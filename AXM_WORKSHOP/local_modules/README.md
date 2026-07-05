@@ -7,6 +7,9 @@ This folder holds side-by-side local modules for the AXM Workshop.
 ## Modules
 
 ```text
+main-hub/
+  Outer router shell. Opens on a clean visible layer first and keeps workshop/build tools one layer deeper to reduce noise.
+
 agent-tool-forge/
   Prepares reusable AI parts:
   prompts, skills, specialist masks, identity drafts, template packs, task wrappers, and wisdom links.
@@ -18,7 +21,17 @@ hermes/
   Wraps the real external Hermes runtime as one possible local AI body/connector.
 
 game-hub/
-  Local AI + human lobby for up to 8 visible seats, swappable human/adapter/AI seats, QR/link join, and swappable game modules from a game library.
+  Local AI + human lobby for up to 8 visible seats, swappable human/adapter/AI seats, QR/link join, game engine, and swappable game modules from a game library.
+```
+
+## Main Hub flow
+
+```text
+Main Hub
+  -> visible layer opens first
+  -> routes to selected modules
+  -> keeps workshop/build layer one move down
+  -> reduces tool noise without hiding value
 ```
 
 ## AI/tool flow
@@ -45,6 +58,7 @@ Game Hub
   -> manages up to 8 visible seats
   -> accepts humans by link/QR
   -> accepts adapters/AI as visible seats
+  -> runs shared 30 TPS / 30 FPS game-engine scaffold
   -> loads game-library manifests
   -> launches selected game module
 ```
@@ -60,3 +74,5 @@ Runtime does not mean consent.
 Package selection does not mean auto-run.
 
 AI/adapters must be visible when used as game seats.
+
+Hub routing should make value reachable without making value noisy.
