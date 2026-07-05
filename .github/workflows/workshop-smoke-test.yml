@@ -50,6 +50,7 @@ jobs:
             for (const key of ['id', 'name', 'version', 'status', 'entry']) {
               if (!manifest[key]) failures.push(`${d.name}: manifest missing ${key}`);
             }
+            if (!Array.isArray(manifest.uses)) failures.push(`${d.name}: manifest missing uses[] declaration`);
             if (manifest.status && !statuses.has(manifest.status)) failures.push(`${d.name}: unknown status ${manifest.status}`);
             if (manifest.entry && !fs.existsSync(path.join(toolsDir, d.name, manifest.entry))) failures.push(`${d.name}: entry file not found: ${manifest.entry}`);
           }
@@ -71,11 +72,19 @@ jobs:
           const html = fs.readFileSync('AXM_WORKSHOP/tools/asset-vault/index.html', 'utf8');
           const checks = [
             ['/launcher/axm-foundation.js', 'uses shared Workshop foundation'],
+            ['/launcher/axm-assets.js', 'loads AXMAssets librarian'],
+            ['/launcher/axm-settings.js', 'loads AXMSettings'],
+            ['/launcher/axm-registry.js', 'loads AXMRegistry'],
             ['AXM.init({id:', 'calls AXM.init'],
             ['AXM.store.save', 'uses AXM.store.save'],
             ['AXMGate.submit', 'uses AXMGate.submit'],
             ['AXM.ask', 'uses optional AXM.ask'],
-            ['/api/export', 'uses Workshop export endpoint'],
+            ['AXMRegistry.register', 'registers a connector'],
+            ['asset-vault.records', 'registers asset-vault.records'],
+            ['kind:\'asset.source\'', 'registers as asset.source'],
+            ['AXMRegistry.connect', 'routes through AXMRegistry.connect'],
+            ['kind:\'asset.sink\'', 'writes via asset.sink'],
+            ['/api/export', 'keeps direct export fallback'],
             ['NO FAKE DONE', 'names unfinished pieces']
           ];
           const missing = checks.filter(([needle]) => !html.includes(needle));
@@ -83,7 +92,7 @@ jobs:
             console.error('Asset Vault wiring checks failed:\n' + missing.map(([, label]) => '- missing ' + label).join('\n'));
             process.exit(1);
           }
-          console.log('Asset Vault foundation wiring checks passed.');
+          console.log('Asset Vault foundation + registry wiring checks passed.');
           NODE
 
       - name: Start Workshop server
@@ -119,12 +128,14 @@ jobs:
             if (!vault) throw new Error('asset-vault not discovered by /api/tools');
             if (vault.status !== 'TEST') throw new Error('asset-vault status should be TEST, got ' + vault.status);
             if (vault.entry !== 'index.html') throw new Error('asset-vault entry should be index.html, got ' + vault.entry);
+            if (!vault.uses || !vault.uses.includes('registry')) throw new Error('asset-vault manifest should declare registry use');
 
             const page = await fetch('http://127.0.0.1:8788/tools/asset-vault/index.html');
             if (!page.ok) throw new Error('asset-vault index route returned ' + page.status);
             const text = await page.text();
             if (!text.includes('AXM Asset Vault')) throw new Error('asset-vault page missing title text');
             if (!text.includes('/launcher/axm-foundation.js')) throw new Error('asset-vault page missing shared foundation script');
+            if (!text.includes('/launcher/axm-registry.js')) throw new Error('asset-vault page missing registry script');
 
             console.log('Workshop smoke test passed:', JSON.stringify({ toolCount: tools.tools.length, assetVault: vault }, null, 2));
           }
