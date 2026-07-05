@@ -5,6 +5,8 @@
   "type": "local-module",
   "entry": "README.md",
   "description": "Local lobby and launcher where human players and adapter/AI seats can connect, switch seats, and launch swappable game modules from a shared game library.",
+  "default_visible_seats": 4,
+  "optional_extra_seats": 4,
   "max_seats": 8,
   "default_network": "local-lan",
   "seat_types": [
@@ -13,16 +15,27 @@
     "adapter",
     "ai",
     "spectator",
-    "closed"
+    "closed",
+    "skip",
+    "next-round"
   ],
+  "seat_selection": {
+    "default_rule": "first eligible ready players fill selected game capacity",
+    "overflow_rule": "extra lobby players become skip, spectator, or next-round queue",
+    "host_override_later": true
+  },
   "responsibilities": [
     "show lobby",
+    "show 4 visible seats by default",
+    "allow adding a second 4-seat team",
     "manage up to 8 visible seats",
     "allow human or adapter/AI occupants",
     "show QR/link join path",
     "load game library manifests",
+    "read selected game min/max players",
+    "apply play-or-skip ready rule",
     "launch selected game module",
-    "pass seat map into game session",
+    "pass selected seat map into game session",
     "return result summary after session"
   ],
   "neighbor_modules": [
@@ -30,5 +43,5 @@
     "../agent-tool-forge",
     "../hermes"
   ],
-  "rule": "Game Hub is a standalone local module. It is the lobby and launcher, not one game. AI/adapters must occupy visible seats."
+  "rule": "Game Hub is a standalone local module. It is the lobby and launcher, not one game. AI/adapters must occupy visible seats. Lobby stability matters more than perfect per-game lobby reshaping."
 }
