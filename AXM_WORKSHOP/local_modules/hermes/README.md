@@ -1,10 +1,72 @@
-# Hermes Local Adapter Module
+# Hermes Local Runner Module
 
-Status: design / local adapter candidate.
+Status: TEST scaffold / runnable local module.
 
 Hermes is an external public open-source agent ecosystem, not an AXM-built tool by default.
 
-This folder is for the AXM adapter plan around Hermes.
+This folder is for the AXM local runner and adapter seam around Hermes.
+
+## What exists now
+
+This module now has a runnable local Node runner:
+
+```text
+hermes-runner.js
+```
+
+Run from this folder:
+
+```text
+node hermes-runner.js
+```
+
+Then check:
+
+```text
+http://127.0.0.1:8791/health
+```
+
+Consent starts OFF by default.
+
+## Consent rule
+
+Hermes actions are blocked until consent is turned ON locally.
+
+With consent OFF:
+
+- health works
+- module list works
+- queue/proposal/vault writes are refused
+
+With consent ON:
+
+- `/queue` can write local task JSON
+- `/proposal` can write local review proposal Markdown
+- `/prompt-vault/add` can write a local prompt record
+
+## Current endpoints
+
+```text
+GET  /health
+GET  /consent
+POST /consent
+GET  /modules
+POST /queue
+POST /proposal
+POST /prompt-vault/add
+GET  /prompt-vault/list
+```
+
+## AXM module slots
+
+Hermes is the local runner body where AXM can later attach:
+
+- prompt vault
+- templates
+- reasoning shell specialist
+- wisdom/log digest
+- task queue
+- bridge/local provider tests
 
 ## What AXM wants from Hermes
 
@@ -23,21 +85,9 @@ Hermes is not the whole AXM brain.
 
 Hermes should work behind the AXM Foundation Gate and bridge rules.
 
-## First target
-
-The first AXM Hermes adapter should be tiny:
-
-```text
-approved Hermes status/digest source
-  -> queue/*.json
-  -> outbox/*.md proposal
-```
-
-It should not edit project files directly.
-
 ## Do not copy blindly
 
-Do not import Hermes code into AXM until:
+Do not import external Hermes code into AXM until:
 
 - source repo is confirmed
 - license is checked
@@ -51,6 +101,6 @@ Default access is none.
 
 Every source must be allowlisted.
 
-Every write should be proposal-only until approved.
+Every write should be local and proposal-first until approved.
 
 No private logs, tokens, API keys, state databases, sessions, account data, or `.env` files belong in the public repo.
