@@ -10,9 +10,11 @@ The project is not trying to replace human choice. It is trying to make collabor
 
 ## Who Mike is
 
-Mike is the human founder, tester, direction-setter, and merge gate for this project.
+Mike Tobi is the human founder, tester, direction-setter, and merge gate for this project.
 
 He is not presenting himself as a traditional software engineer. His role is systems direction: seeing patterns, testing whether ideas actually make sense in real use, challenging fake certainty, and deciding what should or should not become part of AXM.
+
+Public name for people trying to find or recognize the project socially: **Mike Tobi**.
 
 Mike’s rule in the project is simple:
 
