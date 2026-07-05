@@ -1,0 +1,28 @@
+{
+  "id": "main-hub",
+  "name": "AXM Main Hub",
+  "status": "WORKING / TEST",
+  "type": "local-module",
+  "entry": "README.md",
+  "description": "Outer hub shell with layered navigation. Opens on the visible hub layer by default and supports a lower workshop/build layer gated by local password settings.",
+  "default_visible_layer": "visible-hub",
+  "starter_layers": [
+    "visible-hub",
+    "workshop-build"
+  ],
+  "responsibilities": [
+    "open on visible hub layer",
+    "manage hub layer settings",
+    "provide move-down access to workshop/build layer",
+    "keep workshop layer out of the first visible view",
+    "link to Game Hub and local modules from the correct layer",
+    "avoid committing passwords or secrets"
+  ],
+  "neighbor_modules": [
+    "../game-hub",
+    "../agent-command-center",
+    "../agent-tool-forge",
+    "../hermes"
+  ],
+  "rule": "Main Hub controls layered entry. Visible layer opens first. Workshop/build layer is one move down and uses local password settings only."
+}
