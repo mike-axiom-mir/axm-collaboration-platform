@@ -59,8 +59,14 @@ fs.readdirSync(toolsDir,{withFileTypes:true}).forEach(e=>{
   const h = read(p);
   const pos = h.lastIndexOf('<script>');
   if(pos<0) return;
-  const used = new Set((h.slice(pos).match(/\$\('([\w-]+)'\)/g)||[]).map(s=>s.slice(3,-2)));
-  const have = new Set((h.slice(0,pos).match(/id="([\w-]+)"/g)||[]).map(s=>s.slice(4,-1)));
+  const script = h.slice(pos);
+  const used = new Set((script.match(/\$\('([\w-]+)'\)/g)||[]).map(s=>s.slice(3,-2)));
+  const staticIds = new Set((h.slice(0,pos).match(/id="([\w-]+)"/g)||[]).map(s=>s.slice(4,-1)));
+  /* Some tools create controls dynamically before binding handlers. Count ids that appear
+     inside script-built HTML strings as present so verifier catches real missing ids
+     without rejecting deliberate dynamic UI modules. */
+  const dynamicIds = new Set((script.match(/id="([\w-]+)"/g)||[]).map(s=>s.slice(4,-1)));
+  const have = new Set([...staticIds, ...dynamicIds]);
   const missing = [...used].filter(x=>!have.has(x));
   missing.length ? fail(p+' script references ids not in DOM before it: '+missing.join(','))
                  : ok(p+' DOM order clean');
