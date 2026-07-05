@@ -1,0 +1,34 @@
+{
+  "id": "game-hub",
+  "name": "AXM Game Hub",
+  "status": "WORKING / TEST",
+  "type": "local-module",
+  "entry": "README.md",
+  "description": "Local lobby and launcher where human players and adapter/AI seats can connect, switch seats, and launch swappable game modules from a shared game library.",
+  "max_seats": 8,
+  "default_network": "local-lan",
+  "seat_types": [
+    "empty",
+    "human",
+    "adapter",
+    "ai",
+    "spectator",
+    "closed"
+  ],
+  "responsibilities": [
+    "show lobby",
+    "manage up to 8 visible seats",
+    "allow human or adapter/AI occupants",
+    "show QR/link join path",
+    "load game library manifests",
+    "launch selected game module",
+    "pass seat map into game session",
+    "return result summary after session"
+  ],
+  "neighbor_modules": [
+    "../agent-command-center",
+    "../agent-tool-forge",
+    "../hermes"
+  ],
+  "rule": "Game Hub is a standalone local module. It is the lobby and launcher, not one game. AI/adapters must occupy visible seats."
+}
