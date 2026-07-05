@@ -1,27 +1,51 @@
 {
+  "default_visible_seats": 4,
+  "optional_extra_seats": 4,
   "max_seats": 8,
+  "seat_groups": [
+    {
+      "id": "team_a",
+      "label": "Default Lobby Seats",
+      "visible_by_default": true,
+      "seats": ["seat_1", "seat_2", "seat_3", "seat_4"]
+    },
+    {
+      "id": "team_b",
+      "label": "Optional Added Team",
+      "visible_by_default": false,
+      "seats": ["seat_5", "seat_6", "seat_7", "seat_8"]
+    }
+  ],
   "seat_types": [
     "empty",
     "human",
     "adapter",
     "ai",
     "spectator",
-    "closed"
+    "closed",
+    "skip",
+    "next-round"
   ],
   "seats": [
-    { "id": "seat_1", "slot": 1, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false },
-    { "id": "seat_2", "slot": 2, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false },
-    { "id": "seat_3", "slot": 3, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false },
-    { "id": "seat_4", "slot": 4, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false },
-    { "id": "seat_5", "slot": 5, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false },
-    { "id": "seat_6", "slot": 6, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false },
-    { "id": "seat_7", "slot": 7, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false },
-    { "id": "seat_8", "slot": 8, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false }
+    { "id": "seat_1", "slot": 1, "group": "team_a", "visible_by_default": true, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false, "play_status": "lobby" },
+    { "id": "seat_2", "slot": 2, "group": "team_a", "visible_by_default": true, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false, "play_status": "lobby" },
+    { "id": "seat_3", "slot": 3, "group": "team_a", "visible_by_default": true, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false, "play_status": "lobby" },
+    { "id": "seat_4", "slot": 4, "group": "team_a", "visible_by_default": true, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false, "play_status": "lobby" },
+    { "id": "seat_5", "slot": 5, "group": "team_b", "visible_by_default": false, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false, "play_status": "lobby" },
+    { "id": "seat_6", "slot": 6, "group": "team_b", "visible_by_default": false, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false, "play_status": "lobby" },
+    { "id": "seat_7", "slot": 7, "group": "team_b", "visible_by_default": false, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false, "play_status": "lobby" },
+    { "id": "seat_8", "slot": 8, "group": "team_b", "visible_by_default": false, "type": "empty", "display_name": "", "connection": null, "adapter_id": null, "ready": false, "play_status": "lobby" }
   ],
+  "selection_rules": {
+    "default_rule": "first eligible ready players fill selected game capacity",
+    "overflow_rule": "extra ready players become skip, spectator, or next-round queue",
+    "example": "7 lobby players, 4-player game: first 4 ready players play, remaining 3 skip/spectate/wait"
+  },
   "rules": {
     "visible_seat_occupants": true,
     "no_hidden_ai": true,
     "host_can_close_seats": true,
-    "seat_swap_requires_visible_update": true
+    "seat_swap_requires_visible_update": true,
+    "lobby_stays_stable_between_games": true
   }
 }
