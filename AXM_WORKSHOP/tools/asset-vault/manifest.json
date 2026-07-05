@@ -6,38 +6,15 @@
   "entry": "index.html",
   "category": "foundation-tool",
   "summary": "Local-first asset and project vault for AXM Workshop.",
-  "tags": [
-    "assets",
-    "vault",
-    "projects",
-    "handoff",
-    "launcher-skin",
-    "layer-forge"
-  ],
-  "notes": "Local-first asset and project vault for AXM Workshop. Stores imported asset records through the shared AXM spine; real folder indexing is a later bridge/server step.",
-  "uses": [
-    "storage",
-    "gate",
-    "optional-ai",
-    "server-export"
-  ],
-  "supports": [
-    "file-import-records",
-    "image-audio-video-preview",
-    "project-namespaces",
-    "handoff-templates",
-    "launcher-card-metadata",
-    "backup-json",
-    "action-report"
-  ],
-  "card": {
-    "accent": "cyan",
-    "cover": null,
-    "subtitle": "Assets, handoffs, launcher-card metadata"
-  },
+  "tags": ["assets", "vault", "projects", "handoff", "launcher-skin", "layer-forge"],
+  "notes": "Local-first asset and project vault for AXM Workshop. Stores imported records through the shared AXM spine and uses the shared registry for connected export paths where available. Real folder indexing is a later bridge/server step.",
+  "uses": ["storage", "gate", "optional-ai", "asset-librarian", "settings", "registry", "server-export"],
+  "supports": ["file-import-records", "image-audio-video-preview", "project-namespaces", "handoff-templates", "launcher-card-metadata", "backup-json", "action-report", "registry-connection"],
+  "card": {"accent": "cyan", "cover": null, "subtitle": "Assets, handoffs, launcher-card metadata"},
   "no_fake_done": [
     "Real folder watching/indexing is not built in v0.1.",
     "Automatic zipped asset packs are not built in v0.1.",
-    "Workshop launcher does not yet consume launcher-card metadata automatically."
+    "Workshop launcher does not yet consume launcher-card metadata automatically.",
+    "Registry link is page-runtime local in v0.1, not persistent server-wide yet."
   ]
 }
