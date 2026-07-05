@@ -1,0 +1,62 @@
+AXM HERMES SETTINGS EXAMPLE
+
+Status: example only. Local real settings should not be committed.
+
+CONSENT
+enabled_by_default: false
+require_manual_on: true
+allow_off_switch_during_run: true
+
+RUN LIMITS
+max_run_minutes: 15
+max_actions_per_run: 25
+max_tool_calls_per_run: 15
+max_files_read_per_run: 20
+max_files_written_per_run: 5
+stop_on_error: true
+stop_on_uncertainty: true
+stop_before_core_files: true
+
+WISDOM PROFILES
+enabled: false
+mode: manual_upload
+manual_upload_path: wisdom-profiles/inbox
+linked_folder_path: not set
+import_mode: summary_only
+canon_by_default: false
+
+PROMPT VAULT
+enabled: false
+path: vault
+mode: read_only
+
+TEMPLATES
+enabled: false
+path: templates
+rule: outer stable, inner flexible
+writes: proposal_only
+
+SPECIALIST MASKS
+enabled: false
+path: specialist-masks
+selection: manual_or_configured
+allowed examples:
+- reasoning-shell-specialist
+- visualassetagent
+- graphicupgrade
+- mergegate
+- sfx-forge-reviewer
+- code-routing-gate
+
+LOGS
+keep_run_summary: true
+keep_action_trace: true
+redact_sensitive_content: true
+save_after_action_review: true
+
+STOP RULES
+stop_if_consent_off: true
+stop_if_source_not_allowlisted: true
+stop_if_sensitive_file_detected: true
+stop_if_core_edit_requested: true
+stop_if_review_bypass_requested: true
