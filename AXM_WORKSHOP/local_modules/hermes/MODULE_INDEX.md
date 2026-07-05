@@ -8,7 +8,7 @@ Runtime is required.
 
 The goal is not to remove runtime behavior.
 
-The goal is to keep Hermes runnable while adding consent, settings, identity binding, package profiles, and review boundaries around it.
+The goal is to keep Hermes runnable while connecting it to AXM consent, settings, package profiles, and review boundaries.
 
 Locked external source:
 
@@ -33,17 +33,25 @@ HERMES_LOCAL_MODULE_PLAN.md  adapter and safety plan
 hermes-runner.js             early AXM local control-layer experiment, not a replacement for real Hermes
 ```
 
-## Module slots
+## Neighbor modules
 
 ```text
-prompt vault
+../agent-command-center/     package assembly and identity connector binding
+../agent-tool-forge/         prompts, skills, masks, identities, templates, and task wrapper preparation
+```
+
+## Hermes-local slots
+
+```text
+profiles
 templates
-reasoning shell specialist
-wisdom/log digest
-task queue
+vault
+queue
+inbox
+outbox
+run-reports
+logs
 bridge/provider adapter
-identity connector binding
-specialist command center
 shell review
 ```
 
@@ -56,9 +64,8 @@ real Hermes runtime
 AXM control layer
   -> consent
   -> settings
-  -> identity binding
-  -> connector binding
-  -> package profiles
+  -> selected package profile
+  -> selected identity binding
   -> prompt/template/wisdom links
   -> shell review
 ```
@@ -67,10 +74,10 @@ AXM control layer
 
 ```text
 AXM hub/tool
-  -> AXM local module layer
-    -> Hermes wrapper
-      -> real Hermes agent
-        -> AXM add-on slots
+  -> Agent Command Center selects package and identity binding
+    -> Hermes wrapper starts/checks runtime
+      -> real Hermes agent runs approved task
+        -> Shell Review checks result
 ```
 
 ## Rule
@@ -81,6 +88,6 @@ Do not replace real Hermes with an AXM fake runner.
 
 Do not give Hermes uncontrolled access.
 
-Hermes is wrapped as an external local module so AXM can attach prompt vaults, templates, reasoning-shell specialists, wisdom logs, task queues, identity binding, package profiles, and bridge/provider adapters around it.
+Hermes is one runnable connector/body that can use packages prepared by the side-by-side Agent Command Center and Agent Tool Forge.
 
 Runnable does not mean canon.
