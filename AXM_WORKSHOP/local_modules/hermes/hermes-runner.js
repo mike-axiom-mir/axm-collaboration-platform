@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 /* ============================================================
-   AXM HERMES LOCAL RUNNER — v0.1 scaffold
+   AXM HERMES LOCAL CONTROL LAYER — v0.1 scaffold
    ------------------------------------------------------------
-   Runnable local module shell for Hermes-style AXM operations.
+   Early local control-layer shell for Hermes-style AXM operations.
 
    Consent is OFF by default.
    No external network calls.
    No direct repo edits.
-   Writes only to local module folders: queue/, outbox/, prompt-vault/.
+   Writes only to local module folders: queue/, outbox/, logs/,
+   and Agent Tool Forge prompt-packs.
    ============================================================ */
 'use strict';
 
@@ -17,16 +18,18 @@ const path = require('path');
 const crypto = require('crypto');
 
 const ROOT = __dirname;
+const LOCAL_MODULES_ROOT = path.resolve(ROOT, '..');
+const AGENT_TOOL_FORGE_ROOT = path.join(LOCAL_MODULES_ROOT, 'agent-tool-forge');
 const HOST = '127.0.0.1';
 const PORT = process.env.AXM_HERMES_PORT ? Number(process.env.AXM_HERMES_PORT) : 8791;
 const CONSENT_FILE = path.join(ROOT, '.hermes-consent.json');
 const QUEUE_DIR = path.join(ROOT, 'queue');
 const OUTBOX_DIR = path.join(ROOT, 'outbox');
 const LOG_DIR = path.join(ROOT, 'logs');
-const VAULT_DIR = path.join(ROOT, 'prompt-vault');
+const PROMPT_PACKS_DIR = path.join(AGENT_TOOL_FORGE_ROOT, 'prompt-packs');
 
 const MODULES = [
-  { id: 'prompt-vault', name: 'Prompt Vault', status: 'scaffold', writes: 'consent-gated local files' },
+  { id: 'prompt-packs', name: 'Prompt Packs', status: 'scaffold', writes: 'consent-gated Agent Tool Forge files' },
   { id: 'templates', name: 'Template Adapter', status: 'scaffold', writes: 'proposal-only' },
   { id: 'reasoning-shell-specialist', name: 'Reasoning Shell Specialist', status: 'scaffold', writes: 'proposal-only' },
   { id: 'wisdom-log', name: 'Wisdom / Log Digest', status: 'scaffold', writes: 'consent-gated local digest only' },
@@ -34,14 +37,14 @@ const MODULES = [
 ];
 
 function ensureDir(dir) { fs.mkdirSync(dir, { recursive: true }); }
-[QUEUE_DIR, OUTBOX_DIR, LOG_DIR, VAULT_DIR].forEach(ensureDir);
+[QUEUE_DIR, OUTBOX_DIR, LOG_DIR, PROMPT_PACKS_DIR].forEach(ensureDir);
 
 function now() { return new Date().toISOString(); }
 function id(prefix) { return prefix + '-' + now().replace(/[^0-9]/g, '').slice(0, 14) + '-' + crypto.randomBytes(3).toString('hex'); }
 function safeName(s) { return String(s || 'item').toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'item'; }
 function readJson(file, fallback) { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) { return fallback; } }
 function writeJson(file, obj) { fs.writeFileSync(file, JSON.stringify(obj, null, 2) + '\n'); }
-function log(line) { try { fs.appendFileSync(path.join(LOG_DIR, 'hermes-runner.log'), now() + '  ' + line + '\n'); } catch (e) {} }
+function log(line) { try { fs.appendFileSync(path.join(LOG_DIR, 'hermes-control.log'), now() + '  ' + line + '\n'); } catch (e) {} }
 
 function consent() {
   return Object.assign({ enabled: false, updated: null, reason: 'default off' }, readJson(CONSENT_FILE, {}));
@@ -122,28 +125,28 @@ function createProposal(payload) {
   return { id: proposalId, file: path.relative(ROOT, file) };
 }
 
-function addPrompt(payload) {
+function addPromptPack(payload) {
   const promptId = id('prompt');
-  const title = String(payload.title || 'Hermes prompt').slice(0, 120);
+  const title = String(payload.title || 'Hermes prompt pack').slice(0, 120);
   const rec = {
     id: promptId,
-    status: 'local-vault',
+    status: 'local-prompt-pack',
     created: now(),
     title,
     purpose: String(payload.purpose || '').slice(0, 1000),
     text: String(payload.text || '').slice(0, 50000),
-    axm_rule: 'local prompt vault; review before promotion'
+    axm_rule: 'local prompt pack; review before promotion'
   };
-  const file = path.join(VAULT_DIR, promptId + '-' + safeName(title) + '.json');
+  const file = path.join(PROMPT_PACKS_DIR, promptId + '-' + safeName(title) + '.json');
   writeJson(file, rec);
-  log('prompt-vault add ' + promptId + ' · ' + title);
-  return { prompt: rec, file: path.relative(ROOT, file) };
+  log('prompt-pack add ' + promptId + ' · ' + title);
+  return { prompt_pack: rec, file: path.relative(ROOT, file) };
 }
 
 const server = http.createServer(async (req, res) => {
   try {
     if (req.method === 'GET' && req.url === '/health') {
-      return send(res, 200, { ok: true, name: 'AXM Hermes Local Runner', version: '0.1', host: HOST, port: PORT, consent: consent().enabled, modules: MODULES.map(m => m.id) });
+      return send(res, 200, { ok: true, name: 'AXM Hermes Local Control Layer', version: '0.1', host: HOST, port: PORT, consent: consent().enabled, modules: MODULES.map(m => m.id) });
     }
     if (req.method === 'GET' && req.url === '/consent') return send(res, 200, { ok: true, consent: consent() });
     if (req.method === 'POST' && req.url === '/consent') {
@@ -159,14 +162,14 @@ const server = http.createServer(async (req, res) => {
       if (!requireConsent(res)) return;
       return send(res, 200, { ok: true, result: createProposal(await body(req)) });
     }
-    if (req.method === 'POST' && req.url === '/prompt-vault/add') {
+    if (req.method === 'POST' && req.url === '/prompt-packs/add') {
       if (!requireConsent(res)) return;
-      return send(res, 200, { ok: true, result: addPrompt(await body(req)) });
+      return send(res, 200, { ok: true, result: addPromptPack(await body(req)) });
     }
-    if (req.method === 'GET' && req.url === '/prompt-vault/list') {
+    if (req.method === 'GET' && req.url === '/prompt-packs/list') {
       if (!requireConsent(res)) return;
-      const prompts = fs.readdirSync(VAULT_DIR).filter(f => f.endsWith('.json')).map(f => f.replace(/\.json$/, ''));
-      return send(res, 200, { ok: true, prompts });
+      const prompts = fs.readdirSync(PROMPT_PACKS_DIR).filter(f => f.endsWith('.json')).map(f => f.replace(/\.json$/, ''));
+      return send(res, 200, { ok: true, prompt_packs: prompts });
     }
     send(res, 404, { ok: false, error: 'not found' });
   } catch (e) {
@@ -176,8 +179,8 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
-  log('runner up on http://' + HOST + ':' + PORT + ' · consent=' + consent().enabled);
-  console.log('AXM Hermes Local Runner v0.1');
+  log('control layer up on http://' + HOST + ':' + PORT + ' · consent=' + consent().enabled);
+  console.log('AXM Hermes Local Control Layer v0.1');
   console.log('Listening: http://' + HOST + ':' + PORT);
   console.log('Consent: ' + (consent().enabled ? 'ON' : 'OFF'));
   console.log('Health:  http://' + HOST + ':' + PORT + '/health');
