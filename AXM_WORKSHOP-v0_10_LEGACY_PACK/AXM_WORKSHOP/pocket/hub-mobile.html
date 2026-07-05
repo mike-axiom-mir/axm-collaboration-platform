@@ -1,0 +1,2366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AXM Hub</title>
+<!-- ============================================================
+     AXM HUB v0.2 — answers the v0.1 device-test report.
+     First-use loop: open hub -> Prehub is already there -> tap Open.
+     SCRATCH mode is ON by default: fumble freely, nothing becomes
+     history. Switch to CANON when it's real. Canon has no delete.
+     Works fully offline. No account. No AI required, ever.
+     UI status: DEVICE TEST REQUIRED (core is sandbox-tested).
+     ============================================================ -->
+<script>
+/* ============================================================
+   AXM FOUNDATION  —  axm-foundation.js   (bundle v1.4.1)
+   ------------------------------------------------------------
+   The whole pre-hub SPINE in ONE file. One <script> tag, seven pieces:
+     AXMStore  AXMWisdom  AXMIdentity  AXMConnect  AXMGate  AXMFriction  AXMTool
+   ...plus AXM (orchestrator):
+     await AXM.init({id,name,version});   wire everything
+     await AXM.ask('...');                identity-grounded, optional AI
+     await AXM.status();                  one "am I in a good state?" snapshot
+
+   AI is OPTIONAL everywhere (no AI -> clean {noAI:true}, never a crash/fake).
+   Spine, not skin. Nothing here is canon but the core.
+
+   v1.4.1 — REPAIR ONLY: v1.4 accidentally shipped every module TWICE
+   (old copies first, new copies after). Rebuilt clean from the seven
+   source modules. No behaviour change vs what actually ran in v1.4
+   (the new copies loaded last and won). Logged in CROSS_CHECK.txt.
+   ============================================================ */
+
+
+/* ========== axm-storage.js ========== */
+/* ============================================================
+   AXM STORAGE  —  axm-storage.js   (v1.0, stable base)
+   ------------------------------------------------------------
+   Standalone, no dependencies, local-first, fully offline.
+   Drop into any AXM tool with one <script src="axm-storage.js"><\/script>.
+
+   WHAT IT IS
+   Save / load / version / export / import for AXM tools. One namespaced
+   store per tool, named save slots, an autosave slot for no-loss-on-refresh,
+   plus file export/import for backup and transfer.
+
+   THREE LAYERS (from the brief)
+     1. SESSION  — in-memory working values, lost on close.   AXMStore.session
+     2. LOCAL    — IndexedDB (falls back to localStorage), persists.  save/load
+     3. FILE     — download .json / read a file back.          exportFile/importFile
+                    (BROWSER ONLY — uses document/Blob; not for pure Node)
+
+   NAMESPACE
+     axm_<tool>_<version>_<slot>     e.g.  axm_studio_v1_slotA
+     autosave slot key:  axm_<tool>_<version>_auto
+
+   WHY IndexedDB
+   Image, 3D and audio tools blow past localStorage's ~5MB ceiling. IndexedDB
+   has effectively no practical limit and is the right local layer for the
+   whole tool universe. localStorage is kept only as a fallback. The API is
+   identical either way. Because IndexedDB is async, this API is async too
+   (every call returns a Promise).
+
+   GROUND RULES HONOURED
+     LOCAL FIRST : no server, no cloud, no login. Works offline, always.
+     SAME GATES  : save/load/list/export are identical for human and AI.
+     NO LOSS     : autosave + resume() mean a refresh never loses work.
+     CLEAN WISDOM HOOK : storage events are emitted; an optional bridge can
+                         file them into the wisdom layer (default OFF — no noise).
+   ============================================================ */
+(function (global) {
+  'use strict';
+
+  /* ---- config (set by init) ------------------------------------------- */
+  var cfg = { tool: 'tool', version: 'v1', db: 'axm_store', store: 'kv' };
+  var backend = null;          // chosen persistence adapter (IDB or LS)
+  var listeners = [];          // onEvent subscribers
+  var wisdomBridge = false;    // file storage events into AXMWisdom as actions?
+
+  /* ---- key helpers ----------------------------------------------------- */
+  function keyFor(slot) { return 'axm_' + cfg.tool + '_' + cfg.version + '_' + slot; }
+  function prefix()     { return 'axm_' + cfg.tool + '_' + cfg.version + '_'; }
+  function now()        { return new Date().toISOString(); }
+  function sizeOf(s)    { try { return (JSON.stringify(s) || '').length; } catch (e) { return 0; } }
+
+  /* ---- event emit ------------------------------------------------------ */
+  /* Every storage action emits {type, slot, ts, ...}. Tools listen via
+     onEvent() to show a status line, and the optional wisdom bridge can
+     turn these into kind:'action' wisdom entries. */
+  function emit(type, info) {
+    var ev = Object.assign({ type: type, ts: now(), tool: cfg.tool, version: cfg.version }, info || {});
+    for (var i = 0; i < listeners.length; i++) {
+      try { listeners[i](ev); } catch (e) { /* a bad listener never breaks storage */ }
+    }
+    if (wisdomBridge && global.AXMWisdom && global.AXMWisdom.isOn && global.AXMWisdom.isOn()) {
+      try {
+        global.AXMWisdom.file(
+          { text: 'storage: ' + type + (ev.slot ? ' [' + ev.slot + ']' : ''),
+            author: 'system', kind: 'action', tags: ['storage'], context: ev });
+      } catch (e) { /* wisdom optional */ }
+    }
+    return ev;
+  }
+
+  /* ====================================================================
+     PERSISTENCE BACKENDS — both expose get/set/del/keys returning Promises
+     ==================================================================== */
+
+  /* IndexedDB adapter: one shared DB, one object store, full keys inside it. */
+  function idbBackend(IDB) {
+    var dbp = new Promise(function (resolve, reject) {
+      var req = IDB.open(cfg.db, 1);
+      req.onupgradeneeded = function () {
+        var db = req.result;
+        if (!db.objectStoreNames.contains(cfg.store)) db.createObjectStore(cfg.store);
+      };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error); };
+    });
+    function tx(mode, fn) {
+      return dbp.then(function (db) {
+        return new Promise(function (resolve, reject) {
+          var t = db.transaction(cfg.store, mode);
+          var os = t.objectStore(cfg.store);
+          var out = fn(os);
+          t.oncomplete = function () { resolve(out && out.result !== undefined ? out.result : out); };
+          t.onerror = function () { reject(t.error); };
+          t.onabort = function () { reject(t.error); };
+        });
+      });
+    }
+    return {
+      kind: 'indexeddb',
+      get: function (k) { return tx('readonly',  function (os) { return os.get(k); }); },
+      set: function (k, v) { return tx('readwrite', function (os) { return os.put(v, k); }); },
+      del: function (k) { return tx('readwrite', function (os) { return os.delete(k); }); },
+      keys: function () { return tx('readonly',  function (os) { return os.getAllKeys(); }); }
+    };
+  }
+
+  /* localStorage adapter: same interface, for tiny tools or no-IDB browsers.
+     NOTE: ~5MB origin cap — large payloads will fail here; that is exactly
+     why IndexedDB is preferred. set() rejects loudly on quota so a tool can
+     tell the user instead of losing data silently. */
+  function lsBackend(LS) {
+    return {
+      kind: 'localstorage',
+      get: function (k) { return Promise.resolve().then(function () { var r = LS.getItem(k); return r == null ? undefined : JSON.parse(r); }); },
+      set: function (k, v) { return Promise.resolve().then(function () {
+        try { LS.setItem(k, JSON.stringify(v)); }
+        catch (e) { throw new Error('localStorage full (use IndexedDB for large data)'); } }); },
+      del: function (k) { return Promise.resolve().then(function () { LS.removeItem(k); }); },
+      keys: function () { return Promise.resolve().then(function () {
+        var out = []; for (var i = 0; i < LS.length; i++) out.push(LS.key(i)); return out; }); }
+    };
+  }
+
+  function pickBackend() {
+    var IDB = global.indexedDB || global.mozIndexedDB || global.webkitIndexedDB || null;
+    if (IDB) { try { return idbBackend(IDB); } catch (e) { /* fall through */ } }
+    if (global.localStorage) return lsBackend(global.localStorage);
+    // last resort: in-memory only (no persistence) so the API still works
+    var mem = {};
+    return {
+      kind: 'memory',
+      get: function (k) { return Promise.resolve(mem[k]); },
+      set: function (k, v) { return Promise.resolve(void (mem[k] = v)); },
+      del: function (k) { return Promise.resolve(void (delete mem[k])); },
+      keys: function () { return Promise.resolve(Object.keys(mem)); }
+    };
+  }
+
+  /* ---- the record we store -------------------------------------------- */
+  function makeRecord(slot, data, meta) {
+    return {
+      format: 'axm-save', v: 1,
+      tool: cfg.tool, version: cfg.version, slot: slot,
+      saved: now(),
+      meta: meta || {},          // small human-readable summary (title, counts...)
+      data: data                 // the tool's full project payload (any JSON)
+    };
+  }
+
+  /* ====================================================================
+     PUBLIC API — async, same gates for human and AI
+     ==================================================================== */
+  var api = {
+
+    /* init(opts) — call once on tool load.
+       opts: { tool, version, db?, wisdomBridge? }. Returns a Promise that
+       resolves with backend info once persistence is ready. */
+    init: function (opts) {
+      opts = opts || {};
+      if (opts.tool)    cfg.tool = String(opts.tool);
+      if (opts.version) cfg.version = String(opts.version);
+      if (opts.db)      cfg.db = String(opts.db);
+      if (opts.wisdomBridge) wisdomBridge = true;
+      backend = pickBackend();
+      // ensure IDB is actually open (and usable) before we report ready
+      return backend.keys().then(function () {
+        emit('ready', { backend: backend.kind });
+        return { backend: backend.kind, namespace: prefix() };
+      }).catch(function () {
+        // IDB failed at runtime -> degrade to localStorage/memory
+        backend = global.localStorage ? lsBackend(global.localStorage) : pickBackend();
+        emit('ready', { backend: backend.kind, degraded: true });
+        return { backend: backend.kind, namespace: prefix(), degraded: true };
+      });
+    },
+
+    /* save(slot, data, meta?) — write a named slot. Returns the record. */
+    save: function (slot, data, meta) {
+      var rec = makeRecord(slot, data, meta);
+      return backend.set(keyFor(slot), rec).then(function () {
+        emit('save', { slot: slot, bytes: sizeOf(rec) });
+        return rec;
+      });
+    },
+
+    /* load(slot) — return the stored record (or null). The tool reads
+       record.data and record.meta. */
+    load: function (slot) {
+      return backend.get(keyFor(slot)).then(function (rec) {
+        emit('load', { slot: slot, found: !!rec });
+        return rec || null;
+      });
+    },
+
+    /* remove(slot) — delete a slot. */
+    remove: function (slot) {
+      return backend.del(keyFor(slot)).then(function () { emit('remove', { slot: slot }); return true; });
+    },
+
+    /* list() — slots for THIS tool/version, with light metadata, for a
+       save-slot picker. Returns [{slot, saved, meta, bytes}] sorted newest first. */
+    list: function () {
+      var pre = prefix();
+      return backend.keys().then(function (keys) {
+        var slots = keys.filter(function (k) { return typeof k === 'string' && k.indexOf(pre) === 0; });
+        return Promise.all(slots.map(function (k) {
+          return backend.get(k).then(function (rec) {
+            return { slot: k.slice(pre.length), saved: rec && rec.saved, meta: (rec && rec.meta) || {}, bytes: sizeOf(rec) };
+          });
+        }));
+      }).then(function (rows) {
+        return rows.sort(function (a, b) { return (b.saved || '').localeCompare(a.saved || ''); });
+      });
+    },
+
+    /* ---- autosave / resume : no data loss on refresh ----------------- */
+    /* autosave(data, meta?) — write the working state to the 'auto' slot. */
+    autosave: function (data, meta) { return api.save('auto', data, meta); },
+    /* resume() — load the autosave slot on tool start (returns record|null). */
+    resume: function () { return api.load('auto'); },
+
+    /* startAutosave(getData, ms?, getMeta?) — periodically autosave working
+       state. getData() returns the current project payload. Returns a stop fn.
+       Default interval 8s. Call stop() to end it. */
+    startAutosave: function (getData, ms, getMeta) {
+      var iv = setInterval(function () {
+        try { api.autosave(getData(), getMeta ? getMeta() : undefined); } catch (e) {}
+      }, ms || 8000);
+      return function stop() { clearInterval(iv); };
+    },
+
+    /* ---- file layer : export / import -------------------------------- */
+    /* exportFile(slotOrRecord, filename?) — download a slot (or a record/
+       payload you pass in) as pretty JSON. Browser only. */
+    exportFile: function (slotOrRecord, filename) {
+      var p = (typeof slotOrRecord === 'string') ? api.load(slotOrRecord)
+                                                 : Promise.resolve(slotOrRecord);
+      return p.then(function (rec) {
+        if (!rec) throw new Error('nothing to export');
+        var name = filename || ('axm-' + cfg.tool + '-' + (rec.slot || 'export') + '.axm.json');
+        var json = JSON.stringify(rec, null, 2);
+        var a = global.document.createElement('a');
+        a.download = name;
+        a.href = global.URL.createObjectURL(new global.Blob([json], { type: 'application/json' }));
+        a.click();
+        emit('export', { slot: rec.slot, file: name, bytes: json.length });
+        return name;
+      });
+    },
+
+    /* exportJSON(slot) — get the pretty JSON string (for non-browser use,
+       or to hand to another tool / the AI). */
+    exportJSON: function (slot) {
+      return api.load(slot).then(function (rec) { return rec ? JSON.stringify(rec, null, 2) : null; });
+    },
+
+    /* importText(text, intoSlot?) — parse a saved JSON string. If intoSlot is
+       given, the record is written to that slot. Returns the record. */
+    importText: function (text, intoSlot) {
+      return Promise.resolve().then(function () {
+        var rec = JSON.parse(text);
+        if (!rec || rec.format !== 'axm-save') throw new Error('not an AXM save file');
+        if (intoSlot) return api.save(intoSlot, rec.data, rec.meta).then(function () { emit('import', { slot: intoSlot }); return rec; });
+        emit('import', { slot: rec.slot });
+        return rec;
+      });
+    },
+
+    /* importFile(intoSlot?) — open a file picker, read + parse the chosen
+       .json, optionally write it to a slot. Returns the record. Browser only. */
+    importFile: function (intoSlot) {
+      return new Promise(function (resolve, reject) {
+        var input = global.document.createElement('input');
+        input.type = 'file'; input.accept = '.json,application/json';
+        input.onchange = function (e) {
+          var f = e.target.files[0];
+          if (!f) { reject(new Error('no file chosen')); return; }
+          var r = new global.FileReader();
+          r.onload = function (ev) { api.importText(String(ev.target.result), intoSlot).then(resolve, reject); };
+          r.onerror = function () { reject(new Error('could not read file')); };
+          r.readAsText(f);
+        };
+        input.click();
+      });
+    },
+
+    /* ---- session layer : in-memory, lost on close -------------------- */
+    session: (function () {
+      var m = {};
+      return {
+        set: function (k, v) { m[k] = v; return v; },
+        get: function (k) { return m[k]; },
+        all: function () { return Object.assign({}, m); },
+        clear: function () { m = {}; }
+      };
+    })(),
+
+    /* ---- wiring ------------------------------------------------------ */
+    onEvent: function (fn) {
+      if (typeof fn === 'function') listeners.push(fn);
+      return function () { listeners = listeners.filter(function (l) { return l !== fn; }); };
+    },
+    /* logToWisdom(bool) — when on, storage events are filed into AXMWisdom as
+       kind:'action' (only if AXMWisdom exists and is itself on). Default OFF so
+       the wisdom store is not flooded with routine save/load noise. */
+    logToWisdom: function (b) { wisdomBridge = !!b; return wisdomBridge; },
+
+    /* meta */
+    config: function () { return { tool: cfg.tool, version: cfg.version, db: cfg.db, namespace: prefix(), backend: backend && backend.kind }; },
+    /* backend() — which persistence is live ('indexeddb' | 'localstorage' |
+       'memory' | null before init). For AXM.status(). */
+    backend: function () { return backend ? backend.kind : null; },
+
+    VERSION: '1.1'
+  };
+
+  global.AXMStore = api;
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+
+})(typeof window !== 'undefined' ? window : this);
+
+/* ========== axm-wisdom-layer.js ========== */
+/* ============================================================
+   AXM WISDOM LAYER  —  axm-wisdom-layer.js   (v1.0, stable base)
+   ------------------------------------------------------------
+   Standalone, no dependencies, local-first.
+   Drop into any AXM tool with one <script src="axm-wisdom-layer.js"><\/script>.
+
+   WHAT IT IS
+   A small store for "wisdom" — short lessons an AI (or a human) genuinely
+   learns while using a tool. Wisdom is filed, kept append-only, fed back into
+   an AI's prompt as soft guidance, and can be exported / imported as a map.
+
+   WHY IT EXISTS
+   This is the stable base. Today each tool keeps its own wisdom locally.
+   Later, ALL wisdom from ALL tools can be routed to one identity storage so
+   the AI identity can learn and grow across everything. That routing is a
+   single hook here: AXMWisdom.setSink(fn). Nothing else has to change.
+
+   GROUND RULES HONOURED
+   - LOCAL FIRST  : works fully offline. The sink (identity storage) is optional.
+   - SAME GATES   : file() / all() / context() are identical for human and AI.
+   - APPEND ONLY  : the local store is never rewritten or compressed. No loss.
+   - NO FAKE DONE : action-logging, drift-flagging and the identity store
+                    itself are NOT built here. They are documented seams only.
+   ============================================================ */
+(function (global) {
+  'use strict';
+
+  /* ---- internal state (per page load) ---------------------------------- */
+  var cfg = { tool: 'tool', version: 'v1' };  // set by init()
+  var enabled = false;        // the toggle. OFF by default (faithful to Studio)
+  var sessionLog = [];        // entries filed during THIS session
+  var loadedLog = [];         // entries imported from a map (past sessions)
+  var subscribers = [];       // UI listeners, called after any change
+  var sinks = [defaultSink];  // entries are sent to EVERY sink (local + identity, etc.)
+
+  /* ---- tiny helpers ---------------------------------------------------- */
+  function now() { return new Date().toISOString(); }
+  function uid() {
+    return 'w_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+  }
+  function storeKey() { return 'axm_wisdom_' + cfg.tool + '_' + cfg.version; }
+  function isStr(x) { return typeof x === 'string'; }
+
+  /* Turn a string OR a partial object into a full, stamped wisdom entry.
+     A bare string (how Studio files today) becomes a 'lesson' entry. */
+  function normalize(input, defaults) {
+    defaults = defaults || {};
+    var e = isStr(input) ? { text: input } : (input || {});
+    return {
+      id:      e.id      || uid(),
+      ts:      e.ts      || now(),
+      tool:    e.tool    || cfg.tool,
+      version: e.version || cfg.version,
+      author:  e.author  || defaults.author || 'unknown', // 'ai1','ai2','human',name
+      kind:    e.kind    || defaults.kind   || 'lesson',   // reserved: 'action','flag','principle'
+      text:    String(e.text == null ? '' : e.text).trim(),
+      tags:    Array.isArray(e.tags) ? e.tags : [],
+      context: e.context || null                            // optional freeform
+    };
+  }
+
+  function notify() {
+    for (var i = 0; i < subscribers.length; i++) {
+      try { subscribers[i](api); } catch (err) { /* a bad listener never breaks the layer */ }
+    }
+  }
+
+  /* ---- the default sink: append-only localStorage ---------------------- */
+  /* The sink is the ONLY place persistence happens. Replace it with
+     setSink() to route wisdom to identity storage. The default keeps a
+     per-tool append-only array on disk so wisdom survives refreshes and
+     even a "New project" (wisdom is identity-level, not project-level). */
+  function defaultSink(entry) {
+    try {
+      var raw = global.localStorage.getItem(storeKey());
+      var arr = raw ? JSON.parse(raw) : [];
+      arr.push(entry);                                    // APPEND ONLY
+      global.localStorage.setItem(storeKey(), JSON.stringify(arr));
+    } catch (err) { /* private mode / quota — layer still works in-memory */ }
+  }
+
+  /* Read the persistent append-only store back (e.g. on tool start). */
+  function readStore() {
+    try {
+      var raw = global.localStorage.getItem(storeKey());
+      return raw ? JSON.parse(raw) : [];
+    } catch (err) { return []; }
+  }
+
+  /* ====================================================================
+     PUBLIC API  —  the same gates for human and AI
+     ==================================================================== */
+  var api = {
+
+    /* init(opts)
+       Call once when the tool loads. opts:
+         tool    : short tool id, e.g. 'studio'  (namespaces the store)
+         version : e.g. 'v1'
+         sink    : optional custom sink fn(entry) — your identity storage
+         resume  : if true, pull the persistent store into loadedLog so past
+                   wisdom is available to the AI immediately. Default true. */
+    init: function (opts) {
+      opts = opts || {};
+      if (opts.tool)    cfg.tool = String(opts.tool);
+      if (opts.version) cfg.version = String(opts.version);
+      if (typeof opts.sink === 'function') sink = opts.sink;
+      if (opts.resume !== false) {
+        var prior = readStore();
+        if (prior.length) loadedLog = loadedLog.concat(prior);
+      }
+      notify();
+      return api;
+    },
+
+    /* file(input, defaults)
+       The one write path. Accepts a string (back-compat with Studio) or a
+       full/partial entry object. Stamps it, keeps it in session, and sends
+       it to the sink (local store today, identity storage later).
+       Returns the stored entry, or null if the toggle is off or text empty. */
+    file: function (input, defaults) {
+      if (!enabled) return null;                 // faithful: off means off
+      var entry = normalize(input, defaults);
+      if (!entry.text) return null;              // never file an empty nugget
+      sessionLog.push(entry);
+      for (var si = 0; si < sinks.length; si++) { try { sinks[si](entry); } catch (err) { /* one sink offline never blocks the others or the session */ } }
+      notify();
+      return entry;
+    },
+
+    /* fileSeam(opts)  —  the seam-visibility helper.
+       A seam is where one decision touches another: an assumption this tool /
+       module makes about how a DIFFERENT module behaves. Logging the seam (not
+       just the action) is how a contradiction between two tools becomes visible
+       BEFORE it becomes a bug. This is the AI-side of the seam-visibility idea;
+       it does NOT detect drift, and there is NO human-facing version here.
+       opts:
+         assumption : what is being assumed (required)
+         about      : which module / tool / decision the assumption is about
+         why        : optional reasoning behind it
+         by         : which module is making it (defaults to this tool)
+         author     : 'human' | 'ai1' | ...
+       Goes through file(), so it obeys the same toggle and the same gates. */
+    fileSeam: function (opts) {
+      opts = opts || {};
+      var assumption = String(opts.assumption || '').trim();
+      if (!assumption) return null;
+      var about = opts.about ? String(opts.about) : 'another module';
+      var text = 'assumes [' + about + ']: ' + assumption + (opts.why ? ' \u2014 because ' + opts.why : '');
+      return api.file({
+        text: text,
+        kind: 'seam',
+        author: opts.author,
+        tags: ['seam'].concat(Array.isArray(opts.tags) ? opts.tags : []),
+        context: { assumption: assumption, about: about, by: opts.by || cfg.tool, why: opts.why || null }
+      }, { author: opts.author || 'unknown' });
+    },
+
+    /* all()      every entry the AI should consider: loaded + this session
+       session()  only what was filed this session
+       loaded()   only what was imported / resumed from the store          */
+    all:     function () { return loadedLog.concat(sessionLog); },
+    session: function () { return sessionLog.slice(); },
+    loaded:  function () { return loadedLog.slice(); },
+
+    /* seams()    only seam entries (assumptions about other modules)
+       lessons()  everything that is NOT a seam (the applyable wisdom)        */
+    seams:   function () { return api.all().filter(function (e) { return e.kind === 'seam'; }); },
+    lessons: function () { return api.all().filter(function (e) { return e.kind !== 'seam'; }); },
+
+    /* context(opts)
+       Build the guidance block to inject into an AI prompt. Lessons keep their
+       original framing (loaded vs gathered, "apply as guidance"). Seams get a
+       SEPARATE block, framed as assumptions to VERIFY rather than apply — so
+       the AI checks them instead of treating them as rules. Returns '' when the
+       toggle is off or there is nothing to say. opts.label overrides the
+       lesson framing line. */
+    context: function (opts) {
+      opts = opts || {};
+      if (!enabled) return '';
+      var notSeam = function (e) { return e.kind !== 'seam'; };
+      var isSeam  = function (e) { return e.kind === 'seam'; };
+      var loadedL = loadedLog.filter(notSeam), sessionL = sessionLog.filter(notSeam);
+      var seamsAll = api.all().filter(isSeam);
+
+      var lessonParts = [];
+      if (loadedL.length)  lessonParts.push('Loaded wisdom map:\n'  + loadedL.map(fmtLine).join('\n'));
+      if (sessionL.length) lessonParts.push('Gathered this session:\n' + sessionL.map(fmtLine).join('\n'));
+
+      var blocks = [];
+      if (lessonParts.length) {
+        var label = opts.label || 'WISDOM (apply as guidance, not rules):';
+        blocks.push(label + '\n' + lessonParts.join('\n\n'));
+      }
+      if (seamsAll.length) {
+        blocks.push('SEAMS (assumptions about other modules \u2014 verify these still hold, do not just apply):\n' + seamsAll.map(fmtLine).join('\n'));
+      }
+      return blocks.length ? '\n' + blocks.join('\n\n') + '\n' : '';
+    },
+
+    /* on(bool) / isOn()  — the toggle. */
+    on:   function (b) { enabled = !!b; notify(); return enabled; },
+    isOn: function () { return enabled; },
+
+    /* exportMap()  — plain-text map (faithful "AXM WISDOM MAP" header),
+                      readable by a human or an AI alike. For copy-to-file. */
+    exportMap: function () {
+      var lines = api.all().map(fmtLine);
+      return 'AXM WISDOM MAP\n' + (lines.length ? lines.join('\n') : '(empty)');
+    },
+
+    /* exportJSON() — structured form, the preferred transfer format and the
+                      shape identity storage will ingest. */
+    exportJSON: function () {
+      return JSON.stringify({
+        format: 'axm-wisdom', v: 1, tool: cfg.tool, version: cfg.version,
+        exported: now(), entries: api.all()
+      }, null, 2);
+    },
+
+    /* importMap(text)
+       Accepts EITHER exportJSON() output OR the plain "AXM WISDOM MAP" text
+       OR Studio's old loose "- nugget" lines. Parsed entries become loaded
+       wisdom (they are NOT re-filed to the sink — import is read, not write). */
+    importMap: function (text) {
+      text = String(text || '');
+      var entries = [];
+      // try JSON first
+      try {
+        var j = JSON.parse(text);
+        if (j && Array.isArray(j.entries)) entries = j.entries.map(function (e) { return normalize(e); });
+      } catch (err) { /* not JSON — fall through to line parsing */ }
+      if (!entries.length) {
+        text.replace(/^AXM WISDOM MAP\s*/i, '')
+          .split('\n')
+          .forEach(function (ln) {
+            var t = ln.replace(/^\s*[-•]\s*/, '').trim();
+            if (t && t !== '(empty)') entries.push(normalize({ text: t, author: 'imported' }));
+          });
+      }
+      loadedLog = entries;
+      notify();
+      return loadedLog.length;
+    },
+
+    /* setSink(fn) — REPLACE all sinks with this one (back-compat). Pass null
+       to reset to the default local store. */
+    setSink: function (fn) { sinks = [(typeof fn === 'function') ? fn : defaultSink]; return api; },
+
+    /* addSink(fn) — ADD a destination without dropping the others. This is how
+       a tool routes wisdom to the identity store AND keeps its own local copy,
+       so a reload never loses history. (identity.wireWisdom uses this.) */
+    addSink: function (fn) { if (typeof fn === 'function') sinks.push(fn); return api; },
+
+    /* subscribe(fn) — UI listeners (e.g. re-render the wisdom log). Returns
+       an unsubscribe function. */
+    subscribe: function (fn) {
+      if (typeof fn === 'function') subscribers.push(fn);
+      return function () { subscribers = subscribers.filter(function (s) { return s !== fn; }); };
+    },
+
+    /* ---- back-compat with Studio's existing project blob -------------- */
+    /* toLegacy()  — produce {log, loaded, on} in Studio's old shape so the
+                     current Save project keeps working untouched.
+       fromLegacy(o) — ingest that shape on load. These let the module drop
+       into Studio without breaking save/load round-trips. */
+    toLegacy: function () {
+      return {
+        log: sessionLog.map(function (e) { return e.text; }),
+        loaded: loadedLog.map(fmtLine).join('\n'),
+        on: enabled
+      };
+    },
+    fromLegacy: function (o) {
+      o = o || {};
+      enabled = !!o.on;
+      sessionLog = (o.log || []).map(function (t) { return normalize({ text: t, author: 'ai1' }); });
+      if (o.loaded) api.importMap(String(o.loaded));
+      else notify();
+      return api;
+    },
+
+    /* meta */
+    config: function () { return { tool: cfg.tool, version: cfg.version, key: storeKey() }; },
+    VERSION: '1.2'
+  };
+
+  function fmtLine(e) { return '- ' + (isStr(e) ? e : e.text); }
+
+  /* expose */
+  global.AXMWisdom = api;
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+
+})(typeof window !== 'undefined' ? window : this);
+
+/* ========== axm-identity.js ========== */
+/* ============================================================
+   AXM IDENTITY STORE  —  axm-identity.js   (v1.1, stable base)
+   ------------------------------------------------------------
+   Standalone, no dependencies, local-first, fully offline.
+
+   WHAT IT IS
+   The one place wisdom from ALL tools pools, so the AI identity can learn and
+   grow across everything. Holds two things kept apart on purpose:
+     THE CORE   — who the identity is (the four roots / values). Canon.
+     THE MEMORY — everything learned since. Append-only, never lost.
+
+   v1.1 ADDS — DUPLICATE GATE (Mike's design):
+   Append-only protects against LOSS but, unguarded, fills with near-copies.
+   So a check runs BEFORE every append:
+     - EXACT copy        -> not re-added; the existing entry is reinforced
+                            (a "seen N times" count — repeated lessons matter).
+     - NEAR copy         -> NOT added yet. A merge proposal is queued for a
+                            human or AI to decide. This is the ONLY moment an
+                            existing entry can change.
+     - genuinely new     -> appended normally.
+   A merge folds the new nuance into the old entry as a NEW VERSION, keeping
+   the old version underneath. Nothing is erased, nothing is duplicated, and
+   entries can't be edited anywhere else. Even an AI merge is fully reversible
+   because the originals are preserved.
+   ============================================================ */
+(function (global) {
+  'use strict';
+
+  var DB = 'axm_identity';
+  var backend = null;
+  var listeners = [];
+  var dedup = { mode: 'ask', near: 0.6, ignoreKinds: ['action'] };   // mode: 'ask' | 'off'
+  var chain = Promise.resolve();            // serialise absorbs (avoid races)
+
+  function now() { return new Date().toISOString(); }
+  function uid(p) { return (p || 'id_') + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7); }
+  function emit(type, info) { var ev = Object.assign({ type: type, ts: now() }, info || {}); for (var i = 0; i < listeners.length; i++) { try { listeners[i](ev); } catch (e) {} } }
+
+  /* ---- similarity (no AI needed): normalise + light stem + score --------- */
+  var STOP = { the:1,a:1,an:1,is:1,are:1,to:1,of:1,on:1,in:1,for:1,and:1,it:1,that:1,this:1,be:1,with:1,as:1 };
+  function stem(w) { return w.length > 3 ? w.replace(/(ing|ed|er|es|s)$/,'') : w; }
+  function tokens(t) {
+    return String(t || '').toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/)
+      .filter(function (w) { return w && !STOP[w]; }).map(stem);
+  }
+  function tokenSet(t) { var s = {}; tokens(t).forEach(function (w) { s[w] = 1; }); return s; }
+  function normExact(t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
+  function similarity(a, b) {
+    var A = tokenSet(a), B = tokenSet(b);
+    var ak = Object.keys(A), bk = Object.keys(B);
+    if (!ak.length || !bk.length) return 0;
+    var inter = 0; ak.forEach(function (w) { if (B[w]) inter++; });
+    var union = ak.length + bk.length - inter;
+    var jaccard = inter / union;
+    var containment = inter / Math.min(ak.length, bk.length);   // is the smaller mostly inside the larger?
+    return 0.5 * jaccard + 0.5 * containment;
+  }
+
+  /* ---- IndexedDB backend (v2: entries, core, pending, skipped) ----------- */
+  function idbBackend(IDB) {
+    var dbp = new Promise(function (resolve, reject) {
+      var req = IDB.open(DB, 2);
+      req.onupgradeneeded = function () {
+        var db = req.result;
+        if (!db.objectStoreNames.contains('entries')) db.createObjectStore('entries', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('core'))    db.createObjectStore('core', { autoIncrement: true });
+        if (!db.objectStoreNames.contains('pending')) db.createObjectStore('pending', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('skipped')) db.createObjectStore('skipped', { autoIncrement: true });
+      };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error); };
+    });
+    function tx(store, mode, fn) {
+      return dbp.then(function (db) { return new Promise(function (resolve, reject) {
+        var t = db.transaction(store, mode), os = t.objectStore(store), rq = fn(os);
+        t.oncomplete = function () { resolve(rq && rq.result); }; t.onerror = function () { reject(t.error); };
+      }); });
+    }
+    return {
+      kind: 'indexeddb',
+      putEntry: function (e) { return tx('entries','readwrite',function(os){return os.put(e);}); },
+      allEntries: function () { return tx('entries','readonly',function(os){return os.getAll();}); },
+      getEntry: function (id) { return tx('entries','readonly',function(os){return os.get(id);}); },
+      pushCore: function (c) { return tx('core','readwrite',function(os){return os.add(c);}); },
+      allCore: function () { return tx('core','readonly',function(os){return os.getAll();}); },
+      putPending: function (p) { return tx('pending','readwrite',function(os){return os.put(p);}); },
+      allPending: function () { return tx('pending','readonly',function(os){return os.getAll();}); },
+      delPending: function (id) { return tx('pending','readwrite',function(os){return os.delete(id);}); },
+      pushSkipped: function (s) { return tx('skipped','readwrite',function(os){return os.add(s);}); },
+      allSkipped: function () { return tx('skipped','readonly',function(os){return os.getAll();}); }
+    };
+  }
+
+  /* ---- localStorage / memory fallback ------------------------------------ */
+  var _mem = {}; function memGet(k){return k in _mem?_mem[k]:null;} function memSet(k,v){_mem[k]=String(v);}
+  function kvBackend(get, set) {
+    function rd(k,d){ try{var v=get(k);return v==null?d:JSON.parse(v);}catch(e){return d;} }
+    function wr(k,v){ try{set(k,JSON.stringify(v));}catch(e){} }
+    return {
+      kind: get === memGet ? 'memory' : 'localstorage',
+      putEntry:function(e){var a=rd('aie',[]);var i=a.findIndex(function(x){return x.id===e.id;});if(i>=0)a[i]=e;else a.push(e);wr('aie',a);return Promise.resolve();},
+      allEntries:function(){return Promise.resolve(rd('aie',[]));},
+      getEntry:function(id){return Promise.resolve(rd('aie',[]).find(function(x){return x.id===id;}));},
+      pushCore:function(c){var a=rd('aic',[]);a.push(c);wr('aic',a);return Promise.resolve();},
+      allCore:function(){return Promise.resolve(rd('aic',[]));},
+      putPending:function(p){var a=rd('aip',[]);var i=a.findIndex(function(x){return x.id===p.id;});if(i>=0)a[i]=p;else a.push(p);wr('aip',a);return Promise.resolve();},
+      allPending:function(){return Promise.resolve(rd('aip',[]));},
+      delPending:function(id){wr('aip',rd('aip',[]).filter(function(x){return x.id!==id;}));return Promise.resolve();},
+      pushSkipped:function(s){var a=rd('ais',[]);a.push(s);wr('ais',a);return Promise.resolve();},
+      allSkipped:function(){return Promise.resolve(rd('ais',[]));}
+    };
+  }
+  function pickBackend() {
+    var IDB = global.indexedDB || global.mozIndexedDB || global.webkitIndexedDB || null;
+    if (IDB) { try { return idbBackend(IDB); } catch (e) {} }
+    if (global.localStorage) return kvBackend(function(k){return global.localStorage.getItem(k);}, function(k,v){global.localStorage.setItem(k,v);});
+    return kvBackend(memGet, memSet);
+  }
+
+  /* ---- helpers ----------------------------------------------------------- */
+  function normalizeIncoming(entry) {
+    var e = (typeof entry === 'string') ? { text: entry } : (entry || {});
+    return {
+      id: e.id || uid(), ts: e.ts || now(),
+      tool: e.tool || 'unknown', author: e.author || 'unknown',
+      kind: e.kind || 'lesson', text: String(e.text == null ? '' : e.text),
+      tags: Array.isArray(e.tags) ? e.tags : [], context: e.context || null
+    };
+  }
+  function newRecord(inc) {
+    return {
+      id: inc.id, ts: inc.ts, lastTs: inc.ts, tool: inc.tool, author: inc.author,
+      kind: inc.kind, text: inc.text, tags: inc.tags, context: inc.context,
+      seenCount: 1, versions: [{ text: inc.text, ts: inc.ts, author: inc.author }], sources: []
+    };
+  }
+  function defaultMerge(existingText, incomingText) {
+    var a = tokenSet(existingText), b = tokenSet(incomingText);
+    var aIn = Object.keys(a).every(function (w) { return b[w]; });
+    var bIn = Object.keys(b).every(function (w) { return a[w]; });
+    if (bIn) return existingText;                 // incoming adds nothing new
+    if (aIn) return incomingText;                 // incoming is the richer one
+    return existingText + ' | also: ' + incomingText;  // both have nuance — keep both, lossless
+  }
+
+  /* ====================================================================
+     PUBLIC API
+     ==================================================================== */
+  var api = {
+
+    init: function () {
+      backend = pickBackend();
+      return backend.allEntries().then(function () { emit('ready', { backend: backend.kind }); return { backend: backend.kind }; })
+        .catch(function () { backend = global.localStorage ? kvBackend(function(k){return global.localStorage.getItem(k);}, function(k,v){global.localStorage.setItem(k,v);}) : kvBackend(memGet, memSet); return { backend: backend.kind, degraded: true }; });
+    },
+
+    /* setDedup({mode,near}) — mode 'ask' (gate on) or 'off' (pure append).
+       near = similarity threshold 0..1 for a NEAR match (default 0.6). */
+    setDedup: function (o) { o = o || {}; if (o.mode) dedup.mode = o.mode; if (typeof o.near === 'number') dedup.near = o.near; if (Array.isArray(o.ignoreKinds)) dedup.ignoreKinds = o.ignoreKinds; return dedup; },
+
+    /* ---- core (canon) ---- */
+    setCore: function (core) { var rec = { ts: now(), core: core }; return backend.pushCore(rec).then(function () { emit('core', {}); return rec; }); },
+    core: function () { return backend.allCore().then(function (a) { return a && a.length ? a[a.length - 1].core : null; }); },
+    coreHistory: function () { return backend.allCore(); },
+
+    /* absorb(entry) — THE memory write path, now with the duplicate gate.
+       Resolves to:
+         { status:'added',      entry }              brand-new, appended
+         { status:'reinforced', entry }              exact copy -> count bumped
+         { status:'pending',    pendingId, similarTo, score }  near -> needs a decision
+       Serialised internally so concurrent absorbs can't race past each other. */
+    absorb: function (entry) {
+      var run = function () { return api._absorb(entry); };
+      var p = chain.then(run, run);
+      chain = p.catch(function () {});
+      return p;
+    },
+    _absorb: function (entry) {
+      if (!backend) return Promise.resolve(null);
+      var inc = normalizeIncoming(entry);
+      if (!inc.text) return Promise.resolve(null);
+      // identity is for what's LEARNED (lessons, seams, milestones), not routine
+      // telemetry. Skip 'action' entries unless explicitly allowed.
+      if (dedup.ignoreKinds && dedup.ignoreKinds.indexOf(inc.kind) >= 0) { emit('ignored', { kind: inc.kind }); return Promise.resolve({ status: 'ignored', kind: inc.kind }); }
+
+      if (dedup.mode === 'off') {
+        return backend.putEntry(newRecord(inc)).then(function () { emit('absorb', { id: inc.id, tool: inc.tool, kind: inc.kind }); return { status: 'added', entry: inc }; });
+      }
+
+      return backend.allEntries().then(function (all) {
+        var same = (all || []).filter(function (e) { return e.kind === inc.kind; });
+        var incExact = normExact(inc.text);
+        // exact match -> reinforce
+        for (var i = 0; i < same.length; i++) {
+          if (normExact(same[i].text) === incExact) {
+            var e = same[i]; e.seenCount = (e.seenCount || 1) + 1; e.lastTs = now();
+            if (e.sources && inc.id) e.sources.push(inc.id);
+            return backend.putEntry(e).then(function () { emit('reinforced', { id: e.id, seenCount: e.seenCount }); return { status: 'reinforced', entry: e }; });
+          }
+        }
+        // best near match
+        var best = null, bestScore = 0;
+        for (var j = 0; j < same.length; j++) { var sc = similarity(inc.text, same[j].text); if (sc > bestScore) { bestScore = sc; best = same[j]; } }
+        if (best && bestScore >= dedup.near) {
+          var proposal = { id: uid('mrg_'), ts: now(), incoming: inc, similarTo: best.id, existingText: best.text, score: Math.round(bestScore * 100) / 100 };
+          return backend.putPending(proposal).then(function () { emit('pending-merge', { pendingId: proposal.id, similarTo: best.id, score: proposal.score }); return { status: 'pending', pendingId: proposal.id, similarTo: best.id, score: proposal.score }; });
+        }
+        // genuinely new
+        return backend.putEntry(newRecord(inc)).then(function () { emit('absorb', { id: inc.id, tool: inc.tool, kind: inc.kind }); return { status: 'added', entry: inc }; });
+      });
+    },
+
+    /* ---- the one merge door: resolve a pending near-duplicate ---- */
+    pending: function () { return backend.allPending(); },
+    skipped: function () { return backend.allSkipped(); },
+
+    /* resolveMerge(pendingId, decision, opts)
+         decision 'merge'    -> fold incoming into the existing entry as a NEW
+                                version (old kept). opts.text overrides the
+                                merged wording; opts.by = who decided.
+         decision 'separate' -> keep both: append incoming as its own entry.
+         decision 'skip'     -> drop incoming, but log it (recoverable).
+       This is the ONLY place an existing entry gains a new version. */
+    resolveMerge: function (pendingId, decision, opts) {
+      opts = opts || {};
+      return backend.allPending().then(function (list) {
+        var prop = (list || []).find(function (p) { return p.id === pendingId; });
+        if (!prop) throw new Error('no such pending merge');
+        var inc = prop.incoming;
+
+        if (decision === 'separate') {
+          return backend.putEntry(newRecord(inc)).then(function () { return backend.delPending(pendingId); }).then(function () { emit('separated', { id: inc.id }); return { status: 'separated', entry: inc }; });
+        }
+        if (decision === 'skip') {
+          return backend.pushSkipped({ ts: now(), by: opts.by || 'unknown', incoming: inc, similarTo: prop.similarTo, reason: opts.reason || '' }).then(function () { return backend.delPending(pendingId); }).then(function () { emit('skipped', { similarTo: prop.similarTo }); return { status: 'skipped' }; });
+        }
+        // 'merge' (default)
+        return backend.getEntry(prop.similarTo).then(function (ex) {
+          if (!ex) { return backend.putEntry(newRecord(inc)).then(function () { return backend.delPending(pendingId); }).then(function () { return { status: 'separated', entry: inc, note: 'original gone, kept as new' }; }); }
+          var mergedText = opts.text || defaultMerge(ex.text, inc.text);
+          ex.versions = ex.versions || [{ text: ex.text, ts: ex.ts, author: ex.author }];
+          ex.versions.push({ text: mergedText, ts: now(), author: opts.by || inc.author, mergedFrom: inc.id });
+          ex.text = mergedText; ex.lastTs = now();
+          ex.sources = ex.sources || []; ex.sources.push(inc.id);
+          if (Array.isArray(inc.tags)) inc.tags.forEach(function (t) { if (ex.tags.indexOf(t) < 0) ex.tags.push(t); });
+          return backend.putEntry(ex).then(function () { return backend.delPending(pendingId); }).then(function () { emit('merged', { into: ex.id, from: inc.id }); return { status: 'merged', entry: ex }; });
+        });
+      });
+    },
+
+    /* ---- reading (read-only) ---- */
+    all: function (filter) {
+      filter = filter || {};
+      return backend.allEntries().then(function (a) {
+        a = (a || []).slice().sort(function (x, y) { return (x.ts || '').localeCompare(y.ts || ''); });
+        return a.filter(function (e) {
+          if (filter.tool && e.tool !== filter.tool) return false;
+          if (filter.author && e.author !== filter.author) return false;
+          if (filter.kind && e.kind !== filter.kind) return false;
+          if (filter.since && (e.ts || '') < filter.since) return false;
+          return true;
+        });
+      });
+    },
+
+    context: function (opts) {
+      opts = opts || {}; var recent = opts.recent || 20;
+      return Promise.all([api.core(), api.all()]).then(function (r) {
+        var core = r[0], mem = r[1], out = [];
+        if (core) out.push('IDENTITY CORE (who — canon, read-only):\n' + (typeof core === 'string' ? core : JSON.stringify(core, null, 2)));
+        var lessons = mem.filter(function (e) { return e.kind !== 'seam'; });
+        var seams = mem.filter(function (e) { return e.kind === 'seam'; });
+        function line(e) { return '- [' + e.tool + '/' + e.author + '] ' + e.text + ((e.seenCount > 1) ? (' (\u00d7' + e.seenCount + ')') : ''); }
+        if (lessons.length) { var tail = lessons.slice(-recent); out.push('CONTINUITY (what we\'ve learned — most recent ' + tail.length + ' of ' + lessons.length + '):\n' + tail.map(line).join('\n')); }
+        if (seams.length) out.push('SEAMS to keep in mind:\n' + seams.map(function (e) { return '- [' + e.tool + '] ' + e.text; }).join('\n'));
+        if (!out.length) return '';
+        return (opts.label || 'AXM IDENTITY') + '\n\n' + out.join('\n\n') + '\n';
+      });
+    },
+
+    stats: function () {
+      return api.all().then(function (a) {
+        var s = { total: a.length, byTool: {}, byAuthor: {}, byKind: {}, reinforced: 0, first: a[0] && a[0].ts, last: a[a.length - 1] && a[a.length - 1].ts };
+        a.forEach(function (e) { s.byTool[e.tool] = (s.byTool[e.tool] || 0) + 1; s.byAuthor[e.author] = (s.byAuthor[e.author] || 0) + 1; s.byKind[e.kind] = (s.byKind[e.kind] || 0) + 1; if ((e.seenCount || 1) > 1) s.reinforced++; });
+        return s;
+      });
+    },
+
+    wireWisdom: function (W) {
+      if (!W) return api;
+      // ADD identity as a destination without dropping the tool's own local
+      // store, so a reload never loses the tool's wisdom view.
+      if (W.addSink) W.addSink(function (entry) { api.absorb(entry); });
+      else if (W.setSink) W.setSink(function (entry) { api.absorb(entry); });
+      if (W.all) { try { W.all().forEach(function (e) { api.absorb(e); }); } catch (e) {} }
+      emit('wired', {}); return api;
+    },
+
+    export: function () { return Promise.all([api.coreHistory(), api.all(), api.pending(), api.skipped()]).then(function (r) { return JSON.stringify({ format: 'axm-identity', v: 1, exported: now(), coreHistory: r[0], memory: r[1], pending: r[2], skipped: r[3] }, null, 2); }); },
+    import: function (text) {
+      var data; try { data = JSON.parse(text); } catch (e) { return Promise.reject(new Error('not an AXM identity file')); }
+      if (!data || data.format !== 'axm-identity') return Promise.reject(new Error('not an AXM identity file'));
+      var jobs = [];
+      (data.coreHistory || []).forEach(function (c) { jobs.push(backend.pushCore(c)); });
+      (data.memory || []).forEach(function (e) { jobs.push(backend.putEntry(e)); });   // restore as-is (keeps versions/seenCount)
+      return Promise.all(jobs).then(function () { emit('import', { entries: (data.memory || []).length }); return true; });
+    },
+
+    subscribe: function (fn) { if (typeof fn === 'function') listeners.push(fn); return function () { listeners = listeners.filter(function (l) { return l !== fn; }); }; },
+    VERSION: '1.2'
+  };
+
+  global.AXMIdentity = api;
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+
+})(typeof window !== 'undefined' ? window : this);
+
+/* ========== axm-connector.js ========== */
+/* ============================================================
+   AXM CONNECTOR  —  axm-connector.js   (v1.0, stable base)
+   ------------------------------------------------------------
+   Standalone, no dependencies, local-first.
+   Drop into any AXM tool with one <script src="axm-connector.js"><\/script>.
+
+   WHAT IT IS
+   The one shared "call an AI" plug. Every tool that talks to an AI calls
+   AXMConnect.ask(...). Which AI actually answers is swappable: a cloud model,
+   a local model on your own machine, or the Local Bridge — without the tool
+   knowing or caring which. Multiple AIs can be connected at once.
+
+   WHY IT EXISTS
+   Right now each tool reinvents this (the Sound Forge has its own AI call
+   wired in). That means keys, endpoints and quirks are scattered. This pulls
+   it into one piece so: tools stay simple, the Friction Portal can reuse it,
+   and the Local Bridge slots in as just another provider.
+
+   GROUND RULES HONOURED
+     KEYS NEVER LIVE IN THE TOOL. There is no apiKey parameter anywhere. A
+       provider reaches a backend that holds its own key (the runtime injects
+       it, or the Bridge holds it on your machine, or a local model needs none).
+       The tool can't leak a key it never holds.
+     LOCAL FIRST. Local / Bridge providers are preferred; cloud is the
+       fallback, never a default dependency. If nothing is reachable, ask()
+       fails CLEARLY — it never invents an answer.
+     SAME GATES. Human and AI call ask() identically. A pluggable gate() runs
+       before every call (the seam for the future Gate System; default allow).
+     SWAPPABLE + MULTI. Providers are registered; the caller can force one,
+       set a default, or let availability decide.
+   ============================================================ */
+(function (global) {
+  'use strict';
+
+  var providers = {};          // id -> provider
+  var order = [];              // preference order (first = tried first)
+  var activeId = null;         // forced default, if the user picked one
+  var gate = function () { return true; };   // seam for the Gate System
+  var listeners = [];
+  var availCache = {};         // id -> { ok, ts }
+  var AVAIL_TTL = 5000;        // ms to trust an availability check
+  var PING_MS = 700;           // how long to wait on a reachability ping
+
+  function emit(type, info) {
+    var ev = Object.assign({ type: type, ts: new Date().toISOString() }, info || {});
+    for (var i = 0; i < listeners.length; i++) { try { listeners[i](ev); } catch (e) {} }
+    return ev;
+  }
+  function err(msg, code) { var e = new Error(msg); e.axm = code || 'connector'; return e; }
+
+  /* normalise a string or message array into [{role, content}] */
+  function toMessages(input) {
+    if (typeof input === 'string') return [{ role: 'user', content: input }];
+    if (Array.isArray(input)) return input;
+    if (input && input.messages) return input.messages;
+    return [{ role: 'user', content: String(input == null ? '' : input) }];
+  }
+
+  /* short, abortable reachability ping for local/bridge providers */
+  function ping(url) {
+    if (!global.fetch) return Promise.resolve(false);
+    var ctrl = ('AbortController' in global) ? new global.AbortController() : null;
+    var t = setTimeout(function () { ctrl && ctrl.abort(); }, PING_MS);
+    return global.fetch(url, { method: 'GET', signal: ctrl ? ctrl.signal : undefined })
+      .then(function () { clearTimeout(t); return true; })
+      .catch(function () { clearTimeout(t); return false; });
+  }
+
+  function cachedAvailable(p) {
+    var c = availCache[p.id];
+    if (c && (Date.now() - c.ts) < AVAIL_TTL) return Promise.resolve(c.ok);
+    return Promise.resolve(p.available ? p.available() : true).then(function (ok) {
+      availCache[p.id] = { ok: !!ok, ts: Date.now() };
+      return !!ok;
+    }).catch(function () { availCache[p.id] = { ok: false, ts: Date.now() }; return false; });
+  }
+
+  /* ====================================================================
+     BUILT-IN PROVIDERS  (each only "available" when truly reachable)
+     ==================================================================== */
+
+  /* 1) Cloud — the "Claude in the runtime" pattern. NO key is passed; the
+        host runtime injects it. Follows the in-artifact API shape. */
+  var cfgCloud = { model: 'claude-sonnet-4-6', maxTokens: 1024 };
+  var cloud = {
+    id: 'cloud', label: 'Cloud model (runtime-keyed)', kind: 'cloud',
+    available: function () { return !!global.fetch; },   // optimistic; send() surfaces real errors
+    send: function (messages, opts) {
+      opts = opts || {};
+      var body = { model: opts.model || cfgCloud.model, max_tokens: opts.maxTokens || cfgCloud.maxTokens, messages: messages };
+      if (opts.system) body.system = opts.system;
+      return global.fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        var text = (data && Array.isArray(data.content))
+          ? data.content.filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('\n')
+          : '';
+        return { text: text, raw: data };
+      });
+    }
+  };
+
+  /* 2) Bridge — the future Local Bridge on your own machine holds the keys
+        and brokers the real call. Configure its URL with configure(). */
+  var cfgBridge = { url: 'http://localhost:8787' };
+  var bridge = {
+    id: 'bridge', label: 'Local Bridge (keys on your machine)', kind: 'bridge',
+    available: function () { return ping(cfgBridge.url + '/health'); },
+    send: function (messages, opts) {
+      return global.fetch(cfgBridge.url + '/ask', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: messages, opts: opts || {} })
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        return { text: (data && data.text) || '', raw: data };
+      });
+    }
+  };
+
+  /* 3) Local model — an OpenAI-compatible server on your machine
+        (e.g. LM Studio running your Nova/Echo-1). No key needed. */
+  var cfgLocal = { url: 'http://localhost:1234', model: 'local-model' };
+  var localModel = {
+    id: 'local', label: 'Local model (on your machine)', kind: 'local',
+    available: function () { return ping(cfgLocal.url + '/v1/models'); },
+    send: function (messages, opts) {
+      opts = opts || {};
+      var msgs = opts.system ? [{ role: 'system', content: opts.system }].concat(messages) : messages;
+      return global.fetch(cfgLocal.url + '/v1/chat/completions', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: opts.model || cfgLocal.model, messages: msgs, max_tokens: opts.maxTokens || 1024 })
+      }).then(function (r) { return r.json(); }).then(function (data) {
+        var text = data && data.choices && data.choices[0] && data.choices[0].message
+          ? data.choices[0].message.content : '';
+        return { text: text || '', raw: data };
+      });
+    }
+  };
+
+  /* ====================================================================
+     PUBLIC API
+     ==================================================================== */
+  var api = {
+
+    /* register(provider) — add or replace a provider. A provider is:
+         { id, label, kind, available()->bool|Promise, send(messages,opts)->{text,raw} }
+       atFront=true makes it preferred over the others. */
+    register: function (provider, atFront) {
+      if (!provider || !provider.id || typeof provider.send !== 'function') throw err('invalid provider');
+      providers[provider.id] = provider;
+      order = order.filter(function (id) { return id !== provider.id; });
+      if (atFront) order.unshift(provider.id); else order.push(provider.id);
+      delete availCache[provider.id];
+      emit('register', { id: provider.id, kind: provider.kind });
+      return api;
+    },
+
+    /* configure(id, settings) — adjust a built-in provider (url, model…). */
+    configure: function (id, settings) {
+      settings = settings || {};
+      if (id === 'cloud')  Object.assign(cfgCloud, settings);
+      if (id === 'bridge') Object.assign(cfgBridge, settings);
+      if (id === 'local')  Object.assign(cfgLocal, settings);
+      delete availCache[id];
+      return api;
+    },
+
+    /* use(id) — set the default provider (null = decide by availability). */
+    use: function (id) { activeId = id || null; return api; },
+
+    /* providers() — list registered providers with live availability,
+       for a picker UI. */
+    providers: function () {
+      return Promise.all(order.map(function (id) {
+        var p = providers[id];
+        return cachedAvailable(p).then(function (ok) {
+          return { id: id, label: p.label, kind: p.kind, available: ok, active: id === activeId };
+        });
+      }));
+    },
+
+    /* ask(input, opts) — THE one call. Same for human and AI.
+         input : a string, or [{role,content}], or {messages,...}
+         opts  : { provider, system, model, maxTokens, fallback }
+       Routing: opts.provider forces one; else the active one; else the first
+       AVAILABLE in preference order. fallback (default true) tries the next
+       available provider if the chosen one is down or errors. Never invents a
+       reply — if nothing is reachable it throws a clear offline error.
+       Returns { text, provider, raw }.
+       NOTE: a direct AXMConnect.ask() is NOT grounded in identity. To have the
+       AI grounded in "who I am + what we've learned", call AXM.ask() from the
+       bundle (it injects AXMIdentity.context() as the system prompt), or pass
+       your own opts.system here. */
+    ask: function (input, opts) {
+      opts = opts || {};
+      var messages = toMessages(input);
+
+      // the gate runs before anything leaves the tool (seam for Gate System)
+      return Promise.resolve(gate({ messages: messages, opts: opts })).then(function (ok) {
+        if (!ok) {
+          emit('refused', { reason: 'gate' });
+          if (opts.strict) throw err('refused by gate', 'refused');
+          return { text: '', denied: true, provider: null, reason: 'refused by gate' };
+        }
+
+        // build the candidate list
+        var candidates;
+        if (opts.provider) candidates = [opts.provider];
+        else if (activeId) candidates = [activeId].concat(order.filter(function (id) { return id !== activeId; }));
+        else candidates = order.slice();
+        if (opts.fallback === false) candidates = candidates.slice(0, 1);
+
+        emit('ask', { candidates: candidates });
+
+        // walk candidates: first available that succeeds wins
+        var i = 0;
+        function tryNext(lastErr) {
+          if (i >= candidates.length) {
+            // NO AI is a NORMAL, supported state — AI is optional. We never
+            // crash the tool and never fake an answer: we return a clean,
+            // clearly-marked empty result the tool can flow past. (Pass
+            // opts.strict:true if you'd rather have an exception.)
+            emit('no-ai', { reason: 'no-provider' });
+            if (opts.strict) throw err('no AI reachable — offline, or no provider available' + (lastErr ? (' (' + lastErr.message + ')') : ''), 'offline');
+            return { text: '', noAI: true, provider: null, reason: 'no AI connected (AI is optional)' };
+          }
+          var id = candidates[i++]; var p = providers[id];
+          if (!p) return tryNext(lastErr);
+          return cachedAvailable(p).then(function (avail) {
+            if (!avail) { emit('skip', { id: id, reason: 'unavailable' }); return tryNext(lastErr); }
+            emit('route', { id: id });
+            return Promise.resolve(p.send(messages, opts)).then(function (res) {
+              emit('response', { id: id });
+              return { text: (res && res.text) || '', provider: id, raw: res && res.raw };
+            }).catch(function (e) {
+              availCache[id] = { ok: false, ts: Date.now() };  // mark down
+              emit('fallback', { id: id, error: e.message });
+              return tryNext(e);
+            });
+          });
+        }
+        return tryNext(null);
+      });
+    },
+
+    /* setGate(fn) — plug in the Gate System later. fn({messages,opts}) -> bool
+       (sync or Promise). Default allows everything. */
+    setGate: function (fn) { gate = (typeof fn === 'function') ? fn : function () { return true; }; return api; },
+
+    /* onEvent(fn) — observe routing for logging / wisdom. Types: register,
+       ask, route, response, skip, fallback, refused, error. Returns an
+       unsubscribe fn. */
+    onEvent: function (fn) {
+      if (typeof fn === 'function') listeners.push(fn);
+      return function () { listeners = listeners.filter(function (l) { return l !== fn; }); };
+    },
+
+    /* refresh() — forget cached availability so the next providers()/ask()
+       re-checks live. Call this after the user starts a local model or the
+       Bridge, so it's noticed immediately instead of after the cache expires. */
+    refresh: function () { availCache = {}; return api; },
+
+    VERSION: '1.2'
+  };
+
+  /* register the three built-ins. Order encodes local-first:
+     prefer the Bridge, then a local model, then cloud as fallback. */
+  api.register(bridge);
+  api.register(localModel);
+  api.register(cloud);
+
+  global.AXMConnect = api;
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+
+})(typeof window !== 'undefined' ? window : this);
+
+/* ========== axm-gate.js ========== */
+/* ============================================================
+   AXM GATE  —  axm-gate.js   (v1.0, stable base)
+   ------------------------------------------------------------
+   Standalone, no dependencies, local-first.
+   Drop in with one <script src="axm-gate.js"><\/script>.
+
+   WHAT IT IS
+   The one checkpoint every action passes through. It does not DO a thing the
+   way storage/wisdom/connector do — it CHECKS things. Every action, by a human
+   or an AI, goes the same way:
+
+         request  ->  check (rules)  ->  allow / deny  ->  logged
+
+   This is what turns "same gates" from a promise into something the code
+   enforces, and it is where the visible audit trail the hub will show comes
+   from.
+
+   THE DESIGN CHOICE (named, not hidden)
+   The Gate is ADVISORY-BY-DEFAULT, not a lock. With no rules set it ALLOWS —
+   because a gate that blocked everything out of the box would break every tool
+   on day one. You add rules as you need them. Its real job is to make every
+   action visible and checkable, and to enforce exactly the rules you chose.
+   It governs LIVE actions; the human merge-gate still governs what becomes
+   real. Different jobs.
+
+   GROUND RULES HONOURED
+     SAME GATES  : human and AI submit() identically. The actor is just a tag.
+     LOCAL FIRST : the log persists locally (append-only). Works offline.
+     APPEND ONLY : the decision log is never rewritten. Every check is recorded.
+     HONEST      : a denied action is denied clearly, with a reason. Nothing
+                   is silently dropped or silently allowed.
+   ============================================================ */
+(function (global) {
+  'use strict';
+
+  var rules = [];          // [{ id, name, match, decide }]
+  var listeners = [];
+  var logKey = 'axm_gate_log';
+  var maxLog = 2000;       // keep the local log bounded (full history can be exported)
+  var memLog = null;       // in-memory mirror when no localStorage
+
+  function now() { return new Date().toISOString(); }
+  function uid() { return 'g_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7); }
+  function emit(type, info) { var ev = Object.assign({ type: type, ts: now() }, info || {}); for (var i = 0; i < listeners.length; i++) { try { listeners[i](ev); } catch (e) {} } }
+
+  /* ---- append-only local decision log ---------------------------------- */
+  function readLog() {
+    if (memLog) return memLog.slice();
+    try { var r = global.localStorage.getItem(logKey); return r ? JSON.parse(r) : []; }
+    catch (e) { memLog = memLog || []; return memLog.slice(); }
+  }
+  function appendLog(entry) {
+    var arr;
+    try {
+      if (memLog) { memLog.push(entry); if (memLog.length > maxLog) memLog = memLog.slice(-maxLog); return; }
+      arr = readLog(); arr.push(entry); if (arr.length > maxLog) arr = arr.slice(-maxLog);
+      global.localStorage.setItem(logKey, JSON.stringify(arr));
+    } catch (e) { memLog = readLog(); memLog.push(entry); }   // fall back to memory, no loss in-session
+  }
+
+  /* ====================================================================
+     A REQUEST looks like:
+       { action:'storage.save', actor:'ai1', actorType:'ai'|'human',
+         tool:'forge', detail:{...} }
+     A DECISION looks like:
+       { id, ts, request, allow:true|false, reason, rule }
+     ==================================================================== */
+
+  var api = {
+
+    /* addRule(rule) — rule = {
+         id?    : optional id (auto if omitted)
+         name   : human-readable label
+         match  : (request) => bool   — does this rule apply to this request?
+         decide : (request) => true | false | { allow, reason }
+                  true = allow, false = deny. Return an object to give a reason.
+       }
+       Rules are checked in order. The FIRST rule that both matches AND returns
+       a definite allow/deny decides. A rule may match but return undefined to
+       "pass" (let later rules decide). atFront=true checks it before others. */
+    addRule: function (rule, atFront) {
+      if (!rule || typeof rule.match !== 'function' || typeof rule.decide !== 'function') throw new Error('rule needs match() and decide()');
+      rule.id = rule.id || uid();
+      if (atFront) rules.unshift(rule); else rules.push(rule);
+      emit('rule-added', { id: rule.id, name: rule.name });
+      return rule.id;
+    },
+    removeRule: function (id) { rules = rules.filter(function (r) { return r.id !== id; }); return api; },
+    rules: function () { return rules.map(function (r) { return { id: r.id, name: r.name }; }); },
+
+    /* check(request) — run the rules WITHOUT logging or performing anything.
+       A pure "what would the gate say?" Returns { allow, reason, rule }.
+       Default with no matching rule: ALLOW (advisory-by-default). */
+    check: function (request) {
+      request = request || {};
+      for (var i = 0; i < rules.length; i++) {
+        var r = rules[i];
+        var applies; try { applies = r.match(request); } catch (e) { applies = false; }
+        if (!applies) continue;
+        var d; try { d = r.decide(request); } catch (e) { d = { allow: false, reason: 'rule error: ' + e.message }; }
+        if (d === undefined || d === null) continue;             // rule passes to the next
+        if (typeof d === 'boolean') return { allow: d, reason: d ? 'allowed by ' + (r.name || r.id) : 'denied by ' + (r.name || r.id), rule: r.id };
+        return { allow: !!d.allow, reason: d.reason || (d.allow ? 'allowed' : 'denied'), rule: r.id };
+      }
+      return { allow: true, reason: 'no rule blocked it (advisory-by-default)', rule: null };
+    },
+
+    /* submit(request) — THE entry point. Checks, LOGS the decision (allow or
+       deny, with reason), and returns { allow, reason, rule, id }. Same call
+       for human and AI. This never performs the action itself — the caller
+       does that only if allow is true. */
+    submit: function (request) {
+      request = request || {};
+      var verdict = api.check(request);
+      var entry = { id: uid(), ts: now(), request: request, allow: verdict.allow, reason: verdict.reason, rule: verdict.rule };
+      appendLog(entry);
+      emit(verdict.allow ? 'allow' : 'deny', { action: request.action, actor: request.actor, reason: verdict.reason, id: entry.id });
+      return { allow: verdict.allow, reason: verdict.reason, rule: verdict.rule, id: entry.id };
+    },
+
+    /* guard(request, fn) — convenience: submit, and only run fn() if allowed.
+       Returns a Promise of { allow, reason, result? }. The honest path: a
+       denied action does NOT run, and you get told why. */
+    guard: function (request, fn) {
+      var v = api.submit(request);
+      if (!v.allow) return Promise.resolve({ allow: false, reason: v.reason, id: v.id });
+      return Promise.resolve().then(fn).then(function (result) { return { allow: true, reason: v.reason, id: v.id, result: result }; });
+    },
+
+    /* connectTo(connector) — wire the Gate into the Connector's setGate seam,
+       so every AI call passes the checkpoint. One line. */
+    connectTo: function (connector) {
+      if (connector && connector.setGate) {
+        connector.setGate(function (req) {
+          return api.submit({ action: 'connector.ask', actor: (req.opts && req.opts.actor) || 'ai', actorType: 'ai', detail: { provider: req.opts && req.opts.provider } }).allow;
+        });
+        emit('connected', {});
+      }
+      return api;
+    },
+
+    /* ---- the visible audit trail ---- */
+    log: function (filter) {
+      filter = filter || {};
+      return readLog().filter(function (e) {
+        if (filter.action && (!e.request || e.request.action !== filter.action)) return false;
+        if (filter.actor && (!e.request || e.request.actor !== filter.actor)) return false;
+        if (typeof filter.allow === 'boolean' && e.allow !== filter.allow) return false;
+        if (filter.since && (e.ts || '') < filter.since) return false;
+        return true;
+      });
+    },
+    stats: function () {
+      var l = readLog(); var s = { total: l.length, allowed: 0, denied: 0, byAction: {}, byActor: {} };
+      l.forEach(function (e) {
+        if (e.allow) s.allowed++; else s.denied++;
+        var a = e.request && e.request.action || '?'; s.byAction[a] = (s.byAction[a] || 0) + 1;
+        var who = e.request && e.request.actor || '?'; s.byActor[who] = (s.byActor[who] || 0) + 1;
+      });
+      return s;
+    },
+    exportLog: function () { return JSON.stringify({ format: 'axm-gate-log', v: 1, exported: now(), log: readLog() }, null, 2); },
+
+    onEvent: function (fn) { if (typeof fn === 'function') listeners.push(fn); return function () { listeners = listeners.filter(function (l) { return l !== fn; }); }; },
+    VERSION: '1.0'
+  };
+
+  global.AXMGate = api;
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+
+})(typeof window !== 'undefined' ? window : this);
+
+/* ========== axm-friction.js ========== */
+/* ============================================================
+   AXM FRICTION PORTAL  —  axm-friction.js   (v1.0, stable base)
+   ------------------------------------------------------------
+   Standalone, no dependencies, local-first.
+   Drop in with one <script src="axm-friction.js"><\/script>.
+
+   WHAT IT IS
+   A way to mark exactly WHERE confusion happens — point at a phrase, a button,
+   a line of code, a concept — WITHOUT first having to explain why it's
+   confusing or phrase a coherent question. You point; the portal asks ONE
+   narrow question back; then it gets you an answer.
+
+   "POINT, DON'T EXPLAIN."
+   The hard part of being stuck is you often can't yet say what you don't know.
+   So this flips it: marking the spot is enough. The system does the work of
+   narrowing the gap, instead of assuming you already know its shape.
+
+   EYES FOR THE AI TOO (same gate)
+   The same wordless-stuck moment happens to an AI hitting an unclear spec or
+   tool. So an AI points the SAME way a human does — point()/clarify()/respond()
+   are identical; the only difference is a 'by' tag. A human can answer an AI's
+   stuck point, or another AI can. Neither is left without a tool for it.
+
+   GROUND RULES HONOURED
+     LOCAL FIRST : works with no AI connected — the friction is still captured
+                   and routed to a human. The AI side is optional, via the
+                   Connector (swappable, multi-AI).
+     SAME GATES  : human and AI use the identical calls.
+     SEAM-AWARE  : a friction point IS a seam — the gap between what a tool
+                   assumes you know and what you actually know. If the wisdom
+                   layer is wired, each point is logged as a seam, and each
+                   resolution as a lesson, so builders can SEE where people get
+                   stuck.
+   ============================================================ */
+(function (global) {
+  'use strict';
+
+  var deps = { connector: null, wisdom: null, identity: null };
+  var listeners = [];
+  var key = 'axm_friction';
+  var memStore = null;
+
+  function now() { return new Date().toISOString(); }
+  function uid() { return 'f_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7); }
+  function emit(type, info) { var ev = Object.assign({ type: type, ts: now() }, info || {}); for (var i = 0; i < listeners.length; i++) { try { listeners[i](ev); } catch (e) {} } }
+
+  /* ---- small local store (friction points persist so a human can answer an
+          AI's stuck point later) ---------------------------------------- */
+  function readAll() {
+    if (memStore) return memStore.slice();
+    try { var r = global.localStorage.getItem(key); return r ? JSON.parse(r) : []; } catch (e) { memStore = memStore || []; return memStore.slice(); }
+  }
+  function writeOne(rec) {
+    var arr = readAll(); var i = arr.findIndex(function (x) { return x.id === rec.id; });
+    if (i >= 0) arr[i] = rec; else arr.push(rec);
+    try { if (memStore) { memStore = arr; } else { global.localStorage.setItem(key, JSON.stringify(arr)); } }
+    catch (e) { memStore = arr; }
+  }
+
+  function normTarget(target, opts) {
+    if (typeof target === 'string') return { kind: opts.kind || 'concept', ref: target, where: opts.where || 'unknown' };
+    return { kind: target.kind || 'concept', ref: target.ref || '', where: target.where || opts.where || 'unknown' };
+  }
+
+  /* default narrowing question when there's no AI to ask one */
+  /* default narrowing question when there's no AI. Configurable so it needn't
+     assume a human, or English. Set via configure({ fallback: {question, options} }). */
+  var fallback = { question: 'What part is unclear?', options: ['What it does', 'How to use it', 'Why it\'s here', 'Where it leads'] };
+
+  /* ask the connected AI for ONE narrow clarifying question (JSON) */
+  function aiClarify(rec) {
+    var prompt = 'Someone pointed at this and got stuck, WITHOUT explaining why: "' + rec.target.ref + '".'
+      + ' Where: ' + rec.target.where + '. They are a ' + rec.byType + '.'
+      + ' Ask EXACTLY ONE short, narrow question that best pinpoints what confuses them — do not answer yet.'
+      + ' Also give 2-4 short tap-friendly options. Reply ONLY as JSON: {"question":"...","options":["...","..."]} and nothing else.';
+    return deps.connector.ask(prompt, { actor: rec.by, maxTokens: 300 }).then(function (r) {
+      var t = (r.text || '').replace(/```json|```/g, '').trim();
+      try { var j = JSON.parse(t); if (j && j.question) return { question: j.question, options: Array.isArray(j.options) ? j.options : [] }; } catch (e) {}
+      return { question: t || fallback.question, options: [] };
+    });
+  }
+
+  /* ask the connected AI for the actual help, given the narrowing answer */
+  function aiRespond(rec) {
+    var prompt = 'Someone was confused about "' + rec.target.ref + '" (where: ' + rec.target.where + ').'
+      + (rec.clarifyQuestion ? ' Asked "' + rec.clarifyQuestion + '", they answered: "' + rec.clarifyAnswer + '".' : '')
+      + (rec.note ? ' They added: "' + rec.note + '".' : '')
+      + ' Give a clear, short, plain-language answer that resolves exactly that gap. No preamble.';
+    return deps.connector.ask(prompt, { actor: rec.by, maxTokens: 500 }).then(function (r) { return { text: r.text || '', provider: r.provider }; });
+  }
+
+  var api = {
+
+    /* configure({connector, wisdom, identity}) — all optional. Without a
+       connector the portal still captures friction and routes to a human. */
+    configure: function (o) { o = o || {}; if (o.connector) deps.connector = o.connector; if (o.wisdom) deps.wisdom = o.wisdom; if (o.identity) deps.identity = o.identity; if (o.fallback && o.fallback.question) fallback = { question: o.fallback.question, options: Array.isArray(o.fallback.options) ? o.fallback.options : [] }; return api; },
+
+    /* point(target, opts) — mark a friction point. target = a string (the
+       thing) or { kind, ref, where }. opts: { by, byType:'human'|'ai', where,
+       note }. note is usually EMPTY — pointing is enough. Returns the record.
+       Files a seam (if wisdom wired) so builders can see where people stick. */
+    point: function (target, opts) {
+      opts = opts || {};
+      var rec = {
+        id: uid(), ts: now(), status: 'open',
+        by: opts.by || 'someone', byType: opts.byType || 'human',
+        target: normTarget(target, opts), note: opts.note || ''
+      };
+      writeOne(rec);
+      if (deps.wisdom && deps.wisdom.fileSeam) {
+        try { deps.wisdom.fileSeam({ assumption: '"' + rec.target.ref + '" is clear on its own', about: rec.target.where, why: 'a ' + rec.byType + ' got stuck here', author: rec.by, tags: ['friction'] }); } catch (e) {}
+      }
+      emit('point', { id: rec.id, by: rec.by, ref: rec.target.ref });
+      return rec;
+    },
+
+    /* clarify(id) — the "system asks ONE narrow question back" step.
+       Uses the connected AI if present, else a sensible default.
+       Returns Promise<{ question, options }>. */
+    clarify: function (id) {
+      var rec = api.get(id); if (!rec) return Promise.reject(new Error('no such friction point'));
+      var p = (deps.connector) ? aiClarify(rec).catch(function () { return fallback; }) : Promise.resolve(fallback);
+      return p.then(function (q) {
+        rec.status = 'clarifying'; rec.clarifyQuestion = q.question; writeOne(rec);
+        emit('clarify', { id: id, question: q.question });
+        return q;
+      });
+    },
+
+    /* respond(id, {answer, provider}) — get the actual help, given the answer
+       to the narrowing question. If no AI is connected, the friction is left
+       OPEN and routed to a human — returns { needsHuman:true }, never a faked
+       answer. On success, files a lesson (if wisdom wired). */
+    respond: function (id, opts) {
+      opts = opts || {};
+      var rec = api.get(id); if (!rec) return Promise.reject(new Error('no such friction point'));
+      if (opts.answer != null) rec.clarifyAnswer = String(opts.answer);
+      writeOne(rec);
+      if (!deps.connector) { emit('needs-human', { id: id }); return Promise.resolve({ needsHuman: true, friction: rec }); }
+      return aiRespond(rec).then(function (res) {
+        rec.status = 'answered'; rec.answer = res.text; rec.answeredBy = res.provider; writeOne(rec);
+        if (deps.wisdom && deps.wisdom.file) {
+          try { deps.wisdom.file({ text: 'friction at "' + rec.target.ref + '" (' + rec.target.where + ') resolved: ' + (rec.clarifyAnswer || rec.note || 'clarified'), author: rec.by, tags: ['friction-resolved'] }); } catch (e) {}
+        }
+        emit('answered', { id: id, provider: res.provider });
+        return { text: res.text, provider: res.provider };
+      });
+    },
+
+    /* resolve(id) — mark a friction point fully resolved (the person/AI says
+       "got it"). Open points stay listed until resolved, so an AI's stuck
+       point a human still needs to answer doesn't disappear. */
+    resolve: function (id) { var rec = api.get(id); if (rec) { rec.status = 'resolved'; rec.resolvedAt = now(); writeOne(rec); emit('resolved', { id: id }); } return rec; },
+
+    get: function (id) { return readAll().find(function (x) { return x.id === id; }) || null; },
+    list: function (filter) {
+      filter = filter || {};
+      return readAll().filter(function (e) {
+        if (filter.status && e.status !== filter.status) return false;
+        if (filter.byType && e.byType !== filter.byType) return false;
+        if (filter.where && e.target.where !== filter.where) return false;
+        return true;
+      });
+    },
+
+    onEvent: function (fn) { if (typeof fn === 'function') listeners.push(fn); return function () { listeners = listeners.filter(function (l) { return l !== fn; }); }; },
+    VERSION: '1.1'
+  };
+
+  global.AXMFriction = api;
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+
+})(typeof window !== 'undefined' ? window : this);
+
+/* ========== axm-tool.js ========== */
+/* ============================================================
+   AXM TOOL ID  —  axm-tool.js   (v1.1, hook only)
+   ------------------------------------------------------------
+   Standalone, no dependencies, local-first.
+
+   WHAT IT IS
+   The tiny "ID card" a tool declares so the foundation knows which tool is
+   running and which gate it needs. THAT'S ALL it does at the pre-hub level.
+
+   BOUNDARY (repaired after cross-check)
+   Discovery, a registry of all tools, launching, categories, routing — those
+   are the HUB's job (the skin), not the spine. An earlier version of this file
+   built a shared registry; that crossed the line and has been removed. The
+   pre-hub card is just:  { id, name, version, required_gate }.
+
+   START SMALL. The hub extends the card later with description, category, icon,
+   etc. — none of that lives here.
+
+   GROUND RULES HONOURED
+     SPINE, NOT SKIN : declaration only. No registry, no launch, no categories.
+     SAME FOR ALL    : 'name' is a readable label (vs the machine id) — a human
+                       OR an AI sets it the same way. No human assumed.
+     TIES TO THE GATE: required_gate connects a tool to the Gate's checkpoint.
+   ============================================================ */
+(function (global) {
+  'use strict';
+
+  var current = null;
+  var ID_RE = /^[a-z0-9][a-z0-9_-]*$/;   // lowercase machine id
+
+  function normalize(card) {
+    card = card || {};
+    return {
+      id: String(card.id || '').trim(),                 // machine name (namespacing)
+      name: String(card.name || '').trim(),             // readable label (human or AI)
+      version: String(card.version || '').trim(),       // e.g. v1
+      required_gate: card.required_gate || 'default'    // which gate profile it needs (the Gate/hub interprets)
+    };
+  }
+
+  var api = {
+
+    /* validate(card) -> { ok, errors, warnings }. Required: id, name, version. */
+    validate: function (card) {
+      card = card || {};
+      var errors = [], warnings = [];
+      if (!card.id) errors.push('id is required');
+      else if (!ID_RE.test(String(card.id))) errors.push('id must be lowercase letters/digits with - or _ (e.g. "soundforge")');
+      if (!card.name) errors.push('name is required');
+      if (!card.version) errors.push('version is required');
+      if (!card.required_gate) warnings.push('no required_gate (defaults to "default")');
+      return { ok: errors.length === 0, errors: errors, warnings: warnings };
+    },
+
+    /* define(card) — declare THIS tool's card. Validates and holds it as the
+       current tool. Does NOT register it anywhere shared — that's the hub's
+       job. Returns the normalized card. Throws on a missing/invalid required field. */
+    define: function (card) {
+      var v = api.validate(card);
+      if (!v.ok) throw new Error('invalid tool card: ' + v.errors.join('; '));
+      current = normalize(card); current._warnings = v.warnings;
+      return current;
+    },
+
+    /* current() — the card declared this session (this tool), or null. */
+    current: function () { return current; },
+
+    VERSION: '1.1'
+  };
+
+  global.AXMTool = api;
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+
+})(typeof window !== 'undefined' ? window : this);
+
+/* ========== AXM ORCHESTRATOR ========== */
+(function (global) {
+  'use strict';
+  var ready = false, card = null, wiredWisdom = false;
+  var AXM = {
+    store: global.AXMStore, wisdom: global.AXMWisdom, identity: global.AXMIdentity,
+    connect: global.AXMConnect, gate: global.AXMGate, friction: global.AXMFriction, tool: global.AXMTool,
+    init: function (opts) {
+      opts = opts || {};
+      var c = opts.card || { id: opts.id || opts.tool, name: opts.name || (opts.id || opts.tool), version: opts.version || 'v1', required_gate: opts.required_gate };
+      card = global.AXMTool.define(c);
+      var id = card.id, version = card.version;
+      return Promise.all([ global.AXMStore.init({ tool: id, version: version }), global.AXMIdentity.init() ]).then(function (r) {
+        global.AXMWisdom.init({ tool: id, version: version });
+        global.AXMIdentity.wireWisdom(global.AXMWisdom); wiredWisdom = true;
+        global.AXMGate.connectTo(global.AXMConnect);
+        if (opts.wireFriction !== false) global.AXMFriction.configure({ connector: global.AXMConnect, wisdom: global.AXMWisdom, identity: global.AXMIdentity });
+        if (opts.core) global.AXMIdentity.setCore(opts.core);
+        ready = true;
+        return { card: card, storageBackend: r[0] && r[0].backend, identityBackend: r[1] && r[1].backend };
+      });
+    },
+    ask: function (prompt, opts) {
+      opts = opts || {};
+      return global.AXMIdentity.context().then(function (sys) {
+        var o = Object.assign({}, opts);
+        if (sys) o.system = sys + (opts.system ? ('\n\n' + opts.system) : '');
+        return global.AXMConnect.ask(prompt, o);
+      });
+    },
+    /* status() — one snapshot of "am I in a good state?" for a human OR a
+       machine agent with no human watching. Composes the parts; never throws
+       (each part is guarded). Returns a plain object. */
+    status: function () {
+      var snap = { ready: ready, tool: (global.AXMTool.current && global.AXMTool.current()) || null,
+        storage: null, wisdom: { on: null, wiredToIdentity: wiredWisdom },
+        identity: { entries: null, pendingMerges: null }, gate: { rules: null, allowed: null, denied: null },
+        connector: null, friction: { open: null } };
+      try { snap.storage = global.AXMStore.backend ? global.AXMStore.backend() : null; } catch (e) {}
+      try { snap.wisdom.on = global.AXMWisdom.isOn ? global.AXMWisdom.isOn() : null; } catch (e) {}
+      try { var gs = global.AXMGate.stats(); snap.gate = { rules: (global.AXMGate.rules() || []).length, allowed: gs.allowed, denied: gs.denied, total: gs.total }; } catch (e) {}
+      try { snap.friction.open = global.AXMFriction.list({ status: 'open' }).length + global.AXMFriction.list({ status: 'clarifying' }).length; } catch (e) {}
+      // async parts: identity stats + pending, connector availability
+      var jobs = [];
+      jobs.push(Promise.resolve().then(function () { return global.AXMIdentity.stats(); }).then(function (s) { snap.identity.entries = s.total; }).catch(function () {}));
+      jobs.push(Promise.resolve().then(function () { return global.AXMIdentity.pending(); }).then(function (p) { snap.identity.pendingMerges = (p || []).length; }).catch(function () {}));
+      jobs.push(Promise.resolve().then(function () { return global.AXMConnect.providers(); }).then(function (pr) { snap.connector = (pr || []).map(function (x) { return { id: x.id, available: x.available }; }); }).catch(function () {}));
+      return Promise.all(jobs).then(function () { return snap; });
+    },
+    card: function () { return card; }, isReady: function () { return ready; }, VERSION: '1.4.1'
+  };
+  global.AXM = AXM;
+  if (typeof module !== 'undefined' && module.exports) module.exports = AXM;
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+<script>
+/* ============================================================
+   AXM HUB CORE  —  axm-hub-core.js   (v0.2)
+   ------------------------------------------------------------
+   v0.2 answers Mike's device-test report (TECH PASS / UX FAIL):
+
+   1. OFFICIAL TOOLS are BUILT IN — a constant list, friendly labels,
+      baked relative paths. No typing, no import, no path guessing.
+      They are NOT registry entries (nothing to pollute).
+   2. SCRATCH MODE (default ON for a fresh install):
+      - a SEPARATE storage slot, declared disposable BEFORE anything
+        is written to it. Nothing in scratch is history, ever.
+      - CANON registry stays append-only. There is NO delete for canon.
+        Clearing scratch = emptying a sandbox that never claimed to be
+        history. The no-loss rule is about history; scratch isn't.
+      - every gate request is tagged mode:'scratch'|'canon' so the
+        audit view can separate meaning from test noise WITHOUT
+        touching the raw append-only gate log.
+   3. Same-gate API unchanged: buttons call these functions; AI calls
+      these functions. One path.
+
+   v0.3 adds the TOOL LOCKER (kills the path problem):
+      pick a one-file tool's .html ONCE -> the hub stores the whole file
+      in its own storage -> launch runs it from storage, no path exists
+      to break. Stored copy is frozen; updating = pick the new file
+      (a new append-only event = honest version history for free).
+      A stored tool runs in the hub's origin ON PURPOSE (shared spine
+      storage) — import only tools you trust, i.e. your own.
+
+   NEEDS: axm-foundation.js loaded + AXM.init() done (hub is itself a tool).
+   HONESTY: core sandbox-tested (HUB_TESTS_RUN.txt). UI = device test.
+   ============================================================ */
+(function (global) {
+  'use strict';
+
+  /* ---- OFFICIAL AXM TOOLS (built in — fix #1, #2, #3) ------------------ */
+  /* Paths assume the shipped AXM_TEST layout. Only tools that EXIST are
+     listed (no fake-done): Feedback / Action-Report-as-tool come when built.
+     The Action REPORT itself is real below (exportActionReport).           */
+  var OFFICIAL = [
+    { id: 'prehub',
+      label: 'Prehub — write, save, load (the first tool)',
+      path: '../prehub/index.html' },
+    { id: 'prehub-mobile',
+      label: 'Prehub — one-file mobile version',
+      path: '../mobile/prehub-mobile.html' }
+  ];
+
+  var SLOT_CANON   = 'registry-events';          /* append-only. no clear API exists. */
+  var SLOT_SCRATCH = 'registry-events-scratch';  /* disposable by declaration.        */
+  var SLOT_MODE    = 'hub-mode';
+
+  var events = [];
+  var scratch = true;          /* default: fresh installs start SAFE to fumble in */
+  var ready = false;
+  var subs = [];
+
+  function slot() { return scratch ? SLOT_SCRATCH : SLOT_CANON; }
+  function notify() { subs.forEach(function (fn) { try { fn(); } catch (e) {} }); }
+
+  function fold() {
+    var m = {};
+    events.forEach(function (e) {
+      var t;
+      if (e.kind === 'register') {
+        t = m[e.card.id] || (m[e.card.id] = { tags: [], history: [] });
+        t.card = e.card; t.path = e.path || t.path || null;
+        t.retired = false; t.retiredReason = null;
+        (e.tags || []).forEach(function (x) { if (t.tags.indexOf(x) < 0) t.tags.push(x); });
+        t.history.push(e);
+      } else if ((t = m[e.id])) {
+        if (e.kind === 'tag') { (e.tags || []).forEach(function (x) { if (t.tags.indexOf(x) < 0) t.tags.push(x); }); }
+        if (e.kind === 'retire') { t.retired = true; t.retiredReason = e.reason || null; }
+        if (e.kind === 'restore') { t.retired = false; t.retiredReason = null; }
+        t.history.push(e);
+      }
+    });
+    return m;
+  }
+
+  function loadEvents() {
+    return global.AXM.store.load(slot()).then(function (rec) {
+      events = (rec && rec.data && rec.data.events) || [];
+      notify();
+    });
+  }
+  function saveEvents() {
+    return global.AXM.store.save(slot(), { events: events },
+      { title: 'AXM Hub registry (' + (scratch ? 'SCRATCH — disposable' : 'canon — append-only') + ')' });
+  }
+
+  /* every mutation: gate first (tagged with mode), append only if allowed */
+  function gated(action, who, detail, buildEvent) {
+    var req = { action: action, actor: (who && who.actor) || 'unknown',
+                actorType: (who && who.actorType) || 'human',
+                tool: 'axm-hub', mode: scratch ? 'scratch' : 'canon', detail: detail };
+    var v = global.AXMGate.submit(req);
+    if (!v.allow) return Promise.resolve({ allow: false, reason: v.reason });
+    if (!buildEvent) return Promise.resolve({ allow: true });   /* gate-log-only actions */
+    var e = buildEvent();
+    e.ts = Date.now(); e.actor = req.actor; e.actorType = req.actorType;
+    events.push(e);
+    return saveEvents().then(function () { notify(); return { allow: true, event: e }; });
+  }
+
+  var api = {
+
+    init: function () {
+      return global.AXM.store.load(SLOT_MODE).then(function (rec) {
+        if (rec && rec.data && typeof rec.data.scratch === 'boolean') scratch = rec.data.scratch;
+        return loadEvents();
+      }).then(function () { ready = true; notify(); return { ok: true, mode: api.mode(), events: events.length }; });
+    },
+
+    isReady: function () { return ready; },
+
+    /* ---- mode (fix #4) ------------------------------------------------- */
+    mode: function () { return scratch ? 'scratch' : 'canon'; },
+    setMode: function (m, who) {
+      var toScratch = (m === 'scratch');
+      if (toScratch === scratch) return Promise.resolve({ allow: true, mode: api.mode() });
+      return gated('hub.mode.' + m, who, {}, null).then(function (r) {
+        if (!r.allow) return r;
+        scratch = toScratch;
+        return global.AXM.store.save(SLOT_MODE, { scratch: scratch })
+          .then(loadEvents).then(function () { return { allow: true, mode: api.mode() }; });
+      });
+    },
+
+    /* ---- clear SCRATCH only (fix #5) ------------------------------------
+       There is deliberately NO equivalent for canon. Scratch was declared
+       disposable before first write; emptying it destroys no history.
+       The clear itself IS logged (gate, append-only) — so even resets
+       leave an honest trace of "a reset happened".                        */
+    clearScratch: function (who) {
+      if (!scratch) return Promise.resolve({ allow: false, reason: 'not in scratch mode — canon is append-only and has no clear' });
+      return gated('hub.scratch.clear', who, { hadEvents: events.length }, null).then(function (r) {
+        if (!r.allow) return r;
+        events = [];
+        return saveEvents().then(function () { notify(); return { allow: true }; });
+      });
+    },
+
+    /* ---- official tools (fix #1, #2, #3) -------------------------------- */
+    official: function () { return OFFICIAL.slice(); },
+    launchOfficial: function (id, who) {
+      var t = null;
+      OFFICIAL.forEach(function (o) { if (o.id === id) t = o; });
+      if (!t) return Promise.resolve({ allow: false, reason: 'unknown official tool: ' + id });
+      return gated('hub.launch', who, { id: id, official: true }, null).then(function (r) {
+        return r.allow ? { allow: true, path: t.path, label: t.label } : r;
+      });
+    },
+
+    /* ---- registry (unchanged API, now mode-aware) ----------------------- */
+    register: function (card, opts, who) {
+      opts = opts || {};
+      var v = global.AXMTool.validate(card);
+      if (!v.ok) return Promise.resolve({ allow: false, reason: 'invalid card: ' + v.errors.join('; ') });
+      return gated('hub.register', who, { id: card.id, stored: !!opts.content }, function () {
+        return { kind: 'register', card: card, path: opts.path || null,
+                 tags: opts.tags || [], stored: !!opts.content,
+                 bytes: opts.content ? opts.content.length : 0 };
+      }).then(function (r) {
+        if (!r.allow || !opts.content) return r;
+        /* the tool file itself lives in its own slot, namespaced by mode
+           so scratch imports never shadow canon imports */
+        return global.AXM.store.save('toolfile-' + api.mode() + '-' + card.id,
+          { html: opts.content }, { title: 'stored tool: ' + card.name })
+          .then(function () { return r; });
+      });
+    },
+
+    /* registerFromFile(file, extras, who) — THE one-tap path killer.
+       Derives id/name from the filename; caller passes the File's text. */
+    registerFromFile: function (filename, content, extras, who) {
+      extras = extras || {};
+      var base = String(filename).replace(/\.html?$/i, '');
+      var id = extras.id || base.toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
+      var name = extras.name || base.replace(/[-_]+/g, ' ').trim();
+      if (!id) return Promise.resolve({ allow: false, reason: 'could not derive an id from that filename' });
+      return api.register({ id: id, name: name, version: extras.version || 'v1' },
+                          { content: content, tags: extras.tags || [] }, who);
+    },
+
+    /* loadStored(id) — the frozen tool file, or null if this card is path-based. */
+    loadStored: function (id) {
+      return global.AXM.store.load('toolfile-' + api.mode() + '-' + id)
+        .then(function (rec) { return (rec && rec.data && rec.data.html) || null; })
+        .catch(function () { return null; });
+    },
+    tag: function (id, tags, who) {
+      if (!fold()[id]) return Promise.resolve({ allow: false, reason: 'unknown tool: ' + id });
+      return gated('hub.tag', who, { id: id, tags: tags }, function () { return { kind: 'tag', id: id, tags: tags }; });
+    },
+    retire: function (id, reason, who) {
+      if (!fold()[id]) return Promise.resolve({ allow: false, reason: 'unknown tool: ' + id });
+      return gated('hub.retire', who, { id: id, reason: reason }, function () { return { kind: 'retire', id: id, reason: reason || '' }; });
+    },
+    restore: function (id, who) {
+      if (!fold()[id]) return Promise.resolve({ allow: false, reason: 'unknown tool: ' + id });
+      return gated('hub.restore', who, { id: id }, function () { return { kind: 'restore', id: id }; });
+    },
+
+    list: function (filter) {
+      filter = filter || {};
+      var m = fold();
+      return Object.keys(m).map(function (k) { return m[k]; }).filter(function (t) {
+        if (filter.retired === undefined && t.retired) return false;
+        if (filter.retired !== undefined && t.retired !== filter.retired) return false;
+        if (filter.tag && t.tags.indexOf(filter.tag) < 0) return false;
+        if (filter.text) {
+          var s = (t.card.id + ' ' + t.card.name + ' ' + t.tags.join(' ')).toLowerCase();
+          if (s.indexOf(String(filter.text).toLowerCase()) < 0) return false;
+        }
+        return true;
+      });
+    },
+    find: function (id) { return fold()[id] || null; },
+    allTags: function () {
+      var seen = {};
+      api.list({ retired: undefined }).forEach(function (t) {
+        t.tags.forEach(function (x) { seen[x] = (seen[x] || 0) + 1; });
+      });
+      return Object.keys(seen).sort().map(function (k) { return { tag: k, count: seen[k] }; });
+    },
+
+    launch: function (id, who) {
+      var t = fold()[id];
+      if (!t) return Promise.resolve({ allow: false, reason: 'unknown tool: ' + id });
+      if (t.retired) return Promise.resolve({ allow: false, reason: 'retired: ' + (t.retiredReason || 'no reason kept') });
+      var stored = t.history.some(function (e) { return e.kind === 'register' && e.stored; });
+      if (!stored && !t.path) return Promise.resolve({ allow: false, reason: 'no stored file and no path for this tool yet' });
+      return gated('hub.launch', who, { id: id, stored: stored }, null).then(function (r) {
+        return r.allow ? { allow: true, stored: stored, path: t.path || null, card: t.card } : r;
+      });
+    },
+
+    exportRegistry: function () {
+      return JSON.stringify({ axmHubRegistry: true, mode: api.mode(), exported: Date.now(), events: events }, null, 2);
+    },
+    importRegistry: function (json, who) {
+      var data;
+      try { data = typeof json === 'string' ? JSON.parse(json) : json; }
+      catch (e) { return Promise.resolve({ allow: false, reason: 'not valid JSON' }); }
+      if (!data || !data.axmHubRegistry || !Array.isArray(data.events)) {
+        return Promise.resolve({ allow: false, reason: 'not a hub registry export' });
+      }
+      return gated('hub.import', who, { count: data.events.length }, function () {
+        return { kind: 'import-marker', note: 'events below imported', count: data.events.length };
+      }).then(function (r) {
+        if (!r.allow) return r;
+        data.events.forEach(function (e) { e.imported = true; events.push(e); });
+        return saveEvents().then(function () { notify(); return { allow: true, appended: data.events.length }; });
+      });
+    },
+
+    /* ---- ACTION REPORT (real, not a placeholder) ------------------------ */
+    actionReport: function () {
+      return global.AXM.status().then(function (st) {
+        var g = global.AXMGate.stats();
+        var lines = [
+          'AXM ACTION REPORT — ' + new Date().toISOString(),
+          'hub core v' + api.VERSION + ' · mode: ' + api.mode().toUpperCase(),
+          'storage backend: ' + global.AXMStore.backend(),
+          '',
+          'TOOLS (' + api.mode() + ' registry): ' + api.list().length + ' active, '
+            + api.list({ retired: true }).length + ' retired',
+          'GATE (this device, append-only): ' + g.total + ' decisions · '
+            + g.allowed + ' allowed · ' + g.denied + ' denied',
+          'IDENTITY: ' + JSON.stringify(st.identity),
+          '',
+          'Honesty: this report describes THIS device only. Scratch-mode',
+          'activity is test noise by declaration and is labeled as such.'
+        ];
+        return lines.join('\n');
+      });
+    },
+
+    events: function () { return events.slice(); },
+    subscribe: function (fn) { subs.push(fn); },
+
+    VERSION: '0.3'
+  };
+
+  global.AXMHub = api;
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+<style>
+  :root{--ink:#14171c;--panel:#191e25;--line:#2a313d;--text:#dce2ea;--muted:#828d9e;--cy:#38d6ec;--gold:#e8b54a;--red:#e86a5f;--green:#63d68a;--purple:#b18cff}
+  *{box-sizing:border-box} body{margin:0 auto;background:var(--ink);color:var(--text);font-family:system-ui,sans-serif;line-height:1.5;padding:18px;max-width:760px}
+  h1{font-size:20px;margin:0}.eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+  .status{float:right;font-family:ui-monospace,monospace;font-size:12px;color:var(--cy)}
+  .modebar{margin-top:12px;border-radius:11px;padding:10px 12px;font-size:12px;border:1px solid}
+  .modebar.scratch{border-color:#6a5a26;background:#26210f;color:var(--gold)}
+  .modebar.canon{border-color:#26492f;background:#0f1d14;color:var(--green)}
+  .modebar button{margin-left:8px}
+  .tabs{display:flex;gap:8px;margin-top:14px}
+  .tabs button{flex:1;font:inherit;font-size:13px;cursor:pointer;border-radius:9px;padding:9px;border:1px solid var(--line);background:#1f2731;color:var(--muted)}
+  .tabs button.on{color:var(--cy);border-color:var(--cy)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px}
+  .panel h2{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  button{font:inherit;font-size:13px;cursor:pointer;border-radius:9px;padding:8px 13px;border:1px solid var(--line);background:#1f2731;color:var(--text)}
+  button.go{border-color:#2c6047;color:var(--green)} button.warn{border-color:#5a2c26;color:var(--red)} button.big{width:100%;padding:13px;font-size:15px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  input[type=text]{background:var(--ink);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px 11px;font:inherit;flex:1;min-width:120px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .chip{font-family:ui-monospace,monospace;font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid var(--line);color:var(--muted);cursor:pointer;background:none}
+  .chip.on{color:var(--cy);border-color:var(--cy)}
+  ul{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+  li{background:#1f2731;border:1px solid var(--line);border-radius:11px;padding:10px 12px;font-size:13px}
+  .card-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+  .card-name{font-weight:600}
+  .mono{font-family:ui-monospace,monospace;font-size:11px;color:var(--muted)}
+  .who{font-family:ui-monospace,monospace;font-size:10px;padding:1px 6px;border-radius:20px;margin-right:6px}
+  .who.human{color:var(--gold)} .who.ai{color:var(--cy)}
+  .deny{color:var(--red)} .allow{color:var(--green)} .scr{color:var(--purple)}
+  .hint{font-size:11px;color:var(--muted);margin-top:8px}
+  .repair{display:none;margin-top:10px;border:1px solid #6a5a26;background:#26210f;border-radius:11px;padding:10px 12px;font-size:12px;color:var(--gold)}
+  .actorbar{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+  pre{background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:11px;overflow:auto;color:var(--text);white-space:pre-wrap}
+  details{margin-top:6px} summary{cursor:pointer;font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="status" id="boot">starting…</div>
+<div class="eyebrow">AXM · skin on the spine</div>
+<h1>Hub</h1>
+
+<div class="modebar" id="modebar"></div>
+
+<div class="actorbar">acting as
+  <button id="actorBtn" class="chip on">human · mike</button>
+  <span class="hint">same buttons, same gate, for any intelligence.</span>
+</div>
+
+<div class="tabs">
+  <button id="tabTools" class="on">Tools</button>
+  <button id="tabAudit">Audit</button>
+  <button id="tabStatus">Status</button>
+</div>
+
+<!-- ============ TOOLS ============ -->
+<div id="viewTools">
+  <section class="panel"><h2>AXM tools — ready to open</h2>
+    <div id="officialBtns"></div>
+    <div class="repair" id="repair">
+      That didn't open? The folders probably moved. The hub expects the shipped layout:
+      <span class="mono">AXM_TEST/ hub/ · prehub/ · mobile/</span> — put the folders back
+      side-by-side, or pick the tool's HTML file yourself:
+      <div class="row"><button id="pickBtn">Pick the tool file…</button><input type="file" id="pickFile" accept=".html" style="display:none" /></div>
+      <span class="hint">(Picking works best for one-file tools, like everything in /mobile.)</span>
+    </div>
+    <p class="hint">Official tools live here, built in — no paths, no typing. Only tools that actually exist get a button (no fake done).</p>
+  </section>
+
+  <section class="panel"><h2>Add a tool — no paths, ever</h2>
+    <button class="big" id="lockerBtn">+ Add tool from file (pick its .html once)</button>
+    <input type="file" id="lockerFile" accept=".html,.htm" style="display:none" />
+    <p class="hint">The hub stores the whole tool inside its own storage — launching never depends on
+      where the file lives, so nothing breaks when folders move. One-file tools only (everything in
+      /mobile qualifies, and so does axm-studio.html). The stored copy is frozen: to update a tool,
+      pick its new file — the old version stays in history. A stored tool shares the hub's storage
+      space by design, so add only tools you trust — meaning yours.</p>
+  </section>
+
+  <section class="panel"><h2>My tools <span class="mono" id="regModeTag"></span></h2>
+    <div class="row"><input type="text" id="q" placeholder="filter by name, id, tag…" /></div>
+    <div class="chips" id="chips"></div>
+    <ul id="list"></ul>
+    <p class="hint" id="listHint"></p>
+    <details><summary>show retired (canon history is never deleted)</summary><ul id="retiredList"></ul></details>
+    <details><summary>add a tool card by hand (for your own experiments)</summary>
+      <div class="row"><input type="text" id="fId" placeholder="id" /><input type="text" id="fName" placeholder="name" /></div>
+      <div class="row"><input type="text" id="fVer" placeholder="version" value="v1" /><input type="text" id="fPath" placeholder="path (optional)" /></div>
+      <div class="row"><input type="text" id="fTags" placeholder="tags, comma separated" /><button class="go" id="fAdd">Register</button></div>
+      <div class="row"><button id="expBtn">Export registry</button><button id="impBtn">Import registry</button><input type="file" id="impFile" accept=".json" style="display:none" /></div>
+    </details>
+  </section>
+</div>
+
+<!-- ============ AUDIT ============ -->
+<div id="viewAudit" style="display:none">
+  <section class="panel"><h2>What happened (append-only gate log)</h2>
+    <div class="row">
+      <button class="chip on" id="fltCanon">meaningful (canon)</button>
+      <button class="chip" id="fltScratch">test noise (scratch)</button>
+      <button class="chip" id="fltDenied">denied only</button>
+      <button class="chip" id="fltAll">raw: everything</button>
+    </div>
+    <ul id="auditList"></ul>
+    <p class="hint" id="auditStats"></p>
+  </section>
+</div>
+
+<!-- ============ STATUS ============ -->
+<div id="viewStatus" style="display:none">
+  <section class="panel"><h2>Action report</h2>
+    <div class="row"><button class="go" id="reportBtn">Export Action Report (.txt)</button><button id="refreshStatus">Refresh status</button></div>
+    <pre id="statusBox">…</pre>
+    <p class="hint" id="mergeHint"></p>
+  </section>
+</div>
+
+<div id="player" style="display:none;position:fixed;inset:0;background:var(--ink);z-index:50">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line)">
+    <span class="mono" id="playerTitle"></span>
+    <button class="warn" id="playerClose">Close · back to hub</button>
+  </div>
+  <iframe id="playerFrame" style="width:100%;height:calc(100% - 46px);border:0;background:#fff"></iframe>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+if (typeof window.AXM === 'undefined' || typeof window.AXMHub === 'undefined') {
+  $('boot').textContent = 'missing axm-foundation.js / axm-hub-core.js'; throw new Error('deps not found');
+}
+let who = { actor: 'mike', actorType: 'human' };
+let activeTag = null;
+
+$('actorBtn').onclick = () => {
+  who = who.actorType === 'human' ? { actor:'ai-guest', actorType:'ai' } : { actor:'mike', actorType:'human' };
+  $('actorBtn').textContent = who.actorType + ' · ' + who.actor;
+};
+
+/* ---------- mode bar (fix #4/#5) ---------- */
+function renderMode() {
+  const m = AXMHub.mode();
+  const bar = $('modebar');
+  bar.className = 'modebar ' + m;
+  bar.innerHTML = '';
+  const txt = document.createElement('span');
+  if (m === 'scratch') {
+    txt.textContent = 'SCRATCH MODE — a sandbox. Fumble freely: NOTHING here becomes history. ';
+    const sw = document.createElement('button'); sw.textContent = 'Switch to canon';
+    sw.onclick = async () => { await AXMHub.setMode('canon', who); renderAll(); };
+    const cl = document.createElement('button'); cl.className='warn'; cl.textContent = 'Clear scratch';
+    cl.onclick = async () => {
+      if (!confirm('Empty the scratch sandbox? (Canon history is untouched — it has no clear at all.)')) return;
+      const r = await AXMHub.clearScratch(who); if (!r.allow) alert(r.reason); renderAll();
+    };
+    bar.appendChild(txt); bar.appendChild(sw); bar.appendChild(cl);
+  } else {
+    txt.textContent = 'CANON MODE — this is the real, append-only registry. Nothing here can be deleted, only retired with a reason. ';
+    const sw = document.createElement('button'); sw.textContent = 'Switch to scratch';
+    sw.onclick = async () => { await AXMHub.setMode('scratch', who); renderAll(); };
+    bar.appendChild(txt); bar.appendChild(sw);
+  }
+  $('regModeTag').textContent = '· ' + m + ' registry';
+}
+
+/* ---------- views ---------- */
+function show(view) {
+  ['Tools','Audit','Status'].forEach(v => {
+    $('view'+v).style.display = v===view ? '' : 'none';
+    $('tab'+v).className = v===view ? 'on' : '';
+  });
+  if (view==='Audit') renderAudit();
+  if (view==='Status') renderStatus();
+}
+$('tabTools').onclick=()=>show('Tools'); $('tabAudit').onclick=()=>show('Audit'); $('tabStatus').onclick=()=>show('Status');
+
+/* ---------- official tools (fix #1/#2/#3/#7) ---------- */
+function renderOfficial() {
+  const box = $('officialBtns'); box.innerHTML = '';
+  AXMHub.official().forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'go big'; b.style.marginTop = '8px';
+    b.textContent = 'Open ' + o.label;
+    b.onclick = async () => {
+      const r = await AXMHub.launchOfficial(o.id, who);
+      if (!r.allow) return alert('Gate said no: ' + r.reason);
+      window.open(r.path, '_blank');
+      $('repair').style.display = 'block';   /* pre-arm the repair helper — no silent dead ends */
+    };
+    box.appendChild(b);
+  });
+}
+$('pickBtn').onclick = () => $('pickFile').click();
+$('pickFile').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  window.open(URL.createObjectURL(f), '_blank');
+};
+
+/* ---------- registry list ---------- */
+function cardLi(t, retired) {
+  const li = document.createElement('li');
+  const top = document.createElement('div'); top.className='card-top';
+  const left = document.createElement('div');
+  left.innerHTML = '<span class="card-name"></span> <span class="mono"></span>';
+  left.querySelector('.card-name').textContent = t.card.name;
+  left.querySelector('.mono').textContent = t.card.id + ' · ' + t.card.version + (t.tags.length ? ' · ' + t.tags.join(', ') : '');
+  top.appendChild(left);
+  const btns = document.createElement('div'); btns.className='row'; btns.style.marginTop='0';
+  if (!retired) {
+    const stored = t.history.some(e => e.kind==='register' && e.stored);
+    const go = document.createElement('button'); go.className='go';
+    go.textContent = stored ? 'Launch' : (t.path ? 'Launch (by path)' : 'No file yet');
+    go.onclick = async () => {
+      const r = await AXMHub.launch(t.card.id, who);
+      if (!r.allow) return alert(r.reason);
+      if (r.stored) openStored(t.card.id, t.card.name);
+      else { window.open(r.path, '_blank'); $('repair').style.display='block'; show('Tools'); }
+    };
+    const re = document.createElement('button'); re.className='warn'; re.textContent='Retire';
+    re.onclick = async () => {
+      const reason = prompt(AXMHub.mode()==='canon' ? 'Reason (kept in history forever):' : 'Reason (scratch — disposable):') || '';
+      const r = await AXMHub.retire(t.card.id, reason, who);
+      if (!r.allow) alert('Gate said no: ' + r.reason);
+      renderList();
+    };
+    btns.appendChild(go); btns.appendChild(re);
+  } else {
+    const rs = document.createElement('button'); rs.textContent='Restore';
+    rs.onclick = async () => { const r = await AXMHub.restore(t.card.id, who); if(!r.allow) alert(r.reason); renderList(); };
+    const why = document.createElement('span'); why.className='mono'; why.textContent = 'retired: ' + (t.retiredReason || 'no reason kept');
+    btns.appendChild(why); btns.appendChild(rs);
+  }
+  top.appendChild(btns); li.appendChild(top);
+  return li;
+}
+function renderList() {
+  const f = { text: $('q').value || undefined, tag: activeTag || undefined };
+  const live = AXMHub.list(f);
+  const ul = $('list'); ul.innerHTML='';
+  live.forEach(t => ul.appendChild(cardLi(t,false)));
+  $('listHint').textContent = live.length ? live.length + ' tool(s)' :
+    (AXMHub.mode()==='scratch' ? 'Scratch is empty — experiment away, nothing sticks.' : 'No tools of your own yet — the official ones above are ready.');
+  const rul = $('retiredList'); rul.innerHTML='';
+  AXMHub.list({ retired:true }).forEach(t => rul.appendChild(cardLi(t,true)));
+  const chips = $('chips'); chips.innerHTML='';
+  AXMHub.allTags().forEach(({tag,count}) => {
+    const b = document.createElement('button'); b.className = 'chip' + (activeTag===tag?' on':'');
+    b.textContent = tag + ' · ' + count;
+    b.onclick = () => { activeTag = activeTag===tag ? null : tag; renderList(); };
+    chips.appendChild(b);
+  });
+}
+$('q').oninput = renderList;
+$('fAdd').onclick = async () => {
+  const card = { id: $('fId').value.trim(), name: $('fName').value.trim(), version: $('fVer').value.trim() || 'v1' };
+  const tags = $('fTags').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const r = await AXMHub.register(card, { path: $('fPath').value.trim() || null, tags }, who);
+  if (!r.allow) return alert(r.reason);
+  ['fId','fName','fPath','fTags'].forEach(i=>$(i).value='');
+  renderList();
+};
+$('expBtn').onclick = () => {
+  const blob = new Blob([AXMHub.exportRegistry()], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'axm-hub-registry-' + AXMHub.mode() + '.json'; a.click();
+};
+$('impBtn').onclick = () => $('impFile').click();
+$('impFile').onchange = async e => {
+  const file = e.target.files[0]; if(!file) return;
+  const r = await AXMHub.importRegistry(await file.text(), who);
+  alert(r.allow ? 'Appended ' + r.appended + ' events (nothing replaced).' : 'Import refused: ' + r.reason);
+  renderList();
+};
+
+/* ---------- audit (fix #6): mode-separated VIEW of one append-only log ---------- */
+let auditMode = 'canon';
+function renderAudit() {
+  let log = AXMGate.log().slice().reverse();
+  if (auditMode === 'canon')   log = log.filter(d => (d.request.mode || 'canon') === 'canon');
+  if (auditMode === 'scratch') log = log.filter(d => d.request.mode === 'scratch');
+  if (auditMode === 'denied')  log = log.filter(d => !d.allow);
+  ['fltCanon','fltScratch','fltDenied','fltAll'].forEach(id => $(id).className='chip');
+  $({canon:'fltCanon',scratch:'fltScratch',denied:'fltDenied',all:'fltAll'}[auditMode]).className='chip on';
+  const ul = $('auditList'); ul.innerHTML='';
+  log.slice(0,200).forEach(d => {
+    const li = document.createElement('li');
+    const w = document.createElement('span'); w.className = 'who ' + (d.request.actorType==='ai'?'ai':'human'); w.textContent = d.request.actor;
+    li.appendChild(w); li.appendChild(document.createTextNode(d.request.action));
+    const verdict = document.createElement('span'); verdict.className = d.allow?'allow':'deny'; verdict.textContent = d.allow?' allow':' DENY';
+    li.appendChild(verdict);
+    if (d.request.mode==='scratch') { const s=document.createElement('span'); s.className='scr'; s.textContent=' ·scratch'; li.appendChild(s); }
+    const m = document.createElement('div'); m.className='mono';
+    m.textContent = new Date(d.ts).toLocaleString() + (d.allow ? '' : ' — ' + d.reason) + (d.rule ? ' · rule: ' + d.rule : '');
+    li.appendChild(m); ul.appendChild(li);
+  });
+  const s = AXMGate.stats();
+  $('auditStats').textContent = 'Raw log: ' + s.total + ' decisions (' + s.allowed + ' allowed, ' + s.denied +
+    ' denied), append-only, never edited. These buttons change the VIEW, not the log.';
+}
+$('fltCanon').onclick=()=>{auditMode='canon';renderAudit();};
+$('fltScratch').onclick=()=>{auditMode='scratch';renderAudit();};
+$('fltDenied').onclick=()=>{auditMode='denied';renderAudit();};
+$('fltAll').onclick=()=>{auditMode='all';renderAudit();};
+
+/* ---------- status + action report ---------- */
+async function renderStatus() {
+  const st = await AXM.status();
+  $('statusBox').textContent = JSON.stringify(st, null, 2);
+  const pending = st && st.identity && (st.identity.pendingMerges ?? null);
+  $('mergeHint').textContent = (pending && pending > 0)
+    ? pending + ' identity merge decision(s) waiting. Review screen is a later milestone — nothing is auto-merged, ever.'
+    : 'AI is optional — everything on this page works without it.';
+}
+$('refreshStatus').onclick = renderStatus;
+$('reportBtn').onclick = async () => {
+  const txt = await AXMHub.actionReport();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([txt], {type:'text/plain'}));
+  a.download = 'axm-action-report.txt'; a.click();
+};
+
+/* ---------- tool locker (v0.3): add + run without paths ---------- */
+$('lockerBtn').onclick = () => $('lockerFile').click();
+$('lockerFile').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = await AXMHub.registerFromFile(f.name, await f.text(), {}, who);
+  alert(r.allow ? 'Stored. It launches from the hub now — the original file can move or vanish.'
+                : 'Not added: ' + r.reason);
+  e.target.value = ''; renderList();
+};
+function openStored(id, title) {
+  AXMHub.loadStored(id).then(html => {
+    if (!html) return alert('Stored copy missing — pick the file again to re-add it.');
+    $('playerTitle').textContent = title;
+    $('player').style.display = 'block';
+    $('playerFrame').srcdoc = html;
+  });
+}
+$('playerClose').onclick = () => { $('player').style.display='none'; $('playerFrame').srcdoc=''; renderList(); };
+
+/* ---------- boot ---------- */
+function renderAll(){ renderMode(); renderOfficial(); renderList(); }
+(async () => {
+  const info = await AXM.init({ id:'axm-hub', name:'AXM Hub', version:'v0.3.1' });
+  await AXMHub.init();
+  $('boot').textContent = 'ready · ' + info.storageBackend + ' · hub core v' + AXMHub.VERSION;
+  AXMHub.subscribe(renderList);
+  renderAll();
+})().catch(e => { $('boot').textContent = 'boot failed: ' + e.message; });
+</script>
+</body>
+</html>

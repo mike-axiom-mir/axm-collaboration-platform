@@ -1,0 +1,46 @@
+============================================================
+AXM LOCAL BRIDGE — SETUP  (5 steps, weekend)
+Light version. Written + the server is proven to start; the real AI
+call is the part YOU test on your laptop.
+============================================================
+
+WHAT IT'S FOR
+The bridge runs on your machine and holds your API key, so the browser tools
+never touch it. Tools ask the bridge; the bridge asks the AI; the key stays home.
+
+YOU DON'T NEED IT TO USE AXM. Everything works without it — the bridge only
+adds the AI convenience. It's opt-in.
+
+STEPS
+  1. Install Node.js from nodejs.org (the big green button). This lets you run
+     the bridge.
+  2. Put your Anthropic API key where the bridge can read it:
+        mac / linux :   export ANTHROPIC_API_KEY=sk-ant-xxxxx
+        windows cmd :   set ANTHROPIC_API_KEY=sk-ant-xxxxx
+  3. In a terminal, go to the folder with axm-bridge.js and run:
+        node axm-bridge.js
+  4. You should see:
+        AXM Bridge listening on http://127.0.0.1:8787
+  5. Open any AXM tool. The Connector's "bridge" option now lights up on its
+     own, and AI calls route through your machine.
+
+TO CHECK IT'S ALIVE
+  Open http://127.0.0.1:8787/health in a browser — you should see
+  {"ok":true, ... "hasKey":true}. If hasKey is false, your key isn't set (redo
+  step 2 in the SAME terminal you run the bridge from).
+
+IF IT DOESN'T WORK
+  That's fine and expected the first time — this is the untested piece. Note
+  what happened and we fix it together. Tools keep working without it meanwhile.
+
+SAFETY (what this light version does / doesn't do)
+  DOES : binds to your machine only (127.0.0.1), keeps the key out of the
+         browser, logs each request.
+  DOESN'T yet : multiple AI providers, auth between tool and bridge, rate
+         limiting, a saved log file. Those are the next bridge version.
+  HEADS UP    : while the bridge runs, any website open in your browser could
+         in theory call it and use your key. For a private test on your own
+         machine that's fine. Stop it (Ctrl+C) when you're done, and don't run
+         it while browsing untrusted sites. The next version adds a token so
+         only your tools can reach it.
+============================================================
