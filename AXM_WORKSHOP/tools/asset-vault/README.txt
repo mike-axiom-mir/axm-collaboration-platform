@@ -12,13 +12,17 @@ WHAT IT IS
 
 HOW IT FITS THE CURRENT FOUNDATION
   - Loads the shared Workshop spine from /launcher/axm-foundation.js.
+  - Loads the shared asset librarian from /launcher/axm-assets.js.
+  - Loads global defaults from /launcher/axm-settings.js.
+  - Loads the shared registry from /launcher/axm-registry.js.
   - Does not carry its own private foundation copy.
-  - Saves only through AXM.store.
+  - Saves through AXM.store.
   - Uses AXMGate.submit for meaningful actions.
   - Uses AXM.ask only for optional AI summaries.
   - Works without AI connected.
-  - Writes real exports only through the Workshop /api/export endpoint.
-  - Falls back to browser download if /api/export is unavailable.
+  - Registers a tool-local Asset Vault records connector while this page is open.
+  - Routes exports through AXMRegistry when available.
+  - Keeps direct /api/export and browser download as backup routes.
 
 WHAT V0.1 CAN DO
   - Import selected local files into the vault as local browser records.
@@ -39,9 +43,10 @@ WHAT V0.1 CAN DO
 NO FAKE DONE
   - Real folder watching/indexing is not built in v0.1.
   - Automatic asset-pack zipping/copying is not built in v0.1.
-  - Workshop launcher does not yet consume launcher-card metadata automatically.
+  - Workshop launcher now reads static manifest.card metadata.
+  - Vault-exported card packets are not automatically installed yet.
   - Layer editing/compositing belongs to AXM Studio; this tool stores and indexes assets.
-  - Server-side file extraction from the vault is not built yet.
+  - Direct file extraction from the vault is not built yet.
 
 RECOMMENDED TEST
   1. Start AXM Workshop.
