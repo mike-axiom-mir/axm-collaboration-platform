@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AXM Asset Pack Lab</title>
+<script src="/launcher/axm-foundation.js"></script>
+<script src="/launcher/axm-assets.js"></script>
+<script src="/launcher/axm-settings.js"></script>
+<script src="/launcher/axm-registry.js"></script>
+<link rel="stylesheet" href="pack-lab.css" />
+</head>
+<body>
+<header>
+  <div>
+    <div class="eyebrow">AXM module · TEST</div>
+    <h1>Asset Pack Lab</h1>
+    <div class="sub">Build pack manifests and stable-shell / flexible-slot template manifests for launcher skins, cards, comics, factions, and Layer Forge.</div>
+  </div>
+  <div class="status" id="status">starting…</div>
+</header>
+<main>
+  <div class="tabs">
+    <button id="tabPack" class="on">Pack</button>
+    <button id="tabTemplate">Template</button>
+    <button id="tabLibrary">Library</button>
+    <button id="tabStatus">Status</button>
+  </div>
+
+  <section id="viewPack">
+    <div class="layout">
+      <aside class="panel">
+        <h2>Pack</h2>
+        <label>Pack id<input id="packId" value="launcher-skin-pack-test"></label>
+        <label>Name<input id="packName" value="Launcher Skin Pack — TEST"></label>
+        <label>Family<select id="packFamily"><option>launcher</option><option>comic</option><option>faction</option><option>command-card</option><option>info-comic</option><option>studio-layer-forge</option><option>game-ui</option></select></label>
+        <label>Status<select id="packStatus"><option>design-seed</option><option selected>TEST</option><option>WORKING</option><option>CANON</option></select></label>
+        <label>Target namespace<input id="packNamespace" value="/assets/packs/launcher/base/"></label>
+        <div class="row"><button class="good" id="buildPack">Build</button><button class="warn" id="exportPack">Export</button></div>
+      </aside>
+      <section class="panel">
+        <h2>Contents</h2>
+        <label>Asset refs<textarea id="packAssets">launcher/logo.svg
+launcher/icon-tool-default.svg</textarea></label>
+        <label>Template ids<textarea id="packTemplates">launcher-card-shell
+command-card-shell</textarea></label>
+        <label>Quality gates<textarea id="packGates">source known
+status honest
+safe margins checked
+readable text
+export target declared
+no fake done notes included</textarea></label>
+        <p class="nofake">NO FAKE DONE: v0.1 creates/export manifests. It does not install packs into the launcher yet.</p>
+      </section>
+    </div>
+    <section class="panel"><h2>Output</h2><pre id="packOut"></pre></section>
+  </section>
+
+  <section id="viewTemplate" class="hidden">
+    <div class="layout">
+      <aside class="panel">
+        <h2>Template shell</h2>
+        <label>Template id<input id="tplId" value="launcher-card-shell"></label>
+        <label>Name<input id="tplName" value="Launcher Card Shell"></label>
+        <label>Family<select id="tplFamily"><option>launcher</option><option>comic</option><option>faction</option><option>command-card</option><option>info-comic</option><option>systemlog</option><option>game-ui</option></select></label>
+        <label>Output size<input id="tplSize" value="1200x675"></label>
+        <div class="row"><button class="good" id="buildTpl">Build</button><button class="warn" id="exportTpl">Export</button></div>
+      </aside>
+      <section class="panel">
+        <h2>Stable shell / flexible slots</h2>
+        <label>Stable shell rules<textarea id="tplShell">canvas size locked
+safe margins locked
+status badge zone locked
+title/subtitle zones locked
+AXM mark zone locked</textarea></label>
+        <label>Flexible slots<textarea id="tplSlots">title:text
+subtitle:text
+cover:image
+icon:image
+status:badge
+accent:color
+notes:text</textarea></label>
+      </section>
+    </div>
+    <section class="panel"><h2>Output</h2><pre id="tplOut"></pre></section>
+  </section>
+
+  <section id="viewLibrary" class="hidden"><section class="panel"><h2>Template source</h2><button id="refreshTemplates">Refresh templates</button><pre id="templateList"></pre></section></section>
+  <section id="viewStatus" class="hidden"><section class="panel"><h2>Status</h2><button id="refreshStatus">Refresh</button><pre id="statusBox"></pre></section></section>
+</main>
+<script src="pack-lab.js"></script>
+</body>
+</html>
