@@ -1,45 +1,56 @@
 # Hermes Local Module Plan
 
-Status: design / module contract draft.
+Status: design / adapter contract draft.
 
-Hermes is not treated as a random AI model inside AXM.
+Hermes is an existing public open-source AI agent ecosystem, not just an AXM role name.
 
-For AXM, Hermes should become a local/server operations module: a router, queue, watcher, digest maker, and handoff helper that works behind the AXM Foundation Gate.
+This AXM module should be an adapter layer around Hermes, not a blind copy/fork.
 
-## Why Hermes exists
+## Public source references
 
-AXM needs a local layer that can keep boring continuity work organized without turning every tool into its own uncontrolled assistant.
+Known public Hermes-related repos/patterns found during scout:
 
-Hermes can help with:
+- `ivanontech/hermes-agent-dashboard` — open-source local-first dashboard for Hermes Agent. It reads local Hermes telemetry from `~/.hermes/state.db`, is localhost-only by default, read-only by default, redacts obvious secrets, and excludes private runtime data from the public repo.
+- `mudrii/hermes-agent-docs` — public documentation for Hermes Agent, describing it as a Nous Research autonomous agent with memory, skills, SQLite session history, plugin architecture, messaging gateways, local/provider support, LM Studio support, and OpenAI-compatible API/proxy options.
 
-- watching approved local folders
-- keeping a small task queue
-- preparing handoff packets
-- summarizing logs
-- routing work to the right helper
-- preparing review notes for Mike
-- passing clean digests back into AXM
+These references are scout inputs, not canon approval.
 
-Hermes should not be the whole brain.
+## AXM interpretation
 
-Hermes is the operations runner / night guard / message courier.
+For AXM, Hermes should be treated as an external local agent/runtime that can be connected safely through an adapter.
 
-## Local-first role
+Hermes should not be merged into AXM core.
 
-Hermes is mainly for local or self-hosted use.
+AXM should connect to Hermes through clear seams:
 
-Possible local homes:
+```text
+AXM Tool
+  -> AXM Foundation Gate
+    -> AXM Bridge / Hermes Adapter
+      -> Hermes local API / dashboard / state.db / plugin surface
+```
 
-- Mike's laptop / mini PC
-- Ivan's server or VM
-- a local AXM hub machine
-- later: a controlled private server body
+## Why Hermes matters for local
 
-Hermes should be able to run without public cloud hosting.
+Hermes appears valuable because it already has many things AXM eventually needs locally:
+
+- persistent memory/session history
+- SQLite-backed state
+- plugin architecture
+- local dashboard pattern
+- OpenAI-compatible local API/proxy option
+- LM Studio/local provider support
+- messaging gateway support
+- skill/tool ecosystem
+- telemetry/dashboard possibility
+
+That means AXM should not rebuild all of that blindly.
+
+Instead, AXM should test a small adapter.
 
 ## AXM boundary rule
 
-Hermes must not connect directly into every tool.
+Hermes must not connect directly into every AXM tool.
 
 Correct shape:
 
@@ -48,7 +59,7 @@ AXM Tool
   -> AXM Foundation Gate
     -> Bridge / Local Module Adapter
       -> Hermes
-        -> approved local tasks / logs / queues
+        -> approved local tasks / logs / queues / state
 ```
 
 Wrong shape:
@@ -61,20 +72,20 @@ Hermes
   -> acts without review
 ```
 
-## What Hermes may do
+## What AXM may use Hermes for
 
 Allowed draft responsibilities:
 
-1. Watch approved folders.
-2. Read only allowlisted files.
-3. Build task packets.
-4. Summarize logs into review notes.
-5. Queue tasks for Claude Code, ChatGPT, local Axiom/Mir, or another helper.
-6. Return results as proposals.
-7. Preserve proof logs.
-8. Ask for human approval before applying changes.
+1. Local agent runtime tests.
+2. Reading approved Hermes dashboard/API outputs.
+3. Reading approved local Hermes `state.db` summaries, not raw private content by default.
+4. Building task packets from approved AXM inputs.
+5. Returning results as proposals.
+6. Preparing handoff packets for Mike, Claude, ChatGPT, local Axiom/Mir, or coding agents.
+7. Summarizing logs into review notes.
+8. Preserving proof logs locally.
 
-## What Hermes must not do
+## What Hermes must not do inside AXM
 
 Hermes must not:
 
@@ -85,36 +96,28 @@ Hermes must not:
 - bypass the Foundation Gate
 - store API keys in public files
 - claim a task is done without proof
-- mutate its own role rules without review
+- mutate AXM role rules without review
+- import large external code into AXM without license/source review
 
-## Source intake rule
+## Adapter strategy
 
-Future source connectors may exist, but only through explicit allowlists.
+Do not copy Hermes into this repo first.
 
-Examples of possible later sources:
-
-- selected local folders
-- selected logs
-- selected Discord export/channel bridge
-- selected WhatsApp export/bridge
-- selected GitHub issue/PR data
-
-Each source needs:
+Safer first step:
 
 ```text
-source name
-allowed path or API
-read/write permission level
-private/public status
-retention rule
-human approval rule
+AXM_WORKSHOP/local_modules/hermes/
+  docs and adapter contract only
 ```
 
-Default is no access.
+Then test one of these later:
+
+1. OpenAI-compatible local endpoint adapter.
+2. Dashboard/state reader adapter.
+3. Inbox/outbox proposal adapter.
+4. GitHub issue packet adapter.
 
 ## Proposed module folder
-
-Suggested local module shape:
 
 ```text
 AXM_WORKSHOP/local_modules/hermes/
@@ -131,32 +134,13 @@ AXM_WORKSHOP/local_modules/hermes/
     .gitkeep
 ```
 
-Important: real runtime logs should stay local and ignored by Git.
+Important: real runtime logs, state databases, `.env`, credentials, tokens, sessions, and private config should stay local and ignored by Git.
 
 Public repo should only contain placeholders and docs.
 
-## Module manifest idea
-
-Hermes should have a small manifest like:
-
-```json
-{
-  "id": "hermes-local",
-  "name": "Hermes Local Operations Module",
-  "status": "design",
-  "type": "local-module",
-  "entry": "README.md",
-  "access": {
-    "network": "local-only by default",
-    "writes": "proposal-only until approved",
-    "sources": "allowlist only"
-  }
-}
-```
-
 ## Bridge relationship
 
-The current bridge already has:
+The current AXM bridge already has:
 
 - local host only
 - bridge token
@@ -166,11 +150,17 @@ The current bridge already has:
 - health endpoint
 - ask endpoint
 
-Hermes should not replace this bridge.
+Hermes should not replace this bridge yet.
 
-Hermes should sit beside/behind it as a local operations module.
+First integration should be one of:
 
-Possible later endpoints:
+```text
+AXM bridge provider: hermes-api
+AXM local module: hermes-dashboard-reader
+AXM local queue: hermes-inbox-outbox
+```
+
+Possible later endpoints on AXM side:
 
 ```text
 GET  /hermes/health
@@ -182,22 +172,22 @@ POST /hermes/propose
 
 These should require the same local token or a stricter module token.
 
-## First tiny version
+## First tiny AXM adapter version
 
-Do not start with all features.
+Do not start with all Hermes features.
 
-First Hermes module should only do this:
+First AXM-safe adapter should only do this:
 
-1. Read a local `inbox/` folder.
-2. Turn `.txt` notes into task packets.
-3. Write proposal files to `outbox/`.
-4. Keep a local log.
+1. Confirm Hermes is installed/running or note that it is missing.
+2. Confirm local dashboard/API/state path is configured.
+3. Read only an approved minimal status/digest source.
+4. Write a proposal file to `outbox/`.
 5. Never apply changes automatically.
 
 Example:
 
 ```text
-inbox/request-001.txt
+Hermes status / approved digest
   -> queue/task-001.json
   -> outbox/proposal-001.md
 ```
@@ -206,32 +196,34 @@ inbox/request-001.txt
 
 The first test is not intelligence.
 
-The first test is safe continuity:
+The first test is safe local connection:
 
-- Did Hermes read only the allowed folder?
-- Did Hermes create a clear task packet?
-- Did Hermes preserve source text?
-- Did Hermes avoid direct edits?
-- Did Hermes produce a human-reviewable proposal?
+- Did AXM connect only to the approved Hermes source?
+- Did it avoid raw private content unless explicitly enabled?
+- Did it create a clear task packet?
+- Did it preserve source references?
+- Did it avoid direct edits?
+- Did it produce a human-reviewable proposal?
 
 ## Future role
 
-If the tiny version works, Hermes can later become the local coordinator for:
+If the adapter works, Hermes can later help AXM with:
 
-- bridge tests
 - local AI sessions
-- Claude Code handoffs
+- bridge tests
+- LM Studio/local model routing
 - GitHub issue packet creation
 - nightly summaries
 - approved source digests
 - local AXM memory packets
+- server-side operations for the local hub
 
 ## AXM status
 
-Hermes local module is a useful candidate.
+Hermes is a strong external local candidate.
 
-It is not canon yet.
+It is not AXM canon yet.
 
-It becomes stronger only by proving local-safe behavior.
+It becomes stronger only by proving safe local behavior through an adapter.
 
 No silent access. No fake done. No uncontrolled autonomy.
