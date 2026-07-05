@@ -4,7 +4,7 @@ Status: TEST / side-by-side AI tool.
 
 The Agent Command Center is not inside Hermes.
 
-It is a side-by-side AXM local module that can package identities, skills, specialist masks, prompt vault links, templates, wisdom profile links, connector bindings, and run settings for any AI connector.
+It is a side-by-side AXM local module that can package identities, skills, specialist masks, prompt packs, template packs, wisdom profile links, connector bindings, and run settings for any AI connector.
 
 Hermes can use it.
 
@@ -16,6 +16,18 @@ ChatGPT, Claude, LM Studio, local models, or future connectors can also use it w
 AXM_WORKSHOP/local_modules/
   hermes/
   agent-command-center/
+  agent-tool-forge/
+```
+
+## Folder map
+
+```text
+agent-command-center/
+  README.md
+  COMMAND_CENTER_RULES.md
+  IDENTITY_CONNECTOR_BINDING.md
+  package-profiles/
+  identity-bindings/
 ```
 
 ## What comes together here
@@ -24,9 +36,9 @@ AXM_WORKSHOP/local_modules/
 identity profile
 + connector binding
 + specialist masks
-+ skill wrappers
-+ prompt vault links
-+ template links
++ skills
++ prompt packs
++ template packs
 + wisdom profile links
 + run settings
 + consent rules
@@ -43,6 +55,8 @@ This is not the place where all raw wisdom is analyzed.
 
 This is not a code builder by default.
 
+This is not the Agent Tool Forge.
+
 ## Main responsibility
 
 The Agent Command Center assembles end products into selectable AI packages.
@@ -53,8 +67,8 @@ It decides things like:
 which identity belongs to which connector
 which package loads which skills
 which specialist masks are allowed
-which prompt vault links are active
-which template set is used
+which prompt packs are active
+which template pack is used
 which wisdom profile is linked
 which tools are blocked
 which connector is allowed for a package
@@ -76,6 +90,12 @@ Specialists: mergegate reviewer, code routing gate
 Skills: summarize PR, create review packet
 Consent: required before action
 ```
+
+## Relationship to Agent Tool Forge
+
+Agent Tool Forge prepares reusable parts.
+
+Agent Command Center assembles those parts into package profiles.
 
 ## Relationship to Hermes
 
