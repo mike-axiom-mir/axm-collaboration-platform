@@ -1,0 +1,47 @@
+AXM GAME HUB LOCAL RUN
+
+Status: WORKING / TEST scaffold.
+
+Default engine speed:
+
+30 TPS server simulation
+30 FPS default client target
+
+Run from repo root:
+
+cd AXM_WORKSHOP\local_modules\game-hub
+node game-hub-server.js
+
+Default server:
+
+http://localhost:8788
+
+Useful endpoints:
+
+GET  /health
+GET  /state
+GET  /seats
+GET  /games
+POST /seat/assign
+POST /seat/ready
+POST /game/start
+POST /input
+POST /game/end
+
+Example flow:
+
+1. Start server.
+2. Assign seats.
+3. Ready seats.
+4. Start game with game_id or game_manifest.
+5. Inputs are queued.
+6. Engine ticks at 30 TPS.
+7. End game.
+8. Lobby returns stable.
+
+RULE
+
+Lobby is the door.
+Engine is the shared body.
+Game Library holds swappable games.
+Connectivity first, canon later.
