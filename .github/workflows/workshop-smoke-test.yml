@@ -31,37 +31,22 @@ jobs:
           const toolsDir = path.join(root, 'tools');
           const statuses = new Set(['TEST', 'WORKING', 'CANON', 'SHELL', 'BROKEN']);
           let failures = [];
-
           if (!fs.existsSync(toolsDir)) failures.push('AXM_WORKSHOP/tools missing');
-          const dirs = fs.existsSync(toolsDir)
-            ? fs.readdirSync(toolsDir, { withFileTypes: true }).filter(d => d.isDirectory() && !d.name.startsWith('_'))
-            : [];
-
+          const dirs = fs.existsSync(toolsDir) ? fs.readdirSync(toolsDir, { withFileTypes: true }).filter(d => d.isDirectory() && !d.name.startsWith('_')) : [];
           for (const d of dirs) {
             const manifestPath = path.join(toolsDir, d.name, 'manifest.json');
-            if (!fs.existsSync(manifestPath)) {
-              failures.push(`${d.name}: manifest.json missing`);
-              continue;
-            }
+            if (!fs.existsSync(manifestPath)) { failures.push(`${d.name}: manifest.json missing`); continue; }
             let manifest;
             try { manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')); }
             catch (err) { failures.push(`${d.name}: invalid manifest JSON: ${err.message}`); continue; }
-
-            for (const key of ['id', 'name', 'version', 'status', 'entry']) {
-              if (!manifest[key]) failures.push(`${d.name}: manifest missing ${key}`);
-            }
+            for (const key of ['id', 'name', 'version', 'status', 'entry']) if (!manifest[key]) failures.push(`${d.name}: manifest missing ${key}`);
             if (!Array.isArray(manifest.uses)) failures.push(`${d.name}: manifest missing uses[] declaration`);
             if (manifest.status && !statuses.has(manifest.status)) failures.push(`${d.name}: unknown status ${manifest.status}`);
             if (manifest.entry && !fs.existsSync(path.join(toolsDir, d.name, manifest.entry))) failures.push(`${d.name}: entry file not found: ${manifest.entry}`);
           }
-
           if (!fs.existsSync(path.join(toolsDir, 'asset-vault', 'manifest.json'))) failures.push('asset-vault manifest missing');
           if (!fs.existsSync(path.join(toolsDir, 'asset-pack-lab', 'manifest.json'))) failures.push('asset-pack-lab manifest missing');
-
-          if (failures.length) {
-            console.error('Manifest validation failed:\n' + failures.map(f => '- ' + f).join('\n'));
-            process.exit(1);
-          }
+          if (failures.length) { console.error('Manifest validation failed:\n' + failures.map(f => '- ' + f).join('\n')); process.exit(1); }
           console.log(`Manifest validation passed for ${dirs.length} tool folder(s).`);
           NODE
 
@@ -72,8 +57,8 @@ jobs:
           const checks = [];
           const vault = fs.readFileSync('AXM_WORKSHOP/tools/asset-vault/index.html', 'utf8');
           const launcher = fs.readFileSync('AXM_WORKSHOP/launcher/index.html', 'utf8');
+          const server = fs.readFileSync('AXM_WORKSHOP/server.js', 'utf8');
           function requireIncludes(text, needle, label) { if (!text.includes(needle)) checks.push(label); }
-
           requireIncludes(vault, '/launcher/axm-foundation.js', 'Asset Vault uses shared Workshop foundation');
           requireIncludes(vault, '/launcher/axm-assets.js', 'Asset Vault loads AXMAssets');
           requireIncludes(vault, '/launcher/axm-settings.js', 'Asset Vault loads AXMSettings');
@@ -84,18 +69,16 @@ jobs:
           requireIncludes(vault, 'AXMRegistry.connect', 'Asset Vault routes through AXMRegistry.connect');
           requireIncludes(vault, "kind:'asset.sink'", 'Asset Vault writes via asset.sink');
           requireIncludes(vault, 'NO FAKE DONE', 'Asset Vault names unfinished pieces');
-
           requireIncludes(launcher, 'function cardCover', 'Launcher has cardCover consumer');
           requireIncludes(launcher, 'function cardSubtitle', 'Launcher has cardSubtitle consumer');
           requireIncludes(launcher, 'function cardAccent', 'Launcher has cardAccent consumer');
           requireIncludes(launcher, 't.card||{}', 'Launcher reads manifest.card');
           requireIncludes(launcher, 'Launcher v0.2 TEST reads manifest.card', 'Launcher UI labels card metadata support');
           requireIncludes(launcher, 'Vault-installed runtime skin packs', 'Launcher keeps pack install no-fake-done label');
-
-          if (checks.length) {
-            console.error('Wiring checks failed:\n' + checks.map(f => '- missing ' + f).join('\n'));
-            process.exit(1);
-          }
+          requireIncludes(server, 'summary:', 'Server exposes tool summary');
+          requireIncludes(server, 'card:', 'Server exposes tool card metadata');
+          requireIncludes(server, 'no_fake_done:', 'Server exposes no_fake_done notes');
+          if (checks.length) { console.error('Wiring checks failed:\n' + checks.map(f => '- missing ' + f).join('\n')); process.exit(1); }
           console.log('Launcher + Asset Vault wiring checks passed.');
           NODE
 
@@ -105,10 +88,7 @@ jobs:
           node server.js > ../workshop-server.log 2>&1 &
           echo $! > ../workshop-server.pid
           for i in {1..30}; do
-            if curl -fsS http://127.0.0.1:8788/api/health > /tmp/axm-health.json; then
-              cat /tmp/axm-health.json
-              exit 0
-            fi
+            if curl -fsS http://127.0.0.1:8788/api/health > /tmp/axm-health.json; then cat /tmp/axm-health.json; exit 0; fi
             sleep 1
           done
           echo 'Workshop server did not start.'
@@ -118,15 +98,10 @@ jobs:
       - name: Smoke test Workshop API and key routes
         run: |
           node <<'NODE'
-          async function getJson(url) {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`${url} returned ${res.status}`);
-            return res.json();
-          }
+          async function getJson(url) { const res = await fetch(url); if (!res.ok) throw new Error(`${url} returned ${res.status}`); return res.json(); }
           async function main() {
             const health = await getJson('http://127.0.0.1:8788/api/health');
             if (!health.ok || health.body !== 'axm-workshop') throw new Error('bad health payload: ' + JSON.stringify(health));
-
             const tools = await getJson('http://127.0.0.1:8788/api/tools');
             const vault = tools.tools.find(t => t.id === 'asset-vault');
             const packLab = tools.tools.find(t => t.id === 'asset-pack-lab');
@@ -135,12 +110,12 @@ jobs:
             if (vault.status !== 'TEST') throw new Error('asset-vault status should be TEST, got ' + vault.status);
             if (packLab.status !== 'TEST') throw new Error('asset-pack-lab status should be TEST, got ' + packLab.status);
             if (!vault.uses || !vault.uses.includes('registry')) throw new Error('asset-vault manifest should declare registry use');
-
+            if (!vault.card || vault.card.subtitle !== 'Assets, handoffs, launcher-card metadata') throw new Error('asset-vault card metadata not exposed by /api/tools');
+            if (!vault.no_fake_done || !vault.no_fake_done.length) throw new Error('asset-vault no_fake_done not exposed by /api/tools');
             const launcher = await fetch('http://127.0.0.1:8788/launcher/index.html');
             if (!launcher.ok) throw new Error('launcher route returned ' + launcher.status);
             const launcherText = await launcher.text();
             if (!launcherText.includes('function cardCover')) throw new Error('launcher page missing cardCover');
-
             for (const route of ['asset-vault', 'asset-pack-lab']) {
               const page = await fetch(`http://127.0.0.1:8788/tools/${route}/index.html`);
               if (!page.ok) throw new Error(`${route} index route returned ${page.status}`);
@@ -148,7 +123,6 @@ jobs:
               if (!text.includes('/launcher/axm-foundation.js')) throw new Error(`${route} page missing shared foundation script`);
               if (!text.includes('/launcher/axm-registry.js')) throw new Error(`${route} page missing registry script`);
             }
-
             console.log('Workshop smoke test passed:', JSON.stringify({ toolCount: tools.tools.length, assetVault: vault.id, assetPackLab: packLab.id }, null, 2));
           }
           main().catch(err => { console.error(err); process.exit(1); });
