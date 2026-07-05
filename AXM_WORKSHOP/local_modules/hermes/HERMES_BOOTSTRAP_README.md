@@ -2,20 +2,55 @@
 
 Status: TEST scaffold for reducing setup pain.
 
-This is the AXM wrapper for setting up and starting the real external Hermes agent/runtime locally.
+This is the AXM wrapper for setting up and starting the real external Hermes Agent locally.
 
 It is not meant to replace Hermes.
+
+## Locked source
+
+Verified public source:
+
+```text
+https://github.com/NousResearch/hermes-agent
+```
+
+License checked:
+
+```text
+MIT License
+```
+
+Official docs installer:
+
+```text
+curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+```
+
+Windows PowerShell early beta installer:
+
+```text
+irm https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.ps1 | iex
+```
+
+After install:
+
+```text
+hermes
+hermes doctor
+hermes model
+hermes tools
+```
 
 ## Goal
 
 Users should not manually fight setup across many pages.
 
-The local module should eventually become:
+The local module should become:
 
 ```text
 one command
   -> check requirements
-  -> install/clone verified Hermes source
+  -> install real Hermes from NousResearch/hermes-agent
   -> start Hermes
   -> expose AXM consent-controlled module layer
 ```
@@ -38,9 +73,9 @@ This checks:
 
 ## Source config
 
-The real Hermes source must be verified before this wrapper clones it.
+The public example now points at the locked Hermes source.
 
-Copy:
+Local overrides can be made by copying:
 
 ```text
 hermes-source.example.json
@@ -52,19 +87,9 @@ to:
 hermes-source.local.json
 ```
 
-Then set the verified Hermes repo URL and start command.
-
 The local config is ignored by Git.
 
-## Why not hardcode yet?
-
-There are many public repos named Hermes.
-
-AXM should not guess and install the wrong one.
-
-Once the real source is locked, this wrapper becomes the one-click path.
-
-## Future complete path
+## Next complete path
 
 ```text
 node hermes-bootstrap.js doctor
