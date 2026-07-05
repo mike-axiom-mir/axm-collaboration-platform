@@ -1,31 +1,71 @@
-# Hermes Specialist Command
+# Hermes Specialist Command Center
 
-Status: TEST / AI wrapper creation layer.
+Status: TEST / package assembly layer.
 
 Hermes is the local body/tool strength.
 
-Specialist Command is the place where users and AXM create, organize, and tune the AI wrappers that Hermes can use.
+Specialist Command Center is where finished AI wrapper parts come together into strong selectable package profiles.
 
-This is not the shell review layer.
+It is not the factory.
 
-The shell reviews logs, growth, and which combinations worked.
+It is not the analyst.
 
-Specialist Command creates and manages the actual usable wrappers.
+## Correct split
+
+```text
+Builder tools create identities, skills, specialist masks, prompts, templates, and wisdom profiles.
+Shell Review analyzes runs, logs, growth, repair history, and which combinations worked.
+Specialist Command Center assembles approved or test-ready parts into usable package profiles.
+```
 
 ## Purpose
 
-Specialist Command is where these are created and maintained:
+Specialist Command Center is where users and AXM combine end products into package deals.
 
-- identity profiles
-- specialist masks
-- skill wrappers
+A package can combine:
+
+- one default identity
+- selected specialist masks
+- selected skill wrappers
 - prompt vault links
 - template links
-- package profiles
+- wisdom profile links
+- run settings
+- consent requirements
 
-It is the place where everything grown for AI tuning comes together in a user-tweakable form.
+This lets Mike or another user tune an AI without manually rebuilding the setup every time.
 
-## Main types
+## What does not happen here
+
+Specialist Command Center should not be the main place to:
+
+- write raw specialist masks from scratch
+- analyze wisdom logs
+- analyze run growth
+- decide canon
+- directly mutate AXM core
+- auto-run packages without consent
+
+Those belong elsewhere.
+
+## Prompting a builder system
+
+If a new identity, specialist mask, skill, prompt, or template is missing, Command Center can create a request packet for a builder system.
+
+Example request:
+
+```text
+Need: SFX intake specialist mask
+Task type: asset review
+Purpose: separate raw generated sounds from accepted test assets
+Output needed: specialist mask draft
+Status: RAW
+Return to: Specialist Command Center for package assembly
+```
+
+This means Command Center can ask for missing parts, but it is not where deep creation or analysis lives.
+
+## Main parts
 
 ### Identity profile
 
@@ -111,9 +151,17 @@ outer stable
 inner flexible
 ```
 
+### Wisdom profile link
+
+Wisdom profiles are linked here as selected guidance packs.
+
+Command Center does not analyze the wisdom itself.
+
+It only attaches the chosen wisdom profile to the package.
+
 ### Package profile
 
-A package profile is a full default bundle.
+A package profile is the assembled end product.
 
 It can contain:
 
@@ -151,27 +199,27 @@ Wisdom links:
 Consent: required before action
 ```
 
-## Specialist Command step loop
+## Command Center assembly loop
 
-Every wrapper should be created through a simple loop.
+Packages should be assembled through a simple loop.
 
 ```text
-1. Define need
-2. Choose wrapper type
-3. Define purpose
-4. Define allowed tasks
-5. Define forbidden tasks
-6. Define inputs
-7. Define outputs
-8. Define step loop
-9. Define boundaries
-10. Define consent rule
-11. Save as RAW or REVIEW
-12. Test in a bounded run
-13. Promote only with evidence
+1. Choose task/situation type.
+2. Select default identity.
+3. Select specialist masks.
+4. Select skills.
+5. Link prompt vaults.
+6. Link templates.
+7. Link wisdom profiles.
+8. Set run limits.
+9. Set consent rule.
+10. Save package as RAW, REVIEW, or ACCEPT FOR TEST.
+11. Use only with consent.
+12. Send results to Shell Review for analysis.
+13. Update package only when review supports it.
 ```
 
-## Wrapper status labels
+## Status labels
 
 Use AXM labels:
 
@@ -185,36 +233,35 @@ RETIRED
 CANON only after MergeGate
 ```
 
-## Default wrapper template
+## Package template fields
 
-Every wrapper should include:
+A package should include:
 
 ```text
 id
 name
-wrapper_type
 status
 purpose
 best_for
 not_for
-allowed_inputs
-allowed_outputs
-step_loop
-boundaries
+default_identity
+specialist_masks
+skills
+prompt_vault_links
+template_links
+wisdom_profile_links
+run_settings
 consent_rule
-linked_identity
-linked_wisdom_profiles
-linked_prompt_vaults
-linked_templates
-linked_skills
 review_notes
 ```
 
 ## Consent use
 
-A wrapper can be available without consent.
+A package can be available without consent.
 
-A wrapper can only act when consent and run settings allow it.
+A package can auto-load linked parts when selected.
+
+A package can only act when consent and run settings allow it.
 
 Package profiles should not auto-run by default.
 
@@ -222,7 +269,7 @@ They prepare the AI setup. The user still chooses when to run.
 
 ## Relationship to wisdom
 
-Specialist Command does not analyze wisdom logs.
+Command Center does not analyze wisdom logs.
 
 Wisdom profiles may be linked here, selected here, or packaged here.
 
@@ -230,17 +277,18 @@ The shell/log layer reviews whether the wisdom helped later.
 
 ## Relationship to shell
 
-Specialist Command creates and organizes wrappers.
+Command Center assembles packages.
 
-Shell review analyzes how wrappers performed.
+Shell Review analyzes how packages performed.
 
 Flow:
 
 ```text
-Specialist Command creates package
+Builder system creates parts
+Command Center assembles package
 Hermes runs with consent
-Shell review checks result
-Specialist Command updates package if approved
+Shell Review checks result
+Command Center updates package if approved
 ```
 
 ## Default run selection
@@ -269,6 +317,8 @@ No hidden identity switch.
 No package acts without consent.
 
 No wrapper becomes canon by default.
+
+Command Center assembles strength from finished parts.
 
 Specialist masks are for situations or longer roles.
 
