@@ -16,9 +16,12 @@ agent-command-center/
 
 hermes/
   Wraps the real external Hermes runtime as one possible local AI body/connector.
+
+game-hub/
+  Local AI + human lobby for up to 8 visible seats, swappable human/adapter/AI seats, QR/link join, and swappable game modules from a game library.
 ```
 
-## Flow
+## AI/tool flow
 
 ```text
 Agent Tool Forge
@@ -34,6 +37,18 @@ Shell Review
   -> checks result and repair history
 ```
 
+## Game flow
+
+```text
+Game Hub
+  -> shows local lobby
+  -> manages up to 8 visible seats
+  -> accepts humans by link/QR
+  -> accepts adapters/AI as visible seats
+  -> loads game-library manifests
+  -> launches selected game module
+```
+
 ## Public rule
 
 Modules stay separate.
@@ -43,3 +58,5 @@ Connections stay visible.
 Runtime does not mean consent.
 
 Package selection does not mean auto-run.
+
+AI/adapters must be visible when used as game seats.
