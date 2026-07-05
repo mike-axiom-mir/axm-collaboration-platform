@@ -1,15 +1,23 @@
 {
   "id": "hermes-local",
-  "name": "Hermes Local Operations Module",
-  "status": "design",
+  "name": "Hermes Local Runtime Wrapper",
+  "status": "TEST",
   "type": "local-module",
-  "entry": "README.md",
-  "description": "Local/server operations layer for approved folder watching, task queues, digests, and proposal handoffs behind the AXM Foundation Gate.",
-  "access": {
-    "network": "local-only by default",
-    "sources": "allowlist only",
-    "writes": "proposal-only until approved",
-    "secrets": "local/private only"
+  "entry": "MODULE_INDEX.md",
+  "description": "AXM wrapper for the real NousResearch Hermes agent runtime with local setup notes, runtime checks, consent boundaries, and package handoff support.",
+  "external_source": {
+    "repo": "NousResearch/hermes-agent",
+    "license": "MIT"
   },
-  "merge_rule": "Evidence before canon. Hermes must prove safe local behavior before stronger status."
+  "access": {
+    "network": "local-first by default",
+    "sources": "selected and reviewed sources only",
+    "writes": "bounded by consent and package settings",
+    "secrets": "local only, never committed"
+  },
+  "neighbor_modules": [
+    "../agent-command-center",
+    "../agent-tool-forge"
+  ],
+  "merge_rule": "Runtime can be available by default, but action requires consent. Runnable does not mean canon."
 }
