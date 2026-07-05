@@ -13,7 +13,7 @@ It is not the analyst.
 ## Correct split
 
 ```text
-Builder tools create identities, skills, specialist masks, prompts, templates, and wisdom profiles.
+Agent tools / AI tools prepare identities, skills, specialist masks, prompts, templates, and wisdom profiles.
 Shell Review analyzes runs, logs, growth, repair history, and which combinations worked.
 Specialist Command Center assembles approved or test-ready parts into usable package profiles.
 ```
@@ -48,9 +48,9 @@ Specialist Command Center should not be the main place to:
 
 Those belong elsewhere.
 
-## Prompting a builder system
+## Requesting an agent tool
 
-If a new identity, specialist mask, skill, prompt, or template is missing, Command Center can create a request packet for a builder system.
+If a new identity, specialist mask, skill, prompt, or template is missing, Command Center can create a request packet for an agent tool or AI tool.
 
 Example request:
 
@@ -284,7 +284,7 @@ Shell Review analyzes how packages performed.
 Flow:
 
 ```text
-Builder system creates parts
+Agent tools / AI tools prepare parts
 Command Center assembles package
 Hermes runs with consent
 Shell Review checks result
