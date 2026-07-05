@@ -1,8 +1,8 @@
 {
   "format": 1,
-  "note": "THE TEMPLATE INDEX — templates are assets; this file is how they are found. Fetched directly or via AXMRegistry kind 'template.source' (actions: list, resolve). Entries list ONLY real files (no fake done); planned entries carry file:null + status. The 'inherits' and 'slots' fields are RESERVED for the future template engine (cross-pattern research module) — declared now so the index never needs a breaking change.",
+  "note": "THE TEMPLATE INDEX — templates are assets; this file is how they are found. Fetched directly or via AXMRegistry kind template.source. Entries list real files or planned entries with honest status. Stable shell / flexible slots / protected output is the base pattern.",
   "layers": ["shell", "layout", "block"],
-  "families": ["comic", "info", "faction", "social", "systemlog"],
+  "families": ["comic", "info", "faction", "social", "systemlog", "launcher", "command-card", "game-ui"],
   "templates": [
     {
       "id": "library-spec",
@@ -12,7 +12,37 @@
       "file": "library-spec.txt",
       "status": "design-seed",
       "inherits": null,
-      "notes": "The cross-checked spec: stable shell / flexible slots / protected output. Every future template family derives from this document."
+      "notes": "The cross-checked spec: stable shell / flexible slots / protected output."
+    },
+    {
+      "id": "launcher-card-shell",
+      "family": "launcher",
+      "layer": "shell",
+      "name": "Launcher Card Shell",
+      "file": "launcher-card-shell.json",
+      "status": "design-seed",
+      "inherits": "library-spec",
+      "slots": ["title", "subtitle", "cover", "icon", "accent", "status", "tags"]
+    },
+    {
+      "id": "workflow-card-shell",
+      "family": "command-card",
+      "layer": "shell",
+      "name": "Workflow Card Shell",
+      "file": "workflow-card-shell.json",
+      "status": "design-seed",
+      "inherits": "library-spec",
+      "slots": ["title", "subtitle", "mainInstruction", "steps", "icon", "accent", "footer"]
+    },
+    {
+      "id": "faction-card-shell",
+      "family": "faction",
+      "layer": "shell",
+      "name": "Faction Card Shell",
+      "file": "faction-card-shell.json",
+      "status": "design-seed",
+      "inherits": "library-spec",
+      "slots": ["factionName", "symbol", "art", "colors", "stats", "lore"]
     },
     {
       "id": "comic-base-shell",
@@ -20,8 +50,8 @@
       "layer": "shell",
       "name": "AXM Comic Base Shell",
       "file": null,
-      "status": "planned — Axiom/Mir visual pass",
-      "inherits": null
+      "status": "planned design-seed — Axiom/Mir visual pass",
+      "inherits": "library-spec"
     }
   ]
 }
