@@ -1,0 +1,138 @@
+name: AXM Workshop Smoke Test
+
+on:
+  pull_request:
+    paths:
+      - 'AXM_WORKSHOP/**'
+      - '.github/workflows/workshop-smoke-test.yml'
+  workflow_dispatch:
+
+jobs:
+  workshop-smoke:
+    name: Workshop tool smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate tool manifests
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const root = path.join(process.cwd(), 'AXM_WORKSHOP');
+          const toolsDir = path.join(root, 'tools');
+          const statuses = new Set(['TEST', 'WORKING', 'CANON', 'SHELL', 'BROKEN']);
+          let failures = [];
+
+          if (!fs.existsSync(toolsDir)) failures.push('AXM_WORKSHOP/tools missing');
+          const dirs = fs.existsSync(toolsDir)
+            ? fs.readdirSync(toolsDir, { withFileTypes: true }).filter(d => d.isDirectory() && !d.name.startsWith('_'))
+            : [];
+
+          for (const d of dirs) {
+            const manifestPath = path.join(toolsDir, d.name, 'manifest.json');
+            if (!fs.existsSync(manifestPath)) {
+              failures.push(`${d.name}: manifest.json missing`);
+              continue;
+            }
+            let manifest;
+            try { manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')); }
+            catch (err) { failures.push(`${d.name}: invalid manifest JSON: ${err.message}`); continue; }
+
+            for (const key of ['id', 'name', 'version', 'status', 'entry']) {
+              if (!manifest[key]) failures.push(`${d.name}: manifest missing ${key}`);
+            }
+            if (manifest.status && !statuses.has(manifest.status)) failures.push(`${d.name}: unknown status ${manifest.status}`);
+            if (manifest.entry && !fs.existsSync(path.join(toolsDir, d.name, manifest.entry))) failures.push(`${d.name}: entry file not found: ${manifest.entry}`);
+          }
+
+          const assetVault = path.join(toolsDir, 'asset-vault', 'manifest.json');
+          if (!fs.existsSync(assetVault)) failures.push('asset-vault manifest missing');
+
+          if (failures.length) {
+            console.error('Manifest validation failed:\n' + failures.map(f => '- ' + f).join('\n'));
+            process.exit(1);
+          }
+          console.log(`Manifest validation passed for ${dirs.length} tool folder(s).`);
+          NODE
+
+      - name: Check Asset Vault foundation wiring
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const html = fs.readFileSync('AXM_WORKSHOP/tools/asset-vault/index.html', 'utf8');
+          const checks = [
+            ['/launcher/axm-foundation.js', 'uses shared Workshop foundation'],
+            ['AXM.init({id:', 'calls AXM.init'],
+            ['AXM.store.save', 'uses AXM.store.save'],
+            ['AXMGate.submit', 'uses AXMGate.submit'],
+            ['AXM.ask', 'uses optional AXM.ask'],
+            ['/api/export', 'uses Workshop export endpoint'],
+            ['NO FAKE DONE', 'names unfinished pieces']
+          ];
+          const missing = checks.filter(([needle]) => !html.includes(needle));
+          if (missing.length) {
+            console.error('Asset Vault wiring checks failed:\n' + missing.map(([, label]) => '- missing ' + label).join('\n'));
+            process.exit(1);
+          }
+          console.log('Asset Vault foundation wiring checks passed.');
+          NODE
+
+      - name: Start Workshop server
+        working-directory: AXM_WORKSHOP
+        run: |
+          node server.js > ../workshop-server.log 2>&1 &
+          echo $! > ../workshop-server.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8788/api/health > /tmp/axm-health.json; then
+              cat /tmp/axm-health.json
+              exit 0
+            fi
+            sleep 1
+          done
+          echo 'Workshop server did not start.'
+          cat ../workshop-server.log || true
+          exit 1
+
+      - name: Smoke test Workshop API and Asset Vault route
+        run: |
+          node <<'NODE'
+          async function getJson(url) {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`${url} returned ${res.status}`);
+            return res.json();
+          }
+          async function main() {
+            const health = await getJson('http://127.0.0.1:8788/api/health');
+            if (!health.ok || health.body !== 'axm-workshop') throw new Error('bad health payload: ' + JSON.stringify(health));
+
+            const tools = await getJson('http://127.0.0.1:8788/api/tools');
+            const vault = tools.tools.find(t => t.id === 'asset-vault');
+            if (!vault) throw new Error('asset-vault not discovered by /api/tools');
+            if (vault.status !== 'TEST') throw new Error('asset-vault status should be TEST, got ' + vault.status);
+            if (vault.entry !== 'index.html') throw new Error('asset-vault entry should be index.html, got ' + vault.entry);
+
+            const page = await fetch('http://127.0.0.1:8788/tools/asset-vault/index.html');
+            if (!page.ok) throw new Error('asset-vault index route returned ' + page.status);
+            const text = await page.text();
+            if (!text.includes('AXM Asset Vault')) throw new Error('asset-vault page missing title text');
+            if (!text.includes('/launcher/axm-foundation.js')) throw new Error('asset-vault page missing shared foundation script');
+
+            console.log('Workshop smoke test passed:', JSON.stringify({ toolCount: tools.tools.length, assetVault: vault }, null, 2));
+          }
+          main().catch(err => { console.error(err); process.exit(1); });
+          NODE
+
+      - name: Stop Workshop server
+        if: always()
+        run: |
+          if [ -f workshop-server.pid ]; then kill $(cat workshop-server.pid) 2>/dev/null || true; fi
+          cat workshop-server.log || true
