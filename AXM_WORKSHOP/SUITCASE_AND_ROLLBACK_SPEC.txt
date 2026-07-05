@@ -1,0 +1,48 @@
+============================================================
+TWO SPECS — designed now while context is cheap, built later.
+Status: SPEC ONLY · NOT CANON · needs Mike's gate to build.
+============================================================
+A. THE SUITCASE (trust charter #2, full version)
+Today (already real): settings export, registry export, gate-log
+export, action/issue reports; whole-folder copy = manual suitcase.
+MISSING for one-button: the spine exposes list() only PER TOOL.
+THE ONE ADD-ONLY SPINE ADDITION (honors the add-only promise):
+  AXMStore.exportAll() -> Promise<{format:1, exported:ts,
+    slots:[{key, data, meta}]}>   (reads backend.keys() unfiltered
+    — read-only, no behavior change to any existing call)
+Then the launcher builds axm-suitcase.json = {format:1, exported,
+saves:exportAll(), settings, registryEvents, gateLog, manifests[]}
+written via asset.sink through the registry. Import = reverse,
+gated, APPEND-mode only (never overwrites existing slots).
+GOODBYE PATH (document, not code): close servers · export
+suitcase · delete AXM_WORKSHOP folder · browser site-data for
+127.0.0.1:8788 (+8787) clears spine storage. That is ALL of AXM.
+MergeGate items: exportAll is read-only add-only · suitcase
+never auto-uploads anywhere · import is append-only.
+
+B. ROLLBACK / BRANCH (the recovery system, spec only — engine
+deferred by Mike's standing call until the hub is stable)
+GOOD STATE (the unit of rollback): {format:1, ts, label,
+approvedBy, spineSha, manifestShas{}, registryEventCount,
+settingsSnapshot, note}. Created ONLY at Mike's explicit "mark
+good state" (gated 'rollback.mark') — never automatic.
+EVENT SOURCES already emitting what recovery needs: gate log
+(append-only, actor+action+mode), registry events (requestId,
+connectorId, kind, action, ok — metadata only), settings changes,
+shell session logs. NOTHING new to instrument — the one-door
+design was built FOR this vantage point.
+ROLLBACK (files) = restore folder from /backups snapshot matching
+a good state; (spine storage) = suitcase import from that date —
+depends on A, which is why A precedes B.
+BRANCH = copy workshop folder -> AXM_WORKSHOP-branch-<name>,
+separate port via AXM_BRIDGE_PORT/env, own storage origin =
+free isolation (the origin wall becomes a FEATURE here).
+ROOT-BREAK PROTOCOL (from Mike's design): detect (verifier fail
+or gate rule trip) -> freeze (stop servers) -> branch the broken
+state for study (append-only: never delete evidence) -> restore
+last good state -> document in CROSS_CHECK style. Time-locked
+autonomy (24h small / 7d big) plugs in HERE later as gate rules.
+STOP CRITERIA for whoever builds this: no auto-rollback without
+a human/steward trigger in v1 · no deletion of broken branches ·
+engine must not live inside the registry (watcher, not owner).
+============================================================

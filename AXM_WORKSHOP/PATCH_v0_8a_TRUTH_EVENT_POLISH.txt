@@ -1,0 +1,34 @@
+============================================================
+AXM_WORKSHOP v0.8a — TRUTH EVENT POLISH
+Status: ACCEPT FOR TEST · not canon
+Date: 2026-07-05
+============================================================
+
+Purpose:
+  v0.8 correctly surfaced connector result ok:false as top-level registry
+  ok:false. One tiny runtime event flag still reported handled ok:true after
+  a connector returned ok:false.
+
+Patch:
+  launcher/axm-registry.js
+
+Change:
+  handled event now emits ok: !failed instead of ok: true after connector
+  handle() resolves.
+
+Why:
+  Truth root. A failed connector job should not look successful in any layer,
+  even a runtime event/listener layer.
+
+What did NOT change:
+  AXM.ask unchanged.
+  AXMAssets unchanged.
+  AXMSettings unchanged.
+  Connector contract unchanged.
+  Request/result envelopes unchanged.
+  Existing tools unchanged.
+  Registry top-level truth patch from v0.8 preserved.
+
+Status:
+  Tiny polish patch. Safe to test as v0.8a.
+============================================================

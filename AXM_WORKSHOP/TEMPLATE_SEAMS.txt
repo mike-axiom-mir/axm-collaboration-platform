@@ -1,0 +1,101 @@
+============================================================
+AXM TEMPLATE SEAMS — THE CHARTER   (v1 · 5 July 2026)
+One page that governs every "later people might want to change
+this" seam, so ten good ideas don't become ten drifting systems.
+============================================================
+
+THE ONE RULE
+  Do not hardcode the thing. Ask a seam. Local fallback answers
+  today; user choice / packs / Vault answer later; nothing gets
+  rebuilt; nothing changes silently; everything source-checkable.
+
+ONE LIBRARIAN, MANY SHELVES  (the key architecture decision)
+  There is ONE resolver — AXMAssets (launcher/axm-assets.js) —
+  not a SoundResolver + MusicResolver + VideoResolver + ... .
+  Nine copies of the same librarian would drift apart. Instead,
+  the SHELF lives in the asset id:
+
+    AXMAssets.getAssetPath('logo.svg')                 visuals
+    AXMAssets.getAssetPath('sound/ui/click.wav')       sfx
+    AXMAssets.getAssetPath('music/hub-calm.mp3')       music
+    AXMAssets.getAssetPath('video/intro-default.mp4')  video
+    AXMAssets.getAssetPath('lang/nl.json')             language
+
+  Every shelf has the same two homes:
+    /assets/local/<shelf>/        ships complete, works offline
+    /assets/packs/<shelf>/base/   the immutable Vault namespace
+  Declared today (empty by design): sound, music, video, lang.
+  Rich metadata (loop, mood, volume, license) belongs in pack
+  manifests — DEFERRED with the vault manifest system (step 5
+  of the four-review decision), not reinvented per shelf.
+
+PROMPTS — the shelf with REAL content today
+  /prompts/local/               canonical AXM prompt templates
+  /prompts/packs/base/          future prompt packs (namespace)
+  Prompts are assets: fetched by path, versioned by file, never
+  retyped from memory. Seeded with real ones (see the folder).
+
+EXPORT RECIPES — namespace declared, system deferred
+  /export-recipes/local/  +  /export-recipes/packs/base/
+  When tools need shared export shapes (transparent PNG, zip
+  with report, AXM text backup), recipes land here. Building
+  the recipe engine BEFORE two tools need it = speculation.
+
+TOOL SHELLS — /tools/_templates/
+  "New tool" = photocopy a shell. basic-tool/ is the proven
+  seed. New shells are added when real builds earn them.
+
+SETTINGS — one reserved home, no system yet
+  The global settings hub, when built, stores its data in the
+  spine at storage slot 'axm-settings' with namespaced keys:
+    appearance.theme · ai.defaultProvider · export.defaultFormat
+    identity.signature · sound.enabled · lang.code
+  Declaring the slot + key shape now costs one paragraph and
+  prevents every tool inventing its own settings store.
+
+GATES — DO NOT BUILD A SECOND ONE (important)
+  "Gate.can / requiresApproval" from the seam brainstorm ALREADY
+  EXISTS: it is AXMGate.submit + rules, live in the spine since
+  the foundation. What's standardized here is only ACTION NAMES:
+    <tool>.<verb>            e.g. studio.export, duo.ask
+    hub.* / workshop.*       launcher-level actions
+    helper.*                 helper envelope (see its spec)
+  Severity is a RULE decision (Mike's), not a new mechanism:
+  read-only < propose < apply-on-click < write file < delete <
+  bridge/API call < canon change (never automatic).
+
+LOGS — one shape, existing homes (also not a new system)
+  Homes that exist: gate decision log (append-only, in-spine),
+  workshop.log (server), bridge.log (bridge). Tools that want a
+  line in the server log POST /api/log. The SHARED SHAPE for any
+  structured log line, everywhere:
+    { ts, actor, actorType, tool, action, detail }
+  — the same envelope the Gate already records. One vocabulary,
+  every log, AI-reviewable forever.
+
+SAVE-FORMAT VERSIONING  (the forgotten one — cheap now, tears later)
+  Every tool save payload carries a format number from day one:
+    AXM.store.save('project', { format: 1, ...data })
+  When a tool's save shape changes, bump the number and handle
+  the old one. Without this, every tool upgrade risks breaking
+  every existing save with no way to even detect it.
+
+LICENSES  (second forgotten one)
+  The moment packs are shared between people, provenance must
+  already have a home: every pack manifest carries
+    "license": "...", "source": "..."
+  Adopted into the deferred manifest shape now, in writing.
+
+LANGUAGE  (third forgotten one — the club is Dutch)
+  UI strings are assets like any other: lang/<code>.json on the
+  lang shelf. Not built until a tool needs two languages — but
+  the shelf exists, so the Tilburg club never requires a rewrite.
+
+WHAT THIS CHARTER DELIBERATELY DOES NOT DO
+  Build resolvers-without-consumers, metadata engines, sync
+  systems, settings UI, or export engines. A seam's right shape
+  is learned from its first real consumer (the visual resolver
+  was shaped by wiring the launcher through it). Declared today:
+  names, folders, conventions. Built later: when something real
+  asks. Nothing here is canon but the core.
+============================================================
