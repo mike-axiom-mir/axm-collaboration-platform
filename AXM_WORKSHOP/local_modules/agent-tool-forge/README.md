@@ -15,12 +15,25 @@ Agent Tool Forge is where reusable AI tool parts are prepared before they are as
 It prepares:
 
 - prompt packs
-- skill wrappers
+- skills
 - specialist mask drafts
 - identity profile drafts
 - template packs
 - wisdom profile links
 - task wrappers
+
+## Folder map
+
+```text
+agent-tool-forge/
+  prompt-packs/       reusable prompts and prompt groups
+  skills/             small repeatable AI actions
+  specialist-masks/   situation or domain role drafts
+  identity-drafts/    identity profile drafts
+  template-packs/     stable output structures
+  task-wrappers/      small bounded task processes
+  wisdom-links/       references to wisdom profiles or rule packs
+```
 
 ## Correct split
 
@@ -50,11 +63,11 @@ This is not the final package selection screen.
 
 ## Prompt vault relationship
 
-Prompt Vault becomes a sub-area inside the Agent Tool Forge.
+Prompt Vault becomes the prompt-packs area inside the Agent Tool Forge.
 
 It should store reusable prompts and prompt packs.
 
-But the Forge also handles skills, specialist masks, identity drafts, template packs, and task wrappers.
+But the Forge also handles skills, specialist masks, identity drafts, template packs, wisdom links, and task wrappers.
 
 ## Status path
 
@@ -90,9 +103,9 @@ CANON only after MergeGate
 
 Reusable prompt or prompt group.
 
-### Skill wrapper
+### Skill
 
-Small repeatable action.
+Small repeatable AI action.
 
 Examples:
 
