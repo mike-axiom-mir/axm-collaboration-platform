@@ -17,13 +17,37 @@ A tool can be:
 
 The important thing is that the tool menu and verifier know what status the tool has.
 
+## Existing early tools
+
+AXM already has more than one early tool/module.
+
+Known early tool folders include:
+
+- `AXM_WORKSHOP/tools/studio/`
+- `AXM_WORKSHOP/tools/reasoning-shell/`
+- `AXM_WORKSHOP/tools/prehub/`
+- `AXM_WORKSHOP/tools/duo-test/`
+- `AXM_WORKSHOP/tools/_templates/`
+
+These are testable workshop modules, not permanent canon by default.
+
 ## Studio status
 
-`AXM_WORKSHOP/tools/studio/` is the first tool.
+`AXM_WORKSHOP/tools/studio/` is an early practical test tool.
 
 It exists so AXM can test the workshop structure, tool loading, UI/menu behavior, file layout, and verifier logic.
 
 Studio is not sacred. It is allowed to be rough, fixed, replaced, or retired later.
+
+## Reasoning Shell status
+
+`AXM_WORKSHOP/tools/reasoning-shell/` is an experimental shell module.
+
+It is labeled as test / branch-only material, not canon or foundation by default.
+
+Its value is to test profile-driven reasoning steps, human checkpoints, session logs, after-action reports, and proposal-only tweaks.
+
+Reasoning Shell is also not sacred. It can be tested, repaired, split, retired, or replaced.
 
 ## Suggested statuses
 
