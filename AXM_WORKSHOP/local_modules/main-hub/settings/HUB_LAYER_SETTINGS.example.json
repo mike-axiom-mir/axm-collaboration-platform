@@ -1,0 +1,49 @@
+{
+  "status": "WORKING / TEST example",
+  "active_layer_on_start": "visible-hub",
+  "starter_layer_count": 2,
+  "layers": [
+    {
+      "id": "visible-hub",
+      "order": 0,
+      "label": "Hub",
+      "visible_on_start": true,
+      "directly_seen": true,
+      "purpose": "Normal entry layer for players, members, visitors, and simple local tools.",
+      "access": {
+        "type": "open-local",
+        "password_required": false
+      },
+      "modules": [
+        "../game-hub"
+      ]
+    },
+    {
+      "id": "workshop-build",
+      "order": -1,
+      "label": "Workshop Build",
+      "visible_on_start": false,
+      "directly_seen": false,
+      "purpose": "Crew/system build layer for configuring modules, testing tools, and building the hub.",
+      "entry_motion": "move-down",
+      "access": {
+        "type": "local-password-gate",
+        "password_required": true,
+        "password_storage": "settings.local.json or environment variable only; never commit real passwords"
+      },
+      "modules": [
+        "../agent-command-center",
+        "../agent-tool-forge",
+        "../hermes",
+        "../game-hub"
+      ]
+    }
+  ],
+  "rules": {
+    "visible_layer_opens_first": true,
+    "workshop_layer_not_directly_seen": true,
+    "simple_password_gate_for_workshop": true,
+    "no_committed_passwords": true,
+    "later_more_layers_allowed": true
+  }
+}
