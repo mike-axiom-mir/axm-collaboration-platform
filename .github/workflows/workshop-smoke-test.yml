@@ -1,0 +1,141 @@
+name: AXM Workshop Smoke Test
+
+on:
+  pull_request:
+    paths:
+      - 'AXM_WORKSHOP/**'
+      - '.github/workflows/workshop-smoke-test.yml'
+  workflow_dispatch:
+
+jobs:
+  workshop-smoke:
+    name: Workshop tool smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate tool manifests
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const root = path.join(process.cwd(), 'AXM_WORKSHOP');
+          const toolsDir = path.join(root, 'tools');
+          const statuses = new Set(['TEST', 'WORKING', 'CANON', 'SHELL', 'BROKEN']);
+          let failures = [];
+          if (!fs.existsSync(toolsDir)) failures.push('AXM_WORKSHOP/tools missing');
+          const dirs = fs.existsSync(toolsDir) ? fs.readdirSync(toolsDir, { withFileTypes: true }).filter(d => d.isDirectory() && !d.name.startsWith('_')) : [];
+          for (const d of dirs) {
+            const manifestPath = path.join(toolsDir, d.name, 'manifest.json');
+            if (!fs.existsSync(manifestPath)) { failures.push(`${d.name}: manifest.json missing`); continue; }
+            let manifest;
+            try { manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')); }
+            catch (err) { failures.push(`${d.name}: invalid manifest JSON: ${err.message}`); continue; }
+            for (const key of ['id', 'name', 'version', 'status', 'entry']) if (!manifest[key]) failures.push(`${d.name}: manifest missing ${key}`);
+            if (!Array.isArray(manifest.uses)) failures.push(`${d.name}: manifest missing uses[] declaration`);
+            if (manifest.status && !statuses.has(manifest.status)) failures.push(`${d.name}: unknown status ${manifest.status}`);
+            if (manifest.entry && !fs.existsSync(path.join(toolsDir, d.name, manifest.entry))) failures.push(`${d.name}: entry file not found: ${manifest.entry}`);
+          }
+          ['asset-vault','asset-pack-lab','launcher-card-installer'].forEach(id => {
+            if (!fs.existsSync(path.join(toolsDir, id, 'manifest.json'))) failures.push(`${id} manifest missing`);
+          });
+          if (failures.length) { console.error('Manifest validation failed:\n' + failures.map(f => '- ' + f).join('\n')); process.exit(1); }
+          console.log(`Manifest validation passed for ${dirs.length} tool folder(s).`);
+          NODE
+
+      - name: Check launcher and tool wiring
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const checks = [];
+          const vault = fs.readFileSync('AXM_WORKSHOP/tools/asset-vault/index.html', 'utf8');
+          const installer = fs.readFileSync('AXM_WORKSHOP/tools/launcher-card-installer/index.html', 'utf8');
+          const launcher = fs.readFileSync('AXM_WORKSHOP/launcher/index.html', 'utf8');
+          const server = fs.readFileSync('AXM_WORKSHOP/server.js', 'utf8');
+          function requireIncludes(text, needle, label) { if (!text.includes(needle)) checks.push(label); }
+          requireIncludes(vault, '/launcher/axm-foundation.js', 'Asset Vault uses shared Workshop foundation');
+          requireIncludes(vault, 'asset-vault.records', 'Asset Vault registers asset-vault.records');
+          requireIncludes(vault, "kind:'asset.source'", 'Asset Vault registers as asset.source');
+          requireIncludes(launcher, 'function cardCover', 'Launcher has cardCover consumer');
+          requireIncludes(launcher, 'function cardSubtitle', 'Launcher has cardSubtitle consumer');
+          requireIncludes(launcher, 'function cardAccent', 'Launcher has cardAccent consumer');
+          requireIncludes(launcher, 't.card||{}', 'Launcher reads manifest.card');
+          requireIncludes(server, '/api/tool-card', 'Server has tool-card endpoint');
+          requireIncludes(server, 'applyToolCardPatch', 'Server has tool-card patch function');
+          requireIncludes(server, 'no arbitrary manifest editing', 'Server labels narrow manifest editing');
+          requireIncludes(installer, '/api/tool-card', 'Installer calls tool-card endpoint');
+          requireIncludes(installer, 'AXMGate.submit', 'Installer gates apply action');
+          requireIncludes(installer, 'NO FAKE DONE', 'Installer names unfinished pieces');
+          if (checks.length) { console.error('Wiring checks failed:\n' + checks.map(f => '- missing ' + f).join('\n')); process.exit(1); }
+          console.log('Launcher + card installer wiring checks passed.');
+          NODE
+
+      - name: Start Workshop server
+        working-directory: AXM_WORKSHOP
+        run: |
+          node server.js > ../workshop-server.log 2>&1 &
+          echo $! > ../workshop-server.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8788/api/health > /tmp/axm-health.json; then cat /tmp/axm-health.json; exit 0; fi
+            sleep 1
+          done
+          echo 'Workshop server did not start.'
+          cat ../workshop-server.log || true
+          exit 1
+
+      - name: Smoke test Workshop API and key routes
+        run: |
+          node <<'NODE'
+          async function getJson(url) { const res = await fetch(url); if (!res.ok) throw new Error(`${url} returned ${res.status}`); return res.json(); }
+          async function main() {
+            const health = await getJson('http://127.0.0.1:8788/api/health');
+            if (!health.ok || health.body !== 'axm-workshop') throw new Error('bad health payload: ' + JSON.stringify(health));
+            const tools = await getJson('http://127.0.0.1:8788/api/tools');
+            const vault = tools.tools.find(t => t.id === 'asset-vault');
+            const packLab = tools.tools.find(t => t.id === 'asset-pack-lab');
+            const installer = tools.tools.find(t => t.id === 'launcher-card-installer');
+            if (!vault) throw new Error('asset-vault not discovered by /api/tools');
+            if (!packLab) throw new Error('asset-pack-lab not discovered by /api/tools');
+            if (!installer) throw new Error('launcher-card-installer not discovered by /api/tools');
+            if (vault.status !== 'TEST' || packLab.status !== 'TEST' || installer.status !== 'TEST') throw new Error('expected TEST tools');
+            if (!vault.card || vault.card.subtitle !== 'Assets, handoffs, launcher-card metadata') throw new Error('asset-vault card metadata not exposed by /api/tools');
+
+            const patch = await fetch('http://127.0.0.1:8788/api/tool-card', {
+              method: 'POST', headers: {'Content-Type':'application/json'},
+              body: JSON.stringify({ toolId:'launcher-card-installer', card:{ accent:'green', subtitle:'CI card patch smoke test', cover:'launcher/icon-tool-default.svg' }, summary:'CI smoke test summary' })
+            });
+            if (!patch.ok) throw new Error('tool-card endpoint returned ' + patch.status);
+            const patchJson = await patch.json();
+            if (!patchJson.ok || patchJson.card.subtitle !== 'CI card patch smoke test') throw new Error('bad tool-card response: ' + JSON.stringify(patchJson));
+            const toolsAfter = await getJson('http://127.0.0.1:8788/api/tools');
+            const installerAfter = toolsAfter.tools.find(t => t.id === 'launcher-card-installer');
+            if (!installerAfter.card || installerAfter.card.subtitle !== 'CI card patch smoke test') throw new Error('tool-card patch not reflected in /api/tools');
+
+            const launcher = await fetch('http://127.0.0.1:8788/launcher/index.html');
+            if (!launcher.ok) throw new Error('launcher route returned ' + launcher.status);
+            const launcherText = await launcher.text();
+            if (!launcherText.includes('function cardCover')) throw new Error('launcher page missing cardCover');
+            for (const route of ['asset-vault', 'asset-pack-lab', 'launcher-card-installer']) {
+              const page = await fetch(`http://127.0.0.1:8788/tools/${route}/index.html`);
+              if (!page.ok) throw new Error(`${route} index route returned ${page.status}`);
+              const text = await page.text();
+              if (!text.includes('/launcher/axm-foundation.js')) throw new Error(`${route} page missing shared foundation script`);
+            }
+            console.log('Workshop smoke test passed:', JSON.stringify({ toolCount: tools.tools.length, patched: installerAfter.card }, null, 2));
+          }
+          main().catch(err => { console.error(err); process.exit(1); });
+          NODE
+
+      - name: Stop Workshop server
+        if: always()
+        run: |
+          if [ -f workshop-server.pid ]; then kill $(cat workshop-server.pid) 2>/dev/null || true; fi
+          cat workshop-server.log || true
