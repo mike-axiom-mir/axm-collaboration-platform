@@ -1,0 +1,107 @@
+name: Create AXM Workshop experimental prerelease
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/create-axm-prerelease.yml
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: workshop-v1.9.1-tool-factory-v0.2c
+      TARGET_SHA: 586374399c1fc32ff25b44f895db6cf32cc5b32a
+      ZIP_NAME: AXM_WORKSHOP_v1_9_1_TOOL_FACTORY_v0_2c_PUBLIC_SAFE_EXPERIMENTAL.zip
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build public release archive from verified repository snapshot
+        run: |
+          git archive \
+            --format=zip \
+            --prefix=AXM_WORKSHOP_v1_9_1_TOOL_FACTORY_v0_2c/ \
+            --output="$ZIP_NAME" \
+            "$TARGET_SHA"
+          sha256sum "$ZIP_NAME" > "$ZIP_NAME.sha256.txt"
+
+      - name: Write release notes
+        run: |
+          cat > release-notes.md <<'EOF'
+          # AXM Workshop v1.9.1 — Tool Factory v0.2c
+
+          **PUBLIC EXPERIMENTAL CHECKPOINT · WORKING PROOF · NOT CANON · NOT PRODUCTION**
+
+          AXM Workshop is a local-first modular work floor for humans and AI systems. This prerelease publishes the current public-safe checkpoint so people can run it, inspect it, and give grounded feedback.
+
+          ## Verified in this checkpoint
+
+          - Windows `START_HUB.bat` opened the Hub successfully on Mike Tobi's machine.
+          - The Hub reported **22 of 22 modules loaded** and **All Systems Operational**.
+          - Tool Factory can create bounded drafts, validate them, render files, calculate deterministic SHA-256 fingerprints, preview outputs, save/resume locally, and export a module ZIP or review JSON.
+          - Human and machine doors use the same Forge core.
+          - Generated manifests begin as `EXPERIMENTAL`.
+          - Public package excludes private bridge tokens and private runtime logs.
+
+          ## Deliberate boundaries
+
+          Tool Factory does **not** install, overwrite, execute, promote, or canonize generated modules. No module may promote itself.
+
+          ## Quick start on Windows
+
+          1. Download the attached public ZIP.
+          2. Extract it fully into a normal local folder, such as `C:\AXM_WORKSHOP`.
+          3. Do not run it from an online-only OneDrive placeholder folder.
+          4. Install Node.js if it is not already installed.
+          5. Double-click `START_HUB.bat`.
+
+          The starter selects a local port and opens the correct Hub address automatically.
+
+          ## Feedback wanted
+
+          Please report:
+
+          - operating system and browser;
+          - whether `START_HUB.bat` opened successfully;
+          - whether all modules appeared;
+          - any blank module screens or broken controls;
+          - confusing setup or Tool Factory instructions;
+          - what a human or AI system would need to use the Workshop more effectively.
+
+          Automated browser testing is a future branch and is not required to use this release.
+
+          **Founder / public collaboration name:** Mike Tobi  
+          **Principle:** Truth before story · Proof before claim
+          EOF
+
+      - name: Create prerelease and attach public package
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; leaving it unchanged."
+          else
+            gh release create "$TAG" \
+              "$ZIP_NAME#AXM Workshop public-safe Windows package" \
+              "$ZIP_NAME.sha256.txt#SHA-256 checksum" \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$TARGET_SHA" \
+              --title "AXM Workshop v1.9.1 — Tool Factory v0.2c Experimental" \
+              --notes-file release-notes.md \
+              --prerelease
+          fi
+
+      - name: Remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/create-axm-prerelease.yml
+          git commit -m "Remove one-time AXM prerelease workflow"
+          git push origin main
