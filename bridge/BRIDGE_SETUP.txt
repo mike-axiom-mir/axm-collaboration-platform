@@ -1,0 +1,58 @@
+============================================================
+AXM LOCAL BRIDGE v0.3 — PUBLIC-SAFE SETUP
+============================================================
+
+WHAT IT IS
+The optional bridge runs only on your machine and holds API keys in process
+environment variables. Browser tools talk to the bridge; the bridge talks to
+the selected AI provider. The Workshop itself remains usable without AI.
+
+PUBLIC-SAFE TOKEN BEHAVIOR
+No real bridge token ships in this package.
+On first bridge start, axm-bridge.js creates a fresh random file:
+
+  bridge/bridge-token.txt
+
+That file is local runtime state, is ignored by Git, and should never be posted.
+Delete it only when you intentionally want the bridge to generate a new token.
+
+SET API KEYS WITHOUT PUTTING THEM IN THE REPOSITORY
+Windows Command Prompt, same window used to start the bridge:
+
+  set ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY
+  set OPENAI_API_KEY=YOUR_OPENAI_API_KEY
+
+macOS / Linux terminal:
+
+  export ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY
+  export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
+
+One provider is enough. Both are optional. Never paste a real key into source,
+JSON, a committed .env file, an issue, screenshot, or run log.
+
+START
+From the AXM_WORKSHOP folder:
+
+  Windows:  START_AXM_FULL.bat
+  macOS/Linux: ./start-full.sh
+
+Workshop only, without the bridge:
+
+  Windows:  START_HUB.bat
+  macOS/Linux: ./start-hub.sh
+
+HEALTH CHECK
+Open http://127.0.0.1:8787/health while the bridge is running.
+The response reports whether provider keys are available without revealing them.
+
+BOUNDARIES
+- The bridge binds to 127.0.0.1 only.
+- Workshop origins are allowlisted.
+- Non-browser callers need the local x-axm-token value.
+- A default rate cap limits asks per minute.
+- bridge.log is local generated state and is not part of the public package.
+- Anything already executing on your local machine is outside the website-origin lock.
+
+No email address is published in this package. For public collaboration, search
+for **Mike Tobi** and the AXM raw Facebook development log.
+============================================================

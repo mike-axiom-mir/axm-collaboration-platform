@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXM Hub</title>
+<link rel="stylesheet" href="/hub/hub-tokens.css">
+<!-- contract before shell: the shell's reducer lives in AXMContract -->
+<script src="/hub/module-contract.js"></script>
+<script src="/hub/skin-core.js"></script>
+<script src="/hub/hub-shell.js"></script>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ===== TOP BAR (outer stable) ===== -->
+  <header class="topbar">
+    <div class="mark"><b>AXM</b></div>
+    <div class="brand">AXM <span>Hub</span></div>
+    <div class="active-lbl">Active Module: <b id="activeName">Home</b></div>
+    <div class="grow"></div>
+    <span class="status-dot">All Systems Operational</span>
+    <span class="pill saved">● Saved</span>
+    <button class="tb-btn" id="btnLayers">▤ Layers</button>
+    <button class="tb-btn" id="btnModules">＋ Modules</button>
+    <button class="tb-btn" id="btnPerm">Permissions</button>
+    <button class="tb-btn" id="btnExport">Files / Export</button>
+    <button class="tb-btn" id="btnSettings">⚙ Settings</button>
+  </header>
+
+  <!-- ===== BODY: sidebar + viewport ===== -->
+  <div class="body">
+    <nav class="sidebar">
+      <button class="mod active" id="homeBtn"><span class="ic">⌂</span><span class="nm">Home</span></button>
+      <div class="side-cap">Modules</div>
+      <div id="modList"></div>
+    </nav>
+
+    <section class="viewport">
+      <!-- inner flexible: modules load here by iframe (same URL the launcher used) -->
+      <iframe id="viewFrame" title="Active module" style="display:none"></iframe>
+
+      <!-- shell-owned HOME (shared screen) -->
+      <div id="homeScreen" style="position:absolute;inset:0;overflow:auto">
+        <div class="home-hero">
+          <h1>Welcome to AXM <span class="os">Hub</span></h1>
+          <h1 style="font-size:18px;margin-top:2px"><span class="os">Outer Stable</span> / <span class="if">Inner Flexible</span></h1>
+          <p>One shell, many modules. Pick a module to load it inside the viewport — the frame around it never changes.</p>
+        </div>
+        <div class="home-grid" id="homeGrid"></div>
+      </div>
+
+      <!-- blank-screen guard + recovery (never a dead frame) -->
+      <div class="vp-loading" id="vpLoading"><div class="spin"></div><div class="mono">loading module…</div></div>
+      <div class="vp-error" id="vpError">
+        <h3 id="vpErrTitle">Module unavailable</h3>
+        <p id="vpErrMsg"></p>
+        <button class="btn" id="vpRetry">Retry</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== BOTTOM ACTION / STATUS LOG (outer stable) ===== -->
+  <footer class="statusbar">
+    <span class="sb-item">🛡 <b>Checkpoint</b> auto-save on</span>
+    <span class="log-tail" id="logTail">hub starting…</span>
+    <span class="sb-item">System <b>Hub v1.0</b></span>
+    <button class="sb-btn" id="btnExport2" onclick="AXMHubShell.openExport()">Open Logs</button>
+  </footer>
+</div>
+
+<!-- ===== SHARED SCREENS (overlays owned by the shell) ===== -->
+<div class="overlay" id="setScreen"><div class="sheet">
+  <button class="close" data-close="setScreen">✕</button>
+  <h2>Settings</h2><p class="sub">Global hub settings and the active module's declared settings.</p>
+  <div id="setBody"></div>
+</div></div>
+
+<div class="overlay" id="permScreen"><div class="sheet">
+  <button class="close" data-close="permScreen">✕</button>
+  <h2>Permissions</h2><p class="sub">A module only gets what its passport declares — undeclared requests are denied and logged.</p>
+  <div id="permBody"></div>
+</div></div>
+
+<div class="overlay" id="layScreen"><div class="sheet">
+  <button class="close" data-close="layScreen">✕</button>
+  <h2>Layers</h2>
+  <p class="sub">Group modules into spaces — Open, Private, AI-Native, or any you name. Rename, add, delete, hide, and assign freely.</p>
+  <p class="sub" style="border:1px solid var(--gold);border-radius:10px;padding:10px;color:var(--text)">
+    <b style="color:var(--gold)">A door sign is not a lock.</b> A layer passphrase only stops someone
+    walking in by accident. It is <b>not security</b>: the files sit on this machine and the check runs in
+    the browser. Anyone who wants in, gets in. Never put something behind it that must stay secret.<br><br>
+    <b style="color:var(--gold)">Hidden is not secret.</b> A hidden layer (like AI-Native) keeps machine-native
+    modules out of a human's sidebar so they aren't bothered by them. The sidebar still says how many are
+    tucked away, and one click shows them.<br><br>
+    Layers organise; they never change what a module is allowed to do — that comes only from its passport,
+    the same in every layer.
+  </p>
+  <div id="layBody"></div>
+</div></div>
+
+<div class="overlay" id="modScreen"><div class="sheet">
+  <button class="close" data-close="modScreen">✕</button>
+  <h2>Modules</h2><p class="sub">Add only what you need. Added modules join the one system — shared bar, log, and settings. Removing a module keeps its saved data, so you can add it back later.</p>
+  <div id="modBody"></div>
+</div></div>
+
+<div class="overlay" id="expScreen"><div class="sheet">
+  <button class="close" data-close="expScreen">✕</button>
+  <h2>Files / Export</h2><p class="sub">Shared action log and cached module list. One door, gated, logged.</p>
+  <div id="expBody"></div>
+  <div style="margin-top:16px"><button class="btn" id="expDownload">Download hub export (.json)</button></div>
+</div></div>
+
+<script>AXMHubShell.boot();</script>
+</body></html>

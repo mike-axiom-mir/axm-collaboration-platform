@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AXM Evidence Desk</title>
+<script src="axm-foundation.js"></script>
+<script src="evidence-core.js"></script>
+<script src="/hub/axm-hub-module.js"></script>
+<style>
+:root{--ink:#11151b;--panel:#181e27;--panel2:#1d2632;--line:#2d3847;--text:#dce5ef;--muted:#8492a5;--cy:#38d6ec;--gold:#e8b54a;--green:#63d68a;--red:#ff6978;--purple:#ae72ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#172333 0,var(--ink) 42%);color:var(--text);font-family:system-ui,sans-serif;line-height:1.45}
+.wrap{max-width:1160px;margin:0 auto;padding:22px}.top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.eyebrow{font:11px ui-monospace,monospace;letter-spacing:.28em;text-transform:uppercase;color:var(--cy)}h1{font-size:26px;margin:3px 0}.lead{color:var(--muted);max-width:760px;margin:4px 0 0}.badge{font:11px ui-monospace,monospace;color:var(--gold);border:1px solid #574520;border-radius:99px;padding:5px 11px;white-space:nowrap}
+.truth{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.truth div{background:#151c25;border:1px solid var(--line);border-radius:12px;padding:10px}.truth b{display:block;color:var(--cy);font:20px ui-monospace,monospace}.truth span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{background:rgba(24,30,39,.96);border:1px solid var(--line);border-radius:16px;padding:15px}.panel h2{margin:0 0 11px;font-size:12px;text-transform:uppercase;letter-spacing:.15em;color:var(--muted)}label{display:block;font-size:11px;color:var(--muted);margin:9px 0 4px}input,textarea{width:100%;border:1px solid var(--line);border-radius:9px;background:#10151c;color:var(--text);padding:9px;font:12px ui-monospace,monospace}textarea{min-height:78px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.hint{font-size:10px;color:var(--muted);margin:4px 0 0}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}button{border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--text);padding:8px 12px;cursor:pointer}button.primary{border-color:#2b6973;color:#baf6ff}button.save{border-color:#4b3c75;color:#d7b9ff}button.export{border-color:#5a4720;color:#f3cd7e}button:hover{filter:brightness(1.14)}
+.statusline{margin:12px 0 0;border-left:3px solid var(--cy);padding:7px 10px;background:#121923;color:var(--muted);font:11px ui-monospace,monospace}.output{white-space:pre-wrap;overflow:auto;max-height:640px;min-height:400px;background:#0c1117;border:1px solid var(--line);border-radius:11px;padding:12px;font:11px/1.55 ui-monospace,monospace}.tabs{display:flex;gap:7px;margin-bottom:9px}.tabs button.on{border-color:var(--cy);color:var(--cy)}.warning{color:var(--gold)}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.truth{grid-template-columns:1fr 1fr}.top{flex-direction:column}}
+</style></head><body><main class="wrap">
+<div class="top"><div><div class="eyebrow">AXM tool · Work Mode factory trial</div><h1>AXM Evidence Desk</h1><p class="lead">Turns supplied run facts into a compact receipt and Action Report. Observation, execution and verification remain separate; missing evidence remains visible.</p></div><div class="badge">TEST · v0.1</div></div>
+<section class="truth"><div><b id="nObs">0</b><span>observations</span></div><div><b id="nAct">0</b><span>executed</span></div><div><b id="nPass">0</b><span>checks passed</span></div><div><b id="nOpen">0</b><span>failed / not run</span></div></section>
+<div class="grid">
+  <section class="panel"><h2>Evidence input</h2>
+    <div class="row"><div><label for="title">Run title</label><input id="title" value=""></div><div><label for="checkpoint">Source checkpoint</label><input id="checkpoint" placeholder="zip/version/route"></div></div>
+    <label for="goal">Goal</label><input id="goal" placeholder="What outcome was this run attempting?">
+    <div class="row"><div><label for="actor">Actor ID</label><input id="actor" value="chatgpt-workmode"></div><div><label for="actorType">Actor type</label><input id="actorType" value="ai"></div></div>
+    <label for="observations">Observations</label><textarea id="observations" placeholder="claim | source-kind | source reference"></textarea><p class="hint">One per line. Unsourced claims remain visible and trigger a warning.</p>
+    <label for="actionsIn">Actions executed</label><textarea id="actionsIn" placeholder="action | target | result | evidence"></textarea>
+    <label for="checks">Checks</label><textarea id="checks" placeholder="check name | PASS, FAIL, or NOT_RUN | evidence"></textarea>
+    <label for="changes">Changes</label><textarea id="changes" placeholder="path | added/modified/removed | summary"></textarea>
+    <div class="row"><div><label for="limits">Limitations / not tested</label><textarea id="limits" placeholder="one limit per line"></textarea></div><div><label for="next">Next actions</label><textarea id="next" placeholder="one next action per line"></textarea></div></div>
+    <div class="actions"><button class="primary" id="build">Build receipt</button><button id="validate">Validate only</button><button id="example">Load factory example</button><button class="save" id="save">Save draft</button><button id="resume">Resume saved</button><button class="export" id="exportTxt">Export report</button><button class="export" id="exportJson">Export JSON</button></div>
+    <div class="statusline" id="status">Starting…</div>
+  </section>
+  <section class="panel"><h2>Receipt output</h2><div class="tabs"><button class="on" data-tab="report">Action Report</button><button data-tab="json">Structured JSON</button></div><div class="output" id="output">No receipt built yet.</div></section>
+</div></main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id), Core=window.AXMEvidenceCore;
+let current=null,currentTab='report';
+function rows(id, mapper){return $(id).value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(line=>mapper(line.split('|').map(x=>x.trim())));}
+function lines(id){return $(id).value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);}
+function inputData(){return{
+  title:$('title').value.trim(),goal:$('goal').value.trim(),actor:{id:$('actor').value.trim(),type:$('actorType').value.trim()},source_checkpoint:$('checkpoint').value.trim(),
+  observations:rows('observations',p=>({claim:p[0],source_kind:p[1],source:p[2]})),
+  actions:rows('actionsIn',p=>({action:p[0],target:p[1],result:p[2],evidence:p[3],effect:'bounded-local'})),
+  checks:rows('checks',p=>({name:p[0],status:p[1],evidence:p[2]})),
+  changes:rows('changes',p=>({path:p[0],kind:p[1],summary:p[2]})),limitations:lines('limits'),next_actions:lines('next')
+};}
+function rawProject(){return{format:1,input:inputData(),receipt:current};}
+function applyInput(d){if(!d)return;const n=Core.normalize(d);
+  $('title').value=n.title;$('goal').value=n.goal;$('actor').value=n.actor.id;$('actorType').value=n.actor.type;$('checkpoint').value=n.source_checkpoint;
+  $('observations').value=n.observations.map(o=>[o.claim,o.source_kind,o.source].join(' | ')).join('\n');
+  $('actionsIn').value=n.actions.map(a=>[a.action,a.target,a.result,a.evidence].join(' | ')).join('\n');
+  $('checks').value=n.checks.map(c=>[c.name,c.status,c.evidence].join(' | ')).join('\n');
+  $('changes').value=n.changes.map(c=>[c.path,c.kind,c.summary].join(' | ')).join('\n');$('limits').value=n.limitations.join('\n');$('next').value=n.next_actions.join('\n');}
+function gate(action,detail){try{const d=AXMGate.submit({action:'evidence-desk.'+action,actor:'local-user',actorType:'human',tool:'evidence-desk',detail:detail||{}});if(!d.allow){$('status').textContent='Gate denied: '+d.reason;return false;}return true;}catch(e){$('status').textContent='Gate unavailable: '+e.message;return false;}}
+function render(){if(!current)return;const c=current.counts;$('nObs').textContent=c.observations;$('nAct').textContent=c.actions_executed;$('nPass').textContent=c.checks_passed;$('nOpen').textContent=c.checks_failed+c.checks_not_run;
+  $('output').textContent=currentTab==='json'?JSON.stringify(current,null,2):Core.report(current);document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===currentTab));}
+function build(){if(!gate('receipt.build',{effect:'read-only'}))return;current=Core.build(inputData());render();$('status').textContent=current.status+' · '+current.warnings.length+' warning(s) · fingerprint '+current.fingerprint.value;}
+function download(name,content,type){const a=document.createElement('a');a.download=name;a.href=URL.createObjectURL(new Blob([content],{type:type||'text/plain'}));a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200);}
+$('build').onclick=build;
+$('validate').onclick=()=>{if(!gate('receipt.validate',{effect:'read-only'}))return;const v=Core.validate(inputData());$('status').textContent=(v.ok?'VALID':'INVALID')+' · '+v.errors.length+' error(s) · '+v.warnings.length+' warning(s)';$('output').textContent=JSON.stringify({ok:v.ok,errors:v.errors,warnings:v.warnings},null,2);};
+$('example').onclick=()=>{applyInput({title:'Agent Tool Forge package trial',goal:'Draft one bounded module package with visible evidence',actor:{id:'local-user',type:'human'},source_checkpoint:'AXM Workshop Tool Forge v0.2 experimental copy',observations:[{claim:'Agent Tool Forge Safe Composer is available',source_kind:'source-read',source:'tools/agent-tool-forge/index.html'},{claim:'Human and machine doors share forge-core.js',source_kind:'source-read',source:'tools/agent-tool-forge/forge-core.js + machine.js'}],actions:[{action:'draft.package',target:'experimental module ZIP',result:'package proposed; not installed',evidence:'Forge review JSON + package fingerprint'}],checks:[{name:'Forge selftest',status:'NOT_RUN',evidence:'pending'},{name:'Workshop verifier',status:'NOT_RUN',evidence:'pending'},{name:'Manual screen test',status:'NOT_RUN',evidence:'pending'}],changes:[{path:'tools/agent-tool-forge',kind:'modified',summary:'v0.2 Safe Composer and shared core'},{path:'tools/evidence-desk',kind:'modified',summary:'real Hub passport bridge'}],limitations:['This example does not independently verify Forge output','Machine Host and governed installer are not present'],next_actions:['Run bounded tests','Inspect package fingerprint','Keep package EXPERIMENTAL until reviewed']});$('status').textContent='Factory example loaded · not yet built';};
+$('save').onclick=async()=>{if(!gate('draft.save',{effect:'local-write'}))return;await AXM.store.save('latest',rawProject(),{title:'Evidence Desk draft'});$('status').textContent='Draft saved locally';};
+$('resume').onclick=async()=>{if(!gate('draft.load',{effect:'read-only'}))return;const r=await AXM.store.load('latest');if(!r)return $('status').textContent='No saved draft';applyInput(r.data&&r.data.input);current=r.data&&r.data.receipt||null;render();$('status').textContent='Saved draft resumed';};
+$('exportTxt').onclick=()=>{if(!current)build();if(!current||!gate('report.export',{effect:'file-write'}))return;download('axm-evidence-action-report.txt',Core.report(current));$('status').textContent='Action Report exported by explicit user action';};
+$('exportJson').onclick=()=>{if(!current)build();if(!current||!gate('receipt.export',{effect:'file-write'}))return;download('axm-evidence-receipt.json',JSON.stringify(current,null,2),'application/json');$('status').textContent='Structured receipt exported by explicit user action';};
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{currentTab=b.dataset.tab;render();});
+(async()=>{if(!Core)return $('status').textContent='Missing evidence-core.js';try{await AXM.init({id:'evidence-desk',name:'AXM Evidence Desk',version:'v0.1'});AXMHub.ready({id:'evidence-desk',name:'AXM Evidence Desk',version:'v0.1',hubApiVersion:'1.0',permissions:[],savesState:false});AXMHub.log('Evidence Desk ready · records evidence, does not independently verify');$('status').textContent='Ready · build records, it does not independently verify';}catch(e){$('status').textContent='Startup failed: '+e.message;}})();
+</script></body></html>

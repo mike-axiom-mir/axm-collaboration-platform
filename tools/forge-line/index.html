@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AXM Forge Line</title>
+<!-- FORGE LINE v0.1 STARTER — queue + verdict + standards loop. Manual today;
+     Opus wires the overnight worker per FORGE_LINE_SPEC.txt. Proposals never
+     self-apply. Cap: 5 awaiting verdict. -->
+<script src="axm-foundation.js"></script>
+<style>
+:root{--ink:#101318;--panel:#181d25;--line:#2a313d;--text:#dce2ea;--muted:#828d9e;--cy:#38d6ec;--gold:#e8b54a;--red:#e86a5f;--green:#63d68a}
+*{box-sizing:border-box} body{margin:0 auto;max-width:780px;background:var(--ink);color:var(--text);font-family:system-ui,sans-serif;line-height:1.5;padding:18px}
+h1{font-size:18px;margin:0}.eyebrow{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+.status{float:right;font-family:ui-monospace,monospace;font-size:11px;color:var(--cy)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+input,textarea{width:100%;background:var(--ink);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px;font:inherit;margin-top:6px;min-height:44px}
+button{font:inherit;font-size:13px;cursor:pointer;border-radius:9px;padding:10px 13px;border:1px solid var(--line);background:#1f2731;color:var(--text);min-height:44px}
+button.go{border-color:#2c6047;color:var(--green)} button.warn{border-color:#5a2c26;color:var(--red)}
+ul{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+li{background:#1f2731;border:1px solid var(--line);border-radius:11px;padding:10px 12px;font-size:13px}
+.mono{font-family:ui-monospace,monospace;font-size:11px;color:var(--muted)}
+.st{font-family:ui-monospace,monospace;font-size:10px;padding:1px 8px;border-radius:20px;border:1px solid var(--gold);color:var(--gold);margin-right:6px}
+pre{background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:11px;white-space:pre-wrap;max-height:180px;overflow:auto}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+</style></head><body>
+<div class="status" id="boot">starting…</div>
+<div class="eyebrow">AXM · forge line · proposals only, never canon</div>
+<h1>Assembly line</h1>
+
+<div class="panel"><b style="font-size:13px">Queue a build</b>
+<input id="qname" placeholder="Tool/module name (e.g. mike.snow-tally)" />
+<textarea id="qdesc" placeholder="What it should do + which templates/lessons to use…"></textarea>
+<div class="row"><button class="go" id="addBtn">Queue it</button></div>
+<p class="mono">Cap: 5 items awaiting your verdict. The line never builds ahead of judgment.</p></div>
+
+<div class="panel"><b style="font-size:13px">The line</b> <span class="mono" id="counts"></span><ul id="list"></ul></div>
+
+<div class="panel"><b style="font-size:13px">Standards draft (grown from your rejections)</b>
+<pre id="draft">empty — reject something with a reason and the loop begins.</pre>
+<div class="row"><button id="expDraft">Download standards draft</button></div>
+<p class="mono">Review this draft, promote keepers into written AXM standards + verify.js checks. Every promotion raises the floor for every future auto-build.</p></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let Q={format:1,items:[]}, D={format:1,lines:[]};
+const gate=(a,d)=>AXMGate.submit({action:a,actor:'mike',actorType:'human',tool:'forge-line',detail:d});
+const save=()=>Promise.all([AXM.store.save('line-queue',Q),AXM.store.save('standards-draft',D)]);
+const awaiting=()=>Q.items.filter(i=>['queued','built','verified'].includes(i.status)).length;
+
+function render(){
+  $('counts').textContent='· '+awaiting()+'/5 awaiting verdict · '+Q.items.filter(i=>i.status==='accepted').length+' accepted · '+Q.items.filter(i=>i.status==='rejected').length+' rejected';
+  const ul=$('list');ul.innerHTML='';
+  Q.items.slice().reverse().forEach(it=>{
+    const li=document.createElement('li');
+    const s=document.createElement('span');s.className='st';s.textContent=it.status;li.appendChild(s);
+    li.appendChild(document.createTextNode(it.name+' — '+it.desc.slice(0,80)));
+    const m=document.createElement('div');m.className='mono';
+    m.textContent=(it.verify?('verify: '+it.verify+' · '):'')+(it.reason?('rejected: '+it.reason):'');li.appendChild(m);
+    const row=document.createElement('div');row.className='row';
+    if(it.status==='queued'){const b=document.createElement('button');b.textContent='Candidate arrived (mark built)';
+      b.onclick=()=>{it.status='built';gate('line.built',{id:it.id});save().then(render);};row.appendChild(b);
+      const w=document.createElement('span');w.className='mono';w.textContent='(worker builds this overnight later — Opus wires it; today: run the brief by hand)';row.appendChild(w);}
+    if(it.status==='built'){const b=document.createElement('button');b.textContent='Enter verify.js result';
+      b.onclick=()=>{const v=prompt('verify.js summary (e.g. "0 FAIL" or what failed):');if(!v)return;
+        it.verify=v;it.status='verified';gate('line.verified',{id:it.id});save().then(render);};row.appendChild(b);}
+    if(it.status==='verified'){
+      const a=document.createElement('button');a.className='go';a.textContent='ACCEPT (you install it yourself)';
+      a.onclick=()=>{it.status='accepted';gate('line.accept',{id:it.id});save().then(render);};row.appendChild(a);
+      const r=document.createElement('button');r.className='warn';r.textContent='REJECT + reason';
+      r.onclick=()=>{const why=prompt('Why rejected? (required — this line grows the standards)');
+        if(!why||!why.trim())return alert('Reason required — that IS the product.');
+        it.status='rejected';it.reason=why.trim();
+        D.lines.push({ts:Date.now(),from:it.name,reason:it.reason,promoted:false});
+        gate('line.reject',{id:it.id});save().then(render);};row.appendChild(r);}
+    li.appendChild(row);ul.appendChild(li);
+  });
+  $('draft').textContent=D.lines.length?D.lines.map(l=>'['+(l.promoted?'PROMOTED':'draft')+'] '+l.reason+'  (from '+l.from+')').join('\n'):'empty — reject something with a reason and the loop begins.';
+}
+$('addBtn').onclick=()=>{
+  const n=$('qname').value.trim(),d=$('qdesc').value.trim();
+  if(!n||!d)return alert('Name + description needed.');
+  if(awaiting()>=5)return alert('Cap reached: 5 awaiting your verdict. Judge first, queue after — the line never builds ahead of you.');
+  const v=gate('line.queue',{name:n});if(!v.allow)return alert(v.reason);
+  Q.items.push({id:'q'+Date.now(),name:n,desc:d,status:'queued',ts:Date.now()});
+  $('qname').value='';$('qdesc').value='';save().then(render);
+};
+$('expDraft').onclick=()=>{const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,2)],{type:'application/json'}));
+  a.download='axm-standards-draft.json';a.click();};
+(async()=>{
+  const info=await AXM.init({id:'forge-line',name:'AXM Forge Line',version:'v0.1'});
+  const q=await AXM.store.load('line-queue').catch(()=>null);if(q&&q.data)Q=q.data;
+  const d=await AXM.store.load('standards-draft').catch(()=>null);if(d&&d.data)D=d.data;
+  $('boot').textContent='ready · '+info.storageBackend+' · manual mode (worker = Opus, spec ready)';render();
+})().catch(e=>{$('boot').textContent='boot failed: '+e.message;});
+</script></body></html>

@@ -1,0 +1,47 @@
+AXM HUB — SERVER PATCH (optional, for the Runner module)
+========================================================
+
+The Runner module (Run verify / verify-plus / health from inside the hub)
+needs ONE small route in your server. This is opt-in and you are the merge
+gate: nothing was changed in your server.js for you. Paste the block below
+yourself if you want the buttons to work. Without it, everything else in the
+hub still works — the Runner just shows a note telling you to add this.
+
+WHERE
+-----
+Open server.js. Find this line (near the end of the request handler):
+
+    /* ---- static files (read-only) ---- */
+
+Paste the block IMMEDIATELY ABOVE that line (right after the /api/log block).
+
+THE BLOCK
+---------
+  /* ---- gated run: allowlisted local tasks only (for the in-hub Runner) ---- */
+  if (url === '/api/run' && req.method === 'POST') {
+    let buf = '';
+    req.on('data', c => { buf += c; if (buf.length > 1e4) req.destroy(); });
+    req.on('end', () => {
+      let task; try { task = JSON.parse(buf).task; } catch (e) { return send(res, 400, { error: 'bad request' }); }
+      if (task === 'health') return send(res, 200, { ok: true, task: 'health', code: 0, out: 'server up · ' + VERSION + ' · ' + HOST + ':' + PORT });
+      const ALLOW = { 'verify': 'verify.js', 'verify-plus': 'hub/verify-plus.js' };
+      if (!ALLOW[task]) return send(res, 400, { error: 'task not allowed: ' + task });
+      slog('run ' + task);
+      require('child_process').execFile('node', [ALLOW[task]], { cwd: ROOT, timeout: 60000, maxBuffer: 5e6 },
+        (err, stdout, stderr) => send(res, 200, { ok: !err, task: task, code: err ? (err.code || 1) : 0, out: String(stdout || '') + String(stderr || '') }));
+    });
+    return;
+  }
+
+WHY IT'S SAFE
+------------
+- Allowlist ONLY: task must be 'verify', 'verify-plus', or 'health'. Anything
+  else is refused. There is no way to pass an arbitrary command or path.
+- Uses execFile('node', [fixed script]) — no shell, so no shell injection.
+- Bounded: 60s timeout, 5MB output cap, tiny request body cap.
+- Local-only: your server already binds 127.0.0.1.
+- Logged: every run appends to logs/workshop.log via your own slog().
+
+TO REVERT
+---------
+Delete the block. That's it — the server is back to exactly as it was.

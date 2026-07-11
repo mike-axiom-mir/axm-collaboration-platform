@@ -1,0 +1,63 @@
+PACKAGE PROFILE TEMPLATE
+
+id:
+name:
+status: RAW / REVIEW / ACCEPT FOR TEST / WORKING / KNOWN FAIL / RETIRED
+purpose:
+best_for:
+not_for:
+
+DEFAULT IDENTITY
+identity:
+identity_binding_mode: connector_locked / global / tool_limited / skill_limited / blocked
+allowed_connectors:
+blocked_connectors:
+identity_scope:
+
+SPECIALIST MASKS
+-
+
+SKILL WRAPPERS
+-
+
+PROMPT VAULT LINKS
+-
+
+TEMPLATE LINKS
+-
+
+WISDOM PROFILE LINKS
+-
+
+RUN SETTINGS
+max_run_minutes:
+max_actions:
+max_files_read:
+max_files_written:
+
+CONSENT
+consent_required: true
+allow_auto_load_package: true
+allow_auto_run: false
+show_identity_before_run: true
+show_connector_before_run: true
+
+STEP LOOP
+1. Load package profile.
+2. Check active connector from Main Hub.
+3. Check identity binding rules.
+4. Load default identity only if allowed for this connector/tool/skill.
+5. Load selected specialist masks.
+6. Load selected skills.
+7. Load selected prompts/templates/wisdom links.
+8. Show run identity and connector to user.
+9. Wait for consent before action.
+10. Run inside limits.
+11. Create review report.
+
+REVIEW NOTES
+-
+
+RULE
+A package profile prepares an AI setup. It does not act without consent.
+No package may use a blocked identity or silently switch connector identity.

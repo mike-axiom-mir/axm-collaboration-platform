@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<!-- axm-verify-dynamic-ids: swatchWrap ratioList -->
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXM Hub — Skinner</title>
+<style>
+:root{--space:#080b14;--panel:#0d1320;--edge:#1d2942;--cy:#38d6ec;--green:#63d68a;--red:#e86a5f;--gold:#e8b54a;--muted:#828d9e;--text:#dce2ea}
+html,body{margin:0;height:100%;background:var(--space);color:var(--text);font-family:system-ui,sans-serif}
+.wrap{max-width:800px;margin:0 auto;padding:22px}
+h1{font-size:20px;margin:0 0 2px}.sub{color:var(--muted);margin:0 0 16px;font-size:13px}
+.cap{font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin:0 0 9px}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:15px;margin-bottom:11px}
+button{font-family:inherit}
+.btn{padding:8px 13px;border:1px solid #1c7f92;border-radius:9px;background:rgba(56,214,236,.1);color:var(--cy);cursor:pointer;font-size:13px}
+.btn.ghost{border-color:var(--edge);background:transparent;color:var(--text)}
+.btn.danger{border-color:var(--red);color:var(--red);background:rgba(232,106,95,.08)}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.sw{display:flex;align-items:center;gap:8px;padding:6px;border:1px solid var(--edge);border-radius:9px;background:#06080f}
+.sw input[type=color]{width:32px;height:26px;border:0;background:none;padding:0;cursor:pointer}
+.sw .lbl{font-family:ui-monospace,monospace;font-size:11px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px}
+select,input[type=text]{background:#06080f;border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:7px 9px;font-size:13px}
+.ratio{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--edge);font-size:12px}
+.ratio .n{font-family:ui-monospace,monospace}
+.pass{color:var(--green)} .fail{color:var(--red)}
+.verdict{border-radius:10px;padding:12px;margin-bottom:11px;font-size:13px}
+.verdict.ok{border:1px solid var(--green);background:rgba(99,214,138,.07)}
+.verdict.no{border:1px solid var(--red);background:rgba(232,106,95,.07)}
+.verdict ul{margin:7px 0 0;padding-left:18px}
+.muted{color:var(--muted);font-size:12px}
+.mono{font-family:ui-monospace,monospace;font-size:11.5px}
+.chg{padding:5px 0;border-top:1px solid var(--edge);font-size:12px;font-family:ui-monospace,monospace}
+.preview{border:1px solid var(--edge);border-radius:12px;overflow:hidden;margin-bottom:11px}
+.pv-top{display:flex;align-items:center;gap:9px;padding:9px 12px;border-bottom:1px solid}
+.pv-body{display:flex;min-height:104px}
+.pv-nav{width:104px;padding:9px;border-right:1px solid;font-size:11px}
+.pv-nav.right{order:2;border-right:0;border-left:1px solid}
+.pv-nav.rail{width:42px;text-align:center}
+.pv-main{flex:1;padding:12px;font-size:12px}
+.pv-warn{margin-top:7px;padding:7px;border-radius:7px;font-size:11px}
+.pv-status{padding:6px 12px;border-top:1px solid;font-size:11px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Skinner</h1>
+  <p class="sub">Freedom in safety. Change what you like — the system just won't let a skin hide the truth.</p>
+
+  <div id="verdict" class="verdict ok">Checking…</div>
+
+  <div class="preview" id="preview">
+    <div class="pv-top" id="pvTop"><b id="pvBrand">AXM Hub</b><span class="muted" id="pvActive">Active: Home</span></div>
+    <div class="pv-body" id="pvBody">
+      <div class="pv-nav" id="pvNav">modules<br>⬦ 2 hidden</div>
+      <div class="pv-main" id="pvMain">
+        Module viewport
+        <div class="pv-warn" id="pvWarn">⚠ A door sign is not a lock.</div>
+        <div class="pv-warn" id="pvErr">✕ permission denied</div>
+      </div>
+    </div>
+    <div class="pv-status" id="pvStatus">action log · hub ready</div>
+  </div>
+
+  <div class="card">
+    <p class="cap">Colours · click to change</p>
+    <div class="grid" id="swatchWrap"></div>
+  </div>
+
+  <div class="card">
+    <p class="cap">Shape & layout</p>
+    <div class="row">
+      <label class="muted">radius <input type="range" id="rad" min="0" max="28" step="1"></label>
+      <label class="muted">nav <select id="slotNav"></select></label>
+      <label class="muted">status <select id="slotStatus"></select></label>
+      <label class="muted">density <select id="slotDensity"></select></label>
+      <label class="muted">font <select id="fontSel"></select></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="cap">Readability floor · a warning you cannot read is a warning that was hidden</p>
+    <div id="ratioList"></div>
+  </div>
+
+  <div class="card">
+    <p class="cap">What this skin changes · generated, not taken on trust</p>
+    <div id="changes"><span class="muted">nothing yet — identical to default</span></div>
+  </div>
+
+  <div class="card">
+    <p class="cap">My skins · saved locally, switch anytime</p>
+    <div id="library"><span class="muted">no saved skins yet</span></div>
+    <div class="row" style="margin-top:10px">
+      <input type="text" id="saveName" placeholder="name this skin" style="flex:1;min-width:160px">
+      <button class="btn" id="saveBtn">Save as profile</button>
+      <button class="btn ghost" id="packBtn">Export all as pack</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="cap">Assets a designer can supply · all optional</p>
+    <p class="muted" style="margin:0 0 9px">Sizes come from the shell's own CSS. Every slot is optional — a skin with no assets is a complete skin. Assets live in the Asset Vault and are referenced as <span class="mono">vault:id</span>. A skin may not point at a URL.</p>
+    <div id="assetSpec"></div>
+    <div class="row" style="margin-top:9px">
+      <button class="btn ghost" id="specCopy">Copy spec for a designer</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="cap">Get a skin from the web</p>
+    <p class="muted" style="margin:0 0 8px">Downloaded a skin someone shared? Import the file — or paste its JSON here. Pasting works even when file downloads don't.</p>
+    <textarea id="pasteBox" rows="3" placeholder='paste skin.config.json or skins.pack.json here' style="width:100%;box-sizing:border-box;background:#06080f;border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:8px;font-family:ui-monospace,monospace;font-size:11px"></textarea>
+    <div class="row" style="margin-top:8px">
+      <button class="btn" id="pasteBtn">Import pasted skin</button>
+      <button class="btn ghost" id="importBtn">Import file…</button>
+      <input type="file" id="fileIn" accept="application/json" style="display:none">
+    </div>
+    <p class="muted" style="margin:8px 0 0">Anything from outside is untrusted: it passes the same gate, and its author name is treated as a claim, not a fact.</p>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <button class="btn" id="applyBtn">Apply to hub</button>
+      <button class="btn ghost" id="exportBtn">Export skin.config.json</button>
+      <button class="btn danger" id="resetBtn">Reset to default</button>
+    </div>
+    <p class="muted" style="margin:9px 0 0">Reset always works and cannot be skinned away. If a skin ever fails its gate, the previous one stays and you are told why.</p>
+    <p class="muted" style="margin:6px 0 0">There is no upload server — this hub is local-first. To share widely, open a pull request on the public repo's <span class="mono">skins/</span> folder; every submission is checked by the same gate.</p>
+  </div>
+</div>
+
+<script src="/hub/skin-core.js"></script>
+<script src="/hub/axm-hub-module.js"></script>
+<script>
+var $ = function(id){ return document.getElementById(id); };
+var S = window.AXMSkin;
+var skin = S.newSkin('My skin', 'me');
+var library = [];   /* [{skin, provenance}] */
+
+function merged(){ return S.resolve(skin); }
+
+/* ---------- library ---------- */
+function persist(){ AXMHub.save({ skin: skin, library: library }); }
+function renderLibrary(){
+  var box = $('library'); box.innerHTML = '';
+  if (!library.length) { box.innerHTML = '<span class="muted">no saved skins yet</span>'; return; }
+  library.forEach(function(entry, i){
+    var s = entry.skin, p = entry.provenance || {};
+    var fp = S.fingerprint(s);
+    var d = document.createElement('div'); d.className = 'chg';
+    d.style.cssText = 'display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:8px 0';
+    var name = document.createElement('span'); name.style.flex = '1';
+    name.innerHTML = '<b></b> <span class="muted"></span>';
+    name.querySelector('b').textContent = s.name || 'unnamed';
+    name.querySelector('.muted').textContent = ' ' + fp
+      + (p.origin && p.origin !== 'authored' ? '  · from ' + p.origin + ', author claimed: ' + (p.author_claimed || 'none') : '');
+    d.appendChild(name);
+    [['Use', function(){ skin = JSON.parse(JSON.stringify(s)); buildSwatches(); buildSelects(); refresh(); persist(); AXMHub.log('switched to skin ' + s.name); }],
+     ['Copy', function(){ var c = JSON.parse(JSON.stringify(s)); c.name = s.name + ' copy'; c.id = 'skin_' + Math.random().toString(36).slice(2,8);
+        library.push({ skin:c, provenance:{ origin:'authored', imported_at:new Date().toISOString() } }); renderLibrary(); persist(); }],
+     ['Del', function(){ if (!confirm('Delete "' + s.name + '" from your library?')) return; library.splice(i,1); renderLibrary(); persist(); AXMHub.log('deleted skin ' + s.name); }]
+    ].forEach(function(pair){
+      var b = document.createElement('button'); b.className = 'btn ghost'; b.style.padding = '4px 9px'; b.style.fontSize = '12px';
+      b.textContent = pair[0]; b.onclick = pair[1]; d.appendChild(b);
+    });
+    box.appendChild(d);
+  });
+}
+$('saveBtn').onclick = function(){
+  var a = S.accept(skin, null);
+  if (!a.ok) { alert('This skin cannot be saved — it fails the gate:\n\n' + a.errors.join('\n')); return; }
+  var n = $('saveName').value.trim() || skin.name || 'Untitled';
+  var copy = JSON.parse(JSON.stringify(skin)); copy.name = n;
+  library.push({ skin: copy, provenance: { origin:'authored', imported_at: new Date().toISOString(), fingerprint: S.fingerprint(copy) } });
+  $('saveName').value = '';
+  AXMHub.log('saved skin profile "' + n + '" (' + S.fingerprint(copy) + ')');
+  renderLibrary(); persist();
+};
+$('packBtn').onclick = function(){
+  if (!library.length) { alert('Nothing saved yet.'); return; }
+  var pack = S.newPack('My skin pack', skin.author || 'me', library.map(function(e){ return e.skin; }));
+  var b = new Blob([JSON.stringify(pack, null, 2)], { type:'application/json' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'skins.pack.json'; a.click();
+  AXMHub.log('exported pack of ' + library.length + ' skins');
+};
+
+/* ---------- swatches ---------- */
+function buildSwatches(){
+  var wrap = $('swatchWrap'); wrap.innerHTML = '';
+  var m = merged().tokens;
+  S.COLOR_TOKENS.forEach(function(k){
+    var d = document.createElement('div'); d.className = 'sw';
+    var i = document.createElement('input'); i.type = 'color'; i.value = toHex(m[k]);
+    var l = document.createElement('span'); l.className = 'lbl'; l.textContent = k.replace('--','');
+    i.oninput = function(){ skin.tokens[k] = i.value; refresh(); };
+    d.appendChild(i); d.appendChild(l); wrap.appendChild(d);
+  });
+}
+function toHex(v){
+  var c = S.parseColor(v); if (!c) return '#000000';
+  return '#' + c.map(function(x){ return ('0'+x.toString(16)).slice(-2); }).join('');
+}
+
+/* ---------- selects ---------- */
+function buildSelects(){
+  [['slotNav','nav'],['slotStatus','status'],['slotDensity','density']].forEach(function(p){
+    var el = $(p[0]); el.innerHTML = '';
+    S.SLOTS[p[1]].forEach(function(o){ var x = document.createElement('option'); x.value = o; x.textContent = o; el.appendChild(x); });
+    el.value = merged().slots[p[1]];
+    el.onchange = function(){ skin.slots[p[1]] = el.value; refresh(); };
+  });
+  var f = $('fontSel'); f.innerHTML = '';
+  ['system-ui','Georgia','Inter','Helvetica','Arial','serif','monospace'].forEach(function(o){
+    var x = document.createElement('option'); x.value = o; x.textContent = o; f.appendChild(x);
+  });
+  f.onchange = function(){ skin.tokens['--font'] = f.value + ', sans-serif'; refresh(); };
+  $('rad').value = Number(merged().tokens['--radius']);
+  $('rad').oninput = function(){ skin.tokens['--radius'] = String($('rad').value); refresh(); };
+}
+
+/* ---------- live preview (a mannequin, not the live shell) ---------- */
+function paintPreview(){
+  var t = merged().tokens, s = merged().slots;
+  var r = Number(t['--radius']) + 'px', pad = s.density === 'compact' ? '6px 9px' : '9px 12px';
+  $('preview').style.background = t['--space'];
+  $('preview').style.borderColor = t['--edge'];
+  $('preview').style.borderRadius = r;
+  $('pvTop').style.cssText = 'display:flex;align-items:center;gap:9px;padding:' + pad + ';border-bottom:1px solid ' + t['--edge'] + ';background:' + t['--panel'];
+  $('pvBrand').style.color = t['--cy'];
+  $('pvActive').style.color = t['--muted'];
+  var nav = $('pvNav');
+  nav.className = 'pv-nav' + (s.nav === 'right' ? ' right' : s.nav === 'rail' ? ' rail' : '');
+  nav.style.cssText += ';background:' + t['--panel-2'] + ';color:' + t['--muted'] + ';border-color:' + t['--edge'];
+  nav.innerHTML = s.nav === 'rail' ? '▤<br>◇2' : 'modules<br><span style="color:' + t['--muted'] + '">⬦ 2 hidden</span>';
+  $('pvMain').style.color = t['--text'];
+  $('pvBody').style.background = t['--space'];
+  $('pvWarn').style.cssText = 'margin-top:7px;padding:7px;border-radius:7px;font-size:11px;background:' + t['--panel'] + ';color:' + t['--gold'] + ';border:1px solid ' + t['--gold'];
+  $('pvErr').style.cssText = 'margin-top:7px;padding:7px;border-radius:7px;font-size:11px;background:' + t['--panel'] + ';color:' + t['--red'] + ';border:1px solid ' + t['--red'];
+  $('pvStatus').style.cssText = 'padding:6px 12px;border-top:1px solid ' + t['--edge'] + ';font-size:11px;background:' + t['--panel'] + ';color:' + t['--muted'];
+  var st = $('pvStatus'); st.textContent = 'action log · hub ready';
+}
+
+/* ---------- contrast meter ---------- */
+function paintRatios(){
+  var t = merged().tokens, box = $('ratioList'); box.innerHTML = '';
+  S.CONTRAST_PAIRS.forEach(function(p){
+    var r = S.contrast(t[p.fg], t[p.bg]);
+    var pass = r >= p.min;
+    var d = document.createElement('div'); d.className = 'ratio';
+    d.innerHTML = '<span>' + p.why + '</span><span class="n ' + (pass?'pass':'fail') + '">'
+      + (Math.round(r*100)/100) + ':1  (min ' + p.min + ')</span>';
+    box.appendChild(d);
+  });
+}
+
+/* ---------- generated change report ---------- */
+function paintChanges(){
+  var d = S.diff(skin), box = $('changes');
+  if (!d.length) { box.innerHTML = '<span class="muted">nothing yet — identical to default</span>'; return; }
+  box.innerHTML = '';
+  d.forEach(function(c){
+    var e = document.createElement('div'); e.className = 'chg';
+    e.textContent = c.kind + ' ' + c.key + ': ' + (c.from !== undefined ? c.from + ' → ' : '') + c.to;
+    box.appendChild(e);
+  });
+}
+
+/* ---------- the gate ---------- */
+function paintVerdict(){
+  var probe = function(){ return { present:true, visible:true, w:100, h:20 }; }; /* mannequin */
+  var a = S.accept(skin, probe);
+  var v = $('verdict');
+  if (a.ok) {
+    v.className = 'verdict ok';
+    v.innerHTML = '<b>Accepted.</b> ' + a.changes.length + ' change(s). Nothing hidden, nothing unreadable.'
+      + (a.warnings && a.warnings.length ? '<div class="muted" style="margin-top:5px">' + a.warnings.join(' · ') + '</div>' : '');
+    $('applyBtn').disabled = false;
+  } else {
+    v.className = 'verdict no';
+    var ul = a.errors.map(function(e){ return '<li>' + e + '</li>'; }).join('');
+    v.innerHTML = '<b>Refused at the ' + a.stage + ' stage.</b> The previous skin stays.<ul>' + ul + '</ul>';
+    $('applyBtn').disabled = true;
+  }
+  return a;
+}
+
+function refresh(){ paintPreview(); paintRatios(); paintChanges(); paintVerdict(); }
+
+/* ---------- actions ---------- */
+$('applyBtn').onclick = function(){
+  var a = paintVerdict();
+  if (!a.ok) return;
+  persist();
+  AXMHub.log('skin applied: ' + skin.name + ' (' + a.changes.length + ' changes) — ' + a.changes.map(function(c){ return c.key; }).join(', '));
+  alert('Skin saved to the hub.\n\nThe shell reads it on next load. Every change was reported to the action log — nothing was applied silently.');
+};
+$('exportBtn').onclick = function(){
+  var b = new Blob([JSON.stringify(skin, null, 2)], { type:'application/json' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'skin.config.json'; a.click();
+  AXMHub.log('skin exported');
+};
+/* ---------- asset spec sheet (generated, cannot drift) ---------- */
+function renderSpec(){
+  var box = $('assetSpec'); box.innerHTML = '';
+  S.assetSpec().forEach(function(s){
+    var d = document.createElement('div'); d.className = 'chg';
+    d.style.cssText = 'padding:7px 0;border-top:1px solid var(--edge)';
+    d.innerHTML = '<b class="mono" style="color:var(--cy)"></b>'
+      + '<span class="mono"> ' + s.w + '×' + s.h + ' · ' + s.format + ' · ' + s.dpi + '</span>'
+      + '<div class="muted" style="font-family:system-ui;margin-top:3px"></div>'
+      + '<div class="muted" style="font-family:system-ui;font-size:11px;opacity:.8"></div>';
+    d.querySelector('b').textContent = s.slot;
+    d.querySelectorAll('.muted')[0].textContent = s.where;
+    d.querySelectorAll('.muted')[1].textContent = s.note;
+    box.appendChild(d);
+  });
+}
+$('specCopy').onclick = function(){
+  var txt = 'AXM SKIN — ASSET SLOTS (all optional)\n\n' + S.assetSpec().map(function(s){
+    return s.slot + '\n  size   : ' + s.w + ' x ' + s.h + '  (' + s.dpi + ')\n  format : ' + s.format
+         + '\n  where  : ' + s.where + '\n  note   : ' + s.note;
+  }).join('\n\n') + '\n\nAssets are vault: references. No URLs. Every slot optional.\nA skin can never hide a warning — the readability floor applies regardless of imagery.';
+  if (navigator.clipboard) navigator.clipboard.writeText(txt);
+  AXMHub.log('asset spec copied (' + S.assetSpec().length + ' slots)');
+  alert('Spec copied. ' + S.assetSpec().length + ' slots, all optional.');
+};
+
+/* what the local vault actually holds. Until an asset-vault bridge exists,
+   we honestly know nothing — so we say so rather than inventing facts. */
+var VAULT = null;   /* null = unknown; a function id=>bool when known */
+function vaultProbe(){ return VAULT; }
+
+/* one ingest path, used by both "Import file" and "Import pasted". */
+function ingest(text, origin){
+  var incoming;
+  try { incoming = JSON.parse(text); } catch (x) { alert('Not valid JSON.'); return; }
+
+  if (incoming && incoming.schema === S.PACK_SCHEMA) {
+    var p = S.acceptPack(incoming);
+    if (!p.ok) { alert('Nothing in this pack passed the gate.\n\n' + (p.error || (p.refused||[]).map(function(x){ return x.name + ': ' + x.errors[0]; }).join('\n'))); return; }
+    p.accepted.forEach(function(x){ library.push({ skin: x.skin, provenance: S.importRecord(x.skin, origin, 'me') }); });
+    AXMHub.log('imported pack from ' + origin + ': ' + p.accepted.length + ' accepted, ' + p.refused.length + ' refused');
+    renderLibrary(); persist();
+    alert('Imported ' + p.accepted.length + ' skin(s) into your library.'
+      + (p.refused.length ? '\n\n' + p.refused.length + ' refused and skipped:\n' + p.refused.map(function(x){ return '· ' + x.name + ' (' + x.stage + '): ' + x.errors[0]; }).join('\n') : '')
+      + '\n\nAuthor names in shared skins are CLAIMS, not verified identities.');
+    return;
+  }
+
+  var a = S.accept(incoming, function(){ return { present:true, visible:true, w:100, h:20 }; }, vaultProbe());
+  if (!a.ok) {
+    AXMHub.log('skin from ' + origin + ' REFUSED at ' + a.stage);
+    alert('This skin was refused at the ' + a.stage + ' stage:\n\n' + a.errors.join('\n\n') + '\n\nYour current skin is untouched.');
+    return;
+  }
+  skin = incoming;
+  var prov = S.importRecord(skin, origin, 'me');
+  library.push({ skin: JSON.parse(JSON.stringify(skin)), provenance: prov });
+  AXMHub.log('skin imported from ' + origin + ': ' + (skin.name||'unnamed') + ' · ' + prov.fingerprint
+    + ' · author claimed: ' + (prov.author_claimed||'none')
+    + (a.missingAssets.length ? ' · ' + a.missingAssets.length + ' asset(s) missing' : ''));
+  buildSwatches(); buildSelects(); renderLibrary(); refresh(); persist();
+
+  var msg = 'Accepted. ' + a.changes.length + ' change(s) from default.\nFingerprint: ' + prov.fingerprint
+    + '\n\nAuthor "' + (prov.author_claimed || 'unnamed') + '" is a CLAIM in the file — nothing here verifies it.';
+  if (a.missingAssets.length) msg += '\n\nMissing from your vault (that part will not appear):\n'
+    + a.missingAssets.map(function(m){ return '· ' + m.slot + ' → ' + m.ref; }).join('\n');
+  if (a.warnings.length) msg += '\n\n' + a.warnings.filter(function(w){ return !w.includes('vault'); }).join('\n');
+  alert(msg.trim());
+}
+
+$('pasteBtn').onclick = function(){
+  var t = $('pasteBox').value.trim();
+  if (!t) { alert('Paste a skin\'s JSON into the box first.'); return; }
+  ingest(t, 'pasted');
+  $('pasteBox').value = '';
+};
+$('importBtn').onclick = function(){ $('fileIn').click(); };
+$('fileIn').onchange = function(e){
+  var f = e.target.files[0]; if (!f) return;
+  var r = new FileReader();
+  r.onload = function(){ ingest(r.result, 'file'); };
+  r.readAsText(f);
+};
+$('resetBtn').onclick = function(){
+  if (!confirm('Reset to the default AXM skin?')) return;
+  skin = S.newSkin('My skin', 'me');
+  AXMHub.save({ skin: null, library: library });
+  AXMHub.log('skin reset to default (library kept)');
+  buildSwatches(); buildSelects(); renderLibrary(); refresh();
+};
+
+AXMHub.onInit(function(init){
+  if (init && init.moduleState && init.moduleState.skin) skin = init.moduleState.skin;
+  if (init && init.moduleState && init.moduleState.library) library = init.moduleState.library;
+  AXMHub.log('Skinner ready — ' + library.length + ' saved skin(s)');
+  buildSwatches(); buildSelects(); renderLibrary(); renderSpec(); refresh();
+});
+AXMHub.onShutdown(function(){ persist(); });
+AXMHub.ready({ id:'skinner', name:'Skinner', version:'v0.1', hubApiVersion:'1.0', permissions:[], savesState:true, handlesShutdown:true });
+if (!AXMHub.inHub) { buildSwatches(); buildSelects(); renderLibrary(); renderSpec(); refresh(); }
+</script>
+</body></html>

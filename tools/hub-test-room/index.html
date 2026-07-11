@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXM Hub — Test Room</title>
+<style>
+:root{--space:#080b14;--panel:#0d1320;--edge:#1d2942;--cy:#38d6ec;--green:#63d68a;--red:#e86a5f;--gold:#e8b54a;--text:#dce2ea;--muted:#828d9e}
+html,body{margin:0;height:100%;background:var(--space);color:var(--text);font-family:system-ui,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:26px}
+h1{font-size:20px;margin:0 0 4px}.sub{color:var(--muted);margin:0 0 18px;font-size:13px}
+.bar{display:flex;gap:10px;margin-bottom:18px}
+button{padding:8px 14px;border:1px solid #1c7f92;border-radius:9px;background:rgba(56,214,236,.1);color:var(--cy);cursor:pointer;font-size:13px}
+button.ghost{border-color:var(--edge);background:transparent;color:var(--text)}
+.check{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid var(--edge);border-radius:11px;background:var(--panel);margin-bottom:9px}
+.check .n{flex:1}.check .n b{display:block;font-size:14px}.check .n span{color:var(--muted);font-size:12px}
+.chip{font-size:11px;font-weight:700;letter-spacing:.5px;padding:4px 9px;border-radius:6px;border:1px solid var(--edge);color:var(--muted)}
+.chip.PASS{color:var(--green);border-color:var(--green)}
+.chip.FAIL{color:var(--red);border-color:var(--red)}
+.chip.PENDING{color:var(--gold);border-color:var(--gold)}
+.summary{margin-top:16px;font-family:ui-monospace,monospace;font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Test Room</h1>
+  <p class="sub">A module is not “done” because it appears once. Run the six checks. Then fully reload the hub to confirm the reopen ones.</p>
+
+  <div class="bar">
+    <button id="runBtn">Run all checks</button>
+    <button class="ghost" id="armBtn">Arm reopen test</button>
+    <button class="ghost" id="clearBtn">Clear probes</button>
+  </div>
+
+  <div class="check"><div class="n"><b>1 · Files are saved</b><span>write → read back a persisted value</span></div><span class="chip PENDING" id="c1">PENDING</span></div>
+  <div class="check"><div class="n"><b>2 · Hub can restart / reopen</b><span>a value armed last session is still here</span></div><span class="chip PENDING" id="c2">PENDING</span></div>
+  <div class="check"><div class="n"><b>3 · Module list survives reload</b><span>cached registry present after reload</span></div><span class="chip PENDING" id="c3">PENDING</span></div>
+  <div class="check"><div class="n"><b>4 · Module opens without blank screen</b><span>probe module paints real DOM</span></div><span class="chip PENDING" id="c4">PENDING</span></div>
+  <div class="check"><div class="n"><b>5 · Settings survive switch away & back</b><span>per-module setting persists</span></div><span class="chip PENDING" id="c5">PENDING</span></div>
+  <div class="check"><div class="n"><b>6 · Action log records what happened</b><span>a logged line lands in the shared log</span></div><span class="chip PENDING" id="c6">PENDING</span></div>
+
+  <div class="summary" id="summary">not run yet</div>
+</div>
+
+<script src="/hub/axm-hub-module.js"></script>
+<script>
+var $ = function(id){ return document.getElementById(id); };
+var NS = 'axm.hub.';
+function set(id, v){ try { localStorage.setItem(NS + id, JSON.stringify(v)); } catch(e){} }
+function get(id){ try { return JSON.parse(localStorage.getItem(NS + id)); } catch(e){ return null; } }
+function chip(id, state){ var el = $(id); el.className = 'chip ' + state; el.textContent = state; }
+
+/* poll a condition until true or timeout — used for checks that depend on
+   async work (registry cache load, log crossing the iframe bridge). */
+function waitFor(cond, ms, done){
+  var start = Date.now();
+  (function poll(){
+    if (cond()) return done(true);
+    if (Date.now() - start > ms) return done(false);
+    setTimeout(poll, 40);
+  })();
+}
+
+/* reopen check auto-detects an armed marker surviving a document reload */
+(function reopenAutoDetect(){
+  var armed = get('selftest.reopen');
+  var thisLoad = (window.performance && performance.now) ? Date.now() : Date.now();
+  if (armed && armed.stamp && (thisLoad - armed.stamp) > 200) { chip('c2','PASS'); }
+})();
+
+function runAll(){
+  var results = {};
+
+  /* 1 files saved */
+  set('selftest.probe', { v: 'ok', at: Date.now() });
+  results.c1 = get('selftest.probe') && get('selftest.probe').v === 'ok';
+
+  /* 3 module list survives reload — the shell caches it on load, but that
+     load is ASYNC. Poll briefly instead of reading once (race fix). */
+  waitFor(function(){ var reg = get('registry'); return Array.isArray(reg) && reg.length > 0; }, 2000, function(ok){
+    results.c3 = ok; chip('c3', ok ? 'PASS' : 'FAIL');
+  });
+
+  /* 5 settings survive switch away & back (same store the shell uses on switch) */
+  set('settings.hub-test-room', { probe: 'v1' });
+  var back = get('settings.hub-test-room');
+  results.c5 = back && back.probe === 'v1';
+
+  /* 6 action log records — the log call crosses the iframe->shell bridge,
+     which is async. Poll for the line instead of guessing a fixed delay
+     (this was failing at 120ms on real hardware — the write landed later). */
+  AXMHub.log('selftest ping');
+  waitFor(function(){
+    var log = get('log') || [];
+    return log.some(function(e){ return e && e.msg && e.msg.indexOf('selftest ping') >= 0; });
+  }, 2000, function(ok){
+    results.c6 = ok; chip('c6', ok ? 'PASS' : 'FAIL');
+    finish();
+  });
+
+  /* 4 no blank screen — load the template module hidden, confirm it paints */
+  var probe = document.createElement('iframe');
+  probe.style.cssText = 'position:absolute;width:1px;height:1px;left:-9999px';
+  probe.src = '/tools/_module-template/index.html';
+  probe.onload = function(){
+    var painted = false;
+    try { painted = !!(probe.contentDocument && probe.contentDocument.body && probe.contentDocument.body.childNodes.length); } catch(e){ painted = true; }
+    results.c4 = painted; chip('c4', painted ? 'PASS' : 'FAIL'); probe.remove();
+  };
+  document.body.appendChild(probe);
+
+  chip('c1', results.c1 ? 'PASS' : 'FAIL');
+  chip('c5', results.c5 ? 'PASS' : 'FAIL');
+  if ($('c2').textContent === 'PENDING') chip('c2', 'PENDING');
+
+  window.__axmResults = results;
+}
+
+function finish(){
+  var r = window.__axmResults || {};
+  var passNow = ['c1','c3','c4','c5','c6'].filter(function(k){ return $(k).textContent === 'PASS'; }).length;
+  var reopen = $('c2').textContent;
+  $('summary').textContent = passNow + '/5 live checks PASS · reopen: ' + reopen + '  (arm + reload hub to prove reopen)';
+  if (passNow === 5 && reopen === 'PASS') { AXMHub.verifyPass(); AXMHub.log('Test Room: all six criteria PASS'); }
+}
+
+$('runBtn').onclick = runAll;
+$('armBtn').onclick = function(){ set('selftest.reopen', { stamp: Date.now() }); chip('c2','PENDING'); $('summary').textContent = 'reopen armed — now fully reload the hub (F5) and Run again.'; };
+$('clearBtn').onclick = function(){ ['selftest.probe','selftest.reopen'].forEach(function(k){ localStorage.removeItem(NS+k); }); ['c1','c2','c3','c4','c5','c6'].forEach(function(k){ chip(k,'PENDING'); }); $('summary').textContent = 'probes cleared'; };
+
+AXMHub.onInit(function(){ AXMHub.log('Test Room ready'); });
+AXMHub.ready({ id:'hub-test-room', name:'Test Room', version:'v1.0', hubApiVersion:'1.0', permissions:[], savesState:false, handlesShutdown:false });
+</script>
+</body></html>

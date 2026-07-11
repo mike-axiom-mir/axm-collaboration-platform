@@ -1,0 +1,31 @@
+{
+  "id": "evidence-desk",
+  "name": "AXM Evidence Desk",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "audience": "human",
+  "tags": ["evidence", "action-report", "handoff", "verification", "machine-ready"],
+  "uses": ["storage", "gate", "export"],
+  "permissions": [],
+  "notes": "Builds compact evidence receipts and Action Reports while keeping observation, execution and verification separate. Dual-door module: the human screen now announces a real Hub passport and the bounded machine adapter uses the same declared contract.",
+  "machine": {
+    "apiVersion": "1.0",
+    "entry": "machine.js",
+    "status": "TEST",
+    "actions": {
+      "validate": {
+        "description": "Validate supplied evidence fields without saving or exporting.",
+        "effect": "read-only",
+        "inputSchema": { "type": "object", "required": ["title", "goal"] }
+      },
+      "build": {
+        "description": "Build a structured receipt and Action Report from supplied evidence without changing Workshop state.",
+        "effect": "read-only",
+        "inputSchema": { "type": "object", "required": ["title", "goal"] }
+      }
+    }
+  }
+}

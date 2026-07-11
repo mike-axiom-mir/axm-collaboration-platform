@@ -1,0 +1,21 @@
+{
+  "id": "evidence-receipt",
+  "type": "skill",
+  "status": "ACCEPT FOR TEST",
+  "test_evidence": "Evidence Desk shared-core selftest and browser dogfood, 11 July 2026",
+  "purpose": "Turn observed run facts into a compact receipt without merging execution and verification.",
+  "inputs": ["goal", "observations", "actions", "checks", "changes", "limitations", "next_actions"],
+  "rules": [
+    "An observation without a source remains visible and is marked unsourced.",
+    "Execution is never relabelled as verification.",
+    "A failed check remains visible.",
+    "Not-tested scope is never omitted.",
+    "Receipt generation is read-only; saving or exporting is a separate gated action."
+  ],
+  "boundaries": [
+    "Does not inspect files by itself.",
+    "Does not decide canon.",
+    "Does not apply patches or execute shell commands.",
+    "Does not authenticate a caller from a supplied display name."
+  ]
+}

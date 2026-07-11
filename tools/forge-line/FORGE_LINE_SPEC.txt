@@ -1,0 +1,36 @@
+============================================================
+FORGE LINE — HANDOFF SPEC FOR OPUS   (Fable, final 17%)
+Read SUCCESSOR_BRIEFING.txt first. Then this.
+============================================================
+BUILT (works today, manual mode):
+  tools/forge-line/ — queue stored in spine slot 'line-queue'
+  {format:1}. Item lifecycle: queued -> built (human pastes the
+  AI's returned file) -> verified (human enters verify.js result)
+  -> ACCEPTED or REJECTED(reason REQUIRED). Every rejection
+  reason accumulates in 'standards-draft' (spine slot) — Mike Tobi
+  reviews the draft and promotes lines into: (a) written AXM
+  standards, (b) NEW CHECKS IN verify.js. That loop is the whole
+  point: each rejection permanently raises the floor.
+  CAPACITY CAP: max 5 items awaiting verdict — queue refuses
+  more (checkpoint-fatigue defense; a design rule, not a limit
+  to optimize away).
+UNBUILT — YOUR JOB (in order):
+  1. WORKER (node, beside server.js, zero deps): reads queued
+     items -> builds the brief (Forge's makeBrief shape + tool
+     skeleton) -> POST bridge /ask with x-axm-token from
+     bridge-token.txt (non-browser caller = token door),
+     opts.aiProvider per item -> writes candidate to
+     exports/line/<id>/index.html + auto-runs verify.js on a
+     staging copy -> marks item 'built' with verify summary.
+     NEVER installs into /tools. NEVER exceeds the cap. Respects
+     bridge rate cap. One item at a time, resumable.
+  2. Wisdom/template feed: briefs may reference template ids
+     (registry template.source) + lessons (wisdom layer) — read-
+     only pulls, cite ids in the brief.
+  3. verify.js additions live in a clearly-marked STANDARDS
+     section so promoted rules are diffable.
+STOP CRITERIA (inherit shell's + these): worker gets NO write
+access outside exports/ · no auto-accept path may exist even as
+a flag · if Mike Tobi stops reviewing, the line STOPS — it must never
+build ahead of judgment.
+============================================================

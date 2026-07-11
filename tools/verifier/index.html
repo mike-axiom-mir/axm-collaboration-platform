@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXM Hub — Verifier</title>
+<style>
+:root{--space:#080b14;--panel:#0d1320;--edge:#1d2942;--cy:#38d6ec;--green:#63d68a;--red:#e86a5f;--gold:#e8b54a;--muted:#828d9e;--text:#dce2ea}
+html,body{margin:0;height:100%;background:var(--space);color:var(--text);font-family:system-ui,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:24px}
+h1{font-size:20px;margin:0 0 4px}.sub{color:var(--muted);margin:0 0 18px;font-size:13px}
+h2{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:22px 0 8px}
+.item{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--edge);border-radius:10px;background:var(--panel);margin-bottom:8px}
+.item .nm{flex:1;font-size:13.5px}.item .d{color:var(--muted);font-size:11.5px}
+.lock{font-size:11px;color:var(--muted);border:1px solid var(--edge);border-radius:6px;padding:3px 8px}
+.form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:13px;border:1px dashed var(--edge);border-radius:10px;margin-bottom:8px}
+select,input{background:#06080f;border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:7px 9px;font-family:inherit;font-size:13px}
+input{min-width:150px}
+button{padding:8px 13px;border:1px solid #1c7f92;border-radius:9px;background:rgba(56,214,236,.1);color:var(--cy);cursor:pointer;font-size:13px}
+button.ghost{border-color:var(--edge);background:transparent;color:var(--text)}
+.bar{display:flex;gap:10px;margin-top:16px}
+.note{color:var(--muted);font-size:12px;margin-top:10px;font-family:ui-monospace,monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Verifier</h1>
+  <p class="sub">Add or remove your own checks — no code editing. Then download <b>verify.config.json</b> and drop it in your project root. Run <b>node hub/verify-plus.js</b> to run the core gate plus your checks.</p>
+
+  <h2>Core floor · retire only with a reason</h2>
+  <p class="sub" style="margin-top:-4px">Core checks aren't deletable like your own — but as tech changes a check can be <b>retired</b>: it stays visible in every report with your reason, is logged permanently, and can be un-retired. Never silent.</p>
+  <div id="coreList"></div>
+
+  <h2>Retire a core check</h2>
+  <p class="sub" style="margin-top:-4px">Paste a distinctive phrase from the FAIL/warn line you want to retire (click one below to fill it), give a reason, and confirm.</p>
+  <div id="coreReport"></div>
+  <div class="form">
+    <input id="retMatch" type="text" placeholder="match: phrase from the check line">
+    <input id="retReason" type="text" placeholder="reason (required)">
+    <input id="retBy" type="text" placeholder="by (your name)">
+    <input id="retReview" type="text" placeholder="review-by date (optional)">
+    <button id="retBtn">Retire check</button>
+  </div>
+  <div id="retList"></div>
+
+  <h2>Your checks</h2>
+  <div class="form">
+    <select id="kind"></select>
+    <input id="p1" type="text" placeholder="path e.g. hub/index.html">
+    <input id="p2" type="text" placeholder="text / field / folder">
+    <input id="lblIn" type="text" placeholder="label (optional)">
+    <button id="addBtn">Add check</button>
+  </div>
+  <div id="userList"></div>
+
+  <div class="bar">
+    <button id="dlBtn">Download verify.config.json</button>
+    <button class="ghost" id="reloadBtn">Reload current config</button>
+  </div>
+  <div class="note" id="note">loading current config…</div>
+</div>
+
+<script src="/hub/verify-checks.js"></script>
+<script src="/hub/axm-hub-module.js"></script>
+<script>
+var $ = function(id){ return document.getElementById(id); };
+var config = { userChecks: [], acknowledgedWarnings: [] };
+var nextId = 1;
+
+/* core floor — shown with retirement state */
+function renderCore(){
+  var wrap = $('coreList'); wrap.innerHTML = '';
+  AXMChecks.CORE_GROUPS.forEach(function(g){
+    var d = document.createElement('div'); d.className = 'item';
+    d.innerHTML = '<span class="nm"></span><span class="lock">core</span>';
+    d.querySelector('.nm').textContent = g; wrap.appendChild(d);
+  });
+}
+renderCore();
+
+/* kind picker */
+(function fillKinds(){
+  Object.keys(AXMChecks.KINDS).forEach(function(k){
+    var o = document.createElement('option'); o.value = k; o.textContent = AXMChecks.KINDS[k].label; $('kind').appendChild(o);
+  });
+})();
+
+function renderUser(){
+  var wrap = $('userList'); wrap.innerHTML = '';
+  if (!config.userChecks.length) { wrap.innerHTML = '<div class="item"><span class="nm d">No checks yet — add one above.</span></div>'; }
+  config.userChecks.forEach(function(c){
+    var d = document.createElement('div'); d.className = 'item';
+    var nm = document.createElement('div'); nm.className = 'nm';
+    nm.innerHTML = '<div></div><div class="d"></div>';
+    nm.children[0].textContent = c.label || AXMChecks.KINDS[c.kind].label;
+    nm.children[1].textContent = c.kind + '  ·  ' + (c.path || c.folder || '') + (c.needle ? '  ⊇ "' + c.needle + '"' : '') + (c.field ? '  . ' + c.field : '');
+    var rm = document.createElement('button'); rm.className = 'ghost'; rm.textContent = 'Remove';
+    rm.onclick = function(){ config.userChecks = config.userChecks.filter(function(x){ return x.id !== c.id; }); renderUser(); AXMHub.log('removed check ' + c.id); };
+    d.appendChild(nm); d.appendChild(rm); wrap.appendChild(d);
+  });
+}
+
+$('addBtn').onclick = function(){
+  var kind = $('kind').value, p1 = $('p1').value.trim(), p2 = $('p2').value.trim();
+  if (!p1) { $('note').textContent = 'first field (path/folder) is required'; return; }
+  var c = { id: 'u' + (nextId++), kind: kind, label: $('lblIn').value.trim() };
+  if (kind === 'manifest-present') c.folder = p1; else c.path = p1;
+  if (kind === 'file-contains') c.needle = p2;
+  if (kind === 'json-has-field') c.field = p2;
+  config.userChecks.push(c); $('p1').value = ''; $('p2').value = ''; $('lblIn').value = '';
+  renderUser(); AXMHub.log('added ' + kind + ' check on ' + p1);
+};
+
+function renderRetirements(){
+  var wrap = $('retList'); wrap.innerHTML = '';
+  var rets = config.retirements || [];
+  if (!rets.length) { wrap.innerHTML = '<div class="item"><span class="nm d">No core checks retired.</span></div>'; return; }
+  rets.forEach(function(r){
+    var d = document.createElement('div'); d.className = 'item';
+    var nm = document.createElement('div'); nm.className = 'nm';
+    nm.innerHTML = '<div></div><div class="d"></div>';
+    nm.children[0].textContent = 'RETIRED: "' + r.match + '"';
+    nm.children[1].textContent = r.reason + '  ·  by ' + (r.by || '?') + (r.at ? '  ·  ' + r.at : '') + (r.review ? '  ·  review ' + r.review : '');
+    var un = document.createElement('button'); un.className = 'ghost'; un.textContent = 'Un-retire';
+    un.onclick = function(){ config.retirements = config.retirements.filter(function(x){ return x !== r; }); renderRetirements(); AXMHub.log('un-retired "' + r.match + '"'); };
+    d.appendChild(nm); d.appendChild(un); wrap.appendChild(d);
+  });
+}
+
+function loadReport(){
+  var box = $('coreReport'); box.innerHTML = '';
+  fetch('/exports/verify-report.txt').then(function(r){ return r.ok ? r.text() : null; }).then(function(t){
+    if (!t) { box.innerHTML = '<div class="item"><span class="nm d">No core report yet — run node verify.js once to list any FAIL/warn lines here.</span></div>'; return; }
+    var lines = t.split('\n').filter(function(L){ var k = L.replace(/^\s+/,'').slice(0,4); return k === 'FAIL' || k === 'warn'; });
+    if (!lines.length) { box.innerHTML = '<div class="item"><span class="nm d">Last core report: no FAIL/warn lines. Nothing needs retiring.</span></div>'; return; }
+    lines.forEach(function(L){
+      var d = document.createElement('div'); d.className = 'item';
+      var nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = L.trim();
+      var pick = document.createElement('button'); pick.className = 'ghost'; pick.textContent = 'Use';
+      pick.onclick = function(){ $('retMatch').value = L.trim().replace(/^(FAIL|warn)\s+/,''); };
+      d.appendChild(nm); d.appendChild(pick); box.appendChild(d);
+    });
+  }).catch(function(){ box.innerHTML = ''; });
+}
+
+$('retBtn').onclick = function(){
+  var match = $('retMatch').value.trim(), reason = $('retReason').value.trim();
+  if (!match) { $('note').textContent = 'match is required (a phrase from the check line)'; return; }
+  if (!reason) { $('note').textContent = 'a reason is required to retire a core check'; return; }
+  if (!confirm('This turns off a core safety check.\n\n"' + match + '"\n\nIt will still show in every report with your reason, and be logged. Continue?')) return;
+  config.retirements = config.retirements || [];
+  config.retirements.push({ match: match, reason: reason, by: $('retBy').value.trim() || 'me', at: new Date().toISOString().slice(0,10), review: $('retReview').value.trim() });
+  $('retMatch').value = ''; $('retReason').value = ''; $('retReview').value = '';
+  renderRetirements(); AXMHub.log('retired core check "' + match + '" — ' + reason);
+  $('note').textContent = 'retired — download the config and run node hub/verify-plus.js to apply';
+};
+
+$('dlBtn').onclick = function(){
+  var clean = { _note: config._note || 'YOUR checks + retirements. kinds: file-exists | file-contains | json-has-field | manifest-present',
+                userChecks: config.userChecks, retirements: config.retirements || [], acknowledgedWarnings: config.acknowledgedWarnings || [] };
+  var blob = new Blob([JSON.stringify(clean, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'verify.config.json'; a.click();
+  AXMHub.log('downloaded verify.config.json (' + config.userChecks.length + ' checks, ' + (config.retirements||[]).length + ' retired)'); AXMHub.save({ userChecks: config.userChecks, retirements: config.retirements });
+  $('note').textContent = 'downloaded — drop verify.config.json into your project root, then run node hub/verify-plus.js';
+};
+
+function loadConfig(){
+  fetch('/verify.config.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+    if (j) { config = j; config.userChecks = config.userChecks || []; config.retirements = config.retirements || [];
+      var max = 0; config.userChecks.forEach(function(c){ var n = parseInt(String(c.id).replace(/\D/g,''),10); if(n>max) max=n; }); nextId = max+1;
+      $('note').textContent = 'loaded current config · ' + config.userChecks.length + ' checks · ' + config.retirements.length + ' retired'; }
+    else { $('note').textContent = 'no verify.config.json found yet — add checks and download to create it'; config.retirements = config.retirements || []; }
+    renderUser(); renderRetirements();
+  }).catch(function(){ $('note').textContent = 'could not load config (add checks and download to create it)'; renderUser(); });
+}
+$('reloadBtn').onclick = loadConfig;
+
+AXMHub.onInit(function(){ AXMHub.log('Verifier ready'); });
+AXMHub.ready({ id:'verifier', name:'Verifier', version:'v1.0', hubApiVersion:'1.0', permissions:[], savesState:true, handlesShutdown:false });
+loadConfig(); loadReport();
+</script>
+</body></html>

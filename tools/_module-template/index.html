@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New AXM Module</title>
+<style>
+:root{--space:#080b14;--panel:#0d1320;--edge:#1d2942;--cy:#38d6ec;--text:#dce2ea;--muted:#828d9e}
+html,body{margin:0;height:100%;background:var(--space);color:var(--text);font-family:system-ui,sans-serif}
+.wrap{max-width:620px;margin:0 auto;padding:28px}
+h1{font-size:20px;margin:0 0 4px}.sub{color:var(--muted);margin:0 0 20px;font-size:13px}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:16px;margin-bottom:14px}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+input{width:100%;background:#06080f;border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:8px}
+button{margin-top:12px;padding:8px 14px;border:1px solid #1c7f92;border-radius:9px;background:rgba(56,214,236,.1);color:var(--cy);cursor:pointer}
+.mono{font-family:ui-monospace,monospace;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 id="mName">New AXM Module</h1>
+  <p class="sub">This is the module template. Its insides are yours; the hub frame around it is not.</p>
+
+  <div class="card">
+    <label>A note this module remembers (saved to the hub)</label>
+    <input id="noteInput" type="text" placeholder="type something, then Save checkpoint">
+    <button id="saveBtn">Save checkpoint</button>
+  </div>
+
+  <div class="card">
+    <div class="mono">state: <span id="mState">(none yet)</span></div>
+    <button id="logBtn">Write a line to the hub log</button>
+  </div>
+</div>
+
+<script src="/hub/axm-hub-module.js"></script>
+<script>
+var $ = function(id){ return document.getElementById(id); };
+var passport = {
+  id: 'CHANGE-ME', name: 'New AXM Module', version: 'v0.1', hubApiVersion: '1.0',
+  icon: null, permissions: [], savesState: true, handlesShutdown: true,
+  settingsSchema: { greeting: { label: 'Greeting text', type: 'text', default: 'hello' } }
+};
+AXMHub.onInit(function(init){
+  if (init.moduleState && init.moduleState.note) { $('noteInput').value = init.moduleState.note; $('mState').textContent = 'restored: ' + init.moduleState.note; }
+  AXMHub.log('template module initialised');
+});
+AXMHub.onShutdown(function(){ AXMHub.save({ note: $('noteInput').value }); });
+$('saveBtn').onclick = function(){ AXMHub.save({ note: $('noteInput').value }); $('mState').textContent = 'saved: ' + $('noteInput').value; };
+$('logBtn').onclick = function(){ AXMHub.log('hello from the template at ' + new Date().toLocaleTimeString()); };
+AXMHub.ready(passport);
+</script>
+</body></html>

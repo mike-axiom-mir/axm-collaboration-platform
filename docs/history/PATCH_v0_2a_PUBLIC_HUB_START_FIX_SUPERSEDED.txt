@@ -1,0 +1,24 @@
+AXM WORKSHOP PUBLIC-SAFE PATCH v0.2a — DIRECT HUB START FIX
+Generated: 2026-07-11
+
+REASON
+A real Windows test showed START_HUB could open /hub/ against an older server
+already occupying port 8788, or could open the browser before the new server
+was ready. That produced the honest but incorrect-looking "Not here: /hub/"
+page even though hub/index.html existed.
+
+CHANGES
+- START_HUB now starts/verifies the correct package server before opening.
+- It opens the explicit /hub/index.html route.
+- START_AXM and START_AXM_FULL use the same readiness/build check.
+- A running older/different server on port 8788 is reported instead of reused.
+- server.js exposes a local build marker in /api/health.
+- server.js explicitly maps /hub and /hub/ to /hub/index.html.
+- server.js reports a clear port-in-use message.
+- Removed the accidental leading backslash from START_AXM_FULL.bat.
+
+STATUS
+Static and local Linux/Node route verification completed.
+Windows BAT execution still requires Mike Tobi's manual confirmation.
+No Tool Factory capability, manifest status, install boundary, or project
+identity was changed by this patch.

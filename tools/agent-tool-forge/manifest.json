@@ -1,0 +1,31 @@
+{
+  "id": "agent-tool-forge",
+  "name": "AXM Agent Tool Forge",
+  "version": "v0.2",
+  "status": "TEST",
+  "entry": "index.html",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "audience": "human",
+  "tags": [
+    "agents",
+    "skills",
+    "masks",
+    "prompts",
+    "templates",
+    "software-drafts",
+    "package-export"
+  ],
+  "notes": "Draft-only software foundry. Human UI and machine adapter share forge-core.js. Validates, previews, fingerprints and exports new packages; never installs, overwrites, executes, promotes or canonizes.",
+  "uses": ["storage", "gate", "export"],
+  "permissions": [],
+  "risk": "MEDIUM",
+  "machine": {
+    "apiVersion": "1.0",
+    "entry": "machine.js",
+    "status": "TEST",
+    "effect": "draft-only",
+    "actions": ["parts.list", "templates.list", "draft.create", "draft.inspect", "draft.update", "draft.validate", "draft.render", "draft.package"],
+    "forbidden": ["install", "overwrite", "delete", "execute", "promote", "canonize"]
+  }
+}

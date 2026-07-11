@@ -1,0 +1,104 @@
+/* AXM Hub shell tokens — self-contained so the shell renders identically
+   even if the launcher skin folder is reskinned. Palette matches
+   assets/local/launcher/tokens.css and the reference mockups. */
+:root{
+  --space:#080b14; --ink:#101318; --panel:#181d25; --panel-2:#0d1320; --line:#2a313d; --edge:#1d2942;
+  --text:#dce2ea; --muted:#828d9e; --muted-2:#566179;
+  --cy:#38d6ec; --cy-dim:#1c7f92; --blue:#2f6dff; --gold:#e8b54a; --red:#e86a5f; --green:#63d68a; --purple:#b18cff;
+  --radius:14px; --radius-s:9px;
+  --font:system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--space);color:var(--text);font-family:var(--font)}
+body{overflow:hidden;background:radial-gradient(1100px 640px at 62% -12%,rgba(47,109,255,.08),transparent 60%),var(--space)}
+button{font-family:inherit}
+.mono{font-family:var(--mono)}
+
+/* ---- shell grid: outer stable ---- */
+.shell{display:grid;grid-template-rows:auto 1fr auto;height:100vh}
+.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--edge);background:linear-gradient(180deg,rgba(24,29,37,.7),transparent)}
+.mark{width:30px;height:30px;border:1.5px solid var(--cy);border-radius:7px;display:grid;place-items:center;box-shadow:0 0 16px rgba(56,214,236,.25)}
+.mark b{color:var(--cy);font-size:12px;letter-spacing:1px}
+.brand{font-weight:700;font-size:15px;letter-spacing:.5px}.brand span{color:var(--cy)}
+.active-lbl{color:var(--muted);font-size:12.5px;margin-left:8px}
+.active-lbl b{color:var(--cy);font-weight:600}
+.topbar .grow{flex:1}
+.status-dot{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+.status-dot::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border:1px solid var(--edge);border-radius:999px;font-size:12px;color:var(--text);background:rgba(13,19,32,.6)}
+.pill.saved{color:var(--cy);border-color:var(--cy-dim)}
+.tb-btn{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border:1px solid var(--edge);border-radius:9px;background:transparent;color:var(--text);font-size:12.5px;cursor:pointer}
+.tb-btn:hover{border-color:var(--cy-dim);color:var(--cy)}
+
+.body{display:grid;grid-template-columns:210px 1fr;min-height:0}
+/* ---- sidebar switcher ---- */
+.sidebar{border-right:1px solid var(--edge);padding:12px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.side-cap{font-size:10px;letter-spacing:2px;color:var(--muted-2);text-transform:uppercase;margin:10px 8px 4px}
+.mod{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;cursor:pointer;border:1px solid transparent;color:var(--text);font-size:14px;text-align:left;width:100%;background:transparent}
+.mod:hover{background:rgba(56,214,236,.06)}
+.mod.active{background:linear-gradient(90deg,rgba(56,214,236,.14),rgba(56,214,236,.02));border-color:var(--cy-dim);color:var(--cy)}
+.mod .ic{width:20px;height:20px;flex:0 0 20px;display:grid;place-items:center;color:inherit;opacity:.9}
+.mod .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mod .life{font-size:8.5px;letter-spacing:.5px;padding:2px 5px;border-radius:5px;border:1px solid var(--line);color:var(--muted)}
+.life.CLAIMED{color:var(--muted)} .life.TEST{color:var(--gold);border-color:var(--gold)}
+.life.WORKING{color:var(--green);border-color:var(--green)} .life.SAVED{color:var(--cy);border-color:var(--cy-dim)}
+.life.HOLD{color:var(--red);border-color:var(--red)} .life.CANON{color:var(--purple);border-color:var(--purple)}
+
+/* ---- viewport: inner flexible ---- */
+.viewport{position:relative;min-width:0;min-height:0;background:#06080f}
+.viewport iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#06080f}
+.vp-loading,.vp-error{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center}
+.vp-loading.show,.vp-error.show{display:flex}
+.spin{width:34px;height:34px;border:3px solid var(--edge);border-top-color:var(--cy);border-radius:50%;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.vp-error h3{margin:0;color:var(--red)}
+.vp-error p{margin:0;color:var(--muted);max-width:420px;font-size:13px}
+
+/* ---- bottom action/status log ---- */
+.statusbar{display:flex;align-items:center;gap:18px;padding:8px 16px;border-top:1px solid var(--edge);background:linear-gradient(0deg,rgba(24,29,37,.7),transparent);font-size:12px;color:var(--muted);min-height:40px}
+.statusbar .sb-item{display:flex;align-items:center;gap:8px}
+.statusbar .sb-item b{color:var(--text);font-weight:600}
+.statusbar .warn{color:var(--gold)}
+.statusbar .log-tail{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);color:var(--muted-2);font-size:11.5px}
+.statusbar .sb-btn{margin-left:auto;padding:5px 10px;border:1px solid var(--edge);border-radius:8px;background:transparent;color:var(--text);cursor:pointer;font-size:12px}
+.statusbar .sb-btn:hover{border-color:var(--cy-dim);color:var(--cy)}
+
+/* ---- shared screen overlays ---- */
+/* ---- slot arrangements a skin may choose. The CONTRACT is fixed
+   (there is always a nav, a viewport, a status bar); only the
+   arrangement varies. Outer stable, presentation flexible. ---- */
+body[data-nav="right"] .body{grid-template-columns:1fr 210px}
+body[data-nav="right"] .sidebar{order:2;border-right:0;border-left:1px solid var(--edge)}
+body[data-nav="rail"] .body{grid-template-columns:62px 1fr}
+body[data-nav="rail"] .mod .nm,body[data-nav="rail"] .mod .life{display:none}
+body[data-nav="rail"] .mod{justify-content:center;padding:11px 0}
+body[data-nav="rail"] .side-cap{font-size:8px;text-align:center;letter-spacing:.5px}
+body[data-density="compact"] .mod{padding:6px 9px;font-size:13px}
+body[data-density="compact"] .topbar{padding:6px 12px}
+body[data-density="compact"] .statusbar{padding:5px 12px;min-height:32px}
+
+.overlay{position:fixed;inset:0;background:rgba(4,6,10,.72);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:50;padding:24px}
+.overlay.show{display:flex}
+.sheet{width:min(720px,94vw);max-height:86vh;overflow:auto;background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--edge);border-radius:16px;padding:20px}
+.sheet h2{margin:0 0 4px;font-size:18px}
+.sheet .sub{color:var(--muted);font-size:13px;margin:0 0 16px}
+.sheet .close{float:right;background:transparent;border:1px solid var(--edge);color:var(--muted);border-radius:8px;padding:4px 9px;cursor:pointer}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row .k{font-size:13.5px}.row .d{color:var(--muted);font-size:11.5px}
+.grant{color:var(--green)}.deny{color:var(--red)}
+.home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:18px;overflow:auto}
+.home-hero{padding:22px 18px 6px}
+.home-hero h1{margin:0;font-size:26px}
+.home-hero .os{color:var(--cy)}.home-hero .if{color:var(--purple)}
+.home-hero p{color:var(--muted);margin:6px 0 0;font-size:14px}
+.hcard{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--edge);border-radius:14px;padding:14px;cursor:pointer;transition:border-color .15s}
+.hcard:hover{border-color:var(--cy-dim)}
+.hcard h3{margin:0 0 4px;font-size:15px}
+.hcard p{margin:0;color:var(--muted);font-size:12px;min-height:32px}
+.hcard .open{margin-top:10px;color:var(--cy);font-size:12.5px}
+input[type=text],select{background:#06080f;border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:7px 9px;font-family:inherit;font-size:13px}
+.btn{padding:8px 14px;border:1px solid var(--cy-dim);border-radius:9px;background:rgba(56,214,236,.1);color:var(--cy);cursor:pointer;font-size:13px}
+.btn:hover{background:rgba(56,214,236,.18)}
+.btn.ghost{border-color:var(--edge);background:transparent;color:var(--text)}

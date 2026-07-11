@@ -1,0 +1,26 @@
+AXM_WORKSHOP v0.6 STUDIO TEST PATCH
+====================================
+Base: AXM_WORKSHOP-v0_5b_ROOT_CANON
+Added: studio-tool-v1 as /tools/studio
+
+PATCHES APPLIED:
+1. Studio askConnector now preserves the Duo Test route split:
+   - provider = bridge/local door
+   - aiProvider = claude/chatgpt behind the bridge
+   This makes the Main AI / 2nd AI picker meaningful instead of every AI slot
+   falling through the same automatic provider path.
+
+2. Bridge ChatGPT route now converts Claude-style Studio image blocks into
+   OpenAI-style image_url data URLs before sending to the ChatGPT/OpenAI path.
+   This is still NOT live-tested without your key, but it removes the obvious
+   source-shape mismatch.
+
+UNCHANGED:
+- AXM core roots remain CANON BASE.
+- Prehub unchanged.
+- Duo Test unchanged.
+- Foundation bundle unchanged.
+- Tool behavior still requires Mike Tobi/local gate; AI is optional.
+
+STATUS:
+ACCEPT FOR TEST only. Not canon. Real Claude/OpenAI calls still require laptop keys.

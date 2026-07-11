@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AXM Tool Forge</title>
+<!-- FORGE v1 — a tool that makes tools. Generates: (1) manifest.json with
+     declared uses + id rules enforced, (2) index.html shell on the spine with
+     saveFormat + accessibility floor baked in, (3) the AI build brief with
+     NEVER-DUMB-DOWN / NO-FAKE-DONE rules. Nothing is installed automatically:
+     you drop the folder in /tools yourself — the human stays the gate. -->
+<script src="axm-foundation.js"></script>
+<style>
+  :root{--ink:#101318;--panel:#181d25;--line:#2a313d;--text:#dce2ea;--muted:#828d9e;--cy:#38d6ec;--gold:#e8b54a;--green:#63d68a}
+  *{box-sizing:border-box} body{margin:0 auto;max-width:760px;background:var(--ink);color:var(--text);font-family:system-ui,sans-serif;line-height:1.5;padding:18px}
+  h1{font-size:18px;margin:0}.eyebrow{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+  .status{float:right;font-family:ui-monospace,monospace;font-size:11px;color:var(--cy)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+  input,textarea{width:100%;background:var(--ink);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px;font:inherit;margin-top:6px;min-height:44px}
+  textarea{min-height:70px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  button{font:inherit;font-size:14px;cursor:pointer;border-radius:9px;padding:11px 14px;border:1px solid var(--line);background:#1f2731;color:var(--text);min-height:44px}
+  button.go{border-color:#2c6047;color:var(--green)}
+  .chip{font-family:ui-monospace,monospace;font-size:12px;padding:6px 12px;border-radius:20px;border:1px solid var(--line);color:var(--muted);cursor:pointer;background:none;min-height:36px}
+  .chip.on{color:var(--cy);border-color:var(--cy)}
+  .mono{font-family:ui-monospace,monospace;font-size:11px;color:var(--muted)}
+  pre{background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:11px;overflow:auto;white-space:pre-wrap;max-height:220px}
+  label{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="status" id="boot">starting…</div>
+<div class="eyebrow">AXM · tool forge</div>
+<h1>Make a new tool</h1>
+
+<div class="panel">
+  <label>Your name (for the id prefix — official AXM tools skip this)</label>
+  <input id="owner" placeholder="mike (leave empty ONLY for official tools)" />
+  <label>Tool name</label><input id="tname" placeholder="Snowball Counter" />
+  <label>What should it do? (plain words — this becomes the AI brief)</label>
+  <textarea id="tdesc" placeholder="Counts snowballs per faction, saves the tally, shows a simple chart…"></textarea>
+  <label>Powers it needs (tap — becomes the honest uses declaration)</label>
+  <div class="row" id="usesRow"></div>
+  <div class="row">
+    <button class="go" id="genBtn">Forge it</button>
+  </div>
+</div>
+
+<div class="panel" id="outPanel" style="display:none">
+  <b style="font-size:13px" id="outTitle"></b>
+  <p class="mono" id="instr"></p>
+  <div class="row">
+    <button id="dlManifest">Download manifest.json</button>
+    <button id="dlShell">Download index.html</button>
+    <button class="go" id="dlBrief">Download AI build brief (.txt)</button>
+  </div>
+  <pre id="preview"></pre>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const USES = ['storage','ai','bridge','export','network','files'];
+let picked = ['storage'];
+USES.forEach(u => { const b=document.createElement('button'); b.className='chip'+(picked.includes(u)?' on':'');
+  b.textContent=u; b.onclick=()=>{ picked.includes(u)?picked=picked.filter(x=>x!==u):picked.push(u);
+  b.className='chip'+(picked.includes(u)?' on':''); }; $('usesRow').appendChild(b); });
+
+function slug(s){ return s.toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,''); }
+
+function makeManifest(id,name,desc){
+  return JSON.stringify({ id, name, version:'v0.1', status:'TEST', entry:'index.html',
+    tags:[], uses:picked.slice(),
+    notes: desc + ' — forged skeleton; status stays TEST until device-proven. Saves carry {format:1}.' }, null, 2);
+}
+function makeShell(id,name,desc){
+  return ['<!DOCTYPE html>','<html lang="en">','<head>','<meta charset="UTF-8" />',
+'<meta name="viewport" content="width=device-width, initial-scale=1" />',
+'<title>'+name+'</title>',
+'<!-- Forged by AXM Tool Forge. Rules baked in: spine untouched below, saves',
+'     carry {format:1}, accessibility floor (44px targets, readable contrast),',
+'     AI optional (noAI never crashes), meaningful actions pass the gate. -->',
+'<scr'+'ipt src="axm-foundation.js"></scr'+'ipt>',
+'<style>',
+':root{--ink:#101318;--panel:#181d25;--line:#2a313d;--text:#dce2ea;--muted:#828d9e;--cy:#38d6ec;--green:#63d68a}',
+'*{box-sizing:border-box} body{margin:0 auto;max-width:760px;background:var(--ink);color:var(--text);font-family:system-ui,sans-serif;line-height:1.5;padding:18px}',
+'button{font:inherit;font-size:14px;cursor:pointer;border-radius:9px;padding:11px 14px;border:1px solid var(--line);background:#1f2731;color:var(--text);min-height:44px}',
+'.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}',
+'</style>','</head>','<body>',
+'<div id="boot" style="float:right;font-family:monospace;font-size:11px;color:var(--cy)">starting…</div>',
+'<h1 style="font-size:18px;margin:0">'+name+'</h1>',
+'<div class="panel">',
+'  <!-- ============ YOUR TOOL GOES HERE ============',
+'       Goal: '+desc.replace(/-->/g,'- >'),
+'       Saving:   await AXM.store.save("main", { format:1, yourData })',
+'       Loading:  const r = await AXM.store.load("main")',
+'       AI (only if declared): const a = await AXM.ask(prompt)',
+'                 if (a.noAI) { work without it — never fake an answer }',
+'       Gate meaningful actions:',
+'                 AXMGate.submit({action:"'+id+'.thing",actor:"user",actorType:"human"})',
+'       ============================================== -->',
+'  <p>TODO: unbuilt — this is a forged skeleton, honestly empty.</p>',
+'</div>',
+'<scr'+'ipt>',
+'(async () => {',
+'  const info = await AXM.init({ id: "'+id+'", name: "'+name.replace(/"/g,'\\\\"')+'", version: "v0.1" });',
+'  document.getElementById("boot").textContent = "ready · " + info.storageBackend;',
+'})().catch(e => { document.getElementById("boot").textContent = "boot failed: " + e.message; });',
+'</scr'+'ipt>','</body>','</html>'].join('\\n');
+}
+function makeBrief(id,name,desc){
+  return ['AXM TOOL BUILD BRIEF — forged '+new Date().toISOString().slice(0,10),
+'','Attach BOTH generated files (manifest.json + index.html skeleton).','',
+'You are building ONE tool for AXM, a local-first system.',
+'THE TOOL: '+name+' (id: '+id+')','WHAT IT DOES: '+desc,'DECLARED POWERS (do not exceed): '+picked.join(', '),'',
+'HARD RULES:',
+'1. Build ONLY inside the "YOUR TOOL GOES HERE" section. Do NOT touch the',
+'   foundation script block or the AXM.init line ids.',
+'2. ONE self-contained file back (edit the skeleton). No CDN, no accounts,',
+'   works in airplane mode. NEVER DUMB DOWN: all requested features, whole.',
+'3. Saving ONLY via AXM.store.save/load; every payload carries {format:1}.',
+'4. AI only via AXM.ask, only if declared, and {noAI:true} must leave the',
+'   tool fully working. Never fake an AI answer.',
+'5. Meaningful actions pass AXMGate.submit (action: "'+id+'.<verb>").',
+'6. Accessibility floor: 44px touch targets, readable contrast, nothing',
+'   sound-only, readable on a phone.',
+'7. NO FAKE DONE: label anything unbuilt/untested visibly.',
+'8. Honest friction: if part of this brief is a bad idea, say so first.','',
+'RETURN: the completed index.html. The human is the merge gate: they will',
+'drop it in /tools/'+id+'/, run node verify.js, test in SCRATCH, then decide.'].join('\\n');
+}
+
+function dl(filename, content){ const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'})); a.download=filename; a.click(); }
+
+$('genBtn').onclick = () => {
+  const owner = slug($('owner').value); const nm = $('tname').value.trim(); const desc = $('tdesc').value.trim();
+  if(!nm) return alert('Name the tool first.');
+  if(!desc) return alert('Say what it does — that line becomes the AI brief.');
+  if(!picked.length) return alert('Pick at least one power (storage is the usual minimum).');
+  const id = (owner ? owner + '.' : '') + slug(nm);
+  if(!owner && !confirm('No name prefix = OFFICIAL tool id. Official ids are for the founder to approve. Continue?')) return;
+  const v = AXMGate.submit({ action:'forge.generate', actor: owner||'mike', actorType:'human', tool:'forge', detail:{ id } });
+  if(!v.allow) return alert('Gate said no: '+v.reason);
+  const man = makeManifest(id,nm,desc), shell = makeShell(id,nm,desc), brief = makeBrief(id,nm,desc);
+  $('outPanel').style.display='';
+  $('outTitle').textContent = 'Forged: tools/'+id+'/';
+  $('instr').textContent = 'Make a folder tools/'+id+'/ · put manifest.json + index.html inside · copy axm-foundation.js from any tool folder next to them · refresh the Library. Building it yourself? Edit the YOUR TOOL GOES HERE section. Letting an AI build it? Send the brief + both files.';
+  $('preview').textContent = man;
+  $('dlManifest').onclick = () => dl('manifest.json', man);
+  $('dlShell').onclick = () => dl('index.html', shell);
+  $('dlBrief').onclick = () => dl(id+'-build-brief.txt', brief);
+};
+
+(async () => {
+  const info = await AXM.init({ id:'forge', name:'AXM Tool Forge', version:'v1' });
+  $('boot').textContent = 'ready · ' + info.storageBackend;
+})().catch(e => { $('boot').textContent = 'boot failed: ' + e.message; });
+</script>
+</body>
+</html>

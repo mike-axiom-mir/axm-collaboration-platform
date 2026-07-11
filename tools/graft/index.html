@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!-- axm-verify-dynamic-ids: cfList stepList blindList -->
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXM Hub — Graft</title>
+<style>
+:root{--space:#080b14;--panel:#0d1320;--edge:#1d2942;--cy:#38d6ec;--green:#63d68a;--red:#e86a5f;--gold:#e8b54a;--muted:#828d9e;--text:#dce2ea}
+html,body{margin:0;height:100%;background:var(--space);color:var(--text);font-family:system-ui,sans-serif}
+.wrap{max-width:800px;margin:0 auto;padding:22px}
+h1{font-size:20px;margin:0 0 2px}.sub{color:var(--muted);margin:0 0 16px;font-size:13px}
+.cap{font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin:0 0 9px}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:15px;margin-bottom:11px}
+button{font-family:inherit}
+.btn{padding:8px 13px;border:1px solid #1c7f92;border-radius:9px;background:rgba(56,214,236,.1);color:var(--cy);cursor:pointer;font-size:13px}
+.btn.ghost{border-color:var(--edge);background:transparent;color:var(--text)}
+input,textarea,select{background:#06080f;border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:9px}
+.muted{color:var(--muted);font-size:12px}
+.mono{font-family:ui-monospace,monospace;font-size:11.5px}
+.state{border:1px solid var(--edge);border-radius:9px;padding:9px;background:#06080f;font-family:ui-monospace,monospace;font-size:11.5px;color:var(--muted)}
+.cf{padding:7px 0;border-top:1px solid var(--edge);font-size:12.5px}
+.cf .sev{font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-right:7px}
+.sev.block{color:var(--red);border:1px solid var(--red)} .sev.warn{color:var(--gold);border:1px solid var(--gold)} .sev.info{color:var(--cy);border:1px solid #1c7f92}
+.step{padding:8px 0;border-top:1px solid var(--edge);font-size:13px}
+.step .ck{color:var(--green);font-size:11.5px;font-family:ui-monospace,monospace}
+.step .nt{color:var(--gold);font-size:11.5px}
+.blocked{border:1px solid var(--red);border-radius:10px;padding:11px;background:rgba(232,106,95,.07);margin-bottom:11px;font-size:13px}
+.blind{padding:5px 0;font-size:12px;color:var(--muted);border-top:1px dotted var(--edge)}
+.foot{border:1px solid var(--gold);border-radius:10px;padding:11px;background:rgba(232,181,74,.06);font-size:12.5px;margin-top:11px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Graft</h1>
+  <p class="sub">Turn an idea into a recommended patch for THIS workshop. It plans; it never applies.</p>
+
+  <div class="card">
+    <p class="cap">This workshop, right now</p>
+    <div class="state" id="stateView">reading…</div>
+    <p class="muted" style="margin:8px 0 0">A patch is computed against this exact state. If the workshop changes, the patch goes stale and Graft says so.</p>
+  </div>
+
+  <div class="card">
+    <p class="cap">The idea to graft in</p>
+    <div class="row"><input id="iName" placeholder="name (e.g. Notes)" style="flex:2;min-width:150px"><input id="iId" placeholder="module id (e.g. notes)" style="flex:1;min-width:120px"></div>
+    <div class="row"><input id="iUses" placeholder="uses — capabilities, comma separated (e.g. storage, physics)"></div>
+    <div class="row"><input id="iLayer" placeholder="layer (open / private / ai-native)" style="flex:1"><input id="iPins" placeholder="pins (e.g. physics=2)" style="flex:1"></div>
+    <div class="row"><input id="iFiles" placeholder="new files, comma separated"></div>
+    <div class="row"><input id="iTouch" placeholder="existing files it modifies (leave blank if none)"></div>
+    <div class="row"><button class="btn" id="gen">Compute patch</button><button class="btn ghost" id="exp" style="display:none">Export patch</button></div>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<script src="/hub/route-core.js"></script>
+<script src="/hub/graft-core.js"></script>
+<script src="/hub/axm-hub-module.js"></script>
+<script>
+var $=function(id){return document.getElementById(id);};
+var G=window.AXMGraft;
+var STATE=null, PATCH=null;
+
+/* build live workshop state from what the hub knows */
+function readState(init){
+  var mods=[], layers=['open','private','ai-native'], spine='?', vpass=0, files=[];
+  try{
+    if(init && init.hub){
+      spine=init.hub.spine||'?'; vpass=init.hub.verifyPass||0;
+      (init.hub.modules||[]).forEach(function(m){ mods.push({id:m.id, provides:m.provides||[], pins:m.pins||{}}); });
+      (init.hub.files||[]).forEach(function(f){ files.push(f); });
+      if(init.hub.layers) layers=init.hub.layers;
+    }
+  }catch(e){}
+  /* fallback: at least list this module so the demo is not empty */
+  if(!mods.length) mods=[{id:'graft',provides:[],pins:{}}];
+  return { spine:spine, verifyPass:vpass, layers:layers, files:files, modules:mods };
+}
+
+function showState(){
+  STATE.__fp = G.stateFingerprint(STATE);
+  $('stateView').textContent =
+    'spine        ' + STATE.spine + '\n' +
+    'modules      ' + STATE.modules.length + '  (' + STATE.modules.map(function(m){return m.id;}).slice(0,8).join(', ') + (STATE.modules.length>8?'…':'') + ')\n' +
+    'layers       ' + STATE.layers.join(', ') + '\n' +
+    'verify pass  ' + STATE.verifyPass + '\n' +
+    'fingerprint  ' + STATE.__fp;
+}
+
+function parseIdea(){
+  var pins={}; var pinStr=$('iPins').value.trim();
+  if(pinStr){ pinStr.split(',').forEach(function(p){ var kv=p.split('='); if(kv.length===2) pins[kv[0].trim()]=isNaN(+kv[1])?kv[1].trim():+kv[1]; }); }
+  var list=function(v){ return v.trim()? v.split(',').map(function(x){return x.trim();}).filter(Boolean):[]; };
+  return { id:$('iId').value.trim()||null, name:$('iName').value.trim()||'Untitled idea',
+    uses:list($('iUses').value), layer:$('iLayer').value.trim()||'open',
+    pins:pins, new_files:list($('iFiles').value), touches:list($('iTouch').value) };
+}
+
+function render(){
+  var box=$('result'); box.innerHTML='';
+  if(!PATCH) return;
+  var c=document.createElement('div'); c.className='card';
+  var head='<p class="cap">Patch — computed against fingerprint ' + PATCH.computed_against.fingerprint + '</p>';
+  if(PATCH.blocked) head+='<div class="blocked"><b>This patch is BLOCKED.</b> Fix the blockers below, then recompute.</div>';
+  var cf='';
+  if(PATCH.conflicts.length){
+    cf='<p class="cap" style="margin-top:6px">What Graft found</p><div id="cfList"></div>';
+  }
+  var steps='<p class="cap" style="margin-top:12px">Recommended order · each step checkable before the next</p><div id="stepList"></div>';
+  var blind='<div class="foot"><b>What Graft did NOT examine</b> — a clean patch is not a safe patch:<div id="blindList"></div></div>';
+  var foot='<p class="muted" style="margin-top:10px">Nothing was applied. This is a plan to inspect, cross-check and build. Graft does not touch your workshop.</p>';
+  c.innerHTML=head+cf+steps+blind+foot;
+  box.appendChild(c);
+
+  if(PATCH.conflicts.length){
+    var cl=$('cfList');
+    PATCH.conflicts.forEach(function(x){
+      var d=document.createElement('div'); d.className='cf';
+      d.innerHTML='<span class="sev '+x.severity+'">'+x.severity.toUpperCase()+'</span>';
+      d.appendChild(document.createTextNode(x.detail));
+      cl.appendChild(d);
+    });
+  }
+  var sl=$('stepList');
+  PATCH.steps.forEach(function(s,n){
+    var d=document.createElement('div'); d.className='step';
+    d.innerHTML='<b>'+(n+1)+'.</b> ';
+    d.appendChild(document.createTextNode(s.title));
+    if(s.check){ var ck=document.createElement('div'); ck.className='ck'; ck.textContent='check: '+s.check; d.appendChild(ck); }
+    if(s.note){ var nt=document.createElement('div'); nt.className='nt'; nt.textContent='note: '+s.note; d.appendChild(nt); }
+    sl.appendChild(d);
+  });
+  var bl=$('blindList');
+  PATCH.not_examined.forEach(function(x){ var d=document.createElement('div'); d.className='blind'; d.textContent='· '+x; bl.appendChild(d); });
+  $('exp').style.display='';
+}
+
+$('gen').onclick=function(){
+  var idea=parseIdea();
+  PATCH=G.generatePatch(idea, STATE);
+  AXMHub.log('graft computed a patch for "'+idea.name+'" — '+PATCH.conflicts.length+' conflict(s)'+(PATCH.blocked?' [BLOCKED]':''));
+  render();
+};
+$('exp').onclick=function(){
+  if(!PATCH) return;
+  var b=new Blob([JSON.stringify(PATCH,null,2)],{type:'application/json'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='graft-patch.json'; a.click();
+  AXMHub.log('graft patch exported for cross-check');
+};
+
+AXMHub.onInit(function(init){
+  STATE=readState(init);
+  showState();
+  AXMHub.log('Graft ready — read '+STATE.modules.length+' modules');
+});
+AXMHub.ready({ id:'graft', name:'Graft', version:'v0.1', hubApiVersion:'1.0', permissions:[], savesState:false });
+if(!AXMHub.inHub){ STATE=readState(null); showState(); }
+</script>
+</body></html>

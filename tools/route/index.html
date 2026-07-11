@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<!-- axm-verify-dynamic-ids: fMeta fRow fNotes fNoteBtn fNote -->
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXM Hub — Route</title>
+<style>
+:root{--space:#080b14;--panel:#0d1320;--edge:#1d2942;--cy:#38d6ec;--green:#63d68a;--red:#e86a5f;--gold:#e8b54a;--purple:#b18cff;--muted:#828d9e;--text:#dce2ea}
+html,body{margin:0;height:100%;background:var(--space);color:var(--text);font-family:system-ui,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:22px}
+h1{font-size:20px;margin:0 0 2px}.sub{color:var(--muted);margin:0 0 16px;font-size:13px}
+.tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:7px 13px;border:1px solid var(--edge);border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;font-size:13px}
+.tab.on{border-color:#1c7f92;color:var(--cy);background:rgba(56,214,236,.08)}
+button{font-family:inherit}
+.btn{padding:8px 13px;border:1px solid #1c7f92;border-radius:9px;background:rgba(56,214,236,.1);color:var(--cy);cursor:pointer;font-size:13px}
+.btn.ghost{border-color:var(--edge);background:transparent;color:var(--text)}
+.btn.warn{border-color:var(--gold);color:var(--gold);background:rgba(232,181,74,.08)}
+input,select,textarea{background:#06080f;border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:8px;font-family:inherit;font-size:13px}
+input,textarea{width:100%;box-sizing:border-box}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:15px;margin-bottom:11px}
+.focus{border-color:#1c7f92;box-shadow:0 0 26px rgba(56,214,236,.07)}
+.focus h2{margin:0 0 4px;font-size:17px}
+.cap{font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.chip{font-size:10px;font-weight:700;letter-spacing:.4px;padding:3px 7px;border-radius:5px;border:1px solid var(--edge);color:var(--muted);margin-left:6px}
+.chip.CLAIMED{color:var(--muted)} .chip.NEEDS{color:var(--gold);border-color:var(--gold)}
+.chip.WORKING{color:var(--green);border-color:var(--green)} .chip.SAVED{color:var(--cy);border-color:#1c7f92}
+.chip.HOLD{color:var(--red);border-color:var(--red)} .chip.CANON{color:var(--purple);border-color:var(--purple)}
+.chip.src-fetched,.chip.src-tested{color:var(--green);border-color:var(--green)}
+.chip.src-human{color:var(--cy);border-color:#1c7f92}
+.chip.src-asserted{color:var(--gold);border-color:var(--gold)}
+.chip.stale{color:var(--red);border-color:var(--red)}
+.row{display:flex;gap:9px;align-items:center;margin-top:9px;flex-wrap:wrap}
+.muted{color:var(--muted);font-size:12px}
+.strike{text-decoration:line-through;opacity:.5}
+.mono{font-family:ui-monospace,monospace;font-size:11.5px;color:var(--muted)}
+pre{background:#06080f;border:1px solid var(--edge);border-radius:10px;padding:12px;overflow:auto;max-height:44vh;font-size:11px;white-space:pre-wrap;color:var(--text)}
+.note-i{display:block;padding:6px 0;border-top:1px solid var(--edge);font-size:12px}
+.warnbox{border:1px solid var(--gold);border-radius:10px;padding:11px;background:rgba(232,181,74,.06);font-size:12.5px;margin-bottom:12px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 id="rTitle">Route</h1>
+  <p class="sub" id="rGoal">A roadmap any intelligence can pick up later.</p>
+
+  <div class="tabs">
+    <button class="tab on" data-v="focus">Focus</button>
+    <button class="tab" data-v="all">Whole route</button>
+    <button class="tab" data-v="needs">Needs & claims</button>
+    <button class="tab" data-v="handoff">Handoff</button>
+    <button class="tab ghost" id="newBtn">New route</button>
+  </div>
+
+  <!-- FOCUS: one step. Focus is a design decision, not a feature. -->
+  <div id="vFocus">
+    <div class="card focus" id="focusCard"><p class="muted">No steps yet. Add one below.</p></div>
+    <div class="card">
+      <p class="cap">Add a step</p>
+      <input id="stTitle" placeholder="What is the next concrete step?">
+      <div class="row">
+        <input id="stCheck" placeholder="check (optional): file path, or test name" style="flex:1;min-width:180px">
+        <button class="btn" id="addStep">Add step</button>
+      </div>
+      <p class="muted" style="margin:8px 0 0">A step with no check can only ever be <b>CLAIMED</b>. Ticking is not verifying.</p>
+    </div>
+    <div class="card"><p class="cap">Progress</p><div id="prog" class="mono">—</div></div>
+  </div>
+
+  <!-- WHOLE ROUTE -->
+  <div id="vAll" class="hide">
+    <div id="staleWarn" class="warnbox hide"></div>
+    <div id="allSteps"></div>
+    <div class="card">
+      <p class="cap">Route state · chosen, never computed</p>
+      <div class="row">
+        <label class="muted"><input type="checkbox" id="goalReached" style="width:auto"> goal reached</label>
+        <select id="routeState"><option value="living">living</option><option value="quiet">quiet</option><option value="closed">closed</option></select>
+        <button class="btn ghost" id="setState">Set</button>
+      </div>
+      <p class="muted" style="margin:8px 0 0">A goal can be reached and the route stay <b>living</b>. Closing needs a reason. Closed is never gone — it stays readable and forkable.</p>
+    </div>
+  </div>
+
+  <!-- NEEDS & CLAIMS -->
+  <div id="vNeeds" class="hide">
+    <div class="card">
+      <p class="cap">Open a need</p>
+      <input id="ndQ" placeholder="An open question this route depends on">
+      <div class="row">
+        <input id="ndWake" placeholder="revisit when… (optional)" style="flex:1;min-width:170px">
+        <button class="btn" id="addNeed">Add need</button>
+        <button class="btn ghost" id="resolveBtn">Try resolve()</button>
+      </div>
+      <p class="muted" style="margin:8px 0 0" id="resolveNote">resolve() asks the hub for a provider. None exists yet — needs return NEEDS SOURCE.</p>
+    </div>
+    <div id="needList"></div>
+  </div>
+
+  <!-- HANDOFF -->
+  <div id="vHandoff" class="hide">
+    <div class="warnbox">The workers are transient; the route is the memory they don't have. This packet is what a fresh Claude, a local model, or a human friend gets handed — bounded, with rejected paths and settled decisions included.</div>
+    <div class="card">
+      <div class="row">
+        <input id="hoWho" placeholder="who is picking this up? (claude / nova / errol)" style="flex:1;min-width:200px">
+        <button class="btn" id="mkPacket">Build resume packet</button>
+        <button class="btn ghost" id="dlRoute">Download route.json</button>
+      </div>
+    </div>
+    <pre id="packet">Resume packet appears here.</pre>
+    <div id="handList"></div>
+  </div>
+</div>
+
+<script src="/hub/route-core.js"></script>
+<script src="/hub/axm-hub-module.js"></script>
+<script>
+var $ = function(id){ return document.getElementById(id); };
+var R = window.AXMRoute;
+var route = null;
+var WHO = 'me';
+
+function shortState(s){ return ({'NEEDS VERIFY':'NEEDS','SAVED CHECKPOINT':'SAVED','CANON CANDIDATE':'CANON','TEST-HOLD':'HOLD'})[s] || s; }
+function chipCls(s){ return ({'NEEDS VERIFY':'NEEDS','SAVED CHECKPOINT':'SAVED','CANON CANDIDATE':'CANON','TEST-HOLD':'HOLD'})[s] || s; }
+
+function save(){ route.route.updated = new Date().toISOString(); AXMHub.save({ route: route }); render(); }
+
+/* ---------- FOCUS: current step only ---------- */
+function currentStep(){
+  return route.steps.find(function(s){ return !s.superseded_by && s.state === 'CLAIMED'; })
+      || route.steps.filter(function(s){ return !s.superseded_by; })[0] || null;
+}
+function renderFocus(){
+  var s = currentStep(), c = $('focusCard');
+  if (!s) { c.innerHTML = '<p class="muted">No steps yet. Add one below.</p>'; }
+  else {
+    var stale = R.staleSteps(route).some(function(x){ return x.step_id === s.id; });
+    c.innerHTML = '<p class="cap">Your next step</p><h2></h2>'
+      + '<div class="muted" id="fMeta"></div>'
+      + (stale ? '<div class="warnbox" style="margin-top:9px">This step rests on a <b>superseded claim</b>. Not failed — just worth a look.</div>' : '')
+      + '<div class="row" id="fRow"></div><div id="fNotes"></div>'
+      + '<div class="row"><input id="fNote" placeholder="add a note (appends, never conflicts)" style="flex:1;min-width:190px"><button class="btn ghost" id="fNoteBtn">Note</button></div>';
+    c.querySelector('h2').textContent = s.title;
+    $('fMeta').innerHTML = 'state: <b>' + s.state + '</b> · checks: ' + (s.checks.length || 'none')
+      + (s.forced_reason ? ' · <span style="color:var(--gold)">forced: ' + s.forced_reason + '</span>' : '');
+    var row = $('fRow');
+    R.STEP_STATES.forEach(function(st){
+      if (st === s.state) return;
+      var b = document.createElement('button'); b.className = 'btn ghost'; b.textContent = shortState(st);
+      b.onclick = function(){
+        var res = R.setStepState(route, s.id, st, WHO);
+        if (!res.ok) {
+          var why = prompt(res.error + '\n\nForce it anyway? Type a reason (or Cancel):');
+          if (!why) { AXMHub.log('refused to mark "' + s.title + '" ' + st + ' — no check'); return; }
+          R.setStepState(route, s.id, st, WHO, why);
+          AXMHub.log('FORCED step "' + s.title + '" -> ' + st + ' (' + why + ')');
+        } else AXMHub.log('step "' + s.title + '" -> ' + st);
+        save();
+      };
+      row.appendChild(b);
+    });
+    var nb = document.createElement('div'); nb.style.flexBasis = '100%';
+    row.appendChild(nb);
+    var notes = $('fNotes');
+    s.notes.slice(-4).forEach(function(n){
+      var d = document.createElement('span'); d.className = 'note-i';
+      d.textContent = n.text + '  — ' + n.by; notes.appendChild(d);
+    });
+    $('fNoteBtn').onclick = function(){
+      var t = $('fNote').value.trim(); if (!t) return;
+      R.addNote(route, s.id, t, WHO); AXMHub.log('note on "' + s.title + '"'); save();
+    };
+  }
+  var p = R.progress(route);
+  $('prog').textContent = p.verified + ' verified · ' + p.claimed_only + ' claimed-only · '
+    + p.steps + ' live steps · ' + p.open_needs + ' open needs';
+}
+
+/* ---------- WHOLE ROUTE ---------- */
+function renderAll(){
+  var stale = R.staleSteps(route), w = $('staleWarn');
+  if (stale.length) { w.classList.remove('hide'); w.innerHTML = '<b>' + stale.length + ' step(s) rest on a superseded claim.</b> Visible, not auto-failed.'; }
+  else w.classList.add('hide');
+
+  var box = $('allSteps'); box.innerHTML = '';
+  if (!route.steps.length) box.innerHTML = '<div class="card"><p class="muted">No steps yet.</p></div>';
+  route.steps.forEach(function(s){
+    var d = document.createElement('div'); d.className = 'card' + (s.superseded_by ? ' strike' : '');
+    d.innerHTML = '<div><b class="t"></b><span class="chip ' + chipCls(s.state) + '">' + shortState(s.state) + '</span>'
+      + (s.checks.length ? '' : '<span class="chip">no check</span>')
+      + (s.superseded_by ? '<span class="chip stale">superseded</span>' : '') + '</div>'
+      + '<div class="muted sr"></div>';
+    d.querySelector('.t').textContent = s.title;
+    d.querySelector('.sr').textContent = s.superseded_by ? ('reason: ' + s.reason) : (s.notes.length + ' note(s)');
+    if (!s.superseded_by) {
+      var b = document.createElement('button'); b.className = 'btn ghost'; b.style.marginTop = '9px'; b.textContent = 'Supersede';
+      b.onclick = function(){
+        var why = prompt('Plans drift. Superseding keeps this step visible with your reason.\n\nWhy is it replaced?');
+        if (!why) return;
+        R.supersedeStep(route, s.id, null, why, WHO); AXMHub.log('superseded step: ' + s.title); save();
+      };
+      d.appendChild(b);
+    }
+    box.appendChild(d);
+  });
+  $('goalReached').checked = !!route.route.goal_reached;
+  $('routeState').value = route.route.state;
+}
+
+/* ---------- NEEDS & CLAIMS ---------- */
+function renderNeeds(){
+  var box = $('needList'); box.innerHTML = '';
+  if (!route.needs.length) { box.innerHTML = '<div class="card"><p class="muted">No needs yet. A need is an open question — it is allowed to stay open.</p></div>'; return; }
+  route.needs.forEach(function(n){
+    var live = R.liveClaimsFor(route, n.id);
+    var contested = !n.answered_by && live.length > 1;
+    var d = document.createElement('div'); d.className = 'card';
+    var head = '<div><b class="q"></b>'
+      + (n.answered_by ? '<span class="chip WORKING">answered</span>' : '<span class="chip NEEDS">NEEDS SOURCE</span>')
+      + (contested ? '<span class="chip stale">contested</span>' : '') + '</div>';
+    d.innerHTML = head + '<div class="muted wk"></div><div class="cl"></div>'
+      + '<div class="row"><input class="ct" placeholder="a claim answering this" style="flex:1;min-width:150px">'
+      + '<select class="sk"><option value="fetched">fetched (evidence)</option><option value="tested">tested</option><option value="human">human</option><option value="asserted" selected>asserted (unverified)</option></select>'
+      + '<input class="sw" placeholder="source (who?)" style="max-width:140px">'
+      + '<button class="btn ghost addc">Add claim</button></div>';
+    d.querySelector('.q').textContent = n.question;
+    d.querySelector('.wk').textContent = n.revisit_when ? ('revisit when: ' + n.revisit_when) : 'no wake condition — a permanently curious question';
+
+    var cl = d.querySelector('.cl');
+    R.claimsFor(route, n.id).forEach(function(c){
+      var src = route.sources.find(function(s){ return s.id === c.source; }) || {};
+      var e = document.createElement('div'); e.className = 'note-i' + (c.superseded_by ? ' strike' : '');
+      e.innerHTML = '<span class="ct2"></span><span class="chip src-' + (src.kind||'asserted') + '">' + (src.kind||'?') + '</span>'
+        + '<span class="mono"> ' + (src.who||'?') + (src.evidence ? ' · ' + src.evidence : '') + '</span>'
+        + (n.answered_by === c.id ? '<span class="chip WORKING">current answer</span>' : '')
+        + (c.superseded_by ? '<span class="mono"> superseded: ' + c.reason + '</span>' : '');
+      e.querySelector('.ct2').textContent = c.text + ' ';
+      if (!c.superseded_by && n.answered_by !== c.id) {
+        var pick = document.createElement('button'); pick.className = 'btn ghost'; pick.style.marginLeft = '7px'; pick.textContent = 'Use this';
+        pick.onclick = function(){ R.answerNeed(route, n.id, c.id, WHO); AXMHub.log('need answered (choice, not closure)'); save(); };
+        e.appendChild(pick);
+      }
+      cl.appendChild(e);
+    });
+
+    if (contested) {
+      var cc = document.createElement('button'); cc.className = 'btn warn'; cc.style.marginTop = '9px'; cc.textContent = 'Cross-check: why do these differ?';
+      cc.onclick = function(){
+        var res = R.diagnoseConflict(route, n.id, 'cross-check');
+        if (!res.ok) return;
+        var c = res.conflict;
+        AXMHub.log('conflict diagnosed: ' + c.resolution);
+        if (c.escalate) alert('GENUINE FORK — escalated to you.\n\n' + c.diagnosis + '\n\nNo vote was taken. "No right answer yet" is a legal outcome.');
+        else alert('Resolved on provenance, no human needed.\n\n' + c.diagnosis);
+        save();
+      };
+      d.appendChild(cc);
+    }
+    d.querySelector('.addc').onclick = function(){
+      var t = d.querySelector('.ct').value.trim(); if (!t) return;
+      var who = d.querySelector('.sw').value.trim() || 'unnamed';
+      var src = R.addSource(route, { kind: d.querySelector('.sk').value, who: who });
+      var res = R.addClaim(route, { need_id: n.id, text: t, source_id: src.id, who: WHO });
+      if (!res.ok) { alert(res.error); return; }
+      AXMHub.log('claim added from ' + who); save();
+    };
+    box.appendChild(d);
+  });
+}
+
+/* ---------- HANDOFF ---------- */
+function renderHandoff(){
+  var box = $('handList'); box.innerHTML = '';
+  route.handoffs.slice(-6).reverse().forEach(function(h){
+    var d = document.createElement('div'); d.className = 'card';
+    d.innerHTML = '<div class="mono"></div>';
+    d.querySelector('.mono').textContent = h.at + '  ·  ' + h.who + '  ·  left open: ' + (h.left_open.length);
+    box.appendChild(d);
+  });
+}
+$('mkPacket').onclick = function(){
+  var who = $('hoWho').value.trim() || 'unnamed';
+  var s = currentStep();
+  var p = R.resumePacket(route, s && s.id);
+  $('packet').textContent = JSON.stringify(p, null, 2);
+  R.recordHandoff(route, { who: who, took: s && s.id, left_open: R.openNeeds(route).map(function(n){ return n.id; }) });
+  AXMHub.log('handoff packet built for ' + who); save();
+};
+$('dlRoute').onclick = function(){
+  var b = new Blob([JSON.stringify(route, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'route.json'; a.click();
+  AXMHub.log('route.json downloaded — the file is the product');
+};
+
+/* ---------- resolve() seam: declared, inert ---------- */
+$('resolveBtn').onclick = function(){
+  AXMHub.log('AXM.resolve() called — no provider registered');
+  $('resolveNote').textContent = 'resolve(): no provider module is registered to answer needs. Needs stay NEEDS SOURCE. Nothing was fetched. The day a research module exists, this call works unchanged.';
+};
+
+/* ---------- shell ---------- */
+$('addStep').onclick = function(){
+  var t = $('stTitle').value.trim(); if (!t) return;
+  var chk = $('stCheck').value.trim();
+  R.addStep(route, { title: t, checks: chk ? [{ kind: 'manual', ref: chk }] : [], who: WHO });
+  $('stTitle').value = ''; $('stCheck').value = '';
+  AXMHub.log('step added: ' + t); save();
+};
+$('addNeed').onclick = function(){
+  var q = $('ndQ').value.trim(); if (!q) return;
+  var s = currentStep();
+  R.addNeed(route, { question: q, step_id: s && s.id, revisit_when: $('ndWake').value.trim() || null, who: WHO });
+  $('ndQ').value = ''; $('ndWake').value = '';
+  AXMHub.log('need opened: ' + q); save();
+};
+$('setState').onclick = function(){
+  R.setGoalReached(route, $('goalReached').checked, WHO);
+  var st = $('routeState').value, reason = null;
+  if (st === 'closed') { reason = prompt('Closing is a decision, not a calculation.\n\nWhy is this route closed?'); if (!reason) return; }
+  var res = R.setRouteState(route, st, WHO, reason);
+  if (!res.ok) { alert(res.error); return; }
+  AXMHub.log('route state -> ' + st); save();
+};
+$('newBtn').onclick = function(){
+  var t = prompt('Route title:'); if (!t) return;
+  var g = prompt('The goal (what does done look like?):') || '';
+  route = R.newRoute(t, g, WHO); AXMHub.log('new route: ' + t); save();
+};
+[].forEach.call(document.querySelectorAll('.tab[data-v]'), function(b){
+  b.onclick = function(){
+    [].forEach.call(document.querySelectorAll('.tab[data-v]'), function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    ['focus','all','needs','handoff'].forEach(function(v){
+      $('v' + v.charAt(0).toUpperCase() + v.slice(1)).classList.toggle('hide', v !== b.dataset.v);
+    });
+  };
+});
+
+function render(){
+  $('rTitle').textContent = route.route.title;
+  $('rGoal').textContent = (route.route.goal || 'no goal set') + '  ·  ' + route.route.state
+    + (route.route.goal_reached ? '  ·  goal reached' : '');
+  renderFocus(); renderAll(); renderNeeds(); renderHandoff();
+}
+
+AXMHub.onInit(function(init){
+  WHO = (init && init.moduleId) ? 'me' : 'me';
+  if (init && init.moduleState && init.moduleState.route) route = init.moduleState.route;
+  else route = R.newRoute('First route', 'Prove the hub works in a browser', WHO);
+  AXMHub.log('Route ready — ' + route.steps.length + ' steps');
+  render();
+});
+AXMHub.onShutdown(function(){ AXMHub.save({ route: route }); });
+AXMHub.ready({ id:'route', name:'Route', version:'v0.1', hubApiVersion:'1.0', permissions:[], savesState:true, handlesShutdown:true });
+if (!AXMHub.inHub) { route = R.newRoute('First route', 'Prove the hub works in a browser', WHO); render(); }
+</script>
+</body></html>
