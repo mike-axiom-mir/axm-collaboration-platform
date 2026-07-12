@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AXM Geographic Market Map — EXPERIMENTAL</title>
+<script src="/launcher/axm-foundation.js"></script>
+<script src="/launcher/axm-settings.js"></script>
+<script src="/launcher/axm-registry.js"></script>
+<script src="market-core.js"></script>
+<script src="source-adapters.js"></script>
+<style>
+:root{--bg:#071018;--panel:#0e1a25;--panel2:#122331;--line:#254052;--text:#e8f1f5;--muted:#89a1ad;--cy:#43d7e7;--green:#69d995;--gold:#efbb5c;--red:#ef766d;--purple:#b8a0ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% -10%,rgba(67,215,231,.16),transparent 32%),radial-gradient(circle at 90% 0,rgba(184,160,255,.12),transparent 28%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.45}header{padding:18px 20px;border-bottom:1px solid var(--line);background:#071018ee;position:sticky;top:0;z-index:4}.head{max-width:1280px;margin:auto;display:flex;gap:18px;justify-content:space-between;align-items:flex-start}.eyebrow{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--purple)}h1{font-size:25px;margin:3px 0}.sub,.muted,.hint{color:var(--muted)}.sub{font-size:13px;max-width:780px}.status{font:11px ui-monospace,monospace;color:var(--cy);text-align:right}.toolbar{max-width:1280px;margin:12px auto 0;display:flex;gap:8px;flex-wrap:wrap;align-items:end}.field{display:flex;flex-direction:column;gap:4px;min-width:150px}.field label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}input,select,textarea,button{font:inherit;border-radius:9px;border:1px solid var(--line);background:#0a151f;color:var(--text);padding:8px 10px}textarea{width:100%;min-height:88px;resize:vertical}button{cursor:pointer;background:#152635}button:hover{border-color:var(--cy)}button.good{color:var(--green);border-color:#2f6849}button.warn{color:var(--gold);border-color:#6e5423}button.danger{color:#ff9e98;border-color:#743832}button.on{color:var(--cy);border-color:var(--cy)}main{max-width:1280px;margin:auto;padding:16px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.view.hidden{display:none}.panel{background:linear-gradient(180deg,rgba(18,35,49,.94),rgba(10,21,31,.95));border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:14px}.panel h2{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 11px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.split{display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,1.7fr);gap:14px}.stat{background:#0a1620;border:1px solid var(--line);border-radius:12px;padding:11px}.stat b{font-size:23px;color:var(--cy);display:block}.stat small{color:var(--muted)}.nofake{border:1px dashed var(--gold);color:#f3ca83;background:rgba(239,187,92,.06);padding:10px;border-radius:11px;font-size:12px}.mapbox{min-height:340px;position:relative;overflow:hidden;background:linear-gradient(180deg,#0b1a25,#08131d);border:1px solid var(--line);border-radius:14px}.mapbox svg{width:100%;height:340px;display:block}.map-note{position:absolute;left:12px;bottom:10px;font-size:11px;color:var(--muted);background:#071018d9;padding:6px 8px;border-radius:8px}.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:8px}.dot{width:10px;height:10px;border-radius:50%;display:inline-block;background:currentColor;margin-right:4px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;vertical-align:top;border-bottom:1px solid var(--line);padding:8px 6px}th{color:var(--muted);font-weight:600;position:sticky;top:0;background:#10202d}.scroll{overflow:auto;max-height:520px;border:1px solid var(--line);border-radius:11px}.badge{display:inline-block;font:10px ui-monospace,monospace;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}.pass{color:var(--green)}.warntext{color:var(--gold)}.fail{color:var(--red)}.rank{font:700 18px ui-monospace,monospace;color:var(--cy)}.bar{height:7px;border-radius:99px;background:#183040;overflow:hidden;margin-top:4px}.bar>span{height:100%;display:block;background:linear-gradient(90deg,var(--purple),var(--cy))}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.grow{flex:1}.receipt{border:1px solid var(--line);border-radius:10px;padding:9px;margin-top:7px;font-size:11px}.receipt code{word-break:break-all;color:var(--cy)}pre{white-space:pre-wrap;overflow:auto;background:#071018;border:1px solid var(--line);border-radius:11px;padding:11px;font:11px ui-monospace,monospace;max-height:420px}.category-block{margin-top:12px}.category-block h3{font-size:13px;margin:0 0 6px;color:var(--gold)}@media(max-width:850px){header{position:relative}.head{flex-direction:column}.status{text-align:left}.split{grid-template-columns:1fr}.toolbar{align-items:stretch}.field{min-width:130px;flex:1}}
+</style>
+</head>
+<body>
+<header>
+  <div class="head"><div><div class="eyebrow">EXPERIMENTAL · evidence-first · local data workbench</div><h1>AXM Geographic Market Map</h1><div class="sub">Map prices, materials, availability, popularity and geographic lag across the Netherlands, Croatia and the EU. The tool supplies evidence and patterns; the human remains the trading intelligence.</div></div><div class="status" id="status">starting…</div></div>
+  <div class="toolbar">
+    <div class="field"><label>Month</label><input type="month" id="scopeMonth"></div>
+    <div class="field"><label>Geography</label><select id="scopeGeo"></select></div>
+    <div class="field grow"><label>Item</label><select id="scopeItem"></select></div>
+    <button id="saveNow" class="warn">Save checkpoint</button>
+  </div>
+</header>
+<main>
+  <nav class="tabs"><button id="tabOverview" class="on">Overview</button><button id="tabData">Data intake</button><button id="tabRankings">Top 100 / Top 10</button><button id="tabCompare">Compare</button><button id="tabEvidence">Evidence rows</button><button id="tabExport">Export & status</button></nav>
+
+  <section class="view" id="viewOverview">
+    <div class="grid" id="summaryStats"></div>
+    <div class="split" style="margin-top:14px">
+      <section class="panel"><h2>Evidence boundary</h2><div class="nofake">NO FAKE DONE: this map ranks only imported observations. It does not estimate missing stores, missing countries or missing popularity channels. Demo rows are visibly synthetic and carry very low trust.</div><div id="scopeReadout" class="hint" style="margin-top:10px"></div><div class="legend"><span><i class="dot" style="color:var(--green)"></i>higher confidence</span><span><i class="dot" style="color:var(--gold)"></i>partial coverage</span><span><i class="dot" style="color:var(--red)"></i>weak evidence</span></div></section>
+      <section class="panel"><h2>Geographic price surface</h2><div class="mapbox" id="mapBox"><svg id="geoMap" viewBox="0 0 760 340" aria-label="Geographic market map"></svg><div class="map-note">Marker size = observation count · ring = confidence · label = median comparable €/base unit</div></div></section>
+    </div>
+    <section class="panel"><h2>Current geographic aggregates</h2><div class="scroll"><table><thead><tr><th>Item</th><th>Place</th><th>Median</th><th>Range</th><th>Rows</th><th>Sources</th><th>Confidence</th><th>Freshest</th></tr></thead><tbody id="aggregateRows"></tbody></table></div></section>
+  </section>
+
+  <section class="view hidden" id="viewData">
+    <div class="split">
+      <section class="panel"><h2>Import evidence</h2><div class="field"><label>CSV or JSON</label><input type="file" id="dataFile" accept=".csv,.json,text/csv,application/json"></div><div class="row"><button id="importFile" class="good">Validate & import</button><button id="downloadSchema">Download schema CSV</button><button id="loadDemo" class="warn">Load labeled demo</button></div><p class="hint">Accepted JSON: an array, <code>{records:[...]}</code>, or <code>{observations:[...]}</code>. Duplicate evidence keys are refused.</p><pre id="importResult">No import run yet.</pre></section>
+      <section class="panel"><h2>Add one observation</h2><div class="grid">
+        <div class="field"><label>Item ID</label><input id="mItemId" placeholder="copper-cable"></div>
+        <div class="field"><label>Item name</label><input id="mItemName" placeholder="Copper cable"></div>
+        <div class="field"><label>Category</label><select id="mCategory"></select></div>
+        <div class="field"><label>Geography</label><select id="mGeo"></select></div>
+        <div class="field"><label>Observed date</label><input type="date" id="mDate"></div>
+        <div class="field"><label>Price</label><input type="number" min="0" step="any" id="mPrice"></div>
+        <div class="field"><label>Currency</label><select id="mCurrency"></select></div>
+        <div class="field"><label>Unit</label><select id="mUnit"></select></div>
+        <div class="field"><label>Quantity</label><input type="number" min="0.0001" step="any" value="1" id="mQuantity"></div>
+        <div class="field"><label>Seller</label><input id="mSeller"></div>
+        <div class="field"><label>Availability</label><select id="mAvailability"></select></div>
+        <div class="field"><label>Source ID</label><input id="mSourceId" placeholder="receipt-2026-001"></div>
+        <div class="field"><label>Source type</label><select id="mSourceType"></select></div>
+        <div class="field"><label>Source URL</label><input id="mSourceUrl"></div>
+        <div class="field"><label>FX rate to EUR</label><input type="number" min="0" step="any" id="mFx" placeholder="Only for non-EUR"></div>
+      </div>
+      <div class="grid" style="margin-top:8px">
+        <div class="field"><label>Marketplace activity 0–100</label><input type="number" min="0" max="100" id="mMarketplace"></div>
+        <div class="field"><label>Search interest 0–100</label><input type="number" min="0" max="100" id="mSearch"></div>
+        <div class="field"><label>Seller growth 0–100</label><input type="number" min="0" max="100" id="mSellerGrowth"></div>
+        <div class="field"><label>Trade movement 0–100</label><input type="number" min="0" max="100" id="mTrade"></div>
+        <div class="field"><label>Price pressure 0–100</label><input type="number" min="0" max="100" id="mPressure"></div>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="mNotes"></textarea></div><button id="addManual" class="good">Validate & add observation</button></section>
+    </div>
+    <section class="panel"><h2>Import receipts</h2><div id="receiptList"></div></section>
+  </section>
+
+  <section class="view hidden" id="viewRankings">
+    <section class="panel"><h2>Top observed items</h2><div class="nofake">“Top 100” means top 100 within the connected evidence for this scope. A score is absent when no popularity signals were supplied.</div><div class="scroll" style="margin-top:10px"><table><thead><tr><th>Rank</th><th>Item</th><th>Category</th><th>Score</th><th>Coverage</th><th>Confidence</th><th>Rows</th><th>Places</th></tr></thead><tbody id="rankingRows"></tbody></table></div></section>
+    <section class="panel"><h2>Top 10 by subfield</h2><div id="categoryRankings"></div></section>
+  </section>
+
+  <section class="view hidden" id="viewCompare">
+    <section class="panel"><h2>Netherlands · Croatia · EU comparison</h2><div id="compareSummary" class="hint"></div><div class="scroll" style="margin-top:10px"><table><thead><tr><th>Place</th><th>Median comparable price</th><th>Min–max</th><th>Rows</th><th>Sellers</th><th>Sources</th><th>Confidence</th></tr></thead><tbody id="compareRows"></tbody></table></div></section>
+    <section class="panel"><h2>Pattern questions</h2><div class="grid"><div class="stat"><b>1</b><small>Did the underlying material move before local retail?</small></div><div class="stat"><b>2</b><small>Is one geography absorbing costs while another passes them through?</small></div><div class="stat"><b>3</b><small>Does demand rise while supply, seller count or availability falls?</small></div><div class="stat"><b>4</b><small>Is the stock or sector response missing, delayed or already priced in?</small></div></div></section>
+  </section>
+
+  <section class="view hidden" id="viewEvidence">
+    <section class="panel"><div class="row"><h2 class="grow">Underlying evidence rows</h2><button id="clearData" class="danger">Clear local dataset</button></div><div class="scroll"><table><thead><tr><th>Date</th><th>Item</th><th>Place</th><th>Price</th><th>Normalized</th><th>Seller</th><th>Availability</th><th>Source</th><th>Warnings</th></tr></thead><tbody id="evidenceRows"></tbody></table></div></section>
+  </section>
+
+  <section class="view hidden" id="viewExport">
+    <div class="split"><section class="panel"><h2>Export</h2><div class="row"><button id="exportDataset" class="good">Export full evidence JSON</button><button id="exportReport" class="warn">Export scoped report JSON</button></div><p class="hint">Exports preserve source IDs, raw imported rows, normalization results and the ranking boundary.</p></section><section class="panel"><h2>Current module status</h2><pre id="statusBox"></pre></section></div>
+    <section class="panel"><h2>Shared dictionary</h2><pre id="dictionaryBox"></pre></section>
+  </section>
+</main>
+<script src="/hub/axm-hub-module.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var state={records:[],imports:[],dictionary:null,activeView:'Overview'};
+var views=['Overview','Data','Rankings','Compare','Evidence','Export'];
+
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
+function fmt(v,d){return Number.isFinite(v)?Number(v).toFixed(d==null?2:d):'—';}
+function money(v,unit){return Number.isFinite(v)?'€'+fmt(v,2)+' / '+esc(unit||'unit'):'not comparable';}
+function gate(action,detail){if(!window.AXMGate||!AXMGate.submit)return{allow:true};return AXMGate.submit({action:action,actor:'human-user',actorType:'human',tool:'geographic-market-map',detail:detail||{}});}
+function setStatus(t){$('status').textContent=t;}
+function download(name,content,type){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:type||'application/json'}));a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1200);}
+function currentMonth(){return $('scopeMonth').value;}
+function currentGeo(){return $('scopeGeo').value||'ALL';}
+function currentItem(){return $('scopeItem').value||'';}
+
+function demoRows(){
+  var m=currentMonth()||new Date().toISOString().slice(0,7);var d=m+'-01';
+  return[
+    {itemId:'copper-cable',itemName:'Copper cable',category:'construction',geography:'NL',observedAt:d,price:15.4,currency:'EUR',unit:'kg',quantity:1,seller:'DEMO NL A',availability:'in_stock',sourceId:'demo-nl-1',sourceType:'demo',marketplaceActivity:76,searchInterest:68,sellerGrowth:55,tradeMovement:62,pricePressure:71,notes:'Synthetic demonstration row'},
+    {itemId:'copper-cable',itemName:'Copper cable',category:'construction',geography:'HR',observedAt:d,price:14.2,currency:'EUR',unit:'kg',quantity:1,seller:'DEMO HR A',availability:'low_stock',sourceId:'demo-hr-1',sourceType:'demo',marketplaceActivity:70,searchInterest:64,sellerGrowth:48,tradeMovement:59,pricePressure:66,notes:'Synthetic demonstration row'},
+    {itemId:'copper-cable',itemName:'Copper cable',category:'construction',geography:'EU',observedAt:d,price:14.8,currency:'EUR',unit:'kg',quantity:1,seller:'DEMO EU',availability:'unknown',sourceId:'demo-eu-1',sourceType:'demo',marketplaceActivity:73,searchInterest:67,sellerGrowth:52,tradeMovement:65,pricePressure:69,notes:'Synthetic demonstration row'},
+    {itemId:'coffee-beans',itemName:'Coffee beans',category:'food',geography:'NL',observedAt:d,price:18.5,currency:'EUR',unit:'kg',quantity:1,seller:'DEMO NL B',availability:'in_stock',sourceId:'demo-nl-2',sourceType:'demo',marketplaceActivity:82,searchInterest:79,sellerGrowth:61,tradeMovement:53,pricePressure:74,notes:'Synthetic demonstration row'},
+    {itemId:'coffee-beans',itemName:'Coffee beans',category:'food',geography:'HR',observedAt:d,price:17.1,currency:'EUR',unit:'kg',quantity:1,seller:'DEMO HR B',availability:'in_stock',sourceId:'demo-hr-2',sourceType:'demo',marketplaceActivity:78,searchInterest:72,sellerGrowth:57,tradeMovement:51,pricePressure:68,notes:'Synthetic demonstration row'},
+    {itemId:'cement-bag',itemName:'Cement',category:'construction',geography:'NL',observedAt:d,price:8.9,currency:'EUR',unit:'kg',quantity:25,seller:'DEMO NL C',availability:'in_stock',sourceId:'demo-nl-3',sourceType:'demo',marketplaceActivity:58,searchInterest:54,sellerGrowth:49,tradeMovement:44,pricePressure:63,notes:'Synthetic demonstration row'},
+    {itemId:'cement-bag',itemName:'Cement',category:'construction',geography:'HR',observedAt:d,price:7.6,currency:'EUR',unit:'kg',quantity:25,seller:'DEMO HR C',availability:'low_stock',sourceId:'demo-hr-3',sourceType:'demo',marketplaceActivity:66,searchInterest:60,sellerGrowth:56,tradeMovement:48,pricePressure:70,notes:'Synthetic demonstration row'},
+    {itemId:'gaming-handheld',itemName:'Gaming handheld',category:'gaming',geography:'NL',observedAt:d,price:329,currency:'EUR',unit:'item',quantity:1,seller:'DEMO NL D',availability:'in_stock',sourceId:'demo-nl-4',sourceType:'demo',marketplaceActivity:88,searchInterest:90,sellerGrowth:73,tradeMovement:42,pricePressure:60,notes:'Synthetic demonstration row'},
+    {itemId:'gaming-handheld',itemName:'Gaming handheld',category:'gaming',geography:'HR',observedAt:d,price:349,currency:'EUR',unit:'item',quantity:1,seller:'DEMO HR D',availability:'preorder',sourceId:'demo-hr-4',sourceType:'demo',marketplaceActivity:84,searchInterest:86,sellerGrowth:69,tradeMovement:39,pricePressure:64,notes:'Synthetic demonstration row'},
+    {itemId:'electricity-household',itemName:'Household electricity',category:'energy',geography:'NL',observedAt:d,price:.31,currency:'EUR',unit:'kwh',quantity:1,seller:'DEMO NL E',availability:'in_stock',sourceId:'demo-nl-5',sourceType:'demo',marketplaceActivity:48,searchInterest:74,sellerGrowth:20,tradeMovement:58,pricePressure:82,notes:'Synthetic demonstration row'},
+    {itemId:'electricity-household',itemName:'Household electricity',category:'energy',geography:'HR',observedAt:d,price:.19,currency:'EUR',unit:'kwh',quantity:1,seller:'DEMO HR E',availability:'in_stock',sourceId:'demo-hr-5',sourceType:'demo',marketplaceActivity:44,searchInterest:69,sellerGrowth:18,tradeMovement:55,pricePressure:77,notes:'Synthetic demonstration row'}
+  ];
+}
+
+function populateStatic(){
+  var d=state.dictionary;
+  $('scopeGeo').innerHTML='<option value="ALL">All active geographies</option>'+Object.keys(d.geographies).filter(function(k){return d.geographies[k].active;}).map(function(k){return'<option value="'+k+'">'+esc(d.geographies[k].name)+'</option>';}).join('');
+  $('mGeo').innerHTML=Object.keys(d.geographies).filter(function(k){return d.geographies[k].active;}).map(function(k){return'<option value="'+k+'">'+esc(d.geographies[k].name)+'</option>';}).join('');
+  $('mCategory').innerHTML=d.categories.map(function(x){return'<option>'+esc(x)+'</option>';}).join('');
+  $('mCurrency').innerHTML=Object.keys(d.currencies).map(function(x){return'<option value="'+x+'">'+x+(d.currencies[x].active?'':' · planned')+'</option>';}).join('');
+  $('mUnit').innerHTML=Object.keys(d.units).map(function(x){return'<option>'+x+'</option>';}).join('');
+  $('mAvailability').innerHTML=d.availabilityValues.map(function(x){return'<option>'+x+'</option>';}).join('');
+  $('mSourceType').innerHTML=Object.keys(d.sourceTypes).map(function(x){return'<option value="'+x+'">'+esc(d.sourceTypes[x].label)+'</option>';}).join('');
+  $('mDate').value=new Date().toISOString().slice(0,10);$('scopeMonth').value=new Date().toISOString().slice(0,7);
+}
+
+function refreshItemSelect(){
+  var old=currentItem();var items={};state.records.forEach(function(r){items[r.itemId]=r.itemName;});
+  var options=Object.keys(items).sort().map(function(k){return'<option value="'+esc(k)+'">'+esc(items[k])+'</option>';}).join('');
+  $('scopeItem').innerHTML=options||'<option value="">No items imported</option>';
+  if(old&&items[old])$('scopeItem').value=old;
+}
+
+function filtered(){return AXMMarketCore.filterPeriod(state.records,currentMonth(),currentGeo());}
+function aggregates(){return AXMMarketCore.aggregateItem(filtered(),state.dictionary);}
+function ranked(){return AXMMarketCore.rankPopularity(state.records,state.dictionary,currentMonth(),currentGeo());}
+
+function renderSummary(){
+  var rows=filtered();var ag=aggregates();var ranks=ranked();var comparable=rows.filter(function(r){return Number.isFinite(r.unitPriceEur);}).length;
+  $('summaryStats').innerHTML=[
+    ['Evidence rows',rows.length],['Observed items',new Set(rows.map(function(r){return r.itemId;})).size],['Source IDs',new Set(rows.map(function(r){return r.sourceId;})).size],['Comparable in EUR',comparable],['Ranked items',ranks.length],['Active places',new Set(rows.map(function(r){return r.geography;})).size]
+  ].map(function(x){return'<div class="stat"><b>'+x[1]+'</b><small>'+x[0]+'</small></div>';}).join('');
+  $('scopeReadout').textContent='Scope: '+(currentMonth()||'all months')+' · '+(currentGeo()==='ALL'?'all active geographies':state.dictionary.geographies[currentGeo()].name)+' · '+rows.length+' evidence rows. '+(rows.some(function(r){return r.sourceType==='demo';})?'Demo evidence is present.':'No demo rows in this scope.');
+  $('aggregateRows').innerHTML=ag.length?ag.sort(function(a,b){return a.itemName.localeCompare(b.itemName)||a.geography.localeCompare(b.geography);}).map(function(g){var unit=g.units[0]||'unit';return'<tr><td><b>'+esc(g.itemName)+'</b><br><span class="badge">'+esc(g.category)+'</span></td><td>'+esc(state.dictionary.geographies[g.geography]?state.dictionary.geographies[g.geography].name:g.geography)+'</td><td>'+money(g.medianUnitPriceEur,unit)+'</td><td>'+((g.minUnitPriceEur!=null&&g.maxUnitPriceEur!=null)?'€'+fmt(g.minUnitPriceEur)+'–€'+fmt(g.maxUnitPriceEur):'—')+'</td><td>'+g.count+'</td><td>'+g.sourceCount+'</td><td class="'+(g.confidence>=70?'pass':g.confidence>=45?'warntext':'fail')+'">'+g.confidence+'%</td><td>'+esc((g.newestObservedAt||'').slice(0,10)||'—')+'</td></tr>';}).join(''):'<tr><td colspan="8" class="muted">No evidence in this scope.</td></tr>';
+}
+
+function project(lon,lat){var x=70+(lon+12)/45*620;var y=285-(lat-34)/38*245;return{x:x,y:y};}
+function renderMap(){
+  var item=currentItem();var ag=AXMMarketCore.compareGeographies(state.records,state.dictionary,item,currentMonth(),['NL','HR','EU']);
+  var by={};ag.forEach(function(g){by[g.geography]=g;});var d=state.dictionary;var svg=[];
+  svg.push('<defs><radialGradient id="sea"><stop offset="0" stop-color="#17384a"/><stop offset="1" stop-color="#08131d"/></radialGradient></defs><rect width="760" height="340" fill="url(#sea)"/><path d="M165 74 L244 42 L341 55 L420 31 L527 62 L635 118 L619 205 L561 282 L466 307 L359 283 L270 314 L184 265 L113 187 Z" fill="#173140" stroke="#31586b" stroke-width="2" opacity=".82"/><path d="M250 80 L312 92 L365 74 L431 101 L486 83 L557 126 L531 174 L474 185 L438 227 L376 213 L327 238 L287 202 L227 187 L204 134 Z" fill="#1b3b48" stroke="#31586b" opacity=".9"/>');
+  ['EU','NL','HR'].forEach(function(code){var geo=d.geographies[code],p=project(geo.lon,geo.lat),g=by[code],count=g?g.count:0,conf=g?g.confidence:0,r=12+Math.min(18,count*3),stroke=conf>=70?'#69d995':conf>=45?'#efbb5c':'#ef766d',fill=g?'#43d7e7':'#50616b',label=g?money(g.medianUnitPriceEur,g.units[0]):'no evidence';svg.push('<g><circle cx="'+p.x+'" cy="'+p.y+'" r="'+r+'" fill="'+fill+'" fill-opacity=".28" stroke="'+stroke+'" stroke-width="4"/><circle cx="'+p.x+'" cy="'+p.y+'" r="5" fill="'+fill+'"/><text x="'+(p.x+r+8)+'" y="'+(p.y-4)+'" fill="#e8f1f5" font-size="13" font-weight="700">'+esc(code)+' · '+esc(geo.name)+'</text><text x="'+(p.x+r+8)+'" y="'+(p.y+14)+'" fill="#89a1ad" font-size="11">'+esc(label)+'</text></g>');});
+  if(!item)svg.push('<text x="380" y="325" text-anchor="middle" fill="#89a1ad" font-size="12">Import evidence to activate item comparison.</text>');
+  $('geoMap').innerHTML=svg.join('');
+}
+
+function renderRankings(){
+  var r=ranked();$('rankingRows').innerHTML=r.length?r.slice(0,100).map(function(x){return'<tr><td class="rank">'+x.rank+'</td><td><b>'+esc(x.itemName)+'</b><br><span class="badge">'+esc(x.itemId)+'</span></td><td>'+esc(x.category)+'</td><td><b>'+fmt(x.score,1)+'</b><div class="bar"><span style="width:'+Math.max(0,Math.min(100,x.score))+'%"></span></div></td><td>'+Math.round(x.coverage*100)+'%</td><td class="'+(x.confidence>=70?'pass':x.confidence>=45?'warntext':'fail')+'">'+x.confidence+'%</td><td>'+x.observationCount+'</td><td>'+esc(x.geographies.join(', '))+'</td></tr>';}).join(''):'<tr><td colspan="8" class="muted">No items have popularity signals in this scope.</td></tr>';
+  var cats=AXMMarketCore.topByCategory(r,10);$('categoryRankings').innerHTML=Object.keys(cats).sort().map(function(c){return'<div class="category-block"><h3>'+esc(c)+'</h3><div class="scroll"><table><tbody>'+cats[c].map(function(x){return'<tr><td class="rank">'+x.rank+'</td><td>'+esc(x.itemName)+'</td><td>'+fmt(x.score,1)+'</td><td>'+x.confidence+'% confidence</td></tr>';}).join('')+'</tbody></table></div></div>';}).join('')||'<div class="muted">No category rankings yet.</div>';
+}
+
+function renderCompare(){
+  var item=currentItem();var ag=AXMMarketCore.compareGeographies(state.records,state.dictionary,item,currentMonth(),['NL','HR','EU']);
+  var name=state.records.filter(function(r){return r.itemId===item;})[0];$('compareSummary').textContent=item?'Comparing '+(name?name.itemName:item)+' for '+(currentMonth()||'all months')+'. Only rows with explicit EUR comparability receive euro medians.':'No item selected.';
+  $('compareRows').innerHTML=ag.length?ag.map(function(g){return'<tr><td><b>'+esc(state.dictionary.geographies[g.geography].name)+'</b></td><td>'+money(g.medianUnitPriceEur,g.units[0])+'</td><td>'+((g.minUnitPriceEur!=null&&g.maxUnitPriceEur!=null)?'€'+fmt(g.minUnitPriceEur)+'–€'+fmt(g.maxUnitPriceEur):'—')+'</td><td>'+g.count+'</td><td>'+g.sellerCount+'</td><td>'+g.sourceCount+'</td><td class="'+(g.confidence>=70?'pass':g.confidence>=45?'warntext':'fail')+'">'+g.confidence+'%</td></tr>';}).join(''):'<tr><td colspan="7" class="muted">No matching evidence.</td></tr>';
+}
+
+function renderEvidence(){
+  var rows=filtered().slice().sort(function(a,b){return b.observedAt.localeCompare(a.observedAt);});
+  $('evidenceRows').innerHTML=rows.length?rows.map(function(r){var v=AXMMarketCore.validateObservation(r,state.dictionary);return'<tr><td>'+esc(r.observedAt.slice(0,10))+'</td><td><b>'+esc(r.itemName)+'</b><br><span class="badge">'+esc(r.category)+'</span></td><td>'+esc(r.geography)+'</td><td>'+esc(r.currency)+' '+fmt(r.price)+' / '+esc(r.quantity+' '+r.unit)+'</td><td>'+money(r.unitPriceEur,r.baseUnit)+'</td><td>'+esc(r.seller||'—')+'</td><td>'+esc(r.availability)+'</td><td>'+esc(r.sourceId)+'<br><span class="badge">'+esc(r.sourceType)+'</span></td><td class="'+(v.warnings.length?'warntext':'pass')+'">'+esc(v.warnings.join(' · ')||'clean')+'</td></tr>';}).join(''):'<tr><td colspan="9" class="muted">No evidence rows in this scope.</td></tr>';
+}
+
+function renderReceipts(){
+  $('receiptList').innerHTML=state.imports.length?state.imports.slice().reverse().map(function(r){return'<div class="receipt"><b>'+esc(r.filename||r.kind)+'</b> · '+esc(r.importedAt)+'<br>'+r.accepted+' accepted · '+r.rejected+' rejected · '+r.duplicates+' duplicate<br><code>'+(r.sha256?esc(r.sha256):'hash unavailable')+'</code></div>';}).join(''):'<div class="muted">No imports recorded.</div>';
+}
+
+function renderStatus(){
+  var report=AXMMarketCore.buildReport(state.records,state.dictionary,{month:currentMonth(),geography:currentGeo()});
+  $('statusBox').textContent=JSON.stringify({module:'geographic-market-map',version:'v0.1',status:'EXPERIMENTAL',records:state.records.length,imports:state.imports.length,scope:report.scope,evidence:report.evidence,activeGeographies:state.dictionary.scope.active,plannedGeographies:state.dictionary.scope.planned,browserClickTest:'UNRUN until a real browser run is recorded',liveSourceAdapters:'NOT BUILT in v0.1; import adapters only',promotion:'REFUSED until source accuracy and device stability are tested'},null,2);
+  $('dictionaryBox').textContent=JSON.stringify(state.dictionary,null,2);
+}
+
+function renderAll(){refreshItemSelect();renderSummary();renderMap();renderRankings();renderCompare();renderEvidence();renderReceipts();renderStatus();}
+
+async function saveState(note){await AXM.store.save('market-map-state',{records:state.records,imports:state.imports},{title:'AXM Geographic Market Map'});AXMHub.save({records:state.records.length,imports:state.imports.length,updatedAt:new Date().toISOString()});setStatus((note||'saved')+' · '+state.records.length+' rows');}
+function switchView(name){state.activeView=name;views.forEach(function(v){$('view'+v).classList.toggle('hidden',v!==name);$('tab'+v).classList.toggle('on',v===name);});if(name==='Export')renderStatus();}
+
+async function doImport(rows,receipt){
+  var g=gate('market-map.import',{rows:rows.length,filename:receipt.filename||receipt.kind});if(!g.allow){setStatus('import denied · '+g.reason);return;}
+  var result=AXMMarketCore.importRows(rows,state.dictionary,state.records);state.records=state.records.concat(result.accepted);receipt.accepted=result.accepted.length;receipt.rejected=result.rejected.length;receipt.duplicates=result.duplicates.length;state.imports.push(receipt);$('importResult').textContent=JSON.stringify({accepted:result.accepted.length,rejected:result.rejected.slice(0,20),duplicates:result.duplicates.slice(0,20),note:'Rejected and duplicate rows were not added.'},null,2);await saveState('import saved');renderAll();
+}
+
+async function importFile(){
+  var f=$('dataFile').files[0];if(!f){$('importResult').textContent='Choose a CSV or JSON file first.';return;}
+  try{var txt=await f.text();var rows=AXMMarketSources.parse(txt,f.name);var hash=await AXMMarketSources.sha256(txt);await doImport(rows,{kind:'file',filename:f.name,bytes:f.size,sha256:hash,importedAt:new Date().toISOString()});}catch(e){$('importResult').textContent='Import failed before mutation: '+e.message;setStatus('import failed');}
+}
+
+function manualObject(){return{itemId:$('mItemId').value,itemName:$('mItemName').value,category:$('mCategory').value,geography:$('mGeo').value,observedAt:$('mDate').value,price:$('mPrice').value,currency:$('mCurrency').value,unit:$('mUnit').value,quantity:$('mQuantity').value,seller:$('mSeller').value,availability:$('mAvailability').value,sourceId:$('mSourceId').value,sourceType:$('mSourceType').value,sourceUrl:$('mSourceUrl').value,fxRateToEur:$('mFx').value,marketplaceActivity:$('mMarketplace').value,searchInterest:$('mSearch').value,sellerGrowth:$('mSellerGrowth').value,tradeMovement:$('mTrade').value,pricePressure:$('mPressure').value,notes:$('mNotes').value};}
+async function addManual(){var row=manualObject();var v=AXMMarketCore.validateObservation(row,state.dictionary);if(!v.pass){$('importResult').textContent=JSON.stringify(v,null,2);switchView('Data');return;}await doImport([row],{kind:'manual',filename:'manual observation',bytes:0,sha256:null,importedAt:new Date().toISOString()});}
+async function loadDemo(){var g=gate('market-map.load-demo',{synthetic:true});if(!g.allow)return;await doImport(demoRows(),{kind:'demo',filename:'clearly-labeled synthetic demo',bytes:0,sha256:null,importedAt:new Date().toISOString()});}
+async function clearData(){var g=gate('market-map.clear-local-data',{records:state.records.length});if(!g.allow){setStatus('clear denied · '+g.reason);return;}if(!confirm('Clear all local Market Map evidence and import receipts?'))return;state.records=[];state.imports=[];await saveState('dataset cleared');renderAll();}
+function exportDataset(){var g=gate('market-map.export-evidence',{records:state.records.length});if(!g.allow)return;download('axm-market-evidence-'+Date.now()+'.json',JSON.stringify({schema:'axm.geographic-market-evidence/0.1',exportedAt:new Date().toISOString(),dictionaryVersion:state.dictionary.version,records:state.records,imports:state.imports},null,2));}
+function exportReport(){var g=gate('market-map.export-report',{month:currentMonth(),geography:currentGeo()});if(!g.allow)return;download('axm-market-report-'+(currentMonth()||'all')+'-'+currentGeo()+'.json',JSON.stringify(AXMMarketCore.buildReport(state.records,state.dictionary,{month:currentMonth(),geography:currentGeo()}),null,2));}
+
+views.forEach(function(v){$('tab'+v).onclick=function(){switchView(v);};});
+$('scopeMonth').onchange=renderAll;$('scopeGeo').onchange=renderAll;$('scopeItem').onchange=function(){renderMap();renderCompare();};
+$('saveNow').onclick=function(){saveState('checkpoint saved');};$('importFile').onclick=importFile;$('addManual').onclick=addManual;$('loadDemo').onclick=loadDemo;$('clearData').onclick=clearData;$('exportDataset').onclick=exportDataset;$('exportReport').onclick=exportReport;
+$('downloadSchema').onclick=function(){download('axm-market-import-schema.csv',AXMMarketSources.schemaCsv(),'text/csv');};
+
+(async function(){
+  if(!window.AXMMarketCore||!window.AXMMarketSources)throw new Error('market modules missing');
+  state.dictionary=await fetch('market-dictionary.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('dictionary HTTP '+r.status);return r.json();});
+  populateStatic();var info=await AXM.init({id:'geographic-market-map',name:'AXM Geographic Market Map',version:'v0.1'});AXM.wisdom.on(localStorage.getItem('axm.identity.growth.enabled')!=='false');
+  try{var saved=await AXM.store.load('market-map-state');if(saved&&saved.data){state.records=Array.isArray(saved.data.records)?saved.data.records:[];state.imports=Array.isArray(saved.data.imports)?saved.data.imports:[];}}catch(e){AXMHub.error('Market Map restore failed: '+e.message);}
+  renderAll();setStatus('ready · '+info.storageBackend+' · '+state.records.length+' rows');AXMHub.log('Geographic Market Map ready · '+state.records.length+' evidence rows');AXMHub.verifyPass();
+})().catch(function(e){setStatus('boot failed · '+e.message);if(window.AXMHub)AXMHub.error(e.message);});
+AXMHub.ready({id:'geographic-market-map',name:'AXM Geographic Market Map',version:'v0.1',hubApiVersion:'1.0',permissions:[],savesState:true,handlesShutdown:false,notes:'Evidence-first geographic market mapping. Human interpretation remains required.'});
+})();
+</script>
+</body>
+</html>
