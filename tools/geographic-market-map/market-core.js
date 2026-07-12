@@ -51,9 +51,10 @@
     out.sourceUrl=text(out.sourceUrl);
     out.notes=text(out.notes);
     out.fxRateToEur=number(out.fxRateToEur);
+    var nestedPopularity=raw.popularity&&typeof raw.popularity==='object'?raw.popularity:{};
     out.popularity={};
     SIGNALS.forEach(function(s){
-      var v=out.popularity&&out.popularity[s];
+      var v=nestedPopularity[s];
       if(v==null&&raw[s]!=null)v=raw[s];
       v=number(v);if(v!=null)out.popularity[s]=clamp(v,0,100);
     });
