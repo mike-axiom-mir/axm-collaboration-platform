@@ -6,7 +6,9 @@ This is **one Workshop tool** through one Hub card and one interface. Its intern
 
 ```text
 tools/geographic-market-map/
-├── index.html                 One visible polished workbench
+├── index.html                 One visible polished workbench surface
+├── market-ui.css              Responsive visual system and layout
+├── market-app.js              UI state, review gates, rendering, watchlist and exports
 ├── market-core.js             Pure validation, normalization, aggregation, confidence and ranking
 ├── market-insights.js         Quality diagnostics, pattern candidates, source coverage and timelines
 ├── source-adapters.js         CSV/JSON parsing, source receipt hashing and import schema
@@ -26,7 +28,7 @@ selected CSV/JSON or manual observation
         ↓
 source-adapters.js parses without mutation
         ↓
-preview gate shows accepted / rejected / duplicate rows
+market-app.js preview gate shows accepted / rejected / duplicate rows
         ↓
 explicit human commit
         ↓
@@ -36,7 +38,7 @@ AXM local storage keeps evidence + raw row + import receipt
         ↓
 market-insights.js produces diagnostics and research candidates
         ↓
-map / comparison / Top 100 / Top 10 / watchlist
+market-app.js renders map / comparison / Top 100 / Top 10 / watchlist
         ↓
 explicit evidence, scoped report or watchlist export
 ```
@@ -48,7 +50,8 @@ explicit evidence, scoped report or watchlist export
 3. `market-dictionary.json` owns shared identities, unit factors, source trust, thresholds and ranking weights.
 4. `market-core.js` owns deterministic calculations.
 5. `market-insights.js` owns visible diagnostic and candidate-pattern rules.
-6. `index.html` displays results but does not redefine the calculation rules.
+6. `market-app.js` coordinates interaction but does not redefine the calculation rules.
+7. `index.html` and `market-ui.css` present the tool without becoming data authority.
 
 ## Current boundary
 
