@@ -46,7 +46,9 @@ Popularity signals are optional values from 0 to 100. Ranking weights, source tr
 
 ## One tool, modular underneath
 
-- `index.html` owns the visible workbench.
+- `index.html` is the single visible workbench surface.
+- `market-ui.css` owns responsive presentation.
+- `market-app.js` owns interaction, review gates, watchlist state and exports.
 - `market-core.js` owns deterministic normalization, aggregation and ranking.
 - `market-insights.js` owns diagnostic quality checks, pattern candidates, source coverage and timelines.
 - `source-adapters.js` owns CSV/JSON parsing and import receipts.
