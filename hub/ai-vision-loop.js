@@ -7,7 +7,7 @@
   }
   function render(){
     var top=$('aiEyesToggle'),start=$('visionStart'),stop=$('visionStop');
-    if(top){top.textContent=active?'◉ Eyes ON':'◉ Eyes';top.classList.toggle('paused',active);top.setAttribute('aria-pressed',active?'true':'false');top.title=active?'Stop Claude shared vision now':'Share the active AXM screen with Claude on a finite heartbeat';}
+    if(top){var label=top.querySelector('span:last-child');if(label)label.textContent=active?'Eyes ON':'Eyes';top.classList.toggle('paused',active);top.setAttribute('aria-pressed',active?'true':'false');top.title=active?'Stop Claude shared vision now':'Share the active AXM screen with Claude on a finite heartbeat';}
     if(start)start.disabled=active||busy;if(stop)stop.disabled=!active&&!busy;
   }
   function openPanel(){var panel=$('visionPanel');if(panel)panel.hidden=false;}

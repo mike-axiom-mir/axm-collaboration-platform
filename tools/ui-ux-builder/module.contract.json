@@ -1,0 +1,31 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "ui-ux-builder",
+  "version": "v0.1",
+  "provides": [
+    "human-needs-brief",
+    "journey-flow-builder",
+    "safe-visual-tokens",
+    "responsive-live-preview",
+    "deterministic-usability-audit",
+    "reviewable-uiux-proposal"
+  ],
+  "consumes": [],
+  "permissions": ["storage", "export", "gate"],
+  "handoffs": {
+    "emits": ["axm.uiux-proposal/v1", "axm.uiux-workspace/v1"],
+    "accepts": ["axm.uiux-workspace/v1"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:axm.uiux-builder.v1", "user-download:explicit"],
+    "refuses": [
+      "automatic-hub-rewrite",
+      "automatic-proposal-acceptance",
+      "raw-css-import",
+      "script-generation-or-execution",
+      "hidden-navigation-or-emergency-control",
+      "review-ready-with-failing-gates",
+      "invented-human-approval"
+    ]
+  }
+}

@@ -266,6 +266,12 @@ const bad = m => { out.push('  FAIL  ' + m); fails++; };
   const spec = S.assetSpec();
   spec.length === Object.keys(S.ASSET_SLOTS).length ? ok('assets: the spec sheet is generated from the registry (cannot drift)') : bad('spec sheet drifted');
   spec.every(s => s.w && s.h && s.format && s.where && s.note) ? ok('assets: every slot declares size, format, location and a note') : bad('a slot is underspecified');
+  spec.every(s => Array.isArray(s.deliverables) && s.deliverables.length) ? ok('assets: every slot declares concrete production files') : bad('an asset slot has no production deliverables');
+  const production = S.productionSpec();
+  production.counts.controls === 23 ? ok('production sheet: 23 colour, type, and layout controls') : bad('production control count drifted: ' + production.counts.controls);
+  production.counts.productionFiles === 20 ? ok('production sheet: 20 concrete image files') : bad('production file count drifted: ' + production.counts.productionFiles);
+  production.counts.safetyChecks === 14 ? ok('production sheet: 14 readability and honesty checks') : bad('production safety count drifted: ' + production.counts.safetyChecks);
+  production.counts.total === 57 ? ok('production sheet: complete near-60 sheet has 57 generated targets') : bad('complete production sheet count drifted: ' + production.counts.total);
   spec.every(s => s.required === false) ? ok('assets: no slot is required — a missing asset can never break a hub') : bad('a slot is required');
 
   /* sizes must be real numbers a designer can act on */

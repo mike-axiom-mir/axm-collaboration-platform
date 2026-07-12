@@ -39,9 +39,17 @@ select,input[type=text]{background:#06080f;border:1px solid var(--edge);color:va
 .pv-main{flex:1;padding:12px;font-size:12px}
 .pv-warn{margin-top:7px;padding:7px;border-radius:7px;font-size:11px}
 .pv-status{padding:6px 12px;border-top:1px solid;font-size:11px}
+.sheet-summary{display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:8px;margin:10px 0 13px}
+.sheet-stat{border:1px solid var(--edge);border-radius:10px;padding:10px;background:#06080f}
+.sheet-stat b{display:block;color:var(--cy);font-size:20px;line-height:1}
+.sheet-stat span{display:block;color:var(--muted);font-size:10px;margin-top:6px;text-transform:uppercase;letter-spacing:.8px}
+@media(max-width:620px){.sheet-summary{grid-template-columns:repeat(2,1fr)}}
+body.studio-embedded .wrap{max-width:none;padding:18px 22px}
+body.studio-embedded .wrap>h1,body.studio-embedded .wrap>.sub{display:none}
 </style>
 </head>
 <body>
+<script>if(new URLSearchParams(location.search).get('studio')==='1')document.body.classList.add('studio-embedded');</script>
 <div class="wrap">
   <h1>Skinner</h1>
   <p class="sub">Freedom in safety. Change what you like — the system just won't let a skin hide the truth.</p>
@@ -98,11 +106,14 @@ select,input[type=text]{background:#06080f;border:1px solid var(--edge);color:va
   </div>
 
   <div class="card">
-    <p class="cap">Assets a designer can supply · all optional</p>
+    <p class="cap">Complete AXM design sheet · generated from the live safety contract</p>
+    <div class="sheet-summary" id="sheetSummary"></div>
+    <p class="muted" style="margin:0 0 12px">The full production surface includes visual controls, concrete image files, and the checks that keep warnings and controls honest. The image files map into 10 runtime vault slots.</p>
+    <p class="cap">Image slots a designer can supply · all optional</p>
     <p class="muted" style="margin:0 0 9px">Sizes come from the shell's own CSS. Every slot is optional — a skin with no assets is a complete skin. Assets live in the Asset Vault and are referenced as <span class="mono">vault:id</span>. A skin may not point at a URL.</p>
     <div id="assetSpec"></div>
     <div class="row" style="margin-top:9px">
-      <button class="btn ghost" id="specCopy">Copy spec for a designer</button>
+      <button class="btn ghost" id="specCopy">Copy complete 57-point sheet</button>
     </div>
   </div>
 
@@ -302,27 +313,51 @@ $('exportBtn').onclick = function(){
 /* ---------- asset spec sheet (generated, cannot drift) ---------- */
 function renderSpec(){
   var box = $('assetSpec'); box.innerHTML = '';
+  var production = S.productionSpec();
+  var summary = $('sheetSummary'); summary.innerHTML = '';
+  [
+    [production.counts.total, 'production points'],
+    [production.counts.controls, 'visual controls'],
+    [production.counts.productionFiles, 'image files'],
+    [production.counts.safetyChecks, 'safety checks']
+  ].forEach(function(item){
+    var stat = document.createElement('div'); stat.className = 'sheet-stat';
+    stat.innerHTML = '<b></b><span></span>';
+    stat.querySelector('b').textContent = item[0];
+    stat.querySelector('span').textContent = item[1];
+    summary.appendChild(stat);
+  });
   S.assetSpec().forEach(function(s){
     var d = document.createElement('div'); d.className = 'chg';
     d.style.cssText = 'padding:7px 0;border-top:1px solid var(--edge)';
     d.innerHTML = '<b class="mono" style="color:var(--cy)"></b>'
       + '<span class="mono"> ' + s.w + '×' + s.h + ' · ' + s.format + ' · ' + s.dpi + '</span>'
       + '<div class="muted" style="font-family:system-ui;margin-top:3px"></div>'
-      + '<div class="muted" style="font-family:system-ui;font-size:11px;opacity:.8"></div>';
+      + '<div class="muted" style="font-family:system-ui;font-size:11px;opacity:.8"></div>'
+      + '<div class="muted mono" style="margin-top:3px;color:var(--gold)"></div>';
     d.querySelector('b').textContent = s.slot;
     d.querySelectorAll('.muted')[0].textContent = s.where;
     d.querySelectorAll('.muted')[1].textContent = s.note;
+    d.querySelectorAll('.muted')[2].textContent = 'FILES: ' + s.deliverables.join(' · ');
     box.appendChild(d);
   });
 }
 $('specCopy').onclick = function(){
-  var txt = 'AXM SKIN — ASSET SLOTS (all optional)\n\n' + S.assetSpec().map(function(s){
+  var p = S.productionSpec();
+  var txt = 'AXM SKIN — COMPLETE PRODUCTION SHEET\n'
+    + p.counts.total + ' production points = ' + p.counts.controls + ' visual controls + '
+    + p.counts.productionFiles + ' image files + ' + p.counts.safetyChecks + ' safety checks\n\n'
+    + 'VISUAL CONTROLS\n' + p.controls.map(function(c){
+      return '  [' + c.kind + '] ' + c.key + (c.options ? ' = ' + c.options.join('|') : '');
+    }).join('\n') + '\n\nIMAGE SLOTS (all optional)\n\n' + S.assetSpec().map(function(s){
     return s.slot + '\n  size   : ' + s.w + ' x ' + s.h + '  (' + s.dpi + ')\n  format : ' + s.format
-         + '\n  where  : ' + s.where + '\n  note   : ' + s.note;
-  }).join('\n\n') + '\n\nAssets are vault: references. No URLs. Every slot optional.\nA skin can never hide a warning — the readability floor applies regardless of imagery.';
+         + '\n  files  : ' + s.deliverables.join(', ') + '\n  where  : ' + s.where + '\n  note   : ' + s.note;
+  }).join('\n\n') + '\n\nSAFETY CHECKS\n' + p.safetyChecks.map(function(c){
+      return '  [' + c.kind + '] ' + c.key + ' — ' + c.why;
+    }).join('\n') + '\n\nAssets are vault: references. No URLs. Every slot optional.\nA skin can never hide a warning — the readability floor applies regardless of imagery.';
   if (navigator.clipboard) navigator.clipboard.writeText(txt);
-  AXMHub.log('asset spec copied (' + S.assetSpec().length + ' slots)');
-  alert('Spec copied. ' + S.assetSpec().length + ' slots, all optional.');
+  AXMHub.log('complete skin production sheet copied (' + p.counts.total + ' points)');
+  alert('Complete sheet copied: ' + p.counts.total + ' production points.');
 };
 
 /* what the local vault actually holds. Until an asset-vault bridge exists,

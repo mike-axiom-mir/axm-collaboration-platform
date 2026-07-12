@@ -1,0 +1,38 @@
+const Core = require('./studio-core.js');
+const fs = require('fs');
+const path = require('path');
+let failed = 0;
+function test(ok, name) { if (ok) console.log('PASS', name); else { failed++; console.error('FAIL', name); } }
+
+test(Core.FORMAT === 'axm.studio.workspace/v2', 'workspace format is v2');
+test(Core.MODES.length === 10, 'ten complete Studio modes');
+test(Core.canvasModes().length === 7, 'seven modes share the layered canvas');
+test(Core.byId('uiux').route === 'uiux', 'UI/UX is an integrated mode');
+test(Core.byId('skin').route === 'skin', 'Skinner is an integrated mode');
+test(Core.byId('pack').route === 'pack', 'Asset Pack Lab is an integrated mode');
+test(Core.groups().map(g => g.name).join('|') === 'Make|Design|Interface|Produce', 'modes have beginner-facing groups');
+const clean = Core.normalize({ mode:'ghost', projectName:'\u0000  Test project  ' });
+test(clean.mode === 'paint' && clean.projectName === 'Test project', 'invalid mode falls back and project name is cleaned');
+test(Core.MODES.every(m => m.title && m.description && m.route && m.icon), 'each mode has complete shell metadata');
+const engine = fs.readFileSync(path.join(__dirname, 'engine.html'), 'utf8');
+const shell = fs.readFileSync(path.join(__dirname, 'studio-shell.js'), 'utf8');
+const shellHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+const vault = fs.readFileSync(path.join(__dirname, '..', 'asset-vault', 'index.html'), 'utf8');
+const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
+test(engine.includes('EDITABLE VECTOR OBJECT ENGINE') && engine.includes('nearestVectorNode'), 'vector engine supports editable node selection');
+test(engine.includes('vectorSvg()') && engine.includes('axm-studio-vectors.svg'), 'vector engine exports real SVG');
+test(engine.includes('MULTI-FRAME PIXEL ANIMATION') && engine.includes('axm.frame-animation/v1'), 'pixel mode has a versioned frame animation model');
+test(engine.includes('onionToggle') && engine.includes('playbackStep'), 'timeline supports onion skin and playback');
+test(engine.includes('axm-animation-spritesheet.png') && engine.includes('axm-animation.json'), 'timeline exports spritesheet and timing map');
+test(engine.includes("format:1,v:2,W,H") && engine.includes('vectors:JSON.parse') && engine.includes('animation:{format:'), 'Studio project v2 persists vectors and animation');
+test(engine.includes('vectorUndoStack') && engine.includes("currentStudioMode==='vector'?vectorUndo()"), 'shared Undo and Redo route correctly in Vector mode');
+test(engine.includes('layerMetaSnapshot') && engine.includes('frameLoadToken'), 'frame timeline preserves layer metadata and rejects stale loads');
+test(engine.includes("type:'axm-studio-saved',ok:false") && engine.includes('return false;'), 'artwork save failures are reported instead of claimed as success');
+test(shellHtml.includes('data-src="../ui-ux-builder') && shell.includes('ensureFrame'), 'specialist Studio modes load lazily');
+test(shellHtml.includes('Asset Vault available') && shell.includes('Asset Vault connected'), 'Asset Vault status distinguishes availability from connection');
+test(vault.includes('Use in Studio') && vault.includes("gate('send-to-studio'") && shell.includes("msg.schema!=='axm.studio-asset/v1'") && engine.includes("e.data.schema==='axm.studio-asset/v1'"), 'Asset Vault image handoff is gated and versioned end to end');
+test(engine.includes("NL.sourceAsset={schema:'axm.studio-asset/v1'") && engine.includes('sourceAsset:l.sourceAsset||null') && engine.includes('L.sourceAsset=ld.sourceAsset||null'), 'imported layer provenance survives save and reload');
+test(contract.handoffs.accepts.includes('axm.studio-asset/v1') && contract.version === 'v2.2', 'module contract declares the Studio asset handoff');
+
+if (failed) process.exit(1);
+console.log('AXM Studio selftest: PASS');

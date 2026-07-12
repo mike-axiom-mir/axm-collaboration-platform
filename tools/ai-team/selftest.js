@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+'use strict';
+const assert=require('assert'),fs=require('fs'),path=require('path'),Core=require('./ai-team-core.js');
+const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+const js=fs.readFileSync(path.join(__dirname,'ai-team.js'),'utf8');
+const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'manifest.json'),'utf8'));
+const contract=JSON.parse(fs.readFileSync(path.join(__dirname,'module.contract.json'),'utf8'));
+assert.equal(Core.VIEWS.length,10);
+assert.deepEqual(Core.groups().map(g=>g.name),['Control','Work','Build','Evaluate','Learn']);
+assert.equal(Core.normalize({view:'ghost'}).view,'overview');
+['task','duo','agents','forge','prompts','models','reasoning','data'].forEach(route=>assert.equal(Core.VIEWS.filter(v=>v.route===route).length,1));
+assert.ok(Core.SERVICES.some(s=>s.id==='guardian'));
+assert.ok(html.includes('id="attentionInbox"')&&html.includes('id="serviceGrid"')&&html.includes('id="guardianFrame"'));
+assert.ok(html.includes('id="forgeFrame"')&&html.includes('id="dataSurface"')&&html.includes('id="runList"'));
+assert.ok(js.includes('/api/presence/notices')&&js.includes('/api/shell-guardian/status')&&js.includes("'/agents/pause'"));
+assert.ok(html.includes('Automatic approval is never implied')&&js.includes('openNoticeInTalk'));
+assert.ok(js.includes("localStorage.getItem('axm.collaboration.notice.open')")&&js.includes("state.view='collaborate'"));
+assert.ok(js.includes('if(refreshing)return')&&js.includes('refreshing=false'));
+assert.ok(js.includes("schema:'axm.ai-team-prompt/v1'")&&js.includes('routePromptComparison'));
+assert.ok(js.includes("DATA_STORE='axm.ai-team.data-runs.v1'")&&js.includes('Accept evidence'));
+assert.equal(manifest.id,'ai-team');assert.equal(contract.version,'v1.1');
+assert.ok(contract.boundaries.refuses.includes('automatic-guardian-reset'));
+console.log('AI Team selftest: PASS (10 views, prompt comparison, data/run ledgers, connector controls, armed Guardian)');

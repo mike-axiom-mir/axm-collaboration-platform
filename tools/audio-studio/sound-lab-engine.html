@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AXM Sound Forge</title>
+<!-- Preserved Sound Forge engine, now hosted as Audio Studio's local Sound Lab. -->
+<style>
+:root{--space:#080b14;--panel:#0d1320;--panel-2:#111a2c;--edge:#1d2942;--cyan:#38d6ec;--cyan-dim:#1c7f92;--blue:#2f6dff;--gold:#e8b54a;--green:#46e09a;--red:#ff5d6c;--text:#e7eef7;--muted:#7e8da6;--muted-2:#566179}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--space);color:var(--text);font-family:Inter,system-ui,sans-serif}
+body{background:radial-gradient(1000px 500px at 50% -10%,rgba(47,109,255,.10),transparent 60%),var(--space);min-height:100vh}
+.wrap{max-width:600px;margin:0 auto;padding:18px 14px 50px}
+header{display:flex;align-items:center;gap:12px;padding:4px 2px 16px;border-bottom:1px solid var(--edge);margin-bottom:16px}
+.mark{width:34px;height:34px;border:1.5px solid var(--cyan);border-radius:8px;display:grid;place-items:center;box-shadow:0 0 18px rgba(56,214,236,.25)}
+.mark span{font-family:'Chakra Petch';font-weight:700;color:var(--cyan);font-size:15px}
+h1{font-family:'Chakra Petch';font-weight:700;font-size:16px;letter-spacing:2px;margin:0}
+.sub{margin:2px 0 0;font-size:11.5px;color:var(--muted);letter-spacing:.5px}
+.card{background:linear-gradient(180deg,var(--panel),#0a0f1b);border:1px solid var(--edge);border-radius:14px;padding:14px;margin-bottom:14px}
+.ct{font-family:'Chakra Petch';font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.ct::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+.viz{width:100%;height:70px;background:#06080f;border:1px solid var(--edge);border-radius:10px;display:block;margin-bottom:12px}
+.playrow{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.play{flex:1;border:none;border-radius:10px;padding:14px;font-family:'Chakra Petch';font-weight:700;font-size:13px;letter-spacing:1.5px;cursor:pointer;background:linear-gradient(90deg,var(--blue),var(--cyan));color:#03121b;box-shadow:0 0 20px rgba(56,214,236,.25)}
+.play:active{filter:brightness(1.1)}
+.nm{flex:1;background:#06080f;border:1px solid var(--edge);border-radius:10px;color:var(--text);font-family:Inter;font-size:13px;padding:11px}
+.nm:focus{outline:none;border-color:var(--cyan-dim)}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.seg button{flex:1;min-width:60px;background:var(--panel-2);border:1px solid var(--edge);color:var(--muted);border-radius:8px;padding:8px 6px;font-size:11px;cursor:pointer;letter-spacing:.4px}
+.seg button.on{border-color:var(--cyan);color:var(--cyan);background:rgba(56,214,236,.07)}
+.lbl{font-size:11px;color:var(--muted);letter-spacing:.4px;display:flex;justify-content:space-between;margin:10px 0 4px}
+.lbl span{color:var(--cyan);font-family:'JetBrains Mono';font-size:10.5px}
+input[type=range]{width:100%;accent-color:var(--cyan)}
+.chk{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);cursor:pointer;margin:12px 0 4px}
+.chk input{accent-color:var(--cyan);width:16px;height:16px}
+.presets{display:flex;gap:6px;flex-wrap:wrap}
+.pchip{border:1px solid var(--edge);background:var(--panel-2);color:var(--muted);border-radius:20px;padding:6px 12px;font-size:11px;cursor:pointer}
+.pchip:hover{border-color:var(--gold);color:var(--gold)}
+.conn-row{display:flex;gap:6px;margin-bottom:12px}
+.conn{flex:1;text-align:center;padding:8px 4px;border:1px solid var(--edge);border-radius:9px;background:var(--panel-2);font-size:10.5px;color:var(--muted);cursor:pointer;position:relative}
+.conn.on{border-color:var(--cyan);color:var(--cyan);background:rgba(56,214,236,.06)}
+.conn small{display:block;font-size:8.5px;color:var(--muted-2);margin-top:2px}
+.badge{position:absolute;top:-7px;right:-5px;font-size:7.5px;padding:1px 5px;border-radius:6px}
+.badge.live{background:var(--green);color:#04130c}.badge.stub{background:var(--muted-2);color:#0a0f1b}
+textarea{width:100%;background:#06080f;border:1px solid var(--edge);border-radius:10px;color:var(--text);font-family:Inter;font-size:13px;padding:10px;resize:vertical;min-height:50px;margin-bottom:10px}
+textarea:focus{outline:none;border-color:var(--cyan-dim)}
+.btn{width:100%;border:none;border-radius:10px;padding:12px;font-family:'Chakra Petch';font-weight:600;font-size:12px;letter-spacing:1px;cursor:pointer;text-transform:uppercase}
+.btn-ai{background:linear-gradient(90deg,#7a3df0,var(--blue));color:#fff}
+.btn-ai:disabled{opacity:.5}
+.btn-save{background:transparent;border:1px solid var(--green);color:var(--green)}
+.btn-line{background:transparent;border:1px solid var(--gold);color:var(--gold);margin-top:8px}
+.log{font-family:'JetBrains Mono';font-size:11px;line-height:1.5;max-height:150px;overflow-y:auto;background:#06080f;border:1px solid var(--edge);border-radius:10px;padding:10px;margin-top:10px}
+.log .ln{margin-bottom:7px;padding-left:9px;border-left:2px solid var(--cyan)}
+.log .tag{color:var(--cyan);font-size:9px;letter-spacing:.5px;display:block;text-transform:uppercase}
+.log .err{border-color:var(--red)}.log .err .tag{color:var(--red)}
+.log .empty{color:var(--muted-2);font-style:italic;border:0;padding:0}
+.snd{display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--edge);border-radius:9px;padding:8px 10px;margin-bottom:6px}
+.snd .sn{flex:1;font-size:12px}
+.snd button{border:1px solid var(--edge);background:#06080f;color:var(--muted);border-radius:7px;padding:6px 10px;font-size:11px;cursor:pointer}
+.snd button:hover{border-color:var(--cyan);color:var(--cyan)}
+.exp{font-family:'JetBrains Mono';font-size:10px;min-height:90px}
+footer{text-align:center;margin-top:18px;font-family:'Chakra Petch';font-size:10px;letter-spacing:3px;color:var(--muted-2)}
+</style></head><body>
+<div class="wrap">
+<header><div class="mark"><span>AXM</span></div><div><h1>SOUND FORGE</h1><p class="sub">Shape a sound, or describe it and let the AI design it. Built on the AXM sound engine.</p></div></header>
+
+<div class="card">
+  <p class="ct">The Sound</p>
+  <canvas class="viz" id="viz" width="560" height="70"></canvas>
+  <div class="playrow"><button class="play" id="play">▶ PLAY</button></div>
+  <div class="presets" id="presets"></div>
+</div>
+
+<div class="card">
+  <p class="ct">Shape it</p>
+  <div class="seg" id="kind"><button data-k="tone" class="on">Tone</button><button data-k="noise">Noise</button></div>
+  <div id="toneCtl">
+    <div class="seg" id="wave"><button data-w="square" class="on">Square</button><button data-w="sawtooth">Saw</button><button data-w="triangle">Triangle</button><button data-w="sine">Sine</button></div>
+    <div class="lbl">Pitch <span id="vFreq">440 Hz</span></div><input type="range" id="freq" min="60" max="2000" value="440">
+    <label class="chk"><input type="checkbox" id="sweepOn"> Pitch sweep (slide to another pitch)</label>
+    <div class="lbl">Sweep to <span id="vEnd">440 Hz</span></div><input type="range" id="freqEnd" min="60" max="2000" value="440">
+  </div>
+  <div class="lbl">Length <span id="vDur">0.15 s</span></div><input type="range" id="dur" min="3" max="100" value="15">
+  <div class="lbl">Attack <span id="vAtk">0.005 s</span></div><input type="range" id="atk" min="1" max="200" value="5">
+  <div class="lbl">Volume <span id="vGain">0.50</span></div><input type="range" id="gain" min="5" max="100" value="50">
+  <div id="noiseCtl" style="display:none">
+    <div class="lbl">Filter (noise tone) <span id="vFilt">1200 Hz</span></div><input type="range" id="filt" min="200" max="6000" value="1200">
+  </div>
+  <label class="chk"><input type="checkbox" id="noiseMix"> Add noise burst (for impact / damage)</label>
+</div>
+
+<div class="card">
+  <p class="ct">AI Sound Designer</p>
+  <div class="conn-row" id="connRow">
+    <div class="conn on" data-brain="claude">Claude<small>this session</small><span class="badge live">LIVE</span></div>
+    <div class="conn" data-brain="local">Local<small>your model</small><span class="badge stub">WIRE</span></div>
+    <div class="conn" data-brain="chatgpt">ChatGPT<small>your key</small><span class="badge stub">WIRE</span></div>
+  </div>
+  <textarea id="desc" placeholder="Describe a sound, or give feedback to refine. e.g. 'a chunky laser blast', 'shorter and more metallic', 'a soft magic chime'"></textarea>
+  <button class="btn btn-ai" id="design">Design / refine it</button>
+  <div class="log" id="log"><div class="empty ln">The AI proposes sound settings from your words — then YOU are the ear. Tell it what to change and it adjusts. (It can't hear, so you judge.)</div></div>
+</div>
+
+<div class="card">
+  <p class="ct">My Sounds</p>
+  <div class="playrow"><input class="nm" id="sname" placeholder="name this sound (e.g. plasma_shot)"><button class="btn btn-save" id="save" style="width:auto;padding:11px 16px">Save</button></div>
+  <div id="myList"></div>
+  <button class="btn btn-line" id="exportBtn">Show export code</button>
+  <textarea class="exp" id="exportBox" style="display:none;margin-top:8px" readonly></textarea>
+</div>
+
+<div class="card" id="projCard">
+  <p class="ct">Project · saved on your device</p>
+  <div class="playrow"><input class="nm" id="slotName" placeholder="slot name (e.g. arcade_pack)" value="slotA"><button class="btn btn-save" id="slotSave" style="width:auto;padding:11px 16px">Save slot</button></div>
+  <div id="slotList" style="margin-top:8px"></div>
+  <button class="btn btn-line" id="exportFile">Export project file</button>
+  <button class="btn btn-line" id="importFile" style="margin-top:8px">Import project file</button>
+  <p class="sub" id="nsLabel" style="margin-top:8px">connecting…</p>
+</div>
+
+<div class="card" id="wisCard">
+  <p class="ct">Wisdom · lessons kept across tools <span id="wTog" style="margin-left:auto;cursor:pointer;color:var(--muted);font-family:'JetBrains Mono';letter-spacing:.5px">off</span></p>
+  <button class="btn btn-line" id="wToggle" style="border-color:var(--cyan);color:var(--cyan)">Turn wisdom on</button>
+  <div id="wList" style="margin-top:10px"></div>
+</div>
+
+<footer>MIKE · AXIOM / MIR — AXM SOUND FORGE v0.1</footer>
+</div>
+<script>
+/* ---- audio engine (same approach as axm-sound.js, the sound-maker sits on it) ---- */
+let actx=null,master=null;
+function ensure(){if(!actx){actx=new(window.AudioContext||window.webkitAudioContext)();master=actx.createGain();master.gain.value=0.9;master.connect(actx.destination);}if(actx.state==='suspended')actx.resume();return actx;}
+function playSound(s){ensure();const t=actx.currentTime;
+  if(s.kind!=='noise'){const osc=actx.createOscillator(),g=actx.createGain();osc.type=s.wave||'square';
+    osc.frequency.setValueAtTime(Math.max(1,s.freq),t);
+    if(s.sweep&&s.freqEnd)osc.frequency.exponentialRampToValueAtTime(Math.max(1,s.freqEnd),t+s.dur);
+    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(s.gain||0.5,t+(s.attack||0.005));g.gain.exponentialRampToValueAtTime(0.0001,t+s.dur);
+    osc.connect(g);g.connect(master);osc.start(t);osc.stop(t+s.dur+0.03);}
+  if(s.kind==='noise'||s.noise){const len=Math.max(1,Math.floor(actx.sampleRate*s.dur));const buf=actx.createBuffer(1,len,actx.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
+    const src=actx.createBufferSource();src.buffer=buf;const g=actx.createGain();
+    const ng=(s.kind==='noise'?(s.gain||0.6):(s.noiseGain||0.35));
+    g.gain.setValueAtTime(ng,t);g.gain.exponentialRampToValueAtTime(0.0001,t+s.dur);
+    const f=actx.createBiquadFilter();f.type='lowpass';f.frequency.value=s.filterFreq||1200;
+    src.connect(f);f.connect(g);g.connect(master);src.start(t);src.stop(t+s.dur+0.03);}}
+
+/* ---- current sound state ---- */
+const cur={kind:'tone',wave:'square',freq:440,sweep:false,freqEnd:440,dur:0.15,attack:0.005,gain:0.5,noise:false,noiseGain:0.35,filterFreq:1200};
+
+const PRESETS={
+  blip:{kind:'tone',wave:'square',freq:520,sweep:true,freqEnd:380,dur:0.06,attack:0.005,gain:0.45},
+  coin:{kind:'tone',wave:'square',freq:988,sweep:true,freqEnd:1319,dur:0.18,attack:0.005,gain:0.5},
+  shoot:{kind:'tone',wave:'sawtooth',freq:880,sweep:true,freqEnd:120,dur:0.12,attack:0.005,gain:0.4},
+  zap:{kind:'tone',wave:'sawtooth',freq:1200,sweep:true,freqEnd:200,dur:0.15,attack:0.005,gain:0.4},
+  build:{kind:'tone',wave:'triangle',freq:300,sweep:true,freqEnd:560,dur:0.13,attack:0.005,gain:0.55},
+  powerup:{kind:'tone',wave:'square',freq:300,sweep:true,freqEnd:1200,dur:0.4,attack:0.005,gain:0.4},
+  hit:{kind:'noise',dur:0.16,gain:0.5,filterFreq:900},
+  explosion:{kind:'noise',dur:0.5,gain:0.85,filterFreq:600},
+};
+
+/* ---- UI sync ---- */
+const $=id=>document.getElementById(id);
+function drawViz(){const c=$('viz').getContext('2d'),W=560,H=70;c.clearRect(0,0,W,H);c.fillStyle='#06080f';c.fillRect(0,0,W,H);
+  // envelope shape
+  c.strokeStyle='#38d6ec';c.lineWidth=2;c.beginPath();
+  const atkX=Math.min(0.4,cur.attack/cur.dur)*W*0.9;
+  c.moveTo(0,H-4);c.lineTo(atkX,6);
+  for(let x=atkX;x<=W*0.9;x++){const p=(x-atkX)/(W*0.9-atkX);const y=6+(H-10)*(1-Math.exp(-3*p));c.lineTo(x,y);}
+  c.stroke();
+  // pitch line
+  if(cur.kind!=='noise'){c.strokeStyle='rgba(232,181,74,.7)';c.lineWidth=1.5;c.beginPath();
+    const y1=H-(cur.freq/2000)*H, y2=H-((cur.sweep?cur.freqEnd:cur.freq)/2000)*H;
+    c.moveTo(0,y1);c.lineTo(W*0.9,y2);c.stroke();}
+  c.fillStyle='#566179';c.font='9px monospace';c.fillText(cur.kind==='noise'?'noise':cur.wave,W-70,14);}
+function refresh(){
+  $('vFreq').textContent=cur.freq+' Hz';$('vEnd').textContent=cur.freqEnd+' Hz';
+  $('vDur').textContent=cur.dur.toFixed(2)+' s';$('vAtk').textContent=cur.attack.toFixed(3)+' s';
+  $('vGain').textContent=cur.gain.toFixed(2);$('vFilt').textContent=cur.filterFreq+' Hz';
+  $('freq').value=cur.freq;$('freqEnd').value=cur.freqEnd;$('dur').value=Math.round(cur.dur*100);
+  $('atk').value=Math.round(cur.attack*1000);$('gain').value=Math.round(cur.gain*100);$('filt').value=cur.filterFreq;
+  $('sweepOn').checked=cur.sweep;$('noiseMix').checked=cur.noise;
+  document.querySelectorAll('#kind button').forEach(b=>b.classList.toggle('on',b.dataset.k===cur.kind));
+  document.querySelectorAll('#wave button').forEach(b=>b.classList.toggle('on',b.dataset.w===cur.wave));
+  $('toneCtl').style.display=cur.kind==='noise'?'none':'block';
+  $('noiseCtl').style.display=(cur.kind==='noise'||cur.noise)?'block':'none';
+  drawViz();}
+function play(){ensure();playSound(cur);}
+
+$('play').onclick=play;
+$('kind').onclick=e=>{const b=e.target.closest('button');if(!b)return;cur.kind=b.dataset.k;refresh();play();};
+$('wave').onclick=e=>{const b=e.target.closest('button');if(!b)return;cur.wave=b.dataset.w;refresh();play();};
+$('freq').oninput=e=>{cur.freq=+e.target.value;refresh();};$('freq').onchange=play;
+$('freqEnd').oninput=e=>{cur.freqEnd=+e.target.value;refresh();};$('freqEnd').onchange=play;
+$('dur').oninput=e=>{cur.dur=+e.target.value/100;refresh();};$('dur').onchange=play;
+$('atk').oninput=e=>{cur.attack=+e.target.value/1000;refresh();};$('atk').onchange=play;
+$('gain').oninput=e=>{cur.gain=+e.target.value/100;refresh();};$('gain').onchange=play;
+$('filt').oninput=e=>{cur.filterFreq=+e.target.value;refresh();};$('filt').onchange=play;
+$('sweepOn').onchange=e=>{cur.sweep=e.target.checked;refresh();play();};
+$('noiseMix').onchange=e=>{cur.noise=e.target.checked;refresh();play();};
+
+const pr=$('presets');Object.keys(PRESETS).forEach(k=>{const b=document.createElement('div');b.className='pchip';b.textContent=k;
+  b.onclick=()=>{Object.assign(cur,{sweep:false,noise:false},PRESETS[k]);refresh();play();};pr.appendChild(b);});
+
+/* ---- AI designer (connector seam — same swap point as the canvas) ---- */
+let brain='claude';
+$('connRow').onclick=e=>{const c=e.target.closest('.conn');if(!c)return;brain=c.dataset.brain;document.querySelectorAll('.conn').forEach(x=>x.classList.toggle('on',x===c));};
+const logEl=$('log');
+function log(tag,body,err){const em=logEl.querySelector('.empty');if(em)em.remove();const d=document.createElement('div');d.className='ln'+(err?' err':'');d.innerHTML='<span class="tag"></span><span></span>';d.children[0].textContent=tag;d.children[1].textContent=body;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;}
+async function askConnector(messages,system){
+  if(brain==='local')throw new Error("Local brain not wired here — point this branch at your local model on your stack.");
+  if(brain==='chatgpt')throw new Error("ChatGPT not wired here — point this branch at your OpenAI key on your stack.");
+  throw new Error("AI sound proposals now route through Audio Studio and AI Team. Manual shaping and presets remain fully available here.");}
+function parseJSON(t){let s=t.replace(/```json|```/g,'').trim();const a=s.indexOf('{'),b=s.lastIndexOf('}');if(a>=0&&b>=0)s=s.slice(a,b+1);return JSON.parse(s);}
+const SYS=`You design retro game sound effects as JSON parameters. You CANNOT hear the result — you propose settings from the description; the human is the ear and may give feedback to refine. Respond ONLY JSON, no prose, no fences:
+{"thinking":"one short sentence","sound":{"kind":"tone"|"noise","wave":"square"|"sawtooth"|"triangle"|"sine","freq":N,"sweep":true|false,"freqEnd":N,"dur":seconds,"attack":seconds,"gain":0..1,"noise":true|false,"noiseGain":0..1,"filterFreq":Hz}}
+Guide: square=blippy/classic, sawtooth=harsh/laser, triangle=soft, sine=pure. freq 80-2000. sweep:true with a lower freqEnd = shoot/zap; higher freqEnd = coin/powerup. dur 0.05-0.15 for blips/shots, 0.3-0.6 for explosions/powerups. kind:"noise" + filterFreq for hits/explosions. Set noise:true on a tone to add impact (damage). Keep it one short SFX.`;
+$('design').onclick=async()=>{
+  const desc=$('desc').value.trim();if(!desc){log('note','Describe a sound first.');return;}
+  $('design').disabled=true;log('you',desc);
+  const msgs=[{role:"user",content:`Current sound settings: ${JSON.stringify(cur)}.\nRequest: ${desc}\nReturn the full updated sound JSON.`}];
+  try{const r=await askConnector(msgs,SYS);const o=parseJSON(r);
+    if(o.sound){Object.assign(cur,o.sound);refresh();play();}
+    log('ai',o.thinking||'(updated)');}
+  catch(e){log('error',e.message,true);}
+  $('design').disabled=false;};
+
+/* ---- my sounds + export ---- */
+const mine=[];
+function renderMine(){const w=$('myList');w.innerHTML='';mine.forEach((s,i)=>{const d=document.createElement('div');d.className='snd';
+  d.innerHTML=`<span class="sn">${s.name}</span><button class="pl">▶</button><button class="ld">edit</button><button class="dl">✕</button>`;
+  d.querySelector('.pl').onclick=()=>playSound(s.params);
+  d.querySelector('.ld').onclick=()=>{Object.assign(cur,s.params);refresh();play();};
+  d.querySelector('.dl').onclick=()=>{mine.splice(i,1);renderMine();};
+  w.appendChild(d);});}
+$('save').onclick=()=>{const n=($('sname').value.trim()||('sound'+(mine.length+1))).replace(/[^a-z0-9_]/gi,'_');
+  const saved={name:n,params:Object.assign({},cur)};mine.push(saved);$('sname').value='';renderMine();
+  if(parent!==window)parent.postMessage({type:'axm-audio-sound-saved',schema:'axm.audio.sound/v1',sound:saved},location.origin);};
+function toCode(s){const p=s.params;
+  if(p.kind==='noise')return `    ${s.name}: ()=>noise({dur:${p.dur},gain:${p.gain},filterFreq:${p.filterFreq}}),`;
+  let t=`    ${s.name}: ()=>{tone({type:'${p.wave}',freq:${p.freq}${p.sweep?`,freqEnd:${p.freqEnd}`:''},dur:${p.dur},attack:${p.attack},gain:${p.gain}});`;
+  if(p.noise)t+=`noise({dur:${p.dur},gain:${p.noiseGain},filterFreq:${p.filterFreq}});`;
+  return t+'},';}
+$('exportBtn').onclick=()=>{const box=$('exportBox');
+  if(!mine.length){box.style.display='block';box.value='Save some sounds first, then export.';return;}
+  const code='/* paste these into the LIB block of axm-sound.js */\n'+mine.map(toCode).join('\n')+'\n\n/* or as data: */\n'+JSON.stringify(mine,null,1);
+  box.style.display='block';box.value=code;box.focus();box.select();};
+
+refresh();
+
+/* ===== AXM FOUNDATION MOUNT =========================================
+   Added at the seam. The engine, presets, visualiser, AI designer and
+   "My Sounds" above are untouched. This only adds: project persistence
+   (no loss on refresh), file export/import, and the wisdom layer.
+   ==================================================================== */
+(function mountFoundation(){
+  if(new URLSearchParams(location.search).get('embedded')==='1'){
+    $('projCard').style.display='none';
+    $('wisCard').style.display='none';
+    $('connRow').closest('.card').style.display='none';
+    return;
+  }
+  if(typeof window.AXMStore==='undefined' || typeof window.AXMWisdom==='undefined'){
+    log('note','Foundation files missing — keep axm-storage.js + axm-wisdom-layer.js in this folder to enable saving and wisdom.');
+    $('nsLabel').textContent='saving disabled (foundation files not found)';
+    return;
+  }
+  const TOOL='soundforge', VER='v1';
+  let ready=false;
+  function queueAutosave(){ if(ready) AXMStore.autosave(getProject(),meta()).catch(()=>{}); }
+
+  /* the tool's full project = the sound you're shaping + your saved sounds */
+  function getProject(){ return { cur:Object.assign({},cur), mine:mine.map(s=>({name:s.name,params:Object.assign({},s.params)})) }; }
+  function applyProject(d){ if(!d) return; if(d.cur) Object.assign(cur,d.cur);
+    if(Array.isArray(d.mine)){ mine.length=0; d.mine.forEach(s=>mine.push(s)); }
+    refresh(); renderMine(); }
+  function meta(){ return { title:($('slotName').value||'sounds').trim(), sounds:mine.length }; }
+  function describe(p){ return p.kind==='noise'
+    ? ('noise '+(p.filterFreq||1200)+'Hz '+(+p.dur).toFixed(2)+'s')
+    : (p.wave+' '+p.freq+(p.sweep?('\u2192'+p.freqEnd):'')+'Hz '+(+p.dur).toFixed(2)+'s'); }
+  function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+  /* ---- wisdom (same gate for human and AI) ---- */
+  AXMWisdom.init({tool:TOOL,version:VER});
+  AXMWisdom.subscribe(renderWisdom);
+  let seamFiled=false;
+  function reflectW(){ const on=AXMWisdom.isOn(); $('wTog').textContent=on?'on':'off';
+    $('wTog').style.color=on?'var(--green)':'var(--muted)';
+    $('wToggle').textContent=on?'Turn wisdom off':'Turn wisdom on'; }
+  function renderWisdom(){ const items=AXMWisdom.all(); const w=$('wList');
+    if(!items.length){ w.innerHTML='<div class="log"><div class="empty ln">No lessons yet. Turn wisdom on, then design or save a sound.</div></div>'; return; }
+    w.innerHTML='<div class="log">'+items.slice().reverse().map(e=>
+      '<div class="ln'+(e.kind==='seam'?' err':'')+'"><span class="tag">'+esc(e.author)+(e.kind==='seam'?' · seam':'')+'</span><span>'+esc(e.text)+'</span></div>'
+    ).join('')+'</div>'; }
+  $('wToggle').onclick=()=>{ const on=!AXMWisdom.isOn(); AXMWisdom.on(on);
+    if(on && !seamFiled){ AXMWisdom.fileSeam({assumption:'sound params match axm-sound.js tone()/noise() shape',about:'axm-sound.js',by:'soundforge',author:'ai1'}); seamFiled=true; }
+    reflectW(); };
+  reflectW(); renderWisdom();
+
+  /* file a lesson when the human saves a sound — wrap, don't replace, the original */
+  const origSave=$('save').onclick;
+  $('save').onclick=function(){ origSave&&origSave.apply(this,arguments);
+    if(AXMWisdom.isOn() && mine.length){ const s=mine[mine.length-1]; AXMWisdom.file('saved "'+s.name+'": '+describe(s.params),{author:'human',tags:['sound']}); }
+    queueAutosave(); };
+
+  /* file a lesson when the AI designs one — wrap the async handler, run after it resolves */
+  const origDesign=$('design').onclick;
+  $('design').onclick=async function(){ await (origDesign && origDesign.apply(this,arguments));
+    if(AXMWisdom.isOn()){ const d=$('desc').value.trim(); AXMWisdom.file('AI designed'+(d?(' for "'+d+'"'):'')+': '+describe(cur),{author:'ai1',tags:['sound','ai-designed']}); }
+    queueAutosave(); };
+
+  /* ---- storage ---- */
+  AXMStore.onEvent(ev=>{ if(ev.type==='save')log('saved','slot '+(ev.slot||'')); if(ev.type==='import')log('import','project loaded'); });
+  async function refreshSlots(){ const rows=await AXMStore.list(); const named=rows.filter(r=>r.slot!=='auto'); const w=$('slotList'); w.innerHTML='';
+    named.forEach(r=>{ const d=document.createElement('div'); d.className='snd';
+      d.innerHTML='<span class="sn">'+esc(r.slot)+' <small style="color:var(--muted-2)">'+(r.meta&&r.meta.sounds!=null?r.meta.sounds+' sounds':'')+'</small></span><button class="ld">load</button><button class="dl">\u2715</button>';
+      d.querySelector('.ld').onclick=async()=>{ const rec=await AXMStore.load(r.slot); applyProject(rec.data); log('loaded',r.slot); };
+      d.querySelector('.dl').onclick=async()=>{ await AXMStore.remove(r.slot); refreshSlots(); };
+      w.appendChild(d); }); }
+  $('slotSave').onclick=async()=>{ const slot=($('slotName').value||'slotA').trim().replace(/[^a-z0-9_]/gi,'_'); await AXMStore.save(slot,getProject(),meta()); refreshSlots(); };
+  $('exportFile').onclick=async()=>{ const slot=($('slotName').value||'slotA').trim().replace(/[^a-z0-9_]/gi,'_'); try{ await AXMStore.save(slot,getProject(),meta()); await AXMStore.exportFile(slot); }catch(e){ log('error',e.message,true); } };
+  $('importFile').onclick=async()=>{ try{ const rec=await AXMStore.importFile('imported'); applyProject(rec.data); refreshSlots(); }catch(e){ log('note','import cancelled'); } };
+
+  (async function boot(){
+    const info=await AXMStore.init({tool:TOOL,version:VER});
+    ready=true;
+    $('nsLabel').textContent='saved locally · '+info.backend+' · '+info.namespace+'<slot>';
+    const last=await AXMStore.resume();
+    if(last){ applyProject(last.data); log('restored','last session restored'); }
+    AXMStore.startAutosave(getProject,8000,meta);
+    refreshSlots();
+  })();
+})();
+</script>
+</body></html>

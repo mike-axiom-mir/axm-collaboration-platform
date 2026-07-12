@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Publish & Library</title>
+  <link rel="stylesheet" href="publish-library.css">
+</head>
+<body>
+  <div class="publish-app">
+    <header class="topbar">
+      <div class="brand"><a href="/hub/index.html" aria-label="Back to Hub">‹</a><span class="mark">AXM</span><div><span class="eyebrow">Output and release room</span><h1>Publish & Library</h1></div></div>
+      <div class="truth"><i></i><div><b id="truthTitle">Local pipeline ready</b><small id="truthDetail">Nothing uploads or releases itself</small></div></div>
+      <button id="openInbox" class="button primary">Open artifact inbox</button>
+    </header>
+    <div class="app-body">
+      <aside class="view-rail"><div class="rail-heading"><span>Workspace</span><small>One output pipeline</small></div><nav id="viewNav"></nav><div class="rail-foot"><span></span><div><b>One shared route</b><small>Source tools keep their own engines</small></div></div></aside>
+      <main class="workspace">
+        <header class="view-header"><div><span id="viewGroup" class="eyebrow"></span><h2 id="viewTitle"></h2><p id="viewDescription"></p></div><div class="truth-badges"><span>Provenance first</span><span>Human release</span><span>No auto-publish</span></div></header>
+
+        <section id="overviewSurface" class="surface">
+          <section class="hero"><div><span class="eyebrow">Shared output spine</span><h3>Make once. Find it again. Release it honestly.</h3><p>Assets, packs, exports, backups and launcher distribution now meet in one reviewed pipeline. Creative tools send artifacts here; this room preserves where they came from and what actually happened next.</p></div><div class="hero-stats"><div><b id="artifactTotal">0</b><span>artifacts</span></div><div><b id="reviewTotal">0</b><span>need review</span></div><div><b id="releaseTotal">0</b><span>releases</span></div></div></section>
+          <section class="workflow-grid">
+            <button data-open-view="library" class="workflow-card cyan"><span>01</span><b>Find & preserve</b><p>Assets, sources, categories and project context.</p><em>Open library →</em></button>
+            <button data-open-view="packs" class="workflow-card violet"><span>02</span><b>Reuse & bundle</b><p>Asset packs and reusable template manifests.</p><em>Open packs →</em></button>
+            <button data-open-view="release" class="workflow-card gold"><span>03</span><b>Export & version</b><p>Artifact inbox, formats, evidence and releases.</p><em>Open pipeline →</em></button>
+            <button data-open-view="packages" class="workflow-card green"><span>04</span><b>Back up & share</b><p>Verified private and public-safe Workshop ZIPs.</p><em>Open packaging →</em></button>
+            <button data-open-view="distribution" class="workflow-card pink"><span>05</span><b>Distribute</b><p>Launcher cards and governed release metadata.</p><em>Open distribution →</em></button>
+          </section>
+          <section class="boundary"><b>Format truth</b><p>This room coordinates outputs. PNG, PDF, SVG, audio, video, 3D, web and executable files are still produced by the source engine that understands them. A ledger entry never pretends conversion occurred.</p></section>
+        </section>
+
+        <section id="frameSurface" class="surface frame-surface" hidden>
+          <iframe id="libraryFrame" data-src="../asset-vault/index.html?publish-library=1" title="Asset library"></iframe>
+          <iframe id="packsFrame" data-src="../asset-pack-lab/index.html?publish-library=1" title="Asset packs and templates" hidden></iframe>
+          <iframe id="packagesFrame" data-src="../workshop-packager/index.html?publish-library=1" title="Workshop backups and packages" hidden></iframe>
+          <iframe id="distributionFrame" data-src="../launcher-card-installer/index.html?publish-library=1" title="Launcher distribution proposals" hidden></iframe>
+        </section>
+
+        <section id="releaseSurface" class="surface release-surface" hidden>
+          <div class="release-intro"><div><span class="eyebrow">Reviewed release ledger</span><h3>Every artifact arrives as unreviewed.</h3><p>Register an output or receive one from another AXM workspace. Review source, license and version before it can move forward.</p></div><div class="format-strip"><span>PNG</span><span>PDF</span><span>SVG</span><span>Audio</span><span>Video</span><span>3D</span><span>Web</span><span>Executable</span></div></div>
+          <div class="release-layout">
+            <section class="panel"><header><div><span class="eyebrow">Artifact inbox</span><h3>Outputs waiting for a decision</h3></div><b id="inboxBadge">0 open</b></header>
+              <div class="artifact-form"><input id="artifactName" maxlength="120" placeholder="Artifact name"><input id="artifactSource" maxlength="120" placeholder="Source workspace or tool"><select id="artifactFormat" aria-label="Output format"></select><input id="artifactVersion" maxlength="40" placeholder="Version, for example 0.1.0"><input id="artifactLicense" maxlength="120" placeholder="License / rights status"><textarea id="artifactProvenance" maxlength="1800" placeholder="Source file, creator, model, prompt, references or other provenance"></textarea><button id="addArtifact" class="button primary">Add to inbox</button></div>
+              <div id="artifactList" class="record-list"><div class="empty">No artifacts in the release ledger.</div></div>
+            </section>
+            <section class="panel"><header><div><span class="eyebrow">Release records</span><h3>Versions with evidence</h3></div><button id="exportManifest" class="button secondary" disabled>Export manifest</button></header>
+              <div class="release-form"><input id="releaseName" maxlength="120" placeholder="Release name"><select id="releaseArtifact" aria-label="Release artifact"></select><input id="releaseVersion" maxlength="40" placeholder="Release version"><select id="releaseChannel" aria-label="Release channel"><option>LOCAL</option><option>PRIVATE BACKUP</option><option>PUBLIC-SAFE</option><option>LAUNCHER PROPOSAL</option><option>MARKETPLACE LATER</option></select><textarea id="releaseEvidence" maxlength="2200" placeholder="Output path, hash, package report, checks or blocking note"></textarea><button id="addRelease" class="button primary">Record release</button></div>
+              <div id="releaseList" class="record-list"><div class="empty">No release records yet.</div></div>
+            </section>
+          </div>
+        </section>
+        <footer class="statusbar"><span><i></i><b id="statusText">Publish & Library ready</b></span><span id="saveState">Local release state</span></footer>
+      </main>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="publish-library-core.js"></script>
+  <script src="/launcher/axm-foundation.js"></script>
+  <script src="/hub/axm-hub-module.js"></script>
+  <script src="publish-library.js"></script>
+</body>
+</html>

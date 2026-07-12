@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AXM ChatGPT Connector</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">AXM · two honest seats · TEST</div>
+        <h1>ChatGPT Connector</h1>
+        <p>Codex helps build. ChatGPT helps create visual assets. Neither gets hidden access.</p>
+      </div>
+      <div class="platform-state">
+        <span class="lamp manual" id="platformLamp"></span>
+        <div><small>CHATGPT PLATFORM</small><strong id="platformState">MANUAL HANDOFF</strong></div>
+      </div>
+    </header>
+
+    <main class="lanes">
+      <section class="lane coding-lane" aria-labelledby="codingTitle">
+        <div class="lane-number">01</div>
+        <div class="lane-head">
+          <div><div class="eyebrow">Coding seat</div><h2 id="codingTitle">Authenticated Codex</h2></div>
+          <button class="quiet small" id="refreshStatus">Refresh</button>
+        </div>
+        <p class="lead">A truthful read-only view of the local coding seat. This screen does not send Codex a task.</p>
+
+        <div class="seat-card">
+          <div class="seat-mark">C</div>
+          <div class="seat-copy"><strong id="codexLabel">CHECKING</strong><span id="codexDetail">Asking the local Workshop server…</span></div>
+          <span class="status-chip checking" id="codexChip">UNKNOWN</span>
+        </div>
+
+        <div class="facts">
+          <div><span>Codex installed</span><b id="factInstalled">—</b></div>
+          <div><span>Codex CLI accessible</span><b id="factAccessible">—</b></div>
+          <div><span>Codex login verified</span><b id="factAuth">—</b></div>
+          <div><span>ChatGPT app open</span><b id="factChatApp">—</b></div>
+        </div>
+
+        <div class="truth-box">
+          <strong>What “ready” means</strong>
+          <p>Codex sign-in was verified by the local status adapter. The authentication method is named only when the probe reports it. An open process alone never means it is acting or reading this room.</p>
+        </div>
+        <div class="mono status-line" id="statusLine" role="status">Status not loaded yet.</div>
+      </section>
+
+      <section class="lane generator-lane" aria-labelledby="generatorTitle">
+        <div class="lane-number">02</div>
+        <div class="lane-head">
+          <div><div class="eyebrow">Generator Bay</div><h2 id="generatorTitle">ChatGPT image / skin handoff</h2></div>
+          <span class="status-chip manual" id="handoffChip">MANUAL HANDOFF</span>
+        </div>
+        <p class="lead">Build the request here, generate visibly in ChatGPT, then bring back one PNG for Game Hub review.</p>
+
+        <form id="promptForm" autocomplete="off">
+          <div class="form-grid">
+            <label>Asset name<input id="assetName" maxlength="120" placeholder="e.g. blue rescue ship skin" required></label>
+            <label>Target installed game<select id="targetGame" required disabled><option value="">Loading Game Hub…</option></select><span class="field-state" id="gameHubState">Checking installed games.</span></label>
+            <label class="wide">Visual brief<textarea id="visualBrief" maxlength="1200" placeholder="Subject, colours, viewpoint, mood, important shapes…" required></textarea></label>
+            <label>Width (px)<input id="assetWidth" type="number" min="16" max="4096" step="1" value="1024"></label>
+            <label>Height (px)<input id="assetHeight" type="number" min="16" max="4096" step="1" value="1024"></label>
+            <label>Style<select id="assetStyle"><option value="clean game art">Clean game art</option><option value="crisp pixel art">Crisp pixel art</option><option value="bold vector illustration">Bold vector illustration</option><option value="painted fantasy game art">Painted fantasy</option><option value="polished sci-fi game UI">Sci-fi game UI</option><option value="hand-drawn cartoon game art">Hand-drawn cartoon</option></select></label>
+            <div class="toggles"><label class="toggle"><input id="transparentBackground" type="checkbox" checked><span>Transparent background</span></label><label class="toggle"><input id="hardEdges" type="checkbox" checked><span>Crisp game-scale edges</span></label></div>
+          </div>
+        </form>
+
+        <div class="prompt-panel">
+          <div class="panel-head"><strong>Prompt for ChatGPT</strong><span id="promptCount">0 chars</span></div>
+          <textarea id="promptOutput" readonly placeholder="Complete the three required fields to build the prompt."></textarea>
+          <div class="action-row"><button class="primary" id="copyPrompt" disabled>Copy prompt</button><a class="button-link" id="openChatGPT" href="https://chatgpt.com" target="_blank" rel="noopener noreferrer">Open ChatGPT ↗</a></div>
+        </div>
+
+        <div class="handoff-arrow"><span>1 · GENERATE IN CHATGPT</span><i></i><span>2 · SAVE THE PNG</span><i></i><span>3 · RETURN IT HERE</span></div>
+
+        <div class="drop-zone" id="dropZone" tabindex="0" role="button" aria-label="Choose or drop returned PNG">
+          <input id="assetFile" type="file" accept="image/png,.png" hidden>
+          <div class="drop-copy" id="dropCopy"><b>Drop the returned PNG here</b><span>or click to choose · real PNG only · maximum 6 MiB</span></div>
+          <img id="assetPreview" alt="Selected asset preview" hidden>
+        </div>
+        <div class="file-meta" id="fileMeta">No image selected. Nothing has been staged.</div>
+        <button class="stage-button" id="stageAsset" disabled>Stage proposal for Game Hub</button>
+        <div class="stage-state" id="stageState" role="status">Proposal only: Game Hub review is still required before any game file changes.</div>
+        <div class="post-stage-actions" id="postStageActions" hidden><a class="button-link review-link" href="/tools/game-hub/index.html">Review in Game Hub →</a><button class="quiet" id="resetAsset" type="button">Reset / stage another</button></div>
+      </section>
+    </main>
+
+    <section class="boundary">
+      <div><strong>No credentials</strong><span>No keys, cookies, tokens, or chat history are read.</span></div>
+      <div><strong>No fake connection</strong><span>Desktop presence is not an MCP/platform tunnel.</span></div>
+      <div><strong>No automatic install</strong><span>Every returned PNG enters Game Hub as a proposal.</span></div>
+    </section>
+
+    <footer><a href="/hub/index.html">← Back to AXM Hub</a><span>ChatGPT generation happens in your visible ChatGPT conversation.</span></footer>
+  </div>
+
+  <script src="/hub/axm-hub-module.js"></script>
+  <script src="connector-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

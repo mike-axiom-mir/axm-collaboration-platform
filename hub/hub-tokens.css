@@ -17,11 +17,12 @@ button{font-family:inherit}
 
 /* ---- shell grid: outer stable ---- */
 .shell{display:grid;grid-template-rows:auto 1fr auto;height:100vh}
-.topbar{display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--edge);background:linear-gradient(180deg,rgba(24,29,37,.7),transparent)}
+.topbar{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--edge);background:linear-gradient(180deg,rgba(24,29,37,.7),transparent)}
 .mark{width:30px;height:30px;border:1.5px solid var(--cy);border-radius:7px;display:grid;place-items:center;box-shadow:0 0 16px rgba(56,214,236,.25)}
 .mark b{color:var(--cy);font-size:12px;letter-spacing:1px}
 .brand{font-weight:700;font-size:15px;letter-spacing:.5px}.brand span{color:var(--cy)}
-.active-lbl{color:var(--muted);font-size:12.5px;margin-left:8px}
+.active-lbl{color:var(--muted);font-size:12px;margin-left:4px;display:flex;align-items:center;gap:7px}
+.active-lbl span{font:800 8px var(--mono);letter-spacing:1.2px;text-transform:uppercase;color:var(--muted-2)}
 .active-lbl b{color:var(--cy);font-weight:600}
 .topbar .grow{flex:1}
 .status-dot{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
@@ -30,10 +31,22 @@ button{font-family:inherit}
 .pill.saved{color:var(--cy);border-color:var(--cy-dim)}
 .tb-btn{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border:1px solid var(--edge);border-radius:9px;background:transparent;color:var(--text);font-size:12.5px;cursor:pointer}
 .tb-btn:hover{border-color:var(--cy-dim);color:var(--cy)}
+.pill.saved{display:none}
+.hub-tools{position:relative;z-index:20}
+.hub-tools>summary{list-style:none;display:inline-flex;align-items:center;padding:7px 12px;border:1px solid var(--edge);border-radius:9px;background:rgba(13,22,37,.7);color:var(--text);font-size:12px;cursor:pointer}
+.hub-tools>summary::-webkit-details-marker{display:none}.hub-tools>summary::before{content:'☰';color:var(--cy);margin-right:7px;font-size:10px}.hub-tools[open]>summary{border-color:var(--cy-dim);color:var(--cy)}
+.hub-tools-pop{position:absolute;right:0;top:calc(100% + 9px);width:230px;padding:8px;display:grid;gap:5px;border:1px solid var(--edge);border-radius:13px;background:linear-gradient(180deg,#152236,#0b1422);box-shadow:0 22px 60px rgba(0,0,0,.48)}
+.hub-tools-pop .tb-btn{width:100%;justify-content:flex-start;padding:9px 10px;background:rgba(8,15,25,.45)}
 
-.body{display:grid;grid-template-columns:210px 1fr;min-height:0}
+.body{display:grid;grid-template-columns:210px 1fr;min-height:0;position:relative;transition:grid-template-columns .2s ease}
 /* ---- sidebar switcher ---- */
-.sidebar{border-right:1px solid var(--edge);padding:12px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.sidebar{border-right:1px solid var(--edge);padding:12px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;min-width:0;transition:transform .2s ease,opacity .16s ease,visibility .16s}
+.sidebar-toggle{position:absolute;z-index:8;left:196px;top:13px;width:27px;height:44px;border:1px solid rgba(56,214,236,.28);border-radius:0 10px 10px 0;background:linear-gradient(180deg,rgba(16,31,48,.97),rgba(7,15,25,.97));color:var(--cy);display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:5px 0 18px rgba(0,0,0,.3);transition:left .2s ease,right .2s ease,transform .16s ease,border-color .16s ease}
+.sidebar-toggle:hover{border-color:var(--cy);background:linear-gradient(180deg,rgba(26,54,74,.98),rgba(8,20,32,.98))}.sidebar-toggle span{font-size:21px;line-height:1;transform:translateX(-1px)}
+body[data-sidebar-collapsed="true"] .body{grid-template-columns:0 1fr}
+body[data-sidebar-collapsed="true"] .sidebar{transform:translateX(-100%);opacity:0;visibility:hidden;pointer-events:none}
+body[data-sidebar-collapsed="true"] .sidebar-toggle{left:0}
+body[data-sidebar-collapsed="true"] .sidebar-toggle span{transform:rotate(180deg)}
 .side-cap{font-size:10px;letter-spacing:2px;color:var(--muted-2);text-transform:uppercase;margin:10px 8px 4px}
 .mod{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;cursor:pointer;border:1px solid transparent;color:var(--text);font-size:14px;text-align:left;width:100%;background:transparent}
 .mod:hover{background:rgba(56,214,236,.06)}
@@ -70,7 +83,14 @@ button{font-family:inherit}
    arrangement varies. Outer stable, presentation flexible. ---- */
 body[data-nav="right"] .body{grid-template-columns:1fr 210px}
 body[data-nav="right"] .sidebar{order:2;border-right:0;border-left:1px solid var(--edge)}
+body[data-nav="right"] .sidebar-toggle{left:auto;right:196px;border-radius:10px 0 0 10px;box-shadow:-5px 0 18px rgba(0,0,0,.3)}
+body[data-nav="right"][data-sidebar-collapsed="true"] .body{grid-template-columns:1fr 0}
+body[data-nav="right"][data-sidebar-collapsed="true"] .sidebar{transform:translateX(100%)}
+body[data-nav="right"][data-sidebar-collapsed="true"] .sidebar-toggle{left:auto;right:0}
 body[data-nav="rail"] .body{grid-template-columns:62px 1fr}
+body[data-nav="rail"] .sidebar-toggle{left:49px}
+body[data-nav="rail"][data-sidebar-collapsed="true"] .body{grid-template-columns:0 1fr}
+body[data-nav="rail"][data-sidebar-collapsed="true"] .sidebar-toggle{left:0}
 body[data-nav="rail"] .mod .nm,body[data-nav="rail"] .mod .life{display:none}
 body[data-nav="rail"] .mod{justify-content:center;padding:11px 0}
 body[data-nav="rail"] .side-cap{font-size:8px;text-align:center;letter-spacing:.5px}
@@ -146,6 +166,7 @@ body.skin-asset-empty-bg .vp-error{
 .workflow-card:hover{transform:translateY(-1px);box-shadow:0 12px 30px rgba(0,0,0,.18)}
 .workflow-icon,.hcard-icon{color:var(--cy);display:grid;place-items:center;width:48px;height:48px;border:1px solid var(--cy-dim);border-radius:13px;background:rgba(56,214,236,.07)}
 .workflow-copy h3{font-size:20px;margin-bottom:6px}.workflow-copy p{min-height:40px}.workflow-preview{font-size:10px;color:var(--muted-2);line-height:1.5;margin:8px 0}
+.human-label{color:var(--wf);font:800 9px/1 var(--mono);letter-spacing:1.3px;text-transform:uppercase;margin:2px 0 8px}
 .module-card{position:relative;padding-top:68px}.module-card .hcard-icon{position:absolute;left:14px;top:14px;width:40px;height:40px}
 .utility-card{border-style:dashed}.utility-card .hcard-icon{font-size:24px}
 .hcard p{margin:0;color:var(--muted);font-size:12px;min-height:32px}

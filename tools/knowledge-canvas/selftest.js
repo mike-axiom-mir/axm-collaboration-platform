@@ -1,0 +1,24 @@
+const fs=require('fs'),path=require('path'),C=require('./knowledge-canvas-core.js');let fail=0;
+function check(v,m){console.log((v?'PASS ':'FAIL ')+m);if(!v)fail++;}
+const p=C.emptyProject('Research Trial'),sheet=C.activeSheet(p);
+check(C.VIEWS.length===7,'seven unified Knowledge Canvas views');
+check(['research','data','visuals','diagrams','timeline','maps','whiteboard'].every(id=>C.VIEWS.some(v=>v.id===id)),'all requested research and visual modes');
+check(p.format==='axm.knowledge-canvas/v1'&&p.version===2,'portable versioned project format upgraded');
+check(p.spreadsheet.sheets.length===1&&sheet.columns.length===4&&sheet.rows.length===20,'workbook starts usable with one sheet');
+sheet.rows[0][1]='2';sheet.rows[0][2]='=B1*3+1';check(C.cellValue(sheet,0,2)===7,'formula cells resolve references and arithmetic');
+sheet.rows[1][1]='4';sheet.rows[2][1]='=SUM(B1:B2)';sheet.rows[3][1]='=AVERAGE(B1:B2)';check(C.cellValue(sheet,2,1)===6&&C.cellValue(sheet,3,1)===3,'common range formulas calculate locally');
+sheet.rows[0][1]='=C1';check(C.cellValue(sheet,0,1)==='#CYCLE','formula cycles are visible');sheet.rows[0][1]='2';
+sheet.filter={column:0,query:'alpha'};sheet.rows[0][0]='Alpha';sheet.rows[1][0]='Beta';check(C.filteredRows(sheet).length===1,'sheet rows filter by a chosen column');
+sheet.filter={column:-1,query:''};C.sortSheet(sheet,0,'desc');check(sheet.rows[0][0]==='Beta','sheet rows sort without losing data');
+const imported=C.csvToSheet('Name,Value\r\n"Alpha, one",2\r\nBeta,4','Imported');check(imported.columns[0]==='Name'&&imported.rows[0][0]==='Alpha, one','quoted CSV imports into a new sheet');
+check(/Name,Value/.test(C.sheetToCSV(imported)),'active sheet exports to CSV');
+const legacy=C.normalizeProject({format:C.FORMAT,name:'Legacy',table:{columns:['Old'],rows:[['kept']]}});check(C.activeSheet(legacy).rows[0][0]==='kept','old single tables migrate into the workbook');
+const items=C.sourcePacket({schema:'axm.knowledge.research/v1',origin:'Evidence Desk',items:[{title:'Observed seam',claim:'A sourced observation',source:'receipt-1',status:'sourced'}]});check(items.length===1&&items[0].origin==='Evidence Desk','connected research packet preserves origin');
+let refused=false;try{C.sourcePacket({schema:'wrong',items:[{title:'x'}]});}catch(e){refused=true;}check(refused,'unknown research packet is refused');
+const handoff=C.projectRoomHandoff('task',{title:'Check the source',detail:'Review it',sourceCanvasId:p.id});check(handoff.kind==='task'&&handoff.schema==='axm.knowledge-project-handoff/v1','Project Room handoff is narrow and versioned');
+refused=false;try{C.projectRoomHandoff('research',{title:'Do not duplicate'});}catch(e){refused=true;}check(refused,'research cannot be mislabeled as Project Room work');
+const round=C.normalizeProject(JSON.parse(JSON.stringify(p)));check(round.name==='Research Trial'&&round.spreadsheet.sheets.length===1,'project survives export and import');
+const contract=JSON.parse(fs.readFileSync(path.join(__dirname,'module.contract.json'),'utf8')),manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'manifest.json'),'utf8'));check(contract.version===manifest.version,'manifest and contract versions agree');
+check(contract.boundaries.refuses.includes('automatic-source-acceptance'),'source acceptance remains human-controlled');check(contract.boundaries.refuses.includes('research-as-project-task-duplication'),'Project Room does not duplicate research canvas');
+const browser=fs.readFileSync(path.join(__dirname,'knowledge-canvas.js'),'utf8');check(/bindWorkbook/.test(browser)&&/inp\.oninput=function\(\)\{t\.rows/.test(browser),'workbook edits persist while typing before view changes');
+if(fail)process.exit(1);console.log('Knowledge Canvas selftest: PASS (research, workbook, visuals, place, time and whiteboard)');

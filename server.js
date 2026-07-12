@@ -17,6 +17,9 @@ const fs = require('fs');
 const path = require('path');
 const childProcess = require('child_process');
 const WorkshopPackager = require('./tools/workshop-packager/packager-service');
+const GameForgePackages = require('./tools/game-forge/package-service');
+const ChatGPTConnectorStatus = require('./hub/chatgpt-connector-status');
+const SharedProfile = require('./shared/profile/axm-profile-core');
 
 const ROOT = __dirname;
 const HOST = '127.0.0.1';
@@ -38,6 +41,10 @@ const COLLAB_NOTICE_TYPES = ['question', 'proposal', 'message', 'warning'];
 const COLLAB_NOTICES = new Map();
 const VISION_LOOP_DIR = path.join(ROOT, 'state', 'vision-loop');
 const VISION_FRAME_FILE = path.join(VISION_LOOP_DIR, 'latest-screen.jpg');
+const GAME_FORGE_CANDIDATES_DIR = path.join(ROOT, 'exports', 'game-forge-candidates');
+const GAME_LIBRARY_DIR = path.join(ROOT, 'tools', 'game-hub', 'game-library');
+const PROFILE_STATE_DIR = path.join(ROOT, 'state', 'shared-profile');
+const PROFILE_STATE_FILE = path.join(PROFILE_STATE_DIR, 'profile.json');
 let VISION_BUSY = false;
 let VISION_STATUS = { state: 'idle', target: 'claude', frameCount: 0, lastAt: null, summary: null, error: null };
 let ACTIVE_PORT = DEFAULT_PORT;
@@ -63,6 +70,34 @@ function send(res, code, body, type) {
 
 function safeName(name) {
   return String(name || '').replace(/[^a-zA-Z0-9._ -]/g, '_').slice(0, 120) || 'unnamed.txt';
+}
+
+function readJsonBody(req, maxBytes, done) {
+  let body = '';
+  let refused = false;
+  req.on('data', chunk => {
+    if (refused) return;
+    body += chunk;
+    if (body.length > maxBytes) {
+      refused = true;
+      done(new Error('request body too large'));
+    }
+  });
+  req.on('end', () => {
+    if (refused) return;
+    try { done(null, JSON.parse(body || '{}')); }
+    catch (e) { done(new Error('invalid JSON body')); }
+  });
+}
+
+function loadSharedProfile() {
+  try { return SharedProfile.normalize(JSON.parse(fs.readFileSync(PROFILE_STATE_FILE, 'utf8'))); }
+  catch (e) { return SharedProfile.create(); }
+}
+
+function saveSharedProfile(profile) {
+  fs.mkdirSync(PROFILE_STATE_DIR, { recursive: true });
+  fs.writeFileSync(PROFILE_STATE_FILE, JSON.stringify(SharedProfile.normalize(profile), null, 2) + '\n');
 }
 
 function loadCollaborationNotices() {
@@ -240,6 +275,9 @@ function scanTools() {
       type: m.type || null,
       category: m.category || null,
       audience: m.audience || 'human',
+      layer: m.layer || null,
+      integratedInto: m.integratedInto || null,
+      serviceRole: m.serviceRole || null,
       risk: m.risk || null,
       summary: m.summary || '',
       card: m.card && typeof m.card === 'object' ? m.card : null
@@ -305,6 +343,12 @@ const server = http.createServer((req, res) => {
   }
   if (url === '/api/grok/status' && req.method === 'GET') {
     return send(res, 200, { ok: true, status: grokStatus() });
+  }
+  if (url === '/api/chatgpt-connector/status' && req.method === 'GET') {
+    ChatGPTConnectorStatus.inspect()
+      .then(status => send(res, 200, { ok: true, status }))
+      .catch(() => send(res, 500, { ok: false, error: 'ChatGPT connector status probe failed' }));
+    return;
   }
   if (url === '/api/presence' && req.method === 'GET') {
     return send(res, 200, { ok: true, members: livePresence() });
@@ -451,11 +495,100 @@ const server = http.createServer((req, res) => {
     slog('Shell Guardian manually reset; audit history preserved');
     return send(res, 200, { ok: true, status });
   }
+  if (url === '/api/profile' && req.method === 'GET') {
+    return send(res, 200, { ok: true, profile: SharedProfile.publicView(loadSharedProfile()) });
+  }
+  if (url === '/api/profile/opt-in' && req.method === 'POST') {
+    if (req.headers['x-axm-profile'] !== 'local-opt-in') return send(res, 403, { ok: false, error: 'explicit local opt-in required' });
+    readJsonBody(req, 100000, (error, input) => {
+      if (error) return send(res, 400, { ok: false, error: error.message });
+      try {
+        const profile = SharedProfile.optIn(loadSharedProfile(), input);
+        saveSharedProfile(profile);
+        slog('Shared profile opted in by ' + profile.consent.decidedBy);
+        return send(res, 200, { ok: true, profile: SharedProfile.publicView(profile) });
+      } catch (e) { return send(res, 400, { ok: false, error: e.message }); }
+    });
+    return;
+  }
+  if (url === '/api/profile/opt-out' && req.method === 'POST') {
+    if (req.headers['x-axm-profile'] !== 'local-opt-out') return send(res, 403, { ok: false, error: 'explicit local opt-out required' });
+    readJsonBody(req, 8192, (error, input) => {
+      if (error) return send(res, 400, { ok: false, error: error.message });
+      const profile = SharedProfile.optOut(loadSharedProfile(), input.decidedBy || 'local-human');
+      saveSharedProfile(profile);
+      slog('Shared profile tracking stopped; existing local history preserved');
+      return send(res, 200, { ok: true, profile: SharedProfile.publicView(profile) });
+    });
+    return;
+  }
+  if (url === '/api/profile' && req.method === 'DELETE') {
+    if (req.headers['x-axm-profile'] !== 'delete-local-profile') return send(res, 403, { ok: false, error: 'explicit local deletion required' });
+    try { if (fs.existsSync(PROFILE_STATE_FILE)) fs.unlinkSync(PROFILE_STATE_FILE); }
+    catch (e) { return send(res, 500, { ok: false, error: 'could not delete local profile' }); }
+    slog('Shared profile and activity history deleted locally');
+    return send(res, 200, { ok: true, profile: SharedProfile.create() });
+  }
+  if (url === '/api/profile/members' && req.method === 'POST') {
+    if (req.headers['x-axm-profile'] !== 'sync-local-members') return send(res, 403, { ok: false, error: 'explicit local member sync required' });
+    readJsonBody(req, 100000, (error, input) => {
+      if (error) return send(res, 400, { ok: false, error: error.message });
+      const current = loadSharedProfile();
+      if (!current.enabled) return send(res, 409, { ok: false, error: 'shared profile is opted out' });
+      try {
+        const profile = SharedProfile.syncMembers(current, input.members || []);
+        saveSharedProfile(profile);
+        return send(res, 200, { ok: true, profile: SharedProfile.publicView(profile) });
+      } catch (e) { return send(res, 400, { ok: false, error: e.message }); }
+    });
+    return;
+  }
+  if (url === '/api/profile/event' && req.method === 'POST') {
+    if (req.headers['x-axm-profile-event'] !== 'signed-local-receipt') return send(res, 403, { ok: false, error: 'local activity receipt required' });
+    readJsonBody(req, 100000, (error, input) => {
+      if (error) return send(res, 400, { ok: false, error: error.message });
+      try {
+        const result = SharedProfile.record(loadSharedProfile(), input);
+        if (!result.duplicate) saveSharedProfile(result.profile);
+        return send(res, 200, { ok: true, duplicate: result.duplicate, event: result.event, profile: SharedProfile.publicView(result.profile) });
+      } catch (e) {
+        const status = /opted out/.test(e.message) ? 409 : 400;
+        return send(res, status, { ok: false, error: e.message });
+      }
+    });
+    return;
+  }
   if (url === '/api/tools') {
     return send(res, 200, { tools: scanTools(), statuses: STATUSES });
   }
   if (url === '/api/workshop-packages' && req.method === 'GET') {
     return send(res, 200, { ok: true, active: WorkshopPackager.isActive(), packages: WorkshopPackager.list() });
+  }
+  if (url === '/api/game-forge/candidates' && req.method === 'GET') {
+    return send(res, 200, { ok: true, candidates: GameForgePackages.listCandidates(GAME_FORGE_CANDIDATES_DIR) });
+  }
+  if (url === '/api/game-forge/build' && req.method === 'POST') {
+    let buf = '';
+    req.on('data', c => { buf += c; if (buf.length > 2000000) req.destroy(); });
+    req.on('end', () => {
+      try {
+        const parsed = JSON.parse(buf || '{}');
+        const result = GameForgePackages.buildCandidate({
+          project: parsed.project,
+          slot: parsed.slot,
+          minPlayers: parsed.minPlayers,
+          maxPlayers: parsed.maxPlayers,
+          outputRoot: GAME_FORGE_CANDIDATES_DIR,
+          liveLibraryDir: GAME_LIBRARY_DIR
+        });
+        slog('Game Forge candidate ' + result.candidate + ' · verify ' + (result.verification.pass ? 'PASS' : 'FAIL') + ' · not installed');
+        return send(res, 200, { ok: true, result: Object.assign({}, result, { folder: path.relative(ROOT, result.folder).replace(/\\/g, '/') }) });
+      } catch (e) {
+        slog('Game Forge candidate refused: ' + String(e.message || e).replace(/[\r\n]+/g, ' ').slice(0, 500));
+        return send(res, 400, { ok: false, error: e.message });
+      }
+    });
+    return;
   }
   if (url === '/api/workshop-package' && req.method === 'POST') {
     let buf = '';

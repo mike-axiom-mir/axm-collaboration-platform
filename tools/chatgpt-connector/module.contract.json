@@ -1,0 +1,34 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "chatgpt-connector",
+  "version": "v0.1",
+  "provides": [
+    "codex-seat-status",
+    "chatgpt-image-request-builder",
+    "manual-chatgpt-platform-handoff",
+    "reviewed-game-asset-proposal"
+  ],
+  "consumes": [
+    "workshop:chatgpt-connector-status",
+    "chatgpt:web-image-generation",
+    "game-hub:asset-handoff"
+  ],
+  "permissions": ["bridge", "files", "gate"],
+  "handoffs": {
+    "emits": ["axm.game-asset/v1"],
+    "accepts": ["image/png"]
+  },
+  "boundaries": {
+    "writes": ["game-hub:asset-inbox:proposal-only"],
+    "refuses": [
+      "credential-content-read",
+      "cookie-or-token-reuse",
+      "automatic-login",
+      "arbitrary-chat-automation",
+      "process-presence-as-platform-connection",
+      "unproven-mcp-connection-claim",
+      "non-png-asset-handoff",
+      "automatic-game-asset-acceptance"
+    ]
+  }
+}

@@ -11,10 +11,17 @@
 const fs = require('fs'), path = require('path');
 const Core = require('./hub-shell.js');
 const C = require('./module-contract.js');
+const hubHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+const hubCss = fs.readFileSync(path.join(__dirname, 'hub-tokens.css'), 'utf8');
+const hubJs = fs.readFileSync(path.join(__dirname, 'hub-shell.js'), 'utf8');
 const out = []; let fails = 0;
 function ok(m){ out.push('  PASS  ' + m); }
 function bad(m){ out.push('  FAIL  ' + m); fails++; }
 function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
+
+/id="sidebarToggle"[^>]+aria-controls="hubSidebar"/.test(hubHtml) ? ok('sidebar: visible collapse/reopen handle exists') : bad('sidebar toggle missing');
+/data-sidebar-collapsed="true"\] \.body\{grid-template-columns:0 1fr\}/.test(hubCss) ? ok('sidebar: collapsed state gives workspace full width') : bad('sidebar collapse layout missing');
+/axm\.hub\.sidebar-collapsed/.test(hubJs) && /toggleSidebar\(\)/.test(hubJs) ? ok('sidebar: preference persists and toggles') : bad('sidebar persistence missing');
 
 /* ---- 1. persistence round-trip: write, then reopen over same backend ---- */
 (function persistence(){
@@ -78,6 +85,9 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
 (function modularity(){
   const available = [{ id: 'game-hub', name: 'GameHub' }, { id: 'studio', name: 'Studio' }, { id: 'hub-test-room', name: 'Test Room' }];
 
+  const normalized = Core.normalizeRegistry([{ id: 'project-room', layer: 'build' }]);
+  normalized[0].layer === 'build' ? ok('registry preserves a manifest layer suggestion') : bad('registry dropped manifest layer');
+
   /* first run seeds all discovered (no-loss) */
   let res = Core.resolveModules(available, available.map(m => m.id));
   res.visible.length === 3 ? ok('first run: all discovered modules added (no-loss)') : bad('first run seed wrong');
@@ -92,6 +102,10 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
   /* stale id (folder removed) is dropped, not errored */
   res = Core.resolveModules(available, ['studio', 'ghost-module']);
   (res.enabled.indexOf('ghost-module') < 0 && res.visible.length === 1) ? ok('stale added-id dropped cleanly') : bad('stale id not dropped');
+
+  const promoted = Core.promoteIntegratedParents([{id:'ai-team'},{id:'ai-task-talk',integratedInto:'ai-team'}],['ai-task-talk']);
+  (promoted.indexOf('ai-team') >= 0 && promoted.indexOf('ai-task-talk') >= 0)
+    ? ok('upgrade: integrated parent enabled when an existing child was chosen') : bad('upgrade lost consolidated parent');
 
   /* the added-set survives a reopen via the store */
   const backend = Core.memoryBackend();
@@ -161,16 +175,40 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
   Core.doorHash('let-me-in') !== 'let-me-in' ? ok('door: phrase not stored in plaintext') : bad('phrase stored plaintext');
 
   const workflow = Core.workflowLayout([
-    { id: 'studio' }, { id: 'game-hub' }, { id: 'agent-command-center' }, { id: 'verifier' }, { id: 'main-hub' }
+    { id: 'studio' }, { id: 'audio-studio' }, { id: 'film-motion-studio' }, { id: 'ui-ux-builder', integratedInto: 'studio' }, { id: 'project-room' }, { id: 'knowledge-canvas' }, { id: 'publish-library' }, { id: 'asset-vault', integratedInto: 'publish-library' }, { id: 'workshop-packager', integratedInto: 'publish-library' }, { id: 'game-forge' }, { id: 'game-hub', integratedInto: 'game-forge' }, { id: 'sandbox', integratedInto: 'game-forge' }, { id: 'ai-team' }, { id: 'agent-command-center', integratedInto: 'ai-team' }, { id: 'chatgpt-connector', integratedInto: 'ai-team' }, { id: 'verifier' }, { id: 'main-hub' }
   ], [{ id: 'private', name: 'Private', gate: 'passphrase', hash: 'keep-me', order: 1 }]);
-  workflow.assign.studio === 'create' && workflow.assign['game-hub'] === 'play'
+  workflow.assign.studio === 'create' && workflow.assign['game-forge'] === 'play' && workflow.assign['game-hub'] === 'machine'
     ? ok('workflow layout: Create and Play assignments are useful') : bad('workflow layout misplaced Create/Play');
-  workflow.assign['agent-command-center'] === 'ai-team' && workflow.assign.verifier === 'private'
+  workflow.assign['audio-studio'] === 'create' && workflow.assign['film-motion-studio'] === 'create'
+    ? ok('workflow layout: Audio Studio and Film & Motion Studio are in Create') : bad('workflow layout misplaced a production studio');
+  workflow.assign['ui-ux-builder'] === 'machine'
+    ? ok('workflow layout: integrated UI/UX route stays behind Studio') : bad('workflow layout exposed integrated UI/UX route');
+  workflow.assign['project-room'] === 'build'
+    ? ok('workflow layout: Project Room is in Build') : bad('workflow layout misplaced Project Room');
+  workflow.assign['knowledge-canvas'] === 'build'
+    ? ok('workflow layout: Knowledge Canvas is in Build') : bad('workflow layout misplaced Knowledge Canvas');
+  workflow.assign['publish-library'] === 'publish' && workflow.assign['asset-vault'] === 'machine' && workflow.assign['workshop-packager'] === 'machine'
+    ? ok('workflow layout: Publish & Library owns output services') : bad('workflow layout exposed fragmented output services');
+  workflow.assign['ai-team'] === 'ai-team' && workflow.assign.verifier === 'private'
     ? ok('workflow layout: AI Team and Advanced assignments are useful') : bad('workflow layout misplaced AI/Advanced');
+  workflow.assign['agent-command-center'] === 'machine' && workflow.assign['chatgpt-connector'] === 'machine'
+    ? ok('workflow layout: AI tools/connectors stay behind unified AI Team') : bad('workflow layout exposed integrated AI routes');
   workflow.layers.find(l => l.id === 'private').hash === 'keep-me'
     ? ok('workflow layout preserves existing closed-door sign') : bad('workflow layout reset closed-door sign');
   workflow.layers.find(l => l.id === 'machine').hidden && workflow.assign['main-hub'] === 'machine'
     ? ok('workflow layout keeps system internals hidden, not deleted') : bad('workflow layout exposed/lost system internals');
+
+  const oldWorkflow = workflow.layers.filter(l => l.id !== 'publish').map(l => Object.assign({}, l, { order: l.order > 2 ? l.order - 1 : l.order }));
+  const oldAssign = Object.assign({}, workflow.assign, { 'publish-library': 'build', 'workshop-packager': 'build', studio: 'create' });
+  const upgradedPublish = Core.upgradePublishLayer(oldWorkflow, oldAssign, [
+    { id:'publish-library' }, { id:'asset-vault', integratedInto:'publish-library' }, { id:'workshop-packager', integratedInto:'publish-library' }
+  ]);
+  upgradedPublish.changed && upgradedPublish.layers.some(l => l.id === 'publish') && upgradedPublish.assign['publish-library'] === 'publish'
+    ? ok('upgrade: existing workflow gains Publish & Library') : bad('upgrade: Publish & Library migration failed');
+  upgradedPublish.assign.studio === 'create' && upgradedPublish.layers.find(l => l.id === 'private').hash === 'keep-me'
+    ? ok('upgrade: publish migration preserves assignments and closed-door hash') : bad('upgrade: publish migration damaged user layout');
+  upgradedPublish.assign['asset-vault'] === 'machine' && upgradedPublish.assign['workshop-packager'] === 'machine'
+    ? ok('upgrade: output compatibility views stay behind parent') : bad('upgrade: output children remained exposed');
 
   /* THE ROOT CHECK: a layer must never change what a module may do.
      Same passport, same grants, regardless of which layer it sits in. */

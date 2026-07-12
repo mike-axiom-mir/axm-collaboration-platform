@@ -137,51 +137,61 @@
   const ASSET_SLOTS = {
     'brand.mark': {
       w: 30, h: 30, format: 'svg|png', dpi: '@2x = 60x60, @3x = 90x90',
+      deliverables: ['1x 30x30', '2x 60x60', '3x 90x90'],
       where: 'top bar, far left — the cube glyph',
       note: 'Square. Must read at 30px. Keep strokes >= 1.5px at 1x. Transparent background.'
     },
     'brand.wordmark': {
       w: 120, h: 24, format: 'svg|png', dpi: '@2x = 240x48',
+      deliverables: ['1x 120x24', '2x 240x48'],
       where: 'top bar, beside the mark — replaces the "AXM Hub" text',
       note: 'Transparent. Baseline-centred. If omitted, the text renders instead.'
     },
     'nav.icon.default': {
       w: 20, h: 20, format: 'svg', dpi: 'vector only',
+      deliverables: ['vector 20x20'],
       where: 'sidebar, one per module, and the icon rail',
       note: 'Monochrome, currentColor. It is recoloured by --cy / --text. Do not bake colour in. Must read at 20px AND centred in a 62px rail.'
     },
     'sidebar.background': {
       w: 210, h: 1200, format: 'png|webp', dpi: '@2x = 420x2400',
+      deliverables: ['1x 210x1200', '2x 420x2400'],
       where: 'behind the module switcher',
       note: 'Tiles vertically. 210px wide when nav=left|right; the rail is 62px, so it will be CROPPED CENTRALLY, not scaled. Keep the important 62px in the middle.'
     },
     'viewport.background': {
       w: 1600, h: 900, format: 'png|webp|jpg', dpi: '@2x = 3200x1800',
+      deliverables: ['1x 1600x900', '2x 3200x1800'],
       where: 'behind the module area, visible on Home and around modules',
       note: 'Covers a variable region. It is CENTRE-CROPPED, never stretched. Assume the outer 15% on every edge can be cut. Keep nothing important there.'
     },
     'home.hero': {
       w: 1200, h: 320, format: 'png|webp', dpi: '@2x = 2400x640',
+      deliverables: ['1x 1200x320', '2x 2400x640'],
       where: 'top of the Home screen, behind the welcome text',
       note: 'Text sits on the LEFT third. Keep that area calm or the readability floor will refuse your --text colour.'
     },
     'card.texture': {
       w: 400, h: 260, format: 'png|webp', dpi: '@2x = 800x520',
+      deliverables: ['1x 400x260', '2x 800x520'],
       where: 'module cards on Home, and overlay sheets',
       note: 'Tiles or centre-crops. Corner radius 14px is applied by the shell — do not draw rounded corners.'
     },
     'statusbar.background': {
       w: 1600, h: 40, format: 'png|webp', dpi: '@2x = 3200x80',
+      deliverables: ['1x 1600x40', '2x 3200x80'],
       where: 'the action-log strip along the bottom',
       note: 'Only 40px tall. The log tail text sits on it — keep contrast low and even, or --muted becomes unreadable and the skin is refused.'
     },
     'overlay.backdrop': {
       w: 1600, h: 900, format: 'png|webp', dpi: '@2x = 3200x1800',
+      deliverables: ['1x 1600x900', '2x 3200x1800'],
       where: 'behind Settings / Permissions / Layers / Modules sheets',
       note: 'The shell blurs and darkens it. Subtle patterns disappear. Use large shapes.'
     },
     'viewport.empty': {
       w: 480, h: 360, format: 'png|svg', dpi: '@2x = 960x720',
+      deliverables: ['1x 480x360', '2x 960x720'],
       where: 'the error / recovery card when a module fails to load',
       note: 'Shown next to an error message. Do not make it alarming — the shell already says what went wrong.'
     }
@@ -191,6 +201,39 @@
      never drift from what the code accepts. */
   function assetSpec() {
     return Object.keys(ASSET_SLOTS).map(k => Object.assign({ slot: k, required: false }, ASSET_SLOTS[k]));
+  }
+
+  /* Complete designer handoff. Runtime asset keys and concrete image files
+     are different counts; keeping both generated makes that distinction
+     visible and prevents the production sheet from drifting. */
+  function productionSpec() {
+    const controls = [];
+    COLOR_TOKENS.forEach(key => controls.push({ kind:'colour', key }));
+    Object.keys(NUMBER_TOKENS).forEach(key => controls.push({ kind:'number', key }));
+    FONT_TOKENS.forEach(key => controls.push({ kind:'font', key }));
+    Object.keys(SLOTS).forEach(key => controls.push({ kind:'layout', key, options:SLOTS[key].slice() }));
+
+    const productionFiles = [];
+    assetSpec().forEach(asset => {
+      (asset.deliverables || []).forEach(deliverable => {
+        productionFiles.push({ slot:asset.slot, deliverable, format:asset.format, where:asset.where });
+      });
+    });
+    const safetyChecks = CONTRAST_PAIRS.map(p => ({ kind:'contrast', key:p.fg + ' on ' + p.bg, why:p.why }))
+      .concat(REQUIRED_ELEMENTS.map(e => ({ kind:'required-element', key:e.id, why:e.why })));
+    return {
+      controls,
+      runtimeAssets: assetSpec(),
+      productionFiles,
+      safetyChecks,
+      counts: {
+        controls: controls.length,
+        runtimeAssets: Object.keys(ASSET_SLOTS).length,
+        productionFiles: productionFiles.length,
+        safetyChecks: safetyChecks.length,
+        total: controls.length + productionFiles.length + safetyChecks.length
+      }
+    };
   }
 
   /* ---- validation: the cage that isn't a cage ---- */
@@ -407,7 +450,7 @@
   }
 
   return { SCHEMA, PACK_SCHEMA, DEFAULT, COLOR_TOKENS, NUMBER_TOKENS, FONT_TOKENS, FONT_ALLOW,
-           SLOTS, ASSET_SLOTS, assetSpec, REQUIRED_ELEMENTS, CONTRAST_PAIRS,
+           SLOTS, ASSET_SLOTS, assetSpec, productionSpec, REQUIRED_ELEMENTS, CONTRAST_PAIRS,
            parseColor, contrast, validate, checkReadability, checkElements, checkAssets,
            diff, accept, resolve, newSkin, fingerprint, importRecord, newPack, acceptPack };
 });

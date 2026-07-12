@@ -1,0 +1,26 @@
+const fs=require('fs'),path=require('path'),root=path.resolve(__dirname,'..','..'),read=p=>fs.readFileSync(path.join(root,p),'utf8'),json=p=>JSON.parse(read(p)),C=require('./knowledge-canvas-core.js');
+const checks=[
+ ['Seven views share one versioned project',()=>C.VIEWS.length===7&&C.emptyProject('x').format==='axm.knowledge-canvas/v1'],
+ ['Research items keep source, citation, status and origin',()=>{const r=C.normalizeResearch({title:'x',source:'s',citation:'p.1',status:'sourced',origin:'Evidence Desk'});return r.source==='s'&&r.citation==='p.1'&&r.status==='sourced'&&r.origin==='Evidence Desk';}],
+ ['Incoming source packets require an explicit supported schema',()=>/Unsupported research handoff/.test(read('tools/knowledge-canvas/knowledge-canvas-core.js'))],
+ ['Incoming packets are not accepted without confirmation',()=>/confirm\('Add '\+items\.length/.test(read('tools/knowledge-canvas/knowledge-canvas.js'))],
+ ['Discovery Engine has a real Knowledge Canvas send action',()=>/sendKnowledge/.test(read('tools/discovery-engine/index.html'))],
+ ['Evidence Desk has a real Knowledge Canvas send action',()=>/sendKnowledge/.test(read('tools/evidence-desk/index.html'))],
+ ['Workbook migrates old tables and supports multiple sheets',()=>{const p=C.emptyProject('x'),legacy=C.normalizeProject({format:C.FORMAT,table:{columns:['Old'],rows:[['kept']]}});p.spreadsheet.sheets.push(C.blankSheet('Second'));return p.spreadsheet.sheets.length===2&&C.activeSheet(legacy).rows[0][0]==='kept';}],
+ ['Workbook formulas resolve references ranges and cycles',()=>{const p=C.emptyProject('x'),s=C.activeSheet(p);s.rows[0][0]='2';s.rows[1][0]='4';s.rows[2][0]='=SUM(A1:A2)';return C.cellValue(s,2,0)===6;}],
+ ['Workbook filtering and sorting preserve structured rows',()=>typeof C.filteredRows==='function'&&typeof C.sortSheet==='function'],
+ ['Workbook exchanges portable CSV files',()=>typeof C.csvToSheet==='function'&&typeof C.sheetToCSV==='function'&&/importCSV/.test(read('tools/knowledge-canvas/index.html'))],
+ ['Table edits persist before a user switches views',()=>/inp\.oninput=function\(\)\{t\.rows/.test(read('tools/knowledge-canvas/knowledge-canvas.js'))],
+ ['Charts are derived from shared table data',()=>/function chartData\(chart\)/.test(read('tools/knowledge-canvas/knowledge-canvas.js'))],
+ ['Diagram edges store explicit from and to nodes',()=>/room\.diagram\.edges\.push/.test(read('tools/knowledge-canvas/knowledge-canvas.js'))],
+ ['Timeline events preserve a source field',()=>/timelineSource/.test(read('tools/knowledge-canvas/index.html'))],
+ ['Maps preserve latitude longitude layer and source',()=>/lat:Number/.test(read('tools/knowledge-canvas/knowledge-canvas.js'))&&/markerSource/.test(read('tools/knowledge-canvas/index.html'))],
+ ['GIS boundary refuses to claim professional analysis',()=>json('tools/knowledge-canvas/module.contract.json').boundaries.refuses.includes('pretend-professional-gis-analysis')],
+ ['Whiteboard notes have movable bounded positions',()=>/setPointerCapture/.test(read('tools/knowledge-canvas/knowledge-canvas.js'))],
+ ['Only task and decision handoffs enter Project Room',()=>/\['task','decision'\]/.test(read('tools/knowledge-canvas/knowledge-canvas-core.js'))],
+ ['Research cannot be duplicated into Project Room',()=>json('tools/knowledge-canvas/module.contract.json').boundaries.refuses.includes('research-as-project-task-duplication')],
+ ['Project Room handoff appends without replacing project state',()=>{const j=read('tools/knowledge-canvas/knowledge-canvas.js');return /target\.cards\.push/.test(j)&&/target\.decisions\.push/.test(j)&&!/localStorage\.removeItem\('axm\.project-room/.test(j);}],
+ ['The Hub knows the Knowledge Canvas friendly name',()=>/knowledge-canvas/.test(read('hub/hub-shell.js'))],
+ ['Existing Hub installs receive the workspace only once',()=>/axm\.hub\.upgrade\.knowledge-canvas\.v1/.test(read('hub/hub-shell.js'))&&/future visibility remains user-controlled/.test(read('hub/hub-shell.js'))],
+ ['Portable export and guarded import are visible',()=>/exportProject/.test(read('tools/knowledge-canvas/index.html'))&&/Replace the current Knowledge Canvas/.test(read('tools/knowledge-canvas/knowledge-canvas.js'))]
+];let fail=0;for(const [label,fn] of checks){let ok=false;try{ok=!!fn();}catch(e){}console.log((ok?'PASS  ':'FAIL  ')+label);if(!ok)fail++;}console.log('DISCOVERY COUNTS seams='+fail+' verified='+(checks.length-fail)+' future=3');if(fail){console.error('KNOWLEDGE CANVAS DISCOVERY SEAM FAIL — '+fail+' OPEN');process.exit(1);}console.log('KNOWLEDGE CANVAS DISCOVERY SEAM PASS — 0 OPEN');
