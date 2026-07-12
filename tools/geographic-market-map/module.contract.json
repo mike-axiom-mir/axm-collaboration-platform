@@ -1,10 +1,13 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "geographic-market-map",
-  "version": "v0.1",
+  "version": "v0.1-polished-review",
   "provides": [
     "geographic-price-normalization",
     "source-bounded-popularity-ranking",
+    "diagnostic-market-quality-review",
+    "visible-rule-pattern-candidates",
+    "human-invalidated-watchlist",
     "market-evidence-export"
   ],
   "consumes": [
@@ -12,11 +15,16 @@
     "storage:axm",
     "user-file:csv-json"
   ],
-  "permissions": ["storage", "gate", "export"],
+  "permissions": [
+    "storage",
+    "gate",
+    "export"
+  ],
   "handoffs": {
     "emits": [
-      "axm.geographic-market-evidence/0.1",
-      "axm.geographic-market-report/0.1"
+      "axm.geographic-market-evidence/0.2",
+      "axm.geographic-market-report/0.2",
+      "axm.market-watchlist/0.1"
     ],
     "accepts": [
       "text/csv:axm-market-observation-schema",
@@ -30,10 +38,14 @@
     ],
     "refuses": [
       "auto-buy-or-sell",
+      "trade-execution",
       "missing-market-estimation",
       "silent-currency-conversion",
       "source-free-ranking",
       "demo-data-as-real-evidence",
+      "quality-score-as-truth",
+      "pattern-candidate-as-forecast",
+      "watch-entry-without-invalidation",
       "self-promotion-to-working-or-canon",
       "silent-evidence-overwrite"
     ]
