@@ -1,0 +1,82 @@
+v0.6.5 — P2 computer restored
+- P2 is BYTE-BUD computer AI again.
+- P1 remains human bottom paddle.
+- Kept v0.6.4 controls-up phone layout.
+- Kept v0.6.3 manual /start endpoint.
+- P2 human input route is disabled for now.
+- Added CLICK_ME_START_ROBO_PONG_P2_COMPUTER.bat.
+
+v0.6.4 — Control position hotfix
+- Moved HOLD LEFT / HOLD RIGHT buttons upward.
+- Reduced movement button height from 70 to 58.
+- Moved START / RESET row upward.
+- Moved status message upward.
+- Added dynamic viewport height CSS (`100dvh`) to reduce phone browser bar issues.
+- Kept manual /start fix from v0.6.3.
+
+v0.6.3 — Manual start fix
+- Removed buggy autostart.
+- Added direct POST /start endpoint on server.
+- START button now calls /start directly instead of piggybacking on input.
+- RESET button now calls /reset directly.
+- Movement does not auto-start.
+- Added on-screen player label: P1 bottom / P2 top.
+- Keeps .cjs Windows Script Host fix.
+
+v0.6.2 — Ready button / autostart hotfix
+- Removed READY gate for quick live test.
+- Match auto-starts when a player connects/sends input.
+- HOLD LEFT / HOLD RIGHT also marks player ready.
+- READY button label changed to START in client.
+- Keeps 2-human mode and .cjs Windows Script Host fix.
+
+v0.6.1 — Windows Script Host hotfix
+- Renamed server from .js to .cjs.
+- BAT now calls node robo-pong-simple-bat-server.cjs.
+- Added CLICK_ME_START_ROBO_PONG_2_PLAYERS.bat.
+- This prevents accidental Windows Script Host .js execution.
+
+v0.6 — Quick 2 human player test
+- P1 human controls bottom paddle.
+- P2 human controls top paddle.
+- Server accepts /input from player=p1 and player=p2.
+- Either player can press READY to start.
+- Console prints P1 phone, P2 phone, and Screen links.
+- AI backend slot from v0.5 is parked for later.
+
+v0.5 — AI backend slot
+- Added backend slot for future connector/local/cloud AI to join as P2.
+- Added /ai/contract, /ai/status, /ai/state, /ai/join, /ai/input, /ai/leave.
+- P2 remains built-in BYTE-BUD AI by default.
+- External AI can only send paddle intent.
+- If external AI input goes stale, built-in BYTE-BUD AI resumes.
+- No cloud calls, API keys, shell access, or file writes added.
+- Visual design unchanged except normal status data exposed in JSON.
+
+VERSION LOG
+
+v0.4 — Asset integration test
+- Added assets/processed folder with generated Robo Pong test assets.
+- Server now serves /assets/ paths.
+- Phaser client preloads arena, paddles, ball, trail, HUD, buttons, mascots, effects, overlays.
+- Added hit spark and +1 score popup effects.
+- Kept simple BAT / no npm / no Vite path.
+- Kept P2 as BYTE-BUD AI.
+
+v0.3 — Simple BAT repair
+- Removed npm/Vite as required test path.
+- Switched to simple Node local server like RTS LAN test.
+- Kept Phaser browser client loaded via local vendor file or CDN fallback.
+- Phone-first portrait layout.
+- Two-button paddle control.
+- P2 remains BYTE-BUD AI.
+- Server remains source of truth.
+- 30 TPS tick loop.
+- Added vendor folder for later offline Phaser file.
+
+v0.2 — Phone two-button Vite branch
+- Parked for later.
+- Good structure, but not the right immediate test path because npm/Vite adds friction.
+
+v0.1 — Clean Phaser/Vite branch
+- Parked for later.
