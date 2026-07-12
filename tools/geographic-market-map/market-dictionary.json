@@ -1,0 +1,87 @@
+{
+  "schema": "axm.market-dictionary/0.1",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "scope": {
+    "active": ["NL", "HR", "EU"],
+    "planned": ["US", "CN"]
+  },
+  "geographies": {
+    "NL": {"name": "Netherlands", "kind": "country", "currency": "EUR", "lat": 52.1326, "lon": 5.2913, "active": true},
+    "HR": {"name": "Croatia", "kind": "country", "currency": "EUR", "lat": 45.1, "lon": 15.2, "active": true},
+    "EU": {"name": "European Union", "kind": "region", "currency": "EUR", "lat": 50.1, "lon": 9.5, "active": true},
+    "US": {"name": "United States", "kind": "country", "currency": "USD", "lat": 39.8, "lon": -98.6, "active": false},
+    "CN": {"name": "China", "kind": "country", "currency": "CNY", "lat": 35.9, "lon": 104.2, "active": false}
+  },
+  "currencies": {
+    "EUR": {"name": "Euro", "comparison": "native", "active": true},
+    "USD": {"name": "US dollar", "comparison": "requires explicit fxRateToEur", "active": false},
+    "CNY": {"name": "Chinese yuan", "comparison": "requires explicit fxRateToEur", "active": false}
+  },
+  "units": {
+    "item": {"baseUnit": "item", "factorToBase": 1},
+    "kg": {"baseUnit": "kg", "factorToBase": 1},
+    "g": {"baseUnit": "kg", "factorToBase": 0.001},
+    "tonne": {"baseUnit": "kg", "factorToBase": 1000},
+    "l": {"baseUnit": "l", "factorToBase": 1},
+    "ml": {"baseUnit": "l", "factorToBase": 0.001},
+    "m": {"baseUnit": "m", "factorToBase": 1},
+    "cm": {"baseUnit": "m", "factorToBase": 0.01},
+    "m2": {"baseUnit": "m2", "factorToBase": 1},
+    "m3": {"baseUnit": "m3", "factorToBase": 1},
+    "kwh": {"baseUnit": "kwh", "factorToBase": 1}
+  },
+  "categories": [
+    "materials",
+    "construction",
+    "energy",
+    "food",
+    "household",
+    "electronics",
+    "gaming",
+    "clothing",
+    "automotive",
+    "industrial",
+    "logistics",
+    "tourism"
+  ],
+  "sourceTypes": {
+    "official-statistics": {"trust": 1.0, "label": "Official statistics"},
+    "official-trade": {"trust": 0.98, "label": "Official trade data"},
+    "exchange-data": {"trust": 0.95, "label": "Regulated exchange or benchmark"},
+    "retailer-api": {"trust": 0.85, "label": "Retailer API or feed"},
+    "marketplace-api": {"trust": 0.8, "label": "Marketplace API"},
+    "receipt": {"trust": 0.75, "label": "Receipt or invoice evidence"},
+    "retailer-manual": {"trust": 0.65, "label": "Manual retailer observation"},
+    "user-observation": {"trust": 0.45, "label": "User observation"},
+    "demo": {"trust": 0.1, "label": "Synthetic demonstration only"}
+  },
+  "popularityWeights": {
+    "marketplaceActivity": 0.3,
+    "searchInterest": 0.25,
+    "sellerGrowth": 0.2,
+    "tradeMovement": 0.15,
+    "pricePressure": 0.1
+  },
+  "availabilityValues": ["in_stock", "low_stock", "preorder", "out_of_stock", "unknown"],
+  "starterItems": [
+    {"id": "copper", "name": "Copper", "category": "materials"},
+    {"id": "aluminium", "name": "Aluminium", "category": "materials"},
+    {"id": "steel", "name": "Steel", "category": "materials"},
+    {"id": "lithium", "name": "Lithium", "category": "materials"},
+    {"id": "cement", "name": "Cement", "category": "construction"},
+    {"id": "timber", "name": "Timber", "category": "construction"},
+    {"id": "electricity", "name": "Electricity", "category": "energy"},
+    {"id": "natural-gas", "name": "Natural gas", "category": "energy"},
+    {"id": "wheat", "name": "Wheat", "category": "food"},
+    {"id": "coffee", "name": "Coffee", "category": "food"},
+    {"id": "semiconductors", "name": "Semiconductors", "category": "electronics"},
+    {"id": "shipping-container", "name": "Shipping container", "category": "logistics"}
+  ],
+  "rules": {
+    "top100": "Rank only items with observed popularity signals in the selected month and geography.",
+    "comparison": "Do not compare non-EUR records unless an explicit fxRateToEur is stored on the evidence row.",
+    "evidence": "Every aggregate must retain its underlying records and source identifiers.",
+    "noFakeDone": "Missing markets, missing sellers and missing popularity channels are not silently estimated."
+  }
+}
