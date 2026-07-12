@@ -1,21 +1,22 @@
 # AXM Geographic Market Map — authoritative file map
 
-**Status:** EXPERIMENTAL · not canon · browser click test unrun
+**Status:** EXPERIMENTAL · polished review build · not canon
 
-This is **one Workshop tool** presented through one card and one interface. The implementation remains modular underneath so source ingestion, normalization, ranking and presentation can be tested or replaced independently.
+This is **one Workshop tool** through one Hub card and one interface. Its internals remain modular so source ingestion, normalization, diagnostics, pattern rules and presentation can be tested or replaced independently.
 
 ```text
 tools/geographic-market-map/
-├── index.html                 Human interface, local state, evidence views and exports
-├── market-core.js             Pure validation, normalization, aggregation, confidence and ranking logic
-├── source-adapters.js         CSV/JSON parsing, source receipt hashing and import schema generation
-├── market-dictionary.json     One shared domain dictionary for geography, units, currencies, categories,
-│                              source trust, popularity weights and starter item identities
-├── manifest.json              Required Workshop discovery contract
-├── module.contract.json       Required AXM module boundary contract
-├── selftest.js                Deterministic logic checks; no network required
+├── index.html                 One visible polished workbench
+├── market-core.js             Pure validation, normalization, aggregation, confidence and ranking
+├── market-insights.js         Quality diagnostics, pattern candidates, source coverage and timelines
+├── source-adapters.js         CSV/JSON parsing, source receipt hashing and import schema
+├── market-dictionary.json     One shared dictionary: geographies, units, currencies, categories,
+│                              source trust, source catalog, weights and thresholds
+├── manifest.json              Workshop discovery contract
+├── module.contract.json       AXM module boundary contract
+├── selftest.js                Deterministic core + insight regression checks
 ├── FILEMAP.md                 This single authoritative file map
-└── README.md                  Human setup, schema and honest limits
+└── README.md                  Setup, schema, checks and honest limits
 ```
 
 ## Data flow
@@ -25,28 +26,38 @@ selected CSV/JSON or manual observation
         ↓
 source-adapters.js parses without mutation
         ↓
-market-core.js validates + normalizes with market-dictionary.json
+preview gate shows accepted / rejected / duplicate rows
         ↓
-user-gated append into AXM local storage
+explicit human commit
         ↓
-aggregates / geographic comparison / Top 100 / category Top 10
+market-core.js normalizes with market-dictionary.json
         ↓
-explicit evidence JSON or scoped report JSON export
+AXM local storage keeps evidence + raw row + import receipt
+        ↓
+market-insights.js produces diagnostics and research candidates
+        ↓
+map / comparison / Top 100 / Top 10 / watchlist
+        ↓
+explicit evidence, scoped report or watchlist export
 ```
 
 ## Source-of-truth hierarchy
 
-1. Raw imported row retained on each normalized record.
+1. Raw imported row retained on every normalized record.
 2. Source ID, source type, observed date and optional URL remain attached.
-3. `market-dictionary.json` owns unit factors, active geographies, trust weights and ranking weights.
+3. `market-dictionary.json` owns shared identities, unit factors, source trust, thresholds and ranking weights.
 4. `market-core.js` owns deterministic calculations.
-5. `index.html` may display calculations but does not redefine them.
+5. `market-insights.js` owns visible diagnostic and candidate-pattern rules.
+6. `index.html` displays results but does not redefine the calculation rules.
 
-## v0.1 boundary
+## Current boundary
 
-- Active scope: Netherlands, Croatia and EU comparison.
-- Planned only: United States and China.
-- Import adapters are built; live external API connectors are not.
-- EUR is native. Non-EUR comparison requires an explicit row-level `fxRateToEur`.
+- Active geography: Netherlands, Croatia, EU.
+- Planned geography: United States, China.
+- Import adapters: built.
+- Automated live-source adapters: catalogued, not built.
+- EUR is native. Non-EUR comparison requires explicit row-level `fxRateToEur`.
 - Top 100 means top 100 **inside imported evidence**, never universal popularity.
-- The tool provides evidence and patterns, not financial advice or automatic trading actions.
+- Pattern cards are investigation prompts, never automatic forecasts.
+- Watch entries require an invalidation condition.
+- The human remains responsible for any trading interpretation or action.
