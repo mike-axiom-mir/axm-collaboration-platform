@@ -8,7 +8,7 @@ It is meant to help humans and AI systems work together through visible files, c
 
 The project is not trying to replace human choice. It is trying to make collaboration safer, clearer, and easier to inspect.
 
-## Who Mike Tobi is
+## Who Mike is
 
 Mike Tobi is the human founder, tester, direction-setter, and merge gate for this project.
 
@@ -16,7 +16,7 @@ He is not presenting himself as a traditional software engineer. His role is sys
 
 Public name for people trying to find or recognize the project socially: **Mike Tobi**.
 
-Mike Tobi’s rule in the project is simple:
+Mike’s rule in the project is simple:
 
 - useful before impressive
 - truth before story

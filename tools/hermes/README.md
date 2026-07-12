@@ -78,7 +78,7 @@ Hermes may be useful for local/server continuity work:
 - local queue management
 - log/digest summaries
 - handoff packets
-- proposal files for Mike Tobi review
+- proposal files for Mike review
 - possible LM Studio/local model routing
 
 Hermes is not the whole AXM brain.

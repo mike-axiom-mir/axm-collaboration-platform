@@ -1,0 +1,13 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "shell-guardian",
+  "version": "v0.1",
+  "provides": ["agent-shell-observer", "severe-trigger-alarm", "agent-process-circuit-breaker", "audit-log"],
+  "consumes": ["grok:pre-tool-hook", "workshop:local-status"],
+  "permissions": ["gate", "storage", "bridge"],
+  "handoffs": {"emits": ["axm.guardian-trip/v1"], "accepts": []},
+  "boundaries": {
+    "writes": ["state/shell-guardian"],
+    "refuses": ["intent-certainty", "silent-kill", "automatic-memory-promotion", "sandbox-claim", "hidden-alarm", "automatic-reset"]
+  }
+}

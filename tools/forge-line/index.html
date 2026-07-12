@@ -87,6 +87,7 @@ $('expDraft').onclick=()=>{const a=document.createElement('a');
   a.download='axm-standards-draft.json';a.click();};
 (async()=>{
   const info=await AXM.init({id:'forge-line',name:'AXM Forge Line',version:'v0.1'});
+  AXM.wisdom.on(localStorage.getItem('axm.identity.growth.enabled') !== 'false');
   const q=await AXM.store.load('line-queue').catch(()=>null);if(q&&q.data)Q=q.data;
   const d=await AXM.store.load('standards-draft').catch(()=>null);if(d&&d.data)D=d.data;
   $('boot').textContent='ready · '+info.storageBackend+' · manual mode (worker = Opus, spec ready)';render();

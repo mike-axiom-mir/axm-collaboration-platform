@@ -47,7 +47,7 @@ auto_stop_on_uncertainty
 auto_stop_before_core_files
 ```
 
-These settings protect Mike Tobi, the repo, and the local machine from agent drift or endless action.
+These settings protect Mike, the repo, and the local machine from agent drift or endless action.
 
 ## Wisdom profile settings
 
@@ -60,7 +60,7 @@ linked_folder
 
 ### Manual upload
 
-Mike Tobi or AXM can place a wisdom profile into an approved local folder.
+Mike or AXM can place a wisdom profile into an approved local folder.
 
 Example:
 

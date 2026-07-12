@@ -1,0 +1,16 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "studio",
+  "version": "v1.1",
+  "provides": ["layered-canvas", "reviewed-asset-proposal", "machine-draw-packet"],
+  "consumes": ["identity:nova", "identity:gemini-local", "axm.drawpacket/v1"],
+  "permissions": ["storage", "ai", "export", "files"],
+  "handoffs": {
+    "emits": ["axm.game-asset/v1"],
+    "accepts": ["axm.drawpacket/v1"]
+  },
+  "boundaries": {
+    "writes": ["hub-store:studio", "game-hub:asset-inbox"],
+    "refuses": ["direct-game-package-write", "automatic-wisdom-promotion", "silent-identity-swap"]
+  }
+}

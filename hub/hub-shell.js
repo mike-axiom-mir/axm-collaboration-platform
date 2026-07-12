@@ -80,6 +80,21 @@
     }));
   }
 
+  const FRIENDLY_NAMES = {
+    'agent-command-center': 'AI Command Center', 'agent-tool-forge': 'Agent Tool Forge',
+    'asset-pack-lab': 'Asset Pack Lab', 'asset-vault': 'Asset Vault', 'duo-test': 'Nova + Gemini',
+    'evidence-desk': 'Evidence Desk', forge: 'Tool Forge', 'forge-line': 'Forge Line',
+    'game-hub': 'Game Hub', graft: 'Graft', 'hermes-local': 'Local Runtime',
+    'hub-test-room': 'Test Room', 'launcher-card-installer': 'Launcher Cards', 'main-hub': 'Main Hub',
+    'model-lab': 'Model Lab', prehub: 'Notes', 'prompt-vault': 'Prompt Vault',
+    'reasoning-shell': 'Reasoning Shell', route: 'Route', runner: 'Verification Desk',
+    sandbox: 'Sandbox', skinner: 'Skinner', studio: 'Studio', verifier: 'Verifier'
+  };
+  function friendlyName(module) {
+    if (!module) return 'Module';
+    return FRIENDLY_NAMES[module.id] || String(module.name || module.id || 'Module').replace(/^AXM\s+/i, '');
+  }
+
   /* pure log-entry factory (timestamp injected by caller for testability) */
   function logEntry(level, msg, ts) { return { t: ts, level: level, msg: msg }; }
 
@@ -166,8 +181,36 @@
     return doorHash(attempt) === layer.hash;
   }
 
+  /* Beginner-facing workflow layout. Modules stay separate and keep the same
+     permissions; only their sidebar grouping changes. The existing private
+     door hash is preserved so applying the layout never resets Mike's sign. */
+  function workflowLayout(modules, existingLayers) {
+    const old = existingLayers || DEFAULT_LAYERS;
+    const oldPrivate = old.find(l => l.id === 'private') || {};
+    const layers = [
+      { id: 'create', name: 'Create', gate: 'none', order: 0, audience: 'human', hidden: false, host: 'local', note: 'Studio, assets, skins, and prompts.' },
+      { id: 'build', name: 'Build', gate: 'none', order: 1, audience: 'human', hidden: false, host: 'local', note: 'Forge, sandbox, evidence, and packaging.' },
+      { id: 'play', name: 'Play', gate: 'none', order: 2, audience: 'human', hidden: false, host: 'local', note: 'Games and playable experiences.' },
+      { id: 'ai-team', name: 'AI Team', gate: 'none', order: 3, audience: 'human', hidden: false, host: 'local', note: 'Identities, model comparison, and supervised AI work.' },
+      Object.assign({ id: 'private', gate: 'passphrase' }, oldPrivate, { id: 'private', name: 'Closed Door / Advanced', order: 4, audience: 'human', hidden: false, host: 'local', note: 'Routing, verification, and advanced controls. Door sign only; not filesystem security.' }),
+      { id: 'machine', name: 'System Internals', gate: 'none', order: 5, audience: 'machine', hidden: true, host: 'local', note: 'Hub internals and test rooms; hidden from the everyday sidebar.' }
+    ];
+    const groups = {
+      create: ['studio','asset-pack-lab','asset-vault','skinner','prompt-vault'],
+      build: ['agent-tool-forge','evidence-desk','forge','forge-line','graft','launcher-card-installer','sandbox'],
+      play: ['game-hub'],
+      'ai-team': ['agent-command-center','duo-test','model-lab','reasoning-shell'],
+      private: ['hermes-local','route','runner','verifier'],
+      machine: ['hub-test-room','main-hub','prehub']
+    };
+    const assign = {};
+    Object.keys(groups).forEach(layerId => groups[layerId].forEach(id => { assign[id] = layerId; }));
+    (modules || []).forEach(m => { if (!assign[m.id]) assign[m.id] = 'build'; });
+    return { layers, assign };
+  }
+
   return { NS, memoryBackend, localStorageBackend, makeStore, normalizeRegistry, logEntry, resolveModules,
-           DEFAULT_LAYERS, doorHash, layerOf, resolveLayers, checkDoor };
+           DEFAULT_LAYERS, doorHash, layerOf, resolveLayers, checkDoor, workflowLayout, friendlyName };
 });
 
 /* ============================================================
@@ -183,13 +226,31 @@ if (typeof window !== 'undefined') (function () {
   const hhmm = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const Hub = window.AXMHubShell = {
-    registry: [], visible: [], enabled: [], active: null, records: {}, store,
+    registry: [], visible: [], enabled: [], active: null, homeLayer: null, mode: 'simple', records: {}, store,
     layers: [], assign: {}, unlocked: [], revealed: [],   /* unlocked+revealed = this session only */
     /* lifecycle badge classes for the sidebar */
     lifeClass(l) {
       return ({ 'CLAIMED': 'CLAIMED', 'NEEDS VERIFY': 'TEST', 'WORKING': 'WORKING',
         'SAVED CHECKPOINT': 'SAVED', 'TEST-HOLD': 'HOLD', 'CANON CANDIDATE': 'CANON' }[l]) || 'CLAIMED';
     },
+    setMode(mode, silent) {
+      this.mode = mode === 'advanced' ? 'advanced' : 'simple';
+      document.body.dataset.mode = this.mode;
+      try { localStorage.setItem('axm.hub.view-mode', this.mode); } catch (e) {}
+      const b = $('modeToggle');
+      if (b) {
+        b.textContent = this.mode === 'simple' ? '◉ Simple' : '◆ Advanced';
+        b.setAttribute('aria-pressed', this.mode === 'advanced' ? 'true' : 'false');
+        b.title = this.mode === 'simple' ? 'Switch to Advanced controls' : 'Switch to Simple controls';
+      }
+      if (this.mode === 'simple' && this.active) {
+        const m = this.registry.find(x => x.id === this.active);
+        const layer = m && Core.layerOf(m, this.layers, this.assign);
+        if (layer === 'private' || layer === 'machine') this.showHome();
+      }
+      if (!silent) this.log('info', 'view mode → ' + this.mode);
+    },
+    toggleMode() { this.setMode(this.mode === 'simple' ? 'advanced' : 'simple'); },
     log(level, msg) {
       const e = Core.logEntry(level, msg, now());
       store.appendLog(e);
@@ -246,11 +307,11 @@ if (typeof window !== 'undefined') (function () {
         /* hidden (machine-native) layers stay out of the human's way */
         if (g.hidden) { hiddenMods += g.modules.length; hiddenLayers++; return; }
         if (!g.modules.length && g.gate !== 'passphrase') return;   /* hide empty open layers */
-        const cap = document.createElement('div'); cap.className = 'side-cap';
+        const cap = document.createElement('div'); cap.className = 'side-cap'; cap.dataset.layer = g.id;
         cap.textContent = g.name + (g.locked ? '  ·  locked' : '');
         nav.appendChild(cap);
         if (g.locked) {
-          const d = document.createElement('button'); d.className = 'mod';
+          const d = document.createElement('button'); d.className = 'mod'; d.dataset.layer = g.id;
           d.innerHTML = '<span class="ic">🚪</span><span class="nm">Open this layer</span>';
           d.title = 'A door sign, not a lock — see Layers for what that means';
           d.onclick = () => this.knock(g.id);
@@ -264,10 +325,11 @@ if (typeof window !== 'undefined') (function () {
         }
         g.modules.forEach(m => {
           const life = store.getLifecycle(m.id);
-          const b = document.createElement('button'); b.className = 'mod'; b.dataset.id = m.id;
+          const b = document.createElement('button'); b.className = 'mod'; b.dataset.id = m.id; b.dataset.layer = g.id;
           b.innerHTML = '<span class="ic">' + iconFor(m) + '</span><span class="nm"></span>'
             + '<span class="life ' + this.lifeClass(life) + '"></span>';
-          b.querySelector('.nm').textContent = m.name;
+          b.querySelector('.nm').textContent = Core.friendlyName(m);
+          b.title = m.name + ' · ' + m.id;
           b.querySelector('.life').textContent = shortLife(life);
           b.onclick = () => this.open(m.id);
           nav.appendChild(b);
@@ -275,7 +337,7 @@ if (typeof window !== 'undefined') (function () {
       });
       /* hidden ≠ secret: always say what's tucked away, one click to reveal */
       if (hiddenLayers) {
-        const f = document.createElement('button'); f.className = 'mod';
+        const f = document.createElement('button'); f.className = 'mod'; f.dataset.technical = 'true';
         f.style.cssText = 'margin-top:10px;opacity:.7;font-size:12px';
         f.innerHTML = '<span class="ic">◇</span><span class="nm"></span>';
         f.querySelector('.nm').textContent = hiddenMods + ' machine module' + (hiddenMods === 1 ? '' : 's') + ' hidden';
@@ -309,38 +371,60 @@ if (typeof window !== 'undefined') (function () {
     renderHome() {
       const g = $('homeGrid'); if (!g) return; g.innerHTML = '';
       const groups = Core.resolveLayers(this.visible, this.layers, this.assign, this.unlocked, this.revealed);
-      const shown = [];
-      groups.forEach(gr => { if (!gr.locked && !gr.hidden) gr.modules.forEach(m => shown.push(m)); });
-      shown.forEach(m => {
-        const c = document.createElement('div'); c.className = 'hcard';
-        c.innerHTML = '<h3></h3><p></p><div class="open">Open →</div>';
-        c.querySelector('h3').textContent = m.name;
-        c.querySelector('p').textContent = (m.tags || []).join(' · ') || m.status;
-        c.onclick = () => this.open(m.id);
-        g.appendChild(c);
+      const title = $('homeTitle'), intro = $('homeIntro');
+      const makeModuleCard = m => {
+        const c = document.createElement('div'); c.className = 'hcard module-card'; c.title = m.name + ' · ' + m.id;
+        c.innerHTML = '<div class="hcard-icon">' + iconFor(m) + '</div><h3></h3><p></p><div class="open">Open →</div>';
+        c.querySelector('h3').textContent = Core.friendlyName(m);
+        c.querySelector('p').textContent = (m.tags || []).slice(0,3).join(' · ') || m.status;
+        c.onclick = () => this.open(m.id); return c;
+      };
+      const selected = this.homeLayer && groups.find(x => x.id === this.homeLayer && !x.locked && !x.hidden);
+      if (selected) {
+        title.textContent = selected.name;
+        intro.textContent = selected.note || 'Choose a tool in this workspace.';
+        const back = document.createElement('div'); back.className = 'hcard utility-card'; back.innerHTML = '<div class="hcard-icon">←</div><h3>All workspaces</h3><p>Return to the simple Home screen.</p><div class="open">Back</div>'; back.onclick = () => this.showHome(); g.appendChild(back);
+        selected.modules.forEach(m => g.appendChild(makeModuleCard(m)));
+        return;
+      }
+      this.homeLayer = null;
+      title.textContent = 'What do you want to do?';
+      intro.textContent = 'Choose a workspace. Modules stay separate underneath, but you do not need to manage the plumbing.';
+      const order = ['create','build','play','ai-team'];
+      const descriptions = { create:'Design, draw, manage assets, and prepare prompts.', build:'Create and verify tools, packages, and projects.', play:'Launch games and playable experiences.', 'ai-team':'Work with identities, local models, and supervised AI collaboration.' };
+      order.forEach(id => {
+        const gr = groups.find(x => x.id === id); if (!gr) return;
+        const c = document.createElement('div'); c.className = 'hcard workflow-card'; c.dataset.workflow = id;
+        c.innerHTML = '<div class="workflow-icon">' + workflowIcon(id) + '</div><div class="workflow-copy"><h3></h3><p></p><div class="workflow-preview"></div><div class="open">Open workspace →</div></div>';
+        c.querySelector('h3').textContent = gr.name;
+        c.querySelector('p').textContent = descriptions[id];
+        c.querySelector('.workflow-preview').textContent = gr.modules.slice(0,4).map(Core.friendlyName).join(' · ') + (gr.modules.length > 4 ? ' · +' + (gr.modules.length-4) : '');
+        c.onclick = () => this.showHome(id); g.appendChild(c);
       });
       /* always-present: add/remove modules — you never carry what you don't want */
-      const add = document.createElement('div'); add.className = 'hcard';
+      const add = document.createElement('div'); add.className = 'hcard utility-card technical-card';
       add.style.borderStyle = 'dashed';
       const avail = this.registry.length, on = this.visible.length;
       add.innerHTML = '<h3>＋ Modules</h3><p>' + on + ' of ' + avail + ' added. Add or remove modules — removing keeps their saved data.</p><div class="open">Manage →</div>';
       add.onclick = () => this.openModules();
       g.appendChild(add);
-      const lay = document.createElement('div'); lay.className = 'hcard';
+      const lay = document.createElement('div'); lay.className = 'hcard utility-card technical-card';
       lay.style.borderStyle = 'dashed';
       const lockedCount = groups.filter(x => x.locked).length;
       lay.innerHTML = '<h3>▤ Layers</h3><p>' + groups.length + ' layers' + (lockedCount ? ' · ' + lockedCount + ' locked' : '') + '. Group modules into spaces. Door signs, not locks.</p><div class="open">Manage →</div>';
       lay.onclick = () => this.openLayers();
       g.appendChild(lay);
     },
-    showHome() {
+    showHome(layerId) {
       this.active = null;
+      this.homeLayer = layerId || null;
       $('viewFrame').style.display = 'none';
       $('homeScreen').style.display = 'block';
-      $('activeName').textContent = 'Home';
+      $('activeName').textContent = this.homeLayer ? ((this.layers.find(l => l.id === this.homeLayer) || {}).name || 'Home') : 'Home';
       [...document.querySelectorAll('.mod')].forEach(x => x.classList.remove('active'));
       $('homeBtn').classList.add('active');
       store.setState({ lastModuleId: null });
+      this.renderHome();
     },
     open(id) {
       const m = this.registry.find(x => x.id === id);
@@ -368,7 +452,7 @@ if (typeof window !== 'undefined') (function () {
       f.onerror = () => { load.classList.remove('show'); this.showError(m, 'Module failed to load.'); };
       setTimeout(() => { if (load.classList.contains('show')) { load.classList.remove('show'); this.showError(m, 'Module timed out.'); } }, 8000);
       f.src = url;
-      $('activeName').textContent = m.name;
+      $('activeName').textContent = Core.friendlyName(m);
       [...document.querySelectorAll('.mod')].forEach(x => x.classList.toggle('active', x.dataset.id === id));
       $('homeBtn').classList.remove('active');
       /* record + persist which module is open, and bump CLAIMED->NEEDS VERIFY */
@@ -477,6 +561,12 @@ if (typeof window !== 'undefined') (function () {
     /* ---- layers manager ---- */
     openLayers() { this.renderLayers(); $('layScreen').classList.add('show'); },
     saveLayers() { store.setLayers(this.layers); store.setAssign(this.assign); this.resolve(); this.renderLayers(); },
+    applyWorkflowLayout() {
+      const layout = Core.workflowLayout(this.registry, this.layers);
+      this.layers = layout.layers; this.assign = layout.assign;
+      this.log('ok', 'applied simple workflow layout: Create · Build · Play · AI Team · Closed Door / Advanced');
+      this.saveLayers();
+    },
     renderLayers() {
       const s = $('layBody'); if (!s) return; s.innerHTML = '';
       const groups = Core.resolveLayers(this.visible, this.layers, this.assign, this.unlocked, this.revealed);
@@ -529,6 +619,11 @@ if (typeof window !== 'undefined') (function () {
         r.appendChild(info); r.appendChild(btns); s.appendChild(r);
       });
 
+      const presetRow = document.createElement('div'); presetRow.className = 'row';
+      const presetInfo = document.createElement('div'); presetInfo.innerHTML = '<div class="k">Recommended simple layout</div><div class="d">Organises the sidebar without merging modules or changing permissions.</div>';
+      const presetBtn = document.createElement('button'); presetBtn.className = 'btn'; presetBtn.textContent = 'Apply Create / Build / Play / AI Team'; presetBtn.onclick = () => this.applyWorkflowLayout();
+      presetRow.appendChild(presetInfo); presetRow.appendChild(presetBtn); s.appendChild(presetRow);
+
       const addRow = document.createElement('div'); addRow.className = 'row';
       const b = document.createElement('button'); b.className = 'btn'; b.textContent = '＋ New layer';
       b.onclick = () => {
@@ -554,7 +649,25 @@ if (typeof window !== 'undefined') (function () {
         r.appendChild(info); r.appendChild(sel); s.appendChild(r);
       });
     },
+    async applySkinAssets(assets) {
+      if (!window.AXMSkinRenderer) {
+        if (assets && Object.keys(assets).length) this.log('warn', 'skin assets declared but the renderer is unavailable');
+        return;
+      }
+      const r = await window.AXMSkinRenderer.apply(assets || {}, {
+        root: document.documentElement,
+        body: document.body,
+        fetch: window.fetch.bind(window),
+        Image: window.Image
+      });
+      if (r.error) { this.log('warn', 'skin assets not applied — ' + r.error); return; }
+      if (r.refused.length) this.log('error', r.refused.length + ' skin asset reference(s) refused');
+      if (r.missing.length) this.log('warn', r.missing.length + ' skin asset(s) missing — colours/layout kept');
+      if (r.applied.length) this.log('ok', r.applied.length + ' local skin asset(s) rendered');
+    },
     boot() {
+      let savedMode = 'simple'; try { savedMode = localStorage.getItem('axm.hub.view-mode') || 'simple'; } catch (e) {}
+      this.setMode(savedMode, true);
       /* ---- skin: freedom in safety ----
          A saved skin is re-checked EVERY boot, never trusted because it was
          accepted once. ?safe=1 ignores skins entirely, so a bad skin can
@@ -573,6 +686,10 @@ if (typeof window !== 'undefined') (function () {
             const m = window.AXMSkin.resolve(sk);
             Object.keys(m.tokens).forEach(k => document.documentElement.style.setProperty(k, /^--radius/.test(k) ? m.tokens[k] + 'px' : m.tokens[k]));
             document.body.dataset.nav = m.slots.nav; document.body.dataset.density = m.slots.density;
+            /* Asset refs were previously validated but never painted. Resolve
+               them through the local vault index; missing files are logged and
+               never block the readable token/layout skin. */
+            this.applySkinAssets(m.assets);
             /* after paint: the elements must still be there and visible */
             setTimeout(() => {
               const e = window.AXMSkin.checkElements(probe);
@@ -587,6 +704,7 @@ if (typeof window !== 'undefined') (function () {
 
       window.addEventListener('message', e => this.onMessage(e));
       $('homeBtn').onclick = () => this.showHome();
+      $('modeToggle').onclick = () => this.toggleMode();
       $('btnSettings').onclick = () => this.openSettings();
       $('btnPerm').onclick = () => this.openPerm();
       $('btnExport').onclick = () => this.openExport();
@@ -631,14 +749,26 @@ if (typeof window !== 'undefined') (function () {
     r.appendChild(input); return r;
   }
   function shortLife(l) { return ({ 'NEEDS VERIFY': 'TEST', 'SAVED CHECKPOINT': 'SAVED', 'CANON CANDIDATE': 'CANON', 'TEST-HOLD': 'HOLD' }[l]) || l; }
+  function workflowIcon(id) {
+    const g = '<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">';
+    if (id === 'create') return g + '<path d="M4 20l4-1 10-10-3-3L5 16z"/><path d="M13 8l3 3"/></svg>';
+    if (id === 'build') return g + '<path d="M14 5l5 5-9 9H5v-5z"/><path d="M13 6l2-2 5 5-2 2"/></svg>';
+    if (id === 'play') return g + '<rect x="2" y="7" width="20" height="10" rx="4"/><path d="M7 12h4M9 10v4"/><circle cx="16" cy="11" r="1"/><circle cx="18" cy="14" r="1"/></svg>';
+    return g + '<circle cx="8" cy="12" r="4"/><circle cx="17" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><path d="M12 11l2-2M12 13l2 2"/></svg>';
+  }
   function iconFor(m) {
-    const t = (m.tags || []).join(' ');
+    const id = m.id || '', t = (m.tags || []).join(' ');
     const g = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">';
-    if (/game|lobby/.test(t)) return g + '<rect x="2" y="7" width="20" height="10" rx="3"/><line x1="7" y1="12" x2="9" y2="12"/><circle cx="16" cy="11" r="1"/></svg>';
-    if (/canvas|graphic|creative/.test(t)) return g + '<path d="M4 20l4-1 9-9-3-3-9 9z"/></svg>';
-    if (/bridge|connect/.test(t)) return g + '<path d="M8 8a4 4 0 010 8M16 8a4 4 0 000 8M8 12h8"/></svg>';
-    if (/template/.test(t)) return g + '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>';
-    if (/log|memory|prompt/.test(t)) return g + '<path d="M6 3h9l3 3v15H6z"/><line x1="9" y1="9" x2="15" y2="9"/></svg>';
+    if (/game-hub/.test(id)||/game|lobby/.test(t)) return g + '<rect x="2" y="7" width="20" height="10" rx="3"/><path d="M6 12h5M8.5 9.5v5"/><circle cx="17" cy="11" r="1"/><circle cx="19" cy="14" r="1"/></svg>';
+    if (/studio|skinner/.test(id)||/canvas|graphic|creative/.test(t)) return g + '<path d="M4 20l4-1 9-9-3-3-9 9z"/><path d="M14 7l3 3"/></svg>';
+    if (/asset/.test(id)) return g + '<path d="M4 7l8-4 8 4-8 4z"/><path d="M4 7v10l8 4 8-4V7M12 11v10"/></svg>';
+    if (/agent-command|duo-test|model-lab|reasoning-shell/.test(id)) return g + '<circle cx="8" cy="12" r="4"/><circle cx="17" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><path d="M12 11l2-2M12 13l2 2"/></svg>';
+    if (/forge|sandbox|graft/.test(id)) return g + '<path d="M5 19l5-5M14 4l6 6-9 9H5v-6z"/></svg>';
+    if (/verifier|runner|evidence/.test(id)) return g + '<path d="M12 3l8 3v6c0 5-3 8-8 9-5-1-8-4-8-9V6z"/><path d="M8 12l3 3 5-6"/></svg>';
+    if (/hermes|route/.test(id)||/bridge|connect/.test(t)) return g + '<path d="M8 8a4 4 0 010 8M16 8a4 4 0 000 8M8 12h8"/></svg>';
+    if (/launcher-card/.test(id)) return g + '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h10M7 13h6"/></svg>';
+    if (/main-hub|hub-test/.test(id)) return g + '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>';
+    if (/prehub|prompt/.test(id)||/log|memory|prompt/.test(t)) return g + '<path d="M6 3h9l3 3v15H6z"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/></svg>';
     return g + '<rect x="4" y="4" width="16" height="16" rx="3"/></svg>';
   }
 })();

@@ -88,6 +88,52 @@ body[data-density="compact"] .statusbar{padding:5px 12px;min-height:32px}
 .row:first-of-type{border-top:0}
 .row .k{font-size:13.5px}.row .d{color:var(--muted);font-size:11.5px}
 .grant{color:var(--green)}.deny{color:var(--red)}
+
+/* ---- optional validated skin assets ----
+   These rules stay dormant until skin-renderer.js resolves a vault:id through
+   the same-origin skin-vault index and confirms the file actually loads. */
+body.skin-asset-brand-mark .mark{
+  background-image:var(--skin-brand-mark);background-repeat:no-repeat;background-position:center;background-size:contain
+}
+body.skin-asset-brand-mark .mark b{opacity:0}
+body.skin-asset-brand-wordmark .brand{
+  width:120px;height:24px;background-image:var(--skin-brand-wordmark);background-repeat:no-repeat;background-position:left center;background-size:contain;
+  color:transparent;font-size:0
+}
+body.skin-asset-brand-wordmark .brand span{color:transparent}
+body.skin-asset-nav-icon .mod .ic{
+  background-image:var(--skin-nav-icon);background-repeat:no-repeat;background-position:center;background-size:20px 20px;font-size:0;color:transparent
+}
+body.skin-asset-sidebar-bg .sidebar{
+  background-image:linear-gradient(rgba(8,11,20,.72),rgba(8,11,20,.88)),var(--skin-sidebar-bg);
+  background-size:210px auto;background-position:center top;background-repeat:repeat-y
+}
+body.skin-asset-viewport-bg .viewport{
+  background-image:linear-gradient(rgba(6,8,15,.58),rgba(6,8,15,.72)),var(--skin-viewport-bg);
+  background-size:cover;background-position:center;background-repeat:no-repeat
+}
+body.skin-asset-viewport-bg .viewport iframe{background:transparent}
+body.skin-asset-home-hero .home-hero{
+  min-height:210px;padding:32px 28px;display:flex;flex-direction:column;justify-content:flex-end;
+  background-image:linear-gradient(90deg,rgba(6,8,15,.94) 0%,rgba(6,8,15,.62) 44%,rgba(6,8,15,.28) 72%,rgba(6,8,15,.78) 100%),var(--skin-home-hero);
+  background-size:cover;background-position:center;background-repeat:no-repeat;border-bottom:1px solid var(--edge)
+}
+body.skin-asset-card-texture .hcard{
+  background-image:linear-gradient(180deg,rgba(24,29,37,.88),rgba(13,19,32,.94)),var(--skin-card-texture);
+  background-size:cover;background-position:center;background-repeat:no-repeat
+}
+body.skin-asset-statusbar-bg .statusbar{
+  background-image:linear-gradient(rgba(8,11,20,.74),rgba(8,11,20,.86)),var(--skin-statusbar-bg);
+  background-size:cover;background-position:center;background-repeat:no-repeat
+}
+body.skin-asset-overlay-bg .overlay{
+  background-image:linear-gradient(rgba(4,6,10,.78),rgba(4,6,10,.84)),var(--skin-overlay-bg);
+  background-size:cover;background-position:center;background-repeat:no-repeat
+}
+body.skin-asset-empty-bg .vp-error{
+  background-image:linear-gradient(rgba(6,8,15,.72),rgba(6,8,15,.88)),var(--skin-empty-bg);
+  background-size:contain;background-position:center;background-repeat:no-repeat
+}
 .home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:18px;overflow:auto}
 .home-hero{padding:22px 18px 6px}
 .home-hero h1{margin:0;font-size:26px}
@@ -96,9 +142,86 @@ body[data-density="compact"] .statusbar{padding:5px 12px;min-height:32px}
 .hcard{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--edge);border-radius:14px;padding:14px;cursor:pointer;transition:border-color .15s}
 .hcard:hover{border-color:var(--cy-dim)}
 .hcard h3{margin:0 0 4px;font-size:15px}
+.workflow-card{display:grid;grid-template-columns:58px 1fr;gap:14px;min-height:165px;padding:20px;background:linear-gradient(145deg,var(--panel),#101a29)}
+.workflow-card:hover{transform:translateY(-1px);box-shadow:0 12px 30px rgba(0,0,0,.18)}
+.workflow-icon,.hcard-icon{color:var(--cy);display:grid;place-items:center;width:48px;height:48px;border:1px solid var(--cy-dim);border-radius:13px;background:rgba(56,214,236,.07)}
+.workflow-copy h3{font-size:20px;margin-bottom:6px}.workflow-copy p{min-height:40px}.workflow-preview{font-size:10px;color:var(--muted-2);line-height:1.5;margin:8px 0}
+.module-card{position:relative;padding-top:68px}.module-card .hcard-icon{position:absolute;left:14px;top:14px;width:40px;height:40px}
+.utility-card{border-style:dashed}.utility-card .hcard-icon{font-size:24px}
 .hcard p{margin:0;color:var(--muted);font-size:12px;min-height:32px}
 .hcard .open{margin-top:10px;color:var(--cy);font-size:12.5px}
 input[type=text],select{background:#06080f;border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:7px 9px;font-family:inherit;font-size:13px}
 .btn{padding:8px 14px;border:1px solid var(--cy-dim);border-radius:9px;background:rgba(56,214,236,.1);color:var(--cy);cursor:pointer;font-size:13px}
 .btn:hover{background:rgba(56,214,236,.18)}
 .btn.ghost{border-color:var(--edge);background:transparent;color:var(--text)}
+
+/* ---- AXM COMMAND-DECK POLISH -----------------------------------------
+   Pure CSS: stronger identity without external assets or extra runtime. */
+.topbar{
+  min-height:52px;border-bottom-color:rgba(56,214,236,.18);
+  background:linear-gradient(180deg,rgba(18,28,44,.96),rgba(8,12,22,.9));
+  box-shadow:0 10px 28px rgba(0,0,0,.2);position:relative;z-index:4
+}
+.topbar::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,var(--cy),rgba(177,140,255,.7),transparent);opacity:.45}
+.mark{background:radial-gradient(circle at 35% 30%,rgba(56,214,236,.2),rgba(8,18,32,.8));box-shadow:0 0 18px rgba(56,214,236,.28),inset 0 0 12px rgba(56,214,236,.08)}
+.brand{letter-spacing:.9px}.active-lbl{padding-left:10px;border-left:1px solid rgba(56,214,236,.16)}
+.pill,.tb-btn{background:rgba(13,22,37,.7);backdrop-filter:blur(8px)}
+.tb-btn:hover{background:rgba(56,214,236,.08);box-shadow:0 0 16px rgba(56,214,236,.08)}
+
+.sidebar{background:linear-gradient(180deg,rgba(10,15,27,.98),rgba(6,9,17,.98));box-shadow:8px 0 30px rgba(0,0,0,.14)}
+.side-cap{display:flex;align-items:center;gap:7px;color:#677793;margin-top:15px}
+.side-cap::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,rgba(56,214,236,.2),transparent)}
+.mod{position:relative;transition:background .16s,border-color .16s,transform .16s}
+.mod:hover{background:linear-gradient(90deg,rgba(56,214,236,.09),rgba(47,109,255,.025));transform:translateX(2px)}
+.mod .ic{width:27px;height:27px;flex-basis:27px;border:1px solid rgba(56,214,236,.15);border-radius:8px;background:rgba(56,214,236,.035)}
+.mod:hover .ic,.mod.active .ic{border-color:var(--cy-dim);box-shadow:0 0 14px rgba(56,214,236,.12)}
+.mod.active::before{content:"";position:absolute;left:-1px;top:8px;bottom:8px;width:2px;border-radius:2px;background:var(--cy);box-shadow:0 0 10px var(--cy)}
+.life{background:rgba(5,8,15,.55)}
+
+#homeScreen{background-color:#070b14;background-image:linear-gradient(rgba(56,214,236,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(56,214,236,.025) 1px,transparent 1px),radial-gradient(800px 430px at 18% -5%,rgba(47,109,255,.12),transparent 68%),radial-gradient(700px 440px at 90% 12%,rgba(177,140,255,.08),transparent 64%);background-size:38px 38px,38px 38px,auto,auto}
+.home-hero{position:relative;overflow:hidden;padding:30px 28px 20px;border-bottom:1px solid rgba(56,214,236,.11);background:linear-gradient(120deg,rgba(8,18,34,.86),rgba(12,13,28,.5))}
+.home-hero::before{content:"";position:absolute;width:390px;height:390px;border:1px solid rgba(56,214,236,.1);border-radius:50%;right:-130px;top:-260px;box-shadow:0 0 80px rgba(56,214,236,.035),inset 0 0 70px rgba(177,140,255,.025)}
+.home-hero::after{content:"AXM";position:absolute;right:25px;bottom:-18px;font:800 92px/1 var(--font);letter-spacing:-6px;color:rgba(56,214,236,.025);pointer-events:none}
+.hero-kicker{position:relative;z-index:1;display:flex;align-items:center;gap:8px;color:var(--cy);font:10px/1 var(--mono);letter-spacing:2.4px;margin-bottom:11px}
+.hero-kicker span{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+.home-hero h1{position:relative;z-index:1;font-size:34px;letter-spacing:-.8px;background:linear-gradient(90deg,#f2f7ff 15%,#b8d7ef 58%,#9f8fe9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.home-hero p{position:relative;z-index:1;max-width:720px;font-size:13.5px;line-height:1.6;color:#8393aa}
+.hero-meta{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:7px;margin-top:15px}
+.hero-meta span{padding:4px 8px;border:1px solid rgba(56,214,236,.14);border-radius:999px;background:rgba(8,18,31,.62);color:#65768e;font:8.5px/1 var(--mono);letter-spacing:1px}
+
+.home-grid{grid-template-columns:repeat(4,minmax(180px,1fr));gap:14px;padding:22px 28px 28px}
+.workflow-card{--wf:var(--cy);--wf2:var(--blue);position:relative;isolation:isolate;overflow:hidden;min-height:190px;border-color:color-mix(in srgb,var(--wf) 26%,var(--edge));background:linear-gradient(145deg,rgba(19,30,48,.96),rgba(10,15,27,.98));box-shadow:0 14px 36px rgba(0,0,0,.16)}
+.workflow-card[data-workflow="build"]{--wf:#b18cff;--wf2:#6b5cff}.workflow-card[data-workflow="play"]{--wf:#63d68a;--wf2:#20a870}.workflow-card[data-workflow="ai-team"]{--wf:#ff71d0;--wf2:#a855f7}
+.workflow-card::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--wf),var(--wf2),transparent);box-shadow:0 0 14px var(--wf);opacity:.72}
+.workflow-card::after{content:"";position:absolute;width:150px;height:150px;border-radius:50%;right:-70px;bottom:-80px;background:radial-gradient(circle,color-mix(in srgb,var(--wf) 14%,transparent),transparent 70%);z-index:-1}
+.workflow-card:hover{border-color:color-mix(in srgb,var(--wf) 58%,var(--edge));box-shadow:0 18px 42px rgba(0,0,0,.28),0 0 28px color-mix(in srgb,var(--wf) 9%,transparent)}
+.workflow-card .workflow-icon{color:var(--wf);border-color:color-mix(in srgb,var(--wf) 50%,transparent);background:linear-gradient(145deg,color-mix(in srgb,var(--wf) 12%,transparent),rgba(7,12,22,.7));box-shadow:0 0 24px color-mix(in srgb,var(--wf) 10%,transparent),inset 0 0 16px color-mix(in srgb,var(--wf) 5%,transparent)}
+.workflow-copy h3{color:#f0f5fc;letter-spacing:.2px}.workflow-copy p{color:#8290a5;line-height:1.45}.workflow-preview{padding-top:8px;border-top:1px solid color-mix(in srgb,var(--wf) 12%,transparent)}
+.workflow-card .open{color:var(--wf);font-weight:600}.workflow-card .open::before{content:"";display:inline-block;width:18px;height:1px;background:currentColor;margin:0 7px 3px 0;box-shadow:0 0 7px currentColor}
+.hcard:not(.workflow-card){background:linear-gradient(145deg,rgba(18,25,39,.94),rgba(10,15,25,.96));border-color:rgba(80,105,140,.24);box-shadow:0 10px 28px rgba(0,0,0,.11)}
+.utility-card{opacity:.82}.utility-card:hover{opacity:1}
+.module-card .hcard-icon{background:linear-gradient(145deg,rgba(56,214,236,.1),rgba(47,109,255,.05));box-shadow:0 0 18px rgba(56,214,236,.06)}
+.statusbar{border-top-color:rgba(56,214,236,.12);background:linear-gradient(0deg,rgba(13,21,34,.96),rgba(8,12,21,.92));box-shadow:0 -8px 26px rgba(0,0,0,.16)}
+
+@media(max-width:1100px){.home-grid{grid-template-columns:repeat(2,minmax(210px,1fr))}}
+@media(max-width:720px){.home-grid{grid-template-columns:1fr;padding:16px}.home-hero{padding:22px 18px}.home-hero h1{font-size:28px}.hero-meta{display:none}.workflow-card{min-height:150px}}
+
+/* ---- SIMPLE / ADVANCED PRESENTATION ---------------------------------
+   Presentation only: contracts, gates, modules, and verifier state remain. */
+.mode-toggle{border-color:rgba(56,214,236,.34);color:var(--cy);background:linear-gradient(180deg,rgba(56,214,236,.1),rgba(47,109,255,.04));min-width:92px;justify-content:center}
+body[data-mode="advanced"] .mode-toggle{border-color:rgba(177,140,255,.48);color:var(--purple);background:linear-gradient(180deg,rgba(177,140,255,.12),rgba(168,85,247,.05))}
+body[data-mode="simple"] #btnLayers,
+body[data-mode="simple"] #btnModules,
+body[data-mode="simple"] #btnPerm,
+body[data-mode="simple"] #btnExport,
+body[data-mode="simple"] .mod .life,
+body[data-mode="simple"] [data-layer="private"],
+body[data-mode="simple"] [data-technical="true"],
+body[data-mode="simple"] .technical-card,
+body[data-mode="simple"] .statusbar .log-tail,
+body[data-mode="simple"] .statusbar .sb-item:last-of-type,
+body[data-mode="simple"] .statusbar .sb-btn{display:none!important}
+body[data-mode="simple"] .statusbar{justify-content:flex-start}
+body[data-mode="simple"] .sidebar{padding-top:8px}
+body[data-mode="simple"] .mod{padding-top:9px;padding-bottom:9px}
+body[data-mode="simple"] .home-grid{align-content:start}

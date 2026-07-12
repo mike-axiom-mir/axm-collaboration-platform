@@ -1,0 +1,32 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "discovery-engine",
+  "version": "v0.1",
+  "provides": [
+    "provisional-discovery",
+    "bounded-specialist-review",
+    "evidence-gated-research-packet"
+  ],
+  "consumes": [
+    "provider-router:axm-ask",
+    "gate:axm",
+    "storage:axm"
+  ],
+  "permissions": ["storage", "gate", "ai", "export"],
+  "handoffs": {
+    "emits": ["axm.discovery-lab.bundle/0.1", "text:discovery-report"],
+    "accepts": ["axm.discovery-lab.bundle/0.1", "text:executed-evidence"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:discovery-engine", "user-download:explicit"],
+    "refuses": [
+      "auto-run-on-open",
+      "unbounded-model-loop",
+      "self-promotion-to-truth",
+      "ai-output-as-executed-evidence",
+      "silent-candidate-overwrite",
+      "fake-independent-validation",
+      "qualified-readiness-claim"
+    ]
+  }
+}

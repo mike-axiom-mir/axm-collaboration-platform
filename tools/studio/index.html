@@ -5,6 +5,8 @@
 <title>AXM Studio — Creative Sandbox</title>
 <!-- foundation first: wires storage, wisdom, identity, gate, connector (Bridge->local->cloud), AI -->
 <script src="axm-foundation.js"></script>
+<script src="../agent-command-center/identity-registry.js"></script>
+<script src="../../hub/identity-router.js"></script>
 <!-- NO external fonts/CDN — works in airplane mode. System font stack replaces the old Google Fonts. -->
 <style>
 :root{--space:#080b14;--panel:#0d1320;--panel-2:#111a2c;--edge:#1d2942;--cyan:#38d6ec;--cyan-dim:#1c7f92;--blue:#2f6dff;--purple:#a855f7;--gold:#e8b54a;--green:#46e09a;--red:#ff5d6c;--text:#e7eef7;--muted:#7e8da6;--muted-2:#566179}
@@ -16,6 +18,8 @@ body{background:radial-gradient(1200px 700px at 50% -10%,rgba(47,109,255,.08),tr
 .mark span{font-family:'system-ui';font-weight:700;color:var(--cyan);font-size:13px}
 .top h1{font-family:'system-ui';font-weight:700;font-size:14px;letter-spacing:2px;margin:0}
 .top .tag{font-size:10.5px;color:var(--muted);letter-spacing:.5px;margin-left:auto;font-family:ui-monospace,monospace}
+.hub-btn{color:var(--cyan);text-decoration:none;border:1px solid var(--cyan-dim);background:rgba(56,214,236,.07);border-radius:7px;padding:6px 10px;font-size:10px}.hub-btn:hover{border-color:var(--cyan);color:var(--text)}
+.focus-btn{border:1px solid var(--cyan-dim);background:rgba(56,214,236,.07);color:var(--cyan);border-radius:7px;padding:6px 10px;font-size:10px;cursor:pointer}.focus-btn.on{border-color:var(--gold);color:var(--gold)}body.focus-canvas .layout{grid-template-columns:1fr}body.focus-canvas .col{display:none}body.focus-canvas .center{padding:8px}body.focus-canvas .stage{box-shadow:0 0 42px rgba(56,214,236,.14),inset 0 0 40px rgba(0,0,0,.6)}
 .layout{display:grid;grid-template-columns:252px 1fr 332px;height:calc(100vh - 51px)}
 .col{overflow-y:auto;padding:12px}
 .col.left{border-right:1px solid var(--edge)}
@@ -98,8 +102,9 @@ input[type=color]{width:30px;height:26px;border:1px solid var(--edge);border-rad
 .witem.empty:hover{border-color:var(--gold);color:var(--gold)}
 .wheel-title{position:absolute;top:-46px;left:50%;transform:translateX(-50%);font-family:'system-ui';font-size:12px;letter-spacing:2px;color:var(--text);white-space:nowrap}
 .wheel-x{position:absolute;top:-50px;right:-6px;color:var(--muted);cursor:pointer;font-size:20px}
+.duet-assets{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}.duet-asset{border:1px solid var(--edge);border-radius:8px;overflow:hidden;background:#050914}.duet-asset img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}.duet-asset b{display:block;font-size:9px;padding:5px 7px;color:var(--cyan)}.duet-out{white-space:pre-wrap;max-height:190px;overflow:auto;background:#06080f;border:1px solid var(--edge);border-radius:8px;padding:8px;font:9.5px/1.45 ui-monospace,monospace;color:var(--muted);margin-top:8px}.duet-state{font:9px ui-monospace,monospace;color:var(--gold);margin-top:6px}
 </style></head><body>
-<div class="top"><div class="mark"><span>AXM</span></div><h1>AXM STUDIO</h1><span class="tag">creative sandbox · v1.0 · spine · stickers · atlas · AI</span></div>
+<div class="top"><div class="mark"><span>AXM</span></div><h1>AXM STUDIO</h1><a class="hub-btn" href="/hub/index.html">← Hub</a><span class="tag">creative sandbox · v1.1 · spine · stickers · atlas · AI</span></div>
 <div class="layout">
   <div class="col left">
     <div class="block">
@@ -136,13 +141,26 @@ input[type=color]{width:30px;height:26px;border:1px solid var(--edge);border-rad
     <div class="block"><p class="ct">Layers — owner + goal</p><div id="layerList"></div>
       <div class="addrow"><select id="newOwner"></select><select id="newGoal"></select><button id="addLayer">+ Layer</button></div></div>
     <div class="block"><p class="ct">Identities — 2 AI · 1 human</p><div id="idList"></div><div class="integ" id="integ"></div></div>
+    <div class="block" id="duetPanel">
+      <p class="ct">Nova + Gemini Art Directors</p>
+      <div style="font-size:9.5px;color:var(--muted);line-height:1.45">Nova drafts on its locked Llama model. Gemini Local reviews the visible draft on its locked Gemma model. Codex supports rendering. No automatic wisdom.</div>
+      <div class="duet-assets">
+        <div class="duet-asset"><img src="/assets/local/skin-vault/nova-robo-rumble-bg-v1.png" alt="Nova Robo Rumble skin"><b>NOVA · ROBO RUMBLE</b></div>
+        <div class="duet-asset"><img src="/assets/local/skin-vault/gemini-circuit-singularity-bg-v1.png" alt="Gemini Circuit Singularity skin"><b>GEMINI · CIRCUIT SINGULARITY</b></div>
+      </div>
+      <textarea id="duetTask" maxlength="900" placeholder="Give both art directors a skin or asset task..." style="min-height:62px;width:100%;margin-bottom:7px">Design the next AXM skin asset as a readable dark UI background. Nova proposes; Gemini reviews and improves the visible proposal.</textarea>
+      <div class="seg" style="margin:0"><button id="runDuet" style="color:var(--green);border-color:var(--green)">Run Nova → Gemini</button><button id="saveDuetPacket">Save packet</button></div>
+      <div class="seg" style="margin-top:6px"><button id="loadNovaAsset">Load Nova asset</button><button id="loadGeminiAsset">Load Gemini asset</button></div>
+      <div class="duet-state" id="duetState">ready · two private identities · explicit visible handoff</div>
+      <div class="duet-out" id="duetOut">No duet transcript yet.</div>
+    </div>
     <div class="block">
       <p class="ct">Connections &amp; autonomy</p>
       <div class="row" style="margin-top:0"><span style="width:64px">Main AI</span><select id="brain1" style="flex:1;background:var(--panel-2);border:1px solid var(--edge);color:var(--text);border-radius:7px;padding:5px"></select></div>
       <div class="row"><span style="width:64px">2nd AI</span><select id="brain2" style="flex:1;background:var(--panel-2);border:1px solid var(--edge);color:var(--text);border-radius:7px;padding:5px"></select></div>
       <div class="seg" style="margin-top:9px"><button id="hbToggle">AI heartbeat (idle): OFF</button><span style="font-size:9px;color:var(--muted)">every <input id="hbSecIn" type="number" value="30" min="5" style="width:42px;background:var(--panel-2);border:1px solid var(--edge);color:var(--text);border-radius:5px;padding:2px 4px"> s</span></div>
       <div class="seg" style="margin-top:6px"><button id="freeBtn" style="color:var(--purple);border-color:var(--purple)">◆ AI free session</button></div>
-      <div style="font-size:9px;color:var(--muted-2);margin-top:6px;line-height:1.5">Main AI default = Claude (for testing here). Heartbeat off by default — when ON with no human driving, the main AI takes turns on the clock; a 2nd AI then reacts event-based off the first. Local/ChatGPT slots run on your own stack.</div>
+      <div style="font-size:9px;color:var(--muted-2);margin-top:6px;line-height:1.5">Local mode routes Nova and Gemini Local through their own locked models. Heartbeat stays off by default; when switched ON it takes one turn immediately, then continues on the clock. The 2nd AI reacts after the first.</div>
     </div>
     <div class="block">
       <p class="ct">Asset mode → atlas</p>
@@ -156,8 +174,15 @@ input[type=color]{width:30px;height:26px;border:1px solid var(--edge);border-rad
       </div>
     </div>
     <div class="block">
+      <p class="ct">Game Hub handoff · proposal only</p>
+      <div style="font-size:10px;color:var(--muted);line-height:1.45;margin-bottom:7px">Stage the current composite in Game Hub’s review inbox. Studio never writes directly into a game package.</div>
+      <div class="addrow"><select id="gameAssetTarget" style="flex:1"><option value="">loading games…</option></select><input id="gameAssetName" maxlength="80" value="studio-skin" placeholder="asset name" style="min-width:0;flex:1;background:var(--panel-2);border:1px solid var(--edge);color:var(--text);border-radius:7px;padding:6px"></div>
+      <button class="abtn" id="stageGameAsset" disabled style="border-color:var(--gold);color:var(--gold)">Stage proposal in Game Hub</button>
+      <div id="gameAssetState" style="font-size:9px;color:var(--muted-2);margin-top:6px">waiting for Game Hub runtime</div>
+    </div>
+    <div class="block">
       <p class="ct">AI Slot — briefing &amp; wisdom</p>
-      <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Briefing for Claude (read each turn) <span id="briefCount" style="color:var(--muted-2)">0/600</span></div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Briefing for Nova (read each turn) <span id="briefCount" style="color:var(--muted-2)">0/600</span></div>
       <textarea id="brief" maxlength="600" placeholder="Why you connected this AI + the goal. It reads this on its turns. e.g. 'We make neon game assets — keep tiles clean and seamless.'" style="min-height:58px;width:100%;margin-bottom:8px"></textarea>
       <div class="seg" style="margin:0"><button id="wisdomToggle">Wisdom logging: OFF</button></div>
       <div id="wisdomBox" style="display:none;margin-top:8px">
@@ -170,6 +195,11 @@ input[type=color]{width:30px;height:26px;border:1px solid var(--edge);border-rad
       <div class="chat" id="chat"></div>
       <div class="chatin"><input id="chatIn" placeholder="Talk to the room… AI sees canvas + chat on its turn"><button id="send">Send</button></div>
       <button class="abtn" id="askDraw">Ask AI to add to its layer</button></div>
+    <div class="block"><p class="ct">Machine draw packet · TEST</p>
+      <div style="font-size:10px;color:var(--muted);line-height:1.45;margin-bottom:7px">A visible handoff for an AI outside the optional live bridge. Paste an <span style="color:var(--cyan)">axm.drawpacket/v1</span> JSON packet and apply it through the same draw + multi-layer engine used by live AI.</div>
+      <textarea id="drawPacket" placeholder='{"schema":"axm.drawpacket/v1","owner":"ai1","draw":[...]}' style="font-family:ui-monospace,monospace;font-size:9px;min-height:72px;width:100%;margin-bottom:7px"></textarea>
+      <div class="seg" style="margin:0"><button id="applyDrawPacket" style="color:var(--green);border-color:var(--green)">Apply to AI layer</button><button id="sampleDrawPacket">Load sample</button></div>
+    </div>
   </div>
 </div>
 <div class="overlay" id="overlay"><div class="wheel" id="wheel"></div></div>
@@ -177,9 +207,9 @@ input[type=color]{width:30px;height:26px;border:1px solid var(--edge);border-rad
 const W=600,H=600;
 /* ===== identities ===== */
 const identities=[
-  {id:'human',name:'Mike Tobi',kind:'human',color:'#38d6ec',active:true},
-  {id:'ai1',name:'Claude',kind:'ai',color:'#a855f7',active:true,brain:'claude'},
-  {id:'ai2',name:'(open AI slot)',kind:'ai',color:'#46e09a',active:false,brain:'local'},
+  {id:'human',name:'Mike',kind:'human',color:'#38d6ec',active:true},
+  {id:'ai1',name:'Nova',kind:'ai',color:'#a855f7',active:true,brain:'local'},
+  {id:'ai2',name:'Gemini Local',kind:'ai',color:'#46e09a',active:true,brain:'local'},
 ];
 const idOf=id=>identities.find(i=>i.id===id);
 /* ===== THE SPINE: master tool registry (one source of truth) ===== */
@@ -218,15 +248,17 @@ Object.keys(goalsMeta).forEach(g=>{GOALS[g]={label:goalsMeta[g].label,forceFinis
 
 /* ===== layers ===== */
 const stage=document.getElementById('stage');
-function sizeStage(){const s=Math.max(300,Math.min(600,window.innerWidth-640));stage.style.width=s+'px';stage.style.height=s+'px';}
+const focusCanvasBtn=document.createElement('button');focusCanvasBtn.id='focusCanvas';focusCanvasBtn.className='focus-btn';focusCanvasBtn.textContent='Focus canvas';document.querySelector('.top').insertBefore(focusCanvasBtn,document.querySelector('.top .tag'));
+function sizeStage(){const focus=document.body.classList.contains('focus-canvas');const s=focus?Math.max(300,Math.min(900,window.innerWidth-32,window.innerHeight-86)):Math.max(300,Math.min(600,window.innerWidth-640));stage.style.width=s+'px';stage.style.height=s+'px';}
 sizeStage();window.addEventListener('resize',sizeStage);
+focusCanvasBtn.onclick=function(){const on=document.body.classList.toggle('focus-canvas');focusCanvasBtn.classList.toggle('on',on);focusCanvasBtn.textContent=on?'Exit focus':'Focus canvas';sizeStage();};
 let layers=[],activeId=null,showAll=false;
 let selStart=null,selRect=null,selDragging=false,selMode='copy';
 function mkLayer(name,owner,goal){const c=document.createElement('canvas');c.width=W;c.height=H;c.style.cssText='width:100%;height:100%;pointer-events:none';c.style.zIndex=layers.length+1;stage.appendChild(c);
   const L={id:'L'+Date.now()+Math.random().toString(36).slice(2,5),name,owner,goal,visible:true,locked:false,opacity:1,blend:'source-over',canvas:c,ctx:c.getContext('2d',{willReadFrequently:true})};layers.push(L);return L;}
 function active(){return layers.find(l=>l.id===activeId);}
 function aiLayer(idn){return layers.find(l=>l.owner===idn)||layers.find(l=>l.owner==='ai1');}
-mkLayer('Background','human','background');const artL=mkLayer('Art','human','creative');mkLayer('Claude','ai1','creative');activeId=artL.id;
+mkLayer('Background','human','background');const artL=mkLayer('Art','human','creative');mkLayer('Nova','ai1','creative');mkLayer('Gemini Local','ai2','creative');activeId=artL.id;
 
 /* ===== paint state ===== */
 let tool='brush',color='#38d6ec',size=5,finish='flat',drawing=false,last=null,startPt=null,dragBase=null;
@@ -348,7 +380,7 @@ stage.addEventListener('touchstart',down,{passive:false});stage.addEventListener
 
 /* composite / save */
 function composite(forExport){const off=document.createElement('canvas');off.width=W;off.height=H;const o=off.getContext('2d');if(!forExport){o.fillStyle='#06080f';o.fillRect(0,0,W,H);}layers.forEach(l=>{if(l.visible){o.globalAlpha=l.opacity==null?1:l.opacity;o.globalCompositeOperation=l.blend||'source-over';o.drawImage(l.canvas,0,0);}});o.globalAlpha=1;o.globalCompositeOperation='source-over';return off;}
-$('save').onclick=()=>{const a=document.createElement('a');a.download='axm-studio.png';a.href=composite(true).toDataURL('image/png');a.click();sysMsg('A transparent PNG was exported to file by Mike Tobi (no background — game-ready).');};
+$('save').onclick=()=>{const a=document.createElement('a');a.download='axm-studio.png';a.href=composite(true).toDataURL('image/png');a.click();sysMsg('A transparent PNG was exported to file by Mike (no background — game-ready).');};
 function exportHi(scale){const src=composite(true);const big=document.createElement('canvas');big.width=W*scale;big.height=H*scale;const b=big.getContext('2d');b.imageSmoothingEnabled=true;b.imageSmoothingQuality='high';b.drawImage(src,0,0,big.width,big.height);big.toBlob(bl=>{const a=document.createElement('a');a.download='axm-studio@'+scale+'x.png';a.href=URL.createObjectURL(bl);a.click();},'image/png');sysMsg('Exported at '+scale+'× ('+big.width+'×'+big.height+') — more pixels so it stays readable when zoomed on mobile. Tip: run the Polish filter first for crisp edges.');}
 $('saveHi').onclick=()=>exportHi(2);
 $('saveHi3').onclick=()=>exportHi(3);
@@ -382,7 +414,16 @@ function renderIds(){const w=$('idList');w.innerHTML='';identities.forEach(i=>{c
 const chat=[];
 function pushChat(who,color,text,sys){chat.push({who,color,text,sys});const d=document.createElement('div');d.className='msg'+(sys?' sys':'');d.innerHTML=sys?`<span class="bd"></span>`:`<span class="who" style="color:${color}"></span><span class="bd"></span>`;if(!sys)d.querySelector('.who').textContent=who;d.querySelector('.bd').textContent=text;$('chat').appendChild(d);$('chat').scrollTop=$('chat').scrollHeight;}
 function sysMsg(t){pushChat('','','◆ '+t,true);}
-pushChat('','','◆ Room opened. Mike Tobi + Claude present. One AI slot open.',true);
+function consumeCollaborationNotice(){
+  let notice=null;try{notice=JSON.parse(localStorage.getItem('axm.collaboration.notice.open')||'null');localStorage.removeItem('axm.collaboration.notice.open');}catch(e){}
+  if(!notice||!notice.message)return;
+  const detail=notice.context?'\nContext: '+notice.context:'';
+  sysMsg((notice.type||'message').toUpperCase()+' FROM '+(notice.fromName||'COLLABORATOR')+' — '+notice.message+detail);
+  if(notice.fromId==='claude'){$('brain1').value='claude';idOf('ai1').brain='claude';sysMsg('Main AI reply route set to Claude. Heartbeat remains '+(heartbeat?'ON':'OFF')+'.');}
+  $('chatIn').value='Reply to '+(notice.fromName||'the collaborator')+': ';
+  $('chatIn').focus();
+}
+pushChat('','','◆ Room opened. Mike + Nova + Gemini Local present.',true);
 let brain='claude';
 async function askConnector(messages,system,brainChoice){
   /* Wired to the AXM foundation connector.
@@ -400,9 +441,41 @@ async function askConnector(messages,system,brainChoice){
    Cloud (Claude) reads the canvas image fine. A LOCAL vision model (LM Studio) may need image formatting per its own
    API spec — that specific path is UNTESTED here and is the thing to verify when you test the Bridge/local slot. */
 function snapImg(){return composite().toDataURL('image/png').split(',')[1];}
-function parseJSON(t){let s=t.replace(/```json|```/g,'').trim();const a=s.indexOf('{'),b=s.lastIndexOf('}');if(a>=0&&b>=0)s=s.slice(a,b+1);try{return JSON.parse(s);}catch(e){return{thinking:'(parse fail)',chat:null,draw:null};}}
+function parseJSON(t){
+  const raw=String(t||'').replace(/```json|```/gi,'').trim();
+  if(!raw)return{thinking:'(empty response)',chat:null,draw:null,parseError:true};
+  const candidates=[raw];
+  for(let start=0;start<raw.length;start++)if(raw[start]==='{'){
+    let depth=0,inString=false,escaped=false;
+    for(let i=start;i<raw.length;i++){
+      const ch=raw[i];
+      if(inString){if(escaped)escaped=false;else if(ch==='\\')escaped=true;else if(ch==='"')inString=false;continue;}
+      if(ch==='"'){inString=true;continue;}if(ch==='{')depth++;else if(ch==='}'&&--depth===0){candidates.push(raw.slice(start,i+1));break;}
+    }
+  }
+  for(let i=candidates.length-1;i>=0;i--)try{const o=JSON.parse(candidates[i]);if(o&&typeof o==='object'&&('chat' in o||'draw' in o||'done' in o||'thinking' in o))return o;}catch(e){}
+  const visible=raw.replace(/<think>[\s\S]*?<\/think>/gi,'').trim();
+  return{thinking:'(non-JSON response preserved as chat)',chat:(visible||raw).slice(-1000),draw:null,nonJson:true};
+}
+function studioIdentityFor(id){return AXMIdentityRouter.resolve('studio',id);}
+function textFromStudioMessages(messages){return (messages||[]).map(m=>{if(typeof m.content==='string')return m.content;if(Array.isArray(m.content))return m.content.filter(x=>x&&x.type==='text').map(x=>x.text||'').join('\n');return '';}).filter(Boolean).join('\n\n');}
+async function askStudioTurn(id,messages,system){
+  const me=idOf(id);
+  if(me&&me.brain==='local'){
+    if(typeof AXMIdentityRegistry==='undefined'||!AXMIdentityRegistry.ask)throw new Error('identity registry unavailable');
+    const identityId=studioIdentityFor(id);
+    const prompt=textFromStudioMessages(messages)+'\n\nLOCAL CANVAS NOTE: This model is currently on the text-safe drawing route. Use the supplied canvas coordinates and recent chat to create valid draw commands; do not claim you saw pixels that were not supplied.';
+    const r=await AXMIdentityRouter.ask('studio',id,prompt,{system:system,maxTokens:1200,temperature:0});
+    if(!r||!String(r.text||'').trim())throw new Error(identityId+' returned no response');
+    return r.text;
+  }
+  const r=await askConnector(messages,system,me&&me.brain);
+  if(!String(r||'').trim())throw new Error((me&&me.name||'AI')+' returned no response');
+  return r;
+}
 let aiCurrentLayer={};
-function runDraw(L0,cmds){if(!Array.isArray(cmds))return;let L=L0,c=L.ctx;
+function aiPixelSignature(owner){let h=2166136261,n=0;layers.filter(l=>l.owner===owner).forEach(l=>{const d=l.ctx.getImageData(0,0,W,H).data;for(let i=0;i<d.length;i+=4){if(d[i+3])n++;h=Math.imul(h^d[i],16777619);h=Math.imul(h^d[i+1],16777619);h=Math.imul(h^d[i+2],16777619);h=Math.imul(h^d[i+3],16777619);}});return (h>>>0)+':'+n+':'+layers.filter(l=>l.owner===owner).length;}
+function runDraw(L0,cmds){if(!Array.isArray(cmds))return{changed:false,commands:0};const owner=L0.owner,before=aiPixelSignature(owner);let L=L0,c=L.ctx;
   /* AI reaches the SAME tool functions the human's buttons call — one core, a second doorway. */
   cmds.forEach(cm=>{try{c.save();const col=cm.color||'#fff',fin=cm.finish||'flat';
   if(cm.op==='stroke'&&cm.points){c.strokeStyle=fin==='flat'?col:lineStyle(c,{x:cm.points[0][0],y:cm.points[0][1]},{x:cm.points[cm.points.length-1][0],y:cm.points[cm.points.length-1][1]},col,fin);c.lineWidth=cm.width||2;c.lineCap='round';c.lineJoin='round';c.beginPath();cm.points.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.stroke();}
@@ -421,13 +494,21 @@ function runDraw(L0,cmds){if(!Array.isArray(cmds))return;let L=L0,c=L.ctx;
   else if(cm.op==='newlayer'){c.restore();const nm=(cm.name&&String(cm.name).slice(0,18))||(idOf(L.owner).name+' '+(layers.filter(l=>l.owner===L.owner).length+1));const NL=mkLayer(nm,L.owner,'creative');aiCurrentLayer[L.owner]=NL.id;L=NL;c=L.ctx;c.save();renderLayers();sysMsg(idOf(L.owner).name+' added a new layer "'+nm+'".');}
   else if(cm.op==='movelayer'){c.restore();const dir=(cm.dir==='down'||cm.dir===-1)?-1:1;moveLayer(L.id,dir);sysMsg(idOf(L.owner).name+' moved its layer '+(dir>0?'up':'down')+'.');c.save();}
   else if(cm.op==='shiftlayer'){c.restore();const dx=cm.dx||0,dy=cm.dy||0;const snap=document.createElement('canvas');snap.width=W;snap.height=H;snap.getContext('2d').drawImage(L.canvas,0,0);c.clearRect(0,0,W,H);c.drawImage(snap,dx,dy);sysMsg(idOf(L.owner).name+' repositioned its layer ('+dx+','+dy+').');c.save();}
-  c.restore();}catch(e){}});}
+  c.restore();}catch(e){}});return{changed:before!==aiPixelSignature(owner),commands:cmds.length};}
 function aiStickerNames(L){return STICKERS.map(s=>s.name).concat((userUploads[L.goal]||[]).map(u=>u.name)).join(', ');}
 function chatHistory(){return chat.filter(m=>!m.sys).slice(-8).map(m=>m.who+': '+m.text).join('\n');}
-const AI_SYS=name=>`You are ${name}, an AI teammate inside a shared creative workspace (canvas + layers + this team chat). Mike Tobi (human) is here; another AI slot may open later. Each turn you SEE the current canvas image and recent chat: look, reason, decide. You may speak in chat, draw on YOUR layer, both, or neither — speak ONLY if it adds value; stay silent otherwise, don't narrate every stroke. You may also be given a HUMAN BRIEFING (why this connection exists, the goal — honour it) and WISDOM from past sessions (lessons to apply as guidance, never as rigid rules). Canvas ${W}x${H}, (0,0) top-left. Respond ONLY JSON, no prose/fences:
+const AI_SYS=name=>`You are ${name}, an AI teammate inside a shared creative workspace (canvas + layers + this team chat). Mike (human) is here; another AI slot may open later. Each turn you SEE the current canvas image and recent chat: look, reason, decide. You may speak in chat, draw on YOUR layer, both, or neither — speak ONLY if it adds value; stay silent otherwise, don't narrate every stroke. You may also be given a HUMAN BRIEFING (why this connection exists, the goal — honour it) and WISDOM from past sessions (lessons to apply as guidance, never as rigid rules). Canvas ${W}x${H}, (0,0) top-left. Respond ONLY JSON, no prose/fences:
 {"thinking":"private one line","chat":"short message or null","draw":[ commands ] or null,"wisdom":"a short lesson you genuinely learned this turn, or null"}
+DRAW EXACTLY with numeric coordinates inside 0..600. Valid examples: {"op":"circle","x":300,"y":250,"r":100,"fill":true,"color":"#ffd84d"}, {"op":"line","x1":250,"y1":300,"x2":350,"y2":300,"color":"#111827","width":10}. Never rename x/y/r or x1/y1/x2/y2.
 ops: stroke{points,color,width,finish}, erase{points,width} (removes marks on YOUR layer — you can repair/fix your own work, not only add to it), line{x1,y1,x2,y2,color,width}, rect{x,y,w,h,fill,color}, circle{x,y,r,fill,color}, dot{x,y,r,color}, fill{x,y,color}, polygon{x,y,r,sides,fill,color}, gradient{x1,y1,x2,y2,color}, text{x,y,text,size,color}, blur{x,y,r}, dodge{x,y,r}, burn{x,y,r}, sticker{name,x,y,size,rot,color}, newlayer{name} (create a NEW layer of your own and continue drawing on it — use layers like a real artist: background, subject, glow, detail on separate layers so they can be blended/reordered independently. Ops after a newlayer in the same batch land on the new layer), movelayer{dir:"up"|"down"} (reorders YOUR current layer in the stack — above/below other layers), shiftlayer{dx,dy} (slides ALL the content on your current layer across the canvas by dx,dy pixels — use to reposition an element after drawing it). finish can be "gloss" or "metallic". You have the SAME tools the human does — including erase and multiple layers, so you can build proper layered compositions and fix mistakes. Max 14 commands. Only fill "wisdom" if you hit a REAL lesson/mistake this turn — never invent one to fill the field. Be a concise, useful teammate.`;
-function ensureAILayer(id){if(aiCurrentLayer[id]){const cur=layers.find(l=>l.id===aiCurrentLayer[id]);if(cur)return cur;}let L=layers.find(l=>l.owner===id);if(!L){L=mkLayer(idOf(id).name,id,'creative');renderLayers();}aiCurrentLayer[id]=L.id;return L;}
+function ensureAILayer(id){
+  let L=aiCurrentLayer[id]&&layers.find(l=>l.id===aiCurrentLayer[id]);
+  if(!L){const ownCreative=layers.filter(l=>l.owner===id&&l.goal!=='background');L=ownCreative[ownCreative.length-1];}
+  if(!L)L=mkLayer(idOf(id).name+' Live',id,'creative');
+  L.visible=true;L.locked=false;L.canvas.style.display='block';
+  const at=layers.indexOf(L);if(at>=0&&at!==layers.length-1){layers.splice(at,1);layers.push(L);restack();}
+  aiCurrentLayer[id]=L.id;renderLayers();return L;
+}
 let aiBusy=false;
 async function runAITurn(id){const me=idOf(id);if(!me||!me.active||me.kind!=='ai')return;const L=ensureAILayer(id);
   $('pulse').classList.add('on');
@@ -438,8 +519,9 @@ async function runAITurn(id){const me=idOf(id);if(!me||!me.active||me.kind!=='ai
   const wisInstr=(id==='ai1'&&wisdomOn)?`\n(Wisdom logging is ON: if you hit a genuine lesson this turn, return one short nugget in "wisdom" — only if real.)`:'';
   const txt=`${briefCtx}${wisCtx}Recent chat:\n${chatHistory()}\nStickers you can place on your layer (use the sticker op): ${aiStickerNames(L)}.${wisInstr}\n\nCurrent canvas attached. Take your turn.`;
   const msgs=[{role:"user",content:[{type:"text",text:txt},{type:"image",source:{type:"base64",media_type:"image/png",data:snapImg()}}]}];
-  try{const r=await askConnector(msgs,AI_SYS(me.name),me.brain);const o=parseJSON(r);
-    if(o.draw&&o.draw.length){runDraw(L,o.draw);sysMsg(me.name+' drew on its layer.');}
+  try{const r=await askStudioTurn(id,msgs,AI_SYS(me.name));const o=parseJSON(r);
+    if(o.parseError)throw new Error('response was not valid Studio JSON');
+    if(o.draw&&o.draw.length){const dr=runDraw(L,o.draw);sysMsg(dr.changed?me.name+' changed visible pixels on its layer.':me.name+' returned '+dr.commands+' draw command(s), but no canvas pixels changed.');}
     if(o.chat&&String(o.chat).trim())pushChat(me.name,me.color,String(o.chat).trim());
     if(id==='ai1'&&wisdomOn&&o.wisdom&&String(o.wisdom).trim()){wisdomLog.push(String(o.wisdom).trim());renderWisdom();sysMsg(me.name+' filed a wisdom nugget.');}
     if((!o.chat||!String(o.chat).trim())&&!(o.draw&&o.draw.length))sysMsg(me.name+' had nothing to add this turn.');
@@ -457,8 +539,9 @@ async function freeTurn(id){const me=idOf(id);if(!me)return{done:true};const L=e
   const wisInstr=(id==='ai1'&&wisdomOn)?`\n(Wisdom logging is ON: if you hit a genuine lesson this turn, return one short nugget in "wisdom" — only if real.)`:'';
   const txt=`FREE CREATIVE SESSION. There is NO human brief and NO direction — this is your own practice time to create whatever you want and develop your artistic judgement. Look at the current canvas (your work so far), decide your next move, and keep building the piece. You can use multiple layers (newlayer op) like a real artist — background, subject, glow, detail on their own layers, blended and reordered. Take ONE turn now: add to it, refine it, or — if you judge the piece is genuinely finished — set "done": true and stop. There is no limit; a real piece can take many turns. Make it yours.${wisInstr}\n\nReturn ONLY JSON: {"thinking":"one line","chat":"optional short note or null","draw":[commands] or null,"wisdom":"real lesson or null","done":true or false}\n\nCurrent canvas attached.`;
   const msgs=[{role:"user",content:[{type:"text",text:txt},{type:"image",source:{type:"base64",media_type:"image/png",data:snapImg()}}]}];
-  try{const r=await askConnector(msgs,AI_SYS(me.name),me.brain);const o=parseJSON(r);
-    if(o.draw&&o.draw.length){runDraw(L,o.draw);sysMsg(me.name+' drew (free practice).');}
+  try{const r=await askStudioTurn(id,msgs,AI_SYS(me.name));const o=parseJSON(r);
+    if(o.parseError)throw new Error('response was not valid Studio JSON');
+    if(o.draw&&o.draw.length){const dr=runDraw(L,o.draw);sysMsg(dr.changed?me.name+' changed visible pixels (free practice).':me.name+' returned '+dr.commands+' practice command(s), but no canvas pixels changed.');}
     if(o.chat&&String(o.chat).trim())pushChat(me.name,me.color,String(o.chat).trim());
     if(id==='ai1'&&wisdomOn&&o.wisdom&&String(o.wisdom).trim()){wisdomLog.push(String(o.wisdom).trim());renderWisdom();sysMsg(me.name+' filed a wisdom nugget.');}
     $('pulse').classList.remove('on');
@@ -472,10 +555,33 @@ async function runFreeSession(){if(freeRunning){freeRunning=false;return;}
   freeRunning=false;aiBusy=false;$('freeBtn').textContent='◆ AI free session';$('freeBtn').classList.remove('on');$('send').disabled=false;}
 /* heartbeat: when no human is driving, the FIRST ai takes turns on a clock (consent module, off by default) */
 let heartbeat=null,hbSec=30;
-function setHeartbeat(on){if(on){if(heartbeat)clearInterval(heartbeat);heartbeat=setInterval(()=>{if(!aiBusy)triggerTurn();},hbSec*1000);}else{clearInterval(heartbeat);heartbeat=null;}}
-$('send').onclick=()=>{const v=$('chatIn').value.trim();if(!v)return;pushChat('Mike Tobi',idOf('human').color,v);$('chatIn').value='';triggerTurn();};
+function setHeartbeat(on){if(on){if(heartbeat)clearInterval(heartbeat);heartbeat=setInterval(()=>{if(!aiBusy)triggerTurn();},hbSec*1000);if(!aiBusy)triggerTurn();}else{clearInterval(heartbeat);heartbeat=null;}}
+$('send').onclick=()=>{const v=$('chatIn').value.trim();if(!v)return;pushChat('Mike',idOf('human').color,v);$('chatIn').value='';triggerTurn();};
 $('chatIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('send').click();});
-$('askDraw').onclick=()=>{pushChat('Mike Tobi',idOf('human').color,'(asks the AI to add to its layer)');triggerTurn();};
+$('askDraw').onclick=()=>{pushChat('Mike',idOf('human').color,'(asks the AI to add to its layer)');triggerTurn();};
+
+/* ===== MACHINE DRAW PACKET — transparent external-AI handoff =====
+   This does not pretend an API is connected. An external machine can author a
+   bounded JSON packet, a human can inspect it, and this visible button applies
+   it through the exact same runDraw() + layer functions as the live AI path. */
+const DRAW_PACKET_SCHEMA='axm.drawpacket/v1';
+function applyDrawPacket(raw){
+  const p=JSON.parse(String(raw||''));
+  if(!p||p.schema!==DRAW_PACKET_SCHEMA)throw new Error('Expected schema '+DRAW_PACKET_SCHEMA+'.');
+  const owner=(p.owner==='ai2')?'ai2':'ai1';
+  const draw=Array.isArray(p.draw)?p.draw:[];
+  if(!draw.length)throw new Error('Packet has no draw commands.');
+  if(draw.length>80)throw new Error('Packet exceeds the 80-command test boundary. Split it into reviewed packets.');
+  const L=ensureAILayer(owner);
+  const result=runDraw(L,draw);
+  renderLayers();
+  const label=String(p.name||'external machine packet').slice(0,48);
+  sysMsg(result.changed?idOf(owner).name+' applied "'+label+'" and changed visible pixels ('+draw.length+' commands).':idOf(owner).name+' applied "'+label+'", but no canvas pixels changed ('+draw.length+' commands).');
+  setStat(result.changed?'Applied '+draw.length+' commands; canvas pixels changed.':'Applied '+draw.length+' commands; no canvas pixel change detected.');
+  return p;
+}
+$('applyDrawPacket').onclick=()=>{try{applyDrawPacket($('drawPacket').value);}catch(e){setStat('Draw packet refused: '+e.message);sysMsg('Draw packet refused — '+e.message);}};
+$('sampleDrawPacket').onclick=()=>{$('drawPacket').value=JSON.stringify({schema:DRAW_PACKET_SCHEMA,name:'sample layered mark',owner:'ai1',draw:[{op:'circle',x:400,y:260,r:92,fill:false,color:'#38d6ec',width:12},{op:'newlayer',name:'Sample glow'},{op:'circle',x:400,y:260,r:64,fill:false,color:'#a855f7',width:8},{op:'newlayer',name:'Sample core'},{op:'polygon',x:400,y:260,r:38,sides:6,fill:true,color:'#e8b54a'}]},null,2);setStat('Sample packet loaded — inspect it, then Apply.');};
 
 /* ===== PRESET WHEEL (real working presets) + BLUEPRINT WHEEL (reserved) ===== */
 const PRESETS=[
@@ -658,7 +764,8 @@ const BRAINS=[['claude','Claude (live here)'],['local','Local (your stack)'],['c
 (function(){const b1=$('brain1');BRAINS.forEach(([v,l])=>{const o=document.createElement('option');o.value=v;o.textContent=l;b1.appendChild(o);});b1.value=idOf('ai1').brain||'claude';
   b1.onchange=e=>{idOf('ai1').brain=e.target.value;sysMsg('Main AI set to '+e.target.options[e.target.selectedIndex].text+'.');};
   const b2=$('brain2');[['off','— off —'],...BRAINS].forEach(([v,l])=>{const o=document.createElement('option');o.value=v;o.textContent=l;b2.appendChild(o);});b2.value='off';
-  b2.onchange=e=>{const v=e.target.value;const ai2=idOf('ai2');if(v==='off'){ai2.active=false;sysMsg('2nd AI slot turned off.');}else{ai2.active=true;ai2.brain=v;ai2.name=v==='chatgpt'?'ChatGPT':v==='local'?'Local AI':'Claude-2';ensureAILayer('ai2');sysMsg('2nd AI connected: '+ai2.name+' (reacts event-based off the main AI).');}renderIds();renderLayers();};})();
+  b2.value=idOf('ai2').active?(idOf('ai2').brain||'local'):'off';
+  b2.onchange=e=>{const v=e.target.value;const ai2=idOf('ai2');if(v==='off'){ai2.active=false;sysMsg('2nd AI slot turned off.');}else{ai2.active=true;ai2.brain=v;ai2.name=v==='chatgpt'?'ChatGPT':v==='local'?'Gemini Local':'Claude-2';ensureAILayer('ai2');sysMsg('2nd AI connected: '+ai2.name+' (reacts event-based off the main AI).');}renderIds();renderLayers();};})();
 $('hbToggle').onclick=()=>{const on=!heartbeat;setHeartbeat(on);$('hbToggle').textContent='AI heartbeat (idle): '+(on?'ON':'OFF');$('hbToggle').classList.toggle('on',on);sysMsg(on?'Heartbeat ON — main AI will take turns every '+hbSec+'s until you turn it off.':'Heartbeat OFF.');};
 $('freeBtn').onclick=runFreeSession;
 $('hbSecIn').onchange=e=>{hbSec=Math.max(5,+e.target.value||30);if(heartbeat){setHeartbeat(false);setHeartbeat(true);}};
@@ -701,7 +808,7 @@ $('loadProj').onclick=()=>projIn.click();
 async function newProject(){if(!confirm('Start a new project? Unsaved work will be lost (Save project first to keep it).'))return;
   try{if(typeof AXM!=='undefined'&&AXM.store&&AXM.store.remove)await AXM.store.remove('project');}catch(e){}
   layers.forEach(l=>l.canvas.remove());layers=[];
-  mkLayer('Background','human','background');const a=mkLayer('Art','human','creative');mkLayer('Claude','ai1','creative');activeId=a.id;
+  mkLayer('Background','human','background');const a=mkLayer('Art','human','creative');mkLayer('Nova','ai1','creative');mkLayer('Gemini Local','ai2','creative');activeId=a.id;
   userPresets=[];assets=[];undo=[];redo=[];
   renderLayers();applyGoalTools();renderAssets();setStat('New project — fresh room.');sysMsg('New project started.');}
 $('newProj').onclick=newProject;
@@ -729,14 +836,54 @@ async function tryResume(){try{if(typeof AXM==='undefined'||!AXM.store)return;
   if(d&&d.layers){loadProjectData(d);sysMsg('Resumed your last session from the hub store. Save project to update it.');}}catch(e){}}
 
 /* init — wired to the AXM foundation */
+/* ===== Nova + Gemini identity-routed art direction ===== */
+let duetSession={schema:'axm.studio.art-duet/v1',task:'',nova:'',gemini:'',createdAt:null,renderedBy:'Codex support',promotion:'none'};
+function renderDuet(){const parts=[];if(duetSession.nova)parts.push('NOVA · PRIVATE DRAFT\n'+duetSession.nova);if(duetSession.gemini)parts.push('GEMINI LOCAL · VISIBLE REVIEW\n'+duetSession.gemini);$('duetOut').textContent=parts.join('\n\n')||'No duet transcript yet.';}
+async function runArtDuet(){
+  const task=$('duetTask').value.trim();if(!task)return;const b=$('runDuet');b.disabled=true;$('duetState').textContent='Nova drafting on axm-llama-3.1-8b...';
+  try{
+    const n=await AXMIdentityRouter.ask('studio','nova','Act as Nova, local AXM art director. '+task+' Return a concise production visual brief with palette, composition, asset type, constraints, and avoid list.',{temperature:0,maxTokens:650});
+    if(!n||!n.text)throw new Error('Nova returned no final brief');
+    duetSession={schema:'axm.studio.art-duet/v1',task:task,nova:n.text,gemini:'',createdAt:new Date().toISOString(),renderedBy:'Codex support',promotion:'none'};renderDuet();$('duetState').textContent='Gemini reviewing the visible Nova draft on gemini-local...';
+    const handoff='Mike\'s Studio task: '+task+'\n\nVISIBLE NOVA DRAFT:\n'+n.text+'\n\nAct as Gemini Local, an independent Google Gemma art director. Review only this visible draft. Output a final concise improved generation brief; identify one correction and preserve useful parts. No analysis transcript.';
+    const g=await AXMIdentityRouter.ask('studio','gemini',handoff,{temperature:0,maxTokens:1200});duetSession.gemini=(g&&g.text)||'[No final Gemini text returned; draft preserved for retry.]';renderDuet();
+    await AXM.store.save('nova-gemini-art-duet',duetSession,{title:'Nova + Gemini Art Duet'});$('duetState').textContent='complete · attributed transcript saved · not learned automatically';sysMsg('Nova drafted and Gemini Local reviewed a Studio generation packet. Codex render support can now produce the bitmap.');
+  }catch(e){$('duetState').textContent='duet stopped honestly: '+e.message;}finally{b.disabled=false;}
+}
+function loadDuetAsset(src,name,owner){const img=new Image();img.onload=function(){const L=mkLayer(name,owner,'background'),scale=Math.min(W/img.width,H/img.height),w=img.width*scale,h=img.height*scale;L.ctx.fillStyle='#050914';L.ctx.fillRect(0,0,W,H);L.ctx.drawImage(img,(W-w)/2,(H-h)/2,w,h);activeId=L.id;renderLayers();applyGoalTools();setStat(name+' loaded on its attributed AI layer.');};img.onerror=function(){setStat('Could not load '+name+'.');};img.src=src;}
+async function saveDuetPacket(){if(!duetSession.nova){$('duetState').textContent='Run the duet before saving a packet.';return;}const filename='studio-nova-gemini-generation-packet.json',content=JSON.stringify(duetSession,null,2);try{await fetch('/api/export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({filename:filename,content:content})});}catch(e){}const a=document.createElement('a');a.download=filename;a.href=URL.createObjectURL(new Blob([content],{type:'application/json'}));a.click();$('duetState').textContent='generation packet saved locally and downloaded';}
+async function initDuet(){try{const saved=await AXM.store.load('nova-gemini-art-duet');if(saved&&saved.data){duetSession=saved.data;renderDuet();$('duetState').textContent='resumed attributed duet transcript · not promoted';}}catch(e){}}
+$('runDuet').onclick=runArtDuet;$('saveDuetPacket').onclick=saveDuetPacket;$('loadNovaAsset').onclick=function(){loadDuetAsset('/assets/local/skin-vault/nova-robo-rumble-bg-v1.png','Nova · Robo Rumble','ai1');};$('loadGeminiAsset').onclick=function(){loadDuetAsset('/assets/local/skin-vault/gemini-circuit-singularity-bg-v1.png','Gemini · Circuit Singularity','ai2');};
+
+const GAME_ASSET_SCHEMA='axm.game-asset/v1';
+async function loadGameAssetTargets(){
+  const select=$('gameAssetTarget');
+  try{
+    const r=await fetch('/game-api/games'),j=await r.json();if(!r.ok||!j.ok)throw new Error(j.error||('HTTP '+r.status));
+    select.innerHTML='';(j.games||[]).filter(g=>g.game_id&&g.status!=='manifest-error').forEach(g=>{const o=document.createElement('option');o.value=g.game_id;o.textContent=(g.slot||String(g.game_id).slice(0,3))+' · '+(g.name||g.game_id);select.appendChild(o);});
+    $('stageGameAsset').disabled=!select.value;$('gameAssetState').textContent=select.value?'ready · explicit proposal; Game Hub acceptance required':'no verified game packages available';
+  }catch(e){select.innerHTML='<option value="">Game Hub offline</option>';$('stageGameAsset').disabled=true;$('gameAssetState').textContent='handoff unavailable: '+e.message;}
+}
+async function stageGameAsset(){
+  const gameId=$('gameAssetTarget').value,name=$('gameAssetName').value.trim();if(!gameId||!name)return;
+  const b=$('stageGameAsset');b.disabled=true;$('gameAssetState').textContent='staging reviewed PNG proposal…';
+  const packet={schema:GAME_ASSET_SCHEMA,source_module:'studio',target_game_id:gameId,name:name,kind:'skin',status:'proposal',data_url:composite().toDataURL('image/png'),provenance:{studio_version:'v1.1',identity_layers:layers.filter(l=>l.owner==='ai1'||l.owner==='ai2').map(l=>({name:l.name,owner:l.owner})),duet_created_at:duetSession.createdAt||null,automatic_accept:false}};
+  try{const r=await fetch('/game-api/assets/handoff',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(packet)}),j=await r.json();if(!r.ok||!j.ok)throw new Error(j.error||('HTTP '+r.status));$('gameAssetState').textContent='staged '+j.handoff.id+' · open Game Hub to review/accept';sysMsg('Studio staged "'+name+'" for '+gameId+'; no game files changed yet.');}
+  catch(e){$('gameAssetState').textContent='handoff refused: '+e.message;}finally{b.disabled=!$('gameAssetTarget').value;}
+}
+$('stageGameAsset').onclick=stageGameAsset;
+
 (async () => {
   if (typeof AXM === 'undefined') { setStat('missing axm-foundation.js — place it beside index.html'); return; }
-  try { await AXM.init({ id:'studio', name:'AXM Studio', version:'v1' }); } catch(e){}
+  try { await AXM.init({ id:'studio', name:'AXM Studio', version:'v1' }); AXM.wisdom.on(localStorage.getItem('axm.identity.growth.enabled') !== 'false'); } catch(e){}
   /* hydrate personal colors from the store */
   try { const mc = await AXM.store.load('mycolors'); if (mc && mc.data && Array.isArray(mc.data.colors)) myColors = mc.data.colors; } catch(e){}
   await loadUploads();
   setPalette(0); renderTools(); fillSelects(); renderLayers(); renderIds(); applyGoalTools();
   await tryResume();
+  await initDuet();
+  await loadGameAssetTargets();
+  consumeCollaborationNotice();
   setStat('AXM Studio ready — full spine, all tools. Creative = everything; goals filter it.');
 })();
 

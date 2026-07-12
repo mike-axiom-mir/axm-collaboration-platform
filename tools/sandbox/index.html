@@ -1,0 +1,61 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AXM Sandbox — Session 1 (TEST)</title>
+<style>
+:root{--bg:#0d0a1a;--panel:#171230;--line:#2c2450;--txt:#e8e4ff;--dim:#9a90c8;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171;--accent:#8b5cf6}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 system-ui,sans-serif;padding:14px;max-width:720px;margin:auto}
+h1{font-size:19px;margin:6px 0}.tag{font-size:11px;color:var(--warn);border:1px solid var(--warn);border-radius:4px;padding:1px 6px;vertical-align:middle}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0}
+.dim{color:var(--dim);font-size:13px}
+button{background:var(--accent);border:0;color:#fff;border-radius:8px;padding:10px 14px;font-size:15px}
+input{background:#0f0b22;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:10px;font-size:15px;width:100%;margin:6px 0}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+.mono{font-family:ui-monospace,monospace;font-size:12px;word-break:break-all}
+</style></head><body>
+<h1>AXM Sandbox <span class="tag">TEST · Session 1</span></h1>
+<div class="dim">Project skeleton only: create, list, validate portable project folders. Entities arrive in Session 2 — this page does not pretend otherwise.</div>
+
+<div class="card">
+  <b>New project</b>
+  <input id="pname" placeholder="Project name" maxlength="48">
+  <button onclick="createProject()">Create project folder</button>
+  <div id="createOut" class="dim"></div>
+</div>
+
+<div class="card"><b>Projects</b> <span class="dim">(folders under tools/sandbox/projects/ — delete a folder to remove a project)</span>
+  <div id="list" class="dim">loading…</div>
+</div>
+
+<div class="card dim" id="health">checking host…</div>
+
+<script>
+// When opened as a Workshop card, the private-preview adapter exposes the
+// module host only under this scoped path. When opened on the module's own
+// loopback port, keep the original root API behavior.
+const API_BASE = location.pathname.startsWith('/tools/sandbox/') ? '/sandbox-api' : '';
+async function j(u,opt){const r=await fetch(API_BASE+u,opt);return r.json();}
+async function refresh(){
+  try{
+    const h=await j('/api/health');
+    document.getElementById('health').innerHTML='host ok · contract v'+h.contract+' · port '+h.port;
+    const d=await j('/api/projects');
+    const el=document.getElementById('list');
+    if(!d.projects.length){el.innerHTML='No projects yet. Honest empty state.';return;}
+    el.innerHTML=d.projects.map(p=>{
+      const state=p.valid?'<span class="ok">VALID</span>':'<span class="bad">INVALID</span>';
+      const errs=p.errors.map(e=>'<div class="bad">✗ '+e+'</div>').join('');
+      const warns=p.warnings.map(w=>'<div class="warn">⚠ '+w+'</div>').join('');
+      return '<div style="border-top:1px solid var(--line);padding:8px 0;color:var(--txt)"><b>'+p.name+'</b> '+state+
+        '<div class="mono">'+(p.id||'no id')+' · '+p.folder+'/ · render:'+(p.bodies?p.bodies.render:'—')+'</div>'+errs+warns+'</div>';
+    }).join('');
+  }catch(e){document.getElementById('health').innerHTML='<span class="bad">host unreachable — start sandbox-server.js (port 8795)</span>';}
+}
+async function createProject(){
+  const name=document.getElementById('pname').value;
+  const out=document.getElementById('createOut');
+  const r=await j('/api/projects/create',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name})});
+  out.innerHTML=r.ok?'<span class="ok">created '+r.folder+'/ · '+r.manifest.id+'</span>':'<span class="bad">'+r.error+'</span>';
+  refresh();
+}
+refresh();
+</script></body></html>

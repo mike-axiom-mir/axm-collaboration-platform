@@ -112,3 +112,19 @@ Runtime is handled by the selected connector/tool.
 Hub sandbox is ON by default.
 
 Action still requires consent.
+
+## Current TEST implementation
+
+The live Command Center now uses `identity-registry.js` as a routing layer above the unchanged AXM foundation spine.
+
+Current profiles:
+
+- `nova` -> local bridge connector; private Nova memory.
+- `axiom-mir` -> cloud ChatGPT bridge connector; private Axiom/Mir memory.
+- `gemini-local` -> local bridge connector plus the fixed `gemini-local` model identifier; private Google Gemma memory.
+
+The default identity is optional and only controls preselection. It never changes a connector lock or merges memories.
+
+Private memory is the default. A memory reaches another identity only when a human explicitly files it into the shared-wisdom stream with evidence, source, and confidence.
+
+The collaboration test in `../duo-test/` lets Nova and Gemini Local answer independently or pass a visible, attributed answer from Nova to Gemini Local for review. The transcript is not learned automatically.

@@ -17,7 +17,7 @@
        -> after-action report -> profile TWEAK PROPOSAL (never auto)
      [INTEGRATION] stubs only: registry connector registration is a
      documented stub (see SHELL_README) — no gate/registry changes.
-     UNTESTED on real models until Mike Tobi's device test. No fake done.
+     UNTESTED on real models until Mike's device test. No fake done.
      ============================================================ -->
 <script src="axm-foundation.js"></script>
 <style>
@@ -180,6 +180,7 @@ $('expBtn').onclick = () => { const a=document.createElement('a');
 
 (async () => {
   const info = await AXM.init({ id:'reasoning-shell', name:'AXM Reasoning Shell', version:'v0.1-branch' });
+  AXM.wisdom.on(localStorage.getItem('axm.identity.growth.enabled') !== 'false');
   PROFILES = await (await fetch('profiles.json')).json().then(d=>d.profiles);
   const sel = $('profileSel');
   Object.keys(PROFILES).forEach(k => { const o=document.createElement('option'); o.value=k;

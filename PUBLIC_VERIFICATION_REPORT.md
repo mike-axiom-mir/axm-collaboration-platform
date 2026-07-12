@@ -1,45 +1,51 @@
-# AXM Workshop v0.2c verification report
+# AXM Workshop public verification report
 
-Generated: 2026-07-11
+Generated: **2026-07-12**
 
 ## Build
 
-- Edition: **PUBLIC-SAFE**
-- Root: `AXM_WORKSHOP/`
-- Patch: sidebar `NEEDS` display renamed to `TEST`
-- Lifecycle: **EXPERIMENTAL · NOT CANON**
+- Edition: **PUBLIC-SAFE EXPERIMENTAL**
+- Package: `axm-workshop-public-20260712-045532-4e82e2.zip`
+- ZIP bytes: `31,869,468`
+- ZIP SHA-256: `fa290100ae6cf9a498e2812e3ec5911e41f2b1a5ba851cb3e8c9809060482d42`
+- Package content files: `425` plus the generated package manifest
+- Lifecycle: **EXPERIMENTAL · NOT CANON · NOT PRODUCTION**
 
-## Verified in the build environment
+## Passed checks
 
-- ZIP integrity: **PASS**
-- Node syntax scan: **PASS**
-- JSON parse scan: **PASS**
-- Workshop verifier: **PASS**
-- Hub selftest: **PASS**
-- Route selftest: **PASS**
-- Graft selftest: **PASS**
-- Skin selftest: **PASS**
-- Agent Tool Forge selftest: **PASS**
-- Evidence Desk selftest: **PASS**
-- Library route `/`: **HTTP 200**
-- Hub route `/hub`: **HTTP 200**
-- Hub route `/hub/`: **HTTP 200**
-- Hub route `/hub/index.html`: **HTTP 200**
-- API health: **HTTP 200**
-- API tools: **HTTP 200**
+- Public secret-pattern scan: **PASS**
+- Package compression and ZIP existence checks: **PASS**
+- Manifest SHA-256 restore comparison: **425 / 425 PASS**
+- Restored Workshop verifier: **0 FAIL · 0 warn**
+- Restored Hub startup and `/api/health`: **PASS**
+- Canonical Foundation spine: **PASS** (`418f9ce4fb050602`)
+- Discovery Engine × Stance Forge deterministic self-test: **0 FAIL**
+- Hub, module-contract, skin, route, game-library and focused module checks:
+  **PASS** through the Workshop verifier
 
-## Manual Windows confirmation
+## Browser and connector evidence
 
-Mike Tobi manually launched `START_HUB.bat` from a fully local Windows folder.
-The browser opened the Hub automatically on the selected local port. The visible
-Hub reported **22 of 22 modules loaded** and **All Systems Operational**.
+- Hub rendered the dynamic collaborator presence bar.
+- Nova raised a question notice; opening it acknowledged the notice, opened the
+  Talk Room, selected Nova and preserved the exact context without auto-send.
+- Claude raised a proposal notice; opening it acknowledged the notice, opened
+  Studio and preserved the exact context.
+- Claude Code read a supplied AXM screenshot through a read-only connector and
+  correctly identified the Hub, workspace cards and multiple collaborators.
+- The shared-vision control rendered with explicit screen choice, heartbeat and
+  finite frame-budget controls. The browser chooser still requires a real human
+  selection and cannot be silently accepted by automation.
+- Discovery Engine was added through the normal module catalog and rendered in
+  Manual mode with `NO AUTO-RUN ON OPEN`.
 
-Manual Windows one-click startup: **PASS**.
+## Honest limits
 
-Automated Playwright click/render: **UNRUN**.
-
-## Lifecycle display clarification
-
-The saved/internal lifecycle remains `NEEDS VERIFY` for compatibility. The Hub
-sidebar now displays that state as `TEST`, meaning the module has opened and is
-ready for checks. No promotion or trust boundary changed.
+- Connected cloud/local providers are optional and require their own local
+  installation or authentication; no credentials are included.
+- Shared vision is periodic screenshot transport, not continuous native sight.
+- The four games are experimental prototypes, not production multiplayer
+  services.
+- Internal model agreement and Stance Forge review are not independent external
+  validation.
+- High-stakes medical, legal, financial, structural, robotics or public-safety
+  use remains outside this checkpoint's readiness claim.

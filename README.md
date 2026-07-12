@@ -1,116 +1,93 @@
-# AXM Workshop — Public-Safe Experimental Checkpoint
+# AXM Workshop — Public-Safe Collaboration Milestone
 
-**Version:** Workshop v1.9.1 · Tool Factory v0.2  
-**Status:** `EXPERIMENTAL` · working proof · not canon · not production  
+**Checkpoint:** 2026-07-12
+
+**Status:** `EXPERIMENTAL` · working local proof · not canon · not production
 **Founder / public collaboration name:** **Mike Tobi**
 
-AXM Workshop is a local-first modular work floor for humans and AI systems. A
-human can operate modules through the Hub while a governed machine host can use
-explicit machine adapters. Where both doors exist, they should converge on the
-same core logic rather than maintaining two contradictory implementations.
-
-## What changed in Tool Factory v0.2
-
-AXM Agent Tool Forge is now a draft-only software foundry. It can create and
-normalize a bounded draft, validate it, render a complete file set, calculate
-deterministic SHA-256 fingerprints, preview generated files, save/resume locally,
-and export a real module ZIP or review JSON.
-
-It **cannot** install, overwrite, execute, delete, promote, or canonize. Every
-generated manifest starts `EXPERIMENTAL`; risk is recorded separately as
-`LOW`, `MEDIUM`, or `HIGH`.
+AXM Workshop is a local-first operating space where humans, local models and
+cloud AI tools can work through one modular environment without being collapsed
+into one identity. The Hub supplies shared navigation, presence, explicit gates,
+memory seams, verification, packaging and stop controls; every collaborator
+keeps its own model, context, limits and connection state.
 
 ```text
-Human Hub screen  -> index.html -> forge-core.js
-Machine host      -> machine.js -> forge-core.js
+human + cloud AI + local AI
+            ↓
+       governed AXM Hub
+            ↓
+create · build · play · review · learn
 ```
 
-The machine adapter requires a host-supplied authorization decision and refuses
-unknown actions, including install.
+## This milestone
+
+- A simplified workflow Hub groups modules into **Create**, **Build**, **Play**
+  and **AI Team**, while Advanced mode preserves layers, permissions and logs.
+- Dynamic presence distinguishes active, idle, ready, paused and disconnected
+  collaborators instead of displaying fixed names.
+- Collaborators can raise a `question`, `proposal`, `message` or `warning`.
+  Opening a notice carries its context into the appropriate conversation room.
+- **Claude Eyes** lets a human explicitly share the active AXM tab/window for a
+  finite screenshot heartbeat. Vision is read-only and does not unlock command
+  or edit permissions.
+- Separate Shell Guardians provide persistent trip state and connection cutoff
+  paths for Grok Build and Claude Code connectors.
+- Nova and Gemini Local have identity-routed task/talk, Studio and game routes.
+- Game Hub now hosts four modular packages, including Robo Pong, four-player
+  Robo Pong Cross, Relaybound and the Briarfront experiment.
+- Studio supports layered attributed work, bounded AI turns and proposal-only
+  handoff into Game Hub.
+- **Discovery Engine × Stance Forge** combines provisional discovery with
+  bounded specialist pressure testing, evidence gates and explicit human review.
+- Workshop Packager creates private backups or public-safe packages, verifies
+  hashes, restores the archive, runs the verifier and briefly starts the
+  restored Hub before reporting success.
 
 ## Quick start
 
 1. Install Node.js.
-2. Extract the full package into a fully local folder such as `C:\AXM_WORKSHOP`.
-3. Avoid an online-only OneDrive Desktop or other cloud-placeholder folder.
-4. Start the Hub:
+2. Download or clone this repository into a fully local folder.
+3. On Windows, double-click `START_AXM_FULL.bat`.
+4. Open the Hub at the address shown by the launcher (normally
+   `http://127.0.0.1:8788/hub/index.html`).
 
-```text
-Windows:       START_HUB.bat
-macOS/Linux:   ./start-hub.sh
-```
+Cloud and local AI connections are optional. The Workshop, manual modules and
+games can still be opened without them.
 
-Open `AXM Agent Tool Forge`, edit the sample, validate, build, inspect the
-fingerprint, and export. A successful bounded run still says:
+## Truth and control boundaries
 
-```text
-Installed: NO
-Promoted: NO
-```
+- No module may install, promote, certify or canonize itself.
+- AI proposals remain attributed drafts until a human accepts them.
+- Model output is not executed evidence.
+- A layer is organisation, not security.
+- Shared vision requires an explicit browser screen/window choice and a finite
+  frame budget.
+- Pause/stop controls remain visible to the local user.
+- High-stakes work still requires qualified external review.
 
-## Current evidence
+## Public-safe boundary
 
-- 22 discoverable tools/modules; two underscore template shelves are skipped.
-- Core verifier and deterministic self-tests pass in the public-safe audit.
-- Local server/API smoke checks pass.
-- Mike Tobi manually proved the Hub/browser route using a fully local BAT path.
-- An online-only OneDrive Desktop attempt failed at the environment/file layer.
-- Automated Playwright click/render remains **UNRUN** in the audit environment.
+This repository contains no real API key, bridge token, provider session,
+guardian event log, collaboration transcript, shared-screen frame, local save,
+private backup or generated runtime package. Those paths are excluded and
+ignored. Safe examples remain where useful.
 
-See [PUBLIC_VERIFICATION_REPORT.md](PUBLIC_VERIFICATION_REPORT.md) for exact
-scope and [SANITIZATION_REPORT.md](SANITIZATION_REPORT.md) for the public-safety
-transformation.
+See [PUBLIC_VERIFICATION_REPORT.md](PUBLIC_VERIFICATION_REPORT.md) for current
+evidence and [SANITIZATION_REPORT.md](SANITIZATION_REPORT.md) for the exact
+public-safety boundary.
 
-## AI bridge
+## Repository status
 
-AI is optional. No real key or token is included. API keys are read from local
-environment variables. If `bridge/bridge-token.txt` is absent, the bridge creates
-a fresh random token on first start. That generated token and all runtime logs
-are ignored by Git.
-
-See [bridge/BRIDGE_SETUP.txt](bridge/BRIDGE_SETUP.txt).
-
-## Public identity and collaboration
-
-Project, module, and specialist names are intentionally retained. Identity-wisdom
-material and Tilburg context remain because they describe how humans or AI
-specialists grow within the system; they are not treated as secrets.
-
-No email address is published. To follow the raw development log or propose
-collaboration, search for **Mike Tobi** and the **AXM raw Facebook development
-log**.
-
-## Repository boundaries
-
-Do not commit API keys, real bridge tokens, local run logs, sessions, private
-projects, or generated verification history. Uploaded files are data by default;
-they become operative only through an explicit trusted route and authorization.
-No module may promote itself.
-
-Read [AGENTS.md](AGENTS.md) before using a coding agent on the repository.
+- 29 discoverable modules in the current package.
+- Four modular game packages.
+- Canonical Foundation spine hash: `418f9ce4fb050602`.
+- Full Workshop verifier: `0 FAIL · 0 warn` at packaging time.
+- Public archive secret scan, hash restore and restored-Hub startup: `PASS`.
 
 ## License status
 
-No broad public software license has been selected in this checkpoint. Public
-visibility is not an automatic permission grant. See
+No broad public software license has been selected for this experimental
+checkpoint. Public visibility is not an automatic permission grant. See
 [LICENSE_STATUS.md](LICENSE_STATUS.md) and contact Mike Tobi for collaboration.
 
 **Truth before story · proof before claim · no fake done.**
-
-
-## Windows one-click Hub start — manually confirmed
-
-Extract the package into a fully local folder and double-click `START_HUB.bat`.
-The starter opens the correct local Hub address automatically. It prefers port
-`8790` and selects another free local port when required; users do not need to
-type or edit an address.
-
-The Windows one-click route was manually passed by Mike Tobi. The Hub displayed
-22 of 22 modules loaded and All Systems Operational.
-
-## Sidebar lifecycle labels
-
-`CLAIMED` means discovered but not yet opened. `TEST` means opened and ready for
-checks. `WORKING` means checks passed. `SAVED` means the verified state survived
-a checkpoint/reload. The internal compatibility value behind `TEST` remains
-`NEEDS VERIFY`.

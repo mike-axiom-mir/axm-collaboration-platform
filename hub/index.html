@@ -3,9 +3,12 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AXM Hub</title>
 <link rel="stylesheet" href="/hub/hub-tokens.css">
+<link rel="stylesheet" href="/hub/ai-presence.css">
+<link rel="stylesheet" href="/hub/radio.css">
 <!-- contract before shell: the shell's reducer lives in AXMContract -->
 <script src="/hub/module-contract.js"></script>
 <script src="/hub/skin-core.js"></script>
+<script src="/hub/skin-renderer.js"></script>
 <script src="/hub/hub-shell.js"></script>
 </head>
 <body>
@@ -17,12 +20,26 @@
     <div class="brand">AXM <span>Hub</span></div>
     <div class="active-lbl">Active Module: <b id="activeName">Home</b></div>
     <div class="grow"></div>
-    <span class="status-dot">All Systems Operational</span>
+    <span class="status-dot checking" id="systemStatus">Checking systems</span>
+    <div class="ai-presence" id="aiPresence" aria-label="AI and connector status">
+      <span class="ai-node checking" id="presenceBridge" title="AXM local bridge"><i></i><b>Bridge</b><small>···</small></span>
+      <span class="presence-members" id="presenceMembers" aria-live="polite"></span>
+    </div>
+    <button class="ai-master" id="aiMasterToggle" type="button" aria-pressed="false" title="Pause all AI agents while keeping connectors online">⏸ AI</button>
+    <button class="ai-master ai-eyes" id="aiEyesToggle" type="button" aria-pressed="false" title="Share the active AXM screen with Claude on a finite heartbeat">◉ Eyes</button>
     <span class="pill saved">● Saved</span>
+    <button class="tb-btn mode-toggle" id="modeToggle" aria-pressed="false">◉ Simple</button>
     <button class="tb-btn" id="btnLayers">▤ Layers</button>
     <button class="tb-btn" id="btnModules">＋ Modules</button>
     <button class="tb-btn" id="btnPerm">Permissions</button>
     <button class="tb-btn" id="btnExport">Files / Export</button>
+    <div class="radio-cluster">
+      <button class="tb-btn" id="btnRadio" aria-label="Open Hub radio">♫ Radio</button>
+      <span class="radio-quick-stack">
+        <button class="tb-btn radio-quick" id="btnRadioUp" aria-label="Radio volume up" title="Radio volume up">＋</button>
+        <button class="tb-btn radio-quick" id="btnRadioDown" aria-label="Radio volume down" title="Radio volume down">−</button>
+      </span>
+    </div>
     <button class="tb-btn" id="btnSettings">⚙ Settings</button>
   </header>
 
@@ -41,9 +58,10 @@
       <!-- shell-owned HOME (shared screen) -->
       <div id="homeScreen" style="position:absolute;inset:0;overflow:auto">
         <div class="home-hero">
-          <h1>Welcome to AXM <span class="os">Hub</span></h1>
-          <h1 style="font-size:18px;margin-top:2px"><span class="os">Outer Stable</span> / <span class="if">Inner Flexible</span></h1>
-          <p>One shell, many modules. Pick a module to load it inside the viewport — the frame around it never changes.</p>
+          <div class="hero-kicker"><span></span> AXM LOCAL OPERATING SPACE</div>
+          <h1 id="homeTitle">What do you want to do?</h1>
+          <p id="homeIntro">Choose a workspace. The safe modules underneath stay separate, but you do not need to manage the plumbing.</p>
+          <div class="hero-meta"><span>LOCAL FIRST</span><span>MODULAR CORE</span><span>HUMAN CONTROL</span><span>VERIFIED ROUTES</span></div>
         </div>
         <div class="home-grid" id="homeGrid"></div>
       </div>
@@ -66,6 +84,15 @@
     <button class="sb-btn" id="btnExport2" onclick="AXMHubShell.openExport()">Open Logs</button>
   </footer>
 </div>
+
+<section class="vision-panel" id="visionPanel" hidden aria-label="Claude shared vision controls">
+  <div class="vision-head"><div><span>SHARED CAPABILITY · VISION</span><b>Claude Eyes</b></div><button id="visionClose" type="button" aria-label="Close vision controls">×</button></div>
+  <p>Choose the active AXM tab or window when the browser asks. Claude receives one reduced screenshot per heartbeat. Vision grants observation only; command and edit gates do not change.</p>
+  <label>Purpose<input id="visionPurpose" maxlength="500" value="Observe our shared AXM workspace. Raise a notice only for a useful question, proposal, message, or warning."></label>
+  <div class="vision-grid"><label>Heartbeat<select id="visionInterval"><option value="15">15 seconds</option><option value="30" selected>30 seconds</option><option value="60">1 minute</option></select></label><label>Frame budget<select id="visionBudget"><option value="1">1 frame · test</option><option value="4" selected>4 frames</option><option value="10">10 frames</option></select></label></div>
+  <div class="vision-actions"><button id="visionStart" type="button">Share active screen</button><button id="visionStop" type="button" disabled>Stop eyes</button><span id="visionState">OFF</span></div>
+  <div class="vision-summary" id="visionSummary">No screen is being shared.</div>
+</section>
 
 <!-- ===== SHARED SCREENS (overlays owned by the shell) ===== -->
 <div class="overlay" id="setScreen"><div class="sheet">
@@ -110,5 +137,35 @@
   <div style="margin-top:16px"><button class="btn" id="expDownload">Download hub export (.json)</button></div>
 </div></div>
 
+<div class="overlay" id="radioScreen"><div class="sheet radio-sheet">
+  <button class="close" data-close="radioScreen">✕</button>
+  <div class="radio-head"><div class="radio-mark">♫</div><div><h2>Hub Radio</h2><p>A little commercial-free workshop atmosphere.</p></div></div>
+  <div class="radio-player" id="hubRadioPlayer">
+    <div class="radio-main"><button class="radio-play" id="hubRadioPlay" aria-label="Play radio">▶</button><select class="radio-station" id="hubRadioStation" aria-label="Radio station"><option value="poptron">PopTron · electropop</option><option value="indiepop">Indie Pop Rocks! · alternative</option><option value="groovesalad">Groove Salad · chill</option><option value="thetrip">The Trip · trance</option></select></div>
+    <div class="radio-meta"><div class="radio-bars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div><span class="radio-status" id="hubRadioStatus">READY</span><span>128K MP3</span></div>
+    <div class="radio-volume"><span>VOLUME</span><input id="hubRadioVolume" type="range" min="0" max="1" step="0.01" value="0.35" aria-label="Radio volume"><span id="hubRadioVolumeText">35%</span></div>
+    <div class="radio-local">Local Mix appears automatically when owned or licensed tracks are added to <code>assets/audio/radio</code>.</div>
+    <p class="radio-note">Internet presets are <a href="https://somafm.com/" target="_blank" rel="noopener">SomaFM</a> commercial-free, listener-supported radio for personal listening. They are not bundled, recorded, or licensed as game music. Playback starts only when you press Play.</p>
+  </div>
+  <audio id="hubRadioAudio" preload="none"></audio>
+  <div class="spotify-box" id="spotifyBox">
+    <div class="spotify-heading"><div><b>Spotify Premium · DJ controller</b><span id="spotifyStatus">NOT CONNECTED</span></div><a class="spotify-open" href="https://open.spotify.com/search/DJ" target="_blank" rel="noopener">Open Spotify DJ ↗</a></div>
+    <div class="spotify-setup" id="spotifySetup">
+      <p>AXM can control your active Spotify DJ session. Create one Spotify Developer app, register the exact redirect below, then paste its public Client ID. No password or Client Secret enters AXM.</p>
+      <label for="spotifyRedirect">Redirect URI to register</label><div class="spotify-copy"><input id="spotifyRedirect" readonly><button id="spotifyCopyRedirect">Copy</button></div>
+      <label for="spotifyClientId">Spotify Developer Client ID</label><div class="spotify-copy"><input id="spotifyClientId" autocomplete="off" spellcheck="false" placeholder="Paste Client ID"><button class="spotify-connect" id="spotifyConnect">Connect account</button></div>
+      <a class="spotify-dev" href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">Open Spotify Developer Dashboard ↗</a>
+    </div>
+    <div class="spotify-controls" id="spotifyControls" hidden>
+      <div class="spotify-track"><span id="spotifyTrack">No active Spotify device</span><small id="spotifyArtist">Start DJ in Spotify, then return here.</small></div>
+      <div class="spotify-buttons"><button id="spotifyPrevious" aria-label="Spotify previous track">◀◀</button><button id="spotifyToggle" aria-label="Spotify play or pause">▶</button><button id="spotifyNext" aria-label="Spotify next track">▶▶</button><button id="spotifyVolumeDown" aria-label="Spotify volume down">VOL −</button><button id="spotifyVolumeUp" aria-label="Spotify volume up">VOL +</button><button id="spotifyRefresh">Refresh</button><button class="spotify-disconnect" id="spotifyDisconnect">Disconnect</button></div>
+    </div>
+  </div>
+</div></div>
+
+<script src="/hub/ai-presence.js"></script>
+<script src="/hub/ai-vision-loop.js"></script>
+<script src="/hub/radio.js"></script>
+<script src="/hub/spotify.js"></script>
 <script>AXMHubShell.boot();</script>
 </body></html>

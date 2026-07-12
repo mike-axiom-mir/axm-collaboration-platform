@@ -99,6 +99,10 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
   const s2 = Core.makeStore(backend);
   eq(s2.getEnabled(), ['studio', 'hub-test-room']) ? ok('reopen: added-module choice survived') : bad('reopen: added choice lost');
   s2.getEnabled() && s2.getModuleState ? ok('removing a module leaves its saved state addressable (kept)') : bad('module state not addressable');
+  Core.friendlyName({ id: 'studio', name: 'AXM Studio' }) === 'Studio'
+    ? ok('friendly names remove repeated AXM branding') : bad('friendly Studio name wrong');
+  Core.friendlyName({ id: 'unknown', name: 'AXM Example Tool' }) === 'Example Tool'
+    ? ok('friendly names fall back safely for future modules') : bad('friendly fallback wrong');
 })();
 
 /* ---- 3c. user-check evaluator (the add/delete-able checks) ---- */
@@ -155,6 +159,18 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
   !Core.checkDoor(priv, 'nope') ? ok('door: wrong passphrase refused') : bad('wrong phrase accepted');
   Core.checkDoor({ gate: 'passphrase' }, 'anything') ? ok('door: gate with no phrase is not a gate (honest)') : bad('empty gate blocked');
   Core.doorHash('let-me-in') !== 'let-me-in' ? ok('door: phrase not stored in plaintext') : bad('phrase stored plaintext');
+
+  const workflow = Core.workflowLayout([
+    { id: 'studio' }, { id: 'game-hub' }, { id: 'agent-command-center' }, { id: 'verifier' }, { id: 'main-hub' }
+  ], [{ id: 'private', name: 'Private', gate: 'passphrase', hash: 'keep-me', order: 1 }]);
+  workflow.assign.studio === 'create' && workflow.assign['game-hub'] === 'play'
+    ? ok('workflow layout: Create and Play assignments are useful') : bad('workflow layout misplaced Create/Play');
+  workflow.assign['agent-command-center'] === 'ai-team' && workflow.assign.verifier === 'private'
+    ? ok('workflow layout: AI Team and Advanced assignments are useful') : bad('workflow layout misplaced AI/Advanced');
+  workflow.layers.find(l => l.id === 'private').hash === 'keep-me'
+    ? ok('workflow layout preserves existing closed-door sign') : bad('workflow layout reset closed-door sign');
+  workflow.layers.find(l => l.id === 'machine').hidden && workflow.assign['main-hub'] === 'machine'
+    ? ok('workflow layout keeps system internals hidden, not deleted') : bad('workflow layout exposed/lost system internals');
 
   /* THE ROOT CHECK: a layer must never change what a module may do.
      Same passport, same grants, regardless of which layer it sits in. */

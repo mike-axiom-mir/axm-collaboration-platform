@@ -81,7 +81,7 @@ Allowed draft responsibilities:
 3. Reading approved local Hermes `state.db` summaries, not raw private content by default.
 4. Building task packets from approved AXM inputs.
 5. Returning results as proposals.
-6. Preparing handoff packets for Mike Tobi, Claude, ChatGPT, local Axiom/Mir, or coding agents.
+6. Preparing handoff packets for Mike, Claude, ChatGPT, local Axiom/Mir, or coding agents.
 7. Summarizing logs into review notes.
 8. Preserving proof logs locally.
 

@@ -1,0 +1,31 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "claude-connector",
+  "version": "v0.1",
+  "provides": [
+    "claude-code-hook-adapter",
+    "connector-presence-heartbeat",
+    "severe-trigger-pre-tool-gate",
+    "claude-process-circuit-breaker",
+    "connector-audit-log"
+  ],
+  "consumes": [
+    "claude:session-start-hook",
+    "claude:pre-tool-hook",
+    "shell-guardian:classify-policy",
+    "workshop:presence-api"
+  ],
+  "permissions": ["gate", "storage", "bridge"],
+  "handoffs": { "emits": ["axm.claude-guardian-trip/v1"], "accepts": [] },
+  "boundaries": {
+    "writes": ["state/claude-guardian"],
+    "refuses": [
+      "merged-identity-memory",
+      "grok-process-termination",
+      "credential-content-read",
+      "silent-hook-install",
+      "automatic-reset",
+      "hidden-alarm"
+    ]
+  }
+}

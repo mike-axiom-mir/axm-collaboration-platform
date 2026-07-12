@@ -155,7 +155,7 @@
       return Promise.resolve().then(function () { return chosen.handle(request); })
         .then(function (raw) {
           /* TRUTH PATCH: a connector saying ok:false is a FAILURE — surface it,
-             never hide it inside result (Mike Tobi's rule, v0.8). */
+             never hide it inside result (Mike's rule, v0.8). */
           var failed = raw && typeof raw === 'object' && raw.ok === false;
           var r = envelope({ ok: !failed, handled: true, connectorId: chosen.id,
             kind: request.kind, action: request.action, result: raw, requestId: rid,
