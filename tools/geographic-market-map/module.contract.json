@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "geographic-market-map",
+  "version": "v0.1",
+  "provides": [
+    "geographic-price-normalization",
+    "source-bounded-popularity-ranking",
+    "market-evidence-export"
+  ],
+  "consumes": [
+    "gate:axm",
+    "storage:axm",
+    "user-file:csv-json"
+  ],
+  "permissions": ["storage", "gate", "export"],
+  "handoffs": {
+    "emits": [
+      "axm.geographic-market-evidence/0.1",
+      "axm.geographic-market-report/0.1"
+    ],
+    "accepts": [
+      "text/csv:axm-market-observation-schema",
+      "application/json:axm-geographic-market-evidence"
+    ]
+  },
+  "boundaries": {
+    "writes": [
+      "browser-local:geographic-market-map",
+      "user-download:explicit"
+    ],
+    "refuses": [
+      "auto-buy-or-sell",
+      "missing-market-estimation",
+      "silent-currency-conversion",
+      "source-free-ranking",
+      "demo-data-as-real-evidence",
+      "self-promotion-to-working-or-canon",
+      "silent-evidence-overwrite"
+    ]
+  }
+}
