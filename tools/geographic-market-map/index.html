@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AXM Geographic Market Map — EXPERIMENTAL</title>
+<script src="/launcher/axm-foundation.js"></script>
+<script src="/launcher/axm-settings.js"></script>
+<script src="/launcher/axm-registry.js"></script>
+<script src="market-core.js"></script>
+<script src="market-insights.js"></script>
+<script src="source-adapters.js"></script>
+<link rel="stylesheet" href="market-ui.css" />
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand-row">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 24L13 7l5 10 4-7 5 14" fill="none" stroke="#4bdce8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="13" cy="7" r="2" fill="#b99cff"/><circle cx="27" cy="24" r="2" fill="#69dda0"/></svg></div>
+        <div><div class="eyebrow">AXM market intelligence · evidence before interpretation</div><h1>Geographic Market Map</h1><div class="subtitle">A local-first workbench for price, material, availability and popularity patterns across the Netherlands, Croatia and the EU. It maps evidence; Mike remains the trading intelligence.</div></div>
+      </div>
+      <div class="status-stack">
+        <span class="pill exp"><i></i>EXPERIMENTAL</span>
+        <span class="pill info"><i></i>NL · HR · EU</span>
+        <span class="pill"><i></i>USA · CHINA PLANNED</span>
+        <span class="pill ready" id="bootPill"><i></i><span id="status">starting…</span></span>
+      </div>
+    </div>
+    <div class="scopebar">
+      <div class="field"><label>Month</label><input type="month" id="scopeMonth"></div>
+      <div class="field"><label>Geography</label><select id="scopeGeo"></select></div>
+      <div class="field"><label>Tracked item</label><select id="scopeItem"></select></div>
+      <button class="btn warn" id="saveNow">Save checkpoint</button>
+    </div>
+  </div>
+</header>
+
+<main class="shell">
+  <nav class="tabs" aria-label="Market Map sections">
+    <button class="tab on" id="tabOverview">Overview</button>
+    <button class="tab" id="tabPatterns">Pattern desk</button>
+    <button class="tab" id="tabRankings">Top 100 · Top 10</button>
+    <button class="tab" id="tabCompare">Geographic compare</button>
+    <button class="tab" id="tabData">Data intake</button>
+    <button class="tab" id="tabQuality">Accuracy lab</button>
+    <button class="tab" id="tabWatchlist">Watchlist</button>
+    <button class="tab" id="tabEvidence">Evidence</button>
+    <button class="tab" id="tabExport">Export · status</button>
+  </nav>
+
+  <section class="view" id="viewOverview">
+    <div class="grid tight" id="summaryStats"></div>
+    <div class="hero-grid" style="margin-top:14px">
+      <section class="panel">
+        <div class="panel-head"><h2>Geographic price surface</h2><span class="badge" id="mapScopeBadge">no item</span></div>
+        <div class="mapbox"><svg id="geoMap" viewBox="0 0 820 390" aria-label="Geographic market map"></svg><div class="map-note">Marker size = evidence count · ring = confidence · label = comparable median €/base unit</div></div>
+        <div class="legend"><span style="color:var(--green)"><i></i>stronger evidence</span><span style="color:var(--gold)"><i></i>partial evidence</span><span style="color:var(--red)"><i></i>weak evidence</span></div>
+      </section>
+      <aside>
+        <section class="panel">
+          <h2>Data health</h2>
+          <div class="gauge-wrap"><div class="gauge" id="qualityGauge"><b id="qualityScore">0</b></div><div><div id="qualityLabel">No evidence yet</div><div class="gauge-label" id="qualityNote">Quality Signal is diagnostic, not proof.</div></div></div>
+          <div class="grid tight" style="margin-top:12px" id="qualityMini"></div>
+        </section>
+        <section class="panel">
+          <h2>Evidence boundary</h2>
+          <div class="boundary">Top 100 and pattern cards cover only imported evidence. Missing sellers, countries and popularity channels are never silently estimated. Demo rows stay visibly synthetic.</div>
+          <div class="hint" id="scopeReadout" style="margin-top:9px"></div>
+        </section>
+      </aside>
+    </div>
+    <section class="panel">
+      <div class="panel-head"><h2>Strongest current candidates</h2><button class="btn" id="openPatterns">Open pattern desk</button></div>
+      <div class="signal-grid" id="overviewPatterns"></div>
+    </section>
+    <section class="panel"><h2>Current geographic aggregates</h2><div class="scroll"><table><thead><tr><th>Item</th><th>Place</th><th>Median</th><th>Range</th><th>Rows</th><th>Sources</th><th>Confidence</th><th>Freshest</th></tr></thead><tbody id="aggregateRows"></tbody></table></div></section>
+  </section>
+
+  <section class="view hidden" id="viewPatterns">
+    <section class="panel">
+      <div class="panel-head"><div><h2>Pattern desk</h2><div class="hint">Candidates are generated from visible rules. They are questions to investigate, not predictions.</div></div><span class="badge" id="patternCount">0 candidates</span></div>
+      <div class="signal-grid" id="patternCards"></div>
+    </section>
+    <section class="panel"><h2>Pattern rules</h2><div class="grid" id="patternRules"></div></section>
+  </section>
+
+  <section class="view hidden" id="viewRankings">
+    <section class="panel"><div class="panel-head"><div><h2>Top observed items</h2><div class="hint">Weighted ranking within the selected month and geography only.</div></div><span class="badge" id="rankingScope"></span></div>
+      <div class="scroll"><table><thead><tr><th>Rank</th><th>Item</th><th>Category</th><th>Score</th><th>Signal coverage</th><th>Confidence</th><th>Rows</th><th>Places</th></tr></thead><tbody id="rankingRows"></tbody></table></div>
+    </section>
+    <section class="panel"><h2>Top 10 by subfield</h2><div id="categoryRankings"></div></section>
+  </section>
+
+  <section class="view hidden" id="viewCompare">
+    <div class="split">
+      <section class="panel"><div class="panel-head"><h2>NL · Croatia · EU</h2><span class="badge" id="compareItemBadge"></span></div><div class="chart"><svg id="compareBars" viewBox="0 0 760 280"></svg></div></section>
+      <section class="panel"><h2>Monthly timeline</h2><div class="chart"><svg id="timelineChart" viewBox="0 0 760 280"></svg></div></section>
+    </div>
+    <section class="panel"><div class="hint" id="compareSummary"></div><div class="scroll" style="margin-top:9px"><table><thead><tr><th>Place</th><th>Median comparable price</th><th>Min–max</th><th>Rows</th><th>Sellers</th><th>Sources</th><th>Confidence</th></tr></thead><tbody id="compareRows"></tbody></table></div></section>
+    <section class="panel"><h2>Human review questions</h2><div class="grid"><div class="onboarding"><span class="stepnum">1</span><div>Did the underlying material move before local retail?</div></div><div class="onboarding"><span class="stepnum">2</span><div>Is one geography absorbing costs while another passes them through?</div></div><div class="onboarding"><span class="stepnum">3</span><div>Does demand rise while availability or seller count falls?</div></div><div class="onboarding"><span class="stepnum">4</span><div>Is a company or sector reaction delayed, already priced in, or unrelated?</div></div></div></section>
+  </section>
+
+  <section class="view hidden" id="viewData">
+    <div class="split">
+      <section class="panel">
+        <h2>Import with review gate</h2>
+        <div class="import-zone"><div class="field"><label>CSV or JSON evidence file</label><input type="file" id="dataFile" accept=".csv,.json,text/csv,application/json"></div><div class="row" style="margin-top:10px"><button class="btn primary" id="previewFile">Preview file</button><button class="btn" id="downloadSchema">Download schema</button><button class="btn warn" id="stageDemo">Stage labeled demo</button></div><div class="hint" style="margin-top:8px">Nothing is added during preview. Review accepted, rejected and duplicate counts before committing.</div></div>
+        <div class="pending hidden" id="pendingBox"><div class="row"><div class="grow"><b id="pendingTitle">Pending import</b><div class="hint" id="pendingSummary"></div></div><button class="btn good" id="commitPending">Commit accepted rows</button><button class="btn" id="discardPending">Discard</button></div><pre id="pendingPreview"></pre></div>
+        <pre id="importResult">No import action yet.</pre>
+      </section>
+      <section class="panel">
+        <h2>Add one observation</h2>
+        <div class="grid">
+          <div class="field"><label>Item ID</label><input id="mItemId" placeholder="copper-cable"></div>
+          <div class="field"><label>Item name</label><input id="mItemName" placeholder="Copper cable"></div>
+          <div class="field"><label>Category</label><select id="mCategory"></select></div>
+          <div class="field"><label>Geography</label><select id="mGeo"></select></div>
+          <div class="field"><label>Observed date</label><input type="date" id="mDate"></div>
+          <div class="field"><label>Price</label><input type="number" min="0" step="any" id="mPrice"></div>
+          <div class="field"><label>Currency</label><select id="mCurrency"></select></div>
+          <div class="field"><label>Unit</label><select id="mUnit"></select></div>
+          <div class="field"><label>Quantity</label><input type="number" min="0.0001" step="any" value="1" id="mQuantity"></div>
+          <div class="field"><label>Seller / reporter</label><input id="mSeller"></div>
+          <div class="field"><label>Availability</label><select id="mAvailability"></select></div>
+          <div class="field"><label>Source ID</label><input id="mSourceId" placeholder="receipt-2026-001"></div>
+          <div class="field"><label>Source type</label><select id="mSourceType"></select></div>
+          <div class="field"><label>Source URL</label><input id="mSourceUrl"></div>
+          <div class="field"><label>FX rate to EUR</label><input type="number" min="0" step="any" id="mFx" placeholder="Only for non-EUR"></div>
+        </div>
+        <div class="grid" style="margin-top:9px">
+          <div class="field"><label>Marketplace 0–100</label><input type="number" min="0" max="100" id="mMarketplace"></div>
+          <div class="field"><label>Search interest 0–100</label><input type="number" min="0" max="100" id="mSearch"></div>
+          <div class="field"><label>Seller growth 0–100</label><input type="number" min="0" max="100" id="mSellerGrowth"></div>
+          <div class="field"><label>Trade movement 0–100</label><input type="number" min="0" max="100" id="mTrade"></div>
+          <div class="field"><label>Price pressure 0–100</label><input type="number" min="0" max="100" id="mPressure"></div>
+        </div>
+        <div class="field"><label>Notes</label><textarea id="mNotes"></textarea></div><button class="btn good" id="addManual">Validate and add</button>
+      </section>
+    </div>
+    <section class="panel"><h2>Source-ready catalog</h2><div class="grid" id="sourceCatalog"></div></section>
+    <section class="panel"><h2>Import receipts</h2><div class="grid" id="receiptList"></div></section>
+  </section>
+
+  <section class="view hidden" id="viewQuality">
+    <div class="grid tight" id="qualityStats"></div>
+    <div class="split" style="margin-top:14px">
+      <section class="panel"><h2>Quality issues</h2><div id="qualityIssues"></div></section>
+      <section class="panel"><h2>Source coverage</h2><div class="scroll"><table><thead><tr><th>Source type</th><th>Class</th><th>Rows</th><th>Sources</th><th>Items</th><th>Trust weight</th></tr></thead><tbody id="sourceCoverageRows"></tbody></table></div></section>
+    </div>
+    <section class="panel"><h2>Accuracy gate</h2><div class="boundary">A high Quality Signal means the dataset is more complete and internally checkable. It does not prove the source itself is correct. Real promotion requires cross-source comparison, repeated updates and browser/device stability.</div></section>
+  </section>
+
+  <section class="view hidden" id="viewWatchlist">
+    <div class="split">
+      <section class="panel"><h2>Add or update watch entry</h2><div class="field"><label>Item</label><select id="watchItem"></select></div><div class="field"><label>Status</label><select id="watchStatus"><option>WATCH</option><option>RESEARCH</option><option>HOLD</option><option>IGNORE</option></select></div><div class="field"><label>Working thesis</label><textarea id="watchThesis" placeholder="What pattern might be forming?"></textarea></div><div class="field"><label>Invalidation</label><textarea id="watchInvalidation" placeholder="What evidence would show this idea is wrong?"></textarea></div><div class="field"><label>Notes</label><textarea id="watchNotes"></textarea></div><button class="btn good" id="saveWatch">Save watch entry</button></section>
+      <section class="panel"><div class="panel-head"><h2>Human watchlist</h2><span class="badge" id="watchCount">0 items</span></div><div class="grid" id="watchCards"></div></section>
+    </div>
+  </section>
+
+  <section class="view hidden" id="viewEvidence">
+    <section class="panel">
+      <div class="panel-head"><div><h2>Underlying evidence rows</h2><div class="hint">Aggregates and pattern cards must remain traceable to these rows.</div></div><button class="btn danger" id="clearData">Clear local dataset</button></div>
+      <div class="row" style="margin-bottom:9px"><div class="field grow"><label>Filter evidence</label><input id="evidenceSearch" placeholder="item, seller, source, geography, note…"></div><span class="badge" id="evidenceCount"></span></div>
+      <div class="scroll"><table><thead><tr><th>Date</th><th>Item</th><th>Place</th><th>Price</th><th>Normalized</th><th>Seller</th><th>Availability</th><th>Source</th><th>Flags</th></tr></thead><tbody id="evidenceRows"></tbody></table></div>
+    </section>
+  </section>
+
+  <section class="view hidden" id="viewExport">
+    <div class="split">
+      <section class="panel"><h2>Export packages</h2><div class="row"><button class="btn good" id="exportDataset">Full evidence JSON</button><button class="btn warn" id="exportReport">Scoped report JSON</button><button class="btn" id="exportWatchlist">Watchlist JSON</button></div><div class="hint" style="margin-top:9px">Evidence exports preserve raw rows, source IDs, normalization, import receipts, watch entries and the ranking boundary.</div></section>
+      <section class="panel"><h2>Current module status</h2><pre id="statusBox"></pre></section>
+    </div>
+    <section class="panel"><h2>Shared market dictionary</h2><pre id="dictionaryBox"></pre></section>
+  </section>
+</main>
+
+<script src="/hub/axm-hub-module.js"></script>
+<script src="market-app.js"></script>
+</body>
+</html>
