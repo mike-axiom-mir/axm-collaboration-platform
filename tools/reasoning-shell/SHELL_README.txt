@@ -25,7 +25,7 @@ passes AXMGate.submit like any tool · no network beyond AXM.ask.
 consumer exists; measurement harness comparing shell-on vs
 shell-off runs — schemas are ready, harness is TODO.
 
-TEST PLAN (for Mike Tobi/Opus): same task ± shell on a small local
+TEST PLAN (for Mike/Opus): same task ± shell on a small local
 model (Nova) — count fake-done, repairs, completion; on strong
 models with overconfident profile — count unlabeled claims.
 STOP CRITERIA: stop and flag if any change needs autonomy,

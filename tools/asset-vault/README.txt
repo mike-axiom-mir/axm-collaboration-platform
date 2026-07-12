@@ -64,5 +64,5 @@ RECOMMENDED TEST
 PROMOTION RULE
   TEST -> WORKING only after launch, import, save/reload, backup export,
   handoff packet, launcher-card metadata, and issue/action reports all pass
-  on Mike Tobi's machine.
+  on Mike's machine.
 ============================================================

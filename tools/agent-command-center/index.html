@@ -1,48 +1,100 @@
 <!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AXM Agent Command Center</title>
 <script src="axm-foundation.js"></script>
+<script src="identity-registry.js"></script>
 <style>
-  :root{--ink:#14171c;--panel:#191e25;--line:#2a313d;--text:#dce2ea;--muted:#828d9e;--cy:#38d6ec;--gold:#e8b54a;--green:#63d68a}
-  *{box-sizing:border-box}body{margin:0 auto;max-width:720px;background:var(--ink);color:var(--text);font-family:system-ui,sans-serif;line-height:1.55;padding:20px}
-  .eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
-  h1{font-size:22px;margin:2px 0 0}
-  .status{float:right;font-family:ui-monospace,monospace;font-size:11px;color:var(--gold);border:1px solid #4a3a1c;border-radius:20px;padding:2px 10px}
-  .lead{color:var(--text);margin:14px 0 0}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:16px}
-  .panel h2{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
-  ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-  li{background:#1f2731;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:13px}
-  .rule{border-left:3px solid var(--cy);padding:4px 0 4px 12px;color:var(--text);font-size:13px}
-  .chips{display:flex;gap:8px;flex-wrap:wrap}
-  a.chip{text-decoration:none;background:#1f2731;border:1px solid var(--line);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--cy)}
-  .note{font-size:12px;color:var(--muted);margin-top:8px}
-  .tags{margin-top:10px}.tag{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-right:10px}
-  .home{display:inline-block;margin-top:18px;font-size:12px;color:var(--muted);text-decoration:none}
+:root{--bg:#090d14;--panel:#111925;--line:#27364a;--text:#e5edf5;--muted:#8b9aab;--cy:#3bd7eb;--green:#66d891;--gold:#e8ba59;--red:#ee786c;--purple:#b69bff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;line-height:1.45}.wrap{max-width:1120px;margin:auto;padding:24px}h1,h2,h3{margin:0}.eyebrow{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--purple)}.status{margin-left:auto;color:var(--cy);font:11px ui-monospace,monospace}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.panel,.identity{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}.identity{margin-top:0}.identity.nova{border-top:3px solid var(--green)}.identity.axiom{border-top:3px solid var(--cy)}.muted{font-size:12px;color:var(--muted)}button,input,textarea,select{font:inherit;color:var(--text);background:#172234;border:1px solid var(--line);border-radius:9px;padding:8px 10px}button{cursor:pointer}button.go{color:var(--green);border-color:#2f7653}button.cloud{color:var(--cy);border-color:#255c70}button:disabled{opacity:.45;cursor:not-allowed}textarea,input{width:100%}textarea{min-height:70px}.form{display:grid;grid-template-columns:1fr 1fr;gap:9px}.wide{grid-column:1/-1}.chip{font:10px ui-monospace,monospace;border:1px solid var(--line);padding:3px 7px;border-radius:20px}.good{color:var(--green)}.wait{color:var(--gold)}.bad{color:var(--red)}.root,.memory{border:1px solid var(--line);border-radius:10px;padding:9px;margin-top:7px}.root{font-size:12px}.memory small{display:block;color:var(--muted)}.notice{border:1px dashed var(--gold);border-radius:10px;padding:9px 11px;color:var(--gold);margin:12px 0}.answer{white-space:pre-wrap;border-left:3px solid var(--cy);padding:9px 12px;margin-top:9px;background:#0b131e}.scope{display:inline-flex;align-items:center;gap:7px}.scope input{width:auto}pre{white-space:pre-wrap;max-height:320px;overflow:auto;background:#0a111b;padding:10px;border-radius:9px;font:11px ui-monospace,monospace}
 </style>
-</head><body>
-<div class="status">SHELL · local-module</div>
-<div class="eyebrow">AXM module</div>
-<h1>AXM Agent Command Center</h1>
-<p class="lead">Assembles prepared parts into package profiles and binds an identity to a connector — where an agent is put together before it runs.</p>
-<section class="panel"><h2>What it does</h2>
-  <ul>
-    <li>Assemble package profiles</li>
-    <li>Bind identities to connectors</li>
-    <li>Connect skills, specialist masks, prompt packs, templates and wisdom links</li>
-    <li>Keep every action consent-gated</li>
-  </ul></section>
-<section class="panel"><h2>Rule</h2><div class="rule">Command Center is a standalone module. It is not a Git branch and it is not owned by Hermes.</div></section>
-<section class="panel"><h2>Works next to</h2><div class="chips">
-      <a class="chip" href="../agent-tool-forge/">agent-tool-forge</a>
-      <a class="chip" href="../hermes/">hermes</a>
-  </div></section>
-<div class="tags"><span class="tag">agents</span><span class="tag">identity</span><span class="tag">connectors</span></div>
-<p class="note">Home and rules are set. The assembly UI is the next build — nothing here pretends to run yet.</p>
-<a class="home" href="/">← back to the library</a>
+</head>
+<body><div class="wrap">
+  <div class="eyebrow">identity registry · connector locks · explicit sharing</div>
+  <div class="row"><h1>AXM Agent Command Center</h1><span class="status" id="boot">starting...</span></div>
+  <div class="notice"><b>Multiple AIs, distinct identities.</b> The original two-identity pattern remains intact; Gemini Local adds a third supervised profile. Private memories stay separate and only deliberately filed shared wisdom crosses a boundary.</div>
+
+  <section class="panel">
+    <div class="row"><b>Optional default identity</b><select id="defaultIdentity"><option value="">No default</option><option value="nova">Nova</option><option value="axiom-mir">Axiom / Mir</option><option value="gemini-local">Gemini Local (Gemma)</option></select><span class="muted">Preselects an identity only; it does not merge identities or connectors.</span></div>
+  </section>
+
+  <section class="grid" id="identityCards"></section>
+
+  <section class="panel">
+    <div class="row"><b>File evidence-backed wisdom</b><span class="muted">Private by default. Sharing requires the explicit checkbox.</span></div>
+    <div class="form" style="margin-top:10px">
+      <select id="wisdomIdentity"><option value="nova">Nova private memory</option><option value="axiom-mir">Axiom / Mir private memory</option><option value="gemini-local">Gemini Local private memory</option></select>
+      <label class="scope"><input type="checkbox" id="shareWisdom"> Put this in shared wisdom</label>
+      <textarea class="wide" id="claim" placeholder="What did the system genuinely learn?"></textarea>
+      <textarea class="wide" id="evidence" placeholder="Evidence, one item per line"></textarea>
+      <input id="source" placeholder="Source / test / file / observation">
+      <select id="confidence"><option value="high">high confidence</option><option value="medium">medium confidence</option><option value="low">low confidence</option></select>
+      <div class="wide row"><button class="go" id="fileBtn">File wisdom</button><span class="muted" id="fileStatus"></span></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="row"><b>Separated memory stores</b><button id="refreshBtn">Refresh</button><button id="contextBtn">Preview both contexts</button></div>
+    <div class="grid" id="identityMemories"></div>
+    <pre id="contexts" hidden></pre>
+  </section>
+
+  <section class="panel">
+    <div class="row"><b>Identity-routed connector test</b><span class="muted">Each ask receives only its own identity context plus explicit shared wisdom.</span></div>
+    <textarea id="task" placeholder="Ask one of the two identities..."></textarea>
+    <div class="row"><button class="go" id="askNova">Ask Nova locally</button><button class="go" id="askGemini">Ask Gemini Local</button><button class="relay" id="novaGemini">Nova → Gemini review</button><button class="cloud" id="askAxiom">Ask Axiom / Mir in cloud</button><span class="muted" id="askStatus"></span></div>
+    <div class="answer" id="answer" hidden></div>
+  </section>
+</div>
+<script src="/hub/axm-hub-module.js"></script>
 <script>
-/* landing card: spine present + on-backbone, display-only until the module UI is built */
-if (typeof window.AXM === 'undefined') document.querySelector('.status').textContent = 'spine missing';
+(function(){'use strict';
+  var $=function(id){return document.getElementById(id);};
+  var health=null,loadedModels=[];
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
+  function connectorState(p){
+    var b=AXMIdentityRegistry.binding(p.id);
+    if(b.connector==='local'){var model=b.model||loadedModels[0],ok=!!model&&loadedModels.indexOf(model)>=0;return ok?{label:'ONLINE · '+model,cls:'good'}:{label:'WAITING · '+(b.model||'local model'),cls:'wait'};}
+    var cloud=!!(health&&health.providers&&health.providers.chatgpt&&health.providers.chatgpt.hasKey);
+    return cloud?{label:'ONLINE · ChatGPT',cls:'good'}:{label:'WAITING · cloud credential',cls:'wait'};
+  }
+  function renderCards(){
+    $('identityCards').innerHTML=AXMIdentityRegistry.profiles().map(function(p){var b=AXMIdentityRegistry.binding(p.id),s=connectorState(p);return '<article class="identity '+(p.id==='nova'?'nova':'axiom')+'"><div class="row"><h2>'+esc(p.name)+'</h2><span class="chip '+s.cls+'">'+esc(s.label)+'</span></div><p>'+esc(p.role)+'</p><p class="muted">identity: '+esc(p.id)+' · connector: '+esc(b.connector)+(b.model?' · model: '+esc(b.model):'')+' · private memories: '+AXMIdentityRegistry.memories(p.id,{includeShared:false}).length+'</p>'+p.roots.map(function(r){return '<div class="root">'+esc(r)+'</div>';}).join('')+'</article>';}).join('');
+  }
+  function renderMemory(id,target){var list=AXMIdentityRegistry.memories(id,{includeShared:false}).slice(-15).reverse();$(target).innerHTML=list.map(function(m){return '<div class="memory">'+esc(m.text)+'<small>'+esc(m.source)+' · '+esc(m.confidence)+' · '+esc(m.tool)+'</small></div>';}).join('')||'<p class="muted">No private entries yet.</p>';}
+  function memoryHtml(id){var list=AXMIdentityRegistry.memories(id,{includeShared:false}).slice(-15).reverse();return list.map(function(m){return '<div class="memory">'+esc(m.text)+'<small>'+esc(m.source)+' · '+esc(m.confidence)+' · '+esc(m.tool)+'</small></div>';}).join('')||'<p class="muted">No entries yet.</p>';}
+  function refresh(){renderCards();var blocks=AXMIdentityRegistry.profiles().map(function(p){return '<div><h3>'+esc(p.name)+' private</h3>'+memoryHtml(p.id)+'</div>';});blocks.push('<div><h3>Explicitly shared</h3>'+memoryHtml('shared')+'</div>');$('identityMemories').innerHTML=blocks.join('');var d=AXMIdentityRegistry.defaultIdentity();$('defaultIdentity').value=d?d.id:'';}
+  async function inspectConnectors(){
+    try{health=await(await fetch('http://127.0.0.1:8787/health')).json();}catch(e){health=null;}
+    try{var models=await(await fetch('http://127.0.0.1:8787/local-models')).json();loadedModels=(models&&models.data||[]).map(function(x){return x.id;});}catch(e){loadedModels=[];}
+    AXMIdentityRegistry.setConnectorStatus('nova',loadedModels.length?'active':'waiting-for-model');
+    AXMIdentityRegistry.setConnectorStatus('gemini-local',loadedModels.indexOf('gemini-local')>=0?'active':'waiting-for-model');
+    AXMIdentityRegistry.setConnectorStatus('axiom-mir',health&&health.providers&&health.providers.chatgpt&&health.providers.chatgpt.hasKey?'active':'waiting-for-connector');
+    refresh();
+  }
+  async function migrateLegacy(){
+    if(localStorage.getItem('axm.identity.registry.legacy-migrated'))return;
+    try{var entries=await AXM.identity.all();for(var i=0;i<entries.length;i++){var e=entries[i],c=e.context||{};if(!e.text||!c.source||!Array.isArray(c.evidence)||!c.evidence.length)continue;AXMIdentityRegistry.remember('nova',{text:e.text,source:c.source,evidence:c.evidence,confidence:c.confidence||'medium',author:e.author||'unknown',tool:e.tool||'legacy'});}localStorage.setItem('axm.identity.registry.legacy-migrated','true');}catch(e){AXMHub.log('Legacy identity migration skipped: '+e.message);}
+  }
+  function fileWisdom(){
+    var entry={text:$('claim').value,source:$('source').value,evidence:$('evidence').value.split('\n').map(function(x){return x.trim();}).filter(Boolean),confidence:$('confidence').value,author:'mike',tool:'agent-command-center'};
+    var v=AXMIdentityRegistry.validateEntry(entry);if(!v.ok){$('fileStatus').textContent=v.errors.join(' · ');return;}
+    var identityId=$('wisdomIdentity').value,shared=$('shareWisdom').checked;
+    var gate=AXMGate.submit({action:'identity.registry.remember',actor:'mike',actorType:'human',tool:'agent-command-center',detail:{identityId:identityId,shared:shared}});if(!gate.allow){$('fileStatus').textContent='Gate denied';return;}
+    var saved=AXMIdentityRegistry.remember(identityId,entry,{shared:shared});$('fileStatus').textContent='filed to '+saved.scope+' memory';$('claim').value='';$('evidence').value='';$('source').value='';$('shareWisdom').checked=false;refresh();
+  }
+  function previewContexts(){$('contexts').textContent=AXMIdentityRegistry.profiles().map(function(p){return '=== '+p.name.toUpperCase()+' ===\n'+AXMIdentityRegistry.context(p.id);}).join('\n\n');$('contexts').hidden=false;}
+  async function ask(identityId){
+    var task=$('task').value.trim();if(!task)return;var button=identityId==='nova'?$('askNova'):$('askAxiom');button.disabled=true;$('askStatus').textContent='routing as '+identityId+'...';$('answer').hidden=true;
+    try{var opts={temperature:0,maxTokens:600};if(identityId==='nova'&&loadedModels[0])opts.model=loadedModels[0];var r=await AXMIdentityRegistry.ask(identityId,task,opts);$('answer').textContent=(r&&r.text)||((r&&r.reason)||'No answer');$('answer').hidden=false;$('askStatus').textContent='answered by '+identityId+' via '+AXMIdentityRegistry.connectorFor(identityId)+' · not learned automatically';return r&&r.text;}
+    catch(e){$('askStatus').textContent='ask failed: '+e.message;}finally{button.disabled=false;}
+  }
+  $('defaultIdentity').onchange=function(){AXMIdentityRegistry.setDefaultIdentity(this.value||null);AXMHub.log('Default identity set to '+(this.value||'none'));};
+  $('fileBtn').onclick=fileWisdom;$('refreshBtn').onclick=refresh;$('contextBtn').onclick=previewContexts;$('askNova').onclick=function(){ask('nova');};$('askGemini').onclick=function(){ask('gemini-local');};$('askAxiom').onclick=function(){ask('axiom-mir');};$('novaGemini').onclick=async function(){var task=$('task').value.trim();if(!task)return;var first=await ask('nova');if(first){$('task').value='Mike\'s task: "'+task+'"\nNova answered: "'+first+'"\nIndependently review Nova. List agreements, corrections, and uncertainties for Mike and Axiom/Mir to supervise.';await ask('gemini-local');$('task').value=task;}};
+  (async function(){var info=await AXM.init({id:'agent-command-center',name:'AXM Agent Command Center',version:'v0.4'});await migrateLegacy();await inspectConnectors();var gemmaReady=loadedModels.indexOf('gemini-local')>=0;$('askGemini').disabled=!gemmaReady;$('novaGemini').disabled=!gemmaReady;$('askAxiom').disabled=!(health&&health.providers&&health.providers.chatgpt&&health.providers.chatgpt.hasKey);$('boot').textContent='ready · '+info.storageBackend+' · supervised identity registry';AXMHub.log('Agent Command Center ready · distinct connector/model-bound identities');AXMHub.verifyPass();})().catch(function(e){$('boot').textContent='boot failed: '+e.message;});
+  AXMHub.ready({id:'agent-command-center',name:'AXM Agent Command Center',version:'v0.4',hubApiVersion:'1.0',permissions:[],savesState:true,handlesShutdown:false,notes:'Supervised connector/model-bound identities with separated private memory and explicit shared wisdom.'});
+})();
 </script>
 </body></html>

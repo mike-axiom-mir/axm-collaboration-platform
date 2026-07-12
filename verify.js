@@ -6,7 +6,7 @@
    Audits the whole workshop against ITS OWN RULES — every check
    here is one Fable performed by hand during the build sessions,
    now automated so ANY future AI's zip is self-checkable at
-   Mike Tobi's merge gate before a byte is trusted.
+   Mike's merge gate before a byte is trusted.
    Output: console + exports/verify-report.txt. Honest exit code:
    0 = all pass · 1 = failures found.
    ============================================================ */
@@ -118,6 +118,28 @@ if(sh){ sh.includes("status:'proposal'") && sh.includes('rejection_reason')
   .forEach(p => read(p)!==null ? ok('present: '+p) : fail('missing: '+p));
 (read('prompts/local/axm-core.txt')||'').includes('CANON BASE')
   ? ok('core roots file is the CANON BASE version') : warn('core file lacks CANON BASE marker — check which version this is');
+
+/* 9 - NESTED MODULE ADAPTERS: the top-level verifier delegates to each
+   module's narrow contract instead of pretending every package has the same
+   shape. START_AXM_FULL uses this same adapter to gate Game Hub only. */
+try {
+  const gameV = require('./tools/game-hub/game-package-verifier');
+  const gr = gameV.verifyLibrary(path.join(ROOT,'tools','game-hub','game-library'));
+  if(gr.pass) ok('game-library adapter: '+gr.games.length+' modular game package(s) verified');
+  else gr.games.forEach(g => g.errors.forEach(e => fail('game package '+g.game+': '+e)));
+} catch(e) { fail('game-library adapter could not run: '+e.message); }
+
+/* 10 - DECLARED MODULE CONTRACTS: modules may opt into the shared v1
+   contract without forcing legacy tools to pretend they already migrated. */
+try {
+  const contractV = require('./hub/module-contract-verifier');
+  const cr = contractV.verifyDeclaredContracts(ROOT);
+  cr.results.forEach(r => {
+    if(r.pass) ok('module contract: '+r.id+' ('+r.path+')');
+    else r.errors.forEach(e => fail('module contract '+r.id+': '+e));
+  });
+  if(!cr.results.length) warn('no modules declare a shared module contract yet');
+} catch(e) { fail('module contract adapter could not run: '+e.message); }
 
 /* ---- report ---- */
 const head = 'AXM VERIFY — '+new Date().toISOString()+'\n'+

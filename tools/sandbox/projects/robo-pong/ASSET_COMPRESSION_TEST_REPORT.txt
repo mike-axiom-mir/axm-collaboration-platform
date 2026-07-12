@@ -1,0 +1,34 @@
+ROBO PONG · VISUAL PACK COMPRESSION · TEST REPORT
+Date: 2026-07-11
+Status: TEST — not CANON. Mike is the merge gate.
+
+WHAT WAS DONE
+- All 19 PNGs in assets/processed/ quantized to 256-color palette
+  (PIL FASTOCTREE, Floyd-Steinberg dither), optimize=True.
+- Same filenames, same pixel dimensions (verified: 19/19 PASS).
+- Alpha transparency preserved.
+- Result: 19 MB -> 2.1 MB (~89% smaller on the LAN wire).
+
+WHY NO CROP
+- Measured content bounding boxes: every asset has only a uniform
+  ~12px transparent border. Cropping would save almost nothing and
+  would change draw anchor points in client.html. Not worth the risk.
+- client.html paint() uses explicit w/h everywhere; only cover()
+  (arena bg) reads natural dimensions, and dimensions are unchanged.
+
+NO-LOSS
+- Originals are NOT deleted. This patch only contains the compressed
+  processed/ folder. Your current build still holds the v0.6.5
+  originals; keep them (e.g. assets/originals_v0_6_5/) before merging.
+
+NOT RUN / NOT CLAIMED
+- No real browser render test in this environment.
+- Quality judged only by side-by-side sheet; neon gradients can band
+  under 256 colors. Mike must eyeball the sheet and the live game.
+- Asset Vault runtime serving NOT built: vault v0.1 cannot serve
+  files to a running game ("direct file extraction not built yet").
+  Game keeps module-owned assets. Vault-as-source is a v0.2 seam.
+
+PROMOTION GATE
+- Merge only if the quality sheet and a live match look right to Mike.
+- Rollback = restore original processed/ folder. Nothing else touched.

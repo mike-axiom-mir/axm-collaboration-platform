@@ -1,49 +1,77 @@
-<!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AXM Game Hub</title>
-<script src="axm-foundation.js"></script>
-<style>
-  :root{--ink:#14171c;--panel:#191e25;--line:#2a313d;--text:#dce2ea;--muted:#828d9e;--cy:#38d6ec;--gold:#e8b54a;--green:#63d68a}
-  *{box-sizing:border-box}body{margin:0 auto;max-width:720px;background:var(--ink);color:var(--text);font-family:system-ui,sans-serif;line-height:1.55;padding:20px}
-  .eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
-  h1{font-size:22px;margin:2px 0 0}
-  .status{float:right;font-family:ui-monospace,monospace;font-size:11px;color:var(--gold);border:1px solid #4a3a1c;border-radius:20px;padding:2px 10px}
-  .lead{color:var(--text);margin:14px 0 0}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:16px}
-  .panel h2{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
-  ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-  li{background:#1f2731;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:13px}
-  .rule{border-left:3px solid var(--cy);padding:4px 0 4px 12px;color:var(--text);font-size:13px}
-  .chips{display:flex;gap:8px;flex-wrap:wrap}
-  a.chip{text-decoration:none;background:#1f2731;border:1px solid var(--line);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--cy)}
-  .note{font-size:12px;color:var(--muted);margin-top:8px}
-  .tags{margin-top:10px}.tag{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-right:10px}
-  .home{display:inline-block;margin-top:18px;font-size:12px;color:var(--muted);text-decoration:none}
-</style>
-</head><body>
-<div class="status">SHELL · local-module</div>
-<div class="eyebrow">AXM module</div>
-<h1>AXM Game Hub</h1>
-<p class="lead">A local lobby and launcher where humans and AI/adapter seats connect, swap seats and launch swappable games from a shared library — up to 8 visible seats.</p>
-<section class="panel"><h2>What it does</h2>
-  <ul>
-    <li>Show the lobby: 4 visible seats, up to 8</li>
-    <li>Accept humans by link/QR and AI/adapters as visible seats</li>
-    <li>Load game-library manifests</li>
-    <li>Launch the selected game and return a result summary</li>
-  </ul></section>
-<section class="panel"><h2>Rule</h2><div class="rule">Game Hub is the lobby and launcher, not one game. AI/adapters must occupy visible seats.</div></section>
-<section class="panel"><h2>Works next to</h2><div class="chips">
-      <a class="chip" href="../agent-command-center/">agent-command-center</a>
-      <a class="chip" href="../agent-tool-forge/">agent-tool-forge</a>
-      <a class="chip" href="../hermes/">hermes</a>
-  </div></section>
-<div class="tags"><span class="tag">games</span><span class="tag">lobby</span><span class="tag">multiplayer</span></div>
-<p class="note">The lobby runtime runs as its own process — see RUN_GAME_HUB_LOCAL.txt in this folder. This card is its home.</p>
-<a class="home" href="/">← back to the library</a>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Game Hub</title>
+  <script src="axm-foundation.js"></script>
+  <script src="vendor/qrcode.js"></script>
+  <style>
+    :root{--ink:#070b12;--panel:#111a27;--line:#2b3c52;--text:#e8f2fb;--muted:#8b9aac;--cy:#39e1f5;--mag:#ff58d5;--green:#68e394;--gold:#f3c45e;--red:#ff6679}
+    *{box-sizing:border-box}body{margin:0 auto;max-width:1040px;background:radial-gradient(circle at 70% 0,#14273b 0,var(--ink) 38%);color:var(--text);font-family:Inter,Segoe UI,system-ui,sans-serif;line-height:1.5;padding:24px}.eyebrow{font:700 10px ui-monospace,monospace;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}h1{font-size:25px;margin:3px 0}.status{float:right;font:700 10px ui-monospace,monospace;letter-spacing:.08em;color:var(--gold)}.panel,.game{background:linear-gradient(145deg,rgba(20,31,46,.96),rgba(12,19,30,.96));border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px;box-shadow:0 16px 45px rgba(0,0,0,.15)}.muted{font-size:12px;color:var(--muted)}
+    .party-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:12px}.party-head h2{margin:2px 0 0;font-size:18px}.party-count{font:700 11px ui-monospace,monospace;color:var(--green)}.seats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.seat{border:1px solid var(--line);border-radius:13px;padding:13px;transition:.18s;background:rgba(5,10,18,.35)}.seat.active{border-color:rgba(57,225,245,.65);box-shadow:inset 3px 0 var(--cy)}.seat.waiting{border-color:rgba(243,196,94,.5)}.seat-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.seat b{color:var(--cy);font:800 12px ui-monospace,monospace}.seat:nth-child(even) b{color:var(--mag)}.queue{font:800 9px ui-monospace,monospace;letter-spacing:.08em;border:1px solid var(--line);border-radius:999px;padding:3px 7px;color:var(--muted)}.active .queue{color:var(--cy);border-color:var(--cy)}.waiting .queue{color:var(--gold);border-color:var(--gold)}.seat-fields{display:grid;grid-template-columns:1fr 120px;gap:8px;margin-top:10px}input,select{width:100%;border:1px solid var(--line);border-radius:9px;background:#09121f;color:var(--text);padding:10px;font:700 12px ui-monospace,monospace;outline:none}input:focus,select:focus{border-color:var(--cy)}
+    button{font:700 12px ui-monospace,monospace;letter-spacing:.03em;border:1px solid var(--green);border-radius:10px;background:#142536;color:var(--green);padding:11px 13px;cursor:pointer}button:hover{filter:brightness(1.16)}button:disabled{opacity:.4;cursor:not-allowed}.ready{width:100%;margin-top:8px;color:var(--muted);border-color:var(--line)}.ready.on{color:var(--cy);border-color:var(--cy);background:#102b38}.primary{color:var(--cy);border-color:var(--cy)}.secondary{color:var(--gold);border-color:var(--gold)}
+    .game{display:grid;grid-template-columns:82px minmax(170px,1fr) auto;align-items:center;gap:14px;border-left:4px solid var(--cy)}.slot{font:900 30px ui-monospace,monospace;color:var(--cy);text-shadow:0 0 18px rgba(57,225,245,.35)}.game-picker{margin-top:8px;max-width:310px}.actions{display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-end;gap:8px}.match{font:800 11px ui-monospace,monospace;color:var(--gold);width:100%;text-align:right}
+    .join{border-color:rgba(255,88,213,.55)}.join[hidden]{display:none}.join-head{display:flex;justify-content:space-between;align-items:end;gap:12px}.join-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.controller-card{display:grid;grid-template-columns:118px 1fr;gap:12px;align-items:center;border:1px solid var(--line);border-radius:13px;padding:11px;background:rgba(5,10,18,.38)}.qr{background:white;border-radius:10px;padding:7px;display:grid;place-items:center;min-height:104px}.qr img{display:block;width:100%;height:auto;image-rendering:pixelated}.room{font:900 22px ui-monospace,monospace;color:var(--gold);letter-spacing:.12em}.url{margin:6px 0;padding:7px;border-radius:7px;background:#08101a;color:#a9c2da;font:9px ui-monospace,monospace;overflow-wrap:anywhere;user-select:text}.join-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.asset{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px}.asset.accepted{border-color:#315943}.badge{font:10px ui-monospace,monospace;color:var(--gold)}.rule{border-left:3px solid var(--gold);padding-left:12px;color:var(--muted);font-size:12px}.home{display:inline-block;margin-top:18px;color:var(--muted);text-decoration:none;font-size:12px}
+    @media(max-width:820px){.game{grid-template-columns:64px 1fr}.actions{grid-column:1/-1;justify-content:stretch}.actions button{flex:1}.match{text-align:left}.join-grid{grid-template-columns:1fr}}@media(max-width:650px){body{padding:15px}.seats{grid-template-columns:1fr}.seat-fields{grid-template-columns:1fr 110px}.controller-card{grid-template-columns:96px 1fr}.status{float:none;margin-bottom:8px}.party-head,.join-head{align-items:start;flex-direction:column;gap:4px}}
+  </style>
+</head>
+<body>
+  <div class="status" id="status">RUNTIME · CHECKING</div>
+  <div class="eyebrow">AXM · local party launcher</div>
+  <h1>Game Hub</h1>
+  <p class="muted">The group stays together. Ready seats enter the next game in queue order.</p>
+
+  <section class="panel">
+    <div class="party-head"><div><div class="eyebrow">Party lobby</div><h2 id="partyTitle">Four seats · choose a map</h2></div><div class="party-count" id="partyCount">0 READY · 4 IN GROUP</div></div>
+    <div class="seats" id="seats"></div>
+  </section>
+
+  <section class="game">
+    <div class="slot" id="gameSlot">002</div>
+    <div><h2 style="margin:0" id="gameName">Robo Pong</h2><div class="muted" id="gameDescription">First two ready seats play · remaining seats wait for the next round</div><select class="game-picker" id="gameSelect" aria-label="Choose game map"><option value="002-robo-pong">002 · Robo Pong</option></select></div>
+    <div class="actions"><div class="match" id="matchLabel">Ready at least two seats</div><button class="secondary" id="rotate" disabled>Next pair</button><button class="primary" id="launch" disabled>Launch ready pair</button></div>
+  </section>
+
+  <section class="panel join" id="join" hidden>
+    <div class="join-head"><div><div class="eyebrow">Same Wi-Fi controllers</div><div style="font-weight:800;font-size:20px;margin-top:3px" id="scanLabel">Scan the seat you want to control</div></div><div><div class="muted">Room code</div><div class="room" id="room">AXM1</div></div></div>
+    <div class="join-grid" id="joinGrid"></div>
+    <div class="join-actions"><button id="openScreen">Open shared game screen</button></div><p class="muted" style="margin-bottom:0">Each human scans their own named seat. All devices must use the same Wi-Fi. If Windows asks about Node.js, allow private-network access.</p>
+  </section>
+
+  <section class="panel"><div class="eyebrow">Studio Asset Inbox</div><div class="muted">Proposals stay outside game packages until you accept them.</div><div id="assetInbox"><div class="muted">checking inbox…</div></div></section>
+  <section class="panel rule" id="seatRule">Seat order is explicit: PLAY 1 controls cyan, PLAY 2 controls magenta, and WAIT seats remain registered for rotation. Human and AI identities are never silently swapped.</section>
+  <a class="home" href="/hub/index.html">← back to AXM Hub</a>
+
 <script>
-/* landing card: spine present + on-backbone, display-only until the module UI is built */
-if (typeof window.AXM === 'undefined') document.querySelector('.status').textContent = 'spine missing';
+(function(){
+  'use strict';
+  var API='/game-api',online=false,lastLaunch=null,games=[],selectedGameId='002-robo-pong',STORE='axm.gameHub.party.v1',$=function(id){return document.getElementById(id);};
+  var defaults=[{name:'Mike',type:'human'},{name:'Errol',type:'human'},{name:'Nova',type:'adapter'},{name:'Codex',type:'adapter'}];
+  var party=loadParty(),readyOrder=party.readyOrder||[];
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function loadParty(){try{var saved=JSON.parse(localStorage.getItem(STORE)||'null');if(saved&&Array.isArray(saved.slots)&&saved.slots.length===4){saved.readyOrder=(saved.readyOrder||[]).filter(function(n,i,a){return n>=0&&n<4&&a.indexOf(n)===i;});return saved;}}catch(e){}return{slots:defaults,readyOrder:[]};}
+  function persist(){party.readyOrder=readyOrder;party.selectedGameId=selectedGameId;try{localStorage.setItem(STORE,JSON.stringify(party));}catch(e){}}
+  async function call(path,body){var r=await fetch(API+path,{method:body?'POST':'GET',headers:{'content-type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json();if(!r.ok||j.ok===false)throw new Error(j.error||('HTTP '+r.status));return j;}
+  function slotFromUi(i){return{name:($('name'+i).value.trim()||('Player '+(i+1))).slice(0,20),type:$('type'+i).value};}
+  function syncSlots(){for(var i=0;i<4;i++)party.slots[i]=slotFromUi(i);persist();renderQueue();}
+  function buildSeats(){var box=$('seats');box.innerHTML='';party.slots.forEach(function(slot,i){var card=document.createElement('div');card.className='seat';card.id='seatCard'+i;card.innerHTML='<div class="seat-top"><b>SEAT '+(i+1)+'</b><span class="queue" id="queue'+i+'">NOT READY</span></div><div class="seat-fields"><input id="name'+i+'" maxlength="20" aria-label="Seat '+(i+1)+' name" value="'+esc(slot.name)+'"><select id="type'+i+'" aria-label="Seat '+(i+1)+' type"><option value="human"'+(slot.type==='human'?' selected':'')+'>Human</option><option value="adapter"'+(slot.type==='adapter'?' selected':'')+'>AI</option></select></div><button class="ready" id="ready'+i+'">Ready up</button>';box.appendChild(card);$('name'+i).oninput=syncSlots;$('type'+i).onchange=syncSlots;$('ready'+i).onclick=function(){toggleReady(i);};});renderQueue();}
+  function toggleReady(i){var at=readyOrder.indexOf(i);if(at>=0)readyOrder.splice(at,1);else readyOrder.push(i);persist();renderQueue();}
+  function selectedGame(){return games.find(function(g){return g.game_id===selectedGameId;})||{game_id:'002-robo-pong',slot:'002',name:'Robo Pong',min_players:2,max_players:2};}
+  function renderGame(){var game=selectedGame(),max=Number(game.max_players||2),teams=game.rules&&game.rules.team_mode==='2v2',cross=max>=4&&!teams,solo=max===1;$('gameSlot').textContent=game.slot||game.game_id.slice(0,3);$('gameName').textContent=game.name;$('gameDescription').textContent=game.description||(cross?'All four ready seats enter the arena':solo?'One ready seat enters the experiment':'First two ready seats play · remaining seats wait for the next round');$('partyTitle').textContent=teams?'Four seats · West 2v2 East':cross?'Four seats · all four enter the arena':solo?'Solo experiment · one active seat':'Four seats · two play classic Robo Pong';$('seatRule').textContent=teams?'PLAY 1 + PLAY 2 are West Team. PLAY 3 + PLAY 4 are East Team. Human and AI identities remain visibly assigned.':cross?'Four-way seat order stays explicit. Every human and AI remains visibly assigned to its side.':solo?'PLAY 1 enters the experimental map. Other party seats remain registered in the Hub.':'Seat order is explicit: PLAY 1 controls cyan, PLAY 2 controls magenta, and WAIT seats remain registered for rotation. Human and AI identities are never silently swapped.';$('rotate').hidden=max!==2;$('launch').textContent=teams?'Launch 2v2 forest':cross?'Launch four-way arena':solo?'Launch experiment':'Launch ready pair';renderQueue();}
+  function renderQueue(){var game=selectedGame(),max=Number(game.max_players||2),min=Number(game.min_players||2),labels=['PLAY 1','PLAY 2','PLAY 3','PLAY 4'];for(var i=0;i<4;i++){var at=readyOrder.indexOf(i),card=$('seatCard'+i),badge=$('queue'+i),button=$('ready'+i);card.className='seat'+(at>=0&&at<max?' active':at>=max?' waiting':'');badge.textContent=at<0?'NOT READY':at<max?labels[at]:('WAIT '+(at-max+1));button.classList.toggle('on',at>=0);button.textContent=at>=0?'Cancel ready':'Ready up';}var chosen=readyOrder.slice(0,max).map(function(i){return slotFromUi(i).name;});$('partyCount').textContent=readyOrder.length+' READY · 4 IN GROUP';$('matchLabel').textContent=chosen.length>=min?chosen.join(' vs '):'Ready '+min+' seat'+(min===1?'':'s');$('launch').disabled=!online||readyOrder.length<min;$('rotate').disabled=max!==2||readyOrder.length<3;}
+  function rotate(){if(Number(selectedGame().max_players||2)!==2||readyOrder.length<3)return;var pair=readyOrder.splice(0,2);readyOrder=readyOrder.concat(pair);persist();renderQueue();}
+  async function clearRunning(){try{var st=await call('/state');if(st.state&&st.state.session&&st.state.session.phase==='RUNNING')await call('/game/end',{summary:{status:'party-started-next-game'}});}catch(e){}}
+  async function submitParty(){syncSlots();for(var i=0;i<4;i++){var slot=party.slots[i];await call('/seat/ready',{seat_id:'seat_'+(i+1),ready:false});await call('/seat/assign',{seat_id:'seat_'+(i+1),patch:{type:slot.type,display_name:slot.name,adapter_id:slot.type==='adapter'?slot.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'-robo-pong':null}});}for(var q=0;q<readyOrder.length;q++)await call('/seat/ready',{seat_id:'seat_'+(readyOrder[q]+1),ready:true});}
+  function withSession(url,r){if(!url)return null;return url+(url.indexOf('?')>=0?'&':'?')+'session='+encodeURIComponent(r.session.session_id);}
+  async function launch(){var button=$('launch'),old=button.textContent;button.disabled=true;button.textContent='Starting…';try{await clearRunning();await submitParty();var r=await call('/game/start',{game_id:selectedGameId});lastLaunch=r;var humanControllers=(r.controller_urls||[]).filter(function(c){return c.type==='human';});if(r.selected_players.length>2||humanControllers.length>1){showJoin(r);$('status').textContent='ROOM AXM1 · '+r.selected_players.length+'-PLAYER '+selectedGame().name.toUpperCase();return;}var url=withSession(r.client_url,r);if(!url)throw new Error('game did not return a client URL');location.href=url;}catch(e){$('status').textContent='LAUNCH FAILED · '+e.message;}finally{button.textContent=old;renderQueue();}}
+  function qrInto(box,url,name){box.innerHTML='';if(url&&typeof qrcode==='function'){try{var code=qrcode(0,'M');code.addData(url);code.make();var img=document.createElement('img');img.alt='QR controller for '+name;img.src=code.createDataURL(5,3);box.appendChild(img);return;}catch(e){}}box.innerHTML='<span style="color:#111;text-align:center;font-size:10px">Wi-Fi URL unavailable</span>';}
+  function showJoin(r){$('join').hidden=false;$('room').textContent=r.room_code||'AXM1';var grid=$('joinGrid');grid.innerHTML='';var humans=(r.controller_urls||[]).filter(function(c){return c.type==='human';});$('scanLabel').textContent=humans.length?humans.length+' human controller'+(humans.length===1?'':'s')+' · scan your named seat':'AI exhibition · shared screen only';humans.forEach(function(c){var card=document.createElement('div');card.className='controller-card';var qr=document.createElement('div');qr.className='qr';qrInto(qr,c.lan_url,c.name);var info=document.createElement('div');info.innerHTML='<b>'+esc(c.player.toUpperCase()+' · '+c.name)+'</b><div class="muted">'+esc(c.seat_id)+'</div><div class="url">'+esc(c.lan_url||'Connect laptop to Wi-Fi')+'</div>';var open=document.createElement('button');open.textContent='Open controller';open.onclick=function(){location.href=withSession(c.local_url,r);};info.appendChild(open);card.appendChild(qr);card.appendChild(info);grid.appendChild(card);});$('openScreen').disabled=!r.spectator_url;setTimeout(function(){$('join').scrollIntoView({behavior:'smooth',block:'start'});},50);}
+  $('openScreen').onclick=function(){if(lastLaunch&&lastLaunch.spectator_url)location.href=withSession(lastLaunch.spectator_url,lastLaunch);};
+  async function boot(){try{var h=await call('/health'),g=await call('/games');games=(g.games||[]).filter(function(game){return game.status!=='manifest-error';});selectedGameId=party.selectedGameId&&games.some(function(game){return game.game_id===party.selectedGameId;})?party.selectedGameId:(games[0]&&games[0].game_id||'002-robo-pong');$('gameSelect').innerHTML='';games.forEach(function(game){var option=document.createElement('option');option.value=game.game_id;option.textContent=(game.slot||'---')+' · '+game.name;$('gameSelect').appendChild(option);});$('gameSelect').value=selectedGameId;$('gameSelect').onchange=function(){selectedGameId=this.value;persist();$('join').hidden=true;renderGame();};online=true;$('status').textContent='ONLINE · '+games.length+' GAME'+(games.length===1?'':'S');renderGame();await refreshAssets();}catch(e){online=false;$('status').textContent='OFFLINE · START AXM FULL';renderQueue();}}
+  async function refreshAssets(){var box=$('assetInbox');try{var r=await call('/assets/inbox'),items=r.handoffs||[];if(!items.length){box.innerHTML='<div class="muted" style="margin-top:8px">No staged Studio proposals.</div>';return;}box.innerHTML='';items.forEach(function(h){var row=document.createElement('div');row.className='asset '+(h.status==='accepted'?'accepted':'');row.innerHTML='<div><b>'+esc(h.name)+'</b><div class="muted">'+esc(h.target_game_id)+' · '+esc(h.source_module)+' · <span class="badge">'+esc(h.status)+'</span></div></div>';if(h.status==='proposal'){var b=document.createElement('button');b.textContent='Accept into game';b.onclick=async function(){b.disabled=true;try{await call('/assets/accept',{id:h.id});await refreshAssets();}catch(e){b.textContent='Accept failed';}};row.appendChild(b);}box.appendChild(row);});}catch(e){box.innerHTML='<div class="muted" style="margin-top:8px">Inbox unavailable: '+esc(e.message)+'</div>';}}
+  $('rotate').onclick=rotate;$('launch').onclick=launch;buildSeats();boot();
+})();
 </script>
-</body></html>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "workshop-packager",
+  "version": "v0.1",
+  "provides": ["private-workshop-backup", "public-safe-workshop-package", "package-manifest", "ai-native-restore-verification"],
+  "consumes": ["workshop-filesystem"],
+  "permissions": ["files", "export", "gate", "server-export"],
+  "handoffs": {"emits": ["axm.workshop-package/v1"], "accepts": []},
+  "boundaries": {
+    "writes": ["exports/workshop-packages", "exports/workshop-packages/.restore-tests (temporary only)"],
+    "refuses": ["source-overwrite", "network-upload", "public-package-with-secret-finding", "unverified-archive", "path-escape"]
+  }
+}

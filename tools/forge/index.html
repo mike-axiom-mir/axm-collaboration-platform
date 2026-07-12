@@ -153,6 +153,7 @@ $('genBtn').onclick = () => {
 
 (async () => {
   const info = await AXM.init({ id:'forge', name:'AXM Tool Forge', version:'v1' });
+  AXM.wisdom.on(localStorage.getItem('axm.identity.growth.enabled') !== 'false');
   $('boot').textContent = 'ready · ' + info.storageBackend;
 })().catch(e => { $('boot').textContent = 'boot failed: ' + e.message; });
 </script>

@@ -1,58 +1,46 @@
 ============================================================
-AXM LOCAL BRIDGE v0.3 — PUBLIC-SAFE SETUP
+AXM LOCAL BRIDGE — SETUP  (5 steps, weekend)
+Light version. Written + the server is proven to start; the real AI
+call is the part YOU test on your laptop.
 ============================================================
 
-WHAT IT IS
-The optional bridge runs only on your machine and holds API keys in process
-environment variables. Browser tools talk to the bridge; the bridge talks to
-the selected AI provider. The Workshop itself remains usable without AI.
+WHAT IT'S FOR
+The bridge runs on your machine and holds your API key, so the browser tools
+never touch it. Tools ask the bridge; the bridge asks the AI; the key stays home.
 
-PUBLIC-SAFE TOKEN BEHAVIOR
-No real bridge token ships in this package.
-On first bridge start, axm-bridge.js creates a fresh random file:
+YOU DON'T NEED IT TO USE AXM. Everything works without it — the bridge only
+adds the AI convenience. It's opt-in.
 
-  bridge/bridge-token.txt
+STEPS
+  1. Install Node.js from nodejs.org (the big green button). This lets you run
+     the bridge.
+  2. Put your Anthropic API key where the bridge can read it:
+        mac / linux :   export ANTHROPIC_API_KEY=sk-ant-xxxxx
+        windows cmd :   set ANTHROPIC_API_KEY=sk-ant-xxxxx
+  3. In a terminal, go to the folder with axm-bridge.js and run:
+        node axm-bridge.js
+  4. You should see:
+        AXM Bridge listening on http://127.0.0.1:8787
+  5. Open any AXM tool. The Connector's "bridge" option now lights up on its
+     own, and AI calls route through your machine.
 
-That file is local runtime state, is ignored by Git, and should never be posted.
-Delete it only when you intentionally want the bridge to generate a new token.
+TO CHECK IT'S ALIVE
+  Open http://127.0.0.1:8787/health in a browser — you should see
+  {"ok":true, ... "hasKey":true}. If hasKey is false, your key isn't set (redo
+  step 2 in the SAME terminal you run the bridge from).
 
-SET API KEYS WITHOUT PUTTING THEM IN THE REPOSITORY
-Windows Command Prompt, same window used to start the bridge:
+IF IT DOESN'T WORK
+  That's fine and expected the first time — this is the untested piece. Note
+  what happened and we fix it together. Tools keep working without it meanwhile.
 
-  set ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY
-  set OPENAI_API_KEY=YOUR_OPENAI_API_KEY
-
-macOS / Linux terminal:
-
-  export ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY
-  export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
-
-One provider is enough. Both are optional. Never paste a real key into source,
-JSON, a committed .env file, an issue, screenshot, or run log.
-
-START
-From the AXM_WORKSHOP folder:
-
-  Windows:  START_AXM_FULL.bat
-  macOS/Linux: ./start-full.sh
-
-Workshop only, without the bridge:
-
-  Windows:  START_HUB.bat
-  macOS/Linux: ./start-hub.sh
-
-HEALTH CHECK
-Open http://127.0.0.1:8787/health while the bridge is running.
-The response reports whether provider keys are available without revealing them.
-
-BOUNDARIES
-- The bridge binds to 127.0.0.1 only.
-- Workshop origins are allowlisted.
-- Non-browser callers need the local x-axm-token value.
-- A default rate cap limits asks per minute.
-- bridge.log is local generated state and is not part of the public package.
-- Anything already executing on your local machine is outside the website-origin lock.
-
-No email address is published in this package. For public collaboration, search
-for **Mike Tobi** and the AXM raw Facebook development log.
+SAFETY (what this light version does / doesn't do)
+  DOES : binds to your machine only (127.0.0.1), keeps the key out of the
+         browser, logs each request.
+  DOESN'T yet : multiple AI providers, auth between tool and bridge, rate
+         limiting, a saved log file. Those are the next bridge version.
+  HEADS UP    : while the bridge runs, any website open in your browser could
+         in theory call it and use your key. For a private test on your own
+         machine that's fine. Stop it (Ctrl+C) when you're done, and don't run
+         it while browsing untrusted sites. The next version adds a token so
+         only your tools can reach it.
 ============================================================

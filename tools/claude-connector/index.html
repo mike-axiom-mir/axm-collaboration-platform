@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0a0812">
+  <title>AXM Claude Connector</title>
+  <style>
+    :root{--violet:#b794f6;--red:#ff5f70;--green:#70e29b;--line:rgba(255,255,255,.12);--muted:#93a0b2}
+    *{box-sizing:border-box}html,body{min-height:100%;margin:0;background:radial-gradient(circle at 30% 0,#1a1230,#07060c 58%);color:#f4f6f8;font-family:Inter,ui-sans-serif,system-ui,sans-serif}
+    main{width:min(980px,calc(100% - 28px));margin:0 auto;padding:34px 0 60px}
+    .eyebrow{font:900 10px ui-monospace,monospace;color:var(--violet);letter-spacing:.22em}
+    h1{font-size:clamp(28px,5vw,52px);letter-spacing:-.04em;margin:8px 0 10px}
+    .lead{color:#bdc6d2;line-height:1.55;max-width:720px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}
+    .panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,rgba(24,18,36,.92),rgba(10,8,16,.9));padding:18px}
+    .panel h2{font-size:14px;letter-spacing:.08em;margin:0 0 12px}
+    .mono{font:700 11px/1.55 ui-monospace,monospace;color:var(--muted)}
+    .state{font:900 22px ui-monospace,monospace;color:var(--green)}
+    .state.off{color:var(--muted)}.state.trip{color:var(--red)}
+    .facts{display:grid;gap:8px;margin-top:10px}
+    .fact{padding:10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02);font-size:12px}
+    button{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#1a1528;color:#fff;font:800 10px ui-monospace,monospace;cursor:pointer}
+    @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">AXM · SEPARATE CONNECTOR SEAT · TEST v0.1</div>
+  <h1>Claude Code Connector</h1>
+  <p class="lead">Claude Desktop Code tab is its own Dreamteam seat: shared severe-policy classification, separate audit under <code>state/claude-guardian/</code>, and presence heartbeats. This is not merged memory with Grok or other models.</p>
+  <div class="grid">
+    <section class="panel">
+      <h2>PRESENCE (workshop API)</h2>
+      <div class="state off" id="presenceState">UNKNOWN</div>
+      <div class="mono" id="presenceDetail">Fetches only /api/presence when the AXM server is up. No simulated connectivity.</div>
+      <div style="margin-top:12px"><button id="refresh">REFRESH</button></div>
+    </section>
+    <section class="panel">
+      <h2>BREAKER &amp; HOOKS (local files)</h2>
+      <div class="mono">Guardian state: <code>state/claude-guardian/status.json</code><br>Audit: <code>state/claude-guardian/events.jsonl</code><br>Hooks: user <code>~/.claude/settings.json</code> (template in module; not installed by AXM)</div>
+      <div class="facts">
+        <div class="fact">PreToolUse severe trips → deny via <code>hookSpecificOutput</code> (exit 0) or stderr block (exit 2).</div>
+        <div class="fact">Post-trip cutoff targets <code>Claude.exe</code> only (<code>claude-process-cutoff.js</code>).</div>
+        <div class="fact">No dedicated REST route for Claude Guardian yet — open status JSON locally or add a server route later.</div>
+      </div>
+    </section>
+  </div>
+</main>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function renderPresence(members) {
+    var claude = (members || []).filter(function (m) { return m.id === 'claude'; })[0];
+    if (!claude) {
+      $('presenceState').textContent = 'NOT IN ROOM';
+      $('presenceState').className = 'state off';
+      $('presenceDetail').textContent = 'No live heartbeat for id=claude. Server may be down or hooks not installed.';
+      return;
+    }
+    $('presenceState').textContent = 'PRESENT · ' + String(claude.state || 'active').toUpperCase();
+    $('presenceState').className = 'state';
+    $('presenceDetail').textContent = 'Last seen ' + esc(claude.lastSeen) + (claude.location ? ' · ' + esc(claude.location) : '');
+  }
+  function load() {
+    fetch('/api/presence').then(function (r) { return r.json(); }).then(function (j) {
+      renderPresence(j.members || []);
+    }).catch(function (e) {
+      $('presenceState').textContent = 'API UNAVAILABLE';
+      $('presenceState').className = 'state off';
+      $('presenceDetail').textContent = e.message;
+    });
+  }
+  $('refresh').onclick = load;
+  load();
+})();
+</script>
+</body>
+</html>

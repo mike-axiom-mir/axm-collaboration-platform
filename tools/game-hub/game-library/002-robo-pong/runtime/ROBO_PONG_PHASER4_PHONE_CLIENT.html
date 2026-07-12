@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#060911">
+  <title>Robo Pong · AXM</title>
+  <style>
+    :root{--cyan:#35e6ff;--pink:#ff4fc8;--gold:#ffc85a;--ink:#050811;--panel:rgba(10,17,31,.92);--muted:#8594aa}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;margin:0;overflow:hidden;background:radial-gradient(circle at 50% 40%,#13253d 0,#080d18 43%,#03050a 100%);color:#eef8ff;font-family:Inter,Segoe UI,system-ui,sans-serif;touch-action:none;user-select:none}
+    body{display:grid;grid-template-rows:auto minmax(0,1fr) auto;align-items:center;justify-items:center;padding:max(8px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));gap:8px}
+    header{width:min(100%,720px);display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:2}
+    .brand{font:800 15px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.14em;color:var(--cyan);text-shadow:0 0 15px #13cae9}
+    .brand span{color:#fff}.connection{font:700 10px ui-monospace,monospace;letter-spacing:.12em;color:var(--gold)}
+    .stage{height:100%;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;position:relative}
+    canvas{display:block;height:100%;max-height:100%;width:auto;max-width:100%;aspect-ratio:9/14;border:1px solid rgba(53,230,255,.42);border-radius:18px;background:#060b15;box-shadow:0 0 0 1px rgba(255,79,200,.12),0 16px 70px #000,0 0 34px rgba(53,230,255,.13)}
+    .overlay{position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(78%,390px);padding:22px;border:1px solid rgba(53,230,255,.55);border-radius:18px;background:rgba(5,9,18,.88);box-shadow:0 0 35px rgba(53,230,255,.18);backdrop-filter:blur(10px);text-align:center}
+    .overlay[hidden]{display:none}.event{font:900 clamp(22px,5vw,38px)/1.05 ui-monospace,monospace;color:#fff;text-shadow:0 0 18px var(--cyan);margin-bottom:8px}.versus{color:var(--muted);font-size:12px;letter-spacing:.08em}
+    button{border:1px solid currentColor;border-radius:14px;background:linear-gradient(180deg,rgba(25,45,65,.96),rgba(10,20,34,.96));color:var(--cyan);font:800 14px ui-monospace,monospace;letter-spacing:.08em;padding:14px 18px;cursor:pointer;box-shadow:inset 0 1px rgba(255,255,255,.08),0 0 18px rgba(53,230,255,.12)}
+    button:active,.held{transform:translateY(1px);background:#173a4b;box-shadow:0 0 28px rgba(53,230,255,.35)}
+    .start{margin-top:16px;color:var(--gold)}
+    .controls{width:min(100%,720px);display:grid;grid-template-columns:1fr 1fr .82fr;gap:9px;z-index:2}
+    .controls[hidden]{display:none}.move{min-height:62px;font-size:22px}.power{color:var(--pink);font-size:12px;transition:color .18s,border-color .18s,box-shadow .18s}.power small{display:block;color:var(--muted);margin-top:3px;font-size:9px}.power:disabled{opacity:.48}.power.ready{animation:specialPulse 1.5s ease-in-out infinite}.power.ready small{color:#fff}@keyframes specialPulse{50%{box-shadow:0 0 30px currentColor}}
+    .role{position:absolute;left:14px;bottom:13px;padding:6px 9px;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:rgba(0,0,0,.4);font:700 9px ui-monospace,monospace;letter-spacing:.1em;color:#b7c6d8}
+    @media(min-width:850px){body.controller{grid-template-columns:minmax(0,1fr) 280px;grid-template-rows:auto minmax(0,1fr)}body.controller header{grid-column:1/-1}.controller .stage{grid-column:1}.controller .controls{grid-column:2;grid-row:2;width:100%;grid-template-columns:1fr 1fr;align-content:center}.controller .power{grid-column:1/-1;min-height:72px}}
+  </style>
+</head>
+<body>
+  <header><div class="brand">AXM <span>ROBO PONG</span></div><div class="connection" id="connection">CONNECTING</div></header>
+  <main class="stage">
+    <canvas id="game" width="900" height="1400" aria-label="Robo Pong game screen"></canvas>
+    <div class="overlay" id="overlay">
+      <div class="event" id="event">READY</div>
+      <div class="versus" id="versus">waiting for match</div>
+      <button class="start" id="start">START MATCH</button>
+    </div>
+    <div class="role" id="role">SCREEN</div>
+  </main>
+  <nav class="controls" id="controls" hidden>
+    <button class="move" id="left" aria-label="Move left">◀</button>
+    <button class="move" id="right" aria-label="Move right">▶</button>
+    <button class="power" id="power"><span id="powerName">RANDOM SPECIAL</span><small id="powerState">READY</small></button>
+  </nav>
+<script>
+(function(){
+  'use strict';
+  var params=new URLSearchParams(location.search);
+  var player=/^p[12]$/.test(params.get('player')||'')?params.get('player'):'screen';
+  var base=location.pathname.indexOf('/games/002')===0?'/games/002':'';
+  var canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+  var connection=document.getElementById('connection'),overlay=document.getElementById('overlay');
+  var eventBox=document.getElementById('event'),versus=document.getElementById('versus');
+  var startButton=document.getElementById('start'),controls=document.getElementById('controls');
+  var role=document.getElementById('role'),powerButton=document.getElementById('power'),powerName=document.getElementById('powerName'),powerState=document.getElementById('powerState');
+  var state=null,lastPacket=0,input={left:false,right:false},fallbackTimer=null;
+  if(player!=='screen'){document.body.classList.add('controller');controls.hidden=false;}
+
+  function api(path){return base+path;}
+  function post(path,body){return fetch(api(path),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body||{})}).then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error||('HTTP '+r.status));return j;});});}
+  function sendInput(extra){if(player==='screen')return;var packet={left:input.left,right:input.right};if(extra&&extra.power)packet.power=true;post('/input?room=AXM1&player='+player,packet).catch(function(e){connection.textContent='INPUT: '+e.message;});}
+  function setHeld(key,value,button){if(input[key]===value)return;input[key]=value;button.classList.toggle('held',value);sendInput();}
+  function bindHold(id,key){var b=document.getElementById(id);function down(e){e.preventDefault();try{b.setPointerCapture(e.pointerId);}catch(x){}setHeld(key,true,b);}function up(e){e.preventDefault();setHeld(key,false,b);}b.addEventListener('pointerdown',down);b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('lostpointercapture',up);}
+  bindHold('left','left');bindHold('right','right');
+  powerButton.addEventListener('click',function(){sendInput({power:true});});
+  addEventListener('keydown',function(e){if(player==='screen')return;if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a'){e.preventDefault();setHeld('left',true,document.getElementById('left'));}if(e.key==='ArrowRight'||e.key.toLowerCase()==='d'){e.preventDefault();setHeld('right',true,document.getElementById('right'));}if(e.key===' '){e.preventDefault();sendInput({power:true});}});
+  addEventListener('keyup',function(e){if(player==='screen')return;if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')setHeld('left',false,document.getElementById('left'));if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')setHeld('right',false,document.getElementById('right'));});
+  addEventListener('blur',function(){if(player==='screen')return;input.left=false;input.right=false;sendInput();});
+  startButton.onclick=function(){startButton.disabled=true;post(state&&state.phase==='gameover'?'/reset':'/start').catch(function(e){connection.textContent='START: '+e.message;}).finally(function(){startButton.disabled=false;});};
+
+  function accept(next){state=next;lastPacket=Date.now();connection.textContent='LIVE · '+String(next.mode||'').toUpperCase();connection.style.color='#63e68c';updateUi();}
+  function updateUi(){
+    if(!state)return;
+    var p1=state.players.p1.name,p2=state.players.p2.name;
+    role.textContent=player==='screen'?'SPECTATOR SCREEN':'YOU ARE '+player.toUpperCase()+' · '+state.players[player].name;
+    versus.textContent=p1+'  '+state.scores.p1+' — '+state.scores.p2+'  '+p2+' · FIRST TO '+state.winScore;
+    var show=state.phase!=='running'||state.serveIn>0;
+    overlay.hidden=!show;
+    if(state.phase==='ready'){eventBox.textContent='READY';startButton.textContent='START MATCH';startButton.hidden=false;}
+    else if(state.phase==='gameover'){eventBox.textContent=state.players[state.winner].name+' WINS';startButton.textContent='REMATCH';startButton.hidden=false;}
+    else{eventBox.textContent=state.event||'GO';startButton.hidden=true;}
+    if(player!=='screen'){
+      var power=state.power[player],seconds=Math.ceil((power&&power.readyIn||0)/1000);
+      powerButton.disabled=seconds>0||state.phase!=='running';
+      powerButton.classList.toggle('ready',seconds===0&&state.phase==='running'&&!(power&&power.active));
+      powerButton.style.color=power&&power.color||'#ff4fc8';
+      powerName.textContent=power&&power.label||'RANDOM SPECIAL';
+      powerState.textContent=power&&power.active?(power.activeLabel||'ACTIVE'):seconds>0?'NEXT IN '+seconds+'s':'TAP · SPACE';
+    }
+  }
+
+  function connect(){
+    var es=new EventSource(api('/events?room=AXM1'));
+    es.onmessage=function(e){try{accept(JSON.parse(e.data));}catch(x){}};
+    es.onerror=function(){connection.textContent='RECONNECTING';connection.style.color='#ffc85a';};
+    fetch(api('/state?room=AXM1')).then(function(r){return r.json();}).then(accept).catch(function(){});
+    fallbackTimer=setInterval(function(){if(Date.now()-lastPacket<1800)return;fetch(api('/state?room=AXM1')).then(function(r){return r.json();}).then(accept).catch(function(){connection.textContent='OFFLINE';connection.style.color='#ff5f70';});},1200);
+  }
+
+  function roundedRect(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
+  function neonLine(x1,y1,x2,y2,color,width){ctx.save();ctx.strokeStyle=color;ctx.lineWidth=width;ctx.shadowColor=color;ctx.shadowBlur=18;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.restore();}
+  function drawArena(){
+    var g=ctx.createLinearGradient(0,0,0,1400);g.addColorStop(0,'#10091b');g.addColorStop(.48,'#07111f');g.addColorStop(1,'#041421');ctx.fillStyle=g;ctx.fillRect(0,0,900,1400);
+    ctx.save();ctx.strokeStyle='rgba(53,230,255,.075)';ctx.lineWidth=1;for(var x=20;x<900;x+=55){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,1400);ctx.stroke();}for(var y=20;y<1400;y+=55){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(900,y);ctx.stroke();}ctx.restore();
+    neonLine(20,0,20,1400,'#35e6ff',3);neonLine(880,0,880,1400,'#ff4fc8',3);
+    ctx.save();ctx.setLineDash([20,20]);ctx.strokeStyle='rgba(255,255,255,.22)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(48,700);ctx.lineTo(852,700);ctx.stroke();ctx.restore();
+    ctx.save();ctx.strokeStyle='rgba(53,230,255,.16)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(450,700,145,0,Math.PI*2);ctx.stroke();ctx.restore();
+    if(state&&state.effects&&state.effects.slowField){ctx.save();ctx.fillStyle='rgba(85,125,255,.075)';ctx.fillRect(20,0,860,1400);ctx.strokeStyle='rgba(118,169,255,.55)';ctx.lineWidth=5;ctx.setLineDash([12,18]);ctx.strokeRect(35,20,830,1360);ctx.restore();}
+  }
+  function drawPaddle(paddle,color,active){
+    ctx.save();ctx.shadowColor=color;ctx.shadowBlur=active?34:20;var g=ctx.createLinearGradient(paddle.x-paddle.width/2,0,paddle.x+paddle.width/2,0);g.addColorStop(0,'rgba(255,255,255,.35)');g.addColorStop(.25,color);g.addColorStop(.75,color);g.addColorStop(1,'rgba(255,255,255,.35)');ctx.fillStyle=g;roundedRect(paddle.x-paddle.width/2,paddle.y-paddle.height/2,paddle.width,paddle.height,16);ctx.fill();ctx.fillStyle='#effcff';roundedRect(paddle.x-43,paddle.y-6,86,12,6);ctx.fill();ctx.restore();
+  }
+  function drawBall(ball){ctx.save();ctx.fillStyle='#fff';ctx.shadowColor='#35e6ff';ctx.shadowBlur=34;ctx.beginPath();ctx.arc(ball.x,ball.y,ball.radius,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#ff4fc8';ctx.lineWidth=5;ctx.stroke();ctx.restore();}
+  function drawHud(){
+    if(!state)return;ctx.save();ctx.textAlign='center';ctx.font='800 26px ui-monospace,monospace';ctx.fillStyle='#ff8bdd';ctx.fillText(state.players.p2.name,450,48);ctx.fillStyle='#35e6ff';ctx.fillText(state.players.p1.name,450,1370);ctx.font='900 78px ui-monospace,monospace';ctx.fillStyle='rgba(255,255,255,.88)';ctx.shadowColor='#35e6ff';ctx.shadowBlur=14;ctx.fillText(state.scores.p2,450,170);ctx.fillText(state.scores.p1,450,1282);ctx.restore();
+    ctx.save();ctx.textAlign='center';ctx.font='800 15px ui-monospace,monospace';var p2pow=state.power.p2,p1pow=state.power.p1;ctx.fillStyle=p2pow.color||'#ff4fc8';ctx.fillText(p2pow.label+(p2pow.readyIn>0?' · '+Math.ceil(p2pow.readyIn/1000)+'s':' · READY'),450,78);ctx.fillStyle=p1pow.color||'#35e6ff';ctx.fillText(p1pow.label+(p1pow.readyIn>0?' · '+Math.ceil(p1pow.readyIn/1000)+'s':' · READY'),450,1325);ctx.restore();
+    if(Date.now()-state.eventAt<1200&&state.phase==='running'&&!state.serveIn){ctx.save();ctx.textAlign='center';ctx.font='900 30px ui-monospace,monospace';ctx.fillStyle='rgba(255,255,255,'+(1-(Date.now()-state.eventAt)/1200)+')';ctx.fillText(state.event,450,690);ctx.restore();}
+  }
+  function render(){drawArena();if(state){drawPaddle(state.paddles.p2,'#ff4fc8',state.power.p2.active);drawPaddle(state.paddles.p1,'#35e6ff',state.power.p1.active);drawBall(state.ball);drawHud();}else{ctx.save();ctx.textAlign='center';ctx.fillStyle='#8ba0b8';ctx.font='700 26px ui-monospace,monospace';ctx.fillText('CONNECTING TO AXM1',450,700);ctx.restore();}requestAnimationFrame(render);}
+  connect();render();
+})();
+</script>
+</body>
+</html>

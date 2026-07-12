@@ -20,7 +20,7 @@ WHY SEPARATE FROM ASSET VAULT V0.1
   Asset Vault v0.1 is already the record vault.
   Asset Pack Lab is the pack/template design layer.
   Keeping it as a separate TEST module avoids overloading the first vault
-  before Mike Tobi's local device test.
+  before Mike's local device test.
 
 CORE PRINCIPLE
   STABLE SHELL. FLEXIBLE SLOTS. PROTECTED OUTPUT.

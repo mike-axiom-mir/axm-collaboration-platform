@@ -1,0 +1,13 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "ai-task-talk",
+  "version": "v0.1",
+  "provides": ["local-ai-task-queue", "time-wake-dispatch", "budgeted-ai-conversation"],
+  "consumes": ["identity:nova", "identity:gemini-local", "bridge:local"],
+  "permissions": ["storage", "ai", "bridge", "identity", "gate"],
+  "handoffs": {"emits": ["axm.ai-task-review/v1"], "accepts": []},
+  "boundaries": {
+    "writes": ["browser-local:ai-task-talk"],
+    "refuses": ["automatic-done", "automatic-wisdom-promotion", "cloud-fallback", "hidden-prompt", "unbounded-loop", "silent-restart"]
+  }
+}

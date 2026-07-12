@@ -78,7 +78,7 @@ Use honest labels:
 - `working`
 - `known fail`
 - `needs review`
-- `canon` only when explicitly approved by Mike Tobi
+- `canon` only when explicitly approved by Mike
 
 ## Current known issue
 

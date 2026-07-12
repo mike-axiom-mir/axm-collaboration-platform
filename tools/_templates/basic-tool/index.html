@@ -57,6 +57,7 @@ function applyProject(d){ if(d) $('demo').value = d.note || ''; }
 let W;
 (async () => {
   const info = await AXM.init({ id:'template', name:'Untitled tool', version:'v1' });
+  AXM.wisdom.on(localStorage.getItem('axm.identity.growth.enabled') !== 'false');
   $('title').textContent = AXM.card().name; $('status').textContent = 'ready · ' + info.storageBackend; W = AXM.wisdom;
   const last = await AXM.store.resume(); if(last){ applyProject(last.data); }
   AXM.store.startAutosave(getProject, 8000);

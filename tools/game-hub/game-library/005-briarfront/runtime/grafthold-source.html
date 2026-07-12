@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grafthold — walk & build</title>
+<style>
+  :root{ --ink:#0a0e17; --leaf:#63d68a; --mist:#8fb0c8; --gold:#e8b54a; --dim:#5a6b7d; --wood:#c08a4a; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden;background:var(--ink);
+    font-family:ui-monospace,"Cascadia Mono",monospace;user-select:none;-webkit-tap-highlight-color:transparent}
+  #scene{position:fixed;inset:0;touch-action:none}
+  .stick{position:fixed;z-index:8;width:96px;height:96px;border:1px solid rgba(207,238,255,.25);border-radius:50%;
+    transform:translate(-50%,-50%);pointer-events:none;display:none}
+  .stick .nub{position:absolute;left:50%;top:50%;width:34px;height:34px;border-radius:50%;
+    background:rgba(99,214,138,.35);border:1px solid rgba(99,214,138,.6);transform:translate(-50%,-50%)}
+  .hud{position:fixed;left:16px;top:16px;z-index:10;pointer-events:none;
+    color:var(--mist);font-size:11px;letter-spacing:.13em;text-transform:uppercase;line-height:2}
+  .hud b{color:var(--leaf)} .hud .t{color:var(--gold)} .hud .w{color:var(--wood)} .hud .d{color:var(--dim)}
+  .title{position:fixed;right:16px;top:16px;z-index:10;text-align:right;pointer-events:none}
+  .title h1{color:#dce2ea;font-size:12px;font-weight:600;letter-spacing:.2em}
+  .title p{color:var(--mist);font-size:9px;letter-spacing:.16em;margin-top:3px;opacity:.7}
+  /* crosshair */
+  .cross{position:fixed;left:50%;top:50%;z-index:9;transform:translate(-50%,-50%);pointer-events:none;
+    width:18px;height:18px;opacity:.6}
+  .cross:before,.cross:after{content:'';position:absolute;background:#cfe;}
+  .cross:before{left:8px;top:0;width:2px;height:18px} .cross:after{top:8px;left:0;height:2px;width:18px}
+  .cross.hot:before,.cross.hot:after{background:var(--gold)}
+  /* prompt when looking at something */
+  .look{position:fixed;left:50%;top:calc(50% + 26px);z-index:10;transform:translateX(-50%);
+    color:var(--gold);font-size:11px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap}
+  .look.show{opacity:.85}
+  /* start overlay (pointer lock needs a click) */
+  .start{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(6,9,14,.92);color:var(--mist);text-align:center;cursor:pointer}
+  .start h2{color:#dce2ea;font-size:16px;letter-spacing:.2em;margin-bottom:14px}
+  .start p{font-size:11px;letter-spacing:.1em;line-height:2.1;opacity:.8}
+  .start .k{color:var(--leaf)}
+  .start .go{margin-top:18px;color:var(--gold);font-size:12px;letter-spacing:.2em;text-transform:uppercase}
+  /* build bar */
+  .bar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:8px;justify-content:center;
+    padding:14px 12px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(6,9,14,.8) 45%)}
+  .slot{pointer-events:auto;min-width:96px;background:rgba(255,255,255,.03);border:1px solid #2a3140;border-radius:11px;
+    padding:8px 12px;color:var(--mist);font-family:inherit;cursor:pointer;text-align:center}
+  .slot.on{border-color:#1c7f92;color:var(--leaf);background:rgba(56,214,236,.08)}
+  .slot .n{font-size:11px;letter-spacing:.1em}
+  .slot .c{font-size:9px;color:var(--dim);margin-top:3px}
+  .slot.locked{opacity:.45}
+  .journal{position:fixed;right:16px;bottom:76px;z-index:10;max-width:210px;text-align:right;
+    color:var(--mist);font-size:9.5px;line-height:1.9;pointer-events:none}
+  .journal .row{opacity:0;animation:fade .5s forwards} @keyframes fade{to{opacity:.55}}
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+
+<div class="hud">
+  wood <b class="w" id="wood">0</b><br>
+  trees <b id="count">0</b> · world age <span class="t" id="worldage">0</span><br>
+  <span class="d">mode</span> <b id="modeLabel">chop</b>
+</div>
+<div class="title"><h1>GRAFTHOLD</h1><p>walk &amp; build · v0.4</p></div>
+
+<div class="cross" id="cross"></div>
+<div class="look" id="look"></div>
+<div class="journal" id="journal"></div>
+<div class="stick" id="stick"><div class="nub" id="stickNub"></div></div>
+
+<div class="bar" id="bar"></div>
+
+<div class="start" id="start">
+  <h2>GRAFTHOLD</h2>
+  <p id="helpDesk"><span class="k">W A S D</span> — walk &nbsp;·&nbsp; <span class="k">mouse</span> — look<br>
+     <span class="k">left click</span> — chop / plant / build &nbsp;·&nbsp; <span class="k">1-6</span> — pick tool<br>
+     <span class="k">esc</span> — release mouse</p>
+  <p id="helpTouch" style="display:none"><span class="k">left half</span> — drag to look<br>
+     <span class="k">right half</span> — drag to walk<br>
+     <span class="k">tap</span> — chop / plant / build &nbsp;·&nbsp; bottom bar — pick tool</p>
+  <div class="go">click to enter</div>
+</div>
+
+<script type="module">
+/* ============================================================
+ * GRAFTHOLD WALK v0.4 — 2026-07-11 (Claude, Route Guardian seat)
+ * CHANGES vs v0.3 (Mike: read this first, memory-log style):
+ *  1. TUNE block below: every gameplay knob in one place. Tweak there.
+ *  2. RECIPES: buildings are DATA now (hard rule: recipe=data, not core).
+ *     New: shelter, workbench, path stone. Build bar generates itself.
+ *  3. Mobile controls: LEFT half drag=look, RIGHT half drag=walk joystick,
+ *     TAP=act. Desktop unchanged (pointer-lock, drag-look fallback kept).
+ *  4. Movement smoothed (accel/decel). ACTION time still immediate —
+ *     only walk velocity eases. Two-clock rule untouched.
+ *  5. Removed dead statement in chop. No other logic changed.
+ * NOT claimed: no human playtest yet. Syntax-checked headless only.
+ * ============================================================ */
+import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js';
+
+/* ---------- world data ---------- */
+const world = { things:[], fires:[], builds:[], born:0, died:0, wood:0 };
+const WORLD = { speed:1.0, ageClock:0 };
+const R_CLEARING = 30;
+/* campfire cost moved into RECIPES (v0.4) — tweak costs there */
+let tool = 'chop';
+
+/* ---------- TUNE (v0.4): all knobs live here ---------- */
+const TUNE = {
+  walkSpeed: 8,        /* top speed, units/s */
+  walkAccel: 12,       /* higher = snappier (reaches speed in ~1/ACCEL*3 s) */
+  lookSensTouch: 0.006,
+  lookSensMouse: 0.005,
+  lookSensLocked: 0.0022,
+  stickRadius: 48,     /* joystick throw in px */
+  tapPx: 8, tapMs: 350 /* what still counts as a tap */
+};
+
+/* ---------- RECIPES (v0.4): buildings are data, not code ----------
+ * Add a recipe here + a builder in BUILDERS and the bar updates itself.
+ * cost is wood for now; more materials later = more keys, same shape. */
+const RECIPES = [
+  { id:'campfire',  icon:'🔥', name:'campfire',  cost:5,  key:'Digit3' },
+  { id:'shelter',   icon:'⛺', name:'shelter',   cost:12, key:'Digit4' },
+  { id:'workbench', icon:'🪚', name:'workbench', cost:8,  key:'Digit5' },
+  { id:'path',      icon:'🪨', name:'path stone',cost:1,  key:'Digit6' }
+];
+
+function rng(seed){ let s=seed%2147483647; if(s<=0)s+=2147483646; return ()=> (s=s*16807%2147483647)/2147483647; }
+
+/* ---------- renderer / scene ---------- */
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#0f1622');
+scene.fog = new THREE.Fog('#0f1622', 18, 70);
+
+const camera = new THREE.PerspectiveCamera(70, innerWidth/innerHeight, 0.1, 400);
+const player = { x:0, z:16, yaw:Math.PI, pitch:-0.02, eye:2.7,
+                 fwd:0, strafe:0, keys:{},
+                 vx:0, vz:0, touchFwd:0, touchStrafe:0 };  /* v0.4 */
+
+/* ---------- light ---------- */
+scene.add(new THREE.HemisphereLight('#bcd3e8', '#20361f', 0.6));
+const sun = new THREE.DirectionalLight('#ffd9a0', 1.1);
+sun.position.set(-10,16,8); sun.castShadow = true;
+sun.shadow.mapSize.set(2048,2048); sun.shadow.camera.far=90;
+sun.shadow.camera.left=-40; sun.shadow.camera.right=40; sun.shadow.camera.top=40; sun.shadow.camera.bottom=-40;
+scene.add(sun);
+const rim = new THREE.DirectionalLight('#5aa0ff',0.3); rim.position.set(8,6,-10); scene.add(rim);
+
+/* ---------- ground ---------- */
+const ground = new THREE.Mesh(
+  new THREE.CircleGeometry(R_CLEARING+6,64).rotateX(-Math.PI/2),
+  new THREE.MeshStandardMaterial({ color:'#243619', roughness:1 }));
+ground.receiveShadow = true; scene.add(ground);
+const stoneMat = new THREE.MeshStandardMaterial({ color:'#3a4152', roughness:1 });
+for(let i=0;i<40;i++){ const a=(i/40)*Math.PI*2;
+  const s=new THREE.Mesh(new THREE.DodecahedronGeometry(0.35+Math.random()*0.35),stoneMat);
+  s.position.set(Math.cos(a)*(R_CLEARING+3),0.1,Math.sin(a)*(R_CLEARING+3));
+  s.rotation.set(Math.random(),Math.random(),Math.random()); s.castShadow=s.receiveShadow=true; scene.add(s); }
+
+/* ---------- mirror tree ---------- */
+const barkMat = new THREE.MeshStandardMaterial({ color:'#6b4f2f', roughness:.9 });
+const treeGroup = new THREE.Group(); scene.add(treeGroup);
+function buildMirrorTree(green){
+  treeGroup.clear(); const g=Math.max(1,green); const h=1.6+Math.log2(g+1)*1.2;
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.26,h,8),barkMat);
+  trunk.position.y=h/2; trunk.castShadow=true; treeGroup.add(trunk);
+  const lm=new THREE.MeshStandardMaterial({color:'#63d68a',roughness:.7,emissive:'#0d3d22',emissiveIntensity:.4});
+  for(let i=0;i<g;i++){ const leaf=new THREE.Mesh(new THREE.IcosahedronGeometry(0.6+Math.random()*0.35,0),lm);
+    const a=(i/g)*Math.PI*2+i*0.6,rad=g===1?0:0.5+(i%3)*0.35;
+    leaf.position.set(Math.cos(a)*rad,h+0.3+(i%2)*0.4,Math.sin(a)*rad); leaf.castShadow=true; treeGroup.add(leaf); }
+  const glow=new THREE.PointLight('#63d68a',0.6,8); glow.position.y=0.7; treeGroup.add(glow);
+}
+buildMirrorTree(1);
+
+/* ---------- trees (living, choppable) ---------- */
+const MATURE=8, LIFESPAN=60, SEED_FROM=32, OFFSPRING=1.2;
+function makeLeafMat(rand){ const c=new THREE.Color().setHSL(0.27+rand()*0.1,0.4+rand()*0.2,0.42+rand()*0.14);
+  return new THREE.MeshStandardMaterial({color:c,roughness:.75}); }
+function spawnTree(x,z,seed,bornAt){
+  const rand=rng(seed); const grp=new THREE.Group();
+  const leafMat=makeLeafMat(rand); const trunkH=2.6+rand()*2.6;
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.12+rand()*0.06,0.22+rand()*0.1,trunkH,6),barkMat);
+  trunk.position.y=trunkH/2; trunk.castShadow=true; grp.add(trunk);
+  const clumps=2+Math.floor(rand()*4);
+  for(let i=0;i<clumps;i++){ const m=new THREE.Mesh(new THREE.IcosahedronGeometry(0.5+rand()*0.7,0),leafMat);
+    const a=rand()*Math.PI*2,rad=rand()*0.9; m.position.set(Math.cos(a)*rad,trunkH*0.75+rand()*trunkH*0.4,Math.sin(a)*rad); m.castShadow=true; grp.add(m); }
+  grp.rotation.z=(rand()-0.5)*0.25; grp.position.set(x,0,z);
+  const thing={ id:'t'+seed, x,z,seed,type:'tree',born:bornAt!=null?bornAt:WORLD.ageClock,seeded:false,mesh:grp,fullH:trunkH };
+  scene.add(grp); world.things.push(thing); applyGrowth(thing); return thing;
+}
+function applyGrowth(th){
+  const age=WORLD.ageClock-th.born; let g;
+  if(age<MATURE)g=0.12+(age/MATURE)*0.88; else if(age<LIFESPAN-8)g=1; else g=Math.max(0.2,1-(age-(LIFESPAN-8))/8*0.5);
+  th.mesh.scale.setScalar(g); th.grown=g;
+}
+function crowded(x,z){ for(const t of world.things){ if(Math.hypot(t.x-x,t.z-z)<2.2) return true; } return false; }
+
+/* population step */
+let lastPop=0;
+function populationStep(){
+  const nb=[];
+  for(let i=world.things.length-1;i>=0;i--){ const th=world.things[i]; const age=WORLD.ageClock-th.born;
+    if(!th.seeded&&age>SEED_FROM){ th.seeded=true; const rand=rng(th.seed^0x9e37); const n=Math.random()<(OFFSPRING-1)?2:1;
+      for(let k=0;k<n;k++){ const a=rand()*6.28,d=3+rand()*4; const nx=th.x+Math.cos(a)*d,nz=th.z+Math.sin(a)*d;
+        if(Math.hypot(nx,nz)<R_CLEARING&&!crowded(nx,nz)) nb.push([nx,nz,(th.seed*7+k*131+((WORLD.ageClock*10)|0))|0]); } }
+    if(age>LIFESPAN){ scene.remove(th.mesh); world.things.splice(i,1); world.died++; }
+  }
+  nb.forEach(([x,z,s])=>{ spawnTree(x,z,s); world.born++; });
+  if(nb.length) addJournal(nb.length+' seedling'+(nb.length>1?'s':'')+' took root');
+}
+
+/* ---------- build: campfire (first schematic) ---------- */
+function buildCampfire(x,z){
+  const grp=new THREE.Group();
+  const ringMat=new THREE.MeshStandardMaterial({color:'#4a4a52',roughness:1});
+  for(let i=0;i<7;i++){ const a=(i/7)*Math.PI*2; const s=new THREE.Mesh(new THREE.DodecahedronGeometry(0.22),ringMat);
+    s.position.set(Math.cos(a)*0.6,0.15,Math.sin(a)*0.6); s.castShadow=true; grp.add(s); }
+  const logMat=new THREE.MeshStandardMaterial({color:'#5a3f24',roughness:.9});
+  for(let i=0;i<3;i++){ const l=new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.08,0.9,5),logMat);
+    l.rotation.z=Math.PI/2.4; l.rotation.y=i*1.1; l.position.y=0.2; grp.add(l); }
+  const flame=new THREE.Mesh(new THREE.ConeGeometry(0.28,0.7,6),
+    new THREE.MeshStandardMaterial({color:'#ff9838',emissive:'#ff6a1a',emissiveIntensity:1.4}));
+  flame.position.y=0.55; grp.add(flame);
+  const light=new THREE.PointLight('#ff9a3c',1.6,10); light.position.y=1; grp.add(light);
+  grp.position.set(x,0,z); scene.add(grp);
+  world.fires.push({ mesh:grp, flame, light });
+  addJournal('you built a campfire');
+}
+
+function buildShelter(x,z,yaw){
+  const grp=new THREE.Group();
+  const wood=new THREE.MeshStandardMaterial({color:'#7a5a33',roughness:.85});
+  const dark=new THREE.MeshStandardMaterial({color:'#5a3f24',roughness:.9});
+  /* lean-to: two posts, a ridge, slanted roof planks */
+  for(const sx of [-1,1]){ const post=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,2.1,6),dark);
+    post.position.set(sx*1.1,1.05,0); post.castShadow=true; grp.add(post); }
+  const ridge=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,2.5,6),dark);
+  ridge.rotation.z=Math.PI/2; ridge.position.y=2.05; grp.add(ridge);
+  for(let i=0;i<6;i++){ const plank=new THREE.Mesh(new THREE.BoxGeometry(0.38,0.04,2.6),wood);
+    plank.position.set(-1.05+i*0.42,1.35,-1.0); plank.rotation.x=-0.72; plank.castShadow=true; grp.add(plank); }
+  grp.position.set(x,0,z); grp.rotation.y=yaw+Math.PI; scene.add(grp); return grp;
+}
+function buildWorkbench(x,z,yaw){
+  const grp=new THREE.Group();
+  const wood=new THREE.MeshStandardMaterial({color:'#8a6a3e',roughness:.8});
+  const top=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.1,0.8),wood);
+  top.position.y=0.95; top.castShadow=true; grp.add(top);
+  for(const sx of [-0.7,0.7]) for(const sz of [-0.3,0.3]){
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.95,0.1),wood);
+    leg.position.set(sx,0.47,sz); leg.castShadow=true; grp.add(leg); }
+  const stump=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.26,0.5,7),barkMat);
+  stump.position.set(1.2,0.25,0.2); stump.castShadow=true; grp.add(stump);
+  grp.position.set(x,0,z); grp.rotation.y=yaw; scene.add(grp); return grp;
+}
+function buildPath(x,z){
+  const grp=new THREE.Group();
+  const stone=new THREE.MeshStandardMaterial({color:'#59616f',roughness:1});
+  const slab=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.6,0.07,7),stone);
+  slab.position.y=0.035; slab.rotation.y=Math.random()*Math.PI; slab.receiveShadow=true; grp.add(slab);
+  grp.position.set(x,0,z); scene.add(grp); return grp;
+}
+/* registry: recipe id -> builder(x,z,yaw). Campfire routes to the v0.3 fn. */
+const BUILDERS = {
+  campfire:(x,z)=>buildCampfire(x,z),
+  shelter:(x,z,yaw)=>{ world.builds.push({id:'shelter',mesh:buildShelter(x,z,yaw)}); addJournal('you built a shelter'); },
+  workbench:(x,z,yaw)=>{ world.builds.push({id:'workbench',mesh:buildWorkbench(x,z,yaw)}); addJournal('you built a workbench'); },
+  path:(x,z)=>{ world.builds.push({id:'path',mesh:buildPath(x,z)}); addJournal('you laid a path stone'); }
+};
+
+/* ---------- HUD / journal ---------- */
+function updateHUD(){
+  document.getElementById('wood').textContent=world.wood;
+  document.getElementById('count').textContent=world.things.length;
+  document.getElementById('worldage').textContent=WORLD.ageClock.toFixed(0);
+  RECIPES.forEach(r=>{ slots[r.id].classList.toggle('locked', world.wood<r.cost); });
+}
+const journal=[];
+function addJournal(t){ const el=document.getElementById('journal'); const r=document.createElement('div');
+  r.className='row'; r.textContent=t; el.appendChild(r); while(el.children.length>5) el.removeChild(el.firstChild); }
+
+/* ---------- tool select (v0.4: bar built from data) ---------- */
+const barEl=document.getElementById('bar');
+const slots={};
+function addSlot(id,icon,label,sub){
+  const b=document.createElement('button'); b.className='slot';
+  b.innerHTML='<div class="n">'+icon+' '+label+'</div><div class="c">'+sub+'</div>';
+  b.onclick=e=>{ e.stopPropagation(); pickTool(id); };
+  barEl.appendChild(b); slots[id]=b;
+}
+addSlot('chop','✋','chop','tap a tree');
+addSlot('plant','🌱','plant','costs nothing');
+RECIPES.forEach(r=>addSlot(r.id,r.icon,r.name,'needs '+r.cost+' wood'));
+function recipeOf(id){ return RECIPES.find(r=>r.id===id); }
+function pickTool(t){
+  const r=recipeOf(t);
+  if(r && world.wood<r.cost){ addJournal('need '+r.cost+' wood for a '+r.name); return; }
+  setTool(t);
+}
+function setTool(t){ tool=t;
+  for(const id in slots) slots[id].classList.toggle('on',id===t);
+  document.getElementById('modeLabel').textContent=recipeOf(t)?recipeOf(t).name:t;
+}
+setTool('chop');
+
+/* ---------- pointer lock + controls (v0.4 unified) ----------
+ * Desktop: pointer-lock; drag-look fallback if the browser blocks it (KEEP).
+ * Touch:   LEFT half drag = look · RIGHT half drag = walk joystick · tap = act.
+ * One look finger + one walk finger work at the same time.
+ * Mouse listeners removed so touch taps can't double-fire via synthetic events. */
+const startEl=document.getElementById('start');
+let locked=false, entered=false;
+const isTouchDevice=('ontouchstart' in window)||navigator.maxTouchPoints>0;
+if(isTouchDevice){ document.getElementById('helpDesk').style.display='none';
+                   document.getElementById('helpTouch').style.display=''; }
+
+function enter(){
+  entered=true;
+  startEl.style.display='none';
+  if(!isTouchDevice){
+    const p = canvas.requestPointerLock && canvas.requestPointerLock();
+    if(p && p.catch) p.catch(()=>{ /* blocked — drag-look mode */ });
+  }
+}
+startEl.addEventListener('click', enter);
+startEl.addEventListener('touchstart', function(e){ e.preventDefault(); enter(); }, {passive:false});
+
+document.addEventListener('pointerlockchange',()=>{ locked=document.pointerLockElement===canvas; });
+document.addEventListener('pointerlockerror',()=>{ /* blocked — silent, drag-look works */ });
+
+const stickEl=document.getElementById('stick'), stickNub=document.getElementById('stickNub');
+const pointers=new Map();   /* id -> {x0,y0,x,y,role,t0,moved} */
+let lookId=null, walkId=null;
+function setStick(x,y,dx,dy){ stickEl.style.display='block'; stickEl.style.left=x+'px'; stickEl.style.top=y+'px';
+  stickNub.style.transform='translate(-50%,-50%) translate('+dx+'px,'+dy+'px)'; }
+function clearStick(){ stickEl.style.display='none'; player.touchFwd=0; player.touchStrafe=0; }
+
+canvas.addEventListener('pointerdown',e=>{
+  if(!entered) return;
+  if(e.pointerType==='mouse'){
+    if(e.button!==0) return;
+    pointers.set(e.pointerId,{x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY,role:'mouse',t0:performance.now(),moved:false});
+    return;
+  }
+  const role = e.clientX < innerWidth/2 ? 'look' : 'walk';
+  if(role==='look' && lookId!==null) return;
+  if(role==='walk' && walkId!==null) return;
+  pointers.set(e.pointerId,{x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY,role,t0:performance.now(),moved:false});
+  if(role==='look') lookId=e.pointerId;
+  else { walkId=e.pointerId; setStick(e.clientX,e.clientY,0,0); }
+});
+canvas.addEventListener('pointermove',e=>{
+  if(!entered) return;
+  if(locked){ player.yaw -= e.movementX*TUNE.lookSensLocked;
+    player.pitch=Math.max(-1.2,Math.min(0.7,player.pitch-e.movementY*TUNE.lookSensLocked)); return; }
+  const p=pointers.get(e.pointerId); if(!p) return;
+  const dx=e.clientX-p.x, dy=e.clientY-p.y;
+  if(Math.abs(e.clientX-p.x0)+Math.abs(e.clientY-p.y0)>TUNE.tapPx) p.moved=true;
+  if(p.role==='mouse'||p.role==='look'){
+    const sens=p.role==='mouse'?TUNE.lookSensMouse:TUNE.lookSensTouch;
+    player.yaw -= dx*sens; player.pitch=Math.max(-1.2,Math.min(0.7,player.pitch-dy*sens));
+  } else if(p.role==='walk'){
+    let jx=e.clientX-p.x0, jy=e.clientY-p.y0;
+    const m=Math.hypot(jx,jy); if(m>TUNE.stickRadius){ jx*=TUNE.stickRadius/m; jy*=TUNE.stickRadius/m; }
+    player.touchFwd   = -jy/TUNE.stickRadius;
+    player.touchStrafe=  jx/TUNE.stickRadius;
+    setStick(p.x0,p.y0,jx,jy);
+  }
+  p.x=e.clientX; p.y=e.clientY;
+});
+function endPointer(e){
+  const p=pointers.get(e.pointerId); if(!p) return;
+  pointers.delete(e.pointerId);
+  if(p.role==='look') lookId=null;
+  if(p.role==='walk'){ walkId=null; clearStick(); }
+  const quick = performance.now()-p.t0 < TUNE.tapMs;
+  if(!p.moved && quick && !(e.target.closest && e.target.closest('.bar'))) act();
+}
+canvas.addEventListener('pointerup',endPointer);
+canvas.addEventListener('pointercancel',e=>{ const p=pointers.get(e.pointerId);
+  if(p&&p.role==='walk'){ walkId=null; clearStick(); } if(p&&p.role==='look') lookId=null; pointers.delete(e.pointerId); });
+
+/* locked mode: plain click acts (no drag ambiguity under pointer lock) */
+canvas.addEventListener('click',()=>{ if(entered&&locked) act(); });
+
+addEventListener('keydown',e=>{ player.keys[e.code]=true;
+  if(e.code==='Digit1') pickTool('chop'); if(e.code==='Digit2') pickTool('plant');
+  const r=RECIPES.find(r=>r.key===e.code); if(r) pickTool(r.id);
+});
+addEventListener('keyup',e=>{ player.keys[e.code]=false; });
+
+const ray=new THREE.Raycaster();
+function centerRay(){ ray.setFromCamera(new THREE.Vector2(0,0), camera); }
+function lookingAtTree(){
+  centerRay();
+  const meshes=world.things.map(t=>t.mesh);
+  const hit=ray.intersectObjects(meshes,true)[0];
+  if(!hit) return null;
+  let o=hit.object; while(o.parent && !world.things.find(t=>t.mesh===o)) o=o.parent;
+  const th=world.things.find(t=>t.mesh===o);
+  return (th && hit.distance<7) ? {th,point:hit.point} : null;
+}
+function groundPoint(){
+  centerRay(); const hit=ray.intersectObject(ground)[0];
+  return hit && hit.distance<9 ? hit.point : null;
+}
+function act(){
+  if(tool==='chop'){
+    const look=lookingAtTree();
+    if(look){ const {th}=look;
+      const yield_=Math.max(1,Math.round(th.grown*3));   /* bigger tree = more wood */
+      world.wood+=yield_;
+      scene.remove(th.mesh); world.things.splice(world.things.indexOf(th),1); world.died++;
+      addJournal('chopped a tree · +'+yield_+' wood'); updateHUD();
+    } else addJournal('nothing to chop here');
+  } else if(tool==='plant'){
+    const p=groundPoint();
+    if(p && Math.hypot(p.x,p.z)<R_CLEARING && !crowded(p.x,p.z)){ spawnTree(p.x,p.z,(Math.random()*1e9)|0); world.born++; addJournal('planted a sapling'); updateHUD(); }
+    else addJournal('no room to plant there');
+  } else { const r=recipeOf(tool); if(!r) return;
+    if(world.wood<r.cost){ addJournal('need '+r.cost+' wood'); return; }
+    const p=groundPoint();
+    if(p && Math.hypot(p.x,p.z)<R_CLEARING){
+      world.wood-=r.cost; BUILDERS[r.id](p.x,p.z,player.yaw); updateHUD();
+      if(world.wood<r.cost) setTool('chop');
+    } else addJournal('pick flat ground for the '+r.name);
+  }
+}
+
+/* ---------- look prompt ---------- */
+const crossEl=document.getElementById('cross'), lookEl=document.getElementById('look');
+function updateLookPrompt(){
+  if(!entered){ lookEl.classList.remove('show'); crossEl.classList.remove('hot'); return; }
+  if(tool==='chop'){ const l=lookingAtTree();
+    if(l){ lookEl.textContent='chop tree'; lookEl.classList.add('show'); crossEl.classList.add('hot'); return; } }
+  else if(tool==='plant'){ lookEl.textContent='plant here'; lookEl.classList.add('show'); crossEl.classList.remove('hot'); return; }
+  else { const r=recipeOf(tool); if(r){ lookEl.textContent='build '+r.name; lookEl.classList.add('show'); crossEl.classList.add('hot'); return; } }
+  lookEl.classList.remove('show'); crossEl.classList.remove('hot');
+}
+
+/* ---------- loop ---------- */
+let prev=performance.now();
+function frame(now){
+  requestAnimationFrame(frame);
+  const dt=Math.min(0.05,(now-prev)/1000); prev=now;
+  WORLD.ageClock += dt*WORLD.speed;
+  if(WORLD.ageClock-lastPop>2){ lastPop=WORLD.ageClock; populationStep(); updateHUD(); }
+  world.things.forEach(applyGrowth);
+
+  /* movement (v0.4): keys + joystick, eased velocity, same top speed */
+  const k=player.keys;
+  const inFwd   =Math.max(-1,Math.min(1,((k.KeyW?1:0)-(k.KeyS?1:0))+player.touchFwd));
+  const inStrafe=Math.max(-1,Math.min(1,((k.KeyD?1:0)-(k.KeyA?1:0))+player.touchStrafe));
+  const tvx=(Math.sin(player.yaw)*inFwd+Math.cos(player.yaw)*inStrafe)*TUNE.walkSpeed;
+  const tvz=(Math.cos(player.yaw)*inFwd-Math.sin(player.yaw)*inStrafe)*TUNE.walkSpeed;
+  const blend=Math.min(1,TUNE.walkAccel*dt);
+  player.vx+=(tvx-player.vx)*blend; player.vz+=(tvz-player.vz)*blend;
+  player.x+=player.vx*dt; player.z+=player.vz*dt;
+  const d=Math.hypot(player.x,player.z); if(d>R_CLEARING){ player.x*=R_CLEARING/d; player.z*=R_CLEARING/d; }
+  camera.position.set(player.x,player.eye,player.z);
+  camera.lookAt(player.x+Math.sin(player.yaw)*Math.cos(player.pitch), player.eye+Math.sin(player.pitch), player.z+Math.cos(player.yaw)*Math.cos(player.pitch));
+
+  /* flicker fires */
+  world.fires.forEach(f=>{ f.flame.scale.y=1+Math.sin(now*0.02+f.mesh.position.x)*0.18; f.light.intensity=1.4+Math.sin(now*0.03)*0.4; });
+  treeGroup.rotation.y=Math.sin(now*0.0002)*0.05;
+
+  updateLookPrompt();
+  renderer.render(scene,camera);
+}
+
+/* seed a starting grove */
+for(let i=0;i<7;i++){ const a=Math.random()*Math.PI*2,r=4+Math.random()*16;
+  spawnTree(Math.cos(a)*r,Math.sin(a)*r,(Math.random()*1e9)|0,-Math.random()*30); world.born++; }
+updateHUD(); addJournal('you arrived in the clearing');
+requestAnimationFrame(frame);
+
+addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
+window.setMirror=g=>buildMirrorTree(g);
+</script>
+</body></html>
+
+

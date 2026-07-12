@@ -1,15 +1,13 @@
 {
   "id": "agent-command-center",
   "name": "AXM Agent Command Center",
-  "version": "v0.1",
-  "status": "SHELL",
+  "version": "v0.4",
+  "status": "TEST",
   "entry": "index.html",
-  "type": "local-module",
-  "tags": [
-    "agents",
-    "identity",
-    "connectors"
-  ],
-  "notes": "Assembles prepared parts into package profiles and binds an identity to a connector \u2014 where an agent is put together before it runs. (Landing card + rules; module UI is the next build.)",
-  "uses": []
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "permissions": [],
+  "tags": ["agents", "identity", "connectors"],
+  "notes": "Identity and connector control plane for Nova, Axiom/Mir, and an optional local Google Gemma identity. Enforces private memory boundaries, connector/model locks, optional default selection, and explicit shared wisdom.",
+  "uses": ["storage", "wisdom", "identity", "ai", "gate"]
 }

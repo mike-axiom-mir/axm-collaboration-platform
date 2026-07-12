@@ -1,0 +1,16 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "game-hub",
+  "version": "v0.2",
+  "provides": ["game-library", "managed-game-runtime", "reviewed-asset-inbox"],
+  "consumes": ["axm.game-asset/v1", "game.manifest.json"],
+  "permissions": ["files", "gate"],
+  "handoffs": {
+    "emits": ["axm.game-asset-acceptance/v1"],
+    "accepts": ["axm.game-asset/v1"]
+  },
+  "boundaries": {
+    "writes": ["game-hub:asset-inbox", "accepted-game-folder:assets/studio"],
+    "refuses": ["unreviewed-package-write", "path-escape", "hidden-runtime-launch"]
+  }
+}

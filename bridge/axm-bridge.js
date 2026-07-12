@@ -56,6 +56,11 @@ var HOST = '127.0.0.1';                       // local machine ONLY
    Tools choose per request: AXM.ask(prompt, { provider:'chatgpt' })
    No provider named -> first one that has a key.                        */
 var PROVIDERS = {
+  local: {
+    key: '',
+    requiresKey: false,
+    model: process.env.AXM_LOCAL_MODEL || 'local-model'
+  },
   claude: {
     key: process.env.ANTHROPIC_API_KEY || '',
     model: process.env.AXM_CLAUDE_MODEL || 'claude-sonnet-4-6'
@@ -71,6 +76,7 @@ function firstProvider() {
   return null;
 }
 var RATE_PER_MIN = process.env.AXM_BRIDGE_RATE ? Number(process.env.AXM_BRIDGE_RATE) : 30;
+var LOCAL_MODEL_PORT = process.env.AXM_LOCAL_MODEL_PORT ? Number(process.env.AXM_LOCAL_MODEL_PORT) : 1234;
 
 /* who may knock: the workshop by default; extend via env if you must */
 var ALLOWED_ORIGINS = (process.env.AXM_ALLOWED_ORIGINS ||
@@ -94,6 +100,7 @@ function audit(line) {
 
 /* ---- rate cap ------------------------------------------------------------ */
 var stamps = [];
+var AGENTS_PAUSED = false;
 function overRate() {
   var now = Date.now();
   stamps = stamps.filter(function (t) { return now - t < 60000; });
@@ -122,6 +129,21 @@ function httpsJson(options, body) {
       });
     });
     req.on('error', reject); req.write(body); req.end();
+  });
+}
+
+function httpJson(options, body) {
+  return new Promise(function (resolve, reject) {
+    var req = http.request(options, function (res) {
+      var data = ''; res.on('data', function (d) { data += d; });
+      res.on('end', function () {
+        try { resolve(JSON.parse(data)); }
+        catch (e) { reject(new Error('bad local model response')); }
+      });
+    });
+    req.on('error', reject);
+    if (body) req.write(body);
+    req.end();
   });
 }
 
@@ -154,15 +176,34 @@ function callAI(payload) {
   if (!which) return Promise.reject(new Error('no keys set — set ANTHROPIC_API_KEY and/or OPENAI_API_KEY'));
   var p = PROVIDERS[which];
   if (!p) return Promise.reject(new Error('unknown provider: ' + which + ' (have: ' + Object.keys(PROVIDERS).join(', ') + ')'));
-  if (!p.key) return Promise.reject(new Error('provider ' + which + ' has no key set on this machine'));
+  if (p.requiresKey !== false && !p.key) return Promise.reject(new Error('provider ' + which + ' has no key set on this machine'));
   var messages = payload.messages || [];
+
+  if (which === 'local') {
+    var lmsgs = opts.system ? [{ role: 'system', content: opts.system }].concat(messages) : messages;
+    var lbody = JSON.stringify({
+      model: opts.model || p.model,
+      messages: lmsgs,
+      max_tokens: opts.maxTokens || 1024,
+      temperature: typeof opts.temperature === 'number' ? opts.temperature : 0
+    });
+    return httpJson({
+      hostname: '127.0.0.1', port: LOCAL_MODEL_PORT, path: '/v1/chat/completions', method: 'POST',
+      headers: { 'content-type': 'application/json', 'content-length': Buffer.byteLength(lbody) }
+    }, lbody).then(function (j) {
+      if (j.error) throw new Error('local: ' + (j.error.message || 'api error'));
+      var text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
+      return { text: text, provider: 'local', raw: j };
+    });
+  }
 
   if (which === 'claude') {
     var body = JSON.stringify({
       model: opts.model || p.model,
       max_tokens: opts.maxTokens || 1024,
       messages: messages,
-      system: opts.system || undefined
+      system: opts.system || undefined,
+      temperature: typeof opts.temperature === 'number' ? opts.temperature : 0
     });
     return httpsJson({
       hostname: 'api.anthropic.com', path: '/v1/messages', method: 'POST',
@@ -181,7 +222,8 @@ function callAI(payload) {
   var obody = JSON.stringify({
     model: opts.model || p.model,
     max_completion_tokens: opts.maxTokens || 1024,
-    messages: msgs
+    messages: msgs,
+    temperature: typeof opts.temperature === 'number' ? opts.temperature : 0
   });
   return httpsJson({
     hostname: 'api.openai.com', path: '/v1/chat/completions', method: 'POST',
@@ -214,8 +256,43 @@ var server = http.createServer(function (req, res) {
     return send(res, 200, { ok: true, locked: true,
       providers: {
         claude:  { hasKey: !!PROVIDERS.claude.key,  model: PROVIDERS.claude.model },
-        chatgpt: { hasKey: !!PROVIDERS.chatgpt.key, model: PROVIDERS.chatgpt.model }
+        chatgpt: { hasKey: !!PROVIDERS.chatgpt.key, model: PROVIDERS.chatgpt.model },
+        local:   { requiresKey: false, model: PROVIDERS.local.model, port: LOCAL_MODEL_PORT }
       } }, origin);
+  }
+
+  if (req.method === 'GET' && req.url === '/local-models') {
+    var localPass = allowed(req);
+    if (!localPass) {
+      audit('REFUSED /local-models from origin=' + (origin || 'none') + ' (no valid stamp, no valid token)');
+      return send(res, 403, { error: 'refused: not the workshop and no valid token' }, origin);
+    }
+    return httpJson({ hostname: '127.0.0.1', port: LOCAL_MODEL_PORT, path: '/v1/models', method: 'GET' })
+      .then(function (j) { send(res, 200, j, origin); })
+      .catch(function (e) { send(res, 502, { error: 'local model server unavailable: ' + e.message }, origin); });
+  }
+
+  if (req.method === 'GET' && req.url === '/agent-state') {
+    var statePass = allowed(req);
+    if (!statePass) return send(res, 403, { error: 'refused: not the workshop and no valid token' }, origin);
+    return send(res, 200, { ok: true, paused: AGENTS_PAUSED, connectorsRemainOnline: true }, origin);
+  }
+
+  if (req.method === 'POST' && req.url === '/agents/pause') {
+    var controlPass = allowed(req);
+    if (!controlPass) {
+      audit('REFUSED /agents/pause from origin=' + (origin || 'none'));
+      return send(res, 403, { error: 'refused: not the workshop and no valid token' }, origin);
+    }
+    var controlBody = '';
+    req.on('data', function (d) { controlBody += d; if (controlBody.length > 4096) req.destroy(); });
+    req.on('end', function () {
+      var payload; try { payload = JSON.parse(controlBody || '{}'); } catch (e) { return send(res, 400, { error: 'bad json' }, origin); }
+      AGENTS_PAUSED = !!payload.paused;
+      audit((AGENTS_PAUSED ? 'PAUSED' : 'RESUMED') + ' all AI agent requests via ' + controlPass + ' · connectors remain online');
+      return send(res, 200, { ok: true, paused: AGENTS_PAUSED, connectorsRemainOnline: true }, origin);
+    });
+    return;
   }
 
   if (req.method === 'POST' && req.url === '/ask') {
@@ -223,6 +300,10 @@ var server = http.createServer(function (req, res) {
     if (!pass) {
       audit('REFUSED /ask from origin=' + (origin || 'none') + ' (no valid stamp, no valid token)');
       return send(res, 403, { error: 'refused: not the workshop and no valid token' }, origin);
+    }
+    if (AGENTS_PAUSED) {
+      audit('REFUSED /ask while all AI agents are paused via ' + pass);
+      return send(res, 503, { error: 'all AI agents are paused in the Hub; connectors remain online' }, origin);
     }
     if (overRate()) {
       audit('RATE-CAPPED /ask (' + RATE_PER_MIN + '/min) via ' + pass);

@@ -36,7 +36,7 @@ AXM neutral helper
 Axiom structure mode
 Mir repair mode
 Claude-style reviewer
-Mike Tobi-facing plain-language helper
+Mike-facing plain-language helper
 SFX forge reviewer
 visual asset reviewer
 code routing reviewer

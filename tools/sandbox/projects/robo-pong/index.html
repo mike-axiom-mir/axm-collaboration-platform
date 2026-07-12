@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Robo Pong · Mike vs Nova</title>
+<style>
+:root{--bg:#050817;--panel:#0c1430;--cy:#2fe6ff;--mag:#ff39db;--text:#eaf6ff;--muted:#8797b6}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#17114c,var(--bg) 55%);color:var(--text);font-family:system-ui,sans-serif;min-height:100vh;display:grid;place-items:center}.wrap{width:min(94vw,470px);padding:12px}.top{display:flex;justify-content:space-between;align-items:end;margin-bottom:8px}h1{font-size:18px;margin:0}.eyebrow{font:10px ui-monospace,monospace;letter-spacing:.2em;color:var(--cy)}.seat{font:11px ui-monospace,monospace;color:var(--muted);text-align:right}.game{position:relative;border:1px solid #244a89;border-radius:18px;overflow:hidden;box-shadow:0 0 28px #182c7c;background:#020615}canvas{display:block;width:100%;aspect-ratio:420/700;touch-action:none}.overlay{position:absolute;inset:0;display:grid;place-items:center;background:#030716b8;text-align:center;padding:20px}.overlay[hidden]{display:none}.overlay b{font-size:28px;text-shadow:0 0 15px var(--cy)}button{font:inherit;border:1px solid #2c5d98;border-radius:10px;background:#101c3b;color:var(--text);padding:9px 13px;cursor:pointer}.start{border-color:var(--cy);color:var(--cy);margin-top:12px}.controls{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:8px;margin-top:9px}.move{font-size:22px;color:var(--cy);user-select:none}.status{font:10px ui-monospace,monospace;color:var(--muted);margin-top:8px;min-height:28px}.note{font-size:11px;color:var(--muted);margin:7px 2px 0}.mag{color:var(--mag)}
+</style>
+</head>
+<body><main class="wrap">
+<div class="top"><div><div class="eyebrow">AXM · PLAYABLE TEST</div><h1>Robo Pong</h1></div><div class="seat"><span class="mag">NOVA · VISIBLE AI SEAT</span><br>MIKE / CODEX · HUMAN TEAM</div></div>
+<div class="game"><canvas id="game" width="420" height="700" aria-label="Robo Pong court"></canvas><div class="overlay" id="overlay"><div><b id="message">READY?</b><div id="sub">First to 5 · Nova chose the top seat</div><button class="start" id="start">Start match</button></div></div></div>
+<div class="controls"><button class="move" id="left">◀</button><button class="move" id="right">▶</button><button id="autoplay">Codex assist: OFF</button></div><a href="../../../game-hub/" style="display:inline-block;margin-top:8px;color:#8797b6;font-size:11px;text-decoration:none">← Game Hub</a>
+<div class="status" id="status">runtime ready · Nova adapter visible · score 0:0</div>
+<p class="note">Drag on the court, use ←/→, or hold the buttons. Nova uses a local deterministic game adapter so the match stays fast; no hidden model calls happen every frame.</p>
+</main>
+<script>
+(function(){'use strict';
+var canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),overlay=document.getElementById('overlay'),message=document.getElementById('message'),sub=document.getElementById('sub'),status=document.getElementById('status');
+var W=420,H=700,playing=false,last=0,keys={left:false,right:false},assist=false,score={nova:0,team:0};
+var player={x:150,y:625,w:120,h:22,speed:310},nova={x:150,y:58,w:120,h:22,speed:245},ball={x:210,y:350,r:10,vx:145,vy:230};
+var images={};['arena_bg_phone_neon_01','paddle_r_obo_player','paddle_byte_bud_ai','core_ball_glow'].forEach(function(n){var im=new Image();im.src='assets/'+n+'.png';images[n]=im;});
+function clamp(x,a,b){return Math.max(a,Math.min(b,x));}function resetBall(towardNova){ball.x=W/2;ball.y=H/2;ball.vx=(Math.random()>.5?1:-1)*(125+Math.random()*55);ball.vy=(towardNova?-1:1)*(210+Math.random()*40);}
+function start(){score.nova=0;score.team=0;player.x=nova.x=150;resetBall(Math.random()>.5);playing=true;overlay.hidden=true;last=performance.now();requestAnimationFrame(loop);}
+function point(who){score[who]++;playing=false;message.textContent=who==='team'?'+1 MIKE / CODEX':'+1 NOVA';sub.textContent='Nova '+score.nova+' · '+score.team+' Team';overlay.hidden=false;if(score[who]>=5){message.textContent=who==='team'?'TEAM WINS!':'NOVA WINS!';sub.textContent='Final · Nova '+score.nova+' · '+score.team+' Team';document.getElementById('start').textContent='Rematch';fetch('http://127.0.0.1:8789/game/end',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({summary:{winner:who,score:{nova:score.nova,team:score.team}}})}).catch(function(){});}else{document.getElementById('start').textContent='Next serve';setTimeout(function(){if(!playing){resetBall(who==='team');playing=true;overlay.hidden=true;last=performance.now();requestAnimationFrame(loop);}},700);}}
+function paddleHit(p,top){var within=ball.x+ball.r>p.x&&ball.x-ball.r<p.x+p.w;if(!within)return false;if(top&&ball.vy<0&&ball.y-ball.r<=p.y+p.h&&ball.y>p.y){ball.y=p.y+p.h+ball.r;ball.vy=Math.abs(ball.vy)*1.025;}else if(!top&&ball.vy>0&&ball.y+ball.r>=p.y&&ball.y<p.y+p.h){ball.y=p.y-ball.r;ball.vy=-Math.abs(ball.vy)*1.025;}else return false;var offset=(ball.x-(p.x+p.w/2))/(p.w/2);ball.vx=clamp(ball.vx+offset*125,-310,310);return true;}
+function update(dt){
+  var move=(keys.right?1:0)-(keys.left?1:0);if(assist){var aim=ball.x-player.w/2;move=Math.abs(aim-player.x)<5?0:(aim>player.x?1:-1);}player.x=clamp(player.x+move*player.speed*dt,45,W-45-player.w);
+  var target=ball.x-nova.w/2+(ball.vx>0?10:-10),delta=target-nova.x;nova.x=clamp(nova.x+clamp(delta,-nova.speed*dt,nova.speed*dt),45,W-45-nova.w);
+  ball.x+=ball.vx*dt;ball.y+=ball.vy*dt;if(ball.x-ball.r<38){ball.x=38+ball.r;ball.vx=Math.abs(ball.vx);}if(ball.x+ball.r>W-38){ball.x=W-38-ball.r;ball.vx=-Math.abs(ball.vx);}paddleHit(nova,true);paddleHit(player,false);if(ball.y<-25)return point('team');if(ball.y>H+25)return point('nova');
+  status.textContent='LIVE · ball '+Math.round(ball.x)+','+Math.round(ball.y)+' · Nova paddle '+Math.round(nova.x)+' · team paddle '+Math.round(player.x)+' · score '+score.nova+':'+score.team+(assist?' · Codex assist ON':'');
+}
+function draw(){ctx.clearRect(0,0,W,H);var bg=images.arena_bg_phone_neon_01;if(bg.complete)ctx.drawImage(bg,0,0,W,H);else{ctx.fillStyle='#050923';ctx.fillRect(0,0,W,H);}ctx.fillStyle='#07122db0';ctx.fillRect(34,35,W-68,H-70);ctx.strokeStyle='#2fe6ff55';ctx.setLineDash([7,9]);ctx.beginPath();ctx.moveTo(40,H/2);ctx.lineTo(W-40,H/2);ctx.stroke();ctx.setLineDash([]);
+  var ni=images.paddle_byte_bud_ai,pi=images.paddle_r_obo_player,bi=images.core_ball_glow;if(ni.complete)ctx.drawImage(ni,nova.x,nova.y,nova.w,nova.h);else{ctx.fillStyle='#ff39db';ctx.fillRect(nova.x,nova.y,nova.w,nova.h);}if(pi.complete)ctx.drawImage(pi,player.x,player.y,player.w,player.h);else{ctx.fillStyle='#2fe6ff';ctx.fillRect(player.x,player.y,player.w,player.h);}if(bi.complete)ctx.drawImage(bi,ball.x-16,ball.y-15,32,30);else{ctx.fillStyle='white';ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.fill();}
+  ctx.font='bold 22px ui-monospace';ctx.textAlign='center';ctx.fillStyle='#ff62df';ctx.fillText(score.nova,W/2-24,H/2-15);ctx.fillStyle='#4eeaff';ctx.fillText(score.team,W/2+24,H/2-15);
+}
+function loop(t){if(!playing){draw();return;}var dt=Math.min(.025,(t-last)/1000);last=t;update(dt);draw();if(playing)requestAnimationFrame(loop);}
+function bindHold(id,key){var el=document.getElementById(id);function on(e){e.preventDefault();keys[key]=true;}function off(e){e.preventDefault();keys[key]=false;}el.addEventListener('pointerdown',on);el.addEventListener('pointerup',off);el.addEventListener('pointercancel',off);el.addEventListener('pointerleave',off);}
+bindHold('left','left');bindHold('right','right');window.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')keys.left=true;if(e.key==='ArrowRight')keys.right=true;});window.addEventListener('keyup',function(e){if(e.key==='ArrowLeft')keys.left=false;if(e.key==='ArrowRight')keys.right=false;});canvas.addEventListener('pointermove',function(e){if(!e.buttons)return;var r=canvas.getBoundingClientRect();player.x=clamp((e.clientX-r.left)*W/r.width-player.w/2,45,W-45-player.w);});document.getElementById('start').onclick=start;document.getElementById('autoplay').onclick=function(){assist=!assist;this.textContent='Codex assist: '+(assist?'ON':'OFF');};draw();
+})();
+</script>
+</body></html>

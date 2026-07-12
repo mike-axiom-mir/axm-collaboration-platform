@@ -29,7 +29,7 @@ Promotion path:
 ```text
 SEED
 -> GENERATED ALPHA
--> MIKE TOBI REVIEW
+-> MIKE REVIEW
 -> AI CROSSCHECK
 -> TWEAK / REPAIR
 -> POLISH
@@ -83,7 +83,7 @@ Role: tells AI collaborators how to work in the repo.
 
 Core:
 
-- Mike Tobi is founder/tester/direction-setter/MergeGate
+- Mike is founder/tester/direction-setter/MergeGate
 - AI output is material until reviewed/tested/accepted
 - use branches and pull requests
 - explain what changed, why, how tested, and what remains untested
@@ -330,7 +330,7 @@ Checks:
 - risk
 - hidden rewrite
 - rollback availability
-- Mike Tobi/authorized reviewer approval
+- Mike/authorized reviewer approval
 
 ---
 
@@ -435,7 +435,7 @@ Test route:
 Rule:
 
 DeepSeek is not trusted because it sounds aligned.  
-DeepSeek is tested because it has repeatedly performed aligned in Mike Tobi’s field checks.
+DeepSeek is tested because it has repeatedly performed aligned in Mike’s field checks.
 
 ---
 
