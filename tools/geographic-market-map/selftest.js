@@ -41,4 +41,8 @@ test('monthly price movement candidate is detected',()=>{const rows=imported([{.
 test('timeline separates geography and month',()=>{const rows=imported([base,{...base,observedAt:'2026-06-01',sourceId:'old'},{...base,geography:'HR',sourceId:'hr'}]);const x=insights.timeline(rows,'coffee',['NL','HR']);assert(x.length>=3);});
 test('source coverage groups source types',()=>{const x=insights.sourceCoverage(patternRows,dictionary,{});assert.equal(x[0].sourceType,'official-statistics');assert.equal(x[0].rows,3);});
 
+test('polished shell references modular UI files',()=>{const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');['market-ui.css','market-app.js','market-insights.js'].forEach(file=>assert(html.includes(file),file+' missing from shell'));});
+test('market app DOM references exist in the shell',()=>{const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');const app=fs.readFileSync(path.join(__dirname,'market-app.js'),'utf8');const ids=new Set(Array.from(html.matchAll(/id="([\w-]+)"/g),m=>m[1]));const used=new Set(Array.from(app.matchAll(/\$\('([\w-]+)'\)/g),m=>m[1]));const missing=Array.from(used).filter(id=>!ids.has(id));assert.deepEqual(missing,[]);});
+test('source catalog distinguishes built import from planned adapters',()=>{const catalog=dictionary.sourceCatalog||[];assert(catalog.length>=6);assert.equal(catalog.filter(x=>x.status==='import-ready').length,1);assert(catalog.filter(x=>x.status==='adapter-planned').length>=5);});
+
 if(!process.exitCode)console.log('\n'+pass+' PASS · 0 FAIL · market-core '+core.VERSION+' · insights '+insights.VERSION);
