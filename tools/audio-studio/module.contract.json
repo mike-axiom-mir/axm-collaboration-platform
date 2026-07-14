@@ -1,0 +1,37 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "audio-studio",
+  "version": "v1.0",
+  "provides": [
+    "single-audio-production-workspace",
+    "multitrack-timeline-and-mixer",
+    "preserved-sound-forge-engine",
+    "synth-patch-workflow",
+    "editable-score-and-midi-export",
+    "stereo-spatial-stage",
+    "consented-session-voice-recording",
+    "local-filter-and-normalize-restoration",
+    "deterministic-generative-music",
+    "supported-source-wav-render",
+    "review-gated-publish-handoff"
+  ],
+  "consumes": ["service:asset-vault", "service:publish-library", "service:ai-team", "service:shared-engines/project-v1"],
+  "permissions": ["storage", "export", "files", "ai", "asset-vault", "shared-engines"],
+  "handoffs": {
+    "emits": ["axm.audio.sound/v1", "axm.publish-artifact/v1", "axm.audio-studio.project/v1"],
+    "accepts": ["hub:init", "hub:settings:value", "session-local:audio-files"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:axm.audio-studio.project.v1", "browser-local:axm.publish-library.ledger.v1:unreviewed-artifact", "user-download:explicit"],
+    "refuses": [
+      "automatic-publish-approval",
+      "automatic-rights-clearance",
+      "voice-cloning-without-provider-rights-and-consent",
+      "pretend-session-file-persistence",
+      "pretend-imported-audio-in-mixdown",
+      "pretend-professional-mastering",
+      "silent-microphone-recording",
+      "direct-unreviewed-ai-sound-application"
+    ]
+  }
+}

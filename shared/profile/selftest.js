@@ -1,0 +1,8 @@
+const assert=require('assert'),C=require('./axm-profile-core');let p=C.create();assert.equal(p.enabled,false);assert.equal(p.achievements.state,'RESERVED');
+p=C.optIn(p,{displayName:'Village',decidedBy:'mike',members:[{id:'mike',name:'Mike',kind:'human'},{id:'codex',name:'Codex',kind:'ai'},{id:'nova',name:'Nova',kind:'ai'}]});assert.equal(p.enabled,true);assert.equal(p.members.length,3);
+let r=C.record(p,{type:'game-played',dedupeKey:'game:1',actorId:'mike',participants:['mike','nova'],source:'game-hub'});p=r.profile;assert.equal(p.stats.gamesPlayed,1);assert.equal(p.members.find(m=>m.id==='mike').stats.gamesPlayed,1);assert.equal(p.members.find(m=>m.id==='nova').stats.gamesPlayed,1);assert.equal(p.members.find(m=>m.id==='codex').stats.gamesPlayed,0);
+r=C.record(p,{type:'game-played',dedupeKey:'game:1',actorId:'mike',participants:['mike','nova']});assert.equal(r.duplicate,true);assert.equal(r.profile.stats.gamesPlayed,1);
+r=C.record(p,{type:'code-characters',count:1337,dedupeKey:'change:abc',actorId:'codex',participants:['codex'],evidence:'reviewed diff abc',source:'codex'});p=r.profile;assert.equal(p.stats.codeCharacters,1337);assert.equal(p.members.find(m=>m.id==='codex').stats.codeCharacters,1337);
+assert.throws(()=>C.record(p,{type:'code-characters',count:2,dedupeKey:'bad',actorId:'codex',participants:['codex']}),/evidence/);assert.throws(()=>C.record(p,{type:'picture-made',dedupeKey:'bad-member',participants:['ghost']}),/unknown profile member/);
+p=C.optOut(p,'mike');assert.equal(p.enabled,false);assert.equal(p.stats.codeCharacters,1337);assert.throws(()=>C.record(p,{type:'picture-made',dedupeKey:'off',participants:['mike']}),/opted out/);
+console.log('shared profile selftest: PASS');

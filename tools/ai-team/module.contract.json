@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "ai-team",
+  "version": "v1.1",
+  "provides": [
+    "multi-model-collaboration-room",
+    "agent-task-and-handoff-views",
+    "agent-identity-and-memory-controls",
+    "prompt-workshop",
+    "model-evaluation-view",
+    "reasoning-proposal-view",
+    "collaboration-attention-inbox",
+    "connector-status-and-control-dashboard",
+    "shell-guardian-dashboard"
+    ,"agent-tool-and-skill-forge-view"
+    ,"versioned-prompt-comparison-handoff"
+    ,"local-dataset-label-ledger"
+    ,"training-run-evidence-ledger"
+  ],
+  "consumes": [
+    "service:agent-command-center",
+    "service:ai-task-talk",
+    "service:model-lab",
+    "service:reasoning-shell",
+    "service:prompt-vault",
+    "service:duo-test",
+    "service:agent-tool-forge",
+    "service:shell-guardian",
+    "workshop:presence-notices",
+    "workshop:connector-status"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.collaboration-review/v1", "axm.model-comparison-review/v1"],
+    "accepts": ["axm.collaboration-notice/v1", "axm.ai-team-prompt/v1", "hub:init", "hub:settings:value"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:ai-team-workspace", "browser-local:dataset-and-training-ledger", "workshop:notice-acknowledgement", "bridge:local-agent-pause"],
+    "refuses": ["silent-notice-approval", "automatic-wisdom-promotion", "connector-memory-merging", "automatic-guardian-reset", "connector-credential-access", "unbounded-agent-autonomy"]
+  }
+}

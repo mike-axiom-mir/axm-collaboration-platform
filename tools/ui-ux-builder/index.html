@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AXM UI/UX Builder</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <script>if(new URLSearchParams(location.search).get('studio')==='1')document.body.classList.add('studio-embedded');</script>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <span class="brand-mark" aria-hidden="true">UX</span>
+        <div><div class="eyebrow">AXM · design for humans</div><h1>UI/UX Builder</h1><p>Understand the person, shape the journey, then make it beautiful.</p></div>
+      </div>
+      <div class="top-actions">
+        <span id="saveState" class="save-state" role="status">Ready</span>
+        <button id="hubStarter" class="button secondary">Use Hub starter</button>
+        <button id="importButton" class="button ghost">Import</button>
+        <button id="exportWorkspace" class="button ghost">Export workspace</button>
+        <input id="importFile" type="file" accept="application/json,.json" hidden>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="step-rail" aria-label="Design steps">
+        <div class="project-card">
+          <div class="project-icon">A</div>
+          <div><strong id="projectRailName">Untitled experience</strong><span id="projectRailTarget">Choose a target</span></div>
+        </div>
+        <nav id="stepNav">
+          <button class="step active" data-step="human" aria-current="step"><span>1</span><div><strong>Human</strong><small>Who needs what?</small></div></button>
+          <button class="step" data-step="journey"><span>2</span><div><strong>Journey</strong><small>Make the path clear</small></div></button>
+          <button class="step" data-step="look"><span>3</span><div><strong>Look</strong><small>Choose the feeling</small></div></button>
+          <button class="step" data-step="preview"><span>4</span><div><strong>Preview</strong><small>See and check it</small></div></button>
+          <button class="step" data-step="handoff"><span>5</span><div><strong>Handoff</strong><small>Review before build</small></div></button>
+        </nav>
+        <div class="rail-note"><span aria-hidden="true">◆</span><p><strong>One room, one language.</strong> UX, visuals, and implementation stay connected.</p></div>
+      </aside>
+
+      <main class="main-panel">
+        <section class="step-view active" data-view="human" aria-labelledby="humanHeading">
+          <div class="section-heading"><div><div class="eyebrow">Step 1 · Human</div><h2 id="humanHeading">Start with the person—not the software</h2><p>If these answers are fuzzy, visual polish will only make the confusion prettier.</p></div><span class="step-status" id="humanStatus">Needs a brief</span></div>
+          <div class="form-grid">
+            <label>Project name<input id="projectName" maxlength="120" placeholder="What are we improving?"></label>
+            <label>Screen or workflow<input id="target" maxlength="180" placeholder="Where does this happen?"></label>
+            <label class="wide">Who is using it?<textarea id="audience" maxlength="500" placeholder="Describe a real person in ordinary language"></textarea></label>
+            <label class="wide">What must they accomplish?<textarea id="primaryJob" maxlength="1200" placeholder="One clear job—not a list of features"></textarea></label>
+            <label class="wide">What feels difficult today?<textarea id="frustration" maxlength="1200" placeholder="Confusion, fear, delay, misclicks, overload…"></textarea></label>
+          </div>
+          <div class="subheading"><div><h3>Human needs to protect</h3><p>Switch one off only when you consciously accept the trade-off.</p></div></div>
+          <div id="principles" class="principle-grid"></div>
+          <div class="next-row"><button class="button primary" data-next="journey">Shape the journey →</button></div>
+        </section>
+
+        <section class="step-view" data-view="journey" hidden aria-labelledby="journeyHeading">
+          <div class="section-heading"><div><div class="eyebrow">Step 2 · Journey</div><h2 id="journeyHeading">What happens, from arrival to confidence?</h2><p>Keep the path short enough to remember. Each step should answer one human question.</p></div><span class="step-status" id="flowCount">4 steps</span></div>
+          <div id="flowList" class="flow-list"></div>
+          <form id="addFlowForm" class="add-flow"><label class="sr-only" for="newFlowStep">New journey step</label><input id="newFlowStep" maxlength="100" placeholder="Add the next meaningful step"><button class="button secondary" type="submit">Add step</button></form>
+          <div class="gentle-rule"><strong>Good journeys have an exit.</strong><span>A person should always know how to go back, cancel, pause, or recover.</span></div>
+          <div class="next-row"><button class="button ghost" data-next="human">← Human</button><button class="button primary" data-next="look">Choose the look →</button></div>
+        </section>
+
+        <section class="step-view" data-view="look" hidden aria-labelledby="lookHeading">
+          <div class="section-heading"><div><div class="eyebrow">Step 3 · Look</div><h2 id="lookHeading">Choose a feeling, then tune it</h2><p>Presets provide a safe starting point. Everything stays inside readable design tokens—no raw CSS or scripts.</p></div><span class="step-status" id="presetStatus">Calm night</span></div>
+          <div id="presetGrid" class="preset-grid"></div>
+          <div class="look-grid">
+            <section class="control-card"><h3>Colour</h3><div class="color-grid">
+              <label>Accent<input id="accent" type="color"></label><label>Background<input id="background" type="color"></label><label>Surface<input id="surface" type="color"></label><label>Main text<input id="text" type="color"></label><label>Secondary text<input id="muted" type="color"></label>
+            </div></section>
+            <section class="control-card"><h3>Shape and spacing</h3>
+              <label class="range-label"><span>Corner softness <output id="radiusValue"></output></span><input id="radius" type="range" min="0" max="28" step="1"></label>
+              <label>Breathing room<select id="density"><option value="compact">Compact</option><option value="comfortable">Comfortable</option><option value="spacious">Spacious</option></select></label>
+              <label>Navigation<select id="navigation"><option value="left">Left sidebar</option><option value="top">Top navigation</option><option value="rail">Icon rail</option></select></label>
+              <label class="range-label"><span>Text size <output id="textScaleValue"></output></span><input id="textScale" type="range" min="90" max="120" step="1"></label>
+            </section>
+          </div>
+          <div class="next-row"><button class="button ghost" data-next="journey">← Journey</button><button class="button primary" data-next="preview">Open the preview →</button></div>
+        </section>
+
+        <section class="step-view" data-view="preview" hidden aria-labelledby="previewHeading">
+          <div class="section-heading"><div><div class="eyebrow">Step 4 · Preview</div><h2 id="previewHeading">See the experience before changing the real Hub</h2><p>This is a working mannequin: layout, hierarchy, tokens, device size, and human checks—never a claim that the Hub was already changed.</p></div><div class="device-tabs" aria-label="Preview size"><button data-device="desktop" class="active">Desktop</button><button data-device="tablet">Tablet</button><button data-device="phone">Phone</button></div></div>
+          <div class="preview-layout">
+            <div class="preview-stage"><div id="productPreview" class="product-preview desktop"></div></div>
+            <aside class="audit-panel"><div class="audit-head"><div><div class="eyebrow">Human check</div><h3 id="auditTitle">Checking…</h3></div><span id="auditScore">0/10</span></div><div id="auditList" class="audit-list"></div></aside>
+          </div>
+          <div class="next-row"><button class="button ghost" data-next="look">← Look</button><button class="button primary" data-next="handoff">Prepare handoff →</button></div>
+        </section>
+
+        <section class="step-view" data-view="handoff" hidden aria-labelledby="handoffHeading">
+          <div class="section-heading"><div><div class="eyebrow">Step 5 · Handoff</div><h2 id="handoffHeading">A proposal is ready only after a human says so</h2><p>Checks catch measurable problems. You decide whether it looks and feels right.</p></div><span class="step-status" id="proposalState">Draft</span></div>
+          <div class="verdict-card"><div><h3>Your verdict</h3><p>Could a real person use this comfortably?</p></div><div class="verdict-buttons"><button id="verdictYes" class="button success">Yes, ready for review</button><button id="verdictNo" class="button danger">Not yet</button></div></div>
+          <label class="human-note">What should the builders remember?<textarea id="humanNote" maxlength="2000" placeholder="Your judgment, concerns, or the part that finally feels right"></textarea></label>
+          <div class="handoff-grid">
+            <section class="summary-card"><div class="eyebrow">Build summary</div><h3 id="summaryName">Untitled</h3><dl id="summaryFacts"></dl><div id="handoffGate" class="handoff-gate"></div></section>
+            <section class="code-card"><div class="code-head"><div><div class="eyebrow">Safe token handoff</div><h3>CSS variables</h3></div><button id="copyTokens" class="button ghost small">Copy</button></div><pre id="tokenOutput"></pre></section>
+          </div>
+          <div class="proposal-actions"><button id="exportProposal" class="button primary">Export review proposal</button><button id="resetWorkspace" class="button ghost">Start over</button><span>Nothing is applied automatically.</span></div>
+        </section>
+      </main>
+    </div>
+
+    <footer><a href="/hub/index.html">← Back to AXM Hub</a><span>Local workspace · proposal-only · human decision required</span></footer>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/hub/axm-hub-module.js"></script>
+  <script src="ui-ux-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

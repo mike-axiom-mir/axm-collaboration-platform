@@ -62,7 +62,7 @@
   function openNotice(notice){
     try{localStorage.setItem('axm.collaboration.notice.open',JSON.stringify(notice));}catch(error){}
     acknowledgeNotice(notice);notices.delete(notice.fromId);renderMembers();
-    var moduleId=notice.fromId==='claude'?'studio':'ai-task-talk';
+    var moduleId='ai-team';
     if(window.AXMHubShell&&typeof window.AXMHubShell.open==='function')window.AXMHubShell.open(moduleId);
     else location.href='/tools/'+moduleId+'/index.html';
   }
@@ -90,6 +90,20 @@
       upsert({id:'grok',name:'Grok',kind:'ai',state:state,order:40,label:state==='active'?'ACTIVE':state==='ready'?'READY':state==='tripped'?'TRIP':'OFF',detail:state==='tripped'?'Shell Guardian tripped · '+(g.guardianReason||'review required'):state==='active'?'Grok Build active · Guardian armed':state==='ready'?'Grok Build authenticated · Guardian armed':'Grok connector unavailable'});
     }catch(error){}
   }
+  async function loadChatGPT(){
+    try{
+      var response=await fetchTimed('/api/chatgpt-connector/status',2200);if(!response.ok)return;
+      var payload=await response.json(),status=payload.status||{},seat=status.codingSeat||{},app=status.chatApp||{},platform=status.platformMcp||{};
+      if(seat.loginVerified){
+        upsert({id:'codex',name:'Codex',kind:'ai',state:'ready',order:34,label:'READY',detail:'Codex coding seat login verified'});
+      }
+      if(platform.connected===true&&platform.safeTunnel===true){
+        upsert({id:'chatgpt',name:'ChatGPT',kind:'ai',state:'ready',order:35,label:'READY',detail:'ChatGPT Platform MCP safe tunnel explicitly connected'});
+      }else if(app.appOpen){
+        upsert({id:'chatgpt',name:'ChatGPT',kind:'ai',state:'offline',order:35,label:'APP',detail:'ChatGPT app open · Platform MCP manual / unconnected'});
+      }
+    }catch(error){}
+  }
   async function loadBridgeAndModels(){
     var health=await fetchTimed(BRIDGE+'/health',2200);if(!health.ok)throw new Error('bridge HTTP '+health.status);
     setBridge('connected','ON','AXM bridge connected · checked '+new Date().toLocaleTimeString());
@@ -105,14 +119,15 @@
     if(busy)return;busy=true;members.clear();notices.clear();var bridgeOk=false;
     try{await heartbeatSelf();}catch(error){}
     try{await loadBridgeAndModels();bridgeOk=true;}catch(error){setBridge('disconnected','OFF','AXM local bridge is unreachable');paused=false;renderMaster();}
-    await Promise.allSettled([loadRegistered(),loadGrok(),loadNotices()]);renderMembers();
+    await Promise.allSettled([loadRegistered(),loadChatGPT(),loadGrok(),loadNotices()]);renderMembers();
     var count=members.size;
     system(paused?'AI agents paused':bridgeOk?(count+' participant'+(count===1?'':'s')+' present'):'Bridge offline · '+count+' present',paused?'paused':bridgeOk?'':'degraded');
     busy=false;clearTimeout(timer);timer=setTimeout(refresh,POLL_MS);
   }
   function renderMaster(){
     var button=document.getElementById('aiMasterToggle');if(!button)return;
-    button.textContent=paused?'▶ AI':'⏸ AI';button.classList.toggle('paused',paused);button.setAttribute('aria-pressed',paused?'true':'false');
+    var label=button.querySelector('span:last-child');if(label)label.textContent=paused?'Resume AI':'Pause AI';
+    button.classList.toggle('paused',paused);button.setAttribute('aria-pressed',paused?'true':'false');
     button.title=paused?'Resume local AI agents':'Pause active local AI agents';button.disabled=false;
   }
   async function toggleMaster(){
@@ -126,5 +141,6 @@
   addEventListener('online',refresh);
   document.addEventListener('visibilitychange',function(){refresh();});
   var master=document.getElementById('aiMasterToggle');if(master)master.addEventListener('click',toggleMaster);
-  renderMaster();window.AXMAIPresence={refresh:refresh,toggle:toggleMaster,raiseNotice:raiseNotice,openNotice:openNotice};refresh();
+  function snapshot(){return Array.from(members.values()).map(function(member){return Object.assign({},member);});}
+  renderMaster();window.AXMAIPresence={refresh:refresh,toggle:toggleMaster,raiseNotice:raiseNotice,openNotice:openNotice,members:snapshot};refresh();
 })();

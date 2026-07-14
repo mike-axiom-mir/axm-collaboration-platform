@@ -1,0 +1,39 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "project-room",
+  "version": "v0.2",
+  "provides": [
+    "local-project-room",
+    "five-stage-kanban",
+    "goal-and-milestone-tracking",
+    "project-timeline",
+    "evidence-gated-completion",
+    "decision-and-event-log",
+    "project-documents-and-wiki",
+    "human-ai-project-updates",
+    "forms-and-structured-input",
+    "dailies-and-review-history",
+    "named-version-checkpoints",
+    "portable-project-json"
+  ],
+  "consumes": ["axm.knowledge-project-handoff/v1"],
+  "permissions": ["storage", "export"],
+  "handoffs": {
+    "emits": ["axm.project-room/v1"],
+    "accepts": ["axm.project-room/v1", "axm.knowledge-project-handoff/v1"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:axm.project-room.v1", "user-download:explicit"],
+    "refuses": [
+      "automatic-done-without-evidence",
+      "automatic-task-execution",
+      "cloud-sync",
+      "hidden-owner-assignment",
+      "sample-data-on-first-open",
+      "silent-import-overwrite",
+      "silent-checkpoint-restore",
+      "separate-project-truth-stores",
+      "knowledge-canvas-research-duplication"
+    ]
+  }
+}

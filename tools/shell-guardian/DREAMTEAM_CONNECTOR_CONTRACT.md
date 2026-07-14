@@ -75,3 +75,4 @@ state. A missing Guardian is visible as `unprotected`, never reported as healthy
 Grok Build is the first shell-capable adapter proof. It remains a separate
 identity and process, uses the AXM Shell Guardian `PreToolUse` hook, and can be
 stopped without pausing Nova, Gemini Local, Axiom/Mir, or the human connector.
+

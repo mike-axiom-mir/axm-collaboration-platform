@@ -22,6 +22,14 @@
     <div class="row" style="margin-top:10px"><input id="manualModel" placeholder="Optional local model id"/><button id="addLocalBtn">Add local target</button></div>
   </section>
 
+  <section class="panel" id="comparisonPanel">
+    <div class="row"><b>Prompt comparison bench</b><span class="muted">same prompt · selected models · raw outputs · human review</span></div>
+    <div class="row" style="margin-top:10px"><input id="comparisonTitle" placeholder="Comparison title" style="flex:1"><span class="muted" id="comparisonRevision">No Prompt Workshop handoff yet.</span></div>
+    <textarea id="comparisonPrompt" placeholder="Choose a Prompt Workshop card or paste a prompt here." style="width:100%;min-height:110px;margin-top:9px;background:#0d141e;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px"></textarea>
+    <div class="row" style="margin-top:10px"><button class="go" id="compareBtn" disabled>Compare selected models</button><button id="reviewComparison" disabled>Mark comparison reviewed</button><span class="muted" id="comparisonState">Raw outputs are evidence material, not an automatic winner.</span></div>
+    <div class="cards" id="comparisonResults"></div>
+  </section>
+
   <section class="panel">
     <div class="row"><b>2 · Shared probe suite</b><span class="muted">6 identical tests · sequential calls · fallback disabled</span></div>
     <div class="cards" id="suite"></div>
@@ -39,14 +47,14 @@
 (function(){
 'use strict';
 var $=function(id){return document.getElementById(id);};
-var state={targets:[],latest:null,running:false};
+var state={targets:[],latest:null,comparison:null,running:false};
 var BRIDGE='http://127.0.0.1:8787';
 var LOCAL='http://127.0.0.1:1234';
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
 function targetId(t){return [t.provider,t.aiProvider||'',t.model||''].join(':');}
 function selected(){var ids=[].slice.call(document.querySelectorAll('[data-target]:checked')).map(function(x){return x.value;});return state.targets.filter(function(t){return ids.indexOf(targetId(t))>=0;});}
-function updateRunButton(){ $('runBtn').disabled=state.running||selected().length===0; }
+function updateRunButton(){var none=selected().length===0;$('runBtn').disabled=state.running||none;$('compareBtn').disabled=state.running||none||!$('comparisonPrompt').value.trim();}
 
 function renderSuite(){ $('suite').innerHTML=AXMModelEval.CASES.map(function(t){return '<div class="card"><h3>'+esc(t.name)+'</h3><div class="muted">'+esc(t.dimension)+'</div><div class="recommend">If weak: '+esc(t.improve)+'</div></div>';}).join(''); }
 function renderTargets(){
@@ -87,6 +95,16 @@ async function run(){
   state.running=false;$('progress').textContent='Run saved locally.';$('exportBtn').disabled=false;updateRunButton();renderRun(run);
 }
 
+async function comparePrompt(){
+  var targets=selected(),prompt=$('comparisonPrompt').value.trim();if(!targets.length||!prompt||state.running)return;
+  var gate=AXMGate.submit({action:'model-lab.compare-prompt',actor:'mike',actorType:'human',tool:'model-lab',detail:{targets:targets.map(targetId),promptChars:prompt.length}});if(!gate.allow){alert('Gate denied comparison: '+gate.reason);return;}
+  state.running=true;updateRunButton();var comparison={schema:'axm.prompt-comparison/v1',title:$('comparisonTitle').value.trim()||'Prompt comparison',prompt:prompt,revision:Number($('comparisonRevision').dataset.revision)||1,sourcePromptId:$('comparisonRevision').dataset.promptId||null,started:new Date().toISOString(),reviewed:false,results:[]};
+  for(var i=0;i<targets.length;i++){var t=targets[i],started=performance.now(),result={target:t,text:'',error:null,latencyMs:0};$('comparisonState').textContent='Comparing '+t.label+' · '+(i+1)+'/'+targets.length;try{var opts={provider:t.provider,model:t.model,maxTokens:900,temperature:0,fallback:false,actor:'model-lab-comparison'};if(t.aiProvider)opts.aiProvider=t.aiProvider;var answer=await AXM.connect.ask(prompt,opts);result.text=answer&&answer.text||'';if(!result.text)result.error=answer&&answer.reason||'empty response';}catch(e){result.error=e.message||String(e);}result.latencyMs=Math.round(performance.now()-started);comparison.results.push(result);renderComparison(comparison);}
+  comparison.finished=new Date().toISOString();state.comparison=comparison;await AXM.store.save('model-lab-comparison-latest',comparison,{title:comparison.title});state.running=false;$('comparisonState').textContent='Comparison saved · human review required · no winner inferred';renderComparison(comparison);updateRunButton();
+}
+function renderComparison(c){if(!c){$('comparisonResults').innerHTML='';$('reviewComparison').disabled=true;return;}$('comparisonTitle').value=c.title||'';$('comparisonPrompt').value=c.prompt||'';$('comparisonRevision').textContent=(c.sourcePromptId?'Prompt Workshop revision '+c.revision:'Local comparison prompt')+(c.reviewed?' · REVIEWED':' · NEEDS REVIEW');$('comparisonRevision').dataset.revision=c.revision||1;$('comparisonRevision').dataset.promptId=c.sourcePromptId||'';$('comparisonResults').innerHTML=(c.results||[]).map(function(r){return'<article class="card"><h3>'+esc(r.target.label)+'</h3><div class="muted">'+esc(r.latencyMs)+' ms · '+(r.error?'<span class="fail">ERROR</span>':'raw response')+'</div><pre>'+esc(r.error||r.text||'')+'</pre></article>';}).join('');$('reviewComparison').disabled=!(c.results&&c.results.length);$('reviewComparison').textContent=c.reviewed?'Reopen review':'Mark comparison reviewed';}
+async function reviewComparison(){if(!state.comparison)return;state.comparison.reviewed=!state.comparison.reviewed;state.comparison.reviewedAt=state.comparison.reviewed?new Date().toISOString():null;await AXM.store.save('model-lab-comparison-latest',state.comparison,{title:state.comparison.title});renderComparison(state.comparison);$('comparisonState').textContent=state.comparison.reviewed?'Comparison explicitly reviewed · no automatic model promotion':'Comparison returned to human review';}
+
 function renderRun(run){
   if(!run)return;$('runMeta').textContent=(run.finished?'Finished ':'Running ') + (run.finished||run.started);
   $('summary').innerHTML=run.models.map(function(m){var s=m.summary||AXMModelEval.summarize(m.results);var im=m.improvements||AXMModelEval.improvements(m.results);return '<div class="card" style="margin-top:10px"><div class="row"><b>'+esc(m.target.label)+'</b><span class="score '+(s.score>=80?'pass':'fail')+'">'+s.score+'%</span><span class="muted">'+s.passed+'/'+s.total+' signals · avg '+(s.averageLatencyMs==null?'—':s.averageLatencyMs+' ms')+'</span></div>'+(im.length?'<div class="recommend">Improve: '+im.map(function(x){return esc(x.dimension);}).join(' · ')+'</div>':'<div class="pass">No mechanical failures in this suite.</div>')+'</div>';}).join('');
@@ -95,8 +113,9 @@ function renderRun(run){
 
 function exportRun(){if(!state.latest)return;var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state.latest,null,2)],{type:'application/json'}));a.download='axm-model-eval-'+Date.now()+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);}
 
-$('refreshBtn').onclick=refresh;$('addLocalBtn').onclick=addLocal;$('runBtn').onclick=run;$('exportBtn').onclick=exportRun;renderSuite();
-(async function(){var info=await AXM.init({id:'model-lab',name:'AXM Model Lab',version:'v0.1'});AXM.wisdom.on(localStorage.getItem('axm.identity.growth.enabled')!=='false');try{var saved=await AXM.store.load('model-lab-latest');if(saved&&saved.data){state.latest=saved.data;renderRun(state.latest);$('exportBtn').disabled=false;}}catch(e){}await refresh();$('boot').textContent='ready · '+info.storageBackend+' · v0.1';AXMHub.log('Model Lab ready');})().catch(function(e){$('boot').textContent='boot failed: '+e.message;});
-AXMHub.ready({id:'model-lab',name:'AXM Model Lab',version:'v0.1',hubApiVersion:'1.0',permissions:[],savesState:true,handlesShutdown:false,notes:'Mechanical evaluation signals; human review remains required.'});
+$('refreshBtn').onclick=refresh;$('addLocalBtn').onclick=addLocal;$('runBtn').onclick=run;$('exportBtn').onclick=exportRun;$('compareBtn').onclick=comparePrompt;$('reviewComparison').onclick=reviewComparison;$('comparisonPrompt').oninput=updateRunButton;renderSuite();
+(function(){window.addEventListener('message',function(e){var m=e.data;if(!m||m.schema!=='axm.ai-team-prompt/v1'||m.type!=='axm-model-compare-prompt')return;var p=m.prompt||{},text=String(p.text||'').slice(0,16000);if(!text)return;$('comparisonTitle').value=String(p.title||'Prompt comparison').slice(0,120);$('comparisonPrompt').value=text;$('comparisonRevision').textContent='Prompt Workshop revision '+(Number(p.revision)||1)+' · NEEDS TEST';$('comparisonRevision').dataset.revision=Number(p.revision)||1;$('comparisonRevision').dataset.promptId=String(p.id||'');state.comparison=null;$('comparisonResults').innerHTML='';$('reviewComparison').disabled=true;$('comparisonState').textContent='Prompt received from AI Team · choose models and compare';updateRunButton();});}());
+(async function(){var info=await AXM.init({id:'model-lab',name:'AXM Model Lab',version:'v0.2'});AXM.wisdom.on(localStorage.getItem('axm.identity.growth.enabled')!=='false');try{var saved=await AXM.store.load('model-lab-latest');if(saved&&saved.data){state.latest=saved.data;renderRun(state.latest);$('exportBtn').disabled=false;}var compared=await AXM.store.load('model-lab-comparison-latest');if(compared&&compared.data){state.comparison=compared.data;renderComparison(state.comparison);}}catch(e){}await refresh();$('boot').textContent='ready · '+info.storageBackend+' · v0.2';AXMHub.log('Model Lab ready');})().catch(function(e){$('boot').textContent='boot failed: '+e.message;});
+AXMHub.ready({id:'model-lab',name:'AXM Model Lab',version:'v0.2',hubApiVersion:'1.0',permissions:[],savesState:true,handlesShutdown:false,notes:'Mechanical probes and raw prompt comparison; human review remains required.'});
 })();
 </script></body></html>

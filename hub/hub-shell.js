@@ -76,19 +76,20 @@
       id: t.id, name: t.name || t.id, folder: t.folder || t.id,
       entry: t.entry || 'index.html', version: t.version || '?',
       status: t.status || 'TEST', tags: t.tags || [], uses: t.uses || [],
-      audience: t.audience || 'human', layer: t.layer || null
+      audience: t.audience || 'human', layer: t.layer || null,
+      integratedInto: t.integratedInto || null, serviceRole: t.serviceRole || null
     }));
   }
 
   const FRIENDLY_NAMES = {
-    'agent-command-center': 'AI Command Center', 'agent-tool-forge': 'Agent Tool Forge',
-    'asset-pack-lab': 'Asset Pack Lab', 'asset-vault': 'Asset Vault', 'duo-test': 'Nova + Gemini',
+    'ai-team': 'AI Team', 'publish-library': 'Publish & Library', 'game-forge': 'Game Forge', 'knowledge-canvas': 'Knowledge Canvas', 'audio-studio': 'Audio Studio', 'film-motion-studio': 'Film & Motion Studio', 'agent-command-center': 'AI Command Center', 'agent-tool-forge': 'Agent Tool Forge',
+    'asset-pack-lab': 'Asset Pack Lab', 'asset-vault': 'Asset Vault', 'chatgpt-connector': 'ChatGPT', 'duo-test': 'Nova + Gemini',
     'evidence-desk': 'Evidence Desk', forge: 'Tool Forge', 'forge-line': 'Forge Line',
     'game-hub': 'Game Hub', graft: 'Graft', 'hermes-local': 'Local Runtime',
     'hub-test-room': 'Test Room', 'launcher-card-installer': 'Launcher Cards', 'main-hub': 'Main Hub',
-    'model-lab': 'Model Lab', prehub: 'Notes', 'prompt-vault': 'Prompt Vault',
+    'model-lab': 'Model Lab', prehub: 'Notes', 'project-room': 'Project Room', 'prompt-vault': 'Prompt Vault',
     'reasoning-shell': 'Reasoning Shell', route: 'Route', runner: 'Verification Desk',
-    sandbox: 'Sandbox', skinner: 'Skinner', studio: 'Studio', verifier: 'Verifier'
+    sandbox: 'Sandbox', skinner: 'Skinner', studio: 'Studio', 'ui-ux-builder': 'UI/UX Builder', verifier: 'Verifier'
   };
   function friendlyName(module) {
     if (!module) return 'Module';
@@ -106,9 +107,20 @@
     const enabled = (enabledList || []).filter(id => avail.some(m => m.id === id));
     return {
       enabled,
-      visible: avail.filter(m => enabled.indexOf(m.id) >= 0),
+      visible: avail.filter(m => enabled.indexOf(m.id) >= 0 && !m.integratedInto),
       catalog: avail.map(m => Object.assign({}, m, { enabled: enabled.indexOf(m.id) >= 0 }))
     };
+  }
+
+  /* Preserve an existing choice when an upgrade consolidates destinations.
+     The parent becomes visible; children stay enabled for saved-data and
+     compatibility routes but integrated modules do not clutter the sidebar. */
+  function promoteIntegratedParents(available, enabledList) {
+    const avail = available || [], out = Array.isArray(enabledList) ? enabledList.slice() : [];
+    avail.filter(m => m.integratedInto && out.indexOf(m.id) >= 0).forEach(child => {
+      if (avail.some(m => m.id === child.integratedInto) && out.indexOf(child.integratedInto) < 0) out.push(child.integratedInto);
+    });
+    return out;
   }
 
   /* ============================================================
@@ -188,29 +200,56 @@
     const old = existingLayers || DEFAULT_LAYERS;
     const oldPrivate = old.find(l => l.id === 'private') || {};
     const layers = [
-      { id: 'create', name: 'Create', gate: 'none', order: 0, audience: 'human', hidden: false, host: 'local', note: 'Studio, assets, skins, and prompts.' },
+      { id: 'create', name: 'Create', gate: 'none', order: 0, audience: 'human', hidden: false, host: 'local', note: 'Studio and visual production.' },
       { id: 'build', name: 'Build', gate: 'none', order: 1, audience: 'human', hidden: false, host: 'local', note: 'Forge, sandbox, evidence, and packaging.' },
-      { id: 'play', name: 'Play', gate: 'none', order: 2, audience: 'human', hidden: false, host: 'local', note: 'Games and playable experiences.' },
-      { id: 'ai-team', name: 'AI Team', gate: 'none', order: 3, audience: 'human', hidden: false, host: 'local', note: 'Identities, model comparison, and supervised AI work.' },
-      Object.assign({ id: 'private', gate: 'passphrase' }, oldPrivate, { id: 'private', name: 'Closed Door / Advanced', order: 4, audience: 'human', hidden: false, host: 'local', note: 'Routing, verification, and advanced controls. Door sign only; not filesystem security.' }),
-      { id: 'machine', name: 'System Internals', gate: 'none', order: 5, audience: 'machine', hidden: true, host: 'local', note: 'Hub internals and test rooms; hidden from the everyday sidebar.' }
+      { id: 'publish', name: 'Publish & Library', gate: 'none', order: 2, audience: 'human', hidden: false, host: 'local', note: 'Assets, releases, packages, backups, and distribution.' },
+      { id: 'play', name: 'Play', gate: 'none', order: 3, audience: 'human', hidden: false, host: 'local', note: 'Games and playable experiences.' },
+      { id: 'ai-team', name: 'AI Team', gate: 'none', order: 4, audience: 'human', hidden: false, host: 'local', note: 'One collaboration, agent, prompt, model and connector control room.' },
+      Object.assign({ id: 'private', gate: 'passphrase' }, oldPrivate, { id: 'private', name: 'Closed Door / Advanced', order: 5, audience: 'human', hidden: false, host: 'local', note: 'Routing, verification, and advanced controls. Door sign only; not filesystem security.' }),
+      { id: 'machine', name: 'System Internals', gate: 'none', order: 6, audience: 'machine', hidden: true, host: 'local', note: 'Hub internals and test rooms; hidden from the everyday sidebar.' }
     ];
     const groups = {
-      create: ['studio','asset-pack-lab','asset-vault','skinner','prompt-vault'],
-      build: ['agent-tool-forge','evidence-desk','forge','forge-line','graft','launcher-card-installer','sandbox'],
-      play: ['game-hub'],
-      'ai-team': ['agent-command-center','duo-test','model-lab','reasoning-shell'],
+      create: ['studio','audio-studio','film-motion-studio'],
+      build: ['agent-tool-forge','evidence-desk','forge','forge-line','graft','knowledge-canvas','project-room','sandbox'],
+      publish: ['publish-library'],
+      play: ['game-forge'],
+      'ai-team': ['ai-team'],
       private: ['hermes-local','route','runner','verifier'],
       machine: ['hub-test-room','main-hub','prehub']
     };
     const assign = {};
     Object.keys(groups).forEach(layerId => groups[layerId].forEach(id => { assign[id] = layerId; }));
-    (modules || []).forEach(m => { if (!assign[m.id]) assign[m.id] = 'build'; });
+    (modules || []).forEach(m => {
+      if (m.integratedInto) assign[m.id] = 'machine';
+      else if (!assign[m.id]) assign[m.id] = 'build';
+    });
     return { layers, assign };
   }
 
-  return { NS, memoryBackend, localStorageBackend, makeStore, normalizeRegistry, logEntry, resolveModules,
-           DEFAULT_LAYERS, doorHash, layerOf, resolveLayers, checkDoor, workflowLayout, friendlyName };
+  /* Upgrade only the known beginner workflow layout when Publish & Library
+     arrives. Preserve user layers, assignments and the closed-door hash;
+     custom/non-workflow layouts are left untouched. */
+  function upgradePublishLayer(layers, assign, modules) {
+    const ls = Array.isArray(layers) ? layers.map(l => Object.assign({}, l)) : [];
+    const as = Object.assign({}, assign || {});
+    const ids = ls.map(l => l.id);
+    const standard = ['create','build','play','ai-team'].every(id => ids.indexOf(id) >= 0);
+    if (!standard) return { layers: ls, assign: as, changed: false };
+    let changed = false;
+    if (ids.indexOf('publish') < 0) {
+      ls.forEach(l => { if ((l.order || 0) >= 2) l.order = (l.order || 0) + 1; });
+      ls.push({ id:'publish', name:'Publish & Library', gate:'none', order:2, audience:'human', hidden:false, host:'local', note:'Assets, releases, packages, backups, and distribution.' });
+      changed = true;
+    }
+    if (as['publish-library'] !== 'publish') { as['publish-library'] = 'publish'; changed = true; }
+    (modules || []).filter(m => m.integratedInto === 'publish-library').forEach(m => {
+      if (as[m.id] !== 'machine') { as[m.id] = 'machine'; changed = true; }
+    });
+    return { layers: ls.sort((a,b)=>(a.order||0)-(b.order||0)), assign: as, changed };
+  }
+
+  return { NS, memoryBackend, localStorageBackend, makeStore, normalizeRegistry, logEntry, resolveModules, promoteIntegratedParents,
+           DEFAULT_LAYERS, doorHash, layerOf, resolveLayers, checkDoor, workflowLayout, upgradePublishLayer, friendlyName };
 });
 
 /* ============================================================
@@ -226,7 +265,7 @@ if (typeof window !== 'undefined') (function () {
   const hhmm = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const Hub = window.AXMHubShell = {
-    registry: [], visible: [], enabled: [], active: null, homeLayer: null, mode: 'simple', records: {}, store,
+    registry: [], visible: [], enabled: [], active: null, homeLayer: null, mode: 'simple', sidebarCollapsed: false, records: {}, store,
     layers: [], assign: {}, unlocked: [], revealed: [],   /* unlocked+revealed = this session only */
     /* lifecycle badge classes for the sidebar */
     lifeClass(l) {
@@ -251,6 +290,19 @@ if (typeof window !== 'undefined') (function () {
       if (!silent) this.log('info', 'view mode → ' + this.mode);
     },
     toggleMode() { this.setMode(this.mode === 'simple' ? 'advanced' : 'simple'); },
+    setSidebarCollapsed(collapsed, silent) {
+      this.sidebarCollapsed = !!collapsed;
+      document.body.dataset.sidebarCollapsed = this.sidebarCollapsed ? 'true' : 'false';
+      const b = $('sidebarToggle');
+      if (b) {
+        b.setAttribute('aria-expanded', this.sidebarCollapsed ? 'false' : 'true');
+        b.setAttribute('aria-label', this.sidebarCollapsed ? 'Expand navigation' : 'Collapse navigation');
+        b.title = this.sidebarCollapsed ? 'Expand navigation' : 'Collapse navigation';
+      }
+      try { localStorage.setItem('axm.hub.sidebar-collapsed', this.sidebarCollapsed ? 'true' : 'false'); } catch (e) {}
+      if (!silent) this.log('info', this.sidebarCollapsed ? 'navigation collapsed · workspace expanded' : 'navigation expanded');
+    },
+    toggleSidebar() { this.setSidebarCollapsed(!this.sidebarCollapsed); },
     log(level, msg) {
       const e = Core.logEntry(level, msg, now());
       store.appendLog(e);
@@ -271,10 +323,48 @@ if (typeof window !== 'undefined') (function () {
          nothing vanishes on upgrade). After that, the user's choice rules. */
       let en = store.getEnabled();
       if (en === null) { en = this.registry.map(m => m.id); store.setEnabled(en); }
+      else { en = Core.promoteIntegratedParents(this.registry, en); store.setEnabled(en); }
+      /* One-time arrival migration for the new visible Knowledge Canvas.
+         After this marker is written, hiding it remains the user's choice. */
+      try {
+        const marker = 'axm.hub.upgrade.knowledge-canvas.v1';
+        if (!localStorage.getItem(marker) && this.registry.some(m => m.id === 'knowledge-canvas')) {
+          if (en.indexOf('knowledge-canvas') < 0) en.push('knowledge-canvas');
+          store.setEnabled(en); localStorage.setItem(marker, 'done');
+          this.log('ok', 'added Knowledge Canvas workspace · future visibility remains user-controlled');
+        }
+      } catch (e) {}
+      /* One-time arrival migration for Audio Studio. The marker prevents a
+         later intentional hide from being undone on every reload. */
+      try {
+        const marker = 'axm.hub.upgrade.audio-studio.v1';
+        if (!localStorage.getItem(marker) && this.registry.some(m => m.id === 'audio-studio')) {
+          if (en.indexOf('audio-studio') < 0) en.push('audio-studio');
+          store.setEnabled(en); localStorage.setItem(marker, 'done');
+          this.log('ok', 'added Audio Studio workspace · future visibility remains user-controlled');
+        }
+      } catch (e) {}
+      /* One-time arrival migration for Film & Motion Studio. A later manual
+         hide remains respected because the marker is never cleared. */
+      try {
+        const marker = 'axm.hub.upgrade.film-motion-studio.v1';
+        if (!localStorage.getItem(marker) && this.registry.some(m => m.id === 'film-motion-studio')) {
+          if (en.indexOf('film-motion-studio') < 0) en.push('film-motion-studio');
+          store.setEnabled(en); localStorage.setItem(marker, 'done');
+          this.log('ok', 'added Film & Motion Studio workspace · future visibility remains user-controlled');
+        }
+      } catch (e) {}
       /* seed the three starting layers once; after that the user owns them */
       let ly = store.getLayers();
       if (ly === null) { ly = JSON.parse(JSON.stringify(Core.DEFAULT_LAYERS)); store.setLayers(ly); }
-      this.layers = ly; this.assign = store.getAssign();
+      let as = store.getAssign();
+      const publishUpgrade = Core.upgradePublishLayer(ly, as, this.registry);
+      if (publishUpgrade.changed) {
+        ly = publishUpgrade.layers; as = publishUpgrade.assign;
+        store.setLayers(ly); store.setAssign(as);
+        this.log('ok', 'upgraded workflow layout with Publish & Library · custom assignments preserved');
+      }
+      this.layers = ly; this.assign = as;
       /* unlocks are session-only: closing the hub re-locks the door */
       try { this.unlocked = JSON.parse(sessionStorage.getItem('axm.hub.unlocked') || '[]'); } catch (e) { this.unlocked = []; }
       try { this.revealed = JSON.parse(sessionStorage.getItem('axm.hub.revealed') || '[]'); } catch (e) { this.revealed = []; }
@@ -289,13 +379,13 @@ if (typeof window !== 'undefined') (function () {
     enable(id) {
       if (this.enabled.indexOf(id) < 0) { this.enabled.push(id); store.setEnabled(this.enabled); }
       const m = this.registry.find(x => x.id === id);
-      this.log('ok', 'added module: ' + (m ? m.name : id) + ' — now part of the system');
+      this.log('ok', 'dashboard shown: ' + (m ? m.name : id) + ' — service and lifecycle unchanged');
       this.resolve(); this.renderModules();
     },
     disable(id) {
       this.enabled = this.enabled.filter(x => x !== id); store.setEnabled(this.enabled);
       const m = this.registry.find(x => x.id === id);
-      this.log('info', 'removed module: ' + (m ? m.name : id) + ' (its saved data is kept)');
+      this.log('info', 'dashboard hidden: ' + (m ? m.name : id) + ' — not retired or stopped; saved data kept');
       if (this.active === id) this.showHome();
       this.resolve(); this.renderModules();
     },
@@ -373,7 +463,7 @@ if (typeof window !== 'undefined') (function () {
       const groups = Core.resolveLayers(this.visible, this.layers, this.assign, this.unlocked, this.revealed);
       const title = $('homeTitle'), intro = $('homeIntro');
       const makeModuleCard = m => {
-        const c = document.createElement('div'); c.className = 'hcard module-card'; c.title = m.name + ' · ' + m.id;
+        const c = document.createElement('button'); c.type = 'button'; c.className = 'hcard module-card'; c.title = m.name + ' · ' + m.id;
         c.innerHTML = '<div class="hcard-icon">' + iconFor(m) + '</div><h3></h3><p></p><div class="open">Open →</div>';
         c.querySelector('h3').textContent = Core.friendlyName(m);
         c.querySelector('p').textContent = (m.tags || []).slice(0,3).join(' · ') || m.status;
@@ -383,32 +473,37 @@ if (typeof window !== 'undefined') (function () {
       if (selected) {
         title.textContent = selected.name;
         intro.textContent = selected.note || 'Choose a tool in this workspace.';
-        const back = document.createElement('div'); back.className = 'hcard utility-card'; back.innerHTML = '<div class="hcard-icon">←</div><h3>All workspaces</h3><p>Return to the simple Home screen.</p><div class="open">Back</div>'; back.onclick = () => this.showHome(); g.appendChild(back);
+        const back = document.createElement('button'); back.type = 'button'; back.className = 'hcard utility-card'; back.innerHTML = '<div class="hcard-icon">←</div><h3>All workspaces</h3><p>Return to the simple Home screen.</p><div class="open">Back</div>'; back.onclick = () => this.showHome(); g.appendChild(back);
         selected.modules.forEach(m => g.appendChild(makeModuleCard(m)));
         return;
       }
       this.homeLayer = null;
       title.textContent = 'What do you want to do?';
       intro.textContent = 'Choose a workspace. Modules stay separate underneath, but you do not need to manage the plumbing.';
-      const order = ['create','build','play','ai-team'];
-      const descriptions = { create:'Design, draw, manage assets, and prepare prompts.', build:'Create and verify tools, packages, and projects.', play:'Launch games and playable experiences.', 'ai-team':'Work with identities, local models, and supervised AI collaboration.' };
+      const order = ['create','build','publish','play','ai-team'];
+      const descriptions = { create:'Shape an idea, design the experience, and make the pieces.', build:'Turn an idea into something working, checked, and recoverable.', publish:'Find assets, export versions, package safely, and release honestly.', play:'Start a game or shared experience.', 'ai-team':'Talk, create, and solve things with your machine collaborators.' };
+      const humanLabels = { create:'Make something', build:'Make it work', publish:'Share the result', play:'Enjoy together', 'ai-team':'Work together' };
       order.forEach(id => {
         const gr = groups.find(x => x.id === id); if (!gr) return;
-        const c = document.createElement('div'); c.className = 'hcard workflow-card'; c.dataset.workflow = id;
-        c.innerHTML = '<div class="workflow-icon">' + workflowIcon(id) + '</div><div class="workflow-copy"><h3></h3><p></p><div class="workflow-preview"></div><div class="open">Open workspace →</div></div>';
+        const c = document.createElement('button'); c.type = 'button'; c.className = 'hcard workflow-card'; c.dataset.workflow = id;
+        c.innerHTML = '<div class="workflow-icon">' + workflowIcon(id) + '</div><div class="workflow-copy"><div class="human-label"></div><h3></h3><p></p><div class="workflow-preview"></div><div class="open">Open workspace</div></div>';
+        c.querySelector('.human-label').textContent = humanLabels[id];
         c.querySelector('h3').textContent = gr.name;
         c.querySelector('p').textContent = descriptions[id];
-        c.querySelector('.workflow-preview').textContent = gr.modules.slice(0,4).map(Core.friendlyName).join(' · ') + (gr.modules.length > 4 ? ' · +' + (gr.modules.length-4) : '');
+        c.querySelector('.workflow-preview').textContent = gr.modules.length + ' tool' + (gr.modules.length === 1 ? '' : 's') + ' inside · open to choose';
         c.onclick = () => this.showHome(id); g.appendChild(c);
       });
-      /* always-present: add/remove modules — you never carry what you don't want */
-      const add = document.createElement('div'); add.className = 'hcard utility-card technical-card';
+      /* always-present dashboard visibility control. This never claims to
+         install, retire, connect, or stop the underlying module/service. */
+      const add = document.createElement('button'); add.type = 'button'; add.className = 'hcard utility-card technical-card';
       add.style.borderStyle = 'dashed';
       const avail = this.registry.length, on = this.visible.length;
-      add.innerHTML = '<h3>＋ Modules</h3><p>' + on + ' of ' + avail + ' added. Add or remove modules — removing keeps their saved data.</p><div class="open">Manage →</div>';
+      const integrated = this.registry.filter(m => !!m.integratedInto).length;
+      add.innerHTML = '<h3>＋ Dashboards</h3><p>' + on + ' visible · ' + Math.max(0, avail - on) + ' hidden. Visibility never retires or stops a service.</p><div class="open">Choose visibility →</div>';
+      if (integrated) add.querySelector('p').textContent = on + ' visible · ' + integrated + ' integrated into workspaces · ' + Math.max(0, avail - on - integrated) + ' hidden. Integration never retires a service.';
       add.onclick = () => this.openModules();
       g.appendChild(add);
-      const lay = document.createElement('div'); lay.className = 'hcard utility-card technical-card';
+      const lay = document.createElement('button'); lay.type = 'button'; lay.className = 'hcard utility-card technical-card';
       lay.style.borderStyle = 'dashed';
       const lockedCount = groups.filter(x => x.locked).length;
       lay.innerHTML = '<h3>▤ Layers</h3><p>' + groups.length + ' layers' + (lockedCount ? ' · ' + lockedCount + ' locked' : '') + '. Group modules into spaces. Door signs, not locks.</p><div class="open">Manage →</div>';
@@ -539,7 +634,7 @@ if (typeof window !== 'undefined') (function () {
       };
       $('expScreen').classList.add('show');
     },
-    /* ---- module catalog: add/remove modules (the opt-in layer) ---- */
+    /* ---- module catalog: dashboard visibility, not lifecycle ---- */
     openModules() { this.renderModules(); $('modScreen').classList.add('show'); },
     renderModules() {
       const s = $('modBody'); if (!s) return; s.innerHTML = '';
@@ -550,11 +645,17 @@ if (typeof window !== 'undefined') (function () {
         const info = document.createElement('div');
         info.innerHTML = '<div class="k"></div><div class="d"></div>';
         info.querySelector('.k').textContent = m.name;
-        info.querySelector('.d').textContent = (m.tags || []).join(' · ') + '  ·  ' + m.version;
+        info.querySelector('.d').textContent = (m.enabled ? 'Shown in Hub navigation' : 'Dashboard hidden · service/lifecycle unchanged')
+          + '  ·  ' + (m.tags || []).join(' · ') + '  ·  ' + m.version;
+        if (m.integratedInto) info.querySelector('.d').textContent = 'Integrated into ' + Core.friendlyName(this.registry.find(x => x.id === m.integratedInto) || { id:m.integratedInto }) + ' · compatibility route and saved data kept · ' + m.version;
         const btn = document.createElement('button');
         btn.className = 'btn' + (m.enabled ? ' ghost' : '');
-        btn.textContent = m.enabled ? 'Remove' : 'Add';
+        btn.textContent = m.enabled ? 'Hide dashboard' : 'Show dashboard';
         btn.onclick = () => m.enabled ? this.disable(m.id) : this.enable(m.id);
+        if (m.integratedInto) {
+          btn.className = 'btn ghost'; btn.textContent = 'Open Studio';
+          btn.onclick = () => { $('modScreen').classList.remove('show'); this.open(m.integratedInto); };
+        }
         r.appendChild(info); r.appendChild(btn); s.appendChild(r);
       });
     },
@@ -564,7 +665,7 @@ if (typeof window !== 'undefined') (function () {
     applyWorkflowLayout() {
       const layout = Core.workflowLayout(this.registry, this.layers);
       this.layers = layout.layers; this.assign = layout.assign;
-      this.log('ok', 'applied simple workflow layout: Create · Build · Play · AI Team · Closed Door / Advanced');
+      this.log('ok', 'applied simple workflow layout: Create · Build · Publish & Library · Play · AI Team · Closed Door / Advanced');
       this.saveLayers();
     },
     renderLayers() {
@@ -621,7 +722,7 @@ if (typeof window !== 'undefined') (function () {
 
       const presetRow = document.createElement('div'); presetRow.className = 'row';
       const presetInfo = document.createElement('div'); presetInfo.innerHTML = '<div class="k">Recommended simple layout</div><div class="d">Organises the sidebar without merging modules or changing permissions.</div>';
-      const presetBtn = document.createElement('button'); presetBtn.className = 'btn'; presetBtn.textContent = 'Apply Create / Build / Play / AI Team'; presetBtn.onclick = () => this.applyWorkflowLayout();
+      const presetBtn = document.createElement('button'); presetBtn.className = 'btn'; presetBtn.textContent = 'Apply Create / Build / Publish / Play / AI Team'; presetBtn.onclick = () => this.applyWorkflowLayout();
       presetRow.appendChild(presetInfo); presetRow.appendChild(presetBtn); s.appendChild(presetRow);
 
       const addRow = document.createElement('div'); addRow.className = 'row';
@@ -668,6 +769,8 @@ if (typeof window !== 'undefined') (function () {
     boot() {
       let savedMode = 'simple'; try { savedMode = localStorage.getItem('axm.hub.view-mode') || 'simple'; } catch (e) {}
       this.setMode(savedMode, true);
+      let savedSidebar = false; try { savedSidebar = localStorage.getItem('axm.hub.sidebar-collapsed') === 'true'; } catch (e) {}
+      this.setSidebarCollapsed(savedSidebar, true);
       /* ---- skin: freedom in safety ----
          A saved skin is re-checked EVERY boot, never trusted because it was
          accepted once. ?safe=1 ignores skins entirely, so a bad skin can
@@ -704,6 +807,7 @@ if (typeof window !== 'undefined') (function () {
 
       window.addEventListener('message', e => this.onMessage(e));
       $('homeBtn').onclick = () => this.showHome();
+      $('sidebarToggle').onclick = () => this.toggleSidebar();
       $('modeToggle').onclick = () => this.toggleMode();
       $('btnSettings').onclick = () => this.openSettings();
       $('btnPerm').onclick = () => this.openPerm();
@@ -717,7 +821,7 @@ if (typeof window !== 'undefined') (function () {
           .filter(g => !g.locked).some(g => g.modules.some(m => m.id === last));
         if (openable) { this.log('info', 'reopened at last module: ' + last); this.open(last); }
         else { if (last) this.log('info', 'last module sits in a locked layer — starting at Home'); this.showHome(); }
-        this.log('ok', 'hub ready — ' + this.visible.length + ' of ' + this.registry.length + ' modules added');
+        this.log('ok', 'hub ready — ' + this.visible.length + ' dashboards visible · ' + Math.max(0, this.registry.length - this.visible.length) + ' hidden');
       });
     }
   };
@@ -753,16 +857,20 @@ if (typeof window !== 'undefined') (function () {
     const g = '<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">';
     if (id === 'create') return g + '<path d="M4 20l4-1 10-10-3-3L5 16z"/><path d="M13 8l3 3"/></svg>';
     if (id === 'build') return g + '<path d="M14 5l5 5-9 9H5v-5z"/><path d="M13 6l2-2 5 5-2 2"/></svg>';
+    if (id === 'publish') return g + '<path d="M12 3v11M8 10l4 4 4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>';
     if (id === 'play') return g + '<rect x="2" y="7" width="20" height="10" rx="4"/><path d="M7 12h4M9 10v4"/><circle cx="16" cy="11" r="1"/><circle cx="18" cy="14" r="1"/></svg>';
     return g + '<circle cx="8" cy="12" r="4"/><circle cx="17" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><path d="M12 11l2-2M12 13l2 2"/></svg>';
   }
   function iconFor(m) {
     const id = m.id || '', t = (m.tags || []).join(' ');
     const g = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">';
-    if (/game-hub/.test(id)||/game|lobby/.test(t)) return g + '<rect x="2" y="7" width="20" height="10" rx="3"/><path d="M6 12h5M8.5 9.5v5"/><circle cx="17" cy="11" r="1"/><circle cx="19" cy="14" r="1"/></svg>';
-    if (/studio|skinner/.test(id)||/canvas|graphic|creative/.test(t)) return g + '<path d="M4 20l4-1 9-9-3-3-9 9z"/><path d="M14 7l3 3"/></svg>';
+    if (/game-forge|game-hub/.test(id)||/game|lobby/.test(t)) return g + '<rect x="2" y="7" width="20" height="10" rx="3"/><path d="M6 12h5M8.5 9.5v5"/><circle cx="17" cy="11" r="1"/><circle cx="19" cy="14" r="1"/></svg>';
+    if (/audio-studio/.test(id)||/audio|music|midi|sound/.test(t)) return g + '<path d="M4 15V9M8 18V6M12 20V4M16 17V7M20 14v-4"/></svg>';
+    if (/film-motion-studio/.test(id)||/film|video|animation|vfx/.test(t)) return g + '<rect x="3" y="6" width="14" height="12" rx="2"/><path d="M17 10l4-2v8l-4-2zM7 10h6M7 14h4"/></svg>';
+    if (/studio|skinner|ui-ux-builder/.test(id)||/canvas|graphic|creative|design/.test(t)) return g + '<path d="M4 20l4-1 9-9-3-3-9 9z"/><path d="M14 7l3 3"/></svg>';
+    if (/publish-library/.test(id)) return g + '<path d="M12 3v11M8 10l4 4 4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>';
     if (/asset/.test(id)) return g + '<path d="M4 7l8-4 8 4-8 4z"/><path d="M4 7v10l8 4 8-4V7M12 11v10"/></svg>';
-    if (/agent-command|duo-test|model-lab|reasoning-shell/.test(id)) return g + '<circle cx="8" cy="12" r="4"/><circle cx="17" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><path d="M12 11l2-2M12 13l2 2"/></svg>';
+    if (/ai-team|agent-command|chatgpt-connector|duo-test|model-lab|reasoning-shell/.test(id)) return g + '<circle cx="8" cy="12" r="4"/><circle cx="17" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><path d="M12 11l2-2M12 13l2 2"/></svg>';
     if (/forge|sandbox|graft/.test(id)) return g + '<path d="M5 19l5-5M14 4l6 6-9 9H5v-6z"/></svg>';
     if (/verifier|runner|evidence/.test(id)) return g + '<path d="M12 3l8 3v6c0 5-3 8-8 9-5-1-8-4-8-9V6z"/><path d="M8 12l3 3 5-6"/></svg>';
     if (/hermes|route/.test(id)||/bridge|connect/.test(t)) return g + '<path d="M8 8a4 4 0 010 8M16 8a4 4 0 000 8M8 12h8"/></svg>';

@@ -1,16 +1,32 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "studio",
-  "version": "v1.1",
-  "provides": ["layered-canvas", "reviewed-asset-proposal", "machine-draw-packet"],
-  "consumes": ["identity:nova", "identity:gemini-local", "axm.drawpacket/v1"],
-  "permissions": ["storage", "ai", "export", "files"],
+  "version": "v2.2",
+  "provides": [
+    "layered-2d-canvas",
+    "drawing-and-painting",
+    "vector-graphics",
+    "editable-vector-paths-and-svg",
+    "pixel-art-and-atlas",
+    "timed-frame-animation",
+    "onion-skin-and-playback",
+    "photo-collage-compositing",
+    "texture-pattern-repeat",
+    "typography-and-layout",
+    "uiux-design-and-web-preview",
+    "skin-production",
+    "asset-pack-production",
+    "reviewed-asset-proposal",
+    "machine-draw-packet"
+  ],
+  "consumes": ["identity:nova", "identity:gemini-local", "axm.drawpacket/v1", "service:asset-vault"],
+  "permissions": ["storage", "ai", "export", "files", "gate"],
   "handoffs": {
-    "emits": ["axm.game-asset/v1"],
-    "accepts": ["axm.drawpacket/v1"]
+    "emits": ["axm.game-asset/v1", "axm.uiux-proposal/v1", "axm-asset-pack", "skin.config.json"],
+    "accepts": ["axm.drawpacket/v1", "axm.uiux-workspace/v1", "axm.studio-asset/v1", "axm-asset-vault", "skin.config.json"]
   },
   "boundaries": {
-    "writes": ["hub-store:studio", "game-hub:asset-inbox"],
-    "refuses": ["direct-game-package-write", "automatic-wisdom-promotion", "silent-identity-swap"]
+    "writes": ["hub-store:studio", "browser-local:studio-workspaces", "game-hub:asset-inbox", "user-download:explicit"],
+    "refuses": ["direct-game-package-write", "automatic-hub-rewrite", "automatic-proposal-acceptance", "automatic-wisdom-promotion", "silent-identity-swap", "raw-script-from-skin", "remote-asset-reference-in-skin"]
   }
 }

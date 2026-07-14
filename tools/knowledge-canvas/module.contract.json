@@ -1,0 +1,46 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "knowledge-canvas",
+  "version": "v1.1",
+  "provides": [
+    "single-knowledge-canvas-workspace",
+    "sourced-research-notebook",
+    "local-multi-sheet-workbook",
+    "range-formulas-sorting-and-filtering",
+    "csv-import-and-export",
+    "table-backed-charts-and-dashboards",
+    "mind-map-and-flow-diagrams",
+    "sourced-timeline",
+    "coordinate-map-and-gis-layers",
+    "large-sticky-note-whiteboard",
+    "narrow-project-room-handoff"
+  ],
+  "consumes": [
+    "axm.knowledge.research/v1",
+    "service:discovery-engine",
+    "service:evidence-desk"
+  ],
+  "permissions": ["storage", "export"],
+  "handoffs": {
+    "emits": ["axm.knowledge-project-handoff/v1", "axm.knowledge-canvas/v1"],
+    "accepts": ["axm.knowledge.research/v1", "axm.knowledge-canvas/v1", "hub:init", "hub:settings:value"]
+  },
+  "boundaries": {
+    "writes": [
+      "browser-local:axm.knowledge-canvas.project.v1",
+      "browser-local:axm.knowledge-canvas.inbox.v1",
+      "browser-local:axm.project-room.v1:explicit-task-or-decision",
+      "user-download:explicit"
+    ],
+    "refuses": [
+      "automatic-source-acceptance",
+      "research-as-project-task-duplication",
+      "automatic-project-room-completion",
+      "unsourced-claim-promotion",
+      "pretend-professional-gis-analysis",
+      "pretend-full-excel-file-compatibility",
+      "cloud-sync",
+      "automatic-publication"
+    ]
+  }
+}

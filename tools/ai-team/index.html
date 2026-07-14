@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM AI Team — Collaboration & Agent Control</title>
+  <link rel="stylesheet" href="ai-team.css">
+  <link rel="stylesheet" href="ai-team-polish.css">
+</head>
+<body>
+  <div class="team-app">
+    <header class="topbar">
+      <div class="brand"><a href="/hub/index.html" aria-label="Back to Hub">‹</a><span class="mark">AXM</span><div><span class="eyebrow">Collaboration control room</span><h1>AI Team</h1></div></div>
+      <div class="presence-summary"><i></i><div><b id="presenceTitle">Checking the team</b><small id="presenceDetail">Connectors and local identities stay separate underneath</small></div></div>
+      <div class="top-actions"><button id="refreshAll" class="button secondary">Refresh</button><button id="pauseLocal" class="button warning"><span>Ⅱ</span><b>Pause local AI</b></button></div>
+    </header>
+
+    <div class="team-body">
+      <aside class="view-rail"><div class="rail-heading"><span>Workspace</span><small>One AI Team</small></div><nav id="viewNav"></nav><div class="rail-foot"><span class="service-dot"></span><div><b>Services stay armed</b><small>Hidden from navigation, never removed</small></div></div></aside>
+      <main class="workspace">
+        <header class="view-header"><div><span id="viewGroup" class="eyebrow"></span><h2 id="viewTitle"></h2><p id="viewDescription"></p></div><div class="truth-badges"><span>Human review</span><span>Separate identities</span><span>No auto-wisdom</span></div></header>
+
+        <section id="overviewSurface" class="surface overview-surface">
+          <section class="hero-panel"><div><span class="eyebrow">Shared operating picture</span><h3>Coordinate the team without merging the minds.</h3><p>Conversation, tasks, prompts, models and safety now live in one place. Each identity keeps its own connector, memory boundary and evidence trail.</p></div><div class="hero-stats"><div><b id="liveCount">0</b><span>available</span></div><div><b id="noticeCount">0</b><span>open notices</span></div><div><b id="healthyCount">0</b><span>healthy services</span></div></div></section>
+
+          <section class="attention-panel"><header><div><span class="eyebrow">Attention & human review</span><h3>Questions, proposals and warnings</h3></div><span class="manual-badge">Manual decisions only</span></header><div id="attentionInbox" class="attention-list"><div class="empty">Checking for raised hands…</div></div><p class="boundary">Automatic approval is never implied. Opening a notice preserves its context; acknowledging it is a separate human action.</p></section>
+
+          <section class="workflow-grid">
+            <button data-open-view="collaborate" class="workflow-card cyan"><span>01</span><b>Talk & delegate</b><p>Conversation, supervised tasks and handoffs.</p><em>Open collaboration →</em></button>
+            <button data-open-view="agents" class="workflow-card violet"><span>02</span><b>Shape agents</b><p>Roles, behavior, identity and memory boundaries.</p><em>Open agents →</em></button>
+            <button data-open-view="prompts" class="workflow-card gold"><span>03</span><b>Build prompts</b><p>Reusable prompt cards, versions and routes.</p><em>Open workshop →</em></button>
+            <button data-open-view="models" class="workflow-card green"><span>04</span><b>Evaluate models</b><p>Preserved outputs and comparable evidence.</p><em>Open evaluation →</em></button>
+            <button data-open-view="data" class="workflow-card cyan"><span>05</span><b>Grow from evidence</b><p>Label examples and track reviewed training runs.</p><em>Open data + runs →</em></button>
+          </section>
+        </section>
+
+        <section id="frameSurface" class="surface frame-surface" hidden>
+          <iframe id="taskFrame" class="team-frame" data-src="../ai-task-talk/index.html?ai-team=1" title="AI collaboration and tasks"></iframe>
+          <iframe id="duoFrame" class="team-frame" data-src="../duo-test/index.html?ai-team=1" title="Nova and Gemini local duo" hidden></iframe>
+          <iframe id="agentsFrame" class="team-frame" data-src="../agent-command-center/index.html?ai-team=1" title="Agent and identity controls" hidden></iframe>
+          <iframe id="forgeFrame" class="team-frame" data-src="../agent-tool-forge/index.html?ai-team=1" title="Agent tool and skill forge" hidden></iframe>
+          <iframe id="promptsFrame" class="team-frame" data-src="../prompt-vault/index.html?ai-team=1" title="Prompt workshop" hidden></iframe>
+          <iframe id="modelsFrame" class="team-frame" data-src="../model-lab/index.html?ai-team=1" title="Model evaluation" hidden></iframe>
+          <iframe id="reasoningFrame" class="team-frame" data-src="../reasoning-shell/index.html?ai-team=1" title="Reasoning lab" hidden></iframe>
+        </section>
+
+        <section id="dataSurface" class="surface data-surface" hidden>
+          <div class="data-truth"><div><span class="eyebrow">Local evidence workspace</span><h3>Label what happened. Track what was actually run.</h3><p>This view records datasets and training experiments. It does not execute training, infer quality, or promote a model automatically.</p></div><div class="data-totals"><b id="datasetTotal">0</b><span>datasets</span><b id="exampleTotal">0</b><span>examples</span><b id="runTotal">0</b><span>runs</span></div></div>
+          <div class="data-columns">
+            <section class="data-panel"><header><div><span class="eyebrow">Dataset labels</span><h3>Examples with review state</h3></div></header>
+              <div class="compact-form"><input id="datasetName" maxlength="80" placeholder="Dataset name"><input id="datasetPurpose" maxlength="180" placeholder="Purpose / learning question"><button id="createDataset" class="button primary-small">Create dataset</button></div>
+              <label class="field-label">Active dataset<select id="datasetSelect"></select></label>
+              <div class="label-form"><textarea id="exampleInput" maxlength="4000" placeholder="Input, situation or observed context"></textarea><textarea id="exampleOutput" maxlength="4000" placeholder="Desired label / reviewed output"></textarea><input id="exampleTags" maxlength="240" placeholder="tags, comma separated"><button id="addExample" class="button primary-small">Add labelled example</button></div>
+              <div id="exampleList" class="record-list"><div class="empty">Create a dataset to begin.</div></div>
+            </section>
+            <section class="data-panel"><header><div><span class="eyebrow">Training run ledger</span><h3>Plans, runs and human acceptance</h3></div></header>
+              <div class="run-form"><input id="runName" maxlength="100" placeholder="Run name"><select id="runDataset"></select><input id="runModel" maxlength="120" placeholder="Base model / adapter"><select id="runStatus"><option>PLANNED</option><option>RUNNING</option><option>COMPLETED</option><option>FAILED</option></select><textarea id="runEvidence" maxlength="3000" placeholder="Command, metrics, evidence path or failure note"></textarea><button id="addRun" class="button primary-small">Record run</button></div>
+              <div id="runList" class="record-list"><div class="empty">No training runs recorded.</div></div>
+            </section>
+          </div>
+        </section>
+
+        <section id="servicesSurface" class="surface services-surface" hidden>
+          <div class="services-intro"><div><span class="eyebrow">Background services</span><h3>Connections, models and circuit breakers</h3><p>A service can be offline or tripped without disappearing. Refresh checks actual local endpoints; it does not infer intent.</p></div><button id="openGuardian" class="button danger-outline">Open Guardian dashboard</button></div>
+          <div id="serviceGrid" class="service-grid"><div class="empty">Checking services…</div></div>
+          <section id="serviceDetail" class="service-detail" hidden><header><div><span class="eyebrow">Service dashboard</span><h3 id="serviceDetailTitle">Details</h3></div><button id="closeServiceDetail" class="button secondary">Close</button></header>
+            <iframe id="chatgptFrame" class="service-frame" data-src="../chatgpt-connector/index.html?ai-team=1" title="ChatGPT connector" hidden></iframe>
+            <iframe id="claudeFrame" class="service-frame" data-src="../claude-connector/index.html?ai-team=1" title="Claude connector" hidden></iframe>
+            <iframe id="guardianFrame" class="service-frame" data-src="../shell-guardian/index.html?ai-team=1" title="Shell Guardian dashboard" hidden></iframe>
+          </section>
+        </section>
+
+        <footer class="statusbar"><span><i></i><b id="statusText">AI Team ready</b></span><span id="saveState">Workspace state local</span></footer>
+      </main>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="ai-team-core.js"></script>
+  <script src="/hub/axm-hub-module.js"></script>
+  <script src="ai-team.js"></script>
+</body>
+</html>

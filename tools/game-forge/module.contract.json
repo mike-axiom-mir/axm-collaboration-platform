@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "game-forge",
+  "version": "v1.1",
+  "provides": [
+    "modular-game-project-workspace",
+    "2d-and-3d-world-documents",
+    "semantic-level-editor",
+    "event-graph-editor",
+    "gameplay-system-records",
+    "npc-behavior-tree-editor",
+    "studio-hud-route",
+    "multiplayer-controller-playtest-route",
+    "test-replay-and-mod-ledger"
+    ,"instant-playable-map-preview"
+    ,"verified-package-candidate-builder"
+  ],
+  "consumes": [
+    "service:game-hub",
+    "service:sandbox",
+    "service:studio",
+    "game.manifest.json",
+    "axm.game-asset/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.game-forge-project/v1", "axm.game-mod-manifest/v1"],
+    "accepts": ["axm.game-asset/v1", "hub:init", "hub:settings:value"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:game-forge-projects", "user-download:explicit-project-or-mod-json", "exports:game-forge-candidates"],
+    "refuses": [
+      "pretend-3d-runtime-execution",
+      "silent-game-package-write",
+      "hidden-player-or-ai-seat",
+      "automatic-test-pass",
+      "automatic-mod-installation",
+      "separate-engine-module-per-game"
+      ,"automatic-candidate-installation"
+    ]
+  }
+}

@@ -1,0 +1,76 @@
+/* AXM Human Interface Spine v0.1
+   Reusable visual parts. This file is the shared asset layer; screens should
+   assemble these pieces instead of inventing new buttons and icons each time. */
+:root{
+  --axm-ui-bg:#07101b;--axm-ui-surface:#111d2d;--axm-ui-raised:#17263a;
+  --axm-ui-text:#edf6ff;--axm-ui-muted:#9badc1;--axm-ui-accent:#46d7e7;
+  --axm-ui-success:#69dc9a;--axm-ui-warning:#f0bd63;--axm-ui-danger:#f2877f;
+  --axm-ui-r-sm:10px;--axm-ui-r-md:14px;--axm-ui-r-lg:18px;--axm-ui-tap:40px;
+}
+.axm-ui-icon{display:inline-block;width:1.15em;height:1.15em;flex:0 0 auto;background:currentColor;mask:var(--axm-icon) center/contain no-repeat;-webkit-mask:var(--axm-icon) center/contain no-repeat}
+.axm-ui-icon.home{--axm-icon:url('/assets/ui-kit/icons/home.svg')}.axm-ui-icon.create{--axm-icon:url('/assets/ui-kit/icons/create.svg')}.axm-ui-icon.build{--axm-icon:url('/assets/ui-kit/icons/build.svg')}.axm-ui-icon.play{--axm-icon:url('/assets/ui-kit/icons/play.svg')}.axm-ui-icon.ai-team{--axm-icon:url('/assets/ui-kit/icons/ai-team.svg')}.axm-ui-icon.pause{--axm-icon:url('/assets/ui-kit/icons/pause.svg')}.axm-ui-icon.eyes{--axm-icon:url('/assets/ui-kit/icons/eyes.svg')}.axm-ui-icon.radio{--axm-icon:url('/assets/ui-kit/icons/radio.svg')}.axm-ui-icon.manage{--axm-icon:url('/assets/ui-kit/icons/manage.svg')}.axm-ui-icon.back{--axm-icon:url('/assets/ui-kit/icons/back.svg')}.axm-ui-icon.check{--axm-icon:url('/assets/ui-kit/icons/check.svg')}.axm-ui-icon.warning{--axm-icon:url('/assets/ui-kit/icons/warning.svg')}.axm-ui-icon.settings{--axm-icon:url('/assets/ui-kit/icons/settings.svg')}.axm-ui-icon.modules{--axm-icon:url('/assets/ui-kit/icons/modules.svg')}
+.axm-ui-button{min-height:var(--axm-ui-tap);display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(70,215,231,.28);border-radius:var(--axm-ui-r-sm);padding:8px 12px;background:linear-gradient(145deg,rgba(70,215,231,.12),rgba(47,109,255,.05));color:var(--axm-ui-text);font-weight:750;cursor:pointer}
+.axm-ui-button:hover{border-color:rgba(70,215,231,.58);background:linear-gradient(145deg,rgba(70,215,231,.18),rgba(47,109,255,.08))}.axm-ui-button.quiet{border-color:rgba(155,173,193,.18);background:rgba(17,29,45,.6)}.axm-ui-button.danger{color:#ffc0bb;border-color:rgba(242,135,127,.45);background:rgba(242,135,127,.08)}
+.axm-ui-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(155,173,193,.2);border-radius:999px;padding:4px 8px;background:rgba(17,29,45,.65);color:var(--axm-ui-muted);font:800 9px ui-monospace,monospace;text-transform:uppercase;letter-spacing:.06em}.axm-ui-chip.ready{color:var(--axm-ui-success);border-color:rgba(105,220,154,.34)}.axm-ui-chip.warn{color:var(--axm-ui-warning);border-color:rgba(240,189,99,.36)}
+.axm-ui-card{position:relative;border:1px solid rgba(155,173,193,.18);border-radius:var(--axm-ui-r-md);background:linear-gradient(145deg,rgba(23,38,58,.94),rgba(11,20,33,.98));box-shadow:0 15px 38px rgba(0,0,0,.18)}
+
+/* Hub component binding: the real interface layer. These selectors map the
+   established AXM components onto the existing shell without changing any
+   gates, contracts, module state, or skin safety rules. */
+:where(button,.hcard,.mod,.hub-tools>summary):focus-visible{
+  outline:2px solid var(--axm-ui-accent);outline-offset:3px;
+  box-shadow:0 0 0 5px rgba(70,215,231,.12)
+}
+:where(.tb-btn,.ai-master,.btn,.sb-btn){
+  min-height:36px;position:relative;isolation:isolate;overflow:hidden;
+  border-color:rgba(99,128,164,.34);border-radius:10px;
+  background:linear-gradient(180deg,rgba(29,46,69,.86),rgba(10,18,30,.94));
+  box-shadow:inset 0 1px rgba(255,255,255,.045),0 5px 16px rgba(0,0,0,.16);
+  transition:transform .12s ease,border-color .15s ease,background .15s ease,box-shadow .15s ease
+}
+:where(.tb-btn,.ai-master,.btn,.sb-btn)::before{
+  content:"";position:absolute;z-index:-1;inset:0;
+  background:linear-gradient(110deg,transparent 0 38%,rgba(70,215,231,.08) 50%,transparent 62%);
+  transform:translateX(-120%);transition:transform .28s ease
+}
+:where(.tb-btn,.ai-master,.btn,.sb-btn):hover::before{transform:translateX(120%)}
+:where(.tb-btn,.ai-master,.btn,.sb-btn):hover{border-color:rgba(70,215,231,.56);color:var(--axm-ui-accent)}
+:where(.tb-btn,.ai-master,.btn,.sb-btn):active{transform:translateY(1px) scale(.985);box-shadow:inset 0 2px 6px rgba(0,0,0,.35)}
+
+.hcard{
+  width:100%;font:inherit;color:var(--axm-ui-text);text-align:left;
+  appearance:none;-webkit-appearance:none;
+  transition:transform .15s ease,border-color .15s ease,box-shadow .18s ease
+}
+.hcard:hover{transform:translateY(-3px)}
+.hcard:active{transform:translateY(-1px) scale(.992)}
+.hcard .open{
+  display:inline-flex;align-items:center;justify-content:center;min-height:34px;
+  padding:0 12px;border:1px solid color-mix(in srgb,currentColor 45%,transparent);
+  border-radius:9px;background:linear-gradient(180deg,color-mix(in srgb,currentColor 10%,transparent),rgba(6,12,22,.52));
+  box-shadow:inset 0 1px rgba(255,255,255,.04);font-weight:750;letter-spacing:.01em
+}
+.workflow-card .open::before{display:none}
+.workflow-card .open::after{content:"→";margin-left:8px;transition:transform .15s ease}
+.workflow-card:hover .open::after{transform:translateX(3px)}
+.module-card .open,.utility-card .open{color:var(--axm-ui-accent)}
+
+.mod{min-height:42px}
+.mod .life{border-radius:999px;padding:3px 7px;background:rgba(4,9,17,.72);font-weight:800}
+.mod:active{transform:translateX(1px) scale(.99)}
+
+.hub-tools>summary{
+  min-height:36px;box-sizing:border-box;border-color:rgba(99,128,164,.34);
+  background:linear-gradient(180deg,rgba(29,46,69,.84),rgba(10,18,30,.94));
+  box-shadow:inset 0 1px rgba(255,255,255,.04),0 5px 16px rgba(0,0,0,.16)
+}
+.hub-tools-pop{border-color:rgba(70,215,231,.28);box-shadow:0 20px 50px rgba(0,0,0,.46),0 0 30px rgba(70,215,231,.06)}
+
+.statusbar .sb-item:first-child{
+  padding:4px 9px;border:1px solid rgba(105,220,154,.24);border-radius:999px;
+  background:rgba(105,220,154,.055)
+}
+@media(max-width:720px){
+  :where(.tb-btn,.ai-master,.btn,.sb-btn){min-height:40px}
+  .hcard .open{min-height:38px}
+}
