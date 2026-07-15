@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.capability/v1",
+  "title": "AXM Mirror Capability",
+  "type": "object",
+  "required": ["capability_id", "schema_version", "version", "provider", "description", "input_schema", "output_schema", "permissions", "truth_requirements", "risk_class", "reversibility", "adapter_id", "availability", "status", "evidence_refs"],
+  "properties": {
+    "capability_id": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*(\\.[a-z0-9_-]+)+$"},
+    "schema_version": {"const": "axm.mirror.capability/v1"},
+    "version": {"type": "string"},
+    "provider": {"type": "string"},
+    "description": {"type": "string"},
+    "input_schema": {"type": "object"},
+    "output_schema": {"type": "object"},
+    "permissions": {"type": "array", "items": {"type": "string"}},
+    "truth_requirements": {"type": "object"},
+    "risk_class": {"enum": ["low", "medium", "high", "critical"]},
+    "reversibility": {"enum": ["reversible", "conditional", "not_reversible", "unknown"]},
+    "adapter_id": {"type": ["string", "null"]},
+    "availability": {"enum": ["available", "unavailable", "degraded", "unknown"]},
+    "status": {"enum": ["declared", "schema_valid", "test_passed", "approved", "active", "suspended", "retired"]},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}},
+    "extensions": {"type": "object"}
+  },
+  "additionalProperties": false
+}

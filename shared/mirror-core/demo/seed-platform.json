@@ -1,0 +1,170 @@
+{
+  "schema": "axm.mock-system/v1",
+  "system_id": "mock-platform",
+  "revision": 0,
+  "updated_at": "2026-07-14T00:00:00.000Z",
+  "entities": {
+    "project-living-world-root-game": {
+      "native_id": "project-living-world-root-game",
+      "mirror_id": "mir:platform:project:living-world-root-game",
+      "entity_type": "project",
+      "name": "Living World Root Game",
+      "description": "Mock local platform project.",
+      "state": {"status": "active"},
+      "type_data": {
+        "project_status": "active",
+        "goals": [],
+        "milestones": [],
+        "tasks": [],
+        "workspaces": ["workspace-mirror-research"],
+        "evidence_gate": {"completion_requires_evidence": true},
+        "source_document_schema": "axm.project-room/v1"
+      },
+      "created_by": {
+        "actor_id": "actor:human:mike",
+        "actor_type": "human",
+        "display_name": "Mike",
+        "source_system": "mock-platform",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": [],
+      "evidence_refs": ["evidence:mock-platform:seed-fixture"],
+      "revision": 1
+    },
+    "workspace-mirror-research": {
+      "native_id": "workspace-mirror-research",
+      "mirror_id": "mir:platform:workspace:mirror-research",
+      "entity_type": "workspace",
+      "name": "Mirror Research",
+      "description": "Mock platform workspace.",
+      "state": {"status": "active_local"},
+      "created_by": {
+        "actor_id": "actor:human:mike",
+        "actor_type": "human",
+        "display_name": "Mike",
+        "source_system": "mock-platform",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": [],
+      "evidence_refs": ["evidence:mock-platform:seed-fixture"],
+      "revision": 1
+    },
+    "module-workshop-planning": {
+      "native_id": "module-workshop-planning",
+      "mirror_id": "mir:platform:module:workshop-planning",
+      "entity_type": "module",
+      "name": "Workshop Planning",
+      "description": "Mock module record.",
+      "state": {"schema": "axm.module-contract/v1"},
+      "created_by": {
+        "actor_id": "actor:human:mike",
+        "actor_type": "human",
+        "display_name": "Mike",
+        "source_system": "mock-platform",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": [],
+      "evidence_refs": [],
+      "revision": 1
+    },
+    "team-human-ai-stewardship": {
+      "native_id": "team-human-ai-stewardship",
+      "mirror_id": "mir:platform:team:human-ai-stewardship",
+      "entity_type": "team",
+      "name": "Human + AI Stewardship Pair",
+      "description": "Human and AI remain separately attributed.",
+      "state": {"members": ["actor:human:mike", "actor:ai:axiom-mir-test"]},
+      "created_by": {
+        "actor_id": "actor:human:mike",
+        "actor_type": "human",
+        "display_name": "Mike",
+        "source_system": "mock-platform",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": [],
+      "evidence_refs": [],
+      "revision": 1
+    },
+    "service-evidence-desk": {
+      "native_id": "service-evidence-desk",
+      "mirror_id": "mir:platform:service:evidence-desk",
+      "entity_type": "service",
+      "name": "Evidence Desk",
+      "description": "Mock reference to the evidence boundary.",
+      "state": {"status": "compatibility-reference"},
+      "created_by": {
+        "actor_id": "actor:local_service:mirror-core",
+        "actor_type": "local_service",
+        "display_name": "Mirror Core Local Service",
+        "source_system": "mock-platform",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": [],
+      "evidence_refs": [],
+      "revision": 1
+    },
+    "service-local-asset-registry": {
+      "native_id": "service-local-asset-registry",
+      "mirror_id": "mir:platform:service:local-asset-registry",
+      "entity_type": "service",
+      "name": "Local Asset Registry",
+      "description": "Mock reference to local asset metadata.",
+      "state": {"status": "compatibility-reference"},
+      "created_by": {
+        "actor_id": "actor:local_service:mirror-core",
+        "actor_type": "local_service",
+        "display_name": "Mirror Core Local Service",
+        "source_system": "mock-platform",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": [],
+      "evidence_refs": [],
+      "revision": 1
+    }
+  },
+  "relations": [
+    {"relation_id": "platform-rel-1", "source_native_id": "project-living-world-root-game", "relation_type": "contains", "target_native_id": "workspace-mirror-research", "verification": "schema_valid"},
+    {"relation_id": "platform-rel-2", "source_native_id": "workspace-mirror-research", "relation_type": "contains", "target_native_id": "module-workshop-planning", "verification": "schema_valid"},
+    {"relation_id": "platform-rel-3", "source_native_id": "project-living-world-root-game", "relation_type": "stewarded_by", "target_native_id": "team-human-ai-stewardship", "verification": "schema_valid"}
+  ],
+  "capabilities": [],
+  "evidence": [
+    {
+      "evidence_id": "evidence:mock-platform:seed-fixture",
+      "schema_version": "axm.mirror.evidence/v1",
+      "evidence_type": "test_result",
+      "source": {"file": "demo/seed-platform.json"},
+      "creator": {
+        "actor_id": "actor:local_service:mirror-core",
+        "actor_type": "local_service",
+        "display_name": "Mirror Core Local Service",
+        "source_system": "mirror-core-local"
+      },
+      "timestamp": "2026-07-14T00:00:00.000Z",
+      "integrity_hash": null,
+      "storage_reference": "demo/seed-platform.json",
+      "claim_scope": ["deterministic mock seed"],
+      "limitations": ["Proves only that the mock platform fixture exists and parses."],
+      "verification_status": "schema_valid",
+      "extensions": {}
+    }
+  ]
+}

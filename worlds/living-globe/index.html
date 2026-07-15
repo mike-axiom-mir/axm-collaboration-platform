@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXM Living Globe — Grafthold world lineage</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden;background:#070a12;
+    font-family:ui-monospace,"Cascadia Mono",monospace;user-select:none;-webkit-tap-highlight-color:transparent;color:#c8d2e0}
+  #scene{position:fixed;inset:0;touch-action:none}
+  .hud{position:fixed;left:16px;top:16px;z-index:10;pointer-events:none;
+    color:#8fb0c8;font-size:11px;letter-spacing:.13em;text-transform:uppercase;line-height:2}
+  .hud b{color:#63d68a} .hud .t{color:#e8b54a} .hud .w{color:#c08a4a} .hud .d{color:#5a6b7d}
+  .title{position:fixed;right:16px;top:16px;z-index:10;text-align:right;pointer-events:none}
+  .title h1{color:#dce2ea;font-size:12px;font-weight:600;letter-spacing:.2em}
+  .title p{color:#8fb0c8;font-size:9px;letter-spacing:.16em;margin-top:3px;opacity:.7}
+  .cross{position:fixed;left:50%;top:50%;z-index:9;transform:translate(-50%,-50%);pointer-events:none;width:18px;height:18px;opacity:.6}
+  .cross:before,.cross:after{content:'';position:absolute;background:#cfe}
+  .cross:before{left:8px;top:0;width:2px;height:18px}.cross:after{top:8px;left:0;height:2px;width:18px}
+  .cross.hot:before,.cross.hot:after{background:#e8b54a}
+  .look{position:fixed;left:50%;top:calc(50% + 26px);z-index:10;transform:translateX(-50%);
+    color:#e8b54a;font-size:11px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap}
+  .look.show{opacity:.85}
+  .start{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(6,9,14,.92);color:#8fb0c8;text-align:center;cursor:pointer}
+  .start h2{color:#dce2ea;font-size:16px;letter-spacing:.2em;margin-bottom:14px}
+  .start p{font-size:11px;letter-spacing:.1em;line-height:2.1;opacity:.8}
+  .start .k{color:#63d68a}
+  .start .go{margin-top:18px;color:#e8b54a;font-size:12px;letter-spacing:.2em;text-transform:uppercase}
+  .bar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:8px;justify-content:center;
+    padding:14px 12px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(6,9,14,.8) 45%)}
+  .slot{pointer-events:auto;min-width:96px;background:rgba(255,255,255,.03);border:1px solid #2a3140;border-radius:11px;
+    padding:8px 12px;color:#8fb0c8;font-family:inherit;cursor:pointer;text-align:center}
+  .slot.on{border-color:#1c7f92;color:#63d68a;background:rgba(56,214,236,.08)}
+  .slot .n{font-size:11px;letter-spacing:.1em}.slot .c{font-size:9px;color:#5a6b7d;margin-top:3px}
+  .slot.locked{opacity:.45}
+  .journal{position:fixed;right:16px;bottom:76px;z-index:10;max-width:210px;text-align:right;
+    color:#8fb0c8;font-size:9.5px;line-height:1.9;pointer-events:none}
+  .journal .row{opacity:0;animation:fade .5s forwards}@keyframes fade{to{opacity:.55}}
+  .stick{position:fixed;z-index:8;width:96px;height:96px;border:1px solid rgba(207,238,255,.25);border-radius:50%;
+    transform:translate(-50%,-50%);pointer-events:none;display:none}
+  .stick .nub{position:absolute;left:50%;top:50%;width:34px;height:34px;border-radius:50%;
+    background:rgba(99,214,138,.35);border:1px solid rgba(99,214,138,.6);transform:translate(-50%,-50%)}
+</style></head>
+<body>
+<canvas id="scene"></canvas>
+<div class="hud">
+  wood <b class="w" id="wood">0</b><br>
+  trees <b id="count">0</b> · age <span class="t" id="worldage">0</span> · <span id="daypart" class="d">day</span><br>
+  <span class="d">mode</span> <b id="modeLabel">chop</b>
+</div>
+<div class="title"><h1>GRAFTHOLD GLOBE</h1><p>a small living world · v0</p></div>
+<div class="cross" id="cross"></div>
+<div class="look" id="look"></div>
+<div class="journal" id="journal"></div>
+<div class="stick" id="stick"><div class="nub" id="stickNub"></div></div>
+<div class="bar" id="bar"></div>
+<div class="start" id="start">
+  <h2>GRAFTHOLD GLOBE</h2>
+  <p id="helpDesk"><span class="k">W A S D</span> — walk the world &nbsp;·&nbsp; <span class="k">mouse</span> — look<br>
+     <span class="k">click</span> — chop / plant / build &nbsp;·&nbsp; <span class="k">1 2 3</span> — tool</p>
+  <p id="helpTouch" style="display:none"><span class="k">left half</span> — drag to look &nbsp;·&nbsp; <span class="k">right half</span> — drag to walk<br>
+     <span class="k">tap</span> — chop / plant / build</p>
+  <div class="go">enter the world</div>
+  <div class="go" id="newWorld" style="margin-top:8px;font-size:10px;opacity:.75;display:none"><u>new world</u></div>
+</div>
+
+<script type="module">
+/* ============================================================
+ * GRAFTHOLD GLOBE v0 — 2026-07-14 (Claude, Route Guardian seat)
+ * A NEW SIBLING WORLD CORE. Flat Grafthold Walk v0.11 stays canon;
+ * this is the round default-world asset for many future games.
+ * Positions are UNIT VECTORS on a sphere (radius TUNE.R). Walking is
+ * tangent-space transport; distance between things is chord distance;
+ * "up" is always away from the planet's heart.
+ * WHAT V0 HAS: walkable tiny planet · seeded living forest (grow,
+ * seed, crowd, die — same honest ecology, re-expressed on a sphere) ·
+ * chop / plant / campfire · three clocks (action, world, day — the
+ * day clock now drives a TRUE terminator: a real dawn line on a real
+ * globe) · seeded stars · saves (GLOBE_SAVE_V1) · phone + desktop
+ * controls ported from the walk build.
+ * WHAT V0 HONESTLY LACKS: water, rocks, sand, fauna, rho, deadwood,
+ * proposals, boundaries — they port over in v0.x, they are not here,
+ * and this file does not pretend otherwise.
+ * ============================================================ */
+import * as THREE from '/shared/vendor/three-r160/three.module.js';
+
+const WORLD_CONTRACT = Object.freeze({
+  schema:'axm.living-world/v1',
+  world_id:'world.grafthold.globe',
+  lineage:['grafthold-flat-v0.11','grafthold-globe-v0'],
+  state_owner:'living-world',
+  game_rulesets_own_world:false,
+  mirror_connection:'descriptor-only',
+  live_mirror_apply:false,
+  shared_controls_contract:'axm-semantic-input-v1'
+});
+
+/* ---------- TUNE ---------- */
+const TUNE = {
+  R: 24,                 /* planet radius */
+  walkSpeed: 7,          /* surface units/s */
+  walkAccel: 12,
+  lookSensTouch: 0.006, lookSensMouse: 0.005, lookSensLocked: 0.0022,
+  stickRadius: 48, tapPx: 8, tapMs: 350,
+  eye: 2.4,
+  /* ecology (chord distances on the sphere) */
+  mature: 8, lifespan: 60, seedFrom: 32, offspring: 1.2,
+  crowdRadius: 3.2, crowdPenalty: 0.28, shadePenalty: 0.35, minCondition: 0.15,
+  treeMinDist: 2.2,
+  startTrees: 14,
+  /* day — its own dial (three-clock rule holds on the globe) */
+  dayLength: 240, dayStart: 0.35, starCount: 260
+};
+const RECIPES = [ { id:'campfire', icon:'🔥', name:'campfire', cost:5, key:'Digit3' } ];
+
+const world = { things:[], fires:[], born:0, died:0, wood:0 };
+const WORLD = { speed:1.0, ageClock:0 };
+let dayPhase = TUNE.dayStart;
+let tool='chop';
+function rng(seed){ let s=seed%2147483647; if(s<=0)s+=2147483646; return ()=> (s=s*16807%2147483647)/2147483647; }
+const seedWords=new Uint32Array(1); crypto.getRandomValues(seedWords);
+let worldSeed=(seedWords[0]&0x7fffffff)||1;
+let randomState=worldSeed>>>0;
+function worldRandom(){ randomState^=randomState<<13; randomState^=randomState>>>17; randomState^=randomState<<5; return (randomState>>>0)/4294967296; }
+
+/* ---------- renderer / scene ---------- */
+const canvas=document.getElementById('scene');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene();
+scene.background=new THREE.Color('#070a12');
+/* no distance fog on a globe v0 — the horizon IS the curvature */
+const camera=new THREE.PerspectiveCamera(70,innerWidth/innerHeight,0.1,600);
+
+/* ---------- the planet ---------- */
+const hemi=new THREE.HemisphereLight('#bcd3e8','#20361f',0.35); scene.add(hemi);
+const sun=new THREE.DirectionalLight('#ffd9a0',1.1);
+sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
+sun.shadow.camera.far=140;
+sun.shadow.camera.left=-40; sun.shadow.camera.right=40; sun.shadow.camera.top=40; sun.shadow.camera.bottom=-40;
+scene.add(sun); scene.add(sun.target);
+const moon=new THREE.DirectionalLight('#7d9ac9',0); scene.add(moon); scene.add(moon.target);
+
+let planet=null, stars=null;
+function buildPlanet(seed){
+  if(planet) scene.remove(planet);
+  if(stars) scene.remove(stars);
+  const r=rng(seed);
+  const geo=new THREE.IcosahedronGeometry(TUNE.R,4);
+  /* seeded surface color: mossy greens with earthy patches, flat-shaded facets */
+  const pos=geo.attributes.position, colors=new Float32Array(pos.count*3);
+  const c=new THREE.Color();
+  const p1=[r()*8,r()*8,r()*8], p2=[r()*8,r()*8,r()*8];
+  for(let i=0;i<pos.count;i++){
+    const x=pos.getX(i)/TUNE.R,y=pos.getY(i)/TUNE.R,z=pos.getZ(i)/TUNE.R;
+    const n=Math.sin(x*3.1+p1[0])*Math.cos(y*2.7+p1[1])*Math.sin(z*3.7+p1[2])
+          +0.5*Math.sin(x*7.3+p2[0])*Math.sin(y*6.1+p2[1])*Math.cos(z*5.9+p2[2]);
+    const u=(n+1.5)/3;
+    c.setHSL(0.26+u*0.09, 0.32+u*0.14, 0.16+u*0.10);
+    colors[i*3]=c.r; colors[i*3+1]=c.g; colors[i*3+2]=c.b;
+  }
+  geo.setAttribute('color',new THREE.BufferAttribute(colors,3));
+  planet=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,flatShading:true}));
+  planet.receiveShadow=true; scene.add(planet);
+  /* seeded stars — this world's own constellations */
+  const sp=new Float32Array(TUNE.starCount*3);
+  const rs=rng(seed^0x57a125);
+  for(let i=0;i<TUNE.starCount;i++){
+    const az=rs()*Math.PI*2, el=Math.asin(rs()*2-1), Rr=420;
+    sp[i*3]=Math.cos(az)*Math.cos(el)*Rr; sp[i*3+1]=Math.sin(el)*Rr; sp[i*3+2]=Math.sin(az)*Math.cos(el)*Rr;
+  }
+  const sg=new THREE.BufferGeometry(); sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+  const sm=new THREE.PointsMaterial({color:'#cfe4ff',size:1.5,sizeAttenuation:false,transparent:true,opacity:0});
+  stars=new THREE.Points(sg,sm); scene.add(stars);
+}
+
+/* ---------- sphere math helpers ---------- */
+const V=(x,y,z)=>new THREE.Vector3(x,y,z);
+function tangentize(t,p){ return t.sub(p.clone().multiplyScalar(t.dot(p))).normalize(); }
+function chord(a,b){ return a.distanceTo(b)*TUNE.R; }  /* a,b unit vectors */
+
+/* ---------- player on the sphere ---------- */
+const player={
+  p:V(0,1,0),               /* unit position (north pole start) */
+  f:V(0,0,-1),              /* unit forward tangent */
+  pitch:-0.02, vFwd:0, vStr:0,
+  touchFwd:0, touchStrafe:0, keys:{}
+};
+function playerRight(){ return player.f.clone().cross(player.p).normalize().negate(); }
+
+/* ---------- trees (living, on the sphere) ---------- */
+const barkMat=new THREE.MeshStandardMaterial({color:'#6b4f2f',roughness:.9});
+function orientOnSphere(obj,dir){
+  obj.position.copy(dir).multiplyScalar(TUNE.R);
+  obj.quaternion.setFromUnitVectors(V(0,1,0),dir);
+}
+function spawnTree(dir,seed,bornAt){
+  const rand=rng(seed); const grp=new THREE.Group();
+  const c=new THREE.Color().setHSL(0.27+rand()*0.1,0.4+rand()*0.2,0.42+rand()*0.14);
+  const leafMat=new THREE.MeshStandardMaterial({color:c,roughness:.75});
+  const trunkH=2.6+rand()*2.6;
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.12+rand()*0.06,0.22+rand()*0.1,trunkH,6),barkMat);
+  trunk.position.y=trunkH/2; trunk.castShadow=true; grp.add(trunk);
+  const clumps=2+Math.floor(rand()*4);
+  for(let i=0;i<clumps;i++){
+    const m=new THREE.Mesh(new THREE.IcosahedronGeometry(0.5+rand()*0.7,0),leafMat);
+    const a=rand()*Math.PI*2,rad=rand()*0.9;
+    m.position.set(Math.cos(a)*rad,trunkH*0.75+rand()*trunkH*0.4,Math.sin(a)*rad);
+    m.castShadow=true; grp.add(m);
+  }
+  orientOnSphere(grp,dir);
+  const th={dir:dir.clone(),seed,born:bornAt!=null?bornAt:WORLD.ageClock,seeded:false,
+    mesh:grp,fullH:trunkH,condition:1,leafMat,leafColor0:leafMat.color.clone()};
+  scene.add(grp); world.things.push(th); applyGrowth(th); return th;
+}
+function applyGrowth(th){
+  const age=WORLD.ageClock-th.born; let g;
+  if(age<TUNE.mature)g=0.12+(age/TUNE.mature)*0.88;
+  else if(age<TUNE.lifespan-8)g=1;
+  else g=Math.max(0.2,1-(age-(TUNE.lifespan-8))/8*0.5);
+  g*=(0.55+0.45*th.condition);
+  th.mesh.scale.setScalar(g); th.grown=g;
+}
+function crowded(dir){ for(const t of world.things){ if(chord(t.dir,dir)<TUNE.treeMinDist) return true; } return false; }
+function updateConditions(){
+  for(const th of world.things){
+    let crowd=0,shaded=false;
+    for(const o of world.things){ if(o===th) continue;
+      const d=chord(o.dir,th.dir);
+      if(d<TUNE.crowdRadius){ crowd++; if(o.fullH>th.fullH*1.15&&d<2.2) shaded=true; } }
+    let c=1-crowd*TUNE.crowdPenalty-(shaded?TUNE.shadePenalty:0);
+    th.condition=Math.max(TUNE.minCondition,Math.min(1,c));
+    th.leafMat.color.copy(th.leafColor0).lerp(new THREE.Color('#8a7a3a'),1-th.condition);
+  }
+}
+let lastPop=0;
+function populationStep(){
+  updateConditions();
+  const nb=[];
+  for(let i=world.things.length-1;i>=0;i--){ const th=world.things[i]; const age=WORLD.ageClock-th.born;
+    if(!th.seeded&&age>TUNE.seedFrom){ th.seeded=true; const rand=rng(th.seed^0x9e37);
+      let n=worldRandom()<(TUNE.offspring-1)?2:1;
+      if(th.condition<0.5) n=worldRandom()<0.5?0:1;
+      for(let k=0;k<n;k++){
+        /* offspring: rotate parent dir by a small random tangent step */
+        const ang=rand()*Math.PI*2, dist=(3+rand()*4)/TUNE.R;
+        const t0=tangentize(V(rand()-0.5,rand()-0.5,rand()-0.5),th.dir);
+        const t1=t0.clone().applyAxisAngle(th.dir,ang);
+        const nd=th.dir.clone().multiplyScalar(Math.cos(dist)).add(t1.multiplyScalar(Math.sin(dist))).normalize();
+        if(!crowded(nd)) nb.push([nd,(th.seed*7+k*131+((WORLD.ageClock*10)|0))|0]);
+      } }
+    if(age>TUNE.lifespan){ scene.remove(th.mesh); world.things.splice(i,1); world.died++; }
+  }
+  nb.forEach(([d,s])=>{ spawnTree(d,s); world.born++; });
+  if(nb.length&&!restoring) addJournal(nb.length+' seedling'+(nb.length>1?'s':'')+' took root');
+}
+
+/* ---------- campfire ---------- */
+function buildCampfire(dir){
+  const grp=new THREE.Group();
+  const ringMat=new THREE.MeshStandardMaterial({color:'#4a4a52',roughness:1});
+  for(let i=0;i<7;i++){ const a=(i/7)*Math.PI*2;
+    const s=new THREE.Mesh(new THREE.DodecahedronGeometry(0.22),ringMat);
+    s.position.set(Math.cos(a)*0.6,0.15,Math.sin(a)*0.6); s.castShadow=true; grp.add(s); }
+  const flame=new THREE.Mesh(new THREE.ConeGeometry(0.28,0.7,6),
+    new THREE.MeshStandardMaterial({color:'#ff9838',emissive:'#ff6a1a',emissiveIntensity:1.4}));
+  flame.position.y=0.55; grp.add(flame);
+  const light=new THREE.PointLight('#ff9a3c',1.6,10); light.position.y=1; grp.add(light);
+  orientOnSphere(grp,dir); scene.add(grp);
+  world.fires.push({dir:dir.clone(),mesh:grp,flame,light});
+  if(!restoring) addJournal('you built a campfire');
+}
+
+/* ---------- HUD / journal / tools ---------- */
+function updateHUD(){
+  document.getElementById('wood').textContent=world.wood;
+  document.getElementById('count').textContent=world.things.length;
+  document.getElementById('worldage').textContent=WORLD.ageClock.toFixed(0);
+  RECIPES.forEach(r=>slots[r.id].classList.toggle('locked',world.wood<r.cost));
+}
+function addJournalReal(t){ const el=document.getElementById('journal'); const r=document.createElement('div');
+  r.className='row'; r.textContent=t; el.appendChild(r); while(el.children.length>5) el.removeChild(el.firstChild); }
+let addJournal=addJournalReal;
+const barEl=document.getElementById('bar'), slots={};
+function addSlot(id,icon,label,sub){
+  const b=document.createElement('button'); b.className='slot';
+  b.innerHTML='<div class="n">'+icon+' '+label+'</div><div class="c">'+sub+'</div>';
+  b.onclick=e=>{e.stopPropagation();pickTool(id);};
+  barEl.appendChild(b); slots[id]=b;
+}
+addSlot('chop','✋','chop','tap a tree');
+addSlot('plant','🌱','plant','costs nothing');
+RECIPES.forEach(r=>addSlot(r.id,r.icon,r.name,'needs '+r.cost+' wood'));
+function recipeOf(id){return RECIPES.find(r=>r.id===id);}
+function pickTool(t){ const r=recipeOf(t);
+  if(r&&world.wood<r.cost){ addJournal('need '+r.cost+' wood'); return; } setTool(t); }
+function setTool(t){ tool=t;
+  for(const id in slots) slots[id].classList.toggle('on',id===t);
+  document.getElementById('modeLabel').textContent=recipeOf(t)?recipeOf(t).name:t; }
+setTool('chop');
+
+/* ---------- controls (ported: unified pointers, joystick, tap) ---------- */
+const startEl=document.getElementById('start');
+let locked=false, entered=false;
+const isTouchDevice=('ontouchstart' in window)||navigator.maxTouchPoints>0;
+if(isTouchDevice){ document.getElementById('helpDesk').style.display='none';
+                   document.getElementById('helpTouch').style.display=''; }
+function enter(){ entered=true; startEl.style.display='none';
+  if(!isTouchDevice){ const p=canvas.requestPointerLock&&canvas.requestPointerLock();
+    if(p&&p.catch)p.catch(()=>{}); } }
+startEl.addEventListener('click',e=>{ if(e.target.closest('#newWorld')) return; enter(); });
+startEl.addEventListener('touchstart',function(e){ if(e.target.closest('#newWorld')) return;
+  e.preventDefault(); enter(); },{passive:false});
+document.addEventListener('pointerlockchange',()=>{ locked=document.pointerLockElement===canvas; });
+document.addEventListener('pointerlockerror',()=>{});
+const stickEl=document.getElementById('stick'), stickNub=document.getElementById('stickNub');
+const pointers=new Map(); let lookId=null, walkId=null;
+function setStick(x,y,dx,dy){ stickEl.style.display='block'; stickEl.style.left=x+'px'; stickEl.style.top=y+'px';
+  stickNub.style.transform='translate(-50%,-50%) translate('+dx+'px,'+dy+'px)'; }
+function clearStick(){ stickEl.style.display='none'; player.touchFwd=0; player.touchStrafe=0; }
+canvas.addEventListener('pointerdown',e=>{
+  if(!entered) return;
+  if(e.pointerType==='mouse'){ if(e.button!==0) return;
+    pointers.set(e.pointerId,{x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY,role:'mouse',t0:performance.now(),moved:false}); return; }
+  const role=e.clientX<innerWidth/2?'look':'walk';
+  if(role==='look'&&lookId!==null) return;
+  if(role==='walk'&&walkId!==null) return;
+  pointers.set(e.pointerId,{x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY,role,t0:performance.now(),moved:false});
+  if(role==='look') lookId=e.pointerId; else { walkId=e.pointerId; setStick(e.clientX,e.clientY,0,0); }
+});
+canvas.addEventListener('pointermove',e=>{
+  if(!entered) return;
+  if(locked){ yawBy(-e.movementX*TUNE.lookSensLocked);
+    player.pitch=Math.max(-1.2,Math.min(0.7,player.pitch-e.movementY*TUNE.lookSensLocked)); return; }
+  const p=pointers.get(e.pointerId); if(!p) return;
+  const dx=e.clientX-p.x, dy=e.clientY-p.y;
+  if(Math.abs(e.clientX-p.x0)+Math.abs(e.clientY-p.y0)>TUNE.tapPx) p.moved=true;
+  if(p.role==='mouse'||p.role==='look'){
+    const sens=p.role==='mouse'?TUNE.lookSensMouse:TUNE.lookSensTouch;
+    yawBy(-dx*sens); player.pitch=Math.max(-1.2,Math.min(0.7,player.pitch-dy*sens));
+  } else if(p.role==='walk'){
+    let jx=e.clientX-p.x0, jy=e.clientY-p.y0;
+    const m=Math.hypot(jx,jy); if(m>TUNE.stickRadius){ jx*=TUNE.stickRadius/m; jy*=TUNE.stickRadius/m; }
+    player.touchFwd=-jy/TUNE.stickRadius; player.touchStrafe=jx/TUNE.stickRadius;
+    setStick(p.x0,p.y0,jx,jy);
+  }
+  p.x=e.clientX; p.y=e.clientY;
+});
+function endPointer(e){
+  const p=pointers.get(e.pointerId); if(!p) return;
+  pointers.delete(e.pointerId);
+  if(p.role==='look') lookId=null;
+  if(p.role==='walk'){ walkId=null; clearStick(); }
+  const quick=performance.now()-p.t0<TUNE.tapMs;
+  if(!p.moved&&quick&&!(e.target.closest&&e.target.closest('.bar'))) act();
+}
+canvas.addEventListener('pointerup',endPointer);
+canvas.addEventListener('pointercancel',e=>{ const p=pointers.get(e.pointerId);
+  if(p&&p.role==='walk'){walkId=null;clearStick();} if(p&&p.role==='look')lookId=null; pointers.delete(e.pointerId); });
+canvas.addEventListener('click',()=>{ if(entered&&locked) act(); });
+addEventListener('keydown',e=>{ player.keys[e.code]=true;
+  if(e.code==='Digit1')pickTool('chop'); if(e.code==='Digit2')pickTool('plant');
+  const r=RECIPES.find(r=>r.key===e.code); if(r)pickTool(r.id); });
+addEventListener('keyup',e=>{ player.keys[e.code]=false; });
+function yawBy(a){ player.f.applyAxisAngle(player.p,a); tangentize(player.f,player.p); }
+
+/* ---------- acting ---------- */
+const ray=new THREE.Raycaster();
+function centerRay(){ ray.setFromCamera(new THREE.Vector2(0,0),camera); }
+function lookingAtTree(){
+  centerRay();
+  const meshes=world.things.map(t=>t.mesh);
+  if(!meshes.length) return null;
+  const hit=ray.intersectObjects(meshes,true)[0];
+  if(!hit) return null;
+  let o=hit.object; while(o.parent&&!world.things.find(t=>t.mesh===o)) o=o.parent;
+  const th=world.things.find(t=>t.mesh===o);
+  return (th&&hit.distance<7)?{th}:null;
+}
+function groundDir(){
+  centerRay(); const hit=ray.intersectObject(planet)[0];
+  return hit&&hit.distance<9?hit.point.clone().normalize():null;
+}
+function act(){
+  if(tool==='chop'){
+    const look=lookingAtTree();
+    if(look){ const {th}=look;
+      const yield_=Math.max(1,Math.round(th.grown*3));
+      world.wood+=yield_;
+      scene.remove(th.mesh); world.things.splice(world.things.indexOf(th),1); world.died++;
+      addJournal('chopped a tree · +'+yield_+' wood'); updateHUD();
+    } else addJournal('nothing to chop here');
+  } else if(tool==='plant'){
+    const d=groundDir();
+    if(d&&!crowded(d)){ spawnTree(d,(worldRandom()*1e9)|0); world.born++; addJournal('planted a sapling'); updateHUD(); }
+    else addJournal('no room to plant there');
+  } else { const r=recipeOf(tool); if(!r) return;
+    if(world.wood<r.cost){ addJournal('need '+r.cost+' wood'); return; }
+    const d=groundDir();
+    if(d){ world.wood-=r.cost; buildCampfire(d); updateHUD();
+      if(world.wood<r.cost) setTool('chop'); }
+    else addJournal('aim at the ground');
+  }
+}
+const crossEl=document.getElementById('cross'), lookEl=document.getElementById('look');
+function updateLookPrompt(){
+  if(!entered){ lookEl.classList.remove('show'); crossEl.classList.remove('hot'); return; }
+  if(tool==='chop'){ const l=lookingAtTree();
+    if(l){ const c=l.th.condition;
+      lookEl.textContent='chop tree'+(c<0.45?' · struggling (crowded)':c<0.75?' · stressed':'');
+      lookEl.classList.add('show'); crossEl.classList.add('hot'); return; } }
+  else if(tool==='plant'){ lookEl.textContent='plant here'; lookEl.classList.add('show'); crossEl.classList.remove('hot'); return; }
+  else { const r=recipeOf(tool); if(r){ lookEl.textContent='build '+r.name; lookEl.classList.add('show'); crossEl.classList.add('hot'); return; } }
+  lookEl.classList.remove('show'); crossEl.classList.remove('hot');
+}
+
+/* ---------- day & night: the terminator is real now ---------- */
+const SKY_KEYS=[
+  [0.00,'#04060c',0.00,0.10,1.0],[0.20,'#070a14',0.00,0.13,0.8],
+  [0.27,'#241826',0.70,0.26,0.0],[0.35,'#101c2c',1.05,0.45,0.0],
+  [0.50,'#14243a',1.25,0.55,0.0],[0.65,'#101c2c',1.05,0.45,0.0],
+  [0.73,'#241521',0.65,0.26,0.0],[0.80,'#04060c',0.00,0.10,1.0],[1.00,'#04060c',0.00,0.10,1.0]];
+const SUN_COLS={dawn:new THREE.Color('#ff9a5a'),noon:new THREE.Color('#fff2d8')};
+const _cA=new THREE.Color(),_cB=new THREE.Color();
+function skyAt(p){ let i=0; while(i<SKY_KEYS.length-2&&SKY_KEYS[i+1][0]<p)i++;
+  const a=SKY_KEYS[i],b=SKY_KEYS[i+1],u=(p-a[0])/((b[0]-a[0])||1);
+  return { sky:_cA.set(a[1]).lerp(_cB.set(b[1]),u).clone(),
+           sunI:a[2]+(b[2]-a[2])*u, hemiI:a[3]+(b[3]-a[3])*u, star:a[4]+(b[4]-a[4])*u }; }
+function isNight(p){ return p<0.23||p>0.77; }
+function dayTick(dt){
+  dayPhase=(dayPhase+dt*WORLD.speed/TUNE.dayLength)%1;
+  const k=skyAt(dayPhase);
+  scene.background.copy(k.sky);
+  /* the sun ORBITS THE GLOBE — day and night are places now, not moods.
+     It circles in the plane of the player's meridian so the local phase
+     matches the sky keys where the player stands. */
+  const a=(dayPhase-0.25)*Math.PI*2;
+  const east=playerRight(), up=player.p;
+  const sunDir=up.clone().multiplyScalar(Math.sin(a)).add(east.clone().multiplyScalar(Math.cos(a))).normalize();
+  sun.position.copy(sunDir).multiplyScalar(90);
+  sun.target.position.set(0,0,0);
+  const warm=Math.max(0,Math.min(1,(Math.sin(a)-0.05)*4));
+  sun.color.copy(SUN_COLS.dawn).lerp(SUN_COLS.noon,warm);
+  sun.intensity=k.sunI; sun.castShadow=k.sunI>0.05;
+  moon.position.copy(sunDir).multiplyScalar(-90); moon.target.position.set(0,0,0);
+  moon.intensity=isNight(dayPhase)?0.15:0;
+  hemi.intensity=k.hemiI;
+  if(stars) stars.material.opacity=k.star;
+  const w=isNight(dayPhase)?'night':dayPhase<0.3?'dawn':dayPhase<0.7?'day':'dusk';
+  const el=document.getElementById('daypart'); if(el.textContent!==w) el.textContent=w;
+}
+
+/* ---------- saves ---------- */
+const SAVE_KEY='AXM_LIVING_GLOBE_SAVE_V1';
+let restoring=false;
+function saveObject(){
+  return { v:1, schema:WORLD_CONTRACT.schema, worldId:WORLD_CONTRACT.world_id, savedAt:Date.now(), worldSeed, randomState, age:WORLD.ageClock, dayPhase,
+    wood:world.wood, born:world.born, died:world.died,
+    player:{p:player.p.toArray(),f:player.f.toArray(),pitch:player.pitch},
+    trees:world.things.map(t=>({d:t.dir.toArray(),seed:t.seed,born:t.born,seeded:t.seeded})),
+    fires:world.fires.map(f=>({d:f.dir.toArray()})) };
+}
+function saveNow(){ try{ localStorage.setItem(SAVE_KEY,JSON.stringify(saveObject())); }catch(e){} }
+function loadSave(){ try{ const raw=localStorage.getItem(SAVE_KEY); if(!raw) return null;
+  const d=JSON.parse(raw); return (d&&d.v===1)?d:null; }catch(e){ return null; } }
+function restoreFrom(d){
+  restoring=true; addJournal=()=>{};
+  worldSeed=d.worldSeed; randomState=(d.randomState==null?worldSeed:d.randomState)>>>0; dayPhase=d.dayPhase!==undefined?d.dayPhase:TUNE.dayStart;
+  WORLD.ageClock=d.age; lastPop=d.age;
+  world.wood=d.wood; world.born=d.born||0; world.died=d.died||0;
+  player.p.fromArray(d.player.p).normalize();
+  player.f.fromArray(d.player.f); tangentize(player.f,player.p);
+  player.pitch=d.player.pitch;
+  buildPlanet(worldSeed);
+  d.trees.forEach(t=>{ const th=spawnTree(V(...t.d).normalize(),t.seed,t.born); th.seeded=t.seeded; });
+  d.fires.forEach(f=>buildCampfire(V(...f.d).normalize()));
+  updateConditions(); world.things.forEach(applyGrowth);
+  addJournal=addJournalReal; restoring=false;
+}
+setInterval(saveNow,5000);
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) saveNow(); });
+addEventListener('pagehide',saveNow);
+
+/* ---------- frame ---------- */
+let prev=performance.now();
+function frame(now){
+  requestAnimationFrame(frame);
+  const dt=Math.min(0.05,(now-prev)/1000); prev=now;
+  WORLD.ageClock+=dt*WORLD.speed;
+  if(WORLD.ageClock-lastPop>2){ lastPop=WORLD.ageClock; populationStep(); updateHUD(); }
+  world.things.forEach(applyGrowth);
+
+  /* movement: tangent transport on the sphere */
+  const k=player.keys;
+  const inF=Math.max(-1,Math.min(1,((k.KeyW?1:0)-(k.KeyS?1:0))+player.touchFwd));
+  const inS=Math.max(-1,Math.min(1,((k.KeyD?1:0)-(k.KeyA?1:0))+player.touchStrafe));
+  const blend=Math.min(1,TUNE.walkAccel*dt);
+  player.vFwd+=(inF*TUNE.walkSpeed-player.vFwd)*blend;
+  player.vStr+=(inS*TUNE.walkSpeed-player.vStr)*blend;
+  const step=(player.vFwd*dt)/TUNE.R, side=(player.vStr*dt)/TUNE.R;
+  if(Math.abs(step)>1e-7){
+    const np=player.p.clone().multiplyScalar(Math.cos(step)).add(player.f.clone().multiplyScalar(Math.sin(step))).normalize();
+    player.f.copy(player.f.clone().multiplyScalar(Math.cos(step)).sub(player.p.clone().multiplyScalar(Math.sin(step)))).normalize();
+    player.p.copy(np);
+  }
+  if(Math.abs(side)>1e-7){
+    const r=playerRight();
+    const np=player.p.clone().multiplyScalar(Math.cos(side)).add(r.multiplyScalar(Math.sin(side))).normalize();
+    player.p.copy(np); tangentize(player.f,player.p);
+  }
+  /* camera: eye above surface, up = radial, pitch on top of tangent view */
+  const eyePos=player.p.clone().multiplyScalar(TUNE.R+TUNE.eye);
+  camera.position.copy(eyePos);
+  camera.up.copy(player.p);
+  const lookDir=player.f.clone().multiplyScalar(Math.cos(player.pitch))
+    .add(player.p.clone().multiplyScalar(Math.sin(player.pitch)));
+  camera.lookAt(eyePos.clone().add(lookDir));
+  /* keep sun shadow camera near the player for crisp shadows */
+  sun.shadow.camera.position&&0;
+
+  world.fires.forEach(f=>{ f.flame.scale.y=1+Math.sin(now*0.02+f.dir.x*7)*0.18; f.light.intensity=1.4+Math.sin(now*0.03)*0.4; });
+  dayTick(dt);
+  updateLookPrompt();
+  renderer.render(scene,camera);
+}
+
+/* ---------- start ---------- */
+const _save=loadSave();
+if(_save){
+  restoreFrom(_save);
+  document.querySelector('.start .go').textContent='continue · world age '+_save.age.toFixed(0);
+  const nw=document.getElementById('newWorld'); nw.style.display='block';
+  nw.addEventListener('pointerdown',e=>{ e.stopPropagation(); e.preventDefault();
+    localStorage.removeItem(SAVE_KEY); location.reload(); });
+  addJournal('the world kept turning — age '+_save.age.toFixed(0));
+}else{
+  buildPlanet(worldSeed);
+  const r=rng(worldSeed^0x9d0e);
+  let placed=0,guard=0;
+  while(placed<TUNE.startTrees&&guard<400){ guard++;
+    const d=V(r()*2-1,r()*2-1,r()*2-1); if(d.lengthSq()<0.05) continue; d.normalize();
+    if(chord(d,player.p)<4) continue;          /* keep the landing spot open */
+    if(crowded(d)) continue;
+    spawnTree(d,(r()*1e9)|0,-r()*30); world.born++; placed++;
+  }
+  addJournal('you arrived on a small world');
+}
+updateHUD();
+window.AXMLivingWorld=Object.freeze({
+  describe:()=>JSON.parse(JSON.stringify(WORLD_CONTRACT)),
+  snapshot:()=>JSON.parse(JSON.stringify(saveObject())),
+  exportSelected:()=>({
+    schema:'axm.living-world.selected-snapshot/v1',
+    world_id:WORLD_CONTRACT.world_id,
+    revision:Math.floor(WORLD.ageClock*1000),
+    captured_at:new Date().toISOString(),
+    selected:{age:WORLD.ageClock,dayPhase,treeCount:world.things.length,fireCount:world.fires.length,born:world.born,died:world.died},
+    limitations:['Read-only browser snapshot','Not evidence of scientific ecology','No live Mirror adapter connected']
+  })
+});
+requestAnimationFrame(frame);
+addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
+</script>
+</body></html>

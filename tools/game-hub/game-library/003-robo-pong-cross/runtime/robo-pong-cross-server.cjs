@@ -9,6 +9,9 @@ const HOST = process.env.AXM_ROBO_PONG_HOST || '0.0.0.0';
 const PORT = Number(process.env.PORT || 8793);
 const TEST_MODE = process.env.AXM_TEST_MODE === '1';
 const CLIENT_FILE = path.join(__dirname, 'robo-pong-cross-client.html');
+const CONTROLLER_SW_FILE = path.join(__dirname, 'controller-sw.js');
+const MANIFEST_FILE = path.join(__dirname, 'manifest.webmanifest');
+const CONTROLLER_ICON_FILE = path.join(__dirname, 'controller-icon.svg');
 const W = 1000, H = 1000, TICK_MS = 1000 / 60, START_LIVES = 5;
 const BALL_R = 17, BASE_SPEED = 535, PADDLE_LEN = 188, SHIELD_LEN = 290, PADDLE_THICK = 28, PADDLE_SPEED = 620;
 const EDGE = 66, DIAMOND_R = 112, SPECIAL_COOLDOWN = 7600;
@@ -53,7 +56,7 @@ function newRoom() {
     players[id] = { id, name: seat.name, side, kind: seat.human ? 'human' : 'adapter', color: COLORS[i], alive: true };
     paddles[id] = makePaddle(id, side); inputs[id] = { left: false, right: false }; lives[id] = START_LIVES; specials[id] = makeSpecial();
   });
-  return { room: 'AXM1', version: '0.1.0-cross', phase: 'ready', tick: 0, width: W, height: H, startLives: START_LIVES, players, paddles, inputs, lives, specials,
+  return { room: 'AXM1', version: '0.1.1-cross', phase: 'ready', tick: 0, width: W, height: H, startLives: START_LIVES, players, paddles, inputs, lives, specials,
     diamond: { x: W / 2, y: H / 2, radius: DIAMOND_R, angle: 0, rotationSpeed: 0.17 }, ball: { id: 'core', x: W / 2, y: H / 2, vx: 0, vy: 0, radius: BALL_R, lastTouch: null, loopPair: '', loopHits: 0, serveAt: 0, active: true }, bonusBall: { id: 'chaos', x: W / 2, y: H / 2, vx: 0, vy: 0, radius: BALL_R - 2, lastTouch: null, loopPair: '', loopHits: 0, serveAt: 0, active: true }, thirdBall: { id: 'surge', x: W / 2, y: H / 2, vx: 0, vy: 0, radius: BALL_R - 3, lastTouch: null, loopPair: '', loopHits: 0, serveAt: 0, active: true },
     serveAt: 0, winner: null, event: 'CROSS ARENA READY', eventAt: Date.now(), slowFieldUntil: 0 };
 }
@@ -271,7 +274,10 @@ const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url || '/', 'http://localhost');
     if (req.method === 'OPTIONS') return sendJson(res, 200, { ok: true });
-    if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) { const html = fs.readFileSync(CLIENT_FILE); res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }); return res.end(html); }
+    if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html' || url.pathname === '/controller-shell')) { const html = fs.readFileSync(CLIENT_FILE); res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300, stale-while-revalidate=86400' }); return res.end(html); }
+    if (req.method === 'GET' && url.pathname === '/controller-sw.js') { const script = fs.readFileSync(CONTROLLER_SW_FILE); res.writeHead(200, { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'no-cache' }); return res.end(script); }
+    if (req.method === 'GET' && url.pathname === '/manifest.webmanifest') { const manifest = fs.readFileSync(MANIFEST_FILE); res.writeHead(200, { 'content-type': 'application/manifest+json; charset=utf-8', 'cache-control': 'public, max-age=3600' }); return res.end(manifest); }
+    if (req.method === 'GET' && url.pathname === '/controller-icon.svg') { const icon = fs.readFileSync(CONTROLLER_ICON_FILE); res.writeHead(200, { 'content-type': 'image/svg+xml; charset=utf-8', 'cache-control': 'public, max-age=3600' }); return res.end(icon); }
     if (req.method === 'GET' && url.pathname === '/health') return sendJson(res, 200, { ok: true, name: 'Robo Pong Cross', version: room.version, room: room.room, players: 4 });
     if (req.method === 'GET' && url.pathname === '/state') return sendJson(res, 200, publicState());
     if (req.method === 'GET' && url.pathname === '/events') { res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-cache', connection: 'keep-alive', 'access-control-allow-origin': '*' }); res.write('retry: 1000\n\n'); streams.add(res); req.on('close', () => streams.delete(res)); return; }

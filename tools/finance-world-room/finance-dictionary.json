@@ -1,0 +1,52 @@
+{
+  "version": "0.1",
+  "geometry": {
+    "source": "Natural Earth Admin 0 Countries, 1:110m",
+    "version": "5.1.x repository snapshot",
+    "url": "https://www.naturalearthdata.com/downloads/110m-cultural-vectors/110m-admin-0-countries/",
+    "boundaryNote": "Natural Earth depicts de facto boundaries by default. Geometry is context, not a political claim."
+  },
+  "indicators": {
+    "gdp-total": {"name":"GDP","code":"NY.GDP.MKTP.CD","unit":"current USD","group":"scale","format":"currency-compact","note":"Current-price size measure; not cost-of-living adjusted."},
+    "gdp-per-capita": {"name":"GDP per capita","code":"NY.GDP.PCAP.CD","unit":"current USD/person","group":"scale","format":"currency"},
+    "gdp-growth": {"name":"Real GDP growth","code":"NY.GDP.MKTP.KD.ZG","unit":"% annual","group":"momentum","format":"percent"},
+    "population": {"name":"Population","code":"SP.POP.TOTL","unit":"people","group":"scale","format":"compact"},
+    "inflation": {"name":"Consumer-price inflation","code":"FP.CPI.TOTL.ZG","unit":"% annual","group":"pressure","format":"percent"},
+    "unemployment": {"name":"Unemployment","code":"SL.UEM.TOTL.ZS","unit":"% labour force","group":"pressure","format":"percent"},
+    "trade-share": {"name":"Trade","code":"NE.TRD.GNFS.ZS","unit":"% GDP","group":"openness","format":"percent"},
+    "fdi-inflows": {"name":"FDI net inflows","code":"BX.KLT.DINV.WD.GD.ZS","unit":"% GDP","group":"capital","format":"percent"},
+    "central-debt": {"name":"Central government debt","code":"GC.DOD.TOTL.GD.ZS","unit":"% GDP","group":"pressure","format":"percent","note":"Coverage varies substantially by country and period."},
+    "current-account": {"name":"Current account balance","code":"BN.CAB.XOKA.GD.ZS","unit":"% GDP","group":"balance","format":"percent"}
+  },
+  "lenses": {
+    "scale-signal": {
+      "name":"Scale signal", "note":"Relative size, growth, trade and investment coverage within the selected year.", "minimumComponents":2,
+      "components":[
+        {"indicatorId":"gdp-total","weight":0.35,"direction":"high"},
+        {"indicatorId":"population","weight":0.15,"direction":"high"},
+        {"indicatorId":"gdp-growth","weight":0.20,"direction":"high"},
+        {"indicatorId":"trade-share","weight":0.15,"direction":"high"},
+        {"indicatorId":"fdi-inflows","weight":0.15,"direction":"high"}
+      ]
+    },
+    "macro-pressure": {
+      "name":"Macro pressure", "note":"Relative inflation, unemployment and central-debt pressure; higher means more measured pressure, not certain risk.", "minimumComponents":2,
+      "components":[
+        {"indicatorId":"inflation","weight":0.45,"direction":"high"},
+        {"indicatorId":"unemployment","weight":0.30,"direction":"high"},
+        {"indicatorId":"central-debt","weight":0.25,"direction":"high"}
+      ]
+    },
+    "expansion-balance": {
+      "name":"Expansion balance", "note":"A transparent relative lens combining momentum and openness with lower measured inflation and unemployment.", "minimumComponents":3,
+      "components":[
+        {"indicatorId":"gdp-growth","weight":0.25,"direction":"high"},
+        {"indicatorId":"trade-share","weight":0.20,"direction":"high"},
+        {"indicatorId":"fdi-inflows","weight":0.15,"direction":"high"},
+        {"indicatorId":"inflation","weight":0.20,"direction":"low"},
+        {"indicatorId":"unemployment","weight":0.20,"direction":"low"}
+      ]
+    }
+  },
+  "sourceTypes": ["official-statistics", "regulator", "company-filing", "research", "manual-sourced", "synthetic-demo"]
+}

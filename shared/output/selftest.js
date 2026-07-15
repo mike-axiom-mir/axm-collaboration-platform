@@ -1,0 +1,15 @@
+const assert=require('assert'),fs=require('fs'),path=require('path');
+const Core=require('./axm-output-core.js');
+assert.equal(Core.validate({kind:'pdf.generate',payload:{title:'Test',body:'Body'}}).ok,true);
+assert.equal(Core.validate({kind:'pdf.generate',payload:{title:'',body:''}}).ok,false);
+const png='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z7ZsAAAAASUVORK5CYII=';
+const image=Core.validate({kind:'image.transform',name:'tiny',payload:{dataUrl:png,format:'PNG',width:2}});
+assert.equal(image.ok,true);assert.equal(Core.estimate(image.job).kind,'image.transform');
+const receipt=Core.receipt({jobId:'j',kind:'pdf.generate',adapter:'test',engine:{name:'x',version:'1',license:'MIT'},format:'PDF',mime:'application/pdf',filename:'report',extension:'pdf',bytes:20,evidence:['made']});
+assert.equal(receipt.schema,'axm.output-receipt/v1');assert.equal(receipt.filename,'report.pdf');assert.equal(receipt.reviewState,'INBOX');
+const licenses=JSON.parse(fs.readFileSync(path.join(__dirname,'license-registry.json'),'utf8'));
+assert.ok(licenses.dependencies.every(x=>['MIT','Apache-2.0','BSD-3-Clause'].includes(x.license)));
+assert.ok(fs.readFileSync(path.join(__dirname,'axm-output-worker.js'),'utf8').includes('Comlink.expose'));
+assert.ok(fs.readFileSync(path.join(__dirname,'axm-node-output-worker.cjs'),'utf8').includes("../vendor/wasm-vips/lib/vips-node.js"));
+assert.ok(licenses.dependencies.every(x=>x.vendoredRuntime&&fs.existsSync(path.resolve(__dirname,'..','..',x.vendoredRuntime))));
+console.log('AXM Output Engine selftest: PASS (jobs, estimates, receipts, permissive licenses and isolated adapters)');

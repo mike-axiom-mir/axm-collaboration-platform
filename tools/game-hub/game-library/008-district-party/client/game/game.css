@@ -1,0 +1,177 @@
+:root {
+  --mint: #59e0b8;
+  --party-b: #e98aff;
+  --amber: #ffcd70;
+  --ink: #edf8f4;
+  --muted: #9ab4aa;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: var(--ink);
+}
+
+* { box-sizing: border-box; }
+html,
+body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #07110e; }
+canvas { position: fixed; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
+
+.mission-hud,
+.player-card {
+  position: fixed;
+  z-index: 2;
+  background: #07120ed9;
+  border: 1px solid #3b5f54;
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 8px 30px #0008;
+}
+.mission-hud {
+  top: clamp(6px, 1.25vw, 14px);
+  left: 50%;
+  width: min(50vw, 610px);
+  padding: clamp(8px, 1vw, 12px) clamp(10px, 1.2vw, 16px);
+  transform: translateX(-50%);
+}
+.mission-heading { display: flex; justify-content: space-between; align-items: start; gap: 16px; }
+.mission-stats { display: flex; flex: 0 0 auto; gap: clamp(12px, 2vw, 28px); text-align: right; }
+.eyebrow { color: var(--mint); font-size: .68rem; font-weight: 900; letter-spacing: .13em; }
+.mission-title { margin-top: 3px; font-size: 1.18rem; font-weight: 900; }
+.hint { margin-top: 3px; color: var(--muted); font-size: .78rem; }
+.territory-zones { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+.territory-chip { padding: 3px 6px; color: #d7ddd9; font-size: .55rem; font-weight: 900; background: #313b37; border: 1px solid #738078; border-radius: 999px; }
+.territory-chip.party_a { color: #c7ffed; background: #153c32; border-color: var(--mint); }
+.territory-chip.party_b { color: #f5d6ff; background: #3c2144; border-color: var(--party-b); }
+.territory-chip.contested { color: #ffe0b1; border-color: #ff9b66; animation: chipPulse .55s infinite alternate; }
+.combat-rule {
+  display: inline-block;
+  margin-top: 7px;
+  padding: 3px 7px;
+  color: #b9d3ca;
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  border: 1px solid #4b6b61;
+  border-radius: 999px;
+}
+.combat-rule.on { color: #ffd8dc; border-color: #ff7482; }
+.combat-rule.off { color: #bff8e7; border-color: #59e0b8; }
+.justice-status { display: inline-block; margin: 7px 0 0 5px; color: #ffe3a8; font-size: .62rem; font-weight: 900; letter-spacing: .08em; }
+.mission-progress { height: 5px; margin-top: 9px; overflow: hidden; background: #1f3b32; border-radius: 99px; }
+.mission-progress i { display: block; width: 0; height: 100%; background: var(--mint); box-shadow: 0 0 10px var(--mint); transition: width .2s; }
+.stat { display: grid; }
+.stat span { color: var(--muted); font-size: .58rem; letter-spacing: .1em; }
+.stat strong { font-size: 1.2rem; }
+.stat #party-fund { color: #c8ff8c; }
+
+.player-corner {
+  position: fixed;
+  z-index: 2;
+  width: min(22vw, 265px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3px, .55vw, 7px);
+}
+.player-card {
+  --player-accent: var(--mint);
+  position: relative;
+  width: 100%;
+  padding: clamp(7px, .85vw, 11px);
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--player-accent) 54%, #3b5f54);
+}
+.player-card.party-b { --player-accent: var(--party-b); }
+.player-card.unassigned { opacity: .58; }
+.player-card.is-downed { --player-accent: #ff7381; }
+.player-q1 { top: clamp(6px, 1.25vw, 14px); left: clamp(6px, 1.25vw, 14px); }
+.player-q2 { top: clamp(6px, 1.25vw, 14px); right: clamp(6px, 1.25vw, 14px); }
+.player-q3 { bottom: clamp(6px, 1.25vw, 14px); left: clamp(6px, 1.25vw, 14px); }
+.player-q4 { right: clamp(6px, 1.25vw, 14px); bottom: clamp(6px, 1.25vw, 14px); }
+.player-card-heading { display: flex; justify-content: space-between; align-items: center; gap: 7px; min-width: 0; }
+.player-identity { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.player-number {
+  flex: 0 0 auto;
+  min-width: 2em;
+  padding: 2px 4px;
+  color: #07110e;
+  text-align: center;
+  font-size: clamp(.58rem, .75vw, .72rem);
+  font-weight: 1000;
+  background: var(--player-accent);
+  border-radius: 5px;
+}
+.player-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: clamp(.7rem, 1vw, .92rem); }
+.player-status { flex: 0 0 auto; color: var(--muted); font-size: clamp(.48rem, .62vw, .59rem); font-weight: 900; letter-spacing: .06em; }
+.metric-line { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-top: 5px; color: var(--muted); font-size: clamp(.53rem, .68vw, .65rem); font-weight: 900; letter-spacing: .06em; }
+.metric-line strong { color: var(--ink); font-size: clamp(.62rem, .84vw, .78rem); letter-spacing: 0; }
+.health-bar { height: 6px; margin-top: 3px; overflow: hidden; background: #243730; border: 1px solid #3e5f54; border-radius: 99px; }
+.health-fill { display: block; width: 0; height: 100%; background: linear-gradient(90deg, #32c391, #76f0c7); transition: width .18s ease-out; }
+.is-downed .health-fill { background: #ff7381; }
+.player-resources { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+.player-resources .money-line { grid-column: 1 / -1; }
+.money-value { color: #c8ff8c !important; }
+.shield-value { color: #8dd3ff !important; }
+.ammo-value { color: var(--amber) !important; }
+.player-corner.multi .player-card { padding: clamp(4px, .55vw, 7px); }
+.player-corner.multi .metric-line { margin-top: 2px; }
+
+.safe-zone,
+.base-regen,
+.tether-warning {
+  position: fixed;
+  left: 50%;
+  z-index: 3;
+  padding: 8px 16px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  border-radius: 999px;
+  transform: translateX(-50%);
+}
+.safe-zone { bottom: 18px; color: #bdfbe8; background: #0a392ddb; border: 1px solid var(--mint); }
+.base-regen { bottom: 58px; color: #dcedff; font-size: .72rem; background: #12355de8; border: 1px solid #7dc3ff; }
+.tether-warning { top: clamp(138px, 15vh, 176px); color: #ffe6e9; background: #4c1c25e8; border: 1px solid #ff7381; animation: pulse 1s infinite alternate; }
+
+.results,
+.mission-menu { position: fixed; inset: 0; z-index: 8; display: grid; place-items: center; background: #03100dcc; }
+.results-card { padding: 40px; text-align: center; background: #10241d; border: 1px solid var(--mint); border-radius: 18px; box-shadow: 0 0 80px #59e0b833; }
+.mission-menu-card { width: min(540px, 86vw); padding: 28px; text-align: center; background: #10241df2; border: 1px solid var(--mint); border-radius: 18px; box-shadow: 0 0 80px #59e0b833; }
+.results-card h1 { margin: .2em; font-size: clamp(2rem, 6vw, 4rem); }
+.results-card p { color: var(--muted); }
+.mission-menu-card h1 { margin: .25em; }
+.mission-menu-card p { color: var(--muted); }
+.menu-options { display: grid; gap: 7px; margin: 18px auto; max-width: 420px; }
+.menu-option { padding: 9px 12px; text-align: left; color: var(--muted); background: #08130f; border: 1px solid #36564c; border-radius: 8px; }
+.menu-option.selected { color: #07110e; font-weight: 900; background: var(--mint); border-color: var(--mint); }
+.debug { position: fixed; bottom: 14px; left: 14px; z-index: 7; margin: 0; padding: 10px; color: #b7d9ce; font-size: 11px; background: #000c; border: 1px solid #4b6f65; pointer-events: none; }
+.connection-banner { position: fixed; bottom: 20px; left: 50%; z-index: 10; padding: 9px 14px; color: #ffe3a8; background: #172720ed; border: 1px solid var(--amber); border-radius: 9px; transform: translateX(-50%); }
+.hidden { display: none !important; }
+
+@keyframes pulse {
+  to { filter: brightness(1.4); transform: translateX(-50%) scale(1.03); }
+}
+@keyframes chipPulse { to { filter: brightness(1.35); } }
+
+@media (max-width: 760px), (max-height: 600px) {
+  .mission-hud { width: 50vw; padding: 6px 8px; }
+  .mission-heading { gap: 5px; }
+  .mission-stats { gap: 7px; }
+  .eyebrow { font-size: .48rem; }
+  .mission-title { font-size: .74rem; }
+  .hint { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .56rem; }
+  .territory-zones { gap: 2px; margin-top: 4px; }
+  .territory-chip { padding: 2px 4px; font-size: .42rem; }
+  .combat-rule { margin-top: 4px; padding: 2px 4px; font-size: .45rem; }
+  .justice-status { margin-top: 4px; font-size: .45rem; }
+  .mission-progress { margin-top: 5px; }
+  .stat span { font-size: .42rem; }
+  .stat strong { font-size: .75rem; }
+  .player-corner { width: 22vw; }
+  .player-card { padding: 5px; }
+  .player-status { display: none; }
+  .player-number { min-width: 1.8em; padding: 1px 3px; }
+  .player-name { font-size: .58rem; }
+  .metric-line { margin-top: 3px; font-size: .43rem; }
+  .metric-line strong { font-size: .53rem; }
+  .health-bar { height: 4px; }
+  .player-resources { gap: 3px; }
+  .safe-zone { bottom: 82px; max-width: 48vw; text-align: center; font-size: .58rem; }
+  .base-regen { bottom: 48px; max-width: 48vw; padding: 5px 8px; text-align: center; font-size: .53rem; }
+  .tether-warning { top: 104px; max-width: 54vw; text-align: center; font-size: .58rem; }
+}

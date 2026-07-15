@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+'use strict';
+const assert=require('assert');
+const fs=require('fs');
+const path=require('path');
+const core=require('./finance-core');
+const sources=require('./finance-sources');
+const dictionary=JSON.parse(fs.readFileSync(path.join(__dirname,'finance-dictionary.json'),'utf8'));
+let pass=0;function test(name,fn){try{fn();console.log('PASS '+name);pass++;}catch(e){console.error('FAIL '+name+'\n  '+e.stack);process.exitCode=1;}}
+const base={indicatorId:'inflation',indicatorName:'Consumer-price inflation',geography:'NLD',countryName:'Netherlands',period:'2024',value:3.2,unit:'% annual',sourceId:'official:nld:2024',sourceType:'official-statistics',sourceUrl:'https://example.test'};
+test('valid sourced observation passes',()=>assert.equal(core.validateObservation(base,dictionary).pass,true));
+test('source-free observation is refused',()=>assert(core.validateObservation({...base,sourceId:''},dictionary).errors.includes('sourceId required')));
+test('geography requires ISO3',()=>assert.equal(core.validateObservation({...base,geography:'NL'},dictionary).pass,false));
+test('period requires exact year',()=>assert.equal(core.validateObservation({...base,period:'latest'},dictionary).pass,false));
+test('numeric zero remains valid',()=>assert.equal(core.validateObservation({...base,value:0},dictionary).record.value,0));
+test('duplicates are rejected without overwrite',()=>{const one=core.importRows([base],dictionary,[]);const two=core.importRows([base],dictionary,one.accepted);assert.equal(two.duplicates.length,1);assert.equal(two.accepted.length,0);});
+test('exact map never carries earlier year forward',()=>{const map=core.exactMap([core.validateObservation(base,dictionary).record],'inflation','2025');assert.deepEqual(map,{});});
+test('quantile bins are deterministic',()=>{const b=core.quantileBreaks([1,2,3,4,5],5);assert.equal(core.bin(5,b),4);assert.equal(core.bin(null,b),-1);});
+test('lens requires minimum component coverage',()=>{const rows=core.importRows([base],dictionary,[]).accepted;assert.deepEqual(core.lensScores(rows,dictionary,'macro-pressure','2024'),{});});
+test('lens score exposes components and coverage',()=>{const rows=core.importRows([base,{...base,indicatorId:'unemployment',indicatorName:'Unemployment',value:4,sourceId:'u'}],dictionary,[]).accepted;const x=core.lensScores(rows,dictionary,'macro-pressure','2024').NLD;assert(x&&x.components.length===2&&x.coverage>0);});
+test('quality reports exact source coverage',()=>{const q=core.quality(core.importRows([base],dictionary,[]).accepted);assert.equal(q.rows,1);assert.equal(q.officialShare,1);});
+test('CSV parser handles quoted cells',()=>assert.equal(sources.parseCsv('indicatorId,notes\ninflation,"a,b"\n')[0].notes,'a,b'));
+test('World Bank URL uses v2 JSON and explicit dates',()=>{const u=sources.worldBankUrl('SP.POP.TOTL',2020,2024);assert(u.includes('/v2/')&&u.includes('format=json')&&u.includes('date=2020%3A2024'));});
+test('World Bank parser excludes aggregates and nulls',()=>{const payload=[{},[{countryiso3code:'NLD',country:{value:'Netherlands'},region:{value:'Europe'},date:'2024',value:10},{countryiso3code:'WLD',country:{value:'World'},region:{value:'Aggregates'},date:'2024',value:20},{countryiso3code:'HRV',country:{value:'Croatia'},region:{value:'Europe'},date:'2024',value:null}]];const rows=sources.parseWorldBank(payload,{id:'population',name:'Population',unit:'people',code:'SP.POP.TOTL'},'https://example.test');assert.equal(rows.length,1);assert.equal(rows[0].geography,'NLD');});
+test('World Bank parser can restrict rows to mapped countries',()=>{const payload=[{},[{countryiso3code:'NLD',country:{value:'Netherlands'},date:'2024',value:10},{countryiso3code:'AFE',country:{value:'Africa Eastern and Southern'},date:'2024',value:20}]];const rows=sources.parseWorldBank(payload,{id:'population',name:'Population',unit:'people',code:'SP.POP.TOTL'},'https://example.test',null,new Set(['NLD']));assert.deepEqual(rows.map(x=>x.geography),['NLD']);});
+test('local Natural Earth geometry is present and substantial',()=>{const g=JSON.parse(fs.readFileSync(path.join(__dirname,'assets/world-countries-110m.geojson'),'utf8'));assert(g.features.length>170);assert(g.features.some(f=>f.properties.ADM0_A3==='NLD'));});
+test('shell has all app DOM references',()=>{const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),app=fs.readFileSync(path.join(__dirname,'finance-app.js'),'utf8');const ids=new Set(Array.from(html.matchAll(/id="([\w-]+)"/g),m=>m[1]));const used=new Set(Array.from(app.matchAll(/\$\('([\w-]+)'\)/g),m=>m[1]));assert.deepEqual(Array.from(used).filter(x=>!ids.has(x)),[]);});
+test('app scripts compile',()=>new Function(fs.readFileSync(path.join(__dirname,'finance-app.js'),'utf8')));
+test('module contract declares sandbox boundaries',()=>{const c=JSON.parse(fs.readFileSync(path.join(__dirname,'module.contract.json'),'utf8'));assert(c.boundaries.refuses.includes('hidden-network-fetch'));assert(c.boundaries.refuses.includes('automatic-trading'));});
+test('local server proxy restricts World Bank preview',()=>{const server=fs.readFileSync(path.join(__dirname,'..','..','server.js'),'utf8');assert(server.includes("url === '/api/finance-world/world-bank'"));assert(server.includes('allowedIndicators'));assert(server.includes('end - start > 60'));});
+if(!process.exitCode)console.log('\n'+pass+' PASS · 0 FAIL · finance-core '+core.VERSION);

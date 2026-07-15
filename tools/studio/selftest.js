@@ -28,6 +28,8 @@ test(engine.includes("format:1,v:2,W,H") && engine.includes('vectors:JSON.parse'
 test(engine.includes('vectorUndoStack') && engine.includes("currentStudioMode==='vector'?vectorUndo()"), 'shared Undo and Redo route correctly in Vector mode');
 test(engine.includes('layerMetaSnapshot') && engine.includes('frameLoadToken'), 'frame timeline preserves layer metadata and rejects stale loads');
 test(engine.includes("type:'axm-studio-saved',ok:false") && engine.includes('return false;'), 'artwork save failures are reported instead of claimed as success');
+test(engine.includes('wisdomFileBtn') && engine.includes('File map to identity') && engine.includes("automatic:false") && engine.includes("identity:'+author.id"), 'wisdom maps have a deliberate attributed path into shared identity memory');
+test(engine.includes('id="assetName"') && !engine.includes("prompt('Asset name:')") && engine.includes("$('assetName').value"), 'asset capture uses one visible named action instead of a blocking prompt');
 test(shellHtml.includes('data-src="../ui-ux-builder') && shell.includes('ensureFrame'), 'specialist Studio modes load lazily');
 test(shellHtml.includes('Asset Vault available') && shell.includes('Asset Vault connected'), 'Asset Vault status distinguishes availability from connection');
 test(vault.includes('Use in Studio') && vault.includes("gate('send-to-studio'") && shell.includes("msg.schema!=='axm.studio-asset/v1'") && engine.includes("e.data.schema==='axm.studio-asset/v1'"), 'Asset Vault image handoff is gated and versioned end to end');

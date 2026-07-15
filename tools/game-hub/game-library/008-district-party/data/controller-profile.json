@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "profileId": "axm-game-night-twin-stick-v1",
+  "displayName": "AXM Game Night Twin Stick",
+  "clientRole": "controller",
+  "transportAgnostic": true,
+  "controllerKinds": {
+    "human": "touch_or_keyboard_client",
+    "adapter": "connected_ai_using_identical_semantic_intentions",
+    "ai": "optional_builtin_host_state_machine"
+  },
+  "adapterContract": {
+    "protocol": "axm-semantic-input-v1",
+    "inputEndpoint": "/api/input",
+    "observationEndpoint": "/api/adapter-observation",
+    "observationScope": "same-party-shared-screen-only",
+    "seatTokenRequired": true,
+    "maySetPosition": false,
+    "mayClaimHits": false
+  },
+  "touch": {
+    "multiTouch": true,
+    "floatingOrigins": true,
+    "pointerCapture": true,
+    "deadZone": 0.14,
+    "responseExponent": 1.12,
+    "radiusRatio": 0.32,
+    "minimumRadiusPixels": 34,
+    "inputSendIntervalMs": 50
+  },
+  "leftStick": {
+    "fields": ["moveX", "moveY"],
+    "range": [-1, 1],
+    "defaultMeaning": "move",
+    "drivingMeaning": "steer_and_throttle"
+  },
+  "rightStick": {
+    "fields": ["aimX", "aimY", "aimActive"],
+    "range": [-1, 1],
+    "releaseField": "fire",
+    "tapBehavior": "fire_using_last_authoritative_facing",
+    "defaultMeaning": "aim_release_to_fire",
+    "driverMeaning": "release_to_fire_forward",
+    "passengerMeaning": "independent_aim_release_to_fire"
+  },
+  "buttons": {
+    "action": "context_action",
+    "attack": "hold_fire_keyboard_legacy",
+    "fire": "single_host_latched_fire",
+    "sprint": "dash_or_accelerate",
+    "brake": "brake_or_reverse"
+  },
+  "hostRules": {
+    "normalizesMovementAndAimSeparately": true,
+    "firePulseLatchedUntilTick": true,
+    "fireBufferTicks": 4,
+    "clientCannotClaimHit": true,
+    "clientCannotSetPosition": true,
+    "humanAndAdapterUseSameValidation": true
+  }
+}

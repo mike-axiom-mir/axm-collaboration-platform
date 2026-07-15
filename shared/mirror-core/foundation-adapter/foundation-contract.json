@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-contract/v1",
+  "title": "AXM Mirror Core Foundation compatibility contract",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "module_id",
+    "module_version",
+    "status",
+    "source_reference",
+    "discovery",
+    "service_methods",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": { "const": "axm.mirror.foundation-contract/v1" },
+    "module_id": { "const": "service.mirror-core" },
+    "module_version": { "type": "string" },
+    "status": {
+      "enum": [
+        "standalone_foundation_compatibility_harness",
+        "foundation_candidate",
+        "foundation_installed"
+      ]
+    },
+    "source_reference": {
+      "type": "object",
+      "required": ["repository", "pull_request", "head_sha"],
+      "properties": {
+        "repository": { "const": "mike-axiom-mir/axm-collaboration-platform" },
+        "pull_request": { "const": 13 },
+        "head_sha": { "const": "33a87549259d8b4a7ce4753ee1fab49e0ee8091d" }
+      },
+      "additionalProperties": false
+    },
+    "discovery": {
+      "type": "object",
+      "required": ["health_path", "descriptor_path", "local_only"],
+      "properties": {
+        "health_path": { "const": "/health" },
+        "descriptor_path": { "const": "/foundation/discovery" },
+        "local_only": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "service_methods": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "mirror.health",
+          "mirror.query",
+          "mirror.proposal.create",
+          "mirror.proposal.preview",
+          "mirror.proposal.decide",
+          "mirror.application.apply",
+          "mirror.application.verify",
+          "mirror.application.rollback",
+          "mirror.adapter.connect",
+          "mirror.adapter.disconnect"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "proposal_first",
+        "default_deny_permissions",
+        "specific_consent",
+        "no_hidden_machine_permissions",
+        "durable_packets_not_live_game_input",
+        "no_payload_logging",
+        "no_remote_runtime_dependency"
+      ],
+      "properties": {
+        "proposal_first": { "const": true },
+        "default_deny_permissions": { "const": true },
+        "specific_consent": { "const": true },
+        "no_hidden_machine_permissions": { "const": true },
+        "durable_packets_not_live_game_input": { "const": true },
+        "no_payload_logging": { "const": true },
+        "no_remote_runtime_dependency": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["health", "revision", "authority_revision", "foundation_installed"],
+      "properties": {
+        "health": { "type": "boolean" },
+        "revision": { "type": "integer", "minimum": 0 },
+        "authority_revision": { "type": "integer", "minimum": 0 },
+        "foundation_installed": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

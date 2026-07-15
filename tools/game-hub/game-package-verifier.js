@@ -47,6 +47,11 @@ function validateManifest(manifest, context) {
     const expectedPrefix = '/games/' + String(manifest.slot || '') + '/';
     if (!String(launch.client_entry || '').startsWith(expectedPrefix)) errors.push('launch.client_entry must start with ' + expectedPrefix);
     if (launch.spectator_client_entry && !String(launch.spectator_client_entry).startsWith(expectedPrefix)) errors.push('launch.spectator_client_entry must start with ' + expectedPrefix);
+    if (launch.controller_path) {
+      if (!String(launch.controller_path).startsWith('/')) errors.push('launch.controller_path must be an absolute runtime path');
+      if (!String(launch.controller_path).includes('{player}')) errors.push('launch.controller_path must contain {player}');
+      if (String(launch.controller_path).includes('..')) errors.push('launch.controller_path cannot contain path traversal');
+    }
     const port = Number(launch.port);
     if (!Number.isInteger(port) || port < 1024 || port > 65535) errors.push('launch.port must be an integer from 1024 to 65535');
     if (launch.start_command !== 'managed-by-game-hub') errors.push('launch.start_command must be managed-by-game-hub');

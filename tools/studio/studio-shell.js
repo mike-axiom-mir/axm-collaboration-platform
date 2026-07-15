@@ -25,6 +25,11 @@
     state.updatedAt = new Date().toISOString(); localStorage.setItem(STORE, JSON.stringify(state));
     $('saveState').textContent = 'Saved ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
     if (window.AXMHub) AXMHub.save({ workspace:state });
+    if (window.AXMWorkshopContinuity) AXMWorkshopContinuity.announce({
+      workspaceId:'studio', workspaceName:'Studio', projectId:'studio-current',
+      projectName:state.projectName, documentSchema:Core.FORMAT, updatedAt:state.updatedAt,
+      resumeHint:'Continue in '+(Core.byId(state.mode).title||'Studio')+'.'
+    });
     if (message) toast(message);
   }
   function renderNav() {

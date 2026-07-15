@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <title>AXM Shared Controls — Local Feel Demo</title>
+  <link rel="stylesheet" href="/src/browser/axm-controller.css">
+  <style>
+    body { box-sizing: border-box; padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); }
+    main { width: min(920px, 100%); margin: auto; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    h1 { margin: 0; font-size: clamp(1rem, 4vw, 1.5rem); }
+    .status { color: #65e5c7; font-size: .82rem; }
+    select { padding: 8px; border-radius: 9px; background: #202b34; color: #fff; border: 1px solid #425666; }
+    .readout { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    pre { min-height: 115px; max-height: 190px; overflow: auto; margin: 0; padding: 10px; border: 1px solid #344753; border-radius: 12px; background: #0b0f13; font: .72rem/1.35 ui-monospace, monospace; white-space: pre-wrap; }
+    .note { margin: 8px 0 0; color: #9db0bb; font-size: .78rem; }
+    @media (max-width: 620px) { .readout { grid-template-columns: 1fr; } header { align-items: flex-start; flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div><h1>AXM Shared Controls</h1><div id="status" class="status">Local semantic demo</div></div>
+      <label>Profile <select id="profile">
+        <option value="top-down-twin-stick">Top-down twin stick</option>
+        <option value="first-person-explore">First-person explore</option>
+      </select></label>
+    </header>
+
+    <section class="axm-control-surface" aria-label="Twin-stick controller">
+      <div id="left-zone" class="axm-stick">
+        <div id="left-base" class="axm-stick-base"><div id="left-knob" class="axm-stick-knob"></div></div>
+        <span id="left-label" class="axm-stick-label">MOVE</span>
+      </div>
+      <div id="right-zone" class="axm-stick axm-aim">
+        <div id="right-base" class="axm-stick-base"><div id="right-knob" class="axm-stick-knob"></div></div>
+        <span id="right-label" class="axm-stick-label">AIM · RELEASE</span>
+      </div>
+    </section>
+
+    <section class="axm-buttons">
+      <button class="axm-button" data-control="action">ACTION</button>
+      <button class="axm-button" data-control="primary">ATTACK</button>
+      <button class="axm-button" data-control="sprint">DASH</button>
+      <button class="axm-button" data-control="brake">BRAKE</button>
+    </section>
+
+    <section class="readout">
+      <pre id="intent" aria-label="Current semantic intent">Move either stick…</pre>
+      <pre id="packet" aria-label="Last accepted packet">No packet yet.</pre>
+    </section>
+    <p class="note">Demo only: the token is redacted, no game result is calculated, and nothing leaves 127.0.0.1.</p>
+  </main>
+  <script type="module" src="/examples/browser-demo/demo.mjs"></script>
+</body>
+</html>
+

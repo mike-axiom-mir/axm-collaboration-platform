@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.consent/v1",
+  "title": "AXM Mirror Consent Receipt",
+  "type": "object",
+  "required": ["consent_id", "schema_version", "granted_by", "granted_to", "adapter", "system", "scope", "allowed_operations", "denied_operations", "connection_mode", "starts_at", "expires_at", "revocation_method", "data_categories", "purpose", "audit_reference", "status"],
+  "properties": {
+    "consent_id": {"type": "string"},
+    "schema_version": {"const": "axm.mirror.consent/v1"},
+    "granted_by": {"type": "string"},
+    "granted_to": {"type": "string"},
+    "adapter": {"type": "string"},
+    "system": {"type": "string"},
+    "scope": {"type": "object"},
+    "allowed_operations": {"type": "array", "items": {"type": "string"}},
+    "denied_operations": {"type": "array", "items": {"type": "string"}},
+    "connection_mode": {"enum": ["read_only", "proposal_only", "approved_apply"]},
+    "starts_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": ["string", "null"], "format": "date-time"},
+    "revocation_method": {"type": "string"},
+    "data_categories": {"type": "array", "items": {"type": "string"}},
+    "purpose": {"type": "string"},
+    "audit_reference": {"type": "string"},
+    "status": {"enum": ["active", "revoked", "expired", "superseded"]},
+    "revoked_at": {"type": ["string", "null"]},
+    "revoked_by": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}

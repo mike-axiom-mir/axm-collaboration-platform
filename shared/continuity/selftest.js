@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('assert'),fs=require('fs'),path=require('path'),vm=require('vm'),C=require('./workshop-continuity');
+let s=C.create(),r=C.upsert(s,{workspaceId:'studio',workspaceName:'Studio',projectId:'p1',projectName:'Poster',documentSchema:'axm.studio-project/v2',updatedAt:'2026-07-12T20:00:00Z'});s=r.state;
+s=C.upsert(s,{workspaceId:'audio-studio',workspaceName:'Audio Studio',projectId:'a1',projectName:'Theme',documentSchema:'axm.audio-studio-project/v1',updatedAt:'2026-07-12T21:00:00Z'}).state;
+assert.equal(C.validate(s).ok,true);assert.equal(C.list(s)[0].workspaceId,'audio-studio');assert.equal(C.list(s)[1].projectName,'Poster');
+s=C.upsert(s,{workspaceId:'studio',projectId:'p1',projectName:'Poster v2',documentSchema:'axm.studio-project/v2',updatedAt:'2026-07-12T22:00:00Z'}).state;assert.equal(s.records.length,2);assert.equal(s.records[0].projectName,'Poster v2');
+const p=C.packet(s.records[0]);assert.equal(p.truth.projectDataCopied,false);assert.equal(p.truth.automaticOpen,false);assert.ok(!('data' in p.project));
+assert.equal(C.validate({schema:C.SCHEMA,records:[Object.assign({},s.records[0],{projectDataCopied:true})]}).ok,false);
+const browserMessages=[],browserSelf={},browserParent={postMessage:(message,origin)=>browserMessages.push({message,origin})};
+vm.runInNewContext(fs.readFileSync(path.join(__dirname,'workshop-continuity.js'),'utf8'),{self:browserSelf,parent:browserParent,location:{origin:'http://127.0.0.1:8788'},Date,JSON,Math,encodeURIComponent});
+assert.equal(browserSelf.AXMWorkshopContinuity.announce({workspaceId:'project-room',projectId:'current'}),true);
+assert.equal(browserMessages.length,1);assert.equal(browserMessages[0].message.type,'hub:continuity:upsert');assert.equal(browserMessages[0].origin,'http://127.0.0.1:8788');
+console.log('AXM Workshop Continuity selftest: PASS (bounded recents, explicit destination packets, no copied project data and no automatic open)');

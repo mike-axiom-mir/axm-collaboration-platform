@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/seat-screen-semantics-v1.json",
+  "title": "AXM seat screen semantic observation v1",
+  "type": "object",
+  "required": ["ok", "schemaVersion", "observationType", "scope", "seatId", "partyId", "screen", "self", "partyHud", "hud", "visible", "controls"],
+  "properties": {
+    "ok": { "const": true },
+    "schemaVersion": { "const": 1 },
+    "observationType": { "const": "axm-seat-screen-semantics-v1" },
+    "scope": { "const": "same-party-shared-screen-only" },
+    "seatId": { "type": "string" },
+    "partyId": { "type": "string" },
+    "screen": {
+      "type": "object",
+      "required": ["viewport", "x", "y", "zoom", "bounds"]
+    },
+    "self": { "type": "object" },
+    "partyHud": { "type": "array" },
+    "hud": { "type": "object" },
+    "visible": { "type": "object" },
+    "controls": {
+      "type": "object",
+      "required": ["protocol", "nextSequenceMinimum"]
+    }
+  }
+}
+

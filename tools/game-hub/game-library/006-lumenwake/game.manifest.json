@@ -1,0 +1,37 @@
+{
+  "slot": "006",
+  "game_id": "006-lumenwake",
+  "name": "Lumenwake",
+  "status": "WORKING TEST",
+  "description": "A polished 1–4 player co-op game-night run: carry fallen light, cover the carrier, revive the party and wake the aurora before the eclipse.",
+  "version": "0.1.0-game-night",
+  "min_players": 1,
+  "max_players": 4,
+  "allowed_seat_types": ["human", "adapter", "ai"],
+  "launch": {
+    "server_entry": "runtime/lumenwake-server.cjs",
+    "client_entry": "/games/006/?room=AXM1&player=p1",
+    "spectator_client_entry": "/games/006/?room=AXM1&player=screen",
+    "ready_path": "/state",
+    "port": 8796,
+    "start_command": "managed-by-game-hub",
+    "local_only_default": true
+  },
+  "join": {"supports_qr": true, "supports_lan_link": true, "supports_room_code": true, "room_code": "AXM1"},
+  "controls": {"phone_controller": true, "keyboard": true, "mouse": false, "touch": true, "shared_screen": true},
+  "session": {"passes_seat_map": true, "returns_result_summary": true, "drop_in_out_later": false, "target_minutes": 3},
+  "achievements": [
+    {"id":"first-light","title":"First Light","rule":"Win a run"},
+    {"id":"solo-spark","title":"Solo Spark","rule":"Win with one seat"},
+    {"id":"full-constellation","title":"Full Constellation","rule":"Win with four visible seats"},
+    {"id":"unbroken-orbit","title":"Unbroken Orbit","rule":"Win without anyone falling"},
+    {"id":"three-colors-one-dawn","title":"Three Colors, One Dawn","rule":"Return all three colors"},
+    {"id":"early-dawn","title":"Early Dawn","rule":"Win with over one minute left"},
+    {"id":"pulse-artist","title":"Pulse Artist","rule":"Stun 25 gloom in one run"}
+  ],
+  "rules": {"no_hidden_players": true, "host_launch_required": true, "game_does_not_override_hub_seats": true, "team_mode": "coop", "solo_scaling": true, "ai_uses_same_action_vocabulary": true},
+  "package": {
+    "source_status": "clean-local-cc0-build",
+    "required_paths": ["README.md", "ASSET_LICENSES.md", "runtime/lumenwake-core.cjs", "runtime/lumenwake-server.cjs", "runtime/lumenwake-client.html", "runtime/assets/aurora-field.svg", "runtime/assets/lumenwake-mark.svg", "runtime/assets/lumenwake-logo.svg"]
+  }
+}

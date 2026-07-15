@@ -1,0 +1,27 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "finance-world-room",
+  "version": "v0.1-experimental",
+  "provides": [
+    "flat-world-statistic-map",
+    "sourced-finance-time-series",
+    "transparent-relative-lenses",
+    "country-comparison",
+    "review-gated-data-import",
+    "finance-room-evidence-export"
+  ],
+  "consumes": ["gate:axm", "storage:axm", "user-file:csv-json", "network:explicit-world-bank-v2"],
+  "permissions": ["storage", "gate", "export", "network"],
+  "handoffs": {
+    "emits": ["axm.finance-world-evidence/0.1", "axm.finance-world-room-report/0.1"],
+    "accepts": ["text/csv:axm-finance-observation", "application/json:axm-finance-world-evidence"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:finance-world-room", "user-download:explicit"],
+    "refuses": [
+      "automatic-trading", "buy-or-sell-instructions", "hidden-network-fetch", "unsourced-observation",
+      "silent-carry-forward", "missing-value-estimation", "composite-score-as-forecast",
+      "silent-data-overwrite", "self-promotion-to-working-or-canon"
+    ]
+  }
+}

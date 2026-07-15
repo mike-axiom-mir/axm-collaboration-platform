@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.adapter/v1",
+  "title": "AXM Mirror Adapter Descriptor",
+  "type": "object",
+  "required": ["adapter_id", "schema_version", "adapter_version", "system_type", "source_system_id", "supported_schema_versions", "supported_entity_types", "supported_operations", "read_capabilities", "write_capabilities", "connection_modes", "permission_requirements", "limitations"],
+  "properties": {
+    "adapter_id": {"type": "string", "pattern": "^adapter:[a-z0-9._-]+:[a-z0-9._-]+$"},
+    "schema_version": {"const": "axm.mirror.adapter/v1"},
+    "adapter_version": {"type": "string"},
+    "system_type": {"type": "string"},
+    "source_system_id": {"type": "string"},
+    "supported_schema_versions": {"type": "array", "items": {"type": "string"}},
+    "supported_entity_types": {"type": "array", "items": {"type": "string"}},
+    "supported_operations": {"type": "array", "items": {"type": "string"}},
+    "read_capabilities": {"type": "array", "items": {"type": "string"}},
+    "write_capabilities": {"type": "array", "items": {"type": "string"}},
+    "connection_modes": {"type": "array", "items": {"enum": ["disconnected", "read_only", "proposal_only", "approved_apply", "bounded_auto_apply"]}},
+    "permission_requirements": {"type": "array", "items": {"type": "string"}},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

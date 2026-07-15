@@ -1,0 +1,121 @@
+:root {
+  color-scheme: dark;
+  --axm-bg: #10151b;
+  --axm-panel: #19232c;
+  --axm-line: #425666;
+  --axm-move: #43d6b4;
+  --axm-aim: #ff8fb5;
+  --axm-text: #f3f6f7;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  overflow: hidden;
+  background: var(--axm-bg);
+  color: var(--axm-text);
+  font-family: system-ui, sans-serif;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  overscroll-behavior: none;
+}
+
+.axm-control-surface {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  min-height: 46vh;
+}
+
+.axm-stick {
+  position: relative;
+  min-height: 210px;
+  overflow: hidden;
+  border: 1px solid var(--axm-line);
+  border-radius: 18px;
+  background: radial-gradient(circle, #263640, var(--axm-panel) 68%);
+  touch-action: none;
+}
+
+.axm-stick.axm-aim {
+  background: radial-gradient(circle, #402431, #21151b 68%);
+}
+
+.axm-stick-base {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 104px;
+  height: 104px;
+  box-sizing: border-box;
+  border: 2px solid rgba(67, 214, 180, .45);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.axm-aim .axm-stick-base {
+  border-color: rgba(255, 143, 181, .45);
+}
+
+.axm-stick-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 52px;
+  height: 52px;
+  border: 2px solid #d9fff6;
+  border-radius: 50%;
+  background: var(--axm-move);
+  transform: translate(0, 0);
+  translate: -50% -50%;
+  pointer-events: none;
+  box-shadow: 0 4px 22px #0008;
+}
+
+.axm-aim .axm-stick-knob {
+  border-color: #ffe4ed;
+  background: var(--axm-aim);
+}
+
+.axm-stick-label {
+  position: absolute;
+  inset: auto 0 12px;
+  text-align: center;
+  color: #b8c7cf;
+  font-size: .78rem;
+  letter-spacing: .1em;
+  pointer-events: none;
+}
+
+.axm-stick.active { border-color: var(--axm-move); }
+.axm-stick.axm-aim.active { border-color: var(--axm-aim); }
+.axm-stick.axm-disabled { opacity: .35; pointer-events: none; }
+
+.axm-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.axm-button {
+  min-height: 56px;
+  border: 1px solid var(--axm-line);
+  border-radius: 14px;
+  background: #24323d;
+  color: var(--axm-text);
+  font: inherit;
+  font-weight: 700;
+  touch-action: none;
+}
+
+.axm-button.pressed { background: var(--axm-move); color: #07110e; }
+
+@media (max-width: 520px) {
+  .axm-control-surface { gap: 6px; }
+  .axm-stick { min-height: 190px; }
+  .axm-buttons { grid-template-columns: repeat(2, 1fr); }
+}

@@ -15,6 +15,7 @@
   "launch": {
     "server_entry": "server.js",
     "client_entry": "client.html",
+    "controller_path": "/?room=AXM1&player={player}",
     "start_command": "node server.js",
     "local_only_default": true
   },
@@ -24,6 +25,9 @@
     "supports_room_code_later": true
   },
   "controls": {
+    "profile_id": "axm-top-down-twin-stick-v1",
+    "intent_protocol": "axm-semantic-input-v1",
+    "adapter_observation": "axm-seat-screen-semantics-v1",
     "phone_controller": true,
     "keyboard": true,
     "mouse": false,
@@ -42,6 +46,8 @@
   },
   "rules": {
     "no_hidden_players": true,
+    "human_and_adapter_same_input_gate": true,
+    "adapter_observation_is_seat_visible_only": true,
     "host_launch_required": true,
     "game_does_not_override_hub_seats": true
   }

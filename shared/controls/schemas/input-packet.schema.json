@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/semantic-input-packet-v1.json",
+  "title": "AXM semantic input packet v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["roomCode", "sessionId", "seatId", "token", "seq", "input"],
+  "properties": {
+    "roomCode": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "sessionId": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "seatId": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "token": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "seq": { "type": "integer", "minimum": 0 },
+    "input": {
+      "type": "object",
+      "description": "Allowlisted and sanitized by the target game's selected controller profile."
+    }
+  }
+}
+

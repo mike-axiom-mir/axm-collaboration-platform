@@ -5,7 +5,7 @@ const checks=[
  ['Existing package verifier still enforces player and runtime contracts',()=>{const j=read('tools/game-hub/game-package-verifier.js');return /max_players/.test(j)&&/required_paths/.test(j)&&/no_hidden_players/.test(j);}],
  ['Existing runtime server remains the managed launch authority',()=>{const j=read('tools/game-hub/game-hub-server.js');return /startGameRuntime/.test(j)&&/controller_urls/.test(j)&&/runtime_port/.test(j);}],
  ['Default four seats and optional extra four remain in the engine',()=>{const j=read('tools/game-hub/game-engine/engine-core.js');return /DEFAULT_VISIBLE_SEATS = 4/.test(j)&&/OPTIONAL_EXTRA_SEATS = 4/.test(j)&&/MAX_SEATS = 8/.test(j);}],
- ['Nine views cover project, world, events, systems, NPCs, HUD, play and tests',()=>core.VIEWS.length===9],
+ ['Ten views cover project, world, shared physics, events, systems, NPCs, HUD, play and tests',()=>core.VIEWS.length===10&&core.VIEWS.some(v=>v.id==='physics')],
  ['2D and 3D use a versioned semantic project document',()=>{const p=core.blankProject('x','X','3D');return p.schema==='axm.game-forge-project/v1'&&p.world.cells.length===160;}],
  ['3D editor refuses to imply a general runtime exists',()=>json('tools/game-forge/module.contract.json').boundaries.refuses.includes('pretend-3d-runtime-execution')],
  ['Event connections are stored explicitly',()=>{const j=read('tools/game-forge/game-forge.js');return /events\.edges\.push/.test(j)&&/Choose two different event nodes/.test(j);}],
@@ -18,4 +18,6 @@ const checks=[
  ['Existing enabled children promote Game Forge without deleting saved data',()=>/promoteIntegratedParents/.test(read('hub/hub-shell.js'))]
  ,['Preview is driven from the saved semantic map without canvas-only rendering',()=>{const h=read('tools/game-forge/preview.html');return /world\.cells/.test(h)&&/className='tile/.test(h)&&!/canvas/i.test(h);}]
  ,['Package builder stages candidates and invokes the real verifier',()=>{const s=read('tools/game-forge/package-service.js'),server=read('server.js');return /GameVerifier\.verifyGameDir/.test(s)&&/installed:false/.test(s)&&/api\/game-forge\/build/.test(server);}]
+ ,['Physics Lab consumes the shared adapter and starts from an explicit paused state',()=>{const h=read('tools/game-forge/index.html'),j=read('tools/game-forge/game-forge.js');return /shared\/physics\/axm-physics-core\.js/.test(h)&&/physicsRunning=false/.test(j)&&/Save scene to active project/.test(h);}]
+ ,['Physics project data is versioned and scientific overclaim is refused',()=>{const p=core.blankProject('x','X','2D'),c=json('tools/game-forge/module.contract.json');return p.physics.schema==='axm.game-physics-config/v1'&&c.boundaries.refuses.includes('scientific-validation-claim');}]
 ];let fail=0;for(const [label,fn] of checks){let ok=false;try{ok=!!fn();}catch(e){}console.log((ok?'PASS  ':'FAIL  ')+label);if(!ok)fail++;}console.log('DISCOVERY COUNTS seams='+fail+' verified='+(checks.length-fail)+' future=2');if(fail){console.error('GAME FORGE DISCOVERY SEAM FAIL — '+fail+' OPEN');process.exit(1);}console.log('GAME FORGE DISCOVERY SEAM PASS — 0 OPEN');

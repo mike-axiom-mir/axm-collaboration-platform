@@ -25,6 +25,11 @@
     localStorage.setItem(STORE, JSON.stringify(room));
     $('saveState').textContent = 'Saved locally · ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     if (window.AXMHub && AXMHub.inHub) AXMHub.save(room);
+    if (window.AXMWorkshopContinuity) AXMWorkshopContinuity.announce({
+      workspaceId:'project-room', workspaceName:'Project Room', projectId:'project-room-current',
+      projectName:room.project.title, documentSchema:Core.FORMAT, updatedAt:room.updatedAt,
+      resumeHint:'Continue the board, decisions or project review.'
+    });
     if (message) toast(message);
   }
   function findCard(id) { return room.cards.find(function (item) { return item.id === id; }); }
@@ -36,6 +41,16 @@
   function optionList(items, selected, emptyLabel) { return '<option value="">' + esc(emptyLabel) + '</option>' + items.map(function (item) { return '<option value="' + esc(item.id) + '"' + (selected === item.id ? ' selected' : '') + '>' + esc(item.title) + '</option>'; }).join(''); }
   function empty(message) { return '<div class="empty-state">' + esc(message) + '</div>'; }
   function removeButton(attr, id) { return '<button class="danger mini" ' + attr + '="' + esc(id) + '">Delete</button>'; }
+  function projectContributionCandidates() {
+    var names = [room.project.lead]
+      .concat(room.cards.map(function (card) { return card.ownerName; }))
+      .concat(room.messages.map(function (message) { return message.authorName; }))
+      .concat(room.decisions.map(function (decision) { return decision.owner; }))
+      .map(function (name) { return String(name || '').trim(); })
+      .filter(Boolean)
+      .filter(function (name, index, all) { return all.findIndex(function (other) { return other.toLowerCase() === name.toLowerCase(); }) === index; });
+    return names.map(function (name) { return { name: name }; });
+  }
 
   function renderOverview() {
     var s = Core.summary(room);
@@ -104,7 +119,7 @@
 
   document.querySelectorAll('.tab').forEach(function (b) { b.onclick = function () { switchView(b.dataset.view); }; });
   $('ideaForm').onsubmit = function (e) { e.preventDefault(); var title = $('ideaTitle').value.trim(); if (!title) return; room.cards.push(Core.normalizeCard({ title: title, stage: 'ideas' })); $('ideaTitle').value = ''; saveRoom('idea', 'Idea captured: ' + title); renderAll(); };
-  $('projectForm').onsubmit = function (e) { e.preventDefault(); var previousStatus = room.project.status; room.project.title = $('projectTitle').value.trim() || 'Untitled project'; room.project.lead = $('projectLead').value.trim(); room.project.status = $('projectStatus').value; room.project.summary = $('projectSummary').value.trim(); saveRoom('project', 'Project brief updated.'); renderAll(); if (previousStatus !== 'complete' && room.project.status === 'complete' && window.AXMProfile) { var doneCount = room.cards.filter(function (card) { return card.stage === 'done'; }).length; AXMProfile.record({ type: 'project-completed', dedupeKey: 'project-room:' + room.project.id + ':complete', candidates: [{ name: room.project.lead }], evidence: 'Project Room marked "' + room.project.title + '" complete with ' + doneCount + ' done cards and ' + room.reviews.length + ' reviews.', source: 'Project Room', meta: { projectId: room.project.id, title: room.project.title } }).catch(function () {}); } };
+  $('projectForm').onsubmit = function (e) { e.preventDefault(); var previousStatus = room.project.status; room.project.title = $('projectTitle').value.trim() || 'Untitled project'; room.project.lead = $('projectLead').value.trim(); room.project.status = $('projectStatus').value; room.project.summary = $('projectSummary').value.trim(); saveRoom('project', 'Project brief updated.'); renderAll(); if (previousStatus !== 'complete' && room.project.status === 'complete' && window.AXMProfile) { var doneCount = room.cards.filter(function (card) { return card.stage === 'done'; }).length, candidates = projectContributionCandidates(); AXMProfile.record({ type: 'project-completed', dedupeKey: 'project-room:' + room.project.id + ':complete', candidates: candidates, evidence: 'Project Room marked "' + room.project.title + '" complete with ' + doneCount + ' done cards and ' + room.reviews.length + ' reviews. Credited explicit project participants: ' + (candidates.map(function (candidate) { return candidate.name; }).join(', ') || 'local human fallback') + '.', source: 'Project Room', meta: { projectId: room.project.id, title: room.project.title, participantNames: candidates.map(function (candidate) { return candidate.name; }) } }).catch(function () {}); } };
   $('decisionForm').onsubmit = function (e) { e.preventDefault(); var title = $('decisionTitle').value.trim(); if (!title) return; room.decisions.push(Core.normalizeDecision({ title: title, choice: $('decisionChoice').value, reason: $('decisionReason').value, owner: $('decisionOwner').value, decidedOn: $('decisionDate').value })); e.target.reset(); saveRoom('decision', 'Decision recorded: ' + title); renderAll(); };
   $('eventForm').onsubmit = function (e) { e.preventDefault(); var title = $('eventTitle').value.trim(); if (!title) return; room.events.push(Core.normalizeEvent({ title: title, date: $('eventDate').value, time: $('eventTime').value, note: $('eventNote').value })); e.target.reset(); saveRoom('event', 'Event added: ' + title); renderAll(); };
   $('showGoalForm').onclick = function () { $('goalForm').hidden = false; $('goalTitle').focus(); }; $('showMilestoneForm').onclick = function () { $('milestoneForm').hidden = false; $('milestoneTitle').focus(); };

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#08110f">
+  <title>AXM District Party Controller</title>
+  <link rel="stylesheet" href="/common.css">
+  <link rel="stylesheet" href="/controller/controller.css">
+</head>
+<body>
+  <main class="controller-shell">
+    <header>
+      <div><div id="party-label" class="eyebrow">PARTY · SEAT</div><h1 id="player-name">Connecting…</h1></div>
+      <span id="connection" class="status-pill">Connecting</span>
+    </header>
+    <section class="readout">
+      <div><span>HEALTH</span><strong id="health">—</strong></div><div><span>SHIELD</span><strong id="shield">—</strong></div><div><span>PERSONAL</span><strong id="money">—</strong></div><div><span>PARTY FUND</span><strong id="party-money">—</strong></div><div><span>MODE</span><strong id="mode">—</strong></div><div><span>STATE</span><strong id="life-state">—</strong></div>
+    </section>
+    <section class="mission"><div id="controller-mission-title" class="eyebrow">Party House</div><p id="mission-hint">Waiting for authoritative city state…</p></section>
+    <section class="inventory-bar" aria-label="Inventory controls">
+      <button id="inventory-toggle" class="inventory-toggle" type="button"><strong>INVENTORY</strong><small id="inventory-state">closed</small></button>
+      <div id="inventory-controls" class="inventory-controls hidden">
+        <button id="inventory-prev" type="button" aria-label="Previous inventory slot"><strong>◀ PREV</strong></button>
+        <button id="inventory-activate" class="inventory-use" type="button"><strong>USE / EQUIP</strong><small id="inventory-selection">Selected slot</small></button>
+        <button id="inventory-next" type="button" aria-label="Next inventory slot"><strong>NEXT ▶</strong></button>
+      </div>
+    </section>
+    <section class="twin-controls" aria-label="Twin-stick play controls">
+      <div id="stick" class="stick move-stick" aria-label="Floating movement stick" data-disabled-copy="MOVEMENT PAUSED">
+        <div class="stick-grid"></div><div id="stick-base" class="stick-base"><div id="stick-knob" class="stick-knob"></div></div><span id="move-stick-label">MOVE</span>
+      </div>
+      <div id="aim-stick" class="stick aim-stick" aria-label="Floating aim stick; release to fire" data-disabled-copy="AIM PAUSED">
+        <div class="stick-grid"></div><div id="aim-stick-base" class="stick-base"><div id="aim-stick-knob" class="stick-knob"></div></div><span id="aim-stick-label">AIM · RELEASE</span>
+      </div>
+    </section>
+    <section class="buttons">
+      <button id="action" class="action" type="button"><strong>ACTION</strong><small>enter · exit · collect · choose · hire crew</small></button>
+      <button id="attack" class="attack" type="button"><strong>FIRE</strong><small>forward fallback</small></button>
+      <button id="sprint" class="sprint" type="button"><strong>DASH</strong><small>accelerate</small></button>
+      <button id="brake" class="brake" type="button"><strong>BRAKE</strong><small>reverse</small></button>
+    </section>
+    <footer><span id="identity">Token-validated local seat</span><span class="mono">WASD move · arrows aim · Space fire</span></footer>
+  </main>
+  <script type="module" src="/controller/controller.js"></script>
+</body>
+</html>

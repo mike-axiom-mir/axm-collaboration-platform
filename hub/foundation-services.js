@@ -21,6 +21,7 @@
   }
   async function probeRuntime(){var p=await json('/api/health',2000);apply('runtime',{state:p.ok?'READY':'DEGRADED',detail:p.ok?'Local Hub runtime responding':'Runtime answered without a healthy receipt',meta:{lines:[p.version||'version unknown',p.host||'local host']}});}
   async function probeGuardian(){var p=await json('/api/shell-guardian/status',2000),g=p.status||{};apply('guardian',{state:g.tripped?'TRIPPED':'READY',detail:g.tripped?('Circuit breaker tripped · '+(g.reason||'review required')):'Circuit breaker armed · audit history retained',meta:{lines:['trips '+Number(g.tripCount||0),'resets '+Number(g.resetCount||0)]}});}
+  async function probeMirror(){var p=await json('/api/mirror-core/status',2200),m=p.status||{};apply('mirror',{state:m.running?'READY':m.installed?'AVAILABLE':'OFFLINE',detail:m.running?'Isolated Mirror runtime responding · live adapters remain disabled':m.installed?'Installed · explicit start only · no live apply authority':'Mirror Core package unavailable',meta:{lines:[m.running?'runtime running':'runtime stopped',m.liveWorkshopApply?'live Workshop apply enabled':'live Workshop apply off',m.liveWorldApply?'live world apply enabled':'live world apply off']}});}
   async function probePlugins(){var values=await Promise.all([json('/api/tools',2500),text('/launcher/axm-registry.js',2200)]),tools=values[0].tools||[],installed=/AXMRegistry/.test(values[1]);apply('plugins',{state:installed?'READY':'DEGRADED',detail:tools.length+' module manifests discovered · compatibility routes retained',meta:{lines:['registry '+(installed?'installed':'missing'),tools.length+' modules']}});}
   async function probeBackup(){var p=await json('/api/workshop-packages',2600),packs=p.packages||[];apply('backup',{state:p.active?'DEGRADED':'READY',detail:p.active?'Package job running':'Backup and public-safe packaging engine ready',meta:{lines:[packs.length+' packages',p.active?'busy':'idle']}});}
   async function probeConnectors(){
@@ -38,6 +39,10 @@
     if(def.control==='dashboards')out.push({action:'dashboards',label:'Show dashboards'});
     if(def.control==='agents')out.push({action:'agents',label:service.state==='PAUSED'?'Resume AI agents':'Pause AI agents'});
     if(def.control==='guardian'&&service.state==='TRIPPED')out.push({action:'guardian-reset',label:'Human reset',danger:true});
+    if(def.control==='mirror'){
+      if(service.state==='READY')out.push({action:'mirror-open',label:'Open Mirror dashboard'});
+      out.push({action:service.state==='READY'?'mirror-stop':'mirror-start',label:service.state==='READY'?'Stop isolated runtime':'Start isolated runtime'});
+    }
     if(def.dashboard)out.push({action:'open',label:'Open '+(def.dashboard==='ai-team'?'AI Team':'Publish & Library')});
     return out;
   }
@@ -69,6 +74,11 @@
         if(!confirm('Reset the Shell Guardian circuit breaker? Audit history will be kept.'))throw new Error('cancelled');
         var r=await fetchTimed('/api/shell-guardian/reset',2600,{method:'POST',headers:{'x-axm-guardian':'human-reset'}});if(!r.ok)throw new Error('HTTP '+r.status);
       }
+      else if(action==='mirror-open')window.open('/services/mirror-core/','_blank','noopener');
+      else if(action==='mirror-start'||action==='mirror-stop'){
+        var mirrorAction=action==='mirror-start'?'explicit-start':'explicit-stop';
+        var mirrorResponse=await fetchTimed('/api/mirror-core/'+(action==='mirror-start'?'start':'stop'),4200,{method:'POST',headers:{'x-axm-mirror-action':mirrorAction}});if(!mirrorResponse.ok)throw new Error('HTTP '+mirrorResponse.status);
+      }
       state=Core.reduce(state,{type:'CONTROL_RESULT',id:def.id,action:action,ok:true,detail:'completed',at:now()});
       if(action==='permissions'||action==='dashboards'||action==='open')$('foundationScreen').classList.remove('show');
       await refresh();
@@ -76,7 +86,7 @@
   }
   async function refresh(){
     if(busy)return;busy=true;
-    var jobs=[probeFoundationBundle().catch(function(e){['wisdom','identity','gate','storage'].forEach(function(id){failure(id,e);});}),probeRuntime().catch(function(e){failure('runtime',e);}),probeGuardian().catch(function(e){failure('guardian',e);}),probePlugins().catch(function(e){failure('plugins',e);}),probeBackup().catch(function(e){failure('backup',e);}),probeConnectors().catch(function(e){failure('connectors',e);})];
+    var jobs=[probeFoundationBundle().catch(function(e){['wisdom','identity','gate','storage'].forEach(function(id){failure(id,e);});}),probeRuntime().catch(function(e){failure('runtime',e);}),probeGuardian().catch(function(e){failure('guardian',e);}),probeMirror().catch(function(e){failure('mirror',e);}),probePlugins().catch(function(e){failure('plugins',e);}),probeBackup().catch(function(e){failure('backup',e);}),probeConnectors().catch(function(e){failure('connectors',e);})];
     await Promise.all(jobs);busy=false;render();clearTimeout(timer);timer=setTimeout(refresh,12000);
   }
   function init(){

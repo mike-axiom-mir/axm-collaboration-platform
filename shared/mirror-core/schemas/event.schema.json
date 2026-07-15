@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.event/v1",
+  "title": "AXM Mirror Journal Event",
+  "type": "object",
+  "required": ["event_id", "schema_version", "event_type", "timestamp", "actor", "system", "session", "related_packet", "related_entities", "previous_hash", "event_hash", "payload", "evidence_refs"],
+  "properties": {
+    "event_id": {"type": "string"},
+    "schema_version": {"const": "axm.mirror.event/v1"},
+    "event_type": {"type": "string"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "actor": {"type": "object"},
+    "system": {"type": "string"},
+    "session": {"type": ["string", "null"]},
+    "related_packet": {"type": ["string", "null"]},
+    "related_entities": {"type": "array", "items": {"type": "string"}},
+    "previous_hash": {"type": ["string", "null"]},
+    "event_hash": {"type": "string"},
+    "payload": {"type": "object"},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

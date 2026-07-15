@@ -1,0 +1,80 @@
+{
+  "slot": "008",
+  "game_id": "008-district-party",
+  "name": "AXM District Party",
+  "status": "PUBLIC TEST",
+  "description": "A substantial 1–8 player local shared-screen city game: co-op adventures, asymmetric district battles, vehicles, missions, inventory and equal human/AI control routes.",
+  "version": "0.1.7-public-test",
+  "min_players": 1,
+  "max_players": 8,
+  "default_visible_seats": 4,
+  "allowed_seat_types": ["human", "adapter", "ai"],
+  "modes": ["coop_city", "district_dominion"],
+  "launch": {
+    "server_entry": "server/server.js",
+    "client_entry": "/games/008/?room=AXM1&player=p1",
+    "controller_path": "/controller.html?room=AXM1&player={player}",
+    "spectator_client_entry": "/games/008/party-screen.html?party=party_a",
+    "ready_path": "/api/health",
+    "port": 8798,
+    "start_command": "managed-by-game-hub",
+    "local_only_default": true
+  },
+  "join": {
+    "supports_qr": true,
+    "supports_lan_link": true,
+    "supports_room_code": true,
+    "room_code": "AXM1",
+    "controller_urls_per_human_seat": true,
+    "screen_occupies_seat": false
+  },
+  "controls": {
+    "profile_id": "axm-top-down-twin-stick-v1",
+    "intent_protocol": "axm-semantic-input-v1",
+    "adapter_observation": "axm-seat-screen-semantics-v1",
+    "phone_controller": true,
+    "keyboard": true,
+    "mouse": false,
+    "touch": true,
+    "shared_screen": true
+  },
+  "session": {
+    "passes_seat_map": true,
+    "returns_result_summary": true,
+    "drop_in_out_later": false,
+    "parties": {
+      "party_a": [1, 2, 3, 4],
+      "party_b": [5, 6, 7, 8]
+    }
+  },
+  "rules": {
+    "no_hidden_players": true,
+    "host_launch_required": true,
+    "game_does_not_override_hub_seats": true,
+    "local_authoritative_state": true,
+    "clients_send_input_intentions": true,
+    "human_and_adapter_same_input_gate": true,
+    "adapter_observation_is_seat_visible_only": true,
+    "host_ai_fill_empty_seats_default": false,
+    "runtime_internet_required": false
+  },
+  "package": {
+    "source_status": "independent-pr13-derived-public-test",
+    "source_sha256": "034db7fd5cf3df074539b29674146f3b91f3d53a4569f4025d1614eb84102741",
+    "required_paths": [
+      "README_FIRST.md",
+      "ASSET_PROVENANCE.md",
+      "KNOWN_LIMITS.md",
+      "server/server.js",
+      "client/launcher/launcher.html",
+      "client/controller/controller.html",
+      "client/party-screen/party-screen.html",
+      "foundation-adapter/foundation-contract.json",
+      "docs/AI_NATIVE_SEAT_CONTRACT.md"
+    ]
+  },
+  "known_limits": [
+    "Physical phone QR join and two-display play remain marked untested by the source package.",
+    "Public TEST means visible and launchable, not production-certified."
+  ]
+}

@@ -15,11 +15,25 @@ body{overflow:hidden;background:radial-gradient(1100px 640px at 62% -12%,rgba(47
 button{font-family:inherit}
 .mono{font-family:var(--mono)}
 
+/* ---- AXM scrollbars: keep navigation and workspaces visually inside the
+   dark operating shell instead of falling back to the bright OS chrome. ---- */
+*{scrollbar-width:thin;scrollbar-color:#24536a #07101c}
+*::-webkit-scrollbar{width:10px;height:10px}
+*::-webkit-scrollbar-track{background:#07101c;border-left:1px solid rgba(56,214,236,.07)}
+*::-webkit-scrollbar-thumb{border:2px solid #07101c;border-radius:999px;background:linear-gradient(180deg,#2b6b82,#174054);box-shadow:inset 0 0 0 1px rgba(98,224,239,.14)}
+*::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#3a8ba1,#1d596d)}
+*::-webkit-scrollbar-corner{background:#07101c}
+
 /* ---- shell grid: outer stable ---- */
 .shell{display:grid;grid-template-rows:auto 1fr auto;height:100vh}
 .topbar{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--edge);background:linear-gradient(180deg,rgba(24,29,37,.7),transparent)}
 .mark{width:30px;height:30px;border:1.5px solid var(--cy);border-radius:7px;display:grid;place-items:center;box-shadow:0 0 16px rgba(56,214,236,.25)}
 .mark b{color:var(--cy);font-size:12px;letter-spacing:1px}
+.workshop-back{width:30px;height:30px;flex:0 0 30px;padding:0;display:grid;place-items:center;border:1px solid rgba(56,214,236,.28);border-radius:8px;background:linear-gradient(180deg,rgba(16,31,48,.9),rgba(7,15,25,.9));color:var(--cy);cursor:pointer;box-shadow:inset 0 1px rgba(255,255,255,.035);transition:border-color .15s,background .15s,opacity .15s}
+.workshop-back span{font-size:22px;line-height:1;transform:translateY(-1px)}
+.workshop-back:hover:not(:disabled){border-color:var(--cy);background:linear-gradient(180deg,rgba(26,54,74,.96),rgba(8,20,32,.96))}
+.workshop-back:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+.workshop-back:disabled{opacity:.25;cursor:default;box-shadow:none}
 .brand{font-weight:700;font-size:15px;letter-spacing:.5px}.brand span{color:var(--cy)}
 .active-lbl{color:var(--muted);font-size:12px;margin-left:4px;display:flex;align-items:center;gap:7px}
 .active-lbl span{font:800 8px var(--mono);letter-spacing:1.2px;text-transform:uppercase;color:var(--muted-2)}
@@ -199,7 +213,7 @@ input[type=text],select{background:#06080f;border:1px solid var(--edge);color:va
 .mod.active::before{content:"";position:absolute;left:-1px;top:8px;bottom:8px;width:2px;border-radius:2px;background:var(--cy);box-shadow:0 0 10px var(--cy)}
 .life{background:rgba(5,8,15,.55)}
 
-#homeScreen{background-color:#070b14;background-image:linear-gradient(rgba(56,214,236,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(56,214,236,.025) 1px,transparent 1px),radial-gradient(800px 430px at 18% -5%,rgba(47,109,255,.12),transparent 68%),radial-gradient(700px 440px at 90% 12%,rgba(177,140,255,.08),transparent 64%);background-size:38px 38px,38px 38px,auto,auto}
+#homeScreen{overflow-x:hidden!important;background-color:#070b14;background-image:linear-gradient(rgba(56,214,236,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(56,214,236,.025) 1px,transparent 1px),radial-gradient(800px 430px at 18% -5%,rgba(47,109,255,.12),transparent 68%),radial-gradient(700px 440px at 90% 12%,rgba(177,140,255,.08),transparent 64%);background-size:38px 38px,38px 38px,auto,auto}
 .home-hero{position:relative;overflow:hidden;padding:30px 28px 20px;border-bottom:1px solid rgba(56,214,236,.11);background:linear-gradient(120deg,rgba(8,18,34,.86),rgba(12,13,28,.5))}
 .home-hero::before{content:"";position:absolute;width:390px;height:390px;border:1px solid rgba(56,214,236,.1);border-radius:50%;right:-130px;top:-260px;box-shadow:0 0 80px rgba(56,214,236,.035),inset 0 0 70px rgba(177,140,255,.025)}
 .home-hero::after{content:"AXM";position:absolute;right:25px;bottom:-18px;font:800 92px/1 var(--font);letter-spacing:-6px;color:rgba(56,214,236,.025);pointer-events:none}
@@ -210,7 +224,7 @@ input[type=text],select{background:#06080f;border:1px solid var(--edge);color:va
 .hero-meta{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:7px;margin-top:15px}
 .hero-meta span{padding:4px 8px;border:1px solid rgba(56,214,236,.14);border-radius:999px;background:rgba(8,18,31,.62);color:#65768e;font:8.5px/1 var(--mono);letter-spacing:1px}
 
-.home-grid{grid-template-columns:repeat(4,minmax(180px,1fr));gap:14px;padding:22px 28px 28px}
+.home-grid{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px;padding:22px 28px 28px;min-width:0;width:100%;overflow:visible}
 .workflow-card{--wf:var(--cy);--wf2:var(--blue);position:relative;isolation:isolate;overflow:hidden;min-height:190px;border-color:color-mix(in srgb,var(--wf) 26%,var(--edge));background:linear-gradient(145deg,rgba(19,30,48,.96),rgba(10,15,27,.98));box-shadow:0 14px 36px rgba(0,0,0,.16)}
 .workflow-card[data-workflow="build"]{--wf:#b18cff;--wf2:#6b5cff}.workflow-card[data-workflow="play"]{--wf:#63d68a;--wf2:#20a870}.workflow-card[data-workflow="ai-team"]{--wf:#ff71d0;--wf2:#a855f7}
 .workflow-card::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--wf),var(--wf2),transparent);box-shadow:0 0 14px var(--wf);opacity:.72}
@@ -224,8 +238,29 @@ input[type=text],select{background:#06080f;border:1px solid var(--edge);color:va
 .module-card .hcard-icon{background:linear-gradient(145deg,rgba(56,214,236,.1),rgba(47,109,255,.05));box-shadow:0 0 18px rgba(56,214,236,.06)}
 .statusbar{border-top-color:rgba(56,214,236,.12);background:linear-gradient(0deg,rgba(13,21,34,.96),rgba(8,12,21,.92));box-shadow:0 -8px 26px rgba(0,0,0,.16)}
 
-@media(max-width:1100px){.home-grid{grid-template-columns:repeat(2,minmax(210px,1fr))}}
+/* The workspace grid responds to its actual content area after the sidebar,
+   rather than the outer browser width. auto-fit above handles the reflow. */
+@media(max-width:1100px){.home-grid{padding-inline:20px}}
 @media(max-width:720px){.home-grid{grid-template-columns:1fr;padding:16px}.home-hero{padding:22px 18px}.home-hero h1{font-size:28px}.hero-meta{display:none}.workflow-card{min-height:150px}}
+
+/* The command bar gained live foundation, profile and collaborator controls.
+   Keep every control reachable, but compact labels before the row can exceed
+   the viewport. This prevents right-side controls from being pushed away. */
+@media(max-width:1400px){
+  .topbar{gap:7px;padding-inline:9px;min-width:0}
+  .active-lbl span,.foundation-summary span,.profile-summary span{display:none}
+  .status-dot{font-size:0}.status-dot::before{width:7px;height:7px}
+  .ai-presence{grid-template-columns:repeat(4,58px)}
+  .ai-master{min-width:38px;padding-inline:8px}.ai-master>span:last-child{display:none}
+  .radio-cluster #btnRadio>span:last-child,.hub-tools>summary>span:last-child{display:none}
+  .radio-cluster #btnRadio,.hub-tools>summary{padding-inline:9px}
+}
+@media(max-width:1050px){
+  .brand{font-size:0}.brand span{font-size:13px}
+  .active-lbl{max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ai-presence{grid-template-columns:repeat(4,49px);padding-inline:5px;gap-column:3px}
+  .ai-node b{font-size:8px}
+}
 
 /* ---- SIMPLE / ADVANCED PRESENTATION ---------------------------------
    Presentation only: contracts, gates, modules, and verifier state remain. */

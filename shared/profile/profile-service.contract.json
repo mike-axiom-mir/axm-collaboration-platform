@@ -1,0 +1,47 @@
+{
+  "schema": "axm.optional-profile-service/v1",
+  "id": "axm-shared-profile",
+  "version": "1.0.0",
+  "lifecycle": "OPTIONAL_OPT_IN",
+  "purpose": "Portable local activity receipts, identity-bound statistics and achievement unlocks for human and machine collaborators.",
+  "rules": [
+    "Tracking is off until a local human explicitly opts in.",
+    "Pausing preserves history and refuses new receipts.",
+    "Applications submit verified result receipts; the service never infers authorship by scanning files, screens or activity.",
+    "Stable dedupe keys make retries safe.",
+    "Achievements may unlock profile visuals or exported metadata but never permissions, authority, purchases or access.",
+    "Human and machine members use the same identity, statistic and achievement record shapes.",
+    "A host may replace the achievement catalog and artwork without replacing the receipt engine.",
+    "Storage remains host-provided so another local Hub can use the service without copying AXM Hub UI code."
+  ],
+  "receiptTypes": {
+    "game-played": "One successfully started or completed game result, according to the host catalog rule.",
+    "picture-made": "One produced visual export.",
+    "project-completed": "One reviewed project completion.",
+    "code-characters": "An exact reviewed character count with evidence and a declared purpose mood."
+  },
+  "defaultEmitters": [
+    {"id": "game-hub", "receiptTypes": ["game-played"]},
+    {"id": "studio", "receiptTypes": ["picture-made"]},
+    {"id": "project-room", "receiptTypes": ["project-completed"]},
+    {"id": "code-task", "receiptTypes": ["code-characters"]}
+  ],
+  "portableInterface": [
+    "current",
+    "optIn",
+    "optOut",
+    "syncMembers",
+    "record",
+    "submitAssessment",
+    "reviewAssessment",
+    "reportingHealth",
+    "exportPacket"
+  ],
+  "hostResponsibilities": [
+    "Provide local read and write adapters.",
+    "Ask for opt-in and expose pause, export and delete controls.",
+    "Register stable collaborator identities.",
+    "Submit receipts only after the declared result boundary is met.",
+    "Explain missing or stale receipt sources instead of displaying false synchronization."
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.controls.observation/v1",
+  "title": "AXM Seat-Scoped Observation",
+  "type": "object",
+  "required": ["schema_version", "observation_id", "session_id", "seat_id", "observation_scope_id", "tick", "representation", "observation_basis", "source_view_hash", "payload", "withheld_fields", "includes_only_visible_to_seat", "created_at"],
+  "properties": {
+    "schema_version": {"const": "axm.controls.observation/v1"},
+    "observation_id": {"type": "string"},
+    "session_id": {"type": "string"},
+    "seat_id": {"type": "string"},
+    "observation_scope_id": {"type": "string"},
+    "tick": {"type": "integer", "minimum": 0},
+    "representation": {"enum": ["render_frame", "bounded_semantic_projection"]},
+    "observation_basis": {"const": "seat_player_view"},
+    "source_view_hash": {"type": "string"},
+    "payload": {"type": "object"},
+    "withheld_fields": {"type": "array", "items": {"type": "string"}},
+    "includes_only_visible_to_seat": {"const": true},
+    "visibility_evidence_refs": {"type": "array", "items": {"type": "string"}},
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "additionalProperties": false
+}

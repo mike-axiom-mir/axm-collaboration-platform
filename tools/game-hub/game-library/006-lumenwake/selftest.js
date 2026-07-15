@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('assert'),fs=require('fs'),path=require('path'),Core=require('./runtime/lumenwake-core.cjs'),Verifier=require('../../game-package-verifier');
+const dir=__dirname,manifest=JSON.parse(fs.readFileSync(path.join(dir,'game.manifest.json'),'utf8'));
+assert.deepEqual(Verifier.validateManifest(manifest,{gameDir:dir}),[]);assert.equal(manifest.min_players,1);assert.equal(manifest.max_players,4);assert.equal(manifest.rules.team_mode,'coop');assert.ok(manifest.allowed_seat_types.includes('ai'));
+let now=1000,g=Core.create([{display_name:'Mike',type:'human'},{display_name:'Nova',type:'ai'}],now,{seed:42});assert.equal(Object.keys(g.players).length,2);assert.equal(g.players.p2.kind,'ai');assert.equal(g.phase,'countdown');
+Core.step(g,{p1:{updatedAt:8000}},.05,8000);assert.equal(g.phase,'running');assert.ok(g.endsAt>8000);
+g.shards=[{id:'test',color:'cyan',x:g.players.p1.x,y:g.players.p1.y,bornAt:8000}];Core.step(g,{p1:{updatedAt:8050}},.05,8050);assert.equal(g.players.p1.carried.length,1);
+g.players.p1.x=50;g.players.p1.y=32;Core.step(g,{p1:{updatedAt:8100}},.05,8100);assert.ok(g.charge>=6);assert.equal(g.players.p1.carried.length,0);
+g.enemies=[{id:'target',x:g.players.p1.x+1,y:g.players.p1.y,hp:2,speed:0,stunnedUntil:0,hitAt:0}];Core.step(g,{p1:{action:true,updatedAt:8200}},.05,8200);assert.ok(g.players.p1.stats.stuns>=1);assert.ok(g.enemies[0].stunnedUntil>8200);
+const solo=Core.create([{display_name:'Solo',type:'human'}],1000,{seed:1});solo.phase='running';solo.startedAt=1000;solo.endsAt=200000;solo.now=10000;solo.charge=100;Core.step(solo,{p1:{updatedAt:10000}},.05,10000);assert.equal(solo.phase,'won');assert.ok(solo.result.achievements.some(x=>x.id==='solo-spark'));
+assert.ok(/phone-ui/.test(fs.readFileSync(path.join(dir,'runtime','lumenwake-client.html'),'utf8')));assert.ok(/AXM GAME NIGHT/.test(fs.readFileSync(path.join(dir,'runtime','lumenwake-client.html'),'utf8')));
+console.log('Lumenwake 006 selftest: PASS (1–4 seats, solo, AI, co-op loop, achievements, package and polished controller shell)');

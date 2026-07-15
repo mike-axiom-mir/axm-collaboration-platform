@@ -77,12 +77,16 @@
       entry: t.entry || 'index.html', version: t.version || '?',
       status: t.status || 'TEST', tags: t.tags || [], uses: t.uses || [],
       audience: t.audience || 'human', layer: t.layer || null,
-      integratedInto: t.integratedInto || null, serviceRole: t.serviceRole || null
+      integratedInto: t.integratedInto || null, serviceRole: t.serviceRole || null,
+      summary: t.summary || '', notes: t.notes || '', category: t.category || '',
+      risk: t.risk || null, card: t.card && typeof t.card === 'object' ? t.card : null,
+      actions: t.actions || [], accepts: t.accepts || [], produces: t.produces || [], readiness: t.readiness || [],
+      capabilityMetadataSource: t.capabilityMetadataSource || 'manifest'
     }));
   }
 
   const FRIENDLY_NAMES = {
-    'ai-team': 'AI Team', 'publish-library': 'Publish & Library', 'game-forge': 'Game Forge', 'knowledge-canvas': 'Knowledge Canvas', 'audio-studio': 'Audio Studio', 'film-motion-studio': 'Film & Motion Studio', 'agent-command-center': 'AI Command Center', 'agent-tool-forge': 'Agent Tool Forge',
+    'ai-team': 'AI Team', 'publish-library': 'Publish & Library', 'game-forge': 'Game Forge', 'knowledge-canvas': 'Knowledge Canvas', 'finance-world-room': 'Finance World Room', 'audio-studio': 'Audio Studio', 'film-motion-studio': 'Film & Motion Studio', 'agent-command-center': 'AI Command Center', 'agent-tool-forge': 'Agent Tool Forge',
     'asset-pack-lab': 'Asset Pack Lab', 'asset-vault': 'Asset Vault', 'chatgpt-connector': 'ChatGPT', 'duo-test': 'Nova + Gemini',
     'evidence-desk': 'Evidence Desk', forge: 'Tool Forge', 'forge-line': 'Forge Line',
     'game-hub': 'Game Hub', graft: 'Graft', 'hermes-local': 'Local Runtime',
@@ -210,7 +214,7 @@
     ];
     const groups = {
       create: ['studio','audio-studio','film-motion-studio'],
-      build: ['agent-tool-forge','evidence-desk','forge','forge-line','graft','knowledge-canvas','project-room','sandbox'],
+      build: ['agent-tool-forge','evidence-desk','finance-world-room','forge','forge-line','graft','knowledge-canvas','project-room','sandbox'],
       publish: ['publish-library'],
       play: ['game-forge'],
       'ai-team': ['ai-team'],
@@ -265,12 +269,49 @@ if (typeof window !== 'undefined') (function () {
   const hhmm = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const Hub = window.AXMHubShell = {
-    registry: [], visible: [], enabled: [], active: null, homeLayer: null, mode: 'simple', sidebarCollapsed: false, records: {}, store,
+    registry: [], visible: [], enabled: [], active: null, homeLayer: null, mode: 'simple', sidebarCollapsed: false, records: {}, store, continuityRecords: [], navigation: null,
     layers: [], assign: {}, unlocked: [], revealed: [],   /* unlocked+revealed = this session only */
     /* lifecycle badge classes for the sidebar */
     lifeClass(l) {
       return ({ 'CLAIMED': 'CLAIMED', 'NEEDS VERIFY': 'TEST', 'WORKING': 'WORKING',
         'SAVED CHECKPOINT': 'SAVED', 'TEST-HOLD': 'HOLD', 'CANON CANDIDATE': 'CANON' }[l]) || 'CLAIMED';
+    },
+    initNavigation() {
+      const Nav = window.AXMWorkshopNavigation;
+      if (!Nav) return;
+      /* Two deliberately separate trails:
+         - route trail: Hub <-> standalone AXM pages in this browser tab
+         - logical trail: Home <-> modules inside the stable Hub viewport
+         Both live in sessionStorage and contain no project/save data. */
+      Nav.installStandalone({ button: false });
+      let storage; try { storage = sessionStorage; } catch (e) { storage = Nav.memoryStorage(); }
+      this.navigation = Nav.createHistory(storage, 'axm.hub.screen-history.v1', 60);
+      this.refreshBackButton();
+    },
+    recordScreen(destination) {
+      if (this.navigation) this.navigation.record(destination);
+      this.refreshBackButton();
+    },
+    refreshBackButton() {
+      const button = $('workshopBack'); if (!button) return;
+      const logical = !!(this.navigation && this.navigation.canBack());
+      let routed = false;
+      try { routed = !!(window.AXMWorkshopNavigation && window.AXMWorkshopNavigation.routeHistory(window).canBack()); } catch (e) {}
+      button.disabled = !(logical || routed);
+      const previous = logical ? this.navigation.previous() : null;
+      button.title = previous && previous.label
+        ? 'Back to ' + previous.label + ' · saved work is unchanged'
+        : 'Previous AXM screen · saved work is unchanged';
+    },
+    goBack() {
+      const destination = this.navigation && this.navigation.back();
+      if (destination) {
+        if (destination.kind === 'module') this.open(destination.id, { history: false });
+        else this.showHome(destination.layerId || null, { history: false });
+        return;
+      }
+      if (window.AXMWorkshopNavigation && window.AXMWorkshopNavigation.navigateRouteBack(window)) return;
+      this.refreshBackButton();
     },
     setMode(mode, silent) {
       this.mode = mode === 'advanced' ? 'advanced' : 'simple';
@@ -352,6 +393,16 @@ if (typeof window !== 'undefined') (function () {
           if (en.indexOf('film-motion-studio') < 0) en.push('film-motion-studio');
           store.setEnabled(en); localStorage.setItem(marker, 'done');
           this.log('ok', 'added Film & Motion Studio workspace · future visibility remains user-controlled');
+        }
+      } catch (e) {}
+      /* One-time arrival migration for the Finance World Room. It remains an
+         experimental sandbox, and the human can hide it again afterward. */
+      try {
+        const marker = 'axm.hub.upgrade.finance-world-room.v1';
+        if (!localStorage.getItem(marker) && this.registry.some(m => m.id === 'finance-world-room')) {
+          if (en.indexOf('finance-world-room') < 0) en.push('finance-world-room');
+          store.setEnabled(en); localStorage.setItem(marker, 'done');
+          this.log('ok', 'added Finance World Room sandbox · future visibility remains user-controlled');
         }
       } catch (e) {}
       /* seed the three starting layers once; after that the user owns them */
@@ -493,6 +544,10 @@ if (typeof window !== 'undefined') (function () {
         c.querySelector('.workflow-preview').textContent = gr.modules.length + ' tool' + (gr.modules.length === 1 ? '' : 's') + ' inside · open to choose';
         c.onclick = () => this.showHome(id); g.appendChild(c);
       });
+      const growth = document.createElement('button'); growth.type = 'button'; growth.className = 'hcard utility-card technical-card growth-home-card';
+      growth.innerHTML = '<div class="hcard-icon">&#10022;</div><h3>Workshop Growth</h3><p>Files, characters, lines, modules, games and milestone snapshots.</p><div class="open">Open infographic &rarr;</div>';
+      growth.onclick = () => { if (window.AXMWorkshopGrowth) window.AXMWorkshopGrowth.open(); };
+      g.appendChild(growth);
       /* always-present dashboard visibility control. This never claims to
          install, retire, connect, or stop the underlying module/service. */
       const add = document.createElement('button'); add.type = 'button'; add.className = 'hcard utility-card technical-card';
@@ -510,7 +565,67 @@ if (typeof window !== 'undefined') (function () {
       lay.onclick = () => this.openLayers();
       g.appendChild(lay);
     },
-    showHome(layerId) {
+    async renderCapabilityGuide(query) {
+      const out = $('capabilityResults'), input = $('capabilityQuery'); if (!out || !window.AXMCapabilityIndex) return;
+      const q = String(query == null ? (input && input.value) : query).trim().slice(0, 200); if (input) input.value = q;
+      out.innerHTML = ''; if (!q) return;
+      let matches = [];
+      try { const response=await fetch('/api/workshop/capabilities?q='+encodeURIComponent(q),{cache:'no-store'}); if(!response.ok)throw Error('HTTP '+response.status); matches=(await response.json()).matches||[]; }
+      catch(e){ matches=window.AXMCapabilityIndex.search(this.registry,q,{limit:6}); this.log('warn','capability readiness unavailable · local recommendations kept'); }
+      if (!matches.length) { const empty=document.createElement('div'); empty.className='capability-empty'; empty.textContent='No clear route yet. Try a simpler goal, or open a workspace below and explore freely.'; out.appendChild(empty); return; }
+      matches.forEach(match => {
+        const b=document.createElement('button'); b.type='button'; b.className='capability-result';
+        const title=document.createElement('b'); title.textContent=Core.friendlyName(this.registry.find(x=>x.id===match.destinationId)||{id:match.destinationId,name:match.destinationName});
+        const summary=document.createElement('span'); summary.textContent=match.summary||match.reason;
+        const readiness=match.readiness&&match.readiness.state||'UNKNOWN'; b.dataset.readiness=readiness;
+        const ready=document.createElement('small'); ready.textContent='Readiness '+readiness.replace('_',' ');
+        const note=document.createElement('small'); note.textContent=(match.integratedInto?'Inside '+match.destinationName+' · ':'')+match.reason+' · choose to open';
+        b.appendChild(title); b.appendChild(summary); b.appendChild(ready);
+        if(match.readiness&&match.readiness.attention&&match.readiness.attention.length){const guidance=document.createElement('span');const first=match.readiness.attention[0];guidance.className='readiness-guidance';guidance.textContent=first.label+': '+first.nextStep+' Nothing is repaired automatically.';b.appendChild(guidance);}
+        b.appendChild(note); b.onclick=()=>this.openCapability(match.destinationId); out.appendChild(b);
+      });
+      this.log('info','capability guide · '+matches.length+' recommendation(s) for "'+q+'"');
+    },
+    openCapability(id) {
+      const module=this.registry.find(x=>x.id===id); if (!module) return this.log('warn','capability destination unavailable: '+id);
+      if (this.enabled.indexOf(id)<0) this.enable(id);
+      this.open(id);
+    },
+    async loadContinuity() {
+      try { const response=await fetch('/api/workshop/recents',{cache:'no-store'}); if(!response.ok)throw Error('HTTP '+response.status); this.continuityRecords=(await response.json()).records||[]; }
+      catch(e){ this.continuityRecords=[]; this.log('warn','recent-work references unavailable · workspaces still open normally'); }
+      this.renderContinuity();
+    },
+    async recordContinuity(record) {
+      try { const response=await fetch('/api/workshop/recents',{method:'POST',headers:{'content-type':'application/json','x-axm-continuity':'explicit-workspace-event'},body:JSON.stringify({record:record})}); if(!response.ok)throw Error('HTTP '+response.status); await this.loadContinuity(); }
+      catch(e){ this.log('warn','could not update recent-work reference'); }
+    },
+    async forgetContinuity(id) {
+      try { const response=await fetch('/api/workshop/recents?id='+encodeURIComponent(id),{method:'DELETE',headers:{'x-axm-continuity':'explicit-forget'}}); if(!response.ok)throw Error('HTTP '+response.status); await this.loadContinuity(); this.log('info','forgot one recent-work reference · project data unchanged'); }
+      catch(e){ this.log('warn','could not forget recent-work reference'); }
+    },
+    renderContinuity() {
+      const strip=$('continuityStrip'),list=$('continuityList'); if(!strip||!list)return; list.innerHTML=''; const records=(this.continuityRecords||[]).slice(0,8); strip.hidden=!records.length;
+      records.forEach(record=>{const item=document.createElement('article');item.className='continuity-item';const open=document.createElement('button');open.type='button';open.className='continuity-open';const title=document.createElement('b');title.textContent=record.projectName||record.workspaceName;const meta=document.createElement('span');meta.textContent=(record.workspaceName||record.workspaceId)+' · '+new Date(record.updatedAt).toLocaleString();const hint=document.createElement('small');hint.textContent=record.resumeHint||'Open saved state';open.appendChild(title);open.appendChild(meta);open.appendChild(hint);open.onclick=()=>this.openCapability(record.workspaceId);const forget=document.createElement('button');forget.type='button';forget.className='continuity-forget';forget.setAttribute('aria-label','Forget '+(record.projectName||record.workspaceName)+' from recent work');forget.title='Forget this reference · project data stays';forget.textContent='×';forget.onclick=()=>this.forgetContinuity(record.id);item.appendChild(open);item.appendChild(forget);list.appendChild(item);});
+    },
+    loadHandoffBroker() {
+      const source=$('handoffSource'),artifact=$('handoffArtifact');if(!source||!artifact)return;
+      const candidates=this.registry.filter(x=>!x.integratedInto&&Array.isArray(x.produces)&&x.produces.length);
+      source.innerHTML='';candidates.forEach(item=>{const option=document.createElement('option');option.value=item.id;option.textContent=Core.friendlyName(item);source.appendChild(option);});
+      const update=()=>{artifact.innerHTML='';const item=this.registry.find(x=>x.id===source.value);(item&&item.produces||[]).forEach(kind=>{const option=document.createElement('option');option.value=kind;option.textContent=kind;artifact.appendChild(option);});$('handoffResults').innerHTML='';};
+      source.onchange=update;update();
+    },
+    async findHandoffDestinations() {
+      const source=$('handoffSource').value,artifact=$('handoffArtifact').value,out=$('handoffResults');out.innerHTML='';if(!source||!artifact)return;
+      try{const response=await fetch('/api/workshop/handoffs?source='+encodeURIComponent(source)+'&artifact='+encodeURIComponent(artifact),{cache:'no-store'});const data=await response.json();if(!response.ok)throw Error(data.error||('HTTP '+response.status));const matches=data.matches||[];if(!matches.length){const empty=document.createElement('div');empty.className='handoff-empty';empty.textContent='No workspace currently declares this format. Nothing was converted or moved.';out.appendChild(empty);return;}matches.forEach(match=>{const card=document.createElement('article');card.className='handoff-result';const title=document.createElement('b');title.textContent=Core.friendlyName(this.registry.find(x=>x.id===match.destinationId)||{id:match.destinationId,name:match.destinationName});const detail=document.createElement('span');detail.textContent=match.artifactKind+' is accepted as '+match.acceptedAs+'.';const mode=document.createElement('small');mode.textContent=(match.match==='exact'?'Exact format':'Declared format family')+' · proposal only';const button=document.createElement('button');button.type='button';button.className='handoff-prepare';button.textContent='Prepare handoff';button.onclick=()=>this.prepareHandoff(match);card.appendChild(title);card.appendChild(detail);card.appendChild(mode);card.appendChild(button);out.appendChild(card);});this.log('info','handoff broker · '+matches.length+' declared destination(s)');}
+      catch(e){const empty=document.createElement('div');empty.className='handoff-empty';empty.textContent='Handoff check unavailable. No project data moved.';out.appendChild(empty);this.log('warn','handoff broker unavailable');}
+    },
+    async prepareHandoff(match) {
+      const out=$('handoffResults');try{const response=await fetch('/api/workshop/handoffs',{method:'POST',headers:{'content-type':'application/json','x-axm-handoff':'explicit-prepare-proposal'},body:JSON.stringify({sourceId:match.sourceId,artifactKind:match.artifactKind,destinationId:match.destinationId,acceptedAs:match.acceptedAs,note:'Prepared from Hub after an explicit choice'})});const data=await response.json();if(!response.ok)throw Error(data.error||('HTTP '+response.status));const message=document.createElement('div');message.className='handoff-confirmation';message.textContent='Handoff proposal prepared for '+match.destinationName+'. No file was copied, imported, opened or converted. Open the destination only when you choose.';out.prepend(message);this.log('ok','handoff proposal prepared · review required · no data copied');}
+      catch(e){this.log('warn','handoff proposal refused · '+e.message);}
+    },
+    showHome(layerId, options) {
+      options = options || {};
       this.active = null;
       this.homeLayer = layerId || null;
       $('viewFrame').style.display = 'none';
@@ -520,8 +635,12 @@ if (typeof window !== 'undefined') (function () {
       $('homeBtn').classList.add('active');
       store.setState({ lastModuleId: null });
       this.renderHome();
+      this.renderContinuity();
+      if (options.history !== false) this.recordScreen({ kind: 'home', layerId: this.homeLayer || '', label: $('activeName').textContent || 'Home' });
+      else this.refreshBackButton();
     },
-    open(id) {
+    open(id, options) {
+      options = options || {};
       const m = this.registry.find(x => x.id === id);
       if (!m) { this.log('error', 'no such module: ' + id); return; }
       /* a module in a locked layer knocks first. NOTE: this is a door sign,
@@ -554,6 +673,9 @@ if (typeof window !== 'undefined') (function () {
       if (!this.records[id]) this.records[id] = { id, lifecycle: store.getLifecycle(id) };
       store.setState({ lastModuleId: id });
       this.log('info', 'switched to ' + m.name);
+      this.recordContinuity({workspaceId:id,workspaceName:Core.friendlyName(m),projectId:'workspace',projectName:Core.friendlyName(m),documentSchema:'axm.workspace-reference/v1',route:url,resumeHint:'Open the workspace and continue from its own local saved state.',updatedAt:now(),source:'workspace-open'});
+      if (options.history !== false) this.recordScreen({ kind: 'module', id: id, label: Core.friendlyName(m) });
+      else this.refreshBackButton();
     },
     showError(m, why) {
       const err = $('vpError'); err.classList.add('show');
@@ -567,6 +689,12 @@ if (typeof window !== 'undefined') (function () {
     onMessage(ev) {
       const msg = ev.data; if (!msg || typeof msg.type !== 'string' || msg.type.indexOf('hub:') !== 0) return;
       const id = this.active; if (!id) return;
+      if (msg.type === 'hub:continuity:upsert') {
+        if (ev.origin && ev.origin !== location.origin) return;
+        const module=this.registry.find(x=>x.id===id)||{id:id,name:id};
+        const record=Object.assign({},msg.record||{},{workspaceId:id,workspaceName:Core.friendlyName(module),route:'/tools/'+encodeURIComponent(module.folder||id)+'/'+(module.entry||'index.html'),source:'workspace-project-save'});
+        this.recordContinuity(record); return;
+      }
       const cur = this.records[id] || { id, lifecycle: store.getLifecycle(id) };
       cur.id = id;
       const { record, intents } = C.reduce(cur, msg);
@@ -767,6 +895,7 @@ if (typeof window !== 'undefined') (function () {
       if (r.applied.length) this.log('ok', r.applied.length + ' local skin asset(s) rendered');
     },
     boot() {
+      this.initNavigation();
       let savedMode = 'simple'; try { savedMode = localStorage.getItem('axm.hub.view-mode') || 'simple'; } catch (e) {}
       this.setMode(savedMode, true);
       let savedSidebar = false; try { savedSidebar = localStorage.getItem('axm.hub.sidebar-collapsed') === 'true'; } catch (e) {}
@@ -806,6 +935,7 @@ if (typeof window !== 'undefined') (function () {
       } catch (e) { this.log('warn', 'skin check failed, default kept'); }
 
       window.addEventListener('message', e => this.onMessage(e));
+      $('workshopBack').onclick = () => this.goBack();
       $('homeBtn').onclick = () => this.showHome();
       $('sidebarToggle').onclick = () => this.toggleSidebar();
       $('modeToggle').onclick = () => this.toggleMode();
@@ -814,11 +944,16 @@ if (typeof window !== 'undefined') (function () {
       $('btnExport').onclick = () => this.openExport();
       $('btnModules').onclick = () => this.openModules();
       $('btnLayers').onclick = () => this.openLayers();
+      $('capabilityForm').onsubmit = e => { e.preventDefault(); this.renderCapabilityGuide(); };
+      $('handoffForm').onsubmit = e => { e.preventDefault(); this.findHandoffDestinations(); };
+      document.querySelectorAll('[data-capability-query]').forEach(b => b.onclick = () => this.renderCapabilityGuide(b.dataset.capabilityQuery));
       [...document.querySelectorAll('[data-close]')].forEach(b => b.onclick = () => $(b.dataset.close).classList.remove('show'));
       this.loadRegistry().then(() => {
         const last = store.getState().lastModuleId;
         const openable = last && Core.resolveLayers(this.visible, this.layers, this.assign, this.unlocked, this.revealed)
           .filter(g => !g.locked).some(g => g.modules.some(m => m.id === last));
+        this.loadContinuity();
+        this.loadHandoffBroker();
         if (openable) { this.log('info', 'reopened at last module: ' + last); this.open(last); }
         else { if (last) this.log('info', 'last module sits in a locked layer — starting at Home'); this.showHome(); }
         this.log('ok', 'hub ready — ' + this.visible.length + ' dashboards visible · ' + Math.max(0, this.registry.length - this.visible.length) + ' hidden');

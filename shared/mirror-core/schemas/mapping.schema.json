@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.mapping/v1",
+  "title": "AXM Mirror Mapping",
+  "type": "object",
+  "required": ["mapping_id", "schema_version", "mirror_id", "endpoints", "mapping_status", "created_by", "evidence_refs", "field_mappings", "limitations"],
+  "properties": {
+    "mapping_id": {"type": "string", "pattern": "^map:[a-z0-9._-]+:[a-z0-9._-]+$"},
+    "schema_version": {"const": "axm.mirror.mapping/v1"},
+    "mirror_id": {"type": "string"},
+    "endpoints": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["system_id", "native_id", "role"],
+        "properties": {
+          "system_id": {"type": "string"},
+          "native_id": {"type": "string"},
+          "role": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "mapping_status": {"enum": ["proposed", "approved", "active", "disputed", "superseded", "archived"]},
+    "created_by": {"type": "object"},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}},
+    "field_mappings": {"type": "object"},
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "mapping_kind": {"enum": ["one_to_one", "one_to_many", "many_to_one", "representation_only", "derived_from"]}
+  },
+  "additionalProperties": false
+}
