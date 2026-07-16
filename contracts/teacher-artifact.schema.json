@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.teacher-artifact/v1",
+  "title": "Reviewable teacher artifact for future Mirror compression",
+  "type": "object",
+  "required": ["schema", "source", "task", "decision", "verification", "outcome"],
+  "properties": {
+    "schema": { "const": "axm.mirror.teacher-artifact/v1" },
+    "artifactId": { "type": "string", "maxLength": 120 },
+    "source": {
+      "type": "object",
+      "required": ["provider", "model", "usePermission", "capturedBy"],
+      "properties": {
+        "provider": { "type": "string", "maxLength": 120 },
+        "model": { "type": "string", "maxLength": 200 },
+        "sessionRef": { "type": ["string", "null"], "maxLength": 500 },
+        "usePermission": { "enum": ["allowed", "unknown", "forbidden"] },
+        "permissionBasis": { "type": "string", "maxLength": 1000 },
+        "capturedBy": { "type": "string", "maxLength": 120 }
+      },
+      "additionalProperties": false
+    },
+    "task": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "evidenceRefs": { "type": "array", "maxItems": 256, "items": { "type": "string", "maxLength": 1000 } },
+    "alternatives": { "type": "array", "maxItems": 128, "items": { "type": "string", "maxLength": 2000 } },
+    "decision": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "verification": { "type": "array", "minItems": 1, "maxItems": 256, "items": { "type": "string", "maxLength": 2000 } },
+    "corrections": { "type": "array", "maxItems": 256, "items": { "type": "string", "maxLength": 2000 } },
+    "outcome": { "type": "string", "minLength": 1, "maxLength": 4000 },
+    "limitations": { "type": "array", "maxItems": 128, "items": { "type": "string", "maxLength": 2000 } }
+  },
+  "additionalProperties": false
+}

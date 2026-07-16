@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.trace/v1",
+  "title": "Mirror native reasoning trace",
+  "type": "object",
+  "required": ["schema", "traceId", "identity", "rootBundle", "epistemic", "candidates", "decision", "human"],
+  "properties": {
+    "schema": { "const": "axm.mirror.trace/v1" },
+    "traceId": { "type": "string" },
+    "identity": { "const": "axm.machine.mirror/seed-0" },
+    "rootBundle": { "type": "object" },
+    "epistemic": { "type": "object" },
+    "candidates": { "type": "array" },
+    "decision": {
+      "type": "object",
+      "required": ["value", "reason"],
+      "properties": {
+        "value": { "enum": [-1, 0, 1] },
+        "reason": { "type": "string" }
+      }
+    },
+    "human": { "type": "object" }
+  }
+}

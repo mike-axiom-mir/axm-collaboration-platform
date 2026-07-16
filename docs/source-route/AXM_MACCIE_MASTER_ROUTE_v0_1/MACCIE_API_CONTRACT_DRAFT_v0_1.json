@@ -1,0 +1,83 @@
+{
+  "schema": "axm.maccie.api-contract/v0.1-draft",
+  "status": "EXPERIMENTAL",
+  "default_bind": "127.0.0.1",
+  "default_port": 8798,
+  "port_env": "AXM_MACCIE_PORT",
+  "native_endpoints": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "purpose": "Build, root hash, component and offline status."
+    },
+    {
+      "method": "GET",
+      "path": "/capabilities",
+      "purpose": "Supported and unsupported operations."
+    },
+    {
+      "method": "GET",
+      "path": "/v1/models",
+      "purpose": "Provider discovery compatibility."
+    },
+    {
+      "method": "POST",
+      "path": "/axm/v1/session/open",
+      "purpose": "Open explicit bounded session."
+    },
+    {
+      "method": "POST",
+      "path": "/axm/v1/reason",
+      "purpose": "Structured observation/state/goal/action reasoning."
+    },
+    {
+      "method": "POST",
+      "path": "/axm/v1/observe",
+      "purpose": "Attach new sourced observation."
+    },
+    {
+      "method": "POST",
+      "path": "/axm/v1/plan",
+      "purpose": "Bounded candidate search and consequence trace."
+    },
+    {
+      "method": "POST",
+      "path": "/axm/v1/tool-result",
+      "purpose": "Return outcome of an approved action."
+    },
+    {
+      "method": "POST",
+      "path": "/axm/v1/memory/query",
+      "purpose": "Scoped explicit memory retrieval."
+    },
+    {
+      "method": "GET",
+      "path": "/axm/v1/trace/{id}",
+      "purpose": "Operational evidence and decision trace."
+    },
+    {
+      "method": "POST",
+      "path": "/axm/v1/session/close",
+      "purpose": "Close and propose memory writes."
+    }
+  ],
+  "optional_compatibility": [
+    {
+      "method": "POST",
+      "path": "/v1/responses",
+      "note": "Adapter skin only; native trace remains authoritative."
+    }
+  ],
+  "decision": {
+    "1": "supported enough to proceed within explicit bounds",
+    "0": "hold, ask, observe, test, or unresolved conflict",
+    "-1": "contradicted, unauthorized, impossible, or unacceptable risk"
+  },
+  "security_defaults": {
+    "loopback_only": true,
+    "workshop_origin_allowlist": true,
+    "local_bearer_token": true,
+    "no_external_network": true,
+    "write_permissions": []
+  }
+}

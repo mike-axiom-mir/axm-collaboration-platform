@@ -1,0 +1,27 @@
+{
+  "schema": "axm.mirror.api-contract/v1",
+  "status": "EXPERIMENTAL",
+  "defaultBind": "127.0.0.1",
+  "defaultPort": 8818,
+  "portEnvironment": "AXM_MIRROR_PORT",
+  "publicReadOnly": ["GET /health", "GET /capabilities", "GET /v1/models"],
+  "authenticated": [
+    "POST /axm/v1/session/open",
+    "POST /axm/v1/reason",
+    "GET /axm/v1/trace/{id}",
+    "POST /axm/v1/session/close",
+    "POST /v1/responses"
+  ],
+  "decision": {
+    "1": "supported enough to proceed within explicit bounds",
+    "0": "hold, ask, observe, test, or unresolved conflict",
+    "-1": "contradicted, unauthorized, impossible, or unacceptable risk"
+  },
+  "securityDefaults": {
+    "loopbackOnly": true,
+    "localBearerToken": true,
+    "outsideNetworkCalls": false,
+    "toolPermissions": [],
+    "writePermissions": []
+  }
+}

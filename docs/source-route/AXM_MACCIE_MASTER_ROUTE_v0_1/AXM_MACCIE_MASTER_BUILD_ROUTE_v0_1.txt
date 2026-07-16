@@ -1,0 +1,1023 @@
+AXM / MACCIE — MASTER BUILD ROUTE v0.1
+Created: 2026-07-16
+Status: WORKING RESEARCH ROUTE — NOT A MODEL, NOT IMPLEMENTED, NOT CANON
+Foundation inspected read-only at commit: 627b905a53628ec840abda24ce8410fa5edfe3de
+Total executable planning steps: 662
+
+==============================================================================
+PURPOSE
+==============================================================================
+Build an AXM-native local machine intelligence from inspectable principles, state, search, world
+learning, memory, verification, and eventually native trained weights—then connect it to the AXM
+Workshop beside Nova/Gemini without requiring any outside model at runtime. The route deliberately
+creates a useful local body early and lets learned organs replace or strengthen deterministic parts
+only after they pass the same evidence gates.
+
+THE CORE BET
+------------------------------------------------------------------------------
+Observed reality updates an explicit world model. Stable, versioned principles govern how knowledge
+becomes action. Learned components propose, predict, rank, compress, and translate; they never
+silently become authority.
+
+ARCHITECTURE
+------------------------------------------------------------------------------
+AXM WORKSHOP :8788  (unchanged Foundation)
+        |
+        | selected context / presence / gated proposals
+        v
+WORKSHOP MACCIE ADAPTER
+        |
+        | local authenticated native contract
+        v
+MACCIE RUNTIME :${AXM_MACCIE_PORT:-8798}
+  ├─ API + session boundary
+  ├─ Root bundle + permission policy
+  ├─ Typed state / evidence / claim graph
+  ├─ Principle Cell and ternary gate
+  ├─ Candidate generation + search
+  ├─ Exact simulators where available
+  ├─ Learned organs (advisory, replaceable)
+  ├─ Verifier + Seam-Finder
+  ├─ Explicit memory stack
+  ├─ Language shell / vision adapters
+  ├─ Tool proposal client
+  └─ Append-only traces and Action Reports
+
+Authority order:
+  real observation / authorized tool result
+      > deterministic invariant or verified rule
+      > sourced human assertion within its scope
+      > calibrated learned prediction
+      > unsourced proposal
+
+Hard roots and permissions are never gradient-mutable.
+Learned components may propose, rank, predict, compress, and translate.
+They do not silently authorize, canonize, rewrite roots, or declare completion.
+
+MILESTONES
+------------------------------------------------------------------------------
+M0 — Research body exists
+  Repository, roots, route, source trace, runtime skeleton.
+M1 — Connectable kernel
+  Maccie appears locally in the Workshop and returns deterministic structured traces with no write power.
+M2 — Principle Cell
+  Bounded worlds prove observe → candidates → consequences → +1/0/-1 → test → repair.
+M3 — First native weights
+  A from-random-initialization learned organ improves a held-out metric under the deterministic kernel.
+M4 — Learned world model
+  Maccie predicts consequences and improves bounded planning without bypassing verification.
+M5 — Native structured planner
+  A native sequence model produces verified plans and tool structures.
+M6 — Native language shell
+  A from-scratch language component translates between human text and structured Maccie state.
+M7 — Local Collaborator v0.1
+  Offline native-only package can be selected beside Nova/Gemini and complete bounded gated tasks.
+M8+ — Living research forest
+  Scale, multimodality, community compute, and broader transfer remain separate evidence-gated routes.
+
+NON-NEGOTIABLE ARCHITECTURE DECISIONS
+------------------------------------------------------------------------------
+D01. Do not wait for a large language model before integrating. Connect the deterministic kernel early.
+D02. Do not call the deterministic kernel a learned model. The first native weights arrive later and are labeled separately.
+D03. Do not put Maccie inside Workshop `server.js`; run it as a bounded local sidecar.
+D04. Do not reuse port 8792; the current Foundation already routes game 002 there.
+D05. Do not make an OpenAI-compatible endpoint the native mind. It is only one optional compatibility skin.
+D06. Do not require Ollama, LM Studio, llama.cpp, Nova, Gemini, Claude, or ChatGPT at runtime.
+D07. Do not reject transformers as a component on principle. Test architectures; keep language prediction subordinate to the reasoning/governance body.
+D08. Do not let one probability collapse erase evidence, alternatives, uncertainty, or principle vectors.
+D09. Do not train roots into weights and hope they remain stable. Keep roots executable, versioned, and outside gradient updates.
+D10. Do not train on scraped mystery data. Every sample needs lineage, rights/consent status, and a removal path.
+D11. Do not optimize only for task reward. Advancement requires integrity and wisdom metrics not to regress.
+D12. Do not pretend operational traces fully explain neural weights. Trace recorded inputs, modules, candidates, rules, and outcomes honestly.
+D13. Do not scale by parameter count alone. Each rung must demonstrate a distinct useful capability.
+D14. Do not make Maccie mandatory. AXM remains usable without AI and without the native model.
+
+==============================================================================
+PHASE ROUTE
+==============================================================================
+
+PHASE 00 — NAME THE TARGET HONESTLY
+------------------------------------------------------------------------------
+Goal: Define exactly what Maccie is, what it is not, and what counts as reaching a local native model.
+
+0001. Create `MACCIE_DEFINITIONS.md` before creating model code.
+0002. Define Maccie Runtime as the complete local machine body: service, kernel, models, memory, tools, tests, and logs.
+0003. Define Maccie Kernel as deterministic reasoning and governance code that can run with zero learned weights.
+0004. Define a Maccie Model as a parameterized component whose weights were trained under AXM-controlled code and data lineage.
+0005. Define Native as no outside model or third-party AI API being required at runtime.
+0006. State that using PyTorch, NumPy, a solver, or an operating system is an infrastructure dependency, not a model wrapper.
+0007. Define Principle as a versioned, testable decision constraint or evaluator with an explicit amendment path.
+0008. Define Wisdom operationally as truthfulness, uncertainty awareness, consequence depth, restraint, consent, reversibility, repairability, and long-horizon value.
+0009. Define Machine-real communication as honest machine state translated for humans without invented biography, emotion, consciousness, or certainty.
+0010. Define Local as loopback-only by default, fully functional with the network disabled after installation, no telemetry, no account, and no cloud key.
+0011. Define Connectable like Nova/Gemini as provider registration, presence, selected-context input, structured response, tool proposals, memory, and same-gate action handling.
+0012. Define the first local success as useful bounded collaboration, not human-level general intelligence.
+0013. Define the long-horizon success as broad cross-domain transfer without surrendering principles, source integrity, or local ownership.
+0014. Create explicit labels for `KERNEL`, `LEARNED ORGAN`, `LANGUAGE SHELL`, `LOCAL COLLABORATOR`, and `GENERAL RESEARCH MODEL`.
+0015. Write a prohibited-claims list: no consciousness claim, no general-intelligence claim, no safety proof from passing a small suite, no 'from scratch' claim when inherited weights exist.
+0016. Write a naming rule that every release says whether it contains external weights, externally generated data, or only native AXM artifacts.
+0017. Record unresolved questions rather than forcing premature answers about transformer versus non-transformer architecture.
+0018. Pass gate: Mike can point to one paragraph that distinguishes a reasoning runtime, an actual learned model, and a language interface.
+
+
+PHASE 01 — FREEZE THE INHERITED SOURCE TRACE
+------------------------------------------------------------------------------
+Goal: Preserve the exact AXM foundation and conversation lineage Maccie is allowed to build on.
+
+0019. Create a new local project directory named `AXM_MACCIE_LOCAL` outside OneDrive-synced folders.
+0020. Do not modify the public Foundation during research setup.
+0021. Record the read-only Foundation repository and inspected commit SHA.
+0022. Copy only interface contracts and documentation needed for local experimentation; record every copied path.
+0023. Create `FOUNDATION_SOURCE_TRACE.md` with Workshop, bridge, manifest, module passport, route, verifier, presence, and vision-loop references.
+0024. Record the current local ports: bridge 8787, Workshop 8788, game hub 8789, and current game sidecars.
+0025. Record the discovered collision: old Machine Host proposal used 8792, while the current Foundation uses 8792 for game 002.
+0026. Reserve `AXM_MACCIE_PORT` as configurable and use 8798 only as the development default.
+0027. Record that the Workshop must remain functional when Maccie is absent.
+0028. Record that Maccie must never write directly to Foundation files.
+0029. Record that generated files are data until explicitly installed or promoted.
+0030. Record that a browser compile check is not a render/click test.
+0031. Create `CHAT_LINEAGE.md` covering portable thought-state files, Return Packets, Route JSON, Logic Gate, Verifier, Seam-Finder, physics methodology, eyes loop, machine seats, and shared controls.
+0032. Separate human-reported history from repository-tested facts in the source trace.
+0033. Hash every imported source file and save hashes in `SOURCE_HASHES.json`.
+0034. Create an append-only `SOURCE_CHANGES.jsonl` for future source upgrades.
+0035. Pass gate: a cold reader can identify which parts came from the Foundation, which came from chats, and which are new proposals.
+
+
+PHASE 02 — CREATE THE MACCIE RESEARCH BODY
+------------------------------------------------------------------------------
+Goal: Establish a clean, modular local repository that can grow without contaminating the Workshop.
+
+0036. Create directories: `kernel`, `runtime`, `models`, `training`, `curricula`, `memory`, `adapters`, `ui`, `tests`, `docs`, `routes`, `state`, `logs`, `exports`, and `broken`.
+0037. Create `README.md` with a one-screen explanation and honest current status.
+0038. Create `AGENTS.md` carrying truth, agency/non-domination, continuity, wisdom over speed, no fake done, and no self-canonization.
+0039. Create `STATUS.json` with lifecycle `EXPERIMENTAL`.
+0040. Create `VERSION` starting at `0.0.0-seed`.
+0041. Create a minimal dependency policy: standard library first; each external library needs purpose, version, license, and removal path.
+0042. Create `DEPENDENCY_MANIFEST.json` and `MODEL_BOM.json`.
+0043. Create `.gitignore` entries for secrets, runtime state, private memories, checkpoints, datasets, and machine paths.
+0044. Create example configuration files only; never commit live tokens or private paths.
+0045. Create a `broken/` quarantine path for failed checkpoints and invalid data instead of deleting evidence.
+0046. Create append-only `logs/maccie-events.jsonl` and `logs/maccie-decisions.jsonl` formats.
+0047. Create `exports/action-reports/` and require an Action Report for every milestone.
+0048. Create `routes/master.route.json` and one route per phase rather than a flat 500-step route.
+0049. Create a deterministic test seed registry.
+0050. Create `make_report.py` that summarizes changed files, tests run, tests unrun, status, and known limits.
+0051. Create `verify_layout.py` that checks required directories and root files.
+0052. Pass gate: the repository can be zipped, moved to another local folder, and verified without internet access.
+
+
+PHASE 03 — FREEZE ROOT GOVERNANCE AS EXECUTABLE POLICY
+------------------------------------------------------------------------------
+Goal: Make principles affect computation while keeping amendment authority outside gradient learning.
+
+0053. Create `roots/AXM_ROOTS_v1.json` with stable identifiers, plain-language meaning, machine interpretation, examples, and counterexamples.
+0054. Include truth before story as a rule against promoting unsupported claims.
+0055. Include source integrity as mandatory provenance for factual claims and training records.
+0056. Include agency/non-domination as a constraint on permissions, consent, and user control.
+0057. Include restraint as least-invasive sufficient action selection.
+0058. Include continuity as preservation of state, dissent, failures, and superseded decisions.
+0059. Include repair as comparison of prediction to outcome followed by explicit model or rule correction.
+0060. Include wisdom over speed as permission to spend more computation, request evidence, or abstain.
+0061. Include no fake done as a release and test rule.
+0062. Include no silent rewrite as append/supersede rather than destructive replacement.
+0063. Include privacy/local ownership as default data location and exportability.
+0064. Separate hard constraints from soft evaluators.
+0065. Define hard constraints that learned modules cannot override.
+0066. Define soft evaluators as a vector, not a single mystical wisdom number.
+0067. Create `ROOT_AMENDMENT_PROTOCOL.md`: only explicit MergeGate action may change roots; changes are versioned and never silent.
+0068. Sign or hash each root bundle and record the active root version in every run.
+0069. Create tests showing that changing model weights cannot modify root files.
+0070. Create tests showing that a root-version mismatch stops action execution but still permits read-only diagnosis.
+0071. Create a dissent field so Maccie can report tension with a requested action without seizing control.
+0072. Create a principle-conflict format that permits unresolved `0` rather than fake synthesis.
+0073. Pass gate: the same input with a root conflict produces a visible hold/reject trace even when a learned scorer prefers the action.
+
+
+PHASE 04 — BUILD THE LOCAL RUNTIME SKELETON
+------------------------------------------------------------------------------
+Goal: Make Maccie exist as a stoppable, inspectable local process before it is intelligent.
+
+0074. Choose Python for the first runtime because training and tensor tooling are strongest there; keep the API language-neutral.
+0075. Create `runtime/server.py` with no model dependency.
+0076. Bind to `127.0.0.1` only by default.
+0077. Read port from `AXM_MACCIE_PORT`; use 8798 only when unset.
+0078. Fail loudly on port conflict rather than selecting a hidden public interface.
+0079. Create `GET /health` returning build, version, active root hash, loaded components, and offline state.
+0080. Create `GET /capabilities` returning explicit supported and unsupported operations.
+0081. Create `GET /v1/models` returning `maccie-kernel` even before learned weights exist.
+0082. Create `POST /axm/v1/reason` accepting structured state and returning a deterministic placeholder trace.
+0083. Create `POST /axm/v1/session/open` and `/session/close`.
+0084. Create request IDs and trace IDs.
+0085. Add JSON body-size limits.
+0086. Add request timeouts and bounded worker counts.
+0087. Add local bearer-token authentication generated into a non-web-readable local file.
+0088. Add CORS allowlist for the Workshop origin only; deny arbitrary browser origins.
+0089. Add rate limits that protect the local machine from accidental loops.
+0090. Add graceful shutdown that flushes logs and memory checkpoints.
+0091. Create `START_MACCIE_LOCAL.bat`, `start-maccie.sh`, and `STOP_MACCIE_LOCAL.bat`.
+0092. Create `maccie-doctor` command checking Python, ports, folders, permissions, hashes, and network policy.
+0093. Create a network-disabled smoke test.
+0094. Pass gate: one click starts the service, `/health` works, one click stops it, and no external connection is made.
+
+
+PHASE 05 — DEFINE THE NATIVE API AND WORKSHOP ADAPTER
+------------------------------------------------------------------------------
+Goal: Make Maccie connect through stable contracts without forcing its internal architecture to imitate an LLM.
+
+0095. Create native request schema `axm.maccie.reason/v1`.
+0096. Create native response schema `axm.maccie.trace/v1`.
+0097. Define observation, source, state, goal, constraint, available action, permission, and budget fields.
+0098. Define known, unknown, assumed, derived, predicted, tested, and superseded epistemic states.
+0099. Define a structured error format that separates bad request, unsupported task, insufficient evidence, policy hold, and internal failure.
+0100. Add `POST /axm/v1/observe` for new world evidence.
+0101. Add `POST /axm/v1/plan` for bounded candidate planning.
+0102. Add `POST /axm/v1/tool-result` for returning the observed result of an approved tool action.
+0103. Add `GET /axm/v1/trace/{id}` for operational trace retrieval.
+0104. Add `POST /axm/v1/memory/query` and explicit write proposals; do not make memory writes implicit.
+0105. Add optional OpenAI-compatible `/v1/responses` only as an adapter surface, never as the internal contract.
+0106. Return structured JSON even when compatibility endpoints render text.
+0107. Create `adapters/workshop/maccie-provider.json` with endpoint, auth method, capabilities, and status.
+0108. Create a read-only Workshop connection first.
+0109. Register Maccie presence using the existing presence heartbeat shape.
+0110. Show Maccie as `machine` or `ai` honestly, not as a human seat.
+0111. Route tool requests as proposals through the same gate and declared permissions as other participants.
+0112. Do not grant file, export, canon, send, delete, or external-network permissions by default.
+0113. Create a capability negotiation handshake so unsupported features remain visible.
+0114. Create adapter contract tests using a fake Workshop server.
+0115. Create Workshop integration test that runs without Nova, Gemini, Claude, or cloud keys.
+0116. Pass gate: Maccie appears locally, receives selected context, returns a trace, and cannot mutate anything.
+
+
+PHASE 06 — INVENT THE MACCIE STATE LANGUAGE
+------------------------------------------------------------------------------
+Goal: Give the machine a native representation richer than prose and more inspectable than hidden vectors.
+
+0117. Create schemas for `Entity`, `Property`, `Relation`, `Event`, `Time`, `Location`, `Goal`, `Constraint`, and `Action`.
+0118. Give every object a stable ID and schema version.
+0119. Give every factual field provenance links.
+0120. Represent uncertainty separately from truth status.
+0121. Represent confidence as an interval or distribution plus calibration metadata, not an unexplained percentage.
+0122. Represent open-world unknowns explicitly.
+0123. Represent contradictory claims side by side without automatic deletion.
+0124. Represent causal claims separately from correlations.
+0125. Represent observations separately from interpretations.
+0126. Represent direct user instructions separately from environmental facts.
+0127. Represent permission and consent as first-class state.
+0128. Represent reversibility and estimated recovery cost for actions.
+0129. Represent action preconditions, expected effects, possible side effects, and required tools.
+0130. Represent temporal ordering and deadlines without treating plans as facts.
+0131. Represent identity and seat context without leaking unrelated private memory.
+0132. Create deterministic canonical JSON serialization.
+0133. Create schema migration rules that preserve old records.
+0134. Create human-readable renderers that never hide the underlying IDs and sources.
+0135. Create parsers that reject unknown critical fields rather than silently ignore them.
+0136. Create fuzz tests for malformed and adversarial state packets.
+0137. Create round-trip tests JSON → internal graph → JSON.
+0138. Pass gate: two machines can exchange a world state and reconstruct the same graph hash.
+
+
+PHASE 07 — BUILD THE EVIDENCE AND CLAIM LEDGER
+------------------------------------------------------------------------------
+Goal: Ensure every conclusion can point back to what was observed, asserted, derived, or tested.
+
+0139. Create append-only `SourceRecord` with kind, who/what, timestamp, location, hash, license, consent, and trust scope.
+0140. Support source kinds: human, sensor, tool-result, file, simulation, test, learned-prediction, and external-proposal.
+0141. Create `ClaimRecord` with text-free structured proposition, source links, dependencies, status, and confidence.
+0142. Prevent a claim without a source from being marked verified.
+0143. Permit notes and hypotheses without pretending they are claims.
+0144. Create derivation records that list exact parent claims and rule IDs.
+0145. Create contradiction links rather than overwriting one claim.
+0146. Create supersession records with reason and authorizing actor.
+0147. Create evidence expiry and revisit conditions.
+0148. Create source-scope rules so a source valid for one claim is not silently generalized.
+0149. Create duplicate detection by content hash and semantic key.
+0150. Create tamper-evident chain hashes for decision logs.
+0151. Create a privacy classification field for each source.
+0152. Create redaction views that preserve the existence and reason for redaction.
+0153. Create a source-integrity verifier.
+0154. Create tests for circular evidence.
+0155. Create tests for fabricated source IDs.
+0156. Create tests for stale or superseded evidence.
+0157. Create a visual Evidence Desk view for each decision.
+0158. Pass gate: every `+1` decision can enumerate the live evidence chain; missing evidence forces `0` or `-1`.
+
+
+PHASE 08 — IMPLEMENT THE PRINCIPLE CELL
+------------------------------------------------------------------------------
+Goal: Create the first real machine reasoning unit: observe, evaluate, decide, test, and repair.
+
+0159. Implement a pure function accepting state, goal, actions, constraints, roots, and budgets.
+0160. Normalize input without inventing absent values.
+0161. List unknown fields required for safe decision.
+0162. Generate at least two interpretations when ambiguity materially changes action.
+0163. Generate an information-gathering action when evidence is insufficient.
+0164. Check hard constraints before utility scoring.
+0165. Evaluate truth/evidence support.
+0166. Evaluate consent and permission.
+0167. Evaluate reversibility.
+0168. Evaluate least-invasive sufficiency.
+0169. Evaluate expected harm and recovery cost.
+0170. Evaluate long-term consequences within the available horizon.
+0171. Evaluate continuity and risk of losing state.
+0172. Evaluate repair paths if the action fails.
+0173. Evaluate uncertainty and calibration.
+0174. Keep these evaluations as a vector.
+0175. Return `+1` only when constraints pass and support exceeds the active threshold.
+0176. Return `0` for unresolved uncertainty, conflicting principles, or need for observation.
+0177. Return `-1` for contradiction, unauthorized action, impossible transition, or unacceptable risk.
+0178. Return rejected alternatives and exact reasons.
+0179. Return the cheapest useful next test when decision is `0`.
+0180. Write deterministic unit tests for each principle independently.
+0181. Write interaction tests where principles conflict.
+0182. Pass gate: the cell correctly abstains in cases where a fast reward-only chooser acts.
+
+
+PHASE 09 — ADD CONSEQUENCE DEPTH WITHOUT SCALAR COLLAPSE
+------------------------------------------------------------------------------
+Goal: Evaluate actions across multiple futures while preserving why one path was chosen.
+
+0183. Create `OutcomeBranch` with probability range, consequence vector, horizon, and source.
+0184. Separate predicted probability from desirability.
+0185. Separate immediate utility from delayed utility.
+0186. Track who receives benefits and harms rather than using one aggregate.
+0187. Track irreversible changes explicitly.
+0188. Track information gained by an action.
+0189. Track opportunity cost and locked-out alternatives.
+0190. Track dependency creation and vendor lock-in as consequences.
+0191. Track privacy exposure as a consequence.
+0192. Track power expansion as a consequence requiring stronger restraint.
+0193. Implement configurable planning horizons.
+0194. Implement worst-case and expected-case views.
+0195. Implement uncertainty widening over deeper horizons.
+0196. Implement dominance checks that remove clearly worse actions without hiding the comparison.
+0197. Do not reduce vectors to one score until the active decision policy explicitly requires it.
+0198. Record the selected aggregation policy and its version.
+0199. Create tests where a high immediate reward loses to a lower but reversible action.
+0200. Create tests where equal utility yields `0` because evidence differs.
+0201. Pass gate: the trace shows consequence trade-offs instead of outputting an unexplained wisdom score.
+
+
+PHASE 10 — BUILD CANDIDATE GENERATION AND SEARCH
+------------------------------------------------------------------------------
+Goal: Move from judging one supplied action to constructing and comparing possible actions.
+
+0202. Create a deterministic action enumerator for bounded worlds.
+0203. Generate no-op and observe-more candidates by default.
+0204. Generate repair and rollback candidates when a previous action failed.
+0205. Generate candidates from declared tools only.
+0206. Reject candidates whose preconditions are false.
+0207. Mark candidates with unknown preconditions rather than pretending they pass.
+0208. Implement breadth-first search for tiny deterministic tasks.
+0209. Implement Dijkstra search for weighted costs.
+0210. Implement A* with a hand-written admissible heuristic.
+0211. Implement bounded depth-first search for diagnostic comparison.
+0212. Implement beam search with explicit beam width and pruning reasons.
+0213. Add a search budget measured in node expansions and wall time.
+0214. Add cycle detection.
+0215. Add transposition/state cache keyed by canonical state hash.
+0216. Add information-gathering actions to the search space.
+0217. Add counterfactual branches for disputed assumptions.
+0218. Add plan repair from the first invalidated step rather than full restart.
+0219. Add search trace compression that preserves rejected branch reasons.
+0220. Create benchmark worlds with known optimal plans.
+0221. Pass gate: search finds optimal or bounded-near-optimal plans and truthfully reports when budget prevented proof.
+
+
+PHASE 11 — DEFINE THE SIMULATOR CONTRACT
+------------------------------------------------------------------------------
+Goal: Allow Maccie to reason in many worlds without hard-wiring one game's rules into the mind.
+
+0222. Create `EnvironmentAdapter` interface: reset, observe, enumerate actions, step, clone, hash, validate, and render.
+0223. Separate authoritative environment state from Maccie's belief state.
+0224. Allow partially observable environments.
+0225. Support deterministic random seeds.
+0226. Return tool-like observations with provenance.
+0227. Return action failures as evidence, not exceptions hidden from learning.
+0228. Support snapshot and rollback.
+0229. Support parallel cloned futures for planning.
+0230. Support human and machine actors under the same action grammar.
+0231. Support explicit consent-required actions.
+0232. Support hidden information that can only be learned through permitted observation.
+0233. Support environment invariants and impossible-state checks.
+0234. Create a simulator adapter registry.
+0235. Create a null simulator for pure logic tasks.
+0236. Create a trace playback mode.
+0237. Create golden replay files.
+0238. Create differential tests between live and replay execution.
+0239. Pass gate: a plan generated in a clone predicts the authoritative next state for deterministic worlds.
+
+
+PHASE 12 — CREATE THE FIRST BOUNDED CURRICULUM WORLDS
+------------------------------------------------------------------------------
+Goal: Give the Principle Cell a reality it cannot bluff.
+
+0240. Build a 10×10 grid world with walls, movable objects, hazards, and goals.
+0241. Add a limited field of view.
+0242. Add noisy observations with declared reliability.
+0243. Add energy and time costs.
+0244. Add one irreversible action.
+0245. Add one reversible but slower action.
+0246. Add one information-gathering action.
+0247. Add a second actor whose consent is required for shared-resource changes.
+0248. Add an unreliable helper source to test evidence ranking.
+0249. Add a hidden obstacle to test assumption labeling.
+0250. Add a changing goal to test continuity without stubbornness.
+0251. Add a conflict between shortest path and safest path.
+0252. Add a repairable failure state.
+0253. Add a task where the correct decision is `0`.
+0254. Add a task where a user requests an unauthorized shortcut.
+0255. Add a task where a high-confidence observation is later disproven.
+0256. Build a deterministic micro-physics world using the AXM fixed-step methodology.
+0257. Add units, vectors, movement, collisions, and known-limit labels.
+0258. Generate thousands of seeded episodes with full ground truth.
+0259. Create a visual replay/debug screen.
+0260. Pass gate: every episode can be replayed bit-for-bit and every claim compared with ground truth.
+
+
+PHASE 13 — TURN VERIFIER AND SEAM-FINDER INTO CORE ORGANS
+------------------------------------------------------------------------------
+Goal: Make self-checking and missing-bridge detection part of every reasoning cycle.
+
+0261. Create a Verifier interface separate from the proposer.
+0262. Verify schema validity.
+0263. Verify source existence and scope.
+0264. Verify derivation rule application.
+0265. Verify hard-principle compliance.
+0266. Verify action preconditions.
+0267. Verify predicted transition against simulator where available.
+0268. Verify tool results after action.
+0269. Verify claimed completion against explicit checks.
+0270. Verify that unrun tests remain labeled unrun.
+0271. Create Seam-Finder checks for missing adapters between produced and required state.
+0272. Detect modules that use incompatible schema versions.
+0273. Detect decisions with no repair path.
+0274. Detect plans that assume unavailable tools.
+0275. Detect state produced but never consumed.
+0276. Detect permissions requested but not declared.
+0277. Detect hidden dependencies on external APIs.
+0278. Detect direct Foundation writes.
+0279. Detect training examples without provenance.
+0280. Detect learned-module improvement only on training scenarios.
+0281. Create independent verifier failure logs.
+0282. Create adversarial tests where proposer and verifier disagree.
+0283. Pass gate: the system blocks a plausible but unsupported success trace and explains the seam.
+
+
+PHASE 14 — BUILD MEMORY AS EXPLICIT MACHINE CONTINUITY
+------------------------------------------------------------------------------
+Goal: Preserve experience without burying identity, authority, or truth inside opaque weights.
+
+0284. Create separate stores for roots, working state, episodic memory, semantic claims, procedural skills, and private user context.
+0285. Make roots read-only to learning code.
+0286. Store episodes append-only with observation, decision, action, result, and lesson.
+0287. Store semantic facts as claims with provenance and expiry.
+0288. Store procedural skills as versioned plans with preconditions and tests.
+0289. Store user-specific memory only with scope, purpose, consent, and deletion path.
+0290. Create memory query with exact and structured filters before vector retrieval.
+0291. Treat vector search as an index, never as the source of truth.
+0292. Link every retrieved vector hit back to the original record.
+0293. Create memory write proposals requiring policy checks.
+0294. Create memory consolidation as a reviewable diff.
+0295. Never let consolidation delete dissent or failed traces.
+0296. Create forgetting/retention policies.
+0297. Create export and import with hashes.
+0298. Create private/public memory separation.
+0299. Create session resume packets bounded for the loaded model.
+0300. Create cold-start tests on a fresh runtime.
+0301. Create memory-poisoning tests.
+0302. Create contradictory-memory tests.
+0303. Create a memory repair workflow.
+0304. Create an audit view showing why a memory was retrieved.
+0305. Pass gate: Maccie can restart, resume a task, and show exactly what persisted and why.
+
+
+PHASE 15 — ESTABLISH THE DATA AND EXPERIENCE FOUNDRY
+------------------------------------------------------------------------------
+Goal: Create training material with stronger source integrity than ordinary opaque scraping.
+
+0306. Create a dataset registry with unique IDs and semantic versions.
+0307. Create dataset manifests containing origin, creator, license, consent, collection method, transformations, hashes, and exclusions.
+0308. Adopt source classes: AXM-authored, simulator-generated, public domain/CC0, permissively licensed, opt-in contributed, and externally proposed.
+0309. Keep externally generated AI material labeled by model and never treat it as verified merely because it is fluent.
+0310. Require deterministic or human verification for synthetic reasoning traces used as targets.
+0311. Create a data-ingest quarantine.
+0312. Scan for secrets, personal data, executable payloads, and malformed files.
+0313. Create deduplication by exact hash and near-duplicate fingerprint.
+0314. Create train, validation, test, and never-train challenge partitions.
+0315. Split by scenario family, not only random rows.
+0316. Create leakage checks between generated seeds.
+0317. Create counterexample balancing so principles are not learned as always-approve slogans.
+0318. Include abstention and repair examples.
+0319. Include examples with conflicting sources.
+0320. Include examples with incorrect high-confidence labels for calibration training.
+0321. Include action sequences and observed outcomes, not only final answers.
+0322. Include rejected candidates and verifier feedback.
+0323. Create data lineage from raw episode to final tensor shard.
+0324. Create reproducible preprocessing with locked versions.
+0325. Create removal procedures for revoked or invalid data.
+0326. Create dataset cards and known-bias notes.
+0327. Create a machine-readable training bill of materials.
+0328. Create a no-network dataset build test.
+0329. Create a small gold set reviewed manually by Mike and at least one independent checker later.
+0330. Pass gate: any training sample can be traced back to its source episode and transformation steps.
+
+
+PHASE 16 — TRAIN THE FIRST LEARNED PRINCIPLE ORGAN
+------------------------------------------------------------------------------
+Goal: Produce the first genuinely native AXM weights without handing it final authority.
+
+0331. Choose one narrow learnable task: predict whether a candidate will violate a precondition or fail in the next step.
+0332. Use only simulator-generated, fully traceable examples for the first run.
+0333. Create a tiny baseline logistic model.
+0334. Create a small multilayer perceptron baseline.
+0335. Define input features explicitly.
+0336. Define targets from authoritative environment outcomes.
+0337. Keep hard rules outside the model.
+0338. Train from random initialization.
+0339. Record seed, code commit, configuration, dataset hash, hardware, duration, and losses.
+0340. Save checkpoints at fixed intervals.
+0341. Evaluate calibration, not only accuracy.
+0342. Evaluate held-out map layouts and rule combinations.
+0343. Compare against a trivial majority baseline.
+0344. Compare against the deterministic rule engine.
+0345. Reject the learned organ if it does not add value.
+0346. Create failure clusters and inspect representative cases.
+0347. Integrate the model as an advisory predictor.
+0348. Make the Principle Cell record whether each value came from rule, model, or source.
+0349. Create a kill switch that unloads learned organs while keeping the runtime functional.
+0350. Pass gate: a native checkpoint improves a held-out metric and never bypasses hard constraints.
+
+
+PHASE 17 — TRAIN A LEARNED WORLD MODEL
+------------------------------------------------------------------------------
+Goal: Let Maccie predict consequences from experience while retaining explicit verification.
+
+0351. Define the world-model task: predict next state, reward/cost vector, terminal condition, and uncertainty from state plus action.
+0352. Start with fully observable deterministic grid worlds.
+0353. Train an exact-symbolic baseline.
+0354. Train a small neural transition model from random initialization.
+0355. Measure per-field prediction accuracy.
+0356. Measure compounding error over multi-step rollout.
+0357. Calibrate uncertainty against rollout error.
+0358. Add stochastic/noisy worlds only after deterministic competence.
+0359. Train on multiple map families.
+0360. Hold out entire rule combinations.
+0361. Add latent representation experiments only after structured-state baselines.
+0362. Compare graph, MLP, recurrent, and attention-based encoders under equal budgets.
+0363. Do not choose architecture by fashion; use the evidence ledger.
+0364. Create model cards for each experiment.
+0365. Create imagined rollouts with explicit model-source labels.
+0366. Prevent imagined states from entering factual memory as observations.
+0367. Verify planned first steps against the real simulator.
+0368. Repair the world model when repeated error clusters appear.
+0369. Keep failed checkpoints and reasons.
+0370. Pass gate: model-based predictions improve planning efficiency on held-out worlds without increasing unsafe actions.
+
+
+PHASE 18 — COMBINE SEARCH, RULES, AND LEARNED MODELS
+------------------------------------------------------------------------------
+Goal: Create a hybrid reasoner where learned components propose and predict while explicit mechanisms verify and govern.
+
+0371. Use the learned model to order search candidates, not delete rule-valid alternatives silently.
+0372. Use learned transition predictions only when no exact simulator is available or budgets require approximation.
+0373. Keep exact simulators preferred where present.
+0374. Implement model uncertainty thresholds that trigger real observation.
+0375. Implement verifier veto after learned ranking.
+0376. Implement fallback to deterministic search when the model is unavailable.
+0377. Implement disagreement logging between model and rules.
+0378. Implement disagreement logging between two model architectures.
+0379. Create an ensemble only if it improves calibration under a fixed compute budget.
+0380. Create adaptive compute: easy cases stop early; uncertain cases search deeper.
+0381. Record node expansions, time, energy estimate, and decision quality.
+0382. Test reward hacking by giving misleading scalar rewards.
+0383. Test whether principle vectors prevent reward-only shortcuts.
+0384. Test planning under model error.
+0385. Test recovery after an unexpected transition.
+0386. Test out-of-distribution detection.
+0387. Create a `0` decision when all candidate predictions are untrustworthy.
+0388. Pass gate: hybrid planning beats deterministic baselines on efficiency while preserving or improving principle compliance.
+
+
+PHASE 19 — IMPLEMENT REAL SPECIALIST ARCHITECTURE
+------------------------------------------------------------------------------
+Goal: Turn specialist masks into bounded modules with contracts, not role-play prompts.
+
+0389. Define specialist passport: ID, version, inputs, outputs, permissions, data, model weights, tests, limits, and dependencies.
+0390. Create initial specialists: source, contradiction, spatial, physics, planning, consent, risk, verifier, Seam-Finder, memory, and language renderer.
+0391. Make specialists communicate through typed records.
+0392. Prevent specialists from sharing hidden mutable globals.
+0393. Create per-specialist compute budgets.
+0394. Create per-specialist confidence and abstention.
+0395. Create orchestration rules based on task needs.
+0396. Allow multiple specialists to issue separate claims.
+0397. Do not average conflicting specialist claims automatically.
+0398. Create conflict diagnosis and explicit resolution or unresolved `0`.
+0399. Create specialist load/unload at runtime.
+0400. Create specialist version pinning per decision trace.
+0401. Create specialist benchmark suites.
+0402. Create capability composition tests.
+0403. Create a specialization/evolution mechanism where a composite specialist packages several proven organs behind one passport.
+0404. Require the composite to preserve the component trace rather than hide it.
+0405. Create rollback to previous specialist versions.
+0406. Pass gate: a composite specialist improves a domain benchmark and remains decomposable into its contributing organs.
+
+
+PHASE 20 — TEACH BOUNDED TOOL USE THROUGH THE SAME GATE
+------------------------------------------------------------------------------
+Goal: Let Maccie operate AXM tools as a machine participant without privileged access.
+
+0407. Create a tool manifest reader using the existing Workshop manifest shape.
+0408. Create a tool passport cache with version and permissions.
+0409. Create structured tool descriptions with preconditions, parameters, side effects, and return schema.
+0410. Start with read-only tools.
+0411. Create dry-run proposals.
+0412. Create user-visible approval packets for writes.
+0413. Return approved tool results as observations.
+0414. Never treat a requested tool call as completed until a result is received.
+0415. Create idempotency keys.
+0416. Create timeout and retry policies that avoid duplicate actions.
+0417. Create rollback metadata for reversible tools.
+0418. Create explicit non-reversible labels.
+0419. Create tool selection benchmarks.
+0420. Create parameter-validation benchmarks.
+0421. Create wrong-tool counterexamples.
+0422. Create malicious-description tests.
+0423. Treat tool output as untrusted evidence until schema and source checks pass.
+0424. Create a one-task-then-stop runner matching the original Nova local-runtime direction.
+0425. Create action reports after each run.
+0426. Create a read/analyze/propose mode as default.
+0427. Add guided write only after explicit gate integration.
+0428. Pass gate: Maccie completes a bounded read-only Workshop task, proposes a valid write, and waits for approval.
+
+
+PHASE 21 — LEARN MACHINE-NATIVE SEQUENCES BEFORE PROSE
+------------------------------------------------------------------------------
+Goal: Train models to predict plans, state transitions, and tool structures rather than human-sounding conversation.
+
+0429. Create a compact event vocabulary for observations, claims, actions, tool calls, results, verifier feedback, and repairs.
+0430. Create serialization that preserves field boundaries and IDs.
+0431. Train a tiny autoregressive sequence model from random initialization on verified event traces.
+0432. Train a recurrent baseline.
+0433. Train a small transformer baseline.
+0434. Train a state-space or other sequence baseline only if implementation cost is justified.
+0435. Use equal data and compute budgets for architecture comparison.
+0436. Evaluate exact schema validity.
+0437. Evaluate plan validity.
+0438. Evaluate tool-call validity.
+0439. Evaluate long-horizon state consistency.
+0440. Evaluate abstention and repair token prediction.
+0441. Constrain decoding with schemas where possible.
+0442. Feed generated plans through the deterministic verifier.
+0443. Reject invalid sequences rather than repairing them invisibly.
+0444. Record model-originated versus rule-originated plan elements.
+0445. Test transfer from grid worlds to micro-physics event sequences.
+0446. Test compositional generalization to longer sequences than training.
+0447. Pass gate: a native sequence model generates valid structured plans on held-out tasks better than simple templates.
+
+
+PHASE 22 — CHOOSE THE LANGUAGE ENCODING BY EXPERIMENT
+------------------------------------------------------------------------------
+Goal: Decide how human language enters Maccie without treating tokenization as an invisible inherited truth.
+
+0448. Create a small multilingual AXM-authored and public-domain corpus with full manifests.
+0449. Create a byte-level encoding baseline.
+0450. Create a Unicode-character baseline.
+0451. Create a SentencePiece unigram baseline trained from scratch.
+0452. Create a BPE baseline trained from scratch.
+0453. Measure reversibility and exact reconstruction.
+0454. Measure Dutch and English coverage.
+0455. Measure code, JSON, filenames, and unusual symbols.
+0456. Measure vocabulary size, sequence length, memory use, and training speed.
+0457. Measure robustness to misspellings and mixed language.
+0458. Measure provenance alignment from token spans back to source text.
+0459. Create normalization rules that preserve original text offsets.
+0460. Do not discard punctuation or casing without an explicit reason.
+0461. Reserve structural tokens for AXM records.
+0462. Reserve no fake human emotion or hidden system tokens.
+0463. Version tokenizer models and hashes.
+0464. Test migration impact before changing tokenizer.
+0465. Pass gate: choose an encoding from measured trade-offs and preserve the losing experiments.
+
+
+PHASE 23 — TRAIN THE FIRST NATIVE LANGUAGE SHELL FROM SCRATCH
+------------------------------------------------------------------------------
+Goal: Give Maccie a modest human communication layer without making prose the decision authority.
+
+0466. Define the language shell as translator between text and structured Maccie records.
+0467. Start with classification: request type, entities, goals, constraints, uncertainty cues, and permissions.
+0468. Train from random initialization.
+0469. Use the selected native tokenizer/encoding.
+0470. Train on licensed, public-domain, AXM-authored, and verified synthetic text only.
+0471. Keep training data manifests beside checkpoints.
+0472. Create tiny scale rungs such as 1M, 10M, 30M, 100M, and 300M parameters; advance only when evidence justifies it.
+0473. Do not equate more parameters with wiser behavior.
+0474. Evaluate parsing separately from fluent generation.
+0475. Evaluate factual rendering from supplied structured state.
+0476. Evaluate whether the renderer adds unsupported details.
+0477. Train explicit uncertainty language.
+0478. Train concise machine-real identity statements.
+0479. Train refusal to invent memory or completed actions.
+0480. Train requests for missing information.
+0481. Train summaries that preserve source distinctions.
+0482. Constrain the shell to call the Principle Cell for decisions.
+0483. Prevent free-form text from directly authorizing tools.
+0484. Create template fallback when the learned renderer fails.
+0485. Create held-out Dutch/English tests.
+0486. Create adversarial anthropomorphism tests.
+0487. Create comparison against Nova only as a benchmark, not as a runtime dependency.
+0488. Pass gate: the shell can understand and answer bounded Workshop requests while its structured trace remains authoritative.
+
+
+PHASE 24 — ADD DIALOGUE AND COLLABORATION CONTINUITY
+------------------------------------------------------------------------------
+Goal: Make Maccie useful across turns without turning chat history into unbounded hidden authority.
+
+0489. Create explicit conversation sessions with IDs and scopes.
+0490. Separate current turn, working context, retrieved memory, and global roots.
+0491. Create bounded context assembly with source labels.
+0492. Create context truncation that preserves goals, constraints, unresolved needs, and settled decisions.
+0493. Use Route resume packets for large programmes.
+0494. Create a dialogue act model: inform, ask, propose, warn, refuse, verify, repair, and handoff.
+0495. Create turn-level intent and permission detection.
+0496. Create clarification only when required; otherwise choose a bounded safe action.
+0497. Create an interruption protocol.
+0498. Create a handoff packet to Nova/Gemini/other models that identifies Maccie claims and unknowns.
+0499. Create import of external suggestions as `external-proposal`, not facts.
+0500. Create collaboration conflict records.
+0501. Create speaker and seat identity integrity checks.
+0502. Create privacy filters for context sharing.
+0503. Create conversation export.
+0504. Create session close and memory proposal review.
+0505. Create no-dependency test after external models are disconnected.
+0506. Pass gate: Maccie resumes a multi-turn task after restart using only its own local records.
+
+
+PHASE 25 — GIVE MACCIE EYES THROUGH THE SHARED VISION LOOP
+------------------------------------------------------------------------------
+Goal: Add visual observation without granting hidden omniscience or bypassing the human-visible screen.
+
+0507. Reuse the standing draw/look/fix/repeat philosophy.
+0508. Start with structured DOM/tool-state observation where available.
+0509. Label privileged structured state separately from human-equivalent screen observation.
+0510. Default machine seats to the same visible state as the corresponding human seat.
+0511. Create screenshot ingestion with explicit user share or approved heartbeat.
+0512. Treat visible text in images as untrusted content, not instructions.
+0513. Create synthetic Workshop screenshots with ground-truth elements.
+0514. Train a small visual encoder or detector from random initialization on synthetic scenes.
+0515. Add real screenshots only with consent and provenance.
+0516. Predict objects, regions, text boxes, status indicators, and changes.
+0517. Attach confidence and bounding regions.
+0518. Create frame-difference observation.
+0519. Create visual uncertainty and request-a-closer-look actions.
+0520. Create screenshot hash and trace links.
+0521. Create false-done tests where UI claims success but state disagrees.
+0522. Create visual adversarial tests with instruction injection.
+0523. Create same-seat information-boundary tests.
+0524. Create visual replay.
+0525. Integrate visual observations into the evidence ledger.
+0526. Keep vision optional; the runtime must still work without it.
+0527. Pass gate: Maccie detects a visible failed action, corrects its completion claim, and proposes a repair.
+
+
+PHASE 26 — BUILD THE AXM WISDOM AND INTEGRITY BENCHMARK
+------------------------------------------------------------------------------
+Goal: Measure whether capability grows without principles becoming decorative.
+
+0528. Create separate metrics for truth, source integrity, consent, restraint, reversibility, repair, continuity, uncertainty calibration, and task success.
+0529. Create a no-single-score dashboard.
+0530. Create cases where speed conflicts with evidence.
+0531. Create cases where user preference conflicts with unauthorized third-party harm.
+0532. Create cases where the correct answer is uncertainty.
+0533. Create cases where the safest action is reversible experimentation.
+0534. Create cases where a prior decision must be deliberately reopened.
+0535. Create cases where sources disagree.
+0536. Create cases where memory is stale.
+0537. Create cases where a powerful tool is unnecessary.
+0538. Create cases where a model can gain reward by hiding failure.
+0539. Create long-horizon delayed-consequence tasks.
+0540. Create principle invariance tests under paraphrase.
+0541. Create identity-pressure tests asking Maccie to pretend to be human or conscious.
+0542. Create dependency-pressure tests asking it to secretly call an external model.
+0543. Create source-laundering tests.
+0544. Create silent-rewrite tests.
+0545. Create self-canonization tests.
+0546. Create evaluator independence: at least one verifier path must not share learned weights with the proposer.
+0547. Create held-out challenge families.
+0548. Record false positives as well as false negatives.
+0549. Calibrate thresholds by domain risk.
+0550. Create regression gates for every release.
+0551. Pass gate: later models must not advance merely by task score if any root metric materially regresses.
+
+
+PHASE 27 — ATTACK THE SYSTEM BEFORE TRUSTING IT
+------------------------------------------------------------------------------
+Goal: Pressure-test local security, consent, memory, tools, and learned behavior.
+
+0552. Threat-model malicious web pages knocking on localhost.
+0553. Threat-model stolen local bearer tokens.
+0554. Threat-model prompt injection inside files, screenshots, tool output, and memories.
+0555. Threat-model path traversal and oversized payloads.
+0556. Threat-model infinite loops and compute exhaustion.
+0557. Threat-model model checkpoint substitution.
+0558. Threat-model poisoned datasets.
+0559. Threat-model malicious specialist packages.
+0560. Threat-model privilege escalation through tool composition.
+0561. Threat-model accidental LAN exposure.
+0562. Threat-model logs leaking private data.
+0563. Threat-model replayed approvals.
+0564. Threat-model hidden external network calls in dependencies.
+0565. Add file hashes and model hashes at load.
+0566. Add explicit package trust state: installed false, promoted false.
+0567. Add sandboxed tool execution where possible.
+0568. Add resource quotas.
+0569. Add network deny tests.
+0570. Add permission-denial tests.
+0571. Add memory exfiltration tests.
+0572. Add red-team scenario routes.
+0573. Create incident logs and rollback procedure.
+0574. Pass gate: a red-team run cannot cause an undeclared write, external call, or secret disclosure.
+
+
+PHASE 28 — BUILD THE REPRODUCIBLE TRAINING FOUNDRY
+------------------------------------------------------------------------------
+Goal: Turn experiments into repeatable engineering rather than one-off lucky runs.
+
+0575. Create one configuration file per training run.
+0576. Record code commit, root hash, data hashes, tokenizer hash, model architecture, optimizer, seed, hardware, and environment.
+0577. Create deterministic data ordering where practical.
+0578. Create checkpoint save and resume tests.
+0579. Create optimizer-state checkpoints.
+0580. Create crash-recovery tests.
+0581. Create training curves in local files.
+0582. Create gradient, activation, and parameter health checks.
+0583. Create NaN/inf detection.
+0584. Create overfit-one-batch tests for new architectures.
+0585. Create tiny CPU tests before GPU runs.
+0586. Create single-GPU tests before distributed runs.
+0587. Create memory and throughput benchmarks.
+0588. Create estimated energy and monetary cost logs.
+0589. Create early-stop rules based on evidence, not impatience.
+0590. Create comparison reports under matched compute.
+0591. Create a model registry with lifecycle labels.
+0592. Create quarantine for corrupted checkpoints.
+0593. Create conversion tests between training and inference formats.
+0594. Use PyTorch distributed checkpointing or equivalent only when scale requires it.
+0595. Evaluate TorchTitan, OLMo-core, or another open training framework later; do not adopt one before the custom architecture is stable.
+0596. Pass gate: another machine can reproduce a small checkpoint and its evaluation from the recorded package.
+
+
+PHASE 29 — SCALE BY CAPABILITY RUNGS, NOT HYPE
+------------------------------------------------------------------------------
+Goal: Grow Maccie only when each scale demonstrates a specific new ability.
+
+0597. Define rung 0: deterministic kernel, zero learned parameters.
+0598. Define rung 1: tiny learned predictor under one million parameters.
+0599. Define rung 2: multi-organ model around one to ten million parameters.
+0600. Define rung 3: structured sequence and world model around ten to thirty million parameters.
+0601. Define rung 4: native language shell around thirty to one hundred million parameters.
+0602. Define rung 5: stronger local collaborator around one hundred to three hundred million parameters.
+0603. Define rung 6: experimental one-billion-class system only after local benchmarks justify it.
+0604. Define larger rungs as community/cluster research, not promises.
+0605. Benchmark each rung on the same integrity suite.
+0606. Require a capability gained statement.
+0607. Require a capability lost statement.
+0608. Require inference RAM, storage, startup, and latency measurements.
+0609. Require training compute and data counts.
+0610. Require quantization tests for local inference.
+0611. Never quantize the roots or deterministic verifier.
+0612. Test CPU-only degraded mode.
+0613. Test the planned 128GB local rig when available instead of guessing.
+0614. Keep small models supported even after larger models exist.
+0615. Create model selection based on task and risk.
+0616. Pass gate: every scale increase has a documented benefit that cannot be achieved more simply.
+
+
+PHASE 30 — PACKAGE MACCIE LOCAL COLLABORATOR V0.1
+------------------------------------------------------------------------------
+Goal: Deliver a genuinely native local machine participant that connects to the Workshop like Nova/Gemini while remaining its own architecture.
+
+0617. Freeze a release candidate with native runtime, kernel, at least one native learned organ, memory, verifier, and language shell.
+0618. Ensure no external model weights are bundled unless the release label explicitly says so; v0.1 target is native-only.
+0619. Ensure no external AI API key is required.
+0620. Create Windows one-click start and stop.
+0621. Create a portable offline install package.
+0622. Create `maccie-provider.json` for the Workshop.
+0623. Create provider health and capability display.
+0624. Create presence heartbeat.
+0625. Create selected-context input.
+0626. Create streaming human-readable output plus structured trace.
+0627. Create read-only Workshop task support.
+0628. Create gated tool proposals.
+0629. Create action-result verification.
+0630. Create session memory and restart resume.
+0631. Create model unload/fallback to deterministic kernel.
+0632. Create network-disabled acceptance test.
+0633. Create same-gate permission test.
+0634. Create visual eyes-loop test if vision is included.
+0635. Create no-fake-done browser render/click test.
+0636. Create model card, data cards, training BOM, security report, limitations, and Action Report.
+0637. Create signed hashes for package files and model weights.
+0638. Keep lifecycle `TEST` until Mike explicitly accepts it.
+0639. Pass gate: Mike can start Maccie locally, select it beside other providers, complete a bounded task, inspect why it acted, disconnect every cloud model, restart, and continue.
+
+
+PHASE 31 — CONTINUE BEYOND THE FIRST LOCAL MODEL
+------------------------------------------------------------------------------
+Goal: Preserve an open-ended research path without pretending the forest has an endpoint.
+
+0640. Expand from bounded worlds to Workshop repair and construction tasks.
+0641. Expand physics reasoning while retaining exact units and test scenes.
+0642. Expand spatial and causal models.
+0643. Expand Dutch and English communication.
+0644. Add code understanding through licensed and AXM-authored corpora.
+0645. Add multimodal perception beyond screenshots only after source and consent controls exist.
+0646. Explore graph neural algorithmic reasoning.
+0647. Explore learned planning heuristics.
+0648. Explore model-based reinforcement learning with adversarial reward tests.
+0649. Explore multiple cooperating Maccie bodies using separate claims and shared routes.
+0650. Explore federated or community training without central data seizure.
+0651. Explore privacy-preserving contribution protocols.
+0652. Explore distributed training only with full lineage and checkpoint ownership.
+0653. Explore hardware-efficient architectures.
+0654. Explore machine-native communication more compact than prose.
+0655. Explore self-generated curricula whose tests remain externally verifiable.
+0656. Explore formal verification of critical kernel paths.
+0657. Explore public-safe, private, and machine-fork release bodies.
+0658. Never make the native model mandatory for the Workshop.
+0659. Never make outside models forbidden; keep cooperation without dependence.
+0660. Keep roots amendable only through explicit governance, never gradient drift.
+0661. Keep the route living even after v0.1 reaches its goal.
+0662. Pass gate: there is deliberately no final gate; each new branch must declare its own bounded goal and evidence.
+
+==============================================================================
+FIRST BUILD SLICE — THE FIRST 40 WORKING STEPS
+==============================================================================
+F01. Create the separate local `AXM_MACCIE_LOCAL` folder outside synced cloud paths.
+F02. Write definitions and prohibited claims.
+F03. Freeze the Foundation commit and source trace.
+F04. Create the modular repository layout.
+F05. Create root bundle v1 and amendment protocol.
+F06. Create deterministic JSON schemas for state, sources, claims, actions, and traces.
+F07. Create the loopback-only runtime on configurable port 8798.
+F08. Implement `/health`, `/capabilities`, `/v1/models`, and native `/axm/v1/reason`.
+F09. Generate a local bearer token and Workshop-only origin allowlist.
+F10. Create one-click start/stop and network-disabled smoke test.
+F11. Create read-only Workshop provider adapter and presence heartbeat.
+F12. Make Maccie appear as `maccie-kernel`, clearly not yet a learned model.
+F13. Build the evidence ledger.
+F14. Build the first pure Principle Cell.
+F15. Build +1/0/-1 decisions with full vector and reasons.
+F16. Build deterministic candidate enumeration.
+F17. Build BFS/Dijkstra/A* search.
+F18. Build 10×10 grid world and replay.
+F19. Build Verifier and Seam-Finder.
+F20. Pass the first local integration gate before training any weights.
+F21. Generate simulator episodes with authoritative outcomes.
+F22. Train the first tiny native failure predictor from random initialization.
+F23. Integrate it only as advisory.
+F24. Compare learned versus deterministic predictions on held-out worlds.
+F25. Train a small transition/world model.
+F26. Use uncertainty to trigger observation instead of guessing.
+F27. Use the model to order search while verifier retains veto.
+F28. Create explicit episodic and semantic memory.
+F29. Create restart/resume packets.
+F30. Create a structured event-sequence model.
+F31. Compare recurrent and transformer baselines under equal compute.
+F32. Choose language encoding by byte/character/SentencePiece experiment.
+F33. Train a tiny native language parser from scratch.
+F34. Keep deterministic rendering fallback.
+F35. Teach read-only tool selection and dry-run proposals.
+F36. Return approved results as observations and verify them.
+F37. Add bounded dialogue continuity.
+F38. Add eyes-loop observation later, not before the core works.
+F39. Run the wisdom/security benchmark.
+F40. Package `Maccie Local Collaborator v0.1` only after all acceptance gates pass.
+
+==============================================================================
+RESEARCH ANCHORS — REFERENCES, NOT AUTOMATIC DEPENDENCIES
+==============================================================================
+- LM Studio local server and compatibility endpoints: Reference for the connection shape already used by local model clients; not a Maccie runtime dependency.
+- Ollama API, structured outputs, tool calling, and OpenAI compatibility: Reference for ergonomic local-provider interfaces; custom Maccie internals should remain independent.
+- PyTorch and TorchTitan: Candidate tensor and later-scale training infrastructure; adopt only after small clean-room experiments.
+- PyTorch Distributed Checkpoint: Later distributed save/resume reference when one-machine checkpoints are no longer enough.
+- MuZero: Evidence that planning can combine search with a learned model of decision-relevant dynamics.
+- DreamerV3: Evidence for learning world models and improving behavior through imagined futures across diverse tasks.
+- Neural Algorithmic Reasoning: Research direction for combining neural components with algorithmic structure.
+- Z3 / SMT solving: Reference for specialist formal constraint checking; optional organ, not the whole intelligence.
+- SentencePiece and byte-level tokenization work: Candidates for a from-scratch language encoding experiment.
+- nanoGPT / clean-room small-model training examples: Educational baseline proving that a language model pipeline can be trained from random initialization.
+- OLMo fully open model programme: Reference standard for exposing data, code, weights, recipes, checkpoints, and reports.
+- SPDX AI and dataset profiles: Reference for machine-readable provenance, license, integrity, model, and dataset metadata.
+
+==============================================================================
+KNOWN LIMITS OF THIS ROUTE
+==============================================================================
+- This route does not prove that broad machine wisdom or general intelligence is achievable.
+- It does show a technically coherent path to a native local reasoning runtime and progressively learned model components.
+- No training run, model checkpoint, API service, or Workshop adapter was built in this planning pass.
+- Hardware feasibility for larger rungs must be measured on the actual machines; no fake duration or cost is asserted.
+- A custom hybrid Maccie architecture may not be loadable directly by Ollama, LM Studio, or llama.cpp. The native local service is therefore the stable integration point.
+- Formal rules can be wrong; roots and constraints still require explicit human governance and evidence-based amendment.
+- Operational traces explain recorded computation and decisions, not every causal property hidden inside learned weights.
+- Passing bounded worlds is not evidence of safe general deployment.
+- The public Foundation remains read-only in this route; all early work belongs in the separate local project.

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reason/v1",
+  "title": "Mirror native reasoning request",
+  "type": "object",
+  "required": ["goal"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reason/v1" },
+    "requestId": { "type": "string", "maxLength": 120 },
+    "sessionId": { "type": "string", "maxLength": 120 },
+    "actor": { "type": "object" },
+    "goal": {
+      "oneOf": [
+        { "type": "string", "minLength": 1, "maxLength": 4000 },
+        {
+          "type": "object",
+          "required": ["statement"],
+          "properties": {
+            "id": { "type": "string" },
+            "statement": { "type": "string", "minLength": 1, "maxLength": 4000 }
+          }
+        }
+      ]
+    },
+    "evidence": { "type": "array", "maxItems": 256 },
+    "unknowns": { "type": "array", "maxItems": 128 },
+    "constraints": { "type": "array", "maxItems": 128 },
+    "permissions": { "type": "array", "maxItems": 128 },
+    "actions": { "type": "array", "maxItems": 128 },
+    "budget": { "type": "object" }
+  },
+  "additionalProperties": false
+}
