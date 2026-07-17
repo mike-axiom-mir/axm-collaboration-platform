@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Mirror Core</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">AXM · WORLD ↔ LOCAL PLATFORM UNDERLAY</div>
+      <h1>Mirror Core</h1>
+      <p>Inspect · propose · decide · apply · verify · roll back</p>
+    </div>
+    <div class="header-actions">
+      <span class="stage">WORKING TEST · LOCAL ONLY</span>
+      <button id="refresh" class="secondary">Refresh</button>
+      <button id="reset" class="danger-quiet">Reset mock fixtures</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="truth-strip" aria-label="Build boundaries">
+      <span>WORLD <b>NOT BUILT</b></span>
+      <span>PHYSICS <b>NOT BUILT</b></span>
+      <span>FOUNDATION <b>HARNESS ONLY</b></span>
+      <span>GITHUB <b>READ-ONLY SOURCE</b></span>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <div><div class="eyebrow">System status</div><h2>Local truth surface</h2></div>
+        <div id="lastUpdated" class="muted">Loading…</div>
+      </div>
+      <div id="statusCards" class="status-grid"></div>
+      <div id="warning" class="warning" hidden></div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <div><div class="eyebrow">Adapter bridge</div><h2>Explicit connections</h2></div>
+        <p class="muted">Registration is availability, not permission.</p>
+      </div>
+      <div id="adapters" class="adapter-grid"></div>
+    </section>
+
+    <section class="two-column">
+      <div class="panel">
+        <div class="section-title compact">
+          <div><div class="eyebrow">Canonical registry</div><h2>Entities</h2></div>
+          <input id="entityFilter" type="search" placeholder="Filter type, source, name" aria-label="Filter entities">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Type</th><th>Source</th><th>Truth</th><th>Rev</th></tr></thead>
+            <tbody id="entities"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel proposal-list-panel">
+        <div class="section-title compact">
+          <div><div class="eyebrow">No silent sync</div><h2>Proposals</h2></div>
+          <span id="proposalCount" class="count"></span>
+        </div>
+        <div id="proposalList" class="proposal-list"></div>
+      </div>
+    </section>
+
+    <section class="panel review-panel">
+      <div class="section-title">
+        <div><div class="eyebrow">Human review gate</div><h2>Proposal inspection</h2></div>
+        <span id="proposalStatus" class="state neutral">NO PROPOSAL SELECTED</span>
+      </div>
+      <div id="emptyReview" class="empty">Run the deterministic demo or create a packet through the local API, then select it here.</div>
+      <div id="review" hidden>
+        <div class="review-summary">
+          <div><label>Source</label><strong id="reviewSource"></strong></div>
+          <div><label>Target</label><strong id="reviewTarget"></strong></div>
+          <div><label>Actor</label><strong id="reviewActor"></strong></div>
+          <div><label>Risk</label><strong id="reviewRisk"></strong></div>
+          <div><label>Reversibility</label><strong id="reviewReversibility"></strong></div>
+          <div><label>Evidence</label><strong id="reviewEvidence"></strong></div>
+        </div>
+        <div class="review-copy"><label>Intent</label><p id="reviewIntent"></p><label>Reason</label><p id="reviewReason"></p></div>
+        <div class="inspection-grid">
+          <article><h3>Exact operations</h3><pre id="reviewOperations"></pre></article>
+          <article><h3>Preview diff</h3><pre id="reviewDiff"></pre></article>
+          <article><h3>Truth unknowns</h3><pre id="reviewUnknowns"></pre></article>
+          <article><h3>Conflicts</h3><pre id="reviewConflicts"></pre></article>
+        </div>
+        <div id="reviewActions" class="decision-row"></div>
+        <div id="actionResult" class="action-result" hidden></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-title">
+        <div><div class="eyebrow">Tamper-evident local history</div><h2>Event timeline</h2></div>
+        <span class="muted">Hash chain is not external notarisation.</span>
+      </div>
+      <div id="events" class="timeline"></div>
+    </section>
+  </main>
+
+  <footer>
+    ISOLATED MIRROR RUNTIME · FOUNDATION CANDIDATE WRAPPER · LIVE APPLY ADAPTERS OFF
+  </footer>
+  <script src="/app.js"></script>
+</body>
+</html>

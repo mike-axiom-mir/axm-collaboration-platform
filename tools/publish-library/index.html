@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>AXM Publish & Library</title>
   <link rel="stylesheet" href="publish-library.css">
+  <link rel="stylesheet" href="output-engine.css">
 </head>
 <body>
   <div class="publish-app">
@@ -39,6 +40,15 @@
 
         <section id="releaseSurface" class="surface release-surface" hidden>
           <div class="release-intro"><div><span class="eyebrow">Reviewed release ledger</span><h3>Every artifact arrives as unreviewed.</h3><p>Register an output or receive one from another AXM workspace. Review source, license and version before it can move forward.</p></div><div class="format-strip"><span>PNG</span><span>PDF</span><span>SVG</span><span>Audio</span><span>Video</span><span>3D</span><span>Web</span><span>Executable</span></div></div>
+          <section class="output-lab">
+            <header class="output-lab-head"><div><span class="eyebrow">Local output engine</span><h3>Create a real file here</h3><p>Small open-source engines run behind this one screen. Jobs are local, cancellable and never approve their own result.</p></div><div id="outputCapabilities" class="capability-list"><span>Checking engines…</span></div></header>
+            <div class="output-builders">
+              <form id="pdfOutputForm" class="output-builder"><div class="builder-title"><span>PDF</span><div><b>Text document</b><small>jsPDF · MIT · browser worker</small></div></div><input id="pdfTitle" maxlength="160" placeholder="Document title" required><input id="pdfFilename" maxlength="100" placeholder="Filename, for example field-report"><textarea id="pdfBody" maxlength="50000" placeholder="Text to place in the PDF" required></textarea><button class="button primary" type="submit">Generate verified PDF</button></form>
+              <form id="imageOutputForm" class="output-builder"><div class="builder-title"><span>IMG</span><div><b>Resize and convert</b><small>wasm-vips · MIT · isolated local worker</small></div></div><label class="output-file">Choose PNG, JPEG, WebP or GIF<input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" required></label><div class="output-options"><label>Width<input id="imageWidth" type="number" min="1" max="8192" value="1200"></label><label>Height <small>optional</small><input id="imageHeight" type="number" min="1" max="8192" placeholder="auto"></label><label>Format<select id="imageFormat"><option>PNG</option><option>JPEG</option><option>WebP</option></select></label><label>Quality<input id="imageQuality" type="number" min="20" max="100" value="88"></label></div><button class="button primary" type="submit">Transform verified image</button></form>
+            </div>
+            <div id="outputProgress" class="output-progress" hidden><div><span id="outputProgressLabel">Preparing output</span><b id="outputProgressValue">0%</b></div><progress id="outputProgressBar" max="100" value="0"></progress><button id="cancelOutput" class="button secondary" type="button">Cancel job</button></div>
+            <div id="outputResult" class="output-result" hidden><div><span class="eyebrow">Verified result</span><b id="outputResultName"></b><small id="outputResultEvidence"></small></div><button id="downloadOutput" class="button primary" type="button">Download file</button></div>
+          </section>
           <div class="release-layout">
             <section class="panel"><header><div><span class="eyebrow">Artifact inbox</span><h3>Outputs waiting for a decision</h3></div><b id="inboxBadge">0 open</b></header>
               <div class="artifact-form"><input id="artifactName" maxlength="120" placeholder="Artifact name"><input id="artifactSource" maxlength="120" placeholder="Source workspace or tool"><select id="artifactFormat" aria-label="Output format"></select><input id="artifactVersion" maxlength="40" placeholder="Version, for example 0.1.0"><input id="artifactLicense" maxlength="120" placeholder="License / rights status"><textarea id="artifactProvenance" maxlength="1800" placeholder="Source file, creator, model, prompt, references or other provenance"></textarea><button id="addArtifact" class="button primary">Add to inbox</button></div>
@@ -56,6 +66,10 @@
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="publish-library-core.js"></script>
+  <script src="/shared/engines/axm-shared-engines.js"></script>
+  <script src="/shared/output/axm-output-core.js"></script>
+  <script src="/shared/vendor/comlink/comlink.min.js"></script>
+  <script src="/shared/output/axm-output-client.js"></script>
   <script src="/launcher/axm-foundation.js"></script>
   <script src="/hub/axm-hub-module.js"></script>
   <script src="publish-library.js"></script>

@@ -10,6 +10,10 @@ Play stays continuous after a miss: only the ball that escaped briefly respawns 
 
 Controls: the two direction buttons move along your own wall. On a phone controller, tap anywhere on the arena view to activate the currently held random power; the colored special button and Space remain available too.
 
+Supported phones use short vibration cues when movement engages, a power fires, a life is lost, or the player is eliminated.
+
+The stable QR controller URL now caches the single-file controller shell in the phone browser. On secure or localhost connections a service worker adds an offline shell fallback and install prompt; ordinary same-Wi-Fi HTTP still receives reusable browser-cache headers. Only the interface shell is cached. Inputs, lives, balls, powers and authoritative match state always remain live on the laptop, so a cached screen never invents gameplay.
+
 The random pool also contains two attacks: Chaos Curve redirects the most useful midfield ball toward a living rival, while Power Return arms the next paddle contact with extra speed and stronger spin.
 
 For four-player shared-screen matches, phones render a controller-only dashboard instead of a duplicate arena: two oversized translucent movement zones, a large ability panel, personal lives, and the four-player score strip. This removes continuous phone-side canvas rendering and lowers controller load. The shared screen keeps the full 1000×1000 presentation, while the authoritative state stream runs at 25 updates per second and labels every side's held special, active effect, and cooldown.

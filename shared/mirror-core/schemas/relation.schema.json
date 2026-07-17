@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.relation/v1",
+  "title": "AXM Mirror Relation",
+  "type": "object",
+  "required": ["relation_id", "schema_version", "source_mirror_id", "relation_type", "target_mirror_id", "created_by", "created_at", "provenance", "status", "verification"],
+  "properties": {
+    "relation_id": {"type": "string", "pattern": "^rel:[a-z0-9._-]+:[a-z0-9._-]+$"},
+    "schema_version": {"const": "axm.mirror.relation/v1"},
+    "source_mirror_id": {"type": "string"},
+    "relation_type": {"type": "string"},
+    "target_mirror_id": {"type": "string"},
+    "created_by": {"type": "object"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "provenance": {"type": "array", "items": {"type": "object"}},
+    "status": {"enum": ["proposed", "active", "disputed", "superseded", "archived", "unresolved"]},
+    "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "verification": {"enum": ["unverified", "schema_valid", "evidence_supported", "independently_checked", "failed", "disputed"]},
+    "extensions": {"type": "object"}
+  },
+  "additionalProperties": false
+}

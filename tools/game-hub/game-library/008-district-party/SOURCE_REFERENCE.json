@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "generatedDate": "2026-07-13",
+  "timezone": "Europe/Amsterdam",
+  "inspectionMode": "github-connector-read-only",
+  "repository": {
+    "fullName": "mike-axiom-mir/axm-collaboration-platform",
+    "defaultBranch": "main",
+    "visibility": "public"
+  },
+  "pullRequest": {
+    "number": 13,
+    "title": "Stage consolidated AXM workspaces for next milestone",
+    "url": "https://github.com/mike-axiom-mir/axm-collaboration-platform/pull/13",
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "headBranch": "agent/axm-consolidated-workspaces-next",
+    "headSha": "33a87549259d8b4a7ce4753ee1fab49e0ee8091d",
+    "baseBranch": "main",
+    "baseSha": "cda6b0629968cd7f276283ad7362cfdafb64926e",
+    "commitCount": 1,
+    "changedFileCount": 203
+  },
+  "filesInspected": [
+    {
+      "path": "tools/game-hub/index.html",
+      "status": "VERIFIED",
+      "blobSha": "ddf0ad6140c29b8847460a5588b7c49579189c14",
+      "changedByPr13": true,
+      "evidence": ["lines 20-75", "loadParty", "buildSeats", "renderQueue", "submitParty", "launch", "qrInto", "showJoin", "openScreen"]
+    },
+    {
+      "path": "tools/game-hub/axm-foundation.js",
+      "status": "VERIFIED",
+      "blobSha": "7f4ac73ac8712c651888279f681c4d17873996fb",
+      "changedByPr13": false,
+      "evidence": ["bundle header v1.4.1", "local-first browser foundation bundle"]
+    },
+    {
+      "path": "tools/game-hub/game-hub-server.js",
+      "status": "VERIFIED",
+      "blobSha": "f0a279f34137028e08792e1f9206ee2a5066c8dc",
+      "changedByPr13": false,
+      "evidence": ["startGameRuntime lines 75-119", "/game/start lines 217-265", "/input and /game/end lines 267-278"]
+    },
+    {
+      "path": "tools/game-hub/game-engine/engine-core.js",
+      "status": "VERIFIED",
+      "blobSha": "34838a6706ac4788ea096d9614537a13072fb305",
+      "changedByPr13": false,
+      "evidence": ["constants/state lines 1-64", "seat/selection/session lines 73-169", "input/tick/end lines 171-222"]
+    },
+    {
+      "path": "tools/game-hub/game-engine/ENGINE_DEFAULTS.json",
+      "status": "VERIFIED",
+      "blobSha": "d417d325d364dd2db16e0b0d874ce03d3244972b",
+      "changedByPr13": false,
+      "evidence": ["max_lobby_seats", "default_visible_seats", "transport_v0", "rules"]
+    },
+    {
+      "path": "tools/game-hub/game-engine/ENGINE_STATE_TEMPLATE.json",
+      "status": "VERIFIED",
+      "blobSha": "6cb966fa0f74f1b79944f7d4a1a003e072f53ca1",
+      "changedByPr13": false,
+      "evidence": ["lobby.max_seats", "selection.selected_players", "input_buffer", "rules"]
+    },
+    {
+      "path": "tools/game-hub/game-library/002-robo-pong/game.manifest.json",
+      "status": "VERIFIED",
+      "blobSha": "6194227e7f1328bdcb1abaa2ea3d0acae09a14c9",
+      "changedByPr13": false,
+      "evidence": ["allowed_seat_types", "launch", "join", "session.passes_seat_map"]
+    },
+    {
+      "path": "tools/game-hub/game-library/003-robo-pong-cross/game.manifest.json",
+      "status": "VERIFIED",
+      "blobSha": "125bc4b16dad962d8a37d9bc68648989be942d19",
+      "changedByPr13": false,
+      "evidence": ["max_players", "allowed_seat_types", "launch", "join"]
+    },
+    {
+      "path": "tools/game-hub/game-library/004-relaybound/game.manifest.json",
+      "status": "VERIFIED",
+      "blobSha": "cc1df1fe33a5f868ae8572234d8540ee1783c18e",
+      "changedByPr13": false,
+      "evidence": ["allowed_seat_types", "launch", "join", "rules"]
+    },
+    {
+      "path": "tools/game-hub/game-library/005-briarfront/game.manifest.json",
+      "status": "VERIFIED",
+      "blobSha": "56d5e06d9e27dbcb2f2f9f3b520ea0fefe8c5730",
+      "changedByPr13": false,
+      "evidence": ["max_players", "allowed_seat_types", "launch", "join"]
+    },
+    {
+      "path": "tools/game-hub/vendor/qrcode.js",
+      "status": "VERIFIED_SUPPORTING_FILE",
+      "blobSha": "76889b589ec831dd9b791601f6592793356ce9cd",
+      "changedByPr13": false,
+      "evidence": ["local bundled QR generator loaded by index.html"]
+    }
+  ],
+  "sourceTruths": [
+    {
+      "id": "visible-four-seat-hub",
+      "status": "VERIFIED",
+      "claim": "The current Game Hub shows and submits four visible party seats.",
+      "evidence": ["tools/game-hub/index.html: loadParty/buildSeats/renderQueue/submitParty", "tools/game-hub/game-engine/engine-core.js: DEFAULT_VISIBLE_SEATS"]
+    },
+    {
+      "id": "human-ai-adapter-types",
+      "status": "VERIFIED_WITH_NUANCE",
+      "claim": "The UI offers human and adapter labelled AI; the engine and manifests separately support human, adapter and ai.",
+      "evidence": ["tools/game-hub/index.html: buildSeats", "tools/game-hub/game-engine/engine-core.js: assignSeat", "four requested game manifests: allowed_seat_types"]
+    },
+    {
+      "id": "ready-order-selection",
+      "status": "VERIFIED",
+      "claim": "Eligible ready players are selected by ready order up to the manifest capacity.",
+      "evidence": ["tools/game-hub/game-engine/engine-core.js: readySeat/selectPlayersByReadyOrder"]
+    },
+    {
+      "id": "controller-urls",
+      "status": "VERIFIED",
+      "claim": "Launch returns one controller record per selected player; only human records receive local and LAN URLs.",
+      "evidence": ["tools/game-hub/game-hub-server.js: /game/start controllerUrls map"]
+    },
+    {
+      "id": "named-local-qr",
+      "status": "VERIFIED",
+      "claim": "The Hub generates named human-seat QR codes locally with its bundled QR library.",
+      "evidence": ["tools/game-hub/index.html: qrInto/showJoin", "tools/game-hub/vendor/qrcode.js"]
+    },
+    {
+      "id": "shared-spectator-screen",
+      "status": "VERIFIED",
+      "claim": "A distinct screen route is returned and opened without occupying a selected seat.",
+      "evidence": ["four requested manifests: launch.spectator_client_entry", "tools/game-hub/game-hub-server.js: spectator_url", "tools/game-hub/index.html: openScreen"]
+    },
+    {
+      "id": "room-axm1",
+      "status": "VERIFIED",
+      "claim": "The local room code is AXM1.",
+      "evidence": ["four requested manifests: join.room_code", "tools/game-hub/game-hub-server.js: controller URLs and room_code"]
+    },
+    {
+      "id": "eight-seat-foundation",
+      "status": "VERIFIED_CAPACITY_NOT_PLAYTEST",
+      "claim": "The Foundation creates eight seats, of which four are visible by default and four are optional.",
+      "evidence": ["tools/game-hub/game-engine/engine-core.js: MAX_SEATS/createDefaultSeatTable", "ENGINE_DEFAULTS.json", "ENGINE_STATE_TEMPLATE.json"]
+    },
+    {
+      "id": "local-authority",
+      "status": "VERIFIED_AS_FOUNDATION_DIRECTION",
+      "claim": "The host owns engine state, session, input buffer and tick progression.",
+      "evidence": ["tools/game-hub/game-engine/engine-core.js: createEngineState/queueInput/engineTick", "ENGINE_DEFAULTS.json: rules.local_authoritative_state"]
+    },
+    {
+      "id": "input-intentions",
+      "status": "VERIFIED_AS_FOUNDATION_DIRECTION",
+      "claim": "Clients submit seat-tagged input intentions which the host buffers and consumes.",
+      "evidence": ["tools/game-hub/game-engine/engine-core.js: queueInput/engineTick", "tools/game-hub/game-hub-server.js: POST /input"]
+    },
+    {
+      "id": "full-selected-array",
+      "status": "VERIFIED",
+      "claim": "The complete selected-player array is passed to the child runtime through AXM_PLAYERS_JSON.",
+      "evidence": ["tools/game-hub/game-hub-server.js: startGameRuntime"]
+    },
+    {
+      "id": "legacy-p1-p4-names",
+      "status": "VERIFIED",
+      "claim": "AXM_P1_NAME through AXM_P4_NAME remain convenience environment variables in addition to the full array.",
+      "evidence": ["tools/game-hub/game-hub-server.js: startGameRuntime"]
+    }
+  ],
+  "compatibilityContract": {
+    "selectedPlayersSource": "AXM_PLAYERS_JSON",
+    "fieldsToPreserve": ["seat_id", "slot", "type", "display_name", "adapter_id"],
+    "maxSeats": 8,
+    "defaultVisibleSeats": 4,
+    "partyMap": {
+      "slots1To4": "party_a",
+      "slots5To8": "party_b"
+    },
+    "transportDirection": "local HTTP JSON endpoints",
+    "authority": "host",
+    "clients": "send input intentions",
+    "screenClient": "render-only",
+    "readyRosterPolicy": "only selected records with ready not false become actors",
+    "hostAiFillEmptySeatsDefault": false,
+    "adapterObservation": "same-party-shared-screen-only",
+    "defaultRoom": "AXM1"
+  },
+  "localPrototypeAdds": [
+    "city world and actors",
+    "central party mapper",
+    "party_a, party_b and all display roles",
+    "persistent party-screen waiting receiver",
+    "session-seat controller tokens",
+    "party camera and tether",
+    "AI civilians and optional built-in Host AI player state machines",
+    "Foundation adapter seats using the same semantic input gate with token-bound screen-bounded observations",
+    "vehicles and passenger shooting",
+    "server-owned combat and party-aware damage rules",
+    "inventory, personal funds and isolated Party A/Party B treasuries",
+    "reusable floating twin-stick controller with independent move/aim intentions and host-latched release-to-fire",
+    "host-owned 40/60 mission reward splitting and central spending seams",
+    "Party House mission board and group teleport lifecycle",
+    "Supply Sweep, Hold the Relay, Courier Chaos and Call the Heat",
+    "civilian health, Neon Rivals and forgiving justice",
+    "District Dominion flexible 1-4 versus 1-4 Party A/Party B session mode with asymmetric rosters",
+    "two simultaneous party-specific display routes over one authoritative world",
+    "five host-owned capture zones, territorial score and persistent match results",
+    "host-owned Party A and Party B reinforcement purchases using isolated group funds"
+  ],
+  "sourceGapsAndNuances": [
+    "The current visible Hub UI operates on seats 1-4 only.",
+    "The requested current game manifests support at most four players.",
+    "The current server mode label uses four-player for any selection longer than two.",
+    "The public selected-seat record omits the engine's internal group field.",
+    "Existing manifests expose a spectator screen, not persistent party-specific receivers.",
+    "The generic input endpoint validates playing seat state but not a session-seat token.",
+    "Eight-seat capacity is not evidence of physical or simulated eight-player play."
+  ],
+  "literalRepositorySearch": {
+    "queries": [
+      "qrcode",
+      "controller_urls",
+      "spectator_url",
+      "player=screen",
+      "openScreen",
+      "AXM_PLAYERS_JSON",
+      "MAX_SEATS",
+      "max_lobby_seats",
+      "local_authoritative_state",
+      "clients_send_input_intentions",
+      "allowed_seat_types",
+      "game.manifest.json",
+      "room=AXM1"
+    ],
+    "connectorHitsPerQuery": 0,
+    "authoritative": false,
+    "reason": "The connector search cannot be pinned to the PR head and returned no indexed results despite exact-SHA file reads directly containing the terms."
+  },
+  "githubWriteCheck": {
+    "mutationToolsCalled": false,
+    "repositoryCheckoutCreated": false,
+    "branchCreated": false,
+    "commitCreated": false,
+    "pushPerformed": false,
+    "pullRequestChanged": false,
+    "scope": "Actions performed by this source-inspection task only"
+  }
+}

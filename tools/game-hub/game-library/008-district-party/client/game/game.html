@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM District Party · City Screen</title>
+  <link rel="stylesheet" href="/game/game.css">
+  <link rel="stylesheet" href="/game/inventory.css">
+  <link rel="stylesheet" href="/game/results.css">
+</head>
+<body>
+  <canvas id="city-canvas" aria-label="Shared top-down city view"></canvas>
+  <header id="mission-hud" class="mission-hud" aria-label="Current mission status">
+    <div class="mission-heading">
+      <div>
+        <div class="eyebrow">AXM DISTRICT PARTY · <span id="party-name">PARTY A</span></div>
+        <div id="mission-title" class="mission-title">PARTY HOUSE</div>
+      </div>
+      <div class="mission-stats" aria-label="Round score and time">
+        <div class="stat"><span>PARTY SCORE</span><strong id="party-score">0</strong></div>
+        <div class="stat"><span>PARTY FUND</span><strong id="party-fund">DC 0,00</strong></div>
+        <div class="stat"><span>TIME</span><strong id="round-time">3:00</strong></div>
+      </div>
+    </div>
+    <div id="mission-hint" class="hint">Loading authoritative city…</div>
+    <div id="territory-zones" class="territory-zones hidden" aria-label="District ownership"></div>
+    <div id="friendly-fire" class="combat-rule">ALLY DAMAGE: —</div>
+    <div id="justice-status" class="justice-status">JUSTICE: CALM</div>
+    <div class="mission-progress" role="progressbar" aria-label="Delivery progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="mission-bar"></i></div>
+  </header>
+  <section id="player-hud" aria-label="Party player status">
+    <div id="player-card-1" class="player-corner player-q1" aria-label="Top-left player status"></div>
+    <div id="player-card-2" class="player-corner player-q2" aria-label="Top-right player status"></div>
+    <div id="player-card-3" class="player-corner player-q3" aria-label="Bottom-left player status"></div>
+    <div id="player-card-4" class="player-corner player-q4" aria-label="Bottom-right player status"></div>
+  </section>
+  <div id="safe-zone" class="safe-zone hidden">SAFE ZONE · PLAYER DAMAGE BLOCKED</div>
+  <div id="base-regen" class="base-regen hidden">PARTY BASE · HEALTH REGEN 10 HP/S · SHIELD DOES NOT REGEN</div>
+  <div id="tether-warning" class="tether-warning hidden">RETURN TO PARTY</div>
+  <div id="inventory-overlays" aria-label="Open player inventories"></div>
+  <div id="mission-menu" class="mission-menu hidden"><div class="mission-menu-card"><div class="eyebrow">PARTY HOUSE</div><h1 id="mission-menu-title">MISSION BOARD</h1><p id="mission-menu-copy">Move up/down and press ACTION.</p><div id="mission-menu-options" class="menu-options"></div></div></div>
+  <div id="results" class="results hidden"><div class="results-card"><div id="results-mission" class="eyebrow">Mission</div><h1 id="results-title">MISSION COMPLETE</h1><div id="results-score"></div><p>Results stay here as long as the party wants a break.</p><div id="results-options" class="menu-options"></div><small>Move up/down · ACTION to choose</small></div></div>
+  <pre id="debug" class="debug hidden"></pre>
+  <div id="connection-banner" class="connection-banner">Connecting to local authoritative host…</div>
+  <script type="module" src="/game/game.js"></script>
+</body>
+</html>

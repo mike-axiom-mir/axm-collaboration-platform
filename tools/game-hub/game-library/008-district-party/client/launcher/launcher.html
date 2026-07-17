@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM District Party · Local Launcher</title>
+  <link rel="stylesheet" href="/common.css">
+  <link rel="stylesheet" href="/launcher/launcher.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><span>A</span></div>
+        <div><div class="eyebrow">Local-first game night</div><h1>AXM District Party</h1></div>
+      </div>
+      <div><span id="server-status" class="status-pill">Checking local host…</span></div>
+    </header>
+
+    <section class="hero panel">
+      <div>
+        <div class="eyebrow">Co-op adventure · Flexible local party-versus-party</div>
+        <h2>Build the party, then open one screen for each active side.</h2>
+        <p class="muted">Phones send controller intentions only. The local host owns movement, vehicles, projectiles, health, AI, justice, damage rules, and every mission.</p>
+      </div>
+      <div class="local-lock"><span>⌂</span><strong>LOCAL LAN ONLY</strong><small>No account · no telemetry · no cloud runtime</small></div>
+    </section>
+
+    <section id="setup-view">
+      <section class="panel mode-panel">
+        <div><div class="eyebrow">Game format</div><h2>Choose the local session</h2><p id="mode-copy" class="muted">Co-op Adventure keeps one shared Party A screen and the Party House mission board.</p></div>
+        <label><span>MODE</span><select id="game-mode"><option value="coop_adventure" selected>Co-op Adventure · 1–4</option><option value="district_dominion">District Dominion · 1–4 vs 1–4</option></select></label>
+      </section>
+
+      <div class="section-heading"><div><div class="eyebrow">Party A</div><h2>Seats 1–4</h2></div><button id="enable-four" type="button">Ready all Party A seats</button></div>
+      <div id="seat-grid" class="seat-grid" aria-label="Player seat setup"></div>
+      <section id="party-b-setup" class="hidden">
+        <div class="section-heading"><div><div class="eyebrow party-b-copy">Party B</div><h2>Seats 5–8</h2></div><button id="enable-eight" type="button">Ready all eight seats</button></div>
+        <div id="seat-grid-b" class="seat-grid" aria-label="Party B player seat setup"></div>
+      </section>
+
+      <section class="panel rules-panel">
+        <div class="section-heading"><div><div class="eyebrow">Host-owned</div><h2>Combat rules</h2></div><span class="status-pill">Game Night defaults</span></div>
+        <div class="rule-grid">
+          <label><span>Combat enabled</span><input id="combat-enabled" type="checkbox" checked></label>
+          <label><span>Party A friendly fire</span><input id="ff-a" type="checkbox"></label>
+          <label><span>Party-versus-party damage</span><input id="cross-party" type="checkbox" checked></label>
+          <label><span>Self-damage</span><input id="self-damage" type="checkbox"></label>
+          <label><span>Ally knockback</span><select id="ally-knockback"><option value="0">OFF</option><option value="0.25" selected>LOW</option><option value="0.5">MEDIUM</option></select></label>
+          <label><span>Vehicle ally damage</span><strong class="safe-default">OFF · v0.1 safe default</strong></label>
+          <label id="host-ai-fill-rule" class="hidden"><span>Fill unused seats with Host AI</span><input id="host-ai-fill" type="checkbox"></label>
+        </div>
+        <details>
+          <summary>Party B and up-to-eight-seat rules</summary>
+          <div class="advanced-rule"><span>District Dominion uses only ready seats. Party A and Party B may have different sizes; the optional Host AI fill is OFF by default.</span><label>Party B friendly fire <input id="ff-b" type="checkbox"></label></div>
+        </details>
+      </section>
+
+      <div class="start-row">
+        <div class="notice">Connect phones to the same private Wi-Fi. If Windows asks, allow Node only on <strong>Private networks</strong>, never Public networks.</div>
+        <button id="start-session" class="primary" type="button">Start local city session</button>
+      </div>
+      <p id="setup-error" class="error hidden" role="alert"></p>
+    </section>
+
+    <section id="running-view" class="hidden">
+      <div class="section-heading"><div><div class="eyebrow">Room <span id="room-code">AXM1</span></div><h2>Session join board</h2></div><span id="session-status" class="status-pill live">Running</span></div>
+      <div class="screen-launch panel">
+        <div><div class="eyebrow">Shared display · no player seat</div><h3>Party A city screen</h3><p class="muted">Open this on the laptop, monitor, television browser, or another LAN device.</p></div>
+        <div class="row"><button id="open-party" class="primary">Open Party A screen</button><button id="copy-party">Copy screen URL</button></div>
+      </div>
+      <div id="party-b-screen-card" class="screen-launch panel hidden">
+        <div><div class="eyebrow party-b-copy">Second shared display · no player seat</div><h3>Party B city screen</h3><p class="muted">Put this on the second laptop. Both screens render the same authoritative city from their own party camera.</p></div>
+        <div class="row"><button id="open-party-b" class="primary party-b-button">Open Party B screen</button><button id="copy-party-b">Copy screen URL</button></div>
+      </div>
+      <div id="lan-picker" class="lan-picker panel hidden"><label><span>Phone / television private network</span><select id="lan-address"></select></label><small>Choose the Wi-Fi/LAN address your other devices can reach. VPN and virtual adapters may not be the right choice.</small></div>
+      <div id="join-grid" class="join-grid"></div>
+      <section class="panel host-actions">
+        <div><div class="eyebrow">Host controls</div><p class="muted">The party screen remains view-only. Restart or end the session here.</p></div>
+        <div class="row"><button id="restart-session">Restart local session at base</button><button id="end-session" class="danger">End and return to lobby</button></div>
+      </section>
+      <details class="panel contract-view"><summary>Foundation-compatible launch contract</summary><pre id="contract-json"></pre></details>
+    </section>
+  </main>
+
+  <script src="/vendor/qrcode.js"></script>
+  <script src="/launcher/launcher.js"></script>
+</body>
+</html>

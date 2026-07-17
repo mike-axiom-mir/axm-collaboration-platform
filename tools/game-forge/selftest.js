@@ -1,6 +1,6 @@
 const fs=require('fs'),path=require('path'),root=__dirname,read=n=>fs.readFileSync(path.join(root,n),'utf8'),core=require('./game-forge-core.js');let fail=0;function check(ok,label){console.log((ok?'PASS ':'FAIL ')+label);if(!ok)fail++;}
 const html=read('index.html'),js=read('game-forge.js'),manifest=JSON.parse(read('manifest.json')),contract=JSON.parse(read('module.contract.json'));
-check(core.VIEWS.length===9,'nine unified Game Forge views');
+check(core.VIEWS.length===10&&core.VIEWS.some(v=>v.id==='physics'),'ten unified Game Forge views including Physics Lab');
 check(['2D','3D'].every(x=>core.blankProject('x','X',x).runtimeMode===x),'2D and 3D project document modes');
 check(core.blankProject('x','X','2D').world.cells.length===160,'semantic 16 by 10 world document');
 check(/edgeFrom/.test(html)&&/edgeTo/.test(html)&&/events\.edges/.test(js),'visual event nodes and explicit edges');
@@ -13,5 +13,8 @@ check(/axm\.game-mod-manifest\/v1/.test(js)&&/not installed/.test(js),'proposal-
 check(/axm\.game-forge-project\/v1/.test(js)&&/runtime package unchanged/.test(js),'portable project export without runtime claim');
 check(/preview\.html\?project=/.test(js)&&/id="previewProject"/.test(html),'instant playable preview route');
 check(/api\/game-forge\/build/.test(js)&&/STAGING ONLY/.test(html),'reviewed package candidate action');
-check(manifest.id==='game-forge'&&manifest.version==='v1.1'&&contract.id==='game-forge','manifest and contract agree at v1.1');
-if(fail)process.exit(1);console.log('Game Forge selftest: PASS (projects, worlds, events, systems, NPCs, lobby, tests and mods)');
+check(/axm-physics-core\.js/.test(html)&&/physicsSurface/.test(html)&&/AXMPhysics2D/.test(js),'shared Physics Core and visible lab are wired');
+check(contract.boundaries.refuses.includes('automatic-physics-scene-execution')&&contract.boundaries.refuses.includes('scientific-validation-claim'),'physics truth boundaries are explicit');
+check(core.blankProject('p','P','2D').physics.schema==='axm.game-physics-config/v1','new projects contain a versioned disabled physics seam');
+check(manifest.id==='game-forge'&&manifest.version==='v1.2'&&contract.id==='game-forge'&&contract.version==='v1.2','manifest and contract agree at v1.2');
+if(fail)process.exit(1);console.log('Game Forge selftest: PASS (projects, worlds, shared physics, events, systems, NPCs, lobby, tests and mods)');

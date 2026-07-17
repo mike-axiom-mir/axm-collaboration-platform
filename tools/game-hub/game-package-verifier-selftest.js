@@ -15,4 +15,8 @@ bad = JSON.parse(JSON.stringify(base)); bad.max_players = 99;
 ok(V.validateManifest(bad, { gameDir, syntaxCheck: false }).some(x => x.includes('max_players')), 'invalid player cap is refused');
 bad = JSON.parse(JSON.stringify(base)); bad.package.required_paths.push('runtime/definitely-missing.file');
 ok(V.validateManifest(bad, { gameDir, syntaxCheck: false }).some(x => x.includes('required path missing')), 'missing runtime evidence is refused');
+bad = JSON.parse(JSON.stringify(base)); bad.launch.controller_path = '/controller.html';
+ok(V.validateManifest(bad, { gameDir, syntaxCheck: false }).some(x => x.includes('{player}')), 'controller route without player placeholder is refused');
+bad = JSON.parse(JSON.stringify(base)); bad.launch.controller_path = '/../secrets?player={player}';
+ok(V.validateManifest(bad, { gameDir, syntaxCheck: false }).some(x => x.includes('path traversal')), 'controller route traversal is refused');
 console.log('PASS game package verifier: ' + pass + ' assertions');

@@ -17,7 +17,17 @@
 (function () {
   'use strict';
   if (window.top === window.self) { /* opened standalone, not inside the hub */
-    window.AXMHub = stub(); return;
+    window.AXMHub = stub();
+    /* Standalone tools share the same small screen trail. Loading this helper
+       changes navigation only; it never reads or writes the tool's project. */
+    if (window.AXMWorkshopNavigation) window.AXMWorkshopNavigation.installStandalone();
+    else {
+      const script = document.createElement('script');
+      script.src = '/hub/workshop-navigation.js';
+      script.onload = function () { if (window.AXMWorkshopNavigation) window.AXMWorkshopNavigation.installStandalone(); };
+      document.head.appendChild(script);
+    }
+    return;
   }
   const parent = window.parent;
   const initCbs = [], shutdownCbs = [], settingsResolvers = [];

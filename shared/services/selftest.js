@@ -1,8 +1,8 @@
 const assert=require('assert');
 const Core=require('./axm-foundation-services');
 let state=Core.create();
-assert.equal(Core.definitions.length,9,'exactly nine permanent services');
-assert.deepEqual(Core.definitions.map(x=>x.id),['wisdom','identity','gate','storage','connectors','guardian','plugins','backup','runtime']);
+assert.equal(Core.definitions.length,10,'exactly ten permanent services');
+assert.deepEqual(Core.definitions.map(x=>x.id),['wisdom','identity','gate','storage','connectors','guardian','mirror','plugins','backup','runtime']);
 state=Core.reduce(state,{type:'PROBE',id:'guardian',state:'TRIPPED',detail:'unsafe shell pattern',at:'2026-01-01T00:00:00.000Z'});
 assert.equal(state.services.guardian.state,'TRIPPED');
 const hidden=Core.reduce(state,{type:'DASHBOARD_VISIBILITY',id:'guardian',visible:false});
@@ -10,7 +10,7 @@ assert.equal(hidden.services.guardian.state,'TRIPPED','hiding dashboard cannot c
 assert.equal(hidden.services.guardian.dashboardVisible,false);
 state=Core.reduce(state,{type:'PROBE',id:'wisdom',state:'AVAILABLE',detail:'installed'});
 state=Core.reduce(state,{type:'PROBE',id:'connectors',state:'OFFLINE',detail:'no route'});
-assert.equal(Object.keys(state.services).length,9,'offline services remain present');
+assert.equal(Object.keys(state.services).length,10,'offline services remain present');
 assert.equal(Core.summary(state).attention,2,'tripped and offline require attention');
 state=Core.reduce(state,{type:'CONTROL_REQUESTED',id:'guardian',action:'reset'});
 assert.equal(state.services.guardian.control.state,'REQUESTED');

@@ -91,6 +91,27 @@ They send input through the same engine input path as human seats where possible
 
 No hidden adapter may control a player.
 
+## Shared controls and player-view rule
+
+The default reusable implementation lives at `/shared/controls`.
+
+```text
+Human phone/controller -> semantic input packet -> seat token + sequence gate
+Connected AI adapter   -> semantic input packet -> the same gate
+Built-in host AI       -> host state machine; it cannot accept external packets
+```
+
+Games select a versioned controller profile instead of inventing a new phone
+layout. The current defaults are `axm-top-down-twin-stick-v1` and
+`axm-first-person-explore-v1`. A game may add a profile, but it must keep the
+same intention, token, sequence and host-authority boundaries.
+
+Connected AI receives `axm-seat-screen-semantics-v1`: a bounded projection of
+what its assigned player/party screen can reveal. It does not receive raw world
+state, hidden opponents, random seeds, private tokens or host decision state.
+The projection may later be wrapped by Mirror's generic observation envelope;
+live control remains ephemeral and never becomes a durable change packet.
+
 ## Done rule
 
 A game module is compatible when it can:
@@ -99,6 +120,8 @@ A game module is compatible when it can:
 load from manifest
 accept selected seat map
 accept player inputs
+declare a shared control profile
+produce a seat-visible observation for adapter seats
 return state snapshots
 return result summary
 end cleanly back to lobby

@@ -14,14 +14,27 @@ const C = require('./module-contract.js');
 const hubHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const hubCss = fs.readFileSync(path.join(__dirname, 'hub-tokens.css'), 'utf8');
 const hubJs = fs.readFileSync(path.join(__dirname, 'hub-shell.js'), 'utf8');
+const navJs = fs.readFileSync(path.join(__dirname, 'workshop-navigation.js'), 'utf8');
 const out = []; let fails = 0;
 function ok(m){ out.push('  PASS  ' + m); }
 function bad(m){ out.push('  FAIL  ' + m); fails++; }
 function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
 
 /id="sidebarToggle"[^>]+aria-controls="hubSidebar"/.test(hubHtml) ? ok('sidebar: visible collapse/reopen handle exists') : bad('sidebar toggle missing');
+/id="workshopBack"[^>]+aria-label="Go to previous AXM screen"/.test(hubHtml) && /workshop-navigation\.js/.test(hubHtml)
+  ? ok('navigation: universal previous-screen control is visible and shared') : bad('navigation: previous-screen control or helper missing');
+/initNavigation/.test(hubJs) && /goBack\(\)/.test(hubJs) && /sessionStorage/.test(hubJs) && /never reads or writes project state/.test(navJs)
+  ? ok('navigation: session-only trail is isolated from project saves') : bad('navigation: history isolation wiring missing');
 /data-sidebar-collapsed="true"\] \.body\{grid-template-columns:0 1fr\}/.test(hubCss) ? ok('sidebar: collapsed state gives workspace full width') : bad('sidebar collapse layout missing');
 /axm\.hub\.sidebar-collapsed/.test(hubJs) && /toggleSidebar\(\)/.test(hubJs) ? ok('sidebar: preference persists and toggles') : bad('sidebar persistence missing');
+/id="capabilityForm"/.test(hubHtml) && /id="capabilityResults"[^>]+aria-live="polite"/.test(hubHtml) ? ok('capability guide: plain-language form and accessible results exist') : bad('capability guide UI missing');
+/workshop-capability-index\.js/.test(hubHtml) && /renderCapabilityGuide/.test(hubJs) && /openCapability/.test(hubJs) ? ok('capability guide: shared index and explicit open action are wired') : bad('capability guide wiring missing');
+/id="continuityStrip"/.test(hubHtml) && /workshop-continuity\.js/.test(hubHtml) && /loadContinuity/.test(hubJs) && /forgetContinuity/.test(hubJs)
+  ? ok('continuity: explicit Continue and Forget surface is wired') : bad('continuity surface missing');
+/id="handoffForm"/.test(hubHtml) && /artifact-handoff-broker\.js/.test(hubHtml) && /findHandoffDestinations/.test(hubJs) && /prepareHandoff/.test(hubJs)
+  ? ok('handoff broker: declared-format chooser and explicit proposal are wired') : bad('handoff broker surface missing');
+/readiness-guidance/.test(hubJs) && /Nothing is repaired automatically/.test(hubJs)
+  ? ok('readiness: beginner explanation preserves manual repair boundary') : bad('readiness explanation missing');
 
 /* ---- 1. persistence round-trip: write, then reopen over same backend ---- */
 (function persistence(){
@@ -87,6 +100,9 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
 
   const normalized = Core.normalizeRegistry([{ id: 'project-room', layer: 'build' }]);
   normalized[0].layer === 'build' ? ok('registry preserves a manifest layer suggestion') : bad('registry dropped manifest layer');
+  const rich = Core.normalizeRegistry([{ id:'studio', summary:'Make images', notes:'Local', category:'Create', risk:'LOW', card:{ icon:'studio' }, actions:['draw'], accepts:['image/*'], produces:['axm.image/v1'], readiness:['storage'] }])[0];
+  rich.summary === 'Make images' && rich.notes === 'Local' && rich.category === 'Create' && rich.risk === 'LOW' && rich.card.icon === 'studio' && rich.actions[0] === 'draw' && rich.accepts[0] === 'image/*' && rich.produces[0] === 'axm.image/v1' && rich.readiness[0] === 'storage'
+    ? ok('registry preserves beginner-facing and machine-readable capability metadata') : bad('registry dropped capability metadata');
 
   /* first run seeds all discovered (no-loss) */
   let res = Core.resolveModules(available, available.map(m => m.id));
@@ -175,7 +191,7 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
   Core.doorHash('let-me-in') !== 'let-me-in' ? ok('door: phrase not stored in plaintext') : bad('phrase stored plaintext');
 
   const workflow = Core.workflowLayout([
-    { id: 'studio' }, { id: 'audio-studio' }, { id: 'film-motion-studio' }, { id: 'ui-ux-builder', integratedInto: 'studio' }, { id: 'project-room' }, { id: 'knowledge-canvas' }, { id: 'publish-library' }, { id: 'asset-vault', integratedInto: 'publish-library' }, { id: 'workshop-packager', integratedInto: 'publish-library' }, { id: 'game-forge' }, { id: 'game-hub', integratedInto: 'game-forge' }, { id: 'sandbox', integratedInto: 'game-forge' }, { id: 'ai-team' }, { id: 'agent-command-center', integratedInto: 'ai-team' }, { id: 'chatgpt-connector', integratedInto: 'ai-team' }, { id: 'verifier' }, { id: 'main-hub' }
+    { id: 'studio' }, { id: 'audio-studio' }, { id: 'film-motion-studio' }, { id: 'ui-ux-builder', integratedInto: 'studio' }, { id: 'project-room' }, { id: 'knowledge-canvas' }, { id: 'finance-world-room' }, { id: 'publish-library' }, { id: 'asset-vault', integratedInto: 'publish-library' }, { id: 'workshop-packager', integratedInto: 'publish-library' }, { id: 'game-forge' }, { id: 'game-hub', integratedInto: 'game-forge' }, { id: 'sandbox', integratedInto: 'game-forge' }, { id: 'ai-team' }, { id: 'agent-command-center', integratedInto: 'ai-team' }, { id: 'chatgpt-connector', integratedInto: 'ai-team' }, { id: 'verifier' }, { id: 'main-hub' }
   ], [{ id: 'private', name: 'Private', gate: 'passphrase', hash: 'keep-me', order: 1 }]);
   workflow.assign.studio === 'create' && workflow.assign['game-forge'] === 'play' && workflow.assign['game-hub'] === 'machine'
     ? ok('workflow layout: Create and Play assignments are useful') : bad('workflow layout misplaced Create/Play');
@@ -187,6 +203,8 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
     ? ok('workflow layout: Project Room is in Build') : bad('workflow layout misplaced Project Room');
   workflow.assign['knowledge-canvas'] === 'build'
     ? ok('workflow layout: Knowledge Canvas is in Build') : bad('workflow layout misplaced Knowledge Canvas');
+  workflow.assign['finance-world-room'] === 'build'
+    ? ok('workflow layout: Finance World Room sandbox is in Build') : bad('workflow layout misplaced Finance World Room');
   workflow.assign['publish-library'] === 'publish' && workflow.assign['asset-vault'] === 'machine' && workflow.assign['workshop-packager'] === 'machine'
     ? ok('workflow layout: Publish & Library owns output services') : bad('workflow layout exposed fragmented output services');
   workflow.assign['ai-team'] === 'ai-team' && workflow.assign.verifier === 'private'

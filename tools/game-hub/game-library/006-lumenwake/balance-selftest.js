@@ -1,0 +1,5 @@
+'use strict';
+const assert=require('assert'),Core=require('./runtime/lumenwake-core.cjs');
+function run(partySize,seeds){let wins=0,times=[],last=null;for(let seed=1;seed<=seeds;seed++){let now=1000,g=Core.create(Array.from({length:partySize},(_,i)=>({display_name:'AI '+(i+1),type:'ai'})),now,{seed});for(let i=0;i<3800&&!['won','lost'].includes(g.phase);i++){now+=50;Core.step(g,{},.05,now);}if(g.phase==='won'){wins++;times.push(g.result.durationMs);}last=g;}return{wins,times,last};}
+const solo=run(1,20),pair=run(2,20),full=run(4,20);assert.ok(solo.wins>=10,'solo AI should prove the game is completable');assert.ok(pair.wins>=8,'AI pair should be competitive');assert.ok(full.wins>=5,'four-seat AI party should be competitive without guaranteed victory');assert.ok(solo.times.concat(pair.times,full.times).every(ms=>ms>20000&&ms<=180000));assert.equal(full.last.goal,250);assert.equal(Object.keys(full.last.players).length,4);
+console.log('Lumenwake balance selftest: PASS · solo '+solo.wins+'/20 · pair '+pair.wins+'/20 · four-seat '+full.wins+'/20 · bounded three-minute runs');

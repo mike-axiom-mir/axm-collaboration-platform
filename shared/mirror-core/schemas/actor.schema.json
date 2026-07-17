@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.actor/v1",
+  "title": "AXM Mirror Actor",
+  "type": "object",
+  "required": ["actor_id", "actor_type", "display_name", "source_system", "capabilities", "permissions", "provenance", "status"],
+  "properties": {
+    "actor_id": {"type": "string", "pattern": "^actor:[a-z0-9._-]+:[a-z0-9._-]+$"},
+    "actor_type": {"enum": ["human", "ai", "adapter", "local_service", "governance_group", "imported_external_actor"]},
+    "display_name": {"type": "string", "minLength": 1, "maxLength": 160},
+    "source_system": {"type": "string", "minLength": 1},
+    "capabilities": {"type": "array", "items": {"type": "string"}},
+    "permissions": {"type": "array", "items": {"type": "object"}},
+    "active_session": {"type": ["object", "null"]},
+    "provenance": {"type": "array", "items": {"type": "object"}},
+    "status": {"enum": ["active", "paused", "disconnected", "revoked", "retired"]},
+    "revision": {"type": "integer", "minimum": 1}
+  },
+  "additionalProperties": false
+}

@@ -10,10 +10,10 @@
     {id:'packages',title:'Backups & Packages',short:'Packages',group:'Publish',route:'packages',icon:'package',description:'Create verified private backups or scanned public-safe Workshop packages.'},
     {id:'distribution',title:'Launcher & Distribution',short:'Distribution',group:'Publish',route:'distribution',icon:'distribution',description:'Prepare governed launcher cards and distribution metadata without claiming installation.'}
   ];
-  var FORMATS=['PNG','JPEG','PDF','SVG','Audio','Video','3D','Web','Executable','Package','Source','Other'];
+  var FORMATS=['PNG','JPEG','WebP','PDF','SVG','Audio','Video','3D','Web','Executable','Package','Source','Other'];
   var STATES=['INBOX','REVIEWED','READY','EXPORTED','RELEASED','BLOCKED'];
   function byId(id){return VIEWS.find(function(v){return v.id===id;})||VIEWS[0];}
   function groups(){var out=[];VIEWS.forEach(function(v){var g=out.find(function(x){return x.name===v.group;});if(!g){g={name:v.group,views:[]};out.push(g);}g.views.push(v);});return out;}
   function normalize(input){input=input&&typeof input==='object'?input:{};return{schema:'axm.publish-library.workspace/v1',view:byId(input.view).id,updatedAt:input.updatedAt||null};}
-  return{VERSION:'1.0.0',VIEWS:VIEWS,FORMATS:FORMATS,STATES:STATES,byId:byId,groups:groups,normalize:normalize};
+  return{VERSION:'1.1.0',VIEWS:VIEWS,FORMATS:FORMATS,STATES:STATES,byId:byId,groups:groups,normalize:normalize};
 });

@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "game-forge",
-  "version": "v1.1",
+  "version": "v1.2",
   "provides": [
     "modular-game-project-workspace",
     "2d-and-3d-world-documents",
@@ -14,17 +14,25 @@
     "test-replay-and-mod-ledger"
     ,"instant-playable-map-preview"
     ,"verified-package-candidate-builder"
+    ,"shared-physics-2d-lab"
+    ,"fixed-step-body-force-and-contact-prototypes"
+    ,"physics-diagnostics-and-checksums"
+    ,"explicit-game-physics-project-snapshots"
+    ,"contact-lifecycle-and-collision-filtering"
+    ,"bounded-physics-replay-traces"
+    ,"contact-aware-sleep-and-explicit-wake"
   ],
   "consumes": [
     "service:game-hub",
     "service:sandbox",
     "service:studio",
     "game.manifest.json",
-    "axm.game-asset/v1"
+    "axm.game-asset/v1",
+    "service:axm-physics-2d"
   ],
   "permissions": [],
   "handoffs": {
-    "emits": ["axm.game-forge-project/v1", "axm.game-mod-manifest/v1"],
+    "emits": ["axm.game-forge-project/v1", "axm.game-mod-manifest/v1", "axm.game-physics-config/v1"],
     "accepts": ["axm.game-asset/v1", "hub:init", "hub:settings:value"]
   },
   "boundaries": {
@@ -37,6 +45,10 @@
       "automatic-mod-installation",
       "separate-engine-module-per-game"
       ,"automatic-candidate-installation"
+      ,"automatic-physics-scene-execution"
+      ,"scientific-validation-claim"
+      ,"general-3d-physics-claim"
+      ,"cross-engine-bitwise-determinism-claim"
     ]
   }
 }

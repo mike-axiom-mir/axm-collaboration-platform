@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "publish-library",
-  "version": "v1.0",
+  "version": "v1.1",
   "provides": [
     "single-publish-library-workspace",
     "shared-asset-library-view",
@@ -9,13 +9,17 @@
     "versioned-artifact-inbox",
     "reviewed-release-ledger",
     "verified-workshop-packaging-view",
-    "launcher-distribution-proposal-view"
+    "launcher-distribution-proposal-view",
+    "cancellable-local-output-engine",
+    "verified-pdf-output",
+    "verified-image-transform-output"
   ],
   "consumes": [
     "service:asset-vault",
     "service:asset-pack-lab",
     "service:workshop-packager",
-    "service:launcher-card-installer"
+    "service:launcher-card-installer",
+    "service:shared-output-engine-v0.1"
   ],
   "permissions": [],
   "handoffs": {
@@ -26,7 +30,8 @@
     "writes": [
       "browser-local:artifact-inbox",
       "browser-local:release-ledger",
-      "user-download:explicit-release-manifest"
+      "user-download:explicit-release-manifest",
+      "user-download:verified-output-artifact"
     ],
     "refuses": [
       "automatic-artifact-approval",
@@ -34,7 +39,10 @@
       "automatic-release-evidence-acceptance",
       "public-package-after-secret-scan-failure",
       "automatic-launcher-installation",
-      "marketplace-publication"
+      "marketplace-publication",
+      "trial-locked-output-engine",
+      "proprietary-cloud-conversion",
+      "output-job-without-verification-receipt"
     ]
   }
 }

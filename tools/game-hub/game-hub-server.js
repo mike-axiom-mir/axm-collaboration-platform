@@ -152,6 +152,16 @@ function listGames() {
   return games;
 }
 
+function controllerPathFor(game, player, index) {
+  const configured = game && game.launch && game.launch.controller_path;
+  let route = String(configured || '/?room=AXM1&player={player}');
+  route = route
+    .replace(/\{player\}/g, 'p' + (index + 1))
+    .replace(/\{seat_id\}/g, String(player && player.seat_id || ''));
+  if (route.charAt(0) !== '/') route = '/' + route;
+  return route;
+}
+
 function findGame(gameId) {
   const games = listGames();
   return games.find(game => game.game_id === gameId) || null;
@@ -237,8 +247,8 @@ const server = http.createServer(async (req, res) => {
         seat_id: player.seat_id,
         name: player.display_name,
         type: player.type,
-        local_url: player.type === 'human' ? `http://127.0.0.1:${runtime.port}/?room=AXM1&player=p${index + 1}` : null,
-        lan_url: player.type === 'human' && primary ? `http://${primary}:${runtime.port}/?room=AXM1&player=p${index + 1}` : null
+        local_url: player.type === 'human' ? `http://127.0.0.1:${runtime.port}${controllerPathFor(game, player, index)}` : null,
+        lan_url: player.type === 'human' && primary ? `http://${primary}:${runtime.port}${controllerPathFor(game, player, index)}` : null
       }));
       return send(res, 200, {
         ok: true,

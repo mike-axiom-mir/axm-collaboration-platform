@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#080a17" />
+    <title>LUX-5 · Neon Overdrive</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell" id="appShell">
+      <header class="topbar">
+        <div class="brand" aria-label="LUX-5 Neon Overdrive">
+          <span class="brand-mark" aria-hidden="true"><i></i></span>
+          <div>
+            <strong>LUX-5</strong>
+            <span>NEON OVERDRIVE</span>
+          </div>
+        </div>
+
+        <div class="jackpot-pill" id="jackpotPill">
+          <span class="jackpot-spark" aria-hidden="true">✦</span>
+          <span>SHARED JACKPOT</span>
+          <strong id="jackpotValue">100.00</strong>
+        </div>
+
+        <button class="sound-button" id="soundButton" type="button" aria-label="Toggle sound" aria-pressed="true">
+          <span aria-hidden="true">◖))</span>
+        </button>
+      </header>
+
+      <main class="game-layout">
+        <section class="machine-stage" id="machineStage" aria-label="LUX-5 robot slot machine">
+          <canvas id="stageCanvas" aria-hidden="true"></canvas>
+
+          <div class="machine-copy">
+            <span class="machine-kicker" id="modeKicker">FAIR SEQUENCE · ONLINE</span>
+            <h1>Meet <em>LUX-5</em></h1>
+          </div>
+
+          <div class="face-screen" id="faceScreen" aria-hidden="true">
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+            <div class="mouth"></div>
+          </div>
+
+          <div class="reel-console" id="reelConsole">
+            <div class="console-header">
+              <span class="console-status"><i></i><b id="consoleMode">READY</b></span>
+              <span class="sequence-tag">SEQ <b id="sequenceValue">00000</b> / 50000</span>
+            </div>
+
+            <div class="reel-window" id="reelWindow" aria-live="polite" aria-label="Five reel, four row slot result">
+              <div class="payline-glow" aria-hidden="true"></div>
+              <div class="reel-grid" id="reelGrid"></div>
+              <div class="scanline" aria-hidden="true"></div>
+            </div>
+
+            <div class="console-footer">
+              <span id="lastWinLabel">SYSTEM READY</span>
+              <strong id="lastWinValue">96% FAIR MATH</strong>
+            </div>
+          </div>
+
+          <div class="wheel-system" id="wheelSystem" aria-hidden="true">
+            <div class="wheel-pointer"></div>
+            <div class="wheel-rotor" id="wheelRotor">
+              <div class="wheel-face">
+                <span style="--i:0">−30%</span>
+                <span style="--i:1">−15%</span>
+                <span style="--i:2">−5%</span>
+                <span style="--i:3">+5%</span>
+                <span style="--i:4">+25%</span>
+                <span style="--i:5">+35%</span>
+              </div>
+              <div class="wheel-core"><b>LUX</b><small>BOOST</small></div>
+            </div>
+            <div class="wheel-result" id="wheelResult">+5%</div>
+          </div>
+
+          <div class="overdrive-banner" id="overdriveBanner" aria-hidden="true">
+            <span>OVERDRIVE</span>
+            <strong>×1.5</strong>
+          </div>
+
+          <div class="floor-caption">
+            <span class="fair-dot"></span>
+            <span>The machine sees only its next outcome.</span>
+          </div>
+        </section>
+
+        <aside class="control-deck" aria-label="Slot controls and status">
+          <section class="readout-card primary-readout">
+            <div class="readout-label">YOUR BANKROLL</div>
+            <div class="bankroll-value"><span>¤</span><strong id="bankrollValue">250.00</strong></div>
+            <div class="bankroll-rule"><span></span><small>NO PITY · NO PUNISHMENT</small><span></span></div>
+          </section>
+
+          <section class="readout-card wager-card">
+            <div class="card-heading">
+              <div>
+                <small>WAGER</small>
+                <strong id="wagerValue">10.00</strong>
+              </div>
+              <span>4 LINES</span>
+            </div>
+            <input id="wagerSlider" class="wager-slider" type="range" min="0" max="3" value="3" step="1" aria-label="Wager amount" />
+            <div class="quick-bets" id="quickBets">
+              <button type="button" data-bet="1">1</button>
+              <button type="button" data-bet="2">2</button>
+              <button type="button" data-bet="5">5</button>
+              <button type="button" data-bet="10" class="active">10</button>
+            </div>
+          </section>
+
+          <button class="spin-button" id="spinButton" type="button">
+            <span class="spin-orbit" aria-hidden="true"></span>
+            <span class="spin-label"><b id="spinLabel">SPIN</b><small id="spinHint">PRESS SPACE</small></span>
+          </button>
+
+          <section class="feature-grid">
+            <article>
+              <span class="feature-icon core">✦</span>
+              <div><small>POWER CORES</small><strong>3 / 4 / 5</strong><em>4 · 7 · 18 free spins</em></div>
+            </article>
+            <article>
+              <span class="feature-icon bolt">ϟ</span>
+              <div><small>OVERDRIVE</small><strong>×1.5</strong><em>All free-spin line wins</em></div>
+            </article>
+            <article>
+              <span class="feature-icon wheel">◉</span>
+              <div><small>FIVE-IN-A-ROW</small><strong>BOOST WHEEL</strong><em>−30% through +35% profit</em></div>
+            </article>
+          </section>
+
+          <section class="activity-card">
+            <div class="card-heading compact">
+              <small>LAST EVENT</small>
+              <span id="connectionStatus">CONNECTING</span>
+            </div>
+            <p id="eventMessage">LUX-5 is warming up its neon circuits…</p>
+          </section>
+        </aside>
+      </main>
+
+      <div class="jackpot-celebration" id="jackpotCelebration" aria-hidden="true">
+        <div class="jackpot-rays"></div>
+        <div class="jackpot-content">
+          <span>✦ SHARED POOL HIT ✦</span>
+          <h2>JACKPOT</h2>
+          <strong id="jackpotWinValue">¤0.00</strong>
+          <small>THE REST STAYS IN THE POOL</small>
+        </div>
+      </div>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </div>
+
+    <noscript>LUX-5 needs JavaScript enabled.</noscript>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.evidence/v1",
+  "title": "AXM Mirror Evidence",
+  "type": "object",
+  "required": ["evidence_id", "schema_version", "evidence_type", "source", "creator", "timestamp", "storage_reference", "claim_scope", "limitations", "verification_status"],
+  "properties": {
+    "evidence_id": {"type": "string", "pattern": "^evidence:[a-z0-9._-]+(?::[a-z0-9._-]+)+$"},
+    "schema_version": {"const": "axm.mirror.evidence/v1"},
+    "evidence_type": {"enum": ["source_document", "measurement", "test_result", "simulation_result", "screenshot", "log", "user_attestation", "adapter_receipt", "external_reference", "verifier_report"]},
+    "source": {"type": "object"},
+    "creator": {"type": "object"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "integrity_hash": {"type": ["string", "null"]},
+    "storage_reference": {"type": "string"},
+    "claim_scope": {"type": "array", "items": {"type": "string"}},
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "verification_status": {"enum": ["unverified", "schema_valid", "checked", "failed", "disputed"]},
+    "extensions": {"type": "object"}
+  },
+  "additionalProperties": false
+}

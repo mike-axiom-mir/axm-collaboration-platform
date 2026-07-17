@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.type.structure/v1",
+  "title": "Structure type data",
+  "type": "object",
+  "required": ["components", "joints", "support_relations", "geometry_reference", "material_assignments", "construction_steps", "intended_function", "simulation_refs", "inspection_refs", "safety_status", "physical_truth_status"],
+  "properties": {
+    "components": {"type": "array"},
+    "joints": {"type": "array"},
+    "support_relations": {"type": "array"},
+    "geometry_reference": {"type": ["string", "null"]},
+    "material_assignments": {"type": "array"},
+    "construction_steps": {"type": "array"},
+    "intended_function": {"type": "string"},
+    "simulation_refs": {"type": "array"},
+    "inspection_refs": {"type": "array"},
+    "safety_status": {"enum": ["unknown", "not_assessed", "simulated_only", "inspection_required", "restricted", "cleared_by_qualified_review"]},
+    "physical_truth_status": {"type": "string"}
+  },
+  "additionalProperties": true
+}

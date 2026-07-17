@@ -8,7 +8,8 @@ $ErrorActionPreference = 'Stop'
 $ZipPath = [System.IO.Path]::GetFullPath($ZipPath)
 $OutputDir = [System.IO.Path]::GetFullPath($OutputDir)
 $TestRoot = [System.IO.Path]::GetFullPath((Join-Path $OutputDir '.restore-tests'))
-$RestorePath = [System.IO.Path]::GetFullPath((Join-Path $TestRoot $BaseName))
+$RestoreLeaf = 'rt-' + (($BaseName -split '-')[-1])
+$RestorePath = [System.IO.Path]::GetFullPath((Join-Path $TestRoot $RestoreLeaf))
 $ReportPath = [System.IO.Path]::GetFullPath((Join-Path $OutputDir ($BaseName + '.RESTORE_TEST.json')))
 $startedAt = (Get-Date).ToString('o')
 $serverProcess = $null
@@ -40,7 +41,7 @@ Assert-Under $ZipPath $OutputDir
 Assert-Under $TestRoot $OutputDir
 Assert-Under $RestorePath $TestRoot
 Assert-Under $ReportPath $OutputDir
-if ((Split-Path -Leaf $RestorePath) -ne $BaseName -or $BaseName -notlike 'axm-workshop-*') {
+if ((Split-Path -Leaf $RestorePath) -ne $RestoreLeaf -or $RestoreLeaf -notlike 'rt-*' -or $BaseName -notlike 'axm-workshop-*') {
   throw 'Restore-test safety refusal: unexpected package name.'
 }
 if (-not (Test-Path -LiteralPath $ZipPath)) { throw 'Restore-test archive missing.' }
@@ -48,7 +49,11 @@ if (Test-Path -LiteralPath $RestorePath) { throw 'Restore-test destination alrea
 
 try {
   New-Item -ItemType Directory -Force -Path $TestRoot | Out-Null
-  Expand-Archive -LiteralPath $ZipPath -DestinationPath $RestorePath -Force
+  # Windows PowerShell's Expand-Archive can fail during its own cleanup when a
+  # large archive contains a path it has already expanded.  The .NET extractor
+  # is deterministic here because RestorePath is guaranteed to be new.
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+  [System.IO.Compression.ZipFile]::ExtractToDirectory($ZipPath,$RestorePath)
 
   $manifestFiles = @(Get-ChildItem -LiteralPath $RestorePath -Recurse -File -Filter 'PACKAGE_MANIFEST.json' -Force)
   if ($manifestFiles.Count -ne 1) { throw "Expected one PACKAGE_MANIFEST.json, found $($manifestFiles.Count)." }
@@ -128,7 +133,7 @@ try {
   }
   if (Test-Path -LiteralPath $RestorePath) {
     Assert-Under $RestorePath $TestRoot
-    if ((Split-Path -Leaf $RestorePath) -eq $BaseName -and $BaseName -like 'axm-workshop-*') {
+    if ((Split-Path -Leaf $RestorePath) -eq $RestoreLeaf -and $RestoreLeaf -like 'rt-*' -and $BaseName -like 'axm-workshop-*') {
       Remove-Item -LiteralPath $RestorePath -Recurse -Force
     }
   }

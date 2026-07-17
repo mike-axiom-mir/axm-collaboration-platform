@@ -8,19 +8,26 @@
 <link rel="stylesheet" href="/hub/radio.css">
 <link rel="stylesheet" href="/hub/foundation-services.css">
 <link rel="stylesheet" href="/hub/profile.css">
+<link rel="stylesheet" href="/hub/growth.css">
+<link rel="stylesheet" href="/hub/capability-guide.css">
 <script src="/shared/services/axm-foundation-services.js"></script>
+<script src="/shared/capabilities/workshop-capability-index.js"></script>
+<script src="/shared/continuity/workshop-continuity.js"></script>
+<script src="/shared/handoffs/artifact-handoff-broker.js"></script>
 <!-- contract before shell: the shell's reducer lives in AXMContract -->
 <script src="/hub/module-contract.js"></script>
 <script src="/hub/skin-core.js"></script>
 <script src="/hub/skin-renderer.js"></script>
-<script src="/hub/hub-shell.js"></script>
+<script src="/hub/workshop-navigation.js?v=20260713-1"></script>
+<script src="/hub/hub-shell.js?v=20260713-1"></script>
 </head>
 <body>
 <div class="shell">
 
   <!-- ===== TOP BAR (outer stable) ===== -->
   <header class="topbar">
-    <div class="mark"><b>AXM</b></div>
+    <button class="workshop-back" id="workshopBack" type="button" aria-label="Go to previous AXM screen" title="Previous AXM screen · saved work is unchanged" disabled><span aria-hidden="true">‹</span></button>
+    <button class="mark profile-entry" id="profileMark" type="button" aria-label="Open shared profile and achievements" aria-haspopup="dialog" aria-controls="profileScreen" title="Open shared profile"><b>AXM</b></button>
     <div class="brand">AXM <span>Hub</span></div>
     <div class="active-lbl"><span>Inside</span><b id="activeName">Home</b></div>
     <div class="grow"></div>
@@ -73,8 +80,20 @@
           <div class="hero-kicker"><span></span> AXM LOCAL OPERATING SPACE</div>
           <h1 id="homeTitle">What do you want to do?</h1>
           <p id="homeIntro">Choose a workspace. The safe modules underneath stay separate, but you do not need to manage the plumbing.</p>
+          <div class="capability-guide" id="capabilityGuide">
+            <form class="capability-search" id="capabilityForm"><input id="capabilityQuery" type="search" maxlength="200" autocomplete="off" aria-label="Describe what you want to do" placeholder="Describe it normally — e.g. make music, plan a project, edit a picture…"><button type="submit">Find where</button></form>
+            <div class="capability-prompts" aria-label="Example requests"><button class="capability-prompt" type="button" data-capability-query="draw an icon">Draw an icon</button><button class="capability-prompt" type="button" data-capability-query="make music">Make music</button><button class="capability-prompt" type="button" data-capability-query="build a game">Build a game</button><button class="capability-prompt" type="button" data-capability-query="plan a project">Plan a project</button><button class="capability-prompt" type="button" data-capability-query="research data">Research data</button><button class="capability-prompt" type="button" data-capability-query="package and publish">Package &amp; publish</button></div>
+            <div class="capability-results" id="capabilityResults" aria-live="polite"></div>
+            <div class="capability-guide-note">Recommendations only — nothing opens, installs, runs or changes permissions until you choose it.</div>
+          </div>
           <div class="hero-meta"><span>LOCAL FIRST</span><span>MODULAR CORE</span><span>HUMAN CONTROL</span><span>VERIFIED ROUTES</span></div>
         </div>
+        <section class="continuity-strip" id="continuityStrip" hidden aria-labelledby="continuityTitle"><div class="continuity-head"><div><span>LOCAL RESUME REFERENCES</span><h2 id="continuityTitle">Continue working</h2><p>Open a recent workspace or project from its own saved state. Project data stays where it was created.</p></div></div><div class="continuity-list" id="continuityList" aria-live="polite"></div></section>
+        <section class="handoff-strip" id="handoffStrip" aria-labelledby="handoffTitle">
+          <div class="handoff-head"><div><span>EXPLICIT ARTIFACT ROUTES</span><h2 id="handoffTitle">Move work between workspaces</h2><p>Choose what one workspace made. AXM only shows destinations that declare that format. Preparing a handoff never copies or imports the file.</p></div></div>
+          <form class="handoff-form" id="handoffForm"><label>From workspace<select id="handoffSource" aria-label="Handoff source workspace"></select></label><label>Type of work<select id="handoffArtifact" aria-label="Handoff artifact type"></select></label><button type="submit">Find destinations</button></form>
+          <div class="handoff-results" id="handoffResults" aria-live="polite"></div>
+        </section>
         <div class="home-grid" id="homeGrid"></div>
       </div>
 
@@ -106,7 +125,7 @@
 
 <div class="overlay" id="profileScreen" role="dialog" aria-modal="true" aria-labelledby="profileTitle"><div class="sheet profile-sheet">
   <button class="close" id="profileClose" type="button" aria-label="Close shared profile">&#10005;</button>
-  <div class="profile-hero"><div><div class="profile-kicker">Human + machine · one playful record</div><h2 id="profileTitle">Shared profile</h2><p class="profile-intro">A small local scrapbook of what the team makes together. Humans and AI get the same kind of member card. It is optional, stays on this machine, and never affects access or permissions.</p></div><span class="profile-state" id="profileState">OFF BY DEFAULT</span></div>
+  <div class="profile-hero"><div><div class="profile-kicker">Human + machine · one playful record</div><h2 id="profileTitle">Shared profile</h2><p class="profile-intro">A small local scrapbook of what the team makes together. Humans and AI get the same kind of member card. It is optional, stays on this machine, and never affects access or permissions.</p></div><button class="profile-state" id="profileState" type="button" aria-pressed="false">OFF · OPT IN</button></div>
   <section class="profile-consent" id="profileOff">
     <h3>Nothing is being counted</h3><p class="profile-intro">Enable this only if you want fun totals for games, pictures, completed projects and verified code contributions. Current collaborators will join as equal profile members.</p>
     <label>Team name<input id="profileDisplayName" value="AXM Team" maxlength="80"></label>
@@ -115,12 +134,24 @@
   <section id="profileOn" hidden>
     <div class="profile-actions"><h3 id="profileName" style="margin-right:auto">AXM Team</h3><button class="profile-action" id="profileSync" type="button">Add current collaborators</button><button class="profile-action" id="profileExport" type="button">Export JSON</button></div>
     <div class="profile-totals" id="profileTotals"></div>
-    <h3>Team members</h3><div class="profile-members" id="profileMembers"></div>
-    <form class="profile-code" id="profileCodeReceipt"><h3>Verified code receipt</h3><p class="profile-note">For a reviewed change only: record the exact character count and the diff, commit or file evidence behind it. This keeps the silly number honest.</p><div class="profile-code-grid"><select id="profileCodeActor" aria-label="Code contributor"></select><input id="profileCodeCount" type="number" min="1" max="100000000" required placeholder="Exact characters"><input id="profileCodeEvidence" required maxlength="1000" placeholder="Evidence: reviewed diff, commit, or files"></div><div class="profile-actions"><button class="profile-action" type="submit">Count contribution</button></div></form>
-    <div class="profile-future"><b>Achievements and item links are reserved for later.</b> This first version records simple stats only; it does not quietly invent rewards or online identity.</div>
+    <section class="profile-holders"><div class="profile-holder-head"><div><h3>Current craft holders</h3><p class="profile-note">Independent category spots, not a first-to-last leaderboard. Each spot shows its present holder and verified amount; ties share it.</p></div></div><div class="profile-holder-grid" id="profileHolders"></div></section>
+    <div class="profile-contribution-head"><div><h3>Optional task contribution board</h3><p class="profile-note">Only explicit AXM task receipts. No screen tracking, no constant activity surveillance and no overall winner score.</p></div><span>GAMES · ART · PROJECTS · CODE · EMBLEMS</span></div><div class="profile-members profile-contribution-board" id="profileMembers"></div>
+    <section class="profile-reflection" id="profileReflection"></section>
+    <form class="profile-code" id="profileCodeReceipt"><h3>Verified code receipt</h3><p class="profile-note">For a reviewed change only: count the exact characters, choose its purpose mood, and attach diff, commit or file evidence. Mood describes what the code serves—not which language or file it used.</p><div class="profile-receipt-health" id="profileReceiptHealth" role="status"></div><div class="profile-code-grid"><select id="profileCodeActor" aria-label="Code contributor"></select><select id="profileCodeMood" aria-label="Code purpose"><option value="infrastructure">Infrastructure</option><option value="entertainment">Entertainment</option><option value="software">Software</option></select><input id="profileCodeCount" type="number" min="1" max="100000000" required placeholder="Exact characters"><input id="profileCodeEvidence" required maxlength="1000" placeholder="Evidence: reviewed diff, commit, or files"></div><div class="profile-actions"><button class="profile-action" type="submit">Count contribution</button></div></form>
+    <section class="profile-achievements"><div class="profile-achievement-head"><div><h3>Achievements · <span id="profileAchievementOwner">AXM Team</span></h3><p class="profile-note">512 px emblems · 420 px safe artwork · locked by default · tied to verified profile and identity data.</p></div><div class="profile-achievement-actions"><button class="profile-action" id="profileAchievementTeam" type="button" hidden>Team view</button><b id="profileAchievementCount">0 / 8 lit</b></div></div><div class="profile-achievement-grid" id="profileAchievements"></div></section>
+    <div class="profile-future"><b>Item links remain reserved for later.</b> Unlocks are local profile records only; they do not grant access, permissions, purchases or online identity.</div>
     <div class="profile-actions"><button class="profile-action" id="profileStop" type="button">Stop tracking</button><button class="profile-action danger" id="profileDelete" type="button">Delete profile & history</button></div>
   </section>
   <div class="profile-message" id="profileMessage" role="status"></div>
+</div></div>
+
+<div class="overlay" id="growthScreen" role="dialog" aria-modal="true" aria-labelledby="growthTitle"><div class="sheet growth-sheet">
+  <button class="close" id="growthClose" type="button" aria-label="Close Workshop Growth">&#10005;</button>
+  <div class="growth-hero"><div><div class="growth-kicker">AXM · living workshop infographic</div><h2 id="growthTitle">The village is getting bigger.</h2><p>See what the active workshop has become without letting backups, exported copies, logs or dependencies inflate the story.</p></div><div class="growth-actions"><input id="growthLabel" maxlength="100" value="Workshop milestone" aria-label="Snapshot label"><button id="growthCapture" type="button">Save snapshot</button><span id="growthActionStatus" class="growth-action-status" role="status" aria-live="polite"></span></div></div>
+  <div class="growth-primary" id="growthPrimary"></div>
+  <div class="growth-world"><section class="growth-panel"><h3>Workshop constellation</h3><p>Independent things AXM can now open, play, or verify.</p><div class="growth-orbits" id="growthOrbits"></div><div class="growth-composition" id="growthComposition"></div></section><section class="growth-panel"><h3>Growth since baseline</h3><p>Snapshots are explicit and identical measurements deduplicate.</p><div class="growth-deltas" id="growthDeltas"></div></section></div>
+  <section class="growth-panel" style="margin-top:14px"><h3>Timeline</h3><p>Up to the latest twenty saved workshop moments.</p><div class="growth-history" id="growthHistory"></div></section>
+  <div class="growth-rules" id="growthRules"></div><div class="growth-status" id="growthStatus" role="status"></div>
 </div></div>
 
 <section class="vision-panel" id="visionPanel" hidden aria-label="Claude shared vision controls">
@@ -202,10 +233,12 @@
 </div></div>
 
 <script src="/hub/ai-presence.js"></script>
-<script src="/shared/profile/axm-profile-client.js"></script>
-<script src="/hub/profile.js"></script>
+<script src="/shared/profile/axm-profile-client.js?v=20260713-2"></script>
+<script src="/hub/profile.js?v=20260713-2"></script>
+<script src="/hub/growth.js"></script>
 <script src="/hub/ai-vision-loop.js"></script>
 <script src="/hub/foundation-services.js"></script>
+<script src="/hub/sonic-signature.js"></script>
 <script src="/hub/radio.js"></script>
 <script src="/hub/spotify.js"></script>
 <script>AXMHubShell.boot();</script>

@@ -1,0 +1,62 @@
+{
+  "id": "district-dominion-v0-1",
+  "mode": "district_dominion",
+  "title": "District Dominion",
+  "roundSeconds": 300,
+  "scoreGoal": 180,
+  "captureRatePerSecond": 15,
+  "scoreIntervalSeconds": 1,
+  "startingPartyFundCents": 5000,
+  "incomeIntervalSeconds": 5,
+  "incomePerOwnedZoneCents": 100,
+  "reinforcement": {
+    "costCents": 2500,
+    "squadSize": 2,
+    "maxActivePerParty": 4,
+    "lifetimeSeconds": 75,
+    "purchaseCooldownSeconds": 3
+  },
+  "playerSpawns": [
+    { "slot": 1, "partyId": "party_a", "x": 952, "y": 440 },
+    { "slot": 2, "partyId": "party_a", "x": 952, "y": 488 },
+    { "slot": 3, "partyId": "party_a", "x": 952, "y": 536 },
+    { "slot": 4, "partyId": "party_a", "x": 952, "y": 584 },
+    { "slot": 5, "partyId": "party_b", "x": 72, "y": 440 },
+    { "slot": 6, "partyId": "party_b", "x": 72, "y": 488 },
+    { "slot": 7, "partyId": "party_b", "x": 72, "y": 536 },
+    { "slot": 8, "partyId": "party_b", "x": 72, "y": 584 }
+  ],
+  "vehicleSpawns": [
+    { "id": "vehicle-001", "x": 172, "y": 630, "rotation": 0, "maxOccupants": 4, "health": 50, "style": "teal" },
+    { "id": "vehicle-002", "x": 852, "y": 630, "rotation": 3.14159, "maxOccupants": 4, "health": 50, "style": "amber" }
+  ],
+  "commandPosts": {
+    "party_a": {
+      "id": "command-post-a",
+      "label": "Party A East Command",
+      "x": 952,
+      "y": 512,
+      "radius": 76,
+      "reinforcementSpawn": { "x": 904, "y": 512 },
+      "safeZone": { "id": "dominion-safe-a", "x": 892, "y": 420, "width": 100, "height": 184 },
+      "baseZone": { "id": "dominion-base-a", "partyId": "party_a", "x": 892, "y": 420, "width": 100, "height": 184, "healthRegenPerSecond": 10 }
+    },
+    "party_b": {
+      "id": "command-post-b",
+      "label": "Party B West Command",
+      "x": 72,
+      "y": 512,
+      "radius": 76,
+      "reinforcementSpawn": { "x": 120, "y": 512 },
+      "safeZone": { "id": "dominion-safe-b", "x": 32, "y": 420, "width": 100, "height": 184 },
+      "baseZone": { "id": "dominion-base-b", "partyId": "party_b", "x": 32, "y": 420, "width": 100, "height": 184, "healthRegenPerSecond": 10 }
+    }
+  },
+  "zones": [
+    { "id": "west-junction", "label": "West Junction", "x": 172, "y": 512, "radius": 58, "initialOwnerPartyId": "party_b" },
+    { "id": "north-loop", "label": "North Loop", "x": 512, "y": 82, "radius": 58, "initialOwnerPartyId": null },
+    { "id": "central-crossing", "label": "Central Crossing", "x": 512, "y": 512, "radius": 68, "initialOwnerPartyId": null },
+    { "id": "south-loop", "label": "South Loop", "x": 512, "y": 950, "radius": 58, "initialOwnerPartyId": null },
+    { "id": "east-junction", "label": "East Junction", "x": 852, "y": 512, "radius": 58, "initialOwnerPartyId": "party_a" }
+  ]
+}

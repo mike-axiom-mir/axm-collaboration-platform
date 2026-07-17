@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AXM Finance World Room — Experimental</title>
+<script src="/launcher/axm-foundation.js"></script>
+<script src="/launcher/axm-settings.js"></script>
+<script src="/launcher/axm-registry.js"></script>
+<script src="vendor/d3-array.min.js"></script>
+<script src="vendor/d3-geo.min.js"></script>
+<script src="finance-core.js"></script>
+<script src="finance-sources.js"></script>
+<link rel="stylesheet" href="finance-world.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/hub/index.html" aria-label="Return to AXM Hub"><span class="brand-mark">AXM</span><span><b>Finance World Room</b><small>spatial statistics sandbox</small></span></a>
+  <div class="status-line"><span class="signal"></span><span>EXPERIMENTAL</span><span>LOCAL-FIRST</span><span id="bootStatus">starting…</span></div>
+  <div class="top-actions"><button class="button" id="saveCheckpoint">Save</button><button class="button" id="exportRoom">Export room</button></div>
+</header>
+<div class="boundary">Explore evidence, not certainty. No automatic fetch, estimate, forecast, buy/sell instruction or trade execution.</div>
+<main>
+  <nav class="view-tabs" aria-label="Finance World Room views">
+    <button class="view-tab active" data-view="map">World map</button>
+    <button class="view-tab" data-view="timeline">Timeline</button>
+    <button class="view-tab" data-view="compare">Compare</button>
+    <button class="view-tab" data-view="data">Data intake</button>
+    <button class="view-tab" data-view="quality">Sources & quality</button>
+    <button class="view-tab" data-view="notes">Room notes</button>
+  </nav>
+
+  <section class="view active" id="view-map">
+    <div class="map-controls">
+      <label>Layer<select id="metricSelect"></select></label>
+      <label>Year<select id="yearSelect"></select></label>
+      <div class="map-buttons"><button class="button" id="zoomIn" aria-label="Zoom in">+</button><button class="button" id="zoomOut" aria-label="Zoom out">−</button><button class="button" id="resetMap">World</button></div>
+    </div>
+    <div class="map-stage" id="mapStage">
+      <svg id="worldMap" viewBox="0 0 1200 620" role="img" aria-label="Flat world map colored by selected financial statistic"><g id="mapViewport"></g></svg>
+      <div class="map-tooltip" id="mapTooltip" hidden></div>
+      <div class="empty-map" id="emptyMap"><b>No evidence loaded for this layer and year.</b><span>Open Data intake to preview official World Bank data or a local CSV/JSON file.</span><button class="button primary" data-open-view="data">Open data intake</button></div>
+    </div>
+    <div class="legend" id="mapLegend"></div>
+    <div class="map-footer"><span>Drag to move · wheel or buttons to zoom · click a country to inspect · double-click to focus</span><span id="mapCoverage"></span></div>
+    <section class="country-strip" id="countryStrip"><div><span class="eyebrow">Selected country</span><h2>Choose a country on the map</h2></div><div class="country-metrics" id="countryMetrics"></div></section>
+    <section class="lens-box" id="lensBox" hidden></section>
+  </section>
+
+  <section class="view" id="view-timeline">
+    <div class="section-head"><div><span class="eyebrow">Time room</span><h1>Follow one place through time</h1></div><div class="inline-controls"><label>Country<select id="timelineCountry"></select></label><label>Indicator<select id="timelineIndicator"></select></label></div></div>
+    <section class="panel chart-panel"><svg id="timelineChart" viewBox="0 0 1100 430" role="img" aria-label="Selected country financial statistic over time"></svg><div class="chart-empty" id="timelineEmpty">Choose a country with evidence.</div></section>
+    <section class="panel" id="timelineEvidence"></section>
+  </section>
+
+  <section class="view" id="view-compare">
+    <div class="section-head"><div><span class="eyebrow">Comparison table</span><h1>Put countries beside each other</h1></div><div class="inline-controls"><label>Add country<select id="compareCountry"></select></label><button class="button primary" id="addCompare">Add</button></div></div>
+    <section class="panel"><div class="compare-chips" id="compareChips"></div><div class="table-wrap"><table><thead><tr><th>Country</th><th>Layer value</th><th>Coverage</th><th>Year</th><th>Source</th></tr></thead><tbody id="compareRows"></tbody></table></div></section>
+  </section>
+
+  <section class="view" id="view-data">
+    <div class="section-head"><div><span class="eyebrow">Nothing enters silently</span><h1>Preview, inspect, then commit</h1></div></div>
+    <div class="two-col">
+      <section class="panel"><h2>World Bank Indicators API</h2><p>Explicit network preview from World Development Indicators. It does not save until you commit.</p><label>Indicator<select id="wbIndicator"></select></label><div class="year-pair"><label>From<input id="wbStart" type="number" min="1960" max="2100"></label><label>To<input id="wbEnd" type="number" min="1960" max="2100"></label></div><button class="button primary" id="fetchWorldBank">Fetch preview</button><small class="hint">The adapter excludes aggregate regions and keeps the returned source URL with every row.</small></section>
+      <section class="panel"><h2>Local evidence file</h2><p>CSV or JSON using the room schema. Source ID and source type are mandatory.</p><label>Evidence file<input id="dataFile" type="file" accept=".csv,.json,text/csv,application/json"></label><div class="button-row"><button class="button primary" id="previewFile">Preview file</button><button class="button" id="downloadSchema">Schema</button></div></section>
+    </div>
+    <section class="panel preview-panel" id="previewPanel" hidden><div class="section-head compact"><div><span class="eyebrow">Staged only</span><h2 id="previewTitle">Preview</h2></div><div class="button-row"><button class="button primary" id="commitPreview">Commit accepted rows</button><button class="button" id="discardPreview">Discard</button></div></div><div class="stats" id="previewStats"></div><pre id="previewSample"></pre></section>
+    <section class="panel"><div class="section-head compact"><div><h2>Import receipts</h2><p>Every committed batch remains attributable.</p></div><button class="button danger" id="clearData">Clear room data</button></div><div id="importReceipts"></div></section>
+  </section>
+
+  <section class="view" id="view-quality">
+    <div class="section-head"><div><span class="eyebrow">Data health, not truth score</span><h1>See what the room actually knows</h1></div></div>
+    <div class="stats" id="qualityStats"></div>
+    <div class="two-col"><section class="panel"><h2>Indicator coverage</h2><div class="table-wrap"><table><thead><tr><th>Indicator</th><th>Rows</th><th>Countries</th><th>Years</th></tr></thead><tbody id="indicatorCoverage"></tbody></table></div></section><section class="panel"><h2>Source coverage</h2><div class="table-wrap"><table><thead><tr><th>Type</th><th>Rows</th><th>Sources</th></tr></thead><tbody id="sourceCoverage"></tbody></table></div></section></div>
+    <section class="panel"><h2>Honest boundaries</h2><ul><li>Missing years remain missing; the map never silently carries an old value forward.</li><li>Relative lenses compare only countries with enough exact-year components.</li><li>Data providers can revise historical observations.</li><li>Map boundaries provide spatial context and are not political claims.</li></ul></section>
+  </section>
+
+  <section class="view" id="view-notes">
+    <div class="section-head"><div><span class="eyebrow">Human interpretation layer</span><h1>Keep hypotheses separate from evidence</h1></div></div>
+    <div class="two-col"><section class="panel"><label>Question or decision<textarea id="roomQuestion" placeholder="Where might this pattern matter, and what do we still need to verify?"></textarea></label><label>What would change your mind?<textarea id="roomInvalidation" placeholder="Name evidence that would weaken or invalidate the idea."></textarea></label><button class="button primary" id="saveNote">Save room note</button></section><section class="panel"><h2>Saved notes</h2><div id="noteList"></div></section></div>
+  </section>
+</main>
+<footer><span>Finance World Room v0.1 · sandboxed research view</span><span id="footerStatus">0 observations</span></footer>
+<script src="finance-app.js"></script>
+</body>
+</html>

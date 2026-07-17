@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.entity/v1",
+  "title": "AXM Mirror Entity",
+  "type": "object",
+  "required": ["mirror_id", "schema_version", "entity_type", "name", "description", "source_system", "source_native_id", "created_by", "created_at", "updated_at", "truth_facets", "state", "capabilities", "relations", "provenance", "evidence_refs", "permissions", "adapter_metadata", "extensions"],
+  "properties": {
+    "mirror_id": {"type": "string", "pattern": "^mir:[a-z0-9._-]+:[a-z0-9._-]+:[a-z0-9._-]+$"},
+    "schema_version": {"const": "axm.mirror.entity/v1"},
+    "entity_type": {"type": "string"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 200},
+    "description": {"type": "string", "maxLength": 10000},
+    "source_system": {"type": "string", "minLength": 1, "maxLength": 120},
+    "source_native_id": {"type": "string", "minLength": 1, "maxLength": 240},
+    "created_by": {"$ref": "actor.schema.json"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "revision": {"type": "integer", "minimum": 1},
+    "truth_facets": {
+      "type": "object",
+      "required": ["origin", "representation", "verification", "connection", "physical_status", "operational_status"],
+      "additionalProperties": false,
+      "properties": {
+        "origin": {"enum": ["world_native", "platform_native", "real_import", "generated", "user_entered", "adapter_import", "unknown"]},
+        "representation": {"enum": ["visual_only", "text_description", "structured_model", "executable_model", "measured_record", "external_reference"]},
+        "verification": {"enum": ["unverified", "schema_valid", "simulated", "tested", "evidence_supported", "independently_checked", "failed", "disputed"]},
+        "connection": {"enum": ["detached", "read_only", "proposal_only", "approved_sync", "paused", "disconnected"]},
+        "physical_status": {"enum": ["not_applicable", "not_evaluated", "approximate", "simulated", "physically_tested", "measurement_backed", "contradicted"]},
+        "operational_status": {"enum": ["concept", "planned", "prototype", "active_local", "archived", "retired", "mirrored_real_operation"]}
+      }
+    },
+    "state": {"type": "object"},
+    "capabilities": {"type": "array", "items": {"type": "string"}},
+    "relations": {"type": "array", "items": {"type": "string"}},
+    "provenance": {"type": "array", "items": {"type": "object"}},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}},
+    "permissions": {"type": "object"},
+    "adapter_metadata": {"type": "object"},
+    "extensions": {"type": "object"}
+  },
+  "additionalProperties": false
+}

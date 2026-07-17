@@ -1,0 +1,11 @@
+'use strict';
+const fs=require('fs'),path=require('path'),crypto=require('crypto'),assert=require('assert');
+const root=__dirname,catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
+const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
+assert.equal(catalog.schema,'axm.museum-catalog/v1');
+assert.equal(catalog.visibility,'OFF_BY_DEFAULT');
+assert.equal(catalog.artifacts.length,2);
+catalog.artifacts.forEach(x=>assert.equal(x.active_module,false));
+assert.equal(hash('first-mirror/original/mirror.html'),'6eba9634b92df76b5b8d063cfd50356172566e80cbaae82a74ba19bab13b8eb5');
+assert.equal(hash('records/2026-07-14-accidental-symmetry.txt'),'8c04b7bd9511af9e1a937d3c9a4229c8d142aa1f0abe7efa22800a54f48884b3');
+console.log('museum provenance selftest: PASS');

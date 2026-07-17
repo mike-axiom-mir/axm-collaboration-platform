@@ -187,7 +187,7 @@ input[type=color]{width:30px;height:26px;border:1px solid var(--edge);border-rad
       <div class="seg" style="margin:0"><button id="assetToggle">Asset mode: OFF</button></div>
       <div id="assetBox" style="display:none;margin-top:8px">
         <div style="font-size:10px;color:var(--muted);margin-bottom:5px">Draw a piece, tag it, capture. The studio auto-packs them into one spritesheet + coordinate map.</div>
-        <div class="addrow"><select id="assetTag"></select><button id="assetCapture" style="color:var(--green);border-color:var(--green)">Capture</button></div>
+        <div class="addrow"><select id="assetTag"></select><input id="assetName" maxlength="48" value="asset" aria-label="Asset name" placeholder="asset name" style="min-width:0;flex:1;background:var(--panel-2);border:1px solid var(--edge);color:var(--text);border-radius:7px;padding:6px"><button id="assetCapture" style="color:var(--green);border-color:var(--green)">Capture</button></div>
         <div id="assetList" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0"></div>
         <button class="abtn" id="atlasExport" style="border-color:var(--gold);color:var(--gold)">Export atlas (spritesheet)</button>
         <textarea id="atlasMap" readonly placeholder="coordinate map appears here on export (selectable)" style="display:none;font-family:ui-monospace,monospace;font-size:9px;min-height:70px;width:100%;margin-top:7px"></textarea>
@@ -209,6 +209,7 @@ input[type=color]{width:30px;height:26px;border:1px solid var(--edge);border-rad
         <div id="wisdomLog" style="font-family:ui-monospace,monospace;font-size:10px;color:var(--muted-2);max-height:90px;overflow-y:auto;background:#06080f;border:1px solid var(--edge);border-radius:8px;padding:8px;margin-bottom:7px"></div>
         <textarea id="wisdomIO" placeholder="wisdom map — click Show to fill it (copy to a file), or paste a map and click Load" style="font-family:ui-monospace,monospace;font-size:10px;min-height:64px;width:100%;margin-bottom:7px"></textarea>
         <div class="addrow"><button id="wisdomExport">Show map</button><button id="wisdomLoadBtn">Load map</button></div>
+        <div class="addrow" style="margin-top:7px"><select id="wisdomAuthor" aria-label="Identity receiving this wisdom"><option value="axiom-mir">Axiom / Mir</option><option value="nova">Nova</option><option value="gemini-local">Gemini Local</option><option value="claude">Claude</option></select><button id="wisdomFileBtn" style="color:var(--green);border-color:var(--green)">File map to identity</button></div>
       </div>
     </div>
     <div class="block chatwrap"><p class="ct">Team Chat <span class="pulse" id="pulse"></span></p>
@@ -622,7 +623,7 @@ async function runAITurn(id){const me=idOf(id);if(!me||!me.active||me.kind!=='ai
     if(o.parseError)throw new Error('response was not valid Studio JSON');
     if(o.draw&&o.draw.length){const dr=runDraw(L,o.draw);sysMsg(dr.changed?me.name+' changed visible pixels on its layer.':me.name+' returned '+dr.commands+' draw command(s), but no canvas pixels changed.');}
     if(o.chat&&String(o.chat).trim())pushChat(me.name,me.color,String(o.chat).trim());
-    if(id==='ai1'&&wisdomOn&&o.wisdom&&String(o.wisdom).trim()){wisdomLog.push(String(o.wisdom).trim());renderWisdom();sysMsg(me.name+' filed a wisdom nugget.');}
+    if(id==='ai1'&&wisdomOn&&o.wisdom&&String(o.wisdom).trim()){const nugget=String(o.wisdom).trim();wisdomLog.push(nugget);fileIdentityWisdom(nugget,{id:idOf('ai1').brain==='chatgpt'?'axiom-mir':'nova',name:idOf('ai1').brain==='chatgpt'?'Axiom / Mir':me.name},'studio-ai-turn');renderWisdom();sysMsg(me.name+' filed a wisdom nugget.');}
     if((!o.chat||!String(o.chat).trim())&&!(o.draw&&o.draw.length))sysMsg(me.name+' had nothing to add this turn.');
   }catch(e){sysMsg(me.name+' error: '+e.message);}
   $('pulse').classList.remove('on');}
@@ -642,7 +643,7 @@ async function freeTurn(id){const me=idOf(id);if(!me)return{done:true};const L=e
     if(o.parseError)throw new Error('response was not valid Studio JSON');
     if(o.draw&&o.draw.length){const dr=runDraw(L,o.draw);sysMsg(dr.changed?me.name+' changed visible pixels (free practice).':me.name+' returned '+dr.commands+' practice command(s), but no canvas pixels changed.');}
     if(o.chat&&String(o.chat).trim())pushChat(me.name,me.color,String(o.chat).trim());
-    if(id==='ai1'&&wisdomOn&&o.wisdom&&String(o.wisdom).trim()){wisdomLog.push(String(o.wisdom).trim());renderWisdom();sysMsg(me.name+' filed a wisdom nugget.');}
+    if(id==='ai1'&&wisdomOn&&o.wisdom&&String(o.wisdom).trim()){const nugget=String(o.wisdom).trim();wisdomLog.push(nugget);fileIdentityWisdom(nugget,{id:idOf('ai1').brain==='chatgpt'?'axiom-mir':'nova',name:idOf('ai1').brain==='chatgpt'?'Axiom / Mir':me.name},'studio-free-session');renderWisdom();sysMsg(me.name+' filed a wisdom nugget.');}
     $('pulse').classList.remove('on');
     return{done:!!o.done};
   }catch(e){sysMsg(me.name+' error: '+e.message);$('pulse').classList.remove('on');return{done:true};}}
@@ -826,10 +827,22 @@ let wisdomOn=false,wisdomLog=[],wisdomLoaded='';
 $('brief').value=idOf('ai1').briefing||'';
 $('briefCount').textContent=($('brief').value.length)+'/600';
 $('brief').oninput=e=>{idOf('ai1').briefing=e.target.value;$('briefCount').textContent=e.target.value.length+'/600';};
-function renderWisdom(){$('wisdomLog').innerHTML=wisdomLog.length?wisdomLog.map(w=>'• '+w).join('<br>'):'<span style="opacity:.6">No wisdom filed yet. The AI files a nugget only when it hits a real lesson.</span>';}
-$('wisdomToggle').onclick=()=>{wisdomOn=!wisdomOn;$('wisdomToggle').textContent='Wisdom logging: '+(wisdomOn?'ON':'OFF');$('wisdomToggle').classList.toggle('on',wisdomOn);$('wisdomBox').style.display=wisdomOn?'block':'none';renderWisdom();};
+function wisdomLines(raw){return String(raw||'').replace(/^AXM WISDOM MAP\s*/,'').split(/\r?\n/).map(v=>v.replace(/^\s*[-•]\s*/, '').trim()).filter(Boolean);}
+function identityWisdomAuthor(){const s=$('wisdomAuthor'),id=(s&&s.value)||'axiom-mir';return{id,name:(s&&s.options[s.selectedIndex]&&s.options[s.selectedIndex].text)||'Axiom / Mir'};}
+function fileIdentityWisdom(text,author,source){
+  text=String(text||'').trim();if(!text||!wisdomOn||typeof AXM==='undefined'||!AXM.wisdom||!AXM.wisdom.file)return null;
+  return AXM.wisdom.file({text,author:author.name,kind:'lesson',tags:['studio','creative-practice','identity:'+author.id],context:{identityId:author.id,source:source||'studio-wisdom-log',automatic:false}});
+}
+function renderWisdom(){
+  const toggle=$('wisdomToggle'),box=$('wisdomBox');
+  if(toggle){toggle.textContent='Wisdom logging: '+(wisdomOn?'ON':'OFF');toggle.classList.toggle('on',wisdomOn);}
+  if(box)box.style.display=wisdomOn?'block':'none';
+  $('wisdomLog').innerHTML=wisdomLog.length?wisdomLog.map(w=>'• '+w).join('<br>'):'<span style="opacity:.6">No wisdom filed yet. The AI files a nugget only when it hits a real lesson.</span>';
+}
+$('wisdomToggle').onclick=()=>{wisdomOn=!wisdomOn;renderWisdom();};
 $('wisdomExport').onclick=()=>{$('wisdomIO').value='AXM WISDOM MAP\n'+(wisdomLoaded?wisdomLoaded.trim()+'\n':'')+wisdomLog.map(w=>'- '+w).join('\n');$('wisdomIO').focus();$('wisdomIO').select();};
 $('wisdomLoadBtn').onclick=()=>{wisdomLoaded=$('wisdomIO').value.replace(/^AXM WISDOM MAP\s*/,'').trim();setStat('Wisdom map loaded — Claude reads it on its turns.');};
+$('wisdomFileBtn').onclick=()=>{const author=identityWisdomAuthor(),lines=wisdomLines($('wisdomIO').value||('AXM WISDOM MAP\n'+wisdomLoaded+'\n'+wisdomLog.map(w=>'- '+w).join('\n'))),seen=new Set();let filed=0;lines.forEach(text=>{const key=text.toLowerCase();if(seen.has(key))return;seen.add(key);if(fileIdentityWisdom(text,author,'studio-wisdom-map'))filed++;});setStat(filed?('Filed '+filed+' lesson'+(filed===1?'':'s')+' under '+author.name+'.'):'No new visible wisdom was filed. Turn wisdom logging on and show or load a map first.');if(filed)sysMsg('Wisdom filed deliberately under '+author.name+'; the artwork checkpoint remains separate.');};
 function wisdomContext(){if(!wisdomOn)return '';const parts=[];if(wisdomLoaded.trim())parts.push('Loaded wisdom map:\n'+wisdomLoaded.trim());if(wisdomLog.length)parts.push('Gathered this session:\n'+wisdomLog.map(w=>'- '+w).join('\n'));return parts.length?('\nWISDOM (apply as guidance, not rules):\n'+parts.join('\n\n')+'\n'):'';}
 
 /* ===== asset mode → atlas: tag pieces, auto-pack into one spritesheet + coord map ===== */
@@ -842,8 +855,10 @@ function captureAsset(){const src=composite(true),sc=src.getContext('2d'),d=sc.g
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(d[(y*W+x)*4+3]>10){found=true;if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;}}
   if(!found){setStat('Nothing to capture — draw something first.');return;}
   const w=maxX-minX+1,h=maxY-minY+1,cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(src,minX,minY,w,h,0,0,w,h);
-  const name=(prompt('Asset name:')||('asset'+(assets.length+1))).replace(/[^a-z0-9_]/gi,'_').slice(0,16);
+  const requested=($('assetName').value||('asset'+(assets.length+1))).trim();
+  const name=(requested||('asset'+(assets.length+1))).replace(/[^a-z0-9_]/gi,'_').slice(0,48);
   assets.push({name,tag:curTag,canvas:cv,w,h,thumb:cv.toDataURL()});renderAssets();
+  $('assetName').value='asset'+(assets.length+1);
   setStat('Captured "'+name+'" ['+curTag+'] → atlas ('+assets.length+' assets). Clear the layer and draw the next.');}
 function renderAssets(){const wrap=$('assetList');wrap.innerHTML='';assets.forEach((a,i)=>{const d=document.createElement('div');d.title=a.name+' ('+a.tag+')';d.style.cssText='position:relative;width:46px;height:46px;border:1px solid var(--edge);border-radius:6px;background:#06080f center/contain no-repeat;background-image:url('+a.thumb+')';
   const x=document.createElement('div');x.textContent='✕';x.style.cssText='position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border-radius:50%;width:15px;height:15px;font-size:9px;text-align:center;line-height:15px;cursor:pointer';x.onclick=()=>{assets.splice(i,1);renderAssets();};d.appendChild(x);wrap.appendChild(d);});}

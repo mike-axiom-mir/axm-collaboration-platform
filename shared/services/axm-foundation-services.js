@@ -12,6 +12,7 @@
     {id:'storage',name:'Local-first storage',group:'continuity',description:'Workshop state remains local and recoverable.'},
     {id:'connectors',name:'Multi-AI connectors',group:'collaboration',dashboard:'ai-team',control:'agents',description:'Cloud and local model routes, presence and agent pause state.'},
     {id:'guardian',name:'Shell Guardian',group:'governance',dashboard:'ai-team',control:'guardian',description:'Circuit breaker, alarm history and explicit human reset.'},
+    {id:'mirror',name:'Mirror Core',group:'governance',control:'mirror',description:'Proposal-first bridge for reviewed, versioned changes between separately owned systems.'},
     {id:'plugins',name:'Plugin registry',group:'runtime',control:'dashboards',description:'Installed module discovery and compatibility routes.'},
     {id:'backup',name:'Backup & recovery',group:'continuity',dashboard:'publish-library',description:'Private backups and public-safe workshop packages.'},
     {id:'runtime',name:'Hosting & deployment runtime',group:'runtime',description:'The local Hub server and deployment adapters.'}

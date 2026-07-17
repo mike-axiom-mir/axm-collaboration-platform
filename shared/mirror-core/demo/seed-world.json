@@ -1,0 +1,264 @@
+{
+  "schema": "axm.mock-system/v1",
+  "system_id": "mock-world",
+  "revision": 0,
+  "updated_at": "2026-07-14T00:00:00.000Z",
+  "entities": {
+    "world-seed-sphere": {
+      "native_id": "world-seed-sphere",
+      "mirror_id": "mir:world:world:seed-sphere",
+      "entity_type": "world",
+      "name": "Seed Sphere",
+      "description": "Headless mock world record. No planet renderer or ecology exists in this package.",
+      "state": {"rendered": false, "simulation": "mock"},
+      "created_by": {
+        "actor_id": "actor:human:mike",
+        "actor_type": "human",
+        "display_name": "Mike",
+        "source_system": "mock-world",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": ["world.process.timber"],
+      "evidence_refs": ["evidence:mock-world:seed-fixture"],
+      "revision": 1
+    },
+    "region-northern-forest": {
+      "native_id": "region-northern-forest",
+      "mirror_id": "mir:world:region:northern-forest",
+      "entity_type": "region",
+      "name": "Northern Forest",
+      "description": "Mock region used only to prove explicit relations.",
+      "state": {"ecology_model": null},
+      "created_by": {
+        "actor_id": "actor:human:mike",
+        "actor_type": "human",
+        "display_name": "Mike",
+        "source_system": "mock-world",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": [],
+      "evidence_refs": ["evidence:mock-world:seed-fixture"],
+      "revision": 1
+    },
+    "resource-fallen-timber-a": {
+      "native_id": "resource-fallen-timber-a",
+      "mirror_id": "mir:world:resource:fallen-timber-a",
+      "entity_type": "resource",
+      "name": "Fallen Timber Lot A",
+      "description": "Mock resource node. Quantity and physical properties are intentionally unknown.",
+      "state": {"quantity": null, "unit": null},
+      "created_by": {
+        "actor_id": "actor:human:mike",
+        "actor_type": "human",
+        "display_name": "Mike",
+        "source_system": "mock-world",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": [],
+      "evidence_refs": ["evidence:mock-world:seed-fixture"],
+      "revision": 1
+    },
+    "material-timber-batch-01": {
+      "native_id": "material-timber-batch-01",
+      "mirror_id": "mir:world:material:timber-batch-01",
+      "entity_type": "material",
+      "name": "Processed Timber Batch 01",
+      "description": "Structured material record with unknown physical values preserved as unknown.",
+      "state": {"label": "processed timber"},
+      "type_data": {
+        "material_id": "material-timber-batch-01",
+        "category": "timber",
+        "source": {"resource_native_id": "resource-fallen-timber-a"},
+        "dimensions": null,
+        "mass": null,
+        "moisture": null,
+        "density": null,
+        "strength_properties": null,
+        "thermal_properties": null,
+        "condition": "unknown",
+        "measurement_quality": "unknown",
+        "physical_truth_status": "not_evaluated",
+        "provenance": [{"source": "deterministic mock fixture"}]
+      },
+      "created_by": {
+        "actor_id": "actor:human:mike",
+        "actor_type": "human",
+        "display_name": "Mike",
+        "source_system": "mock-world",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": [],
+      "evidence_refs": ["evidence:mock-world:seed-fixture"],
+      "revision": 1
+    },
+    "structure-forest-workshop": {
+      "native_id": "structure-forest-workshop",
+      "mirror_id": "mir:world:structure:forest-workshop",
+      "entity_type": "structure",
+      "name": "Forest Workshop",
+      "description": "A proposed workshop represented in the mock world.",
+      "state": {"visual_exists": false},
+      "type_data": {
+        "components": [],
+        "joints": [],
+        "support_relations": [],
+        "geometry_reference": null,
+        "material_assignments": [],
+        "construction_steps": [],
+        "intended_function": "Local workshop concept",
+        "simulation_refs": [],
+        "inspection_refs": [],
+        "safety_status": "not_assessed",
+        "physical_truth_status": "not_evaluated"
+      },
+      "truth_facets": {
+        "origin": "world_native",
+        "representation": "structured_model",
+        "verification": "schema_valid",
+        "connection": "proposal_only",
+        "physical_status": "not_evaluated",
+        "operational_status": "concept"
+      },
+      "created_by": {
+        "actor_id": "actor:human:mike",
+        "actor_type": "human",
+        "display_name": "Mike",
+        "source_system": "mock-world",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": [],
+      "evidence_refs": ["evidence:mock-world:seed-fixture"],
+      "revision": 1
+    },
+    "process-timber-preparation": {
+      "native_id": "process-timber-preparation",
+      "mirror_id": "mir:world:process:timber-preparation",
+      "entity_type": "process",
+      "name": "Timber Preparation",
+      "description": "Mock ordered process with unknown duration and energy values.",
+      "state": {"status": "concept"},
+      "type_data": {
+        "inputs": ["resource-fallen-timber-a"],
+        "outputs": ["material-timber-batch-01"],
+        "tools": [],
+        "capabilities": ["world.process.timber"],
+        "ordered_steps": ["inspect source record", "record proposed processing", "retain unknown measurements"],
+        "preconditions": ["authorised mock resource snapshot"],
+        "expected_duration": null,
+        "energy_requirements": null,
+        "waste_outputs": [],
+        "safety_constraints": ["No physical instruction is produced by this mock."],
+        "evidence": ["evidence:mock-world:seed-fixture"],
+        "verification_status": "schema_valid"
+      },
+      "created_by": {
+        "actor_id": "actor:ai:axiom-mir-test",
+        "actor_type": "ai",
+        "display_name": "Axiom/Mir Test Agent",
+        "source_system": "mock-world",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": ["world.process.timber"],
+      "evidence_refs": ["evidence:mock-world:seed-fixture"],
+      "revision": 1
+    },
+    "actor-human-mike": {
+      "native_id": "actor-human-mike",
+      "mirror_id": "mir:world:actor:mike",
+      "entity_type": "actor",
+      "name": "Mike",
+      "description": "Visible human steward in the mock world.",
+      "state": {"role": "human steward"},
+      "created_by": {
+        "actor_id": "actor:human:mike",
+        "actor_type": "human",
+        "display_name": "Mike",
+        "source_system": "mock-world",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": [],
+      "evidence_refs": [],
+      "revision": 1
+    },
+    "actor-ai-axiom-mir": {
+      "native_id": "actor-ai-axiom-mir",
+      "mirror_id": "mir:world:actor:axiom-mir-test",
+      "entity_type": "actor",
+      "name": "Axiom/Mir Test Agent",
+      "description": "Visible AI steward in the mock world.",
+      "state": {"role": "AI steward", "hidden": false},
+      "created_by": {
+        "actor_id": "actor:human:mike",
+        "actor_type": "human",
+        "display_name": "Mike",
+        "source_system": "mock-world",
+        "capabilities": [],
+        "permissions": [],
+        "provenance": [],
+        "status": "active"
+      },
+      "capabilities": [],
+      "evidence_refs": [],
+      "revision": 1
+    }
+  },
+  "relations": [
+    {"relation_id": "native-rel-1", "source_native_id": "region-northern-forest", "relation_type": "located_in", "target_native_id": "world-seed-sphere", "verification": "schema_valid"},
+    {"relation_id": "native-rel-2", "source_native_id": "resource-fallen-timber-a", "relation_type": "located_in", "target_native_id": "region-northern-forest", "verification": "schema_valid"},
+    {"relation_id": "native-rel-3", "source_native_id": "material-timber-batch-01", "relation_type": "produced_by", "target_native_id": "process-timber-preparation", "verification": "schema_valid"},
+    {"relation_id": "native-rel-4", "source_native_id": "structure-forest-workshop", "relation_type": "built_from", "target_native_id": "material-timber-batch-01", "verification": "unverified"},
+    {"relation_id": "native-rel-5", "source_native_id": "structure-forest-workshop", "relation_type": "stewarded_by", "target_native_id": "actor-human-mike", "verification": "schema_valid"},
+    {"relation_id": "native-rel-6", "source_native_id": "structure-forest-workshop", "relation_type": "stewarded_by", "target_native_id": "actor-ai-axiom-mir", "verification": "schema_valid"}
+  ],
+  "capabilities": [
+    {
+      "capability_id": "world.process.timber",
+      "version": "0.1.0",
+      "provider": "mock-world",
+      "description": "Mock declaration only.",
+      "status": "active"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "evidence:mock-world:seed-fixture",
+      "schema_version": "axm.mirror.evidence/v1",
+      "evidence_type": "test_result",
+      "source": {"file": "demo/seed-world.json"},
+      "creator": {
+        "actor_id": "actor:local_service:mirror-core",
+        "actor_type": "local_service",
+        "display_name": "Mirror Core Local Service",
+        "source_system": "mirror-core-local"
+      },
+      "timestamp": "2026-07-14T00:00:00.000Z",
+      "integrity_hash": null,
+      "storage_reference": "demo/seed-world.json",
+      "claim_scope": ["deterministic mock seed"],
+      "limitations": ["Proves only that the fixture exists and parses.", "Does not prove a real world, material, structure, or process."],
+      "verification_status": "schema_valid",
+      "extensions": {}
+    }
+  ]
+}

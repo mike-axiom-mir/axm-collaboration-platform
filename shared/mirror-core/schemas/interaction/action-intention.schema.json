@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.controls.action-intention/v1",
+  "title": "AXM Seat-Bound Action Intention",
+  "description": "Ephemeral live input. Durable cross-system changes still require a Mirror Change Packet.",
+  "type": "object",
+  "required": ["schema_version", "intention_id", "session_id", "seat_id", "actor_id", "binding_id", "control_surface_id", "control_surface_version", "action_id", "sequence", "payload", "created_at"],
+  "properties": {
+    "schema_version": {"const": "axm.controls.action-intention/v1"},
+    "intention_id": {"type": "string"},
+    "session_id": {"type": "string"},
+    "seat_id": {"type": "string"},
+    "actor_id": {"type": "string"},
+    "binding_id": {"type": "string"},
+    "control_surface_id": {"type": "string"},
+    "control_surface_version": {"type": "string"},
+    "action_id": {"type": "string"},
+    "sequence": {"type": "integer", "minimum": 0},
+    "client_tick": {"type": ["integer", "null"], "minimum": 0},
+    "payload": {"type": "object"},
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "additionalProperties": false
+}
