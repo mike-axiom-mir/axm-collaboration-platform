@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/usd-scene-composition-v1.schema.json",
+  "title": "AXM USD Scene Composition v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "id",
+    "name",
+    "target_canvas",
+    "root_layer",
+    "meters_per_unit",
+    "up_axis",
+    "handedness",
+    "dimensions",
+    "layers",
+    "variants",
+    "active_variant",
+    "resolver_policy",
+    "provenance"
+  ],
+  "properties": {
+    "schema": { "const": "axm.usd-scene-composition/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "target_canvas": { "type": "object" },
+    "root_layer": { "const": "root.usda" },
+    "meters_per_unit": { "type": "number", "exclusiveMinimum": 0 },
+    "up_axis": { "const": "Y" },
+    "handedness": { "const": "right" },
+    "dimensions": { "type": "object" },
+    "layers": { "type": "array", "minItems": 2 },
+    "variants": { "type": "array", "minItems": 2 },
+    "active_variant": { "type": "string" },
+    "resolver_policy": { "type": "object" },
+    "provenance": { "type": "object" }
+  },
+  "additionalProperties": false
+}

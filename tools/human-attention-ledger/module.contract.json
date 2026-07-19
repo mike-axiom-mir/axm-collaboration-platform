@@ -1,0 +1,5 @@
+{
+  "schema":"axm.module-contract/v1","id":"human-attention-ledger","version":"v0.1","status":"TEST","provides":["opt-in-pseudonymous-attention-observation","future-capture-consent-withdrawal"],"consumes":["human:explicit-consent"],"permissions":["human.attention.write"],
+  "handoffs":{"emits":["PSEUDONYMOUS_ATTENTION_RECEIPT","ATTENTION_CONSENT_WITHDRAWAL"],"accepts":["OPTED_IN_ATTENTION_OBSERVATION"]},"lifecycle":{"state_owner":"service","reload":"resume","disconnect":"graceful-degrade","cleanup":"explicit"},
+  "boundaries":{"writes":["state/cognitive-evidence-labs:attention-record"],"refuses":["name-email-or-identity-storage","private-memory-capture","non-consensual-capture","silent-background-timing","productivity-score","machine-compute-merge","ranking","employment-decision","permission-change","training","canon","world-action"]}
+}

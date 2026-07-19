@@ -7,6 +7,7 @@ const { dropActorPackage, isMissionInputLocked } = require('./mission-system');
 const { consumeEquippedAmmo } = require('./inventory-system');
 const { ejectAllOccupants, exitVehicle } = require('./vehicle-system');
 const { recordCivilianHarm } = require('./justice-system');
+const { collidesObstacle, pointBlocked } = require('./spatial-index');
 
 const PULSE_INPUT_FIELDS = Object.freeze([
   'action', 'fire', 'inventoryToggle', 'inventoryPrev', 'inventoryNext', 'inventoryActivate',
@@ -114,12 +115,7 @@ function applyAllyKnockback(world, target, projectile, multiplier) {
     x: clamp(target.position.x + projectile.velocity.x / length * distance, target.radius, world.staticMap.width - target.radius),
     y: clamp(target.position.y + projectile.velocity.y / length * distance, target.radius, world.staticMap.height - target.radius),
   };
-  const blocked = world.staticMap.obstacles.some((box) => (
-    candidate.x + target.radius > box.x
-    && candidate.x - target.radius < box.x + box.width
-    && candidate.y + target.radius > box.y
-    && candidate.y - target.radius < box.y + box.height
-  ));
+  const blocked = collidesObstacle(world, candidate, target.radius);
   if (blocked) return false;
   target.position = candidate;
   return true;
@@ -310,12 +306,7 @@ function circleHit(a, b, extraRadius = 0) {
 }
 
 function projectileHitsObstacle(world, projectile) {
-  return world.staticMap.obstacles.some((box) => (
-    projectile.position.x >= box.x
-    && projectile.position.x <= box.x + box.width
-    && projectile.position.y >= box.y
-    && projectile.position.y <= box.y + box.height
-  ));
+  return pointBlocked(world, projectile.position);
 }
 
 function updateProjectiles(world, deltaSeconds) {

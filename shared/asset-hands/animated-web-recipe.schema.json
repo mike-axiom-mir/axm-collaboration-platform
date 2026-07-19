@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/animated-web-recipe-v1.schema.json",
+  "title": "AXM Animated Web Recipe v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "target_canvas", "operation", "source", "frames", "frame_rate", "duration_seconds", "loop_count", "deliveries", "losses", "provenance"],
+  "properties": {
+    "schema": {"const": "axm.animated-web-recipe/v1"}, "version": {"const": "1.0.0"}, "id": {"type": "string", "minLength": 1},
+    "target_canvas": {"type": "object"}, "operation": {"enum": ["create", "edit", "finish", "validate"]}, "source": {"type": ["object", "null"]},
+    "frames": {"type": "integer", "minimum": 2}, "frame_rate": {"type": "number", "exclusiveMinimum": 0}, "requested_frame_rate": {"type": "number", "exclusiveMinimum": 0},
+    "delay_ms": {"type": "number", "exclusiveMinimum": 0}, "duration_seconds": {"type": "number", "exclusiveMinimum": 0}, "loop_count": {"type": ["integer", "null"], "minimum": 0},
+    "deliveries": {"type": "array", "minItems": 1}, "losses": {"type": "array"},
+    "provenance": {"type": "object", "required": ["hand", "hand_version", "seed", "source_artifact_digests"]}
+  },
+  "additionalProperties": false
+}

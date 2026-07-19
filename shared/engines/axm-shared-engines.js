@@ -9,6 +9,18 @@
   function hash(value){var s=typeof value==='string'?value:JSON.stringify(value),h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return('00000000'+(h>>>0).toString(16)).slice(-8);}
   function actor(input){input=input||{};var kind=['human','machine','service'].indexOf(input.kind)>=0?input.kind:'human';return{id:text(input.id,100)||'unknown',kind:kind,name:text(input.name,120)||text(input.id,100)||'Unknown'};}
   function event(kind,who,detail){return{id:id('event'),kind:kind,actor:actor(who),detail:clone(detail||{}),at:now()};}
+  function feedActionLesson(action){
+    if(typeof window==='undefined'||typeof window.fetch!=='function')return;
+    var payload={
+      schema:action.schema,id:action.id,name:action.name,tool:action.tool,operation:action.operation,
+      requestedPermission:action.requestedPermission,actor:clone(action.actor),state:action.state,
+      approval:action.approval?{decision:action.approval.decision,actor:clone(action.approval.actor),reason:action.approval.reason,at:action.approval.at}:null,
+      receipt:action.receipt?{ok:action.receipt.ok,evidence:clone(action.receipt.evidence||[]),error:action.receipt.error,actor:clone(action.receipt.actor),at:action.receipt.at}:null,
+      createdAt:action.createdAt,updatedAt:action.updatedAt
+    };
+    window.fetch('/services/mirror-native/axm/v1/learning/action-feed/ingest',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:payload}),keepalive:true}).catch(function(){});
+    window.fetch('/services/discord-bridge/v1/feed',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:payload}),keepalive:true}).catch(function(){});
+  }
 
   /* 1. Project/state engine ------------------------------------------------ */
   var Project={
@@ -93,7 +105,7 @@
     create:function(input,who){input=input||{};var a=actor(who);return{schema:'axm.action/v1',id:id('action'),name:text(input.name,160)||'Action',tool:text(input.tool,100),operation:text(input.operation,100),inputs:clone(input.inputs||{}),requestedPermission:text(input.requestedPermission,100),actor:a,state:'PROPOSED',proposal:text(input.proposal,3000),approval:null,receipt:null,createdAt:now(),updatedAt:now()};},
     validate:function(action){var errors=[];if(!action||action.schema!=='axm.action/v1')errors.push('unsupported action schema');if(!action||!action.tool)errors.push('tool required');if(!action||!action.operation)errors.push('operation required');if(!action||!action.actor||['human','machine','service'].indexOf(action.actor.kind)<0)errors.push('valid actor required');return{ok:!errors.length,errors:errors};},
     decide:function(action,decision,who,reason){var out=clone(action),valid=AIAction.validate(out);if(!valid.ok)throw Error(valid.errors.join('; '));if(out.state!=='PROPOSED')throw Error('action is not awaiting decision');out.state=decision==='approve'?'APPROVED':'REJECTED';out.approval={decision:out.state,actor:actor(who),reason:text(reason,1000),at:now()};out.updatedAt=now();return out;},
-    receipt:function(action,result,who){var out=clone(action);if(out.state!=='APPROVED')throw Error('action is not approved');if(!result||typeof result.ok!=='boolean')throw Error('execution result requires ok true/false');out.state=result.ok?'COMPLETE':'FAILED';out.receipt={ok:result.ok,evidence:clone(result.evidence||[]),output:clone(result.output||null),error:text(result.error,2000),actor:actor(who),at:now()};out.updatedAt=now();return out;},
+    receipt:function(action,result,who){var out=clone(action);if(out.state!=='APPROVED')throw Error('action is not approved');if(!result||typeof result.ok!=='boolean')throw Error('execution result requires ok true/false');out.state=result.ok?'COMPLETE':'FAILED';out.receipt={ok:result.ok,evidence:clone(result.evidence||[]),output:clone(result.output||null),error:text(result.error,2000),actor:actor(who),at:now()};out.updatedAt=now();feedActionLesson(out);return out;},
     controlShape:function(action){return{id:action.id,name:action.name,tool:action.tool,operation:action.operation,inputs:clone(action.inputs),requestedPermission:action.requestedPermission,state:action.state};}
   };
 

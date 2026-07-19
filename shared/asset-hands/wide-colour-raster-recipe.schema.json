@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/wide-colour-raster-recipe-v1.schema.json",
+  "title": "AXM Wide-colour Raster Recipe v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "target_canvas", "operation", "targetSpace", "bitDepth", "dimensions", "transparency", "renderingIntent", "profile", "preview", "budgets", "provenance"],
+  "properties": {
+    "schema": {"const": "axm.wide-colour-raster-recipe/v1"},
+    "version": {"const": "1.0.0"},
+    "id": {"type": "string", "minLength": 1},
+    "target_canvas": {"type": "object"},
+    "operation": {"enum": ["create", "edit", "finish", "validate"]},
+    "targetSpace": {"enum": ["display-p3", "linear-srgb"]},
+    "bitDepth": {"enum": [8, 16]},
+    "dimensions": {"type": "object", "required": ["width", "height", "unit"]},
+    "transparency": {"enum": ["required", "allowed", "opaque"]},
+    "renderingIntent": {"enum": ["perceptual", "relative-colorimetric", "saturation", "absolute-colorimetric"]},
+    "profile": {"type": "object", "required": ["name", "source", "inspection"]},
+    "source": {"type": ["object", "null"]},
+    "generator": {"type": ["object", "null"]},
+    "preview": {"type": "object", "required": ["space", "gamutClippedChannels"]},
+    "budgets": {"type": "object", "required": ["actualFileBytes", "actualTextureMemoryBytes"]},
+    "provenance": {"type": "object", "required": ["hand", "hand_version", "seed", "source_artifact_digests"]}
+  },
+  "additionalProperties": false
+}

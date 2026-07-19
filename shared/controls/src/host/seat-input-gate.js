@@ -29,6 +29,40 @@ function findSeatActor(session, seatId) {
   return sessionActors(session).find((actor) => actor?.seatId === seatId) || null;
 }
 
+const HUMAN_INPUT_SOURCES = new Set(['phone-touch', 'keyboard', 'host-gamepad', 'device-gamepad']);
+
+function bindHumanInputSource(actor, inputSource, options = {}) {
+  if (!actor || actor.controller !== 'human') throw new TypeError('an occupied human actor is required.');
+  if (!HUMAN_INPUT_SOURCES.has(inputSource)) throw new RangeError('unsupported human input source.');
+  const previousEpoch = Number.isSafeInteger(actor.inputSourceBinding?.epoch)
+    ? actor.inputSourceBinding.epoch
+    : -1;
+  const epoch = previousEpoch + 1;
+  const id = typeof options.bindingId === 'string' && options.bindingId.length > 0
+    ? options.bindingId
+    : crypto.randomUUID();
+  if (id.length > 160) throw new RangeError('input-source binding id is too long.');
+  neutralizeActorInput(actor, options.sanitizeIntent);
+  actor.inputSequence = -1;
+  actor.inputSourceBinding = {
+    id,
+    epoch,
+    inputSource,
+    status: 'active',
+    claimedAt: Number.isFinite(options.now) ? options.now : Date.now(),
+  };
+  return { ...actor.inputSourceBinding };
+}
+
+function revokeHumanInputSource(actor, options = {}) {
+  if (!actor || actor.controller !== 'human') throw new TypeError('an occupied human actor is required.');
+  neutralizeActorInput(actor, options.sanitizeIntent);
+  actor.inputSequence = -1;
+  actor.connected = false;
+  if (actor.inputSourceBinding) actor.inputSourceBinding = { ...actor.inputSourceBinding, status: 'revoked' };
+  return actor.inputSourceBinding ? { ...actor.inputSourceBinding } : null;
+}
+
 function createSeatInputGate(options = {}) {
   if (typeof options.getSession !== 'function') throw new TypeError('getSession(sessionId) is required.');
   const sanitizeIntent = options.sanitizeIntent || createIntentSanitizer(options.intentSpec);
@@ -56,6 +90,20 @@ function createSeatInputGate(options = {}) {
     const expectedToken = session.seatTokens?.[packet.seatId];
     if (!tokensEqual(packet.token, expectedToken)) {
       return { ok: false, statusCode: 403, reason: 'seat-token-rejected' };
+    }
+    const sourceBinding = actor.inputSourceBinding;
+    if (sourceBinding) {
+      if (sourceBinding.status !== 'active') {
+        return { ok: false, statusCode: 409, reason: 'input-source-binding-inactive' };
+      }
+      if (packet.inputSourceBindingId !== sourceBinding.id || packet.inputSourceEpoch !== sourceBinding.epoch) {
+        return {
+          ok: false,
+          statusCode: 409,
+          reason: 'input-source-binding-rejected',
+          inputSourceEpoch: sourceBinding.epoch,
+        };
+      }
     }
     const acceptedSequence = Number.isSafeInteger(actor.inputSequence) ? actor.inputSequence : -1;
     if (packet.seq <= acceptedSequence) {
@@ -95,6 +143,8 @@ function createSeatInputGate(options = {}) {
       controller: actor.controller,
       acceptedSeq: actor.inputSequence,
       tick: session.world?.tick ?? session.tick ?? null,
+      inputSource: sourceBinding?.inputSource ?? null,
+      inputSourceEpoch: sourceBinding?.epoch ?? null,
     };
   }
 
@@ -133,12 +183,14 @@ function disconnectIdleSeats(session, timeoutMs, now = Date.now(), sanitizeInten
 }
 
 module.exports = {
+  HUMAN_INPUT_SOURCES,
+  bindHumanInputSource,
   consumePulse,
   createSeatInputGate,
   disconnectIdleSeats,
   findSeatActor,
   neutralizeActorInput,
+  revokeHumanInputSource,
   sessionActors,
   tokensEqual,
 };
-

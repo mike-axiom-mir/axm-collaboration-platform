@@ -1,0 +1,37 @@
+{
+  "schema": "axm.native-host-adapter-package/v1",
+  "version": "1.0.0",
+  "package_id": "axm.native.blender.reference",
+  "package_version": "1.0.0",
+  "adapter_id": "blender",
+  "adapter_contract_version": "1.0.0",
+  "host_application": {
+    "name": "Blender",
+    "minimum_version": "4.2",
+    "maximum_version_exclusive": "5.0"
+  },
+  "entrypoint": {
+    "type": "fixed-python-script",
+    "path": "blender-host.py",
+    "sha256": "REPLACED_WHEN_PACKAGE_IS_SEALED"
+  },
+  "capabilities": {
+    "canvas_mediums": ["3d-surface", "game-world"],
+    "units": ["m", "mm", "game-world-unit"],
+    "colour_spaces": ["material-channel", "linear-srgb", "srgb"],
+    "transparency_modes": ["opaque", "allowed"],
+    "behaviours": ["static"],
+    "intended_uses": ["native-bridge", "character", "prop", "environment-model"],
+    "supported_constraints": ["dimensions", "dimensions.unit", "colour.space", "colour.transparency", "colour.bit-depth", "spatial.coordinate-unit", "spatial.up-axis", "spatial.handedness", "spatial.world-scale", "spatial.origin", "behaviour.static", "performance.max-file-bytes", "performance.max-polygon-count", "performance.max-vertices"],
+    "source_mime_types": ["model/gltf-binary"],
+    "operations": ["create-directory", "import-asset", "set-metadata", "refresh-index"]
+  },
+  "permissions": {
+    "filesystem": "configured-workspace-only",
+    "process": "configured-blender-binary-only",
+    "network": "none",
+    "arbitrary_code": false
+  },
+  "integrity": null,
+  "signature": null
+}

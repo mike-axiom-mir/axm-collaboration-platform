@@ -1,0 +1,5 @@
+{
+  "schema":"axm.module-contract/v1","id":"sustainability-metrology-lab","version":"v0.1","status":"TEST","provides":["hardware-bound-energy-observation","regional-factor-bound-carbon-observation"],"consumes":["profile:hardware","source:explicit-power-or-carbon-evidence"],"permissions":["sustainability.evidence.write"],
+  "handoffs":{"emits":["SUSTAINABILITY_METROLOGY_RECEIPT"],"accepts":["DIRECT_POWER_METER_OBSERVATION","SUSTAINABILITY_ATTESTATION"]},"lifecycle":{"state_owner":"service","reload":"resume","disconnect":"graceful-degrade","cleanup":"explicit"},
+  "boundaries":{"writes":["state/cognitive-evidence-labs:sustainability-record"],"refuses":["token-to-energy-conversion","unbound-carbon-factor","current-grid-certification","sustainability-score","green-claim","ranking","selection","budget-allocation","permission-change","canon","world-action"]}
+}

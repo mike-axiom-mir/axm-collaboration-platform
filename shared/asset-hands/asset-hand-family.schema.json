@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.asset-hand-family/v1",
+  "title": "AXM Asset Hand Family v1",
+  "type": "object",
+  "required": ["schema", "status", "brief", "target_canvas", "diagnosis", "routes", "results", "failures", "issues"],
+  "properties": {
+    "schema": { "const": "axm.asset-hand-family/v1" },
+    "status": { "enum": ["READY", "PARTIAL", "MISSING_HAND", "UNSUPPORTED_CANVAS", "INVALID_CANVAS"] },
+    "brief": { "$ref": "asset-brief.schema.json" },
+    "target_canvas": { "$ref": "target-canvas.schema.json" },
+    "diagnosis": { "$ref": "asset-hand-gap-report.schema.json" },
+    "routes": { "type": "array" },
+    "results": { "type": "array", "items": { "$ref": "asset-hand-result.schema.json" } },
+    "failures": { "type": "array" },
+    "issues": { "type": "array" }
+  },
+  "additionalProperties": true
+}

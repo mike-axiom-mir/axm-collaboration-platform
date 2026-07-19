@@ -19,4 +19,17 @@ bad = JSON.parse(JSON.stringify(base)); bad.launch.controller_path = '/controlle
 ok(V.validateManifest(bad, { gameDir, syntaxCheck: false }).some(x => x.includes('{player}')), 'controller route without player placeholder is refused');
 bad = JSON.parse(JSON.stringify(base)); bad.launch.controller_path = '/../secrets?player={player}';
 ok(V.validateManifest(bad, { gameDir, syntaxCheck: false }).some(x => x.includes('path traversal')), 'controller route traversal is refused');
+ok(V.validateGameNightSeams(base, { gameDir }).errors.length === 0, 'declared game-night seam contract passes');
+bad = JSON.parse(JSON.stringify(base)); delete bad.verification;
+ok(V.validateGameNightSeams(bad, { gameDir }).errors.some(x => x.includes('contract is required')), 'missing seam contract is refused');
+bad = JSON.parse(JSON.stringify(base)); bad.controls.touch = false;
+ok(V.validateGameNightSeams(bad, { gameDir }).errors.some(x => x.includes('controls.touch')), 'phone claim without touch support is refused');
+bad = JSON.parse(JSON.stringify(base)); bad.verification.game_night.controller_evidence = ['runtime/missing-controller.html'];
+ok(V.validateGameNightSeams(bad, { gameDir }).errors.some(x => x.includes('evidence missing')), 'missing controller evidence is refused');
+bad = JSON.parse(JSON.stringify(base)); bad.verification.game_night.controller_delivery = 'runtime-issued'; delete bad.verification.game_night.runtime_metadata_endpoint;
+ok(V.validateGameNightSeams(bad, { gameDir }).errors.some(x => x.includes('runtime_metadata_endpoint')), 'runtime-issued controls require a metadata endpoint');
+ok(V.validateGameNightSeams(base, { gameDir }).warnings.some(x => x.includes('physical phone qa')), 'pending physical phone QA remains visible');
+ok(V.validateGameNightSeams(base, { gameDir }).warnings.some(x => x.includes('external collaborator')), 'legacy adapter state seam remains visibly pending');
+bad = JSON.parse(JSON.stringify(base)); bad.verification.game_night.adapter_state_interface = 'verified';
+ok(V.validateGameNightSeams(bad, { gameDir }).errors.some(x => x.includes('intent_protocol')), 'verified external collaborator cannot omit its semantic input contract');
 console.log('PASS game package verifier: ' + pass + ' assertions');

@@ -8,15 +8,30 @@ const { updateMission } = require('./mission-system');
 const { updateNpcs } = require('./npc-system');
 const { updateJustice } = require('./justice-system');
 const { updatePlayers } = require('./player-system');
+const { isGroupSaveMenuOpen, updateGroupSaveComputer } = require('./group-save-system');
 const { updateTerritory } = require('./territory-system');
 const { updateVehicles } = require('./vehicle-system');
+
+function updateConnectedMetrics(world) {
+  world.metrics.connectedControllers = Object.values(world.actors)
+    .filter((actor) => ['human', 'adapter'].includes(actor.controller) && actor.connected).length;
+}
 
 function advanceWorld(world, options = {}) {
   const deltaSeconds = options.deltaSeconds || 1 / TICK_RATE;
   const now = options.now || Date.now();
   world.tick += 1;
+  updateGroupSaveComputer(world);
+  if (isGroupSaveMenuOpen(world)) {
+    updateConnectedMetrics(world);
+    return world;
+  }
   updateAiPlayerInputs(world);
   updatePlayers(world, deltaSeconds, now);
+  if (isGroupSaveMenuOpen(world)) {
+    updateConnectedMetrics(world);
+    return world;
+  }
   updateVehicles(world, deltaSeconds, now);
   updateCombat(world, deltaSeconds);
   updateBaseRegeneration(world, deltaSeconds);
@@ -24,14 +39,14 @@ function advanceWorld(world, options = {}) {
   updateTerritory(world, deltaSeconds);
   updateMission(world);
   updateJustice(world, deltaSeconds);
-  world.metrics.connectedControllers = Object.values(world.actors)
-    .filter((actor) => ['human', 'adapter'].includes(actor.controller) && actor.connected).length;
+  updateConnectedMetrics(world);
   return world;
 }
 
 class WorldLoop {
   constructor(getSession, options = {}) {
     this.getSession = getSession;
+    this.processSession = typeof options.processSession === 'function' ? options.processSession : null;
     this.intervalMs = options.intervalMs || TICK_MS;
     this.timer = null;
     this.lastTickAt = 0;
@@ -46,6 +61,7 @@ class WorldLoop {
       if (session?.status === 'running' && session.world) {
         session.world.metrics.loopDriftMs = Math.round((now - this.lastTickAt) - this.intervalMs);
         advanceWorld(session.world, { deltaSeconds: 1 / TICK_RATE, now });
+        this.processSession?.(session);
       }
       this.lastTickAt = now;
     }, this.intervalMs);

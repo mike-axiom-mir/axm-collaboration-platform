@@ -1,0 +1,12 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "recovery-center",
+  "version": "v0.1",
+  "provides": ["verified-private-snapshots", "scheduled-backups", "selective-restore-preview", "pre-restore-safety-copy", "recoverable-rollback"],
+  "consumes": ["service:workshop-packager", "service:storage", "service:gate"],
+  "permissions": ["recovery.apply"],
+  "handoffs": {"emits": ["axm.recovery-snapshot/v1", "axm.restore-preview/v1", "axm.pre-restore-backup/v1"], "accepts": ["axm.recovery-request/v1"]},
+  "boundaries": {"writes": ["exports/workshop-packages", "backups/recovery-center", "state/recovery-center", "explicitly-selected-workshop-files"], "refuses": ["silent-restore", "unreviewed-delete", "restore-without-preview", "restore-without-safety-copy", "path-escape", "automatic-cloud-upload"]},
+  "lifecycle": {"state_owner": "service", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"}
+}
+

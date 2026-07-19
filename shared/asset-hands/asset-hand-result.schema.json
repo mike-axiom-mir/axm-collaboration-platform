@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.asset-hand-result/v1",
+  "title": "AXM Asset Hand Result v1",
+  "type": "object",
+  "required": ["schema", "id", "hand", "brief", "target_canvas", "target_canvas_original", "canvas_transform_receipt", "artifacts", "previewArtifactId", "preview", "creation_recipe", "validation_receipt", "provenance", "status", "failure_code", "technical", "digest"],
+  "properties": {
+    "schema": { "const": "axm.asset-hand-result/v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "hand": { "$ref": "asset-hand-v2.schema.json" },
+    "brief": { "$ref": "asset-brief.schema.json" },
+    "target_canvas": { "$ref": "target-canvas.schema.json" },
+    "target_canvas_original": { "type": "object" },
+    "canvas_transform_receipt": { "type": "object", "required": ["status", "transformations", "original_digest", "effective_digest"] },
+    "artifacts": { "type": "array", "minItems": 1, "items": { "$ref": "asset-artifact.schema.json" } },
+    "previewArtifactId": { "type": ["string", "null"] },
+    "preview": { "type": ["object", "null"] },
+    "creation_recipe": { "$ref": "asset-creation-recipe.schema.json" },
+    "validation_receipt": { "$ref": "asset-validation-receipt.schema.json" },
+    "provenance": { "type": "object", "required": ["handId", "handVersion", "engine", "deterministic", "sourceBriefId", "targetCanvasOriginalDigest", "targetCanvasEffectiveDigest"] },
+    "status": { "enum": ["READY", "HOLD"] },
+    "failure_code": { "type": ["string", "null"] },
+    "technical": { "type": "object", "required": ["pass", "errors", "validationReceipt"] },
+    "digest": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.cognitive-work-observation-draft/v1",
+  "title": "Mirror cognitive-work observation draft",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "source", "objective", "workShape", "execution", "outcome", "costObservation", "permission"],
+  "properties": {
+    "schema": { "const": "axm.mirror.cognitive-work-observation-draft/v1" },
+    "source": { "$ref": "#/$defs/source" },
+    "objective": { "$ref": "#/$defs/objective" },
+    "workShape": { "$ref": "#/$defs/workShape" },
+    "execution": { "$ref": "#/$defs/execution" },
+    "outcome": { "$ref": "#/$defs/outcome" },
+    "costObservation": { "$ref": "#/$defs/costObservation" },
+    "permission": { "$ref": "#/$defs/permission" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "nullableDigest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,199}$" },
+    "nullableIdentifier": { "type": ["string", "null"], "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,199}$" },
+    "machineToken": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,79}$" },
+    "machineTokens": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/machineToken" } },
+    "nullableCount": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991 },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceSystemId", "sourceRecordId", "sourceRecordDigest", "collectionMethod", "authorshipState", "measurementDefinitionDigest"],
+      "properties": {
+        "sourceSystemId": { "$ref": "#/$defs/identifier" },
+        "sourceRecordId": { "$ref": "#/$defs/identifier" },
+        "sourceRecordDigest": { "$ref": "#/$defs/nullableDigest" },
+        "collectionMethod": { "enum": ["DIRECT_MACHINE_METER", "IMPORTED_ATTESTATION", "MANUAL_DECLARATION"] },
+        "authorshipState": { "enum": ["DECLARED_NOT_CERTIFIED", "UNKNOWN"] },
+        "measurementDefinitionDigest": { "$ref": "#/$defs/nullableDigest" }
+      }
+    },
+    "objective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objectiveKind", "objectiveDigest", "startingStateDigest", "endingStateDigest"],
+      "properties": {
+        "objectiveKind": { "$ref": "#/$defs/machineToken" },
+        "objectiveDigest": { "$ref": "#/$defs/digest" },
+        "startingStateDigest": { "$ref": "#/$defs/nullableDigest" },
+        "endingStateDigest": { "$ref": "#/$defs/nullableDigest" }
+      }
+    },
+    "workShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operationKinds", "domainKinds", "requestedOutputKinds", "riskTier", "requiredVerificationKinds"],
+      "properties": {
+        "operationKinds": { "$ref": "#/$defs/machineTokens" },
+        "domainKinds": { "$ref": "#/$defs/machineTokens" },
+        "requestedOutputKinds": { "$ref": "#/$defs/machineTokens" },
+        "riskTier": { "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] },
+        "requiredVerificationKinds": { "$ref": "#/$defs/machineTokens" }
+      }
+    },
+    "tokenMeter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["definitionId", "coverage", "inputTokens", "cachedInputTokens", "outputTokens", "reasoningTokens", "totalTokens"],
+      "properties": {
+        "definitionId": { "$ref": "#/$defs/nullableIdentifier" },
+        "coverage": { "enum": ["COMPLETE", "PARTIAL", "UNKNOWN"] },
+        "inputTokens": { "$ref": "#/$defs/nullableCount" },
+        "cachedInputTokens": { "$ref": "#/$defs/nullableCount" },
+        "outputTokens": { "$ref": "#/$defs/nullableCount" },
+        "reasoningTokens": { "$ref": "#/$defs/nullableCount" },
+        "totalTokens": { "$ref": "#/$defs/nullableCount" }
+      }
+    },
+    "computeMeter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["definitionId", "coverage", "cpuCoreMilliseconds", "acceleratorMilliseconds", "peakMemoryBytes", "providerComputeUnitsMicros"],
+      "properties": {
+        "definitionId": { "$ref": "#/$defs/nullableIdentifier" },
+        "coverage": { "enum": ["COMPLETE", "PARTIAL", "UNKNOWN"] },
+        "cpuCoreMilliseconds": { "$ref": "#/$defs/nullableCount" },
+        "acceleratorMilliseconds": { "$ref": "#/$defs/nullableCount" },
+        "peakMemoryBytes": { "$ref": "#/$defs/nullableCount" },
+        "providerComputeUnitsMicros": { "$ref": "#/$defs/nullableCount" }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["wallMilliseconds", "toolMilliseconds"],
+      "properties": {
+        "wallMilliseconds": { "$ref": "#/$defs/nullableCount" },
+        "toolMilliseconds": { "$ref": "#/$defs/nullableCount" }
+      }
+    },
+    "workCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filesExamined", "filesChanged", "linesAdded", "linesRemoved", "toolCalls"],
+      "properties": {
+        "filesExamined": { "$ref": "#/$defs/nullableCount" },
+        "filesChanged": { "$ref": "#/$defs/nullableCount" },
+        "linesAdded": { "$ref": "#/$defs/nullableCount" },
+        "linesRemoved": { "$ref": "#/$defs/nullableCount" },
+        "toolCalls": { "$ref": "#/$defs/nullableCount" }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["testsExecuted", "testsPassed", "testsFailed", "testsNotRun", "verificationDigest"],
+      "properties": {
+        "testsExecuted": { "$ref": "#/$defs/nullableCount" },
+        "testsPassed": { "$ref": "#/$defs/nullableCount" },
+        "testsFailed": { "$ref": "#/$defs/nullableCount" },
+        "testsNotRun": { "$ref": "#/$defs/nullableCount" },
+        "verificationDigest": { "$ref": "#/$defs/nullableDigest" }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["modelProfileDigest", "toolchainDigest", "environmentDigest", "hardwareProfileDigest", "tokenMeter", "computeMeter", "timing", "workCounts", "verification"],
+      "properties": {
+        "modelProfileDigest": { "$ref": "#/$defs/nullableDigest" },
+        "toolchainDigest": { "$ref": "#/$defs/nullableDigest" },
+        "environmentDigest": { "$ref": "#/$defs/nullableDigest" },
+        "hardwareProfileDigest": { "$ref": "#/$defs/nullableDigest" },
+        "tokenMeter": { "$ref": "#/$defs/tokenMeter" },
+        "computeMeter": { "$ref": "#/$defs/computeMeter" },
+        "timing": { "$ref": "#/$defs/timing" },
+        "workCounts": { "$ref": "#/$defs/workCounts" },
+        "verification": { "$ref": "#/$defs/verification" }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "status", "preexistingImplementationState"],
+      "properties": {
+        "state": { "enum": ["VERIFIED_COMPLETE", "VERIFIED_PARTIAL", "KNOWN_FAIL", "HOLD"] },
+        "status": { "enum": ["EXPERIMENTAL", "TEST", "WORKING", "KNOWN_FAIL", "NEEDS_REVIEW"] },
+        "preexistingImplementationState": { "enum": ["NONE", "PARTIAL", "SUBSTANTIAL", "UNKNOWN"] }
+      }
+    },
+    "costObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["basis", "profileDigest", "currency", "moneyMicros", "energyMilliwattHours", "carbonMilligrams"],
+      "properties": {
+        "basis": { "enum": ["MEASURED", "BILLED", "PROFILE_ESTIMATED", "UNKNOWN"] },
+        "profileDigest": { "$ref": "#/$defs/nullableDigest" },
+        "currency": { "type": ["string", "null"], "pattern": "^[A-Z]{3}$" },
+        "moneyMicros": { "$ref": "#/$defs/nullableCount" },
+        "energyMilliwattHours": { "$ref": "#/$defs/nullableCount" },
+        "carbonMilligrams": { "$ref": "#/$defs/nullableCount" }
+      }
+    },
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "basisDigest"],
+      "properties": {
+        "status": { "enum": ["ALLOWED", "UNKNOWN", "FORBIDDEN"] },
+        "basisDigest": { "$ref": "#/$defs/nullableDigest" }
+      }
+    }
+  }
+}

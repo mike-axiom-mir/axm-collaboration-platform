@@ -1,0 +1,10 @@
+{
+  "id": "device-handoff", "name": "AXM Local Device Handoff Bridge", "version": "v0.1", "status": "TEST", "entry": "index.html", "contract": "module.contract.json", "type": "hub-module", "hubApiVersion": "1.0", "category": "FOUNDATION", "layer": "foundation", "audience": "human-machine", "risk": "HIGH",
+  "tags": ["device", "phone", "tablet", "handoff", "qr", "wifi", "files"], "uses": ["files", "storage", "gate", "device.listen"], "permissions": ["device.listen"],
+  "actions": ["start a temporary local device handoff", "pair a phone or tablet by expiring QR link", "receive explicitly selected device files", "stop the handoff listener"],
+  "accepts": ["multipart/form-data", "axm.device-handoff-request/v1"],
+  "produces": ["axm.device-handoff-receipt/v1"],
+  "readiness": ["runtime", "files", "local-network", "gate"],
+  "summary": "Start a temporary handoff-only LAN server, pair by expiring QR link and receive only files explicitly selected on the sending device.",
+  "notes": "The Workshop server remains loopback-only. The LAN sidecar exposes only health, one receive page and bounded upload; it cannot browse a device or the Workshop."
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/visual-kernel-tokens-v1.schema.json",
+  "title": "AXM Visual Kernel Token Bundle",
+  "type": "object",
+  "required": ["schema", "version", "id", "profile", "color_scheme", "colours", "shared", "provenance"],
+  "properties": {
+    "schema": { "const": "axm.visual-kernel.tokens/v1" },
+    "version": { "type": "string" },
+    "id": { "type": "string", "minLength": 1 },
+    "profile": { "enum": ["dark", "light", "high-contrast"] },
+    "color_scheme": { "enum": ["dark", "light"] },
+    "colours": { "type": "object", "minProperties": 16, "additionalProperties": { "type": "string", "pattern": "^#[0-9a-f]{6}$" } },
+    "shared": { "type": "object" },
+    "provenance": { "type": "object" }
+  },
+  "additionalProperties": false
+}

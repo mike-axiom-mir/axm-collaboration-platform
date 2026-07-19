@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/geometry-graph-recipe-v1.schema.json",
+  "title": "AXM Geometry Graph Recipe v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "id",
+    "target_canvas",
+    "operation",
+    "source",
+    "graph",
+    "evaluation",
+    "bake",
+    "budgets",
+    "known_limits",
+    "provenance"
+  ],
+  "properties": {
+    "schema": { "const": "axm.geometry-graph-recipe/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "target_canvas": { "type": "object" },
+    "operation": { "enum": ["create", "edit", "validate", "workflow"] },
+    "source": { "type": ["object", "null"] },
+    "graph": { "type": "object" },
+    "evaluation": { "type": "object" },
+    "bake": { "type": "object" },
+    "budgets": { "type": "object" },
+    "known_limits": { "type": "array", "minItems": 1 },
+    "provenance": { "type": "object" }
+  },
+  "additionalProperties": false
+}

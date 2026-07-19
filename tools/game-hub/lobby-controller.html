@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>AXM Phone Lobby</title>
+  <style>
+    :root{color-scheme:dark;--bg:#050b13;--panel:#0d1826;--line:#1d3850;--text:#edf7ff;--muted:#8da3b8;--cy:#42e8ff;--green:#72f6a4;--red:#ff7584}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 0,#17344b,transparent 43%),var(--bg);color:var(--text);font:16px/1.5 system-ui,sans-serif}
+    main{width:min(100%,430px);padding:24px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(150deg,#101e2e,#08111c);box-shadow:0 24px 80px #0008}
+    .eyebrow{color:var(--cy);font:800 11px ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase}h1{font-size:34px;margin:8px 0}p{color:var(--muted)}.state{margin:22px 0;padding:16px;border:1px solid var(--line);border-radius:14px}.state b,.state span{display:block}.state span{color:var(--muted);margin-top:5px}
+    button,a{display:block;width:100%;padding:16px;border:1px solid var(--cy);border-radius:14px;background:#0c2631;color:var(--cy);font:800 17px system-ui,sans-serif;text-align:center;text-decoration:none}button.ready{border-color:var(--green);color:var(--green)}button:disabled{opacity:.45}.error{color:var(--red)}#gameLink{margin-top:12px;border-color:var(--green);color:var(--green)}
+    #ready{margin-top:12px}#preview{margin-bottom:12px}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">AXM Game Night · phone seat</div>
+    <h1 id="name">Joining lobby…</h1>
+    <p>Ready here. When the host launches, this page becomes your game controller automatically.</p>
+    <div class="state"><b id="seatLabel">Checking seat</b><span id="status">Connecting to the local workshop…</span></div>
+    <a id="preview" hidden>Preview game controls · does not ready</a>
+    <button id="ready" disabled>Ready up</button>
+    <a id="gameLink" hidden>Open game controls</a>
+  </main>
+  <script>
+    (function(){
+      'use strict';
+      var params=new URLSearchParams(location.search), seat=params.get('seat')||'', redirected=false;
+      var game=params.get('game')||'', name=document.getElementById('name'), label=document.getElementById('seatLabel'), status=document.getElementById('status'), button=document.getElementById('ready'), preview=document.getElementById('preview'), link=document.getElementById('gameLink');
+      function api(path,body){return fetch(path,{method:body?'POST':'GET',headers:{'content-type':'application/json'},body:body?JSON.stringify(body):undefined}).then(function(r){return r.json().then(function(v){if(!r.ok||v.ok===false)throw new Error(v.error||('HTTP '+r.status));return v;});});}
+      function show(value){
+        var current=value.seat||{}; name.textContent=current.display_name||'Open seat'; label.textContent='SEAT '+String(current.slot||'?')+' · '+String(current.type||'empty').toUpperCase();
+        var usable=current.type==='human'; button.disabled=!usable; button.className=current.ready?'ready':''; button.textContent=current.ready?'Cancel ready':'Ready up';
+        status.className=''; status.textContent=!usable?'The host must assign this as a human seat.':current.ready?'Ready. Waiting for the host to launch.':'Connected. Ready up when you are here.';
+        if(value.preview_url){preview.href=value.preview_url;preview.hidden=false;}
+        if(value.controller_url){link.href=value.controller_url;link.hidden=false;status.textContent='Game launched. Loading your controls…';if(!redirected){redirected=true;setTimeout(function(){location.replace(value.controller_url);},650);}}
+      }
+      function poll(){api('/lobby/status?seat_id='+encodeURIComponent(seat)+'&game_id='+encodeURIComponent(game)).then(show).catch(function(e){status.className='error';status.textContent=e.message;}).finally(function(){setTimeout(poll,850);});}
+      button.onclick=function(){button.disabled=true;api('/seat/ready',{seat_id:seat,ready:button.className!=='ready'}).then(function(){return api('/lobby/status?seat_id='+encodeURIComponent(seat)+'&game_id='+encodeURIComponent(game));}).then(show).catch(function(e){status.className='error';status.textContent=e.message;button.disabled=false;});};
+      if(!/^seat_[1-8]$/.test(seat)){status.className='error';status.textContent='This QR contains an invalid seat.';return;} poll();
+    })();
+  </script>
+</body>
+</html>

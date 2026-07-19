@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Marketplace &amp; Deployment</title>
+  <link rel="stylesheet" href="marketplace-deployment.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true"><span></span><i>11</i></div>
+      <div class="brand-copy"><span>AXM FINAL PARENT WORKSPACE - LOCAL-FIRST - TEST</span><h1>Marketplace &amp; Deployment</h1></div>
+      <div class="truth-strip"><span><i class="pulse"></i> draft before public</span><span>rights before reach</span><span>rollback before deploy</span></div>
+      <div class="top-actions">
+        <label class="file-button">Import<input id="importProject" type="file" accept="application/json,.json"></label>
+        <button id="exportProject" class="button secondary">Export project</button>
+        <button id="newProject" class="button danger">New</button>
+      </div>
+    </header>
+
+    <aside class="rail">
+      <div class="rail-title"><span>Workspace 11</span><b>Distribution gate</b></div>
+      <nav id="modeNav" aria-label="Marketplace and Deployment modes"></nav>
+      <div class="rail-foot"><span id="saveState">Local checkpoint ready</span><small>No payment rail - no auto-upload - no auto-install</small></div>
+    </aside>
+
+    <main class="workspace">
+      <section class="workspace-head">
+        <div><span id="modeKicker">DISTRIBUTION MAP</span><h2 id="modeTitle">Prepare reach without pretending it happened.</h2><p id="modeDescription">One parent for listings, rights, reviews, packages, deployment plans, galleries and update channels above the real Publish &amp; Library foundation.</p></div>
+        <div class="workspace-metrics">
+          <article><b id="metricListings">0</b><span>listings</span></article>
+          <article><b id="metricReady">0</b><span>ready</span></article>
+          <article><b id="metricPlans">0</b><span>plans</span></article>
+          <article><b id="metricReceipts">0</b><span>receipts</span></article>
+        </div>
+      </section>
+
+      <section id="homePanel" class="mode-panel">
+        <div class="hero-card">
+          <div class="hero-graphic" aria-hidden="true"><span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span><b>LOCAL<br>TO<br>REACH</b></div>
+          <div class="hero-copy"><span class="eyebrow">CREATE - REVIEW - PACKAGE - DEPLOY - UPDATE</span><h3>Distribution is a route, not a button.</h3><p>Work remains a local candidate until its source, rights, dependencies, review seats, package, target and rollback path are inspectable. The last step stays explicit because public reach changes the blast radius.</p><div class="hero-flow"><i>Catalog</i><i>Rights</i><i>Review</i><i>Package</i><i>Plan</i><i>Export</i></div><button class="button primary" data-mode-jump="catalog">Create a draft listing</button></div>
+        </div>
+        <div class="home-grid">
+          <section class="panel"><header><div><span class="eyebrow">CATALOG</span><h3>Local listing shelf</h3></div><b id="homeListingCount">0</b></header><div id="homeListings" class="record-list"><div class="empty">No product, tool, game or package has been listed.</div></div></section>
+          <section class="panel"><header><div><span class="eyebrow">GOVERNANCE</span><h3>Review shape</h3></div><span id="governanceState" class="status ready">DUAL</span></header><p class="panel-copy">Dual mode requires one attributed human and one attributed machine upvote. Solo mode keeps the workspace usable by any one intelligence while preserving an explicit rights and review gate.</p><button id="toggleGovernance" class="button secondary">Switch to solo mode</button></section>
+          <section class="panel"><header><div><span class="eyebrow">BODY READINESS</span><h3>Local distribution foundation</h3></div><span id="foundationState" class="status held">CHECKING</span></header><div id="foundationFacts" class="fact-list"><div class="empty">Checking the local runtime.</div></div><button id="checkFoundation" class="button secondary">Check foundation</button></section>
+        </div>
+        <section class="route-grid">
+          <a href="../publish-library/index.html"><span>OUTPUT</span><b>Publish &amp; Library</b><small>Artifacts, release ledger and exports</small></a>
+          <a href="../workshop-packager/index.html"><span>PACKAGE</span><b>Workshop Packager</b><small>Verified backup and public-safe archives</small></a>
+          <a href="../launcher-card-installer/index.html"><span>DISCOVER</span><b>Launcher Cards</b><small>Reviewed distribution metadata proposals</small></a>
+          <a href="../agent-tool-forge/index.html"><span>EXTEND</span><b>Agent Tool Forge</b><small>Draft plugin and skill packages</small></a>
+        </section>
+      </section>
+
+      <section id="catalogPanel" class="mode-panel" hidden>
+        <div class="two-column wide-left">
+          <section class="panel"><header><div><span class="eyebrow">LOCAL CATALOG</span><h3>Draft a listing</h3></div><span class="status held">NOT PUBLIC</span></header>
+            <div class="form-grid"><label>Name<input id="listingName" maxlength="120" placeholder="Project, game, plugin or asset name"></label><label>Version<input id="listingVersion" maxlength="40" placeholder="0.1.0"></label><label>Kind<select id="listingKind"></select></label><label>Access policy<select id="listingAccess"></select></label></div>
+            <label>Audience<input id="listingAudience" maxlength="160" value="Any intelligence able to use the declared format"></label>
+            <label>Source route<input id="listingSource" maxlength="300" placeholder="Publish artifact, package path or workspace route"></label>
+            <label>Summary<textarea id="listingSummary" rows="5" maxlength="800" placeholder="What it is, what it is not, and who it may help"></textarea></label>
+            <button id="addListing" class="button primary">Create draft listing</button>
+          </section>
+          <section class="panel"><header><div><span class="eyebrow">LISTING LEDGER</span><h3>States remain visible</h3></div><b id="catalogCount">0</b></header><div id="catalogListings" class="record-list tall"><div class="empty">No listings yet.</div></div></section>
+        </div>
+      </section>
+
+      <section id="rightsPanel" class="mode-panel" hidden>
+        <div class="two-column">
+          <section class="panel"><header><div><span class="eyebrow">RIGHTS GATE</span><h3>License, provenance and dependencies</h3></div><span class="status held">NOT LEGAL ADVICE</span></header>
+            <label>Listing<select id="rightsListing"></select></label><label>Declared license<select id="rightsLicense"></select></label>
+            <label>Provenance<textarea id="rightsProvenance" rows="5" maxlength="1600" placeholder="Creators, sources, models, prompts, references and transformations"></textarea></label>
+            <label>Dependencies and third-party materials<textarea id="rightsDependencies" rows="5" maxlength="1600" placeholder="Packages, assets, fonts, media and their licenses; write none only if genuinely none"></textarea></label>
+            <label class="check"><input id="rightsConfirmed" type="checkbox"> I explicitly confirm I have a basis to distribute this candidate under the declared terms.</label>
+            <button id="runRightsGate" class="button primary">Run local rights gate</button>
+          </section>
+          <section class="panel"><header><div><span class="eyebrow">LATEST FINDING</span><h3 id="rightsVerdict">UNREVIEWED</h3></div></header><div id="rightsResult" class="empty">Choose a listing and preserve the evidence behind its distribution rights.</div><button id="markReviewReady" class="button secondary" disabled>Mark ready for export</button></section>
+        </div>
+      </section>
+
+      <section id="pluginsPanel" class="mode-panel" hidden>
+        <div class="two-column">
+          <section class="panel"><header><div><span class="eyebrow">PLUGIN DISTRIBUTION</span><h3>Package proposal</h3></div><span class="status held">NO INSTALL</span></header><label>Plugin / extension listing<select id="pluginListing"></select></label><label>Entry point<input id="pluginEntry" maxlength="260" placeholder="index.js or .codex-plugin/plugin.json"></label><label>Host compatibility<textarea id="pluginCompatibility" rows="4" maxlength="800" placeholder="Supported host, API and version range"></textarea></label><label>Permission surface<textarea id="pluginPermissions" rows="4" maxlength="800" placeholder="Files, network, storage, tools or none"></textarea></label><button id="buildPlugin" class="button primary">Build distribution proposal</button></section>
+          <section class="panel"><header><div><span class="eyebrow">PROPOSALS</span><h3>Install remains separate</h3></div><b id="pluginCount">0</b></header><div id="pluginProposals" class="record-list tall"><div class="empty">No plugin package proposals.</div></div></section>
+        </div>
+      </section>
+
+      <section id="deployPanel" class="mode-panel" hidden>
+        <div class="deploy-grid">
+          <section class="panel"><header><div><span class="eyebrow">TARGET</span><h3>Generate an inspectable plan</h3></div><span class="status held">NO EXECUTION</span></header><label>Reviewed listing<select id="deployListing"></select></label><label>Target<select id="deployTarget"></select></label><label>Runtime / hosting requirements<textarea id="deployRequirements" rows="5" maxlength="1400" placeholder="Ports, runtime, storage, domain, LAN binding, secrets supplied later"></textarea></label><label>Rollback procedure<textarea id="deployRollback" rows="4" maxlength="1000" placeholder="How the previous verified package is restored"></textarea></label><button id="buildDeployment" class="button primary">Generate deployment plan</button></section>
+          <section class="panel plan-view"><header><div><span class="eyebrow">LATEST PLAN</span><h3 id="deploymentVerdict">NOT BUILT</h3></div><button id="downloadPlan" class="button tiny" disabled>Download</button></header><pre id="deploymentPlan">A plan is data, not a live deployment.</pre></section>
+          <section class="panel"><header><div><span class="eyebrow">PLAN LEDGER</span><h3>Previous candidates</h3></div><b id="deploymentCount">0</b></header><div id="deploymentHistory" class="record-list"><div class="empty">No deployment plans.</div></div></section>
+        </div>
+      </section>
+
+      <section id="galleryPanel" class="mode-panel" hidden>
+        <div class="two-column gallery-layout">
+          <section class="panel"><header><div><span class="eyebrow">GALLERY DRAFT</span><h3>Prepare a discoverable card</h3></div><span class="status held">LOCAL ONLY</span></header><label>Listing<select id="galleryListing"></select></label><label>Caption<textarea id="galleryCaption" rows="5" maxlength="700" placeholder="Human-readable context, honest status and invitation to review"></textarea></label><label>Media reference<input id="galleryMedia" maxlength="300" placeholder="Local relative path or reviewed artifact reference"></label><label>Visibility<select id="galleryVisibility"><option value="private-preview">Private preview</option><option value="public-proposal">Public proposal</option></select></label><button id="addGallery" class="button primary">Create gallery draft</button></section>
+          <section class="panel"><header><div><span class="eyebrow">LOCAL GALLERY</span><h3>Preview, never pretend</h3></div><b id="galleryCount">0</b></header><div id="galleryGrid" class="gallery-grid"><div class="empty">No gallery drafts.</div></div></section>
+        </div>
+      </section>
+
+      <section id="updatesPanel" class="mode-panel" hidden>
+        <div class="two-column">
+          <section class="panel"><header><div><span class="eyebrow">UPDATE CANDIDATE</span><h3>Version with rollback</h3></div><span class="status held">AUTO-INSTALL OFF</span></header><label>Listing<select id="updateListing"></select></label><div class="form-grid"><label>Channel<select id="updateChannel"></select></label><label>New version<input id="updateVersion" maxlength="40" placeholder="0.2.0"></label></div><label>Changelog<textarea id="updateChangelog" rows="5" maxlength="1400" placeholder="What changed, what was repaired and what remains uncertain"></textarea></label><label>Rollback version<input id="updateRollback" maxlength="40" placeholder="0.1.0"></label><button id="addUpdate" class="button primary">Add channel draft</button></section>
+          <section class="panel"><header><div><span class="eyebrow">CHANNELS</span><h3>Stable is earned</h3></div><b id="updateCount">0</b></header><div id="updateChannels" class="channel-grid"></div></section>
+        </div>
+      </section>
+
+      <section id="reviewsPanel" class="mode-panel" hidden>
+        <div class="two-column">
+          <section class="panel"><header><div><span class="eyebrow">ATTRIBUTED REVIEW</span><h3>Keep perspective and reasoning</h3></div><span class="status ready">NO SINGLE TASTE SCORE</span></header><label>Listing<select id="reviewListing"></select></label><div class="form-grid"><label>Reviewer identity<input id="reviewerName" maxlength="100" placeholder="Mike, Codex, Ivan, Mirror..."></label><label>Seat kind<select id="reviewSeat"><option value="human">Human</option><option value="machine">Machine</option></select></label><label>Scope<select id="reviewScope"><option value="both">Technical + experience</option><option value="technical">Technical</option><option value="experience">Experience / taste</option></select></label><label>Verdict<select id="reviewVerdict"><option value="UPVOTE">Upvote</option><option value="HOLD">Hold</option><option value="REPAIR">Repair required</option></select></label></div><label>Reasoning<textarea id="reviewNote" rows="6" maxlength="1200" placeholder="What worked, what failed, what remains uncertain and the next disconfirming test"></textarea></label><button id="addReview" class="button primary">Record attributed review</button></section>
+          <section class="panel"><header><div><span class="eyebrow">REVIEW LEDGER</span><h3>Perspectives remain separate</h3></div><b id="reviewCount">0</b></header><div id="reviewLedger" class="record-list tall"><div class="empty">No reviews recorded.</div></div></section>
+        </div>
+      </section>
+
+      <section id="publishPanel" class="mode-panel" hidden>
+        <div class="foundation-hero"><div><span class="eyebrow">INTEGRATED CHILD - REAL OUTPUT BODY</span><h3>Publish &amp; Library</h3><p>The catalog and deployment parent prepares distribution state. The existing Publish &amp; Library still owns artifact review, verified output, packages, backups and release manifests.</p></div><div><span id="publishState" class="status held">CHECKING</span><p id="publishDetail">Looking for the local output foundation.</p><a class="button secondary" href="../publish-library/index.html" target="_blank" rel="noopener">Open separately</a></div></div>
+        <section class="foundation-frame"><header><div><span class="eyebrow">EXISTING PUBLISH WORKSPACE</span><h3>Artifact and package foundation</h3></div></header><iframe id="publishFrame" data-src="../publish-library/index.html?marketplace-deployment=1" title="Publish and Library child route"></iframe></section>
+      </section>
+    </main>
+
+    <footer class="footer-bar"><span>Marketplace &amp; Deployment v0.1</span><span id="footerStatus">Ready - local drafts only</span><span>Publish &amp; Library + Packager + Plugin Registry + Runtime</span></footer>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="marketplace-deployment-core.js"></script>
+  <script src="marketplace-deployment-app.js"></script>
+</body>
+</html>

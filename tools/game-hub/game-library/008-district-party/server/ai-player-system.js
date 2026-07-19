@@ -1,6 +1,7 @@
 'use strict';
 
-const { nearestAvailablePackage } = require('./mission-system');
+const { activeDeliveryZones, nearestAvailablePackage } = require('./mission-system');
+const { collidesObstacle } = require('./spatial-index');
 const { activeCrew, territoryTargetForParty } = require('./territory-system');
 
 const AI_PLAYER_STATES = Object.freeze([
@@ -23,24 +24,67 @@ function gridCellBlocked(world, column, row, resolution, radius = 11) {
   const x = column * resolution + resolution / 2;
   const y = row * resolution + resolution / 2;
   if (x - radius < 0 || y - radius < 0 || x + radius > world.staticMap.width || y + radius > world.staticMap.height) return true;
-  return world.staticMap.obstacles.some((box) => (
-    x + radius > box.x
-    && x - radius < box.x + box.width
-    && y + radius > box.y
-    && y - radius < box.y + box.height
-  ));
+  return collidesObstacle(world, { x, y }, radius);
 }
 
-function findGridPath(world, start, target, resolution = 32) {
-  const columns = Math.ceil(world.staticMap.width / resolution);
-  const rows = Math.ceil(world.staticMap.height / resolution);
+function findGridPath(world, start, target, requestedResolution) {
+  const resolution = Math.max(8, Number(requestedResolution)
+    || (Math.max(world.staticMap.width, world.staticMap.height) > 4096 ? 8 : 32));
+  const worldColumns = Math.ceil(world.staticMap.width / resolution);
+  const worldRows = Math.ceil(world.staticMap.height / resolution);
+  const navigationRadius = 11;
   const clampCell = (value, maximum) => Math.max(0, Math.min(maximum - 1, Math.floor(value / resolution)));
-  const startColumn = clampCell(start.x, columns);
-  const startRow = clampCell(start.y, rows);
-  const goalColumn = clampCell(target.x, columns);
-  const goalRow = clampCell(target.y, rows);
-  const startIndex = startRow * columns + startColumn;
-  const goalIndex = goalRow * columns + goalColumn;
+  const startColumn = clampCell(start.x, worldColumns);
+  const startRow = clampCell(start.y, worldRows);
+
+  // A large city does not need a full-map path allocation. AI solves one local
+  // corridor at a time and requests the next corridor as it advances, matching
+  // the same chunked-world principle used by the party screen.
+  const distance = Math.hypot(target.x - start.x, target.y - start.y);
+  const maximumLeg = resolution * 32;
+  const legScale = distance > maximumLeg ? maximumLeg / distance : 1;
+  const legTarget = {
+    x: start.x + (target.x - start.x) * legScale,
+    y: start.y + (target.y - start.y) * legScale,
+  };
+  let goalColumn = clampCell(legTarget.x, worldColumns);
+  let goalRow = clampCell(legTarget.y, worldRows);
+
+  if (gridCellBlocked(world, goalColumn, goalRow, resolution, navigationRadius)) {
+    let replacement = null;
+    for (let ring = 1; ring <= 32 && !replacement; ring += 1) {
+      for (let dy = -ring; dy <= ring && !replacement; dy += 1) {
+        for (let dx = -ring; dx <= ring; dx += 1) {
+          if (Math.abs(dx) !== ring && Math.abs(dy) !== ring) continue;
+          const column = goalColumn + dx;
+          const row = goalRow + dy;
+          if (column < 0 || row < 0 || column >= worldColumns || row >= worldRows) continue;
+          if (!gridCellBlocked(world, column, row, resolution, navigationRadius)) {
+            replacement = { column, row };
+            break;
+          }
+        }
+      }
+    }
+    if (!replacement) return [];
+    goalColumn = replacement.column;
+    goalRow = replacement.row;
+  }
+
+  const margin = resolution <= 8 ? 64 : resolution <= 16 ? 48 : 16;
+  const minimumColumn = Math.max(0, Math.min(startColumn, goalColumn) - margin);
+  const maximumColumn = Math.min(worldColumns - 1, Math.max(startColumn, goalColumn) + margin);
+  const minimumRow = Math.max(0, Math.min(startRow, goalRow) - margin);
+  const maximumRow = Math.min(worldRows - 1, Math.max(startRow, goalRow) + margin);
+  const columns = maximumColumn - minimumColumn + 1;
+  const rows = maximumRow - minimumRow + 1;
+  const localIndex = (column, row) => (row - minimumRow) * columns + column - minimumColumn;
+  const worldCell = (index) => ({
+    column: minimumColumn + index % columns,
+    row: minimumRow + Math.floor(index / columns),
+  });
+  const startIndex = localIndex(startColumn, startRow);
+  const goalIndex = localIndex(goalColumn, goalRow);
   const parents = new Int32Array(columns * rows);
   parents.fill(-2);
   parents[startIndex] = -1;
@@ -52,14 +96,13 @@ function findGridPath(world, start, target, resolution = 32) {
 
   while (head < tail && parents[goalIndex] === -2) {
     const current = queue[head++];
-    const column = current % columns;
-    const row = Math.floor(current / columns);
+    const currentCell = worldCell(current);
     for (const [dx, dy] of offsets) {
-      const nextColumn = column + dx;
-      const nextRow = row + dy;
-      if (nextColumn < 0 || nextRow < 0 || nextColumn >= columns || nextRow >= rows) continue;
-      const nextIndex = nextRow * columns + nextColumn;
-      if (parents[nextIndex] !== -2 || gridCellBlocked(world, nextColumn, nextRow, resolution)) continue;
+      const nextColumn = currentCell.column + dx;
+      const nextRow = currentCell.row + dy;
+      if (nextColumn < minimumColumn || nextRow < minimumRow || nextColumn > maximumColumn || nextRow > maximumRow) continue;
+      const nextIndex = localIndex(nextColumn, nextRow);
+      if (parents[nextIndex] !== -2 || gridCellBlocked(world, nextColumn, nextRow, resolution, navigationRadius)) continue;
       parents[nextIndex] = current;
       queue[tail++] = nextIndex;
     }
@@ -68,14 +111,15 @@ function findGridPath(world, start, target, resolution = 32) {
 
   const reversed = [];
   for (let cursor = goalIndex; cursor !== -1; cursor = parents[cursor]) {
+    const cell = worldCell(cursor);
     reversed.push({
-      x: (cursor % columns) * resolution + resolution / 2,
-      y: Math.floor(cursor / columns) * resolution + resolution / 2,
+      x: cell.column * resolution + resolution / 2,
+      y: cell.row * resolution + resolution / 2,
     });
   }
   reversed.reverse();
   if (reversed.length && Math.hypot(reversed[0].x - start.x, reversed[0].y - start.y) < resolution) reversed.shift();
-  reversed.push({ x: target.x, y: target.y });
+  if (legScale === 1) reversed.push({ x: target.x, y: target.y });
   return reversed;
 }
 
@@ -113,7 +157,7 @@ function chooseAiTarget(world, actor) {
     if (territoryTarget) return territoryTarget;
   }
   if (actor.carryingPackageId) {
-    const zones = world.staticMap.mission.deliveryZones;
+    const zones = activeDeliveryZones(world);
     return zones.reduce((nearest, zone) => {
       const centre = { x: zone.x + zone.width / 2, y: zone.y + zone.height / 2 };
       const distance = Math.hypot(actor.position.x - centre.x, actor.position.y - centre.y);
@@ -167,7 +211,11 @@ function updateAiPlayerInputs(world) {
       const partyHasExternalController = Object.values(world.actors)
         .some((candidate) => candidate.partyId === actor.partyId && ['human', 'adapter'].includes(candidate.controller));
       const post = world.territory.commandPosts[actor.partyId];
-      const isAutoBuyer = partyAi[0]?.id === actor.id;
+      const autoBuyer = partyAi.reduce((nearest, candidate) => {
+        const distance = Math.hypot(candidate.position.x - post.x, candidate.position.y - post.y);
+        return !nearest || distance < nearest.distance ? { candidate, distance } : nearest;
+      }, null)?.candidate;
+      const isAutoBuyer = autoBuyer?.id === actor.id;
       const canAutoHire = isAutoBuyer
         && !partyHasExternalController
         && activeCrew(world, actor.partyId).length === 0

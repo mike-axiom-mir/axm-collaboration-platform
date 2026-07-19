@@ -107,10 +107,16 @@
   async function loadBridgeAndModels(){
     var health=await fetchTimed(BRIDGE+'/health',2200);if(!health.ok)throw new Error('bridge HTTP '+health.status);
     setBridge('connected','ON','AXM bridge connected · checked '+new Date().toLocaleTimeString());
-    var stateResponse=await fetchTimed(BRIDGE+'/agent-state',2200);if(!stateResponse.ok)throw new Error('agent gate HTTP '+stateResponse.status);
-    var gate=await stateResponse.json();paused=!!gate.paused;renderMaster();
-    var response=await fetchTimed(BRIDGE+'/local-models',3200);if(!response.ok)throw new Error('model connector HTTP '+response.status);
-    var payload=await response.json(),ids=(payload&&payload.data||[]).map(function(item){return String(item.id||'').toLowerCase();});
+    try{
+      var stateResponse=await fetchTimed(BRIDGE+'/agent-state',2200);
+      if(stateResponse.ok){var gate=await stateResponse.json();paused=!!gate.paused;}
+    }catch(error){paused=false;}
+    renderMaster();
+    var ids=[];
+    try{
+      var response=await fetchTimed(BRIDGE+'/local-models',3200);
+      if(response.ok){var payload=await response.json();ids=(payload&&payload.data||[]).map(function(item){return String(item.id||'').toLowerCase();});}
+    }catch(error){}
     if(ids.indexOf('axm-llama-3.1-8b')>=0)upsert({id:'nova',name:'Nova',kind:'ai',state:paused?'paused':'active',order:30,label:paused?'HOLD':'ON',detail:'Nova · axm-llama-3.1-8b'});
     if(ids.indexOf('gemini-local')>=0)upsert({id:'gemini-local',name:'Gemini',kind:'ai',state:paused?'paused':'active',order:31,label:paused?'HOLD':'ON',detail:'Gemini Local · gemini-local'});
     return ids.length;

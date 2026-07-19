@@ -23,7 +23,7 @@ test('required launcher, controller, party receiver, and game controls exist', (
     'client/party-screen/party-screen.html': ['waiting', 'game-frame', 'party-title'],
     'client/game/game.html': [
       'city-canvas', 'connection-banner', 'tether-warning', 'friendly-fire', 'debug',
-      'base-regen', 'inventory-overlays', 'mission-menu', 'results', 'justice-status', 'territory-zones',
+      'base-regen', 'inventory-overlays', 'map-toggle', 'mission-menu', 'results', 'justice-status', 'territory-zones',
     ],
   };
   for (const [relative, ids] of Object.entries(expectedIds)) {
@@ -32,15 +32,15 @@ test('required launcher, controller, party receiver, and game controls exist', (
   }
 });
 
-test('District Dominion data defines five zones, mirrored commands, eight spawns, and bounded reinforcement rules', () => {
+test('District Dominion data defines city-scale zones, mirrored commands, eight spawns, and bounded reinforcement rules', () => {
   const territory = JSON.parse(read('data/territory-zones.json'));
   assert.equal(territory.mode, 'district_dominion');
-  assert.equal(territory.zones.length, 5);
+  assert.equal(territory.zones.length, 13);
   assert.equal(territory.playerSpawns.length, 8);
   assert.deepEqual(territory.playerSpawns.map((spawn) => spawn.slot), [1, 2, 3, 4, 5, 6, 7, 8]);
   assert.ok(territory.commandPosts.party_a);
   assert.ok(territory.commandPosts.party_b);
-  assert.equal(territory.vehicleSpawns.length, 2);
+  assert.ok(territory.vehicleSpawns.length >= 6);
   assert.equal(territory.reinforcement.squadSize, 2);
   assert.equal(territory.reinforcement.maxActivePerParty, 4);
   assert.ok(territory.reinforcement.costCents > 0);
@@ -73,12 +73,16 @@ test('launcher defaults to sparse ready seats and keeps Host AI substitution exp
 test('structured city map contains the required gameplay layer semantics', () => {
   const map = JSON.parse(read('data/map.json'));
   assert.equal(map.generatedWithTiled, false);
-  assert.equal(map.world.width, 1024);
-  assert.equal(map.world.height, 1024);
+  assert.equal(map.world.width, 12288);
+  assert.equal(map.world.height, 8192);
+  assert.equal(map.format, 'AXM_CHUNKED_CITY_MAP');
+  assert.equal(map.chunking.enabled, true);
+  assert.equal(map.chunking.chunks.length, 96);
+  assert.equal(map.statistics.groundAreaComparedWithV017, 96);
   for (const layer of [
     'ground', 'roads', 'sidewalks', 'buildings', 'details_below', 'details_above',
     'collision', 'player_spawns', 'vehicle_spawns', 'npc_spawns', 'mission_zones',
-    'safe_zones', 'party_regroup_zones', 'base_zones',
+    'safe_zones', 'party_regroup_zones', 'base_zones', 'interior_zones',
   ]) assert.ok(Array.isArray(map.layers[layer]), `map layer ${layer}`);
   assert.equal(map.layers.player_spawns.length, 8);
   assert.ok(map.layers.vehicle_spawns.length >= 2);
@@ -86,6 +90,9 @@ test('structured city map contains the required gameplay layer semantics', () =>
   assert.ok(map.layers.mission_zones.some((zone) => zone.kind === 'pickup'));
   assert.ok(map.layers.mission_zones.some((zone) => zone.kind === 'mission_board'));
   assert.ok(map.layers.mission_zones.filter((zone) => zone.kind === 'delivery').length >= 2);
+  for (const chunk of map.chunking.chunks) {
+    assert.ok(fs.statSync(path.join(root, chunk.path.replace(/^\//, ''))).size > 0, chunk.path);
+  }
   const partyBase = map.layers.base_zones.find((zone) => zone.kind === 'party_base');
   assert.ok(partyBase, 'walkable party base zone');
   for (const spawn of map.layers.player_spawns.filter((entry) => entry.slot <= 4)) {

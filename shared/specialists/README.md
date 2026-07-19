@@ -32,12 +32,12 @@ Return requires a human-readable summary and evidence reference. Machine collabo
 Capability bridges provide equal access without pretending every model has the same native interface:
 
 - **JSON Visual Composer** teaches a text model to emit reviewed `axm.drawpacket/v1` instructions for Studio's real layered renderer.
-- **Screen Scout Loop** lets a deliberately shared screen be observed by a vision-capable scout and passed as attributed text to a model without native eyes.
+- **Desktop Eyes · Screen Scout** lets a deliberately shared screen be observed by a vision-capable scout and passed as attributed text to a chosen model without native eyes. Mirror receives only an observation candidate in its private perception inbox; it does not enter training, wisdom, truth or permissions.
 - **Tool Action Translator** lets text-only models propose normal `axm.action/v1` tool calls and wait for approval/receipts.
 - **Bounded Context Index Reader** lets small-context models request traceable file slices without implying unread coverage.
 - **Structured Output Repair** preserves raw output and permits one schema-only repair pass; it cannot invent missing evidence.
 
-These are compensating skills, not safety bypasses. Screen capture stays visible, finite, consent-based and observation-only. Tool bridges cannot create a capability or permission the host has not exposed.
+These are compensating skills, not safety bypasses. Screen capture stays visible, finite, consent-based and observation-only. The current scout is Claude, and scout/recipient attribution stays separate. Tool bridges cannot create a capability or permission the host has not exposed.
 
 ## Recommendation router
 

@@ -1,0 +1,19 @@
+{
+  "schema": "axm.shared-service-contract/v1",
+  "id": "visual-kernel",
+  "version": "0.2.0",
+  "status": "TEST",
+  "provides": [
+    "semantic-host-neutral-visual-tokens",
+    "dark-light-and-high-contrast-profiles",
+    "deterministic-css-variable-export",
+    "contrast-and-required-role-validation",
+    "reduced-motion-and-forced-colour-foundation"
+  ],
+  "accepts": ["axm.visual-kernel.tokens/v1", "profile-overrides"],
+  "produces": ["axm.visual-kernel.tokens/v1", "axm.visual-kernel.validation/v1", "text/css"],
+  "boundaries": {
+    "automaticWrites": [],
+    "refuses": ["raw-script-token", "remote-font-fetch", "brand-specific-screen-token", "accessibility-pass-with-failing-contrast", "automatic-host-theme-apply"]
+  }
+}

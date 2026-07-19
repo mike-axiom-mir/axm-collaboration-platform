@@ -1,0 +1,45 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "marketplace-deployment",
+  "version": "v0.1",
+  "provides": [
+    "single-marketplace-deployment-workspace",
+    "local-distribution-catalog",
+    "license-and-provenance-review-gate",
+    "attributed-human-machine-review-seats",
+    "plugin-extension-package-proposals",
+    "deployment-and-self-hosting-plans",
+    "public-gallery-drafts",
+    "versioned-update-channel-drafts",
+    "publish-library-parent-view"
+  ],
+  "consumes": [
+    "service:publish-library",
+    "service:workshop-packager",
+    "service:launcher-card-installer",
+    "service:asset-vault",
+    "service:plugin-registry",
+    "service:backup",
+    "service:runtime"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.marketplace-listing/v1", "axm.plugin-distribution-proposal/v1", "axm.deployment-plan/v1", "axm.update-feed-proposal/v1"],
+    "accepts": ["axm.release-manifest/v1", "axm.workshop-package/v1", "axm.publish-artifact/v1", "hub:init", "hub:settings:value"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:marketplace-deployment-project", "user-download:explicit-plan-or-project-export"],
+    "refuses": [
+      "marketplace-publication",
+      "payment-processing",
+      "automatic-network-upload",
+      "automatic-plugin-installation",
+      "automatic-update-installation",
+      "credential-storage",
+      "deployment-without-rollback",
+      "distribution-without-rights-review",
+      "one-score-as-taste",
+      "grade-review-or-popularity-as-authority"
+    ]
+  }
+}

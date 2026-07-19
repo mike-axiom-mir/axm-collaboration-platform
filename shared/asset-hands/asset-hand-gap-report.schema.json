@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/asset-hand-gap-report-v1.schema.json",
+  "title": "AXM Asset Hand Gap Report v1",
+  "description": "A deterministic explanation of the installed hands that match a request, or the exact capability contract a missing hand would need to declare.",
+  "type": "object",
+  "required": ["schema", "status", "request", "compatible_hands", "missing_hand_spec", "rejections"],
+  "properties": {
+    "schema": { "const": "axm.asset-hand-gap-report/v1" },
+    "status": { "enum": ["READY", "MISSING_HAND", "UNSUPPORTED_CANVAS", "INVALID_CANVAS"] },
+    "request": {
+      "type": "object",
+      "required": ["kind", "operation_mode", "intended_use", "target_canvas", "target_canvas_original", "target_canvas_validation", "fallback_policy", "required_outputs", "editable_recipe_formats", "quality_requirements", "source_artifacts"],
+      "properties": {
+        "kind": { "type": "string", "minLength": 1 },
+        "operation_mode": { "enum": ["create", "edit", "inspect", "validate", "finish", "workflow"] },
+        "intended_use": { "type": "string", "minLength": 1 },
+        "target_canvas": { "$ref": "target-canvas.schema.json" },
+        "target_canvas_original": { "type": "object" },
+        "target_canvas_validation": { "type": "object", "required": ["pass", "errors", "transformations"] },
+        "fallback_policy": { "type": "object", "required": ["generalist", "lossy_conversion"], "properties": { "generalist": { "enum": ["forbidden", "permitted"] }, "lossy_conversion": { "enum": ["forbidden", "permitted"] } }, "additionalProperties": false },
+        "required_outputs": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "editable_recipe_formats": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "quality_requirements": { "type": "object" },
+        "source_artifacts": { "type": "array", "items": { "type": "object" } }
+      },
+      "additionalProperties": false
+    },
+    "compatible_hands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "version", "score", "reason"],
+        "properties": {
+          "id": { "type": "string" },
+          "version": { "type": "string" },
+          "score": { "type": "number" },
+          "reason": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "missing_hand_spec": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["kinds", "operation_modes", "input_types", "output_types", "canvas_types", "constraints_honoured", "editable_recipe_formats", "operations"],
+          "properties": {
+            "kinds": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+            "operation_modes": { "type": "array", "items": { "enum": ["create", "edit", "inspect", "validate", "finish", "workflow"] }, "minItems": 1 },
+            "input_types": { "type": "array", "items": { "type": "object" } },
+            "output_types": { "type": "array", "items": { "type": "string" } },
+            "canvas_types": { "type": "array", "items": { "$ref": "asset-hand-v2.schema.json#/$defs/canvasProfile" }, "minItems": 1 },
+            "constraints_honoured": { "type": "array", "items": { "type": "string" } },
+            "editable_recipe_formats": { "type": "array", "items": { "type": "string" } },
+            "operations": {
+              "type": "object",
+              "required": ["preview", "validate", "edit"],
+              "properties": {
+                "preview": { "type": "boolean" },
+                "validate": { "type": "boolean" },
+                "edit": { "type": "boolean" }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "rejections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["handId", "code", "reason", "missing"],
+        "properties": {
+          "handId": { "type": "string" },
+          "code": { "type": "string" },
+          "reason": { "type": "string" },
+          "missing": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "planned_hands": {
+      "type": "array",
+      "description": "Non-executable catalog entries that may satisfy the visible gap after their unblock conditions are implemented.",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "priority", "score", "reason", "why_missing", "unblock_conditions"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "priority": { "enum": ["P0", "P1", "P2", "P3"] },
+          "score": { "type": "number" },
+          "reason": { "type": "string" },
+          "why_missing": { "type": "string", "minLength": 1 },
+          "unblock_conditions": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

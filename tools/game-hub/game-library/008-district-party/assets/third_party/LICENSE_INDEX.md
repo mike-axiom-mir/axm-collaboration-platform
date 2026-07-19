@@ -51,3 +51,7 @@ CC0 reference: https://creativecommons.org/publicdomain/zero/1.0/
 All selected runtime files are local under `assets/selected/`. Gameplay does not need a CDN or a remote asset request. A file being curated under `selected/` is not, by itself, proof that the current renderer actually loads it; runtime use must be confirmed by the game and its browser tests.
 
 Exact file-level mappings, transformations, hashes, crop/scale facts, and intended uses are recorded in `assets/ASSET_MANIFEST.json`.
+
+## Derived geodata (not an art pack)
+
+The v0.2 city foundation additionally uses the official PDOK BGT OGC API, whose collection metadata exposes CC0-1.0. Exact queries, snapshot, counts, transforms, and the derived-output hash are retained in `data/tilburg-source-index.json`; the readable record is `GEODATA_PROVENANCE.md`. No raw API archive or Google map imagery is included.

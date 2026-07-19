@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/musical-sequence-v1.schema.json",
+  "title": "AXM Musical Sequence v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "id",
+    "title",
+    "target_canvas",
+    "tempo_bpm",
+    "time_signature",
+    "ticks_per_quarter",
+    "midi_channel",
+    "notes",
+    "duration_seconds",
+    "provenance"
+  ],
+  "properties": {
+    "schema": { "const": "axm.musical-sequence/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string" },
+    "title": { "type": "string" },
+    "target_canvas": { "type": "object" },
+    "tempo_bpm": { "type": "number" },
+    "time_signature": { "type": "array", "minItems": 2, "maxItems": 2 },
+    "ticks_per_quarter": { "type": "integer" },
+    "midi_channel": { "type": "integer" },
+    "notes": { "type": "array", "minItems": 1 },
+    "duration_seconds": { "type": "number" },
+    "provenance": { "type": "object" }
+  },
+  "additionalProperties": false
+}

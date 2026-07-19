@@ -9,6 +9,8 @@ const { createInventory } = require('./inventory-system');
 const { createHostileNpc } = require('./npc-factory');
 const { createEconomyState } = require('./economy-system');
 
+const STATIC_MAP_CACHE = new Map();
+
 const DEFAULT_STATIC_MAP = Object.freeze({
   id: 'district-four-blocks-v0-1',
   source: 'structured-json-fallback-not-tiled',
@@ -42,6 +44,10 @@ const DEFAULT_STATIC_MAP = Object.freeze({
     { id: 'spawn-plaza-safe', x: 70, y: 82, width: 152, height: 152 },
     { id: 'depot-pickup-safe', x: 62, y: 548, width: 156, height: 150 },
   ],
+  saveTerminals: [
+    { id: 'party-house-save-computer', name: 'GROUP SAVE COMPUTER', x: 174, y: 174, width: 38, height: 34, interactionDistance: 54 },
+  ],
+  interiorZones: [],
   playerSpawns: [
     { x: 110, y: 125 }, { x: 155, y: 125 }, { x: 110, y: 172 }, { x: 155, y: 172 },
     { x: 868, y: 596 }, { x: 908, y: 596 }, { x: 868, y: 640 }, { x: 908, y: 640 },
@@ -74,13 +80,39 @@ const DEFAULT_STATIC_MAP = Object.freeze({
   },
 });
 
+function cloneStaticMap(staticMap) {
+  return {
+    ...staticMap,
+    roads: [...(staticMap.roads || [])],
+    obstacles: [...(staticMap.obstacles || [])],
+    areas: [...(staticMap.areas || [])],
+    safeZones: (staticMap.safeZones || []).map((zone) => ({ ...zone })),
+    baseZones: (staticMap.baseZones || []).map((zone) => ({ ...zone })),
+    saveTerminals: (staticMap.saveTerminals || []).map((terminal) => ({ ...terminal })),
+    interiorZones: (staticMap.interiorZones || []).map((zone) => ({ ...zone, entrance: zone.entrance ? { ...zone.entrance } : null })),
+    playerSpawns: (staticMap.playerSpawns || []).map((spawn) => ({ ...spawn })),
+    vehicleSpawns: (staticMap.vehicleSpawns || []).map((spawn) => ({ ...spawn })),
+    npcSpawns: (staticMap.npcSpawns || []).map((spawn) => ({ ...spawn })),
+    rivalSpawns: (staticMap.rivalSpawns || []).map((spawn) => ({ ...spawn })),
+    mission: JSON.parse(JSON.stringify(staticMap.mission || {})),
+    territory: JSON.parse(JSON.stringify(staticMap.territory || {})),
+  };
+}
+
 function loadStaticMap(projectRoot) {
   const mapPath = path.join(projectRoot, 'data', 'map.json');
+  const cached = STATIC_MAP_CACHE.get(mapPath);
+  if (cached) return cloneStaticMap(cached);
   try {
     const parsed = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
-    if (parsed && Number(parsed.width) > 0 && Number(parsed.height) > 0) return parsed;
+    if (parsed && Number(parsed.width) > 0 && Number(parsed.height) > 0) {
+      STATIC_MAP_CACHE.set(mapPath, parsed);
+      return cloneStaticMap(parsed);
+    }
     if (parsed?.world && Number(parsed.world.width) > 0 && Number(parsed.world.height) > 0) {
-      return normalizeClientMap(parsed, projectRoot);
+      const normalized = normalizeClientMap(parsed, projectRoot);
+      STATIC_MAP_CACHE.set(mapPath, normalized);
+      return cloneStaticMap(normalized);
     }
   } catch {
     // The standalone harness deliberately retains a built-in structured map fallback.
@@ -104,10 +136,27 @@ function normalizeRect(entry) {
   };
 }
 
+function loadChunkLayers(clientMap, projectRoot) {
+  const combined = {
+    ground: [], roads: [], sidewalks: [], buildings: [], details_below: [], details_above: [], collision: [],
+  };
+  if (clientMap.chunking?.enabled !== true || !Array.isArray(clientMap.chunking.chunks)) return combined;
+  for (const entry of clientMap.chunking.chunks) {
+    const relative = String(entry.path || '').replace(/^\/+/, '');
+    if (!relative.startsWith('data/map-chunks/')) continue;
+    const chunk = readOptionalJson(path.join(projectRoot, relative), null);
+    if (!chunk?.layers) continue;
+    for (const layer of Object.keys(combined)) combined[layer].push(...(chunk.layers[layer] || []));
+  }
+  return combined;
+}
+
 function normalizeClientMap(clientMap, projectRoot) {
   const layers = clientMap.layers || {};
+  const chunkLayers = loadChunkLayers(clientMap, projectRoot);
   const routeData = readOptionalJson(path.join(projectRoot, 'data', 'npc-routes.json'), { routes: [] });
   const missionData = readOptionalJson(path.join(projectRoot, 'data', 'missions.json'), {});
+  const missionLayoutData = readOptionalJson(path.join(projectRoot, 'data', 'mission-layouts.json'), { modes: {} });
   const vehicleData = readOptionalJson(path.join(projectRoot, 'data', 'vehicle-spawns.json'), {});
   const territoryData = readOptionalJson(path.join(projectRoot, 'data', 'territory-zones.json'), {});
   const mode = missionData.courier_chaos || {};
@@ -124,10 +173,20 @@ function normalizeClientMap(clientMap, projectRoot) {
     x: pickup.x + 30 + (index % columns) * 46,
     y: pickup.y + 22 + Math.floor(index / columns) * 34,
   }));
+  const missionCatalog = JSON.parse(JSON.stringify(missionData));
+  for (const [missionMode, layoutEntry] of Object.entries(missionLayoutData.modes || {})) {
+    if (!missionCatalog[missionMode] || !Array.isArray(layoutEntry?.layouts)) continue;
+    missionCatalog[missionMode].layouts = layoutEntry.layouts.map((layout) => JSON.parse(JSON.stringify(layout)));
+  }
+  missionCatalog.layoutSchemaVersion = Number(missionLayoutData.schemaVersion) || 1;
+  missionCatalog.layoutSelection = missionLayoutData.selectionPolicy || missionData.layoutSelection || 'host-route-deck';
   const layerVehicles = layers.vehicle_spawns || [];
   const vehicleSpawns = Array.isArray(vehicleData.vehicles) && vehicleData.vehicles.length
     ? vehicleData.vehicles
     : layerVehicles;
+  const chunkBuildings = chunkLayers.buildings.map((entry) => ({ ...normalizeRect(entry), kind: 'building' }));
+  const chunkWaterCollision = chunkLayers.details_below.filter((entry) => entry.collision === true).map(normalizeRect);
+  const chunkBuildingCollision = chunkBuildings.filter((entry) => entry.collision === true);
   return {
     id: clientMap.id,
     source: clientMap.generatedWithTiled ? 'tiled' : 'structured-json-not-tiled',
@@ -135,17 +194,26 @@ function normalizeClientMap(clientMap, projectRoot) {
     height: Number(clientMap.world.height),
     tileSize: Number(clientMap.tileSize) || 16,
     background: clientMap.palette?.ground || '#233a35',
-    roads: (layers.roads || []).map(normalizeRect),
-    obstacles: (layers.collision || []).map(normalizeRect),
+    roads: [...(layers.roads || []), ...chunkLayers.roads].map(normalizeRect),
+    obstacles: [
+      ...(layers.collision || []).map(normalizeRect),
+      ...chunkBuildingCollision,
+      ...chunkWaterCollision,
+      ...(chunkLayers.collision || []).map(normalizeRect),
+    ],
     areas: [
       ...(layers.buildings || []).map((entry) => ({ ...normalizeRect(entry), kind: 'building' })),
       ...(layers.ground || []).filter((entry) => entry.id === 'park').map((entry) => ({ ...normalizeRect(entry), kind: 'park' })),
+      ...chunkBuildings,
     ],
     safeZones: (layers.safe_zones || []).map(normalizeRect),
     baseZones: (layers.base_zones || []).map(normalizeRect),
+    saveTerminals: (layers.save_terminals || []).map(normalizeRect),
+    interiorZones: (layers.interior_zones || []).map(normalizeRect),
     playerSpawns: [...(layers.player_spawns || [])].sort((a, b) => a.slot - b.slot),
     vehicleSpawns,
     npcSpawns: layers.npc_spawns || [],
+    rivalSpawns: layers.rival_spawns || [],
     npcRoutes: Object.fromEntries((routeData.routes || []).map((route) => [route.id, route.points || []])),
     mission: {
       depot: normalizeRect(pickup),
@@ -156,10 +224,12 @@ function normalizeClientMap(clientMap, projectRoot) {
       deliveryGoal: packageCount,
       scorePerDelivery: Number(mode.scorePerDelivery) || 100,
       vehicleAssistBonus: Number(mode.vehicleAssistBonus) || 0,
-      catalog: missionData,
+      catalog: missionCatalog,
     },
     territory: territoryData,
     clientMapId: clientMap.id,
+    chunking: clientMap.chunking || null,
+    spatialCellSize: Number(clientMap.chunking?.chunkSize) || 512,
   };
 }
 
@@ -205,6 +275,7 @@ function createActor(player, spawn) {
     damageImmuneUntilTick: 0,
     carryingPackageId: null,
     walletCents: 10000,
+    career: { deliveries: 0, missionsCompleted: 0 },
     tether: { level: 'ok', distance: 0, returnToParty: false, movementBlocked: false },
     aiState: player.controllerType === 'ai' ? 'follow_party' : null,
     aiPath: [],
@@ -444,11 +515,11 @@ function createWorldState({ players, settings = {}, projectRoot }) {
     return [npc.id, npc];
   }));
   if (!territoryMode) {
-    [
-      { x: 850, y: 430, role: 'rusher' },
-      { x: 870, y: 500, role: 'skirmisher' },
-      { x: 850, y: 570, role: 'blocker' },
-    ].forEach((entry, index) => {
+    (staticMap.rivalSpawns?.length ? staticMap.rivalSpawns : [
+      { x: staticMap.width / 2 + 250, y: staticMap.height / 2 - 80, role: 'rusher' },
+      { x: staticMap.width / 2 + 280, y: staticMap.height / 2, role: 'skirmisher' },
+      { x: staticMap.width / 2 + 250, y: staticMap.height / 2 + 80, role: 'blocker' },
+    ]).forEach((entry, index) => {
       const npc = createHostileNpc({
         id: `rival-city-${index + 1}`,
         faction: 'neon-rivals',
@@ -511,6 +582,13 @@ function createWorldState({ players, settings = {}, projectRoot }) {
     nextProjectileNumber: 1,
     nextNpcNumber: 100,
     randomSeed: 0x4a584d31,
+    missionDirector: {
+      seed: (Date.now() ^ 0x4d495353) >>> 0,
+      decks: {},
+      lastLayoutByMode: {},
+      runsByMode: {},
+      totalRuns: 0,
+    },
   };
   return world;
 }

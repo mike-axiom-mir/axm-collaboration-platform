@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/print-document-v1.schema.json",
+  "title": "AXM Editable Print Document v1",
+  "description": "Editable source for a bounded print page created against a target canvas before PDF encoding.",
+  "type": "object",
+  "required": ["schema", "version", "id", "title", "purpose", "target_canvas", "layout", "colour", "elements"],
+  "properties": {
+    "schema": { "const": "axm.print-document/v1" },
+    "version": { "const": 1 },
+    "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "title": { "type": "string", "minLength": 1, "maxLength": 240 },
+    "purpose": { "type": "string", "maxLength": 2000 },
+    "target_canvas": { "$ref": "target-canvas.schema.json" },
+    "layout": {
+      "type": "object",
+      "required": ["kind", "trim", "bleed", "minimum_stroke"],
+      "properties": {
+        "kind": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "trim": {
+          "type": "array",
+          "prefixItems": [{ "type": "number", "exclusiveMinimum": 0 }, { "type": "number", "exclusiveMinimum": 0 }],
+          "items": false
+        },
+        "bleed": { "type": "number", "minimum": 0, "maximum": 50 },
+        "minimum_stroke": { "type": "number", "exclusiveMinimum": 0, "maximum": 20 }
+      },
+      "additionalProperties": true
+    },
+    "colour": {
+      "type": "object",
+      "required": ["model", "printable_colours"],
+      "properties": {
+        "model": { "enum": ["DeviceCMYK", "DeviceGray", "sRGB"] },
+        "printable_colours": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "elements": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": { "type": "object", "required": ["kind"], "properties": { "kind": { "type": "string" } }, "additionalProperties": true }
+    }
+  },
+  "additionalProperties": true
+}

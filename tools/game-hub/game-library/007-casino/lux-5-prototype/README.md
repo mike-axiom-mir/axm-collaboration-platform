@@ -4,9 +4,9 @@ LUX-5 is the first local playable slot prototype for the casino game. Its
 5×4 reels are built into a procedural 3D robot cabinet. A five-in-a-row wakes
 the robot, opens its arms, and turns its body into the six-face boost wheel.
 
-This began as a standalone workbench prototype and is now registered as Game
-Hub slot 007 with `PUBLIC TEST` status. It still has no multiplayer or map
-layer, and running it does not upload or publish anything.
+This is deliberately a standalone workbench prototype. It is not registered in
+Game Hub, it has no multiplayer or map layer yet, and running it does not upload
+or publish anything.
 
 ## Start it locally
 

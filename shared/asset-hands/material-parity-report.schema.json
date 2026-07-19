@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/material-parity-report-v1.schema.json",
+  "title": "AXM Material Parity Report v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "claim",
+    "target_canvas",
+    "operation",
+    "source",
+    "reference_scene",
+    "backends",
+    "metrics",
+    "thresholds",
+    "performance",
+    "native_renderer_validation",
+    "checks"
+  ],
+  "properties": {
+    "schema": { "const": "material-parity-report" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "HOLD"] },
+    "claim": { "type": "string" },
+    "target_canvas": { "type": "object" },
+    "operation": { "enum": ["inspect", "validate", "workflow"] },
+    "source": { "type": "object" },
+    "reference_scene": { "type": "object" },
+    "backends": { "type": "array", "minItems": 2, "maxItems": 2 },
+    "metrics": { "type": "object" },
+    "thresholds": { "type": "object" },
+    "performance": { "type": "object" },
+    "native_renderer_validation": { "const": false },
+    "checks": { "type": "array", "minItems": 1 }
+  },
+  "additionalProperties": false
+}

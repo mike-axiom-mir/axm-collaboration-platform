@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.asset-artifact/v1",
+  "title": "AXM Asset Artifact v1",
+  "type": "object",
+  "required": ["schema", "id", "role", "name", "filename", "mime", "format", "editable", "digest", "metadata"],
+  "properties": {
+    "schema": { "const": "axm.asset-artifact/v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "role": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "filename": { "type": "string", "minLength": 1 },
+    "mime": { "type": "string", "minLength": 1 },
+    "format": { "type": "string", "minLength": 1 },
+    "width": { "type": "number", "minimum": 0 },
+    "height": { "type": "number", "minimum": 0 },
+    "editable": { "type": "boolean" },
+    "text": { "type": "string" },
+    "dataUrl": { "type": "string" },
+    "metadata": { "type": "object" },
+    "digest": { "type": "string", "minLength": 1 }
+  },
+  "anyOf": [{ "required": ["text"] }, { "required": ["dataUrl"] }],
+  "additionalProperties": true
+}

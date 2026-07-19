@@ -52,11 +52,13 @@ test('District Dominion initializes one authoritative eight-actor world with mir
     'party_a', 'party_a', 'party_a', 'party_a',
     'party_b', 'party_b', 'party_b', 'party_b',
   ]);
-  assert.deepEqual(world.actors['actor-seat-1'].position, { x: 952, y: 440 });
-  assert.deepEqual(world.actors['actor-seat-5'].position, { x: 72, y: 440 });
-  assert.equal(world.territory.zones.length, 5);
+  const spawnA = world.staticMap.territory.playerSpawns.find((spawn) => spawn.slot === 1);
+  const spawnB = world.staticMap.territory.playerSpawns.find((spawn) => spawn.slot === 5);
+  assert.deepEqual(world.actors['actor-seat-1'].position, { x: spawnA.x, y: spawnA.y });
+  assert.deepEqual(world.actors['actor-seat-5'].position, { x: spawnB.x, y: spawnB.y });
+  assert.equal(world.territory.zones.length, 13);
   assert.deepEqual(world.economy.partyFunds, { party_a: 5000, party_b: 5000 });
-  assert.equal(Object.keys(world.vehicles).length, 2);
+  assert.equal(Object.keys(world.vehicles).length, 6);
   assert.equal(Object.values(world.npcs).filter((npc) => npc.source === 'city').length, 0);
   assert.equal(serializeStaticWorld(session).activePlayerTarget, 8);
 });
@@ -118,8 +120,8 @@ test('District Dominion rejects a one-sided roster unless optional Host AI fill 
 test('capture progress is host-owned, contested presence pauses it, and an owner is not erased by one tick', () => {
   const { world } = territorySession();
   parkActorsAtCommands(world);
-  const central = world.territory.zones.find((zone) => zone.id === 'central-crossing');
-  const east = world.territory.zones.find((zone) => zone.id === 'east-junction');
+  const central = world.territory.zones.find((zone) => zone.id === 'city-centre');
+  const east = world.territory.zones.find((zone) => zone.id === 'east-gate');
   const actorA = world.actors['actor-seat-1'];
   const actorB = world.actors['actor-seat-5'];
 

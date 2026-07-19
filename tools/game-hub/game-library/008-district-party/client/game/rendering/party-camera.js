@@ -32,4 +32,14 @@ export class PartyCamera {
   begin(ctx, viewport) { ctx.save(); ctx.translate(viewport.width / 2, viewport.height / 2); ctx.scale(this.zoom, this.zoom); ctx.translate(-this.x, -this.y); }
   end(ctx) { ctx.restore(); }
   worldToScreen(p, viewport) { return { x: (p.x - this.x) * this.zoom + viewport.width / 2, y: (p.y - this.y) * this.zoom + viewport.height / 2 }; }
+  visibleBounds(viewport, margin = 0) {
+    const halfWidth = viewport.width / (2 * this.zoom) + margin;
+    const halfHeight = viewport.height / (2 * this.zoom) + margin;
+    return {
+      left: Math.max(0, this.x - halfWidth),
+      right: Math.min(this.worldWidth, this.x + halfWidth),
+      top: Math.max(0, this.y - halfHeight),
+      bottom: Math.min(this.worldHeight, this.y + halfHeight),
+    };
+  }
 }

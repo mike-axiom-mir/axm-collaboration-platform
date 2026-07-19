@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/uv-layout-v1.schema.json",
+  "title": "AXM UV Layout v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "target_canvas", "method", "resolution", "padding_pixels", "uv_convention", "tangent_convention", "triangles", "vertices", "islands", "overlap_count", "source"],
+  "properties": {
+    "schema": {"const": "axm.uv-layout/v1"}, "version": {"const": "1.0.0"}, "id": {"type": "string", "minLength": 1},
+    "target_canvas": {"type": "object"}, "method": {"const": "deterministic-triangle-atlas"},
+    "resolution": {"type": "integer", "minimum": 16, "maximum": 512}, "padding_pixels": {"type": "integer", "minimum": 1},
+    "uv_convention": {"type": "string"}, "tangent_convention": {"type": "string"},
+    "triangles": {"type": "integer", "minimum": 1}, "vertices": {"type": "integer", "minimum": 3},
+    "islands": {"type": "array", "minItems": 1}, "overlap_count": {"const": 0}, "source": {"type": ["object", "null"]}
+  },
+  "additionalProperties": false
+}

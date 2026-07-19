@@ -1,0 +1,18 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "cognitive-resource-meter",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": ["guided-and-explicit-goal-receipt-import", "explicit-local-server-process-window-meter", "direct-provider-compute-telemetry", "privacy-safe-machine-profile-vault", "versioned-rate-schedule-vault", "hold-explanation-without-auto-repair", "separate-dimension-resource-timeline", "portable-cognitive-evidence-bundle", "exact-mirror-observation-draft-export", "exact-mirror-economics-profile-draft-export", "content-addressed-cognitive-ledger", "append-archive-supersede-restore-continuity", "command-center-control-seam"],
+  "consumes": ["provider:explicit-declaration", "contract:axm.mirror.cognitive-work-observation-draft/v1@74a135eca16239f502d73ecbee296ae49fa8a09316cae4437188b923c500286d", "contract:axm.mirror.cognitive-resource-economics-profile-draft/v1@fa66b93360b0a43da9ac35bd6b128d2c62e9e341d06a4f1fad9c15f31f073ef3", "service:technical-glasses"],
+  "permissions": ["cognitive.evidence.write", "cognitive.measure.local"],
+  "handoffs": {
+    "emits": ["COGNITIVE_WORK_OBSERVATION_DRAFT", "COGNITIVE_RESOURCE_ECONOMICS_PROFILE_DRAFT", "COGNITIVE_RESOURCE_LEDGER_RECEIPT", "PRIVACY_SAFE_MACHINE_PROFILE_DIGEST", "COGNITIVE_EVIDENCE_BUNDLE", "SEPARATE_DIMENSION_RESOURCE_TIMELINE"],
+    "accepts": ["PROVIDER_GOAL_RUN_RECEIPT", "axm.workshop.codex-goal-completion-receipt/v1", "PROVIDER_COMPUTE_TELEMETRY", "PRIVACY_SAFE_MACHINE_PROFILE", "VERSIONED_PROVIDER_RATE_SCHEDULE", "LOCAL_HARDWARE_RATE_SCHEDULE", "EXPLICIT_LOCAL_METER_WINDOW"]
+  },
+  "lifecycle": {"state_owner": "service", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"},
+  "boundaries": {
+    "writes": ["state/cognitive-resource-meter:private-content-addressed-ledger", "state/cognitive-resource-meter:explicit-volatile-local-meter-window", "exports/cognitive-resource-meter:explicit-exact-draft-or-evidence-bundle"],
+    "refuses": ["prompt-response-hidden-reasoning-secret-identity-or-memory-capture", "absolute-mirror-path", "mirror-write", "automatic-network-price-refresh", "external-freshness-certification", "universal-token-to-compute-conversion", "provider-unit-to-flops-relabel", "overlapping-meter-double-count", "cross-accounting-mode-metric", "silent-rate-mutation", "currency-combination", "nonlinear-billing-claim", "measured-or-billed-cost-claim-from-profile", "composite-intelligence-or-value-score", "ranking", "optimization", "model-hardware-provider-or-plan-selection", "budget-allocation", "permission-grant", "training", "release", "canon", "world-action", "required-third-party-runtime"]
+  }
+}

@@ -24,6 +24,7 @@ function makeWorld() {
 
 test('hard party range transparently blocks only further outward movement', () => {
   const world = makeWorld();
+  world.staticMap.obstacles = [];
   const anchor = world.actors['actor-seat-1'];
   const separated = world.actors['actor-seat-2'];
   anchor.position = { x: 100, y: 500 };

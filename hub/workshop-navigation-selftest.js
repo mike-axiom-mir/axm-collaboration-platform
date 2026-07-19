@@ -29,6 +29,7 @@ function ok(value, message) { if (value) console.log('  PASS  ' + message); else
   ok(history.entries().length === 3, 'external routes are refused');
   ok(Nav.isWorkshopRoute('/tools/studio/index.html') && Nav.isWorkshopRoute('/hub/index.html'), 'same-origin workshop routes are accepted');
   ok(!Nav.isWorkshopRoute('//example.com') && !Nav.isWorkshopRoute('/admin'), 'non-workshop routes are refused');
+  ok(Nav.isHubHomeRoute('/hub/index.html') && Nav.isHubHomeRoute('/hub/?from=tool') && !Nav.isHubHomeRoute('/tools/main-hub/index.html'), 'Hub self-route is identified without confusing other tools');
 })();
 
 (function independentFromSavedState() {

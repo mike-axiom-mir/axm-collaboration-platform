@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/native-project-change.schema.json",
+  "title": "AXM Native Project Change",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "id",
+    "target_canvas",
+    "state",
+    "adapter",
+    "project",
+    "source_artifact",
+    "change_digest",
+    "commands",
+    "required_permissions",
+    "approval",
+    "rollback",
+    "native_execution",
+    "provenance"
+  ],
+  "properties": {
+    "schema": { "const": "native-project-change" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "target_canvas": { "type": "object" },
+    "state": {
+      "enum": [
+        "REFUSED",
+        "STAGED_NOT_EXECUTED",
+        "VALIDATED_NOT_EXECUTED",
+        "HOST_REPORTED_APPLIED",
+        "HOST_REPORTED_INSPECTED",
+        "HOST_APPLIED_AND_VERIFIED"
+      ]
+    },
+    "adapter": {
+      "type": "object",
+      "required": ["id", "application_version", "contract_version"],
+      "properties": {
+        "id": { "enum": ["blender", "godot", "unity", "unreal", "freecad"] },
+        "application_version": { "type": "string" },
+        "contract_version": { "const": "1.0.0" }
+      },
+      "additionalProperties": false
+    },
+    "project": { "type": "object" },
+    "source_artifact": { "type": "object" },
+    "change_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "commands": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "adapter_command",
+          "path",
+          "source_path",
+          "metadata",
+          "execution"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "adapter_command": { "type": "string" },
+          "path": { "type": "string" },
+          "source_path": { "type": ["string", "null"] },
+          "metadata": { "type": "object" },
+          "execution": { "const": "native-host-adapter-only" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "required_permissions": { "const": ["filesystem:write", "plugin-data"] },
+    "approval": { "type": "object" },
+    "rollback": { "type": "object" },
+    "native_execution": { "const": false },
+    "provenance": { "type": "object" }
+  },
+  "additionalProperties": false
+}

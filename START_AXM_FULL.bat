@@ -37,6 +37,31 @@ if "%AXM_GAME_PACKAGES_OK%"=="1" (
   echo   Bridge, Studio, Hub, and unrelated tools will still start.
 )
 
+if not defined AXM_MIRROR_HOME set "AXM_MIRROR_HOME=C:\AXM_MIRROR_LOCAL"
+if exist "%AXM_MIRROR_HOME%\modules\mirror-learning-forge\server\server.js" (
+  echo   Starting shared AI Learning Forge on port 8801...
+  start "AXM AI Learning Forge - TEST" /min /D "%AXM_MIRROR_HOME%\modules\mirror-learning-forge\server" cmd /k "node server.js"
+) else (
+  echo   AI Learning Forge not installed. Continuing without the optional school.
+)
+if exist "%AXM_MIRROR_HOME%\modules\axm-native-learning-shell\server\server.js" (
+  echo   Starting AXM Native Learning Shell on port 8802...
+  start "AXM Mirror Learning - TEST" /min /D "%AXM_MIRROR_HOME%\modules\axm-native-learning-shell\server" cmd /k "node server.js"
+) else (
+  echo   Mirror Learning shell not installed. Continuing without its optional panel.
+)
+
+if /I "%AXM_DISCORD_BRIDGE%"=="1" (
+  if exist "tools\discord-bridge\server.js" (
+    echo   Starting explicitly enabled Discord Bridge on port 8822 - network session stays paused...
+    start "AXM Discord Bridge - OPTIONAL" /min /D "%~dp0tools\discord-bridge" cmd /k "node server.js"
+  ) else (
+    echo   Discord Bridge requested but not installed. Continuing without it.
+  )
+) else (
+  echo   Discord Bridge installed but dormant. Set AXM_DISCORD_BRIDGE=1 only if you choose to use it later.
+)
+
 set "AXM_PORT=8788"
 echo.
 echo   Starting AXM Workshop library...

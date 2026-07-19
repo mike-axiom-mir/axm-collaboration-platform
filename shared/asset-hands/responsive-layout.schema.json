@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/responsive-layout-v1.schema.json",
+  "title": "AXM Responsive Layout v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "name", "target_canvas", "operation", "container", "breakpoints", "active", "regions", "interaction", "tokens", "provenance"],
+  "properties": {
+    "schema": { "const": "axm.responsive-layout/v1" },
+    "version": { "const": 1 },
+    "id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "target_canvas": { "$ref": "target-canvas.schema.json" },
+    "operation": { "enum": ["create", "edit"] },
+    "container": { "type": "object" },
+    "breakpoints": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "min", "max", "unit", "columns"] } },
+    "active": { "type": "object" },
+    "regions": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "role", "span"] } },
+    "interaction": { "type": "object" },
+    "tokens": { "type": "object" },
+    "provenance": { "type": "object" }
+  },
+  "additionalProperties": false
+}

@@ -95,6 +95,42 @@ Expected session seam:
 
 `actors` may also be a `Map` or array.
 
+## Optional input-source switching
+
+Phone-only sessions remain backward-compatible and need no additional packet
+fields. A host that allows one human seat to switch between phone, keyboard and
+gamepad must bind exactly one source before accepting its packets:
+
+```js
+const {
+  bindHumanInputSource,
+  createSeatInputGate,
+  revokeHumanInputSource,
+} = require('./src/host/seat-input-gate');
+
+const binding = bindHumanInputSource(actor, 'host-gamepad');
+
+const runtime = new AxmControllerRuntime({
+  identity: {
+    roomCode, sessionId, seatId, token,
+    inputSourceBindingId: binding.id,
+    inputSourceEpoch: binding.epoch,
+  },
+  profile,
+  transport,
+});
+```
+
+Switching sources neutralizes the actor, increments the source epoch and starts
+a fresh source sequence. Packets from the previous binding are rejected even
+if they retain the valid seat token and send a higher sequence number. On
+disconnect, call `await runtime.neutralize()` before stopping transport, then
+`revokeHumanInputSource(actor)` on the host. Do not derive the binding id from
+the browser's raw gamepad id.
+
+This is only the host/runtime prerequisite. The actual gamepad polling adapter
+and Controller Dock remain unimplemented until physical hardware is tested.
+
 ## Connected AI wiring
 
 Give an `adapter` only:
@@ -147,4 +183,3 @@ If a game truly needs another semantic field, add it to the profile allowlist an
 | `server/input-router.js` | `src/host/seat-input-gate.js` |
 | `server/seat-observation.js` | `src/host/screen-observation.js` |
 | adapter HTTP loop | `src/ai/connected-ai-client.mjs` |
-

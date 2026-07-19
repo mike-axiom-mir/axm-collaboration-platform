@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/fabric-production-spec-v1.schema.json",
+  "title": "AXM Fabric Production Spec v1",
+  "type": "object",
+  "required": ["schema", "repeat", "minimumStroke", "materialBehaviour", "materialCompensation", "seamProof", "colourSpace", "printableColours", "notes"],
+  "properties": {
+    "schema": { "const": "axm.fabric-production-spec/v1" },
+    "repeat": { "type": "object", "required": ["mode", "width", "height", "unit"] },
+    "minimumStroke": { "type": "object", "required": ["value", "unit"] },
+    "materialBehaviour": { "type": "array", "items": { "type": "string" } },
+    "materialCompensation": { "type": "object" },
+    "seamProof": { "type": "object", "required": ["method", "periodicAxes", "boundaryFill", "clearance", "pass"] },
+    "colourSpace": { "type": "string" },
+    "printableColours": { "type": "boolean" },
+    "notes": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

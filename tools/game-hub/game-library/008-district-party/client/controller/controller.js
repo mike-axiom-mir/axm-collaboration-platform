@@ -10,7 +10,7 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
   const pulseKeys = ['fire', 'inventoryToggle', 'inventoryPrev', 'inventoryNext', 'inventoryActivate'];
   const pulseButtonIds = { fire: 'attack', inventoryToggle: 'inventory-toggle', inventoryPrev: 'inventory-prev', inventoryNext: 'inventory-next', inventoryActivate: 'inventory-activate' };
   const pulseGeneration = Object.fromEntries(pulseKeys.map((key) => [key, 0]));
-  let seq = 0, lastActor = null, sending = false, stateFailures = 0, inventoryWasOpen = false;
+  let seq = 0, lastActor = null, lastWorld = null, sending = false, stateFailures = 0, inventoryWasOpen = false;
   let moveStick = null, aimStick = null;
 
   document.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -61,15 +61,22 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
       const p = new URLSearchParams({ roomCode: identity.room, sessionId: identity.sessionId, view: 'controller', party: 'all' });
       const state = await jsonFetch(`/api/state?${p}`);
       const world = state.world || state;
+      lastWorld = world;
       lastActor = (world.actors || []).find((a) => a.seatId === identity.seatId);
-      if (lastActor) updateReadout(lastActor, world.mission || {}, world.economy || {});
+      if (lastActor) updateReadout(lastActor, world);
       stateFailures = 0;
     } catch (e) {
       if (++stateFailures > 2) { $('connection').textContent = 'Reconnecting'; $('connection').classList.remove('live'); }
     }
   }
 
-  function updateReadout(actor, mission, economy) {
+  function updateReadout(actor, world) {
+    const mission = world.mission || {};
+    const economy = world.economy || {};
+    const saveComputer = world.groupSaveComputer || {};
+    const groupSaveOpen = saveComputer.open === true;
+    const controlsGroupSave = groupSaveOpen && saveComputer.controlActorId === actor.id;
+    const externalSeat = actor.controller === 'human' || actor.controller === 'adapter';
     $('health').textContent = `${Math.max(0, Math.round(actor.health ?? 0))}/${actor.maxHealth || 100}`;
     $('shield').textContent = `${Math.max(0, Math.round(actor.shield ?? 0))}`;
     $('money').textContent = formatCredits(actor.walletCents);
@@ -78,18 +85,28 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
     $('mode').textContent = driving ? (actor.vehicleSeat === 'driver' ? 'DRIVING' : 'PASSENGER') : 'ON FOOT';
     const respawnLeft = actor.respawnAtTick ? 'RESPAWNING' : null;
     $('life-state').textContent = actor.alive === false ? (respawnLeft || 'DOWNED') : (driving ? 'IN VEHICLE' : 'ACTIVE');
-    const menuLocked = ['board', 'countdown', 'results'].includes(mission.status);
-    $('move-stick-label').textContent = ['board', 'results'].includes(mission.status)
+    const menuLocked = groupSaveOpen || ['board', 'countdown', 'results'].includes(mission.status);
+    $('move-stick-label').textContent = controlsGroupSave
+      ? 'SELECT SLOT · LEFT SAVE · RIGHT LOAD'
+      : groupSaveOpen ? 'PARTY SAVE PAUSED'
+      : ['board', 'results'].includes(mission.status)
       ? 'SELECT OPTION'
       : actor.vehicleSeat === 'driver' ? 'STEER · THROTTLE' : driving ? 'RIDING' : 'MOVE';
-    $('aim-stick-label').textContent = menuLocked
+    $('aim-stick-label').textContent = groupSaveOpen
+      ? 'SAVE COMPUTER · AIM PAUSED'
+      : menuLocked
       ? 'AIM PAUSED'
       : actor.vehicleSeat === 'driver' ? 'RELEASE · FIRE FORWARD' : 'AIM · RELEASE TO FIRE';
     $('controller-mission-title').textContent = (mission.title || mission.mode || 'Party House').replaceAll('_', ' ').toUpperCase();
     const inventoryOpen = actor.inventoryOpen === true || actor.inventory?.open === true;
-    updateInventoryMode(actor, inventoryOpen);
-    aimStick?.setEnabled(!inventoryOpen && !menuLocked);
-    if (actor.tether?.returnToParty || actor.tether?.level === 'hard') $('mission-hint').textContent = actor.tether?.movementBlocked ? 'HARD RANGE — move back toward your party.' : 'RETURN TO PARTY — you are leaving shared-screen range.';
+    updateInventoryMode(actor, inventoryOpen, { groupSaveOpen, controlsGroupSave, menuLocked, externalSeat });
+    if (!externalSeat) {
+      $('connection').textContent = 'Host AI owns saved seat';
+      $('connection').classList.remove('live');
+      $('mission-hint').textContent = 'This missing saved player was replaced by Host AI when the fixed-roster save loaded.';
+    } else if (controlsGroupSave) $('mission-hint').textContent = saveComputer.message || 'Choose one of nine local group save slots.';
+    else if (groupSaveOpen) $('mission-hint').textContent = 'Another player is using the Party House save computer. The city is paused.';
+    else if (actor.tether?.returnToParty || actor.tether?.level === 'hard') $('mission-hint').textContent = actor.tether?.movementBlocked ? 'HARD RANGE — move back toward your party.' : 'RETURN TO PARTY — you are leaving shared-screen range.';
     else if (inventoryOpen) $('mission-hint').textContent = 'Inventory open — movement and combat are paused for this player.';
     else if (actor.tether?.level === 'soft') $('mission-hint').textContent = 'STAY CLOSE — the shared camera is widening toward its safe range.';
     else if (actor.regeneration?.insideBase) $('mission-hint').textContent = 'PARTY BASE — health regenerates 10 HP/s here; shield does not regenerate.';
@@ -129,18 +146,21 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
     return `${name}${quantity}`;
   }
 
-  function updateInventoryMode(actor, inventoryOpen) {
+  function updateInventoryMode(actor, inventoryOpen, menu = {}) {
     const inventory = actor.inventory || {};
     const selectedIndex = inventorySelectedIndex(inventory);
     const selected = itemLabel(inventoryItems(inventory)[selectedIndex]);
     $('inventory-state').textContent = inventoryOpen ? `open · ${selectedIndex + 1}/18` : 'closed';
     $('inventory-selection').textContent = `${inventorySlotNames[selectedIndex]} · ${selected}`;
     $('inventory-controls').classList.toggle('hidden', !inventoryOpen);
-    $('inventory-toggle').classList.toggle('open', inventoryOpen);
+    $('inventory-toggle').classList.toggle('open', inventoryOpen || menu.controlsGroupSave);
+    $('inventory-toggle').querySelector('strong').textContent = menu.controlsGroupSave ? 'CLOSE COMPUTER' : 'INVENTORY';
     document.body.classList.toggle('inventory-open', inventoryOpen);
-    moveStick?.setEnabled(!inventoryOpen);
-    aimStick?.setEnabled(!inventoryOpen);
-    ['action', 'attack', 'sprint', 'brake'].forEach((id) => { $(id).disabled = inventoryOpen; });
+    moveStick?.setEnabled(menu.externalSeat !== false && !inventoryOpen && (!menu.groupSaveOpen || menu.controlsGroupSave));
+    aimStick?.setEnabled(menu.externalSeat !== false && !inventoryOpen && !menu.menuLocked);
+    $('action').disabled = menu.externalSeat === false || inventoryOpen || (menu.groupSaveOpen && !menu.controlsGroupSave);
+    ['attack', 'sprint', 'brake'].forEach((id) => { $(id).disabled = menu.externalSeat === false || inventoryOpen || menu.groupSaveOpen; });
+    $('inventory-toggle').disabled = menu.externalSeat === false || (menu.groupSaveOpen && !menu.controlsGroupSave);
     if (inventoryOpen) {
       if (!inventoryWasOpen) keys.clear();
       resetPlayInput();
@@ -214,6 +234,15 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
   const keys = new Set();
   function applyKeys() {
     if (lastActor && (lastActor.inventoryOpen === true || lastActor.inventory?.open === true)) { resetPlayInput(); return; }
+    const saveComputer = lastWorld?.groupSaveComputer || {};
+    if (saveComputer.open) {
+      const controls = saveComputer.controlActorId === lastActor?.id && ['human', 'adapter'].includes(lastActor?.controller);
+      input.moveX = controls ? (keys.has('KeyD') ? 1 : 0) - (keys.has('KeyA') ? 1 : 0) : 0;
+      input.moveY = controls ? (keys.has('KeyS') ? 1 : 0) - (keys.has('KeyW') ? 1 : 0) : 0;
+      input.aimX = 0; input.aimY = 0; input.aimActive = false;
+      input.action = controls && keys.has('KeyE'); input.attack = false; input.fire = false; input.sprint = false; input.brake = false;
+      return;
+    }
     input.moveX = (keys.has('KeyD') ? 1 : 0) - (keys.has('KeyA') ? 1 : 0);
     input.moveY = (keys.has('KeyS') ? 1 : 0) - (keys.has('KeyW') ? 1 : 0);
     input.aimX = (keys.has('ArrowRight') ? 1 : 0) - (keys.has('ArrowLeft') ? 1 : 0);

@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+'use strict';
+const assert=require('assert'),Core=require('./creation-core');
+let passed=0;function test(name,fn){try{fn();passed++;console.log('PASS '+name);}catch(error){console.error('FAIL '+name+'\n  '+error.stack);process.exitCode=1;}}
+function candidate(id,niche,descriptors,values,constraints,nodes){return{id,nicheId:niche,origin:'test',descriptors,values,constraints:constraints||{valid:true,violations:[]},nodes:nodes||[{id:'n1',kind:id,inputs:[],config:{}}]};}
+const useful={coherence:.8,usefulness:.8,playValue:.5,repairability:.8,resourceCost:.3};
+test('first valid form is preserved for novelty',()=>{const result=Core.consider(Core.newArchive('x'),candidate('a','forest',{structure:.2},useful));assert.equal(result.receipt.decision,'PRESERVE_NOVEL');assert.equal(result.archive.entries.length,1);});
+test('behaviorally different forms coexist instead of one winner erasing the other',()=>{let a=Core.consider(Core.newArchive('x'),candidate('a','forest',{structure:.1,interaction:.1},useful)).archive;let b=Core.consider(a,candidate('b','forest',{structure:.9,interaction:.8},{...useful,usefulness:.3}));assert.equal(b.receipt.decision,'PRESERVE_NOVEL');assert.equal(b.archive.entries.length,2);});
+test('an exact duplicate is held',()=>{const c=candidate('a','forest',{structure:.2},useful),a=Core.consider(Core.newArchive('x'),c).archive,b=Core.consider(a,c);assert.equal(b.receipt.decision,'HOLD');assert.equal(b.receipt.duplicate,true);});
+test('hard constraint failure cannot enter the archive',()=>{const result=Core.consider(Core.newArchive('x'),candidate('unsafe','forest',{structure:.9},useful,{valid:false,violations:['escaped sandbox']}));assert.equal(result.receipt.hardConstraintsPassed,false);assert.equal(result.archive.entries.length,0);});
+test('a non-dominated value trade-off can survive below novelty threshold',()=>{let archive=Core.newArchive('x');archive.noveltyThreshold=.5;archive=Core.consider(archive,candidate('cheap','forest',{structure:.2},{coherence:.7,usefulness:.6,playValue:.5,repairability:.7,resourceCost:.1})).archive;const result=Core.consider(archive,candidate('playful','forest',{structure:.21},{coherence:.7,usefulness:.6,playValue:.9,repairability:.7,resourceCost:.4}));assert.equal(result.receipt.decision,'PRESERVE_PARETO');});
+test('language extensions never auto-promote',()=>{const result=Core.proposeLanguageExtension(Core.newArchive('x'),{id:'weather-memory',need:'world remembers storms',newPrimitive:'temporal-field'});assert.equal(result.proposal.status,'STRICT_REVIEW_REQUIRED');assert.equal(result.proposal.automaticPromotion,false);});
+if(!process.exitCode)console.log('\n'+passed+' PASS · 0 FAIL · creation-incubator '+Core.VERSION);

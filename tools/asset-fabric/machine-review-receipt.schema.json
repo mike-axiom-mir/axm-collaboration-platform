@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.asset-fabric.machine-review-receipt/v1",
+  "title": "AXM Asset Fabric independent machine review receipt",
+  "type": "object",
+  "required": ["schema", "receiptId", "candidateId", "candidateDigest", "reviewer", "issuer", "verdict", "reviewedAt", "evidence"],
+  "properties": {
+    "schema": { "const": "axm.asset-fabric.machine-review-receipt/v1" },
+    "receiptId": { "type": "string", "minLength": 1 },
+    "candidateId": { "type": "string", "minLength": 1 },
+    "candidateDigest": { "type": "string", "pattern": "^[0-9a-f]{8}$" },
+    "reviewer": {
+      "type": "object",
+      "required": ["identityId", "kind"],
+      "properties": {
+        "identityId": { "const": "axiom-mir" },
+        "kind": { "const": "machine" },
+        "model": { "type": "string" },
+        "sessionId": { "type": "string" }
+      }
+    },
+    "issuer": {
+      "type": "object",
+      "required": ["kind", "id"],
+      "properties": {
+        "kind": { "const": "connector" },
+        "id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "verdict": { "enum": ["UP", "DOWN", "HOLD"] },
+    "reviewedAt": { "type": "string", "format": "date-time" },
+    "evidence": {
+      "type": "object",
+      "required": ["summary"],
+      "properties": { "summary": { "type": "string", "minLength": 1 } }
+    },
+    "signature": { "type": "object" }
+  },
+  "additionalProperties": true
+}

@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "film-motion-studio",
-  "version": "v1.0",
+  "version": "v1.1",
   "provides": [
     "single-film-and-motion-workspace",
     "frame-accurate-non-destructive-edit-document",
@@ -13,13 +13,14 @@
     "manual-and-evidence-bearing-imported-tracking",
     "explicit-camera-on-set-preview",
     "portable-project-and-edl-export",
-    "review-gated-publish-handoff"
+    "review-gated-publish-handoff",
+    "modular-asset-hand-candidate-import"
   ],
-  "consumes": ["service:asset-vault", "service:publish-library", "service:studio", "service:audio-studio", "service:shared-engines/project-v1", "service:shared-engines/timeline-v1", "service:shared-engines/scene-v1", "service:shared-engines/collaboration-v1"],
-  "permissions": ["storage", "export", "files", "gate", "asset-vault", "shared-engines", "camera"],
+  "consumes": ["service:asset-vault", "service:asset-hands", "service:publish-library", "service:studio", "service:audio-studio", "service:shared-engines/project-v1", "service:shared-engines/timeline-v1", "service:shared-engines/scene-v1", "service:shared-engines/collaboration-v1"],
+  "permissions": ["storage", "export", "files", "gate", "asset-vault", "shared-engines", "asset-hands", "camera"],
   "handoffs": {
     "emits": ["axm.film-motion.project/v1", "axm.film.edl/v1", "axm.publish-artifact/v1", "axm.film.frame-proof/v1"],
-    "accepts": ["hub:init", "hub:settings:value", "session-local:media-files", "axm.motion-capture.points/v1"]
+    "accepts": ["hub:init", "hub:settings:value", "session-local:media-files", "axm.asset-hand-result/v1", "axm.motion-capture.points/v1"]
   },
   "boundaries": {
     "writes": ["browser-local:axm.film-motion.project.v1", "browser-local:axm.publish-library.ledger.v1:unreviewed-artifact", "user-download:explicit"],
@@ -31,6 +32,8 @@
       "pretend-camera-tracking-without-solver-evidence",
       "silent-camera-or-microphone-access",
       "automatic-review-approval",
+      "automatic-asset-hand-timeline-placement",
+      "asset-hand-result-without-technical-pass",
       "unverified-motion-capture-import",
       "destructive-source-media-editing"
     ]

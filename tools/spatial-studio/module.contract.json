@@ -1,0 +1,62 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "spatial-studio",
+  "version": "v0.1",
+  "provides": [
+    "single-spatial-workspace",
+    "portable-3d-project-document",
+    "parametric-mesh-recipes",
+    "three-dimensional-scene-hierarchy",
+    "material-recipes",
+    "object-transform-animation",
+    "real-webgl-preview-and-frame-proof",
+    "real-triangulated-obj-export",
+    "bounded-2d-physics-projection-proof",
+    "rig-and-particle-structure-records",
+    "voxel-cells-and-capture-manifests",
+    "shared-domain-scene-templates",
+    "guarded-asset-hand-project-and-material-intake",
+    "target-canvas-recipe-validation-and-hand-provenance-retention",
+    "review-gated-publish-handoff"
+  ],
+  "consumes": [
+    "service:shared-engines/project-v1",
+    "service:shared-engines/scene-v1",
+    "service:shared-engines/timeline-v1",
+    "service:shared-engines/renderer-registry-v1",
+    "service:shared-engines/physics-registry-v1",
+    "service:shared-physics/axm-physics-2d",
+    "service:asset-hands/axm.asset-hand-result/v1",
+    "service:publish-library"
+  ],
+  "permissions": ["storage", "export", "files", "gate", "shared-engines", "shared-physics"],
+  "handoffs": {
+    "emits": ["axm.spatial.project/v1", "axm.spatial.scene/v1", "model/obj", "image/png", "axm.publish-artifact/v1"],
+    "accepts": ["hub:init", "hub:settings:value", "user-file:axm.spatial.project/v1", "axm.asset-hand-result/v1:validated-editable-spatial-project-or-material-graph"]
+  },
+  "adapterSlots": [
+    "model:boolean-sculpt-retopology",
+    "surface:uv-unwrapping-texture-baking",
+    "rig:skin-weight-deformation",
+    "simulation:3d-rigid-body",
+    "simulation:fluids-cloth-hair-volumes",
+    "render:path-tracing",
+    "capture:photogrammetry-reconstruction"
+  ],
+  "boundaries": {
+    "writes": ["browser-local:axm.spatial.project.v1", "browser-local:axm.spatial.shared.v1", "browser-local:axm.publish-library.ledger.v1:unreviewed-artifact", "user-download:explicit"],
+    "refuses": [
+      "automatic-publish-approval",
+      "automatic-rights-clearance",
+      "pretend-3d-physics-from-2d-projection",
+      "pretend-skin-deformation",
+      "pretend-fluid-cloth-hair-or-volume-simulation",
+      "pretend-photogrammetry-reconstruction",
+      "pretend-path-tracing",
+      "silent-project-file-access",
+      "asset-hand-result-without-pass-receipt-and-complete-canvas-provenance",
+      "raster-pdf-obj-or-glb-treated-as-an-editable-spatial-project",
+      "destructive-source-overwrite"
+    ]
+  }
+}

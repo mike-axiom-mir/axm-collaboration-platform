@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cognitive Resource Meter</title>
+  <link rel="stylesheet" href="../../shared/operations/operations-ui.css">
+  <link rel="stylesheet" href="meter.css">
+</head>
+<body>
+  <header><a href="../../hub/index.html">&larr; Hub</a><div><span class="eyebrow">EXPLICIT METER → DIGEST → HOLD/ARCHIVE → HANDOFF</span><h1>Cognitive Resource Meter</h1><p>The technical producer beneath a future one-click command center.</p></div></header>
+  <main>
+    <div id="notice" class="notice hidden"></div>
+    <section class="panel hero"><div><h2>Truth boundary</h2><p class="truth"><strong>TEST ceiling:</strong> <code>TEST_MACHINE_BOUND_COGNITIVE_RESOURCE_AND_ECONOMICS_PROFILE_PRODUCER</code>. Separate evidence dimensions only. No Mirror calculation, current-price certification, ranking, selection, budget authority or automatic action.</p></div><div class="workspace-links"><a href="../cognitive-evidence-explorer/index.html">Evidence Explorer</a><a href="../cognitive-calibration-lab/index.html">Calibration Lab</a><a href="../human-attention-ledger/index.html">Attention Ledger</a><a href="../sustainability-metrology-lab/index.html">Sustainability Lab</a><a href="../mirror-intake-monitor/index.html">Mirror Intake</a></div><div id="facts" class="facts"></div></section>
+
+    <section class="panel"><div class="toolbar"><div><span class="eyebrow">Fast path</span><h2>Guided Codex goal receipt</h2></div><button id="refresh" class="secondary">Refresh all</button></div><p>Type ordinary labels here; the browser hashes them before sending. Prompts, responses and content never enter the receipt.</p><div class="form-grid">
+      <label class="wide">Private objective label (hashed locally)<input id="objectiveLabel" value="Build Workshop capability"></label>
+      <label>Goal/run ID<input id="goalRunId" value="goal-run-id"></label><label>Total provider tokens<input id="totalTokens" type="number" min="0" placeholder="329000"></label>
+      <label>Wall milliseconds<input id="wallMilliseconds" type="number" min="0"></label><label>Tests executed<input id="testsExecuted" type="number" min="0"></label><label>Tests passed<input id="testsPassed" type="number" min="0"></label><label>Tests failed<input id="testsFailed" type="number" min="0" value="0"></label>
+      <label class="wide">Import exact goal receipt or observation JSON<input id="goalFile" type="file" accept=".json,application/json"></label>
+    </div><div class="toolbar"><button id="previewGoal" class="secondary">Preview and explain</button><button id="importGoal">Archive explicit receipt</button></div><pre id="goalHold" class="explain">No preview yet.</pre><details><summary>Generated privacy-safe receipt JSON</summary><textarea id="goalJson"></textarea></details></section>
+
+    <section class="grid">
+      <article class="panel"><span class="eyebrow">Native, explicit, partial</span><h2>Local process window</h2><p>Measures the whole Workshop server process between Start and Stop using native monotonic time, CPU counters and sampled RSS. It does not isolate one task or measure accelerator use.</p><label>Private objective label (hashed locally)<input id="meterObjectiveLabel" value="Explicit Workshop work window"></label><div class="toolbar"><button id="startLocalMeter">Start meter</button><button id="stopLocalMeter" class="secondary">Stop and archive</button><button id="cancelLocalMeter" class="danger">Cancel</button></div><pre id="meterResult" class="code">No active meter.</pre></article>
+      <article class="panel"><span class="eyebrow">Versioned, never refreshed silently</span><h2>Rate schedule wizard</h2><div class="form-grid compact"><label>Mode<select id="rateMode"><option>PROVIDER_TOKEN_BILLING</option><option>PROVIDER_COMPUTE_UNIT_BILLING</option><option>LOCAL_HARDWARE_TIME</option></select></label><label>Metric<select id="rateMetric"></select></label><label>Currency<input id="rateCurrency" value="USD" maxlength="3"></label><label>Quantity denominator<input id="rateDenominator" type="number" min="1" value="1000000"></label><label>Money micros<input id="rateMoney" type="number" min="0"></label><label>Energy mWh<input id="rateEnergy" type="number" min="0"></label><label>Carbon mg<input id="rateCarbon" type="number" min="0"></label><label>Freshness<select id="rateFreshness"><option>CURRENT_DECLARED_NOT_CERTIFIED</option><option>HISTORICAL</option><option>UNKNOWN</option></select></label><label class="wide">Source record ID<input id="rateSourceId" value="rate-schedule-id"></label><label class="wide">Bound model or hardware profile digest<input id="rateProfileDigest" placeholder="64 hexadecimal characters"></label></div><div class="toolbar"><button id="previewRate" class="secondary">Preview and explain</button><button id="saveRate">Archive new schedule</button></div><pre id="rateHold" class="explain">No preview yet.</pre></article>
+    </section>
+
+    <section class="grid">
+      <article class="panel"><div class="toolbar"><h2>Profile Vault</h2><span id="profileCount" class="pill">0</span></div><div id="profileVault" class="vault-list empty">No sealed profiles.</div></article>
+      <article class="panel"><div class="toolbar"><h2>Rate Schedule Vault</h2><span id="rateCount" class="pill">0</span></div><div id="rateVault" class="vault-list empty">No schedules.</div></article>
+    </section>
+
+    <section class="panel"><div class="toolbar"><div><span class="eyebrow">No composite score</span><h2>Separate resource timeline</h2></div><a class="button-link" href="../cognitive-evidence-explorer/index.html">Open full Explorer</a></div><div id="timeline" class="timeline empty">No observations yet.</div></section>
+
+    <section class="panel"><span class="eyebrow">Portable handoff</span><h2>Evidence bundle</h2><p>Creates a dependency-free ZIP with selected immutable records, provider declarations, copied contracts and a truth manifest.</p><label>Record IDs, one per line (blank means all active records)<textarea id="bundleIds"></textarea></label><button id="exportBundle">Export evidence bundle</button></section>
+
+    <section class="panel"><details><summary><strong>Advanced exact-contract tools</strong></summary><div class="grid advanced">
+      <article><h3>Observation draft</h3><label>Provider<select id="provider"><option value="codex-goal-completion-receipt/v1">Direct Codex goal declaration</option><option value="codex-goal-receipt-explicit-import/v1">Explicit receipt import</option></select></label><textarea id="observation"></textarea><div class="toolbar"><button id="previewObservation" class="secondary">Preview</button><button id="captureObservation">Archive</button></div></article>
+      <article><h3>Economics draft</h3><textarea id="economics"></textarea><div class="toolbar"><button id="previewEconomics" class="secondary">Preview</button><button id="captureEconomics">Archive</button></div></article>
+      <article><h3>Privacy-safe profile seal</h3><textarea id="profileSeal"></textarea><div class="toolbar"><button id="allowProfile" class="secondary">Add local permission basis</button><button id="sealProfile">Seal</button></div></article>
+      <article><h3>Ledger continuity</h3><label>Record ID<input id="recordId"></label><div class="toolbar"><button id="inspect" class="secondary">Inspect</button><button id="archive" class="danger">Archive</button><button id="restore" class="secondary">Restore</button><button id="export">Exact draft</button></div></article>
+    </div><details><summary>Providers, Hands and limits</summary><pre id="providers" class="code">Loading...</pre></details></details></section>
+    <section class="panel"><h2>Latest operation</h2><pre id="out" class="code">Loading...</pre></section>
+  </main>
+  <script src="../../shared/operations/operations-client.js"></script><script src="app.js"></script>
+</body>
+</html>

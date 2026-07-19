@@ -44,12 +44,22 @@ function requireIdentity(identity = {}) {
       throw new TypeError(`identity.${field} is required.`);
     }
   }
-  return {
+  const result = {
     roomCode: identity.roomCode,
     sessionId: identity.sessionId,
     seatId: identity.seatId,
     token: identity.token,
   };
+  const hasBindingId = typeof identity.inputSourceBindingId === 'string' && identity.inputSourceBindingId.length > 0;
+  const hasBindingEpoch = Number.isSafeInteger(identity.inputSourceEpoch) && identity.inputSourceEpoch >= 0;
+  if (hasBindingId !== hasBindingEpoch) {
+    throw new TypeError('identity input-source binding id and epoch must be supplied together.');
+  }
+  if (hasBindingId) {
+    result.inputSourceBindingId = identity.inputSourceBindingId;
+    result.inputSourceEpoch = identity.inputSourceEpoch;
+  }
+  return result;
 }
 
 export class AxmTransportError extends Error {
@@ -222,6 +232,11 @@ export class AxmControllerRuntime {
     for (const channel of Object.keys(this.vectorState)) this.setVector(channel, {});
     for (const field of Object.keys(this.buttonState)) this.buttonState[field] = false;
     for (const field of Object.keys(this.pendingPulses)) this.pendingPulses[field] = false;
+  }
+
+  async neutralize() {
+    this.reset();
+    return this.flush();
   }
 }
 

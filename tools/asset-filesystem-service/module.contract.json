@@ -1,0 +1,8 @@
+{
+  "schema": "axm.module-contract/v1", "id": "asset-filesystem-service", "version": "v0.2",
+  "provides": ["asset-folder-index", "recursive-change-watch", "sha256-deduplication", "media-metadata", "direct-asset-retrieval", "dependency-free-zip-store", "verified-asset-pack-export"],
+  "consumes": ["filesystem:assets", "selected-device-handoff-files"], "permissions": [],
+  "handoffs": {"emits": ["axm.asset-filesystem-index/v1", "axm.asset-pack/v1"], "accepts": ["explicit-asset-query", "explicit-pack-selection"]},
+  "boundaries": {"writes": ["state/asset-filesystem-service", "exports/asset-packs"], "refuses": ["arbitrary-folder-scan", "asset-source-mutation", "whole-device-scan", "silent-pack-install", "remote-upload", "path-escape", "required-third-party-archive-tool"]},
+  "lifecycle": {"state_owner": "service", "reload": "resume", "disconnect": "not-applicable", "cleanup": "automatic"}
+}

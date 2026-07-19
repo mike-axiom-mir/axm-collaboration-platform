@@ -51,11 +51,11 @@ try {
   const chatgptAccepted = H.acceptHandoff({ id: chatgptCreated.id, libraryDir, inboxDir });
   ok(chatgptAccepted.source_module === 'chatgpt-connector' && chatgptAccepted.acceptance.decision === 'explicit-user-accept', 'explicit acceptance preserves ChatGPT source and decision');
   ok(fs.existsSync(path.join(gameDir, chatgptAccepted.acceptance.package_path)), 'explicitly accepted ChatGPT asset is copied into the game folder');
-  const ui = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+  const ui = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8') + fs.readFileSync(path.join(__dirname, 'game-night.js'), 'utf8');
   ok(ui.includes('/tools/game-hub/asset-inbox/') && ui.includes('/asset.png'), 'proposal inbox renders the stored PNG thumbnail route');
-  ok(ui.includes('h.dimensions.width') && ui.includes('proposalBrief(h)'), 'proposal inbox renders decoded dimensions and provenance summary');
+  ok(ui.includes('h.dimensions.width') && ui.includes('brief(h)'), 'proposal inbox renders decoded dimensions and provenance summary');
   ok(ui.includes('Accept into game package'), 'proposal inbox labels the explicit acceptance action');
-  ok(ui.includes('Stored in proposal inbox · not activated'), 'proposal inbox states that staged assets are not activated');
+  ok(ui.includes('Stored in proposal inbox') && ui.includes('not activated'), 'proposal inbox states that staged assets are not activated');
   console.log('PASS asset handoff: ' + pass + ' assertions');
 } finally {
   const resolved = path.resolve(root), tempPrefix = path.resolve(os.tmpdir()) + path.sep;

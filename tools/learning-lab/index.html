@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Learning Lab</title>
+  <link rel="stylesheet" href="learning-lab.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true"><span></span><i>10</i></div>
+      <div class="brand-copy">
+        <span>AXM PARENT WORKSPACE · LOCAL-FIRST · TEST</span>
+        <h1>Learning Lab</h1>
+      </div>
+      <div class="truth-strip">
+        <span><i class="pulse"></i> attributed learners</span>
+        <span>grades ≠ authority</span>
+        <span>school state separated</span>
+      </div>
+      <div class="top-actions">
+        <label class="file-button">Import<input id="importProject" type="file" accept="application/json,.json"></label>
+        <button id="exportProject" class="button secondary">Export</button>
+        <button id="newProject" class="button danger">New</button>
+      </div>
+    </header>
+
+    <aside class="rail">
+      <div class="rail-title"><span>Workspace</span><b id="projectTitle">Learning Lab</b></div>
+      <nav id="modeNav" aria-label="Learning Lab modes"></nav>
+      <div class="rail-foot">
+        <span id="saveState">Local checkpoint ready</span>
+        <small>No network classroom · no auto-training</small>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <section class="workspace-head">
+        <div><span id="modeKicker">LEARNING MAP</span><h2 id="modeTitle">Learn with evidence, not pressure.</h2><p id="modeDescription">One room for lessons, practice, simulation, code, discussion and the separate machine-native school.</p></div>
+        <div class="workspace-metrics">
+          <article><b id="metricCourses">2</b><span>courses</span></article>
+          <article><b id="metricLearners">0</b><span>learners</span></article>
+          <article><b id="metricSessions">0</b><span>active</span></article>
+          <article><b id="metricReceipts">0</b><span>receipts</span></article>
+        </div>
+      </section>
+
+      <section id="homePanel" class="mode-panel">
+        <div class="hero-card">
+          <div class="hero-orbit" aria-hidden="true"><span class="orbit-one"></span><span class="orbit-two"></span><b>LEARN</b></div>
+          <div class="hero-copy">
+            <span class="eyebrow">SHARED PRACTICE · SEPARATE MINDS</span>
+            <h3>The same lesson door. Never the same identity.</h3>
+            <p>Humans, AI collaborators and machine learners can study common material while keeping consent, notes, results, memory and authority separate.</p>
+            <div class="hero-flow"><i>Choose</i><i>Attempt</i><i>Observe</i><i>Repair</i><i>Review</i><i>Transfer</i></div>
+            <button class="button primary" data-mode-jump="study">Start a bounded session</button>
+          </div>
+        </div>
+        <div class="home-grid">
+          <section class="panel course-shelf"><header><div><span class="eyebrow">CURRICULUM SHELF</span><h3>Practice paths</h3></div><b id="courseCount">2</b></header><div id="courseShelf" class="course-list"></div></section>
+          <section class="panel learner-desk"><header><div><span class="eyebrow">ATTRIBUTED SEATS</span><h3>Learners</h3></div><b id="learnerCount">0</b></header><div id="learnerList" class="learner-list"><div class="empty">No learner has been added.</div></div><button class="button secondary" data-mode-jump="study">Manage learner seats</button></section>
+          <section class="panel active-desk"><header><div><span class="eyebrow">CURRENT PRACTICE</span><h3>Active session</h3></div><b id="activeCount">0</b></header><div id="activeSessionHome" class="empty">Nothing is running. Time exists; no session is forced.</div></section>
+        </div>
+        <section class="route-grid">
+          <a href="../project-room/index.html"><span>Plan</span><b>Project Room</b><small>Goals, decisions and checkpoints</small></a>
+          <a href="../knowledge-canvas/index.html"><span>Study</span><b>Knowledge Canvas</b><small>Research, sources and visual thinking</small></a>
+          <a href="../game-forge/index.html"><span>Simulate</span><b>Game Forge</b><small>Playable and simulation foundations</small></a>
+          <a href="../ai-team/index.html"><span>Collaborate</span><b>AI Team</b><small>Attributed identities and bounded methods</small></a>
+        </section>
+      </section>
+
+      <section id="studyPanel" class="mode-panel" hidden>
+        <div class="study-layout">
+          <section class="panel learner-builder">
+            <header><div><span class="eyebrow">SEPARATE LEARNER PROFILE</span><h3>Add a seat</h3></div></header>
+            <label>Identity ID<input id="newLearnerId" maxlength="64" placeholder="mike · mirror · nova"></label>
+            <label>Display name<input id="newLearnerName" maxlength="80" placeholder="Learner name"></label>
+            <label>Kind<select id="newLearnerKind"><option value="human">Human</option><option value="ai">AI collaborator</option><option value="machine">Machine learner</option></select></label>
+            <label class="check"><input id="newLearnerOptIn" type="checkbox"> Explicitly opt this learner in now</label>
+            <button id="addLearner" class="button primary">Add attributed learner</button>
+            <p class="boundary-note">Adding a seat does not enroll it. Opt-in belongs to the learner and can be paused.</p>
+          </section>
+          <section class="panel session-start">
+            <header><div><span class="eyebrow">BOUNDED SESSION</span><h3>Choose learner + course</h3></div><span id="sessionGate" class="status held">NO LEARNER</span></header>
+            <label>Learner<select id="learnerSelect"></select></label>
+            <label>Course<select id="courseSelect"></select></label>
+            <div class="inline-actions"><button id="toggleOptIn" class="button secondary">Toggle opt-in</button><button id="startSession" class="button primary">Start session</button></div>
+            <div id="selectedLearnerTruth" class="truth-box">Choose an attributed learner.</div>
+          </section>
+          <section class="panel lesson-stage">
+            <header><div><span class="eyebrow">CURRENT STEP</span><h3 id="lessonTitle">No active lesson</h3></div><span id="lessonProgress" class="status">0 / 0</span></header>
+            <div id="lessonBody" class="lesson-body"><div class="empty">Start a session to open the first step.</div></div>
+            <label>Evidence / reflection<textarea id="lessonEvidence" rows="4" maxlength="1800" placeholder="What did this attempt show? What remains uncertain?"></textarea></label>
+            <div class="inline-actions"><button id="openStepTool" class="button secondary" disabled>Open step tool</button><button id="completeStep" class="button primary" disabled>Record step + continue</button></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="assessPanel" class="mode-panel" hidden>
+        <div class="two-column">
+          <section class="panel assessment-card"><header><div><span class="eyebrow">ASSESSMENT · SESSION EVIDENCE</span><h3>Claim-state check</h3></div><span class="status">NO AUTHORITY</span></header><div id="assessmentQuestions" class="question-list"></div><button id="gradeAssessment" class="button primary">Check answers</button></section>
+          <section class="panel result-card"><header><div><span class="eyebrow">RESULT</span><h3>What the attempt showed</h3></div></header><div id="assessmentResult" class="empty">Nothing graded. A score describes this bounded attempt only.</div></section>
+        </div>
+      </section>
+
+      <section id="labPanel" class="mode-panel" hidden>
+        <div class="lab-layout">
+          <section class="panel lab-controls"><header><div><span class="eyebrow">DETERMINISTIC SIMULATION</span><h3>Evidence pressure bench</h3></div><span class="status ready">REPLAYABLE</span></header>
+            <label>Evidence items <output id="evidenceOut">2</output><input id="evidenceInput" type="range" min="0" max="5" value="2"></label>
+            <label>Source quality <output id="sourceOut">2</output><input id="sourceInput" type="range" min="0" max="5" value="2"></label>
+            <label>Contradictions <output id="contradictionOut">0</output><input id="contradictionInput" type="range" min="0" max="5" value="0"></label>
+            <button id="runLab" class="button primary">Run bounded simulation</button>
+            <p class="boundary-note">This is a small inspectable teaching model—not a universal truth calculator.</p>
+          </section>
+          <section class="panel lab-output"><header><div><span class="eyebrow">LIVE VERDICT</span><h3 id="labVerdict">PROPOSE</h3></div><b id="labScore">40</b></header><div class="meter"><i id="labMeter"></i></div><p id="labExplanation">Useful support exists, but verification has not yet been earned.</p><pre id="labReceipt">Adjust the inputs to inspect the model.</pre></section>
+          <section class="panel lab-history"><header><div><span class="eyebrow">RECEIPTS</span><h3>Recent runs</h3></div></header><div id="labHistory" class="history-list"><div class="empty">No runs recorded.</div></div></section>
+        </div>
+      </section>
+
+      <section id="codePanel" class="mode-panel" hidden>
+        <div class="code-layout">
+          <section class="panel challenge-brief"><header><div><span class="eyebrow">GUIDED JAVASCRIPT</span><h3 id="codeChallengeTitle">Repair a claim packet</h3></div><span class="status ready">SANDBOX</span></header><p id="codePrompt"></p><div id="codeTestsPreview" class="test-preview"></div><p id="codeBoundary" class="boundary-note"></p></section>
+          <section class="panel code-editor"><header><div><span class="eyebrow">SOURCE</span><h3>Attempt</h3></div><button id="resetCode" class="button tiny">Reset</button></header><textarea id="codeSource" spellcheck="false"></textarea><button id="runCode" class="button primary">Run visible + held-out tests</button><iframe id="codeSandbox" title="Network-blocked code sandbox" sandbox="allow-scripts" hidden></iframe></section>
+          <section class="panel code-results"><header><div><span class="eyebrow">TEST RECEIPT</span><h3 id="codeState">NOT RUN</h3></div><b id="codeScore">0 / 3</b></header><div id="codeResultList" class="test-results"><div class="empty">Code has not executed.</div></div></section>
+        </div>
+      </section>
+
+      <section id="classroomPanel" class="mode-panel" hidden>
+        <div class="two-column classroom-layout">
+          <section class="panel"><header><div><span class="eyebrow">LOCAL CLASSROOM</span><h3>Attributed discussion</h3></div><span class="status held">THIS DEVICE</span></header><div id="classroomFeed" class="classroom-feed"><div class="empty">No messages yet.</div></div></section>
+          <section class="panel classroom-compose"><header><div><span class="eyebrow">ADD PERSPECTIVE</span><h3>Speak from a learner seat</h3></div></header><label>Learner<select id="classroomLearner"></select></label><label>Message<textarea id="classroomMessage" rows="7" maxlength="1200" placeholder="Question, challenge, observation or repair suggestion"></textarea></label><button id="sendClassroom" class="button primary">Add attributed message</button><p class="boundary-note">Networked presence is not installed. This record stays local and grants no voting or canon authority.</p></section>
+        </div>
+      </section>
+
+      <section id="notebookPanel" class="mode-panel" hidden>
+        <div class="two-column notebook-layout">
+          <section class="panel notebook-compose"><header><div><span class="eyebrow">LAB NOTEBOOK</span><h3>Preserve what the attempt taught</h3></div></header><label>Learner<select id="notebookLearner"></select></label><label>Title<input id="noteTitle" maxlength="120" placeholder="Observation or repair"></label><label>Entry<textarea id="noteBody" rows="7" maxlength="2400" placeholder="Observation, inference, uncertainty and next test"></textarea></label><label>Evidence<input id="noteEvidence" maxlength="400" placeholder="Receipt, test, source or artifact"></label><label>Visibility<select id="noteVisibility"><option value="private">Private to learner profile</option><option value="shared">Shared in this local project</option></select></label><button id="addNote" class="button primary">Save notebook entry</button></section>
+          <section class="panel"><header><div><span class="eyebrow">PRESERVED NOTES</span><h3>Notebook</h3></div><b id="noteCount">0</b></header><div id="notebookEntries" class="notebook-entries"><div class="empty">No notebook entries.</div></div></section>
+        </div>
+      </section>
+
+      <section id="schoolPanel" class="mode-panel" hidden>
+        <div class="school-hero">
+          <div><span class="eyebrow">INTEGRATED CHILD · SEPARATE BODY</span><h3>AI Learning Forge</h3><p>The existing machine-native school is available from this parent, while Mirror and every future learner retain separate identity, memory, consent, grades and promotion state.</p></div>
+          <div class="school-health"><span id="schoolState" class="status held">CHECKING</span><p id="schoolDetail">Looking for the local Forge.</p><button id="checkSchool" class="button secondary">Check school</button></div>
+        </div>
+        <div class="school-layout">
+          <section class="panel"><header><div><span class="eyebrow">PORTABLE TRACKS</span><h3>Available studies</h3></div><b id="schoolTrackCount">0</b></header><div id="schoolTracks" class="school-tracks"><div class="empty">Waiting for the local school.</div></div></section>
+          <section class="panel school-door"><header><div><span class="eyebrow">ATTRIBUTED HANDOFF</span><h3>Propose a school session</h3></div></header><label>Learner<select id="schoolLearner"></select></label><label>Curriculum / track<input id="schoolCurriculum" maxlength="160" placeholder="curriculum:structured-json-v1"></label><label>Purpose<textarea id="schoolPurpose" rows="4" maxlength="600" placeholder="Why this learner chooses this study"></textarea></label><button id="buildSchoolHandoff" class="button primary">Build proposal only</button><pre id="schoolProposal">Nothing proposed.</pre></section>
+        </div>
+        <section class="school-frame-wrap"><header><div><span class="eyebrow">EXISTING SCHOOL DOOR</span><h3>Mirror Learning Shell</h3></div><a class="button secondary" href="../mirror-learning-shell/index.html" target="_blank" rel="noopener">Open separately</a></header><iframe id="schoolFrame" data-src="../mirror-learning-shell/index.html" title="AI Learning Forge child route"></iframe></section>
+      </section>
+
+      <section id="authorPanel" class="mode-panel" hidden>
+        <div class="author-layout">
+          <section class="panel"><header><div><span class="eyebrow">DRAFT CURRICULUM</span><h3>Create a small course</h3></div><span class="status held">LOCAL DRAFT</span></header><label>Title<input id="courseTitle" maxlength="120" placeholder="Course title"></label><label>Summary<textarea id="courseSummary" rows="3" maxlength="500" placeholder="What should the learner be able to understand or do?"></textarea></label><label>Steps<textarea id="courseSteps" rows="10" maxlength="4000" placeholder="One step per line: type | title | prompt&#10;lesson | Observe first | Separate observation from inference&#10;reflection | Transfer | Name the first disconfirming test"></textarea></label><button id="createCourse" class="button primary">Create draft course</button></section>
+          <section class="panel"><header><div><span class="eyebrow">AUTHORING CONTRACT</span><h3>What a course must preserve</h3></div></header><ol class="contract-list"><li><b>Attribution</b><span>Who made it and who is learning remain visible.</span></li><li><b>Attempt before answer</b><span>The learner gets room to reason, fail and repair.</span></li><li><b>Evidence</b><span>Completion requires a note, artifact or result.</span></li><li><b>Unseen check</b><span>Practice and assessment are not identical.</span></li><li><b>No authority from score</b><span>Grades never change permissions, identity or canon.</span></li></ol><div id="authorResult" class="empty">No course drafted this session.</div></section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer-bar"><span>Learning Lab v0.1</span><span id="footerStatus">Ready · no active learner</span><span>Project Room + Knowledge Canvas + Game/Simulation + AI Team + separate school</span></footer>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="../../shared/engines/axm-shared-engines.js"></script>
+  <script src="learning-lab-core.js"></script>
+  <script src="learning-lab-app.js"></script>
+</body>
+</html>

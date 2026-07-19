@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Authoritative Living World State Server</title>
+  <link rel="stylesheet" href="../../shared/operations/operations-ui.css">
+</head>
+<body>
+  <header>
+    <a href="../../hub/index.html">&larr; Hub</a>
+    <div>
+      <span class="eyebrow">SELECT WORLD -> EXPECT REVISION -> PATCH -> JOURNAL -> SNAPSHOT</span>
+      <h1>Authoritative Living World State Server</h1>
+      <p>One service owns isolated canonical world lineages, conflict receipts and recovery snapshots.</p>
+    </div>
+  </header>
+  <main>
+    <div id="notice" class="notice hidden"></div>
+    <section class="grid">
+      <article class="panel">
+        <h2>World lineage</h2>
+        <label>World ID<input id="worldId" value="living-globe"></label>
+        <button id="loadWorld" class="secondary">Load selected world</button>
+        <pre id="catalog" class="code">Loading world catalog...</pre>
+        <p class="truth">The legacy <code>living-globe</code> compatibility slot remains isolated from named worlds.</p>
+      </article>
+      <article class="panel">
+        <h2>Create named world</h2>
+        <label>Bootstrap contract (JSON)<textarea id="createBody">{"schema":"axm.living-world.create/v1","worldId":"world.axm.foundation-planet","lineageId":"world.axm.foundation-planet:18470219:root","seed":18470219,"coordinateReference":{"schema":"axm.foundation-planet.coordinate/v1","type":"latitude-longitude-elevation","horizontalReference":"planet-centered-spherical","verticalDatum":"planet-mean-sea-level","radiusM":6371000,"renderCoordinatesCanonical":false},"metadata":{"title":"Caelus","contract":"axm.foundation-planet.host-contract/v1","authority":"living-world-state-server","rulesetsOwnWorld":false,"rulesetsCanResetWorld":false},"facts":{"foundation-contract":{"schema":"axm.foundation-planet.host-contract/v1","worldId":"world.axm.foundation-planet","authoritativeOwner":"living-world-state-server","namedWorldIsolation":true,"expectedRevisionWrites":true,"automaticHostMutation":false},"planet-clock":{"day":1,"year":1,"dayLengthSeconds":86400,"yearLengthDays":365.25},"condition-profile":"temperate","layer-state":{},"simulation-anchor":{"sourceRevision":0,"livingAgeDays":0,"coordinate":{"schema":"axm.foundation-planet.coordinate/v1","worldId":"world.axm.foundation-planet","latitudeDeg":0,"longitudeDeg":0,"elevationM":0,"reference":"planet-mean-sea-level"},"mode":"orbit"}}}</textarea></label>
+        <button id="createWorld">Create explicit lineage</button>
+        <p class="truth">Requires <code>world.mutate</code>. Existing IDs, ownership transfer and secret-like fields are refused.</p>
+      </article>
+      <article class="panel">
+        <h2>Expected-revision patch</h2>
+        <label>Revision<input id="revision" type="number"></label>
+        <label>Operations (JSON)<textarea id="ops">[{"type":"upsert-entity","entity":{"id":"test-mover","kind":"agent","data":{"zone":"north","position":{"x":0,"y":0},"velocity":{"x":1,"y":0.5}}}}]</textarea></label>
+        <button id="patch">Apply explicit patch</button>
+        <p class="truth">Requires <code>world.mutate</code>. A stale revision is refused.</p>
+      </article>
+      <article class="panel">
+        <h2>Recovery point</h2>
+        <label>Snapshot reason<input id="reason" value="manual world checkpoint"></label>
+        <button id="snapshot">Create snapshot</button>
+        <p class="truth">Restore is a separate preview plus exact confirmation and <code>world.restore</code> grant.</p>
+      </article>
+    </section>
+    <section class="panel">
+      <div class="toolbar"><h2>Canonical state</h2><button id="refresh" class="secondary">Refresh</button></div>
+      <div id="facts" class="facts"></div>
+      <pre id="out" class="code">Loading...</pre>
+    </section>
+  </main>
+  <script src="../../shared/operations/operations-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

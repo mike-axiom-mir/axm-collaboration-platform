@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/asset-verification-envelope-v1.schema.json",
+  "title": "AXM Asset Verification Envelope v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "result_id",
+    "result_digest",
+    "target_canvas_digest",
+    "target_canvas_sha256",
+    "requirements",
+    "receipts",
+    "createdAt"
+  ],
+  "properties": {
+    "schema": { "const": "axm.asset-verification-envelope/v1" },
+    "version": { "const": "1.0.0" },
+    "status": {
+      "enum": ["CORROBORATED", "PARTIAL", "FAILED", "MISSING_VALIDATOR"]
+    },
+    "result_id": { "type": "string", "minLength": 1 },
+    "result_digest": { "type": "string", "minLength": 1 },
+    "target_canvas_digest": { "type": "string", "minLength": 1 },
+    "target_canvas_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "claim",
+          "artifact_id",
+          "artifact_role",
+          "required",
+          "status",
+          "receipt_id"
+        ]
+      }
+    },
+    "receipts": {
+      "type": "array",
+      "items": { "$ref": "reference-validators/reference-validation-receipt.schema.json" }
+    },
+    "createdAt": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

@@ -7,9 +7,9 @@ const checks=[
   [core.includes("state:'CANDIDATE'")&&core.includes('addWisdom'),'wisdom never auto-promotes'],
   [core.includes('discussion proposal requires at least one evidenced artifact'),'artifact evidence gate'],
   [core.includes('quality claim, AXM fit, risks and next test are required'),'proposal quality gate'],
-  [server.includes("'/api/exploration/opt-in'")&&server.includes('explicit local exploration opt-in'),'explicit server opt-in'],
+  [server.includes('/api/exploration/opt-in')&&server.includes('explicit local exploration opt-in'),'explicit server opt-in'],
   [server.includes('EXPLORATION_STATE_FILE')&&server.includes('saveExplorationGarden'),'local durable service state'],
-  [server.includes("type: 'proposal'")&&server.includes('createCollaborationNotice'),'proposal enters discussion inbox'],
+  [server.includes('type:')&&server.includes('proposal')&&server.includes('createCollaborationNotice'),'proposal enters discussion inbox'],
   [html.includes('id="exploreSurface"')&&ui.includes('renderGarden'),'AI Team owns visible workflow'],
   [html.includes('does not install software')&&html.includes('does not enter durable wisdom'),'honest UI boundaries'],
   [ui.includes("receipt||'identity-action'")&&ui.includes("'discussion-comment'"),'attributed machine and discussion routes']

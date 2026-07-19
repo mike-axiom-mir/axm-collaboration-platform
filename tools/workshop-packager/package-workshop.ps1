@@ -22,6 +22,64 @@ function Assert-Under([string]$Child,[string]$Parent) {
   }
 }
 
+function Remove-TreeSafely([string]$Target,[string]$Parent) {
+  if (-not (Test-Path -LiteralPath $Target)) { return }
+  Assert-Under $Target $Parent
+  $targetFull = [System.IO.Path]::GetFullPath($Target)
+  Get-ChildItem -LiteralPath $targetFull -Recurse -Force -ErrorAction SilentlyContinue | ForEach-Object {
+    if (($_.Attributes -band [System.IO.FileAttributes]::ReadOnly) -ne 0) {
+      $_.Attributes = ($_.Attributes -bxor [System.IO.FileAttributes]::ReadOnly)
+    }
+  }
+  $rootItem = Get-Item -LiteralPath $targetFull -Force
+  if (($rootItem.Attributes -band [System.IO.FileAttributes]::ReadOnly) -ne 0) {
+    $rootItem.Attributes = ($rootItem.Attributes -bxor [System.IO.FileAttributes]::ReadOnly)
+  }
+  $longTarget = if ($targetFull.StartsWith('\\?\')) { $targetFull } else { '\\?\' + $targetFull }
+  [System.IO.Directory]::Delete($longTarget,$true)
+  if (Test-Path -LiteralPath $Target) {
+    throw "Package cleanup did not remove staging folder: $targetFull"
+  }
+}
+
+function New-PackageZip([string]$Source,[string]$Destination) {
+  Add-Type -AssemblyName System.IO.Compression
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+  if (Test-Path -LiteralPath $Destination) { throw "ZIP destination already exists: $Destination" }
+  $sourceFull = [System.IO.Path]::GetFullPath($Source).TrimEnd('\')
+  $rootName = Split-Path -Leaf $sourceFull
+  $archive = [System.IO.Compression.ZipFile]::Open($Destination,[System.IO.Compression.ZipArchiveMode]::Create)
+  try {
+    foreach ($file in Get-ChildItem -LiteralPath $sourceFull -Recurse -File -Force | Sort-Object FullName) {
+      $relative = $file.FullName.Substring($sourceFull.Length + 1).Replace('\','/')
+      $entryName = $rootName + '/' + $relative
+      $fileFull = [System.IO.Path]::GetFullPath($file.FullName)
+      $longFile = if ($fileFull.StartsWith('\\?\')) { $fileFull } else { '\\?\' + $fileFull }
+      [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+        $archive,
+        $longFile,
+        $entryName,
+        [System.IO.Compression.CompressionLevel]::Optimal
+      ) | Out-Null
+    }
+  } finally {
+    if ($archive) { $archive.Dispose() }
+  }
+}
+
+function Get-Sha256LongPath([string]$Path) {
+  $fileFull = [System.IO.Path]::GetFullPath($Path)
+  $longFile = if ($fileFull.StartsWith('\\?\')) { $fileFull } else { '\\?\' + $fileFull }
+  $stream = [System.IO.File]::OpenRead($longFile)
+  $sha = [System.Security.Cryptography.SHA256]::Create()
+  try {
+    return ([System.BitConverter]::ToString($sha.ComputeHash($stream))).Replace('-','').ToLowerInvariant()
+  } finally {
+    $sha.Dispose()
+    $stream.Dispose()
+  }
+}
+
 Assert-Under $CopyPath $OutputDir
 Assert-Under $ZipPath $OutputDir
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
@@ -34,8 +92,10 @@ try {
   if ($Mode -eq 'public') {
     $excludedDirs += @(
       (Join-Path $Root 'backups'),(Join-Path $Root 'logs'),(Join-Path $Root 'saves'),
-      (Join-Path $Root 'state'),(Join-Path $Root '.claude'),(Join-Path $Root '.grok'),
-      (Join-Path $Root '.git'),(Join-Path $Root 'node_modules')
+      (Join-Path $Root 'state'),(Join-Path $Root '.claude'),(Join-Path $Root '.codex'),
+      (Join-Path $Root '.grok'),(Join-Path $Root '.git'),(Join-Path $Root 'node_modules'),
+      (Join-Path $Root 'runtime'),(Join-Path $Root 'sessions'),(Join-Path $Root 'cache'),
+      (Join-Path $Root 'tmp'),(Join-Path $Root 'projects'),(Join-Path $Root 'intakes')
     )
   }
   $args = @($Root,$CopyPath,'/E','/COPY:DAT','/DCOPY:DAT','/R:1','/W:1','/NFL','/NDL','/NJH','/NJS','/NP','/XD') + $excludedDirs
@@ -46,7 +106,10 @@ try {
   $excludedFiles = @()
   $scanFindings = @()
   if ($Mode -eq 'public') {
-    $privateDirNames = @('exports','backups','logs','saves','state','.claude','.grok','.git','node_modules')
+    $privateDirNames = @(
+      'exports','backups','logs','saves','state','.claude','.codex','.grok','.git',
+      'node_modules','sessions','cache','tmp','projects','intakes'
+    )
     $nestedPrivateDirs = Get-ChildItem -LiteralPath $CopyPath -Recurse -Directory -Force | Where-Object { $privateDirNames -contains $_.Name.ToLowerInvariant() } | Sort-Object { $_.FullName.Length } -Descending
     foreach ($directory in $nestedPrivateDirs) {
       if (-not (Test-Path -LiteralPath $directory.FullName)) { continue }
@@ -65,13 +128,29 @@ try {
       Remove-Item -LiteralPath $file.FullName -Force
     }
 
-    $textExtensions = @('.js','.cjs','.mjs','.html','.css','.json','.txt','.md','.bat','.ps1','.sh','.yml','.yaml','.xml')
+    # Preserve unpacked, hashed, rights-recorded project art while omitting the
+    # redundant nested source archive. The archive duplicates the source set
+    # and can push restored Windows paths beyond legacy path limits.
+    $publicOmissions = @(
+      'tools/game-hub/game-library/008-district-party/assets/source/user_generated/interactable_alpha_pack_2026-07-19/AXM_DISTRICT_PARTY_INTERACTABLE_ALPHA_PACK_2026-07-19.zip'
+    )
+    foreach ($relative in $publicOmissions) {
+      $candidate = Join-Path $CopyPath ($relative.Replace('/','\'))
+      if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) { continue }
+      Assert-Under $candidate $CopyPath
+      $excludedFiles += $relative
+      Remove-Item -LiteralPath $candidate -Force
+    }
+
+    $textExtensions = @('.js','.cjs','.mjs','.html','.css','.json','.txt','.md','.bat','.cmd','.ps1','.sh','.yml','.yaml','.xml','.toml','.ini')
     $patterns = @(
       @{ Name='private-key'; Regex='-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----' },
       @{ Name='openai-key'; Regex='\bsk-[A-Za-z0-9_-]{24,}\b' },
       @{ Name='anthropic-key'; Regex='\bsk-ant-[A-Za-z0-9_-]{20,}\b' },
       @{ Name='google-key'; Regex='\bAIza[0-9A-Za-z_-]{20,}\b' },
       @{ Name='github-token'; Regex='\bgh[pousr]_[A-Za-z0-9]{20,}\b' },
+      @{ Name='discord-webhook'; Regex='https://(?:canary\.|ptb\.)?(?:discord(?:app)?\.com)/api/webhooks/[0-9]+/[A-Za-z0-9._-]+' },
+      @{ Name='private-windows-user-path'; Regex='(?i)C:\\Users\\[^\\\r\n]+' },
       @{ Name='assigned-api-key'; Regex='(?im)^\s*(?:OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY|GEMINI_API_KEY|AXM_BRIDGE_TOKEN)\s*=\s*[^%\s<][^\r\n]{11,}$' }
     )
     foreach ($file in Get-ChildItem -LiteralPath $CopyPath -Recurse -File -Force) {
@@ -90,12 +169,19 @@ try {
     }
   }
 
+  # The repository may contain a historical package manifest. It cannot be
+  # hashed as ordinary content and then overwritten by this package's manifest.
+  $stagingManifestPath = Join-Path $CopyPath 'PACKAGE_MANIFEST.json'
+  if (Test-Path -LiteralPath $stagingManifestPath -PathType Leaf) {
+    Assert-Under $stagingManifestPath $CopyPath
+    Remove-Item -LiteralPath $stagingManifestPath -Force
+  }
   $contentFiles = Get-ChildItem -LiteralPath $CopyPath -Recurse -File -Force
   $manifestEntries = foreach ($file in $contentFiles) {
     [ordered]@{
       path = $file.FullName.Substring($CopyPath.Length + 1).Replace('\','/')
       bytes = $file.Length
-      sha256 = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+      sha256 = Get-Sha256LongPath $file.FullName
     }
   }
   $manifest = [ordered]@{
@@ -110,7 +196,7 @@ try {
   }
   $manifest | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $CopyPath 'PACKAGE_MANIFEST.json') -Encoding UTF8
 
-  Compress-Archive -LiteralPath $CopyPath -DestinationPath $ZipPath -CompressionLevel Optimal
+  New-PackageZip $CopyPath $ZipPath
   if (-not (Test-Path -LiteralPath $ZipPath)) { throw 'ZIP creation did not produce an archive.' }
   $zipItem = Get-Item -LiteralPath $ZipPath
   if ($zipItem.Length -lt 100) { throw 'ZIP verification failed: archive is unexpectedly small.' }
@@ -124,7 +210,7 @@ try {
   if (-not $kept) {
     Assert-Under $CopyPath $OutputDir
     if ((Split-Path -Leaf $CopyPath) -notlike 'axm-workshop-*') { throw 'Safety refusal: unexpected cleanup folder name.' }
-    Remove-Item -LiteralPath $CopyPath -Recurse -Force
+    Remove-TreeSafely $CopyPath $OutputDir
   }
   [ordered]@{
     ok = $true
@@ -146,7 +232,9 @@ try {
 } catch {
   if (Test-Path -LiteralPath $CopyPath) {
     Assert-Under $CopyPath $OutputDir
-    if ((Split-Path -Leaf $CopyPath) -like 'axm-workshop-*') { Remove-Item -LiteralPath $CopyPath -Recurse -Force }
+    if ((Split-Path -Leaf $CopyPath) -like 'axm-workshop-*') {
+      try { Remove-TreeSafely $CopyPath $OutputDir } catch { Write-Warning $_.Exception.Message }
+    }
   }
   if (Test-Path -LiteralPath $ZipPath) {
     Assert-Under $ZipPath $OutputDir

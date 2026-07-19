@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.cognitive-resource-economics-profile-draft/v1",
+  "title": "Mirror cognitive-resource economics profile draft",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "source", "scope", "components", "permission"],
+  "properties": {
+    "schema": { "const": "axm.mirror.cognitive-resource-economics-profile-draft/v1" },
+    "source": { "$ref": "#/$defs/source" },
+    "scope": { "$ref": "#/$defs/scope" },
+    "components": { "type": "array", "minItems": 1, "maxItems": 8, "items": { "$ref": "#/$defs/component" } },
+    "permission": { "$ref": "#/$defs/permission" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "nullableDigest": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/digest" }] },
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,199}$" },
+    "nullableId": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/id" }] },
+    "count": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+    "positiveCount": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+    "nullableCount": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/count" }] },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceSystemId", "sourceRecordId", "sourceRecordDigest", "collectionMethod", "authorshipState", "rateScheduleDigest", "effectiveWindowId", "freshnessState"],
+      "properties": {
+        "sourceSystemId": { "$ref": "#/$defs/id" },
+        "sourceRecordId": { "$ref": "#/$defs/id" },
+        "sourceRecordDigest": { "$ref": "#/$defs/nullableDigest" },
+        "collectionMethod": { "enum": ["DIRECT_BILLING_SCHEDULE", "DIRECT_HARDWARE_MEASUREMENT", "IMPORTED_ATTESTATION", "MANUAL_DECLARATION"] },
+        "authorshipState": { "enum": ["DECLARED_NOT_CERTIFIED", "UNKNOWN"] },
+        "rateScheduleDigest": { "$ref": "#/$defs/nullableDigest" },
+        "effectiveWindowId": { "$ref": "#/$defs/nullableId" },
+        "freshnessState": { "enum": ["CURRENT_DECLARED_NOT_CERTIFIED", "HISTORICAL", "UNKNOWN"] }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accountingMode", "currency", "modelProfileDigest", "hardwareProfileDigest", "tokenMeterDefinitionId", "computeMeterDefinitionId"],
+      "properties": {
+        "accountingMode": { "enum": ["PROVIDER_TOKEN_BILLING", "PROVIDER_COMPUTE_UNIT_BILLING", "LOCAL_HARDWARE_TIME"] },
+        "currency": { "oneOf": [{ "type": "null" }, { "type": "string", "pattern": "^[A-Z]{3}$" }] },
+        "modelProfileDigest": { "$ref": "#/$defs/nullableDigest" },
+        "hardwareProfileDigest": { "$ref": "#/$defs/nullableDigest" },
+        "tokenMeterDefinitionId": { "$ref": "#/$defs/nullableId" },
+        "computeMeterDefinitionId": { "$ref": "#/$defs/nullableId" }
+      }
+    },
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric", "quantityDenominator", "moneyMicrosPerQuantity", "energyMilliwattHoursPerQuantity", "carbonMilligramsPerQuantity"],
+      "properties": {
+        "metric": { "enum": ["ACCELERATOR_MILLISECONDS", "CACHED_INPUT_TOKENS", "CPU_CORE_MILLISECONDS", "INPUT_TOKENS", "OUTPUT_TOKENS", "PROVIDER_COMPUTE_UNITS_MICROS", "REASONING_TOKENS", "TOTAL_TOKENS"] },
+        "quantityDenominator": { "$ref": "#/$defs/positiveCount" },
+        "moneyMicrosPerQuantity": { "$ref": "#/$defs/nullableCount" },
+        "energyMilliwattHoursPerQuantity": { "$ref": "#/$defs/nullableCount" },
+        "carbonMilligramsPerQuantity": { "$ref": "#/$defs/nullableCount" }
+      }
+    },
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "basisDigest"],
+      "properties": {
+        "status": { "enum": ["ALLOWED", "UNKNOWN", "FORBIDDEN"] },
+        "basisDigest": { "$ref": "#/$defs/nullableDigest" }
+      }
+    }
+  }
+}

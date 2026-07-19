@@ -12,5 +12,11 @@
   "boundaries": {
     "writes": ["game-hub:asset-inbox", "accepted-game-folder:assets/studio"],
     "refuses": ["unreviewed-package-write", "path-escape", "hidden-runtime-launch"]
+  },
+  "lifecycle": {
+    "state_owner": "service",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
   }
 }

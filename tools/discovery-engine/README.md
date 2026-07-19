@@ -115,6 +115,16 @@ node tests/html-script-syntax-test.js
 node verify.js
 ```
 
+Project-specific bounded passes may live beside the core when their executable
+controls are worth preserving. `physical-controller-discovery.js` records the
+Shared Controls gamepad-route seams, repairs that can be proven without
+hardware, and the still-open physical-device evidence gate.
+
+`asset-hands-discovery.js` applies the SOFTWARE-profile General Evidence Lab to
+the shared Target Canvas registry. It preserves a deterministic request matrix,
+checks native raster and cutting routes, refuses unsafe or unsupported canvases,
+and keeps PDF, animated-raster and 3D gaps visibly blocked.
+
 These checks do not contact a model or execute either source prompt. The core
 self-test covers manual use, bounded dispatch reservations, duplicate/out-of-
 order refusal, malformed output, stale proposals, full evidence-gate pause and

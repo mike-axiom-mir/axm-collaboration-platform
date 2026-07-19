@@ -12,18 +12,26 @@
     "Achievements may unlock profile visuals or exported metadata but never permissions, authority, purchases or access.",
     "Human and machine members use the same identity, statistic and achievement record shapes.",
     "A host may replace the achievement catalog and artwork without replacing the receipt engine.",
+    "Specialized image and sound receipts also increment the total-assets metric exactly once; emitters must not submit a second generic asset receipt for the same output.",
     "Storage remains host-provided so another local Hub can use the service without copying AXM Hub UI code."
   ],
   "receiptTypes": {
-    "game-played": "One successfully started or completed game result, according to the host catalog rule.",
-    "picture-made": "One produced visual export.",
+    "game-played": "One explicitly finished game result. Merely starting, replacing or stopping a runtime is not a result.",
+    "picture-made": "One produced visual export; also counts once toward total assets.",
+    "sfx-created": "One produced sound effect; also counts once toward total assets.",
+    "asset-created": "One produced non-image, non-SFX asset. Do not duplicate a specialized image or sound receipt.",
+    "kill-recorded": "An aggregate elimination count from one confirmed game result, with evidence.",
+    "death-recorded": "An aggregate defeat/death count from one confirmed game result, with evidence.",
+    "game-developed": "One reviewed playable game contribution result.",
     "project-completed": "One reviewed project completion.",
     "code-characters": "An exact reviewed character count with evidence and a declared purpose mood."
   },
   "defaultEmitters": [
-    {"id": "game-hub", "receiptTypes": ["game-played"]},
-    {"id": "studio", "receiptTypes": ["picture-made"]},
+    {"id": "game-hub", "receiptTypes": ["game-played", "kill-recorded", "death-recorded"]},
+    {"id": "studio", "receiptTypes": ["picture-made", "asset-created"]},
+    {"id": "audio-studio", "receiptTypes": ["sfx-created"]},
     {"id": "project-room", "receiptTypes": ["project-completed"]},
+    {"id": "game-forge", "receiptTypes": ["game-developed"]},
     {"id": "code-task", "receiptTypes": ["code-characters"]}
   ],
   "portableInterface": [
@@ -43,5 +51,10 @@
     "Register stable collaborator identities.",
     "Submit receipts only after the declared result boundary is met.",
     "Explain missing or stale receipt sources instead of displaying false synchronization."
+  ],
+  "localHttpAdapter": [
+    "GET /api/profile/health exposes receipt-source health without inferring activity.",
+    "POST /api/profile/receipt accepts stable module candidates and resolves only exact opted-in identities.",
+    "An unmatched candidate is ignored and never reassigned to the local human."
   ]
 }

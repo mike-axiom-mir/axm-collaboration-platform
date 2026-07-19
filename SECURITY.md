@@ -1,34 +1,40 @@
-# Security and Privacy Notes
+# Security and Privacy
 
-## Local binding
+AXM Workshop is experimental local-first software. Its default boundary is one
+device, not a public network service.
 
-The Workshop and bridge bind to loopback by default. Do not change them to a
-network-wide address without a separate threat review, authentication plan, and
-explicit user choice.
+## Safe default
+
+The Hub and local bridge bind to `127.0.0.1` by default. Do not expose them to a
+LAN or the internet without authentication, scoped authorization, firewall
+rules, and an explicit threat review.
+
+Optional AI, remote-machine, Discord, and controller connections are separate
+capabilities. Discovering a connection does not grant it permission to read,
+write, execute, promote, or publish.
 
 ## Secrets
 
-Provider keys belong in local environment variables. Never commit real keys,
-bridge tokens, cookies, session identifiers, or authorization headers.
+Keep provider keys in local environment variables. Never commit or post real
+API keys, passwords, cookies, authorization headers, SSH keys, bridge tokens,
+or session URLs.
 
-The public package intentionally omits `bridge/bridge-token.txt`. The bridge
-creates a fresh random token on first start. Keep that file private. Deleting it
-rotates the local token on the next bridge start.
+The public package omits `bridge/bridge-token.txt`. The bridge creates a fresh
+random token on first start; deleting the local file rotates it on next start.
 
-## Generated state
+## Local evidence
 
-Runtime logs and generated verifier/route files are local evidence. They may
-contain timestamps, actor names, task details, file names, or machine context.
-They are ignored by Git and replaced by schema examples in this checkpoint.
+Logs, saves, sessions, generated state, caches, and verifier receipts may
+contain actor names, task details, filenames, timestamps, or machine context.
+They remain local and are excluded from public packages. Share the smallest
+sanitized excerpt that can prove a bug.
 
-## Machine adapter boundary
+## Reporting a vulnerability
 
-Machine-facing actions require a host-supplied authorization decision. Unknown
-or forbidden actions must be refused. A successful draft/build response does not
-mean install, execution, promotion, or canonization occurred.
+Use GitHub's private vulnerability-reporting route when it is available under
+the repository's **Security** tab. If it is unavailable, open a minimal public
+issue titled `Private security contact requested` without including exploit
+details or secrets. A maintainer can then arrange a private channel.
 
-## Reporting
-
-No email address is published in this checkpoint. For responsible collaboration
-or issue coordination, locate Mike Tobi through the AXM raw Facebook development
-log and avoid posting secrets in public comments.
+Ordinary bugs belong in the Bug report template. Remove tokens, private paths,
+personal data, and raw logs before attaching evidence.

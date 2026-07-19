@@ -1,0 +1,9 @@
+{
+  "schema": "axm.module-contract/v1", "id": "diagnostics-operations-center", "version": "v0.1",
+  "provides": ["unified-health-snapshot", "bounded-log-tail", "operations-issue-list", "diagnostic-report-export", "service-readiness-summary"],
+  "consumes": ["service:runtime", "service:machine-host", "service:review-inbox", "service:recovery", "service:search", "service:assets", "service:permissions", "service:device-handoff"], "permissions": [],
+  "handoffs": {"emits": ["axm.diagnostics-snapshot/v1"], "accepts": ["service-health-metadata", "metadata-only-audit-lines"]},
+  "boundaries": {"writes": ["exports/diagnostics/explicit-report"], "refuses": ["automatic-repair", "automatic-restart", "secret-value-in-report", "unbounded-log-read", "arbitrary-log-path", "health-as-certification"]},
+  "lifecycle": {"state_owner": "service", "reload": "reset", "disconnect": "graceful-degrade", "cleanup": "automatic"}
+}
+

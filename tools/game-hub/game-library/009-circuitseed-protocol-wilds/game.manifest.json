@@ -1,0 +1,94 @@
+{
+  "slot": "009",
+  "game_id": "009-circuitseed-protocol-wilds",
+  "name": "CIRCUITSEED — THE PROTOCOL WILDS",
+  "status": "ALPHA CANDIDATE / WORKING",
+  "description": "A local-first agent-world adventure about trust, repair, discovery and building a life in a living technical wilderness.",
+  "version": "0.2.0-local-alpha-candidate-directors-cut",
+  "min_players": 1,
+  "max_players": 8,
+  "allowed_seat_types": ["human", "adapter", "ai", "spectator"],
+  "launch": {
+    "server_entry": "server/server.js",
+    "client_entry": "/games/009/",
+    "controller_path": "/controller/?room=AXM1&player={player}&seat={seat_id}",
+    "spectator_client_entry": "/games/009/party/",
+    "ready_path": "/health",
+    "port": 8799,
+    "start_command": "managed-by-game-hub",
+    "local_only_default": true
+  },
+  "join": {
+    "supports_qr": false,
+    "supports_lan_link": true,
+    "supports_room_code": true,
+    "room_code": "AXM1"
+  },
+  "controls": {
+    "profile_id": "axm-circuitseed-field-v1",
+    "intent_protocol": "axm-semantic-input-v1",
+    "adapter_observation": "axm-seat-screen-semantics-v1",
+    "phone_controller": true,
+    "keyboard": true,
+    "mouse": true,
+    "touch": true,
+    "shared_screen": true
+  },
+  "session": {
+    "passes_seat_map": true,
+    "returns_result_summary": true,
+    "drop_in_out_later": false,
+    "drop_in_out_implemented": true,
+    "field_operator_limit": 4,
+    "additional_roles": ["support-console", "spectate", "vote", "item", "scan", "round-rotation"]
+  },
+  "rules": {
+    "no_hidden_players": true,
+    "host_launch_required": true,
+    "game_does_not_override_hub_seats": true,
+    "local_authoritative_state": true,
+    "clients_send_input_intentions": true,
+    "human_and_adapter_same_input_gate": true,
+    "adapter_observation_is_seat_visible_only": true,
+    "host_ai_fill_empty_seats_default": false,
+    "runtime_internet_required": false
+  },
+  "verification": {
+    "game_night": {
+      "schema": "axm.game-night-seams/v1",
+      "controller_delivery": "dedicated-path",
+      "controller_evidence": ["client/controller/index.html", "tests/game-hub-lifecycle-smoke.js", "tests/session.test.js"],
+      "state_authority": "server",
+      "host_reload_recovery": "game-hub-active-launch",
+      "shared_screen_occupies_seat": false,
+      "disconnect_recovery": "verified",
+      "blocking_overlay_escape": "pending",
+      "physical_phone_qa": "pending",
+      "adapter_state_interface": "verified",
+      "adapter_state_evidence": ["docs/AI_NATIVE_SEAT_CONTRACT.md", "tests/input-gate.test.js", "tests/observation.test.js"]
+    }
+  },
+  "package": {
+    "source_status": "original-circuitseed-local-build-with-read-only-contract-references",
+    "required_paths": [
+      "README_FIRST.md",
+      "ACTION_REPORT.md",
+      "TEST_REPORT.md",
+      "KNOWN_LIMITS.md",
+      "ASSET_PROVENANCE.md",
+      "THIRD_PARTY_SOFTWARE.md",
+      "DIRECTORS_CUT_CHANGELOG.md",
+      "LOCAL_CHATGPT_INTAKE.md",
+      "server/server.js",
+      "client/index.html",
+      "client/controller/index.html",
+      "client/party/index.html",
+      "data/control-profile.json",
+      "data/field-requests.json",
+      "data/items.json",
+      "data/lore.json",
+      "profiles/router-profile.contract.json",
+      "assets/ASSET_MANIFEST.json"
+    ]
+  }
+}

@@ -28,6 +28,10 @@ seat_8
 
 Hard maximum is 8 seats.
 
+Visible cards are lobby positions, not forced players. Each card can be set to
+`Empty / remove`. Empty seats cannot ready up and never enter a game. A saved
+name remains available if that seat is restored later.
+
 ## Play or skip rule
 
 If a selected game supports fewer players than the lobby contains, the hub uses ready order.
@@ -77,7 +81,7 @@ round-robin rotation
 
 Lobby stability first.
 
-Visible seats always.
+Visible seat positions always; occupancy remains optional.
 
 No hidden AI/adapters.
 

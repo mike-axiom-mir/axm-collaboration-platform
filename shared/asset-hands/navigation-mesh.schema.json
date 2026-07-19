@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/navigation-mesh.schema.json",
+  "title": "AXM Navigation Mesh",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "id",
+    "target_canvas",
+    "coordinate_unit",
+    "settings",
+    "vertices",
+    "polygons",
+    "adjacency",
+    "walkable_bounds",
+    "excluded_regions",
+    "provenance"
+  ],
+  "properties": {
+    "schema": { "const": "navigation-mesh+json" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string" },
+    "target_canvas": { "type": "object" },
+    "coordinate_unit": { "const": "metre" },
+    "settings": { "type": "object" },
+    "vertices": { "type": "array", "minItems": 4 },
+    "polygons": { "type": "array", "minItems": 1 },
+    "adjacency": { "type": "array", "minItems": 1 },
+    "walkable_bounds": { "type": "object" },
+    "excluded_regions": { "type": "array", "minItems": 1 },
+    "provenance": { "type": "object" }
+  },
+  "additionalProperties": false
+}

@@ -34,6 +34,8 @@ async function main() {
 
     const launcher = await context.newPage();
     await launcher.goto(`${origin}/`, { waitUntil: 'networkidle' });
+    const groupSaves = await launcher.evaluate(() => fetch('/api/group-saves').then((response) => response.json()));
+    if (groupSaves.slotCount !== 9 || groupSaves.slots?.length !== 9) throw new Error('Host did not expose nine local group save slots.');
     if (await launcher.locator('.seat-card').count() !== 8) throw new Error('Launcher did not reserve all eight seat cards.');
     if (await launcher.locator('#party-b-setup:not(.hidden)').count() !== 0) throw new Error('Party B should stay folded away in the co-op default.');
     await launcher.locator('#game-mode').selectOption('district_dominion');
@@ -60,10 +62,35 @@ async function main() {
     const gameFrame = party.frames().find((frame) => frame.url().includes('/game/'));
     if (!gameFrame) throw new Error('Persistent receiver did not load the party game frame.');
     await gameFrame.locator('#city-canvas').waitFor({ state: 'visible', timeout: 5000 });
+    const visualAssetProbe = await gameFrame.evaluate(async () => {
+      const routes = [
+        '/assets/selected/characters/axm_generated/player_01_axm.png',
+        '/assets/selected/characters/axm_generated/resident_woman_backpack-v2.png',
+        '/assets/selected/vehicles/axm_generated/sport_red.png',
+        '/assets/selected/shopkeepers/axm_generated/shopkeeper_axm.png',
+        '/assets/selected/buildings/axm_generated/corner_cafe.png',
+        '/assets/selected/interactables/axm_generated/parcel_box_taped.png',
+        '/assets/selected/interactables/axm_generated/vending_red.png',
+        '/assets/selected/interactables/axm_generated/bench_wood.png',
+      ];
+      return Promise.all(routes.map(async (src) => {
+        const image = new Image(); image.src = src; await image.decode();
+        return { src, width: image.naturalWidth, height: image.naturalHeight };
+      }));
+    });
+    if (visualAssetProbe.length !== 8 || visualAssetProbe.some((asset) => asset.width < 128 || asset.height < 128)) throw new Error('User-art runtime images did not decode locally.');
+    if (await gameFrame.locator('#save-computer').count() !== 1 || await gameFrame.locator('#save-slot-grid').count() !== 1) throw new Error('Shared game screen is missing the group-save overlay contract.');
     const canvasSize = await gameFrame.locator('#city-canvas').evaluate((canvas) => ({ width: canvas.width, height: canvas.height }));
     if (canvasSize.width < 100 || canvasSize.height < 100) throw new Error('City canvas did not size itself.');
+    const mapButton = gameFrame.locator('#map-toggle');
+    await mapButton.waitFor({ state: 'visible', timeout: 2000 });
+    await mapButton.click();
+    if (await gameFrame.locator('body.map-open').count() !== 1) throw new Error('Full city map did not open from the visible screen button.');
+    if (await mapButton.getAttribute('aria-expanded') !== 'true') throw new Error('Full-map accessibility state was not updated.');
+    await gameFrame.locator('body').press('Escape');
+    if (await gameFrame.locator('body.map-open').count() !== 0) throw new Error('Escape did not return the shared screen to its minimap.');
     await gameFrame.locator('#player-card-1 .player-card:not(.unassigned)').waitFor({ timeout: 5000 });
-    if (await gameFrame.locator('#territory-zones .territory-chip').count() !== 5) throw new Error('Party A screen did not render five district ownership chips.');
+    if (await gameFrame.locator('#territory-zones .territory-chip').count() !== 13) throw new Error('Party A screen did not render thirteen district ownership chips.');
     if (await gameFrame.locator('.player-corner').count() !== 4) throw new Error('Shared screen does not define four player corners.');
     if (await gameFrame.locator('.player-corner > .player-card:not(.unassigned)').count() !== 1) throw new Error('Party A should render only its one ready status card.');
     const cornerHud = await gameFrame.evaluate(() => {
@@ -106,7 +133,7 @@ async function main() {
     await gameFrameB.locator('#player-card-1 .player-card:not(.unassigned)').waitFor({ timeout: 5000 });
     const partyBLabels = await gameFrameB.locator('.player-number').allTextContents();
     if (partyBLabels.join(',') !== 'P5') throw new Error(`Party B ready corner was not P5 only: ${partyBLabels.join(',')}`);
-    if (await gameFrameB.locator('#territory-zones .territory-chip').count() !== 5) throw new Error('Party B screen did not render territory state.');
+    if (await gameFrameB.locator('#territory-zones .territory-chip').count() !== 13) throw new Error('Party B screen did not render territory state.');
 
     const firstControllerUrl = await launcher.locator('.join-card.human .url').first().evaluate((element) => element.dataset.localUrl);
     const controller = await context.newPage();
@@ -123,7 +150,7 @@ async function main() {
 
     if (externalRequests.length) throw new Error(`External runtime request(s): ${externalRequests.join(', ')}`);
     if (consoleErrors.length) throw new Error(`Browser console error(s): ${consoleErrors.join(' | ')}`);
-    console.log(JSON.stringify({ status: 'PASS', launcher: true, sparseOneVsOneDefault: true, phoneQrCards: qrImages, privateLanDetected: detectedLan, localQrGenerator: true, defaultHostAiCards: 0, partyAScreen: true, partyBScreen: true, canvas: true, partyRelativeFourCornerHud: true, territoryChips: 5, controller: true, restart: true, returnToWaiting: true, externalRequests: 0 }, null, 2));
+    console.log(JSON.stringify({ status: 'PASS', launcher: true, groupSaveSlots: 9, sparseOneVsOneDefault: true, phoneQrCards: qrImages, privateLanDetected: detectedLan, localQrGenerator: true, defaultHostAiCards: 0, partyAScreen: true, partyBScreen: true, canvas: true, userArtImagesDecoded: visualAssetProbe.length, minimapAndFullMap: true, groupSaveOverlayContract: true, partyRelativeFourCornerHud: true, territoryChips: 13, controller: true, restart: true, returnToWaiting: true, externalRequests: 0 }, null, 2));
   } finally {
     await browser?.close();
     await runtime.close();

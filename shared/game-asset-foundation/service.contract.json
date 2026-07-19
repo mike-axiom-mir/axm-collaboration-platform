@@ -1,0 +1,45 @@
+{
+  "schema": "axm.service-contract/v1",
+  "id": "game-asset-foundation",
+  "version": "v2.0",
+  "status": "PS2_TECHNICAL_CANDIDATE_PIPELINE",
+  "provides": [
+    "original-2002-2006-urban-asset-family",
+    "ps2-geometry-density-gates",
+    "dependency-free-obj-lod-generation",
+    "shared-1024-texture-atlas",
+    "drop-in-day-dusk-night-rain-style-atlases",
+    "representative-pbr-glb-and-ktx2-baking",
+    "visible-mesh-13-joint-character-rigs",
+    "collision-and-navigation-candidates",
+    "visual-contact-sheets",
+    "composed-street-scene-proof",
+    "interactive-local-runtime-preview",
+    "candidate-pack-manifest",
+    "dependency-free-zip-export"
+  ],
+  "consumes": [
+    "service:asset-hands",
+    "axm.asset-brief/v1",
+    "axm.asset-hand-result/v1"
+  ],
+  "permissions": ["explicit-local-output-directory"],
+  "handoffs": {
+    "emits": ["axm.game-asset-pack/v1", "axm.game-asset-foundation-report/v1"],
+    "accepts": ["explicit-build-request"]
+  },
+  "boundaries": {
+    "writes": ["explicit-new-or-empty-output-directory"],
+    "refuses": [
+      "automatic-game-engine-import",
+      "automatic-publish",
+      "automatic-existing-directory-overwrite",
+      "public-release-below-ps2-floor",
+      "commercial-game-equivalence-claim",
+      "copied-commercial-art-or-map",
+      "native-engine-validation-without-native-engine-evidence",
+      "human-art-approval-by-machine"
+    ]
+  },
+  "requiredThirdPartyDependencies": []
+}

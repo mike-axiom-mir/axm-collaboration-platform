@@ -41,6 +41,7 @@ export class Hud {
     }
     const inSafe = actors.some((a) => a.inSafeZone || a.safeZoneId);
     this.$('safe-zone').classList.toggle('hidden', !inSafe);
+    this.renderGroupSaveComputer(world.groupSaveComputer, stateMeta?.tick ?? 0);
     const menuOpen = ['board', 'countdown'].includes(mission.status);
     this.$('mission-menu').classList.toggle('hidden', !menuOpen);
     if (menuOpen) this.renderMissionMenu(mission);
@@ -70,6 +71,53 @@ export class Hud {
     }));
     const progressLabel = this.$('mission-bar').parentElement;
     progressLabel.setAttribute('aria-label', `${this.partyId === 'all' ? 'Leading' : this.partyId.replace('_', ' ')} territory score progress`);
+  }
+
+  renderGroupSaveComputer(saveComputer, tick) {
+    const overlay = this.$('save-computer');
+    if (!overlay) return;
+    const open = saveComputer?.open === true;
+    overlay.classList.toggle('hidden', !open);
+    const toast = this.$('save-status-toast');
+    const showToast = !open && Boolean(saveComputer?.message) && Number(saveComputer.messageUntilTick) >= Number(tick);
+    toast.classList.toggle('hidden', !showToast);
+    if (showToast) toast.textContent = saveComputer.message;
+    if (!open) return;
+
+    const operation = saveComputer.operation === 'load' ? 'load' : 'save';
+    this.$('save-operation-current').textContent = `${operation.toUpperCase()} MODE`;
+    this.$('save-operation-save').classList.toggle('active', operation === 'save');
+    this.$('save-operation-load').classList.toggle('active', operation === 'load');
+    const selectedSlot = Number(saveComputer.selectedSlot) || 1;
+    const armed = saveComputer.confirmation;
+    const entries = Array.from({ length: 9 }, (_, index) => {
+      const slot = index + 1;
+      const summary = (saveComputer.catalog || []).find((candidate) => candidate.slot === slot) || { slot, status: 'empty' };
+      const card = node('article', `save-slot ${summary.status || 'empty'}${slot === selectedSlot ? ' selected' : ''}${armed?.slot === slot && armed?.operation === operation ? ' armed' : ''}`);
+      card.setAttribute('aria-current', String(slot === selectedSlot));
+      const heading = node('header', 'save-slot-heading');
+      heading.append(text('strong', '', `SLOT ${slot}`), text('span', 'save-slot-state', (summary.status || 'empty').toUpperCase()));
+      card.append(heading);
+      if (summary.status === 'ready') {
+        const distribution = summary.partyDistribution || {};
+        const groupTotal = Number(summary.partyFunds?.party_a || 0) + Number(summary.partyFunds?.party_b || 0);
+        card.append(text('b', 'save-roster', `${summary.seatCount} FIXED SEAT${summary.seatCount === 1 ? '' : 'S'} · ${summary.seatSlots?.map((value) => `P${value}`).join(' ') || ''}`));
+        card.append(text('span', '', `A ${distribution.party_a || 0} · B ${distribution.party_b || 0}`));
+        card.append(text('span', '', `Players ${formatCredits(summary.totalPersonalFundsCents)} · Group ${formatCredits(groupTotal)}`));
+        card.append(text('time', '', formatSaveDate(summary.updatedAt)));
+      } else if (summary.status === 'corrupt') {
+        card.append(text('b', 'save-roster', 'LOAD BLOCKED'));
+        card.append(text('span', '', 'Save over this slot to repair it.'));
+      } else {
+        card.append(text('b', 'save-roster', 'EMPTY'));
+        card.append(text('span', '', 'Available for a new fixed roster.'));
+      }
+      if (armed?.slot === slot && armed?.operation === operation) card.append(text('em', 'save-confirm', 'PRESS ACTION AGAIN'));
+      return card;
+    });
+    this.$('save-slot-grid').replaceChildren(...entries);
+    this.$('save-computer-message').textContent = saveComputer.message || 'Choose a slot.';
+    this.$('save-computer-message').classList.toggle('busy', saveComputer.busy === true);
   }
 
   renderPlayerCards(quarter, actors) {
@@ -146,8 +194,8 @@ export class Hud {
     const countdown = mission.status === 'countdown';
     this.$('mission-menu-title').textContent = countdown ? `${mission.title || 'MISSION'} STARTING` : 'MISSION BOARD';
     this.$('mission-menu-copy').textContent = countdown
-      ? `${Math.max(0, Math.ceil(mission.timeRemaining || 0))} seconds · leader ACTION cancels`
-      : 'Move up/down and press ACTION. The whole party launches together.';
+      ? `${Math.max(0, Math.ceil(mission.timeRemaining || 0))} seconds · ${mission.pendingLayout?.twist || 'new city route'} · leader ACTION cancels`
+      : 'Move up/down and press ACTION. Each mission draws a location from its host-owned route deck.';
     this.renderOptions(this.$('mission-menu-options'), countdown ? [] : mission.menuOptions || []);
   }
 
@@ -166,7 +214,7 @@ export class Hud {
     const partyFund = this.partyId === 'all'
       ? formatPartyFund({ partyFunds: summary.partyFundTotals }, 'all')
       : formatCredits(summary.partyFundTotals[this.partyId] || 0);
-    const entries = [['Score', summary.score], ['Progress', summary.deliveries], ['Gross / player', formatCredits(summary.rewardCents)], [`Player ${summary.rewardSplit.personalPercent}%`, formatCredits(summary.personalRewardCents)], [`Party ${summary.rewardSplit.partyPercent}%`, formatCredits(summary.partyContributionCents)], ['Party fund', partyFund], ['Fastest', fastest], ['Vehicle', summary.vehicleAssisted], ['Dropped', summary.droppedPackages]];
+    const entries = [['Location', mission.layout?.label || mission.result?.layout?.label || 'Default'], ['Score', summary.score], ['Progress', summary.deliveries], ['Gross / player', formatCredits(summary.rewardCents)], [`Player ${summary.rewardSplit.personalPercent}%`, formatCredits(summary.personalRewardCents)], [`Party ${summary.rewardSplit.partyPercent}%`, formatCredits(summary.partyContributionCents)], ['Party fund', partyFund], ['Fastest', fastest], ['Vehicle', summary.vehicleAssisted], ['Dropped', summary.droppedPackages]];
     if (summary.wavesCompleted) entries.push(['Waves', summary.wavesCompleted]);
     if (summary.relayHealth !== null) entries.push(['Relay HP', summary.relayHealth]);
     entries.forEach(([label, value]) => {
@@ -221,6 +269,12 @@ export class Hud {
 function formatCredits(cents) {
   const value = Math.max(0, Math.min(99_999_999, Math.round(Number(cents) || 0))) / 100;
   return `DC ${new Intl.NumberFormat('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)}`;
+}
+
+function formatSaveDate(value) {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return 'UNKNOWN TIME';
+  return new Intl.DateTimeFormat(undefined, { dateStyle: 'short', timeStyle: 'short' }).format(date);
 }
 
 function formatPartyFund(economy = {}, partyId) {

@@ -1,0 +1,17 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "judgement-chamber",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": ["four-dimension-deep-judgement", "dual-perspective-exact-digest-voting", "visible-disagreement-repair-flow", "secondary-workshop-goal-intake"],
+  "consumes": ["service:review-inbox", "service:workshop-direction"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.deep-judgement-artifact/v1", "axm.review-item/v1", "axm.review-vote/v1", "axm.workshop-direction.request/v1"],
+    "accepts": ["axm.review-item/v1", "axm.workshop-direction.plan/v1"]
+  },
+  "boundaries": {
+    "writes": ["service:review-inbox:exact-digest-item", "service:workshop-direction:explicit-goal-only"],
+    "refuses": ["automatic-vote", "review-seat-impersonation", "silent-override", "single-score-as-taste", "automatic-promotion", "automatic-execution", "publication-authority", "tool-authority", "file-authority", "network-authority"]
+  }
+}

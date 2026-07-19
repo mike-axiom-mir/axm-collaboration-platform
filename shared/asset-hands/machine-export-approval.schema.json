@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/machine-export-approval-v1.schema.json",
+  "title": "AXM Machine Export Approval v1",
+  "type": "object",
+  "required": ["schema", "approved", "authority", "source_digest", "approved_at", "machine_profile"],
+  "properties": {
+    "schema": {"const": "axm.machine-export-approval/v1"}, "approved": {"const": true}, "authority": {"const": "human-operator"},
+    "source_digest": {"type": "string", "minLength": 1}, "approved_at": {"type": "string", "minLength": 1},
+    "machine_profile": {"type": "object", "required": ["id", "units", "safe_z", "work_area_mm"], "properties": {"id": {"type": "string", "minLength": 1}, "units": {"const": "mm"}, "safe_z": {"type": "number", "exclusiveMinimum": 0}, "work_area_mm": {"type": "array", "prefixItems": [{"type": "number", "exclusiveMinimum": 0}, {"type": "number", "exclusiveMinimum": 0}], "minItems": 2, "maxItems": 2}}}
+  },
+  "additionalProperties": false
+}

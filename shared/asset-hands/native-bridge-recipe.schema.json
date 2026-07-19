@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/native-bridge-recipe-v1.schema.json",
+  "title": "AXM Native Bridge Recipe v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "id",
+    "target_canvas",
+    "operation",
+    "source",
+    "adapter",
+    "change",
+    "approval",
+    "rollback",
+    "execution_boundary",
+    "known_limits",
+    "provenance"
+  ],
+  "properties": {
+    "schema": { "const": "axm.native-bridge-recipe/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "target_canvas": { "type": "object" },
+    "operation": { "enum": ["workflow", "finish", "validate"] },
+    "source": {
+      "type": "object",
+      "required": [
+        "bundle_id",
+        "artifact_id",
+        "artifact_digest",
+        "bundle_digest"
+      ],
+      "properties": {
+        "bundle_id": { "type": "string" },
+        "artifact_id": { "type": "string" },
+        "artifact_digest": { "type": "string" },
+        "bundle_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "adapter": { "type": "object" },
+    "change": {
+      "type": "object",
+      "required": ["digest", "source_artifact", "commands"],
+      "properties": {
+        "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "source_artifact": { "type": "object" },
+        "commands": { "type": "array", "maxItems": 20 }
+      },
+      "additionalProperties": false
+    },
+    "approval": { "type": "object" },
+    "rollback": { "type": "object" },
+    "execution_boundary": {
+      "type": "object",
+      "required": [
+        "native_execution",
+        "adapter_execution_required",
+        "host_report_is_independently_verified",
+        "automatic_host_import"
+      ],
+      "properties": {
+        "native_execution": { "const": false },
+        "adapter_execution_required": { "const": true },
+        "host_report_is_independently_verified": { "type": "boolean" },
+        "automatic_host_import": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "host_application_receipt": { "type": ["object", "null"] },
+    "known_limits": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "provenance": { "type": "object" }
+  },
+  "additionalProperties": false
+}

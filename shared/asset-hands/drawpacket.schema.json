@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/drawpacket-v1.schema.json",
+  "title": "AXM Studio Draw Packet v1",
+  "type": "object",
+  "required": ["schema", "name", "owner", "identityId", "canvas", "source", "draw"],
+  "properties": {
+    "schema": { "const": "axm.drawpacket/v1" },
+    "name": { "type": "string", "minLength": 1 },
+    "owner": { "type": "string", "minLength": 1 },
+    "identityId": { "type": "string", "minLength": 1 },
+    "canvas": { "type": "object", "required": ["width", "height", "unit"] },
+    "source": { "type": "object", "required": ["schema", "briefId", "handId", "automaticApply"], "properties": { "schema": { "type": "string" }, "briefId": { "type": "string" }, "handId": { "type": "string" }, "automaticApply": { "const": false } }, "additionalProperties": false },
+    "draw": { "type": "array", "maxItems": 100, "items": { "type": "object", "required": ["op"] } }
+  },
+  "additionalProperties": false
+}

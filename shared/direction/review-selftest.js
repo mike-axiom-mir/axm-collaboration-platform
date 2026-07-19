@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+'use strict';
+const assert = require('assert');
+const Direction = require('./axm-direction-core');
+const Review = require('./axm-direction-review');
+const modules = [{ id:'studio', name:'Studio', folder:'studio', entry:'index.html' }];
+const held = Direction.compile({ description:'Make a polished logo and publish it with a safe package.', quality:'HIGH', maxPulsesPerRoute:2 }, modules, 1000);
+const assessment = Review.judge(held);
+assert.equal(assessment.schema, Review.ASSESSMENT_SCHEMA);
+assert.equal(assessment.suggestedVerdict, 'HOLD');
+assert.equal(assessment.truth.automaticVote, false);
+assert.equal(assessment.truth.fillsReviewSeat, false);
+assert.equal(assessment.truth.startsExecution, false);
+assert.equal(assessment.criteria.length, 6);
+assert.equal(Review.artifact(held).schema, Review.ARTIFACT_SCHEMA);
+const ready = Direction.compile({ description:'Create a carefully specified reusable asset family with sixteen icon assets, named sizes, colours, formats, contrast rules, variants, and delivery constraints.', quality:'HIGH', maxPulsesPerRoute:2 }, [{ id:'asset-fabric', name:'Asset Fabric', folder:'asset-fabric', entry:'index.html' }], 1000);
+assert.equal(Review.judge(ready).suggestedVerdict, 'UP');
+console.log('PASS direction steward assessment · six dimensions · advisory-only · no seat impersonation');

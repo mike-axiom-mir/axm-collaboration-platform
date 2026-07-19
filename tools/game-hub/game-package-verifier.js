@@ -7,6 +7,9 @@ const childProcess = require('child_process');
 
 const LIBRARY_DIR = __dirname + path.sep + 'game-library';
 const ALLOWED_SEAT_TYPES = new Set(['human', 'adapter', 'ai', 'spectator']);
+const GAME_NIGHT_SEAM_SCHEMA = 'axm.game-night-seams/v1';
+const CONTROLLER_DELIVERY = new Set(['shared-runtime', 'dedicated-path', 'runtime-issued']);
+const EVIDENCE_STATES = new Set(['verified', 'pending', 'not-applicable']);
 
 function inside(root, candidate) {
   const base = path.resolve(root);
@@ -70,13 +73,90 @@ function validateManifest(manifest, context) {
   return errors;
 }
 
+function validateGameNightSeams(manifest, context) {
+  const errors = [];
+  const warnings = [];
+  const gameDir = context.gameDir;
+  const exists = context.exists || fs.existsSync;
+  const controls = manifest && manifest.controls || {};
+  const join = manifest && manifest.join || {};
+  const seam = manifest && manifest.verification && manifest.verification.game_night;
+
+  if (!seam || typeof seam !== 'object') {
+    errors.push('verification.game_night contract is required');
+    return { errors, warnings };
+  }
+  if (seam.schema !== GAME_NIGHT_SEAM_SCHEMA) errors.push('verification.game_night.schema must be ' + GAME_NIGHT_SEAM_SCHEMA);
+  if (!CONTROLLER_DELIVERY.has(seam.controller_delivery)) errors.push('verification.game_night.controller_delivery is unsupported');
+  if (seam.state_authority !== 'server') errors.push('verification.game_night.state_authority must be server');
+  if (!['game-hub-active-launch', 'native-resume'].includes(seam.host_reload_recovery)) errors.push('verification.game_night.host_reload_recovery must declare an active resume route');
+  if (seam.shared_screen_occupies_seat !== false) errors.push('verification.game_night.shared_screen_occupies_seat must be false');
+
+  ['disconnect_recovery', 'blocking_overlay_escape', 'physical_phone_qa'].forEach(field => {
+    if (!EVIDENCE_STATES.has(seam[field])) errors.push('verification.game_night.' + field + ' must be verified, pending, or not-applicable');
+    else if (seam[field] === 'pending') warnings.push(field.replace(/_/g, ' ') + ' is pending');
+  });
+
+  const hasExternalAdapter = Array.isArray(manifest && manifest.allowed_seat_types)
+    && manifest.allowed_seat_types.includes('adapter');
+  if (hasExternalAdapter) {
+    if (!EVIDENCE_STATES.has(seam.adapter_state_interface) || seam.adapter_state_interface === 'not-applicable') {
+      errors.push('verification.game_night.adapter_state_interface must be verified or pending for an adapter seat');
+    } else if (seam.adapter_state_interface === 'pending') {
+      warnings.push('external collaborator state interface is pending');
+    } else {
+      const rules = manifest && manifest.rules || {};
+      if (controls.intent_protocol !== 'axm-semantic-input-v1') errors.push('verified adapter seat requires controls.intent_protocol=axm-semantic-input-v1');
+      if (controls.adapter_observation !== 'axm-seat-screen-semantics-v1') errors.push('verified adapter seat requires controls.adapter_observation=axm-seat-screen-semantics-v1');
+      if (rules.human_and_adapter_same_input_gate !== true) errors.push('verified adapter seat requires rules.human_and_adapter_same_input_gate=true');
+      if (rules.adapter_observation_is_seat_visible_only !== true) errors.push('verified adapter seat requires rules.adapter_observation_is_seat_visible_only=true');
+      if (!Array.isArray(seam.adapter_state_evidence) || !seam.adapter_state_evidence.length) {
+        errors.push('verified adapter seat requires verification.game_night.adapter_state_evidence');
+      } else seam.adapter_state_evidence.forEach(rel => {
+        const abs = path.resolve(gameDir, String(rel || ''));
+        if (!inside(gameDir, abs)) errors.push('adapter state evidence escapes the game folder: ' + rel);
+        else if (!exists(abs)) errors.push('adapter state evidence missing: ' + rel);
+      });
+    }
+  }
+
+  if (!Array.isArray(seam.controller_evidence) || !seam.controller_evidence.length) {
+    errors.push('verification.game_night.controller_evidence must name inspectable files');
+  } else {
+    let viewportEvidence = false;
+    seam.controller_evidence.forEach(rel => {
+      const abs = path.resolve(gameDir, String(rel || ''));
+      if (!inside(gameDir, abs)) return errors.push('controller evidence escapes the game folder: ' + rel);
+      if (!exists(abs)) return errors.push('controller evidence missing: ' + rel);
+      if (/\.html?$/i.test(abs)) {
+        try { if (/name=["']viewport["']/i.test(fs.readFileSync(abs, 'utf8'))) viewportEvidence = true; } catch (_) {}
+      }
+    });
+    if (controls.phone_controller === true && !viewportEvidence) errors.push('phone controller evidence must include responsive viewport HTML');
+  }
+
+  if (controls.phone_controller === true) {
+    if (controls.touch !== true) errors.push('controls.phone_controller requires controls.touch=true');
+    if (join.supports_lan_link !== true) errors.push('controls.phone_controller requires join.supports_lan_link=true');
+  }
+  if (join.supports_qr === true && controls.phone_controller !== true) errors.push('join.supports_qr requires controls.phone_controller=true');
+  if (seam.controller_delivery === 'dedicated-path' && !(manifest.launch && manifest.launch.controller_path)) errors.push('dedicated-path controller delivery requires launch.controller_path');
+  if (seam.controller_delivery === 'runtime-issued') {
+    const endpoint = String(seam.runtime_metadata_endpoint || '');
+    if (!endpoint.startsWith('/api/')) errors.push('runtime-issued controller delivery requires an /api/ runtime_metadata_endpoint');
+  }
+  return { errors, warnings };
+}
+
 function verifyGameDir(gameDir) {
   const manifestPath = path.join(gameDir, 'game.manifest.json');
   if (!fs.existsSync(manifestPath)) return { game: path.basename(gameDir), manifest: manifestPath, errors: ['game.manifest.json is missing'] };
   let manifest;
   try { manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')); }
   catch (e) { return { game: path.basename(gameDir), manifest: manifestPath, errors: ['manifest JSON is invalid: ' + e.message] }; }
-  return { game: manifest.game_id || path.basename(gameDir), slot: manifest.slot || null, manifest: manifestPath, errors: validateManifest(manifest, { gameDir }) };
+  const errors = validateManifest(manifest, { gameDir });
+  const seams = validateGameNightSeams(manifest, { gameDir });
+  return { game: manifest.game_id || path.basename(gameDir), slot: manifest.slot || null, manifest: manifestPath, errors: errors.concat(seams.errors), warnings: seams.warnings };
 }
 
 function verifyLibrary(libraryDir) {
@@ -93,7 +173,7 @@ function verifyLibrary(libraryDir) {
       if (other) other.errors.push('launch.port conflicts with ' + result.game);
     } else ports.set(port, result.game);
   });
-  return { schema: 'axm.game-package-verification/v1', scope: path.resolve(libraryDir), checkedAt: new Date().toISOString(), games, pass: games.every(x => !x.errors.length), failCount: games.reduce((n, x) => n + x.errors.length, 0) };
+  return { schema: 'axm.game-package-verification/v1', scope: path.resolve(libraryDir), checkedAt: new Date().toISOString(), games, pass: games.every(x => !x.errors.length), failCount: games.reduce((n, x) => n + x.errors.length, 0), warningCount: games.reduce((n, x) => n + ((x.warnings || []).length), 0) };
 }
 
 function main() {
@@ -102,11 +182,12 @@ function main() {
   report.games.forEach(g => {
     console.log((g.errors.length ? 'FAIL ' : 'PASS ') + (g.slot ? g.slot + ' · ' : '') + g.game);
     g.errors.forEach(e => console.log('  - ' + e));
+    (g.warnings || []).forEach(e => console.log('  warn ' + e));
   });
-  console.log(report.failCount + ' failure(s) · ' + report.games.length + ' game folder(s) checked');
+  console.log(report.failCount + ' failure(s) · ' + report.warningCount + ' warning(s) · ' + report.games.length + ' game folder(s) checked');
   if (!report.pass) process.exitCode = 1;
   return report;
 }
 
 if (require.main === module) main();
-module.exports = { inside, validateManifest, verifyGameDir, verifyLibrary };
+module.exports = { GAME_NIGHT_SEAM_SCHEMA, inside, validateManifest, validateGameNightSeams, verifyGameDir, verifyLibrary };

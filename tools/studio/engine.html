@@ -6,6 +6,7 @@
 <!-- foundation first: wires storage, wisdom, identity, gate, connector (Bridge->local->cloud), AI -->
 <script src="axm-foundation.js"></script>
 <script src="../agent-command-center/identity-registry.js"></script>
+<script src="mirror-studio-bridge.js"></script>
 <script src="../../hub/identity-router.js"></script>
 <script src="/shared/profile/axm-profile-client.js"></script>
 <!-- NO external fonts/CDN — works in airplane mode. System font stack replaces the old Google Fonts. -->
@@ -209,7 +210,7 @@ input[type=color]{width:30px;height:26px;border:1px solid var(--edge);border-rad
         <div id="wisdomLog" style="font-family:ui-monospace,monospace;font-size:10px;color:var(--muted-2);max-height:90px;overflow-y:auto;background:#06080f;border:1px solid var(--edge);border-radius:8px;padding:8px;margin-bottom:7px"></div>
         <textarea id="wisdomIO" placeholder="wisdom map — click Show to fill it (copy to a file), or paste a map and click Load" style="font-family:ui-monospace,monospace;font-size:10px;min-height:64px;width:100%;margin-bottom:7px"></textarea>
         <div class="addrow"><button id="wisdomExport">Show map</button><button id="wisdomLoadBtn">Load map</button></div>
-        <div class="addrow" style="margin-top:7px"><select id="wisdomAuthor" aria-label="Identity receiving this wisdom"><option value="axiom-mir">Axiom / Mir</option><option value="nova">Nova</option><option value="gemini-local">Gemini Local</option><option value="claude">Claude</option></select><button id="wisdomFileBtn" style="color:var(--green);border-color:var(--green)">File map to identity</button></div>
+        <div class="addrow" style="margin-top:7px"><select id="wisdomAuthor" aria-label="Identity receiving this wisdom"><option value="axiom-mir">Axiom / Mir</option><option value="nova">Nova</option><option value="gemini-local">Gemini Local</option><option value="mirror">Mirror</option><option value="claude">Claude</option></select><button id="wisdomFileBtn" style="color:var(--green);border-color:var(--green)">File map to identity</button></div>
       </div>
     </div>
     <div class="block chatwrap"><p class="ct">Team Chat <span class="pulse" id="pulse"></span></p>
@@ -220,6 +221,10 @@ input[type=color]{width:30px;height:26px;border:1px solid var(--edge);border-rad
       <div style="font-size:10px;color:var(--muted);line-height:1.45;margin-bottom:7px">A visible handoff for an AI outside the optional live bridge. Paste an <span style="color:var(--cyan)">axm.drawpacket/v1</span> JSON packet and apply it through the same draw + multi-layer engine used by live AI.</div>
       <textarea id="drawPacket" placeholder='{"schema":"axm.drawpacket/v1","owner":"ai1","draw":[...]}' style="font-family:ui-monospace,monospace;font-size:9px;min-height:72px;width:100%;margin-bottom:7px"></textarea>
       <div class="seg" style="margin:0"><button id="applyDrawPacket" style="color:var(--green);border-color:var(--green)">Apply to AI layer</button><button id="sampleDrawPacket">Load sample</button></div>
+      <div style="font-size:10px;color:var(--muted);line-height:1.45;margin:10px 0 7px">Mirror may enter only this reversible Studio surface. Its experimental candidate organ may originate and rank tiny geometric proposals; Seed-0 still gates the winner and a truthful hold still counts as evidence.</div>
+      <button id="prepareMirrorRoom" style="width:100%;margin-bottom:7px;color:var(--cyan);border-color:var(--cyan-dim)">Save current work · prepare blank Mirror room</button>
+      <button id="mirrorFreeTest" style="width:100%;color:var(--gold);border-color:rgba(232,181,74,.55)">Mirror · originate + choose one mark</button>
+      <textarea id="mirrorReceipt" readonly placeholder="Mirror's decision and pixel receipt will appear here." style="display:none;font-family:ui-monospace,monospace;font-size:9px;min-height:90px;width:100%;margin-top:7px"></textarea>
     </div>
   </div>
 </div>
@@ -231,6 +236,7 @@ const identities=[
   {id:'human',name:'Mike',kind:'human',color:'#38d6ec',active:true},
   {id:'ai1',name:'Nova',kind:'ai',color:'#a855f7',active:true,brain:'local'},
   {id:'ai2',name:'Gemini Local',kind:'ai',color:'#46e09a',active:true,brain:'local'},
+  {id:'mirror',name:'Mirror',kind:'ai-native',color:'#e8b54a',active:false,brain:'mirror-native'},
 ];
 const idOf=id=>identities.find(i=>i.id===id);
 /* ===== THE SPINE: master tool registry (one source of truth) ===== */
@@ -349,7 +355,7 @@ function applyStudioMode(msg){
   renderLayers();
   setStat('Studio mode: '+String(msg.mode||'paint')+' — same project, focused tools.');
 }
-window.addEventListener('message',e=>{applyStudioMode(e.data);if(e.data&&e.data.type==='axm-studio-save')saveProject(false);if(e.data&&e.data.schema==='axm.studio-asset/v1'&&e.data.type==='axm-studio-import-asset')importStudioImageAsset(e.data.asset);});
+window.addEventListener('message',e=>{applyStudioMode(e.data);if(e.data&&e.data.type==='axm-studio-save')saveProject(false);if(e.data&&e.data.schema==='axm.studio-asset/v1'&&e.data.type==='axm-studio-import-asset')importStudioImageAsset(e.data.asset);if(e.data&&e.data.type==='axm-studio-apply-hand-drawpacket'){try{const packet=applyDrawPacket(JSON.stringify(e.data.packet||{})),owner=packet.owner==='ai2'?'ai2':'ai1',target=layers.filter(l=>l.owner===owner).slice(-1)[0];if(target)target.sourceAsset={schema:'axm.studio-asset/v1',sourceSchema:String(e.data.source&&e.data.source.schema||''),id:String(e.data.source&&e.data.source.resultId||''),resultDigest:String(e.data.source&&e.data.source.resultDigest||''),handId:String(e.data.source&&e.data.source.handId||''),handVersion:String(e.data.source&&e.data.source.handVersion||''),handContract:String(e.data.source&&e.data.source.handContract||''),operationMode:String(e.data.source&&e.data.source.operationMode||'create'),sourceArtifactDigests:Array.isArray(e.data.source&&e.data.source.sourceArtifactDigests)?e.data.source.sourceArtifactDigests:[],artifactInventory:Array.isArray(e.data.source&&e.data.source.artifactInventory)?e.data.source.artifactInventory:[],artifactDigest:String(e.data.source&&e.data.source.artifactDigest||''),targetCanvas:e.data.source&&e.data.source.targetCanvas||null,targetCanvasOriginal:e.data.source&&e.data.source.targetCanvasOriginal||null,targetCanvasValidation:e.data.source&&e.data.source.targetCanvasValidation||null,canvasTransformReceipt:e.data.source&&e.data.source.canvasTransformReceipt||null,fallbackPolicy:e.data.source&&e.data.source.fallbackPolicy||null,creationRecipe:e.data.source&&e.data.source.creationRecipe||null,validationReceipt:e.data.source&&e.data.source.validationReceipt||null,referenceValidation:e.data.source&&e.data.source.referenceValidation||null,mime:'application/json'};}catch(error){setStat('Creation Hand draw packet refused — '+error.message);}}});
 
 /* ===== finish helpers ===== */
 function hexRgba(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16),255];}
@@ -575,6 +581,7 @@ async function askStudioTurn(id,messages,system){
 }
 let aiCurrentLayer={};
 function aiPixelSignature(owner){let h=2166136261,n=0;layers.filter(l=>l.owner===owner).forEach(l=>{const d=l.ctx.getImageData(0,0,W,H).data;for(let i=0;i<d.length;i+=4){if(d[i+3])n++;h=Math.imul(h^d[i],16777619);h=Math.imul(h^d[i+1],16777619);h=Math.imul(h^d[i+2],16777619);h=Math.imul(h^d[i+3],16777619);}});return (h>>>0)+':'+n+':'+layers.filter(l=>l.owner===owner).length;}
+function signatureVisiblePixels(signature){const parts=String(signature||'').split(':');return Math.max(0,Number(parts[1])||0);}
 function runDraw(L0,cmds){if(!Array.isArray(cmds))return{changed:false,commands:0};const owner=L0.owner,before=aiPixelSignature(owner);let L=L0,c=L.ctx;
   /* AI reaches the SAME tool functions the human's buttons call — one core, a second doorway. */
   cmds.forEach(cm=>{try{c.save();const col=cm.color||'#fff',fin=cm.finish||'flat';
@@ -683,6 +690,37 @@ function applyDrawPacket(raw){
 $('applyDrawPacket').onclick=()=>{try{applyDrawPacket($('drawPacket').value);}catch(e){setStat('Draw packet refused: '+e.message);sysMsg('Draw packet refused — '+e.message);}};
 $('sampleDrawPacket').onclick=()=>{$('drawPacket').value=JSON.stringify({schema:DRAW_PACKET_SCHEMA,name:'sample layered mark',owner:'ai1',draw:[{op:'circle',x:400,y:260,r:92,fill:false,color:'#38d6ec',width:12},{op:'newlayer',name:'Sample glow'},{op:'circle',x:400,y:260,r:64,fill:false,color:'#a855f7',width:8},{op:'newlayer',name:'Sample core'},{op:'polygon',x:400,y:260,r:38,sides:6,fill:true,color:'#e8b54a'}]},null,2);setStat('Sample packet loaded — inspect it, then Apply.');};
 
+async function mirrorJson(path,options){const response=await fetch('/services/mirror-native'+path,Object.assign({headers:{'content-type':'application/json'}},options||{}));const body=await response.json().catch(()=>({}));if(!response.ok)throw new Error(body.error||('Mirror request failed ('+response.status+')'));return body;}
+async function runMirrorStudioSession(){
+  const button=$('mirrorFreeTest'),receiptBox=$('mirrorReceipt'),mirror=idOf('mirror');button.disabled=true;button.textContent='Mirror · originating bounded proposals…';
+  let sessionId=null;
+  try{
+    if(!window.AXMMirrorStudioBridge)throw new Error('Mirror Studio bridge unavailable');
+    const opened=await mirrorJson('/axm/v1/session/open',{method:'POST',body:JSON.stringify({actor:{id:'mirror',kind:'machine-native-seed',displayName:'Mirror'},purpose:'Bounded AXM Studio candidate origination and choice observation'})});
+    sessionId=opened.session&&opened.session.id;if(!sessionId)throw new Error('Mirror did not open an explicit session');
+    mirror.active=true;renderIds();
+    const before=aiPixelSignature('mirror');
+    const visiblePixels=signatureVisiblePixels(before),mirrorLayers=layers.filter(l=>l.owner==='mirror').length;
+    const originated=await mirrorJson('/axm/v1/organs/studio-candidates',{method:'POST',body:JSON.stringify({sessionId:sessionId,surface:'axm-studio-bounded-proposal-layer',observation:{width:W,height:H,visiblePixels:visiblePixels,blank:visiblePixels===0,layerCount:mirrorLayers||1,signature:before,backgroundColor:'#050914'}})});
+    const candidateSet=originated.candidateSet;if(!candidateSet||!Array.isArray(candidateSet.candidates)||!candidateSet.candidates.length)throw new Error('Mirror candidate organ returned no bounded proposals');
+    const recommended=candidateSet.candidates.find(candidate=>candidate.id===candidateSet.recommendedCandidateId);if(!recommended||!recommended.packet)throw new Error('Mirror candidate organ did not name one ranked recommendation');
+    const bundle=AXMMirrorStudioBridge.createRequest({sessionId:sessionId,packets:[recommended.packet],canvasObservation:'Studio canvas observed with '+layers.length+' layer(s); Mirror owns '+mirrorLayers+' layer(s) and has '+visiblePixels+' visible pixel(s). No human visual brief was supplied; Mirror\'s bounded candidate organ originated '+candidateSet.candidates.length+' proposals and recommended '+recommended.name+'.',canvasReceipt:'studio-'+before});
+    const reasoned=await mirrorJson('/axm/v1/reason',{method:'POST',body:JSON.stringify(bundle.request)}),trace=reasoned.trace||reasoned;
+    const selected=AXMMirrorStudioBridge.selectedPacket(trace,bundle.candidates);
+    if(selected){const checked=AXMMirrorStudioBridge.validatePacket(selected);if(!checked.ok)throw new Error(checked.errors.join('; '));const result=runDraw(ensureAILayer('mirror'),selected.draw);if(!result.changed)sysMsg('Mirror selected a packet, but the observed pixels did not change.');}
+    const after=aiPixelSignature('mirror'),receipt=AXMMirrorStudioBridge.receipt(trace,before,after,selected);
+    localStorage.setItem('axm.studio.mirror.last-receipt.v1',JSON.stringify(receipt));
+    localStorage.setItem('axm.studio.mirror.last-candidate-set.v1',JSON.stringify(candidateSet));
+    const selectedCandidate=candidateSet.candidates.find(candidate=>selected&&candidate.packet&&candidate.packet.name===selected.name)||candidateSet.candidates.find(candidate=>candidate.id===candidateSet.recommendedCandidateId)||null;
+    receiptBox.style.display='block';receiptBox.value=JSON.stringify({candidateOrgan:{id:candidateSet.organ&&candidateSet.organ.id,status:candidateSet.status,recommendedCandidateId:candidateSet.recommendedCandidateId,recommendationReason:candidateSet.recommendationReason,criteria:candidateSet.criteria,rankedCandidates:candidateSet.candidates.map(candidate=>({rank:candidate.rank,id:candidate.id,name:candidate.name,score:candidate.score}))},human:trace.human||null,decision:trace.decision||null,limitations:(candidateSet.limitations||[]).concat(trace.limitations||[]),receipt:receipt},null,2);
+    if(receipt.changedPixels){sysMsg('Mirror originated, ranked, gated and applied "'+(selectedCandidate&&selectedCandidate.name||selected&&selected.name||'bounded mark')+'" on its own reversible layer.');setStat('Mirror Studio test: '+(selectedCandidate&&selectedCandidate.name||'bounded mark')+' changed visible pixels · inspect the receipt.');}
+    else{sysMsg('Mirror produced no visible change: Seed-0 held/refused the recommendation or the packet changed no pixels.');setStat('Mirror Studio test: no visible change · inspect the decision and receipt.');}
+    renderLayers();
+  }catch(error){mirror.active=false;renderIds();receiptBox.style.display='block';receiptBox.value=JSON.stringify({ok:false,error:error.message},null,2);sysMsg('Mirror Studio session failed — '+error.message);setStat('Mirror Studio session failed: '+error.message);}
+  finally{if(sessionId)await mirrorJson('/axm/v1/session/close',{method:'POST',body:JSON.stringify({sessionId:sessionId})}).catch(()=>null);mirror.active=false;renderIds();button.disabled=false;button.textContent='Mirror · originate + choose one mark';}
+}
+$('mirrorFreeTest').onclick=runMirrorStudioSession;
+
 /* ===== PRESET WHEEL (real working presets) + BLUEPRINT WHEEL (reserved) ===== */
 const PRESETS=[
   {name:'Cyan Brush',dot:'#38d6ec',s:{tool:'brush',color:'#38d6ec',finish:'flat',size:5}},
@@ -789,7 +827,7 @@ function beginSelect(mode){selMode=mode;tool='select';placingSticker=null;docume
   setStat(mode==='cut'?'Cut mode: drag a box over a design — it lifts to a new layer and is removed from the original.':'Copy mode: drag a box over a design — it lifts to a new layer (original stays).');}
 $('selCopy').onclick=()=>beginSelect('copy');
 $('selCut').onclick=()=>beginSelect('cut');
-function importStudioImageAsset(asset){asset=asset||{};const src=String(asset.dataUrl||'');if(!/^data:image\//i.test(src)||src.length>28000000){setStat('Image handoff refused — invalid or oversized data.');return;}const img=new Image();img.onload=()=>{const clean=String(asset.name||'Vault Import').replace(/[^a-z0-9 _.-]/gi,'').slice(0,48)||'Vault Import';const NL=mkLayer(clean,active()?active().owner:'human',active()?active().goal:'creative');NL.sourceAsset={schema:'axm.studio-asset/v1',id:String(asset.id||''),name:clean,mime:String(asset.mime||'image/*')};activeId=NL.id;const ar=img.width/img.height;let w=W,h=H;if(ar>1)h=W/ar;else w=H*ar;NL.ctx.drawImage(img,(W-w)/2,(H-h)/2,w,h);renderLayers();applyGoalTools();setStat(clean+' imported from Asset Vault on a new layer.');};img.onerror=()=>setStat('Image handoff failed to decode.');img.src=src;}
+function importStudioImageAsset(asset){asset=asset||{};const src=String(asset.dataUrl||'');if(!/^data:image\//i.test(src)||src.length>28000000){setStat('Image handoff refused — invalid or oversized data.');return;}const img=new Image();img.onload=()=>{const clean=String(asset.name||'Vault Import').replace(/[^a-z0-9 _.-]/gi,'').slice(0,48)||'Vault Import';const NL=mkLayer(clean,active()?active().owner:'human',active()?active().goal:'creative');NL.sourceAsset={schema:'axm.studio-asset/v1',id:String(asset.id||''),name:clean,mime:String(asset.mime||'image/*'),sourceSchema:String(asset.sourceSchema||''),resultDigest:String(asset.resultDigest||''),handId:String(asset.handId||''),handVersion:String(asset.handVersion||''),handContract:String(asset.handContract||''),operationMode:String(asset.operationMode||'create'),sourceArtifactDigests:Array.isArray(asset.sourceArtifactDigests)?asset.sourceArtifactDigests:[],artifactInventory:Array.isArray(asset.artifactInventory)?asset.artifactInventory:[],artifactDigest:String(asset.artifactDigest||''),targetCanvas:asset.targetCanvas||null,targetCanvasOriginal:asset.targetCanvasOriginal||null,targetCanvasValidation:asset.targetCanvasValidation||null,canvasTransformReceipt:asset.canvasTransformReceipt||null,fallbackPolicy:asset.fallbackPolicy||null,creationRecipe:asset.creationRecipe||null,validationReceipt:asset.validationReceipt||null,referenceValidation:asset.referenceValidation||null};activeId=NL.id;const ar=img.width/img.height;let w=W,h=H;if(ar>1)h=W/ar;else w=H*ar;NL.ctx.drawImage(img,(W-w)/2,(H-h)/2,w,h);renderLayers();applyGoalTools();setStat(clean+' imported from '+(asset.handId?'Creation Hands':'Asset Vault')+' on a new layer.');};img.onerror=()=>setStat('Image handoff failed to decode.');img.src=src;}
 const imgIn=document.createElement('input');imgIn.type='file';imgIn.accept='image/*';imgIn.style.display='none';document.body.appendChild(imgIn);
 imgIn.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>importStudioImageAsset({name:f.name,dataUrl:ev.target.result,mime:f.type});r.readAsDataURL(f);e.target.value='';};
 $('impImg').onclick=()=>imgIn.click();
@@ -933,6 +971,18 @@ async function newProject(){if(!confirm('Start a new project? Unsaved work will 
   vectorObjects=[];selectedVector=-1;selectedVectorNode=-1;vectorUndoStack=[];vectorRedoStack=[];animationFrames=[];activeFrame=0;vectorCtx.clearRect(0,0,W,H);onionCtx.clearRect(0,0,W,H);renderVectors();renderTimeline();
   renderLayers();applyGoalTools();renderAssets();setStat('New project — fresh room.');sysMsg('New project started.');}
 $('newProj').onclick=newProject;
+
+async function prepareMirrorRoom(){
+  const preserved=await saveProject(false);
+  if(!preserved){setStat('Mirror room not prepared — current project could not be preserved.');return;}
+  layers.forEach(l=>l.canvas.remove());layers=[];
+  mkLayer('Background','human','background');const mirrorLayer=mkLayer('Mirror first marks','mirror','creative');activeId=mirrorLayer.id;
+  userPresets=[];assets=[];undo=[];redo=[];
+  vectorObjects=[];selectedVector=-1;selectedVectorNode=-1;vectorUndoStack=[];vectorRedoStack=[];animationFrames=[];activeFrame=0;vectorCtx.clearRect(0,0,W,H);onionCtx.clearRect(0,0,W,H);renderVectors();renderTimeline();
+  try{const name=parent.document&&parent.document.getElementById('projectName');if(name){name.value='Mirror Studio Test';name.dispatchEvent(new Event('input',{bubbles:true}));}}catch(e){}
+  renderLayers();applyGoalTools();renderAssets();setStat('Blank Mirror room ready — saved project remains preserved until you explicitly save over it.');sysMsg('Current work preserved. Blank Mirror-owned working layer prepared; nothing generated for Mirror.');
+}
+$('prepareMirrorRoom').onclick=prepareMirrorRoom;
 
 /* ===== FILTERS shelf — whole-layer effects, DATA-driven (add one like a goal/faction) ===== */
 const FILTERS=[

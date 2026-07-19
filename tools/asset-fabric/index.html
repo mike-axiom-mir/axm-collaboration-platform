@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AXM Asset Fabric</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="review.css" />
+    <link rel="stylesheet" href="pulse.css" />
+    <link rel="stylesheet" href="hands.css" />
+    <link rel="stylesheet" href="canvas.css" />
+  </head>
+  <body>
+    <header class="top">
+      <a href="../evolution-foundry/index.html">← Foundry</a>
+      <div>
+        <span class="eyebrow">EXPERIMENTAL CREATION LINE</span>
+        <h1>Asset Fabric</h1>
+        <p>Grow useful visual families without turning one score into taste.</p>
+      </div>
+      <div class="pulse">
+        <b id="heartbeatState">Stopped</b>
+        <small id="pulseDetail">Body-governed · explicit start</small>
+        <select id="cadence">
+          <option value="15">15 min</option>
+          <option value="30" selected>30 min</option>
+          <option value="60">60 min</option>
+        </select>
+        <button id="heartbeat">Start heartbeat</button>
+      </div>
+    </header>
+    <main>
+      <section class="summary">
+        <article><span>Open needs</span><b id="needCount">0</b></article>
+        <article>
+          <span>Preserved candidates</span><b id="candidateCount">0</b>
+        </article>
+        <article>
+          <span>Shared vocabulary</span><b id="vocabCount">0</b>
+        </article>
+        <article>
+          <span>Installed creation hands</span><b id="handCount">0</b>
+        </article>
+        <article><span>Heartbeat beats</span><b id="beatCount">0</b></article>
+      </section>
+      <section class="grid">
+        <article class="panel needs">
+          <header>
+            <div>
+              <span class="eyebrow">REAL REQUIREMENTS FIRST</span>
+              <h2>Asset needs</h2>
+            </div>
+            <button id="generate">Generate next family</button>
+          </header>
+          <div id="needs"></div>
+          <div class="hand-compat">
+            <span class="eyebrow">COMPATIBLE HANDS FOR SELECTED NEED</span>
+            <div id="compatibleHands"></div>
+          </div>
+          <form id="needForm">
+            <input
+              id="needTitle"
+              required
+              maxlength="100"
+              placeholder="New asset need"
+            />
+            <select id="needKind">
+              <option>icon</option>
+              <option>badge</option>
+              <option>logo</option>
+              <option>symbol</option>
+              <option>panel</option>
+              <option>ui-component</option>
+              <option>button</option>
+              <option>hud</option>
+              <option>tile</option>
+              <option>texture</option>
+              <option>pattern</option>
+              <option>background</option>
+              <option>sprite</option>
+              <option>character</option>
+              <option>animation</option>
+              <option>decal</option>
+              <option>effect</option>
+              <option>illustration</option>
+              <option>poster</option>
+              <option>cover</option>
+              <option>document</option>
+              <option>print-document</option>
+              <option>label</option>
+              <option>papercraft</option>
+              <option>theme</option>
+              <option>design-tokens</option>
+              <option>layout</option>
+              <option>ui-layout</option>
+              <option>timeline</option>
+              <option>sequence</option>
+              <option>motion</option>
+              <option>mesh</option>
+              <option>3d-object</option>
+              <option>prop</option>
+              <option>material</option>
+              <option>shader</option>
+            </select>
+            <input
+              id="needIntendedUse"
+              maxlength="100"
+              value="icon"
+              placeholder="Intended use"
+            />
+            <select id="needMedium" aria-label="Target medium">
+              <option>screen</option>
+              <option>ui</option>
+              <option>game-world</option>
+              <option>print</option>
+              <option>paper</option>
+              <option>fabric</option>
+              <option>wood</option>
+              <option>metal</option>
+              <option>physical-object</option>
+              <option>3d-surface</option>
+              <option>audio-device</option>
+            </select>
+            <input
+              id="needTarget"
+              maxlength="100"
+              value="shared"
+              placeholder="Host target"
+            />
+            <input
+              id="needWidth"
+              type="number"
+              min="0.01"
+              max="1000000"
+              step="any"
+              value="256"
+              aria-label="Width"
+            />
+            <input
+              id="needHeight"
+              type="number"
+              min="0.01"
+              max="1000000"
+              step="any"
+              value="256"
+              aria-label="Height"
+            />
+            <select id="needUnit" aria-label="Canvas unit">
+              <option value="px">px</option>
+              <option value="mm">mm</option>
+              <option value="m">m</option>
+              <option value="game-world-unit">game-world unit</option>
+            </select>
+            <select id="needColourSpace" aria-label="Colour space">
+              <option value="srgb">sRGB</option>
+              <option value="display-p3">Display P3</option>
+              <option value="linear-srgb">Linear sRGB</option>
+              <option value="cmyk">CMYK</option>
+              <option value="grayscale">Grayscale</option>
+              <option value="material-channel">Material channel</option>
+            </select>
+            <select id="needBehaviour" aria-label="Behaviour">
+              <option>static</option>
+              <option>animated</option>
+              <option>interactive</option>
+              <option>responsive</option>
+              <option>tileable</option>
+            </select>
+            <input
+              id="needRequiredOutputs"
+              maxlength="200"
+              value="image/svg+xml"
+              placeholder="Required outputs"
+            />
+            <input
+              id="needRecipeFormats"
+              maxlength="200"
+              value="axm.asset-creation-recipe/v1"
+              placeholder="Editable recipe formats"
+            />
+            <details class="need-advanced">
+              <summary>
+                Physical, colour, quality and performance constraints
+              </summary>
+              <div>
+                <input
+                  id="needContrast"
+                  type="number"
+                  min="1"
+                  max="21"
+                  step="0.1"
+                  placeholder="Contrast ratio"
+                />
+                <label
+                  ><input id="needPrintable" type="checkbox" /> printable
+                  colours</label
+                >
+                <input
+                  id="needBleed"
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder="Bleed"
+                />
+                <input
+                  id="needMinStroke"
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder="Minimum stroke"
+                />
+                <input
+                  id="needToolWidth"
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder="Cutting/tool width"
+                />
+                <input
+                  id="needDepth"
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder="Canvas depth / thickness"
+                />
+                <input
+                  id="needPhysicalDepth"
+                  type="number"
+                  min="0"
+                  step="any"
+                  placeholder="Cut / engrave depth"
+                />
+                <select id="needRepeat">
+                  <option value="none">no repeat</option>
+                  <option value="x">repeat x</option>
+                  <option value="y">repeat y</option>
+                  <option value="xy">repeat x+y</option>
+                </select>
+                <input
+                  id="needMaterial"
+                  maxlength="200"
+                  placeholder="Material behaviour"
+                />
+                <input
+                  id="needFileBudget"
+                  type="number"
+                  min="1"
+                  placeholder="Max file bytes"
+                />
+                <input
+                  id="needTextureBudget"
+                  type="number"
+                  min="1"
+                  placeholder="Texture memory bytes"
+                />
+                <input
+                  id="needPolygonBudget"
+                  type="number"
+                  min="0"
+                  placeholder="Polygon count"
+                />
+                <input
+                  id="needFrameBudget"
+                  type="number"
+                  min="0.01"
+                  step="any"
+                  placeholder="Frame budget ms"
+                />
+                <input
+                  id="needMinimumQuality"
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value="0"
+                  placeholder="Minimum quality 0..1"
+                />
+                <label
+                  ><input id="needEditable" type="checkbox" /> editable source
+                  required</label
+                >
+                <label
+                  ><input id="needStrictValidation" type="checkbox" /> strict
+                  validation required</label
+                >
+                <label
+                  ><input id="needGeneralistFallback" type="checkbox" /> permit
+                  declared generalist fallback</label
+                >
+                <label
+                  ><input id="needLossyFallback" type="checkbox" /> permit
+                  declared lossy conversion</label
+                >
+                <textarea
+                  id="needCanvasJson"
+                  rows="5"
+                  spellcheck="false"
+                  placeholder="Optional extra target_canvas JSON (responsive, spatial, temporal, accessibility or specialist constraints)"
+                ></textarea>
+              </div>
+            </details>
+            <button>Add need</button>
+          </form>
+        </article>
+        <article class="panel candidates">
+          <header>
+            <div>
+              <span class="eyebrow">QUALITY + DIVERSITY</span>
+              <h2>Incubator</h2>
+            </div>
+            <div class="review-tools">
+              <span class="hint"
+                >Your vote stays yours. The machine seat requires its own
+                receipt.
+                <b id="reviewQueueState">0 open · max 8 per goal</b></span
+              ><button id="importMachineReview">Import machine review</button
+              ><input
+                id="machineReceiptFile"
+                type="file"
+                accept="application/json,.json"
+                hidden
+              />
+            </div>
+          </header>
+          <div id="candidates" class="cards"></div>
+        </article>
+      </section>
+      <section class="panel vocabulary">
+        <header>
+          <div>
+            <span class="eyebrow">DUAL-REVIEWED PRIMITIVES</span>
+            <h2>Shared vocabulary layer</h2>
+            <p>
+              Other experiments may reference these immutable sources as
+              building blocks.
+            </p>
+          </div>
+          <button id="exportVocabulary">Export JSON</button>
+        </header>
+        <div id="vocabulary" class="cards"></div>
+      </section>
+      <section class="truth">
+        <b>Honest v0.9:</b> each need declares a target canvas before creation.
+        Contract-v2 hands must understand its operation, medium, units, colour,
+        physical behaviour, performance budget, intended use, inputs, outputs
+        and editable recipe formats. Primary delivery stays distinct from
+        preview: PDF, PNG, APNG, KTX2, DXF, OBJ, GLB, MaterialX, OTIO, USDZ,
+        MIDI, MusicXML and video are never treated as SVG. All fifteen curated
+        hand gaps are executable; unfamiliar future requests still fail as
+        MISSING_HAND or UNSUPPORTED_CANVAS. Native application transactions
+        require an installed adapter, narrow host permissions, exact dual
+        approval and rollback binding. Existing v1 records and dual-review
+        governance remain intact. Automatic cycles still need a bounded Body
+        Pulse lease and never gain promotion authority.
+      </section>
+    </main>
+    <script src="../governed-evolution-lab/creation-core.js"></script>
+    <script src="../../shared/pulse/axm-body-pulse-client.js"></script>
+    <script src="../../shared/asset-hands/target-canvas.js"></script>
+    <script src="../../shared/asset-hands/artifact-schema-catalog.js"></script>
+    <script src="../../shared/asset-hands/vendor/basis-universal/basis_encoder.js"></script>
+    <script src="../../shared/asset-hands/ktx2-codec.js"></script>
+    <script src="../../shared/asset-hands/asset-hand-core.js"></script>
+    <script src="../../shared/visual-kernel/visual-kernel.js"></script>
+    <script src="../spatial-studio/spatial-core.js"></script>
+    <script src="../spatial-studio/spatial-geometry.js"></script>
+    <script src="../film-motion-studio/film-motion-core.js"></script>
+    <script src="../../shared/vendor/jspdf/jspdf.umd.min.js"></script>
+    <script src="../../shared/asset-hands/raster-codec.js"></script>
+    <script src="../../shared/asset-hands/colour-codec.js"></script>
+    <script src="../../shared/asset-hands/pdfx-codec.js"></script>
+    <script src="../../shared/asset-hands/uv-material-codec.js"></script>
+    <script src="../../shared/asset-hands/toolpath-codec.js"></script>
+    <script src="../../shared/asset-hands/vendor/wasm-vips/vips.js"></script>
+    <script src="../../shared/asset-hands/animated-web-codec.js"></script>
+    <script src="../../shared/asset-hands/video-codec.js"></script>
+    <script src="../../shared/asset-hands/accessible-document-codec.js"></script>
+    <script src="../../shared/asset-hands/font-shaping-codec.js"></script>
+    <script src="../../shared/asset-hands/rigged-gltf-codec.js"></script>
+    <script src="../../shared/asset-hands/material-parity-codec.js"></script>
+    <script src="../../shared/asset-hands/openusd-codec.js"></script>
+    <script src="../../shared/asset-hands/geometry-graph-codec.js"></script>
+    <script src="../../shared/asset-hands/spatial-navigation-codec.js"></script>
+    <script src="../../shared/asset-hands/audio-notation-codec.js"></script>
+    <script src="../../shared/asset-hands/native-bridge-codec.js"></script>
+    <script src="../../shared/asset-hands/pdf-codec.js"></script>
+    <script src="../../shared/asset-hands/gltf-codec.js"></script>
+    <script src="../../shared/asset-hands/otio-codec.js"></script>
+    <script src="../../shared/asset-hands/hands/vector-form.js"></script>
+    <script src="../../shared/asset-hands/hands/surface-pattern.js"></script>
+    <script src="../../shared/asset-hands/hands/raster-texture.js"></script>
+    <script src="../../shared/asset-hands/hands/ui-component.js"></script>
+    <script src="../../shared/asset-hands/hands/pixel-sprite.js"></script>
+    <script src="../../shared/asset-hands/hands/composition.js"></script>
+    <script src="../../shared/asset-hands/hands/print-layout.js"></script>
+    <script src="../../shared/asset-hands/hands/fabric-pattern.js"></script>
+    <script src="../../shared/asset-hands/hands/physical-mark.js"></script>
+    <script src="../../shared/asset-hands/hands/cut-layout.js"></script>
+    <script src="../../shared/asset-hands/hands/production-print.js"></script>
+    <script src="../../shared/asset-hands/hands/animated-raster.js"></script>
+    <script src="../../shared/asset-hands/hands/material-shader.js"></script>
+    <script src="../../shared/asset-hands/hands/theme-token.js"></script>
+    <script src="../../shared/asset-hands/hands/layout-responsive.js"></script>
+    <script src="../../shared/asset-hands/hands/inspect-codegen.js"></script>
+    <script src="../../shared/asset-hands/hands/parametric-mesh.js"></script>
+    <script src="../../shared/asset-hands/hands/timeline-sequence.js"></script>
+    <script src="../../shared/asset-hands/hands/ktx2-texture-delivery.js"></script>
+    <script src="../../shared/asset-hands/hands/wide-colour-raster.js"></script>
+    <script src="../../shared/asset-hands/hands/pdfx-press-production.js"></script>
+    <script src="../../shared/asset-hands/hands/uv-material-baker.js"></script>
+    <script src="../../shared/asset-hands/hands/cnc-toolpath-simulation.js"></script>
+    <script src="../../shared/asset-hands/hands/animated-web-delivery.js"></script>
+    <script src="../../shared/asset-hands/hands/final-video-encoder.js"></script>
+    <script src="../../shared/asset-hands/hands/accessible-document.js"></script>
+    <script src="../../shared/asset-hands/hands/font-shaping-localization.js"></script>
+    <script src="../../shared/asset-hands/hands/rigged-animated-3d.js"></script>
+    <script src="../../shared/asset-hands/hands/renderer-material-parity.js"></script>
+    <script src="../../shared/asset-hands/hands/openusd-scene-composition.js"></script>
+    <script src="../../shared/asset-hands/hands/procedural-geometry-graph.js"></script>
+    <script src="../../shared/asset-hands/hands/spatial-collision-navigation.js"></script>
+    <script src="../../shared/asset-hands/hands/audio-notation-device.js"></script>
+    <script src="../../shared/asset-hands/hands/native-dcc-bridge.js"></script>
+    <script src="../../shared/asset-hands/asset-hands.js"></script>
+    <script src="fabric-core.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

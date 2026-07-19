@@ -1,0 +1,194 @@
+{
+  "schema": "axm.cognitive-resource-hand-provider-catalog/v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "contractBindings": [
+    {
+      "schemaId": "axm.mirror.cognitive-work-observation-draft/v1",
+      "path": "contracts/cognitive-work-observation-draft.schema.json",
+      "sha256": "74a135eca16239f502d73ecbee296ae49fa8a09316cae4437188b923c500286d",
+      "outputKind": "COGNITIVE_WORK_OBSERVATION_DRAFT"
+    },
+    {
+      "schemaId": "axm.mirror.cognitive-resource-economics-profile-draft/v1",
+      "path": "contracts/cognitive-resource-economics-profile-draft.schema.json",
+      "sha256": "fa66b93360b0a43da9ac35bd6b128d2c62e9e341d06a4f1fad9c15f31f073ef3",
+      "outputKind": "COGNITIVE_RESOURCE_ECONOMICS_PROFILE_DRAFT"
+    }
+  ],
+  "meterDefinitions": [
+    {
+      "id": "axm.workshop.codex-goal-total-tokens/v1",
+      "providerDeclarationId": "codex-goal-completion-receipt/v1",
+      "quantity": "TOTAL_TOKENS",
+      "meaning": "The total token counter exposed by one completed tracked Codex goal. Component composition and universal compute equivalence remain unknown.",
+      "universalComputeClaim": false
+    },
+    {
+      "id": "axm.workshop.local-process-time/v1",
+      "providerDeclarationId": "local-hardware-process-meter/v1",
+      "quantity": "CPU_CORE_MILLISECONDS_OR_ACCELERATOR_MILLISECONDS_AS_DIRECTLY_METERED",
+      "meaning": "Direct bounded local process or accelerator time only; wall time is never silently relabelled as core or accelerator time.",
+      "universalComputeClaim": false
+    },
+    {
+      "id": "axm.workshop.server-process-window/v1",
+      "providerDeclarationId": "workshop-server-process-window-meter/v1",
+      "quantity": "CPU_CORE_MILLISECONDS_AND_SAMPLED_PEAK_RSS",
+      "meaning": "Explicitly started and stopped Workshop server-process window using the native monotonic clock, process CPU usage counter, and sampled RSS. It does not isolate unrelated server work and exposes no accelerator quantity.",
+      "universalComputeClaim": false
+    }
+  ],
+  "providers": [
+    {
+      "id": "codex-goal-completion-receipt/v1",
+      "status": "TEST_DECLARATION",
+      "sourceSystemId": "openai.codex.goal-tracker",
+      "collectionMethod": "DIRECT_MACHINE_METER",
+      "tokenMeterDefinitionId": "axm.workshop.codex-goal-total-tokens/v1",
+      "computeMeterDefinitionId": null,
+      "capture": "EXPLICIT_GOAL_COMPLETION_RECORD_ONLY",
+      "identityProof": "provider-declaration-id-and-explicit-source-binding",
+      "automaticCapture": false
+    },
+    {
+      "id": "local-hardware-process-meter/v1",
+      "status": "TEST_DECLARATION",
+      "sourceSystemId": "axm.workshop.local-hardware-meter",
+      "collectionMethod": "DIRECT_MACHINE_METER",
+      "tokenMeterDefinitionId": null,
+      "computeMeterDefinitionId": "axm.workshop.local-process-time/v1",
+      "capture": "EXPLICIT_DIRECT_PROCESS_OR_ACCELERATOR_METER_ONLY",
+      "identityProof": "provider-declaration-id-and-explicit-source-binding",
+      "automaticCapture": false
+    },
+    {
+      "id": "codex-goal-receipt-explicit-import/v1",
+      "status": "TEST_DECLARATION",
+      "sourceSystemId": "openai.codex.goal-tracker",
+      "collectionMethod": "IMPORTED_ATTESTATION",
+      "tokenMeterDefinitionId": "axm.workshop.codex-goal-total-tokens/v1",
+      "computeMeterDefinitionId": null,
+      "capture": "EXPLICIT_PRIVACY_SAFE_RECEIPT_IMPORT_ONLY",
+      "identityProof": "strict-receipt-schema-provider-declaration-and-content-digest",
+      "automaticCapture": false
+    },
+    {
+      "id": "workshop-server-process-window-meter/v1",
+      "status": "TEST_DECLARATION",
+      "sourceSystemId": "axm.workshop.server-process-window",
+      "collectionMethod": "DIRECT_MACHINE_METER",
+      "tokenMeterDefinitionId": null,
+      "computeMeterDefinitionId": "axm.workshop.server-process-window/v1",
+      "capture": "EXPLICIT_START_STOP_WINDOW_ONLY",
+      "identityProof": "native-process-counters-bound-to-one-explicit-window",
+      "automaticCapture": false
+    },
+    {
+      "id": "declared-provider-compute-meter/v1",
+      "status": "HOLD_UNBOUND_PROVIDER",
+      "sourceSystemId": null,
+      "collectionMethod": "DIRECT_MACHINE_METER",
+      "tokenMeterDefinitionId": null,
+      "computeMeterDefinitionId": null,
+      "capture": "REQUIRES_SEPARATE_EXPLICIT_PROVIDER_BINDING",
+      "identityProof": "names-selectors-consumers-and-files-do-not-prove-provider-identity",
+      "automaticCapture": false
+    }
+  ],
+  "hands": [
+    {
+      "id": "goal-run-receipt-capture-hand",
+      "version": "1.0.0",
+      "status": "TEST",
+      "purpose": "Capture provider-declared goal or run token meters and timing without prompts, responses, reasoning, identity, or content snapshots.",
+      "providerBindings": ["codex-goal-completion-receipt/v1", "replaceable-explicit-provider-declaration"],
+      "accepts": ["PROVIDER_GOAL_RUN_RECEIPT"],
+      "produces": ["COGNITIVE_WORK_OBSERVATION_DRAFT"],
+      "automaticAuthority": false
+    },
+    {
+      "id": "provider-compute-telemetry-capture-hand",
+      "version": "1.0.0",
+      "status": "TEST",
+      "purpose": "Preserve provider compute units only when a declared provider meter exposes them directly.",
+      "providerBindings": ["replaceable-explicit-provider-declaration"],
+      "accepts": ["PROVIDER_COMPUTE_TELEMETRY"],
+      "produces": ["COMPUTE_METER_DEFINITION_PROFILE", "COGNITIVE_WORK_OBSERVATION_DRAFT"],
+      "automaticAuthority": false
+    },
+    {
+      "id": "machine-profile-sealing-hand",
+      "version": "1.0.0",
+      "status": "TEST",
+      "purpose": "Seal privacy-safe model, toolchain, environment, hardware, token-meter, and compute-meter profiles into content digests.",
+      "providerBindings": ["workshop-local-content-addressed-profile-sealer/v1"],
+      "accepts": ["PRIVACY_SAFE_MACHINE_PROFILE"],
+      "produces": ["MODEL_PROFILE_DIGEST", "TOOLCHAIN_DIGEST", "ENVIRONMENT_DIGEST", "HARDWARE_PROFILE_DIGEST", "METER_DEFINITION_DIGEST"],
+      "automaticAuthority": false
+    },
+    {
+      "id": "billing-rate-schedule-capture-hand",
+      "version": "1.0.0",
+      "status": "TEST",
+      "purpose": "Capture one content-bound versioned provider billing schedule without automatic network refresh or freshness certification.",
+      "providerBindings": ["replaceable-explicit-provider-declaration"],
+      "accepts": ["VERSIONED_PROVIDER_RATE_SCHEDULE"],
+      "produces": ["COGNITIVE_RESOURCE_ECONOMICS_PROFILE_DRAFT"],
+      "automaticAuthority": false
+    },
+    {
+      "id": "local-hardware-rate-profile-hand",
+      "version": "1.0.0",
+      "status": "TEST",
+      "purpose": "Capture separate money, energy, and carbon rates over directly metered CPU or accelerator time.",
+      "providerBindings": ["local-hardware-process-meter/v1"],
+      "accepts": ["LOCAL_HARDWARE_RATE_SCHEDULE"],
+      "produces": ["COGNITIVE_RESOURCE_ECONOMICS_PROFILE_DRAFT"],
+      "automaticAuthority": false
+    },
+    {
+      "id": "mirror-observation-draft-export-hand",
+      "version": "1.0.0",
+      "status": "TEST",
+      "purpose": "Export exact content matching the bound Mirror observation-draft schema without writing into Mirror.",
+      "providerBindings": ["axm.mirror.cognitive-work-observation-draft/v1@74a135eca16239f502d73ecbee296ae49fa8a09316cae4437188b923c500286d"],
+      "accepts": ["VERIFIED_COGNITIVE_WORK_LEDGER_RECORD"],
+      "produces": ["COGNITIVE_WORK_OBSERVATION_DRAFT"],
+      "automaticAuthority": false
+    },
+    {
+      "id": "mirror-economics-profile-draft-export-hand",
+      "version": "1.0.0",
+      "status": "TEST",
+      "purpose": "Export exact content matching the bound Mirror economics-profile-draft schema without calculation or Mirror writes.",
+      "providerBindings": ["axm.mirror.cognitive-resource-economics-profile-draft/v1@fa66b93360b0a43da9ac35bd6b128d2c62e9e341d06a4f1fad9c15f31f073ef3"],
+      "accepts": ["VERIFIED_COGNITIVE_ECONOMICS_LEDGER_RECORD"],
+      "produces": ["COGNITIVE_RESOURCE_ECONOMICS_PROFILE_DRAFT"],
+      "automaticAuthority": false
+    },
+    {
+      "id": "cognitive-ledger-archive-hand",
+      "version": "1.0.0",
+      "status": "TEST",
+      "purpose": "Maintain hot content digests and immutable recoverable cold detail through append, archive, supersede, restore, and tamper verification events.",
+      "providerBindings": ["workshop-local-content-addressed-ledger/v1"],
+      "accepts": ["COGNITIVE_RESOURCE_TYPED_RECORD"],
+      "produces": ["COGNITIVE_RESOURCE_LEDGER_RECEIPT"],
+      "automaticAuthority": false
+    }
+  ],
+  "authority": {
+    "calculatesMirrorResult": false,
+    "certifiesExternalFreshness": false,
+    "convertsTokensToUniversalCompute": false,
+    "ranksCandidates": false,
+    "selectsModelHardwareProviderOrPlan": false,
+    "allocatesBudget": false,
+    "changesPermission": false,
+    "writesMirror": false,
+    "trains": false,
+    "promotesCanon": false,
+    "actsOnWorld": false
+  }
+}

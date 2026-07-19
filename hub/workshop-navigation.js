@@ -90,6 +90,12 @@
     return /^\/(?:hub|tools|games)(?:\/|$)/.test(route);
   }
 
+  function isHubHomeRoute(route) {
+    if (typeof route !== 'string') return false;
+    const pathname = route.split(/[?#]/, 1)[0].replace(/\/+$/, '') || '/';
+    return pathname === '/hub' || pathname === '/hub/index.html';
+  }
+
   function currentRoute(win) {
     if (!win || !win.location) return null;
     const route = (win.location.pathname || '/') + (win.location.search || '') + (win.location.hash || '');
@@ -146,5 +152,5 @@
     return history;
   }
 
-  return { ROUTE_KEY, memoryStorage, cleanEntry, entryKey, createHistory, isWorkshopRoute, currentRoute, routeHistory, recordCurrentRoute, navigateRouteBack, installStandalone };
+  return { ROUTE_KEY, memoryStorage, cleanEntry, entryKey, createHistory, isWorkshopRoute, isHubHomeRoute, currentRoute, routeHistory, recordCurrentRoute, navigateRouteBack, installStandalone };
 });

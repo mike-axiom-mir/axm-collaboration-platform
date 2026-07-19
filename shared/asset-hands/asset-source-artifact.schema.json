@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/asset-source-artifact-v1.schema.json",
+  "title": "AXM Asset Source Artifact v1",
+  "description": "A bounded, digest-bearing input supplied to an edit, inspect, validate, finish or workflow hand.",
+  "type": "object",
+  "required": ["schema", "id", "role", "name", "mime", "format", "content_schema", "editable", "text", "dataUrl", "digest", "metadata"],
+  "properties": {
+    "schema": { "const": "axm.asset-source-artifact/v1" },
+    "id": { "type": "string", "minLength": 1, "maxLength": 100 },
+    "role": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "name": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "mime": { "type": "string", "minLength": 1, "maxLength": 100 },
+    "format": { "type": "string", "minLength": 1, "maxLength": 40 },
+    "content_schema": { "type": "string", "maxLength": 120 },
+    "editable": { "type": "boolean" },
+    "text": { "type": "string", "maxLength": 2000000 },
+    "dataUrl": { "type": "string", "maxLength": 4000000 },
+    "digest": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false
+}

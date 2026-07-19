@@ -1,0 +1,32 @@
+{
+  "schema": "axm.game-night/v1",
+  "defaultVisibleSeats": 4,
+  "optionalExtraSeats": 4,
+  "maxSeats": 8,
+  "featuredGames": ["003-robo-pong-cross", "006-lumenwake", "007-lux5-neon-overdrive", "008-district-party"],
+  "truths": {
+    "screenOccupiesSeat": false,
+    "humanAndAiStayVisible": true,
+    "startCountsAsPlayed": false,
+    "confirmedFinishCreatesResult": true,
+    "stoppedSessionCreatesAchievementReceipt": false,
+    "wisdomAutoPromoted": false
+  },
+  "controllerFlow": {
+    "oneNamedQrPerReadyHuman": true,
+    "sameWifiRequiredForLiveInput": true,
+    "cachedShellWhereGameSupportsIt": true,
+    "adapterUsesDeclaredActionVocabulary": true
+  },
+  "runtimeIdle": {
+    "timeoutMinutes": 30,
+    "activitySources": ["browser input", "controller or adapter mutation", "Game Hub input"],
+    "stopBehavior": "stop child runtime, seal an idle-timeout receipt, and return to the lobby",
+    "countsAsConfirmedFinish": false
+  },
+  "postGame": {
+    "route": "/tools/game-hub/post-game/",
+    "choices": ["discard", "next-match-only", "private-note", "shared-wisdom"],
+    "sharedWisdomRequiresExplicitClick": true
+  }
+}

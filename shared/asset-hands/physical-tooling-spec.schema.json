@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/physical-tooling-spec-v1.schema.json",
+  "title": "AXM Physical Tooling Spec v1",
+  "type": "object",
+  "required": ["schema", "medium", "dimensions", "minimumStroke", "cuttingToolWidth", "depth", "tolerance", "materialThickness", "kerf", "materialBehaviour", "materialCompensation", "operations", "simulation", "automaticManufacture"],
+  "properties": {
+    "schema": { "const": "axm.physical-tooling-spec/v1" },
+    "medium": { "enum": ["wood", "metal", "physical-object"] },
+    "dimensions": { "type": "object" },
+    "minimumStroke": { "type": "object", "required": ["value", "unit"] },
+    "cuttingToolWidth": { "type": "object", "required": ["value", "unit"] },
+    "depth": { "type": "object", "required": ["value", "unit"] },
+    "tolerance": { "type": "object", "required": ["value", "unit"] },
+    "materialThickness": { "oneOf": [{ "type": "null" }, { "type": "object", "required": ["value", "unit"] }] },
+    "kerf": { "type": "object", "required": ["side", "offset"], "properties": { "side": { "enum": ["centerline", "inside", "outside"] }, "offset": { "type": "object", "required": ["value", "unit"] } }, "additionalProperties": false },
+    "materialBehaviour": { "type": "array", "items": { "type": "string" } },
+    "materialCompensation": { "type": "object" },
+    "operations": { "type": "array", "minItems": 1, "items": { "enum": ["CUT", "ENGRAVE"] } },
+    "simulation": { "enum": ["NOT_RUN", "PASS", "FAIL"] },
+    "automaticManufacture": { "const": false }
+  },
+  "additionalProperties": false
+}

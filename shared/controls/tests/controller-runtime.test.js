@@ -61,3 +61,26 @@ test('first-person profile keeps the physical right stick but removes release-to
   assert.equal(packets[0].input.lookActive, true);
   assert.equal('fire' in packets[0].input, false);
 });
+
+test('neutralize immediately transmits zero vectors and released buttons through the ordinary gate transport', async () => {
+  const { AxmControllerRuntime } = await runtimeModule();
+  const profile = JSON.parse(fs.readFileSync(path.join(root, 'profiles', 'top-down-twin-stick.json')));
+  const packets = [];
+  const runtime = new AxmControllerRuntime({
+    identity: {
+      roomCode: 'AXM1', sessionId: 'session-runtime', seatId: 'seat_1', token: 'private-token',
+      inputSourceBindingId: 'binding-phone', inputSourceEpoch: 0,
+    },
+    profile,
+    transport: async (packet) => { packets.push(packet); return { ok: true, acceptedSeq: packet.seq }; },
+  });
+  runtime.setVector('left', { x: 1, y: -0.5, active: true });
+  runtime.setButton('sprint', true);
+  await runtime.flush();
+  await runtime.neutralize();
+  const neutral = packets.at(-1);
+  assert.equal(neutral.inputSourceBindingId, 'binding-phone');
+  assert.equal(neutral.inputSourceEpoch, 0);
+  assert.deepEqual({ x: neutral.input.moveX, y: neutral.input.moveY }, { x: 0, y: 0 });
+  assert.equal(neutral.input.sprint, false);
+});

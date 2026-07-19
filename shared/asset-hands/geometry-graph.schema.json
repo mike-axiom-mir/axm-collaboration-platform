@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/geometry-graph.schema.json",
+  "title": "AXM Geometry Graph",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "id",
+    "name",
+    "target_canvas",
+    "coordinate_unit",
+    "nodes",
+    "output",
+    "cache_policy",
+    "provenance"
+  ],
+  "properties": {
+    "schema": { "const": "geometry-graph+json" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "target_canvas": { "type": "object" },
+    "coordinate_unit": { "const": "metre" },
+    "nodes": { "type": "array", "minItems": 2, "maxItems": 64 },
+    "output": { "type": "string" },
+    "cache_policy": { "type": "object" },
+    "provenance": { "type": "object" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/uv-material-bake-recipe-v1.schema.json",
+  "title": "AXM UV Material Bake Recipe v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "target_canvas", "operation", "source", "generator", "atlas", "channels", "material", "compression", "provenance"],
+  "properties": {
+    "schema": {"const": "axm.uv-material-bake-recipe/v1"}, "version": {"const": "1.0.0"}, "id": {"type": "string", "minLength": 1},
+    "target_canvas": {"type": "object"}, "operation": {"enum": ["create", "edit", "finish", "validate"]},
+    "source": {"type": ["object", "null"]}, "generator": {"type": "object"}, "atlas": {"type": "object"},
+    "channels": {"type": "object", "required": ["baseColor", "normal", "orm", "emissive"]}, "material": {"type": "object"},
+    "compression": {"type": ["object", "null"]}, "provenance": {"type": "object", "required": ["hand", "hand_version", "seed", "source_artifact_digests"]}
+  },
+  "additionalProperties": false
+}

@@ -5,6 +5,7 @@ const DEFAULT_FPS = 30;
 const MAX_SEATS = 8;
 const DEFAULT_VISIBLE_SEATS = 4;
 const OPTIONAL_EXTRA_SEATS = 4;
+const NON_PLAYING_SEAT_TYPES = new Set(['empty', 'closed', 'spectator']);
 
 function nowIso() {
   return new Date().toISOString();
@@ -76,7 +77,16 @@ function assignSeat(state, seatId, patch) {
   if (!seat) throw new Error(`Unknown seat: ${seatId}`);
   const allowedTypes = new Set(['empty', 'human', 'adapter', 'ai', 'spectator', 'closed', 'skip', 'next-round']);
   if (patch.type && !allowedTypes.has(patch.type)) throw new Error(`Invalid seat type: ${patch.type}`);
+  const typeChanged = patch.type && patch.type !== seat.type;
   Object.assign(seat, patch, { updated_at: nowIso() });
+  /* A seat identity/type change invalidates its old consent. In particular,
+     an emptied seat may never retain a ghost ready flag that another game
+     later interprets as a player. The host must ready the new occupant. */
+  if (typeChanged || NON_PLAYING_SEAT_TYPES.has(seat.type)) {
+    seat.ready = false;
+    seat.ready_order = null;
+    seat.play_status = 'lobby';
+  }
   state.updated_at = nowIso();
   return seat;
 }
@@ -84,6 +94,9 @@ function assignSeat(state, seatId, patch) {
 function readySeat(state, seatId, ready) {
   const seat = getSeat(state, seatId);
   if (!seat) throw new Error(`Unknown seat: ${seatId}`);
+  if (ready && NON_PLAYING_SEAT_TYPES.has(seat.type)) {
+    throw new Error(`Seat cannot ready while type is ${seat.type}: ${seatId}`);
+  }
   seat.ready = !!ready;
   if (seat.ready && seat.ready_order === null) {
     const currentOrders = state.lobby.seats.map(s => s.ready_order).filter(n => Number.isInteger(n));
@@ -144,11 +157,19 @@ function toPublicSeat(seat) {
 }
 
 function startSession(state, gameManifest) {
-  const selection = selectPlayersByReadyOrder(state, gameManifest);
-  const minPlayers = Number(gameManifest.min_players || 1);
-  if (selection.selected_players.length < minPlayers) {
-    throw new Error(`Not enough ready players. Need ${minPlayers}, got ${selection.selected_players.length}.`);
+  if (state.session && state.session.phase === 'RUNNING') {
+    throw new Error('A game session is already running. End it before starting another.');
   }
+  const minPlayers = Number(gameManifest.min_players || 1);
+  const maxPlayers = Number(gameManifest.max_players || 4);
+  const allowedSeatTypes = Array.isArray(gameManifest.allowed_seat_types)
+    ? gameManifest.allowed_seat_types
+    : ['human', 'adapter', 'ai'];
+  const eligibleCount = state.lobby.seats.filter(seat => isEligiblePlayerSeat(seat, allowedSeatTypes)).slice(0, maxPlayers).length;
+  if (eligibleCount < minPlayers) {
+    throw new Error(`Not enough ready players. Need ${minPlayers}, got ${eligibleCount}.`);
+  }
+  const selection = selectPlayersByReadyOrder(state, gameManifest);
   state.status = 'running';
   state.tick = 0;
   state.session = Object.assign(state.session, {
@@ -225,6 +246,7 @@ module.exports = {
   MAX_SEATS,
   DEFAULT_VISIBLE_SEATS,
   OPTIONAL_EXTRA_SEATS,
+  NON_PLAYING_SEAT_TYPES,
   createEngineState,
   assignSeat,
   readySeat,

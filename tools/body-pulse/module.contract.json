@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "body-pulse",
+  "version": "v0.2",
+  "status": "EXPERIMENTAL",
+  "provides": ["whole-body-pressure-view", "shared-pulse-leases", "bounded-goal-queues", "pause-resume-complete-request-lifecycle", "forgettable-request-archive", "active-conserve-rest-stop-modes", "cross-module-capacity", "dormant-line-registry", "pulse-receipts"],
+  "consumes": ["host:cpu", "host:memory", "host:nvidia-gpu", "host:nvidia-gpu-thermal", "host:windows-battery", "future:host:cpu-thermal", "axm.body-pulse.module/v1", "axm.body-pulse.goal/v1"],
+  "permissions": [],
+  "handoffs": { "emits": ["axm.body-pulse.lease/v1", "axm.body-pulse.receipt/v1"], "accepts": ["axm.body-pulse.module/v1", "axm.body-pulse.goal/v1"] },
+  "boundaries": {
+    "writes": ["server-local:state/body-pulse/pulse.json"],
+    "refuses": ["tool-authority", "file-authority", "network-authority", "promotion-authority", "release-authority", "real-world-authority", "deleting-goal-output-artifacts", "screen-only-fake-deletion", "hidden-body-signal", "unknown-thermal-claimed-safe", "unbounded-goal-queue", "per-module-whole-body-assumption"]
+  }
+}

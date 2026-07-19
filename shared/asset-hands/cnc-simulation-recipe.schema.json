@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/cnc-simulation-recipe-v1.schema.json",
+  "title": "AXM CNC Simulation Recipe v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "target_canvas", "operation", "source", "tool", "depth", "material", "approval", "machine_code", "provenance"],
+  "properties": {
+    "schema": {"const": "axm.cnc-simulation-recipe/v1"}, "version": {"const": "1.0.0"}, "id": {"type": "string", "minLength": 1},
+    "target_canvas": {"type": "object"}, "operation": {"enum": ["inspect", "validate", "finish", "workflow"]},
+    "source": {"type": "object"}, "tool": {"type": "object"}, "depth": {"type": "object"}, "material": {"type": "object"},
+    "approval": {"type": ["object", "null"]}, "machine_code": {"type": "object", "required": ["prepared", "automatic_execution"]},
+    "provenance": {"type": "object", "required": ["hand", "hand_version", "seed", "source_artifact_digests"]}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,11 @@
+{
+  "id": "module-installer", "name": "AXM Governed Installer & Update Manager", "version": "v0.1", "status": "TEST", "entry": "index.html", "contract": "module.contract.json", "type": "hub-module", "hubApiVersion": "1.0", "category": "FOUNDATION", "layer": "foundation", "audience": "human-machine", "risk": "HIGH",
+  "tags": ["install", "update", "cartridge", "modules", "rollback", "review"],
+  "uses": ["storage", "gate", "backup", "module.install"], "permissions": ["module.install"],
+  "actions": ["stage a bounded module bundle", "validate an install candidate", "apply a digest-approved module update", "roll back an installed module"],
+  "accepts": ["axm.module-bundle/v1", "axm.review-receipt/v1"],
+  "produces": ["axm.module-install-candidate/v1", "axm.module-install-receipt/v1", "axm.module-rollback-receipt/v1"],
+  "readiness": ["storage", "backup", "review-inbox", "gate"],
+  "summary": "Stage bounded module bundles, validate contracts, bind approval to exact digests, install atomically and roll back from local backups.",
+  "notes": "No archive or bundle writes directly into tools. Apply requires Review Inbox approval, a permission grant and exact typed confirmation."
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "learning-lab",
+  "version": "v0.1",
+  "provides": [
+    "single-guided-learning-workspace",
+    "portable-learning-project",
+    "attributed-human-ai-machine-learners",
+    "interactive-lessons-and-flashcards",
+    "evidence-bearing-assessments",
+    "deterministic-simulation-labs",
+    "time-limited-network-blocked-code-practice",
+    "local-virtual-classroom",
+    "private-or-shared-lab-notebook",
+    "draft-course-authoring",
+    "explicit-ai-learning-forge-door"
+  ],
+  "consumes": [
+    "service:shared-engines/project-v1",
+    "service:shared-engines/collaboration-v1",
+    "service:shared-engines/evidence-v1",
+    "workspace:project-room",
+    "workspace:knowledge-canvas",
+    "workspace:game-forge",
+    "workspace:ai-team",
+    "child:mirror-learning-shell",
+    "service:mirror-learning-forge"
+  ],
+  "permissions": ["storage", "export", "shared-engines"],
+  "handoffs": {
+    "emits": ["axm.learning-lab.project/v1", "axm.learning-lab.assessment/v1", "axm.learning-lab.simulation-result/v1", "axm.learning-lab.code-run/v1", "axm.ai-learning.session-proposal/v1"],
+    "accepts": ["hub:init", "hub:settings:value", "user-file:axm.learning-lab.project/v1", "axm.ai-learning.curriculum/v1"]
+  },
+  "integratedChildren": [
+    { "id": "mirror-learning-shell", "role": "machine-native-school-door", "separation": ["identity", "memory", "learner-state", "promotion", "authority"] }
+  ],
+  "adapterSlots": [
+    "classroom:networked-presence",
+    "assessment:external-question-bank",
+    "lab:domain-simulation-adapter",
+    "code:language-runtime-adapter",
+    "school:additional-attributed-learner-adapter"
+  ],
+  "boundaries": {
+    "writes": ["browser-local:axm.learning-lab.project.v1", "user-download:explicit", "learner-private:only-through-child-school-contract"],
+    "refuses": [
+      "automatic-enrollment",
+      "forced-study",
+      "unattributed-learner",
+      "identity-or-memory-merge",
+      "authority-from-grade",
+      "automatic-wisdom-or-canon-promotion",
+      "hidden-chain-of-thought-capture",
+      "unsandboxed-user-code",
+      "external-network-from-code-sandbox",
+      "automatic-publication",
+      "pretend-networked-classroom",
+      "pretend-domain-simulation"
+    ]
+  }
+}

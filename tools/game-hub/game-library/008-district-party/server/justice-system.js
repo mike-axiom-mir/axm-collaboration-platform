@@ -2,6 +2,7 @@
 
 const { isPointInZone } = require('./world-state');
 const { createHostileNpc } = require('./npc-factory');
+const { collidesObstacle } = require('./spatial-index');
 
 const JUSTICE_THRESHOLDS = Object.freeze({ response: 45, pursuit: 75, maximum: 100 });
 
@@ -58,10 +59,25 @@ function justiceNpcCount(world) {
 }
 
 function spawnJusticeNpc(world, index) {
+  const livingActors = Object.values(world.actors).filter((actor) => actor.alive);
+  const centre = livingActors.length ? {
+    x: livingActors.reduce((sum, actor) => sum + actor.position.x, 0) / livingActors.length,
+    y: livingActors.reduce((sum, actor) => sum + actor.position.y, 0) / livingActors.length,
+  } : { x: world.staticMap.width / 2, y: world.staticMap.height / 2 };
+  const margin = 64;
+  const clamp = (value, maximum) => Math.max(margin, Math.min(maximum - margin, value));
   const points = [
-    { x: 72, y: 512 }, { x: 952, y: 512 }, { x: 512, y: 72 }, { x: 512, y: 952 },
+    { x: centre.x - 360, y: centre.y }, { x: centre.x + 360, y: centre.y },
+    { x: centre.x, y: centre.y - 360 }, { x: centre.x, y: centre.y + 360 },
+    { x: centre.x - 280, y: centre.y - 260 }, { x: centre.x + 280, y: centre.y + 260 },
   ];
-  const point = points[index % points.length];
+  const candidates = points.map((point) => ({
+    x: clamp(point.x, world.staticMap.width),
+    y: clamp(point.y, world.staticMap.height),
+  }));
+  const point = candidates.find((candidate, offset) => (
+    offset >= index % candidates.length && !collidesObstacle(world, candidate, 12)
+  )) || candidates[index % candidates.length];
   world.nextNpcNumber ||= 100;
   const id = `justice-${String(world.nextNpcNumber++).padStart(3, '0')}`;
   const role = index % 3 === 0 ? 'blocker' : index % 2 === 0 ? 'rusher' : 'skirmisher';

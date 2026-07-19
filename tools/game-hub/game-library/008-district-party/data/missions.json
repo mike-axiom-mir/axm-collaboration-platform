@@ -1,42 +1,74 @@
 {
-  "modes": ["supply_sweep", "hold_relay", "courier_chaos", "chaos_call", "free_roam"],
-  "sessionModes": ["coop_adventure", "district_dominion"],
+  "modes": [
+    "supply_sweep",
+    "hold_relay",
+    "courier_chaos",
+    "chaos_call",
+    "free_roam"
+  ],
+  "sessionModes": [
+    "coop_adventure",
+    "district_dominion"
+  ],
   "defaultMode": "free_roam",
+  "layoutSource": "data/mission-layouts.json",
+  "layoutSelection": "host-shuffled-route-deck-no-immediate-repeat",
   "supply_sweep": {
     "title": "Supply Sweep",
-    "description": "Collect six supply crates around the open yard.",
+    "description": "Search one of four Tilburg activity areas for six supplies; some routes include light rival resistance.",
     "roundSeconds": 120,
     "goal": 6,
     "rewardCents": 1500,
-    "start": { "x": 330, "y": 390 }
+    "start": {
+      "x": 6264,
+      "y": 4024
+    }
   },
   "hold_relay": {
     "title": "Hold the Relay",
-    "description": "Protect the district relay through three short rival waves.",
+    "description": "Protect a relay at one of four district sites through three short, location-specific rival waves.",
     "roundSeconds": 150,
     "waves": 3,
     "relayHealth": 30,
     "rewardCents": 2500,
-    "start": { "x": 512, "y": 512 }
+    "start": {
+      "x": 7048,
+      "y": 4904
+    }
   },
   "courier_chaos": {
     "title": "Courier Chaos",
-    "description": "Collect packages at the depot and deliver them together before time expires.",
-    "roundSeconds": 180,
-    "deliveryGoal": 5,
+    "description": "Collect packages from one of four dispatch points and choose among that route's active city drop zones.",
+    "roundSeconds": 420,
+    "deliveryGoal": 8,
     "packageSpawnZoneId": "depot-pickup",
-    "deliveryZoneIds": ["delivery-park", "delivery-garage", "delivery-plaza"],
+    "deliveryZoneIds": [
+      "delivery-reeshof",
+      "delivery-centre",
+      "delivery-north",
+      "delivery-east",
+      "delivery-south"
+    ],
     "scorePerDelivery": 100,
     "vehicleAssistBonus": 25,
     "rewardCents": 2000,
-    "start": { "x": 760, "y": 365 },
-    "finalPackage": { "implemented": false, "reservedRule": "vehicle-required" }
+    "start": {
+      "x": 6296,
+      "y": 5544
+    },
+    "finalPackage": {
+      "implemented": false,
+      "reservedRule": "vehicle-required"
+    }
   },
   "chaos_call": {
     "title": "Call the Heat",
-    "description": "Willingly trigger a short justice response for free-roam chaos.",
+    "description": "Willingly trigger a short justice response from one of four city districts.",
     "roundSeconds": 90,
     "rewardCents": 0,
-    "start": { "x": 512, "y": 512 }
+    "start": {
+      "x": 6264,
+      "y": 4024
+    }
   }
 }

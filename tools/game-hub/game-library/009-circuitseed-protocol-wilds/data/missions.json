@@ -1,0 +1,21 @@
+{
+  "schema": "axm.circuitseed-missions/v1",
+  "chapter": "Chapter One — The Signal That Returned",
+  "stages": [
+    {"id":"m01-first-light","kind":"story","title":"First Light","brief":"Move through Lumen Yard and scan the broken welcome relay.","objectives":["move","scan:welcome-relay"],"reward":{"currency":20,"trust":1}},
+    {"id":"m02-unfinished-need","kind":"story","title":"An Unfinished Need","brief":"Choose which Circuitseed to help first. It joins by consent and repair, never capture.","objectives":["choose-starter","connect:starter"],"reward":{"currency":15,"trust":3}},
+    {"id":"m03-relayborn-route","kind":"story","title":"The Relayborn Route","brief":"Recover two conductive filaments and patch the route beacon after diagnosis.","objectives":["collect:conductive-filament:2","scan:route-beacon","interact:route-beacon"],"reward":{"currency":30,"materials":{"signal-shard":1},"trust":2}},
+    {"id":"m04-threadwild-map","kind":"request","title":"Threads Remember","brief":"Map three honest signal knots in the Threadwild. Uncertain readings count when labeled.","objectives":["scan:thread-knot-a","scan:thread-knot-b","scan:thread-knot-c"],"reward":{"currency":35,"recipe":"thread-map","trust":2}},
+    {"id":"m05-corewild-breach","kind":"story","title":"Contain, Do Not Conquer","brief":"Stabilize the Corewild breach through tactical containment and recovery.","objectives":["encounter:corewild-breach"],"reward":{"currency":45,"materials":{"wild-core":1},"recipe":"anchor-node","trust":3}},
+    {"id":"m06-workbench","kind":"business","title":"A Useful Place","brief":"Craft a service kit and choose a business path at your personal workbench.","objectives":["craft:any","business:choose"],"reward":{"currency":25,"reputation":2}},
+    {"id":"m07-first-order","kind":"business","title":"The First Honest Order","brief":"Open the stall and fulfill one demand-backed local order.","objectives":["shop:open","order:fulfill"],"reward":{"currency":50,"reputation":4}},
+    {"id":"m08-world-response","kind":"dynamic-world","title":"What We Changed","brief":"Resolve the world-state request created by the region with the highest unresolved instability.","objectives":["dynamic:resolve"],"reward":{"currency":45,"trust":2}},
+    {"id":"m09-shared-pulse","kind":"cooperative","title":"Shared Pulse","brief":"Synchronize the relay with another occupied seat, or with your trusted Circuitkin when playing solo.","objectives":["coop:synchronize"],"reward":{"currency":40,"relationship":2}},
+    {"id":"m10-rootsignal","kind":"chapter-finale","title":"The Rootsignal Fracture","brief":"Reach the convergence, surface the conflicting histories, stabilize the fracture, and return to Lumen Yard.","objectives":["encounter:rootsignal-fracture","return:settlement"],"reward":{"currency":100,"achievement":"rootsignal-witness","trust":5}}
+  ],
+  "dynamicTemplates": [
+    {"id":"relay-load","requires":"relayInstability","title":"A Relay Under Load","actions":["scan","patch","anchor"]},
+    {"id":"thread-tangle","requires":"threadInstability","title":"A Thread That Split","actions":["scan","reroute","synchronize"]},
+    {"id":"corewild-spill","requires":"coreInstability","title":"A Boundary Giving Way","actions":["isolate","shield","recover"]}
+  ]
+}

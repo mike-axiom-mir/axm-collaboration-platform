@@ -15,5 +15,5 @@ if (!tests.length) {
   process.exit(1);
 }
 
-const result = spawnSync(process.execPath, ['--test', ...tests], { cwd: root, stdio: 'inherit' });
+const result = spawnSync(process.execPath, ['--test', '--test-concurrency=4', ...tests], { cwd: root, stdio: 'inherit' });
 process.exit(result.status == null ? 1 : result.status);

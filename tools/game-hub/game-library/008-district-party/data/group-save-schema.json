@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm-district-party://schemas/group-save-v1.json",
+  "title": "AXM District Party fixed-roster group save",
+  "type": "object",
+  "required": ["format", "schemaVersion", "slot", "createdAt", "updatedAt", "mode", "roster", "perSeat", "group"],
+  "properties": {
+    "format": { "const": "AXM_GROUP_SAVE_V1" },
+    "schemaVersion": { "const": 1 },
+    "slot": { "type": "integer", "minimum": 1, "maximum": 9 },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "buildVersion": { "type": "string", "maxLength": 96 },
+    "mode": { "enum": ["coop_adventure", "district_dominion"] },
+    "roster": {
+      "type": "object",
+      "required": ["seatCount", "seatSlots", "partyDistribution"],
+      "properties": {
+        "seatCount": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "seatSlots": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": { "type": "integer", "minimum": 1, "maximum": 8 }
+        },
+        "partyDistribution": {
+          "type": "object",
+          "required": ["party_a", "party_b"],
+          "properties": {
+            "party_a": { "type": "integer", "minimum": 0, "maximum": 4 },
+            "party_b": { "type": "integer", "minimum": 0, "maximum": 4 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "perSeat": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "required": ["slot", "partyId", "walletCents", "inventory", "career"],
+        "properties": {
+          "slot": { "type": "integer", "minimum": 1, "maximum": 8 },
+          "partyId": { "enum": ["party_a", "party_b"] },
+          "walletCents": { "type": "integer", "minimum": 0, "maximum": 99999999 },
+          "inventory": { "type": "object" },
+          "career": {
+            "type": "object",
+            "required": ["deliveries", "missionsCompleted"],
+            "properties": {
+              "deliveries": { "type": "integer", "minimum": 0 },
+              "missionsCompleted": { "type": "integer", "minimum": 0 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "group": {
+      "type": "object",
+      "required": ["partyFunds", "lifetimePartyIncome", "rivalGang"],
+      "properties": {
+        "partyFunds": { "$ref": "#/$defs/funds" },
+        "lifetimePartyIncome": { "$ref": "#/$defs/funds" },
+        "rivalGang": {
+          "type": "object",
+          "required": ["id", "enabled", "pressure", "progress", "territoryProgress"],
+          "properties": {
+            "id": { "type": "string", "maxLength": 64 },
+            "enabled": { "type": "boolean" },
+            "pressure": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "progress": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+            "territoryProgress": { "type": "integer", "minimum": 0, "maximum": 1000000 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "funds": {
+      "type": "object",
+      "required": ["party_a", "party_b"],
+      "properties": {
+        "party_a": { "type": "integer", "minimum": 0, "maximum": 99999999 },
+        "party_b": { "type": "integer", "minimum": 0, "maximum": 99999999 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

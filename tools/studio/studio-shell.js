@@ -63,20 +63,37 @@
     if (!$('vaultFrame').dataset.loaded) {$('vaultFrame').onload=function(){var s=$('vaultState');s.classList.remove('available');s.innerHTML='<i></i>Asset Vault connected';};$('vaultFrame').dataset.loaded='1';$('vaultFrame').src='../asset-vault/index.html?studio=1';}
   }
   function closeAssets() { var drawer=$('assetDrawer'); drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); }
+  function handKindForMode(mode) {
+    return { paint:'illustration', vector:'icon', pixel:'sprite', photo:'illustration', pattern:'texture', type:'poster', layout:'cover', uiux:'ui-component', skin:'panel', pack:'icon' }[mode] || 'icon';
+  }
+  function handCanvasForMode(mode) {
+    return { uiux:{medium:'ui',use:'ui-component'},skin:{medium:'ui',use:'panel'},pixel:{medium:'game-world',use:'sprite'},pattern:{medium:'screen',use:'pattern'},vector:{medium:'screen',use:'icon'},type:{medium:'screen',use:'poster'},layout:{medium:'screen',use:'cover'} }[mode] || {medium:'screen',use:handKindForMode(mode)};
+  }
+  function openHands() {
+    var drawer=$('handsDrawer'); drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false');
+    if (!$('handsFrame').dataset.loaded) {
+      $('handsFrame').dataset.loaded='1';
+      var canvas=handCanvasForMode(state.mode);
+      $('handsFrame').src='/shared/asset-hands/index.html?host=studio&kind='+encodeURIComponent(handKindForMode(state.mode))+'&medium='+encodeURIComponent(canvas.medium)+'&use='+encodeURIComponent(canvas.use)+'&target='+encodeURIComponent(state.projectName||'studio');
+    }
+  }
+  function closeHands() { var drawer=$('handsDrawer'); drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); }
 
   renderNav(); $('projectName').value=state.projectName;
   $('projectName').addEventListener('change',function(){state.projectName=this.value; persist('Project name saved');});
   $('saveWorkspace').onclick=function(){state.projectName=$('projectName').value;this.disabled=true;$('canvasFrame').contentWindow.postMessage({type:'axm-studio-save',download:false},'*');persist('Studio shell saved · artwork checkpoint pending');};
   $('openAssets').onclick=openAssets; $('openAssetsRail').onclick=openAssets;
+  $('openHands').onclick=openHands; $('openHandsRail').onclick=openHands;
   document.querySelectorAll('[data-close-assets]').forEach(function(b){b.onclick=closeAssets;});
-  window.addEventListener('keydown',function(e){if(e.key==='Escape')closeAssets();});
+  document.querySelectorAll('[data-close-hands]').forEach(function(b){b.onclick=closeHands;});
+  window.addEventListener('keydown',function(e){if(e.key==='Escape'){closeAssets();closeHands();}});
   $('canvasFrame').addEventListener('load',function(){$('saveWorkspace').disabled=false;selectMode(state.mode,true);});
 
   /* Nested Studio panels use their existing Hub bridge. Studio answers their
      ready/save/log messages and forwards the meaningful state to the real Hub. */
   window.addEventListener('message',function(ev){
     var msg=ev.data; if(!msg||typeof msg.type!=='string'||msg.type.indexOf('hub:')!==0)return;
-    var child=[...document.querySelectorAll('.mode-frame,#vaultFrame')].find(function(f){return f.contentWindow===ev.source;}); if(!child)return;
+    var child=[...document.querySelectorAll('.mode-frame,#vaultFrame,#handsFrame')].find(function(f){return f.contentWindow===ev.source;}); if(!child)return;
     var key='axm.studio.child.'+child.id;
     if(msg.type==='hub:ready') ev.source.postMessage({type:'hub:init',moduleId:'studio',settings:{},moduleState:JSON.parse(localStorage.getItem(key)||'null'),granted:[]},'*');
     if(msg.type==='hub:save'){localStorage.setItem(key,JSON.stringify(msg.state||{})); persist();}
@@ -84,6 +101,28 @@
     if(msg.type==='hub:log'&&window.AXMHub)AXMHub.log('Studio · '+String(msg.msg||''),msg.level||'info');
   });
   window.addEventListener('message',function(ev){if(ev.data&&ev.data.type==='axm-studio-saved'){$('saveWorkspace').disabled=false;if(ev.data.ok===false){$('statusText').textContent='Artwork save failed · '+(ev.data.error||'storage unavailable');toast('Artwork was not saved — '+(ev.data.error||'storage unavailable'));return;}$('statusText').textContent='Artwork checkpoint saved';$('saveState').textContent='Saved '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});toast('Studio workspace and artwork saved');}});
+  window.addEventListener('message',function(ev){
+    var msg=ev.data;if(!msg||msg.type!=='axm-asset-hand-result'||msg.schema!=='axm.asset-hand-result/v1'||ev.source!==$('handsFrame').contentWindow)return;
+    var result=msg.result||{};
+    if(result.schema!=='axm.asset-hand-result/v1'||!result.technical||result.technical.pass!==true||!result.validation_receipt||result.validation_receipt.status!=='PASS'||!result.target_canvas||!result.target_canvas_original||!result.hand||!Array.isArray(result.artifacts)){toast('Creation Hand result refused — invalid, unvalidated or missing canvas provenance');return;}
+    var packetArtifact=result.artifacts.find(function(item){return item.metadata&&item.metadata.schema==='axm.drawpacket/v1'&&item.format==='JSON';});
+    if(packetArtifact){
+      try{
+        var packet=JSON.parse(packetArtifact.text);
+        if(packet.schema!=='axm.drawpacket/v1')throw new Error('draw packet schema mismatch');
+        $('canvasFrame').contentWindow.postMessage({type:'axm-studio-apply-hand-drawpacket',packet:packet,source:{schema:result.schema,resultId:result.id,resultDigest:result.digest,handId:result.hand.id,handVersion:result.hand.version,handContract:result.hand.schema||'',operationMode:result.brief&&result.brief.operation_mode||'create',sourceArtifactDigests:result.creation_recipe&&result.creation_recipe.source_artifact_digests||[],artifactInventory:result.artifacts.map(function(item){return{id:item.id,role:item.role,mime:item.mime,format:item.format,digest:item.digest,editable:item.editable,contentSchema:item.metadata&&item.metadata.schema||''};}),artifactDigest:packetArtifact.digest,targetCanvas:result.target_canvas,targetCanvasOriginal:result.target_canvas_original,targetCanvasValidation:result.brief&&result.brief.target_canvas_validation||null,canvasTransformReceipt:result.canvas_transform_receipt||null,fallbackPolicy:result.brief&&result.brief.fallback_policy||null,creationRecipe:result.creation_recipe||null,validationReceipt:result.validation_receipt,referenceValidation:result.reference_validation||null}},'*');
+        closeHands();$('statusText').textContent=result.hand.title+' sent editable instructions to the canvas';toast('Applied '+result.hand.title+' candidate through Studio tools');return;
+      }catch(error){toast('Creation Hand packet refused — '+error.message);return;}
+    }
+    var artifact=result.artifacts.find(function(item){return item.id===result.previewArtifactId&&/^image\//.test(item.mime||'');})||result.artifacts.find(function(item){return /^image\//.test(item.mime||'');});
+    if(!artifact){toast('Creation Hand result has no Studio-previewable image artifact');return;}
+    var data='';
+    if(artifact.mime==='image/svg+xml'&&artifact.format==='SVG'&&/^<svg[\s>]/.test(String(artifact.text||'')))data='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(artifact.text);
+    else if(/^image\/(?:png|jpeg|webp)$/.test(artifact.mime)&&new RegExp('^data:'+artifact.mime.replace('/','\\/')+'(?:;|,)','i').test(artifact.dataUrl||''))data=artifact.dataUrl;
+    else{toast('Creation Hand image artifact refused — format and MIME do not agree');return;}
+    $('canvasFrame').contentWindow.postMessage({schema:'axm.studio-asset/v1',type:'axm-studio-import-asset',asset:{id:result.id,name:result.brief&&result.brief.title||artifact.name,mime:artifact.mime,dataUrl:data,sourceSchema:result.schema,resultDigest:result.digest,handId:result.hand.id,handVersion:result.hand.version,handContract:result.hand.schema||'',operationMode:result.brief&&result.brief.operation_mode||'create',sourceArtifactDigests:result.creation_recipe&&result.creation_recipe.source_artifact_digests||[],artifactInventory:result.artifacts.map(function(item){return{id:item.id,role:item.role,mime:item.mime,format:item.format,digest:item.digest,editable:item.editable,contentSchema:item.metadata&&item.metadata.schema||''};}),artifactDigest:artifact.digest,targetCanvas:result.target_canvas,targetCanvasOriginal:result.target_canvas_original,targetCanvasValidation:result.brief&&result.brief.target_canvas_validation||null,canvasTransformReceipt:result.canvas_transform_receipt||null,fallbackPolicy:result.brief&&result.brief.fallback_policy||null,creationRecipe:result.creation_recipe||null,validationReceipt:result.validation_receipt,referenceValidation:result.reference_validation||null}},'*');
+    closeHands();$('statusText').textContent=result.hand.title+' candidate sent to layered canvas';toast('Added '+String(result.brief&&result.brief.title||artifact.name)+' from '+result.hand.title);
+  });
   window.addEventListener('message',function(ev){
     var msg=ev.data;if(!msg||msg.schema!=='axm.studio-asset/v1'||msg.type!=='axm-studio-asset'||ev.source!==$('vaultFrame').contentWindow)return;
     var asset=msg.asset||{},data=String(asset.dataUrl||'');

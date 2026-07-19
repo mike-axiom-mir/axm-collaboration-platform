@@ -1,6 +1,6 @@
 (function(root,factory){var api=factory();if(typeof module!=='undefined'&&module.exports)module.exports=api;if(root)root.AXMCapabilityIndex=api;})(typeof self!=='undefined'?self:this,function(){
   'use strict';
-  var VERSION='0.2.0';
+  var VERSION='0.4.0';
   var STOP={a:1,an:1,and:1,are:1,can:1,do:1,for:1,how:1,i:1,in:1,is:1,it:1,make:1,my:1,of:1,on:1,or:1,the:1,to:1,want:1,with:1};
   var ALIASES={
     draw:'visual image art painting vector pixel studio',paint:'visual image art drawing studio',picture:'visual image art photo graphic studio',icon:'visual image graphic ui studio',skin:'visual image texture graphic studio',interface:'ui ux web design studio',website:'ui ux web design studio',
@@ -9,7 +9,7 @@
     game:'game forge play multiplayer controller level',controller:'game play multiplayer phone seats',multiplayer:'game play controller seats',level:'game world terrain forge',
     plan:'project task milestone timeline room',task:'project plan board milestone',idea:'project plan note discovery',milestone:'project plan timeline',
     research:'knowledge evidence sources citation canvas',spreadsheet:'knowledge table formula data canvas',diagram:'knowledge flowchart mindmap canvas',map:'knowledge geographic gis canvas',data:'knowledge table chart research canvas',
-    money:'finance market economic metric world',market:'finance economic geographic metric',economy:'finance economic world data',
+    money:'finance market economic metric world',market:'finance economic geographic metric',economy:'finance economic world data',evolve:'evolution lineage challenger genome world exam creation fabric',evolution:'evolve lineage challenger genome world exam creation fabric',genome:'evolution lineage challenger world exam',fabric:'asset creation evolution image vocabulary',
     publish:'export package release library',export:'publish output package library',backup:'publish package archive workshop',asset:'library publish reuse metadata',library:'publish asset package',
     ai:'agent model prompt collaboration team',agent:'ai model task handoff team',prompt:'ai model compare team',model:'ai agent inference team',chat:'ai talk collaboration team',
     verify:'evidence test audit build',test:'verify evidence build',code:'build forge software tool',tool:'build forge software module'
@@ -23,7 +23,13 @@
     'project-room':'plan project task tasks milestone milestones kanban goal goals decision decisions roadmap idea ideas',
     'knowledge-canvas':'research source sources citation citations spreadsheet formula data chart diagram mindmap map gis whiteboard',
     'finance-world-room':'finance money market economy economic cost risk metric metrics',
-    'publish-library':'publish export package backup asset library release archive template',
+    'workshop-direction':'goal goals direction request requests route routes capability capabilities hands quality automation command build system',
+    'evolution-foundry':'evolve evolution creation automation heartbeat body pulse goal queue lineage asset fabric experiment',
+    'body-pulse':'body heartbeat pulse scheduler governor goal queue resource cpu memory thermal idle dormant quiet forgotten automatic automation lease receipt',
+    'governed-evolution-lab':'evolve evolution lineage challenger genome world globe exam inherit inheritance mirror ecology',
+    'asset-fabric':'asset image icon tile badge generate creation evolve vocabulary game visual independent vote review receipt provider hand',
+    'marketplace-deployment':'marketplace catalog store licensing review plugin extension deploy hosting self-host gallery update distribution publish release',
+    'publish-library':'publish export package backup asset library release archive template marketplace deployment foundation',
     'ai-team':'ai agent agents prompt prompts model models chat collaboration handoff inference'
   };
   function clean(v){return String(v==null?'':v).toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();}

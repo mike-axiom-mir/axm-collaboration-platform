@@ -24,7 +24,7 @@ const district = json('tools/game-hub/game-library/008-district-party/game.manif
 const profileContract = json('shared/profile/profile-service.contract.json');
 const server = read('server.js');
 const globeHtml = read('worlds/living-globe/index.html');
-const luxServer = read('tools/game-hub/game-library/007-casino/lux-5-prototype/runtime/server.js');
+const casinoServer = read('tools/game-hub/game-library/007-casino/alpha/runtime/casino-server.cjs');
 const profileCore = read('shared/profile/axm-profile-core.js');
 
 const checks = [
@@ -42,16 +42,16 @@ const checks = [
   ['Museum is off by default and never activates its records', () => museum.visibility === 'OFF_BY_DEFAULT' && museum.artifacts.every(item => item.active_module === false)],
   ['First Mirror original bytes still match catalog provenance', () => sha256('museum/first-mirror/original/mirror.html') === museum.artifacts.find(item => item.id === 'museum.first-mirror').sha256],
   ['Accidental Symmetry record bytes still match catalog provenance', () => sha256('museum/records/2026-07-14-accidental-symmetry.txt') === museum.artifacts.find(item => item.id === 'record.accidental-symmetry').sha256],
-  ['LUX-5 remains honestly labeled public test and single-player', () => lux.status === 'PUBLIC TEST' && lux.max_players === 1 && lux.allowed_seat_types.join(',') === 'human'],
-  ['LUX-5 serves only its client root, not its outcome book', () => lux.rules.audit_fixture_is_not_served === true && luxServer.includes('CLIENT_ROOT') && !luxServer.includes('slots/lux-5')],
+  ['Casino alpha is honestly labeled TEST/WORKING and still requires browser/phone QA', () => lux.status === 'TEST-WORKING' && lux.version === '0.3.2-alpha' && lux.max_players === 8 && lux.allowed_seat_types.join(',') === 'human,adapter,ai' && /browser-and-physical-phone-qa-required/.test(lux.package.source_status)],
+  ['Casino alpha serves an explicit client allowlist, not its slot books or audit fixture', () => casinoServer.includes('CLIENT_ROOT') && casinoServer.includes('STATIC_FILES') && !casinoServer.includes('slots/lux-5') && !casinoServer.includes('lux5-outcome-book-50000')],
   ['LUX-5 vendored Three.js now has exact license provenance', () => exists('tools/game-hub/game-library/007-casino/lux-5-prototype/client/vendor/LICENSE') && sha256('tools/game-hub/game-library/007-casino/lux-5-prototype/client/vendor/LICENSE') === '852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d'],
   ['District Party remains honestly labeled public test', () => district.status === 'PUBLIC TEST' && district.known_limits.some(item => /UNTESTED|untested/i.test(item))],
   ['District Party human and adapter seats use the same input gate', () => district.rules.human_and_adapter_same_input_gate === true && district.rules.adapter_observation_is_seat_visible_only === true],
   ['Shared Controls preserves intention-only host authority', () => controls.authority.clientsSendIntentionsOnly === true && controls.authority.hostOwnsResults === true && controls.authority.humanAndAdapterSameGate === true],
   ['Static server boundary hides state, logs, bridge and project internals', () => ['state/x.json', 'logs/x.log', 'bridge/bridge-token.txt', 'projects/x/state.json'].every(Boundary.isPrivateStaticPath)],
   ['Public runtime routes remain outside the private boundary', () => ['hub/index.html', 'worlds/living-globe/index.html', 'museum/catalog.json', 'shared/vendor/three-r160/three.module.js'].every(item => !Boundary.isPrivateStaticPath(item))],
-  ['Profile infrastructure remains optional and receipt-based', () => profileContract.lifecycle === 'OPTIONAL_OPT_IN' && profileCore.includes('enabled:false') && profileCore.includes('code character receipt requires evidence')],
-  ['No intake package embeds the local user path or a Bridge token path', () => !/C:\\Users\\miket|bridge[\\/]bridge-token\.txt/i.test([read('shared/mirror-core/AXM_INTEGRATION.json'), read('shared/controls/AXM_INTEGRATION.json'), globeHtml, read('tools/game-hub/game-library/007-casino/game.manifest.json'), read('tools/game-hub/game-library/008-district-party/game.manifest.json')].join('\n'))],
+  ['Profile infrastructure remains optional and receipt-based', () => profileContract.lifecycle === 'OPTIONAL_OPT_IN' && profileCore.includes('enabled:false') && profileCore.includes("'code-characters':{stat:'codeCharacters',countMode:'aggregate',evidence:true}") && profileCore.includes('if(definition.evidence&&!evidence)')],
+  ['No intake package embeds a local user path or a Bridge token path', () => !/C:\\Users\\[^\\/]+|bridge[\\/]bridge-token\.txt/i.test([read('shared/mirror-core/AXM_INTEGRATION.json'), read('shared/controls/AXM_INTEGRATION.json'), globeHtml, read('tools/game-hub/game-library/007-casino/game.manifest.json'), read('tools/game-hub/game-library/008-district-party/game.manifest.json')].join('\n'))],
   ['Imported game READMEs distinguish managed and standalone launch modes', () => read('tools/game-hub/game-library/007-casino/README.md').includes('managed port') && read('tools/game-hub/game-library/008-district-party/README_FIRST.md').includes('managed port')]
 ];
 

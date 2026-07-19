@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/ktx2-validation-report-v1.schema.json",
+  "title": "AXM KTX2 Validation Report v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "container", "decoder", "constraints", "checks"],
+  "properties": {
+    "schema": {"const": "axm.ktx2-validation-report/v1"},
+    "version": {"const": "1.0.0"},
+    "status": {"enum": ["PASS", "HOLD"]},
+    "container": {"type": "object", "required": ["mime", "format", "bytes", "supercompression", "width", "height", "levels"]},
+    "decoder": {"type": "object", "required": ["engine", "version", "accepted", "etc1s", "uastc", "rgba_transcode_bytes"]},
+    "constraints": {"type": "object"},
+    "checks": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["name", "pass"]}}
+  },
+  "additionalProperties": false
+}

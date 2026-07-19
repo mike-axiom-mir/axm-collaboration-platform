@@ -1,0 +1,41 @@
+{
+  "schema": "axm.game-night-seams/v1",
+  "purpose": "Make cross-module play failures visible before a package is called phone-ready or co-op-ready.",
+  "hard_gate": [
+    "inspectable controller evidence exists inside the game package",
+    "phone claims include touch and responsive viewport evidence",
+    "phone claims include a LAN delivery route",
+    "runtime-issued controller links declare their metadata endpoint",
+    "dedicated controller delivery declares its runtime path",
+    "authoritative game state remains server owned",
+    "host reload has an explicit resume route",
+    "a shared screen never consumes a player seat",
+    "an external collaborator seat declares a structured seat-visible observation interface",
+    "an external collaborator uses the same authoritative action gate as a human seat"
+  ],
+  "visible_evidence_states": ["verified", "pending", "not-applicable"],
+  "never_hidden": [
+    "physical phone QA",
+    "disconnect and reconnect recovery",
+    "escape from blocking overlays or menus",
+    "external collaborator state-interface QA"
+  ],
+  "runtime_lifecycle": {
+    "idle_timeout_minutes": 30,
+    "activity_is_input_not_rendering": true,
+    "idle_stop_returns_to_lobby": true,
+    "idle_stop_is_not_a_confirmed_finish": true
+  },
+  "origin_lessons": [
+    "empty seats must remain optional",
+    "previewing controls is not consent to ready",
+    "QR handoff must preserve the exact seat and runtime token",
+    "refresh must reattach instead of resetting the host shell",
+    "a disconnected menu owner must not trap connected players",
+    "visual overlays need an explicit escape path",
+    "external collaborator is a Hub-connected seat, never a relabelled built-in bot",
+    "no rendered screen still requires a complete decision-relevant structured view",
+    "seat-visible state excludes private or omniscient world truth",
+    "an unattended child runtime must not consume the body forever"
+  ]
+}

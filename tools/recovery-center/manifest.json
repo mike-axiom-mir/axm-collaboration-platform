@@ -1,0 +1,23 @@
+{
+  "id": "recovery-center",
+  "name": "AXM Recovery & Rollback Center",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "FOUNDATION",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": ["backup", "recovery", "restore", "rollback", "snapshots"],
+  "uses": ["storage", "backup", "gate", "recovery.apply"],
+  "permissions": ["recovery.apply"],
+  "actions": ["create a verified Workshop snapshot", "preview a selective restore", "apply a confirmed restore", "configure private snapshot scheduling"],
+  "accepts": ["axm.recovery-request/v1", "axm.workshop-package/v1"],
+  "produces": ["axm.recovery-snapshot/v1", "axm.recovery-restore-receipt/v1"],
+  "readiness": ["storage", "backup", "gate", "workshop-packager"],
+  "summary": "Create verified full snapshots, schedule private backups, preview selective restores and preserve pre-restore copies.",
+  "notes": "Restore is exact-preview only, never deletes absent files, and requires a separate permission grant plus typed confirmation."
+}

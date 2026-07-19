@@ -2,3 +2,24 @@
 # Keep these copies LF-stable on Windows as well as Linux.
 **/axm-foundation.js text eol=lf
 
+# Museum originals are immutable byte evidence; never rewrite their line endings.
+museum/first-mirror/original/mirror.html -text
+
+# The public Mirror Core build manifest hashes every package byte. Preserve the
+# already-published baseline exactly instead of allowing Windows CRLF smudging.
+shared/mirror-core/** -text
+
+# Markdown uses intentional two-space hard line breaks, while generated module
+# skeletons and third-party source may retain harmless terminal blank lines.
+*.md whitespace=-trailing-space,-blank-at-eof
+*.txt whitespace=-trailing-space,-blank-at-eof
+*.json whitespace=-blank-at-eof
+*.js whitespace=-blank-at-eof
+*.css whitespace=-blank-at-eof
+*.html whitespace=-blank-at-eof
+
+# Preserve upstream formatting in vendored code and license payloads.
+shared/asset-hands/vendor/** whitespace=-trailing-space,-space-before-tab,-blank-at-eof
+tools/**/vendor/** whitespace=-trailing-space,-space-before-tab,-blank-at-eof
+tools/ps2-asset-forge/assets/kenney/** whitespace=-trailing-space,-blank-at-eof
+

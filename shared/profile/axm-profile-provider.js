@@ -7,9 +7,11 @@
   'use strict';
   if(!Core)throw Error('AXM profile core is required');
   var DEFAULT_EMITTERS=[
-    {id:'game-hub',receiptTypes:['game-played']},
-    {id:'studio',receiptTypes:['picture-made']},
+    {id:'game-hub',receiptTypes:['game-played','kill-recorded','death-recorded']},
+    {id:'studio',receiptTypes:['picture-made','asset-created']},
+    {id:'audio-studio',receiptTypes:['sfx-created']},
     {id:'project-room',receiptTypes:['project-completed']},
+    {id:'game-forge',receiptTypes:['game-developed']},
     {id:'code-task',receiptTypes:['code-characters']}
   ];
   function clone(v){return JSON.parse(JSON.stringify(v));}

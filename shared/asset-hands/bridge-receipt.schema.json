@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/bridge-receipt.schema.json",
+  "title": "AXM Native Bridge Receipt",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "result",
+    "claim",
+    "target_canvas",
+    "operation",
+    "adapter",
+    "change_digest",
+    "bundle_digest",
+    "integrity",
+    "approval",
+    "rollback",
+    "native_execution",
+    "host_reported_applied",
+    "independently_verified_application",
+    "errors",
+    "warnings",
+    "checks"
+  ],
+  "properties": {
+    "schema": { "const": "bridge-receipt" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "HOLD"] },
+    "result": {
+      "enum": [
+        "REFUSED",
+        "STAGED_NOT_EXECUTED",
+        "VALIDATED_NOT_EXECUTED",
+        "HOST_REPORTED_APPLIED",
+        "HOST_REPORTED_INSPECTED",
+        "HOST_APPLIED_AND_VERIFIED"
+      ]
+    },
+    "claim": { "type": "string", "minLength": 1 },
+    "target_canvas": { "type": "object" },
+    "operation": { "enum": ["workflow", "finish", "validate"] },
+    "adapter": { "type": "object" },
+    "change_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "bundle_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "integrity": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "manifest_integrity_verified",
+        "cryptographic_signature_verified"
+      ],
+      "properties": {
+        "algorithm": { "const": "sha-256" },
+        "manifest_integrity_verified": { "type": "boolean" },
+        "cryptographic_signature_verified": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "approval": { "type": "object" },
+    "rollback": { "type": "object" },
+    "native_execution": { "const": false },
+    "host_reported_applied": { "type": "boolean" },
+    "independently_verified_application": { "type": "boolean" },
+    "host_reported_independent_inspection": { "type": "boolean" },
+    "host_application_receipt": { "type": ["object", "null"] },
+    "errors": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "pass", "details"],
+        "properties": {
+          "name": { "type": "string" },
+          "pass": { "type": "boolean" },
+          "details": {}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "result": { "const": "HOST_REPORTED_APPLIED" } }
+      },
+      "then": { "properties": { "host_reported_applied": { "const": true } } }
+    },
+    {
+      "if": {
+        "properties": { "result": { "const": "HOST_APPLIED_AND_VERIFIED" } }
+      },
+      "then": {
+        "properties": {
+          "host_reported_applied": { "const": true },
+          "independently_verified_application": { "const": true }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "result": { "const": "HOST_REPORTED_INSPECTED" } }
+      },
+      "then": {
+        "properties": {
+          "host_reported_applied": { "const": true },
+          "host_reported_independent_inspection": { "const": true },
+          "independently_verified_application": { "const": false }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "result": { "const": "REFUSED" } } },
+      "then": {
+        "properties": {
+          "status": { "const": "HOLD" },
+          "host_reported_applied": { "const": false }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

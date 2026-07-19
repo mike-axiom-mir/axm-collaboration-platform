@@ -40,12 +40,17 @@ test('live server serves static clients and completes start/input/state/settings
   assert.equal(oversizedResponse.status, 413, 'oversized JSON receives a graceful 413');
   assert.equal((await oversizedResponse.json()).error, 'body_too_large');
 
-  for (const route of ['/', '/party-screen.html?party=party_a', '/controller.html', '/controller/controller.js', '/controller/axm-game-night-controls.js', '/game/', '/game/results.css', '/game/inventory.css', '/game/ui/inventory-overlay.js', '/common.css', '/vendor/qrcode.js', '/data/map.json', '/data/item-schema.json', '/data/controller-profile.json', '/data/territory-zones.json']) {
+  for (const route of ['/', '/party-screen.html?party=party_a', '/controller.html', '/controller/controller.js', '/controller/axm-game-night-controls.js', '/game/', '/game/results.css', '/game/inventory.css', '/game/ui/inventory-overlay.js', '/game/ui/city-map.js', '/common.css', '/vendor/qrcode.js', '/data/map.json', '/data/item-schema.json', '/data/group-save-schema.json', '/data/controller-profile.json', '/data/territory-zones.json']) {
     const response = await fetch(`${base}${route}`);
     assert.equal(response.status, 200, `${route} static load`);
   }
   const traversal = await fetch(`${base}/assets/%2e%2e/server/server.js`);
   assert.equal(traversal.status, 404, 'directory traversal is rejected');
+  const saveCatalog = await jsonRequest(base, '/api/group-saves');
+  assert.equal(saveCatalog.response.status, 200);
+  assert.equal(saveCatalog.json.slotCount, 9);
+  assert.equal(saveCatalog.json.slots.length, 9);
+  assert.equal(saveCatalog.json.profileAccountsUsed, false);
 
   const players = Array.from({ length: 4 }, (_, index) => ({
     slot: index + 1,
@@ -117,7 +122,7 @@ test('live server serves static clients and completes start/input/state/settings
   assert.equal(state.json.world.actors[0].regeneration.healthAccumulator, undefined, 'private fractional regeneration state is not broadcast');
   assert.equal(state.json.world.npcs.filter((npc) => npc.kind === 'civilian').length, 8);
   assert.equal(state.json.world.npcs.filter((npc) => npc.kind === 'rival').length, 3);
-  assert.equal(state.json.world.vehicles.length, 2);
+  assert.equal(state.json.world.vehicles.length, 8);
   assert.ok(state.json.world.vehicles.every((vehicle) => vehicle.health === 50 && vehicle.maxHealth === 50));
   assert.equal(state.json.world.actors[0].walletCents, 10000);
   assert.equal(state.json.world.actors[0].personalFundCents, 10000);
@@ -221,7 +226,7 @@ test('live server serves static clients and completes start/input/state/settings
   advanceWorld(runtime.sessionManager.getRunningSession().world);
   const districtState = await jsonRequest(base, `/api/state?roomCode=AXM1&sessionId=${district.json.sessionId}&party=party_b`);
   assert.equal(districtState.json.world.territory.enabled, true);
-  assert.equal(districtState.json.world.territory.zones.length, 5);
+  assert.equal(districtState.json.world.territory.zones.length, 13);
   assert.equal(districtState.json.world.actors.length, 5);
   assert.equal(districtState.json.world.npcs.filter((npc) => npc.kind === 'crew' && npc.partyId === 'party_a').length, 2);
   assert.equal(districtState.json.world.npcs.filter((npc) => npc.kind === 'crew' && npc.partyId === 'party_b').length, 2);

@@ -37,6 +37,22 @@ Covered:
 - `unzip -t`: **PASS — no compressed-data errors**
 - ZIP path inspection: **PASS — 54 entries, 0 unsafe paths, all required files present**
 
+## Local Foundation extension - 2026-07-18
+
+The original 19/19 source-package result above remains preserved as intake
+provenance. The active Workshop adds one contract-only test for the dormant
+physical-controller route.
+
+- Active local result: **PASS - 23/23**
+- Added runtime gamepad adapter: **NO**
+- Added hardware compatibility claim: **NO**
+- Proved architectural boundary: a gamepad is an `inputSource` for a `human`
+  seat, not a new `controllerType`
+- Draft device-binding schema parses: **PASS**
+- Exclusive input-source lease rejects a previous valid hand: **PASS**
+- Runtime neutralize transmits a zero/released semantic packet immediately: **PASS**
+- USB / Bluetooth hardware testing: **UNTESTED**
+
 ## Device and integration truth
 
 - Physical phone test: **UNTESTED**

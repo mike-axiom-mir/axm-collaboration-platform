@@ -1,0 +1,252 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/native-bridge-bundle-v1.schema.json",
+  "title": "AXM Native Bridge Bundle v1",
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "safePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^(?!/)(?![A-Za-z]+:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$)).+$"
+    },
+    "actorApproval": {
+      "type": "object",
+      "required": ["approved", "actor"],
+      "properties": {
+        "approved": { "const": true },
+        "actor": { "type": "string", "minLength": 1, "maxLength": 160 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "id",
+    "adapter",
+    "project",
+    "change",
+    "approval",
+    "rollback",
+    "provenance"
+  ],
+  "properties": {
+    "schema": { "const": "axm.native-bridge-bundle/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "adapter": {
+      "type": "object",
+      "required": [
+        "id",
+        "contract_version",
+        "application_version",
+        "canvas_mediums",
+        "units",
+        "colour_spaces",
+        "transparency_modes",
+        "behaviours",
+        "intended_uses",
+        "supported_constraints",
+        "integrity"
+      ],
+      "properties": {
+        "id": { "enum": ["blender", "godot", "unity", "unreal", "freecad"] },
+        "contract_version": { "const": "1.0.0" },
+        "application_version": {
+          "type": "string",
+          "pattern": "^\\d+(?:\\.\\d+){0,3}$"
+        },
+        "canvas_mediums": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "units": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["px", "mm", "m", "game-world-unit", "*"] }
+        },
+        "colour_spaces": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "transparency_modes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["opaque", "required", "allowed", "*"] }
+        },
+        "behaviours": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "static",
+              "animated",
+              "interactive",
+              "responsive",
+              "tileable",
+              "*"
+            ]
+          }
+        },
+        "intended_uses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "supported_constraints": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "integrity": {
+          "type": "object",
+          "required": ["algorithm", "digest", "cryptographic_signature"],
+          "properties": {
+            "algorithm": { "const": "sha-256" },
+            "digest": { "$ref": "#/$defs/digest" },
+            "cryptographic_signature": { "const": false }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "project": {
+      "type": "object",
+      "required": ["id", "adapter_id", "root", "project_file"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "adapter_id": {
+          "enum": ["blender", "godot", "unity", "unreal", "freecad"]
+        },
+        "root": { "$ref": "#/$defs/safePath" },
+        "project_file": { "$ref": "#/$defs/safePath" }
+      },
+      "additionalProperties": false
+    },
+    "change": {
+      "type": "object",
+      "required": ["target_canvas_digest", "source_artifact", "operations"],
+      "properties": {
+        "target_canvas_digest": { "$ref": "#/$defs/digest" },
+        "source_artifact": {
+          "type": "object",
+          "required": ["digest", "mime", "format", "staged_path"],
+          "properties": {
+            "digest": { "$ref": "#/$defs/digest" },
+            "mime": { "type": "string", "minLength": 1 },
+            "format": { "type": "string", "minLength": 1 },
+            "staged_path": { "$ref": "#/$defs/safePath" }
+          },
+          "additionalProperties": false
+        },
+        "operations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "required": ["type", "path"],
+            "properties": {
+              "type": {
+                "enum": [
+                  "create-directory",
+                  "import-asset",
+                  "set-metadata",
+                  "refresh-index"
+                ]
+              },
+              "path": { "$ref": "#/$defs/safePath" },
+              "source_path": { "$ref": "#/$defs/safePath" },
+              "metadata": { "type": "object" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "approval": {
+      "type": "object",
+      "required": ["bound_change_digest", "human", "machine"],
+      "properties": {
+        "bound_change_digest": { "$ref": "#/$defs/digest" },
+        "human": { "$ref": "#/$defs/actorApproval" },
+        "machine": {
+          "type": "object",
+          "required": ["approved", "actor", "receipt_digest"],
+          "properties": {
+            "approved": { "const": true },
+            "actor": { "type": "string", "minLength": 1, "maxLength": 160 },
+            "receipt_digest": { "$ref": "#/$defs/digest" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "rollback": {
+      "type": "object",
+      "required": [
+        "reversible",
+        "strategy",
+        "snapshot_digest",
+        "snapshot_path"
+      ],
+      "properties": {
+        "reversible": { "const": true },
+        "strategy": { "type": "string", "minLength": 1 },
+        "snapshot_digest": { "$ref": "#/$defs/digest" },
+        "snapshot_path": { "$ref": "#/$defs/safePath" }
+      },
+      "additionalProperties": false
+    },
+    "host_application_receipt": {
+      "type": ["object", "null"],
+      "required": [
+        "receipt_id",
+        "applied",
+        "application_version",
+        "change_digest",
+        "rollback_snapshot_digest"
+      ],
+      "properties": {
+        "receipt_id": { "type": "string", "minLength": 1 },
+        "applied": { "type": "boolean" },
+        "application_version": { "type": "string" },
+        "change_digest": { "$ref": "#/$defs/digest" },
+        "rollback_snapshot_digest": { "$ref": "#/$defs/digest" },
+        "schema": { "type": "string" },
+        "version": { "type": "string" },
+        "transaction_id": { "type": "string", "minLength": 1 },
+        "independently_verified": { "type": "boolean" },
+        "source_digest": { "$ref": "#/$defs/digest" },
+        "project_digest": { "$ref": "#/$defs/digest" },
+        "inspection_digest": { "$ref": "#/$defs/digest" },
+        "adapter_package_id": { "type": "string", "minLength": 1 },
+        "adapter_package_version": { "type": "string", "minLength": 1 },
+        "adapter_package_digest": { "$ref": "#/$defs/digest" },
+        "adapter_signature_key_id": { "type": "string", "minLength": 1 },
+        "adapter_package_signature_verified": { "type": "boolean" },
+        "host_application_version_actual": { "type": "string", "minLength": 1 },
+        "host_executable_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+        "host_executable_digest_verified": { "type": "boolean" },
+        "applied_at": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "provenance": { "type": "object" }
+  },
+  "additionalProperties": false
+}

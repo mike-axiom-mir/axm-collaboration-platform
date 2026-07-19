@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#03080d">
+  <title>AXM Foundation Planet</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <canvas id="scene" aria-label="Interactive foundation planet"></canvas>
+
+  <header class="topbar glass">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <div class="eyebrow">AXM WORLD FOUNDATION / 001</div>
+        <h1>Caelus</h1>
+      </div>
+    </div>
+    <div class="mode-switch" aria-label="View mode">
+      <button class="mode-button active" data-mode="orbit">Orbital</button>
+      <button class="mode-button" data-mode="surface">Surface</button>
+    </div>
+    <div class="clock-block">
+      <span id="clock">12:00</span>
+      <small id="season">DAY 118 · YEAR 1</small>
+    </div>
+  </header>
+
+  <aside class="inspector glass" id="inspector">
+    <section class="readout hero-readout">
+      <div class="section-label">Survey position</div>
+      <div class="coordinate" id="coordinate">0.000° N&nbsp;&nbsp;0.000° E</div>
+      <div class="biome-line"><span class="biome-dot" id="biomeDot"></span><strong id="biome">Scanning…</strong></div>
+      <div class="metric-grid">
+        <div><span>Elevation</span><strong id="elevation">—</strong></div>
+        <div><span>Temperature</span><strong id="temperature">—</strong></div>
+        <div><span id="moistureLabel">Moisture</span><strong id="moisture">—</strong></div>
+        <div><span id="habitabilityLabel">Habitability</span><strong id="habitability">—</strong></div>
+        <div><span id="annualRainLabel">Annual rain</span><strong id="annualRain">—</strong></div>
+        <div><span id="soilDepthLabel">Soil depth</span><strong id="soilDepth">—</strong></div>
+      </div>
+      <div class="geology-card">
+        <div><span>Plate province</span><strong id="plateId">—</strong></div>
+        <div><span>Bedrock</span><strong id="bedrock">—</strong></div>
+        <div><span>Nearest boundary</span><strong id="plateBoundary">—</strong></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-heading">
+        <div>
+          <div class="section-label">World conditions</div>
+          <p>Replace the conditions without replacing the planet.</p>
+        </div>
+      </div>
+      <label class="select-wrap">
+        <span>Condition profile</span>
+        <select id="profileSelect" aria-label="Planet condition profile"></select>
+      </label>
+    </section>
+
+    <section class="weather-section">
+      <div class="weather-head">
+        <div>
+          <div class="section-label">Dynamic environment</div>
+          <strong id="seasonNow">—</strong>
+        </div>
+        <span id="weatherSummary">Scanning</span>
+      </div>
+      <div class="weather-grid">
+        <div><span>Daylight</span><strong id="dayLength">—</strong></div>
+        <div><span>Seasonal temp</span><strong id="seasonalTemp">—</strong></div>
+        <div><span>Pressure</span><strong id="pressure">—</strong></div>
+        <div><span>Wind</span><strong id="wind">—</strong></div>
+        <div><span>Precipitation</span><strong id="precipitation">—</strong></div>
+        <div><span>Snowpack</span><strong id="snowpack">—</strong></div>
+      </div>
+      <div class="risk-row">
+        <label>Drought <strong id="drought">0%</strong><i><b id="droughtBar"></b></i></label>
+        <label>Fire <strong id="fireRisk">0%</strong><i><b id="fireBar"></b></i></label>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-heading">
+        <div>
+          <div class="section-label">World layers</div>
+          <p>Physical, climate and living systems remain independent.</p>
+        </div>
+        <button class="life-master on" id="lifeMaster" aria-pressed="true"><i></i>Life</button>
+      </div>
+      <div class="layer-list" id="layerList"></div>
+    </section>
+
+    <section class="diagnostic-section">
+      <div class="section-label">Streaming diagnostics</div>
+      <div class="diag-grid">
+        <span>Planet radius</span><strong>6,371 km</strong>
+        <span>Loaded sector</span><strong id="sectorSize">120 × 120 km</strong>
+        <span>Vegetation loaded</span><strong id="vegetationCount">0</strong>
+        <span>Fauna groups</span><strong id="faunaCount">0</strong>
+        <span>River reaches</span><strong id="riverCount">0</strong>
+        <span>Local lakes</span><strong id="lakeCount">0</strong>
+        <span>River edge handoffs</span><strong id="riverHandoffs">0</strong>
+        <span>Physics frame</span><strong id="physicsFrame">—</strong>
+        <span>World-state revision</span><strong id="persistenceRevision">r0</strong>
+        <span>Shared authority</span><strong id="hostAuthority" title="Checking the optional named-world host seam">…</strong>
+        <span>Earth-system cell</span><strong id="earthCell">—</strong>
+        <span>Transport domain</span><strong id="transportDomain">—</strong>
+        <span>Lateral water</span><strong id="transportWater">—</strong>
+        <span>Transport closure</span><strong id="transportClosure">—</strong>
+        <span>Dry-air transport</span><strong id="airMassRoute">—</strong>
+        <span>Momentum closure</span><strong id="momentumClosure">—</strong>
+        <span>Coriolis deflection</span><strong id="rotationDeflection">—</strong>
+        <span>Atmospheric kinetic energy</span><strong id="kineticClosure">—</strong>
+        <span>Cloud phase change</span><strong id="cloudPhaseChange">—</strong>
+        <span>Vertical atmosphere</span><strong id="verticalAtmosphere">—</strong>
+        <span>Convective exchange</span><strong id="convectiveExchange">—</strong>
+        <span>Atmospheric moist enthalpy</span><strong id="moistEnthalpyClosure">—</strong>
+        <span>Atmospheric water</span><strong id="atmosphereWater">—</strong>
+        <span>Runoff queue</span><strong id="runoffQueue">—</strong>
+        <span>Runoff destination</span><strong id="runoffDestination">—</strong>
+        <span>River-channel storage</span><strong id="channelStorage">—</strong>
+        <span>River-routing closure</span><strong id="channelClosure">—</strong>
+        <span>Ocean-mouth route</span><strong id="riverMouth">—</strong>
+        <span>Soil / ocean water</span><strong id="soilWater">—</strong>
+        <span>Groundwater / salinity</span><strong id="groundwaterDepth">—</strong>
+        <span>Runoff / freshwater flux</span><strong id="runoffFlux">—</strong>
+        <span>Water residual</span><strong id="waterBudget">—</strong>
+        <span>Surface energy</span><strong id="energyBudget">—</strong>
+        <span>Snow / sea ice</span><strong id="seaIce">—</strong>
+        <span>Regional animals</span><strong id="regionalAnimals">0</strong>
+        <span>Active realms</span><strong id="activeRealms">--</strong>
+        <span>Aquatic species</span><strong id="aquaticSpecies">0</strong>
+        <span>Keystone species</span><strong id="keystoneSpecies">0</strong>
+        <span>Food-web balance</span><strong id="foodWebBalance">—</strong>
+        <span>Births / deaths</span><strong id="populationChange">0 / 0</strong>
+        <span>Young / adult / old</span><strong id="ageCohorts">0 / 0 / 0</strong>
+        <span>Migration net</span><strong id="migrationNet">0</strong>
+        <span>Active wildfire</span><strong id="activeFire">NO</strong>
+        <span>Frame rate</span><strong id="fps">—</strong>
+      </div>
+      <div class="community-card">
+        <div><span>Local community</span><strong id="speciesCount">0 species</strong></div>
+        <div class="species-list" id="speciesList"></div>
+      </div>
+    </section>
+  </aside>
+
+  <div class="mission glass">
+    <div class="section-label" id="modeLabel">Orbital survey</div>
+    <p id="modeHelp">Drag to rotate · wheel to change altitude · double-click land to deploy</p>
+    <div class="mission-actions">
+      <button id="randomLand">Find viable land</button>
+      <button id="freshwater">Follow water</button>
+      <button id="marineSurvey">Survey ocean</button>
+      <button id="resetView" class="quiet">Reset view</button>
+    </div>
+  </div>
+
+  <div class="scale-ruler glass" aria-label="View scale">
+    <span></span><strong id="scaleLabel">2,000 km</strong><span></span>
+  </div>
+
+  <div class="surface-reticle" id="reticle" aria-hidden="true"><i></i></div>
+  <div class="surface-compass glass" id="compass" aria-hidden="true">
+    <b>N</b><span id="heading">000°</span>
+  </div>
+
+  <div class="truth-label">PROCEDURAL EXPLORATION MODEL · NOT A SCIENTIFIC EARTH SIMULATION</div>
+
+  <div class="loading" id="loading">
+    <div class="loading-orbit"><i></i></div>
+    <div class="eyebrow">Constructing deterministic planet</div>
+    <strong id="loadingStatus">Continents and ocean basins</strong>
+    <div class="loading-line"><span id="loadingBar"></span></div>
+  </div>
+
+  <script type="module" src="./app.mjs?v=0.15.0-r15"></script>
+</body>
+</html>

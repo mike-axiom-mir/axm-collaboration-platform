@@ -30,7 +30,11 @@
     'Template index honesty',
     'Registry + settings contracts unforked',
     'Shell branch discipline',
-    'Trust files present (charter, seams, core roots)'
+    'Trust files present (charter, seams, core roots)',
+    'Game Night seam contracts (phone, QR, reload, disconnect, overlays)',
+    'Shared game engine lifecycle seams (seat consent, launch rollback, crash recovery)',
+    'Declared module contracts',
+    'Lifecycle seam gap inventory (reload, disconnect, cleanup)'
   ];
 
   function getField(obj, dotted) {
