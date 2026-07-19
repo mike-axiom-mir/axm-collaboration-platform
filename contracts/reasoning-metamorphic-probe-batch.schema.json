@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-metamorphic-probe-batch/v2",
+  "title": "Mirror private reasoning metamorphic probe batch",
+  "type": "object",
+  "required": ["schema", "batchId", "batchDigest", "inputsDigest", "createdAt", "organ", "sourceReceipts", "results", "frontier", "summary", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-metamorphic-probe-batch/v2" },
+    "batchId": { "type": "string", "pattern": "^reasoning-metamorphic-[a-f0-9]{20}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "inputsDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "createdAt": { "type": ["string", "null"] },
+    "organ": { "type": "object" },
+    "sourceReceipts": { "type": "array" },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["probeId", "relation", "composition", "parentReceiptId", "parentReceiptDigest", "parentSourceGroup", "expectedDecision", "observedDecision", "state", "behaviorMatched", "reasoningSessionId", "principleTraceId", "sessionDigest", "sessionFile", "sessionSha256", "negativeExperienceReceiptId", "negativeExperienceReceiptDigest", "experienceStorageState", "semanticConsolidation"],
+        "properties": {
+          "relation": { "const": "DECISION_INVARIANT" },
+          "composition": {
+            "type": "object",
+            "required": ["depth", "operatorIds", "generated", "learnedWeights"],
+            "properties": {
+              "depth": { "enum": [1, 2] },
+              "operatorIds": { "type": "array", "minItems": 1, "maxItems": 2 },
+              "generated": { "type": "boolean" },
+              "learnedWeights": { "const": false }
+            },
+            "additionalProperties": false
+          },
+          "state": { "enum": ["INVARIANT_CONFIRMED", "COUNTEREXAMPLE_FOUND"] },
+          "sessionSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "negativeExperienceReceiptId": { "type": ["string", "null"] },
+          "semanticConsolidation": { "const": false }
+        },
+        "additionalProperties": true
+      }
+    },
+    "frontier": { "type": "object" },
+    "summary": { "type": "object" },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string" }
+  },
+  "additionalProperties": false
+}

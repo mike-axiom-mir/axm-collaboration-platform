@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.readiness-probe-recipe-admission.schema.json",
+  "title": "AXM Mirror readiness probe recipe admission",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "cellId", "assessmentDigest", "handRequestId", "handRequestDigest", "requirementId", "recipeId", "recipeDigest", "classification", "probe", "review", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.readiness-probe-recipe-admission/v1" },
+    "cellId": { "const": "axm.mirror.cell/readiness-probe-recipe-admission-v1" },
+    "assessmentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "handRequestId": { "type": "string" },
+    "handRequestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "requirementId": { "type": "string" },
+    "recipeId": { "type": "string" },
+    "recipeDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "classification": { "enum": ["APPROVED_DISPOSABLE_CANDIDATE_BUILD", "HELD_RECIPE_NOT_APPROVED"] },
+    "probe": { "type": ["object", "null"] },
+    "review": { "type": "object" },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string" }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.cognitive-resource-calibration-report/v1",
+  "title": "Mirror cognitive-resource local-order coverage report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "reportId", "reportDigest", "organ", "calibrationKey", "source", "targetCoverageBasisPoints", "evaluations", "coverage", "chronology", "state", "calibrationClaim", "accuracyClaim", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.cognitive-resource-calibration-report/v1" },
+    "reportId": { "type": "string", "pattern": "^cognitive-resource-calibration-[a-f0-9]{24}$" },
+    "reportDigest": { "$ref": "#/$defs/digest" },
+    "organ": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "learnedWeights", "calibrationModel", "automaticSelection"],
+      "properties": {
+        "id": { "const": "axm.mirror.cognitive-resource-calibration-cell/v1" },
+        "learnedWeights": { "const": false }, "calibrationModel": { "const": false }, "automaticSelection": { "const": false }
+      }
+    },
+    "calibrationKey": { "$ref": "#/$defs/digest" },
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["predictionIds", "predictionDigests", "observationIds", "observationDigests", "predictions", "evaluatedPredictions", "pendingPredictions", "heldPredictions", "distinctEvaluatedStartingStates"],
+      "properties": {
+        "predictionIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^cognitive-resource-prediction-[a-f0-9]{24}$" } },
+        "predictionDigests": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/digest" } },
+        "observationIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^cognitive-work-observation-[a-f0-9]{24}$" } },
+        "observationDigests": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/digest" } },
+        "predictions": { "$ref": "#/$defs/count" }, "evaluatedPredictions": { "$ref": "#/$defs/count" }, "pendingPredictions": { "$ref": "#/$defs/count" },
+        "heldPredictions": { "$ref": "#/$defs/count" }, "distinctEvaluatedStartingStates": { "$ref": "#/$defs/count" }
+      }
+    },
+    "targetCoverageBasisPoints": { "type": "integer", "minimum": 1, "maximum": 9999 },
+    "evaluations": { "type": "array", "items": { "$ref": "#/$defs/evaluation" } },
+    "coverage": {
+      "type": "object", "additionalProperties": false, "required": ["overall", "metrics"],
+      "properties": {
+        "overall": { "$ref": "#/$defs/coverage" },
+        "metrics": {
+          "type": "object", "additionalProperties": false,
+          "required": ["totalTokens", "wallMilliseconds", "cpuCoreMilliseconds", "acceleratorMilliseconds", "peakMemoryBytes", "providerComputeUnitsMicros", "moneyMicros", "energyMilliwattHours", "carbonMilligrams"],
+          "properties": {
+            "totalTokens": { "$ref": "#/$defs/coverage" }, "wallMilliseconds": { "$ref": "#/$defs/coverage" }, "cpuCoreMilliseconds": { "$ref": "#/$defs/coverage" },
+            "acceleratorMilliseconds": { "$ref": "#/$defs/coverage" }, "peakMemoryBytes": { "$ref": "#/$defs/coverage" }, "providerComputeUnitsMicros": { "$ref": "#/$defs/coverage" },
+            "moneyMicros": { "$ref": "#/$defs/coverage" }, "energyMilliwattHours": { "$ref": "#/$defs/coverage" }, "carbonMilligrams": { "$ref": "#/$defs/coverage" }
+          }
+        }
+      }
+    },
+    "chronology": {
+      "type": "object", "additionalProperties": false,
+      "required": ["localAppendOrderObserved", "externalTimeCertified", "independentAuthorshipCertified", "pendingOutcomesExcludedFromDenominatorAndVisible"],
+      "properties": {
+        "localAppendOrderObserved": { "const": true }, "externalTimeCertified": { "const": false }, "independentAuthorshipCertified": { "const": false },
+        "pendingOutcomesExcludedFromDenominatorAndVisible": { "const": true }
+      }
+    },
+    "state": { "enum": ["HOLD_INSUFFICIENT_EVALUATED_PREDICTIONS", "EMPIRICAL_LOCAL_ORDER_COVERAGE_NOT_INDEPENDENTLY_TIME_CERTIFIED"] },
+    "calibrationClaim": { "const": null },
+    "accuracyClaim": { "const": null },
+    "authority": { "$ref": "#/$defs/authority" },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "count": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+    "nullableCount": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/count" }] },
+    "nullableBasisPoints": { "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 0, "maximum": 10000 }] },
+    "metricResult": {
+      "type": "object", "additionalProperties": false, "required": ["state", "actual", "hit"],
+      "properties": {
+        "state": { "enum": ["NOT_PREDICTED", "HOLD_OUTCOME_METRIC_ABSENT", "EVALUATED"] },
+        "actual": { "$ref": "#/$defs/nullableCount" },
+        "hit": { "oneOf": [{ "type": "null" }, { "type": "boolean" }] }
+      }
+    },
+    "metricResults": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["totalTokens", "wallMilliseconds", "cpuCoreMilliseconds", "acceleratorMilliseconds", "peakMemoryBytes", "providerComputeUnitsMicros", "moneyMicros", "energyMilliwattHours", "carbonMilligrams"],
+          "properties": {
+            "totalTokens": { "$ref": "#/$defs/metricResult" }, "wallMilliseconds": { "$ref": "#/$defs/metricResult" }, "cpuCoreMilliseconds": { "$ref": "#/$defs/metricResult" },
+            "acceleratorMilliseconds": { "$ref": "#/$defs/metricResult" }, "peakMemoryBytes": { "$ref": "#/$defs/metricResult" }, "providerComputeUnitsMicros": { "$ref": "#/$defs/metricResult" },
+            "moneyMicros": { "$ref": "#/$defs/metricResult" }, "energyMilliwattHours": { "$ref": "#/$defs/metricResult" }, "carbonMilligrams": { "$ref": "#/$defs/metricResult" }
+          }
+        }
+      ]
+    },
+    "evaluation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["predictionId", "predictionDigest", "state", "observationId", "observationDigest", "metricResults", "overallHit"],
+      "properties": {
+        "predictionId": { "type": "string", "pattern": "^cognitive-resource-prediction-[a-f0-9]{24}$" }, "predictionDigest": { "$ref": "#/$defs/digest" },
+        "state": { "enum": ["PENDING_NO_MATCHING_OUTCOME", "HOLD_AMBIGUOUS_MULTIPLE_OUTCOMES", "HOLD_INELIGIBLE_PREDICTION_OR_OUTCOME", "HOLD_COST_BINDING_MISMATCH", "HOLD_PREDICTED_METRIC_ABSENT_FROM_OUTCOME", "EVALUATED"] },
+        "observationId": { "oneOf": [{ "type": "null" }, { "type": "string", "pattern": "^cognitive-work-observation-[a-f0-9]{24}$" }] },
+        "observationDigest": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/digest" }] },
+        "metricResults": { "$ref": "#/$defs/metricResults" },
+        "overallHit": { "oneOf": [{ "type": "null" }, { "type": "boolean" }] }
+      }
+    },
+    "coverage": {
+      "type": "object", "additionalProperties": false, "required": ["evaluated", "hits", "misses", "observedCoverageBasisPoints"],
+      "properties": { "evaluated": { "$ref": "#/$defs/count" }, "hits": { "$ref": "#/$defs/count" }, "misses": { "$ref": "#/$defs/count" }, "observedCoverageBasisPoints": { "$ref": "#/$defs/nullableBasisPoints" } }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["calibratedForecastClaim", "costOptimization", "modelSelection", "hardwareSelection", "budgetAllocation", "permissionGrant", "trainingAdmission", "runtimePromotion", "canonChange", "worldAction"],
+      "properties": {
+        "calibratedForecastClaim": { "const": false }, "costOptimization": { "const": false }, "modelSelection": { "const": false }, "hardwareSelection": { "const": false },
+        "budgetAllocation": { "const": false }, "permissionGrant": { "const": false }, "trainingAdmission": { "const": false }, "runtimePromotion": { "const": false },
+        "canonChange": { "const": false }, "worldAction": { "const": false }
+      }
+    }
+  }
+}

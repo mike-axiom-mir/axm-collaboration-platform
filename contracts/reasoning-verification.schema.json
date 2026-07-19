@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-verification/v1",
+  "title": "Mirror reasoning verification receipt",
+  "type": "object",
+  "required": ["schema", "id", "actionId", "claim", "evidenceRefs", "method", "result", "limitations", "missingEvidenceRefs", "source", "receiptDigest"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-verification/v1" },
+    "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "actionId": { "type": ["string", "null"] },
+    "claim": { "type": "string", "minLength": 1, "maxLength": 1600 },
+    "evidenceRefs": { "type": "array", "items": { "type": "string" }, "maxItems": 256 },
+    "method": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "result": { "enum": ["PASS", "HOLD", "FAIL", "CONFLICT"] },
+    "limitations": { "type": "array", "maxItems": 64 },
+    "missingEvidenceRefs": { "type": "array", "items": { "type": "string" }, "maxItems": 256 },
+    "source": { "const": "SUPPLIED_RECEIPT" },
+    "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

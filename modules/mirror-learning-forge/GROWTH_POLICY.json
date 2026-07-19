@@ -1,0 +1,37 @@
+{
+  "schema": "axm.mirror.growth-policy/v1",
+  "principle": "Experience may grow exponentially; authority may not.",
+  "stages": [
+    {
+      "name": "SEED",
+      "max_vocab": 512,
+      "max_episodes_per_cycle": 32,
+      "max_challengers_per_cycle": 2,
+      "max_promotions_per_cycle": 1,
+      "unlock": "manual review only"
+    },
+    {
+      "name": "SPROUT",
+      "max_vocab": 1024,
+      "max_episodes_per_cycle": 96,
+      "max_challengers_per_cycle": 4,
+      "max_promotions_per_cycle": 1,
+      "minimum_evidence": "3 verified promotions, at least 100 held-out cases, no rollback failure"
+    },
+    {
+      "name": "SAPLING",
+      "max_vocab": 2048,
+      "max_episodes_per_cycle": 256,
+      "max_challengers_per_cycle": 6,
+      "max_promotions_per_cycle": 1,
+      "minimum_evidence": "10 verified promotions, at least 500 held-out cases, at most one repaired rollback"
+    }
+  ],
+  "never_automatic": [
+    "stage unlock",
+    "root change",
+    "tool authority",
+    "live adapter connection",
+    "promotion"
+  ]
+}

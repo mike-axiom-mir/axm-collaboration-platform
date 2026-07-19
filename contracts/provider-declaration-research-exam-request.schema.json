@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.provider-declaration-research-exam-request.schema.json",
+  "title": "AXM Mirror provider declaration research exam request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "examRequestId", "examRequestDigest", "sourceHand", "knownRelations", "unresolvedDimensions", "architectureHypotheses", "caseFamilies", "independence", "architectureDecision", "examExecutorState", "state", "humanWordingAuthority", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.provider-declaration-research-exam-request/v1" },
+    "examRequestId": { "type": "string", "pattern": "^provider-declaration-research-exam-[a-f0-9]{20}$" },
+    "examRequestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "sourceHand": { "type": "object" },
+    "knownRelations": { "type": "object" },
+    "unresolvedDimensions": { "type": "array", "minItems": 1, "uniqueItems": true },
+    "architectureHypotheses": { "type": "array", "minItems": 4, "maxItems": 4 },
+    "caseFamilies": { "type": "array", "minItems": 10, "maxItems": 10 },
+    "independence": { "type": "object" },
+    "architectureDecision": { "const": "UNRESOLVED_REQUIRES_INDEPENDENT_EXPERIMENT" },
+    "examExecutorState": { "const": "NOT_BUILT" },
+    "state": { "const": "REVIEWABLE_PROVIDER_DECLARATION_RESEARCH_EXAM_NOT_EXECUTED" },
+    "humanWordingAuthority": { "const": false },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

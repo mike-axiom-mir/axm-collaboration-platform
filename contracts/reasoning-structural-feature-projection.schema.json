@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-structural-feature-projection/v1",
+  "title": "Mirror schema-selected reasoning structural feature projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "projectionId", "projectionDigest", "organ", "selector", "source", "observations", "features", "negativeFeatures", "unknowns", "summary", "policy", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-structural-feature-projection/v1" },
+    "projectionId": { "type": "string", "pattern": "^reasoning-structural-features-[a-f0-9]{24}$" },
+    "projectionDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "learnedWeights"],
+      "properties": {
+        "id": { "const": "axm.mirror.organ/reasoning-structural-feature-projection-v1" },
+        "status": { "const": "TEST_SCHEMA_SELECTED_MACHINE_FEATURES" },
+        "learnedWeights": { "const": false }
+      }
+    },
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "selectorId", "selectorDigest", "sourceSchema", "rules"],
+      "properties": {
+        "schema": { "const": "axm.mirror.structural-feature-selector/v1" },
+        "selectorId": { "type": "string", "minLength": 1 },
+        "selectorDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "sourceSchema": { "const": "axm.mirror.reasoning-feature-source/v1" },
+        "rules": { "type": "integer", "minimum": 1, "maximum": 64 }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "selectionDigest", "fullSourcePersisted", "proseFieldsRead", "idsRead"],
+      "properties": {
+        "schema": { "const": "axm.mirror.reasoning-feature-source/v1" },
+        "selectionDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "fullSourcePersisted": { "const": false },
+        "proseFieldsRead": { "const": 0 },
+        "idsRead": { "const": 0 }
+      }
+    },
+    "observations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "mode", "observedValues", "positiveValues", "nonPositiveValues", "observations"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "mode": { "enum": ["BOOLEAN", "ENUM", "PRESENCE"] },
+          "observedValues": { "type": "array", "maxItems": 32, "uniqueItems": true, "items": { "type": "string" } },
+          "positiveValues": { "type": "array", "maxItems": 32, "uniqueItems": true, "items": { "type": "string" } },
+          "nonPositiveValues": { "type": "array", "maxItems": 32, "uniqueItems": true, "items": { "type": "string" } },
+          "observations": { "type": "integer", "minimum": 0, "maximum": 32 }
+        }
+      }
+    },
+    "features": { "type": "array", "maxItems": 256, "uniqueItems": true, "items": { "type": "string", "pattern": "^structural-fact:" } },
+    "negativeFeatures": { "type": "array", "maxItems": 256, "uniqueItems": true, "items": { "type": "string", "pattern": "^structural-negative:" } },
+    "unknowns": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "type": "string" } },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rules", "rulesObserved", "positiveStructuralFeatures", "nonPositiveStructuralFeatures", "proseFieldsRead", "idsRead", "decisionsMade", "permissionsGranted", "trainingAdmissions", "worldActions"],
+      "properties": {
+        "rules": { "type": "integer", "minimum": 1, "maximum": 64 },
+        "rulesObserved": { "type": "integer", "minimum": 0, "maximum": 64 },
+        "positiveStructuralFeatures": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "nonPositiveStructuralFeatures": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "proseFieldsRead": { "const": 0 },
+        "idsRead": { "const": 0 },
+        "decisionsMade": { "const": 0 },
+        "permissionsGranted": { "const": 0 },
+        "trainingAdmissions": { "const": 0 },
+        "worldActions": { "const": 0 }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaSelectedPathsOnly", "finiteMachineValuesOnly", "unselectedFieldsIgnored", "proseCanBecomeFeature", "identifiersCanBecomeFeature", "selectorChangeRequiresNewDigest"],
+      "properties": {
+        "schemaSelectedPathsOnly": { "const": true },
+        "finiteMachineValuesOnly": { "const": true },
+        "unselectedFieldsIgnored": { "const": true },
+        "proseCanBecomeFeature": { "const": false },
+        "identifiersCanBecomeFeature": { "const": false },
+        "selectorChangeRequiresNewDigest": { "const": true }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["activeRuntime", "sourceRead", "semanticTruthWrite", "evidenceAdmission", "decisionAuthority", "permissionGrant", "trainingAdmission", "toolUse", "runtimePromotion", "canonChange", "worldAction"],
+      "properties": {
+        "activeRuntime": { "const": false },
+        "sourceRead": { "const": true },
+        "semanticTruthWrite": { "const": false },
+        "evidenceAdmission": { "const": false },
+        "decisionAuthority": { "const": false },
+        "permissionGrant": { "const": false },
+        "trainingAdmission": { "const": false },
+        "toolUse": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "worldAction": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

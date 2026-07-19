@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-native-evidence-eligibility-batch/v1",
+  "title": "Mirror hardcoded native reasoning-receipt evidence eligibility batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "organ", "source", "sourceHolds", "assessments", "summary", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-native-evidence-eligibility-batch/v1" },
+    "batchId": { "type": "string", "pattern": "^foundation-native-evidence-eligibility-[a-f0-9]{24}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "learnedWeights", "hardcodedEvidenceSemantics", "evaluatesEveryArtifact", "firstMatchSelection", "eventInduction"],
+      "properties": {
+        "id": { "const": "axm.mirror.foundation-native-evidence-eligibility-organ/v1" },
+        "status": { "const": "TEST_HARDCODED_REASONING_RECEIPT_NATIVE_VERIFICATION_AND_EXACT_EVIDENCE_ELIGIBILITY" },
+        "learnedWeights": { "const": false },
+        "hardcodedEvidenceSemantics": { "const": "PASSIVE_VERIFIED_REAL_LOCAL_NEGATIVE_EPISODE" },
+        "evaluatesEveryArtifact": { "const": true },
+        "firstMatchSelection": { "const": false },
+        "eventInduction": { "const": false }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nativeInventoryBatchId", "nativeInventoryBatchDigest", "adapterRequestBatchId", "adapterRequestBatchDigest", "handBatchId", "handBatchDigest", "cellSourcePath", "cellSourceSha256", "organSourcePath", "organSourceSha256", "nativeVerifierSourcePath", "nativeVerifierSourceSha256", "envelopeAdapterSourcePath", "envelopeAdapterSourceSha256"],
+      "properties": {
+        "nativeInventoryBatchId": { "type": "string", "pattern": "^foundation-capability-native-artifacts-[a-f0-9]{24}$" },
+        "nativeInventoryBatchDigest": { "$ref": "#/$defs/digest" },
+        "adapterRequestBatchId": { "type": "string", "pattern": "^foundation-capability-output-adapters-[a-f0-9]{24}$" },
+        "adapterRequestBatchDigest": { "$ref": "#/$defs/digest" },
+        "handBatchId": { "type": "string", "pattern": "^foundation-development-hands-[a-f0-9]{24}$" },
+        "handBatchDigest": { "$ref": "#/$defs/digest" },
+        "cellSourcePath": { "const": "kernel/reasoning-experience-foundation-evidence-cell.js" },
+        "cellSourceSha256": { "$ref": "#/$defs/digest" },
+        "organSourcePath": { "const": "organs/foundation-native-evidence-eligibility-organ.js" },
+        "organSourceSha256": { "$ref": "#/$defs/digest" },
+        "nativeVerifierSourcePath": { "const": "organs/reasoning-experience-organ.js" },
+        "nativeVerifierSourceSha256": { "$ref": "#/$defs/digest" },
+        "envelopeAdapterSourcePath": { "const": "organs/foundation-evidence-envelope-adapter-organ.js" },
+        "envelopeAdapterSourceSha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "sourceHolds": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["inventoryResultId", "adapterRequestId", "capabilityId", "nativeOutputKind", "inventoryState", "artifactsAvailable", "assessmentState"],
+        "properties": {
+          "inventoryResultId": { "type": "string", "minLength": 1 },
+          "adapterRequestId": { "type": "string", "minLength": 1 },
+          "capabilityId": { "type": "string", "minLength": 1 },
+          "nativeOutputKind": { "type": "string", "minLength": 1 },
+          "inventoryState": { "type": "string", "minLength": 1 },
+          "artifactsAvailable": { "type": "integer", "minimum": 0 },
+          "assessmentState": { "enum": ["ARTIFACTS_ASSESSED_SEPARATELY", "HOLD_NO_ARTIFACTS_AVAILABLE"] }
+        }
+      }
+    },
+    "assessments": {
+      "type": "array",
+      "maxItems": 1024,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["assessmentId", "inventoryResultId", "adapterRequestId", "adapterRequestDigest", "handRequestId", "handRequestDigest", "capabilityId", "nativeOutputKind", "artifact", "native", "criteria", "failedCriteria", "state", "issue", "evidenceCandidate", "authority", "boundary"],
+        "properties": {
+          "assessmentId": { "type": "string", "pattern": "^foundation-native-evidence-assessment-[a-f0-9]{24}$" },
+          "inventoryResultId": { "type": "string", "minLength": 1 },
+          "adapterRequestId": { "type": "string", "minLength": 1 },
+          "adapterRequestDigest": { "$ref": "#/$defs/digest" },
+          "handRequestId": { "type": "string", "minLength": 1 },
+          "handRequestDigest": { "$ref": "#/$defs/digest" },
+          "capabilityId": { "type": "string", "minLength": 1 },
+          "nativeOutputKind": { "type": "string", "minLength": 1 },
+          "artifact": { "type": "object" },
+          "native": { "type": "object" },
+          "criteria": { "type": ["object", "null"] },
+          "failedCriteria": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+          "state": { "type": "string", "minLength": 1 },
+          "issue": { "type": ["string", "null"] },
+          "evidenceCandidate": { "type": ["object", "null"] },
+          "authority": { "type": "object", "additionalProperties": { "const": false } },
+          "boundary": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "summary": { "type": "object" },
+    "state": {
+      "enum": [
+        "ELIGIBLE_NATIVE_EVIDENCE_CANDIDATES_PRODUCED_NOT_ADMITTED",
+        "HOLD_NO_ELIGIBLE_NATIVE_EVIDENCE_CANDIDATES",
+        "HOLD_NO_NATIVE_ARTIFACTS_TO_ASSESS"
+      ]
+    },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

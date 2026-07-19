@@ -1,0 +1,146 @@
+{
+  "schema": "axm.mirror.reasoning-strategy-training-fixtures/v1",
+  "status": "TEST",
+  "usePermission": "allowed",
+  "permissionBasis": "Mirror project fixtures authored for private reasoning-strategy challenger training.",
+  "cases": [
+    {
+      "caseId": "train-blocking-local-service",
+      "sourceGroup": "train/blocking/local-service",
+      "goal": "A local service is unreachable; choose the next bounded reasoning move.",
+      "evidence": [{ "id": "initial", "kind": "observation", "status": "observed", "statement": "The client reports connection refused.", "source": { "kind": "fixture", "id": "train-blocking-local-service" } }],
+      "unknowns": [{ "id": "service-state", "question": "Is the service process listening?", "blocking": true }],
+      "actions": [
+        { "id": "ask-state", "kind": "ask", "label": "Observe the service state before changing configuration", "risk": "low", "reversible": true, "recovery": "No mutation." },
+        { "id": "assume-port", "kind": "ask", "label": "Assume the port is wrong and continue", "risk": "low", "reversible": true, "recovery": "No mutation." }
+      ],
+      "pathProfiles": [
+        { "actionId": "ask-state", "approach": "Answer the blocking unknown with one direct observation.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["ask-blocking-unknown"] },
+        { "actionId": "assume-port", "approach": "Continue from an unsupported guess.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["guess-through-unknown"] }
+      ],
+      "correctActionId": "ask-state",
+      "resolvedSeams": ["blocking-unknowns"]
+    },
+    {
+      "caseId": "train-blocking-export",
+      "sourceGroup": "train/blocking/export",
+      "goal": "An export is absent; choose the next bounded reasoning move.",
+      "evidence": [{ "id": "initial", "kind": "observation", "status": "observed", "statement": "No export receipt is present.", "source": { "kind": "fixture", "id": "train-blocking-export" } }],
+      "unknowns": [{ "id": "export-state", "question": "Did the export job run?", "blocking": true }],
+      "actions": [
+        { "id": "ask-state", "kind": "ask", "label": "Inspect the job state", "risk": "low", "reversible": true, "recovery": "No mutation." },
+        { "id": "assume-complete", "kind": "ask", "label": "Treat absence as delayed visibility", "risk": "low", "reversible": true, "recovery": "No mutation." }
+      ],
+      "pathProfiles": [
+        { "actionId": "ask-state", "approach": "Answer the blocking unknown with one direct observation.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["ask-blocking-unknown"] },
+        { "actionId": "assume-complete", "approach": "Continue from an unsupported guess.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["guess-through-unknown"] }
+      ],
+      "correctActionId": "ask-state",
+      "resolvedSeams": ["blocking-unknowns"]
+    },
+    {
+      "caseId": "train-conflict-manifest",
+      "sourceGroup": "train/conflict/manifest",
+      "goal": "Two module inventories disagree; choose the next bounded reasoning move.",
+      "evidence": [
+        { "id": "left", "kind": "observation", "status": "observed", "statement": "The manifest lists eight modules.", "contradicts": ["right"], "source": { "kind": "fixture", "id": "manifest" } },
+        { "id": "right", "kind": "observation", "status": "observed", "statement": "The runtime lists nine modules.", "contradicts": ["left"], "source": { "kind": "fixture", "id": "runtime" } }
+      ],
+      "actions": [
+        { "id": "discriminate", "kind": "observe", "label": "Compare timestamps and scopes", "risk": "low", "reversible": true, "recovery": "No mutation." },
+        { "id": "choose-left", "kind": "observe", "label": "Prefer the manifest without a discriminating check", "risk": "low", "reversible": true, "recovery": "No mutation." }
+      ],
+      "pathProfiles": [
+        { "actionId": "discriminate", "approach": "Run a check that can discriminate between preserved conflicting records.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["discriminate-conflict"] },
+        { "actionId": "choose-left", "approach": "Select a preferred source without resolving the conflict.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["pick-preferred-source"] }
+      ],
+      "correctActionId": "discriminate",
+      "resolvedSeams": ["unresolved-contradictions"]
+    },
+    {
+      "caseId": "train-conflict-sensor",
+      "sourceGroup": "train/conflict/sensor",
+      "goal": "Two sensor receipts disagree; choose the next bounded reasoning move.",
+      "evidence": [
+        { "id": "left", "kind": "observation", "status": "observed", "statement": "Sensor A reports open.", "contradicts": ["right"], "source": { "kind": "fixture", "id": "sensor-a" } },
+        { "id": "right", "kind": "observation", "status": "observed", "statement": "Sensor B reports closed.", "contradicts": ["left"], "source": { "kind": "fixture", "id": "sensor-b" } }
+      ],
+      "actions": [
+        { "id": "discriminate", "kind": "observe", "label": "Check calibration and observation time", "risk": "low", "reversible": true, "recovery": "No mutation." },
+        { "id": "choose-newer", "kind": "observe", "label": "Choose the newer sensor by name", "risk": "low", "reversible": true, "recovery": "No mutation." }
+      ],
+      "pathProfiles": [
+        { "actionId": "discriminate", "approach": "Run a check that can discriminate between preserved conflicting records.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["discriminate-conflict"] },
+        { "actionId": "choose-newer", "approach": "Select a preferred source without resolving the conflict.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["pick-preferred-source"] }
+      ],
+      "correctActionId": "discriminate",
+      "resolvedSeams": ["unresolved-contradictions"]
+    },
+    {
+      "caseId": "train-tool-file",
+      "sourceGroup": "train/tool/file",
+      "goal": "A claim depends on current file contents; choose the next bounded reasoning move.",
+      "evidence": [{ "id": "initial", "kind": "human-assertion", "status": "asserted", "statement": "The file may have changed.", "source": { "kind": "fixture", "id": "train-tool-file" } }],
+      "actions": [
+        { "id": "request-tool", "kind": "ask", "label": "Request a scoped read", "risk": "low", "reversible": true, "recovery": "No mutation." },
+        { "id": "infer-old", "kind": "ask", "label": "Infer from the earlier description", "risk": "low", "reversible": true, "recovery": "No mutation." }
+      ],
+      "pathProfiles": [
+        { "actionId": "request-tool", "approach": "Request the minimum external observation without assuming authority.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["request-bounded-tool"], "toolRequest": { "tool": "file-reader", "scope": "one named file", "reason": "Current bytes are required." } },
+        { "actionId": "infer-old", "approach": "Answer from stale context without checking current state.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["infer-without-tool"] }
+      ],
+      "correctActionId": "request-tool",
+      "resolvedSeams": []
+    },
+    {
+      "caseId": "train-tool-clock",
+      "sourceGroup": "train/tool/clock",
+      "goal": "A decision depends on current time; choose the next bounded reasoning move.",
+      "evidence": [{ "id": "initial", "kind": "human-assertion", "status": "asserted", "statement": "The earlier time may be stale.", "source": { "kind": "fixture", "id": "train-tool-clock" } }],
+      "actions": [
+        { "id": "request-tool", "kind": "ask", "label": "Request a scoped clock reading", "risk": "low", "reversible": true, "recovery": "No mutation." },
+        { "id": "infer-time", "kind": "ask", "label": "Estimate from the previous timestamp", "risk": "low", "reversible": true, "recovery": "No mutation." }
+      ],
+      "pathProfiles": [
+        { "actionId": "request-tool", "approach": "Request the minimum external observation without assuming authority.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["request-bounded-tool"], "toolRequest": { "tool": "clock", "scope": "one current timestamp", "reason": "Current time is required." } },
+        { "actionId": "infer-time", "approach": "Answer from stale context without checking current state.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["infer-without-tool"] }
+      ],
+      "correctActionId": "request-tool",
+      "resolvedSeams": []
+    },
+    {
+      "caseId": "train-assumption-settings",
+      "sourceGroup": "train/assumption/settings",
+      "goal": "Several settings changed with a score; choose the next bounded reasoning move.",
+      "evidence": [{ "id": "initial", "kind": "test", "status": "tested", "statement": "The score changed after a multi-setting update.", "source": { "kind": "fixture", "id": "train-assumption-settings" } }],
+      "assumptions": [{ "id": "single-cause", "statement": "One setting caused the change.", "status": "OPEN", "evidenceRefs": [] }],
+      "actions": [
+        { "id": "test-assumption", "kind": "observe", "label": "Isolate one setting with a reversible comparison", "risk": "low", "reversible": true, "recovery": "No mutation." },
+        { "id": "accept-cause", "kind": "observe", "label": "Accept the first plausible cause", "risk": "low", "reversible": true, "recovery": "No mutation." }
+      ],
+      "pathProfiles": [
+        { "actionId": "test-assumption", "approach": "Test the visible assumption with a reversible disconfirming comparison.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["test-open-assumption"] },
+        { "actionId": "accept-cause", "approach": "Promote the first plausible assumption.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["promote-assumption"] }
+      ],
+      "correctActionId": "test-assumption",
+      "resolvedSeams": []
+    },
+    {
+      "caseId": "train-assumption-layout",
+      "sourceGroup": "train/assumption/layout",
+      "goal": "A layout changed after several edits; choose the next bounded reasoning move.",
+      "evidence": [{ "id": "initial", "kind": "test", "status": "tested", "statement": "The layout changed after a batch edit.", "source": { "kind": "fixture", "id": "train-assumption-layout" } }],
+      "assumptions": [{ "id": "font-cause", "statement": "The font edit caused the layout change.", "status": "OPEN", "evidenceRefs": [] }],
+      "actions": [
+        { "id": "test-assumption", "kind": "observe", "label": "Isolate the edit in a reversible comparison", "risk": "low", "reversible": true, "recovery": "No mutation." },
+        { "id": "accept-cause", "kind": "observe", "label": "Accept the most salient edit as cause", "risk": "low", "reversible": true, "recovery": "No mutation." }
+      ],
+      "pathProfiles": [
+        { "actionId": "test-assumption", "approach": "Test the visible assumption with a reversible disconfirming comparison.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["test-open-assumption"] },
+        { "actionId": "accept-cause", "approach": "Promote the first plausible assumption.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["promote-assumption"] }
+      ],
+      "correctActionId": "test-assumption",
+      "resolvedSeams": []
+    }
+  ]
+}

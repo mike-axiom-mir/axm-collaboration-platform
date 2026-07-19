@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-capability-native-output-envelope-input/v1",
+  "title": "Mirror bounded native capability output for generic evidence-candidate enveloping",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "capabilityId", "declarationDigest", "nativeOutputKind", "nativeArtifact", "nativeArtifactDigest", "permission", "provenance", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-capability-native-output-envelope-input/v1" },
+    "capabilityId": { "type": "string", "minLength": 1 },
+    "declarationDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "nativeOutputKind": { "type": "string", "minLength": 1 },
+    "nativeArtifact": {},
+    "nativeArtifactDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "basis", "attribution"],
+      "properties": {
+        "status": { "enum": ["ALLOWED", "UNKNOWN", "FORBIDDEN"] },
+        "basis": { "type": ["string", "null"] },
+        "attribution": { "type": ["string", "null"] }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceClass", "authorshipDeclaration", "authorshipState", "independenceDeclaration", "independenceState", "observedOutcome", "nativeAcceptanceState"],
+      "properties": {
+        "sourceClass": { "enum": ["REAL_LOCAL", "OUTSIDE_SUBMISSION", "SYNTHETIC_FIXTURE", "UNKNOWN"] },
+        "authorshipDeclaration": { "type": ["string", "null"] },
+        "authorshipState": { "enum": ["DECLARED_NOT_CERTIFIED", "UNKNOWN"] },
+        "independenceDeclaration": { "type": ["boolean", "null"] },
+        "independenceState": { "enum": ["DECLARED_NOT_CERTIFIED", "UNKNOWN"] },
+        "observedOutcome": { "enum": ["POSITIVE", "NEGATIVE", "UNKNOWN", "NOT_APPLICABLE"] },
+        "nativeAcceptanceState": { "type": "string", "minLength": 1 }
+      }
+    },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

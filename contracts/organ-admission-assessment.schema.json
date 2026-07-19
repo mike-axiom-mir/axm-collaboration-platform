@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.organ-admission-assessment/v1",
+  "title": "Mirror evidence-gated organ admission assessment",
+  "type": "object",
+  "required": ["schema", "assessmentId", "assessmentDigest", "cell", "classification", "evidenceLedger", "proposedContract", "gaps", "buildProposal", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.organ-admission-assessment/v1" },
+    "assessmentId": { "type": "string" },
+    "assessmentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "cell": { "type": "object" },
+    "classification": { "enum": ["PROPOSE_BUILD", "HOLD_EVIDENCE", "REJECT_BOUNDARY"] },
+    "evidenceLedger": { "type": "object" },
+    "proposedContract": { "type": "object" },
+    "gaps": { "type": "object" },
+    "buildProposal": { "type": ["object", "null"] },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string" }
+  },
+  "additionalProperties": false
+}

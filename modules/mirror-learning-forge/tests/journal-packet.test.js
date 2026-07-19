@@ -1,0 +1,5 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict');
+const {makeForge,mike,seedFlow}=require('./helpers');
+test('journal is hash-linked and verifies',t=>{const x=makeForge();t.after(x.cleanup);seedFlow(x.forge);const v=x.forge.store.verifyJournal();assert.equal(v.ok,true);assert.ok(v.count>=6);});
+test('Mirror Core export remains DRAFT and proposal-only',t=>{const x=makeForge();t.after(x.cleanup);const {candidate}=seedFlow(x.forge);const baseline=x.forge.createBaseline({actor:mike,texts:['mirror holds evidence'],make_active:true});const challenger=x.forge.trainChallenger({actor:mike,candidate_id:candidate.candidate_id,base_model_id:baseline.model_id});const out=x.forge.evaluateChallenger({actor:mike,challenger_model_id:challenger.model_id,base_model_id:baseline.model_id});const packet=x.forge.exportMirrorCorePacket({actor:mike,promotion_packet_id:out.promotion_packet.packet_id});assert.equal(packet.status,'DRAFT');assert.deepEqual(packet.requested_permissions,['create_proposal']);assert.equal(packet.expected_preconditions.find(x=>x.field==='live_workshop_apply').equals,false);});

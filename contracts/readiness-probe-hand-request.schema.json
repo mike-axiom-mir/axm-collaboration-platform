@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.readiness-probe-hand-request.schema.json",
+  "title": "AXM Mirror readiness probe hand request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "requestId", "requestDigest", "requirementId", "assessmentDigest", "observedInModuleIds", "impact", "evidenceBindings", "proposedProbeContract", "state", "humanWordingAuthority", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.readiness-probe-hand-request/v1" },
+    "requestId": { "type": "string", "pattern": "^readiness-hand-[a-f0-9]{20}$" },
+    "requestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "requirementId": { "type": "string", "minLength": 1 },
+    "assessmentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "observedInModuleIds": { "type": "array", "minItems": 1, "maxItems": 64, "uniqueItems": true },
+    "impact": { "type": "object" },
+    "evidenceBindings": { "type": "array", "minItems": 1, "maxItems": 64 },
+    "proposedProbeContract": { "type": "object" },
+    "state": { "const": "REVIEWABLE_MISSING_PROBE_HAND_REQUEST_NOT_BUILT" },
+    "humanWordingAuthority": { "const": false },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

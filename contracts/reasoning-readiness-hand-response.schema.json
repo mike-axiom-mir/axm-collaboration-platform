@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-readiness-hand-response.schema.json",
+  "title": "AXM Mirror readiness hand plan response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "responseDigest", "organId", "sourceBatchId", "request", "state", "reason", "proposals", "inspectionHolds", "humanRenderingAuthority", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-readiness-hand-response/v1" },
+    "responseDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organId": { "const": "axm.mirror.organ/reasoning-readiness-hand-planner-v1" },
+    "sourceBatchId": { "type": "string" },
+    "request": { "type": "object" },
+    "state": { "enum": ["PROPOSED_READINESS_PROBE_HAND_REQUESTS", "HOLD_UNKNOWN_REQUIRES_INSPECTION_NOT_NEW_PROBE", "HOLD_UNKNOWN_READINESS_REQUIREMENT", "NO_MISSING_READINESS_PROBE_HANDS"] },
+    "reason": { "type": "string", "minLength": 1 },
+    "proposals": { "type": "array", "maxItems": 32 },
+    "inspectionHolds": { "type": "array", "maxItems": 128 },
+    "humanRenderingAuthority": { "const": false },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

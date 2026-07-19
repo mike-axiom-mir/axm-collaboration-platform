@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.readiness-gap-assessment.schema.json",
+  "title": "AXM Mirror readiness gap assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "cellId", "assessmentDigest", "sourceReadinessBatchId", "sourceReadinessBatchDigest", "sourceStateDigest", "requirementId", "observations", "impactedRouteIds", "classification", "counts", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.readiness-gap-assessment/v1" },
+    "cellId": { "const": "axm.mirror.cell/readiness-gap-v1" },
+    "assessmentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "sourceReadinessBatchId": { "type": "string", "minLength": 1 },
+    "sourceReadinessBatchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "sourceStateDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "requirementId": { "type": "string", "minLength": 1 },
+    "observations": { "type": "array", "minItems": 1, "maxItems": 64 },
+    "impactedRouteIds": { "type": "array", "minItems": 1, "maxItems": 256, "uniqueItems": true },
+    "classification": { "enum": ["MISSING_PROBE_HAND_CANDIDATE", "UNKNOWN_INSPECTION_REQUIRED"] },
+    "counts": { "type": "object" },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

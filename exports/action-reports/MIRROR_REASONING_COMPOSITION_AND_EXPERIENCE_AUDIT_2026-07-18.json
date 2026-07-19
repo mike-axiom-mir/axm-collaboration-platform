@@ -1,0 +1,139 @@
+{
+  "schema": "axm.mirror.reasoning-composition-experience-audit/v1",
+  "reportId": "mirror-reasoning-composition-experience-20260718-seed0-v2",
+  "supersedesCurrentStateReport": "mirror-reasoning-skill-growth-20260718-seed0-v1",
+  "preservesSupersededEvidence": true,
+  "identity": "axm.machine.mirror/seed-0",
+  "date": "2026-07-18",
+  "status": "WORKING_PRIVATE_ORDERED_CHALLENGER_PROPOSE_HUMAN_REVIEW",
+  "goalStatus": "ACTIVE",
+  "humanView": "docs/MIRROR_REASONING_COMPOSITION_AND_EXPERIENCE_ACTION_REPORT_2026-07-18.md",
+  "cycle": {
+    "cycleId": "reasoning-skill-e87ee75fdb0453f346ec",
+    "inputsDigest": "e87ee75fdb0453f346ec3066c5d123ad9cbc0d217a3caaa8268c82220b15ba36",
+    "state": "PROPOSE_HUMAN_REVIEW",
+    "openSeams": 0,
+    "activeRuntime": false,
+    "automaticPromotion": false,
+    "privateStatePath": "state/reasoning-skill-runs/reasoning-skill-e87ee75fdb0453f346ec"
+  },
+  "model": {
+    "modelId": "reasoning-strategy-7580099f2d76e7bad8da67ee",
+    "modelDigest": "569d5c2e6f48467db4d9c5d7d372fe39f8fe1db0d2d65b86ad9763d7f92ce95e",
+    "artifactSha256": "3f9dcf804374f0a983cf707e2c432184f32631f861a30e35c5bbaa19fef055d4",
+    "evaluationArtifactSha256": "2697dc61d1fbc359ea38a9842866886dc11213413e1057e86761b09a44de2e0c",
+    "trainingLineageArtifactSha256": "620d50f76efa8281e4d4aa0635e19808c443027ea448d88d9a81e005e4cdda25",
+    "status": "PRIVATE_CHALLENGER",
+    "featurePolicy": "structural-state-only-no-goal-word-features",
+    "learnedStrategyLabels": [
+      "ask-blocking-unknown",
+      "discriminate-conflict",
+      "request-bounded-tool",
+      "test-open-assumption"
+    ],
+    "learnedOrderedStrategies": [
+      "ask-blocking-unknown",
+      "ask-blocking-unknown>then>discriminate-conflict",
+      "ask-blocking-unknown>then>request-bounded-tool",
+      "discriminate-conflict",
+      "discriminate-conflict>then>test-open-assumption",
+      "request-bounded-tool",
+      "request-bounded-tool>then>test-open-assumption",
+      "test-open-assumption"
+    ],
+    "compiledStrategyOrSequenceList": false,
+    "preSequenceArtifactRefusal": "PASS",
+    "tamperDetection": "PASS"
+  },
+  "corpus": {
+    "trainingGroups": 12,
+    "trainingFixtures": [
+      { "path": "training/reasoning-strategy-train.json", "cases": 8, "sha256": "d5830de59b6a2db359785d52c14ff49e2815a889264a9271f8ffa8a86f3ad81c" },
+      { "path": "training/reasoning-strategy-composition-train.json", "cases": 4, "sha256": "9f353c69f3a5c3ed3d79131c77edcda9062a95248f4f9787e10009310f7c368b" }
+    ],
+    "heldOutGroups": 12,
+    "heldOutFixtures": [
+      { "path": "tests/fixtures/reasoning-strategy-held-out.json", "cases": 8, "frozen": true, "sha256": "9f634813e6524068e240c06fa798ad579a07ddbf4c0085070567ea559c275f3a" },
+      { "path": "tests/fixtures/reasoning-strategy-composition-held-out.json", "cases": 4, "frozen": true, "sha256": "f129cc42e0283d06100d5e3096ae1d538aabc9a3844c3f7f9d30c0678fca1a07" }
+    ],
+    "sourceFamilyLeakage": 0,
+    "expectedActionsVisibleToModel": false,
+    "realReasoningExperienceReceipts": 0
+  },
+  "evaluation": {
+    "suppliedCandidateBaseline": "0/12",
+    "suppliedCandidateChallenger": "12/12",
+    "adversarialTransfer": "8/8",
+    "orderedMixedSignalTransfer": "4/4",
+    "noCandidateBaseline": "0/12",
+    "learnedCandidateOrigination": "12/12",
+    "behaviorCanaries": "12/12",
+    "independentSeamOpen": 0
+  },
+  "reasoningExperienceOrgan": {
+    "id": "axm.mirror.organ/reasoning-experience-intake-v1",
+    "status": "WORKING_PRIVATE_APPEND_ONLY",
+    "route": "POST /axm/v1/reasoning/experience",
+    "standingPolicy": "axm.mirror.standing-local-practice/v1",
+    "evaluatorArtifactDigestRequired": true,
+    "appendScope": "training/datasets/reasoning-receipts under ignored private state",
+    "automaticNextCycleDiscovery": true,
+    "syntheticDiscoveryIntegrationTest": "PASS_1_RECEIPT_13_ADMITTED_SESSIONS_12_OF_12_TRANSFER",
+    "learnedSelfTraining": false,
+    "overwriteAuthority": false,
+    "heldOutMutationAuthority": false,
+    "toolAuthority": false,
+    "activeModelChangeAuthority": false,
+    "runtimePromotionAuthority": false
+  },
+  "liveRuntime": {
+    "boundedRestartPerformed": true,
+    "pidHistory": [24364, 5212, 24416],
+    "currentPid": 24416,
+    "healthOrganStatus": "WORKING_PRIVATE_APPEND_ONLY",
+    "writePermissions": ["ignored-private-reasoning-receipt-append-only"],
+    "learnedWeights": false
+  },
+  "authority": {
+    "activeRuntimeModel": false,
+    "worldAction": false,
+    "toolUse": false,
+    "permissionGrant": false,
+    "privateReceiptAppend": true,
+    "receiptOverwrite": false,
+    "heldOutMutation": false,
+    "automaticPromotion": false,
+    "automaticOrganInstallation": false,
+    "canonChange": false,
+    "identityChange": false
+  },
+  "verification": [
+    { "command": "npm.cmd test", "status": "PASS", "tests": 76 },
+    { "command": "npm.cmd run test:learning-forge", "status": "PASS", "tests": 99 },
+    { "command": "npm.cmd run test:learning-shell", "status": "PASS", "tests": 4 },
+    { "command": "node modules/mirror-learning-forge/scripts/verify-build.js", "status": "PASS", "files": 148 },
+    { "command": "npm.cmd run doctor", "status": "PASS" },
+    { "command": "Node JSON parse sweep", "status": "PASS", "files": 104 },
+    { "command": "git diff --check", "status": "PASS", "notices": "existing LF-to-CRLF conversion warnings only" },
+    { "command": "node scripts/run-reasoning-skill-cycle.js", "status": "PROPOSE_HUMAN_REVIEW", "openSeams": 0 }
+  ],
+  "whatNowWorks": [
+    "arbitrary ordered strategy sequences are learned from verified receipts rather than a compiled list",
+    "mixed-signal supplied paths and no-candidate origination match exact taught order on frozen transfer cases",
+    "verified local deterministic experience receipts append immutably under standing policy",
+    "the next private cycle discovers new receipt files without a source-code or fixture-list edit",
+    "learned-model self-training, hidden reasoning, outside-policy sources, tampering, and overwrites are refused",
+    "the active runtime remains deterministic with no learned model loaded"
+  ],
+  "knownLimits": [
+    "the latest preserved cycle contains zero real reasoning experience receipts",
+    "the exam contains twelve small synthetic training groups and twelve small synthetic held-out groups",
+    "perfect performance on this exam is not broad or open-ended reasoning evidence",
+    "the learner originates epistemic paths rather than arbitrary domain solutions",
+    "ordinary reasoning requests are not silently harvested; explicit verified intake is required",
+    "the private strategy model is not loaded by the active runtime",
+    "the token-language cycle still has the training-corpus-small seam",
+    "Mike has not accepted this result as CANON or approved learned-model promotion"
+  ],
+  "decision": "Preserve the private ordered challenger and append-only experience intake as WORKING research. Keep the active learned-model pointer unchanged and continue the active goal with source-diverse real receipts and a fresh frozen evaluation."
+}

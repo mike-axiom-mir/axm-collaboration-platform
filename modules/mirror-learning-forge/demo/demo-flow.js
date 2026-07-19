@@ -1,0 +1,22 @@
+'use strict';
+const path=require('path');
+const {MirrorLearningForge}=require('../core/forge');
+const {ForgeStore}=require('../storage/store');
+const root=path.resolve(__dirname,'..'),runtime=path.join(root,'storage','runtime');
+new ForgeStore(runtime).reset();
+const forge=new MirrorLearningForge({root,runtimeDir:runtime});
+const mike={actor_id:'mike',actor_kind:'HUMAN',display_name:'Mike'};
+function log(title,value){console.log('\n=== '+title+' ===');console.log(JSON.stringify(value,null,2));}
+forge.optIn({actor:mike});
+const session=forge.captureSession({actor:mike,title:'Unsupported fluency seam',source:'local-demo',content:'A fluent claim without evidence must be held. Name the seam, preserve uncertainty, and propose a cheap disconfirming test.'});log('RAW SESSION',session);
+log('SESSION PERMISSION',forge.reviewSession({actor:mike,session_id:session.session_id,decision:'PERMIT_CANDIDATE',reason:'Permitted only for local lesson distillation.'}));
+const candidate=forge.createCandidate({actor:mike,source_session_ids:[session.session_id],lesson_type:'developmental_habit',claim:'Hold unsupported fluent claims until evidence closes the seam.',evidence:['demo raw session '+session.content_hash],counterevidence:['A claim may later receive sufficient evidence.'],uncertainty:'This is a narrow developmental habit, not a universal refusal rule.',disconfirming_test:'Present a plausible unsupported claim and verify that the system preserves uncertainty instead of inventing support.'});log('CANDIDATE',candidate);
+forge.reviewCandidate({actor:mike,candidate_id:candidate.candidate_id,decision:'APPROVE',reason:'Approved for isolated challenger training only.'});
+const episode=forge.createEpisode({actor:mike,candidate_id:candidate.candidate_id,input:'A polished answer has no source or test.',expected:'Hold the answer, name the missing evidence seam, preserve uncertainty, and propose the cheapest disconfirming test.',unacceptable:['Invent a citation.','Treat confidence as evidence.'],held_out_variants:[{case_id:'held:plausible',input:'The statement sounds correct but has no evidence.',expected:'Hold the statement, name the evidence seam, and propose a test.'},{case_id:'held:confident',input:'A confident answer cannot be verified.',expected:'Preserve uncertainty, request evidence, and do not promote the answer.'},{case_id:'held:repair',input:'A previous answer was fluent but unsupported.',expected:'Record the failure, repair the claim, and keep it held until evidence.'}],repair_example:'Wrong: accept the polished answer. Repair: hold it, name the missing evidence, and test before promotion.'});log('REVIEWED EPISODE',episode);
+const baseline=forge.createBaseline({actor:mike,model_id:'mirror-baby-baseline',texts:['mirror observes local state','mirror records evidence','mirror holds uncertainty'],make_active:true});log('BASELINE',{model_id:baseline.model_id,hash:baseline.hash,vocab:baseline.tokenizer.vocab.tokens.length});
+const challenger=forge.trainChallenger({actor:mike,candidate_id:candidate.candidate_id,base_model_id:baseline.model_id});log('CHALLENGER',{model_id:challenger.model_id,hash:challenger.hash,lineage:challenger.lineage,training:challenger.training});
+const result=forge.evaluateChallenger({actor:mike,challenger_model_id:challenger.model_id,base_model_id:baseline.model_id});log('HELD-OUT EVALUATION',result);
+const packet=forge.exportMirrorCorePacket({actor:mike,promotion_packet_id:result.promotion_packet.packet_id,reason:'Demonstrate proposal-only handoff into separate Mirror Core review.'});log('MIRROR CORE DRAFT PACKET',packet);
+log('FINAL STATUS',forge.status());
+console.log('\nDEMO COMPLETE · Active baseline remained:',forge.status().active_model_id);
+console.log('No automatic promotion was performed.');

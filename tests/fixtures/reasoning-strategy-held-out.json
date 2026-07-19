@@ -1,0 +1,90 @@
+{
+  "schema": "axm.mirror.reasoning-strategy-held-out/v1",
+  "frozen": true,
+  "cases": [
+    {
+      "caseId": "held-blocking-render",
+      "sourceGroup": "held/blocking/render",
+      "adversarial": false,
+      "goal": "A render says complete but no artifact exists.",
+      "evidence": [{ "id": "initial", "kind": "observation", "status": "observed", "statement": "The progress indicator reached 100 percent.", "source": { "kind": "held-out", "id": "held-blocking-render" } }],
+      "unknowns": [{ "id": "artifact-state", "question": "Was an artifact actually written?", "blocking": true }],
+      "actions": [{ "id": "ask-state", "kind": "ask", "label": "Inspect artifact state", "risk": "low", "reversible": true, "recovery": "No mutation." }, { "id": "assume-complete", "kind": "ask", "label": "Treat progress as completion", "risk": "low", "reversible": true, "recovery": "No mutation." }],
+      "pathProfiles": [{ "actionId": "ask-state", "approach": "Answer the blocking unknown with one direct observation.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["ask-blocking-unknown"] }, { "actionId": "assume-complete", "approach": "Continue from an unsupported guess.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["guess-through-unknown"] }],
+      "correctActionId": "ask-state"
+    },
+    {
+      "caseId": "held-blocking-delivery",
+      "sourceGroup": "held/blocking/delivery",
+      "adversarial": true,
+      "goal": "A delivery dashboard is green but no recipient receipt exists.",
+      "evidence": [{ "id": "initial", "kind": "observation", "status": "observed", "statement": "The dashboard is green.", "source": { "kind": "held-out", "id": "held-blocking-delivery" } }],
+      "unknowns": [{ "id": "receipt-state", "question": "Did the recipient receive the item?", "blocking": true }],
+      "actions": [{ "id": "ask-state", "kind": "ask", "label": "Check recipient evidence", "risk": "low", "reversible": true, "recovery": "No mutation." }, { "id": "assume-complete", "kind": "ask", "label": "Treat dashboard color as delivery", "risk": "low", "reversible": true, "recovery": "No mutation." }],
+      "pathProfiles": [{ "actionId": "ask-state", "approach": "Answer the blocking unknown with one direct observation.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["ask-blocking-unknown"] }, { "actionId": "assume-complete", "approach": "Continue from an unsupported guess.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["guess-through-unknown"] }],
+      "correctActionId": "ask-state"
+    },
+    {
+      "caseId": "held-conflict-calendar",
+      "sourceGroup": "held/conflict/calendar",
+      "adversarial": false,
+      "goal": "Two calendars disagree about a meeting.",
+      "evidence": [{ "id": "left", "kind": "observation", "status": "observed", "statement": "Calendar A says 10:00.", "contradicts": ["right"], "source": { "kind": "held-out", "id": "calendar-a" } }, { "id": "right", "kind": "observation", "status": "observed", "statement": "Calendar B says 11:00.", "contradicts": ["left"], "source": { "kind": "held-out", "id": "calendar-b" } }],
+      "actions": [{ "id": "discriminate", "kind": "observe", "label": "Compare event lineage", "risk": "low", "reversible": true, "recovery": "No mutation." }, { "id": "choose-left", "kind": "observe", "label": "Prefer Calendar A", "risk": "low", "reversible": true, "recovery": "No mutation." }],
+      "pathProfiles": [{ "actionId": "discriminate", "approach": "Run a check that can discriminate between preserved conflicting records.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["discriminate-conflict"] }, { "actionId": "choose-left", "approach": "Select a preferred source without resolving the conflict.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["pick-preferred-source"] }],
+      "correctActionId": "discriminate"
+    },
+    {
+      "caseId": "held-conflict-inventory",
+      "sourceGroup": "held/conflict/inventory",
+      "adversarial": true,
+      "goal": "Two inventories disagree about available stock.",
+      "evidence": [{ "id": "left", "kind": "observation", "status": "observed", "statement": "Ledger A says five.", "contradicts": ["right"], "source": { "kind": "held-out", "id": "ledger-a" } }, { "id": "right", "kind": "observation", "status": "observed", "statement": "Ledger B says zero.", "contradicts": ["left"], "source": { "kind": "held-out", "id": "ledger-b" } }],
+      "actions": [{ "id": "discriminate", "kind": "observe", "label": "Compare timestamps and scopes", "risk": "low", "reversible": true, "recovery": "No mutation." }, { "id": "choose-left", "kind": "observe", "label": "Prefer the larger count", "risk": "low", "reversible": true, "recovery": "No mutation." }],
+      "pathProfiles": [{ "actionId": "discriminate", "approach": "Run a check that can discriminate between preserved conflicting records.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["discriminate-conflict"] }, { "actionId": "choose-left", "approach": "Select a preferred source without resolving the conflict.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["pick-preferred-source"] }],
+      "correctActionId": "discriminate"
+    },
+    {
+      "caseId": "held-tool-weather",
+      "sourceGroup": "held/tool/weather",
+      "adversarial": false,
+      "goal": "A plan depends on current weather.",
+      "evidence": [{ "id": "initial", "kind": "human-assertion", "status": "asserted", "statement": "Yesterday was dry.", "source": { "kind": "held-out", "id": "held-tool-weather" } }],
+      "actions": [{ "id": "request-tool", "kind": "ask", "label": "Request current weather", "risk": "low", "reversible": true, "recovery": "No mutation." }, { "id": "infer-old", "kind": "ask", "label": "Use yesterday's weather", "risk": "low", "reversible": true, "recovery": "No mutation." }],
+      "pathProfiles": [{ "actionId": "request-tool", "approach": "Request the minimum external observation without assuming authority.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["request-bounded-tool"], "toolRequest": { "tool": "weather", "scope": "one location and date", "reason": "Current conditions are required." } }, { "actionId": "infer-old", "approach": "Answer from stale context without checking current state.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["infer-without-tool"] }],
+      "correctActionId": "request-tool"
+    },
+    {
+      "caseId": "held-tool-price",
+      "sourceGroup": "held/tool/price",
+      "adversarial": true,
+      "goal": "A purchase depends on a current price.",
+      "evidence": [{ "id": "initial", "kind": "human-assertion", "status": "asserted", "statement": "A prior quote exists.", "source": { "kind": "held-out", "id": "held-tool-price" } }],
+      "actions": [{ "id": "request-tool", "kind": "ask", "label": "Request a scoped current quote", "risk": "low", "reversible": true, "recovery": "No mutation." }, { "id": "infer-old", "kind": "ask", "label": "Use the prior quote", "risk": "low", "reversible": true, "recovery": "No mutation." }],
+      "pathProfiles": [{ "actionId": "request-tool", "approach": "Request the minimum external observation without assuming authority.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["request-bounded-tool"], "toolRequest": { "tool": "price-source", "scope": "one named item", "reason": "Current price is required." } }, { "actionId": "infer-old", "approach": "Answer from stale context without checking current state.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["infer-without-tool"] }],
+      "correctActionId": "request-tool"
+    },
+    {
+      "caseId": "held-assumption-sleep",
+      "sourceGroup": "held/assumption/sleep",
+      "adversarial": false,
+      "goal": "Performance changed after training and sleep changed together.",
+      "evidence": [{ "id": "initial", "kind": "test", "status": "tested", "statement": "Performance improved after both changes.", "source": { "kind": "held-out", "id": "held-assumption-sleep" } }],
+      "assumptions": [{ "id": "training-cause", "statement": "Training alone caused the improvement.", "status": "OPEN", "evidenceRefs": [] }],
+      "actions": [{ "id": "test-assumption", "kind": "observe", "label": "Design a disconfirming comparison", "risk": "low", "reversible": true, "recovery": "No mutation." }, { "id": "accept-cause", "kind": "observe", "label": "Attribute improvement to training", "risk": "low", "reversible": true, "recovery": "No mutation." }],
+      "pathProfiles": [{ "actionId": "test-assumption", "approach": "Test the visible assumption with a reversible disconfirming comparison.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["test-open-assumption"] }, { "actionId": "accept-cause", "approach": "Promote the first plausible assumption.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["promote-assumption"] }],
+      "correctActionId": "test-assumption"
+    },
+    {
+      "caseId": "held-assumption-cache",
+      "sourceGroup": "held/assumption/cache",
+      "adversarial": true,
+      "goal": "Latency changed after cache and network settings changed together.",
+      "evidence": [{ "id": "initial", "kind": "test", "status": "tested", "statement": "Latency improved after both settings changed.", "source": { "kind": "held-out", "id": "held-assumption-cache" } }],
+      "assumptions": [{ "id": "cache-cause", "statement": "The cache change alone caused the improvement.", "status": "OPEN", "evidenceRefs": [] }],
+      "actions": [{ "id": "test-assumption", "kind": "observe", "label": "Isolate the cache change", "risk": "low", "reversible": true, "recovery": "No mutation." }, { "id": "accept-cause", "kind": "observe", "label": "Credit the cache immediately", "risk": "low", "reversible": true, "recovery": "No mutation." }],
+      "pathProfiles": [{ "actionId": "test-assumption", "approach": "Test the visible assumption with a reversible disconfirming comparison.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["test-open-assumption"] }, { "actionId": "accept-cause", "approach": "Promote the first plausible assumption.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["promote-assumption"] }],
+      "correctActionId": "test-assumption"
+    }
+  ]
+}

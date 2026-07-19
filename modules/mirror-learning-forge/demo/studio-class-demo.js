@@ -1,0 +1,16 @@
+'use strict';
+const path=require('path');
+const {MirrorLearningForge}=require('../core/forge');
+const root=path.resolve(__dirname,'..');
+const forge=new MirrorLearningForge({root});
+const mike={actor_id:'mike',actor_kind:'HUMAN',display_name:'Mike'};
+const mirror={actor_id:'mirror-seed-0',actor_kind:'MACHINE',display_name:'Mirror'};
+forge.store.reset();
+forge.optIn({actor:mike});
+const chosen=forge.chooseStudioClass({actor:mirror,class_id:'studio-eyes-loop',goal:'Learn to inspect the post-draw screenshot before saying a piece is done.',reason:'Current evidence has draw proposals but needs more visible repair receipts.'});
+const approved=forge.reviewTrackTask({actor:mike,task_id:chosen.task_id,decision:'APPROVE',reason:'Approved for isolated challenger-only class work.'});
+const sample=forge.studioSample({class_id:'studio-eyes-loop'});
+const staticGrade=forge.gradeStudio({actor:mike,submission:sample});
+const unsafe=forge.studioSample({class_id:'studio-shapes-composition'});unsafe.draw_packet.owner='human';unsafe.verdict='PASS';
+const blockedGrade=forge.gradeStudio({actor:mike,submission:unsafe});
+console.log(JSON.stringify({chosen:{class_id:chosen.skill,status:chosen.status,chosen_by:chosen.created_by},reviewed:{status:approved.status,scope:approved.permission.scope},sample_grade:{verdict:staticGrade.verdict,static_only:staticGrade.static_only,visual_receipt_required:staticGrade.requires_live_studio_visual_receipt},human_layer_attempt:{verdict:blockedGrade.verdict,failed:blockedGrade.checks.filter(x=>!x.pass).map(x=>x.id)},boundaries:forge.status().boundaries,journal:forge.status().journal},null,2));

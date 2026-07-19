@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-handoff-route-batch.schema.json",
+  "x-axm-status": "KNOWN_FAIL",
+  "x-axm-superseded-by": "contracts/reasoning-handoff-route-batch-v2.schema.json",
+  "title": "AXM Mirror typed handoff route batch",
+  "type": "object",
+  "required": ["schema", "batchId", "batchDigest", "inputsDigest", "organ", "cell", "implementationContract", "refusedContracts", "contracts", "edges", "results", "frontier", "summary", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-handoff-route-batch/v1" },
+    "batchId": { "type": "string", "pattern": "^reasoning-handoff-graph-[a-f0-9]{20}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "inputsDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "createdAt": { "type": ["string", "null"] },
+    "organ": {
+      "type": "object",
+      "required": ["id", "status", "learnedWeights"],
+      "properties": {
+        "id": { "const": "axm.mirror.organ/reasoning-handoff-graph-v1" },
+        "status": { "const": "TEST_PROPOSAL_ONLY_TYPED_HANDOFF_GRAPH" },
+        "learnedWeights": { "const": false }
+      }
+    },
+    "cell": {
+      "type": "object",
+      "required": ["id", "schema", "learnedWeights"],
+      "properties": {
+        "id": { "const": "axm.mirror.cell/contract-handoff-compatibility-v1" },
+        "schema": { "const": "axm.mirror.contract-handoff-compatibility/v1" },
+        "learnedWeights": { "const": false }
+      }
+    },
+    "implementationContract": { "type": "object" },
+    "refusedContracts": { "type": "array" },
+    "contracts": { "type": "array", "maxItems": 64 },
+    "edges": { "type": "array", "maxItems": 256 },
+    "results": { "type": "array", "maxItems": 256 },
+    "frontier": { "type": "object" },
+    "summary": {
+      "type": "object",
+      "required": ["eligibleContracts", "exactCrossModuleEdges", "directRoutes", "composedDepthTwoRoutes", "exactRoutesSelected", "routeSelectionMismatches", "incompatibleDecoysRejected", "trainingReceiptsCreated", "worldActionsExecuted"],
+      "properties": {
+        "eligibleContracts": { "type": "integer", "minimum": 0, "maximum": 64 },
+        "exactCrossModuleEdges": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "directRoutes": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "composedDepthTwoRoutes": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "exactRoutesSelected": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "routeSelectionMismatches": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "incompatibleDecoysRejected": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "trainingReceiptsCreated": { "const": 0 },
+        "worldActionsExecuted": { "const": 0 }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "required": ["privateEvaluationTraceWrite", "trainingAdmission", "contractWrite", "toolUse", "worldAction", "networkUse", "permissionGrant", "semanticTruthWrite", "activeModelChange", "runtimePromotion", "canonChange", "identityChange"],
+      "properties": {
+        "privateEvaluationTraceWrite": { "const": true },
+        "trainingAdmission": { "const": false },
+        "contractWrite": { "const": false },
+        "toolUse": { "const": false },
+        "worldAction": { "const": false },
+        "networkUse": { "const": false },
+        "permissionGrant": { "const": false },
+        "semanticTruthWrite": { "const": false },
+        "activeModelChange": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "identityChange": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

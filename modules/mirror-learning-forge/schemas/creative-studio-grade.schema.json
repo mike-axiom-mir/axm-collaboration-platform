@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.creative-studio-grade/v1",
+  "title": "Mirror Creative Studio Static Grade",
+  "type": "object",
+  "required": ["schema", "grade_id", "track_id", "class_id", "checks", "summary", "verdict", "authority", "static_only", "requires_live_studio_visual_receipt", "created_at", "hash"],
+  "properties": {
+    "schema": {"const": "axm.mirror.creative-studio-grade/v1"},
+    "grade_id": {"type": "string"},
+    "track_id": {"const": "creative_studio"},
+    "class_id": {"type": "string"},
+    "checks": {"type": "array"},
+    "summary": {"type": "object"},
+    "verdict": {"enum": ["PASS", "HOLD", "REPAIR", "REJECT"]},
+    "authority": {"const": "NONE"},
+    "static_only": {"const": true},
+    "requires_live_studio_visual_receipt": {"const": true},
+    "created_at": {"type": "string"},
+    "hash": {"type": "string"}
+  },
+  "additionalProperties": true
+}

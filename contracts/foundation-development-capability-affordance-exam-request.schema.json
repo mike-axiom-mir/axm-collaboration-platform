@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-development-capability-affordance-exam-request/v1",
+  "title": "Mirror Foundation independent declared-capability affordance exam request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "examRequestId", "examRequestDigest", "source", "examBoundary", "caseRequirements", "requiredIndependentArtifacts", "result", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-development-capability-affordance-exam-request/v1" },
+    "examRequestId": { "type": "string", "pattern": "^foundation-capability-affordance-exam-[a-f0-9]{24}$" },
+    "examRequestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source": { "type": "object" },
+    "examBoundary": { "type": "object" },
+    "caseRequirements": { "type": "array", "minItems": 1 },
+    "requiredIndependentArtifacts": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+    "result": { "type": "object" },
+    "state": { "const": "INDEPENDENT_AFFORDANCE_EXAM_REQUESTED_NOT_EXECUTED" },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

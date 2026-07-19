@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.typed-trace-language-corpus/v1",
+  "title": "Mirror permissioned typed-trace language wisdom corpus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "statement", "claimBoundary", "examples"],
+  "properties": {
+    "schema": { "const": "axm.mirror.typed-trace-language-corpus/v1" },
+    "statement": { "type": "string", "minLength": 1 },
+    "claimBoundary": { "type": "string", "minLength": 1 },
+    "examples": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "groupId", "split", "usePermission", "permissionBasis", "features", "expectedPlanId"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "groupId": { "type": "string", "minLength": 1 },
+          "split": { "enum": ["TRAIN", "HELD_OUT"] },
+          "usePermission": { "const": "allowed" },
+          "permissionBasis": { "type": "string", "minLength": 1 },
+          "features": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["decision", "unknowns", "contradictions", "boundaryViolation", "missingEvidence", "repairabilityGap"],
+            "properties": {
+              "decision": { "enum": ["SUPPORTED", "HOLD", "REFUSED"] },
+              "unknowns": { "enum": ["NONE", "PRESENT"] },
+              "contradictions": { "enum": ["NONE", "PRESENT"] },
+              "boundaryViolation": { "enum": ["NONE", "PRESENT"] },
+              "missingEvidence": { "enum": ["NONE", "PRESENT"] },
+              "repairabilityGap": { "enum": ["NONE", "PRESENT"] }
+            }
+          },
+          "expectedPlanId": { "enum": ["SUPPORTED_BOUNDED_CLEAR", "SUPPORTED_BOUNDED_UNCERTAIN", "HOLD_CONTRADICTION", "HOLD_MISSING_EVIDENCE", "HOLD_OPEN_UNCERTAINTY", "HOLD_REPAIRABILITY", "REFUSE_BOUNDARY"] }
+        }
+      }
+    }
+  }
+}

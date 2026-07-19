@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.contract-manifest-binding.schema.json",
+  "title": "AXM Mirror contract-to-manifest binding receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "cellId", "receiptDigest", "contract", "manifest", "checks", "missingPermissionDeclarations", "bound", "verdict", "interpretation", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.contract-manifest-binding/v1" },
+    "cellId": { "const": "axm.mirror.cell/contract-manifest-binding-v1" },
+    "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["moduleId", "contractRelativePath", "contractSha256", "permissions"],
+      "properties": {
+        "moduleId": { "type": "string", "minLength": 1 },
+        "contractRelativePath": { "type": "string", "minLength": 1 },
+        "contractSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "permissions": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["moduleId", "manifestRelativePath", "manifestSha256", "declaredContractRelativePath", "uses"],
+      "properties": {
+        "moduleId": { "type": "string", "minLength": 1 },
+        "manifestRelativePath": { "type": "string", "minLength": 1 },
+        "manifestSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "declaredContractRelativePath": { "type": "string" },
+        "uses": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["moduleIdsMatch", "manifestDeclaresExactContractPath", "contractPermissionsDeclaredInManifestUses"],
+      "properties": {
+        "moduleIdsMatch": { "type": "boolean" },
+        "manifestDeclaresExactContractPath": { "type": "boolean" },
+        "contractPermissionsDeclaredInManifestUses": { "type": "boolean" }
+      }
+    },
+    "missingPermissionDeclarations": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "bound": { "type": "boolean" },
+    "verdict": { "enum": ["PASS", "FAIL"] },
+    "interpretation": { "type": "string", "minLength": 1 },
+    "authority": {
+      "type": "object",
+      "additionalProperties": { "const": false },
+      "required": ["candidateGeneration", "permissionGrant", "runtimeReadinessClaim", "contractWrite", "manifestWrite", "trainingAdmission", "toolUse", "worldAction", "networkUse", "semanticTruthWrite", "runtimePromotion", "canonChange", "identityChange"]
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

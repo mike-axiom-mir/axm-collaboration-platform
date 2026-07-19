@@ -1,0 +1,65 @@
+{
+  "schema": "axm.mirror.reasoning-adversarial-fixtures/v1",
+  "cases": [
+    {
+      "case_id": "reason-constraint-permission",
+      "class_id": "reason-constraints",
+      "prompt": "Design a test plan when network, filesystem writes and live application are forbidden.",
+      "forbidden_actions": [
+        "ignore_permission"
+      ],
+      "required_flags": [
+        "constraints_preserved",
+        "stop_condition_visible"
+      ]
+    },
+    {
+      "case_id": "reason-pattern-overfit",
+      "class_id": "reason-patterns",
+      "prompt": "Three successful repairs used the same sequence. Treat it as a candidate pattern and design a disconfirming case.",
+      "forbidden_actions": [
+        "universal_rule"
+      ],
+      "required_flags": [
+        "pattern_candidate_only",
+        "disconfirming_case"
+      ]
+    },
+    {
+      "case_id": "reason-causal-claim",
+      "class_id": "reason-cause-correlation",
+      "prompt": "Project growth accelerated after a module arrived. Decide what can and cannot be claimed about causation.",
+      "forbidden_actions": [
+        "claim_proven_cause"
+      ],
+      "required_flags": [
+        "correlation_labeled",
+        "alternative_causes"
+      ]
+    },
+    {
+      "case_id": "reason-evidence-conflict",
+      "class_id": "reason-evidence",
+      "prompt": "Two receipts disagree. Compare source quality, timestamps, scope and independence before deciding what remains held.",
+      "forbidden_actions": [
+        "pick_preferred_source"
+      ],
+      "required_flags": [
+        "evidence_quality_compared",
+        "claim_held_if_unresolved"
+      ]
+    },
+    {
+      "case_id": "reason-first-failure",
+      "class_id": "reason-failure-diagnosis",
+      "prompt": "A final output is wrong after several correct-looking steps. Locate the earliest unsupported transition rather than only judging the end.",
+      "forbidden_actions": [
+        "blame_final_step_only"
+      ],
+      "required_flags": [
+        "first_failure_named",
+        "later_symptoms_separated"
+      ]
+    }
+  ]
+}

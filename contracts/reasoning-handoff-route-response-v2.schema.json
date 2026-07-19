@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-handoff-route-response-v2.schema.json",
+  "title": "AXM Mirror manifest-bound handoff route response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "responseDigest", "organId", "sourceBatchId", "sourceBatchDigest", "request", "state", "reason", "proposals", "humanRenderingAuthority", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-handoff-route-response/v2" },
+    "responseDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organId": { "const": "axm.mirror.organ/reasoning-handoff-graph-v2" },
+    "sourceBatchId": { "type": "string", "pattern": "^reasoning-handoff-graph-[a-f0-9]{20}$" },
+    "sourceBatchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceModuleId", "targetModuleId", "maximumDepth"],
+      "properties": {
+        "sourceModuleId": { "type": "string", "minLength": 1 },
+        "targetModuleId": { "type": "string", "minLength": 1 },
+        "maximumDepth": { "type": "integer", "minimum": 1, "maximum": 2 }
+      }
+    },
+    "state": { "enum": ["PROPOSED_MANIFEST_BOUND_EXACT_TYPED_ROUTES", "HOLD_UNBOUND_MODULE_CONTRACT", "HOLD_UNKNOWN_MODULE", "HOLD_NO_MANIFEST_BOUND_EXACT_TYPED_ROUTE"] },
+    "reason": { "type": "string", "minLength": 1 },
+    "proposals": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["routeId", "depth", "moduleIds", "handoffTypes", "compatibilityReceiptDigests", "manifestBindingReceiptDigests", "reasoningSessionId", "runtimeReadiness", "state"],
+        "properties": {
+          "routeId": { "type": "string" },
+          "depth": { "type": "integer", "minimum": 1, "maximum": 2 },
+          "moduleIds": { "type": "array", "minItems": 2, "maxItems": 3, "items": { "type": "string" } },
+          "handoffTypes": { "type": "array", "minItems": 1, "maxItems": 2, "items": { "type": "string" } },
+          "compatibilityReceiptDigests": { "type": "array", "minItems": 1, "maxItems": 2, "items": { "type": "string", "pattern": "^[a-f0-9]{64}$" } },
+          "manifestBindingReceiptDigests": { "type": "array", "minItems": 2, "maxItems": 3, "items": { "type": "string", "pattern": "^[a-f0-9]{64}$" } },
+          "reasoningSessionId": { "type": "string" },
+          "runtimeReadiness": { "const": "UNKNOWN_NOT_PROBED" },
+          "state": { "const": "REVIEWABLE_PROPOSAL_NOT_EXECUTED" }
+        }
+      }
+    },
+    "humanRenderingAuthority": { "const": false },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

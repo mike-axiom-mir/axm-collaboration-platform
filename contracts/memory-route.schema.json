@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.memory-route/v1",
+  "title": "Mirror proposal-only memory route",
+  "type": "object",
+  "required": ["schema", "working", "episodicCandidates", "semanticCandidates", "skillCandidates", "repairCandidates", "preserveDissentAndContradictions", "discard", "writesPerformed", "authority", "routeDigest"],
+  "properties": {
+    "schema": { "const": "axm.mirror.memory-route/v1" },
+    "working": { "type": "array", "maxItems": 256 },
+    "episodicCandidates": { "type": "array", "maxItems": 256 },
+    "semanticCandidates": { "type": "array", "maxItems": 256 },
+    "skillCandidates": { "type": "array", "maxItems": 256 },
+    "repairCandidates": { "type": "array", "maxItems": 256 },
+    "preserveDissentAndContradictions": { "type": "array", "maxItems": 256 },
+    "discard": { "type": "array", "maxItems": 256 },
+    "writesPerformed": { "type": "array", "maxItems": 0 },
+    "authority": { "const": "PROPOSAL_ONLY" },
+    "routeDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

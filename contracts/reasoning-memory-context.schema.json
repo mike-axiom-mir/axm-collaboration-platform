@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-memory-context/v1",
+  "title": "Mirror bounded reasoning memory context",
+  "type": "object",
+  "required": ["schema", "contextId", "organ", "query", "access", "featureProjection", "inventory", "state", "supporting", "counterevidence", "contradictions", "refused", "unknowns", "retrievalRule", "authority", "boundary", "contextDigest"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-memory-context/v1" },
+    "contextId": { "type": "string", "pattern": "^reasoning-memory-context-[a-f0-9]{24}$" },
+    "organ": {
+      "type": "object",
+      "required": ["id", "status", "learnedWeights"],
+      "properties": {
+        "id": { "const": "axm.mirror.organ/reasoning-memory-context-v1" },
+        "status": { "const": "EXPERIMENTAL" },
+        "learnedWeights": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "query": {
+      "type": "object",
+      "required": ["queryId", "requiredFeatures", "requiredStrategyTags", "requiredSeamIds"],
+      "properties": {
+        "queryId": { "type": "string" },
+        "requiredFeatures": { "type": "array", "items": { "type": "string" }, "maxItems": 128 },
+        "requiredStrategyTags": { "type": "array", "items": { "type": "string" }, "maxItems": 128 },
+        "requiredSeamIds": { "type": "array", "items": { "type": "string" }, "maxItems": 128 }
+      },
+      "additionalProperties": false
+    },
+    "access": {
+      "type": "object",
+      "required": ["requester", "purpose", "usePermission", "permissionBasis", "allowedSourceGroups", "allowedSourceGroupPrefixes", "maximumPerOutcome", "scopeDigest"],
+      "properties": {
+        "requester": { "type": "string" },
+        "purpose": { "type": "string" },
+        "usePermission": { "const": "allowed" },
+        "permissionBasis": { "type": "string" },
+        "allowedSourceGroups": { "type": "array", "items": { "type": "string" }, "maxItems": 128 },
+        "allowedSourceGroupPrefixes": { "type": "array", "items": { "type": "string" }, "maxItems": 128 },
+        "maximumPerOutcome": { "type": "integer", "minimum": 1, "maximum": 32 },
+        "scopeDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "featureProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["organId", "selectorId", "selectorDigest", "positiveFactsOnly"],
+      "properties": {
+        "organId": { "const": "axm.mirror.organ/reasoning-structural-feature-projection-v1" },
+        "selectorId": { "const": "axm.mirror.selector/reasoning-session-structural-growth-v1" },
+        "selectorDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "positiveFactsOnly": { "const": true }
+      }
+    },
+    "inventory": {
+      "type": "object",
+      "required": ["supplied", "verifiedUnique", "accessible", "exactMatches", "supporting", "counterevidence", "refused"],
+      "properties": {
+        "supplied": { "type": "integer", "minimum": 0, "maximum": 512 },
+        "verifiedUnique": { "type": "integer", "minimum": 0, "maximum": 512 },
+        "accessible": { "type": "integer", "minimum": 0, "maximum": 512 },
+        "exactMatches": { "type": "integer", "minimum": 0, "maximum": 512 },
+        "supporting": { "type": "integer", "minimum": 0, "maximum": 512 },
+        "counterevidence": { "type": "integer", "minimum": 0, "maximum": 512 },
+        "refused": { "type": "integer", "minimum": 0, "maximum": 512 }
+      },
+      "additionalProperties": false
+    },
+    "state": { "enum": ["NO_EXACT_STRUCTURAL_MATCH", "SUPPORTING_EXPERIENCE_ONLY", "COUNTEREVIDENCE_ONLY", "MIXED_RELEVANT_EXPERIENCE", "CONTRADICTORY_RELEVANT_EXPERIENCE"] },
+    "supporting": { "type": "array", "maxItems": 32 },
+    "counterevidence": { "type": "array", "maxItems": 32 },
+    "contradictions": { "type": "array", "maxItems": 512 },
+    "refused": { "type": "array", "maxItems": 512 },
+    "unknowns": { "type": "array", "items": { "type": "string" }, "maxItems": 16 },
+    "retrievalRule": { "type": "string" },
+    "authority": {
+      "type": "object",
+      "required": ["memoryReadBeyondScope", "memoryWrite", "semanticTruthWrite", "evidenceAdmission", "decisionAuthority", "trainingAdmission", "toolUse", "permissionGrant", "runtimePromotion", "canonChange", "worldAction"],
+      "properties": {
+        "memoryReadBeyondScope": { "const": false },
+        "memoryWrite": { "const": false },
+        "semanticTruthWrite": { "const": false },
+        "evidenceAdmission": { "const": false },
+        "decisionAuthority": { "const": false },
+        "trainingAdmission": { "const": false },
+        "toolUse": { "const": false },
+        "permissionGrant": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "worldAction": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "boundary": { "type": "string" },
+    "contextDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

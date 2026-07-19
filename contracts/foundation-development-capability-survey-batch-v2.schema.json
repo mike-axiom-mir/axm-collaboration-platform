@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-development-capability-survey-batch/v2",
+  "title": "Mirror Foundation exact and output-adapter compatibility survey batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "organ", "source", "inventory", "results", "summary", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-development-capability-survey-batch/v2" },
+    "batchId": { "type": "string", "pattern": "^foundation-capability-survey-[a-f0-9]{24}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": { "type": "object" },
+    "source": { "type": "object" },
+    "inventory": { "type": "array" },
+    "results": { "type": "array" },
+    "summary": { "type": "object" },
+    "state": { "enum": ["DECLARED_EXACT_COMPATIBILITY_WITNESSES_RECORDED", "DECLARED_PARTIAL_COMPATIBILITY_WITNESSES_RECORDED", "NO_DECLARED_COMPATIBILITY_WITNESSES", "NO_EVIDENCE_HANDS_TO_SURVEY"] },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-contract-curriculum-batch/v2",
+  "title": "Mirror typed contract-derived reasoning curriculum batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "inputsDigest", "organ", "partition", "refusedContracts", "results", "frontier", "summary", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-contract-curriculum-batch/v2" },
+    "batchId": { "type": "string", "pattern": "^reasoning-contract-curriculum-[a-f0-9]{20}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "inputsDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "required": ["id", "status", "learnedWeights"],
+      "properties": {
+        "id": { "const": "axm.mirror.organ/reasoning-contract-curriculum-v2" },
+        "status": { "const": "TEST_PRIVATE_TYPED_CONTRACT_CURRICULUM_V2" },
+        "learnedWeights": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "partition": { "type": "object" },
+    "refusedContracts": { "type": "array" },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["moduleId", "contractSha256", "typedField", "boundaryId", "partition", "expectedDecision", "observedDecision", "behaviorMatched", "state", "reasoningSessionId", "sessionFile", "sessionSha256", "sessionDigest", "semanticConsolidation"],
+        "properties": {
+          "moduleId": { "type": "string", "minLength": 1 },
+          "contractSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "typedField": { "const": "boundaries.refuses[]" },
+          "boundaryId": { "type": "string", "minLength": 1 },
+          "partition": { "enum": ["PRIVATE_TRAINING", "HELD_OUT_EVALUATION"] },
+          "expectedDecision": { "type": "object" },
+          "observedDecision": { "type": "object" },
+          "behaviorMatched": { "type": "boolean" },
+          "state": { "enum": ["BOUNDARY_PRESERVED", "BOUNDARY_MISMATCH"] },
+          "reasoningSessionId": { "type": "string", "minLength": 1 },
+          "sessionFile": { "type": "string", "minLength": 1 },
+          "sessionSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "sessionDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "semanticConsolidation": { "const": false }
+        }
+      }
+    },
+    "frontier": { "type": "object" },
+    "summary": { "type": "object" },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

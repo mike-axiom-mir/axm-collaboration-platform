@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-development-evidence-need/v1",
+  "title": "Mirror machine-readable Foundation development evidence need",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["evidenceKind", "acquisitionMode", "sourceConstraint", "independentFromCandidate", "permissionRequired", "eventInductionAllowed", "candidateMayAuthorExpectedResult", "acceptanceEvidence"],
+  "properties": {
+    "evidenceKind": {
+      "enum": [
+        "OUTSIDE_AUTHORED_SEALED_LANGUAGE_EXAM",
+        "PASSIVE_VERIFIED_REAL_LOCAL_NEGATIVE_EPISODE",
+        "BOUND_INDEPENDENT_REGRESSION_EXAM"
+      ]
+    },
+    "acquisitionMode": {
+      "enum": [
+        "EXTERNAL_PERMISSIONED_SUBMISSION",
+        "PASSIVE_LOCAL_OBSERVATION",
+        "INDEPENDENT_BOUNDED_EXAM"
+      ]
+    },
+    "sourceConstraint": { "type": "string", "minLength": 1 },
+    "independentFromCandidate": { "type": "boolean" },
+    "permissionRequired": { "const": true },
+    "eventInductionAllowed": { "const": false },
+    "candidateMayAuthorExpectedResult": { "const": false },
+    "acceptanceEvidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

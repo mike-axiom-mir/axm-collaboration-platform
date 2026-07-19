@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.provider-declaration-architecture-pattern-assessment.schema.json",
+  "title": "AXM Mirror provider declaration architecture pattern assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "cellId", "assessmentDigest", "document", "classification", "hypothesisId", "slots", "currentRelations", "mustDemonstrate", "demonstrated", "missing", "completeCurrentRelationWitness", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.provider-declaration-architecture-pattern-assessment/v1" },
+    "cellId": { "const": "axm.mirror.cell/provider-declaration-architecture-pattern-v1" },
+    "assessmentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "document": { "type": "object" },
+    "classification": { "enum": ["SHARED_SERVICE_DECLARATION_PATTERN", "ENGINE_REGISTRY_DECLARATION_PATTERN", "FOUNDATION_SERVICE_PLANE_PATTERN", "TYPED_SERVICE_INTEGRATION_PATTERN", "JSON_SCHEMA_DECLARATION_PATTERN", "UNRELATED_TYPED_DOCUMENT", "UNTYPED_DOCUMENT", "MALFORMED_DOCUMENT", "BOUNDARY_REFUSED_DOCUMENT"] },
+    "hypothesisId": { "type": ["string", "null"] },
+    "slots": { "type": "object" },
+    "currentRelations": { "type": "object" },
+    "mustDemonstrate": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "demonstrated": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "missing": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "completeCurrentRelationWitness": { "type": "boolean" },
+    "state": { "enum": ["COMPLETE_CURRENT_RELATION_WITNESS_NOT_ARCHITECTURE_EVALUATED", "PARTIAL_CURRENT_RELATION_WITNESS", "RELEVANT_PATTERN_NO_CURRENT_REQUIREMENT_WITNESS", "NOT_A_PROVIDER_DECLARATION_ARCHITECTURE_PATTERN", "DOCUMENT_REFUSED"] },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string" }
+  }
+}

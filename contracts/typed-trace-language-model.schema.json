@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.typed-trace-language-model/v1",
+  "title": "Mirror learned typed-trace surface-plan model",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "architecture", "features", "labels", "alpha", "classCounts", "valueCounts", "featureVocabulary", "training", "authority", "modelDigest"],
+  "properties": {
+    "schema": { "const": "axm.mirror.typed-trace-language-model/v1" },
+    "architecture": { "const": "laplace-smoothed-categorical-surface-plan-classifier" },
+    "features": { "type": "array", "minItems": 6, "maxItems": 6, "items": { "type": "string" }, "uniqueItems": true },
+    "labels": { "type": "array", "minItems": 1, "items": { "type": "string" }, "uniqueItems": true },
+    "alpha": { "type": "number", "exclusiveMinimum": 0, "maximum": 10 },
+    "classCounts": { "type": "object" },
+    "valueCounts": { "type": "object" },
+    "featureVocabulary": { "type": "object" },
+    "training": { "type": "object" },
+    "authority": {
+      "type": "object",
+      "required": ["factPromotion", "decisionChange", "permissionGrant", "toolUse", "memoryWrite", "trainingAdmission", "runtimePromotion"],
+      "properties": {
+        "factPromotion": { "const": false }, "decisionChange": { "const": false }, "permissionGrant": { "const": false },
+        "toolUse": { "const": false }, "memoryWrite": { "const": false }, "trainingAdmission": { "const": false }, "runtimePromotion": { "const": false }
+      }
+    },
+    "modelDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

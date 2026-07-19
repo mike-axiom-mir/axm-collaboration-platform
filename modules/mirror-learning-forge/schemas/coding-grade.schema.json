@@ -1,0 +1,21 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.mirror.coding-grade/v1",
+  "type":"object",
+  "required":["schema","grade_id","track","language","syntax","safety","contract","tests","verdict","truth_boundary","created_at","hash"],
+  "properties":{
+    "schema":{"const":"axm.mirror.coding-grade/v1"},
+    "grade_id":{"type":"string"},
+    "track":{"const":"coding_foundations"},
+    "language":{"enum":["javascript","python","html_css","generic"]},
+    "syntax":{"type":"object"},
+    "safety":{"type":"object"},
+    "contract":{"type":"object"},
+    "tests":{"type":"object"},
+    "verdict":{"enum":["PASS","REPAIR","REJECT"]},
+    "truth_boundary":{"type":"string"},
+    "created_at":{"type":"string"},
+    "hash":{"type":"string"}
+  },
+  "additionalProperties":true
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.typed-trace-language-independent-pack/v1",
+  "title": "Mirror sealed declared-independent typed-trace language exam pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "packId", "packDigest", "usePermission", "permissionBasis", "author", "independence", "frozenHeldOut", "records", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.typed-trace-language-independent-pack/v1" },
+    "packId": { "type": "string", "pattern": "^typed-trace-language-independent-pack-[a-f0-9]{24}$" },
+    "packDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "usePermission": { "const": "allowed" },
+    "permissionBasis": { "type": "string", "minLength": 1 },
+    "author": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "relationshipToMirrorTrainingEffort"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["HUMAN", "AI_SYSTEM", "TEAM"] },
+        "relationshipToMirrorTrainingEffort": { "const": "OUTSIDE_MODEL_AND_CORPUS_AUTHORING" }
+      }
+    },
+    "independence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authoredOutsideModelAndCorpusEffort", "modelWeightsUnavailableDuringAuthorship", "modelPredictionsUnavailableDuringAuthorship", "recordsFrozenBeforeFirstEvaluation", "notDerivedFromMirrorLanguageCorpus", "attestationBasis"],
+      "properties": {
+        "authoredOutsideModelAndCorpusEffort": { "const": true },
+        "modelWeightsUnavailableDuringAuthorship": { "const": true },
+        "modelPredictionsUnavailableDuringAuthorship": { "const": true },
+        "recordsFrozenBeforeFirstEvaluation": { "const": true },
+        "notDerivedFromMirrorLanguageCorpus": { "const": true },
+        "attestationBasis": { "type": "string", "minLength": 1 }
+      }
+    },
+    "frozenHeldOut": { "const": true },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "sourceGroupId", "trace"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "sourceGroupId": { "type": "string", "minLength": 1 },
+          "trace": { "type": "object" }
+        }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-handoff-route-batch-v2.schema.json",
+  "title": "AXM Mirror manifest-bound typed handoff route batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "inputsDigest", "organ", "cells", "implementationContract", "sourceLineage", "knownFailSupersession", "refusedContracts", "contracts", "edges", "results", "frontier", "summary", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-handoff-route-batch/v2" },
+    "batchId": { "type": "string", "pattern": "^reasoning-handoff-graph-[a-f0-9]{20}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "inputsDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "createdAt": { "type": ["string", "null"] },
+    "organ": {
+      "type": "object",
+      "required": ["id", "status", "learnedWeights"],
+      "properties": {
+        "id": { "const": "axm.mirror.organ/reasoning-handoff-graph-v2" },
+        "status": { "const": "TEST_MANIFEST_BOUND_PROPOSAL_ONLY_TYPED_HANDOFF_GRAPH" },
+        "learnedWeights": { "const": false }
+      }
+    },
+    "cells": {
+      "type": "object",
+      "required": ["handoffCompatibility", "contractManifestBinding"],
+      "properties": {
+        "handoffCompatibility": { "type": "object" },
+        "contractManifestBinding": { "type": "object" }
+      }
+    },
+    "implementationContract": { "type": "object" },
+    "sourceLineage": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+        }
+      }
+    },
+    "knownFailSupersession": { "type": "object" },
+    "refusedContracts": { "type": "array" },
+    "contracts": { "type": "array", "maxItems": 64 },
+    "edges": { "type": "array", "maxItems": 256 },
+    "results": { "type": "array", "maxItems": 256 },
+    "frontier": { "type": "object" },
+    "summary": {
+      "type": "object",
+      "required": ["eligibleContracts", "manifestBindingsPassed", "manifestBindingsFailed", "undeclaredContractFiles", "exactCrossModuleEdges", "directRoutes", "composedDepthTwoRoutes", "exactRoutesSelected", "routeSelectionMismatches", "unboundDecoysRejected", "trainingReceiptsCreated", "worldActionsExecuted"],
+      "properties": {
+        "eligibleContracts": { "type": "integer", "minimum": 0, "maximum": 64 },
+        "manifestBindingsPassed": { "type": "integer", "minimum": 0, "maximum": 64 },
+        "manifestBindingsFailed": { "type": "integer", "minimum": 0 },
+        "undeclaredContractFiles": { "type": "integer", "minimum": 0 },
+        "exactCrossModuleEdges": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "directRoutes": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "composedDepthTwoRoutes": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "exactRoutesSelected": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "routeSelectionMismatches": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "unboundDecoysRejected": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "trainingReceiptsCreated": { "const": 0 },
+        "worldActionsExecuted": { "const": 0 }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "properties": { "privateEvaluationTraceWrite": { "const": true } },
+      "additionalProperties": { "const": false }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

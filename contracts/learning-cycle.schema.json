@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.learning-cycle/v1",
+  "title": "Mirror deliberate seam-gated learning cycle",
+  "type": "object",
+  "required": ["schema", "cycleId", "inputsDigest", "resultDigest", "identity", "seamInvocation", "corpus", "evaluation", "recovery", "promotion", "artifacts"],
+  "properties": {
+    "schema": { "const": "axm.mirror.learning-cycle/v1" },
+    "cycleId": { "type": "string" },
+    "inputsDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "resultDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identity": { "const": "axm.machine.mirror/seed-0" },
+    "seamInvocation": {
+      "type": "object",
+      "required": ["mode", "invoked", "reason"],
+      "properties": {
+        "mode": { "const": "deliberate" },
+        "invoked": { "const": true },
+        "reason": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "corpus": {
+      "type": "object",
+      "required": ["manifest", "approvedSessionEpisodes", "approvedTrainingEpisodes", "trainingTokenCount", "documents", "splits", "splitLineage"],
+      "properties": {
+        "splitLineage": { "$ref": "language-evaluation-split-lineage.schema.json" }
+      },
+      "additionalProperties": true
+    },
+    "evaluation": { "type": "object" },
+    "recovery": { "type": "object" },
+    "promotion": {
+      "type": "object",
+      "required": ["automatic", "reviewRequired", "runtimePointerChanged", "state"],
+      "properties": {
+        "automatic": { "const": false },
+        "reviewRequired": { "const": true },
+        "runtimePointerChanged": { "const": false },
+        "state": { "enum": ["HOLD_REPAIR", "PROPOSE_HUMAN_REVIEW"] },
+        "reason": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "artifacts": { "type": "array" }
+  },
+  "additionalProperties": true
+}

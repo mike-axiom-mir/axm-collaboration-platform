@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-strategy-model/v2",
+  "title": "Mirror private reusable reasoning strategy challenger",
+  "type": "object",
+  "required": ["schema", "modelId", "modelDigest", "status", "createdAt", "featurePolicy", "featureVocabulary", "labels", "sequences", "negativeLabels", "negativeSequences", "training", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-strategy-model/v2" },
+    "modelId": { "type": "string", "pattern": "^reasoning-strategy-[a-f0-9]{24}$" },
+    "modelDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "status": { "const": "PRIVATE_CHALLENGER" },
+    "createdAt": { "type": ["string", "null"] },
+    "featurePolicy": { "const": "structural-state-only-no-goal-word-features" },
+    "featureVocabulary": { "type": "array", "items": { "type": "string" } },
+    "labels": { "type": "object", "minProperties": 1 },
+    "sequences": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["examples", "strategyTags", "featureCounts", "sourceSessionIds", "prototypeCandidates", "prototype"],
+        "properties": {
+          "examples": { "type": "integer", "minimum": 1 },
+          "strategyTags": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+          "featureCounts": { "type": "object" },
+          "sourceSessionIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+          "prototypeCandidates": { "type": "object", "minProperties": 1 },
+          "prototype": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "negativeLabels": { "type": "object" },
+    "negativeSequences": { "type": "object" },
+    "training": { "type": "object" },
+    "authority": {
+      "type": "object",
+      "properties": {
+        "activeRuntime": { "const": false },
+        "toolUse": { "const": false },
+        "permissionGrant": { "const": false },
+        "memoryWrite": { "const": false },
+        "canonChange": { "const": false },
+        "identityChange": { "const": false },
+        "selfPromotion": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

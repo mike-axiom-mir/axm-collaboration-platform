@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-development-snapshot/v1",
+  "title": "Mirror longitudinal foundation-development behavior snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "snapshotId", "snapshotDigest", "organ", "subject", "evidence", "dimensions", "comparison", "openGates", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-development-snapshot/v1" },
+    "snapshotId": { "type": "string", "pattern": "^foundation-development-[a-f0-9]{24}$" },
+    "snapshotDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "required": ["id", "learnedWeights", "singleIntelligenceScore"],
+      "properties": {
+        "id": { "const": "axm.mirror.foundation-development-observatory-organ/v1" },
+        "learnedWeights": { "const": false },
+        "singleIntelligenceScore": { "const": false }
+      }
+    },
+    "subject": { "type": "object" },
+    "evidence": { "type": "object" },
+    "dimensions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "state", "statement", "evidenceRefs", "claimAuthority"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "state": { "type": "string", "minLength": 1 },
+          "statement": { "type": "string", "minLength": 1 },
+          "evidenceRefs": { "type": "array" },
+          "developmentNeed": { "type": ["object", "null"] },
+          "claimAuthority": { "const": false }
+        }
+      }
+    },
+    "comparison": { "type": "object" },
+    "openGates": { "type": "array" },
+    "state": { "enum": ["SYNTHETIC_OBSERVATORY_FIXTURE_NOT_OPERATIONAL_EVIDENCE", "HOLD_FOUNDATION_BEHAVIOR_REGRESSION_REQUIRES_REVIEW", "FOUNDATION_BEHAVIOR_STABLE_WITH_OPEN_EVIDENCE_GATES", "BASELINE_FOUNDATION_BEHAVIOR_OBSERVED_WITH_OPEN_EVIDENCE_GATES"] },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["privateEvidenceTraceWrite", "factPromotion", "semanticTruthWrite", "trainingAdmission", "automaticRepair", "modelChange", "runtimePromotion", "canonChange", "worldAction"],
+      "properties": {
+        "privateEvidenceTraceWrite": { "const": true },
+        "factPromotion": { "const": false },
+        "semanticTruthWrite": { "const": false },
+        "trainingAdmission": { "const": false },
+        "automaticRepair": { "const": false },
+        "modelChange": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "worldAction": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

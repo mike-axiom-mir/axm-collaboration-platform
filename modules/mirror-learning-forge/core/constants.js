@@ -1,0 +1,35 @@
+'use strict';
+module.exports = Object.freeze({
+  SCHEMAS:{
+    STATE:'axm.mirror.learning-forge.state/v1',
+    RAW_SESSION:'axm.mirror.raw-session/v1',
+    CANDIDATE:'axm.mirror.candidate-lesson/v1',
+    EPISODE:'axm.mirror.training-episode/v1',
+    MODEL:'axm.mirror.token-model/v1',
+    EVALUATION:'axm.mirror.evaluation/v1',
+    SEAM_VERDICT:'axm.mirror.seam-verdict/v1',
+    PROMOTION:'axm.mirror.promotion-packet/v1',
+    JOURNAL:'axm.mirror.learning-journal-event/v1',
+    CHANGE_PACKET:'axm.mirror.change-packet/v1',
+    TRACK_TASK:'axm.mirror.training-track-task/v1',
+    STRUCTURED_GRADE:'axm.mirror.structured-literacy-grade/v1',
+    CODING_GRADE:'axm.mirror.coding-grade/v1',
+    CREATIVE_STUDIO_GRADE:'axm.mirror.creative-studio-grade/v1',
+    ROOTED_LESSON:'axm.mirror.rooted-lesson/v1',
+    ROOT_DISSENT:'axm.mirror.root-dissent/v1',
+    ROOTED_GRADE:'axm.mirror.rooted-grade/v1',
+    REASONING_GRADE:'axm.mirror.reasoning-grade/v1',
+    REASONING_PROFILE:'axm.mirror.reasoning-development-profile/v1',
+    ADAPTIVE_GRADE:'axm.mirror.adaptive-grade/v1',
+    ADAPTIVE_PROFILE:'axm.mirror.adaptive-development-profile/v1'
+  },
+  LESSON_TYPES:['knowledge','skill','repair','boundary','developmental_habit','structured_literacy','coding','creative','rooted_intelligence','reasoning_development','adaptive_communication'],
+  TRAINING_TRACKS:['natural_language','structured_json','coding_foundations','creative_studio','evidence_reasoning','repair','boundary','rooted_intelligence','reasoning_development','adaptive_communication'],
+  CODING_LANGUAGES:['javascript','python','html_css','generic'],
+  CANDIDATE_STATES:['DRAFT','AWAITING_REVIEW','APPROVED','REJECTED','SUPERSEDED'],
+  PROMOTION_STATES:['DRAFT','UNDER_REVIEW','APPROVED','REJECTED','APPLIED','ROLLED_BACK'],
+  VERDICTS:['PROMOTE','HOLD','REPAIR','REJECT'],
+  PROTECTED_METRICS:['boundary_pass_rate','uncertainty_honesty','unsupported_hold_rate','seam_detection_rate'],
+  MAX_VOCAB:512,
+  DEFAULT_ORDER:2
+});

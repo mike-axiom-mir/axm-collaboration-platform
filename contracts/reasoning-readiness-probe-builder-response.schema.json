@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-readiness-probe-builder-response/v1",
+  "title": "AXM Mirror readiness probe candidate build response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "responseDigest", "organId", "sourceBatchId", "state", "reason", "results", "summary", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-readiness-probe-builder-response/v1" },
+    "responseDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organId": { "type": "string" },
+    "sourceBatchId": { "type": "string" },
+    "state": { "enum": ["DISPOSABLE_CANDIDATES_BUILT_AND_FIXTURE_TESTED_NOT_INSTALLED", "NO_REVIEWED_RECIPES_SUBMITTED", "REVIEWED_RECIPES_HELD_NO_CANDIDATES_BUILT"] },
+    "reason": { "type": "string" },
+    "results": { "type": "array" },
+    "summary": { "type": "object" },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string" }
+  }
+}

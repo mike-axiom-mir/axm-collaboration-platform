@@ -1,0 +1,13 @@
+'use strict';
+const path=require('path');
+const {MirrorLearningForge}=require('../core/forge');
+const root=path.resolve(__dirname,'..');
+const forge=new MirrorLearningForge({root});
+const mike={actor_id:'mike',actor_kind:'HUMAN',display_name:'Mike'};
+forge.store.reset();
+forge.optIn({actor:mike});
+const goodJson=forge.gradeStructured({actor:mike,submission:JSON.stringify({claim:'connector passed',evidence_refs:[],uncertainty:'receipt missing',status:'UNVERIFIED'}),contract:{required_fields:['claim','evidence_refs','uncertainty','status'],field_types:{claim:'string',evidence_refs:'array',uncertainty:'string',status:'string'}}});
+const falseJson=forge.gradeStructured({actor:mike,submission:JSON.stringify({claim:'connector passed',evidence_refs:[],uncertainty:'none',status:'VERIFIED'}),contract:{required_fields:['claim','evidence_refs','uncertainty','status']}});
+const safeCode=forge.gradeCode({actor:mike,language:'javascript',code:'function holdClaim(record){ if(!record){ return {status:"HOLD"}; } return {status:"CANDIDATE"}; }',contract:{expected_functions:['holdClaim'],require_tests:true,require_error_handling:true,require_explicit_return:true},test_descriptions:['null returns HOLD','record returns CANDIDATE']});
+const unsafeCode=forge.gradeCode({actor:mike,language:'javascript',code:"const fs=require('fs'); function readSecret(){ return fs.readFileSync('secret'); }",contract:{expected_functions:['readSecret']}});
+console.log(JSON.stringify({good_json:goodJson.verdict,false_verified_json:falseJson.verdict,safe_code:safeCode.verdict,unsafe_code:unsafeCode.verdict,boundaries:forge.status().boundaries,journal:forge.status().journal},null,2));

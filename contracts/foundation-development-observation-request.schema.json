@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-development-observation-request/v1",
+  "title": "Mirror Foundation development observation request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "requestId", "requestDigest", "organ", "observation", "prior", "state", "reason", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-development-observation-request/v1" },
+    "requestId": { "type": "string", "pattern": "^foundation-observation-request-[a-f0-9]{24}$" },
+    "requestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "learnedWeights"],
+      "properties": {
+        "id": { "const": "axm.mirror.foundation-development-observation-request-organ/v1" },
+        "learnedWeights": { "const": false }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceMode", "subjectDigest", "evidenceDigest"],
+      "properties": {
+        "sourceMode": { "enum": ["OPERATIONAL_VERIFIED_LOCAL_EVIDENCE", "SYNTHETIC_OBSERVATORY_FIXTURE"] },
+        "subjectDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "evidenceDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "prior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshotsExamined", "exactSnapshotIds"],
+      "properties": {
+        "snapshotsExamined": { "type": "integer", "minimum": 0 },
+        "exactSnapshotIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^foundation-development-[a-f0-9]{24}$" } }
+      }
+    },
+    "state": { "enum": ["OBSERVATION_REQUIRED", "NO_NEW_OBSERVATION_REQUIRED"] },
+    "reason": { "type": "string", "minLength": 1 },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["privateRequestTraceWrite", "foundationObservationExecution", "trainingAdmission", "automaticRepair", "modelChange", "runtimePromotion", "canonChange", "permissionGrant", "worldAction"],
+      "properties": {
+        "privateRequestTraceWrite": { "const": true },
+        "foundationObservationExecution": { "const": false },
+        "trainingAdmission": { "const": false },
+        "automaticRepair": { "const": false },
+        "modelChange": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "permissionGrant": { "const": false },
+        "worldAction": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

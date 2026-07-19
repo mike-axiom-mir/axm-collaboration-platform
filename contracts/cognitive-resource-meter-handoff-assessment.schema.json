@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.cognitive-resource-meter-handoff-assessment/v1",
+  "title": "AXM Mirror bounded Workshop cognitive-resource-meter handoff assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessmentDigest", "organ", "source", "workshopObservation", "state", "summary", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.cognitive-resource-meter-handoff-assessment/v1" },
+    "assessmentId": { "type": "string", "pattern": "^cognitive-resource-meter-handoff-[a-f0-9]{24}$" },
+    "assessmentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "learnedWeights", "workshopSourceExecution", "automaticIntake"],
+      "properties": {
+        "id": { "const": "axm.mirror.cognitive-resource-meter-handoff-organ/v1" },
+        "learnedWeights": { "const": false },
+        "workshopSourceExecution": { "const": false },
+        "automaticIntake": { "const": false }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workshopObservationSchema", "workshopObservationDigest", "moduleId", "providerCatalogSha256"],
+      "properties": {
+        "workshopObservationSchema": { "const": "axm.mirror.cognitive-resource-meter-workshop-observation/v1" },
+        "workshopObservationDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "moduleId": { "enum": ["cognitive-resource-meter", null] },
+        "providerCatalogSha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "workshopObservation": { "$ref": "cognitive-resource-meter-workshop-observation.schema.json" },
+    "state": { "enum": ["WORKSHOP_ABSENT", "COGNITIVE_RESOURCE_METER_ABSENT", "DECLARED_TEST_PROVIDER_NO_EXPORTED_DRAFTS", "HOLD_DRAFTS_REQUIRE_REVIEW", "EXPLICIT_INTAKE_CANDIDATES_OBSERVED"] },
+    "summary": { "type": "object" },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["privateHandoffAssessmentWrite", "workshopWrite", "automaticIntake", "evidenceAdmission", "observationSeal", "economicsProfileSeal", "currentPriceCertification", "measuredOrBilledCostClaim", "universalTokenComputeConversion", "nonlinearBillingClaim", "calibratedCostClaim", "ranking", "modelHardwareProviderOrPlanSelection", "budgetAllocation", "permissionGrant", "trainingAdmission", "runtimePromotion", "canonChange", "worldAction"],
+      "properties": {
+        "privateHandoffAssessmentWrite": { "const": true },
+        "workshopWrite": { "const": false },
+        "automaticIntake": { "const": false },
+        "evidenceAdmission": { "const": false },
+        "observationSeal": { "const": false },
+        "economicsProfileSeal": { "const": false },
+        "currentPriceCertification": { "const": false },
+        "measuredOrBilledCostClaim": { "const": false },
+        "universalTokenComputeConversion": { "const": false },
+        "nonlinearBillingClaim": { "const": false },
+        "calibratedCostClaim": { "const": false },
+        "ranking": { "const": false },
+        "modelHardwareProviderOrPlanSelection": { "const": false },
+        "budgetAllocation": { "const": false },
+        "permissionGrant": { "const": false },
+        "trainingAdmission": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "worldAction": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

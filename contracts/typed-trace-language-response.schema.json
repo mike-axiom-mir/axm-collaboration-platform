@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.typed-trace-language-response/v1",
+  "title": "Mirror shadow typed-trace language response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "responseDigest", "organId", "state", "traceId", "traceDigest", "model", "machineGround", "prediction", "verifier", "proposal", "fallback", "fidelity", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.typed-trace-language-response/v1" },
+    "responseDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organId": { "const": "axm.mirror.typed-trace-language-organ/shadow-v1" },
+    "state": { "enum": ["PROPOSED_SHADOW_TRACE_FAITHFUL_RENDERING", "HOLD_LEARNED_PLAN_CONTRADICTS_TRACE", "HOLD_LEARNED_PLAN_UNCERTAIN"] },
+    "traceId": { "type": "string", "minLength": 1 },
+    "traceDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "model": { "type": "object" },
+    "machineGround": { "type": "object" },
+    "prediction": { "type": "object" },
+    "verifier": { "type": "object" },
+    "proposal": { "type": ["object", "null"] },
+    "fallback": { "type": ["object", "null"] },
+    "fidelity": { "type": "object" },
+    "authority": {
+      "type": "object",
+      "required": ["activeHumanRendering", "factPromotion", "decisionChange", "permissionGrant", "toolUse", "memoryWrite", "trainingAdmission", "runtimePromotion", "worldAction"],
+      "properties": {
+        "activeHumanRendering": { "const": false }, "factPromotion": { "const": false }, "decisionChange": { "const": false },
+        "permissionGrant": { "const": false }, "toolUse": { "const": false }, "memoryWrite": { "const": false },
+        "trainingAdmission": { "const": false }, "runtimePromotion": { "const": false }, "worldAction": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

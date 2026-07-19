@@ -1,0 +1,4 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict');
+const {makeForge,mike,seedFlow}=require('./helpers');
+test('evaluation refuses held-out mutation after training',()=>{const {forge,cleanup}=makeForge();try{const {candidate}=seedFlow(forge);const baseline=forge.createBaseline({actor:mike,model_id:'baseline',texts:['mirror holds uncertainty','evidence closes seams']});const challenger=forge.trainChallenger({actor:mike,candidate_id:candidate.candidate_id,base_model_id:baseline.model_id});const state=forge.store.read();const episode=state.episodes[challenger.training.episode_ids[0]];forge.store.mutate('TEST_MUTATION',{actor_id:'test',actor_kind:'SYSTEM'},s=>{s.episodes[episode.episode_id].held_out_variants[0].expected+=' changed';return true;});assert.throws(()=>forge.evaluateChallenger({actor:mike,challenger_model_id:challenger.model_id,base_model_id:baseline.model_id}),/held-out suite changed/);}finally{cleanup();}});

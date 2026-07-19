@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.typed-trace-language-independent-exam/v1",
+  "title": "Mirror declared-independent typed-trace language distribution-shift exam",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "examId", "examDigest", "organ", "sourcePack", "independence", "evaluation", "coverage", "files", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.typed-trace-language-independent-exam/v1" },
+    "examId": { "type": "string", "pattern": "^typed-trace-language-independent-exam-[a-f0-9]{24}$" },
+    "examDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": { "type": "object" },
+    "sourcePack": { "type": "object" },
+    "independence": { "type": "object" },
+    "evaluation": { "type": "object" },
+    "coverage": { "type": "object" },
+    "files": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "object" } },
+    "state": { "enum": ["DECLARED_INDEPENDENT_SHADOW_EXAM_PASSED", "DECLARED_INDEPENDENT_EVIDENCE_INSUFFICIENT_COVERAGE", "DECLARED_INDEPENDENT_SHADOW_DRIFT_REQUIRES_REVIEW"] },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["privateEvidenceTraceWrite", "independenceCertification", "trainingAdmission", "automaticRetraining", "thresholdChange", "modelChange", "runtimePromotion", "activeHumanRendering", "worldAction"],
+      "properties": {
+        "privateEvidenceTraceWrite": { "const": true },
+        "independenceCertification": { "const": false },
+        "trainingAdmission": { "const": false },
+        "automaticRetraining": { "const": false },
+        "thresholdChange": { "const": false },
+        "modelChange": { "const": false },
+        "runtimePromotion": { "const": false },
+        "activeHumanRendering": { "const": false },
+        "worldAction": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

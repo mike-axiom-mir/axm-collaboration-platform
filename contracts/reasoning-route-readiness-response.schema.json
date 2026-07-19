@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-route-readiness-response.schema.json",
+  "title": "AXM Mirror route readiness response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "responseDigest", "organId", "sourceGraphBatchId", "sourceReadinessBatchId", "request", "observation", "state", "reason", "compatibilityRoutesEvaluated", "proposals", "heldRoutes", "humanRenderingAuthority", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-route-readiness-response/v1" },
+    "responseDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organId": { "const": "axm.mirror.organ/reasoning-route-readiness-overlay-v1" },
+    "sourceGraphBatchId": { "type": "string" },
+    "sourceReadinessBatchId": { "type": "string" },
+    "request": { "type": "object" },
+    "observation": { "type": "object" },
+    "state": { "enum": ["PROPOSED_READY_MANIFEST_BOUND_EXACT_TYPED_ROUTES", "PROPOSED_AVAILABLE_EXPLICIT_START_REQUIRED_ROUTES", "HOLD_ROUTE_READINESS_NEEDS_ACTION", "HOLD_ROUTE_READINESS_BLOCKED", "HOLD_READINESS_EVIDENCE_STALE_OR_MISSING", "HOLD_UNBOUND_MODULE_CONTRACT", "HOLD_UNKNOWN_MODULE", "HOLD_NO_MANIFEST_BOUND_EXACT_TYPED_ROUTE"] },
+    "reason": { "type": "string", "minLength": 1 },
+    "compatibilityRoutesEvaluated": { "type": "integer", "minimum": 0 },
+    "proposals": { "type": "array", "maxItems": 8 },
+    "heldRoutes": { "type": "array", "maxItems": 256 },
+    "humanRenderingAuthority": { "const": false },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

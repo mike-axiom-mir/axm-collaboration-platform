@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.provider-declaration-gap-assessment.schema.json",
+  "title": "AXM Mirror provider declaration gap assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "cellId", "assessmentDigest", "sourceAffordanceAssessmentDigest", "sourceClassification", "requirementId", "classification", "consumerBindings", "providerSelectors", "counts", "unknowns", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.provider-declaration-gap-assessment/v1" },
+    "cellId": { "const": "axm.mirror.cell/provider-declaration-gap-v1" },
+    "assessmentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "sourceAffordanceAssessmentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "sourceClassification": { "type": "string" },
+    "requirementId": { "type": "string", "minLength": 1 },
+    "classification": { "enum": ["PROVIDER_DECLARATION_GAP_CANDIDATE", "DECLARATION_PRESENT_NO_GAP", "AMBIGUOUS_PROVIDER_DECLARATIONS_HOLD", "NO_CONSUMER_BOUND_DECLARATION_GAP_HOLD"] },
+    "consumerBindings": { "type": "array", "maxItems": 64 },
+    "providerSelectors": { "type": "array", "maxItems": 64, "uniqueItems": true },
+    "counts": { "type": "object" },
+    "unknowns": { "type": "array" },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}
+

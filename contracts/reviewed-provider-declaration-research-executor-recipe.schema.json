@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reviewed-provider-declaration-research-executor-recipe.schema.json",
+  "title": "AXM Mirror reviewed provider declaration research executor recipe",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "recipeId", "recipeDigest", "examRequestId", "examRequestDigest", "decision", "review", "executor", "humanWordingAuthority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reviewed-provider-declaration-research-executor-recipe/v1" },
+    "recipeId": { "type": "string", "pattern": "^provider-declaration-research-executor-recipe-[a-f0-9]{20}$" },
+    "recipeDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "examRequestId": { "type": "string", "minLength": 1 },
+    "examRequestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "decision": { "enum": ["APPROVE_DISPOSABLE_EXECUTOR", "HOLD"] },
+    "review": { "type": "object" },
+    "executor": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "projectionSchema", "buildRoot", "fixtureCaseIds", "architectureSelection", "candidateMayAuthorFixtures", "liveExecutionApproved"],
+          "properties": {
+            "kind": { "const": "DECLARATION_RELATION_FIXTURE_EXECUTOR_V1" },
+            "projectionSchema": { "const": "axm.mirror.provider-declaration-architecture-projection/v1" },
+            "buildRoot": { "const": "IGNORED_PRIVATE_STATE" },
+            "fixtureCaseIds": { "type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true },
+            "architectureSelection": { "const": "NONE" },
+            "candidateMayAuthorFixtures": { "const": false },
+            "liveExecutionApproved": { "const": false }
+          }
+        }
+      ]
+    },
+    "humanWordingAuthority": { "const": false },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "decision": { "const": "HOLD" } } },
+      "then": { "properties": { "executor": { "type": "null" } } },
+      "else": { "properties": { "executor": { "type": "object" } } }
+    }
+  ]
+}

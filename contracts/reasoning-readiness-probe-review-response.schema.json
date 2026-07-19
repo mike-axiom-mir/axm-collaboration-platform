@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-readiness-probe-review-response.schema.json",
+  "title": "AXM Mirror sealed readiness probe recipe human review response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "responseDigest", "organId", "sourceHandBatch", "request", "reviewProvenance", "state", "recipe", "admission", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-readiness-probe-review-response/v1" },
+    "responseDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organId": { "type": "string" },
+    "sourceHandBatch": { "type": "object" },
+    "request": { "type": "object" },
+    "reviewProvenance": { "type": "object" },
+    "state": { "enum": ["REVIEWED_RECIPE_SEALED_NOT_BUILT", "HOLD_RECORDED_WITH_NO_PROBE"] },
+    "recipe": { "$ref": "reviewed-readiness-probe-recipe.schema.json" },
+    "admission": { "$ref": "readiness-probe-recipe-admission.schema.json" },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string" }
+  }
+}

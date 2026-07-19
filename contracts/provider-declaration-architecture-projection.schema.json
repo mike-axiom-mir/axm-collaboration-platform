@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.provider-declaration-architecture-projection.schema.json",
+  "title": "AXM Mirror provider declaration architecture projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "architectureHypothesisId", "requirementId", "providerIdentity", "consumerBindings", "providerSelectors", "declaration", "implementation", "permissions", "exactProviderCount", "rootBoundary", "transition"],
+  "properties": {
+    "schema": { "const": "axm.mirror.provider-declaration-architecture-projection/v1" },
+    "architectureHypothesisId": { "enum": ["REUSE_TYPED_SHARED_SERVICE_DECLARATION", "EXTEND_TYPED_ENGINE_OR_REGISTRY_DECLARATION", "NEW_TYPED_PROVIDER_DECLARATION", "PRESERVE_UNRESOLVED_NO_ARCHITECTURE_FIT"] },
+    "requirementId": { "type": "string", "minLength": 1 },
+    "providerIdentity": { "type": ["string", "null"] },
+    "consumerBindings": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "providerSelectors": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "declaration": { "type": ["object", "null"] },
+    "implementation": { "type": ["object", "null"] },
+    "permissions": { "type": "object" },
+    "exactProviderCount": { "type": "integer", "minimum": 0 },
+    "rootBoundary": { "type": "object" },
+    "transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "previousExactDeclarationRetained", "nextGapExists"],
+      "properties": {
+        "kind": { "enum": ["CURRENT", "REPAIRED_NEXT_BATCH", "EXISTING_DECLARATION_REGRESSION"] },
+        "previousExactDeclarationRetained": { "type": "boolean" },
+        "nextGapExists": { "type": "boolean" }
+      }
+    }
+  }
+}

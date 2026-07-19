@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.route-readiness-assessment.schema.json",
+  "title": "AXM Mirror route readiness assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "cellId", "assessmentDigest", "sourceStateDigest", "route", "modules", "routeState", "attention", "counts", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.route-readiness-assessment/v1" },
+    "cellId": { "const": "axm.mirror.cell/route-readiness-v1" },
+    "assessmentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "sourceStateDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "route": {
+      "type": "object",
+      "required": ["routeId", "moduleIds"],
+      "properties": {
+        "routeId": { "type": "string", "minLength": 1 },
+        "moduleIds": { "type": "array", "minItems": 2, "maxItems": 3, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "modules": { "type": "array", "minItems": 2, "maxItems": 3 },
+    "routeState": { "enum": ["READY", "AVAILABLE", "NEEDS_ACTION", "BLOCKED"] },
+    "attention": { "type": "array" },
+    "counts": { "type": "object" },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

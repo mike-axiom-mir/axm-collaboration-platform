@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.provider-declaration-binding-experiment-frame.schema.json",
+  "title": "AXM Mirror provider declaration binding experiment frame",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["experimentFrameId", "experimentFrameDigest", "schema", "requirementId", "sourceEvidence", "architectureHypothesis", "candidateInputs", "independentExam", "unresolvedRelations", "selectionState", "providerBindingEstablished", "implementationSelected", "sourceExecuted", "architectureSelected", "architectureEvaluated", "providerCandidateBuilt", "providerDeclarationWritten", "state", "authority", "boundary"],
+  "properties": {
+    "experimentFrameId": { "type": "string", "pattern": "^provider-binding-experiment-frame-[a-f0-9]{20}$" },
+    "experimentFrameDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "schema": { "const": "axm.mirror.provider-declaration-binding-experiment-frame/v1" },
+    "requirementId": { "type": "string", "minLength": 1 },
+    "sourceEvidence": { "type": "object" },
+    "architectureHypothesis": { "type": "object" },
+    "candidateInputs": { "type": "object" },
+    "independentExam": { "type": "object" },
+    "unresolvedRelations": { "type": "array", "minItems": 1, "uniqueItems": true },
+    "selectionState": { "const": "NOT_SELECTED" },
+    "providerBindingEstablished": { "const": false },
+    "implementationSelected": { "const": false },
+    "sourceExecuted": { "const": false },
+    "architectureSelected": { "const": false },
+    "architectureEvaluated": { "const": false },
+    "providerCandidateBuilt": { "const": false },
+    "providerDeclarationWritten": { "const": false },
+    "state": { "const": "REVIEWABLE_PROVIDER_BINDING_EXPERIMENT_FRAME_NOT_SELECTED_NOT_EXECUTED" },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

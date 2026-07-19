@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-session/v1",
+  "title": "Mirror native reasoning foundation session",
+  "type": "object",
+  "required": ["schema", "reasoningSessionId", "cell", "createdAt", "identity", "rootBundle", "problemState", "decomposition", "pathSet", "verification", "seams", "metacognition", "memoryRoute", "consolidation", "developmentProposal", "independentSeamReview", "candidateOrigin", "principleTrace", "authority", "limitations"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-session/v1" },
+    "reasoningSessionId": { "type": "string", "pattern": "^reasoning-[a-f0-9]{24}$" },
+    "cell": { "type": "object" },
+    "createdAt": { "type": "string" },
+    "identity": { "const": "axm.machine.mirror/seed-0" },
+    "rootBundle": { "type": "object" },
+    "problemState": { "$ref": "axm.mirror.reasoning-state/v1" },
+    "decomposition": { "$ref": "axm.mirror.decomposition/v1" },
+    "pathSet": { "$ref": "axm.mirror.reasoning-path-set/v1" },
+    "verification": { "type": "object" },
+    "seams": { "type": "array", "maxItems": 256 },
+    "metacognition": { "$ref": "axm.mirror.metacognition-receipt/v1" },
+    "memoryRoute": { "$ref": "axm.mirror.memory-route/v1" },
+    "consolidation": { "$ref": "axm.mirror.consolidation-proposal/v1" },
+    "developmentProposal": { "type": ["object", "null"] },
+    "independentSeamReview": { "type": "object" },
+    "candidateOrigin": { "type": ["object", "null"] },
+    "principleTrace": { "type": "object" },
+    "authority": { "type": "object" },
+    "limitations": { "type": "array", "minItems": 1 }
+  },
+  "additionalProperties": false
+}

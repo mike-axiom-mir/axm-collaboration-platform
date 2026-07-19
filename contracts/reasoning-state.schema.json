@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-state/v1",
+  "title": "Mirror inspectable reasoning state",
+  "type": "object",
+  "required": ["schema", "goal", "observations", "assertions", "derived", "predictions", "assumptions", "unknowns", "constraints", "permissions", "evidenceRefs", "contradictions", "authority"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-state/v1" },
+    "goal": { "type": "object", "required": ["id", "statement"] },
+    "observations": { "type": "array", "maxItems": 256 },
+    "assertions": { "type": "array", "maxItems": 256 },
+    "derived": { "type": "array", "maxItems": 256 },
+    "predictions": { "type": "array", "maxItems": 256 },
+    "assumptions": { "type": "array", "maxItems": 128 },
+    "unknowns": { "type": "array", "maxItems": 128 },
+    "constraints": { "type": "array", "maxItems": 128 },
+    "permissions": { "type": "array", "maxItems": 128 },
+    "evidenceRefs": { "type": "array", "items": { "type": "string" }, "maxItems": 256 },
+    "contradictions": { "type": "array", "maxItems": 256 },
+    "authority": { "const": "NONE" }
+  },
+  "additionalProperties": false
+}

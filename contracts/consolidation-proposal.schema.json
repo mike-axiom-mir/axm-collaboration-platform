@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.consolidation-proposal/v1",
+  "title": "Mirror review-only consolidation proposal",
+  "type": "object",
+  "required": ["schema", "state", "sourceReasoningSessionId", "criteria", "lessonCandidate", "authority", "boundary", "proposalDigest"],
+  "properties": {
+    "schema": { "const": "axm.mirror.consolidation-proposal/v1" },
+    "state": { "enum": ["NOT_ELIGIBLE", "PROPOSE_REVIEW"] },
+    "sourceReasoningSessionId": { "type": "string", "minLength": 1 },
+    "criteria": { "type": "object" },
+    "lessonCandidate": { "type": ["object", "null"] },
+    "authority": {
+      "type": "object",
+      "required": ["memoryWrite", "trainingAdmission", "activeModelChange", "canonChange", "identityChange", "toolGrant", "humanReviewRequired"],
+      "properties": {
+        "memoryWrite": { "const": false },
+        "trainingAdmission": { "const": false },
+        "activeModelChange": { "const": false },
+        "canonChange": { "const": false },
+        "identityChange": { "const": false },
+        "toolGrant": { "const": false },
+        "humanReviewRequired": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "boundary": { "type": "string", "minLength": 1 },
+    "proposalDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

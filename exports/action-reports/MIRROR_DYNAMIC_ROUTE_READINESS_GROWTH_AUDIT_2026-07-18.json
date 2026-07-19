@@ -1,0 +1,199 @@
+{
+  "schema": "axm.mirror.dynamic-route-readiness-growth-audit/v1",
+  "status": "WORKING_TEST_NEEDS_REVIEW",
+  "canon": false,
+  "acceptedByMike": false,
+  "date": "2026-07-18",
+  "preservesEarlierEvidence": true,
+  "sourceGraphReport": "docs/MIRROR_MANIFEST_BOUND_HANDOFF_GROWTH_ACTION_REPORT_2026-07-18.md",
+  "outcome": "Mirror now overlays fresh typed Technical Glasses readiness on separately verified manifest-bound routes. New route modules and requirement records are discovered without module-ID rules; stale, missing, mismatched, UNKNOWN, OFFLINE, TRIPPED, USER_ACTION, AVAILABLE, OPTIONAL, and READY states remain distinct. No readiness trace trains, starts, repairs, grants, executes, or promotes anything.",
+  "organDecision": {
+    "newHardcodedOrganRequired": true,
+    "reason": "Dynamic readiness is a distinct safety and truth relation whose ordering and freshness gate must not be rewritten by learned weights.",
+    "staticCompatibilityKeptSeparate": true,
+    "hardcodedModuleIds": false,
+    "hardcodedDependencyIds": false,
+    "automaticallyDiscoversNewManifestBoundRouteModules": true,
+    "automaticallyDiscoversNewTypedReadinessRequirements": true
+  },
+  "ordering": {
+    "first": "UNKNOWN|OFFLINE|TRIPPED => BLOCKED",
+    "second": "USER_ACTION => NEEDS_ACTION",
+    "third": "AVAILABLE|OPTIONAL => AVAILABLE",
+    "otherwise": "READY",
+    "maximumSnapshotAgeMs": 300000,
+    "unknownBlocks": true,
+    "availableStartsAutomatically": false
+  },
+  "staticGraph": {
+    "organId": "axm.mirror.organ/reasoning-handoff-graph-v2",
+    "batchId": "reasoning-handoff-graph-627524b8983dd7079ff2",
+    "eligibleContracts": 33,
+    "refusedUndeclaredContractFiles": 6,
+    "exactEdges": 21,
+    "directRoutes": 21,
+    "depthTwoRoutes": 16,
+    "routes": 37
+  },
+  "technicalGlasses": {
+    "schema": "axm.technical-glasses/v1",
+    "fingerprint": "ab03fee549a8240f43ee8ee34822078b6180471ada1539c19e069453fb88aa63",
+    "projectedStateDigest": "410ff03be35cd24843ce91068b2c3f089cfa227e253bf7bc53a3548d11c49004",
+    "graphModules": 16,
+    "readinessRequirements": 51,
+    "loopbackRefreshOnly": true,
+    "responseLimitBytes": 5242880,
+    "missingMeansUnknown": true,
+    "automaticAction": false
+  },
+  "readinessCell": {
+    "id": "axm.mirror.cell/route-readiness-v1",
+    "schema": "axm.mirror.route-readiness-assessment/v1",
+    "sourcePath": "kernel/route-readiness-cell.js",
+    "sourceSha256": "404d73f260bdba08d824311ada065e94573331fe20c3d3d37485e11d93eb6cf4",
+    "schemaPath": "contracts/route-readiness-assessment.schema.json",
+    "schemaSha256": "40f889d95f024a96f4afcf8be1a8cea77928ae82d6d13c1db5c1761ee7f7a4ca",
+    "learnedWeights": false
+  },
+  "readinessOrgan": {
+    "id": "axm.mirror.organ/reasoning-route-readiness-overlay-v1",
+    "schema": "axm.mirror.reasoning-route-readiness-batch/v1",
+    "responseSchema": "axm.mirror.reasoning-route-readiness-response/v1",
+    "sourcePath": "organs/reasoning-route-readiness-organ.js",
+    "sourceSha256": "217daf77f75b8e7a12d6485bb785ea603bb4c009fa7911876b4380b389ba3dd4",
+    "batchSchemaSha256": "608b3dcb8137c5421ceca4b1ad641a0dfbfe48e36d5f5c78175bddc4fbbefbe8",
+    "responseSchemaSha256": "edb28c1b43fd655741f4b3c160b24474dd43fadfccd471e13b41d31b7d56716d",
+    "learnedWeights": false,
+    "maximumRoutes": 256,
+    "maximumModules": 64,
+    "maximumSnapshotAgeMs": 300000
+  },
+  "batch": {
+    "batchId": "reasoning-route-readiness-513d4de63414c6522bfa",
+    "inputsDigest": "513d4de63414c6522bfa187ceb2fc391a375a41ef8481ccb2ff7fbae39d8c89a",
+    "batchDigest": "5b71bc80a250740293135e4873b2da1f45b2b8b0ca8ed61b60a28254b67c9c43",
+    "fileSha256": "8fe4cc92669d00f477e79d7a0bfce622e544a147a4ba7ac7b91a60156f75c6ed",
+    "bytes": 336573,
+    "graphRoutes": 37,
+    "graphModules": 16,
+    "readinessRequirements": 51,
+    "readyRoutes": 5,
+    "availableRoutes": 2,
+    "needsActionRoutes": 0,
+    "blockedRoutes": 30,
+    "classificationsMatched": 37,
+    "classificationMismatches": 0,
+    "trainingReceiptsCreated": 0,
+    "worldActionsExecuted": 0,
+    "frontierState": "NO_UNEXPECTED_SEAM"
+  },
+  "liveRuntime": {
+    "pid": 31256,
+    "startedAt": "2026-07-18T12:51:41.952Z",
+    "learnedWeights": false,
+    "sessionId": "session-eac8c24fbd6136f921f17191",
+    "technicalGlassesRefreshedReadOnly": true,
+    "ready": {
+      "modules": ["discovery-engine", "knowledge-canvas", "project-room"],
+      "state": "PROPOSED_READY_MANIFEST_BOUND_EXACT_TYPED_ROUTES",
+      "responseDigest": "c42edc83bb92e7e65315bc66e45ad78972f2e1403cf59933c95f3d1caeeea046",
+      "executed": false
+    },
+    "available": {
+      "modules": ["chatgpt-connector", "game-hub"],
+      "state": "PROPOSED_AVAILABLE_EXPLICIT_START_REQUIRED_ROUTES",
+      "responseDigest": "d240abd73f4ebb21f39c9624989ac35fdfbdcc2dec8115b6d9c05b1c11d53fbe",
+      "started": false,
+      "executed": false
+    },
+    "blocked": {
+      "modules": ["ui-ux-builder", "studio", "game-hub"],
+      "state": "HOLD_ROUTE_READINESS_BLOCKED",
+      "blockingEvidence": "studio:asset-hands:UNKNOWN",
+      "alsoObserved": "game-hub:game-runtime:AVAILABLE",
+      "responseDigest": "959d20f632295ff580a74db0d989668069068404e99b686af83fd53ce8e5fdb9",
+      "executed": false
+    },
+    "unbound": {
+      "modules": ["body-pulse", "game-hub"],
+      "state": "HOLD_UNBOUND_MODULE_CONTRACT",
+      "responseDigest": "e1e6fbdecb5d112fb1f24827364a1129b3c02f42fb4640ee389dea7f483c464c",
+      "readinessBypass": false
+    },
+    "allResponseAuthorityFalse": true
+  },
+  "automaticPractice": {
+    "reportId": "curriculum-20260718125144773-9a33d5563412",
+    "reportSha256": "56fcab39ced7c37a63fa8b0593925fa791ecceb0463f2a0354ec185132b9fe07",
+    "reportBytes": 11046,
+    "readinessBatchId": "reasoning-route-readiness-513d4de63414c6522bfa",
+    "readyRoutes": 5,
+    "availableRoutes": 2,
+    "needsActionRoutes": 0,
+    "blockedRoutes": 30,
+    "classificationMismatches": 0,
+    "trainingReceiptsCreated": 0,
+    "worldActionsExecuted": 0
+  },
+  "learningShell": {
+    "sessionId": "learning-shell-mrqd9r84-4675005d",
+    "status": "COMPLETE",
+    "judgement": "HOLD_REPAIR",
+    "readinessBatchReused": true,
+    "trainingArtifactSha256": "43dab90946bfc863538889105c1387dc4c0af399cca2ae63bb3661f059ac5bc7",
+    "trainingArtifactBytes": 1157720,
+    "readinessEnteredTrainingCorpus": false
+  },
+  "verification": {
+    "focusedReadinessTests": "5/5 PASS",
+    "mirrorCoreTests": "101/101 PASS",
+    "learningForgeTests": "99/99 PASS",
+    "nativeLearningShellTests": "6/6 PASS",
+    "mirrorDoctor": "PASS",
+    "repositoryVisibleJsonParse": "190 PASS",
+    "forgeJournal": {
+      "ok": true,
+      "count": 3,
+      "headHash": "9c7afd7f0ddb9f68c88de7df9325d4416cc1fc2140276fd617ac1ccadad09e9a"
+    },
+    "tamperRefusal": [
+      "assessment content or digest change",
+      "outer batch digest change",
+      "private reasoning session byte change",
+      "manifest or contract evidence path mismatch"
+    ]
+  },
+  "authority": {
+    "privateEvaluationTraceWrite": true,
+    "automaticStart": false,
+    "automaticRepair": false,
+    "permissionGrant": false,
+    "readinessMutation": false,
+    "trainingAdmission": false,
+    "contractWrite": false,
+    "manifestWrite": false,
+    "toolUse": false,
+    "worldAction": false,
+    "networkUseByOrgan": false,
+    "semanticTruthWrite": false,
+    "activeModelChange": false,
+    "runtimePromotion": false,
+    "canonChange": false,
+    "identityChange": false
+  },
+  "knownLimits": [
+    "Thirty current routes remain blocked by missing or unavailable readiness evidence.",
+    "The readiness vocabulary and precedence are hard-coded and require a versioned organ change if Workshop changes that contract.",
+    "Compatibility is bounded to exact one-hop and non-cyclic depth-two routes.",
+    "Technical Glasses compiles readiness evidence; Mirror does not independently execute every dependency probe.",
+    "No manual dashboard or browser visual review was run.",
+    "No genuine real-local negative reasoning receipt exists yet.",
+    "This is bounded structural and live-observation evidence, not general intelligence."
+  ],
+  "testsNotRun": [
+    "manual human dashboard visual review",
+    "non-loopback or external deployment",
+    "automatic service start or repair, because the organ explicitly has no such authority"
+  ],
+  "stateAndSecretsCommitted": false
+}

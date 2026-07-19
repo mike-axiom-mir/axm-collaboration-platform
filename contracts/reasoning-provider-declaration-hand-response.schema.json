@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-provider-declaration-hand-response.schema.json",
+  "title": "AXM Mirror provider declaration hand response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "responseDigest", "organId", "sourceBatchId", "request", "state", "reason", "proposals", "holds", "declarationCandidatesBuilt", "providerDeclarationsWritten", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-provider-declaration-hand-response/v1" },
+    "responseDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organId": { "const": "axm.mirror.organ/provider-declaration-hand-planner-v1" },
+    "sourceBatchId": { "type": "string" },
+    "request": { "type": "object" },
+    "state": { "type": "string" },
+    "reason": { "type": "string" },
+    "proposals": { "type": "array" },
+    "holds": { "type": "array" },
+    "declarationCandidatesBuilt": { "const": false },
+    "providerDeclarationsWritten": { "const": false },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string" }
+  }
+}

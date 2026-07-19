@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.seam-report/v1",
+  "title": "AXM Mirror AI-native seam report",
+  "type": "object",
+  "required": ["schema", "reportId", "identity", "subject", "stances", "seams", "summary", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.seam-report/v1" },
+    "reportId": { "type": "string", "minLength": 8 },
+    "identity": { "const": "axm.machine.mirror/seed-0" },
+    "subject": {
+      "type": "object",
+      "required": ["id", "kind"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "kind": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "stances": { "type": "array", "minItems": 8, "uniqueItems": true },
+    "seams": { "type": "array" },
+    "summary": { "type": "object" },
+    "boundary": { "type": "string" }
+  },
+  "additionalProperties": false
+}

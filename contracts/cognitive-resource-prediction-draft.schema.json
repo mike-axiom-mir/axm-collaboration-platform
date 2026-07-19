@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.cognitive-resource-prediction-draft/v1",
+  "title": "Mirror cognitive-resource prediction draft",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "source", "target", "method", "intervals", "costBinding", "permission"],
+  "properties": {
+    "schema": { "const": "axm.mirror.cognitive-resource-prediction-draft/v1" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceSystemId", "sourceRecordId", "sourceRecordDigest", "collectionMethod", "authorshipState", "sequence", "priorPredictionDigest"],
+      "properties": {
+        "sourceSystemId": { "$ref": "#/$defs/id" },
+        "sourceRecordId": { "$ref": "#/$defs/id" },
+        "sourceRecordDigest": { "$ref": "#/$defs/nullableDigest" },
+        "collectionMethod": { "enum": ["DIRECT_MACHINE_SEAL", "IMPORTED_ATTESTATION", "MANUAL_DECLARATION"] },
+        "authorshipState": { "enum": ["DECLARED_NOT_CERTIFIED", "UNKNOWN"] },
+        "sequence": { "$ref": "#/$defs/count" },
+        "priorPredictionDigest": { "$ref": "#/$defs/nullableDigest" }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objectiveKind", "objectiveDigest", "startingStateDigest", "comparisonKey"],
+      "properties": {
+        "objectiveKind": { "$ref": "#/$defs/token" },
+        "objectiveDigest": { "$ref": "#/$defs/digest" },
+        "startingStateDigest": { "$ref": "#/$defs/digest" },
+        "comparisonKey": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "method": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["methodId", "methodDigest", "resourceProfileId", "resourceProfileDigest", "targetCoverageBasisPoints"],
+      "properties": {
+        "methodId": { "$ref": "#/$defs/id" },
+        "methodDigest": { "$ref": "#/$defs/digest" },
+        "resourceProfileId": { "type": "string", "pattern": "^cognitive-resource-profile-[a-f0-9]{24}$" },
+        "resourceProfileDigest": { "$ref": "#/$defs/digest" },
+        "targetCoverageBasisPoints": { "type": "integer", "minimum": 1, "maximum": 9999 }
+      }
+    },
+    "intervals": { "$ref": "#/$defs/intervals" },
+    "costBinding": { "$ref": "#/$defs/costBinding" },
+    "permission": { "$ref": "#/$defs/permission" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "nullableDigest": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/digest" }] },
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,199}$" },
+    "token": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,79}$" },
+    "count": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+    "interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lower", "upper"],
+      "properties": { "lower": { "$ref": "#/$defs/count" }, "upper": { "$ref": "#/$defs/count" } }
+    },
+    "nullableInterval": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/interval" }] },
+    "intervals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["totalTokens", "wallMilliseconds", "cpuCoreMilliseconds", "acceleratorMilliseconds", "peakMemoryBytes", "providerComputeUnitsMicros", "moneyMicros", "energyMilliwattHours", "carbonMilligrams"],
+      "properties": {
+        "totalTokens": { "$ref": "#/$defs/interval" },
+        "wallMilliseconds": { "$ref": "#/$defs/interval" },
+        "cpuCoreMilliseconds": { "$ref": "#/$defs/nullableInterval" },
+        "acceleratorMilliseconds": { "$ref": "#/$defs/nullableInterval" },
+        "peakMemoryBytes": { "$ref": "#/$defs/nullableInterval" },
+        "providerComputeUnitsMicros": { "$ref": "#/$defs/nullableInterval" },
+        "moneyMicros": { "$ref": "#/$defs/nullableInterval" },
+        "energyMilliwattHours": { "$ref": "#/$defs/nullableInterval" },
+        "carbonMilligrams": { "$ref": "#/$defs/nullableInterval" }
+      }
+    },
+    "costBinding": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["costProfileDigest", "currency"],
+          "properties": {
+            "costProfileDigest": { "$ref": "#/$defs/digest" },
+            "currency": { "oneOf": [{ "type": "null" }, { "type": "string", "pattern": "^[A-Z]{3}$" }] }
+          }
+        }
+      ]
+    },
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "basisDigest"],
+      "properties": {
+        "status": { "enum": ["ALLOWED", "UNKNOWN", "FORBIDDEN"] },
+        "basisDigest": { "$ref": "#/$defs/nullableDigest" }
+      }
+    }
+  }
+}

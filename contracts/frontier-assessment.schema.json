@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.frontier-assessment/v1",
+  "title": "Mirror evidence-linked capability frontier assessment",
+  "type": "object",
+  "required": ["schema", "cell", "subject", "perspectiveLedger", "observations", "classification", "authority", "limitations", "digest"],
+  "properties": {
+    "schema": { "const": "axm.mirror.frontier-assessment/v1" },
+    "classification": {
+      "enum": [
+        "HOLD_MISSING_EVIDENCE",
+        "MAINTAIN_NO_FRONTIER",
+        "OPTIMIZE_KNOWN",
+        "FRONTIER_EXAM_REQUIRED",
+        "FRONTIER_EXAM_REPAIR",
+        "FRONTIER_CANDIDATE_AWAITING_REVIEW"
+      ]
+    },
+    "proposal": { "type": ["object", "null"] },
+    "authority": {
+      "type": "object",
+      "properties": {
+        "runtimeChange": { "const": false },
+        "canonChange": { "const": false },
+        "identityChange": { "const": false },
+        "permissionChange": { "const": false },
+        "toolChange": { "const": false },
+        "automaticPromotion": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{32}$" }
+  },
+  "additionalProperties": true
+}

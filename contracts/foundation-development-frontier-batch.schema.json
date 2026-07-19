@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-development-frontier-batch/v1",
+  "title": "Mirror measured-dimension development frontier batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "organ", "source", "requests", "summary", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-development-frontier-batch/v1" },
+    "batchId": { "type": "string", "pattern": "^foundation-development-frontier-[a-f0-9]{24}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": { "type": "object" },
+    "source": { "type": "object" },
+    "requests": { "type": "array" },
+    "summary": { "type": "object" },
+    "state": { "enum": ["DEVELOPMENT_FRONTIER_REQUESTS_PROPOSED", "NO_DEVELOPMENT_FRONTIER_REQUESTS"] },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

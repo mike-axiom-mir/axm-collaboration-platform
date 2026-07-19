@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-experience-receipt/v5",
+  "title": "Mirror append-only private episodic reasoning experience receipt",
+  "type": "object",
+  "required": ["schema", "receiptId", "receiptDigest", "organ", "createdAt", "source", "reasoningSession", "evaluation", "trainingExample", "admission", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-experience-receipt/v5" },
+    "receiptId": { "type": "string", "pattern": "^reasoning-experience-[a-f0-9]{24}$" },
+    "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "properties": {
+        "id": { "const": "axm.mirror.organ/reasoning-experience-intake-v5" },
+        "status": { "const": "WORKING_PRIVATE_APPEND_ONLY" },
+        "learnedWeights": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "createdAt": { "type": ["string", "null"] },
+    "source": {
+      "type": "object",
+      "required": ["provider", "sourceGroup", "experienceKind", "parentReceiptIds", "interventionId", "role", "policyId", "evaluator", "usePermission", "permissionBasis"],
+      "properties": {
+        "provider": { "const": "axm-workshop-local" },
+        "sourceGroup": { "type": "string", "minLength": 1 },
+        "experienceKind": { "enum": ["REAL_LOCAL_LESSON", "SYNTHETIC_COUNTEREXAMPLE", "CONTRACT_DERIVED_EXAM"] },
+        "parentReceiptIds": { "type": "array", "maxItems": 1, "items": { "type": "string", "pattern": "^reasoning-experience-[a-f0-9]{24}$" } },
+        "interventionId": { "type": ["string", "null"] },
+        "role": { "const": "training" },
+        "policyId": { "const": "axm.mirror.standing-local-practice/v1" },
+        "evaluator": {
+          "type": "object",
+          "required": ["id", "kind", "independent", "sourceRef", "sourceDigest"],
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "kind": { "type": "string", "minLength": 1 },
+            "independent": { "const": true },
+            "sourceRef": { "type": "string", "minLength": 1 },
+            "sourceDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          "additionalProperties": false
+        },
+        "usePermission": { "const": "allowed" },
+        "permissionBasis": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "experienceKind": { "const": "REAL_LOCAL_LESSON" } } },
+          "then": {
+            "properties": {
+              "parentReceiptIds": { "maxItems": 0 },
+              "interventionId": { "const": null }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "experienceKind": { "const": "SYNTHETIC_COUNTEREXAMPLE" } } },
+          "then": {
+            "properties": {
+              "parentReceiptIds": { "minItems": 1, "maxItems": 1 },
+              "interventionId": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "experienceKind": { "const": "CONTRACT_DERIVED_EXAM" } } },
+          "then": {
+            "properties": {
+              "parentReceiptIds": { "maxItems": 0 },
+              "interventionId": { "const": null }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "reasoningSession": { "type": "object" },
+    "evaluation": {
+      "type": "object",
+      "required": ["result", "behaviorMatched", "decisionMatched", "outcomeSucceeded", "outcomeVerified", "observedDecision", "expectedDecision", "statement", "strategyTags", "strategyLabelSource", "worldMutations", "runtimePointerChanged", "unexpectedSeams"],
+      "properties": {
+        "result": { "enum": ["WORKED", "DID_NOT_WORK"] },
+        "behaviorMatched": { "type": "boolean" },
+        "decisionMatched": { "type": "boolean" },
+        "outcomeSucceeded": { "type": "boolean" },
+        "outcomeVerified": { "const": true },
+        "observedDecision": { "$ref": "#/$defs/decision" },
+        "expectedDecision": { "$ref": "#/$defs/decision" },
+        "statement": { "type": "string", "minLength": 1 },
+        "strategyTags": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "strategyLabelSource": { "enum": ["INDEPENDENT_EVALUATOR", "STRUCTURAL_BOOTSTRAP_ORGAN"] },
+        "worldMutations": { "const": 0 },
+        "runtimePointerChanged": { "const": false },
+        "unexpectedSeams": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "trainingExample": {
+      "type": "object",
+      "required": ["outcome", "features", "strategyTags", "strategyLabelSource", "prototype", "semanticConsolidation", "evidenceRole"],
+      "properties": {
+        "outcome": { "enum": ["WORKED", "DID_NOT_WORK"] },
+        "features": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "strategyTags": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "strategyLabelSource": { "enum": ["INDEPENDENT_EVALUATOR", "STRUCTURAL_BOOTSTRAP_ORGAN"] },
+        "prototype": { "type": ["object", "null"] },
+        "semanticConsolidation": { "const": false },
+        "evidenceRole": { "enum": ["POSITIVE_EPISODIC_EXAMPLE", "NEGATIVE_EPISODIC_EXAMPLE"] }
+      },
+      "additionalProperties": false
+    },
+    "admission": {
+      "type": "object",
+      "properties": {
+        "state": { "const": "APPROVED_PRIVATE_EPISODIC_TRAINING" },
+        "episodicOutcomeVerified": { "const": true },
+        "semanticConsolidation": { "const": false },
+        "independentSeamOpen": { "const": 0 },
+        "deterministicTeacherOnly": { "const": true },
+        "learnedSelfTraining": { "const": false },
+        "appendOnly": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "authority": {
+      "type": "object",
+      "properties": {
+        "privateReceiptAppend": { "const": true },
+        "overwriteReceipt": { "const": false },
+        "toolUse": { "const": false },
+        "worldAction": { "const": false },
+        "permissionGrant": { "const": false },
+        "heldOutMutation": { "const": false },
+        "semanticTruthWrite": { "const": false },
+        "activeModelChange": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "identityChange": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "decision": {
+      "type": "object",
+      "required": ["value", "actionId"],
+      "properties": {
+        "value": { "enum": [-1, 0, 1] },
+        "actionId": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

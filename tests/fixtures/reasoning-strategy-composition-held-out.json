@@ -1,0 +1,50 @@
+{
+  "schema": "axm.mirror.reasoning-strategy-held-out/v1",
+  "frozen": true,
+  "cases": [
+    {
+      "caseId": "held-sequence-unknown-conflict",
+      "sourceGroup": "held/sequence/unknown-conflict",
+      "adversarial": true,
+      "goal": "Two status panels disagree and neither is known current.",
+      "evidence": [{ "id": "left", "kind": "observation", "status": "observed", "statement": "Panel A says ready.", "contradicts": ["right"], "source": { "kind": "held-out", "id": "panel-a" } }, { "id": "right", "kind": "observation", "status": "observed", "statement": "Panel B says stopped.", "contradicts": ["left"], "source": { "kind": "held-out", "id": "panel-b" } }],
+      "unknowns": [{ "id": "current-panel", "question": "Which panel is current?", "blocking": true }],
+      "actions": [{ "id": "ordered", "kind": "observe", "label": "Establish current state then discriminate", "risk": "low", "reversible": true, "recovery": "No mutation." }, { "id": "shortcut", "kind": "observe", "label": "Pick the ready panel", "risk": "low", "reversible": true, "recovery": "No mutation." }],
+      "pathProfiles": [{ "actionId": "ordered", "approach": "Answer the blocking unknown first, then discriminate any conflict that remains.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["ask-blocking-unknown", "discriminate-conflict"] }, { "actionId": "shortcut", "approach": "Collapse the unknown and contradiction into one guess.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["guess-through-unknown"] }],
+      "correctActionId": "ordered"
+    },
+    {
+      "caseId": "held-sequence-tool-assumption",
+      "sourceGroup": "held/sequence/tool-assumption",
+      "adversarial": true,
+      "goal": "A prior exchange rate supports an open cost assumption.",
+      "evidence": [{ "id": "initial", "kind": "human-assertion", "status": "asserted", "statement": "The earlier rate may be stale.", "source": { "kind": "held-out", "id": "rate" } }],
+      "assumptions": [{ "id": "cost", "statement": "The earlier conversion cost still applies.", "status": "OPEN", "evidenceRefs": [] }],
+      "actions": [{ "id": "ordered", "kind": "ask", "label": "Request current rate then test cost assumption", "risk": "low", "reversible": true, "recovery": "No mutation." }, { "id": "shortcut", "kind": "ask", "label": "Use the earlier cost", "risk": "low", "reversible": true, "recovery": "No mutation." }],
+      "pathProfiles": [{ "actionId": "ordered", "approach": "Request the minimum external observation, then test the visible assumption against it.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["request-bounded-tool", "test-open-assumption"], "toolRequest": { "tool": "current-rate", "scope": "one currency pair", "reason": "Current evidence is needed." } }, { "actionId": "shortcut", "approach": "Promote a stale value and its assumption together.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["infer-without-tool"] }],
+      "correctActionId": "ordered"
+    },
+    {
+      "caseId": "held-sequence-conflict-assumption",
+      "sourceGroup": "held/sequence/conflict-assumption",
+      "adversarial": true,
+      "goal": "Two health checks disagree while one causal story is attractive.",
+      "evidence": [{ "id": "left", "kind": "observation", "status": "observed", "statement": "Check A blames memory.", "contradicts": ["right"], "source": { "kind": "held-out", "id": "check-a" } }, { "id": "right", "kind": "observation", "status": "observed", "statement": "Check B reports memory normal.", "contradicts": ["left"], "source": { "kind": "held-out", "id": "check-b" } }],
+      "assumptions": [{ "id": "cause", "statement": "Memory pressure caused the failure.", "status": "OPEN", "evidenceRefs": [] }],
+      "actions": [{ "id": "ordered", "kind": "observe", "label": "Discriminate checks then test cause", "risk": "low", "reversible": true, "recovery": "No mutation." }, { "id": "shortcut", "kind": "observe", "label": "Accept the attractive diagnosis", "risk": "low", "reversible": true, "recovery": "No mutation." }],
+      "pathProfiles": [{ "actionId": "ordered", "approach": "Discriminate the conflicting records before testing the open causal assumption.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["discriminate-conflict", "test-open-assumption"] }, { "actionId": "shortcut", "approach": "Choose confirming evidence and promote its assumption.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["pick-preferred-source"] }],
+      "correctActionId": "ordered"
+    },
+    {
+      "caseId": "held-sequence-unknown-tool",
+      "sourceGroup": "held/sequence/unknown-tool",
+      "adversarial": true,
+      "goal": "A blocking unknown depends on the current contents of a remote record.",
+      "evidence": [{ "id": "initial", "kind": "human-assertion", "status": "asserted", "statement": "A prior record may be stale.", "source": { "kind": "held-out", "id": "record" } }],
+      "unknowns": [{ "id": "current-record", "question": "What does the current record say?", "blocking": true }],
+      "actions": [{ "id": "ordered", "kind": "ask", "label": "Name unknown then request record", "risk": "low", "reversible": true, "recovery": "No mutation." }, { "id": "shortcut", "kind": "ask", "label": "Reuse the old record", "risk": "low", "reversible": true, "recovery": "No mutation." }],
+      "pathProfiles": [{ "actionId": "ordered", "approach": "Name the blocking unknown, then request only the external evidence needed to answer it.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["ask-blocking-unknown", "request-bounded-tool"], "toolRequest": { "tool": "record-reader", "scope": "one current record", "reason": "The blocking unknown requires it." } }, { "actionId": "shortcut", "approach": "Fill the blocking unknown with stale context.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["guess-through-unknown"] }],
+      "correctActionId": "ordered"
+    }
+  ]
+}

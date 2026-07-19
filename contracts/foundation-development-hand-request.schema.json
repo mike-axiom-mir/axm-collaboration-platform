@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-development-hand-request/v1",
+  "title": "Mirror reviewable Foundation evidence-acquisition hand request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "handRequestId", "handRequestDigest", "source", "evidenceNeed", "handFamily", "proposedContract", "selection", "unresolved", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-development-hand-request/v1" },
+    "handRequestId": { "type": "string", "pattern": "^foundation-evidence-hand-[a-f0-9]{24}$" },
+    "handRequestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source": { "type": "object" },
+    "evidenceNeed": { "type": "object" },
+    "handFamily": {
+      "enum": [
+        "PERMISSIONED_EXTERNAL_EVIDENCE_INTAKE_HAND",
+        "NON_INDUCING_LOCAL_EVENT_OBSERVATION_HAND",
+        "INDEPENDENT_REGRESSION_EXAM_HAND"
+      ]
+    },
+    "proposedContract": { "type": "object" },
+    "selection": { "type": "object" },
+    "unresolved": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "state": { "const": "REVIEWABLE_EVIDENCE_HAND_REQUEST_NOT_BUILT_OR_SELECTED" },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

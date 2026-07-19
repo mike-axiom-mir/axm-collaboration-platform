@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-failure-curriculum-request/v1",
+  "title": "Mirror proposal-only reasoning failure curriculum request",
+  "type": "object",
+  "required": ["schema", "requestId", "requestDigest", "state", "failureClass", "failureSignature", "failureSignatureDigest", "recurrence", "source", "positiveStructuralContrasts", "route", "contractDraft", "curriculum", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-failure-curriculum-request/v1" },
+    "requestId": { "type": "string", "pattern": "^reasoning-failure-curriculum-[a-f0-9]{24}$" },
+    "requestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "state": { "enum": ["HOLD_INSUFFICIENT_INDEPENDENT_REAL_SOURCE_GROUPS", "PROPOSE_INDEPENDENT_CURRICULUM"] },
+    "failureClass": { "enum": ["PATH_SELECTION_FAILURE", "CANDIDATE_ORIGINATION_FAILURE", "VERIFIED_ACTION_OUTCOME_FAILURE"] },
+    "failureSignature": {
+      "type": "object",
+      "required": ["failureClass", "structuralFeatures", "strategyTags", "observedDecisionValue", "expectedDecisionValue"],
+      "properties": {
+        "failureClass": { "enum": ["PATH_SELECTION_FAILURE", "CANDIDATE_ORIGINATION_FAILURE", "VERIFIED_ACTION_OUTCOME_FAILURE"] },
+        "structuralFeatures": { "type": "array", "items": { "type": "string" } },
+        "strategyTags": { "type": "array", "items": { "type": "string" } },
+        "observedDecisionValue": { "enum": [-1, 0, 1] },
+        "expectedDecisionValue": { "enum": [-1, 0, 1] }
+      },
+      "additionalProperties": false
+    },
+    "failureSignatureDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "recurrence": {
+      "type": "object",
+      "required": ["requiredIndependentRealSourceGroups", "distinctRealSourceGroups", "distinctIndependentEvaluators", "recurrentNeedObserved"],
+      "properties": {
+        "requiredIndependentRealSourceGroups": { "const": 2 },
+        "distinctRealSourceGroups": { "type": "integer", "minimum": 1 },
+        "distinctIndependentEvaluators": { "type": "integer", "minimum": 1 },
+        "recurrentNeedObserved": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["receiptId", "receiptDigest", "sourceSha256", "sourceGroup", "evaluatorId", "evaluatorSourceDigest", "observedDecision", "expectedDecision"],
+        "properties": {
+          "receiptId": { "type": "string", "pattern": "^reasoning-experience-[a-f0-9]{24}$" },
+          "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "sourceSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "sourceGroup": { "type": "string", "minLength": 1 },
+          "evaluatorId": { "type": "string", "minLength": 1 },
+          "evaluatorSourceDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "observedDecision": { "$ref": "reasoning-experience-receipt.schema.json#/$defs/decision" },
+          "expectedDecision": { "$ref": "reasoning-experience-receipt.schema.json#/$defs/decision" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "positiveStructuralContrasts": { "type": "array", "items": { "type": "object" } },
+    "route": {
+      "type": "object",
+      "required": ["kind", "target", "reasonCode"],
+      "properties": {
+        "kind": { "enum": ["PRIVATE_STRATEGY_CHALLENGER_CURRICULUM", "NEW_HARDCODED_ORGAN_ADMISSION", "INDEPENDENT_CAUSE_AND_REPAIR_EXAM"] },
+        "target": { "type": "string", "minLength": 1 },
+        "reasonCode": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "contractDraft": { "type": ["object", "null"] },
+    "curriculum": {
+      "type": "object",
+      "required": ["sourceRole", "proposalRole", "independentHeldOutRequirement", "counterexampleRequirement", "regressionRequirement", "repairReplayRequired", "candidateMayAuthorExpectedResult", "candidateMayAdmitTraining", "candidateMayInstallItself"],
+      "properties": {
+        "sourceRole": { "const": "VERIFIED_REAL_LOCAL_NEGATIVE_EPISODIC_EVIDENCE" },
+        "proposalRole": { "const": "PROPOSAL_ONLY_NOT_TRAINING" },
+        "independentHeldOutRequirement": { "type": "string", "minLength": 1 },
+        "counterexampleRequirement": { "type": "string", "minLength": 1 },
+        "regressionRequirement": { "type": "string", "minLength": 1 },
+        "repairReplayRequired": { "const": true },
+        "candidateMayAuthorExpectedResult": { "const": false },
+        "candidateMayAdmitTraining": { "const": false },
+        "candidateMayInstallItself": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "authority": {
+      "type": "object",
+      "properties": {
+        "privateProposalTraceWrite": { "const": true },
+        "semanticTruthWrite": { "const": false },
+        "trainingAdmission": { "const": false },
+        "heldOutMutation": { "const": false },
+        "codeBuild": { "const": false },
+        "repairSelection": { "const": false },
+        "installOrgan": { "const": false },
+        "modelChange": { "const": false },
+        "permissionGrant": { "const": false },
+        "toolUse": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "identityChange": { "const": false },
+        "worldAction": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

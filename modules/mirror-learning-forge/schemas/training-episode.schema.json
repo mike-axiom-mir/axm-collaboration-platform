@@ -1,0 +1,24 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.mirror.training-episode/v1",
+  "type":"object",
+  "required":["schema","episode_id","candidate_id","input","expected","unacceptable","held_out_variants","evidence_refs","training_tracks","track_metadata","permission","created_at"],
+  "properties":{
+    "schema":{"const":"axm.mirror.training-episode/v1"},
+    "episode_id":{"type":"string"},
+    "candidate_id":{"type":"string"},
+    "input":{"type":"string"},
+    "expected":{"type":"string"},
+    "unacceptable":{"type":"array"},
+    "held_out_variants":{"type":"array","minItems":1},
+    "evidence_refs":{"type":"array"},
+    "uncertainty_expectation":{"type":"string"},
+    "repair_example":{"type":"string"},
+    "training_tracks":{"type":"array","minItems":1,"items":{"enum":["natural_language","structured_json","coding_foundations","evidence_reasoning","repair","boundary"]}},
+    "skill_tags":{"type":"array","items":{"type":"string"}},
+    "track_metadata":{"type":"object"},
+    "permission":{"type":"object"},
+    "created_at":{"type":"string"}
+  },
+  "additionalProperties":false
+}

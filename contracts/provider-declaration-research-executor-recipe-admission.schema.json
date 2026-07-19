@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.provider-declaration-research-executor-recipe-admission.schema.json",
+  "title": "AXM Mirror provider declaration research executor recipe admission",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "cellId", "assessmentDigest", "examRequestId", "examRequestDigest", "recipeId", "recipeDigest", "classification", "executor", "review", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.provider-declaration-research-executor-recipe-admission/v1" },
+    "cellId": { "const": "axm.mirror.cell/provider-declaration-research-executor-recipe-admission-v1" },
+    "assessmentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "examRequestId": { "type": "string" },
+    "examRequestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "recipeId": { "type": "string" },
+    "recipeDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "classification": { "enum": ["APPROVED_DISPOSABLE_EXECUTOR_BUILD", "HELD_EXECUTOR_NOT_APPROVED"] },
+    "executor": { "type": ["object", "null"] },
+    "review": { "type": "object" },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string" }
+  }
+}

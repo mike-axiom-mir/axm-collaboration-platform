@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reviewed-readiness-probe-recipe.schema.json",
+  "title": "AXM Mirror reviewed readiness probe recipe",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "recipeId", "recipeDigest", "handRequestId", "handRequestDigest", "decision", "review", "probe"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reviewed-readiness-probe-recipe/v1" },
+    "recipeId": { "type": "string", "pattern": "^probe-recipe-[a-f0-9]{20}$" },
+    "recipeDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "handRequestId": { "type": "string" },
+    "handRequestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "decision": { "enum": ["APPROVE_DISPOSABLE_CANDIDATE", "HOLD"] },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actorId", "actorKind", "reviewedAt", "reason"],
+      "properties": {
+        "actorId": { "type": "string", "minLength": 1 },
+        "actorKind": { "const": "HUMAN" },
+        "reviewedAt": { "type": "string", "format": "date-time" },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "probe": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "targetRelativePath", "presentState", "missingState", "requiredPermission", "liveExecutionApproved"],
+          "properties": {
+            "kind": { "enum": ["FILE_EXISTS", "DIRECTORY_EXISTS", "DECLARED_MODULE_AVAILABLE", "DECLARED_SHARED_SERVICE_AVAILABLE", "DECLARED_FOUNDATION_SERVICE_AVAILABLE"] },
+            "targetRelativePath": { "type": "string", "minLength": 1 },
+            "presentState": { "const": "AVAILABLE" },
+            "missingState": { "const": "UNKNOWN" },
+            "requiredPermission": { "const": "files:read" },
+            "liveExecutionApproved": { "const": false }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "decision": { "const": "HOLD" } } },
+      "then": { "properties": { "probe": { "type": "null" } } },
+      "else": { "properties": { "probe": { "type": "object" } } }
+    }
+  ]
+}

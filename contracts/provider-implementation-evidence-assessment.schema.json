@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.provider-implementation-evidence-assessment.schema.json",
+  "title": "AXM Mirror provider implementation evidence assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "cellId", "assessmentDigest", "document", "demandedSelectors", "exactSelectorLiterals", "exactSelectorLiteralCounts", "sourceSignals", "classification", "state", "providerIdentityBound", "outerRequirementBound", "implementationSelected", "sourceExecuted", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.provider-implementation-evidence-assessment/v1" },
+    "cellId": { "const": "axm.mirror.cell/provider-implementation-evidence-v1" },
+    "assessmentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "document": { "type": "object" },
+    "demandedSelectors": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "exactSelectorLiterals": { "type": "array", "items": { "type": "string" } },
+    "exactSelectorLiteralCounts": { "type": "object" },
+    "sourceSignals": { "type": "object" },
+    "classification": { "enum": ["BOUNDARY_REFUSED_SOURCE", "MALFORMED_LEXICAL_SOURCE", "NO_DEMANDED_SELECTOR_LITERAL", "SELECTOR_BEARING_EXPORT_AND_REGISTRATION_SOURCE", "SELECTOR_BEARING_TEST_SOURCE", "SELECTOR_BEARING_EXPORT_SOURCE", "SELECTOR_BEARING_REGISTRATION_SOURCE", "SELECTOR_BEARING_SOURCE"] },
+    "state": { "enum": ["SOURCE_REFUSED", "NOT_A_DEMANDED_SELECTOR_SOURCE", "SELECTOR_SOURCE_WITNESS_NOT_PROVIDER_BINDING"] },
+    "providerIdentityBound": { "const": false },
+    "outerRequirementBound": { "const": false },
+    "implementationSelected": { "const": false },
+    "sourceExecuted": { "const": false },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string" }
+  }
+}

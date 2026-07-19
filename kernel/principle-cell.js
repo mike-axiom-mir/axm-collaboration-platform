@@ -97,7 +97,8 @@ function reason(input, options = {}) {
     possibleSideEffects: [], reversible: true, recovery: 'No world mutation occurred.', risk: 'low'
   }];
   const evaluations = actions.map(action => evaluate(action, request, evidenceById, conflictedIds));
-  const accepted = evaluations.filter(item => item.value === 1);
+  const accepted = evaluations.filter(item => item.value === 1 && item.action.kind !== 'hold');
+  const explicitHolds = evaluations.filter(item => item.value === 1 && item.action.kind === 'hold');
   const held = evaluations.filter(item => item.value === 0);
   const decision = accepted.length ? {
     value: 1,
@@ -107,6 +108,10 @@ function reason(input, options = {}) {
     value: 0,
     selectedActionId: held[0].action.id,
     reason: 'At least one candidate remains potentially valid but lacks sufficient evidence, permission clarity, conflict resolution, or repairability.'
+  } : explicitHolds.length ? {
+    value: 0,
+    selectedActionId: explicitHolds[0].action.id,
+    reason: 'The selected action is an explicit non-mutating hold, not a successful world action.'
   } : {
     value: -1,
     selectedActionId: evaluations[0] && evaluations[0].action.id || null,
@@ -137,7 +142,7 @@ function reason(input, options = {}) {
     human: null,
     limitations: [
       'Deterministic supplied-candidate evaluation only.',
-      'No learned weights, world model, candidate generator, tool use, or open-ended language organ.',
+      'The Principle Cell has no learned weights, world model, candidate generation, tool use, or open-ended language; a separate bounded organ may supply proposals for it to gate.',
       'A passing Seed-0 trace is bounded evidence, not a general safety proof.'
     ]
   };

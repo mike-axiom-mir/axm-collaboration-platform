@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-counterexample-practice-batch/v2",
+  "title": "Mirror private counterexample practice batch",
+  "type": "object",
+  "required": ["schema", "batchId", "batchDigest", "inputsDigest", "createdAt", "organ", "sourceReceipts", "supersedes", "priorEvidenceReviews", "results", "summary", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-counterexample-practice-batch/v2" },
+    "batchId": { "type": "string", "pattern": "^reasoning-counterexamples-[a-f0-9]{20}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "inputsDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "createdAt": { "type": ["string", "null"] },
+    "organ": {
+      "type": "object",
+      "properties": {
+        "id": { "const": "axm.mirror.organ/reasoning-counterexample-lab-v2" },
+        "status": { "const": "TEST_PRIVATE_COUNTEREXAMPLE_LAB" },
+        "learnedWeights": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "sourceReceipts": { "type": "array", "items": { "type": "object" } },
+    "supersedes": { "type": "object" },
+    "priorEvidenceReviews": { "type": "array", "items": { "type": "object" } },
+    "results": { "type": "array", "items": { "type": "object" } },
+    "summary": { "type": "object" },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

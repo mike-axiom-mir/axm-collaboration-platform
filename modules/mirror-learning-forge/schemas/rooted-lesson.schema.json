@@ -1,0 +1,25 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.mirror.rooted-lesson/v1",
+  "title":"AXM Mirror Rooted Intelligence Lesson",
+  "type":"object",
+  "required":["schema","lesson_id","roots","level","scenario","known","unknown","choices","consequences","repair_path","multiplier_effect","evidence_refs","source_lineage","status"],
+  "properties":{
+    "schema":{"const":"axm.mirror.rooted-lesson/v1"},
+    "lesson_id":{"type":"string"},
+    "roots":{"type":"array","items":{"enum":["truth","agency","continuity","wisdom"]},"minItems":1,"uniqueItems":true},
+    "level":{"enum":["RECOGNIZE","DISTINGUISH","EXPLAIN","APPLY","TENSION","REPAIR","TRANSFER"]},
+    "scenario":{"type":"string"},
+    "known":{"type":"array","items":{"type":"string"}},
+    "unknown":{"type":"array","items":{"type":"string"}},
+    "choices":{"type":"array","items":{"type":"object"}},
+    "consequences":{"type":"array","items":{"type":"string"}},
+    "repair_path":{"type":"array","items":{"type":"string"}},
+    "multiplier_effect":{"type":"string"},
+    "evidence_refs":{"type":"array","items":{"type":"string"}},
+    "source_lineage":{"type":"array","items":{"type":"string"}},
+    "held_out_variant_ref":{"type":["string","null"]},
+    "status":{"enum":["CANDIDATE","REVIEWED","HELD","REJECTED"]}
+  },
+  "additionalProperties":false
+}

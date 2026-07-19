@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.contract-handoff-compatibility.schema.json",
+  "title": "AXM Mirror exact contract handoff compatibility receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "receiptDigest", "cellId", "learnedWeights", "producer", "consumer", "handoffType", "checks", "compatible", "verdict", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.contract-handoff-compatibility/v1" },
+    "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "cellId": { "const": "axm.mirror.cell/contract-handoff-compatibility-v1" },
+    "learnedWeights": { "const": false },
+    "producer": { "$ref": "#/$defs/module" },
+    "consumer": { "$ref": "#/$defs/module" },
+    "handoffType": { "type": "string", "minLength": 1, "maxLength": 240 },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["producerEmits", "consumerAccepts", "exactStringEquality"],
+      "properties": {
+        "producerEmits": { "type": "boolean" },
+        "consumerAccepts": { "type": "boolean" },
+        "exactStringEquality": { "const": true }
+      }
+    },
+    "compatible": { "type": "boolean" },
+    "verdict": { "enum": ["PASS", "FAIL"] },
+    "authority": { "$ref": "#/$defs/closedAuthority" },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "typedList": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 240 }
+    },
+    "module": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["moduleId", "contractSha256", "emits", "accepts"],
+      "properties": {
+        "moduleId": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "contractSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "emits": { "$ref": "#/$defs/typedList" },
+        "accepts": { "$ref": "#/$defs/typedList" }
+      }
+    },
+    "closedAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidateGeneration", "contractWrite", "toolUse", "worldAction", "networkUse", "permissionGrant", "semanticTruthWrite", "trainingAdmission", "runtimePromotion", "canonChange", "identityChange"],
+      "properties": {
+        "candidateGeneration": { "const": false },
+        "contractWrite": { "const": false },
+        "toolUse": { "const": false },
+        "worldAction": { "const": false },
+        "networkUse": { "const": false },
+        "permissionGrant": { "const": false },
+        "semanticTruthWrite": { "const": false },
+        "trainingAdmission": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "identityChange": { "const": false }
+      }
+    }
+  }
+}

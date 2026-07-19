@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-capability-output-adapter-fixture-exam-batch/v2",
+  "title": "Mirror independently source-sealed synthetic fixture exam for the generic Foundation evidence-envelope adapter",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "organ", "source", "results", "summary", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-capability-output-adapter-fixture-exam-batch/v2" },
+    "batchId": { "type": "string", "pattern": "^foundation-capability-output-adapter-fixture-exams-[a-f0-9]{24}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "learnedWeights", "candidateAuthoredFixtures", "nativeSourceExecution", "adapterSelection"],
+      "properties": {
+        "id": { "const": "axm.mirror.foundation-capability-output-adapter-fixture-exam-organ/v2" },
+        "status": { "const": "TEST_INDEPENDENT_SYNTHETIC_ADAPTER_FIXTURE_EXAM" },
+        "learnedWeights": { "const": false },
+        "candidateAuthoredFixtures": { "const": false },
+        "nativeSourceExecution": { "const": false },
+        "adapterSelection": { "const": false }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["handBatchId", "handBatchDigest", "adapterRequestBatchId", "adapterRequestBatchDigest", "examinerSourcePath", "examinerSourceSha256", "adapterOrganId", "adapterSourcePath", "adapterSourceSha256", "transportSourcePath", "transportSourceSha256"],
+      "properties": {
+        "handBatchId": { "type": "string", "minLength": 1 },
+        "handBatchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "adapterRequestBatchId": { "type": "string", "minLength": 1 },
+        "adapterRequestBatchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "examinerSourcePath": { "const": "organs/foundation-capability-output-adapter-fixture-exam-organ.js" },
+        "examinerSourceSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "adapterOrganId": { "const": "axm.mirror.foundation-evidence-envelope-adapter-organ/v1" },
+        "adapterSourcePath": { "const": "organs/foundation-evidence-envelope-adapter-organ.js" },
+        "adapterSourceSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "transportSourcePath": { "const": "kernel/key-safe-json-transport-cell.js" },
+        "transportSourceSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["adapterRequestId", "adapterRequestDigest", "handRequestId", "handRequestDigest", "declaredInputKinds", "caseResults", "sourceState", "state"],
+        "properties": {
+          "adapterRequestId": { "type": "string", "minLength": 1 },
+          "adapterRequestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "handRequestId": { "type": "string", "minLength": 1 },
+          "handRequestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "declaredInputKinds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+          "caseResults": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["caseId", "target", "expected", "observed", "passed", "adapterCalls", "candidateDigest", "errorDigest"],
+              "properties": {
+                "caseId": { "type": "string", "pattern": "^[A-Z0-9_]+$" },
+                "target": { "enum": ["ADAPTER_INPUT_BOUNDARY", "ADAPTER_AND_INDEPENDENT_OUTPUT_PREDICATE", "INDEPENDENT_OUTPUT_PREDICATE"] },
+                "expected": { "enum": ["ACCEPT", "REFUSE"] },
+                "observed": { "enum": ["ACCEPT", "REFUSE"] },
+                "passed": { "type": "boolean" },
+                "adapterCalls": { "type": "integer", "minimum": 0 },
+                "candidateDigest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+                "errorDigest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
+              }
+            }
+          },
+          "sourceState": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["beforeDigest", "afterDigest", "unchanged"],
+            "properties": {
+              "beforeDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "afterDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "unchanged": { "type": "boolean" }
+            }
+          },
+          "state": { "enum": ["SYNTHETIC_ADAPTER_FIXTURE_EXAM_PASSED_INSTRUMENT_ONLY", "SYNTHETIC_ADAPTER_FIXTURE_EXAM_FAILED_KNOWN_FAIL"] }
+        }
+      }
+    },
+    "summary": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+    "state": { "enum": ["NO_OUTPUT_ADAPTER_REQUESTS_TO_EXAM", "SYNTHETIC_ADAPTER_FIXTURE_EXAMS_PASSED_INSTRUMENT_ONLY", "SYNTHETIC_ADAPTER_FIXTURE_EXAMS_FAILED_KNOWN_FAIL"] },
+    "authority": { "type": "object", "additionalProperties": { "type": "boolean" } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

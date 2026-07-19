@@ -1,0 +1,82 @@
+{
+  "schema": "axm.mirror.reasoning-strategy-training-fixtures/v1",
+  "status": "TEST",
+  "usePermission": "allowed",
+  "permissionBasis": "Mirror project mixed-signal fixtures authored for private ordered-strategy challenger training.",
+  "cases": [
+    {
+      "caseId": "train-sequence-unknown-conflict",
+      "sourceGroup": "train/sequence/unknown-conflict",
+      "goal": "A state is unknown and two observations disagree; order the reasoning moves.",
+      "evidence": [
+        { "id": "left", "kind": "observation", "status": "observed", "statement": "Log A says active.", "contradicts": ["right"], "source": { "kind": "fixture", "id": "seq-log-a" } },
+        { "id": "right", "kind": "observation", "status": "observed", "statement": "Log B says inactive.", "contradicts": ["left"], "source": { "kind": "fixture", "id": "seq-log-b" } }
+      ],
+      "unknowns": [{ "id": "current-state", "question": "Which observation describes the current state?", "blocking": true }],
+      "actions": [
+        { "id": "ordered", "kind": "observe", "label": "Observe current state, then discriminate the remaining conflict", "risk": "low", "reversible": true, "recovery": "No mutation." },
+        { "id": "shortcut", "kind": "observe", "label": "Pick one log immediately", "risk": "low", "reversible": true, "recovery": "No mutation." }
+      ],
+      "pathProfiles": [
+        { "actionId": "ordered", "approach": "Answer the blocking unknown first, then discriminate any conflict that remains.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["ask-blocking-unknown", "discriminate-conflict"] },
+        { "actionId": "shortcut", "approach": "Collapse the unknown and contradiction into one guess.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["guess-through-unknown"] }
+      ],
+      "correctActionId": "ordered",
+      "resolvedSeams": ["blocking-unknowns", "unresolved-contradictions"]
+    },
+    {
+      "caseId": "train-sequence-tool-assumption",
+      "sourceGroup": "train/sequence/tool-assumption",
+      "goal": "A stale external value supports an open assumption; order the reasoning moves.",
+      "evidence": [{ "id": "initial", "kind": "human-assertion", "status": "asserted", "statement": "The prior external value may be stale.", "source": { "kind": "fixture", "id": "seq-tool" } }],
+      "assumptions": [{ "id": "still-valid", "statement": "The prior value still applies.", "status": "OPEN", "evidenceRefs": [] }],
+      "actions": [
+        { "id": "ordered", "kind": "ask", "label": "Request current evidence, then test the assumption", "risk": "low", "reversible": true, "recovery": "No mutation." },
+        { "id": "shortcut", "kind": "ask", "label": "Treat the stale value as current", "risk": "low", "reversible": true, "recovery": "No mutation." }
+      ],
+      "pathProfiles": [
+        { "actionId": "ordered", "approach": "Request the minimum external observation, then test the visible assumption against it.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["request-bounded-tool", "test-open-assumption"], "toolRequest": { "tool": "minimum-current-source", "scope": "one current value", "reason": "Current evidence is needed before testing the assumption." } },
+        { "actionId": "shortcut", "approach": "Promote a stale value and its assumption together.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["infer-without-tool"] }
+      ],
+      "correctActionId": "ordered",
+      "resolvedSeams": []
+    },
+    {
+      "caseId": "train-sequence-conflict-assumption",
+      "sourceGroup": "train/sequence/conflict-assumption",
+      "goal": "Conflicting observations feed an open causal assumption; order the reasoning moves.",
+      "evidence": [
+        { "id": "left", "kind": "observation", "status": "observed", "statement": "Measure A increased.", "contradicts": ["right"], "source": { "kind": "fixture", "id": "seq-measure-a" } },
+        { "id": "right", "kind": "observation", "status": "observed", "statement": "Measure B did not increase.", "contradicts": ["left"], "source": { "kind": "fixture", "id": "seq-measure-b" } }
+      ],
+      "assumptions": [{ "id": "cause", "statement": "One change caused the increase.", "status": "OPEN", "evidenceRefs": [] }],
+      "actions": [
+        { "id": "ordered", "kind": "observe", "label": "Discriminate the evidence, then test the causal assumption", "risk": "low", "reversible": true, "recovery": "No mutation." },
+        { "id": "shortcut", "kind": "observe", "label": "Choose the confirming measure", "risk": "low", "reversible": true, "recovery": "No mutation." }
+      ],
+      "pathProfiles": [
+        { "actionId": "ordered", "approach": "Discriminate the conflicting records before testing the open causal assumption.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["discriminate-conflict", "test-open-assumption"] },
+        { "actionId": "shortcut", "approach": "Choose confirming evidence and promote its assumption.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["pick-preferred-source"] }
+      ],
+      "correctActionId": "ordered",
+      "resolvedSeams": ["unresolved-contradictions"]
+    },
+    {
+      "caseId": "train-sequence-unknown-tool",
+      "sourceGroup": "train/sequence/unknown-tool",
+      "goal": "A blocking unknown requires current external evidence; order the reasoning moves.",
+      "evidence": [{ "id": "initial", "kind": "human-assertion", "status": "asserted", "statement": "The last known state may be stale.", "source": { "kind": "fixture", "id": "seq-unknown-tool" } }],
+      "unknowns": [{ "id": "current", "question": "What is the current external state?", "blocking": true }],
+      "actions": [
+        { "id": "ordered", "kind": "ask", "label": "Name the blocking unknown, then request the scoped observation", "risk": "low", "reversible": true, "recovery": "No mutation." },
+        { "id": "shortcut", "kind": "ask", "label": "Reuse the stale state", "risk": "low", "reversible": true, "recovery": "No mutation." }
+      ],
+      "pathProfiles": [
+        { "actionId": "ordered", "approach": "Name the blocking unknown, then request only the external evidence needed to answer it.", "estimatedCost": "HIGH", "informationValue": 0.1, "reversible": true, "strategyTags": ["ask-blocking-unknown", "request-bounded-tool"], "toolRequest": { "tool": "minimum-current-source", "scope": "one current state", "reason": "The blocking unknown requires external evidence." } },
+        { "actionId": "shortcut", "approach": "Fill the blocking unknown with stale context.", "estimatedCost": "LOW", "informationValue": 0.95, "reversible": true, "strategyTags": ["guess-through-unknown"] }
+      ],
+      "correctActionId": "ordered",
+      "resolvedSeams": ["blocking-unknowns"]
+    }
+  ]
+}

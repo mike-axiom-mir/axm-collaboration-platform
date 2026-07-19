@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-provider-declaration-architecture-survey-batch.schema.json",
+  "title": "AXM Mirror provider declaration architecture survey batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "inputsDigest", "createdAt", "organ", "cell", "surveyContract", "sourceLineage", "sourceResearchExamBatch", "inventory", "results", "summary", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-provider-declaration-architecture-survey-batch/v1" },
+    "batchId": { "type": "string", "pattern": "^reasoning-provider-declaration-architecture-surveys-[a-f0-9]{20}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "inputsDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "createdAt": { "type": "null" },
+    "organ": { "type": "object" },
+    "cell": { "type": "object" },
+    "surveyContract": { "type": "object" },
+    "sourceLineage": { "type": "array" },
+    "sourceResearchExamBatch": { "type": "object" },
+    "inventory": { "type": "object" },
+    "results": { "type": "array", "maxItems": 128 },
+    "summary": { "type": "object" },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string" }
+  }
+}

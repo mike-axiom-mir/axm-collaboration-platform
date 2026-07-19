@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.training-track-task/v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "task_id",
+    "track_id",
+    "title",
+    "skill",
+    "prompt",
+    "expected",
+    "held_out",
+    "contract",
+    "status",
+    "permission",
+    "created_by",
+    "created_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.mirror.training-track-task/v1"
+    },
+    "task_id": {
+      "type": "string"
+    },
+    "track_id": {
+      "enum": [
+        "natural_language",
+        "structured_json",
+        "coding_foundations",
+        "creative_studio",
+        "evidence_reasoning",
+        "repair",
+        "boundary",
+        "rooted_intelligence",
+        "reasoning_development"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "skill": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string"
+    },
+    "prompt": {
+      "type": "string"
+    },
+    "expected": {
+      "type": "string"
+    },
+    "held_out": {
+      "type": "array",
+      "minItems": 1
+    },
+    "contract": {
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "AWAITING_REVIEW",
+        "APPROVED",
+        "REJECTED"
+      ]
+    },
+    "permission": {
+      "type": "object"
+    },
+    "created_by": {
+      "type": "object"
+    },
+    "created_at": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

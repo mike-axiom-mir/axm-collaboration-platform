@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.promotion-proposal-receipt/v1",
+  "title": "Digest-bound review of an eligible Mirror learning proposal",
+  "type": "object",
+  "required": ["schema", "cycleId", "cycleSha256", "seamReportId", "reviewer", "statement", "state", "runtimePointerChanged", "canonChanged", "toolAuthorityChanged", "sha256"],
+  "properties": {
+    "schema": { "const": "axm.mirror.promotion-proposal-receipt/v1" },
+    "cycleId": { "type": "string" },
+    "cycleSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "seamReportId": { "type": "string" },
+    "reviewer": { "type": "string" },
+    "statement": { "type": "string" },
+    "state": { "const": "REVIEWED_PROPOSAL_ONLY" },
+    "runtimePointerChanged": { "const": false },
+    "canonChanged": { "const": false },
+    "toolAuthorityChanged": { "const": false },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": true
+}

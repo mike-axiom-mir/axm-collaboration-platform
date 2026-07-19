@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-failure-curriculum-batch/v1",
+  "title": "Mirror content-bound reasoning failure curriculum batch",
+  "type": "object",
+  "required": ["schema", "batchId", "batchDigest", "organ", "implementationSources", "sourceInventory", "requests", "exclusions", "summary", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-failure-curriculum-batch/v1" },
+    "batchId": { "type": "string", "pattern": "^reasoning-failure-curriculum-[a-f0-9]{24}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "required": ["id", "status", "learnedWeights"],
+      "properties": {
+        "id": { "const": "axm.mirror.organ/reasoning-failure-curriculum-v1" },
+        "status": { "const": "TEST_PROPOSAL_ONLY" },
+        "learnedWeights": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "implementationSources": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["path", "bytes", "sha256"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "bytes": { "type": "integer", "minimum": 1 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "sourceInventory": { "type": "array", "items": { "type": "object" } },
+    "requests": { "type": "array", "items": { "$ref": "reasoning-failure-curriculum-request.schema.json" } },
+    "exclusions": {
+      "type": "object",
+      "required": ["nonRealNegativeReceipts", "legacyReceipts"],
+      "properties": {
+        "nonRealNegativeReceipts": { "type": "array", "items": { "type": "object" } },
+        "legacyReceipts": { "type": "array", "items": { "type": "object" } }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["verifiedReceipts", "currentV5Receipts", "compatibleV4Receipts", "realLocalPositiveReceipts", "realLocalNegativeReceipts", "syntheticNegativeReceiptsExcluded", "contractDerivedNegativeReceiptsExcluded", "legacyReceiptsExcluded", "distinctFailureSignatures", "recurrentFailureSignatures", "curriculumRequestsProposed", "insufficientRecurrenceHolds", "trainingAdmissions", "codeBuilds", "repairsSelected", "organsInstalled", "runtimePromotions", "canonChanges", "worldActions"],
+      "properties": {
+        "verifiedReceipts": { "type": "integer", "minimum": 0 },
+        "currentV5Receipts": { "type": "integer", "minimum": 0 },
+        "compatibleV4Receipts": { "type": "integer", "minimum": 0 },
+        "realLocalPositiveReceipts": { "type": "integer", "minimum": 0 },
+        "realLocalNegativeReceipts": { "type": "integer", "minimum": 0 },
+        "syntheticNegativeReceiptsExcluded": { "type": "integer", "minimum": 0 },
+        "contractDerivedNegativeReceiptsExcluded": { "type": "integer", "minimum": 0 },
+        "legacyReceiptsExcluded": { "type": "integer", "minimum": 0 },
+        "distinctFailureSignatures": { "type": "integer", "minimum": 0 },
+        "recurrentFailureSignatures": { "type": "integer", "minimum": 0 },
+        "curriculumRequestsProposed": { "type": "integer", "minimum": 0 },
+        "insufficientRecurrenceHolds": { "type": "integer", "minimum": 0 },
+        "trainingAdmissions": { "const": 0 },
+        "codeBuilds": { "const": 0 },
+        "repairsSelected": { "const": 0 },
+        "organsInstalled": { "const": 0 },
+        "runtimePromotions": { "const": 0 },
+        "canonChanges": { "const": 0 },
+        "worldActions": { "const": 0 }
+      },
+      "additionalProperties": false
+    },
+    "state": { "enum": ["NO_VERIFIED_REAL_LOCAL_NEGATIVE_EXPERIENCE", "REAL_FAILURES_HELD_FOR_MORE_INDEPENDENT_RECURRENCE", "INDEPENDENT_FAILURE_CURRICULUM_REQUESTS_PROPOSED"] },
+    "authority": { "$ref": "reasoning-failure-curriculum-request.schema.json#/properties/authority" },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

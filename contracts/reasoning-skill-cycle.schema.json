@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-skill-cycle/v1",
+  "title": "Mirror private reasoning skill learning cycle",
+  "type": "object",
+  "required": ["schema", "cycleId", "inputsDigest", "identity", "corpus", "model", "evaluation", "promotion", "recovery", "organAdmission", "artifacts", "authority", "claimBoundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-skill-cycle/v1" },
+    "cycleId": { "type": "string", "pattern": "^reasoning-skill-[a-f0-9]{20}$" },
+    "inputsDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identity": { "const": "axm.machine.mirror/seed-0" },
+    "corpus": { "type": "object" },
+    "model": { "type": "object" },
+    "evaluation": { "type": "object" },
+    "promotion": {
+      "type": "object",
+      "properties": {
+        "state": { "enum": ["HOLD_REPAIR", "PROPOSE_HUMAN_REVIEW"] },
+        "automatic": { "const": false },
+        "reviewRequired": { "const": true },
+        "runtimePointerChanged": { "const": false }
+      }
+    },
+    "recovery": { "type": "object" },
+    "organAdmission": { "type": "object" },
+    "artifacts": { "type": "array", "minItems": 3 },
+    "authority": { "type": "object" },
+    "claimBoundary": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

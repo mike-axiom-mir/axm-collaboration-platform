@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-readiness-probe-review-request.schema.json",
+  "title": "AXM Mirror readiness probe recipe human review request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "handRequestId", "decision", "reason", "probe"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-readiness-probe-review-request/v1" },
+    "handRequestId": { "type": "string", "minLength": 1 },
+    "decision": { "enum": ["APPROVE_DISPOSABLE_CANDIDATE", "HOLD"] },
+    "reason": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "probe": { "oneOf": [{ "type": "null" }, { "type": "object" }] }
+  }
+}

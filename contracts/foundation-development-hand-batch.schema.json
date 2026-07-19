@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-development-hand-batch/v1",
+  "title": "Mirror Foundation evidence-acquisition hand planning batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "organ", "source", "hands", "holds", "summary", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-development-hand-batch/v1" },
+    "batchId": { "type": "string", "pattern": "^foundation-development-hands-[a-f0-9]{24}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": { "type": "object" },
+    "source": { "type": "object" },
+    "hands": { "type": "array" },
+    "holds": { "type": "array" },
+    "summary": { "type": "object" },
+    "state": { "enum": ["EVIDENCE_HAND_REQUESTS_PROPOSED", "NO_ELIGIBLE_EVIDENCE_HAND_REQUESTS"] },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.cognitive-resource-profile/v1",
+  "title": "Mirror descriptive cognitive-resource profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "profileId", "profileDigest", "organ", "comparisonKey", "source", "outcomes", "resources", "calibration", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.cognitive-resource-profile/v1" },
+    "profileId": { "type": "string", "pattern": "^cognitive-resource-profile-[a-f0-9]{24}$" },
+    "profileDigest": { "$ref": "#/$defs/digest" },
+    "organ": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "learnedWeights", "forecastingModel", "automaticSelection"],
+      "properties": {
+        "id": { "const": "axm.mirror.cognitive-work-metrology-cell/v1" },
+        "learnedWeights": { "const": false },
+        "forecastingModel": { "const": false },
+        "automaticSelection": { "const": false }
+      }
+    },
+    "comparisonKey": { "$ref": "#/$defs/digest" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observationIds", "observationDigests", "matchedObservations", "eligibleObservations", "excludedObservations", "distinctStartingStates"],
+      "properties": {
+        "observationIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^cognitive-work-observation-[a-f0-9]{24}$" } },
+        "observationDigests": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/digest" } },
+        "matchedObservations": { "$ref": "#/$defs/count" },
+        "eligibleObservations": { "$ref": "#/$defs/count" },
+        "excludedObservations": { "$ref": "#/$defs/count" },
+        "distinctStartingStates": { "$ref": "#/$defs/count" }
+      }
+    },
+    "outcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verifiedComplete", "verifiedPartial", "knownFail", "hold"],
+      "properties": {
+        "verifiedComplete": { "$ref": "#/$defs/count" },
+        "verifiedPartial": { "$ref": "#/$defs/count" },
+        "knownFail": { "$ref": "#/$defs/count" },
+        "hold": { "$ref": "#/$defs/count" }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allEligibleTotalTokens", "allEligibleWallMilliseconds", "allEligibleCpuCoreMilliseconds", "allEligibleAcceleratorMilliseconds", "allEligiblePeakMemoryBytes", "allEligibleProviderComputeUnitsMicros", "verifiedCompleteTotalTokens", "verifiedCompleteWallMilliseconds", "directCostProfileDigests", "directCostAggregationState", "directlyObservedMoneyMicros", "directlyObservedEnergyMilliwattHours", "directlyObservedCarbonMilligrams"],
+      "properties": {
+        "allEligibleTotalTokens": { "$ref": "#/$defs/nullableRange" },
+        "allEligibleWallMilliseconds": { "$ref": "#/$defs/nullableRange" },
+        "allEligibleCpuCoreMilliseconds": { "$ref": "#/$defs/nullableRange" },
+        "allEligibleAcceleratorMilliseconds": { "$ref": "#/$defs/nullableRange" },
+        "allEligiblePeakMemoryBytes": { "$ref": "#/$defs/nullableRange" },
+        "allEligibleProviderComputeUnitsMicros": { "$ref": "#/$defs/nullableRange" },
+        "verifiedCompleteTotalTokens": { "$ref": "#/$defs/nullableRange" },
+        "verifiedCompleteWallMilliseconds": { "$ref": "#/$defs/nullableRange" },
+        "directCostProfileDigests": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/digest" } },
+        "directCostAggregationState": { "enum": ["NO_DIRECT_COST_OBSERVATIONS", "HOLD_MULTIPLE_COST_PROFILES", "HOLD_MULTIPLE_CURRENCIES", "EXACT_PROFILE_DIRECT_COST_DESCRIPTION"] },
+        "directlyObservedMoneyMicros": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["currency", "range"],
+              "properties": {
+                "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+                "range": { "$ref": "#/$defs/range" }
+              }
+            }
+          ]
+        },
+        "directlyObservedEnergyMilliwattHours": { "$ref": "#/$defs/nullableRange" },
+        "directlyObservedCarbonMilligrams": { "$ref": "#/$defs/nullableRange" }
+      }
+    },
+    "calibration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "targetCoverage", "heldOutPredictions", "observedCoverage", "accuracyClaim"],
+      "properties": {
+        "state": { "enum": ["INSUFFICIENT_COMPARABLE_OBSERVATIONS", "INDEPENDENT_PRE_OUTCOME_CALIBRATION_REQUIRED"] },
+        "targetCoverage": { "const": null },
+        "heldOutPredictions": { "const": 0 },
+        "observedCoverage": { "const": null },
+        "accuracyClaim": { "const": null }
+      }
+    },
+    "state": { "enum": ["HOLD_INSUFFICIENT_COMPARABLE_OBSERVATIONS", "DESCRIPTIVE_RESOURCE_PROFILE_NOT_A_CALIBRATED_FORECAST"] },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["forecastClaim", "costOptimization", "modelSelection", "hardwareSelection", "budgetAllocation", "permissionGrant", "trainingAdmission", "runtimePromotion", "canonChange", "worldAction"],
+      "properties": {
+        "forecastClaim": { "const": false },
+        "costOptimization": { "const": false },
+        "modelSelection": { "const": false },
+        "hardwareSelection": { "const": false },
+        "budgetAllocation": { "const": false },
+        "permissionGrant": { "const": false },
+        "trainingAdmission": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "worldAction": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "count": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum", "median", "maximum", "observations"],
+      "properties": {
+        "minimum": { "$ref": "#/$defs/count" },
+        "median": { "$ref": "#/$defs/count" },
+        "maximum": { "$ref": "#/$defs/count" },
+        "observations": { "$ref": "#/$defs/count" }
+      }
+    },
+    "nullableRange": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/range" }] }
+  }
+}

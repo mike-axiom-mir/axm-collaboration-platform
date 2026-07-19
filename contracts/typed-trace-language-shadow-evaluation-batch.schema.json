@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.typed-trace-language-shadow-evaluation-batch/v1",
+  "title": "Mirror append-only typed-trace language shadow evaluation batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "inputsDigest", "organ", "sourceModel", "sourceCorpus", "results", "files", "summary", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.typed-trace-language-shadow-evaluation-batch/v1" },
+    "batchId": { "type": "string", "minLength": 1 },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "inputsDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": { "type": "object" },
+    "sourceModel": { "type": "object" },
+    "sourceCorpus": { "type": "object" },
+    "results": { "type": "array", "minItems": 1, "maxItems": 256, "items": { "type": "object" } },
+    "files": { "type": "array", "minItems": 1, "maxItems": 256, "items": { "type": "object" } },
+    "summary": { "type": "object" },
+    "state": { "enum": ["NO_OBSERVED_LANGUAGE_SHADOW_DRIFT", "OBSERVED_LANGUAGE_SHADOW_DRIFT_REQUIRES_REVIEW"] },
+    "authority": {
+      "type": "object",
+      "required": ["privateEvidenceTraceWrite", "trainingAdmission", "automaticRetraining", "modelChange", "runtimePromotion", "activeHumanRendering", "worldAction"],
+      "properties": {
+        "privateEvidenceTraceWrite": { "const": true }, "trainingAdmission": { "const": false },
+        "automaticRetraining": { "const": false }, "modelChange": { "const": false },
+        "runtimePromotion": { "const": false }, "activeHumanRendering": { "const": false }, "worldAction": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

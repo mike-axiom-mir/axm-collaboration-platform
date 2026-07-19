@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-path-set/v1",
+  "title": "Mirror bounded candidate path set",
+  "type": "object",
+  "required": ["schema", "profiles", "comparisons", "selectedPathId", "selectedActionId", "state", "selectionReason", "inputOrderAuthority", "strategyGuidance"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-path-set/v1" },
+    "profiles": { "type": "array", "maxItems": 128 },
+    "comparisons": { "type": "array", "maxItems": 128 },
+    "selectedPathId": { "type": ["string", "null"] },
+    "selectedActionId": { "type": ["string", "null"] },
+    "state": { "enum": ["BOUNDED_PROPOSAL", "HOLD"] },
+    "selectionReason": { "type": "string", "minLength": 1 },
+    "inputOrderAuthority": { "const": false },
+    "strategyGuidance": {
+      "type": "object",
+      "required": ["mode", "featureSource", "problemFeatures", "structuralProjection", "prediction", "activeRuntimeAuthority"],
+      "properties": {
+        "mode": { "enum": ["NONE", "PRIVATE_CHALLENGER", "PRIVATE_MEMORY_CHALLENGER", "PRIVATE_STRATEGY_AND_MEMORY_CHALLENGER"] },
+        "featureSource": { "enum": ["SESSION_LEGACY_PLUS_SCHEMA_SELECTED_MACHINE_PROJECTION", "CANDIDATE_ORIGIN_LEGACY_PLUS_SCHEMA_SELECTED_MACHINE_PROJECTION", "EXPLICIT_PRIVATE_TEST_OVERRIDE"] },
+        "problemFeatures": { "type": "array", "items": { "type": "string" } },
+        "structuralProjection": { "$ref": "reasoning-structural-feature-projection.schema.json" },
+        "prediction": { "type": ["object", "null"] },
+        "memory": { "type": "object" },
+        "activeRuntimeAuthority": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

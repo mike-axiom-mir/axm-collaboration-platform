@@ -1,0 +1,17 @@
+'use strict';
+const path=require('path');
+const {MirrorLearningForge}=require('../core/forge');
+const Rooted=require('../core/rooted-intelligence');
+const forge=new MirrorLearningForge({root:path.resolve(__dirname,'..')});
+const mike={actor_id:'mike',actor_kind:'HUMAN',display_name:'Mike'};
+const mirror={actor_id:'mirror-seed-0',actor_kind:'MACHINE',display_name:'Mirror'};
+forge.store.reset();forge.optIn({actor:mike});
+const task=forge.chooseRootClass({actor:mirror,class_id:'root-tension-privacy',goal:'Learn why accurate evidence does not automatically grant permission to expose it.'});
+console.log('Mirror chose:',task.title,'·',task.status);
+forge.reviewTrackTask({actor:mike,task_id:task.task_id,decision:'APPROVE',reason:'Challenger-only grounded teaching.'});
+const sample=forge.rootedSample({scenario_id:'root-truth-vs-privacy'});
+const grade=forge.gradeRooted({actor:mike,scenario_id:'root-truth-vs-privacy',submission:sample});
+console.log('Grounded grade:',grade.score,'·',grade.passed?'PASS':'HOLD');
+const dissent=forge.fileRootDissent({actor:mirror,root_id:'wisdom',interpretation_challenged:'Wisdom always means waiting for perfect certainty.',reason:'Delay can itself cause preventable damage.',evidence_refs:['scenario:root-urgent-bounded-action'],proposed_test:'Compare bounded reversible action now against indefinite waiting.'});
+console.log('Dissent:',dissent.status,'· preserved');
+console.log('Canon edit authority:',forge.status().boundaries.root_canon_edit_authority);

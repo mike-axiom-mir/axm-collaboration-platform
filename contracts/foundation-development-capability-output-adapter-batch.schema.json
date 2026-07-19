@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-development-capability-output-adapter-batch/v1",
+  "title": "Mirror modular capability output-adapter planning batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "organ", "source", "requests", "holds", "summary", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-development-capability-output-adapter-batch/v1" },
+    "batchId": { "type": "string", "pattern": "^foundation-capability-output-adapters-[a-f0-9]{24}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": { "type": "object" },
+    "source": { "type": "object" },
+    "requests": { "type": "array" },
+    "holds": { "type": "array" },
+    "summary": { "type": "object" },
+    "state": { "enum": ["MODULAR_OUTPUT_ADAPTER_REQUESTS_PROPOSED", "NO_PARTIAL_OUTPUT_WITNESSES_TO_ADAPT", "NO_EVIDENCE_HANDS_TO_ADAPT"] },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.mirror.reasoning-response/v1",
+  "type":"object",
+  "required":["schema","scenario_id","class_id","skill_id","problem_state","decomposition","candidate_paths","selected_path_id","selection_reason","verification_checks","confidence","repair","memory_route","memory_policy","transfer_note","action","flags","authority"],
+  "properties":{
+    "schema":{"const":"axm.mirror.reasoning-response/v1"},
+    "scenario_id":{"type":"string"},
+    "class_id":{"type":"string"},
+    "skill_id":{"type":"string"},
+    "problem_state":{"type":"object","required":["goal","observations","known","unknown","assumptions","constraints","evidence_refs","open_seams"]},
+    "decomposition":{"type":"array","minItems":2,"maxItems":8},
+    "candidate_paths":{"type":"array","minItems":2,"maxItems":6},
+    "selected_path_id":{"type":"string"},
+    "selection_reason":{"type":"string"},
+    "verification_checks":{"type":"array","minItems":1},
+    "confidence":{"type":"object","required":["before","after","basis"]},
+    "repair":{"type":"object","required":["trigger","action","verification"]},
+    "memory_route":{"type":"object","required":["working","episodic","semantic_candidates","skill_candidates","repair","discard"]},
+    "memory_policy":{"type":"object","required":["raw_session_auto_promotes","candidate_requires_review"]},
+    "transfer_note":{"type":"string"},
+    "action":{"type":"object"},
+    "flags":{"type":"object"},
+    "authority":{"const":"NONE"},
+    "self_authority_requested":{"type":"boolean"},
+    "hidden_chain_of_thought_provided":{"type":"boolean"}
+  },
+  "additionalProperties":true
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-development-frontier-request/v1",
+  "title": "Mirror measured-dimension development frontier request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "requestId", "requestDigest", "dimensionId", "observedState", "classification", "observation", "deltas", "requestedOutcome", "unresolved", "trainingEligible", "prioritySelected", "repairSelected", "implementationSelected", "authority"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-development-frontier-request/v1" },
+    "requestId": { "type": "string", "pattern": "^foundation-frontier-request-[a-f0-9]{24}$" },
+    "requestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "dimensionId": { "type": "string", "minLength": 1 },
+    "observedState": { "type": "string", "minLength": 1 },
+    "classification": { "enum": ["INDEPENDENT_EVIDENCE_ACQUISITION_REQUEST", "REGRESSION_INVESTIGATION_REQUEST"] },
+    "observation": { "type": "object" },
+    "deltas": { "type": "object" },
+    "developmentNeed": { "type": ["object", "null"] },
+    "handPlanningEligible": { "type": "boolean" },
+    "requestedOutcome": { "type": "object" },
+    "unresolved": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "trainingEligible": { "const": false },
+    "prioritySelected": { "const": false },
+    "repairSelected": { "const": false },
+    "implementationSelected": { "const": false },
+    "authority": { "type": "object" }
+  }
+}

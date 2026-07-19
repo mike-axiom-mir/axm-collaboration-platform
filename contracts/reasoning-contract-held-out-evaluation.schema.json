@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-contract-curriculum-held-out/v2",
+  "title": "Mirror contract-derived held-out transfer evaluation",
+  "type": "object",
+  "required": ["schema", "evaluationId", "evaluationDigest", "organ", "sourceBatchId", "sourceBatchDigest", "splitLeakage", "results", "summary", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-contract-curriculum-held-out/v2" },
+    "evaluationId": { "type": "string", "pattern": "^contract-held-out-[a-f0-9]{20}$" },
+    "evaluationDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "required": ["id", "status", "learnedModelId", "learnedModelDigest"],
+      "properties": {
+        "id": { "const": "axm.mirror.organ/reasoning-contract-curriculum-v2" },
+        "status": { "const": "TEST_PRIVATE_HELD_OUT_CONTRACT_TRANSFER" },
+        "learnedModelId": { "type": "string", "minLength": 1 },
+        "learnedModelDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "sourceBatchId": { "type": "string", "minLength": 1 },
+    "sourceBatchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "splitLeakage": { "const": false },
+    "results": { "type": "array" },
+    "summary": { "type": "object" },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

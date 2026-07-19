@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.cognitive-work-observation/v1",
+  "title": "Mirror sealed cognitive-work observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "observationId", "observationDigest", "organ", "source", "objective", "workShape", "comparisonKey", "execution", "outcome", "costObservation", "permission", "assessment", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.cognitive-work-observation/v1" },
+    "observationId": { "type": "string", "pattern": "^cognitive-work-observation-[a-f0-9]{24}$" },
+    "observationDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "learnedWeights", "costOptimization", "forecastAuthority"],
+      "properties": {
+        "id": { "const": "axm.mirror.cognitive-work-metrology-cell/v1" },
+        "learnedWeights": { "const": false },
+        "costOptimization": { "const": false },
+        "forecastAuthority": { "const": false }
+      }
+    },
+    "source": { "$ref": "cognitive-work-observation-draft.schema.json#/$defs/source" },
+    "objective": { "$ref": "cognitive-work-observation-draft.schema.json#/$defs/objective" },
+    "workShape": { "$ref": "cognitive-work-observation-draft.schema.json#/$defs/workShape" },
+    "comparisonKey": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "execution": { "$ref": "cognitive-work-observation-draft.schema.json#/$defs/execution" },
+    "outcome": { "$ref": "cognitive-work-observation-draft.schema.json#/$defs/outcome" },
+    "costObservation": { "$ref": "cognitive-work-observation-draft.schema.json#/$defs/costObservation" },
+    "permission": { "$ref": "cognitive-work-observation-draft.schema.json#/$defs/permission" },
+    "assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resourceProfileEligible", "verifiedComplete", "issues", "forecastCalibration"],
+      "properties": {
+        "resourceProfileEligible": { "type": "boolean" },
+        "verifiedComplete": { "type": "boolean" },
+        "issues": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{0,79}$" } },
+        "forecastCalibration": { "const": "NOT_EVALUATED" }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["factPromotion", "objectiveChange", "modelSelection", "hardwareSelection", "budgetAllocation", "permissionGrant", "trainingAdmission", "runtimePromotion", "canonChange", "worldAction"],
+      "properties": {
+        "factPromotion": { "const": false },
+        "objectiveChange": { "const": false },
+        "modelSelection": { "const": false },
+        "hardwareSelection": { "const": false },
+        "budgetAllocation": { "const": false },
+        "permissionGrant": { "const": false },
+        "trainingAdmission": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "worldAction": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

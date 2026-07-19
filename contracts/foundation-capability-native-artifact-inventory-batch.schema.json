@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-capability-native-artifact-inventory-batch/v1",
+  "title": "Mirror declaration-driven native capability artifact inventory batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "organ", "source", "declarationInventory", "results", "summary", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-capability-native-artifact-inventory-batch/v1" },
+    "batchId": { "type": "string", "pattern": "^foundation-capability-native-artifacts-[a-f0-9]{24}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "learnedWeights", "capabilitySpecificRouting", "nativeSourceExecution", "artifactSelection"],
+      "properties": {
+        "id": { "const": "axm.mirror.foundation-capability-native-artifact-inventory-organ/v1" },
+        "status": { "const": "TEST_DECLARATION_DRIVEN_PRIVATE_NATIVE_ARTIFACT_HASH_INVENTORY" },
+        "learnedWeights": { "const": false },
+        "capabilitySpecificRouting": { "const": false },
+        "nativeSourceExecution": { "const": false },
+        "artifactSelection": { "const": false }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapterRequestBatchId", "adapterRequestBatchDigest", "capabilityInventoryDigest", "inventoryDeclarationDigest"],
+      "properties": {
+        "adapterRequestBatchId": { "type": "string", "minLength": 1 },
+        "adapterRequestBatchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "capabilityInventoryDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "inventoryDeclarationDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "declarationInventory": { "type": "array" },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["resultId", "adapterRequestId", "adapterRequestDigest", "capabilityId", "capabilityDeclarationDigest", "nativeOutputKind", "inventoryDeclarationId", "inventoryDeclarationDigest", "roots", "artifacts", "refusals", "state", "permissionState", "evidenceEligibility", "artifactSelected", "operationalFit", "newOrganNeed"],
+        "properties": {
+          "resultId": { "type": "string", "pattern": "^foundation-native-artifact-inventory-result-[a-f0-9]{24}$" },
+          "adapterRequestId": { "type": "string", "minLength": 1 },
+          "adapterRequestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "capabilityId": { "type": "string", "minLength": 1 },
+          "capabilityDeclarationDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "nativeOutputKind": { "type": "string", "minLength": 1 },
+          "inventoryDeclarationId": { "type": ["string", "null"] },
+          "inventoryDeclarationDigest": { "type": ["string", "null"] },
+          "roots": { "type": "array" },
+          "artifacts": { "type": "array" },
+          "refusals": { "type": "array" },
+          "state": { "type": "string", "minLength": 1 },
+          "permissionState": { "const": "NOT_EVALUATED" },
+          "evidenceEligibility": { "const": "UNASSESSED" },
+          "artifactSelected": { "const": false },
+          "operationalFit": { "const": "UNTESTED" },
+          "newOrganNeed": { "const": "UNASSESSED" }
+        }
+      }
+    },
+    "summary": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+    "state": { "type": "string", "minLength": 1 },
+    "authority": { "type": "object", "additionalProperties": { "type": "boolean" } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-provider-declaration-implementation-evidence-survey-batch.schema.json",
+  "title": "AXM Mirror provider declaration implementation evidence survey batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "inputsDigest", "createdAt", "organ", "cell", "surveyContract", "sourceLineage", "sourceArchitectureSurveyBatch", "inventory", "results", "summary", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-provider-declaration-implementation-evidence-survey-batch/v1" },
+    "batchId": { "type": "string" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "inputsDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "createdAt": { "type": ["string", "null"] },
+    "organ": { "type": "object" },
+    "cell": { "type": "object" },
+    "surveyContract": { "type": "object" },
+    "sourceLineage": { "type": "array" },
+    "sourceArchitectureSurveyBatch": { "type": "object" },
+    "inventory": { "type": "object" },
+    "results": { "type": "array", "maxItems": 128 },
+    "summary": { "type": "object" },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string" }
+  }
+}

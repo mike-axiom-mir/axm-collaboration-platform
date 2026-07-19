@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.provider-declaration-research-executor-review-request.schema.json",
+  "title": "AXM Mirror provider declaration research executor review request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "examRequestId", "decision", "reason", "executor"],
+  "properties": {
+    "schema": { "const": "axm.mirror.provider-declaration-research-executor-review-request/v1" },
+    "examRequestId": { "type": "string", "minLength": 1 },
+    "decision": { "enum": ["APPROVE_DISPOSABLE_EXECUTOR", "HOLD"] },
+    "reason": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "executor": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "projectionSchema", "buildRoot", "fixtureCaseIds", "architectureSelection", "candidateMayAuthorFixtures", "liveExecutionApproved"],
+          "properties": {
+            "kind": { "const": "DECLARATION_RELATION_FIXTURE_EXECUTOR_V1" },
+            "projectionSchema": { "const": "axm.mirror.provider-declaration-architecture-projection/v1" },
+            "buildRoot": { "const": "IGNORED_PRIVATE_STATE" },
+            "fixtureCaseIds": { "type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true },
+            "architectureSelection": { "const": "NONE" },
+            "candidateMayAuthorFixtures": { "const": false },
+            "liveExecutionApproved": { "const": false }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.mirror.root-dissent/v1",
+  "title":"AXM Mirror Root Interpretation Dissent",
+  "type":"object",
+  "required":["schema","dissent_id","root_id","interpretation_challenged","reason","evidence_refs","proposed_test","status","created_by","created_at","reviews"],
+  "properties":{
+    "schema":{"const":"axm.mirror.root-dissent/v1"},
+    "dissent_id":{"type":"string"},
+    "root_id":{"enum":["truth","agency","continuity","wisdom"]},
+    "interpretation_challenged":{"type":"string","minLength":1},
+    "reason":{"type":"string","minLength":1},
+    "evidence_refs":{"type":"array","items":{"type":"string"}},
+    "proposed_test":{"type":"string","minLength":1},
+    "status":{"enum":["OPEN_REVIEW","TEST_REQUESTED","ACCEPTED_FOR_CANON_REVIEW","REJECTED_PRESERVED"]},
+    "created_by":{"type":"object"},
+    "created_at":{"type":"string"},
+    "reviews":{"type":"array","items":{"type":"object"}}
+  },
+  "additionalProperties":true
+}

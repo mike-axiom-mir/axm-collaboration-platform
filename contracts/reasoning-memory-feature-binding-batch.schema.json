@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-memory-feature-binding-batch/v1",
+  "title": "Mirror private contrast-tested reasoning-memory feature bindings",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "organ", "source", "strategyTags", "bindings", "refused", "summary", "policy", "state", "authority", "boundary"],
+  "$defs": {
+    "tokenArray": { "type": "array", "maxItems": 256, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "counts": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 1 } },
+    "cohort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipts", "sourceGroups", "evaluators", "experienceKinds", "outcomes"],
+      "properties": {
+        "receipts": { "type": "integer", "minimum": 0 },
+        "sourceGroups": { "$ref": "#/$defs/tokenArray" },
+        "evaluators": { "$ref": "#/$defs/tokenArray" },
+        "experienceKinds": { "$ref": "#/$defs/counts" },
+        "outcomes": { "$ref": "#/$defs/counts" }
+      }
+    }
+  },
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-memory-feature-binding-batch/v1" },
+    "batchId": { "type": "string", "pattern": "^reasoning-memory-feature-bindings-[a-f0-9]{24}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "learnedWeights"],
+      "properties": {
+        "id": { "const": "axm.mirror.organ/reasoning-memory-feature-binding-v1" },
+        "status": { "const": "TEST_PRIVATE_CONTRAST_BINDER" },
+        "learnedWeights": { "const": false }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accessDigest", "receiptInventoryDigest", "structuralProjectionOrganId", "structuralSelectorId", "structuralSelectorDigest", "receiptsSupplied", "receiptsVerified", "eligibleNonSyntheticReceipts", "syntheticReceiptsHeld", "refusedReceipts"],
+      "properties": {
+        "accessDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "receiptInventoryDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "structuralProjectionOrganId": { "const": "axm.mirror.organ/reasoning-structural-feature-projection-v1" },
+        "structuralSelectorId": { "const": "axm.mirror.selector/reasoning-session-structural-growth-v1" },
+        "structuralSelectorDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "receiptsSupplied": { "type": "integer", "minimum": 0, "maximum": 512 },
+        "receiptsVerified": { "type": "integer", "minimum": 0, "maximum": 512 },
+        "eligibleNonSyntheticReceipts": { "type": "integer", "minimum": 0, "maximum": 512 },
+        "syntheticReceiptsHeld": { "type": "integer", "minimum": 0, "maximum": 512 },
+        "refusedReceipts": { "type": "integer", "minimum": 0, "maximum": 512 }
+      }
+    },
+    "strategyTags": { "type": "array", "maxItems": 32, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "bindings": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["strategyTag", "state", "bindingFeature", "tagged", "contrast", "syntheticTaggedReceiptsHeld", "universalFeatures", "universalExclusiveFeatures", "eligibleExclusivePositiveFeatures", "excludedDescriptorOrNegativeFeatures", "tagOnlyRetrievalAllowed", "semanticTruth", "decisionAuthority"],
+        "properties": {
+          "strategyTag": { "type": "string", "minLength": 1 },
+          "state": { "enum": ["HOLD_SYNTHETIC_ONLY_TAG_EVIDENCE", "HOLD_NO_TAGGED_RECEIPTS", "HOLD_INSUFFICIENT_TAG_SOURCE_DIVERSITY", "HOLD_INSUFFICIENT_TAG_EVALUATOR_DIVERSITY", "HOLD_NO_CONTRAST_RECEIPTS", "HOLD_INSUFFICIENT_CONTRAST_SOURCE_DIVERSITY", "HOLD_INSUFFICIENT_CONTRAST_EVALUATOR_DIVERSITY", "HOLD_NO_EXACT_EXCLUSIVE_POSITIVE_FEATURE", "HOLD_AMBIGUOUS_EXCLUSIVE_POSITIVE_FEATURES", "BOUND_EXACT_EXCLUSIVE_POSITIVE_FEATURE"] },
+          "bindingFeature": { "type": ["string", "null"] },
+          "tagged": { "$ref": "#/$defs/cohort" },
+          "contrast": { "$ref": "#/$defs/cohort" },
+          "syntheticTaggedReceiptsHeld": { "type": "integer", "minimum": 0 },
+          "universalFeatures": { "$ref": "#/$defs/tokenArray" },
+          "universalExclusiveFeatures": { "$ref": "#/$defs/tokenArray" },
+          "eligibleExclusivePositiveFeatures": { "$ref": "#/$defs/tokenArray" },
+          "excludedDescriptorOrNegativeFeatures": { "$ref": "#/$defs/tokenArray" },
+          "tagOnlyRetrievalAllowed": { "const": false },
+          "semanticTruth": { "const": false },
+          "decisionAuthority": { "const": false }
+        }
+      }
+    },
+    "refused": {
+      "type": "array",
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["receiptId", "reason"],
+        "properties": {
+          "receiptId": { "type": ["string", "null"] },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategiesAssessed", "exactBindings", "heldBindings", "tagOnlyRetrievalsAllowed", "evidenceAdmissions", "trainingAdmissions", "permissionGrants", "runtimePromotions", "worldActions"],
+      "properties": {
+        "strategiesAssessed": { "type": "integer", "minimum": 0, "maximum": 32 },
+        "exactBindings": { "type": "integer", "minimum": 0, "maximum": 32 },
+        "heldBindings": { "type": "integer", "minimum": 0, "maximum": 32 },
+        "tagOnlyRetrievalsAllowed": { "const": 0 },
+        "evidenceAdmissions": { "const": 0 },
+        "trainingAdmissions": { "const": 0 },
+        "permissionGrants": { "const": 0 },
+        "runtimePromotions": { "const": 0 },
+        "worldActions": { "const": 0 }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimumDistinctTaggedSourceGroups", "minimumDistinctTaggedEvaluators", "minimumDistinctContrastSourceGroups", "minimumDistinctContrastEvaluators", "syntheticEvidenceCanBind", "exactUniversalFeatureRequired", "exactContrastExclusionRequired", "exactlyOneEligibleFeatureRequired", "negativeOrAbsentFeatureCanBind", "tagOnlyRetrievalAllowed", "schemaSelectedMachineFeaturesCanBind", "structuralFeaturePrefix", "legacyBindableFeatures", "excludedFeaturePrefixes", "excludedFeatureSuffixes"],
+      "properties": {
+        "minimumDistinctTaggedSourceGroups": { "const": 2 },
+        "minimumDistinctTaggedEvaluators": { "const": 2 },
+        "minimumDistinctContrastSourceGroups": { "const": 2 },
+        "minimumDistinctContrastEvaluators": { "const": 2 },
+        "syntheticEvidenceCanBind": { "const": false },
+        "exactUniversalFeatureRequired": { "const": true },
+        "exactContrastExclusionRequired": { "const": true },
+        "exactlyOneEligibleFeatureRequired": { "const": true },
+        "negativeOrAbsentFeatureCanBind": { "const": false },
+        "tagOnlyRetrievalAllowed": { "const": false },
+        "schemaSelectedMachineFeaturesCanBind": { "const": true },
+        "structuralFeaturePrefix": { "const": "structural-fact:" },
+        "legacyBindableFeatures": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "excludedFeaturePrefixes": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "excludedFeatureSuffixes": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "state": { "enum": ["ALL_REQUESTED_STRATEGIES_EXACTLY_BOUND", "PARTIAL_EXACT_BINDINGS_WITH_VISIBLE_HOLDS", "HOLD_NO_REQUESTED_STRATEGY_EXACTLY_BOUND"] },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["privateBindingTraceWrite", "semanticTruthWrite", "evidenceAdmission", "decisionAuthority", "permissionGrant", "trainingAdmission", "runtimePromotion", "canonChange", "worldAction"],
+      "properties": {
+        "privateBindingTraceWrite": { "const": true },
+        "semanticTruthWrite": { "const": false },
+        "evidenceAdmission": { "const": false },
+        "decisionAuthority": { "const": false },
+        "permissionGrant": { "const": false },
+        "trainingAdmission": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "worldAction": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

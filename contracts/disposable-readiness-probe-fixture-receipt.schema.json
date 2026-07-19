@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.disposable-readiness-probe-fixture-receipt/v1",
+  "title": "AXM Mirror disposable readiness probe fixture receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "state", "exitCode", "stdoutSha256", "cases", "observations", "authority", "error"],
+  "properties": {
+    "schema": { "const": "axm.mirror.disposable-readiness-probe-fixture-receipt/v1" },
+    "state": { "enum": ["PASS", "FAIL"] },
+    "exitCode": { "type": "integer" },
+    "stdoutSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "cases": { "type": "object" },
+    "observations": { "type": "object" },
+    "authority": { "type": "object" },
+    "error": { "type": ["string", "null"] }
+  }
+}

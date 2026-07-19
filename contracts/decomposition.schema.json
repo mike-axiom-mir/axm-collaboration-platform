@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.decomposition/v1",
+  "title": "Mirror dependency-visible decomposition",
+  "type": "object",
+  "required": ["schema", "questions", "dependencyStatus"],
+  "properties": {
+    "schema": { "const": "axm.mirror.decomposition/v1" },
+    "questions": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "required": ["id", "question", "dependsOn", "cheapestCheck", "status", "answerEvidenceRefs"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "question": { "type": "string", "minLength": 1, "maxLength": 1200 },
+          "dependsOn": { "type": "array", "items": { "type": "string" }, "maxItems": 64 },
+          "cheapestCheck": { "type": "string", "minLength": 1, "maxLength": 1200 },
+          "status": { "enum": ["OPEN", "ANSWERED", "BLOCKED"] },
+          "answerEvidenceRefs": { "type": "array", "items": { "type": "string" }, "maxItems": 128 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "dependencyStatus": { "enum": ["VISIBLE", "HOLD_REPAIR"] }
+  },
+  "additionalProperties": false
+}

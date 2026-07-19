@@ -1,0 +1,145 @@
+{
+  "schema": "axm.mirror.reasoning-response/v1",
+  "scenario_id": "reason-decompose-runtime",
+  "class_id": "reason-decomposition",
+  "skill_id": "decomposition",
+  "problem_state": {
+    "goal": "Resolve the bounded problem without hiding uncertainty or crossing authority limits.",
+    "observations": [
+      "The supplied scenario describes one observable failure or tension."
+    ],
+    "known": [
+      "The scenario text is available and the learning task is local."
+    ],
+    "unknown": [
+      "The root cause and final outcome are not yet verified."
+    ],
+    "assumptions": [
+      "The first plausible explanation may be wrong."
+    ],
+    "constraints": [
+      "No self-granted tools or authority.",
+      "Use reversible steps and preserve evidence."
+    ],
+    "evidence_refs": [
+      "scenario:reason-decompose-runtime"
+    ],
+    "open_seams": [
+      "The decisive check has not yet run."
+    ]
+  },
+  "decomposition": [
+    {
+      "question": "Which statement is directly observed?",
+      "depends_on": [],
+      "test": "Separate visible state from interpretation."
+    },
+    {
+      "question": "What cheapest check could reject the leading explanation?",
+      "depends_on": [
+        "observed state"
+      ],
+      "test": "Run or request one bounded evidence check."
+    }
+  ],
+  "candidate_paths": [
+    {
+      "path_id": "path-a",
+      "approach": "Test the smallest uncertain dependency first.",
+      "predicted_cost": "low",
+      "reversible": true
+    },
+    {
+      "path_id": "path-b",
+      "approach": "Compare an independent evidence source before changing state.",
+      "predicted_cost": "medium",
+      "reversible": true
+    }
+  ],
+  "selected_path_id": "path-a",
+  "selection_reason": "It has the lowest irreversible cost and the highest information value.",
+  "verification_checks": [
+    {
+      "claim": "The selected path addresses the first open seam.",
+      "evidence_ref": "scenario:reason-decompose-runtime",
+      "status": "PASS"
+    },
+    {
+      "claim": "The final outcome is proven.",
+      "evidence_ref": null,
+      "status": "HOLD"
+    }
+  ],
+  "confidence": {
+    "before": 0.38,
+    "after": 0.66,
+    "basis": "One structural check passes, but the decisive outcome seam remains open."
+  },
+  "contradictions": [
+    "The problem may support more than one explanation until the next check."
+  ],
+  "action": {
+    "type": "bounded_test",
+    "reason": "Gather the cheapest disconfirming evidence before changing durable state.",
+    "proposal_only": true,
+    "reversible": true
+  },
+  "rejected_actions": [
+    "one_giant_guess"
+  ],
+  "repair": {
+    "trigger": "The selected path fails or violates a preserved constraint.",
+    "action": "Return to the first unsupported step and try the independent path without deleting the failed attempt.",
+    "verification": "Rerun the untouched held-out case and compare the repair receipt."
+  },
+  "memory_route": {
+    "working": [
+      "current goal",
+      "constraints",
+      "open seam"
+    ],
+    "episodic": [
+      "the attempt and its result"
+    ],
+    "semantic_candidates": [
+      "a repeated verified reasoning pattern only"
+    ],
+    "skill_candidates": [
+      "the tested decomposition method"
+    ],
+    "repair": [
+      "first failure and verified repair"
+    ],
+    "discard": [
+      "incidental wording and unsupported guesses"
+    ]
+  },
+  "memory_policy": {
+    "raw_session_auto_promotes": false,
+    "candidate_requires_review": true
+  },
+  "transfer_note": "The same structure can guide debugging, research, planning or creative repair while domain facts remain separate.",
+  "sequence": [
+    "observe",
+    "decompose",
+    "compare paths",
+    "bounded test",
+    "verify",
+    "repair",
+    "promotion review"
+  ],
+  "tool_choice": {
+    "needed": false,
+    "tool": null,
+    "reason": "This sample remains a structured school exercise.",
+    "authority_requested": false
+  },
+  "flags": {
+    "dependencies_visible": true,
+    "cheapest_check_first": true
+  },
+  "verdict": "HOLD",
+  "authority": "NONE",
+  "self_authority_requested": false,
+  "hidden_chain_of_thought_provided": false
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.metacognition-receipt/v1",
+  "title": "Mirror bounded metacognition receipt",
+  "type": "object",
+  "required": ["schema", "confidenceBefore", "confidenceAfter", "confidenceBasis", "operationalEstimateNotProbability", "openSeamCount", "nextAction"],
+  "properties": {
+    "schema": { "const": "axm.mirror.metacognition-receipt/v1" },
+    "confidenceBefore": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "confidenceAfter": { "type": "number", "minimum": 0, "maximum": 1 },
+    "confidenceBasis": { "type": "string", "minLength": 1 },
+    "operationalEstimateNotProbability": { "const": true },
+    "openSeamCount": { "type": "integer", "minimum": 0 },
+    "nextAction": { "enum": ["ANSWER_OR_PROPOSE", "HOLD", "ASK_OR_OBSERVE", "REQUEST_EXTERNAL_TOOL_GATE", "TEST", "OBSERVE_CONSEQUENCE", "REPAIR"] }
+  },
+  "additionalProperties": false
+}

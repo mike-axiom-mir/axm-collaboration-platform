@@ -1,0 +1,114 @@
+{
+  "schema": "axm.mirror.reasoning-skill-growth-audit/v1",
+  "reportId": "mirror-reasoning-skill-growth-20260718-seed0-v1",
+  "identity": "axm.machine.mirror/seed-0",
+  "date": "2026-07-18",
+  "status": "WORKING_PRIVATE_CHALLENGER_PROPOSE_HUMAN_REVIEW",
+  "goalStatus": "ACTIVE",
+  "humanView": "docs/MIRROR_REASONING_SKILL_GROWTH_ACTION_REPORT_2026-07-18.md",
+  "cycle": {
+    "cycleId": "reasoning-skill-349ae37bac2166b02ced",
+    "inputsDigest": "349ae37bac2166b02ced9ce3bc8c7ce554d0db366ac5bb8dc6ff73b9fb5360e4",
+    "state": "PROPOSE_HUMAN_REVIEW",
+    "openSeams": 0,
+    "activeRuntime": false,
+    "automaticPromotion": false,
+    "privateStatePath": "state/reasoning-skill-runs/reasoning-skill-349ae37bac2166b02ced"
+  },
+  "model": {
+    "modelId": "reasoning-strategy-164229275f59d5c01e0478d4",
+    "modelDigest": "0ca20b6ec8933075b3b416c7099d4c12123ba2c46b102ff56de9aeaa50b7c061",
+    "artifactSha256": "9973430917c3dadb12c4bf15a03e0ef3101242cb6f13207b5198ebc633a4dc31",
+    "status": "PRIVATE_CHALLENGER",
+    "featurePolicy": "structural-state-only-no-goal-word-features",
+    "learnedStrategyLabels": [
+      "ask-blocking-unknown",
+      "discriminate-conflict",
+      "request-bounded-tool",
+      "test-open-assumption"
+    ],
+    "compiledStrategyLabelList": false,
+    "arbitraryNewLabelTest": "PASS",
+    "tamperDetection": "PASS"
+  },
+  "corpus": {
+    "trainingGroups": 8,
+    "trainingFixtureSha256": "d5830de59b6a2db359785d52c14ff49e2815a889264a9271f8ffa8a86f3ad81c",
+    "heldOutGroups": 8,
+    "heldOutFixtureSha256": "9f634813e6524068e240c06fa798ad579a07ddbf4c0085070567ea559c275f3a",
+    "heldOutFrozen": true,
+    "sourceFamilyLeakage": 0,
+    "expectedActionsVisibleToModel": false
+  },
+  "evaluation": {
+    "suppliedCandidateBaseline": "0/8",
+    "suppliedCandidateChallenger": "8/8",
+    "adversarialTransfer": "4/4",
+    "noCandidateBaseline": "0/8",
+    "learnedCandidateOrigination": "8/8",
+    "behaviorCanaries": "10/10",
+    "independentSeamOpen": 0,
+    "evaluationArtifactSha256": "f1a357cdf66d71abeebacfa90c950260210e7419de7b6acf71386a176a58807f",
+    "trainingLineageArtifactSha256": "af16996b67fe7aed2e830fe2efe9170c0540e542e00c3346be76a3ef1c3f3df9"
+  },
+  "candidateOrgan": {
+    "id": "axm.mirror.organ/reasoning-strategy-private-challenger-v1",
+    "status": "WORKING_PRIVATE_CHALLENGER_NOT_LOADED",
+    "originates": "non-mutating ask, observe, or hold candidates from learned strategy prototypes",
+    "toolAuthority": false,
+    "worldMutationAuthority": false,
+    "runtimePromotionAuthority": false
+  },
+  "organAdmission": {
+    "cell": "axm.mirror.organ-admission/seed-0",
+    "working": true,
+    "minimumIndependentSourceGroups": 2,
+    "requiresRepeatedVerifiedGap": true,
+    "requiresTypedContract": true,
+    "requiresHeldOutCounterexampleRegressionAuthorityAndRollbackTests": true,
+    "successfulState": "PROPOSE_BUILD",
+    "writeCodeAuthority": false,
+    "installAuthority": false,
+    "loadAuthority": false
+  },
+  "authority": {
+    "activeRuntimeModel": false,
+    "worldAction": false,
+    "toolUse": false,
+    "permissionGrant": false,
+    "memoryWrite": false,
+    "automaticTrainingAdmissionFromRuntime": false,
+    "automaticPromotion": false,
+    "automaticOrganInstallation": false,
+    "canonChange": false,
+    "identityChange": false
+  },
+  "verification": [
+    { "command": "npm.cmd test", "status": "PASS", "tests": 72 },
+    { "command": "npm.cmd run test:learning-forge", "status": "PASS", "tests": 99 },
+    { "command": "npm.cmd run test:learning-shell", "status": "PASS", "tests": 4 },
+    { "command": "node modules/mirror-learning-forge/scripts/verify-build.js", "status": "PASS", "files": 148 },
+    { "command": "node scripts/run-reasoning-skill-cycle.js", "status": "PROPOSE_HUMAN_REVIEW", "openSeams": 0 }
+  ],
+  "whatNowWorks": [
+    "verified reasoning receipts can train a non-language strategy challenger",
+    "strategy labels can be added through evidence without editing a compiled label list",
+    "learned structural guidance improves path selection on separated frozen cases",
+    "learned safe prototypes can originate epistemic candidates when no candidates are supplied",
+    "resolved contradictions remain visible with evidence-bound closure receipts",
+    "token and reasoning-skill tracks have separate evidence and verdicts",
+    "repeated verified gaps can earn a typed organ build proposal without installation authority"
+  ],
+  "knownLimits": [
+    "the exam contains eight synthetic structural transfer groups and only four learned strategy families",
+    "perfect performance on this small frozen set is not broad reasoning evidence",
+    "the model uses simple count-based structural associations rather than a rich world model",
+    "the learned organ originates epistemic paths, not arbitrary domain answers",
+    "tool requests remain requests and no tool is used",
+    "the private model is not loaded by the active runtime",
+    "PROPOSE_BUILD does not generate or install organ code",
+    "the older token-language cycle still has the training-corpus-small seam",
+    "Mike has not accepted this result as CANON or approved runtime promotion"
+  ],
+  "decision": "Preserve the private challenger and review proposal. Do not load it into the active runtime. Continue the active goal by expanding source-diverse real reasoning receipts, testing mixed-signal and unfamiliar strategy cases, and only then considering explicit promotion."
+}

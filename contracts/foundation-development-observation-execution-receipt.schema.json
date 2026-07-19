@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-development-observation-execution-receipt/v1",
+  "title": "Mirror automatic Foundation observation execution receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "executionId", "receiptDigest", "organ", "request", "observation", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-development-observation-execution-receipt/v1" },
+    "executionId": { "type": "string", "pattern": "^foundation-observation-execution-[a-f0-9]{24}$" },
+    "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "learnedWeights"],
+      "properties": {
+        "id": { "const": "axm.mirror.foundation-development-observation-executor-organ/v1" },
+        "learnedWeights": { "const": false }
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requestId", "requestDigest", "subjectDigest", "evidenceDigest"],
+      "properties": {
+        "requestId": { "type": "string", "pattern": "^foundation-observation-request-[a-f0-9]{24}$" },
+        "requestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "subjectDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "evidenceDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshotId", "snapshotDigest", "snapshotState", "snapshotReused", "exactRequestFulfilled", "dimensions"],
+      "properties": {
+        "snapshotId": { "type": "string", "pattern": "^foundation-development-[a-f0-9]{24}$" },
+        "snapshotDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "snapshotState": { "type": "string", "minLength": 1 },
+        "snapshotReused": { "type": "boolean" },
+        "exactRequestFulfilled": { "const": true },
+        "dimensions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["observedPassing", "openEvidenceGates", "directRegressions", "longitudinalRegressions", "improvementsObserved", "singleIntelligenceScore", "growthGrade"],
+          "properties": {
+            "observedPassing": { "type": "integer", "minimum": 0 },
+            "openEvidenceGates": { "type": "integer", "minimum": 0 },
+            "directRegressions": { "type": "integer", "minimum": 0 },
+            "longitudinalRegressions": { "type": "integer", "minimum": 0 },
+            "improvementsObserved": { "type": "integer", "minimum": 0 },
+            "singleIntelligenceScore": { "const": false },
+            "growthGrade": { "type": "null" }
+          }
+        }
+      }
+    },
+    "state": { "enum": ["OBSERVATION_RECORDED_WITHOUT_REGRESSION", "OBSERVATION_RECORDED_WITH_REGRESSION_REQUIRES_REVIEW"] },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["privateExecutionTraceWrite", "foundationObservationExecution", "compositeGrowthGrade", "trainingAdmission", "automaticRepair", "modelChange", "permissionGrant", "runtimePromotion", "canonChange", "worldAction"],
+      "properties": {
+        "privateExecutionTraceWrite": { "const": true },
+        "foundationObservationExecution": { "const": true },
+        "compositeGrowthGrade": { "const": false },
+        "trainingAdmission": { "const": false },
+        "automaticRepair": { "const": false },
+        "modelChange": { "const": false },
+        "permissionGrant": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "worldAction": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

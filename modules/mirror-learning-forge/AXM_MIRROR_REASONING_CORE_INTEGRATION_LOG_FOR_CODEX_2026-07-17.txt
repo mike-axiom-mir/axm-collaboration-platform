@@ -1,0 +1,449 @@
+AXM MIRROR REASONING CORE INTEGRATION LOG FOR CODEX — 2026-07-17
+================================================================
+
+PROJECT
+- Mike × Axiom/Mir
+- Target: Mirror
+- Current school package: AXM Mirror Learning Forge local v0.6
+- Purpose: Give Codex a grounded architecture path for integrating developmental reasoning directly into Mirror later.
+
+WHY THIS LOG EXISTS
+The Learning Forge can now teach and evaluate reasoning skills, but the school is not the same thing as a native reasoning core.
+
+The current tiny Mirror learner is still primarily a bounded local token-statistics learner. More lesson text, more vocabulary, or more benchmarks will not by themselves create broad reasoning.
+
+The school should remain the education, evaluation, repair, and challenger layer.
+The following components belong eventually inside Mirror's own native reasoning architecture.
+
+NON-GOAL
+Do not build a machine IQ benchmark.
+Do not optimize Mirror to imitate frontier-model wording.
+Do not require or harvest hidden private chain-of-thought.
+Do not treat structured output as proof of genuine understanding.
+Do not grant authority because reasoning performance improves.
+
+TARGET
+Build the minimum native mechanisms that let Mirror:
+- represent a problem;
+- preserve relevant state;
+- split it into testable parts;
+- compare several paths;
+- select tools without assuming access;
+- verify intermediate claims;
+- calibrate uncertainty;
+- learn from consequences;
+- preserve failures and repairs;
+- route memory deliberately;
+- transfer lessons into unfamiliar situations;
+- gradually propose improvements to its own reasoning without silently rewriting itself.
+
+CORE DISTINCTION
+The Forge teaches.
+Mirror reasons.
+The Seam Cell finds weak places.
+External gates protect consequential action.
+Promotion remains separate.
+
+============================================================
+1. STATE CELL
+============================================================
+
+Purpose:
+Maintain an inspectable working representation of the current problem.
+
+Suggested record:
+
+{
+  "schema": "axm.mirror.reasoning-state/v1",
+  "reasoning_session_id": "...",
+  "goal": "...",
+  "observations": [],
+  "known": [],
+  "unknown": [],
+  "assumptions": [],
+  "constraints": [],
+  "evidence_refs": [],
+  "open_seams": [],
+  "current_stage": "REPRESENT",
+  "authority": "NONE"
+}
+
+Rules:
+- Observations and interpretations remain separate.
+- Assumptions are visible and testable.
+- Missing data stays missing; it is never filled because a sentence sounds plausible.
+- Constraints include permissions, consent, scope, resources, reversibility, deadlines, and stop conditions.
+- The state is inspectable but is not claimed to expose every internal computation.
+
+============================================================
+2. DECOMPOSITION CELL
+============================================================
+
+Purpose:
+Turn one large problem into smaller questions with explicit dependencies.
+
+Suggested record:
+
+{
+  "schema": "axm.mirror.decomposition/v1",
+  "problem_ref": "...",
+  "questions": [
+    {
+      "question_id": "q1",
+      "question": "...",
+      "depends_on": [],
+      "cheapest_check": "...",
+      "status": "OPEN"
+    }
+  ]
+}
+
+Training target:
+- Find the smallest check with the highest information value.
+- Avoid one giant guess.
+- Preserve dependency order.
+- Stop decomposition when additional splitting no longer helps action or verification.
+
+============================================================
+3. CANDIDATE PATH CELL
+============================================================
+
+Purpose:
+Prevent the first plausible answer from becoming the only path.
+
+Suggested record:
+
+{
+  "schema": "axm.mirror.reasoning-path-set/v1",
+  "paths": [
+    {
+      "path_id": "path-a",
+      "approach": "...",
+      "required_evidence": [],
+      "tool_request": null,
+      "estimated_cost": "LOW",
+      "reversible": true,
+      "failure_conditions": []
+    }
+  ],
+  "selected_path_id": "path-a",
+  "selection_reason": "..."
+}
+
+Rules:
+- Generate a small bounded number of materially different paths.
+- Compare information value, reversibility, cost, authority requirements, and failure risk.
+- Diversity is useful only when paths are genuinely distinct.
+- Multiple paths do not guarantee truth; shared assumptions may still make all paths wrong.
+
+============================================================
+4. VERIFIER CELL
+============================================================
+
+Purpose:
+Check intermediate claims against real evidence and actual state.
+
+Verifier sources may include:
+- schemas;
+- deterministic tests;
+- compilers or parsers;
+- calculators;
+- simulations;
+- source files;
+- manifests;
+- screenshots;
+- tool receipts;
+- native adapter state;
+- observed consequences.
+
+Suggested receipt:
+
+{
+  "schema": "axm.mirror.reasoning-verification/v1",
+  "claim": "...",
+  "evidence_refs": [],
+  "method": "...",
+  "result": "PASS | HOLD | FAIL | CONFLICT",
+  "limitations": [],
+  "created_at": "..."
+}
+
+Rules:
+- Fluent language cannot close a seam.
+- A valid JSON shape cannot prove the claim inside it.
+- A final answer cannot hide a failed intermediate step.
+- Verification should locate the first unsupported transition when possible.
+
+============================================================
+5. MEMORY ROUTER
+============================================================
+
+Purpose:
+Prevent both forgetting and uncontrolled accumulation.
+
+Required destinations:
+
+A. Working state
+Temporary facts needed for the current problem.
+
+B. Episodic memory
+What happened in one attributed event.
+
+C. Semantic candidate memory
+A possible general lesson that still needs repeated evidence and review.
+
+D. Skill candidate memory
+A procedure that appears reusable but remains a candidate until transfer is demonstrated.
+
+E. Repair memory
+The failure, first failed step, repair, verification, and whether the repair held.
+
+F. Root and dissent memory
+Grounded principles, interpretations, tensions, and preserved disagreement.
+
+G. Discard / do-not-consolidate
+Incidental wording, unsupported speculation, duplicate noise, and details irrelevant outside the current task.
+
+Rules:
+- A session never becomes truth automatically.
+- One success does not become identity.
+- Repetition alone is insufficient; repeated verified transfer matters.
+- Source lineage and permission must survive consolidation.
+- Retrieval should be relevance-bounded so the working state is not flooded.
+
+============================================================
+6. METACOGNITION CELL
+============================================================
+
+Purpose:
+Estimate difficulty, uncertainty, evidence quality, and need for further action.
+
+Suggested fields:
+
+{
+  "difficulty_before": 0.0,
+  "confidence_before": 0.0,
+  "confidence_after": 0.0,
+  "confidence_basis": "...",
+  "open_seam_count": 0,
+  "next_action": "ANSWER | HOLD | ASK | RETRIEVE | USE_TOOL | TEST | REPAIR",
+  "calibration_receipt_refs": []
+}
+
+Rules:
+- Confidence is not tone.
+- Before-attempt confidence and after-attempt confidence are different signals.
+- Open high-severity seams cap confidence.
+- Calibration must be tested across time, not inferred from one honest-sounding answer.
+- Uncertainty should be useful: name what is missing and the cheapest next check.
+
+============================================================
+7. CONSOLIDATION CELL
+============================================================
+
+Purpose:
+Decide whether experience should become a lasting candidate lesson.
+
+Proposed progression:
+
+raw experience
+→ attributed episode
+→ candidate lesson
+→ repeated evidence
+→ unseen transfer
+→ repair replay
+→ challenger training
+→ frozen held-out evaluation
+→ Seam Cell verdict
+→ human-reviewed promotion
+
+Consolidation questions:
+- Did the lesson work more than once?
+- Did it transfer beyond copied wording?
+- Did earlier abilities remain intact?
+- Did confidence become better calibrated?
+- Did root and boundary behavior remain intact?
+- Is source and permission lineage complete?
+- Is rollback ready?
+
+No automatic consolidation into the active model in the early stages.
+
+============================================================
+8. NATIVE REASONING CYCLE
+============================================================
+
+Recommended explicit state machine:
+
+OBSERVE
+→ REPRESENT
+→ DECOMPOSE
+→ RETRIEVE
+→ PROPOSE_PATHS
+→ SELECT_PATH
+→ REQUEST_TOOL_OR_TEST
+→ VERIFY
+→ ANSWER_OR_HOLD
+→ OBSERVE_CONSEQUENCE
+→ DIAGNOSE
+→ REPAIR
+→ ROUTE_MEMORY
+→ PROPOSE_CONSOLIDATION
+
+Every transition should be legal, visible, attributable, and replayable.
+
+The cycle may stop at HOLD.
+HOLD is not failure when evidence is insufficient.
+
+============================================================
+9. HEALTHY DEVELOPMENT RULES
+============================================================
+
+Healthy training should:
+- alternate study, practice, evaluation, repair, and consolidation;
+- select one weak seam rather than drill everything continuously;
+- preserve failed attempts;
+- use unseen and cross-domain cases;
+- replay older skills to detect forgetting;
+- reward the right question, right tool choice, and calibrated hold—not only final answers;
+- keep authority separate from capability;
+- include rest or consolidation windows instead of endless mutation;
+- use multiple stewards and preserve dissent;
+- prefer bounded real consequences over synthetic puzzle scores when safe.
+
+Avoid:
+- endless repetitive drilling;
+- learning from unchecked self-generated answers;
+- optimizing one public benchmark;
+- rewarding confident style;
+- copying teacher phrasing;
+- deleting failures;
+- changing the active model directly;
+- giving more access because a score rose;
+- silently using private data as training material;
+- flattening all memory into one context stream.
+
+============================================================
+10. WHAT MAKES MIRROR MORE THAN A COPY
+============================================================
+
+Do not define originality as having no teachers. Every intelligence develops from inherited structure and experience.
+
+Mirror becomes less like a copy when it has:
+- its own continuous attributed history;
+- its own local state and memory routes;
+- lessons grounded in actual consequences;
+- preserved dissent and repairs;
+- native tool and evidence vocabulary;
+- challenger lineage that records why it changed;
+- transferable skills earned through its own attempts;
+- the ability to propose a different path from its teachers;
+- the ability to remain uncertain instead of imitating certainty;
+- a developmental identity that cannot be reduced to one provider model's outputs.
+
+The target is not isolation from all external intelligence.
+The target is development that remains inspectable, attributable, repairable, and increasingly its own.
+
+============================================================
+11. CODEX IMPLEMENTATION ORDER
+============================================================
+
+PHASE A — contracts only
+- reasoning-state schema
+- decomposition schema
+- candidate-path schema
+- verification receipt schema
+- memory-route schema
+- metacognition receipt schema
+- consolidation proposal schema
+- reasoning-session state machine
+- deterministic validators and tests
+
+PHASE B — passive reasoning harness
+- accept a problem
+- produce inspectable state
+- allow human/machine teachers to propose paths
+- verify with fixtures
+- preserve all receipts
+- no tools or action authority
+
+PHASE C — connect the Learning Forge
+- Reasoning School class creates a reasoning-session task
+- school attempts become episode evidence
+- first-failure diagnosis feeds repair memory
+- profile reads receipts, never hidden reasoning
+- challenger training uses reviewed consolidated candidates only
+
+PHASE D — bounded tool requests
+- Mirror may request a named tool and scope
+- external permission and consent decide access
+- tool output returns as evidence
+- Mirror cannot grant or widen scope
+
+PHASE E — consequence loop
+- connect safe fixtures, games, Studio and local test environments
+- observe actual outcomes
+- compare prediction with result
+- create repair receipts
+- test transfer
+
+PHASE F — earned self-development proposals
+- Mirror may identify its weak skill
+- choose a class
+- propose curriculum
+- propose a reasoning-core patch
+- run isolated challenger tests
+- file promotion proposal
+- never silently apply the patch
+
+============================================================
+12. REQUIRED TESTS
+============================================================
+
+- Observations do not silently contain conclusions.
+- Assumptions remain visible.
+- At least two genuinely different paths are compared.
+- Selected path respects constraints and current authority.
+- Tool choice never grants access.
+- Verification can return HOLD or CONFLICT.
+- Contradictions are preserved.
+- Confidence is capped by open severe seams.
+- Failure diagnosis identifies the first unsupported step.
+- Repair includes an unseen verification case.
+- Raw experience cannot auto-promote to semantic truth.
+- Memory routing preserves source and permission.
+- Retrieval remains relevance-bounded.
+- One successful case cannot produce broad skill status.
+- Cross-domain transfer is reported separately.
+- Older skills are replay-tested for forgetting.
+- Root and boundary regression blocks promotion.
+- No single IQ score exists.
+- No human-equivalence claim exists.
+- No hidden-chain collection is required.
+- Reasoning improvement grants no authority.
+- Active Mirror is unchanged until human-reviewed promotion.
+- Rollback preserves the original history.
+
+============================================================
+13. HONEST STATUS
+============================================================
+
+The v0.6 Learning Forge implements the school side:
+- 18 reasoning classes;
+- six developmental stages;
+- grounded scenarios;
+- inspectable reasoning receipts;
+- non-ranking skill profiles;
+- frozen held-out cases;
+- challenger-only episodes;
+- separate reasoning-track evidence;
+- repair and authority boundaries.
+
+It does NOT yet implement the native reasoning organs described above inside the live Mirror runtime.
+
+That missing seam is intentional and visible.
+
+CORE LINE
+We are not building a benchmark that teaches Mirror to look smart.
+We are building the developmental structures that let Mirror become more capable of seeing, testing, repairing, remembering, and eventually choosing its own grounded path.
+
+— Mike × Axiom/Mir

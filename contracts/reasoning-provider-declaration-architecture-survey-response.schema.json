@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-provider-declaration-architecture-survey-response.schema.json",
+  "title": "AXM Mirror provider declaration architecture survey response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "responseDigest", "organId", "sourceBatchId", "request", "state", "reason", "surveys", "holds", "architectureSelected", "architectureEvaluated", "providerCandidateBuilt", "providerDeclarationWritten", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-provider-declaration-architecture-survey-response/v1" },
+    "responseDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organId": { "const": "axm.mirror.organ/provider-declaration-architecture-survey-v1" },
+    "sourceBatchId": { "type": "string" },
+    "request": { "type": "object" },
+    "state": { "enum": ["PROPOSED_PROVIDER_DECLARATION_ARCHITECTURE_PATTERN_EVIDENCE", "HOLD_NO_RESEARCH_EXAM_TO_SURVEY", "HOLD_UNKNOWN_PROVIDER_DECLARATION_RESEARCH_RESULT", "NO_PROVIDER_DECLARATION_RESEARCH_RESULTS"] },
+    "reason": { "type": "string" },
+    "surveys": { "type": "array" },
+    "holds": { "type": "array" },
+    "architectureSelected": { "const": false },
+    "architectureEvaluated": { "const": false },
+    "providerCandidateBuilt": { "const": false },
+    "providerDeclarationWritten": { "const": false },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string" }
+  }
+}

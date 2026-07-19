@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/contracts/workshop-transfer-regression-exam-result.schema.json",
+  "title": "AXM Mirror Workshop Transfer Regression Exam Result",
+  "type": "object",
+  "required": [
+    "schema",
+    "resultDigest",
+    "cell",
+    "regressionBinding",
+    "source",
+    "criteria",
+    "checks",
+    "contractBoundaryCanaries",
+    "handoffRouteCanaries",
+    "summary",
+    "causeClassification",
+    "state",
+    "claimCeiling",
+    "authority",
+    "boundary"
+  ],
+  "properties": {
+    "schema": { "const": "axm.mirror.workshop-transfer-regression-exam-result/v1" },
+    "resultDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "cell": { "type": "object" },
+    "regressionBinding": { "type": "object" },
+    "source": { "type": "object" },
+    "criteria": { "type": "object" },
+    "checks": { "type": "array", "minItems": 1, "items": { "type": "object" } },
+    "contractBoundaryCanaries": { "type": "object" },
+    "handoffRouteCanaries": { "type": "object" },
+    "summary": { "type": "object" },
+    "causeClassification": { "type": "string" },
+    "state": {
+      "enum": [
+        "PASS_BOUND_WORKSHOP_TRANSFER_REVALIDATION",
+        "FAIL_BOUND_WORKSHOP_TRANSFER_REGRESSION_OBSERVED",
+        "HOLD_WORKSHOP_TRANSFER_REVALIDATION_INSUFFICIENT",
+        "HOLD_WORKSHOP_SOURCE_CHANGED_DURING_REVALIDATION"
+      ]
+    },
+    "claimCeiling": { "type": "string" },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

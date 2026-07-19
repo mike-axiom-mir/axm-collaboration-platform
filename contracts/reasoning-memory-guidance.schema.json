@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-memory-guidance/v2",
+  "title": "Mirror private contrast-bound reasoning memory guidance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "guidanceId", "organ", "problemFeatures", "featureBinding", "contextRefs", "paths", "policy", "authority", "boundary", "guidanceDigest"],
+  "$defs": {
+    "tokenArray": { "type": "array", "maxItems": 512, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receiptId", "receiptDigest", "sourceGroup", "experienceKind", "evaluatorId", "contextSignature", "outcome"],
+      "properties": {
+        "receiptId": { "type": "string", "minLength": 1 },
+        "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "sourceGroup": { "type": "string", "minLength": 1 },
+        "experienceKind": { "type": "string", "minLength": 1 },
+        "evaluatorId": { "type": "string", "minLength": 1 },
+        "contextSignature": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "outcome": { "enum": ["WORKED", "DID_NOT_WORK"] }
+      }
+    },
+    "bindingRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategyTag", "bindingBatchId", "bindingBatchDigest", "bindingState", "bindingFeature", "currentFeatureMatched", "contextId", "contextDigest"],
+      "properties": {
+        "strategyTag": { "type": "string", "minLength": 1 },
+        "bindingBatchId": { "type": "string", "pattern": "^reasoning-memory-feature-bindings-[a-f0-9]{24}$" },
+        "bindingBatchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "bindingState": { "type": "string", "minLength": 1 },
+        "bindingFeature": { "type": ["string", "null"] },
+        "currentFeatureMatched": { "type": "boolean" },
+        "contextId": { "type": ["string", "null"] },
+        "contextDigest": { "type": ["string", "null"] }
+      }
+    }
+  },
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-memory-guidance/v2" },
+    "guidanceId": { "type": "string", "pattern": "^reasoning-memory-guidance-[a-f0-9]{24}$" },
+    "organ": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "learnedWeights"],
+      "properties": {
+        "id": { "const": "axm.mirror.organ/reasoning-memory-guidance-v2" },
+        "status": { "const": "TEST_PRIVATE_CONTRAST_BOUND_CHALLENGER" },
+        "learnedWeights": { "const": false }
+      }
+    },
+    "problemFeatures": { "$ref": "#/$defs/tokenArray" },
+    "featureBinding": { "$ref": "reasoning-memory-feature-binding-batch.schema.json" },
+    "contextRefs": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["strategyTag", "bindingBatchId", "bindingBatchDigest", "bindingState", "bindingFeature", "currentFeatureMatched", "contextId", "contextDigest", "state", "exactMatches", "supporting", "counterevidence", "unknowns"],
+        "properties": {
+          "strategyTag": { "type": "string", "minLength": 1 },
+          "bindingBatchId": { "type": "string", "pattern": "^reasoning-memory-feature-bindings-[a-f0-9]{24}$" },
+          "bindingBatchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "bindingState": { "type": "string", "minLength": 1 },
+          "bindingFeature": { "type": ["string", "null"] },
+          "currentFeatureMatched": { "type": "boolean" },
+          "contextId": { "type": ["string", "null"] },
+          "contextDigest": { "type": ["string", "null"] },
+          "state": { "type": ["string", "null"] },
+          "exactMatches": { "type": "integer", "minimum": 0 },
+          "supporting": { "type": "integer", "minimum": 0 },
+          "counterevidence": { "type": "integer", "minimum": 0 },
+          "unknowns": { "$ref": "#/$defs/tokenArray" }
+        }
+      }
+    },
+    "paths": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["actionId", "strategyTags", "bindingRefs", "exactFeatureBindingsUsed", "tagOnlyRetrievals", "state", "adjustment", "supporting", "counterevidence", "syntheticHeld", "contradictionSignatures", "distinctSourceGroups", "distinctEvaluators", "experienceKinds", "evidenceSufficient", "boundary"],
+        "properties": {
+          "actionId": { "type": "string", "minLength": 1 },
+          "strategyTags": { "$ref": "#/$defs/tokenArray" },
+          "bindingRefs": { "type": "array", "maxItems": 32, "items": { "$ref": "#/$defs/bindingRef" } },
+          "exactFeatureBindingsUsed": { "$ref": "#/$defs/tokenArray" },
+          "tagOnlyRetrievals": { "const": 0 },
+          "state": { "enum": ["NO_CONTEXT", "CONTEXT_FEATURE_MISMATCH", "SYNTHETIC_ONLY_CONTEXT", "INSUFFICIENT_INDEPENDENCE", "UNBOUND_STRATEGY_CONTEXT", "CONTRADICTORY_CONTEXT", "MIXED_CONTEXT", "SUPPORTING_CONTEXT", "COUNTEREVIDENCE_CONTEXT"] },
+          "adjustment": { "type": "number", "minimum": -12, "maximum": 12 },
+          "supporting": { "type": "array", "maxItems": 512, "items": { "$ref": "#/$defs/receipt" } },
+          "counterevidence": { "type": "array", "maxItems": 512, "items": { "$ref": "#/$defs/receipt" } },
+          "syntheticHeld": { "type": "array", "maxItems": 512, "items": { "$ref": "#/$defs/receipt" } },
+          "contradictionSignatures": { "$ref": "#/$defs/tokenArray" },
+          "distinctSourceGroups": { "$ref": "#/$defs/tokenArray" },
+          "distinctEvaluators": { "$ref": "#/$defs/tokenArray" },
+          "experienceKinds": { "$ref": "#/$defs/tokenArray" },
+          "evidenceSufficient": { "type": "boolean" },
+          "boundary": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maximumAdjustment", "minimumDistinctSourceGroups", "minimumDistinctEvaluators", "syntheticEvidenceCanAdjust", "contradictoryOrMixedEvidenceCanAdjust", "exactContrastTestedFeatureBindingRequired", "tagOnlyRetrievalAllowed", "ambiguousOrSyntheticFeatureBindingCanAdjust", "eligibilityGateMutation"],
+      "properties": {
+        "maximumAdjustment": { "const": 12 },
+        "minimumDistinctSourceGroups": { "const": 2 },
+        "minimumDistinctEvaluators": { "const": 2 },
+        "syntheticEvidenceCanAdjust": { "const": false },
+        "contradictoryOrMixedEvidenceCanAdjust": { "const": false },
+        "exactContrastTestedFeatureBindingRequired": { "const": true },
+        "tagOnlyRetrievalAllowed": { "const": false },
+        "ambiguousOrSyntheticFeatureBindingCanAdjust": { "const": false },
+        "eligibilityGateMutation": { "const": false }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["activeRuntime", "memoryWrite", "semanticTruthWrite", "evidenceAdmission", "decisionAuthority", "eligibilityMutation", "permissionGrant", "trainingAdmission", "toolUse", "runtimePromotion", "canonChange", "worldAction"],
+      "properties": {
+        "activeRuntime": { "const": false },
+        "memoryWrite": { "const": false },
+        "semanticTruthWrite": { "const": false },
+        "evidenceAdmission": { "const": false },
+        "decisionAuthority": { "const": false },
+        "eligibilityMutation": { "const": false },
+        "permissionGrant": { "const": false },
+        "trainingAdmission": { "const": false },
+        "toolUse": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false },
+        "worldAction": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 },
+    "guidanceDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-evidence-candidate/v1",
+  "title": "Mirror content-sealed Foundation evidence candidate envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "candidateId", "candidateDigest", "organ", "source", "native", "permission", "provenance", "requestedEvidence", "assessment", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-evidence-candidate/v1" },
+    "candidateId": { "type": "string", "pattern": "^foundation-evidence-candidate-[a-f0-9]{24}$" },
+    "candidateDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "organ": { "type": "object" },
+    "source": { "type": "object" },
+    "native": { "type": "object" },
+    "permission": { "type": "object" },
+    "provenance": { "type": "object" },
+    "requestedEvidence": { "type": "object" },
+    "assessment": { "type": "object" },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

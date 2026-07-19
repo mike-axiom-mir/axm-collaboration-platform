@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.provider-declaration-research-executor-fixture-receipt.schema.json",
+  "title": "AXM Mirror provider declaration research executor fixture receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "receiptDigest", "examRequestId", "recipeId", "executorCandidateId", "fixtureManifestSha256", "caseResults", "summary", "state", "architectureEvaluated", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.provider-declaration-research-executor-fixture-receipt/v1" },
+    "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "examRequestId": { "type": "string" },
+    "recipeId": { "type": "string" },
+    "executorCandidateId": { "type": "string" },
+    "fixtureManifestSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "caseResults": { "type": "array", "minItems": 10, "maxItems": 10 },
+    "summary": { "type": "object" },
+    "state": { "enum": ["PASS", "FAIL"] },
+    "architectureEvaluated": { "const": false },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string" }
+  }
+}

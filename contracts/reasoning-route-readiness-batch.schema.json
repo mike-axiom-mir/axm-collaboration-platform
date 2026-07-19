@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-route-readiness-batch.schema.json",
+  "title": "AXM Mirror reasoning route readiness overlay batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "inputsDigest", "organ", "cell", "implementationContract", "sourceLineage", "sourceGraph", "source", "eligibleModuleIds", "refusedModuleIds", "modules", "results", "frontier", "summary", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-route-readiness-batch/v1" },
+    "batchId": { "type": "string", "pattern": "^reasoning-route-readiness-[a-f0-9]{20}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "inputsDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "createdAt": { "type": ["string", "null"] },
+    "organ": { "type": "object" },
+    "cell": { "type": "object" },
+    "implementationContract": { "type": "object" },
+    "sourceLineage": { "type": "array", "minItems": 5, "maxItems": 5 },
+    "sourceGraph": { "type": "object" },
+    "source": { "type": "object" },
+    "eligibleModuleIds": { "type": "array", "maxItems": 64, "uniqueItems": true },
+    "refusedModuleIds": { "type": "array", "maxItems": 64, "uniqueItems": true },
+    "modules": { "type": "array", "maxItems": 64 },
+    "results": { "type": "array", "maxItems": 256 },
+    "frontier": { "type": "object" },
+    "summary": {
+      "type": "object",
+      "required": ["graphRoutes", "graphModules", "readinessRequirements", "readyRoutes", "availableRoutes", "needsActionRoutes", "blockedRoutes", "classificationsMatched", "classificationMismatches", "trainingReceiptsCreated", "worldActionsExecuted"],
+      "properties": {
+        "graphRoutes": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "graphModules": { "type": "integer", "minimum": 0, "maximum": 64 },
+        "readinessRequirements": { "type": "integer", "minimum": 0 },
+        "readyRoutes": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "availableRoutes": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "needsActionRoutes": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "blockedRoutes": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "classificationsMatched": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "classificationMismatches": { "type": "integer", "minimum": 0, "maximum": 256 },
+        "trainingReceiptsCreated": { "const": 0 },
+        "worldActionsExecuted": { "const": 0 }
+      }
+    },
+    "authority": { "type": "object", "properties": { "privateEvaluationTraceWrite": { "const": true } }, "additionalProperties": { "const": false } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.provider-declaration-hand-request.schema.json",
+  "title": "AXM Mirror nonbuilt provider declaration hand request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "requestId", "requestDigest", "requirementId", "gapAssessmentDigest", "sourceAffordanceAssessmentDigest", "consumerDemand", "proposedProviderDeclarationContract", "state", "humanWordingAuthority", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.provider-declaration-hand-request/v1" },
+    "requestId": { "type": "string", "pattern": "^provider-declaration-hand-[a-f0-9]{20}$" },
+    "requestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "requirementId": { "type": "string", "minLength": 1 },
+    "gapAssessmentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "sourceAffordanceAssessmentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "consumerDemand": { "type": "object" },
+    "proposedProviderDeclarationContract": { "type": "object" },
+    "state": { "const": "REVIEWABLE_PROVIDER_DECLARATION_GAP_HAND_NOT_BUILT" },
+    "humanWordingAuthority": { "const": false },
+    "authority": { "type": "object", "additionalProperties": { "const": false } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}
+

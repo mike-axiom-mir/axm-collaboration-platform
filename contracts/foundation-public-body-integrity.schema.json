@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.foundation-public-body-integrity/v1",
+  "title": "Mirror bounded public-body structural integrity report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "digest", "cell", "identity", "state", "source", "coverage", "holds", "summary", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.foundation-public-body-integrity/v1" },
+    "digest": { "$ref": "#/$defs/digest" },
+    "cell": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "learnedWeights", "sourceExecutionAuthority", "repairAuthority"],
+      "properties": {
+        "id": { "const": "axm.mirror.foundation-public-body-integrity-cell/v1" },
+        "learnedWeights": { "const": false }, "sourceExecutionAuthority": { "const": false }, "repairAuthority": { "const": false }
+      }
+    },
+    "identity": { "const": "axm.machine.mirror/seed-0" },
+    "state": { "enum": ["PASS_BOUNDED_PUBLIC_BODY_STRUCTURAL_INTEGRITY", "HOLD_BOUNDED_PUBLIC_BODY_STRUCTURAL_INTEGRITY"] },
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["inventorySchema", "inventoryDigest", "publicFiles", "publicBytes"],
+      "properties": {
+        "inventorySchema": { "const": "axm.mirror.foundation-public-source-inventory/v1" },
+        "inventoryDigest": { "$ref": "#/$defs/digest" }, "publicFiles": { "$ref": "#/$defs/count" }, "publicBytes": { "$ref": "#/$defs/count" }
+      }
+    },
+    "coverage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["javascriptSyntaxChecked", "esmSyntaxHeld", "jsonParsed", "contractSchemas", "modules", "activeOrganTestReachability", "staticRequireReachabilityClaim", "unparsedExtensions"],
+      "properties": {
+        "javascriptSyntaxChecked": { "$ref": "#/$defs/paths" }, "esmSyntaxHeld": { "$ref": "#/$defs/paths" }, "jsonParsed": { "$ref": "#/$defs/paths" },
+        "contractSchemas": { "type": "array", "items": { "$ref": "#/$defs/contract" } },
+        "modules": { "type": "array", "items": { "$ref": "#/$defs/module" } },
+        "activeOrganTestReachability": { "type": "array", "items": { "$ref": "#/$defs/organ" } },
+        "staticRequireReachabilityClaim": { "const": "STATIC_EXACT_RELATIVE_REQUIRE_WITNESS_NOT_TEST_EXECUTION_OR_BEHAVIORAL_CORRECTNESS" },
+        "unparsedExtensions": { "type": "array", "items": { "$ref": "#/$defs/extension" } }
+      }
+    },
+    "holds": { "type": "array", "items": { "$ref": "#/$defs/hold" } },
+    "summary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["javascriptSyntaxChecked", "esmSyntaxHeld", "jsonParsed", "contractSchemasChecked", "knownFailContractSchemasPreserved", "moduleManifestsChecked", "activeOrgansChecked", "activeOrgansWithTestReachability", "holds", "sourceExecutions", "repairs"],
+      "properties": {
+        "javascriptSyntaxChecked": { "$ref": "#/$defs/count" }, "esmSyntaxHeld": { "$ref": "#/$defs/count" },
+        "jsonParsed": { "$ref": "#/$defs/count" }, "contractSchemasChecked": { "$ref": "#/$defs/count" }, "knownFailContractSchemasPreserved": { "$ref": "#/$defs/count" },
+        "moduleManifestsChecked": { "$ref": "#/$defs/count" }, "activeOrgansChecked": { "$ref": "#/$defs/count" },
+        "activeOrgansWithTestReachability": { "$ref": "#/$defs/count" }, "holds": { "$ref": "#/$defs/count" },
+        "sourceExecutions": { "const": 0 }, "repairs": { "const": 0 }
+      }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sourceExecution", "capabilityClaim", "correctnessClaim", "repair", "permissionGrant", "trainingAdmission", "runtimePromotion", "canonChange", "worldAction"],
+      "properties": {
+        "sourceExecution": { "const": false }, "capabilityClaim": { "const": false }, "correctnessClaim": { "const": false },
+        "repair": { "const": false }, "permissionGrant": { "const": false }, "trainingAdmission": { "const": false },
+        "runtimePromotion": { "const": false }, "canonChange": { "const": false }, "worldAction": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "count": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+    "path": { "type": "string", "minLength": 1, "pattern": "^(?![A-Za-z]:)(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$" },
+    "paths": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/path" } },
+    "contract": {
+      "type": "object", "additionalProperties": false, "required": ["path", "id", "dialect", "rootAdditionalPropertiesDeclared", "knownFail", "supersededBy"],
+      "properties": { "path": { "$ref": "#/$defs/path" }, "id": { "type": ["string", "null"] }, "dialect": { "type": ["string", "null"] }, "rootAdditionalPropertiesDeclared": { "type": "boolean" }, "knownFail": { "type": "boolean" }, "supersededBy": { "type": ["string", "null"] } }
+    },
+    "module": {
+      "type": "object", "additionalProperties": false, "required": ["path", "moduleId", "entry", "contractPath", "state"],
+      "properties": { "path": { "$ref": "#/$defs/path" }, "moduleId": { "type": ["string", "null"] }, "entry": { "type": ["string", "null"] }, "contractPath": { "$ref": "#/$defs/path" }, "state": { "type": "string" } }
+    },
+    "organ": {
+      "type": "object", "additionalProperties": false, "required": ["path", "testWitnesses"],
+      "properties": { "path": { "$ref": "#/$defs/path" }, "testWitnesses": { "$ref": "#/$defs/paths" } }
+    },
+    "extension": {
+      "type": "object", "additionalProperties": false, "required": ["extension", "files"],
+      "properties": { "extension": { "type": "string", "minLength": 1 }, "files": { "$ref": "#/$defs/count" } }
+    },
+    "hold": {
+      "type": "object", "additionalProperties": false, "required": ["code", "path", "detail"],
+      "properties": { "code": { "type": "string", "minLength": 1 }, "path": { "type": ["string", "null"] }, "detail": { "type": "string", "minLength": 1 } }
+    }
+  }
+}

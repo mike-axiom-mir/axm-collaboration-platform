@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-readiness-hand-batch.schema.json",
+  "title": "AXM Mirror reasoning readiness hand planner batch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "batchId", "batchDigest", "inputsDigest", "organ", "cell", "implementationContract", "sourceLineage", "sourceGraph", "sourceReadiness", "results", "frontier", "summary", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-readiness-hand-batch/v1" },
+    "batchId": { "type": "string", "pattern": "^reasoning-readiness-hands-[a-f0-9]{20}$" },
+    "batchDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "inputsDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "createdAt": { "type": ["string", "null"] },
+    "organ": { "type": "object" },
+    "cell": { "type": "object" },
+    "implementationContract": { "type": "object" },
+    "sourceLineage": { "type": "array", "minItems": 7, "maxItems": 7 },
+    "sourceGraph": { "type": "object" },
+    "sourceReadiness": { "type": "object" },
+    "results": { "type": "array", "maxItems": 128 },
+    "frontier": { "type": "object" },
+    "summary": { "type": "object" },
+    "authority": { "type": "object", "properties": { "privateEvaluationTraceWrite": { "const": true } }, "additionalProperties": { "const": false } },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

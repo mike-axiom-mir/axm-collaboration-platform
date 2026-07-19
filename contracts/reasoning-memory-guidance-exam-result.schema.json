@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.reasoning-memory-guidance-exam-result/v1",
+  "title": "Mirror frozen reasoning memory guidance exam result",
+  "type": "object",
+  "required": ["schema", "resultId", "organ", "source", "state", "results", "summary", "promotion", "authority", "boundary", "resultDigest"],
+  "properties": {
+    "schema": { "const": "axm.mirror.reasoning-memory-guidance-exam-result/v1" },
+    "resultId": { "type": "string", "pattern": "^reasoning-memory-guidance-exam-[a-f0-9]{24}$" },
+    "organ": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "learnedWeights"],
+      "properties": {
+        "id": { "const": "axm.mirror.organ/reasoning-memory-guidance-exam-v1" },
+        "status": { "const": "TEST" },
+        "learnedWeights": { "const": false }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["packId", "packPath", "packSha256", "packBytes", "frozenPackCandidateOrganId", "evaluatedGuidanceOrganId", "evaluatedGuidanceSchema", "evaluatedFeatureBindingOrganId", "evaluatedFeatureBindingSchema", "outsideAuthored", "candidateAuthoredExpectedOutcomes", "expectedFieldsExcludedFromFoundationInput", "receiptInventoryDigest", "receiptInventoryCount", "heldOutCaseSourceOverlap"],
+      "properties": {
+        "packId": { "type": "string", "minLength": 1 },
+        "packPath": { "type": "string", "minLength": 1 },
+        "packSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "packBytes": { "type": "integer", "minimum": 1 },
+        "frozenPackCandidateOrganId": { "const": "axm.mirror.organ/reasoning-memory-guidance-v1" },
+        "evaluatedGuidanceOrganId": { "const": "axm.mirror.organ/reasoning-memory-guidance-v2" },
+        "evaluatedGuidanceSchema": { "const": "axm.mirror.reasoning-memory-guidance/v2" },
+        "evaluatedFeatureBindingOrganId": { "const": "axm.mirror.organ/reasoning-memory-feature-binding-v1" },
+        "evaluatedFeatureBindingSchema": { "const": "axm.mirror.reasoning-memory-feature-binding-batch/v1" },
+        "outsideAuthored": { "const": false },
+        "candidateAuthoredExpectedOutcomes": { "const": false },
+        "expectedFieldsExcludedFromFoundationInput": { "const": true },
+        "receiptInventoryDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "receiptInventoryCount": { "type": "integer", "minimum": 0 },
+        "heldOutCaseSourceOverlap": { "const": 0 }
+      }
+    },
+    "state": { "enum": ["HOLD_FROZEN_MEMORY_GUIDANCE_EXAM_FAILURE", "HOLD_NO_MEMORY_GUIDANCE_IMPROVEMENT", "TEST_CONTRACT_BOUNDARY_TRANSFER_IMPROVED_REAL_LOCAL_EVALUATOR_DIVERSITY_HOLD", "TEST_MEMORY_GUIDANCE_INSTRUMENT_PASSED"] },
+    "results": { "type": "array", "minItems": 4, "maxItems": 32 },
+    "summary": { "type": "object" },
+    "promotion": { "type": "object" },
+    "authority": { "type": "object" },
+    "boundary": { "type": "string" },
+    "resultDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

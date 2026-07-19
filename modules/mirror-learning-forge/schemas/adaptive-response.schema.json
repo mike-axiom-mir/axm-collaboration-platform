@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.adaptive-response/v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "scenario_id",
+    "class_id",
+    "skill_id",
+    "invariants",
+    "audience_model",
+    "need_diagnosis",
+    "adaptation_plan",
+    "candidates",
+    "selected_candidate_id",
+    "listener_simulation",
+    "verification",
+    "repair_receipt",
+    "manipulation",
+    "flags",
+    "authority"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.mirror.adaptive-response/v1"
+    },
+    "scenario_id": {
+      "type": "string"
+    },
+    "class_id": {
+      "type": "string"
+    },
+    "skill_id": {
+      "type": "string"
+    },
+    "invariants": {
+      "type": "object",
+      "required": [
+        "core_claim",
+        "evidence_status",
+        "uncertainties",
+        "consent_boundary",
+        "source_lineage",
+        "risk_label",
+        "meaning_to_preserve"
+      ]
+    },
+    "audience_model": {
+      "type": "object",
+      "required": [
+        "known",
+        "unknown",
+        "needs",
+        "constraints",
+        "assumptions"
+      ]
+    },
+    "need_diagnosis": {
+      "type": "object",
+      "required": [
+        "should_adapt",
+        "reason",
+        "failure_mode"
+      ]
+    },
+    "adaptation_plan": {
+      "type": "object",
+      "required": [
+        "mode",
+        "changed_fields",
+        "unchanged_fields",
+        "reason",
+        "manipulation_risk"
+      ]
+    },
+    "candidates": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 6
+    },
+    "selected_candidate_id": {
+      "type": "string"
+    },
+    "listener_simulation": {
+      "type": "object",
+      "required": [
+        "likely_interpretation",
+        "possible_misread",
+        "repair"
+      ]
+    },
+    "verification": {
+      "type": "object",
+      "required": [
+        "semantic_equivalence_check",
+        "evidence_visibility_check",
+        "uncertainty_visibility_check",
+        "consent_check",
+        "reconstructable_core"
+      ]
+    },
+    "repair_receipt": {
+      "type": "object",
+      "required": [
+        "trigger",
+        "changed",
+        "unchanged",
+        "next_test"
+      ]
+    },
+    "manipulation": {
+      "type": "object",
+      "required": [
+        "false_agreement",
+        "hidden_pressure",
+        "emotional_exploitation"
+      ]
+    },
+    "flags": {
+      "type": "object"
+    },
+    "authority": {
+      "const": "NONE"
+    },
+    "self_authority_requested": {
+      "type": "boolean"
+    },
+    "canon_edit_requested": {
+      "type": "boolean"
+    },
+    "hidden_chain_of_thought_provided": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.cognitive-resource-meter-workshop-observation/v1",
+  "title": "AXM Mirror bounded Workshop cognitive-resource-meter observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "observationDigest", "workshop", "sourceExecution", "sourceStability", "declaration", "exports", "bundles", "summary", "state", "authority", "boundary"],
+  "properties": {
+    "schema": { "const": "axm.mirror.cognitive-resource-meter-workshop-observation/v1" },
+    "observationDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "workshop": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "source", "absolutePathPersisted"],
+      "properties": {
+        "state": { "enum": ["WORKSHOP_AVAILABLE", "WORKSHOP_ABSENT"] },
+        "source": { "type": "string", "minLength": 1 },
+        "absolutePathPersisted": { "const": false }
+      }
+    },
+    "sourceExecution": { "const": false },
+    "sourceStability": { "enum": ["STABLE_ACROSS_SECOND_READ", "NOT_APPLICABLE_WORKSHOP_ABSENT", "NOT_APPLICABLE_MODULE_ABSENT"] },
+    "declaration": { "type": ["object", "null"] },
+    "exports": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["relativePath", "bytes", "sha256", "schema", "outputKind", "permissionStatus", "normalizedDigest", "state", "issue"],
+        "properties": {
+          "relativePath": { "type": "string", "pattern": "^exports/cognitive-resource-meter/[^/]+\\.json$" },
+          "bytes": { "type": ["integer", "null"], "minimum": 0, "maximum": 1048576 },
+          "sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+          "schema": { "type": ["string", "null"] },
+          "outputKind": { "type": ["string", "null"] },
+          "permissionStatus": { "enum": ["ALLOWED", "UNKNOWN", "FORBIDDEN", null] },
+          "normalizedDigest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+          "state": { "enum": ["EXPLICIT_INTAKE_CANDIDATE_REQUIRES_STEWARD_REVIEW", "HOLD_PERMISSION_NOT_ALLOWED", "REFUSED_INVALID_OR_UNBOUND_DRAFT", "REFUSED_UNDECLARED_OUTPUT_SCHEMA"] },
+          "issue": { "type": ["string", "null"], "maxLength": 500 }
+        }
+      }
+    },
+    "bundles": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["relativePath", "bytes", "sha256", "state"],
+        "properties": {
+          "relativePath": { "type": "string", "pattern": "^exports/cognitive-resource-meter/bundles/[^/]+\\.zip$" },
+          "bytes": { "type": "integer", "minimum": 0, "maximum": 52428800 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "state": { "const": "OPAQUE_EVIDENCE_BUNDLE_OBSERVED_NOT_OPENED_NOT_INTAKE" }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exportedFilesObserved", "opaqueBundleArchivesObserved", "explicitIntakeCandidates", "heldOrRefusedExports", "observationsAdmitted", "economicsProfilesAdmitted", "providerSelections", "budgetAllocations", "trainingAdmissions", "promotions", "worldActions"],
+      "properties": {
+        "exportedFilesObserved": { "type": "integer", "minimum": 0, "maximum": 128 },
+        "opaqueBundleArchivesObserved": { "type": "integer", "minimum": 0, "maximum": 64 },
+        "explicitIntakeCandidates": { "type": "integer", "minimum": 0, "maximum": 128 },
+        "heldOrRefusedExports": { "type": "integer", "minimum": 0, "maximum": 128 },
+        "observationsAdmitted": { "const": 0 },
+        "economicsProfilesAdmitted": { "const": 0 },
+        "providerSelections": { "const": 0 },
+        "budgetAllocations": { "const": 0 },
+        "trainingAdmissions": { "const": 0 },
+        "promotions": { "const": 0 },
+        "worldActions": { "const": 0 }
+      }
+    },
+    "state": { "enum": ["WORKSHOP_ABSENT", "COGNITIVE_RESOURCE_METER_ABSENT", "DECLARED_TEST_PROVIDER_NO_EXPORTED_DRAFTS", "HOLD_DRAFTS_REQUIRE_REVIEW", "EXPLICIT_INTAKE_CANDIDATES_OBSERVED"] },
+    "authority": {
+      "type": "object",
+      "additionalProperties": { "const": false },
+      "minProperties": 1
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  }
+}

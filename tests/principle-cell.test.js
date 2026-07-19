@@ -46,7 +46,7 @@ test('contradictory supporting evidence remains visible and causes a hold', () =
 
 test('no candidates creates an explicit non-mutating hold', () => {
   const trace = reason(request({ actions: [] }));
-  assert.equal(trace.decision.value, 1);
+  assert.equal(trace.decision.value, 0);
   assert.equal(trace.decision.selectedActionId, 'hold-no-candidate');
   assert.match(trace.human.selected, /Hold and request/);
 });

@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.mirror.language-evaluation-split-lineage/v1",
+  "title": "Mirror longitudinal language evaluation split lineage",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "assignmentPolicy",
+    "historicalCyclesInspected",
+    "historicalCycleIds",
+    "historicallyAssignedGroupsInCurrentCorpus",
+    "firstAssignmentGroups",
+    "newGroupsAssignedToTraining",
+    "validationExposure",
+    "testExposure",
+    "evaluationGroupsMovedToTraining",
+    "trainingGroupsMovedToEvaluation",
+    "historicalRoleConflicts",
+    "automaticEvaluationRoleReassignment",
+    "authority",
+    "boundary"
+  ],
+  "properties": {
+    "schema": { "const": "axm.mirror.language-evaluation-split-lineage/v1" },
+    "assignmentPolicy": { "const": "IMMUTABLE_FIRST_OBSERVED_GROUP_ROLE_NEW_GROUPS_TRAIN_ONLY" },
+    "historicalCyclesInspected": { "type": "integer", "minimum": 0 },
+    "historicalCycleIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^cycle-[a-f0-9]{20}$" }
+    },
+    "historicallyAssignedGroupsInCurrentCorpus": { "type": "integer", "minimum": 0 },
+    "firstAssignmentGroups": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "newGroupsAssignedToTraining": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "validationExposure": { "$ref": "#/$defs/exposure" },
+    "testExposure": { "$ref": "#/$defs/exposure" },
+    "evaluationGroupsMovedToTraining": { "type": "array", "maxItems": 0 },
+    "trainingGroupsMovedToEvaluation": { "type": "array", "maxItems": 0 },
+    "historicalRoleConflicts": { "const": 0 },
+    "automaticEvaluationRoleReassignment": { "const": false },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trainingAdmission", "thresholdChange", "modelSelection", "runtimePromotion", "canonChange"],
+      "properties": {
+        "trainingAdmission": { "const": false },
+        "thresholdChange": { "const": false },
+        "modelSelection": { "const": false },
+        "runtimePromotion": { "const": false },
+        "canonChange": { "const": false }
+      }
+    },
+    "boundary": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "exposure": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["groupId", "priorCycleCount", "firstCycleId"],
+        "properties": {
+          "groupId": { "type": "string", "minLength": 1 },
+          "priorCycleCount": { "type": "integer", "minimum": 0 },
+          "firstCycleId": {
+            "oneOf": [
+              { "type": "null" },
+              { "type": "string", "pattern": "^cycle-[a-f0-9]{20}$" }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
