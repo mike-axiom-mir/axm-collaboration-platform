@@ -5,9 +5,11 @@ const assert = require('node:assert/strict');
 const profile = require('../profiles/top-down-twin-stick.json');
 const { createIntentSanitizer } = require('../src/shared/intent');
 const {
+  bindHumanInputSource,
   consumePulse,
   createSeatInputGate,
   disconnectIdleSeats,
+  revokeHumanInputSource,
 } = require('../src/host/seat-input-gate');
 
 function fixture() {
@@ -86,3 +88,30 @@ test('idle external seats are neutralized while built-in Host AI remains interna
   assert.notEqual(session.actors.ai.connected, false);
 });
 
+test('one versioned input-source lease excludes the previous hand while preserving the human seat', () => {
+  const { session, gate, packet } = fixture();
+  const actor = session.actors.human;
+  const phone = bindHumanInputSource(actor, 'phone-touch', { bindingId: 'binding-phone', now: 100 });
+  const phonePacket = { ...packet('seat_1', 'private-human-token', 0, { moveX: 1 }), inputSourceBindingId: phone.id, inputSourceEpoch: phone.epoch };
+  assert.equal(gate.route(packet('seat_1', 'private-human-token', 0, { moveX: 1 })).reason, 'input-source-binding-rejected');
+  assert.equal(gate.route(phonePacket).ok, true);
+
+  const gamepad = bindHumanInputSource(actor, 'host-gamepad', { bindingId: 'binding-gamepad', now: 200 });
+  assert.equal(gamepad.epoch, phone.epoch + 1);
+  assert.equal(gate.route({ ...phonePacket, seq: 99 }).reason, 'input-source-binding-rejected');
+  assert.equal(gate.route({
+    ...packet('seat_1', 'private-human-token', 0, { moveX: -1 }),
+    inputSourceBindingId: gamepad.id,
+    inputSourceEpoch: gamepad.epoch,
+  }).ok, true);
+  assert.equal(actor.controller, 'human');
+
+  revokeHumanInputSource(actor);
+  assert.equal(actor.input.moveX, 0);
+  assert.equal(actor.controller, 'human');
+  assert.equal(gate.route({
+    ...packet('seat_1', 'private-human-token', 1, {}),
+    inputSourceBindingId: gamepad.id,
+    inputSourceEpoch: gamepad.epoch,
+  }).reason, 'input-source-binding-inactive');
+});

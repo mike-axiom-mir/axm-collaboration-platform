@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/native-raster-spec-v1.schema.json",
+  "title": "AXM Native Raster Spec v1",
+  "type": "object",
+  "required": ["schema", "nativeRaster", "dimensions", "colourSpace", "transparency", "tileable", "repeat", "textureMemoryBytes", "pngBytes", "palette", "seed"],
+  "properties": {
+    "schema": { "const": "axm.native-raster-spec/v1" },
+    "nativeRaster": { "const": true },
+    "dimensions": { "type": "object", "required": ["width", "height", "unit"], "properties": { "width": { "type": "integer", "minimum": 1 }, "height": { "type": "integer", "minimum": 1 }, "unit": { "const": "px" } }, "additionalProperties": false },
+    "colourSpace": { "const": "srgb" },
+    "transparency": { "enum": ["required", "allowed", "opaque"] },
+    "tileable": { "type": "boolean" },
+    "repeat": { "type": "object" },
+    "textureMemoryBytes": { "type": "integer", "minimum": 1 },
+    "pngBytes": { "type": "integer", "minimum": 1 },
+    "palette": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" } },
+    "seed": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

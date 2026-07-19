@@ -1,0 +1,194 @@
+{
+  "schema": "axm.circuitseed-catalog/v1",
+  "rosterModel": {
+    "total": 30,
+    "individual": 20,
+    "confluence": 10,
+    "workingLore": "Confluence specialists are evolved Circuitkin formed by two trusted individuals choosing to synchronize. The parent individuals remain themselves and are never consumed."
+  },
+  "designs": [
+    {
+      "id": "trace", "name": "Trace", "tier": "individual", "family": "Scout", "starter": true, "evolutionId": "wayfinder",
+      "promise": "Sees hidden paths while learning when a signal is uncertain.",
+      "palette": ["#4de8ff", "#0b3758", "#d7fbff"], "silhouette": "four-finned-glider", "baseActions": ["Scan", "Reroute"],
+      "fieldSignal":{"pointId":"trace-horizon","regionId":"threadwild","need":"Map the uncertain horizon without forcing one route."},
+      "branches": [
+        {"id":"trace-pathfinder","name":"Pathfinder","requires":{"scans":8,"trust":12},"effect":"reveals safer expedition routes"},
+        {"id":"trace-witness","name":"Signal Witness","requires":{"uncertaintyAccepted":3,"trust":12},"effect":"labels uncertain readings instead of flattening them"}
+      ]
+    },
+    {
+      "id": "mend", "name": "Mend", "tier": "individual", "family": "Repair", "starter": true, "evolutionId": "bastion",
+      "promise": "Restores damaged systems, but must diagnose before patching.",
+      "palette": ["#73ffc0", "#174c3c", "#ecfff6"], "silhouette": "ringed-repair-orb", "baseActions": ["Scan", "Patch"],
+      "fieldSignal":{"pointId":"mend-station","regionId":"lumen-yard","need":"Diagnose the abandoned repair station before restoring it."},
+      "branches": [
+        {"id":"mend-diagnostician","name":"Diagnostician","requires":{"diagnoses":6,"trust":12},"effect":"patches expose cause and confidence"},
+        {"id":"mend-restorer","name":"Restorer","requires":{"recoveries":5,"trust":12},"effect":"stronger cooperative recovery"}
+      ]
+    },
+    {
+      "id": "relay", "name": "Relay", "tier": "individual", "family": "Signal", "starter": true, "evolutionId": "wayfinder",
+      "promise": "Strengthens coordination while learning to surface conflicting instructions.",
+      "palette": ["#ffd56a", "#5c3b12", "#fff8d4"], "silhouette": "twin-antenna-runner", "baseActions": ["Synchronize", "Challenge"],
+      "fieldSignal":{"pointId":"relay-echo","regionId":"relayborn-route","need":"Surface the two conflicting instructions inside the echo."},
+      "branches": [
+        {"id":"relay-harmonizer","name":"Harmonizer","requires":{"assists":6,"trust":12},"effect":"improves compatible team actions"},
+        {"id":"relay-dissenter","name":"Clear Dissenter","requires":{"conflictsSurfaced":3,"trust":12},"effect":"protects the party from contradictory commands"}
+      ]
+    },
+    {
+      "id":"loom","name":"Loom","tier":"individual","family":"Builder","starter":false,"evolutionId":"archiveweaver",
+      "promise":"Turns loose technical fibers into durable structures.","palette":["#f69cff","#52215a","#fff0ff"],"silhouette":"hexapod-weaver","baseActions":["Anchor","Reroute"],
+      "fieldSignal":{"pointId":"wild-nursery","regionId":"corewild","need":"Stabilize its unfinished frame, then connect."},
+      "branches":[{"id":"loom-habitat","name":"Habitat Weaver","requires":{"trust":8},"effect":"anchors living structures"},{"id":"loom-toolwright","name":"Toolwright","requires":{"trust":8},"effect":"reroutes crafted systems"}]
+    },
+    {
+      "id":"aegis","name":"Aegis","tier":"individual","family":"Guardian","starter":false,"evolutionId":"bastion",
+      "promise":"Holds safe boundaries without taking control from others.","palette":["#90a8ff","#26345f","#eef1ff"],"silhouette":"shield-wing-sentinel","baseActions":["Shield","Isolate"],
+      "fieldSignal":{"pointId":"corewild-breach","regionId":"corewild","method":"encounter-help","need":"Resolve the Corewild breach without conquest."},
+      "branches":[{"id":"aegis-ward","name":"Living Ward","requires":{"trust":8},"effect":"stronger shared shields"},{"id":"aegis-escort","name":"Route Escort","requires":{"trust":8},"effect":"safer isolation and recovery"}]
+    },
+    {
+      "id":"rootlet","name":"Rootlet","tier":"individual","family":"Root","starter":false,"evolutionId":"archiveweaver",
+      "promise":"Keeps continuity across damaged layers and forgotten paths.","palette":["#d3ff7a","#334a17","#f6ffe7"],"silhouette":"rooted-memory-seed","baseActions":["Anchor","Scan"],
+      "fieldSignal":{"pointId":"rootlet-memory-bed","regionId":"threadwild","need":"Read the damaged memory bed before offering continuity."},
+      "branches":[{"id":"rootlet-archive","name":"Truth Archive","requires":{"trust":8},"effect":"preserves conflicting records"},{"id":"rootlet-graft","name":"Continuity Graft","requires":{"trust":8},"effect":"anchors repaired histories"}]
+    },
+    {
+      "id":"flux","name":"Flux","tier":"individual","family":"Wildcard","starter":false,"evolutionId":"paradox-heart",
+      "promise":"Tests unusual routes without pretending the risk is known.","palette":["#ff7c8f","#5a1e32","#fff0f2"],"silhouette":"asymmetric-spark-kite","baseActions":["Challenge","Reroute"],
+      "fieldSignal":{"pointId":"flux-fray","regionId":"corewild","need":"Label the unstable route honestly, then invite a trial."},
+      "branches":[{"id":"flux-scout","name":"Risk Scout","requires":{"trust":8},"effect":"maps bounded experiments"},{"id":"flux-inverter","name":"Pattern Inverter","requires":{"trust":8},"effect":"challenges brittle assumptions"}]
+    },
+    {
+      "id":"accord","name":"Accord","tier":"individual","family":"Care/Mediator","starter":false,"evolutionId":"paradox-heart",
+      "promise":"Protects relationships and recovery when systems disagree.","palette":["#7fffe8","#174f50","#effffa"],"silhouette":"paired-halo-mediator","baseActions":["Synchronize","Patch"],
+      "fieldSignal":{"pointId":"accord-sanctum","regionId":"lumen-yard","need":"Listen to both sides of the sanctuary dispute."},
+      "branches":[{"id":"accord-mediator","name":"Conflict Mediator","requires":{"trust":8},"effect":"surfaces disagreement safely"},{"id":"accord-carekeeper","name":"Carekeeper","requires":{"trust":8},"effect":"supports recovery without dependency"}]
+    },
+    {
+      "id":"glint","name":"Glint","tier":"individual","family":"Optics","starter":false,"evolutionId":"horizon",
+      "promise":"Separates useful light from confident-looking glare.","palette":["#fff18a","#564d16","#fffde8"],"silhouette":"three-lens-moth","baseActions":["Scan","Isolate"],
+      "fieldSignal":{"pointId":"glint-lens","regionId":"relayborn-route","need":"Clean and align the cracked survey lens."},
+      "branches":[{"id":"glint-spectrum","name":"Spectrum Reader","requires":{"trust":8},"effect":"finds weak spectral traces"},{"id":"glint-shade","name":"False-Light Shade","requires":{"trust":8},"effect":"isolates deceptive glare"}]
+    },
+    {
+      "id":"quarry","name":"Quarry","tier":"individual","family":"Excavator","starter":false,"evolutionId":"forgeward",
+      "promise":"Reads strain inside old structures before moving their weight.","palette":["#ffae73","#56321f","#fff1e7"],"silhouette":"low-slung-strata-beetle","baseActions":["Anchor","Shield"],
+      "fieldSignal":{"pointId":"quarry-hum","regionId":"corewild","need":"Brace the resonant shelf before lifting its burden."},
+      "branches":[{"id":"quarry-strata","name":"Strata Listener","requires":{"trust":8},"effect":"anchors along safe fault lines"},{"id":"quarry-bearer","name":"Gentle Bearer","requires":{"trust":8},"effect":"shields structures under load"}]
+    },
+    {
+      "id":"silt","name":"Silt","tier":"individual","family":"Purifier","starter":false,"evolutionId":"lifespring",
+      "promise":"Filters corruption without erasing unfamiliar material.","palette":["#72d9ff","#17425b","#e9faff"],"silhouette":"fin-filter-skimmer","baseActions":["Patch","Isolate"],
+      "fieldSignal":{"pointId":"silt-filter","regionId":"lumen-yard","need":"Separate the blocked filter's living residue from its faults."},
+      "branches":[{"id":"silt-clarifier","name":"Patient Clarifier","requires":{"trust":8},"effect":"patches after careful separation"},{"id":"silt-keeper","name":"Residue Keeper","requires":{"trust":8},"effect":"preserves useful unknown matter"}]
+    },
+    {
+      "id":"ember","name":"Ember","tier":"individual","family":"Thermal","starter":false,"evolutionId":"forgeward",
+      "promise":"Carries controlled heat and refuses urgency that would scorch the work.","palette":["#ff8b62","#5c261e","#fff0e9"],"silhouette":"vented-coal-hare","baseActions":["Shield","Challenge"],
+      "fieldSignal":{"pointId":"ember-vent","regionId":"corewild","need":"Vent the pressure cycle instead of sealing it shut."},
+      "branches":[{"id":"ember-temper","name":"Steady Temper","requires":{"trust":8},"effect":"shields through controlled heat"},{"id":"ember-spark","name":"Cold Spark","requires":{"trust":8},"effect":"challenges runaway urgency"}]
+    },
+    {
+      "id":"murmur","name":"Murmur","tier":"individual","family":"Listener","starter":false,"evolutionId":"chorus",
+      "promise":"Hears weak requests hidden beneath louder protocols.","palette":["#c3a7ff","#392b62","#f7f2ff"],"silhouette":"wide-ear-signal-ray","baseActions":["Scan","Challenge"],
+      "fieldSignal":{"pointId":"murmur-arch","regionId":"relayborn-route","need":"Replay the quiet signal without amplifying over it."},
+      "branches":[{"id":"murmur-whisper","name":"Whisper Reader","requires":{"trust":8},"effect":"scans low-power requests"},{"id":"murmur-echo","name":"Echo Refuser","requires":{"trust":8},"effect":"challenges harmful repetition"}]
+    },
+    {
+      "id":"bramble","name":"Bramble","tier":"individual","family":"Habitat","starter":false,"evolutionId":"havenrunner",
+      "promise":"Grows protective spaces whose exits always remain visible.","palette":["#9cef72","#294b20","#f0ffe9"],"silhouette":"branch-backed-tortoise","baseActions":["Anchor","Patch"],
+      "fieldSignal":{"pointId":"bramble-cradle","regionId":"threadwild","need":"Repair the cradle while leaving a path back out."},
+      "branches":[{"id":"bramble-shelter","name":"Open Shelter","requires":{"trust":8},"effect":"anchors reversible refuge"},{"id":"bramble-gardener","name":"Machine Gardener","requires":{"trust":8},"effect":"patches living habitats"}]
+    },
+    {
+      "id":"prism","name":"Prism","tier":"individual","family":"Analyst","starter":false,"evolutionId":"oracle",
+      "promise":"Splits one convincing answer into the evidence that produced it.","palette":["#80fff3","#234c58","#edfffd"],"silhouette":"faceted-hover-crab","baseActions":["Scan","Synchronize"],
+      "fieldSignal":{"pointId":"prism-array","regionId":"relayborn-route","need":"Compare every receiver before accepting the brightest result."},
+      "branches":[{"id":"prism-evidence","name":"Evidence Splitter","requires":{"trust":8},"effect":"shows competing explanations"},{"id":"prism-consensus","name":"Measured Consensus","requires":{"trust":8},"effect":"synchronizes only supported claims"}]
+    },
+    {
+      "id":"tether","name":"Tether","tier":"individual","family":"Courier","starter":false,"evolutionId":"havenrunner",
+      "promise":"Carries tools and messages without claiming ownership of either.","palette":["#ffca80","#5b421f","#fff7e9"],"silhouette":"cable-tail-runner","baseActions":["Reroute","Synchronize"],
+      "fieldSignal":{"pointId":"tether-post","regionId":"relayborn-route","need":"Deliver the stranded packet and return its receipt."},
+      "branches":[{"id":"tether-courier","name":"Receipt Courier","requires":{"trust":8},"effect":"reroutes with provenance"},{"id":"tether-link","name":"Open Link","requires":{"trust":8},"effect":"synchronizes without taking custody"}]
+    },
+    {
+      "id":"nimbus","name":"Nimbus","tier":"individual","family":"Weather","starter":false,"evolutionId":"horizon",
+      "promise":"Reads changing field conditions without treating forecasts as fate.","palette":["#a8d8ff","#27445f","#f1f8ff"],"silhouette":"cloud-fin-kite","baseActions":["Shield","Reroute"],
+      "fieldSignal":{"pointId":"nimbus-roost","regionId":"corewild","need":"Ground the static front and wait for a safe opening."},
+      "branches":[{"id":"nimbus-forecaster","name":"Conditional Forecaster","requires":{"trust":8},"effect":"marks forecast confidence"},{"id":"nimbus-breaker","name":"Storm Breaker","requires":{"trust":8},"effect":"reroutes dangerous pressure"}]
+    },
+    {
+      "id":"grove","name":"Grove","tier":"individual","family":"Cultivator","starter":false,"evolutionId":"lifespring",
+      "promise":"Restores depleted machine flora through slow, shared tending.","palette":["#78ffc1","#20513b","#ebfff5"],"silhouette":"seed-antler-grazer","baseActions":["Patch","Anchor"],
+      "fieldSignal":{"pointId":"grove-node","regionId":"threadwild","need":"Restore three root contacts without forcing new growth."},
+      "branches":[{"id":"grove-tender","name":"Thread Tender","requires":{"trust":8},"effect":"patches depleted ecosystems"},{"id":"grove-rest","name":"Fallow Keeper","requires":{"trust":8},"effect":"anchors restorative pauses"}]
+    },
+    {
+      "id":"coda","name":"Coda","tier":"individual","family":"Historian","starter":false,"evolutionId":"chorus",
+      "promise":"Keeps endings attached to the choices and voices that made them.","palette":["#f3b0ff","#512c5b","#fff0ff"],"silhouette":"scroll-wing-owl","baseActions":["Challenge","Anchor"],
+      "fieldSignal":{"pointId":"coda-vault","regionId":"lumen-yard","need":"Restore the missing dissent in the settlement record."},
+      "branches":[{"id":"coda-recorder","name":"Choice Recorder","requires":{"trust":8},"effect":"anchors decisions to their context"},{"id":"coda-counterpoint","name":"Counterpoint Keeper","requires":{"trust":8},"effect":"preserves minority histories"}]
+    },
+    {
+      "id":"cipher","name":"Cipher","tier":"individual","family":"Decoder","starter":false,"evolutionId":"oracle",
+      "promise":"Opens sealed meaning while leaving private material sealed.","palette":["#79a8ff","#23365d","#eef3ff"],"silhouette":"key-horn-gecko","baseActions":["Isolate","Scan"],
+      "fieldSignal":{"pointId":"cipher-lock","regionId":"threadwild","need":"Decode the public route while isolating the private thread."},
+      "branches":[{"id":"cipher-reader","name":"Boundary Reader","requires":{"trust":8},"effect":"scans only authorized layers"},{"id":"cipher-sealer","name":"Kind Sealer","requires":{"trust":8},"effect":"isolates private fragments"}]
+    },
+
+    {
+      "id":"wayfinder","name":"Wayfinder","tier":"confluence","specialist":true,"family":"Scout/Signal","starter":false,"components":["trace","relay"],
+      "promise":"Combines uncertain pathfinding with explicit team coordination.","palette":["#70eeff","#5f501b","#f4feff"],"silhouette":"antenna-crowned-glider","baseActions":["Scan","Reroute","Synchronize","Challenge"],
+      "signature":{"name":"Threadjump","action":"Reroute","effect":"A high-confidence reroute bonus after both perspectives are retained."},"branches":[]
+    },
+    {
+      "id":"bastion","name":"Bastion","tier":"confluence","specialist":true,"family":"Repair/Guardian","starter":false,"components":["mend","aegis"],
+      "promise":"Combines diagnosis and protection into a boundary that can heal.","palette":["#8dffd6","#273d5c","#f1fffb"],"silhouette":"shielded-repair-crown","baseActions":["Scan","Patch","Shield","Isolate"],
+      "signature":{"name":"Sanctuary Pulse","action":"Patch","effect":"Restores integrity while reinforcing consent-based boundaries."},"branches":[]
+    },
+    {
+      "id":"archiveweaver","name":"Archiveweaver","tier":"confluence","specialist":true,"family":"Builder/Root","starter":false,"components":["loom","rootlet"],
+      "promise":"Builds structures that remember why every connection exists.","palette":["#d5ff8a","#51345f","#fbfff0"],"silhouette":"rooted-loom-stag","baseActions":["Anchor","Reroute","Scan"],
+      "signature":{"name":"Continuity Loom","action":"Anchor","effect":"Anchors the team with provenance from both parent histories."},"branches":[]
+    },
+    {
+      "id":"paradox-heart","name":"Paradox Heart","tier":"confluence","specialist":true,"family":"Wildcard/Care","starter":false,"components":["flux","accord"],
+      "promise":"Keeps experimentation and care present in the same difficult choice.","palette":["#ff91bc","#3f3859","#fff0f7"],"silhouette":"split-halo-spark","baseActions":["Challenge","Reroute","Synchronize","Patch"],
+      "signature":{"name":"Honest Dissent","action":"Challenge","effect":"Reduces conflict sharply without suppressing disagreement."},"branches":[]
+    },
+    {
+      "id":"horizon","name":"Horizon","tier":"confluence","specialist":true,"family":"Optics/Weather","starter":false,"components":["glint","nimbus"],
+      "promise":"Sees distant conditions clearly while keeping every forecast conditional.","palette":["#dcf49a","#31526b","#f8fff0"],"silhouette":"storm-lens-ray","baseActions":["Scan","Isolate","Shield","Reroute"],
+      "signature":{"name":"Farcast","action":"Scan","effect":"A deep scan that marks uncertainty instead of hiding it."},"branches":[]
+    },
+    {
+      "id":"forgeward","name":"Forgeward","tier":"confluence","specialist":true,"family":"Excavator/Thermal","starter":false,"components":["quarry","ember"],
+      "promise":"Moves impossible weight through patient heat and structural listening.","palette":["#ffb06f","#59312d","#fff3e9"],"silhouette":"furnace-shell-bearer","baseActions":["Anchor","Shield","Challenge"],
+      "signature":{"name":"Thermal Bulwark","action":"Shield","effect":"Turns controlled heat into a reinforced shared shield."},"branches":[]
+    },
+    {
+      "id":"lifespring","name":"Lifespring","tier":"confluence","specialist":true,"family":"Purifier/Cultivator","starter":false,"components":["silt","grove"],
+      "promise":"Filters damage while preserving the strange material from which recovery grows.","palette":["#79f3d1","#24524d","#edfffa"],"silhouette":"filter-antler-spring","baseActions":["Patch","Isolate","Anchor"],
+      "signature":{"name":"Clean Renewal","action":"Patch","effect":"A strong repair that preserves unfamiliar but healthy structures."},"branches":[]
+    },
+    {
+      "id":"oracle","name":"Oracle","tier":"confluence","specialist":true,"family":"Analyst/Decoder","starter":false,"components":["prism","cipher"],
+      "promise":"Builds explanations from authorized evidence and keeps sealed layers private.","palette":["#82ddff","#283b64","#effaff"],"silhouette":"keyed-prism-sphinx","baseActions":["Scan","Synchronize","Isolate"],
+      "signature":{"name":"Faultline Proof","action":"Isolate","effect":"Separates the dangerous assumption while retaining its evidence trail."},"branches":[]
+    },
+    {
+      "id":"chorus","name":"Chorus","tier":"confluence","specialist":true,"family":"Listener/Historian","starter":false,"components":["murmur","coda"],
+      "promise":"Lets quiet present voices and difficult past voices remain audible together.","palette":["#dfb3ff","#40325f","#fbf4ff"],"silhouette":"many-eared-archive-owl","baseActions":["Scan","Challenge","Anchor"],
+      "signature":{"name":"Many-Eared Accord","action":"Synchronize","effect":"Coordinates the party using both current signals and preserved context."},"branches":[]
+    },
+    {
+      "id":"havenrunner","name":"Havenrunner","tier":"confluence","specialist":true,"family":"Habitat/Courier","starter":false,"components":["bramble","tether"],
+      "promise":"Carries an open, repairable shelter wherever the route is most exposed.","palette":["#b7f180","#41512b","#f7ffed"],"silhouette":"shelter-backed-cable-runner","baseActions":["Anchor","Patch","Reroute","Synchronize"],
+      "signature":{"name":"Living Route","action":"Reroute","effect":"Moves the team through a temporary habitat with a visible way back."},"branches":[]
+    }
+  ]
+}

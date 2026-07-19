@@ -15,6 +15,7 @@ const clean = Core.normalize({ mode:'ghost', projectName:'\u0000  Test project  
 test(clean.mode === 'paint' && clean.projectName === 'Test project', 'invalid mode falls back and project name is cleaned');
 test(Core.MODES.every(m => m.title && m.description && m.route && m.icon), 'each mode has complete shell metadata');
 const engine = fs.readFileSync(path.join(__dirname, 'engine.html'), 'utf8');
+const mirrorBridge = fs.readFileSync(path.join(__dirname, 'mirror-studio-bridge.js'), 'utf8');
 const shell = fs.readFileSync(path.join(__dirname, 'studio-shell.js'), 'utf8');
 const shellHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const vault = fs.readFileSync(path.join(__dirname, '..', 'asset-vault', 'index.html'), 'utf8');
@@ -32,9 +33,21 @@ test(engine.includes('wisdomFileBtn') && engine.includes('File map to identity')
 test(engine.includes('id="assetName"') && !engine.includes("prompt('Asset name:')") && engine.includes("$('assetName').value"), 'asset capture uses one visible named action instead of a blocking prompt');
 test(shellHtml.includes('data-src="../ui-ux-builder') && shell.includes('ensureFrame'), 'specialist Studio modes load lazily');
 test(shellHtml.includes('Asset Vault available') && shell.includes('Asset Vault connected'), 'Asset Vault status distinguishes availability from connection');
+test(shellHtml.includes('id="handsFrame"') && shellHtml.includes('/shared/asset-hands') === false && shell.includes("'/shared/asset-hands/index.html?host=studio") && shell.includes("msg.type!=='axm-asset-hand-result'"), 'Studio embeds the shared Asset Hands workbench and accepts only its versioned explicit handoff');
+test(shell.includes("item.metadata.schema==='axm.drawpacket/v1'") && engine.includes('axm-studio-apply-hand-drawpacket'), 'layered composition handoffs reuse the bounded Studio draw-packet engine');
+test(shell.includes("medium='+encodeURIComponent(canvas.medium)") && shell.includes('result.target_canvas') && engine.includes('targetCanvas:asset.targetCanvas||null'), 'Target Canvas, recipe and validation provenance survive the Studio handoff');
+test(shell.includes("artifact.mime==='image/svg+xml'&&artifact.format==='SVG'") && shell.includes("/^image\\/(?:png|jpeg|webp)$/") && shell.includes('artifact.dataUrl'), 'Studio validates SVG and raster hand artifacts through distinct paths');
 test(vault.includes('Use in Studio') && vault.includes("gate('send-to-studio'") && shell.includes("msg.schema!=='axm.studio-asset/v1'") && engine.includes("e.data.schema==='axm.studio-asset/v1'"), 'Asset Vault image handoff is gated and versioned end to end');
-test(engine.includes("NL.sourceAsset={schema:'axm.studio-asset/v1'") && engine.includes('sourceAsset:l.sourceAsset||null') && engine.includes('L.sourceAsset=ld.sourceAsset||null'), 'imported layer provenance survives save and reload');
-test(contract.handoffs.accepts.includes('axm.studio-asset/v1') && contract.version === 'v2.2', 'module contract declares the Studio asset handoff');
+test(engine.includes("NL.sourceAsset={schema:'axm.studio-asset/v1'") && engine.includes("handId:String(asset.handId||'')") && engine.includes('sourceAsset:l.sourceAsset||null') && engine.includes('L.sourceAsset=ld.sourceAsset||null'), 'Vault and Creation Hand provenance survives save and reload');
+test(contract.handoffs.accepts.includes('axm.studio-asset/v1') && contract.handoffs.accepts.includes('axm.asset-hand-result/v1') && contract.consumes.includes('axm.target-canvas/v1') && contract.consumes.includes('axm.asset-hand/v2') && contract.version === 'v2.5', 'module contract declares canvas-aware contract-v2 Vault and shared Creation Hand handoffs');
+test(contract.consumes.includes('axm.asset-verification-envelope/v1'), 'Studio contract declares optional reference-validation envelope intake');
+test(shell.includes('handContract:result.hand.schema') && shell.includes('sourceArtifactDigests:result.creation_recipe') && shell.includes('artifactInventory:result.artifacts.map') && engine.includes('sourceArtifactDigests:Array.isArray') && engine.includes('artifactInventory:Array.isArray'), 'Studio preserves hand contract, operation, source digests and artifact inventory on explicit import');
+test(shell.includes('referenceValidation:result.reference_validation') && engine.includes('referenceValidation:e.data.source') && engine.includes('referenceValidation:asset.referenceValidation'), 'Studio preserves an optional reference-validation envelope on draw-packet and image handoffs');
+test(engine.includes('runMirrorStudioSession') && engine.includes('/axm/v1/organs/studio-candidates') && engine.includes('candidateSet.recommendedCandidateId') && mirrorBridge.includes("packets || []"), 'Mirror receives ranked native proposals through a separate bounded Studio adapter');
+test(mirrorBridge.includes("ALLOWED_OPERATIONS = ['dot', 'line', 'rect', 'circle', 'polygon', 'stroke', 'newlayer']") && mirrorBridge.includes('MAX_COMMANDS = 14'), 'Mirror first Studio boundary is operation- and command-limited');
+test(engine.includes('axm.studio.mirror.last-receipt.v1') && engine.includes('receipt.changedPixels'), 'Mirror Studio result is preserved as an observed pixel receipt');
+test(engine.includes('axm.studio.mirror.last-candidate-set.v1') && engine.includes('rankedCandidates'), 'Mirror candidate lineage and ranking remain inspectable beside the pixel receipt');
+test(engine.includes('prepareMirrorRoom') && engine.includes('saveProject(false)'), 'Mirror can receive a blank room without deleting the preserved project');
 
 if (failed) process.exit(1);
 console.log('AXM Studio selftest: PASS');

@@ -32,7 +32,7 @@ test('package claim is exclusive and one delivery awards once', () => {
   assert.equal(claimPackage(world, p1.id, packageEntity.id).ok, true);
   assert.equal(claimPackage(world, p2.id, packageEntity.id).reason, 'package-unavailable');
 
-  const zone = world.staticMap.mission.deliveryZones[0];
+  const zone = world.mission.deliveryZones[0];
   p1.position = { x: zone.x + 5, y: zone.y + 5 };
   p1.currentVehicleId = 'vehicle-001';
   world.tick = 25;
@@ -51,7 +51,7 @@ test('round completes at goal and restart removes stale ownership', () => {
   const actor = world.actors['actor-seat-1'];
   actor.position = { ...packageEntity.position };
   claimPackage(world, actor.id, packageEntity.id);
-  const zone = world.staticMap.mission.deliveryZones[0];
+  const zone = world.mission.deliveryZones[0];
   actor.position = { x: zone.x + 4, y: zone.y + 4 };
   deliverPackage(world, actor.id, zone.id);
   assert.equal(world.mission.status, 'results');

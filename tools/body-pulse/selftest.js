@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+'use strict';
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
+const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+const app = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+const server = fs.readFileSync(path.join(__dirname, '..', '..', 'server.js'), 'utf8');
+assert(contract.boundaries.refuses.includes('promotion-authority'));
+assert(contract.boundaries.refuses.includes('real-world-authority'));
+assert(html.includes('Unknown signals'));
+assert(html.includes('Goal queues'));
+assert(html.includes('Dormant lines'));
+assert(html.includes('Request archive'));
+assert(html.includes('Warmest known sensor'));
+assert(html.includes('Battery'));
+assert(app.includes("!module.activeLease"));
+assert(app.includes('module.promotionGate'));
+assert(app.includes('PAUSED'));
+assert(app.includes('Pulse.deleteGoals'));
+assert(app.includes('confirm(question)'));
+assert(app.includes('retention.approximateBytes'));
+assert(server.includes('BodyPulseService.deleteGoals'));
+assert(!server.includes('bodyPulse.deleteGoals'));
+assert(!/setInterval|setTimeout/.test(app));
+console.log('PASS body-pulse dashboard · no private timer · no promotion authority');

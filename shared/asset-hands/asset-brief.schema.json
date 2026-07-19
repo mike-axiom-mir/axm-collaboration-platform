@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.asset-brief/v1",
+  "title": "AXM Asset Brief v1",
+  "type": "object",
+  "required": ["schema", "id", "title", "kind", "operation_mode", "intended_use", "target_canvas", "target_canvas_original", "target_canvas_validation", "required_outputs", "editable_recipe_formats", "fallback_policy", "quality_requirements"],
+  "properties": {
+    "schema": { "const": "axm.asset-brief/v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "kind": { "type": "string", "minLength": 1 },
+    "operation_mode": { "enum": ["create", "edit", "inspect", "validate", "finish", "workflow"] },
+    "intended_use": { "type": "string", "minLength": 1 },
+    "target_canvas": { "$ref": "target-canvas.schema.json" },
+    "target_canvas_original": { "type": "object" },
+    "target_canvas_validation": { "type": "object", "required": ["pass", "errors", "transformations"], "properties": { "pass": { "type": "boolean" }, "errors": { "type": "array", "items": { "type": "string" } }, "transformations": { "type": "array" } } },
+    "required_outputs": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "editable_recipe_formats": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "fallback_policy": { "type": "object", "required": ["generalist", "lossy_conversion"], "properties": { "generalist": { "enum": ["forbidden", "permitted"] }, "lossy_conversion": { "enum": ["forbidden", "permitted"] } } },
+    "source_artifacts": { "type": "array", "items": { "$ref": "asset-source-artifact.schema.json" } },
+    "quality_requirements": { "type": "object", "required": ["require_preview", "require_validation", "require_editable_source"] }
+  },
+  "additionalProperties": true
+}

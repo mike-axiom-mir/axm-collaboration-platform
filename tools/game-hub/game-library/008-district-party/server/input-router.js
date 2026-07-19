@@ -104,6 +104,7 @@ function getControllerInfo(sessionManager, { roomCode, sessionId, seatId, token 
       mode: session.world.mission.mode,
       title: session.world.mission.title,
       status: session.world.mission.status,
+      layout: session.world.mission.layout || session.world.mission.pendingLayout || null,
       deliveredCount: session.world.mission.deliveredCount,
       goal: session.world.mission.goal,
       endsAtTick: session.world.mission.endsAtTick,

@@ -4,6 +4,7 @@ const { TICK_RATE } = require('../shared/constants');
 const { summarizeAmmo } = require('./inventory-system');
 const { missionLabel } = require('./mission-system');
 const { safeZoneForPosition } = require('./world-state');
+const { publicGroupSaveComputer } = require('./group-save-system');
 
 function publicActor(actor, world) {
   const {
@@ -92,6 +93,7 @@ function serializeWorldState(session, requestedParty = 'all') {
       ? Math.max(0, Math.floor((world.tick - (sourceMission.startedAtTick || world.tick)) / TICK_RATE))
       : deliveries;
   const selectedOption = sourceMission.board?.options?.[sourceMission.board.selectedIndex || 0] || null;
+  const layoutPrefix = sourceMission.layout?.label ? `${sourceMission.layout.label} · ` : '';
   const hints = {
     base: 'Party House · walk to the mission board and press ACTION',
     board: `Mission board · ${missionLabel(selectedOption)} · move up/down, ACTION to choose`,
@@ -101,12 +103,12 @@ function serializeWorldState(session, requestedParty = 'all') {
   const activeHint = sourceMission.mode === 'district_dominion'
     ? `Hold districts · A ${sourceMission.partyScores.party_a} — B ${sourceMission.partyScores.party_b} · ACTION at your command post hires a crew squad`
     : sourceMission.mode === 'supply_sweep'
-      ? `Collect supplies · ${deliveries}/${sourceMission.goal}`
+      ? `${layoutPrefix}Collect supplies · ${deliveries}/${sourceMission.goal}${sourceMission.guardCount ? ` · ${sourceMission.guardCount} rival lookout${sourceMission.guardCount === 1 ? '' : 's'}` : ''}`
       : sourceMission.mode === 'hold_relay'
-        ? `Defend relay ${sourceMission.relay?.health ?? 0}/${sourceMission.relay?.maxHealth ?? 0} · wave ${sourceMission.wave || 0}/${sourceMission.goal}`
+        ? `${layoutPrefix}Defend relay ${sourceMission.relay?.health ?? 0}/${sourceMission.relay?.maxHealth ?? 0} · wave ${sourceMission.wave || 0}/${sourceMission.goal}`
         : sourceMission.mode === 'chaos_call'
-        ? `Justice response: ${world.justice.stage.toUpperCase()} · survive until the timer ends`
-          : `Collect at depot · ${deliveries}/${sourceMission.goal} delivered`;
+        ? `${layoutPrefix}Justice response: ${world.justice.stage.toUpperCase()} · survive until the timer ends`
+          : `${layoutPrefix}Collect at dispatch · ${deliveries}/${sourceMission.goal} delivered · ${sourceMission.deliveryZones?.length || 0} active drops`;
   const mission = {
     ...sourceMission,
     phase: sourceMission.status,
@@ -119,7 +121,7 @@ function serializeWorldState(session, requestedParty = 'all') {
     hint: hints[sourceMission.status] || activeHint,
     menuOptions: (sourceMission.board?.options || []).map((id, index) => ({
       id,
-      label: missionLabel(id),
+      label: `${missionLabel(id)}${(sourceMission.board?.layoutCounts?.[id] || 0) > 1 ? ` · ${sourceMission.board.layoutCounts[id]} locations` : ''}`,
       selected: index === sourceMission.board.selectedIndex,
     })),
   };
@@ -138,6 +140,8 @@ function serializeWorldState(session, requestedParty = 'all') {
     combatRules: world.combatRules,
     justice: world.justice,
     rivalGang: world.rivalGang,
+    groupSaveComputer: publicGroupSaveComputer(world.groupSaveComputer),
+    loadedGroupSave: world.loadedGroupSave ? { ...world.loadedGroupSave, seatSlots: [...world.loadedGroupSave.seatSlots] } : null,
     territory: world.territory,
     tetherRules: world.tetherRules,
     metrics: {
@@ -168,11 +172,20 @@ function serializeWorldState(session, requestedParty = 'all') {
 }
 
 function serializeStaticWorld(session) {
+  const staticMap = session.world.staticMap;
   return {
     ok: true,
     sessionId: session.id,
     roomCode: session.roomCode,
-    map: session.world.staticMap,
+    map: {
+      id: staticMap.id,
+      width: staticMap.width,
+      height: staticMap.height,
+      tileSize: staticMap.tileSize,
+      chunking: staticMap.chunking,
+      source: staticMap.source,
+    },
+    mapUrl: '/data/map.json',
     tickRate: 30,
     activePlayerTarget: Object.keys(session.world.actors).length,
     maximumPlayerCapacity: 8,

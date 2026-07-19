@@ -1,0 +1,5 @@
+{
+  "schema":"axm.module-contract/v1","id":"cognitive-calibration-lab","version":"v0.1","status":"TEST","provides":["observation-bound-prediction-interval-comparison","append-only-calibration-evidence"],"consumes":["module:cognitive-resource-meter"],"permissions":["cognitive.calibration.write"],
+  "handoffs":{"emits":["CALIBRATION_COMPARISON_RECEIPT"],"accepts":["COGNITIVE_WORK_OBSERVATION_DRAFT","DECLARED_RESOURCE_PREDICTION_INTERVAL"]},"lifecycle":{"state_owner":"service","reload":"resume","disconnect":"graceful-degrade","cleanup":"explicit"},
+  "boundaries":{"writes":["state/cognitive-evidence-labs:calibration-record"],"refuses":["unbound-actual-value","cross-dimension-comparison","calibrated-accuracy-claim-from-insufficient-evidence","model-ranking","selection","optimization","budget-allocation","permission-change","training","canon","world-action"]}
+}

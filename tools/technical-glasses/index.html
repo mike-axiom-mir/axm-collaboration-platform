@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Technical Glasses</title>
+  <link rel="stylesheet" href="technical-glasses.css">
+</head>
+<body>
+  <main class="glasses-shell">
+    <header class="hero">
+      <div>
+        <span class="eyebrow">AI-native technical ground truth</span>
+        <h1>Technical Glasses</h1>
+        <p>Any instance sees the same current Workshop: what exists, what is ready, what matters now, what is uncertain, and which evidence outranks memory.</p>
+      </div>
+      <div class="truth-badge"><b>OBSERVE</b><span>never auto-act</span></div>
+    </header>
+
+    <section class="focus-bar">
+      <label for="focusInput">What is the current task?</label>
+      <div><input id="focusInput" maxlength="240" placeholder="Example: repair phone controller lifecycle seams"><button id="compileButton" type="button">Compile focused view</button></div>
+      <small>Every request recompiles from current local source. Missing facts stay UNKNOWN.</small>
+    </section>
+
+    <section class="status-grid" aria-live="polite">
+      <article><span>Freshness</span><b id="freshnessState">CHECKING</b><small id="compiledAt">Waiting for live compiler</small></article>
+      <article><span>Fingerprint</span><b id="fingerprint">—</b><small>changes when technical source changes</small></article>
+      <article><span>Workshop</span><b id="moduleCount">—</b><small id="contractCount">module evidence</small></article>
+      <article><span>Body</span><b id="bodyState">—</b><small id="bodyDetail">live pressure unknown</small></article>
+    </section>
+
+    <section class="action-row">
+      <button id="refreshButton" type="button">Refresh from source</button>
+      <button id="copyButton" type="button">Copy AI briefing</button>
+      <button id="downloadButton" type="button">Download JSON</button>
+      <span id="autoState">Auto-refresh: 30s while visible</span>
+    </section>
+
+    <section class="panel focus-panel">
+      <header><div><span class="eyebrow">Where this task belongs</span><h2>Focused routes</h2></div><span>recommend only</span></header>
+      <div id="focusRoutes" class="route-list"><div class="empty">Compile a focus to receive evidence-linked destinations.</div></div>
+    </section>
+
+    <section class="two-column">
+      <section class="panel">
+        <header><div><span class="eyebrow">Read first</span><h2>Important technical seams</h2></div><b id="priorityCount">0</b></header>
+        <div id="priorityList" class="priority-list"><div class="empty">Checking current contracts and readiness…</div></div>
+      </section>
+      <section class="panel">
+        <header><div><span class="eyebrow">What just changed</span><h2>Recent source signals</h2></div><span>timestamps, not intent</span></header>
+        <div id="recentList" class="recent-list"><div class="empty">Scanning source…</div></div>
+      </section>
+    </section>
+
+    <section class="panel authority-panel">
+      <header><div><span class="eyebrow">When sources disagree</span><h2>Technical authority order</h2></div><span>no guessing</span></header>
+      <ol id="authorityOrder"></ol>
+      <p>README and chat memory can explain history and purpose. They cannot override live readiness, executable evidence, contracts or current source.</p>
+    </section>
+
+    <section class="panel briefing-panel">
+      <header><div><span class="eyebrow">Portable between instances</span><h2>AI briefing</h2></div><span>same view for human + machine</span></header>
+      <pre id="briefing">Waiting for Technical Glasses…</pre>
+    </section>
+
+    <footer><span id="statusText">Connecting to local ground truth…</span><span>automaticAction=false · permissionChange=false</span></footer>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="technical-glasses-app.js"></script>
+</body>
+</html>

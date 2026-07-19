@@ -91,6 +91,37 @@ The game returns state snapshots.
 }
 ```
 
+## External collaborator seat (adapter)
+
+`adapter` means a Hub-connected collaborator such as Codex, Claude, a local
+model, or another declared machine participant. It is not a renamed built-in
+game bot. Built-in game automation uses the `ai` seat type.
+
+An external collaborator does not need a second rendered video surface, but it
+does need a complete decision-relevant view. The game projects its authoritative
+world into `axm-seat-screen-semantics-v1` for that seat. The projection includes
+what the seat could learn from its own screen, HUD and public game information,
+and excludes hidden opponents, private player state and omniscient world truth.
+
+```json
+{
+  "schema": "axm-seat-screen-semantics-v1",
+  "session_id": "session-001",
+  "seat_id": "seat_2",
+  "tick": 123,
+  "visible_world": {},
+  "own_state": {},
+  "public_state": {},
+  "available_actions": [],
+  "uncertainty": []
+}
+```
+
+Human controller packets and external collaborator packets pass through the
+same server-authoritative semantic action gate. A game must never hand an
+adapter its host token, raw in-process world object, or an action shortcut that
+a human seat cannot use.
+
 ## Result summary
 
 At the end, the game returns a result summary.

@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AXM Asset Hands</title>
+    <link rel="stylesheet" href="workbench.css" />
+    <link rel="stylesheet" href="workbench-v2.css" />
+    <link rel="stylesheet" href="canvas-contract.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <span class="eyebrow">SHARED MODULAR CAPABILITY</span>
+        <h1>Asset Hands</h1>
+        <p>
+          Describe one need. Compatible producing hands become available
+          automatically.
+        </p>
+      </div>
+      <div class="inventory">
+        <b id="inventoryCount">0 installed</b
+        ><span id="compatibilityCount">0 compatible</span>
+      </div>
+    </header>
+    <main>
+      <section class="brief panel">
+        <header>
+          <div>
+            <span class="eyebrow">VERSIONED ASSET BRIEF</span>
+            <h2>What should the hands make?</h2>
+          </div>
+          <button id="createFamily" class="primary">
+            Create compatible family
+          </button>
+        </header>
+        <div class="fields">
+          <label class="wide"
+            ><span>Name</span
+            ><input id="briefTitle" maxlength="120" value="Co-op action icon"
+          /></label>
+          <label
+            ><span>Kind</span
+            ><select id="briefKind"></select
+          ></label>
+          <label
+            ><span>Operation</span
+            ><select id="operationMode">
+              <option value="create">create</option>
+              <option value="edit">edit</option>
+              <option value="inspect">inspect</option>
+              <option value="validate">validate</option>
+              <option value="finish">finish</option>
+              <option value="workflow">workflow</option>
+            </select></label
+          >
+          <label
+            ><span>Host target</span
+            ><input id="briefTarget" maxlength="120" value="shared"
+          /></label>
+          <label
+            ><span>Target medium</span
+            ><select id="canvasMedium"></select
+          ></label>
+          <label
+            ><span>Intended use</span
+            ><input id="intendedUse" maxlength="100" value="icon"
+          /></label>
+          <label
+            ><span>Width</span
+            ><input
+              id="briefWidth"
+              type="number"
+              min="0.01"
+              max="1000000"
+              step="any"
+              value="256"
+          /></label>
+          <label
+            ><span>Height</span
+            ><input
+              id="briefHeight"
+              type="number"
+              min="0.01"
+              max="1000000"
+              step="any"
+              value="256"
+          /></label>
+          <label
+            ><span>Dimensional depth</span
+            ><input
+              id="dimensionDepth"
+              type="number"
+              min="0"
+              max="1000000"
+              step="any"
+              placeholder="3D bound, optional"
+          /></label>
+          <label
+            ><span>Unit</span
+            ><select id="canvasUnit">
+              <option value="px">pixels</option>
+              <option value="mm">millimetres</option>
+              <option value="m">metres</option>
+              <option value="game-world-unit">game-world units</option>
+            </select></label
+          >
+          <label
+            ><span>Colour space</span
+            ><select id="colourSpace">
+              <option value="srgb">sRGB</option>
+              <option value="display-p3">Display P3</option>
+              <option value="linear-srgb">Linear sRGB</option>
+              <option value="cmyk">CMYK</option>
+              <option value="grayscale">Grayscale</option>
+              <option value="material-channel">Material channel</option>
+            </select></label
+          >
+          <label
+            ><span>Behaviours</span
+            ><input
+              id="canvasBehaviours"
+              maxlength="120"
+              value="static"
+              placeholder="static, animated, interactive, responsive, tileable"
+          /></label>
+          <label class="wide"
+            ><span>Purpose</span
+            ><input
+              id="briefPurpose"
+              maxlength="500"
+              value="Readable reusable asset for a Workshop interface or game"
+          /></label>
+          <label class="wide"
+            ><span>Style signals</span
+            ><input
+              id="briefStyle"
+              maxlength="300"
+              value="clear silhouette, modern, high contrast"
+          /></label>
+          <label class="wide"
+            ><span>Required outputs</span
+            ><input
+              id="requiredOutputs"
+              maxlength="300"
+              value="image/svg+xml"
+              placeholder="MIME types or formats, comma separated"
+          /></label>
+          <label class="wide"
+            ><span>Editable recipe formats</span
+            ><input
+              id="recipeFormats"
+              maxlength="300"
+              value="axm.asset-creation-recipe/v1"
+              placeholder="Recipe schemas, comma separated"
+          /></label>
+          <label class="wide"
+            ><span>Source artifact for edit, inspect or validate</span
+            ><textarea
+              id="sourceArtifact"
+              maxlength="2000000"
+              placeholder="Paste an AXM artifact packet, JSON, CSS, SVG or text. It remains a bounded read-only input unless the selected hand explicitly declares edit support."
+            ></textarea>
+          </label>
+          <label class="check"
+            ><input id="briefTransparent" type="checkbox" checked /><span
+              >Transparent source where supported</span
+            ></label
+          >
+        </div>
+        <details class="canvas-details">
+          <summary>Colour, physical and material constraints</summary>
+          <div class="fields">
+            <label
+              ><span>Minimum contrast</span
+              ><input
+                id="minimumContrast"
+                type="number"
+                min="1"
+                max="21"
+                step="0.1"
+                placeholder="e.g. 4.5"
+            /></label>
+            <label class="check"
+              ><input id="printableColours" type="checkbox" /><span
+                >Printable colours required</span
+              ></label
+            >
+            <label
+              ><span>Colour profile</span
+              ><input
+                id="colourProfile"
+                maxlength="160"
+                placeholder="e.g. FOGRA39"
+            /></label>
+            <label
+              ><span>Bit depth</span
+              ><input
+                id="bitDepth"
+                type="number"
+                min="1"
+                max="64"
+                step="1"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>Alpha mode</span
+              ><select id="alphaMode">
+                <option value="">automatic</option>
+                <option value="none">none</option>
+                <option value="straight">straight</option>
+                <option value="premultiplied">premultiplied</option>
+              </select></label
+            >
+            <label
+              ><span>Spot colours</span
+              ><input
+                id="spotColours"
+                maxlength="300"
+                placeholder="names, comma separated"
+            /></label>
+            <label
+              ><span>Total ink coverage %</span
+              ><input
+                id="inkCoverage"
+                type="number"
+                min="0"
+                max="400"
+                step="any"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>Bleed</span
+              ><input
+                id="canvasBleed"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="in canvas unit"
+            /></label>
+            <label
+              ><span>Minimum stroke</span
+              ><input
+                id="minimumStroke"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="in canvas unit"
+            /></label>
+            <label
+              ><span>Cutting/tool width</span
+              ><input
+                id="toolWidth"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="in canvas unit"
+            /></label>
+            <label
+              ><span>Depth</span
+              ><input
+                id="canvasDepth"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="in canvas unit"
+            /></label>
+            <label
+              ><span>Repeat mode</span
+              ><select id="repeatMode">
+                <option value="none">none</option>
+                <option value="x">x</option>
+                <option value="y">y</option>
+                <option value="xy">x + y</option>
+              </select></label
+            >
+            <label
+              ><span>Repeat width</span
+              ><input
+                id="repeatWidth"
+                type="number"
+                min="0.01"
+                step="any"
+                placeholder="in canvas unit"
+            /></label>
+            <label
+              ><span>Repeat height</span
+              ><input
+                id="repeatHeight"
+                type="number"
+                min="0.01"
+                step="any"
+                placeholder="in canvas unit"
+            /></label>
+            <label
+              ><span>Tolerance</span
+              ><input
+                id="physicalTolerance"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="in canvas unit"
+            /></label>
+            <label
+              ><span>Material thickness</span
+              ><input
+                id="materialThickness"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="in canvas unit"
+            /></label>
+            <label
+              ><span>Kerf side</span
+              ><select id="kerfSide">
+                <option value="centerline">centreline</option>
+                <option value="inside">inside</option>
+                <option value="outside">outside</option>
+              </select></label
+            >
+            <label
+              ><span>Grain direction</span
+              ><input id="grainDirection" maxlength="80" placeholder="optional"
+            /></label>
+            <label class="wide"
+              ><span>Material behaviour</span
+              ><input
+                id="materialBehaviour"
+                maxlength="300"
+                placeholder="stretch, grain direction, heat sensitivity"
+            /></label>
+            <label class="wide"
+              ><span>Physical operations</span
+              ><input
+                id="physicalOperations"
+                maxlength="300"
+                placeholder="cut, engrave, score, drill"
+            /></label>
+          </div>
+        </details>
+        <details class="canvas-details">
+          <summary>Performance and animation constraints</summary>
+          <div class="fields">
+            <label
+              ><span>Max file bytes</span
+              ><input
+                id="maxFileBytes"
+                type="number"
+                min="1"
+                step="1"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>Texture memory bytes</span
+              ><input
+                id="textureMemory"
+                type="number"
+                min="1"
+                step="1"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>Polygon budget</span
+              ><input
+                id="polygonBudget"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>Frame budget (ms)</span
+              ><input
+                id="frameBudget"
+                type="number"
+                min="0.01"
+                step="any"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>Animation frames</span
+              ><input
+                id="animationFrames"
+                type="number"
+                min="1"
+                step="1"
+                placeholder="maximum"
+            /></label>
+            <label
+              ><span>Frames per second</span
+              ><input
+                id="framesPerSecond"
+                type="number"
+                min="0.01"
+                step="any"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>Duration seconds</span
+              ><input
+                id="durationBudget"
+                type="number"
+                min="0.001"
+                step="any"
+                placeholder="maximum"
+            /></label>
+            <label
+              ><span>Vertex budget</span
+              ><input
+                id="vertexBudget"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>Draw-call budget</span
+              ><input
+                id="drawCallBudget"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>Mip-level budget</span
+              ><input
+                id="mipBudget"
+                type="number"
+                min="1"
+                max="64"
+                step="1"
+                placeholder="optional"
+            /></label>
+          </div>
+        </details>
+        <details class="canvas-details">
+          <summary>Print and responsive constraints</summary>
+          <div class="fields">
+            <label
+              ><span>Print DPI</span
+              ><input
+                id="printDpi"
+                type="number"
+                min="1"
+                max="9600"
+                step="any"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>Safe margin</span
+              ><input
+                id="safeMargin"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="in canvas unit"
+            /></label>
+            <label class="check"
+              ><input id="cropMarks" type="checkbox" /><span
+                >Crop marks required</span
+              ></label
+            >
+            <label class="check"
+              ><input id="registrationMarks" type="checkbox" /><span
+                >Registration marks required</span
+              ></label
+            >
+            <label
+              ><span>Output condition</span
+              ><input
+                id="outputCondition"
+                maxlength="160"
+                placeholder="press condition"
+            /></label>
+            <label
+              ><span>Font policy</span
+              ><input
+                id="fontPolicy"
+                maxlength="80"
+                placeholder="embed, outline, subset"
+            /></label>
+            <label class="wide"
+              ><span>Breakpoints JSON</span
+              ><textarea
+                id="breakpoints"
+                maxlength="4000"
+                placeholder='[{"id":"compact","max_width":599,"unit":"px"},{"id":"wide","min_width":600,"unit":"px"}]'
+              ></textarea>
+            </label>
+            <label
+              ><span>Locale</span
+              ><input id="locale" maxlength="40" placeholder="e.g. nl-NL"
+            /></label>
+            <label
+              ><span>Direction</span
+              ><select id="direction">
+                <option value="auto">automatic</option>
+                <option value="ltr">left to right</option>
+                <option value="rtl">right to left</option>
+              </select></label
+            >
+            <label
+              ><span>Input modalities</span
+              ><input
+                id="inputModalities"
+                maxlength="200"
+                placeholder="pointer, keyboard, touch"
+            /></label>
+            <label class="check"
+              ><input id="reducedMotion" type="checkbox" /><span
+                >Reduced motion required</span
+              ></label
+            >
+            <label
+              ><span>Minimum target size</span
+              ><input
+                id="minimumTargetSize"
+                type="number"
+                min="1"
+                max="1000"
+                step="any"
+                placeholder="in canvas unit"
+            /></label>
+            <label
+              ><span>Pixel density</span
+              ><input
+                id="pixelDensity"
+                type="number"
+                min="0.1"
+                max="16"
+                step="any"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>Zoom percent</span
+              ><input
+                id="zoomPercent"
+                type="number"
+                min="25"
+                max="1000"
+                step="any"
+                placeholder="optional"
+            /></label>
+          </div>
+        </details>
+        <details class="canvas-details">
+          <summary>Spatial, temporal and accessibility constraints</summary>
+          <div class="fields">
+            <label
+              ><span>Up axis</span
+              ><select id="upAxis">
+                <option value="y">Y up</option>
+                <option value="z">Z up</option>
+              </select></label
+            >
+            <label
+              ><span>Handedness</span
+              ><select id="handedness">
+                <option value="right">right handed</option>
+                <option value="left">left handed</option>
+              </select></label
+            >
+            <label
+              ><span>Spatial origin</span
+              ><input id="spatialOrigin" maxlength="100" placeholder="x, y, z"
+            /></label>
+            <label
+              ><span>World scale</span
+              ><input
+                id="worldScale"
+                type="number"
+                min="0.000001"
+                step="any"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>UV convention</span
+              ><input id="uvConvention" maxlength="80" placeholder="optional"
+            /></label>
+            <label
+              ><span>Tangent convention</span
+              ><input
+                id="tangentConvention"
+                maxlength="80"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>LOD policy</span
+              ><input id="lodPolicy" maxlength="80" placeholder="optional"
+            /></label>
+            <label
+              ><span>Collision policy</span
+              ><input
+                id="collisionPolicy"
+                maxlength="80"
+                placeholder="optional"
+            /></label>
+            <label
+              ><span>Frame-rate numerator</span
+              ><input
+                id="frameRateNumerator"
+                type="number"
+                min="1"
+                step="1"
+                placeholder="e.g. 30000"
+            /></label>
+            <label
+              ><span>Frame-rate denominator</span
+              ><input
+                id="frameRateDenominator"
+                type="number"
+                min="1"
+                step="1"
+                placeholder="e.g. 1001"
+            /></label>
+            <label class="check"
+              ><input id="dropFrame" type="checkbox" /><span
+                >Drop-frame timecode</span
+              ></label
+            >
+            <label
+              ><span>Codec</span
+              ><input
+                id="temporalCodec"
+                maxlength="80"
+                placeholder="required delivery codec"
+            /></label>
+            <label
+              ><span>Container</span
+              ><input
+                id="temporalContainer"
+                maxlength="80"
+                placeholder="required delivery container"
+            /></label>
+            <label
+              ><span>Captions policy</span
+              ><input id="captionsPolicy" maxlength="80" placeholder="optional"
+            /></label>
+            <label
+              ><span>Accessibility standard</span
+              ><input
+                id="accessibilityStandard"
+                maxlength="80"
+                placeholder="e.g. WCAG 2.2 AA"
+            /></label>
+            <label class="check"
+              ><input id="readingOrder" type="checkbox" /><span
+                >Reading order required</span
+              ></label
+            >
+            <label class="check"
+              ><input id="alternativeText" type="checkbox" /><span
+                >Alternative text required</span
+              ></label
+            >
+            <label class="check"
+              ><input id="keyboardAccess" type="checkbox" /><span
+                >Keyboard behavior required</span
+              ></label
+            >
+            <label class="check"
+              ><input id="focusVisible" type="checkbox" /><span
+                >Visible focus required</span
+              ></label
+            >
+          </div>
+        </details>
+        <details class="canvas-details">
+          <summary>Quality and fallback policy</summary>
+          <div class="fields">
+            <label
+              ><span>Generalist fallback</span
+              ><select id="generalistFallback">
+                <option value="forbidden">forbidden</option>
+                <option value="permitted">permitted and visible</option>
+              </select></label
+            >
+            <label
+              ><span>Lossy conversion</span
+              ><select id="lossyFallback">
+                <option value="forbidden">forbidden</option>
+                <option value="permitted">permitted and visible</option>
+              </select></label
+            >
+            <label class="check"
+              ><input id="requireEditable" type="checkbox" /><span
+                >Editable source required</span
+              ></label
+            >
+          </div>
+        </details>
+        <div class="route-head">
+          <span>Compatible hand route</span
+          ><small>Only executable contract matches are shown</small>
+        </div>
+        <div id="handRoutes" class="hand-routes"></div>
+      </section>
+
+      <section class="results panel">
+        <header>
+          <div>
+            <span class="eyebrow">CANDIDATE FAMILY</span>
+            <h2>Created sources</h2>
+            <p>Every result remains a candidate until its host reviews it.</p>
+          </div>
+          <label class="format"
+            ><span>Finishing format</span
+            ><select id="deliveryFormat">
+              <option>PNG</option>
+              <option>WebP</option>
+              <option>JPEG</option>
+            </select></label
+          >
+        </header>
+        <div id="results" class="cards">
+          <div class="empty">Create a family to run the compatible hands.</div>
+        </div>
+      </section>
+
+      <section class="truth">
+        <b>Hands are machinery, not identities.</b> They create bounded local
+        sources and record the exact provider and engine version. They do not
+        approve taste, publish assets, gain permissions or write into a host
+        without an explicit handoff.
+      </section>
+    </main>
+    <div id="status" class="status" role="status" aria-live="polite">
+      Asset Hands ready
+    </div>
+
+    <script src="target-canvas.js"></script>
+    <script src="missing-hands-catalog.js"></script>
+    <script src="artifact-schema-catalog.js"></script>
+    <script src="vendor/basis-universal/basis_encoder.js"></script>
+    <script src="ktx2-codec.js"></script>
+    <script src="asset-hand-core.js"></script>
+    <script src="../visual-kernel/visual-kernel.js"></script>
+    <script src="../../tools/spatial-studio/spatial-core.js"></script>
+    <script src="../../tools/spatial-studio/spatial-geometry.js"></script>
+    <script src="../../tools/film-motion-studio/film-motion-core.js"></script>
+    <script src="../vendor/jspdf/jspdf.umd.min.js"></script>
+    <script src="raster-codec.js"></script>
+    <script src="colour-codec.js"></script>
+    <script src="pdfx-codec.js"></script>
+    <script src="uv-material-codec.js"></script>
+    <script src="toolpath-codec.js"></script>
+    <script src="vendor/wasm-vips/vips.js"></script>
+    <script src="animated-web-codec.js"></script>
+    <script src="video-codec.js"></script>
+    <script src="accessible-document-codec.js"></script>
+    <script src="font-shaping-codec.js"></script>
+    <script src="rigged-gltf-codec.js"></script>
+    <script src="material-parity-codec.js"></script>
+    <script src="openusd-codec.js"></script>
+    <script src="geometry-graph-codec.js"></script>
+    <script src="spatial-navigation-codec.js"></script>
+    <script src="audio-notation-codec.js"></script>
+    <script src="native-bridge-codec.js"></script>
+    <script src="pdf-codec.js"></script>
+    <script src="gltf-codec.js"></script>
+    <script src="otio-codec.js"></script>
+    <script src="hands/vector-form.js"></script>
+    <script src="hands/surface-pattern.js"></script>
+    <script src="hands/raster-texture.js"></script>
+    <script src="hands/ui-component.js"></script>
+    <script src="hands/pixel-sprite.js"></script>
+    <script src="hands/composition.js"></script>
+    <script src="hands/print-layout.js"></script>
+    <script src="hands/fabric-pattern.js"></script>
+    <script src="hands/physical-mark.js"></script>
+    <script src="hands/cut-layout.js"></script>
+    <script src="hands/production-print.js"></script>
+    <script src="hands/animated-raster.js"></script>
+    <script src="hands/material-shader.js"></script>
+    <script src="hands/theme-token.js"></script>
+    <script src="hands/layout-responsive.js"></script>
+    <script src="hands/inspect-codegen.js"></script>
+    <script src="hands/parametric-mesh.js"></script>
+    <script src="hands/timeline-sequence.js"></script>
+    <script src="hands/ktx2-texture-delivery.js"></script>
+    <script src="hands/wide-colour-raster.js"></script>
+    <script src="hands/pdfx-press-production.js"></script>
+    <script src="hands/uv-material-baker.js"></script>
+    <script src="hands/cnc-toolpath-simulation.js"></script>
+    <script src="hands/animated-web-delivery.js"></script>
+    <script src="hands/final-video-encoder.js"></script>
+    <script src="hands/accessible-document.js"></script>
+    <script src="hands/font-shaping-localization.js"></script>
+    <script src="hands/rigged-animated-3d.js"></script>
+    <script src="hands/renderer-material-parity.js"></script>
+    <script src="hands/openusd-scene-composition.js"></script>
+    <script src="hands/procedural-geometry-graph.js"></script>
+    <script src="hands/spatial-collision-navigation.js"></script>
+    <script src="hands/audio-notation-device.js"></script>
+    <script src="hands/native-dcc-bridge.js"></script>
+    <script src="asset-hands.js"></script>
+    <script src="../output/axm-output-core.js"></script>
+    <script src="../output/axm-output-client.js"></script>
+    <script src="asset-finisher.js"></script>
+    <script src="workbench.js"></script>
+  </body>
+</html>

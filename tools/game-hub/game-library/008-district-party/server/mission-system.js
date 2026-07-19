@@ -6,6 +6,7 @@ const { createHostileNpc } = require('./npc-factory');
 const { clearVoluntaryChaos, triggerVoluntaryChaos } = require('./justice-system');
 const { ejectAllOccupants } = require('./vehicle-system');
 const { creditSplitReward, splitRewardCents } = require('./economy-system');
+const { collidesObstacle } = require('./spatial-index');
 
 const BOARD_OPTIONS = Object.freeze(['supply_sweep', 'hold_relay', 'courier_chaos', 'chaos_call', 'close']);
 const RESULT_OPTIONS = Object.freeze(['continue', 'replay', 'mission_list']);
@@ -30,6 +31,88 @@ function definitionFor(world, mode) {
 
 function missionLabel(mode) {
   return MISSION_LABELS[mode] || mode;
+}
+
+function layoutsFor(world, mode) {
+  return (definitionFor(world, mode).layouts || []).filter((layout) => (
+    layout && typeof layout.id === 'string' && layout.id && Number.isFinite(Number(layout.start?.x)) && Number.isFinite(Number(layout.start?.y))
+  ));
+}
+
+function layoutFor(world, mode, layoutId) {
+  return layoutsFor(world, mode).find((layout) => layout.id === layoutId) || null;
+}
+
+function publicLayout(layout, index, total) {
+  if (!layout) return null;
+  return {
+    id: layout.id,
+    label: layout.label || layout.id,
+    index: index + 1,
+    total,
+    twist: layout.twist || '',
+  };
+}
+
+function missionDirector(world) {
+  world.missionDirector ||= {
+    seed: (Number(world.randomSeed) || 0x4d495353) >>> 0,
+    decks: {},
+    lastLayoutByMode: {},
+    runsByMode: {},
+    totalRuns: 0,
+  };
+  return world.missionDirector;
+}
+
+function nextDirectorRandom(director) {
+  director.seed = (Math.imul(director.seed, 1664525) + 1013904223) >>> 0;
+  return director.seed;
+}
+
+function refillLayoutDeck(director, mode, layouts) {
+  const ids = layouts.map((layout) => layout.id);
+  for (let index = ids.length - 1; index > 0; index -= 1) {
+    const other = nextDirectorRandom(director) % (index + 1);
+    [ids[index], ids[other]] = [ids[other], ids[index]];
+  }
+  const previous = director.lastLayoutByMode[mode];
+  if (ids.length > 1 && ids[0] === previous) [ids[0], ids[1]] = [ids[1], ids[0]];
+  director.decks[mode] = { ids, cursor: 0 };
+  return director.decks[mode];
+}
+
+function reserveMissionLayout(world, mode, requestedLayoutId = null) {
+  const layouts = layoutsFor(world, mode);
+  if (!layouts.length) return null;
+  const director = missionDirector(world);
+  let selected = requestedLayoutId ? layoutFor(world, mode, requestedLayoutId) : null;
+  if (!selected) {
+    let deck = director.decks[mode];
+    const currentIds = layouts.map((layout) => layout.id).sort().join('|');
+    const deckIds = (deck?.ids || []).slice().sort().join('|');
+    if (!deck || deck.cursor >= deck.ids.length || currentIds !== deckIds) deck = refillLayoutDeck(director, mode, layouts);
+    const id = deck.ids[deck.cursor];
+    deck.cursor += 1;
+    selected = layoutFor(world, mode, id) || layouts[0];
+  }
+  director.lastLayoutByMode[mode] = selected.id;
+  director.runsByMode[mode] = (director.runsByMode[mode] || 0) + 1;
+  director.totalRuns += 1;
+  const index = layouts.findIndex((layout) => layout.id === selected.id);
+  return publicLayout(selected, Math.max(0, index), layouts.length);
+}
+
+function layoutCounts(world) {
+  return Object.fromEntries(BOARD_OPTIONS.filter((mode) => !['close'].includes(mode)).map((mode) => [mode, layoutsFor(world, mode).length]));
+}
+
+function activeDeliveryZones(world) {
+  const ids = world.mission?.activeDeliveryZoneIds;
+  const zones = world.staticMap.mission.deliveryZones || [];
+  if (!Array.isArray(ids) || ids.length === 0) return zones;
+  const allowed = new Set(ids);
+  return zones.filter((zone) => allowed.has(zone.id));
 }
 
 function activeActors(world) {
@@ -76,9 +159,40 @@ function formationPosition(centre, index) {
   return { x: centre.x + x, y: centre.y + y };
 }
 
+function findOpenMissionPosition(world, preferred, radius = 10, occupied = [], maximumDistance = 264) {
+  const safeRadius = Math.max(0, Number(radius) || 0);
+  const minimumSeparation = safeRadius * 2 + 6;
+  const candidates = [{ x: Number(preferred.x), y: Number(preferred.y) }];
+  for (let distanceFromPreferred = 24; distanceFromPreferred <= maximumDistance; distanceFromPreferred += 24) {
+    const points = Math.max(8, Math.round(distanceFromPreferred / 12));
+    for (let index = 0; index < points; index += 1) {
+      const angle = index / points * Math.PI * 2;
+      candidates.push({
+        x: Number(preferred.x) + Math.cos(angle) * distanceFromPreferred,
+        y: Number(preferred.y) + Math.sin(angle) * distanceFromPreferred,
+      });
+    }
+  }
+  return candidates.find((candidate) => {
+    const position = {
+      x: Math.max(safeRadius, Math.min(world.staticMap.width - safeRadius, candidate.x)),
+      y: Math.max(safeRadius, Math.min(world.staticMap.height - safeRadius, candidate.y)),
+    };
+    candidate.x = position.x;
+    candidate.y = position.y;
+    return !collidesObstacle(world, position, safeRadius)
+      && occupied.every((entry) => distance(entry, position) >= minimumSeparation);
+  }) || null;
+}
+
 function teleportActors(world, centre, options = {}) {
+  const occupied = [];
   activeActors(world).sort((a, b) => a.slot - b.slot).forEach((actor, index) => {
-    const position = formationPosition(centre, index);
+    const preferred = formationPosition(centre, index);
+    const position = findOpenMissionPosition(world, preferred, actor.radius || 10, occupied, 216)
+      || findOpenMissionPosition(world, actor.spawnPosition || centre, actor.radius || 10, occupied, 320)
+      || preferred;
+    occupied.push(position);
     actor.position = position;
     actor.velocity = { x: 0, y: 0 };
     actor.tether = { level: 'ok', distance: 0, returnToParty: false, movementBlocked: false };
@@ -108,6 +222,7 @@ function baseCentre(world) {
 function enterBaseState(world) {
   const base = createMissionState(world.staticMap, world.tick, 'base');
   base.board.options = [...BOARD_OPTIONS];
+  base.board.layoutCounts = layoutCounts(world);
   world.mission = base;
   clearVoluntaryChaos(world);
   removeMissionHostiles(world);
@@ -126,6 +241,7 @@ function openMissionBoard(world, actor) {
     selectedIndex: 0,
     controlActorId: actor.id,
     navigationHeld: false,
+    layoutCounts: layoutCounts(world),
   };
   closeActorOverlays(world);
   return { ok: true, kind: 'mission-board-open', actorId: actor.id };
@@ -134,17 +250,19 @@ function openMissionBoard(world, actor) {
 function beginCountdown(world, mode, actorId = null) {
   const definition = definitionFor(world, mode);
   if (!BOARD_OPTIONS.includes(mode) || mode === 'close') return { ok: false, reason: 'unknown-mission' };
+  const layout = reserveMissionLayout(world, mode);
   world.mission.status = 'countdown';
   world.mission.phase = 'countdown';
   world.mission.mode = mode;
-  world.mission.title = definition.title || missionLabel(mode);
+  world.mission.title = `${definition.title || missionLabel(mode)}${layout ? ` · ${layout.label}` : ''}`;
   world.mission.selectedMode = mode;
+  world.mission.pendingLayout = layout;
   world.mission.countdownStartedAtTick = world.tick;
   world.mission.countdownEndsAtTick = world.tick + TICK_RATE * 10;
   world.mission.board.controlActorId = actorId || world.mission.board.controlActorId;
   world.mission.board.navigationHeld = false;
   closeActorOverlays(world);
-  return { ok: true, kind: 'mission-countdown', mode, seconds: 10 };
+  return { ok: true, kind: 'mission-countdown', mode, seconds: 10, layout };
 }
 
 function packageEntity(id, position, kind = 'courier') {
@@ -177,13 +295,16 @@ function individualStats(world) {
   }]));
 }
 
-function commonActiveMission(world, mode, definition, centre) {
+function commonActiveMission(world, mode, definition, centre, layout = null) {
   const roundSeconds = Math.max(1, Number(definition.roundSeconds) || 120);
+  const baseTitle = definition.title || missionLabel(mode);
   return {
     id: mode.replaceAll('_', '-'),
     mode,
-    title: definition.title || missionLabel(mode),
+    title: `${baseTitle}${layout ? ` · ${layout.label}` : ''}`,
+    baseTitle,
     description: definition.description || '',
+    layout,
     status: 'active',
     phase: 'active',
     startedAtTick: world.tick,
@@ -199,6 +320,9 @@ function commonActiveMission(world, mode, definition, centre) {
     fastestDeliveryTicks: null,
     winnerPartyId: null,
     packages: [],
+    activeDeliveryZoneIds: [],
+    deliveryZones: [],
+    pickupZone: null,
     droppedPackages: 0,
     revives: 0,
     result: null,
@@ -217,21 +341,27 @@ function spawnRelayWave(world, wave) {
   const playerCount = Math.max(1, Math.min(4, activeActors(world).filter((actor) => actor.partyId === 'party_a').length));
   const count = Math.min(maximums[playerCount], Math.ceil(baseCounts[wave - 1] * partyThreatScale(world)));
   const centre = world.mission.relay.position;
-  const points = [
-    { x: centre.x - 220, y: centre.y }, { x: centre.x + 220, y: centre.y },
-    { x: centre.x, y: centre.y - 220 }, { x: centre.x, y: centre.y + 220 },
-    { x: centre.x - 180, y: centre.y - 150 }, { x: centre.x + 180, y: centre.y + 150 },
-  ];
-  const roles = wave === 1 ? ['rusher', 'skirmisher'] : wave === 2
-    ? ['rusher', 'skirmisher', 'blocker'] : ['blocker', 'rusher', 'skirmisher'];
+  const layout = layoutFor(world, 'hold_relay', world.mission.layout?.id);
+  const offsets = Array.isArray(layout?.enemySpawnOffsets) && layout.enemySpawnOffsets.length
+    ? layout.enemySpawnOffsets
+    : [[-220, 0], [220, 0], [0, -220], [0, 220], [-180, -150], [180, 150]];
+  const configuredRoles = layout?.waveRoles?.[wave - 1];
+  const roles = Array.isArray(configuredRoles) && configuredRoles.length
+    ? configuredRoles
+    : wave === 1 ? ['rusher', 'skirmisher'] : wave === 2
+      ? ['rusher', 'skirmisher', 'blocker'] : ['blocker', 'rusher', 'skirmisher'];
+  const occupied = [];
   for (let index = 0; index < count; index += 1) {
-    const point = points[index % points.length];
+    const [offsetX, offsetY] = offsets[index % offsets.length];
+    const preferred = { x: centre.x + offsetX, y: centre.y + offsetY };
+    const point = findOpenMissionPosition(world, preferred, 9, occupied, 168) || preferred;
+    occupied.push(point);
     const id = `rival-wave-${wave}-${index + 1}`;
     world.npcs[id] = createHostileNpc({
       id,
       faction: 'neon-rivals',
       role: roles[index % roles.length],
-      position: { x: point.x + (index % 3) * 14, y: point.y + Math.floor(index / 3) * 14 },
+      position: { ...point },
       source: 'mission',
       kind: 'rival',
     });
@@ -242,30 +372,91 @@ function spawnRelayWave(world, wave) {
   return count;
 }
 
-function startMission(world, mode) {
+function spawnSupplyGuards(world, layout) {
+  const count = Math.max(0, Math.min(3, Number(layout?.guardCount) || 0));
+  const offsets = Array.isArray(layout?.guardOffsets) && layout.guardOffsets.length
+    ? layout.guardOffsets
+    : [[-150, 0], [150, 0], [0, 150]];
+  const occupied = [];
+  for (let index = 0; index < count; index += 1) {
+    const [offsetX, offsetY] = offsets[index % offsets.length];
+    const preferred = { x: world.mission.missionStart.x + offsetX, y: world.mission.missionStart.y + offsetY };
+    const point = findOpenMissionPosition(world, preferred, 9, occupied, 144) || preferred;
+    occupied.push(point);
+    const id = `rival-supply-${index + 1}`;
+    world.npcs[id] = createHostileNpc({
+      id,
+      faction: 'neon-rivals',
+      role: index % 2 === 0 ? 'rusher' : 'skirmisher',
+      position: point,
+      source: 'mission',
+      kind: 'rival',
+    });
+  }
+  world.mission.guardCount = count;
+  return count;
+}
+
+function startMission(world, mode, options = {}) {
   const definition = definitionFor(world, mode);
   const controlActorId = world.mission?.board?.controlActorId || world.mission?.controlActorId || null;
-  const centre = definition.start || (mode === 'courier_chaos'
+  const pendingLayout = !options.layoutId && world.mission?.selectedMode === mode ? world.mission.pendingLayout : null;
+  const selectedLayout = pendingLayout && layoutFor(world, mode, pendingLayout.id)
+    ? pendingLayout
+    : reserveMissionLayout(world, mode, options.layoutId || null);
+  const layout = layoutFor(world, mode, selectedLayout?.id);
+  const requestedCentre = layout?.start || definition.start || (mode === 'courier_chaos'
     ? { x: world.staticMap.mission.depot.x + world.staticMap.mission.depot.width / 2, y: world.staticMap.mission.depot.y + world.staticMap.mission.depot.height / 2 }
     : { x: world.staticMap.width / 2, y: world.staticMap.height / 2 });
+  const centre = findOpenMissionPosition(world, requestedCentre, 16, [], 192) || requestedCentre;
   removeMissionHostiles(world);
   clearTransientCombat(world);
   ejectPartyVehicles(world, 'mission-teleport');
   closeActorOverlays(world);
   teleportActors(world, centre, { missionSpawn: true, healAll: true, returnHealth: 100, returnShield: 1 });
-  const mission = commonActiveMission(world, mode, definition, centre);
+  const mission = commonActiveMission(world, mode, definition, centre, selectedLayout);
   mission.controlActorId = controlActorId;
 
   if (mode === 'supply_sweep') {
-    const offsets = [[-90,-60],[0,-70],[90,-55],[-80,65],[0,76],[86,58]];
+    const offsets = Array.isArray(layout?.packageOffsets) && layout.packageOffsets.length
+      ? layout.packageOffsets
+      : [[-90,-60],[0,-70],[90,-55],[-80,65],[0,76],[86,58]];
     mission.goal = Math.max(1, Number(definition.goal) || 6);
-    mission.packages = offsets.slice(0, mission.goal).map(([x, y], index) => (
-      packageEntity(`supply-${index + 1}`, { x: centre.x + x, y: centre.y + y }, 'supply')
-    ));
+    const occupied = [];
+    mission.packages = offsets.slice(0, mission.goal).map(([x, y], index) => {
+      const preferred = { x: centre.x + x, y: centre.y + y };
+      const point = findOpenMissionPosition(world, preferred, 8, occupied, 132) || preferred;
+      occupied.push(point);
+      return packageEntity(`supply-${index + 1}`, point, 'supply');
+    });
   } else if (mode === 'courier_chaos') {
-    const spawns = world.staticMap.mission.packageSpawns || [];
-    mission.goal = Math.max(1, Number(definition.deliveryGoal) || spawns.length);
-    mission.packages = spawns.slice(0, mission.goal).map((spawn, index) => packageEntity(`package-${String(index + 1).padStart(2, '0')}`, spawn));
+    const configuredOffsets = Array.isArray(layout?.packageOffsets) ? layout.packageOffsets : [];
+    const staticSpawns = world.staticMap.mission.packageSpawns || [];
+    const requestedSpawns = configuredOffsets.length
+      ? configuredOffsets.map(([x, y]) => ({ x: centre.x + x, y: centre.y + y }))
+      : staticSpawns;
+    mission.goal = Math.max(1, Number(definition.deliveryGoal) || requestedSpawns.length);
+    const occupied = [];
+    mission.packages = requestedSpawns.slice(0, mission.goal).map((spawn, index) => {
+      const point = findOpenMissionPosition(world, spawn, 8, occupied, 132) || spawn;
+      occupied.push(point);
+      return packageEntity(`package-${String(index + 1).padStart(2, '0')}`, point);
+    });
+    const configuredZoneIds = Array.isArray(layout?.deliveryZoneIds) ? layout.deliveryZoneIds : definition.deliveryZoneIds;
+    const knownZoneIds = new Set((world.staticMap.mission.deliveryZones || []).map((zone) => zone.id));
+    mission.activeDeliveryZoneIds = (configuredZoneIds || []).filter((id) => knownZoneIds.has(id));
+    if (!mission.activeDeliveryZoneIds.length) mission.activeDeliveryZoneIds = [...knownZoneIds];
+    mission.deliveryZones = (world.staticMap.mission.deliveryZones || [])
+      .filter((zone) => mission.activeDeliveryZoneIds.includes(zone.id))
+      .map((zone) => ({ ...zone }));
+    mission.pickupZone = {
+      id: `dispatch-${selectedLayout?.id || 'default'}`,
+      label: selectedLayout?.label || 'Courier Dispatch',
+      x: centre.x - 112,
+      y: centre.y - 62,
+      width: 224,
+      height: 124,
+    };
   } else if (mode === 'hold_relay') {
     mission.goal = Math.max(1, Number(definition.waves) || 3);
     mission.wave = 0;
@@ -285,6 +476,7 @@ function startMission(world, mode) {
   }
 
   world.mission = mission;
+  if (mode === 'supply_sweep') spawnSupplyGuards(world, layout);
   if (mode === 'hold_relay') spawnRelayWave(world, 1);
   return mission;
 }
@@ -336,7 +528,7 @@ function claimPackage(world, actorId, packageId) {
 
 function deliverPackage(world, actorId, deliveryZoneId) {
   const actor = world.actors[actorId];
-  const zone = world.staticMap.mission.deliveryZones.find((entry) => entry.id === deliveryZoneId);
+  const zone = activeDeliveryZones(world).find((entry) => entry.id === deliveryZoneId);
   if (!actor || !zone || !actor.carryingPackageId) return { ok: false, reason: 'not-ready' };
   if (!isPointInZone(actor.position, zone, 6)) return { ok: false, reason: 'outside-delivery-zone' };
   const packageEntry = world.mission.packages.find((entry) => entry.id === actor.carryingPackageId);
@@ -414,7 +606,7 @@ function interactWithMission(world, actor) {
   if (mission.status !== 'active') return { ok: false, reason: 'round-not-active' };
   if (mission.mode === 'hold_relay' || mission.mode === 'chaos_call') return { ok: false, reason: 'no-mission-interaction-here' };
   if (actor.carryingPackageId) {
-    const zone = world.staticMap.mission.deliveryZones.find((entry) => isPointInZone(actor.position, entry, 6));
+    const zone = activeDeliveryZones(world).find((entry) => isPointInZone(actor.position, entry, 6));
     return zone ? deliverPackage(world, actor.id, zone.id) : { ok: false, reason: 'no-delivery-zone' };
   }
   const packageEntry = nearestAvailablePackage(world, actor);
@@ -456,6 +648,8 @@ function completeMission(world, success, reason) {
     deliveredCount: mission.deliveredCount,
     wavesCompleted: mission.wavesCompleted || 0,
     relayHealth: mission.relay?.health ?? null,
+    layout: mission.layout ? { ...mission.layout } : null,
+    guardCount: mission.guardCount || 0,
     partyScores: { ...mission.partyScores },
     rewardCents,
     personalRewardCents: rewardSplit.personalCents,
@@ -570,6 +764,7 @@ module.exports = {
   BOARD_OPTIONS,
   MISSION_LABELS,
   RESULT_OPTIONS,
+  activeDeliveryZones,
   applyResultChoice,
   beginCountdown,
   claimPackage,
@@ -578,12 +773,15 @@ module.exports = {
   dropActorPackage,
   enterBaseState,
   finishRound,
+  findOpenMissionPosition,
   interactWithMission,
   isMissionInputLocked,
+  layoutsFor,
   missionLabel,
   nearestAvailablePackage,
   openMissionBoard,
   partyThreatScale,
+  reserveMissionLayout,
   restartMission,
   spawnRelayWave,
   startMission,

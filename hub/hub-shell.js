@@ -13,6 +13,25 @@
   'use strict';
 
   const NS = 'axm.hub.';
+  const GOVERNED_FOUNDATION_WAVE1 = Object.freeze([
+    'recovery-center', 'module-installer', 'machine-host', 'review-inbox', 'module-contract-workbench',
+    'secrets-permissions-console', 'diagnostics-operations-center', 'workshop-search-provenance', 'asset-filesystem-service', 'device-handoff'
+  ]);
+  const GOVERNED_FOUNDATION_WAVE2 = Object.freeze([
+    'browser-lan-hardware-qa-lab', 'template-runtime-pack-engine', 'source-connector-hub', 'media-render-transcode-service', 'living-world-state-server',
+    'multiplayer-controller-transport', 'living-world-ruleset-physics-adapter-kit', 'read-only-mirror-world-adapter', 'novelty-diversity-engine', 'public-release-deployment-adapter'
+  ]);
+  const GOVERNED_FOUNDATION_ASSIGNMENTS = Object.freeze({
+    'asset-filesystem-service':'create', 'device-handoff':'create',
+    'module-installer':'build', 'module-contract-workbench':'build', 'diagnostics-operations-center':'build', 'workshop-search-provenance':'build',
+    'recovery-center':'publish', 'review-inbox':'publish',
+    'machine-host':'ai-team', 'secrets-permissions-console':'ai-team',
+    'template-runtime-pack-engine':'create', 'media-render-transcode-service':'create',
+    'browser-lan-hardware-qa-lab':'build', 'source-connector-hub':'build', 'living-world-state-server':'build', 'novelty-diversity-engine':'build',
+    'public-release-deployment-adapter':'publish',
+    'multiplayer-controller-transport':'play', 'living-world-ruleset-physics-adapter-kit':'play',
+    'read-only-mirror-world-adapter':'ai-team'
+  });
 
   /* ---- HubStore: one persistence interface, swappable backend ----
      browser -> localStorage ; node/self-test -> in-memory map.
@@ -86,7 +105,7 @@
   }
 
   const FRIENDLY_NAMES = {
-    'ai-team': 'AI Team', 'publish-library': 'Publish & Library', 'game-forge': 'Game Forge', 'knowledge-canvas': 'Knowledge Canvas', 'finance-world-room': 'Finance World Room', 'audio-studio': 'Audio Studio', 'film-motion-studio': 'Film & Motion Studio', 'agent-command-center': 'AI Command Center', 'agent-tool-forge': 'Agent Tool Forge',
+    'ai-team': 'AI Team', 'workshop-command-center': 'Workshop Command Center', 'marketplace-deployment': 'Marketplace & Deployment', 'publish-library': 'Publish & Library', 'game-forge': 'Game Forge', 'knowledge-canvas': 'Knowledge Canvas', 'learning-lab': 'Learning Lab', 'finance-world-room': 'Finance World Room', 'workshop-direction': 'Workshop Direction', 'evolution-foundry': 'Evolution Foundry', 'body-pulse': 'Body Pulse', 'governed-evolution-lab': 'Living World Lineage', 'asset-fabric': 'Asset Fabric', 'audio-studio': 'Audio Studio', 'film-motion-studio': 'Film & Motion Studio', 'spatial-studio': 'Spatial Studio', 'agent-command-center': 'AI Command Center', 'agent-tool-forge': 'Agent Tool Forge',
     'asset-pack-lab': 'Asset Pack Lab', 'asset-vault': 'Asset Vault', 'chatgpt-connector': 'ChatGPT', 'duo-test': 'Nova + Gemini',
     'evidence-desk': 'Evidence Desk', forge: 'Tool Forge', 'forge-line': 'Forge Line',
     'game-hub': 'Game Hub', graft: 'Graft', 'hermes-local': 'Local Runtime',
@@ -206,18 +225,18 @@
     const layers = [
       { id: 'create', name: 'Create', gate: 'none', order: 0, audience: 'human', hidden: false, host: 'local', note: 'Studio and visual production.' },
       { id: 'build', name: 'Build', gate: 'none', order: 1, audience: 'human', hidden: false, host: 'local', note: 'Forge, sandbox, evidence, and packaging.' },
-      { id: 'publish', name: 'Publish & Library', gate: 'none', order: 2, audience: 'human', hidden: false, host: 'local', note: 'Assets, releases, packages, backups, and distribution.' },
+      { id: 'publish', name: 'Marketplace & Deployment', gate: 'none', order: 2, audience: 'human', hidden: false, host: 'local', note: 'Catalog, rights, reviews, releases, packages, deployment plans, galleries, and updates.' },
       { id: 'play', name: 'Play', gate: 'none', order: 3, audience: 'human', hidden: false, host: 'local', note: 'Games and playable experiences.' },
       { id: 'ai-team', name: 'AI Team', gate: 'none', order: 4, audience: 'human', hidden: false, host: 'local', note: 'One collaboration, agent, prompt, model and connector control room.' },
       Object.assign({ id: 'private', gate: 'passphrase' }, oldPrivate, { id: 'private', name: 'Closed Door / Advanced', order: 5, audience: 'human', hidden: false, host: 'local', note: 'Routing, verification, and advanced controls. Door sign only; not filesystem security.' }),
       { id: 'machine', name: 'System Internals', gate: 'none', order: 6, audience: 'machine', hidden: true, host: 'local', note: 'Hub internals and test rooms; hidden from the everyday sidebar.' }
     ];
     const groups = {
-      create: ['studio','audio-studio','film-motion-studio'],
-      build: ['agent-tool-forge','evidence-desk','finance-world-room','forge','forge-line','graft','knowledge-canvas','project-room','sandbox'],
-      publish: ['publish-library'],
-      play: ['game-forge'],
-      'ai-team': ['ai-team'],
+      create: ['studio','audio-studio','film-motion-studio','spatial-studio','ps2-asset-forge','asset-filesystem-service','device-handoff','template-runtime-pack-engine','media-render-transcode-service'],
+      build: ['agent-tool-forge','browser-lan-hardware-qa-lab','cognitive-resource-meter','diagnostics-operations-center','evidence-desk','evolution-foundry','finance-world-room','forge','forge-line','graft','knowledge-canvas','learning-lab','living-world-state-server','module-contract-workbench','module-installer','novelty-diversity-engine','project-room','sandbox','source-connector-hub','workshop-search-provenance'],
+      publish: ['marketplace-deployment','recovery-center','review-inbox','public-release-deployment-adapter'],
+      play: ['game-forge','multiplayer-controller-transport','living-world-ruleset-physics-adapter-kit'],
+      'ai-team': ['ai-team','machine-host','secrets-permissions-console','read-only-mirror-world-adapter'],
       private: ['hermes-local','route','runner','verifier'],
       machine: ['hub-test-room','main-hub','prehub']
     };
@@ -228,6 +247,26 @@
       else if (!assign[m.id]) assign[m.id] = 'build';
     });
     return { layers, assign };
+  }
+
+  /* Migrate only the untouched three-layer starter layout. Browsers keep
+     separate localStorage, so Edge may still have this older flat layout
+     even when another browser already uses the workflow categories. Any
+     assignment or extra/renamed layer makes the layout user-owned and is
+     deliberately left alone. */
+  function upgradeLegacyOpenLayout(layers, assign, modules) {
+    const ls = Array.isArray(layers) ? layers : [];
+    const as = assign && typeof assign === 'object' ? assign : {};
+    const expected = DEFAULT_LAYERS;
+    const untouched = ls.length === expected.length
+      && Object.keys(as).length === 0
+      && expected.every(template => ls.some(layer => layer.id === template.id
+        && layer.name === template.name
+        && layer.gate === template.gate
+        && !!layer.hidden === !!template.hidden));
+    if (!untouched) return { layers: ls, assign: as, changed: false };
+    const next = workflowLayout(modules, ls);
+    return { layers: next.layers, assign: next.assign, changed: true };
   }
 
   /* Upgrade only the known beginner workflow layout when Publish & Library
@@ -245,15 +284,39 @@
       ls.push({ id:'publish', name:'Publish & Library', gate:'none', order:2, audience:'human', hidden:false, host:'local', note:'Assets, releases, packages, backups, and distribution.' });
       changed = true;
     }
-    if (as['publish-library'] !== 'publish') { as['publish-library'] = 'publish'; changed = true; }
-    (modules || []).filter(m => m.integratedInto === 'publish-library').forEach(m => {
+    const hasMarketplace = (modules || []).some(m => m.id === 'marketplace-deployment');
+    const primary = hasMarketplace ? 'marketplace-deployment' : 'publish-library';
+    if (hasMarketplace) {
+      const publishLayer = ls.find(l => l.id === 'publish');
+      if (publishLayer && publishLayer.name === 'Publish & Library') {
+        publishLayer.name = 'Marketplace & Deployment';
+        publishLayer.note = 'Catalog, rights, reviews, releases, packages, deployment plans, galleries, and updates.';
+        changed = true;
+      }
+    }
+    if (as[primary] !== 'publish') { as[primary] = 'publish'; changed = true; }
+    (modules || []).filter(m => m.integratedInto === primary || (hasMarketplace && m.id === 'publish-library') || (hasMarketplace && m.integratedInto === 'publish-library')).forEach(m => {
       if (as[m.id] !== 'machine') { as[m.id] = 'machine'; changed = true; }
     });
     return { layers: ls.sort((a,b)=>(a.order||0)-(b.order||0)), assign: as, changed };
   }
 
+  /* Place all governed roadmap foundations in existing standard workflow
+     layouts. Only previously unassigned arrivals move; a person's custom
+     placement is never overwritten. */
+  function upgradeFoundationRoadmap(layers, assign, modules) {
+    const ls = Array.isArray(layers) ? layers.map(l => Object.assign({}, l)) : [], as = Object.assign({}, assign || {}), ids = ls.map(l => l.id);
+    if (!['create','build','publish','play','ai-team','private','machine'].every(id => ids.indexOf(id) >= 0)) return { layers:ls, assign:as, changed:false };
+    let changed = false; (modules || []).forEach(module => { const layer = GOVERNED_FOUNDATION_ASSIGNMENTS[module.id]; if (layer && !as[module.id]) { as[module.id]=layer; changed=true; } });
+    return { layers:ls, assign:as, changed };
+  }
+
+  /* Compatibility name for callers saved before the full-roadmap migration. */
+  const upgradeFoundationWave2 = upgradeFoundationRoadmap;
+
   return { NS, memoryBackend, localStorageBackend, makeStore, normalizeRegistry, logEntry, resolveModules, promoteIntegratedParents,
-           DEFAULT_LAYERS, doorHash, layerOf, resolveLayers, checkDoor, workflowLayout, upgradePublishLayer, friendlyName };
+           DEFAULT_LAYERS, GOVERNED_FOUNDATION_WAVE1, GOVERNED_FOUNDATION_WAVE2, GOVERNED_FOUNDATION_ASSIGNMENTS,
+           doorHash, layerOf, resolveLayers, checkDoor, workflowLayout, upgradeLegacyOpenLayout, upgradePublishLayer, upgradeFoundationRoadmap, upgradeFoundationWave2, friendlyName };
 });
 
 /* ============================================================
@@ -269,7 +332,7 @@ if (typeof window !== 'undefined') (function () {
   const hhmm = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const Hub = window.AXMHubShell = {
-    registry: [], visible: [], enabled: [], active: null, homeLayer: null, mode: 'simple', sidebarCollapsed: false, records: {}, store, continuityRecords: [], navigation: null,
+    registry: [], visible: [], enabled: [], active: null, homeLayer: null, mode: 'simple', sidebarCollapsed: false, records: {}, store, continuityRecords: [], navigation: null, pendingShutdown: null,
     layers: [], assign: {}, unlocked: [], revealed: [],   /* unlocked+revealed = this session only */
     /* lifecycle badge classes for the sidebar */
     lifeClass(l) {
@@ -319,15 +382,27 @@ if (typeof window !== 'undefined') (function () {
       try { localStorage.setItem('axm.hub.view-mode', this.mode); } catch (e) {}
       const b = $('modeToggle');
       if (b) {
-        b.textContent = this.mode === 'simple' ? '◉ Simple' : '◆ Advanced';
+        b.textContent = this.mode === 'simple' ? 'View: Simple' : 'View: Advanced';
         b.setAttribute('aria-pressed', this.mode === 'advanced' ? 'true' : 'false');
         b.title = this.mode === 'simple' ? 'Switch to Advanced controls' : 'Switch to Simple controls';
       }
+      const quick = $('viewModeQuick');
+      if (quick) {
+        $('viewModeQuickTitle').textContent = this.mode === 'simple' ? 'Simple view' : 'Advanced view';
+        $('viewModeQuickHint').textContent = this.mode === 'simple' ? 'Advanced available' : 'Full controls visible';
+        quick.setAttribute('aria-pressed', this.mode === 'advanced' ? 'true' : 'false');
+        quick.title = this.mode === 'simple'
+          ? 'Switch to Advanced view · all tools, data and controls remain available'
+          : 'Switch to Simple view · saved work and capabilities stay unchanged';
+      }
+      this.renderSystemDeck();
       if (this.mode === 'simple' && this.active) {
         const m = this.registry.find(x => x.id === this.active);
         const layer = m && Core.layerOf(m, this.layers, this.assign);
         if (layer === 'private' || layer === 'machine') this.showHome();
       }
+      this.renderSidebar();
+      this.renderHome();
       if (!silent) this.log('info', 'view mode → ' + this.mode);
     },
     toggleMode() { this.setMode(this.mode === 'simple' ? 'advanced' : 'simple'); },
@@ -395,6 +470,38 @@ if (typeof window !== 'undefined') (function () {
           this.log('ok', 'added Film & Motion Studio workspace · future visibility remains user-controlled');
         }
       } catch (e) {}
+      /* One-time arrival migration for Spatial Studio. It is a visible parent
+         workspace; future hiding remains a user-controlled choice. */
+      try {
+        const marker = 'axm.hub.upgrade.spatial-studio.v1';
+        if (!localStorage.getItem(marker) && this.registry.some(m => m.id === 'spatial-studio')) {
+          if (en.indexOf('spatial-studio') < 0) en.push('spatial-studio');
+          store.setEnabled(en); localStorage.setItem(marker, 'done');
+          this.log('ok', 'added Spatial Studio workspace · future visibility remains user-controlled');
+        }
+      } catch (e) {}
+      /* One-time arrival migration for Learning Lab. The machine-native
+         school remains enabled as an integrated child, while the new parent
+         becomes the visible everyday route. */
+      try {
+        const marker = 'axm.hub.upgrade.learning-lab.v1';
+        if (!localStorage.getItem(marker) && this.registry.some(m => m.id === 'learning-lab')) {
+          if (en.indexOf('learning-lab') < 0) en.push('learning-lab');
+          store.setEnabled(en); localStorage.setItem(marker, 'done');
+          this.log('ok', 'added Learning Lab parent · separate school state preserved');
+        }
+      } catch (e) {}
+      /* One-time arrival migration for the final Marketplace & Deployment
+         parent. Publish & Library remains enabled as its independently
+         executable child while the new parent becomes the everyday door. */
+      try {
+        const marker = 'axm.hub.upgrade.marketplace-deployment.v1';
+        if (!localStorage.getItem(marker) && this.registry.some(m => m.id === 'marketplace-deployment')) {
+          if (en.indexOf('marketplace-deployment') < 0) en.push('marketplace-deployment');
+          store.setEnabled(en); localStorage.setItem(marker, 'done');
+          this.log('ok', 'added Marketplace & Deployment parent - Publish & Library foundation preserved');
+        }
+      } catch (e) {}
       /* One-time arrival migration for the Finance World Room. It remains an
          experimental sandbox, and the human can hide it again afterward. */
       try {
@@ -405,15 +512,96 @@ if (typeof window !== 'undefined') (function () {
           this.log('ok', 'added Finance World Room sandbox · future visibility remains user-controlled');
         }
       } catch (e) {}
-      /* seed the three starting layers once; after that the user owns them */
+      /* One-time arrival migration for the Cognitive Resource Meter. It is a
+         TEST evidence producer in Build; later hiding remains user-owned. */
+      try {
+        const marker = 'axm.hub.upgrade.cognitive-resource-meter.v1';
+        if (!localStorage.getItem(marker) && this.registry.some(m => m.id === 'cognitive-resource-meter')) {
+          if (en.indexOf('cognitive-resource-meter') < 0) en.push('cognitive-resource-meter');
+          store.setEnabled(en); localStorage.setItem(marker, 'done');
+          this.log('ok', 'added Cognitive Resource Meter TEST workspace');
+        }
+      } catch (e) {}
+      /* PS2 Asset Forge is an explicit Create room. Its catalog entries are
+         reusable source parts, while generated previews remain memory-only. */
+      try {
+        const marker = 'axm.hub.upgrade.ps2-asset-forge.v1';
+        if (!localStorage.getItem(marker) && this.registry.some(m => m.id === 'ps2-asset-forge')) {
+          if (en.indexOf('ps2-asset-forge') < 0) en.push('ps2-asset-forge');
+          store.setEnabled(en); localStorage.setItem(marker, 'done');
+          this.log('ok', 'added PS2 Asset Forge to Create · generated previews remain temporary');
+        }
+      } catch (e) {}
+      /* The beginner Command Center is a top-level doorway above the five
+         workflow parents. Enable its dashboard once; a later hide remains
+         user-owned, while its dedicated Hub door preserves the architecture. */
+      try {
+        const marker = 'axm.hub.upgrade.workshop-command-center.v1';
+        if (!localStorage.getItem(marker) && this.registry.some(m => m.id === 'workshop-command-center')) {
+          if (en.indexOf('workshop-command-center') < 0) en.push('workshop-command-center');
+          store.setEnabled(en); localStorage.setItem(marker, 'done');
+          this.log('ok', 'added Workshop Command Center above the five parent workspaces');
+        }
+      } catch (e) {}
+      /* The technical cognitive evidence rooms stay integrated behind the
+         Meter. Enable each arrival once without adding five everyday cards. */
+      try {
+        const marker = 'axm.hub.upgrade.cognitive-evidence-stack.v1';
+        if (!localStorage.getItem(marker)) {
+          const children = ['cognitive-evidence-explorer','cognitive-calibration-lab','human-attention-ledger','sustainability-metrology-lab','mirror-intake-monitor'];
+          let added = 0; children.forEach(id => { if (this.registry.some(m => m.id === id) && en.indexOf(id) < 0) { en.push(id); added += 1; } });
+          if (added) { store.setEnabled(en); this.log('ok', 'enabled ' + added + ' integrated cognitive evidence room(s) behind the Meter'); }
+          localStorage.setItem(marker, 'done');
+        }
+      } catch (e) {}
+      /* One-time arrival of each governed foundation wave. A marker preserves
+         a later intentional hide, while layout placement stays editable. */
+      try {
+        const marker = 'axm.hub.upgrade.foundation-wave1.v1';
+        if (!localStorage.getItem(marker)) {
+          let added = 0;
+          Core.GOVERNED_FOUNDATION_WAVE1.forEach(id => { if (this.registry.some(m => m.id === id) && en.indexOf(id) < 0) { en.push(id); added += 1; } });
+          if (added) { store.setEnabled(en); this.log('ok', 'added ' + added + ' governed foundation dashboard(s)'); }
+          localStorage.setItem(marker, 'done');
+        }
+      } catch (e) {}
+      try {
+        const marker = 'axm.hub.upgrade.foundation-wave2.v1';
+        if (!localStorage.getItem(marker)) {
+          let added = 0;
+          Core.GOVERNED_FOUNDATION_WAVE2.forEach(id => { if (this.registry.some(m => m.id === id) && en.indexOf(id) < 0) { en.push(id); added += 1; } });
+          if (added) { store.setEnabled(en); this.log('ok', 'added ' + added + ' governed foundation dashboard(s)'); }
+          localStorage.setItem(marker, 'done');
+        }
+      } catch (e) {}
+      /* New browser profiles start with the beginner workflow. Older Edge or
+         in-app-browser profiles may still carry the untouched flat Open
+         layout; migrate only that exact legacy shape. */
       let ly = store.getLayers();
-      if (ly === null) { ly = JSON.parse(JSON.stringify(Core.DEFAULT_LAYERS)); store.setLayers(ly); }
       let as = store.getAssign();
+      if (ly === null) {
+        const firstLayout = Core.workflowLayout(this.registry, Core.DEFAULT_LAYERS);
+        ly = firstLayout.layers; as = firstLayout.assign;
+        store.setLayers(ly); store.setAssign(as);
+      } else {
+        const legacyUpgrade = Core.upgradeLegacyOpenLayout(ly, as, this.registry);
+        if (legacyUpgrade.changed) {
+          ly = legacyUpgrade.layers; as = legacyUpgrade.assign;
+          store.setLayers(ly); store.setAssign(as);
+          this.log('ok', 'restored workflow categories for this browser profile');
+        }
+      }
       const publishUpgrade = Core.upgradePublishLayer(ly, as, this.registry);
       if (publishUpgrade.changed) {
         ly = publishUpgrade.layers; as = publishUpgrade.assign;
         store.setLayers(ly); store.setAssign(as);
         this.log('ok', 'upgraded workflow layout with Publish & Library · custom assignments preserved');
+      }
+      const foundationUpgrade = Core.upgradeFoundationRoadmap(ly, as, this.registry);
+      if (foundationUpgrade.changed) {
+        ly = foundationUpgrade.layers; as = foundationUpgrade.assign;
+        store.setLayers(ly); store.setAssign(as);
+        this.log('ok', 'placed governed roadmap foundations into the existing workflow');
       }
       this.layers = ly; this.assign = as;
       /* unlocks are session-only: closing the hub re-locks the door */
@@ -442,7 +630,32 @@ if (typeof window !== 'undefined') (function () {
     },
     renderSidebar() {
       const nav = $('modList'); nav.innerHTML = '';
+      const commandDoor = $('commandCenterNav'); if (commandDoor) commandDoor.hidden = !this.registry.some(m => m.id === 'workshop-command-center');
       const groups = Core.resolveLayers(this.visible, this.layers, this.assign, this.unlocked, this.revealed);
+      if (this.mode === 'simple') {
+        const labels = {
+          create: ['Create', 'Design and make'],
+          build: ['Build', 'Turn ideas into working projects'],
+          publish: ['Publish & Library', 'Package and share safely'],
+          play: ['Play', 'Games and experiences'],
+          'ai-team': ['AI Team', 'Work with your collaborators']
+        };
+        ['create','build','publish','play','ai-team'].forEach(id => {
+          const group = groups.find(item => item.id === id && !item.hidden && !item.locked);
+          if (!group) return;
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'mod workflow-nav' + (!this.active && this.homeLayer === id ? ' active' : '');
+          button.dataset.layer = id;
+          button.innerHTML = '<span class="ic">' + workflowIcon(id) + '</span><span class="nm"><b></b><small></small></span><span class="nav-arrow" aria-hidden="true">›</span>';
+          button.querySelector('.nm b').textContent = labels[id][0];
+          button.querySelector('.nm small').textContent = labels[id][1];
+          button.title = labels[id][0] + ' · ' + group.modules.length + ' tool' + (group.modules.length === 1 ? '' : 's');
+          button.onclick = () => this.showHome(id);
+          nav.appendChild(button);
+        });
+        return;
+      }
       let hiddenMods = 0, hiddenLayers = 0;
       groups.forEach(g => {
         /* hidden (machine-native) layers stay out of the human's way */
@@ -464,7 +677,7 @@ if (typeof window !== 'undefined') (function () {
           e.style.cssText = 'color:var(--muted-2);letter-spacing:0;text-transform:none;font-size:11px';
           e.textContent = 'no modules here yet'; nav.appendChild(e); return;
         }
-        g.modules.forEach(m => {
+        g.modules.filter(m => m.id !== 'workshop-command-center').forEach(m => {
           const life = store.getLifecycle(m.id);
           const b = document.createElement('button'); b.className = 'mod'; b.dataset.id = m.id; b.dataset.layer = g.id;
           b.innerHTML = '<span class="ic">' + iconFor(m) + '</span><span class="nm"></span>'
@@ -513,6 +726,7 @@ if (typeof window !== 'undefined') (function () {
       const g = $('homeGrid'); if (!g) return; g.innerHTML = '';
       const groups = Core.resolveLayers(this.visible, this.layers, this.assign, this.unlocked, this.revealed);
       const title = $('homeTitle'), intro = $('homeIntro');
+      this.renderSystemDeck();
       const makeModuleCard = m => {
         const c = document.createElement('button'); c.type = 'button'; c.className = 'hcard module-card'; c.title = m.name + ' · ' + m.id;
         c.innerHTML = '<div class="hcard-icon">' + iconFor(m) + '</div><h3></h3><p></p><div class="open">Open →</div>';
@@ -525,25 +739,39 @@ if (typeof window !== 'undefined') (function () {
         title.textContent = selected.name;
         intro.textContent = selected.note || 'Choose a tool in this workspace.';
         const back = document.createElement('button'); back.type = 'button'; back.className = 'hcard utility-card'; back.innerHTML = '<div class="hcard-icon">←</div><h3>All workspaces</h3><p>Return to the simple Home screen.</p><div class="open">Back</div>'; back.onclick = () => this.showHome(); g.appendChild(back);
-        selected.modules.forEach(m => g.appendChild(makeModuleCard(m)));
+        selected.modules.filter(m => m.id !== 'workshop-command-center').forEach(m => g.appendChild(makeModuleCard(m)));
         return;
       }
       this.homeLayer = null;
-      title.textContent = 'What do you want to do?';
-      intro.textContent = 'Choose a workspace. Modules stay separate underneath, but you do not need to manage the plumbing.';
+      title.textContent = 'What would you like to make today?';
+      intro.textContent = 'Tell AXM what you want to do, or choose a workspace below. You can reach the full toolset whenever you need it.';
       const order = ['create','build','publish','play','ai-team'];
       const descriptions = { create:'Shape an idea, design the experience, and make the pieces.', build:'Turn an idea into something working, checked, and recoverable.', publish:'Find assets, export versions, package safely, and release honestly.', play:'Start a game or shared experience.', 'ai-team':'Talk, create, and solve things with your machine collaborators.' };
       const humanLabels = { create:'Make something', build:'Make it work', publish:'Share the result', play:'Enjoy together', 'ai-team':'Work together' };
-      order.forEach(id => {
+      const commandCenter = this.registry.find(m => m.id === 'workshop-command-center');
+      if (commandCenter) {
+        const command = document.createElement('button'); command.type = 'button'; command.className = 'hcard command-center-home-card';
+        command.innerHTML = '<div class="command-home-core" aria-hidden="true"><b>AXM</b><i></i></div><div class="command-home-copy"><span>ONE-PAGE BEGINNER COCKPIT</span><h3>Workshop Command Center</h3><p>Tell AXM what you want, inspect the plan, queue up to ten independent reviews, cast your vote, and watch real Workshop output.</p><div class="open">Enter Command Center</div></div><div class="command-home-state"><b>TOP LEVEL</b><span>Above 5 parent rooms</span></div>';
+        command.onclick = () => this.open('workshop-command-center'); g.appendChild(command);
+      }
+      order.forEach((id, index) => {
         const gr = groups.find(x => x.id === id); if (!gr) return;
         const c = document.createElement('button'); c.type = 'button'; c.className = 'hcard workflow-card'; c.dataset.workflow = id;
-        c.innerHTML = '<div class="workflow-icon">' + workflowIcon(id) + '</div><div class="workflow-copy"><div class="human-label"></div><h3></h3><p></p><div class="workflow-preview"></div><div class="open">Open workspace</div></div>';
+        c.innerHTML = '<span class="workflow-index" aria-hidden="true"></span><div class="workflow-icon">' + workflowIcon(id) + '</div><div class="workflow-copy"><div class="human-label"></div><h3></h3><p></p><div class="workflow-preview"></div><div class="open">Enter workspace</div></div>';
+        c.querySelector('.workflow-index').textContent = String(index + 1).padStart(2, '0');
         c.querySelector('.human-label').textContent = humanLabels[id];
         c.querySelector('h3').textContent = gr.name;
         c.querySelector('p').textContent = descriptions[id];
         c.querySelector('.workflow-preview').textContent = gr.modules.length + ' tool' + (gr.modules.length === 1 ? '' : 's') + ' inside · open to choose';
         c.onclick = () => this.showHome(id); g.appendChild(c);
       });
+      const directionModule = this.registry.find(m => m.id === 'workshop-direction');
+      if (directionModule) {
+        const direction = document.createElement('button'); direction.type = 'button'; direction.className = 'hcard utility-card direction-home-card';
+        direction.innerHTML = '<div class="hcard-icon">&#8644;</div><h3>Workshop Direction</h3><p>Give AXM a goal, route it to the required modules, and expose missing hands before work begins.</p><div class="open">Open direction layer &rarr;</div>';
+        direction.onclick = () => this.open('workshop-direction');
+        g.appendChild(direction);
+      }
       const growth = document.createElement('button'); growth.type = 'button'; growth.className = 'hcard utility-card technical-card growth-home-card';
       growth.innerHTML = '<div class="hcard-icon">&#10022;</div><h3>Workshop Growth</h3><p>Files, characters, lines, modules, games and milestone snapshots.</p><div class="open">Open infographic &rarr;</div>';
       growth.onclick = () => { if (window.AXMWorkshopGrowth) window.AXMWorkshopGrowth.open(); };
@@ -607,6 +835,16 @@ if (typeof window !== 'undefined') (function () {
     renderContinuity() {
       const strip=$('continuityStrip'),list=$('continuityList'); if(!strip||!list)return; list.innerHTML=''; const records=(this.continuityRecords||[]).slice(0,8); strip.hidden=!records.length;
       records.forEach(record=>{const item=document.createElement('article');item.className='continuity-item';const open=document.createElement('button');open.type='button';open.className='continuity-open';const title=document.createElement('b');title.textContent=record.projectName||record.workspaceName;const meta=document.createElement('span');meta.textContent=(record.workspaceName||record.workspaceId)+' · '+new Date(record.updatedAt).toLocaleString();const hint=document.createElement('small');hint.textContent=record.resumeHint||'Open saved state';open.appendChild(title);open.appendChild(meta);open.appendChild(hint);open.onclick=()=>this.openCapability(record.workspaceId);const forget=document.createElement('button');forget.type='button';forget.className='continuity-forget';forget.setAttribute('aria-label','Forget '+(record.projectName||record.workspaceName)+' from recent work');forget.title='Forget this reference · project data stays';forget.textContent='×';forget.onclick=()=>this.forgetContinuity(record.id);item.appendChild(open);item.appendChild(forget);list.appendChild(item);});
+      this.renderSystemDeck();
+    },
+    renderSystemDeck() {
+      const tools = $('heroToolCount'), resumes = $('heroResumeCount'), mode = $('heroModeState'), signal = $('heroSystemSignal'), deck = $('heroSystemDeck');
+      if (tools) tools.textContent = String((this.visible || []).length);
+      if (resumes) resumes.textContent = String((this.continuityRecords || []).length);
+      if (mode) mode.textContent = this.mode === 'advanced' ? 'Advanced' : 'Simple';
+      const source = $('systemStatus');
+      if (signal && source) signal.textContent = source.textContent || 'Checking';
+      if (deck && source) deck.dataset.tone = source.classList.contains('degraded') ? 'warning' : source.classList.contains('paused') ? 'paused' : source.classList.contains('checking') ? 'checking' : 'ready';
     },
     loadHandoffBroker() {
       const source=$('handoffSource'),artifact=$('handoffArtifact');if(!source||!artifact)return;
@@ -624,22 +862,46 @@ if (typeof window !== 'undefined') (function () {
       const out=$('handoffResults');try{const response=await fetch('/api/workshop/handoffs',{method:'POST',headers:{'content-type':'application/json','x-axm-handoff':'explicit-prepare-proposal'},body:JSON.stringify({sourceId:match.sourceId,artifactKind:match.artifactKind,destinationId:match.destinationId,acceptedAs:match.acceptedAs,note:'Prepared from Hub after an explicit choice'})});const data=await response.json();if(!response.ok)throw Error(data.error||('HTTP '+response.status));const message=document.createElement('div');message.className='handoff-confirmation';message.textContent='Handoff proposal prepared for '+match.destinationName+'. No file was copied, imported, opened or converted. Open the destination only when you choose.';out.prepend(message);this.log('ok','handoff proposal prepared · review required · no data copied');}
       catch(e){this.log('warn','handoff proposal refused · '+e.message);}
     },
-    showHome(layerId, options) {
+    requestActiveShutdown() {
+      const id = this.active, frame = $('viewFrame'), record = id && this.records[id];
+      if (!id || !frame || !frame.contentWindow || !record || !record.passport || record.passport.handlesShutdown !== true) return Promise.resolve({ requested: false });
+      if (this.pendingShutdown && this.pendingShutdown.promise) return this.pendingShutdown.promise;
+      let finish;
+      const promise = new Promise(resolve => { finish = resolve; });
+      const pending = { id, promise, finish: result => {
+        if (this.pendingShutdown !== pending) return;
+        clearTimeout(pending.timer); this.pendingShutdown = null; finish(result);
+      } };
+      pending.timer = setTimeout(() => {
+        this.log('warn', id + ' shutdown checkpoint timed out; navigation continued');
+        pending.finish({ requested: true, acknowledged: false });
+      }, 800);
+      this.pendingShutdown = pending;
+      frame.contentWindow.postMessage({ type: 'hub:shutdown:request', moduleId: id }, '*');
+      return promise;
+    },
+    async showHome(layerId, options) {
       options = options || {};
+      if (this.active && options.skipShutdown !== true) await this.requestActiveShutdown();
       this.active = null;
       this.homeLayer = layerId || null;
       $('viewFrame').style.display = 'none';
       $('homeScreen').style.display = 'block';
+      /* Home is a destination, not a restored reading position. Returning to
+         it midway down made the workflow cards look as if they had vanished. */
+      $('homeScreen').scrollTop = 0;
       $('activeName').textContent = this.homeLayer ? ((this.layers.find(l => l.id === this.homeLayer) || {}).name || 'Home') : 'Home';
       [...document.querySelectorAll('.mod')].forEach(x => x.classList.remove('active'));
-      $('homeBtn').classList.add('active');
+      const workflowHome = this.homeLayer && document.querySelector('.workflow-nav[data-layer="' + this.homeLayer + '"]');
+      if (workflowHome) workflowHome.classList.add('active');
+      else $('homeBtn').classList.add('active');
       store.setState({ lastModuleId: null });
       this.renderHome();
       this.renderContinuity();
       if (options.history !== false) this.recordScreen({ kind: 'home', layerId: this.homeLayer || '', label: $('activeName').textContent || 'Home' });
       else this.refreshBackButton();
     },
-    open(id, options) {
+    async open(id, options) {
       options = options || {};
       const m = this.registry.find(x => x.id === id);
       if (!m) { this.log('error', 'no such module: ' + id); return; }
@@ -649,6 +911,7 @@ if (typeof window !== 'undefined') (function () {
       const lid = Core.layerOf(m, this.layers, this.assign);
       const grp = Core.resolveLayers(this.visible, this.layers, this.assign, this.unlocked, this.revealed).find(g => g.id === lid);
       if (grp && grp.locked) { this.knock(lid); if (this.unlocked.indexOf(lid) < 0) return; }
+      if (this.active && options.skipShutdown !== true) await this.requestActiveShutdown();
       this.active = id;
       $('homeScreen').style.display = 'none';
       const err = $('vpError'); err.classList.remove('show');
@@ -659,7 +922,18 @@ if (typeof window !== 'undefined') (function () {
       const url = '/tools/' + encodeURIComponent(m.folder) + '/' + m.entry;
       f.onload = () => {
         load.classList.remove('show');
-        try { painted = !!(f.contentDocument && f.contentDocument.body && f.contentDocument.body.childNodes.length); }
+        try {
+          const loadedRoute = (f.contentWindow.location.pathname || '') + (f.contentWindow.location.search || '') + (f.contentWindow.location.hash || '');
+          if (window.AXMWorkshopNavigation && window.AXMWorkshopNavigation.isHubHomeRoute(loadedRoute)) {
+            painted = true;
+            f.onload = null;
+            f.removeAttribute('src');
+            this.log('info', 'module returned to Home · cleared nested Hub frame');
+            this.showHome(null, { skipShutdown: true });
+            return;
+          }
+          painted = !!(f.contentDocument && f.contentDocument.body && f.contentDocument.body.childNodes.length);
+        }
         catch (e) { painted = true; /* cross-doc but loaded = not blank */ }
         if (!painted) this.showError(m, 'Module loaded but its screen is empty.');
       };
@@ -688,6 +962,11 @@ if (typeof window !== 'undefined') (function () {
     /* ---- bridge: receive a module's postMessage, run the pure reducer ---- */
     onMessage(ev) {
       const msg = ev.data; if (!msg || typeof msg.type !== 'string' || msg.type.indexOf('hub:') !== 0) return;
+      if (msg.type === 'hub:shutdown:ok') {
+        const pending = this.pendingShutdown;
+        if (pending && pending.id === this.active && ev.source === $('viewFrame').contentWindow) pending.finish({ requested: true, acknowledged: true });
+        return;
+      }
       const id = this.active; if (!id) return;
       if (msg.type === 'hub:continuity:upsert') {
         if (ev.origin && ev.origin !== location.origin) return;
@@ -937,8 +1216,17 @@ if (typeof window !== 'undefined') (function () {
       window.addEventListener('message', e => this.onMessage(e));
       $('workshopBack').onclick = () => this.goBack();
       $('homeBtn').onclick = () => this.showHome();
+      $('commandCenterNav').onclick = () => this.open('workshop-command-center');
+      $('growthNavBtn').onclick = () => {
+        if (window.AXMWorkshopGrowth) window.AXMWorkshopGrowth.open();
+      };
       $('sidebarToggle').onclick = () => this.toggleSidebar();
       $('modeToggle').onclick = () => this.toggleMode();
+      $('viewModeQuick').onclick = () => this.toggleMode();
+      const systemSource = $('systemStatus');
+      if (systemSource && window.MutationObserver) {
+        new MutationObserver(() => this.renderSystemDeck()).observe(systemSource, { childList:true, characterData:true, subtree:true, attributes:true });
+      }
       $('btnSettings').onclick = () => this.openSettings();
       $('btnPerm').onclick = () => this.openPerm();
       $('btnExport').onclick = () => this.openExport();
@@ -1002,9 +1290,13 @@ if (typeof window !== 'undefined') (function () {
     if (/game-forge|game-hub/.test(id)||/game|lobby/.test(t)) return g + '<rect x="2" y="7" width="20" height="10" rx="3"/><path d="M6 12h5M8.5 9.5v5"/><circle cx="17" cy="11" r="1"/><circle cx="19" cy="14" r="1"/></svg>';
     if (/audio-studio/.test(id)||/audio|music|midi|sound/.test(t)) return g + '<path d="M4 15V9M8 18V6M12 20V4M16 17V7M20 14v-4"/></svg>';
     if (/film-motion-studio/.test(id)||/film|video|animation|vfx/.test(t)) return g + '<rect x="3" y="6" width="14" height="12" rx="2"/><path d="M17 10l4-2v8l-4-2zM7 10h6M7 14h4"/></svg>';
+    if (/spatial-studio/.test(id)||/spatial|3d|modeling|voxel/.test(t)) return g + '<path d="M12 2l8 5-8 5-8-5zM4 7v10l8 5 8-5V7M12 12v10"/></svg>';
+    if (/learning-lab|mirror-learning-shell/.test(id)||/learning|lesson|assessment|school|curriculum/.test(t)) return g + '<path d="M4 5.5C6.8 4.2 9.5 4.4 12 6v13c-2.5-1.6-5.2-1.8-8-.5zM20 5.5c-2.8-1.3-5.5-1.1-8 .5v13c2.5-1.6 5.2-1.8 8-.5z"/><path d="M12 6v13"/></svg>';
     if (/studio|skinner|ui-ux-builder/.test(id)||/canvas|graphic|creative|design/.test(t)) return g + '<path d="M4 20l4-1 9-9-3-3-9 9z"/><path d="M14 7l3 3"/></svg>';
+    if (/marketplace-deployment/.test(id)) return g + '<circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c3 3 3 13 0 16M12 4c-3 3-3 13 0 16"/><path d="M17 7l3-3M17 4h3v3"/></svg>';
     if (/publish-library/.test(id)) return g + '<path d="M12 3v11M8 10l4 4 4-4"/><rect x="4" y="17" width="16" height="4" rx="1"/></svg>';
     if (/asset/.test(id)) return g + '<path d="M4 7l8-4 8 4-8 4z"/><path d="M4 7v10l8 4 8-4V7M12 11v10"/></svg>';
+    if (/workshop-command-center/.test(id)) return g + '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>';
     if (/ai-team|agent-command|chatgpt-connector|duo-test|model-lab|reasoning-shell/.test(id)) return g + '<circle cx="8" cy="12" r="4"/><circle cx="17" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><path d="M12 11l2-2M12 13l2 2"/></svg>';
     if (/forge|sandbox|graft/.test(id)) return g + '<path d="M5 19l5-5M14 4l6 6-9 9H5v-6z"/></svg>';
     if (/verifier|runner|evidence/.test(id)) return g + '<path d="M12 3l8 3v6c0 5-3 8-8 9-5-1-8-4-8-9V6z"/><path d="M8 12l3 3 5-6"/></svg>';

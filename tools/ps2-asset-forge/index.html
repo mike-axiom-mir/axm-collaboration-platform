@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM PS2 Asset Forge</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div>
+          <p class="eyebrow">AXM / CREATE / GAME ASSETS</p>
+          <h1>PS2 Asset Forge <span class="version">ALPHA 02</span></h1>
+        </div>
+      </div>
+      <div class="truth-strip">
+        <span class="truth-dot"></span>
+        <span><b>Local creation</b> · CC0 sources · no runtime network</span>
+      </div>
+      <div class="top-actions">
+        <button class="button ghost" id="export-recipe">Recipe</button>
+        <button class="button primary" id="export-glb" disabled title="Approve the visible candidate before exporting it">Export GLB</button>
+      </div>
+    </header>
+
+    <section class="workspace">
+      <aside class="left-panel panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">BUILD TARGET</p>
+            <h2>What are we making?</h2>
+          </div>
+          <span class="step">01</span>
+        </div>
+
+        <div class="target-grid" id="target-grid">
+          <button class="target-card active" data-target="street"><span class="target-icon">▦</span><span><b>Street slice</b><small>Full quality benchmark</small></span></button>
+          <button class="target-card" data-target="storefront"><span class="target-icon">▤</span><span><b>Storefront</b><small>Shell + sign + props</small></span></button>
+          <button class="target-card" data-target="vehicle"><span class="target-icon">▰</span><span><b>Vehicle</b><small>Body + damage parts</small></span></button>
+          <button class="target-card" data-target="pedestrian"><span class="target-icon">♟</span><span><b>Pedestrian</b><small>Rig + animation</small></span></button>
+        </div>
+
+        <div class="control-section">
+          <div class="section-title"><span>Direction</span><span class="step">02</span></div>
+          <label class="field-label" for="seed">World seed</label>
+          <div class="seed-row">
+            <input id="seed" value="tilburg-0405" maxlength="80" spellcheck="false">
+            <button id="shuffle-seed" class="icon-button" title="New seed">↻</button>
+          </div>
+
+          <label class="field-label" for="palette">Palette</label>
+          <div class="select-wrap">
+            <select id="palette">
+              <option value="petrol">Petrol & amber</option>
+              <option value="rust">Brick & rust</option>
+              <option value="cobalt">Cobalt night</option>
+              <option value="olive">Olive concrete</option>
+            </select>
+          </div>
+
+          <div class="range-head"><label class="field-label" for="wear">Street wear</label><output id="wear-value">28%</output></div>
+          <input type="range" id="wear" min="0" max="100" value="28">
+
+          <div class="range-head"><label class="field-label" for="density">Detail density</label><output id="density-value">2 / 4</output></div>
+          <input type="range" id="density" min="1" max="4" value="2">
+        </div>
+
+        <button class="forge-button" id="forge"><span>FORGE VARIANT</span><small>Rebuild from editable recipe</small></button>
+
+        <div class="used-sources">
+          <div class="section-title"><span>Recipe sources</span><span id="used-count">0</span></div>
+          <div id="used-list" class="used-list"><p class="muted">Waiting for first build…</p></div>
+        </div>
+      </aside>
+
+      <section class="viewport-panel">
+        <div class="viewport-toolbar">
+          <div class="mode-tag"><span></span><b id="viewport-title">Street quality benchmark</b></div>
+          <div class="toolbar-center"><kbd>LMB</kbd> Orbit <kbd>RMB</kbd> Pan <kbd>Wheel</kbd> Zoom</div>
+          <div class="view-actions">
+            <label class="render-control" for="render-profile"><span>Renderer</span><select id="render-profile">
+              <option value="native">PS2 Native</option>
+              <option value="preview">PS3 Preview</option>
+              <option value="high">PS3 High Preview</option>
+            </select></label>
+            <button class="chip active" data-lighting="day">Day</button>
+            <button class="chip" data-lighting="night">Night</button>
+            <button class="icon-button" id="reset-camera" title="Reset camera">⌖</button>
+          </div>
+        </div>
+        <div class="viewport-wrap">
+          <canvas id="viewport" aria-label="Interactive 3D asset viewport"></canvas>
+          <div class="loading-card" id="loading-card">
+            <span class="loading-orbit"></span>
+            <b>Building local scene</b>
+            <small id="loading-status">Loading texture-aware GLB sources…</small>
+          </div>
+          <div class="quality-badge">
+            <span class="quality-kicker">TARGET FLOOR</span>
+            <b>2002–2006</b>
+            <small>PS2 candidate · human gate required</small>
+          </div>
+          <div class="viewport-stats">
+            <div><span>TRIANGLES</span><b id="stat-triangles">—</b></div>
+            <div><span>MATERIALS</span><b id="stat-materials">—</b></div>
+            <div><span>ANIMATIONS</span><b id="stat-animations">—</b></div>
+            <div><span>DRAW CALLS</span><b id="stat-draws">—</b></div>
+          </div>
+        </div>
+        <div class="build-receipt" id="build-receipt">
+          <div><span class="receipt-dot pending"></span><span id="receipt-status">Candidate has not been judged</span></div>
+          <div class="receipt-id" id="recipe-id">—</div>
+        </div>
+      </section>
+
+      <aside class="right-panel panel">
+        <div class="panel-heading compact">
+          <div>
+            <p class="eyebrow">LOCAL SOURCE LIBRARY</p>
+            <h2><span id="catalog-total">—</span> source parts</h2>
+          </div>
+          <span class="step">03</span>
+        </div>
+
+        <div class="catalog-summary">
+          <div><b id="catalog-tris">—</b><span>source triangles, not outputs</span></div>
+          <div><b id="catalog-animated">—</b><span>animated assets</span></div>
+          <div><b>CC0</b><span>allowed license</span></div>
+        </div>
+
+        <div class="library-tools">
+          <input id="asset-search" type="search" placeholder="Search vehicles, walls, roads…">
+          <select id="kind-filter" aria-label="Filter asset kind"><option value="all">All kinds</option></select>
+        </div>
+
+        <div class="asset-library" id="asset-library"></div>
+
+        <div class="gate-card">
+          <p class="eyebrow">VISUAL GATE</p>
+          <h3>Code cannot approve appearance.</h3>
+          <p>Technical checks prove load, textures, rig, and provenance. The preview is memory-only; approval unlocks explicit export.</p>
+          <div class="gate-actions">
+            <button class="button reject" id="reject-candidate">Reject</button>
+            <button class="button approve" id="approve-candidate">Approve candidate</button>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <footer class="statusbar">
+      <div><span class="status-light"></span><span id="runtime-status">Local renderer starting…</span></div>
+      <div>GLTF 2.0 · WEBGL · EDITABLE RECIPE · REAL GLB OUTPUT</div>
+    </footer>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

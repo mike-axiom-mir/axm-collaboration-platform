@@ -43,3 +43,19 @@
 - [ ] Test off-screen opponent non-disclosure.
 - [ ] Test the real Game Hub launch and end lifecycle.
 
+## Future physical controller adapter
+
+- [ ] Keep the occupied seat `controllerType` as `human`; record hardware separately as `inputSource`.
+- [ ] Poll gamepads only in a host Controller Dock or the individual controller page, never the shared party screen.
+- [ ] Require press-any-button seat claiming; do not equate a reusable gamepad index with a player number.
+- [ ] Arm a visible claim window, require a new button edge, and confirm before replacing an active input source.
+- [ ] Keep exactly one opaque versioned input-source binding active per human seat; reject packets from the previous binding and epoch.
+- [ ] Never persist, log, or display a raw browser gamepad identifier as player identity.
+- [ ] Auto-map only a standard browser layout; hold non-standard devices for explicit calibration.
+- [ ] Map device axes and buttons into `AxmControllerRuntime`; do not bypass the semantic packet gate.
+- [ ] Keep device binding profiles separate from game semantic profiles.
+- [ ] Use a trigger/button for a gamepad fire pulse; do not inherit phone stick-release firing accidentally.
+- [ ] Immediately neutralize vectors and held buttons when the gamepad disconnects.
+- [ ] Preserve the human seat, never auto-fill it with AI, and allow return to phone control.
+- [ ] Keep Connected AI outside the human hardware selector; `human` to `adapter` is a separate consented authority transition.
+- [ ] Prove USB and Bluetooth operation on physical hardware before changing the route status.

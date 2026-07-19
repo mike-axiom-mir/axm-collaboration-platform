@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/toolpath-simulation-v1.schema.json",
+  "title": "AXM Toolpath Simulation v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "unit", "stock", "tool", "depth", "feeds", "bounds", "paths", "cut_length", "rapid_length", "estimated_minutes", "errors", "warnings", "checks", "automatic_execution", "target_canvas", "source", "approval", "machine_code"],
+  "properties": {
+    "schema": {"const": "axm.toolpath-simulation/v1"}, "version": {"const": "1.0.0"}, "status": {"enum": ["PASS", "HOLD"]},
+    "unit": {"enum": ["mm", "m"]}, "stock": {"type": "object"}, "tool": {"type": "object"}, "depth": {"type": "object"},
+    "feeds": {"type": "object"}, "bounds": {"type": "object"}, "paths": {"type": "array", "minItems": 1},
+    "cut_length": {"type": "number", "exclusiveMinimum": 0}, "rapid_length": {"type": "number", "minimum": 0}, "estimated_minutes": {"type": "number", "minimum": 0},
+    "errors": {"type": "array"}, "warnings": {"type": "array"}, "checks": {"type": "array", "minItems": 1},
+    "automatic_execution": {"const": false}, "target_canvas": {"type": "object"}, "source": {"type": "object"},
+    "approval": {"type": ["object", "null"]}, "machine_code": {"type": "object"}
+  },
+  "additionalProperties": false
+}

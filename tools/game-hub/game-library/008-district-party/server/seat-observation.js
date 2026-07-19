@@ -3,6 +3,7 @@
 const { summarizeAmmo } = require('./inventory-system');
 const { serializeWorldState } = require('./display-state');
 const { tokensEqual } = require('./session-manager');
+const { queryFeatures } = require('./spatial-index');
 
 const DEFAULT_VIEWPORT = Object.freeze({ width: 1280, height: 720 });
 
@@ -246,9 +247,9 @@ function buildAdapterObservation(session, actor, viewport) {
       effects: display.effects.filter((entry) => pointVisible(entry, camera, 12)).map(effectView),
       territoryZones: (display.territory?.zones || []).filter((entry) => pointVisible(entry, camera, entry.radius || 52)),
       map: {
-        roads: world.staticMap.roads.filter((entry) => rectangleVisible(entry, camera)).map(mapFeatureView),
-        obstacles: world.staticMap.obstacles.filter((entry) => rectangleVisible(entry, camera)).map(mapFeatureView),
-        areas: world.staticMap.areas.filter((entry) => rectangleVisible(entry, camera)).map(mapFeatureView),
+        roads: queryFeatures(world.staticMap, 'roads', camera.bounds).filter((entry) => rectangleVisible(entry, camera)).map(mapFeatureView),
+        obstacles: queryFeatures(world.staticMap, 'obstacles', camera.bounds).filter((entry) => rectangleVisible(entry, camera)).map(mapFeatureView),
+        areas: queryFeatures(world.staticMap, 'areas', camera.bounds).filter((entry) => rectangleVisible(entry, camera)).map(mapFeatureView),
         safeZones: world.staticMap.safeZones.filter((entry) => rectangleVisible(entry, camera)).map(mapFeatureView),
       },
     },

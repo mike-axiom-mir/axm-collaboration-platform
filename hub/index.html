@@ -2,14 +2,18 @@
 <html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AXM Hub</title>
+<link rel="stylesheet" href="/shared/visual-kernel/axm-kernel.css?v=20260718-future-os-1">
 <link rel="stylesheet" href="/hub/hub-tokens.css">
 <link rel="stylesheet" href="/hub/ui-kit.css">
 <link rel="stylesheet" href="/hub/ai-presence.css">
 <link rel="stylesheet" href="/hub/radio.css">
 <link rel="stylesheet" href="/hub/foundation-services.css">
 <link rel="stylesheet" href="/hub/profile.css">
-<link rel="stylesheet" href="/hub/growth.css">
+<link rel="stylesheet" href="/hub/growth.css?v=20260717-3">
 <link rel="stylesheet" href="/hub/capability-guide.css">
+<link rel="stylesheet" href="/hub/mobile-device.css">
+<link rel="stylesheet" href="/hub/production-session.css?v=20260718-1">
+<link rel="stylesheet" href="/hub/modern-ui.css?v=20260719-eye2-1">
 <script src="/shared/services/axm-foundation-services.js"></script>
 <script src="/shared/capabilities/workshop-capability-index.js"></script>
 <script src="/shared/continuity/workshop-continuity.js"></script>
@@ -18,8 +22,9 @@
 <script src="/hub/module-contract.js"></script>
 <script src="/hub/skin-core.js"></script>
 <script src="/hub/skin-renderer.js"></script>
-<script src="/hub/workshop-navigation.js?v=20260713-1"></script>
-<script src="/hub/hub-shell.js?v=20260713-1"></script>
+<script src="/hub/workshop-navigation.js?v=20260717-2"></script>
+<script src="/hub/hub-shell.js?v=20260718-future-os-1"></script>
+<script src="/hub/mobile-device.js"></script>
 </head>
 <body>
 <div class="shell">
@@ -30,6 +35,8 @@
     <button class="mark profile-entry" id="profileMark" type="button" aria-label="Open shared profile and achievements" aria-haspopup="dialog" aria-controls="profileScreen" title="Open shared profile"><b>AXM</b></button>
     <div class="brand">AXM <span>Hub</span></div>
     <div class="active-lbl"><span>Inside</span><b id="activeName">Home</b></div>
+    <button class="view-mode-quick" id="viewModeQuick" type="button" aria-pressed="false" title="Switch to Advanced view"><b id="viewModeQuickTitle">Simple view</b><small id="viewModeQuickHint">Advanced available</small></button>
+    <button class="production-session-toggle" id="productionSessionToggle" type="button" aria-haspopup="dialog" aria-controls="productionSessionScreen"><span class="production-session-dot" aria-hidden="true"></span><span id="productionSessionToggleText">Ivan mode</span></button>
     <div class="grow"></div>
     <span class="status-dot checking" id="systemStatus">Checking systems</span>
     <button class="foundation-summary" id="foundationToggle" type="button" aria-haspopup="dialog" aria-controls="foundationScreen"><span>Foundation</span> checking</button>
@@ -39,7 +46,7 @@
       <span class="presence-members" id="presenceMembers" aria-live="polite"></span>
     </div>
     <button class="ai-master" id="aiMasterToggle" type="button" aria-pressed="false" title="Pause all AI agents while keeping connectors online"><span class="axm-ui-icon pause" aria-hidden="true"></span><span>Pause AI</span></button>
-    <button class="ai-master ai-eyes" id="aiEyesToggle" type="button" aria-pressed="false" title="Share the active AXM screen with Claude on a finite heartbeat"><span class="axm-ui-icon eyes" aria-hidden="true"></span><span>Eyes</span></button>
+    <button class="ai-master ai-eyes" id="aiEyesToggle" type="button" aria-pressed="false" title="Open the finite Eye 2.0 controls"><span class="axm-ui-icon eyes" aria-hidden="true"></span><span>Eyes</span></button>
     <span class="pill saved">● Saved</span>
     <div class="radio-cluster">
       <button class="tb-btn" id="btnRadio" aria-label="Open Hub radio"><span class="axm-ui-icon radio" aria-hidden="true"></span><span>Radio</span></button>
@@ -52,6 +59,7 @@
       <summary><span class="axm-ui-icon manage" aria-hidden="true"></span><span>Manage</span></summary>
       <div class="hub-tools-pop">
         <button class="tb-btn mode-toggle" id="modeToggle" aria-pressed="false">◉ Simple</button>
+        <p class="view-mode-note">Views only change presentation. Your tools, data, saved work and permissions remain intact.</p>
         <button class="tb-btn" id="btnLayers">▤ Organize spaces</button>
         <button class="tb-btn" id="btnModules"><span class="axm-ui-icon modules" aria-hidden="true"></span><span>Show or hide dashboards</span></button>
         <button class="tb-btn" id="btnPerm">Permissions</button>
@@ -65,7 +73,9 @@
   <div class="body">
     <nav class="sidebar" id="hubSidebar">
       <button class="mod active" id="homeBtn"><span class="ic"><span class="axm-ui-icon home" aria-hidden="true"></span></span><span class="nm">Home</span></button>
-      <div class="side-cap">Modules</div>
+      <button class="mod command-center-nav" id="commandCenterNav" data-id="workshop-command-center" type="button" title="Open the one-page Workshop Command Center"><span class="ic" aria-hidden="true">⌁</span><span class="nm"><b>Command Center</b><small>Tell AXM what to do</small></span><span class="nav-arrow" aria-hidden="true">›</span></button>
+      <button class="mod" id="growthNavBtn" type="button" title="Open the Workshop Growth infographic"><span class="ic" aria-hidden="true">&#10022;</span><span class="nm">Workshop Growth</span></button>
+      <div class="side-cap sidebar-section-title">Workspaces</div>
       <div id="modList"></div>
     </nav>
     <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-controls="hubSidebar" aria-expanded="true" aria-label="Collapse navigation" title="Collapse navigation"><span aria-hidden="true">‹</span></button>
@@ -77,24 +87,37 @@
       <!-- shell-owned HOME (shared screen) -->
       <div id="homeScreen" style="position:absolute;inset:0;overflow:auto">
         <div class="home-hero">
-          <div class="hero-kicker"><span></span> AXM LOCAL OPERATING SPACE</div>
-          <h1 id="homeTitle">What do you want to do?</h1>
-          <p id="homeIntro">Choose a workspace. The safe modules underneath stay separate, but you do not need to manage the plumbing.</p>
+          <div class="hero-layout">
+            <div class="hero-copy">
+              <div class="hero-kicker"><span></span> AXM WORKSHOP · LIVE LOCAL SYSTEM</div>
+              <h1 id="homeTitle">What would you like to make today?</h1>
+              <p id="homeIntro">Tell AXM what you want to do, or choose a workspace below. You can reach the full toolset whenever you need it.</p>
+            </div>
+            <aside class="hero-system-deck" id="heroSystemDeck" aria-label="Live Workshop summary">
+              <div class="hero-system-head"><span>WORKSHOP STATE</span><b id="heroSystemSignal">Starting</b></div>
+              <div class="hero-orbit" aria-hidden="true"><i></i><i></i><i></i><strong>AXM</strong></div>
+              <div class="hero-system-grid">
+                <div><span>VISIBLE TOOLS</span><strong id="heroToolCount">—</strong></div>
+                <div><span>RESUME ROUTES</span><strong id="heroResumeCount">—</strong></div>
+                <div><span>INTERFACE</span><strong id="heroModeState">Simple</strong></div>
+              </div>
+            </aside>
+          </div>
           <div class="capability-guide" id="capabilityGuide">
-            <form class="capability-search" id="capabilityForm"><input id="capabilityQuery" type="search" maxlength="200" autocomplete="off" aria-label="Describe what you want to do" placeholder="Describe it normally — e.g. make music, plan a project, edit a picture…"><button type="submit">Find where</button></form>
+            <form class="capability-search" id="capabilityForm"><input id="capabilityQuery" type="search" maxlength="200" autocomplete="off" aria-label="Describe what you want to do" placeholder="Try “make a logo”, “build a game”, or “plan a project”"><button type="submit">Show me where</button></form>
             <div class="capability-prompts" aria-label="Example requests"><button class="capability-prompt" type="button" data-capability-query="draw an icon">Draw an icon</button><button class="capability-prompt" type="button" data-capability-query="make music">Make music</button><button class="capability-prompt" type="button" data-capability-query="build a game">Build a game</button><button class="capability-prompt" type="button" data-capability-query="plan a project">Plan a project</button><button class="capability-prompt" type="button" data-capability-query="research data">Research data</button><button class="capability-prompt" type="button" data-capability-query="package and publish">Package &amp; publish</button></div>
             <div class="capability-results" id="capabilityResults" aria-live="polite"></div>
-            <div class="capability-guide-note">Recommendations only — nothing opens, installs, runs or changes permissions until you choose it.</div>
+            <div class="capability-guide-note">AXM will recommend a starting point. Nothing opens or changes until you choose it.</div>
           </div>
-          <div class="hero-meta"><span>LOCAL FIRST</span><span>MODULAR CORE</span><span>HUMAN CONTROL</span><span>VERIFIED ROUTES</span></div>
+          <div class="hero-meta"><span>Private on this computer</span><span>Autosave is on</span><span>You approve changes</span></div>
         </div>
+        <div class="home-grid" id="homeGrid"></div>
         <section class="continuity-strip" id="continuityStrip" hidden aria-labelledby="continuityTitle"><div class="continuity-head"><div><span>LOCAL RESUME REFERENCES</span><h2 id="continuityTitle">Continue working</h2><p>Open a recent workspace or project from its own saved state. Project data stays where it was created.</p></div></div><div class="continuity-list" id="continuityList" aria-live="polite"></div></section>
         <section class="handoff-strip" id="handoffStrip" aria-labelledby="handoffTitle">
           <div class="handoff-head"><div><span>EXPLICIT ARTIFACT ROUTES</span><h2 id="handoffTitle">Move work between workspaces</h2><p>Choose what one workspace made. AXM only shows destinations that declare that format. Preparing a handoff never copies or imports the file.</p></div></div>
           <form class="handoff-form" id="handoffForm"><label>From workspace<select id="handoffSource" aria-label="Handoff source workspace"></select></label><label>Type of work<select id="handoffArtifact" aria-label="Handoff artifact type"></select></label><button type="submit">Find destinations</button></form>
           <div class="handoff-results" id="handoffResults" aria-live="polite"></div>
         </section>
-        <div class="home-grid" id="homeGrid"></div>
       </div>
 
       <!-- blank-screen guard + recovery (never a dead frame) -->
@@ -109,12 +132,31 @@
 
   <!-- ===== BOTTOM ACTION / STATUS LOG (outer stable) ===== -->
   <footer class="statusbar">
-    <span class="sb-item">🛡 <b>Checkpoint</b> auto-save on</span>
+    <span class="sb-item"><span aria-hidden="true">✓</span> <b>Autosave</b> on</span>
     <span class="log-tail" id="logTail">hub starting…</span>
     <span class="sb-item">System <b>Hub v1.0</b></span>
     <button class="sb-btn" id="btnExport2" onclick="AXMHubShell.openExport()">Open Logs</button>
   </footer>
 </div>
+
+<div class="overlay production-session-overlay" id="productionSessionScreen" role="dialog" aria-modal="true" aria-labelledby="productionSessionTitle" hidden><div class="sheet production-session-sheet">
+  <button class="close" id="productionSessionClose" type="button" aria-label="Close temporary production session controls">&#10005;</button>
+  <div class="production-session-head"><div><div class="production-session-kicker">SEPARATE MEMORY · SAME WORKSHOP</div><h2 id="productionSessionTitle">Temporary Production Session</h2><p>Give a trusted collaborator the same tools without mixing their browser state, saved module data, outputs or logs into Mike's Workshop.</p></div><span class="production-session-state" id="productionSessionState">CHECKING</span></div>
+  <div id="productionSessionMain">
+    <div class="production-session-truth"><b>Trust is not a thermal sensor.</b><span>The session prevents accidental state crossover. Shared live bodies and heavy compute stay off until they can prove session-safe storage and Body Pulse capacity.</span></div>
+    <label class="production-session-label" for="productionSessionParticipant">Who is using this session?</label>
+    <div class="production-session-start"><input id="productionSessionParticipant" maxlength="48" value="Ivan" autocomplete="off"><button id="productionSessionStart" type="button">Open isolated session</button></div>
+    <p class="production-session-note">Your current tab and exact Mike state stay open. The collaborator starts on a separate local port. Nothing is archived automatically.</p>
+    <div class="production-session-list" id="productionSessionList" aria-live="polite"></div>
+  </div>
+  <div id="productionSessionCurrent" hidden>
+    <div class="production-session-identity"><span>ACTIVE TEMPORARY IDENTITY</span><strong id="productionSessionParticipantName">Guest</strong><small id="productionSessionId"></small></div>
+    <div class="production-session-boundaries"><div><b>OWN STATE</b><span>Separate browser origin, server state and outputs</span></div><div><b>BODY SAFE</b><span>Shared runtimes and heavy compute are not granted here</span></div><div><b>NO ARCHIVE</b><span>Download or discard explicitly when closing</span></div></div>
+    <div class="production-session-workspace"><span>Codex / produced-file workspace</span><code id="productionSessionWorkspace"></code><button id="productionSessionCopyPrompt" type="button">Copy safe Codex handoff</button></div>
+    <div class="production-session-actions"><button class="production-session-save" id="productionSessionSaveClose" type="button">Download work &amp; close</button><button class="production-session-discard" id="productionSessionDiscardClose" type="button">Discard session &amp; close</button><button id="productionSessionCancel" type="button">Keep working</button></div>
+    <p class="production-session-note" id="productionSessionMessage">A heartbeat keeps this temporary room alive. If its Hub disappears for 15 minutes, the room cleans itself instead of becoming an unattended process.</p>
+  </div>
+</div></div>
 
 <div class="overlay" id="foundationScreen" role="dialog" aria-modal="true" aria-labelledby="foundationTitle"><div class="sheet foundation-sheet">
   <button class="close" data-close="foundationScreen" aria-label="Close foundation services">&#10005;</button>
@@ -138,7 +180,7 @@
     <div class="profile-contribution-head"><div><h3>Optional task contribution board</h3><p class="profile-note">Only explicit AXM task receipts. No screen tracking, no constant activity surveillance and no overall winner score.</p></div><span>GAMES · ART · PROJECTS · CODE · EMBLEMS</span></div><div class="profile-members profile-contribution-board" id="profileMembers"></div>
     <section class="profile-reflection" id="profileReflection"></section>
     <form class="profile-code" id="profileCodeReceipt"><h3>Verified code receipt</h3><p class="profile-note">For a reviewed change only: count the exact characters, choose its purpose mood, and attach diff, commit or file evidence. Mood describes what the code serves—not which language or file it used.</p><div class="profile-receipt-health" id="profileReceiptHealth" role="status"></div><div class="profile-code-grid"><select id="profileCodeActor" aria-label="Code contributor"></select><select id="profileCodeMood" aria-label="Code purpose"><option value="infrastructure">Infrastructure</option><option value="entertainment">Entertainment</option><option value="software">Software</option></select><input id="profileCodeCount" type="number" min="1" max="100000000" required placeholder="Exact characters"><input id="profileCodeEvidence" required maxlength="1000" placeholder="Evidence: reviewed diff, commit, or files"></div><div class="profile-actions"><button class="profile-action" type="submit">Count contribution</button></div></form>
-    <section class="profile-achievements"><div class="profile-achievement-head"><div><h3>Achievements · <span id="profileAchievementOwner">AXM Team</span></h3><p class="profile-note">512 px emblems · 420 px safe artwork · locked by default · tied to verified profile and identity data.</p></div><div class="profile-achievement-actions"><button class="profile-action" id="profileAchievementTeam" type="button" hidden>Team view</button><b id="profileAchievementCount">0 / 8 lit</b></div></div><div class="profile-achievement-grid" id="profileAchievements"></div></section>
+    <section class="profile-achievements"><div class="profile-achievement-head"><div><h3>Achievements · <span id="profileAchievementOwner">AXM Team</span></h3><p class="profile-note">512 px emblems · 420 px safe artwork · locked by default · tied to verified profile and identity data.</p></div><div class="profile-achievement-actions"><button class="profile-action" id="profileAchievementTeam" type="button" hidden>Team view</button><b id="profileAchievementCount">0 / 29 lit</b></div></div><div class="profile-achievement-grid" id="profileAchievements"></div></section>
     <div class="profile-future"><b>Item links remain reserved for later.</b> Unlocks are local profile records only; they do not grant access, permissions, purchases or online identity.</div>
     <div class="profile-actions"><button class="profile-action" id="profileStop" type="button">Stop tracking</button><button class="profile-action danger" id="profileDelete" type="button">Delete profile & history</button></div>
   </section>
@@ -147,18 +189,19 @@
 
 <div class="overlay" id="growthScreen" role="dialog" aria-modal="true" aria-labelledby="growthTitle"><div class="sheet growth-sheet">
   <button class="close" id="growthClose" type="button" aria-label="Close Workshop Growth">&#10005;</button>
-  <div class="growth-hero"><div><div class="growth-kicker">AXM · living workshop infographic</div><h2 id="growthTitle">The village is getting bigger.</h2><p>See what the active workshop has become without letting backups, exported copies, logs or dependencies inflate the story.</p></div><div class="growth-actions"><input id="growthLabel" maxlength="100" value="Workshop milestone" aria-label="Snapshot label"><button id="growthCapture" type="button">Save snapshot</button><span id="growthActionStatus" class="growth-action-status" role="status" aria-live="polite"></span></div></div>
+  <div class="growth-hero"><div><div class="growth-kicker">AXM · living workshop infographic</div><h2 id="growthTitle">The village is getting bigger.</h2><p>See what the active workshop has become without letting backups, exported copies, logs or dependencies inflate the story.</p></div><div class="growth-actions"><div class="growth-manual"><input id="growthLabel" maxlength="100" value="Workshop milestone" aria-label="Snapshot label"><button id="growthCapture" type="button">Save snapshot</button><button id="growthRefresh" type="button">Refresh</button></div><div class="growth-daily"><label><input id="growthAutoEnabled" type="checkbox"> Daily snapshot</label><input id="growthAutoTime" type="time" value="05:00" aria-label="Daily snapshot time"><button id="growthScheduleSave" type="button">Save daily</button></div><small id="growthScheduleSummary">Compact daily metrics · local time</small><span id="growthActionStatus" class="growth-action-status" role="status" aria-live="polite"></span></div></div>
   <div class="growth-primary" id="growthPrimary"></div>
-  <div class="growth-world"><section class="growth-panel"><h3>Workshop constellation</h3><p>Independent things AXM can now open, play, or verify.</p><div class="growth-orbits" id="growthOrbits"></div><div class="growth-composition" id="growthComposition"></div></section><section class="growth-panel"><h3>Growth since baseline</h3><p>Snapshots are explicit and identical measurements deduplicate.</p><div class="growth-deltas" id="growthDeltas"></div></section></div>
+  <div class="growth-world"><section class="growth-panel"><h3>Workshop constellation</h3><p>Independent things AXM can now open, play, or verify.</p><div class="growth-orbits" id="growthOrbits"></div><div class="growth-composition" id="growthComposition"></div></section><section class="growth-panel"><h3>Growth since previous snapshot</h3><p>The first baseline stays in history; this view shows the latest daily step.</p><div class="growth-deltas" id="growthDeltas"></div></section></div>
   <section class="growth-panel" style="margin-top:14px"><h3>Timeline</h3><p>Up to the latest twenty saved workshop moments.</p><div class="growth-history" id="growthHistory"></div></section>
   <div class="growth-rules" id="growthRules"></div><div class="growth-status" id="growthStatus" role="status"></div>
 </div></div>
 
-<section class="vision-panel" id="visionPanel" hidden aria-label="Claude shared vision controls">
-  <div class="vision-head"><div><span>SHARED CAPABILITY · VISION</span><b>Claude Eyes</b></div><button id="visionClose" type="button" aria-label="Close vision controls">×</button></div>
-  <p>Choose the active AXM tab or window when the browser asks. Claude receives one reduced screenshot per heartbeat. Vision grants observation only; command and edit gates do not change.</p>
+<section class="vision-panel" id="visionPanel" hidden aria-label="Eye 2.0 controls">
+  <div class="vision-head"><div><span>SHARED CAPABILITY · TEMPORAL VISION</span><b>Desktop Eyes · Eye 2.0</b></div><button id="visionClose" type="button" aria-label="Close vision controls">×</button></div>
+  <p>Choose the active AXM tab or window when the browser asks. Eye 2.0 observes a bounded rolling sequence, extracts one attributed text observation, seals a tiny digest receipt, then releases the raw frames. No raw-video archive. Sight grants no command, edit, training or wisdom authority.</p>
+  <div class="vision-grid"><label>Recipient<select id="visionTarget"><option value="mirror" selected>Mirror · Seed-0</option><option value="codex">Codex · Axiom/Mir</option><option value="claude">Claude</option><option value="nova">Nova</option><option value="gemini-local">Gemini Local</option></select></label><label>Scout<input value="Claude · observation only" disabled></label></div>
   <label>Purpose<input id="visionPurpose" maxlength="500" value="Observe our shared AXM workspace. Raise a notice only for a useful question, proposal, message, or warning."></label>
-  <div class="vision-grid"><label>Heartbeat<select id="visionInterval"><option value="15">15 seconds</option><option value="30" selected>30 seconds</option><option value="60">1 minute</option></select></label><label>Frame budget<select id="visionBudget"><option value="1">1 frame · test</option><option value="4" selected>4 frames</option><option value="10">10 frames</option></select></label></div>
+  <div class="vision-grid"><label>Heartbeat<select id="visionInterval"><option value="15">15 seconds</option><option value="30" selected>30 seconds</option><option value="60">1 minute</option></select></label><label>Observation budget<select id="visionBudget"><option value="1">1 sequence · test</option><option value="4" selected>4 sequences</option><option value="10">10 sequences</option></select></label></div>
   <div class="vision-actions"><button id="visionStart" type="button">Share active screen</button><button id="visionStop" type="button" disabled>Stop eyes</button><span id="visionState">OFF</span></div>
   <div class="vision-summary" id="visionSummary">No screen is being shared.</div>
 </section>
@@ -232,14 +275,16 @@
   </div>
 </div></div>
 
-<script src="/hub/ai-presence.js"></script>
+<script src="/hub/ai-presence.js?v=20260717-bridge-state-1"></script>
 <script src="/shared/profile/axm-profile-client.js?v=20260713-2"></script>
 <script src="/hub/profile.js?v=20260713-2"></script>
-<script src="/hub/growth.js"></script>
-<script src="/hub/ai-vision-loop.js"></script>
+<script src="/hub/growth.js?v=20260717-3"></script>
+<script src="/shared/ai-native-hands/ephemeral-vision-hand.js?v=20260719-1"></script>
+<script src="/hub/ai-vision-loop.js?v=20260719-eye2-1"></script>
 <script src="/hub/foundation-services.js"></script>
 <script src="/hub/sonic-signature.js"></script>
-<script src="/hub/radio.js"></script>
+<script src="/hub/radio.js?v=20260717-2"></script>
 <script src="/hub/spotify.js"></script>
+<script src="/hub/production-session.js?v=20260718-1"></script>
 <script>AXMHubShell.boot();</script>
 </body></html>

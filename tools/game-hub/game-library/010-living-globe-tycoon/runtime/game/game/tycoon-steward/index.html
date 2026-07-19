@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#0b6670">
+  <title>AXM Island Steward's Desk — v0.7 Palace Polish</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to stewardship workspace</a>
+  <header class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">AXM tropical tycoon stewardship experiment</p>
+      <h1>The Island Steward's Desk</h1>
+      <p class="lede">Draw the broad direction, fund what matters, then let the island improvise the details—with every coconut, coin, cost and consequence still accounted for.</p>
+      <p class="palace-radio"><span>🦜 Palace radio</span> Governor, the island has filed several opinions. Most are about housing. One is apparently from a goat.</p>
+    </div>
+    <div class="truth-badge" aria-label="Current status">
+      <strong>EXPERIMENTAL v0.7</strong>
+      <span>Palace-polish test edition</span>
+      <span>Local test candidate</span>
+      <span>Not installed · not promoted</span>
+      <span>Globe disconnected</span>
+    </div>
+  </header>
+
+  <main id="workspace" class="workspace">
+    <section class="command-bar panel" aria-label="Turn and state controls">
+      <div class="state-stamp">
+        <span>Turn <strong id="turnValue">0</strong></span>
+        <span>Revision <strong id="revisionValue">0</strong></span>
+        <span id="seedValue">seed</span>
+      </div>
+      <div class="command-actions">
+        <button id="advanceOneButton" class="primary" type="button">▶ Next turn</button>
+        <button id="advanceFiveButton" type="button">⏩ Advance 5</button>
+        <button id="sampleButton" type="button">🎬 Try the 24-turn island</button>
+      </div>
+      <label class="reason-field">Visible reason for the next decision
+        <input id="reasonInput" type="text" maxlength="180" value="Steer carefully with visible reasons and reversible choices.">
+      </label>
+      <p id="statusMessage" class="status-message" role="status" aria-live="polite">No turn advances until you choose it.</p>
+    </section>
+
+    <section class="world-column">
+      <article class="panel map-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Seeded island · 8 × 8 planning cells</p>
+            <h2>The Island Planning Table</h2>
+          </div>
+          <div class="legend" aria-label="Zone legend">
+            <span data-zone="HOUSING">Homes</span><span data-zone="INDUSTRY">Work</span><span data-zone="ENTERTAINMENT">Joy</span>
+            <span data-zone="NATURE">Nature</span><span data-zone="INFRASTRUCTURE">Links</span><span data-zone="NEUTRAL">Open</span>
+          </div>
+        </div>
+        <div class="map-scroll">
+          <div id="regionGrid" class="region-grid" role="grid" aria-label="Steward region map"></div>
+        </div>
+        <div class="brush-row">
+          <label>Broad zone brush
+            <select id="brushZone">
+              <option value="HOUSING">Housing</option>
+              <option value="INDUSTRY">Industry</option>
+              <option value="ENTERTAINMENT">Entertainment</option>
+              <option value="NATURE">Nature</option>
+              <option value="INFRASTRUCTURE">Infrastructure</option>
+              <option value="NEUTRAL">Neutral / emergent</option>
+            </select>
+          </label>
+          <button id="paintButton" type="button">🖌 Zone selected cells</button>
+          <button id="clearSelectionButton" class="quiet" type="button">Clear selection</button>
+          <span id="selectionCount">0 cells selected</span>
+        </div>
+      </article>
+
+      <div class="two-up">
+        <article class="panel">
+          <div class="panel-head"><div><p class="eyebrow">Separate, never collapsed</p><h2>Island mood &amp; wellbeing</h2></div></div>
+          <div id="vitalsList" class="vitals-list"></div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><p class="eyebrow">Stock · reserved · available</p><h2>Treasury &amp; stores</h2></div></div>
+          <div id="resourceList" class="resource-list"></div>
+        </article>
+      </div>
+
+      <article class="panel supply-panel">
+        <div class="panel-head"><div><p class="eyebrow">Casual headline · conserved products underneath</p><h2>Markets &amp; workshops</h2></div><span id="supplyPriceIndex" aria-hidden="true"></span></div>
+        <p id="supplyHeadline" class="supply-headline">The stores are checking their shelves.</p>
+        <div id="supplyList" class="supply-list"></div>
+        <p id="tradeReadyLine" class="boundary-note">No external trade route is connected.</p>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head"><div><p class="eyebrow">Pressure with disconfirmers</p><h2>What people are grumbling about</h2></div></div>
+        <div id="needsList" class="needs-list"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head"><div><p class="eyebrow">History survives failure</p><h2>District stories</h2></div></div>
+        <div id="districtList" class="district-list"></div>
+      </article>
+    </section>
+
+    <aside class="steward-column" aria-label="Steward controls and evidence">
+      <article class="panel control-card">
+        <p class="eyebrow">Allocate without placing buildings</p>
+        <h2>Back a broad idea</h2>
+        <label>Zone
+          <select id="allocationZone">
+            <option value="HOUSING">Housing</option><option value="INDUSTRY">Industry</option>
+            <option value="ENTERTAINMENT">Entertainment</option><option value="NATURE">Nature</option>
+            <option value="INFRASTRUCTURE">Infrastructure</option><option value="NEUTRAL">Neutral / emergent</option>
+          </select>
+        </label>
+        <div class="allocation-grid">
+          <label>Population<input id="allocationPopulation" type="number" min="0" max="20" step="1" value="3"></label>
+          <label>Energy<input id="allocationEnergy" type="number" min="0" max="100" step="1" value="14"></label>
+          <label>Materials<input id="allocationMaterials" type="number" min="0" max="100" step="1" value="20"></label>
+          <label>Funds<input id="allocationFunds" type="number" min="0" max="160" step="1" value="28"></label>
+          <label>Attention<input id="allocationAttention" type="number" min="0" max="20" step="1" value="4"></label>
+        </div>
+        <div class="button-row"><button id="previewAllocationButton" type="button">Preview only</button><button id="acceptAllocationButton" class="primary" type="button" disabled>Accept proposal</button></div>
+        <div id="proposalPanel" class="proposal-panel">No allocation proposal yet. Previewing never spends.</div>
+      </article>
+
+      <article class="panel control-card">
+        <p class="eyebrow">Direction and constraints</p>
+        <h2>Governor's compass</h2>
+        <label>Priority
+          <select id="policyPriority">
+            <option value="BALANCED">Balanced tradeoffs</option><option value="HOMES_FIRST">Homes first</option>
+            <option value="LOCAL_WORK">Local work</option><option value="ACCESS_FIRST">Access first</option>
+            <option value="CIVIC_CARE">Civic care</option><option value="ECOLOGICAL_REPAIR">Ecological repair</option>
+          </select>
+        </label>
+        <label class="check-row"><input id="protectNatureCheck" type="checkbox" checked> Protect sensitive nature in routing</label>
+        <label class="check-row warning-check"><input id="natureOverrideCheck" type="checkbox"> Explicit protected-route override</label>
+        <button id="applyPolicyButton" type="button">Apply policy direction</button>
+      </article>
+
+      <article class="panel control-card memory-card">
+        <p class="eyebrow">Bottle the lightning, not the blueprint</p>
+        <h2>Remember what worked</h2>
+        <p id="patternHeadline" class="memory-headline">The island has not remembered a district pattern yet.</p>
+        <label>Working source district
+          <select id="patternSourceDistrict"></select>
+        </label>
+        <label>Pattern name
+          <input id="patternName" type="text" maxlength="80" value="A district worth repeating">
+        </label>
+        <button id="capturePatternButton" type="button">Capture observed emergence · 1 attention</button>
+        <div class="memory-divider" aria-hidden="true"></div>
+        <label>Captured pattern
+          <select id="goalPattern"></select>
+        </label>
+        <label>What happens at the captured baseline?
+          <select id="goalMode">
+            <option value="EVOLVE">Evolve beyond it</option>
+            <option value="PRESERVE">Preserve its character</option>
+          </select>
+        </label>
+        <button id="applyGoalButton" class="primary" type="button">Guide selected cells · 2 attention</button>
+        <p class="boundary-note">Select target cells on the map first. A goal changes candidate preference only: zones, terrain, deposits, labor, allocations and exact product bills still decide what is possible.</p>
+        <div id="patternList" class="pattern-list"></div>
+        <div id="goalLayerList" class="goal-layer-list"></div>
+      </article>
+
+      <article class="panel">
+        <p class="eyebrow">Why did this happen?</p>
+        <h2>Why did that happen?</h2>
+        <div id="inspectorPanel" class="inspector-panel">Select a map cell, structure, road, district or receipt.</div>
+      </article>
+
+      <article class="panel">
+        <p class="eyebrow">Unbound effects stay outside the score</p>
+        <h2>Novelty review</h2>
+        <div id="noveltyList" class="novelty-list"></div>
+      </article>
+
+      <article class="panel">
+        <p class="eyebrow">Append-only civic memory</p>
+        <h2>Recent palace paperwork</h2>
+        <div id="receiptList" class="receipt-list"></div>
+      </article>
+
+      <article class="panel control-card">
+        <p class="eyebrow">Offline, revision-checked handoff</p>
+        <h2>Host-world proposal</h2>
+        <p id="hostBridgeStatus" class="boundary-note">Load a bridge packet exported by the host world. Nothing connects or applies automatically.</p>
+        <button id="loadHostBridgeButton" type="button">Load host bridge packet</button>
+        <input id="hostBridgeFileInput" type="file" accept="application/json,.json" hidden>
+        <div id="hostBridgeControls" hidden>
+          <label>Operation
+            <select id="hostOperation">
+              <option value="PROPOSE_SERVICE">Build a service</option>
+              <option value="PROPOSE_DISTRICT">Set district direction</option>
+              <option value="PROPOSE_ROAD">Connect two districts</option>
+              <option value="PROPOSE_ECO_BUFFER">Protect ecological buffer</option>
+            </select>
+          </label>
+          <label>Host district<select id="hostDistrict"></select></label>
+          <label id="hostServiceLabel">Service
+            <select id="hostService">
+              <option value="HOUSING">Housing</option><option value="CLINIC">Clinic</option><option value="SCHOOL">School</option>
+              <option value="MARKET">Market</option><option value="WATER_WORKS">Water works</option><option value="SOLAR_COOP">Solar co-op</option><option value="FARM">Farm</option>
+            </select>
+          </label>
+          <label id="hostZoneLabel" hidden>Zone
+            <select id="hostZone"><option value="HOUSING">Housing</option><option value="INDUSTRY">Industry</option><option value="ENTERTAINMENT">Entertainment</option><option value="NATURE">Nature</option><option value="INFRASTRUCTURE">Infrastructure</option><option value="NEUTRAL">Neutral</option></select>
+          </label>
+          <label id="hostRoadLabel" hidden>Connect to<select id="hostRoadTo"></select></label>
+          <button id="exportHostProposalButton" class="primary" type="button">Export proposal for host review</button>
+        </div>
+        <p class="boundary-note">The exported city-patch packet carries this simulation ID, turn, revision and visible reason. It remains a proposal until the host world separately reviews and applies it.</p>
+      </article>
+
+      <article class="panel file-card">
+        <p class="eyebrow">Explicit portability</p>
+        <h2>State and local storage</h2>
+        <div class="file-grid">
+          <button id="exportStateButton" type="button">Export state</button>
+          <button id="importStateButton" type="button">Import state</button>
+          <button id="exportReceiptsButton" type="button">Export receipts</button>
+          <button id="saveLocalButton" type="button">Save locally</button>
+          <button id="loadLocalButton" type="button">Load local save</button>
+          <button id="clearLocalButton" type="button">Clear local save</button>
+          <button id="resetButton" class="danger" type="button">Reset to starter</button>
+        </div>
+        <input id="importFileInput" type="file" accept="application/json,.json" hidden>
+        <p class="boundary-note">Nothing loads, overwrites, clears or advances automatically. Import limit: 1 MB.</p>
+      </article>
+    </aside>
+  </main>
+
+  <footer>
+    <strong>Truth boundary:</strong> this is a deterministic civic-game experiment. It is not a scientific city model, autonomous planner, living-globe integration, or proof of fun or balance.
+  </footer>
+
+  <div id="toastHarbor" class="toast-harbor" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="core/canonical-state.js"></script>
+  <script src="core/deterministic-rng.js"></script>
+  <script src="core/zone-model.js"></script>
+  <script src="core/resource-ledger.js"></script>
+  <script src="core/supply-chain.js"></script>
+  <script src="core/emergence-patterns.js"></script>
+  <script src="core/needs-model.js"></script>
+  <script src="core/road-emergence.js"></script>
+  <script src="core/consequence-model.js"></script>
+  <script src="core/receipt-log.js"></script>
+  <script src="core/globe-adapter.js"></script>
+  <script src="core/emergence-engine.js"></script>
+  <script src="core/steward-state.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

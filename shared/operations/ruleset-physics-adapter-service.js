@@ -1,0 +1,35 @@
+'use strict';
+
+const path = require('path');
+const U = require('./operations-utils');
+
+const SCHEMA = 'axm.living-world-adapter-registry/v1';
+const BUILT_INS = [
+  { id:'bounded-motion-2d', name:'Bounded Motion 2D', kind:'physics', version:'1.0.0', consumes:'axm.living-world.snapshot/v1', produces:'axm.living-world.intent/v1', ownsWorld:false, canResetWorld:false, description:'Advances position from bounded velocity and emits upsert intents.' },
+  { id:'zone-score-ruleset', name:'Zone Score Ruleset', kind:'ruleset', version:'1.0.0', consumes:'axm.living-world.snapshot/v1', produces:'axm.living-world.intent/v1', ownsWorld:false, canResetWorld:false, description:'Counts entities by zone and proposes score facts.' }
+];
+
+function create(options) {
+  const stateDir = path.join(options.stateRoot, 'living-world-ruleset-physics-kit'), stateFile = path.join(stateDir, 'registry.json'), auditFile = path.join(stateDir, 'audit.jsonl');
+  function seed() { return { schema:SCHEMA, version:1, adapters:BUILT_INS.map(U.clone), attachments:[], evaluations:[] }; }
+  function read() { const state=U.loadJson(stateFile,null); if(state&&state.schema===SCHEMA)return state; const next=seed(); write(next); return next; }
+  function write(state) { state.updatedAt=U.now(); U.atomicJson(stateFile,state); }
+  function audit(event) { U.appendJsonl(auditFile,Object.assign({at:U.now()},event)); }
+  function contract(input) {
+    const body=input||{}, result={ id:U.cleanId(body.id,'adapter id'), name:String(body.name||'Adapter').slice(0,120), kind:['ruleset','physics'].includes(body.kind)?body.kind:'ruleset', version:String(body.version||'1.0.0').slice(0,40), consumes:String(body.consumes||''), produces:String(body.produces||''), ownsWorld:body.ownsWorld===true, canResetWorld:body.canResetWorld===true, description:String(body.description||'').slice(0,500) };
+    const errors=[]; if(result.consumes!=='axm.living-world.snapshot/v1')errors.push('adapter must consume axm.living-world.snapshot/v1'); if(result.produces!=='axm.living-world.intent/v1')errors.push('adapter must produce axm.living-world.intent/v1'); if(result.ownsWorld)errors.push('adapter cannot own the living world'); if(result.canResetWorld)errors.push('adapter cannot reset the living world'); return {valid:errors.length===0,errors,adapter:result};
+  }
+  function register(input,actor) { const checked=contract(input); if(!checked.valid)throw new Error('adapter contract refused: '+checked.errors.join('; ')); const state=read(); if(state.adapters.some(x=>x.id===checked.adapter.id))throw new Error('adapter id already exists'); state.adapters.push(checked.adapter); write(state); audit({type:'adapter-registered',adapterId:checked.adapter.id,actor:String(actor||'local-user').slice(0,120)}); return checked.adapter; }
+  function attach(input,actor) { const body=input||{}, state=read(), world=options.worldStateService.get(body.worldId), adapter=state.adapters.find(x=>x.id===String(body.adapterId||'')); if(!adapter)throw new Error('adapter not found'); const expected=Number(body.expectedRevision); if(!Number.isInteger(expected)||expected!==world.revision)throw new Error('world revision conflict while attaching adapter'); const attachment={schema:'axm.living-world-adapter-attachment/v1',id:U.uid('attachment'),adapterId:adapter.id,worldId:world.worldId,boundRevision:world.revision,config:body.config&&typeof body.config==='object'?U.clone(body.config):{},createdBy:String(actor||'local-user').slice(0,120),createdAt:U.now(),active:true,ownsWorld:false,canResetWorld:false}; if(JSON.stringify(attachment.config).length>20000)throw new Error('adapter config exceeds 20 KB'); state.attachments.unshift(attachment);state.attachments=state.attachments.slice(0,200);write(state);audit({type:'adapter-attached',attachmentId:attachment.id,adapterId:adapter.id,worldId:world.worldId,revision:world.revision});return attachment; }
+  function evaluate(input,actor) {
+    const body=input||{}, state=read(), attachment=state.attachments.find(x=>x.id===String(body.attachmentId||'')&&x.active); if(!attachment)throw new Error('active adapter attachment not found'); const adapter=state.adapters.find(x=>x.id===attachment.adapterId); const world=options.worldStateService.get(attachment.worldId); if(world.worldId!==attachment.worldId)throw new Error('attachment world mismatch'); const expected=Number(body.expectedRevision); if(!Number.isInteger(expected)||expected!==world.revision)throw new Error('world revision conflict while evaluating adapter'); const intents=[];
+    if(adapter.id==='bounded-motion-2d') { const dt=Math.max(0.001,Math.min(1,Number(attachment.config.dt)||0.016)); const bound=Math.max(1,Math.min(100000,Number(attachment.config.bound)||100)); world.entities.slice(0,500).forEach(entity=>{const c=entity.data||{},p=c.position,v=c.velocity;if(!p||!v)return;const x=Math.max(-bound,Math.min(bound,(Number(p.x)||0)+(Number(v.x)||0)*dt)),y=Math.max(-bound,Math.min(bound,(Number(p.y)||0)+(Number(v.y)||0)*dt));intents.push({type:'upsert-entity',entity:{id:entity.id,kind:entity.kind,data:Object.assign({},c,{position:{x,y}})}});}); }
+    else if(adapter.id==='zone-score-ruleset') { const counts={}; world.entities.forEach(entity=>{const zone=String(entity.data&&entity.data.zone||'unassigned').slice(0,60);counts[zone]=(counts[zone]||0)+1;}); Object.keys(counts).sort().slice(0,100).forEach(zone=>{const clean=zone.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'unassigned';intents.push({type:'set-fact',key:'score-'+clean,value:counts[zone]});}); }
+    const packet={schema:'axm.living-world.intent/v1',id:U.uid('intent'),attachmentId:attachment.id,adapterId:adapter.id,worldId:world.worldId,expectedRevision:world.revision,intents:intents.slice(0,500),createdBy:String(actor||'local-user').slice(0,120),createdAt:U.now(),applyAuthority:false,resetAuthority:false}; packet.digest=U.sha256(JSON.stringify(packet)); state.evaluations.unshift({id:packet.id,attachmentId:packet.attachmentId,adapterId:packet.adapterId,revision:packet.expectedRevision,intents:packet.intents.length,digest:packet.digest,createdAt:packet.createdAt});state.evaluations=state.evaluations.slice(0,200);write(state);audit({type:'adapter-evaluated',intentId:packet.id,adapterId:adapter.id,intents:packet.intents.length,revision:world.revision,digest:packet.digest});return packet;
+  }
+  function detach(id,actor) { const state=read(),item=state.attachments.find(x=>x.id===String(id||''));if(!item)throw new Error('adapter attachment not found');item.active=false;item.detachedAt=U.now();item.detachedBy=String(actor||'local-user').slice(0,120);write(state);audit({type:'adapter-detached',attachmentId:item.id});return item; }
+  function status(){const state=read();return{schema:SCHEMA,adapters:state.adapters,attachments:state.attachments,evaluations:state.evaluations,contracts:{consumes:'axm.living-world.snapshot/v1',produces:'axm.living-world.intent/v1'},worldOwner:false,automaticApply:false,resetAuthority:false};}
+  return{status,contract,register,attach,evaluate,detach,stateFile,auditFile};
+}
+
+module.exports={SCHEMA,BUILT_INS,create};

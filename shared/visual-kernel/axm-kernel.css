@@ -1,0 +1,138 @@
+/* AXM Visual Kernel v0.2
+   Shared semantic visual primitives. Product themes may change character,
+   never interaction meaning, readability, focus, or state boundaries. */
+@layer axm-kernel.tokens, axm-kernel.base, axm-kernel.states;
+
+@layer axm-kernel.tokens {
+  :root {
+    --axm-color-scheme:dark;
+    color-scheme:var(--axm-color-scheme);
+
+    --axm-neutral-1000:#050810;
+    --axm-neutral-950:#080d18;
+    --axm-neutral-900:#0d1524;
+    --axm-neutral-850:#121d2f;
+    --axm-neutral-800:#19273c;
+    --axm-neutral-700:#2a3b55;
+    --axm-neutral-500:#72839a;
+    --axm-neutral-300:#b5c2d2;
+    --axm-neutral-100:#f2f6fb;
+
+    --axm-brand:#58d2df;
+    --axm-action:#718cff;
+    --axm-focus:#a7efff;
+    --axm-info:#55bfea;
+    --axm-success:#61d69e;
+    --axm-warning:#efbd65;
+    --axm-danger:#f17d7b;
+
+    --axm-canvas:var(--axm-neutral-1000);
+    --axm-surface:var(--axm-neutral-950);
+    --axm-surface-raised:var(--axm-neutral-900);
+    --axm-surface-strong:var(--axm-neutral-850);
+    --axm-overlay:color-mix(in oklab,var(--axm-neutral-950) 92%,transparent);
+    --axm-text:var(--axm-neutral-100);
+    --axm-text-secondary:var(--axm-neutral-300);
+    --axm-text-quiet:var(--axm-neutral-500);
+    --axm-edge-subtle:#303b4b;
+    --axm-edge-strong:#586ea6;
+
+    --axm-font-sans:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --axm-font-mono:ui-monospace,"Cascadia Mono","SFMono-Regular",Consolas,monospace;
+    --axm-text-meta:.75rem;
+    --axm-text-body-sm:.875rem;
+    --axm-text-body:1rem;
+    --axm-text-subtitle:1.25rem;
+    --axm-text-title:1.75rem;
+    --axm-text-display:2.5rem;
+
+    --axm-space-1:.25rem;
+    --axm-space-2:.5rem;
+    --axm-space-3:.75rem;
+    --axm-space-4:1rem;
+    --axm-space-6:1.5rem;
+    --axm-space-8:2rem;
+    --axm-space-12:3rem;
+    --axm-space-16:4rem;
+
+    --axm-radius-sm:.5rem;
+    --axm-radius-md:.75rem;
+    --axm-radius-lg:1.125rem;
+    --axm-radius-xl:1.5rem;
+    --axm-radius-pill:999px;
+    --axm-shadow-1:0 1px 2px rgb(0 0 0/.28);
+    --axm-shadow-2:0 12px 32px rgb(0 0 0/.28);
+    --axm-shadow-3:0 28px 72px rgb(0 0 0/.44);
+
+    --axm-motion-quick:140ms;
+    --axm-motion-standard:220ms;
+    --axm-motion-emphasis:360ms;
+    --axm-ease-standard:cubic-bezier(.2,.8,.2,1);
+    --axm-ease-emphasis:cubic-bezier(.16,1,.3,1);
+    --axm-target-min:2.75rem;
+  }
+
+  :root[data-axm-theme="light"] {
+    --axm-color-scheme:light;
+    --axm-canvas:#f4f7fb;
+    --axm-surface:#ffffff;
+    --axm-surface-raised:#f8fafc;
+    --axm-surface-strong:#e9eef5;
+    --axm-text:#172231;
+    --axm-text-secondary:#48586b;
+    --axm-text-quiet:#68788b;
+    --axm-brand:#086d7a;
+    --axm-action:#3659c9;
+    --axm-focus:#0b6674;
+    --axm-info:#176f99;
+    --axm-success:#18794e;
+    --axm-warning:#805500;
+    --axm-danger:#b4232c;
+    --axm-edge-subtle:#d6dee8;
+    --axm-edge-strong:#8094bd;
+  }
+
+  :root[data-axm-theme="high-contrast"] {
+    --axm-color-scheme:dark;
+    --axm-canvas:#000000;
+    --axm-surface:#000000;
+    --axm-surface-raised:#090909;
+    --axm-surface-strong:#111111;
+    --axm-text:#ffffff;
+    --axm-text-secondary:#ffffff;
+    --axm-text-quiet:#d9d9d9;
+    --axm-brand:#6effff;
+    --axm-action:#91a8ff;
+    --axm-focus:#ffff00;
+    --axm-info:#72d7ff;
+    --axm-success:#6effa8;
+    --axm-warning:#ffdd66;
+    --axm-danger:#ff8b8b;
+    --axm-edge-subtle:#a0a0a0;
+    --axm-edge-strong:#ffffff;
+  }
+}
+
+@layer axm-kernel.base {
+  :focus-visible {
+    outline:2px solid var(--axm-focus);
+    outline-offset:3px;
+  }
+}
+
+@layer axm-kernel.states {
+  [aria-disabled="true"],:disabled { opacity:.5;cursor:not-allowed; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    scroll-behavior:auto!important;
+    animation-duration:1ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:1ms!important;
+  }
+}
+
+@media (forced-colors:active) {
+  button,input,select,.hcard,.sheet { border:1px solid CanvasText; }
+}

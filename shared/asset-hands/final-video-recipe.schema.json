@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/final-video-recipe-v1.schema.json",
+  "title": "AXM Final Video Recipe v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "target_canvas", "operation", "source", "frames", "frame_rate", "duration_seconds", "deliveries", "audio", "losses", "provenance"],
+  "properties": {
+    "schema": {"const": "axm.final-video-recipe/v1"}, "version": {"const": "1.0.0"}, "id": {"type": "string", "minLength": 1},
+    "target_canvas": {"type": "object"}, "operation": {"enum": ["create", "edit", "finish", "validate"]}, "source": {"type": ["object", "null"]},
+    "frames": {"type": "integer", "minimum": 1}, "requested_frame_rate": {"type": "number", "exclusiveMinimum": 0}, "frame_rate": {"type": "number", "exclusiveMinimum": 0},
+    "duration_seconds": {"type": "number", "exclusiveMinimum": 0}, "deliveries": {"type": "array", "minItems": 1},
+    "audio": {"type": "object", "required": ["present", "supported"]}, "losses": {"type": "array"},
+    "provenance": {"type": "object", "required": ["hand", "hand_version", "seed", "source_artifact_digests"]}
+  },
+  "additionalProperties": false
+}

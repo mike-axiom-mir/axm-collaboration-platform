@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "profileId": "axm-circuitseed-field-v1",
+  "displayName": "Circuitseed Field Controls",
+  "sendIntervalMs": 50,
+  "vectors": {
+    "left": { "xField": "moveX", "yField": "moveY", "activeField": "moveActive", "retainOnInactive": false }
+  },
+  "buttons": {
+    "scan": "scan",
+    "connect": "connect",
+    "deploy": "deploy",
+    "assist": "assist",
+    "recover": "recover",
+    "return": "return",
+    "build": "build",
+    "interact": "interact"
+  },
+  "labels": {
+    "left": "MOVE",
+    "scan": "SCAN",
+    "connect": "CONNECT",
+    "deploy": "DEPLOY",
+    "assist": "ASSIST",
+    "recover": "RECOVER",
+    "return": "RETURN",
+    "build": "BUILD / SELL",
+    "interact": "ACT"
+  },
+  "intent": {
+    "vectorPairs": [{ "x": "moveX", "y": "moveY" }],
+    "booleanFields": ["moveActive"],
+    "pulseFields": ["scan", "connect", "deploy", "assist", "recover", "return", "build", "interact"]
+  },
+  "gameSpecific": {
+    "enumFields": {
+      "tacticalAction": ["Scan", "Anchor", "Shield", "Patch", "Reroute", "Challenge", "Isolate", "Synchronize"],
+      "choice": ["trace", "mend", "relay", "branch_a", "branch_b", "repair", "map", "translate", "open", "closed"]
+    },
+    "boundedTextFields": ["targetId", "recipeId", "orderId", "vote"]
+  }
+}

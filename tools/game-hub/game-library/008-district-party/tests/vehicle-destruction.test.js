@@ -32,6 +32,7 @@ test('non-driver movement aims independently and all four seats remain host-owne
 
 test('50 HP car explosion ejects occupants and applies exactly 80 damage through the one-point shield', () => {
   const world = makeWorld(), vehicle = world.vehicles['vehicle-001'];
+  world.staticMap.safeZones = [];
   Object.values(world.actors).forEach((actor) => { actor.position = { ...vehicle.position }; });
   claimVehicleSeat(world, 'actor-seat-1', vehicle.id, 'driver');
   for (let slot = 2; slot <= 4; slot += 1) claimVehicleSeat(world, `actor-seat-${slot}`, vehicle.id, 'passenger');
@@ -48,6 +49,7 @@ test('50 HP car explosion ejects occupants and applies exactly 80 damage through
 
 test('same-party shots cannot damage an owned car and destroyed cars reject entry until host respawn', () => {
   const world = makeWorld(), vehicle = world.vehicles['vehicle-001'];
+  world.staticMap.safeZones = [];
   const owner = world.actors['actor-seat-1'];
   owner.position = { ...vehicle.position };
   claimVehicleSeat(world, owner.id, vehicle.id, 'driver');

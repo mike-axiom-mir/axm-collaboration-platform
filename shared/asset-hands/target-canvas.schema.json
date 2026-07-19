@@ -1,0 +1,329 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/target-canvas-v1.schema.json",
+  "title": "AXM Target Canvas Contract v1",
+  "description": "A format-neutral declaration of the technological or physical environment an asset must be created for.",
+  "type": "object",
+  "required": [
+    "schema",
+    "medium",
+    "dimensions",
+    "colour",
+    "physical",
+    "behaviour",
+    "performance",
+    "intended_use"
+  ],
+  "properties": {
+    "schema": { "const": "axm.target-canvas/v1" },
+    "medium": {
+      "enum": [
+        "screen",
+        "ui",
+        "game-world",
+        "print",
+        "paper",
+        "fabric",
+        "wood",
+        "metal",
+        "physical-object",
+        "3d-surface",
+        "audio-device"
+      ]
+    },
+    "dimensions": {
+      "type": "object",
+      "required": ["width", "height", "unit"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "depth": { "type": ["number", "null"], "minimum": 0 },
+        "unit": { "enum": ["px", "mm", "m", "game-world-unit"] }
+      },
+      "additionalProperties": false
+    },
+    "colour": {
+      "type": "object",
+      "required": ["space", "transparency", "printable_colours"],
+      "properties": {
+        "space": {
+          "enum": [
+            "srgb",
+            "display-p3",
+            "linear-srgb",
+            "cmyk",
+            "grayscale",
+            "material-channel"
+          ]
+        },
+        "transparency": { "enum": ["required", "allowed", "opaque"] },
+        "minimum_contrast_ratio": {
+          "type": ["number", "null"],
+          "minimum": 1,
+          "maximum": 21
+        },
+        "printable_colours": { "type": "boolean" },
+        "profile": { "type": ["string", "null"], "maxLength": 160 },
+        "bit_depth": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 64
+        },
+        "transfer_function": { "type": ["string", "null"], "maxLength": 80 },
+        "primaries": { "type": ["string", "null"], "maxLength": 80 },
+        "alpha_mode": { "enum": ["straight", "premultiplied", "none"] },
+        "rendering_intent": {
+          "enum": [
+            "perceptual",
+            "relative-colorimetric",
+            "saturation",
+            "absolute-colorimetric"
+          ]
+        },
+        "spot_colours": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 100 }
+        },
+        "total_ink_coverage": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 400
+        },
+        "peak_luminance_nits": {
+          "type": ["number", "null"],
+          "exclusiveMinimum": 0,
+          "maximum": 100000
+        }
+      },
+      "additionalProperties": false
+    },
+    "physical": {
+      "type": "object",
+      "required": ["unit", "repeat", "material_behaviour"],
+      "properties": {
+        "unit": { "enum": ["px", "mm", "m", "game-world-unit"] },
+        "bleed": { "type": ["number", "null"], "minimum": 0 },
+        "minimum_stroke": { "type": ["number", "null"], "minimum": 0 },
+        "cutting_tool_width": { "type": ["number", "null"], "minimum": 0 },
+        "depth": { "type": ["number", "null"], "minimum": 0 },
+        "repeat": {
+          "type": "object",
+          "required": ["mode"],
+          "properties": {
+            "mode": { "enum": ["none", "x", "y", "xy"] },
+            "width": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+            "height": { "type": ["number", "null"], "exclusiveMinimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "material_behaviour": {
+          "type": "array",
+          "maxItems": 20,
+          "items": { "type": "string", "minLength": 1, "maxLength": 80 }
+        },
+        "tolerance": { "type": ["number", "null"], "minimum": 0 },
+        "material_thickness": { "type": ["number", "null"], "minimum": 0 },
+        "kerf_side": { "enum": ["centerline", "inside", "outside"] },
+        "grain_direction": { "type": ["string", "null"], "maxLength": 80 },
+        "operations": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 80 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "behaviour": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["static", "animated", "interactive", "responsive", "tileable"]
+      }
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "max_file_bytes": { "type": ["integer", "null"], "minimum": 1 },
+        "max_texture_memory_bytes": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "max_polygon_count": { "type": ["integer", "null"], "minimum": 0 },
+        "max_frame_ms": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "max_animation_frames": { "type": ["integer", "null"], "minimum": 1 },
+        "frames_per_second": {
+          "type": ["number", "null"],
+          "exclusiveMinimum": 0
+        },
+        "max_vertices": { "type": ["integer", "null"], "minimum": 0 },
+        "max_draw_calls": { "type": ["integer", "null"], "minimum": 0 },
+        "max_mip_levels": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 64
+        },
+        "max_duration_seconds": {
+          "type": ["number", "null"],
+          "exclusiveMinimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "print": {
+      "type": "object",
+      "properties": {
+        "dpi": { "type": ["number", "null"], "minimum": 1, "maximum": 9600 },
+        "safe_margin": { "type": ["number", "null"], "minimum": 0 },
+        "crop_marks": { "type": "boolean" },
+        "registration_marks": { "type": "boolean" },
+        "output_condition": { "type": ["string", "null"], "maxLength": 160 },
+        "font_policy": { "type": ["string", "null"], "maxLength": 80 }
+      },
+      "additionalProperties": false
+    },
+    "responsive": {
+      "type": "object",
+      "properties": {
+        "breakpoints": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "required": ["id", "min_width", "max_width", "unit"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1, "maxLength": 60 },
+              "min_width": { "type": ["number", "null"], "minimum": 0 },
+              "max_width": { "type": ["number", "null"], "minimum": 0 },
+              "unit": { "enum": ["px", "mm", "m", "game-world-unit"] }
+            },
+            "additionalProperties": false
+          }
+        },
+        "container_policy": { "type": ["string", "null"], "maxLength": 80 },
+        "pixel_density": {
+          "type": ["number", "null"],
+          "minimum": 0.1,
+          "maximum": 16
+        },
+        "locale": { "type": ["string", "null"], "maxLength": 40 },
+        "direction": { "enum": ["ltr", "rtl", "auto"] },
+        "safe_areas": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": { "type": "string", "maxLength": 80 }
+        },
+        "input_modalities": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": { "type": "string", "maxLength": 80 }
+        },
+        "reduced_motion": { "type": "boolean" },
+        "minimum_target_size": {
+          "type": ["number", "null"],
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "zoom_percent": {
+          "type": ["number", "null"],
+          "minimum": 25,
+          "maximum": 1000
+        }
+      },
+      "additionalProperties": false
+    },
+    "spatial": {
+      "type": "object",
+      "properties": {
+        "up_axis": { "enum": ["x", "y", "z"] },
+        "handedness": { "enum": ["left", "right"] },
+        "origin": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -1000000,
+            "maximum": 1000000
+          },
+          "anyOf": [{ "maxItems": 0 }, { "minItems": 3, "maxItems": 3 }]
+        },
+        "world_scale": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "uv_convention": { "type": ["string", "null"], "maxLength": 80 },
+        "tangent_convention": { "type": ["string", "null"], "maxLength": 80 },
+        "lod_policy": { "type": ["string", "null"], "maxLength": 80 },
+        "collision": { "type": ["string", "null"], "maxLength": 80 }
+      },
+      "additionalProperties": false
+    },
+    "temporal": {
+      "type": "object",
+      "properties": {
+        "frame_rate_numerator": { "type": ["integer", "null"], "minimum": 1 },
+        "frame_rate_denominator": { "type": ["integer", "null"], "minimum": 1 },
+        "drop_frame": { "type": "boolean" },
+        "sample_rate": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 768000
+        },
+        "channel_layout": { "type": ["string", "null"], "maxLength": 80 },
+        "codec": { "type": ["string", "null"], "maxLength": 80 },
+        "container": { "type": ["string", "null"], "maxLength": 80 },
+        "captions": { "type": ["string", "null"], "maxLength": 80 },
+        "tempo_bpm": {
+          "type": ["number", "null"],
+          "minimum": 20,
+          "maximum": 400
+        },
+        "time_signature_numerator": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 32
+        },
+        "time_signature_denominator": {
+          "type": ["integer", "null"],
+          "enum": [null, 1, 2, 4, 8, 16, 32]
+        },
+        "ticks_per_quarter": {
+          "type": ["integer", "null"],
+          "minimum": 24,
+          "maximum": 9600
+        },
+        "midi_channel": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 16
+        },
+        "note_min": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 127
+        },
+        "note_max": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 127
+        }
+      },
+      "additionalProperties": false
+    },
+    "accessibility": {
+      "type": "object",
+      "properties": {
+        "standard": { "type": ["string", "null"], "maxLength": 80 },
+        "reading_order": { "type": "boolean" },
+        "alternative_text": { "type": "boolean" },
+        "keyboard": { "type": "boolean" },
+        "focus_visible": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "intended_use": { "type": "string", "minLength": 1, "maxLength": 100 },
+    "declaration": { "enum": ["declared", "legacy-inferred"] }
+  },
+  "additionalProperties": false
+}

@@ -55,6 +55,22 @@
         'Expose uncertainty and disagreement for human review.',
         'Never promote a collaboration transcript into wisdom automatically.'
       ]
+    },
+    'mirror': {
+      id: 'mirror',
+      nativeId: 'axm.machine.mirror/seed-0',
+      name: 'Mirror',
+      kind: 'machine-native-seed',
+      role: 'Separate connectable reasoning seed with its own developmental wisdom stream and an explicit Workshop boundary.',
+      connector: 'mirror-native',
+      connectorLabel: 'Mirror Seed-0 loopback runtime',
+      status: 'waiting-for-runtime',
+      roots: [
+        'Truth before story; unsupported interpretation remains unpromoted.',
+        'Preserve source lineage, contradiction, dissent, and failed evidence.',
+        'No identity or interface silently expands permissions or removes meaningful human control.',
+        'Observe, model, compare, verify, and repair; hold when evidence is inadequate.'
+      ]
     }
   };
 
@@ -84,6 +100,18 @@
       provider: 'bridge',
       scope: 'workshop',
       consentRequired: true
+    },
+    'mirror': {
+      identityId: 'mirror',
+      mode: 'external-body-and-kernel-locked',
+      connector: 'mirror-native',
+      model: 'axm.machine.mirror/seed-0',
+      provider: 'mirror-kernel',
+      scope: 'workshop-wisdom-link',
+      consentRequired: true,
+      wisdomEnabled: true,
+      askEnabled: false,
+      privateStateImported: false
     }
   };
 
@@ -134,7 +162,7 @@
       profiles: clone(DEFAULT_PROFILES),
       bindings: clone(DEFAULT_BINDINGS),
       defaultIdentityId: null,
-      memories: { 'nova': [], 'axiom-mir': [], 'gemini-local': [], shared: [clone(SHARED_SEED), clone(SHARED_PURPOSEFUL_AGENCY)] },
+      memories: { 'nova': [], 'axiom-mir': [], 'gemini-local': [], 'mirror': [], shared: [clone(SHARED_SEED), clone(SHARED_PURPOSEFUL_AGENCY)] },
       updatedAt: now()
     };
   }
@@ -271,6 +299,10 @@
   }
   function ask(identityId, prompt, opts) {
     opts = opts || {};
+    var selectedBinding = binding(identityId);
+    if (selectedBinding.askEnabled === false) {
+      throw new Error('identity ask unavailable: ' + identityId + ' has a wisdom-only Workshop link; use its explicit native runtime contract');
+    }
     var connector = assertRoute(identityId, opts.aiProvider || opts.targetProvider);
     var model = assertModel(identityId, opts.model);
     var connect = opts.connect || root.AXMConnect || (root.AXM && root.AXM.connect);

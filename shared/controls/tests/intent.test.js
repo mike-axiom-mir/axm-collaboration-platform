@@ -43,3 +43,13 @@ test('packet validation requires local identity, sequence, and object input', ()
   assert.equal(bad.ok, false);
   assert.deepEqual(bad.errors, ['invalid-token', 'invalid-sequence', 'invalid-input']);
 });
+
+test('input-source binding identity is optional for legacy packets but atomic when present', () => {
+  const base = {
+    roomCode: 'AXM1', sessionId: 'session-one', seatId: 'seat_1', token: 'private-token', seq: 0, input: {},
+  };
+  assert.equal(validateInputPacket(base).ok, true);
+  assert.equal(validateInputPacket({ ...base, inputSourceBindingId: 'binding-one', inputSourceEpoch: 2 }).ok, true);
+  assert.deepEqual(validateInputPacket({ ...base, inputSourceBindingId: 'binding-one' }).errors, ['incomplete-input-source-binding']);
+  assert.deepEqual(validateInputPacket({ ...base, inputSourceEpoch: 2 }).errors, ['incomplete-input-source-binding']);
+});

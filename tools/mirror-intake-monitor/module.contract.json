@@ -1,0 +1,5 @@
+{
+  "schema":"axm.module-contract/v1","id":"mirror-intake-monitor","version":"v0.1","status":"TEST","provides":["explicit-draft-bound-mirror-intake-receipt","read-only-intake-state-view"],"consumes":["module:cognitive-resource-meter","provider:explicit-mirror-intake-receipt"],"permissions":["mirror.intake-receipt.import"],
+  "handoffs":{"emits":["WORKSHOP_MIRROR_INTAKE_STATUS_RECEIPT"],"accepts":["MIRROR_INTAKE_RECEIPT"]},"lifecycle":{"state_owner":"service","reload":"resume","disconnect":"graceful-degrade","cleanup":"explicit"},
+  "boundaries":{"writes":["state/cognitive-evidence-labs:imported-intake-receipt"],"refuses":["absolute-mirror-path","private-mirror-state-read","mirror-write","acceptance-inference-from-export","receipt-certification","automatic-network-connection","ranking","selection","permission-change","training","canon","world-action"]}
+}

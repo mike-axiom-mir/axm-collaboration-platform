@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.asset-creation-recipe/v1",
+  "title": "AXM Asset Creation Recipe v1",
+  "type": "object",
+  "required": ["schema", "format", "hand", "operation_mode", "source_artifact_digests", "seed", "target_canvas", "target_canvas_original", "canvas_transformations", "intended_use", "parameters", "steps", "editable", "deterministic"],
+  "properties": {
+    "schema": { "const": "axm.asset-creation-recipe/v1" },
+    "format": { "type": "string", "minLength": 1 },
+    "hand": { "type": "object", "required": ["id", "version"], "properties": { "id": { "type": "string" }, "version": { "type": "string" } } },
+    "operation_mode": { "enum": ["create", "edit", "inspect", "validate", "finish", "workflow"] },
+    "source_artifact_digests": { "type": "array", "items": { "type": "object" } },
+    "seed": { "type": "string" },
+    "target_canvas": { "$ref": "target-canvas.schema.json" },
+    "target_canvas_original": { "type": "object" },
+    "canvas_transformations": { "type": "array" },
+    "intended_use": { "type": "string" },
+    "parameters": { "type": "object" },
+    "steps": { "type": "array", "items": { "type": "object" } },
+    "editable": { "type": "boolean" },
+    "deterministic": { "type": "boolean" }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,212 @@
+{
+  "schema": "axm.physics-source-register/v1",
+  "date": "2026-07-19",
+  "target": {
+    "engine": "axm-physics-2d",
+    "version": "0.3.1",
+    "scope": "translation-only 2D game-physics prototype"
+  },
+  "provenance": {
+    "factPack": {
+      "filename": "AXM_PHYSICS_CORE_FACT_PACK_v0_1_2026-07-19.zip",
+      "sha256": "453655F576EABF2A9B0ACA6E829D7B5F52E864F2550E20159F45EBE609E26442",
+      "manifestEntriesVerified": 3,
+      "manifestEntriesFailed": 0
+    },
+    "lightweightAddendum": {
+      "filename": "AXM_PHYSICS_CORE_LIGHTWEIGHT_ADDENDUM_v0_2_2026-07-19.zip",
+      "sha256": "68D1974E1A6E19E1420DDEBE73F675100C5A724D89B687DD4B25BD4C2E44CD78",
+      "manifestEntriesVerified": 4,
+      "manifestEntriesFailed": 0
+    },
+    "baselineWarning": "Both supplied packs audited v0.2.2. Local behavior claims were re-executed against v0.3.1 rather than copied forward.",
+    "sourceMetadataCorrection": {
+      "sourceId": "S10",
+      "suppliedTitle": "Concepts of Model Verification and Validation",
+      "suppliedUrl": "https://www.osti.gov/biblio/901974",
+      "observedAtSuppliedUrl": "Verification and validation benchmarks",
+      "correctTitleUrl": "https://www.osti.gov/biblio/835920",
+      "resolution": "S10 retains the supplied URL but uses its actual title and authors. The intended-title record is preserved as a correction note, not silently substituted."
+    }
+  },
+  "truthClasses": [
+    "FACT_DEFINITION",
+    "PHYSICAL_LAW",
+    "CONVENTION",
+    "EMPIRICAL_PAIR_DATA",
+    "NUMERICAL_METHOD",
+    "ENGINE_POLICY",
+    "VERIFIED_BEHAVIOR",
+    "VALIDATED_PHYSICS",
+    "KNOWN_LIMIT"
+  ],
+  "sources": [
+    {
+      "id": "S1",
+      "title": "The International System of Units (SI Brochure), 9th edition",
+      "institution": "Bureau International des Poids et Mesures",
+      "url": "https://www.bipm.org/en/publications/si-brochure/",
+      "doi": "10.59161/AUEZ1291",
+      "retrievalDate": "2026-07-19",
+      "authorityClass": "international metrology authority",
+      "claimsSupported": [
+        "SI units and coherent dimensions",
+        "distinction between quantities, dimensions and unit conventions"
+      ],
+      "limitsOfUse": "Does not validate AXM numerical behavior or game-engine policies.",
+      "verificationStatus": "PRIMARY_PAGE_OPENED"
+    },
+    {
+      "id": "S2",
+      "title": "NIST Guide to the SI — Footnotes",
+      "institution": "National Institute of Standards and Technology",
+      "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-footnotes",
+      "retrievalDate": "2026-07-19",
+      "authorityClass": "national metrology institute",
+      "claimsSupported": [
+        "conventional standard acceleration of free fall g_n = 9.80665 m/s^2"
+      ],
+      "limitsOfUse": "The conventional value is not a claim that local gravity everywhere equals it; AXM retains 9.81 as a legacy rounded game profile.",
+      "verificationStatus": "PRIMARY_PAGE_AND_VALUE_OPENED"
+    },
+    {
+      "id": "S3",
+      "title": "Chapter 7: Newton’s Laws of Motion",
+      "institution": "MIT OpenCourseWare",
+      "url": "https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/mit8_01scs22_chapter7.pdf",
+      "retrievalDate": "2026-07-19",
+      "authorityClass": "university course material",
+      "claimsSupported": [
+        "net force and constant-mass acceleration relation",
+        "scope assumptions for translational Newtonian mechanics"
+      ],
+      "limitsOfUse": "Teaching material is not independent validation of AXM.",
+      "verificationStatus": "PRIMARY_INSTITUTION_PDF_OPENED"
+    },
+    {
+      "id": "S4",
+      "title": "Impulse, Collisions and Conservation of Momentum",
+      "institution": "MIT OpenCourseWare",
+      "url": "https://ocw.mit.edu/courses/2-003j-dynamics-and-control-i-spring-2007/e12ed118aeb1eb716db972ab23f4b982_lec06.pdf",
+      "retrievalDate": "2026-07-19",
+      "authorityClass": "university course material",
+      "claimsSupported": [
+        "impulse-momentum relation",
+        "isolated-system momentum conservation",
+        "impact energy loss and restitution framing"
+      ],
+      "limitsOfUse": "Does not establish AXM material constants or validate its collision solver.",
+      "verificationStatus": "PRIMARY_INSTITUTION_PDF_OPENED"
+    },
+    {
+      "id": "S5",
+      "title": "Box2D Simulation Documentation",
+      "authors": [
+        "Erin Catto / Box2D"
+      ],
+      "url": "https://box2d.org/documentation/md_simulation.html",
+      "retrievalDate": "2026-07-19",
+      "authorityClass": "primary engine documentation",
+      "claimsSupported": [
+        "fixed timestep and substep engineering guidance",
+        "damping approximation and timestep sensitivity",
+        "sleep as a performance mechanism",
+        "tunnelling and CCD distinction",
+        "friction and restitution mixing as engine policy",
+        "contact and impulse terminology"
+      ],
+      "limitsOfUse": "Box2D policies are not universal physical laws and do not prove AXM correctness.",
+      "verificationStatus": "PRIMARY_PAGE_OPENED"
+    },
+    {
+      "id": "S6",
+      "title": "Box2D Publications",
+      "authors": [
+        "Erin Catto / Box2D"
+      ],
+      "url": "https://box2d.org/publications/",
+      "retrievalDate": "2026-07-19",
+      "authorityClass": "primary author and engine technical publications",
+      "claimsSupported": [
+        "sequential impulses",
+        "constraint and contact-manifold implementation references",
+        "continuous collision references"
+      ],
+      "limitsOfUse": "Techniques require AXM-specific implementation tests and bounded claims.",
+      "verificationStatus": "PRIMARY_PAGE_OPENED"
+    },
+    {
+      "id": "S7",
+      "title": "An Implicit Time-Stepping Scheme for Rigid Body Dynamics with Inelastic Collisions and Coulomb Friction",
+      "authors": [
+        "David E. Stewart",
+        "Jeffrey C. Trinkle"
+      ],
+      "year": 1996,
+      "url": "https://onlinelibrary.wiley.com/doi/abs/10.1002/%28SICI%291097-0207%2819960815%2939%3A15%3C2673%3A%3AAID-NME972%3E3.0.CO%3B2-I",
+      "doi": "10.1002/(SICI)1097-0207(19960815)39:15<2673::AID-NME972>3.0.CO;2-I",
+      "retrievalDate": "2026-07-19",
+      "authorityClass": "peer-reviewed research paper",
+      "claimsSupported": [
+        "rigid contact, impact and Coulomb friction require explicit numerical formulation",
+        "contact-method claims require convergence and scope controls"
+      ],
+      "limitsOfUse": "AXM does not implement the paper’s full formulation.",
+      "verificationStatus": "PUBLISHER_RECORD_OPENED"
+    },
+    {
+      "id": "S8",
+      "title": "ECMAScript 2025 Language Specification",
+      "institution": "Ecma International / TC39",
+      "url": "https://tc39.es/ecma262/2025/",
+      "retrievalDate": "2026-07-19",
+      "authorityClass": "primary language standard",
+      "claimsSupported": [
+        "JavaScript Number uses IEEE 754 binary64 semantics",
+        "numeric and bitwise conversion boundaries relevant to replay claims"
+      ],
+      "limitsOfUse": "Language semantics do not establish cross-runtime whole-simulation identity.",
+      "verificationStatus": "PRIMARY_SPECIFICATION_OPENED"
+    },
+    {
+      "id": "S9",
+      "title": "NASA-STD-7009B — Standard for Models and Simulations",
+      "institution": "NASA",
+      "url": "https://standards.nasa.gov/standard/nasa/nasa-std-7009",
+      "documentDate": "2024-03-05",
+      "retrievalDate": "2026-07-19",
+      "authorityClass": "active engineering standard",
+      "claimsSupported": [
+        "model and simulation credibility requires intended-use, assumptions and evidence boundaries",
+        "verification must remain distinct from validation"
+      ],
+      "limitsOfUse": "AXM is not claiming NASA qualification or compliance certification.",
+      "verificationStatus": "PRIMARY_ACTIVE_STANDARD_PAGE_OPENED"
+    },
+    {
+      "id": "S10",
+      "title": "Verification and validation benchmarks",
+      "authors": [
+        "William L. Oberkampf",
+        "Timothy G. Trucano"
+      ],
+      "institution": "Sandia National Laboratories / U.S. Department of Energy OSTI",
+      "url": "https://www.osti.gov/biblio/901974",
+      "doi": "10.2172/901974",
+      "year": 2007,
+      "retrievalDate": "2026-07-19",
+      "authorityClass": "national-laboratory technical report record",
+      "claimsSupported": [
+        "code verification, solution verification and physical validation answer different questions",
+        "validation evidence depends on experiments, metrics and uncertainty",
+        "verification and validation benchmarks need declared application relevance"
+      ],
+      "limitsOfUse": "Does not validate AXM and must not be cited under the incorrect supplied title.",
+      "verificationStatus": "PRIMARY_OSTI_RECORD_OPENED_AND_METADATA_CORRECTED",
+      "suppliedPackDiscrepancy": {
+        "incorrectTitleInPack": "Concepts of Model Verification and Validation",
+        "actualRecordForThatTitle": "https://www.osti.gov/biblio/835920"
+      }
+    }
+  ]
+}

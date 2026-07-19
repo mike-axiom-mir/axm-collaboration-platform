@@ -4,6 +4,7 @@ const { clamp } = require('../shared/validation');
 const { applyActorDamage, applyNpcDamage, spawnNpcProjectile } = require('./projectile-system');
 const { territoryTargetForParty } = require('./territory-system');
 const { findGridPath } = require('./ai-player-system');
+const { collidesObstacle } = require('./spatial-index');
 
 function normalized(dx, dy) {
   const distance = Math.hypot(dx, dy);
@@ -32,12 +33,7 @@ function nearestMovingVehicle(world, npc, radius = 58) {
 }
 
 function npcCollidesObstacle(world, position, radius) {
-  return world.staticMap.obstacles.some((box) => (
-    position.x + radius > box.x
-    && position.x - radius < box.x + box.width
-    && position.y + radius > box.y
-    && position.y - radius < box.y + box.height
-  ));
+  return collidesObstacle(world, position, radius);
 }
 
 function moveNpcWithCollision(world, npc, velocity, deltaSeconds) {

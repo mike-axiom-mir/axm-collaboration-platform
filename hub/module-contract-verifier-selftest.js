@@ -8,4 +8,6 @@ ok(V.validateContract(good, manifest).pass, 'valid declared contract accepted');
 ok(!V.validateContract(Object.assign({}, good, { id: 'other' }), manifest).pass, 'manifest id mismatch refused');
 ok(!V.validateContract(Object.assign({}, good, { permissions: ['network'] }), manifest).pass, 'undeclared permission refused');
 ok(!V.validateContract(Object.assign({}, good, { schema: 'future/v9' }), manifest).pass, 'unknown schema refused');
+ok(V.validateContract(Object.assign({}, good, { lifecycle: { state_owner: 'browser', reload: 'resume', disconnect: 'not-applicable', cleanup: 'explicit' } }), manifest).pass, 'valid lifecycle seam declaration accepted');
+ok(!V.validateContract(Object.assign({}, good, { lifecycle: { state_owner: 'browser', reload: 'magic', disconnect: 'not-applicable', cleanup: 'explicit' } }), manifest).pass, 'invalid lifecycle seam declaration refused');
 console.log('PASS module contract verifier: ' + pass + ' assertions');

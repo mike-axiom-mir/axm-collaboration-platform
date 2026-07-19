@@ -1091,6 +1091,44 @@
     }
   };
 
+  /* 4) Mirror Native - a separate deterministic AXM research body reached
+        through the Workshop's same-origin token-injecting proxy. It is
+        registered last so it cannot become an automatic language fallback
+        before it has a learned language organ. */
+  var cfgMirror = { url: '/services/mirror-native' };
+  var mirror = {
+    id: 'mirror-kernel', label: 'Mirror Native (Seed-0)', kind: 'machine-native',
+    available: function () {
+      if (!global.fetch) return Promise.resolve(false);
+      return global.fetch(cfgMirror.url + '/health', { method: 'GET', cache: 'no-store' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (h) { return !!(h && h.ok && h.identity === 'axm.machine.mirror/seed-0'); })
+        .catch(function () { return false; });
+    },
+    send: function (messages, opts) {
+      opts = opts || {};
+      var headers = { 'Content-Type': 'application/json' };
+      return global.fetch(cfgMirror.url + '/axm/v1/session/open', {
+        method: 'POST', headers: headers,
+        body: JSON.stringify({ actor: { id: String(opts.actor || 'workshop-participant'), kind: 'collaborator' }, purpose: 'AXMConnect bounded Mirror session' })
+      }).then(function (r) { if (!r.ok) throw err('Mirror session refused', 'mirror-session'); return r.json(); })
+        .then(function (opened) {
+          var sessionId = opened && opened.session && opened.session.id;
+          return global.fetch(cfgMirror.url + '/v1/responses', {
+            method: 'POST', headers: headers,
+            body: JSON.stringify({ sessionId: sessionId, actor: opened.session.actor, input: messages })
+          }).then(function (r) { if (!r.ok) throw err('Mirror response refused', 'mirror-response'); return r.json(); })
+            .then(function (result) {
+              return global.fetch(cfgMirror.url + '/axm/v1/session/close', {
+                method: 'POST', headers: headers, body: JSON.stringify({ sessionId: sessionId })
+              }).catch(function () { return null; }).then(function () {
+                return { text: result.output_text || '', raw: result };
+              });
+            });
+        });
+    }
+  };
+
   /* ====================================================================
      PUBLIC API
      ==================================================================== */
@@ -1115,6 +1153,7 @@
       if (id === 'cloud')  Object.assign(cfgCloud, settings);
       if (id === 'bridge') Object.assign(cfgBridge, settings);
       if (id === 'local')  Object.assign(cfgLocal, settings);
+      if (id === 'mirror-kernel') Object.assign(cfgMirror, settings);
       delete availCache[id];
       return api;
     },
@@ -1222,6 +1261,7 @@
   api.register(bridge);
   api.register(localModel);
   api.register(cloud);
+  api.register(mirror);
 
   global.AXMConnect = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

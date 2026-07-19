@@ -4,17 +4,19 @@ const fs=require('fs'),path=require('path'),Discovery=require('../discovery-engi
 const read=file=>fs.readFileSync(path.join(__dirname,file),'utf8');
 const shell=read('ai-team.js'),html=read('index.html'),core=read('ai-team-core.js'),hub=read('../../hub/hub-shell.js'),presence=read('../../hub/ai-presence.js'),router=read('../../shared/specialists/specialist-router.js');
 const manifest=id=>JSON.parse(read('../'+id+'/manifest.json'));
-const children=['agent-command-center','agent-tool-forge','ai-task-talk','model-lab','reasoning-shell','prompt-vault','duo-test'];
+const children=['agent-command-center','agent-tool-forge','ai-task-talk','model-lab','reasoning-shell','prompt-vault','duo-test','technical-glasses'];
 const services=['chatgpt-connector','claude-connector','shell-guardian'];
 const checks=[
-  ['One visible parent declares all seven compatibility views',children.every(id=>manifest(id).integratedInto==='ai-team')],
+  ['One visible parent declares all eight owned compatibility views',children.every(id=>manifest(id).integratedInto==='ai-team')],
+  ['Mirror learning remains owned by Learning Lab while AI Team exposes its explicit doorway',manifest('mirror-learning-shell').integratedInto==='learning-lab'&&/id:'learning'/.test(core)&&html.includes('mirror-learning-shell/index.html')],
   ['Connectors and Guardian declare background service roles',services.every(id=>manifest(id).integratedInto==='ai-team'&&/service/.test(manifest(id).serviceRole))],
-  ['Twelve beginner-facing views cover control, work, build, evaluation, exploration and learning',/id:'overview'/.test(core)&&/id:'services'/.test(core)&&/id:'forge'/.test(core)&&/id:'specialists'/.test(core)&&/id:'explore'/.test(core)&&/id:'data'/.test(core)],
+  ['Fourteen beginner-facing views cover technical truth, control, work, build, evaluation, Mirror learning and exploration',/id:'overview'/.test(core)&&/id:'technical'/.test(core)&&/id:'services'/.test(core)&&/id:'forge'/.test(core)&&/id:'specialists'/.test(core)&&/id:'learning'/.test(core)&&/id:'explore'/.test(core)&&/id:'data'/.test(core)],
   ['Specialist views load lazily instead of booting every model tool',html.includes('data-src="../ai-task-talk')&&shell.includes('function ensureFrame')],
   ['Old child Hub messages save through the AI Team parent',shell.includes("msg.type==='hub:ready'")&&shell.includes("msg.type==='hub:save'")],
   ['Questions and proposals require separate open and acknowledge actions',html.includes('Manual decisions only')&&shell.includes('data-open-notice')&&shell.includes('data-ack-notice')],
   ['Hub-raised notices reach Task & Talk even when Overview was last open',shell.includes("localStorage.getItem('axm.collaboration.notice.open')")&&shell.includes("state.view='collaborate'")&&presence.includes("var moduleId='ai-team'")],
   ['Local pause controls only local agents and does not hide connectors',shell.includes("BRIDGE+'/agents/pause'")&&shell.includes('Connectors remain visible while local inference is held')],
+  ['Bridge health stays truthful when the optional local-model service is offline',shell.includes("service('bridge',paused?'paused':'ready'")&&shell.includes('var ids=[];try{var m=await fetchTimed')&&presence.includes("setBridge('connected','ON'")],
   ['Guardian is visible as armed/tripped/offline and reset stays in its confirmed dashboard',shell.includes("service('guardian'")&&html.includes('id="guardianFrame"')&&!shell.includes('/api/shell-guardian/reset')],
   ['Offline services remain visible instead of disappearing',shell.includes("Core.SERVICES.map")&&shell.includes("state:'offline'")],
   ['Refresh polling rejects overlapping runs',shell.includes('if(refreshing)return')&&shell.includes('finally{refreshing=false')],

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/ktx2-texture-recipe-v1.schema.json",
+  "title": "AXM KTX2 Texture Recipe v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "target_canvas", "source", "encoder", "texture", "budgets", "provenance"],
+  "properties": {
+    "schema": {"const": "axm.ktx2-texture-recipe/v1"},
+    "version": {"const": "1.0.0"},
+    "id": {"type": "string", "minLength": 1},
+    "target_canvas": {"type": "object"},
+    "source": {"type": "object", "required": ["kind", "receipt"]},
+    "encoder": {"type": "object", "required": ["name", "version", "commit", "mode", "supercompression", "single_threaded"]},
+    "texture": {"type": "object", "required": ["width", "height", "colour_space", "has_alpha", "tileable", "mip_levels"]},
+    "budgets": {"type": "object", "required": ["file_bytes", "texture_memory", "mip_levels"]},
+    "provenance": {"type": "object", "required": ["hand", "hand_version", "seed", "source_artifact_digests"]}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,63 @@
+name: Bug report
+description: Report something that is broken or behaves differently from its claim.
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing AXM. Do not include passwords, tokens, private logs, personal data, or private session URLs.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Beginner launcher or installation
+        - Hub or navigation
+        - Workshop module
+        - Game or controller
+        - AI or optional connector
+        - Packaging or verification
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: What happened?
+      description: Describe what you saw, including the exact visible error when safe.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Device and operating system
+      placeholder: Windows 11 laptop, Android phone, etc.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Add a cropped screenshot or short non-sensitive log excerpt if useful.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed secrets, personal data, private paths, and private session links.
+          required: true

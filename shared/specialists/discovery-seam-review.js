@@ -6,5 +6,8 @@ assert.ok(catalog.every(m=>m.source.kind==='discovery-role-pack'&&m.abstentionCo
 assert.equal(new Set(catalog.map(m=>m.id)).size,catalog.length);assert.ok(catalog.some(m=>m.source.packId==='physics-stance-forge'));
 assert.ok(catalog.every(m=>m.runtimeProfile&&m.runtimeProfile.inputs.required.length&&m.runtimeProfile.tools.length&&m.runtimeProfile.artifact.requiredFields.length));
 assert.ok(catalog.every(m=>S.compileMask(m.id).files.some(f=>f.path==='CAPABILITY-BRIDGES.json')&&S.compileMask(m.id).files.some(f=>f.path==='OUTPUT.schema.json')));
-const server=fs.readFileSync(path.join(__dirname,'..','..','server.js'),'utf8');assert.ok(server.includes("schema: 'axm.vision-observation/v1'")&&server.includes('targetIdentity')&&server.includes('fs.unlinkSync(VISION_FRAME_FILE)'));
-console.log('Specialist Library seam review: PASS (Discovery contracts reused; every role compiles to inputs, gated tools and specialist output fields)');
+const server=fs.readFileSync(path.join(__dirname,'..','..','server.js'),'utf8'),hub=fs.readFileSync(path.join(__dirname,'..','..','hub','index.html'),'utf8'),vision=fs.readFileSync(path.join(__dirname,'..','..','hub','ai-vision-loop.js'),'utf8');
+assert.ok(server.includes('axm.vision-observation/v1')&&server.includes('targetIdentity')&&server.includes('fs.unlinkSync(VISION_FRAME_FILE)'));
+assert.ok(server.includes('recordVisionObservation')&&server.includes('OBSERVATION_ONLY')&&server.includes('trainingData: false')&&server.includes('/api/vision/observations'));
+assert.ok(hub.includes('id="visionTarget"')&&hub.includes('Mirror · Seed-0')&&vision.includes('targetIdentity:targetIdentity')&&vision.includes('activeSurfaceConsent:true'));
+console.log('Specialist Library seam review: PASS (Discovery contracts reused; every role compiles to bounded methods; Screen Scout routes attributed observations without granting training, wisdom or permission)');

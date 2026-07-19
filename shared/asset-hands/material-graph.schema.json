@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/material-graph-v1.schema.json",
+  "title": "AXM Material Graph v1",
+  "description": "Editable portable material parameters used to emit MaterialX and a bounded glTF preview.",
+  "type": "object",
+  "required": ["schema", "version", "id", "name", "target_canvas", "node", "parameters", "bindings", "provenance"],
+  "properties": {
+    "schema": { "const": "axm.material-graph/v1" },
+    "version": { "const": 1 },
+    "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "name": { "type": "string", "minLength": 1, "maxLength": 240 },
+    "target_canvas": { "$ref": "target-canvas.schema.json" },
+    "node": { "const": "standard_surface" },
+    "parameters": {
+      "type": "object",
+      "required": ["base_color_hex", "base_color", "metallic", "roughness", "opacity"],
+      "properties": {
+        "base_color_hex": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "base_color": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number", "minimum": 0, "maximum": 1 } },
+        "metallic": { "type": "number", "minimum": 0, "maximum": 1 },
+        "roughness": { "type": "number", "minimum": 0, "maximum": 1 },
+        "opacity": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": true
+    },
+    "bindings": { "type": "array", "maxItems": 256, "items": { "type": "object" } },
+    "provenance": { "type": "object", "required": ["engine"], "properties": { "engine": { "type": "string" } }, "additionalProperties": true }
+  },
+  "additionalProperties": true
+}

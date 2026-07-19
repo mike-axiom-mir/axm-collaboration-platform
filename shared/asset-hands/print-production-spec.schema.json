@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/print-production-spec-v1.schema.json",
+  "title": "AXM Print Layout Preview Spec v1",
+  "type": "object",
+  "required": ["schema", "trim", "bleed", "minimumStroke", "colour", "transparency", "pressReady", "automaticPrint"],
+  "properties": {
+    "schema": { "const": "axm.print-production-spec/v1" },
+    "trim": { "type": "object", "required": ["width", "height", "unit"] },
+    "bleed": { "type": "object", "required": ["all", "unit"] },
+    "minimumStroke": { "type": "object", "required": ["value", "unit"] },
+    "colour": { "type": "object", "required": ["requestedSpace", "printableColours", "previewPalette", "separation"] },
+    "transparency": { "enum": ["required", "allowed", "opaque"] },
+    "pressReady": { "const": false },
+    "automaticPrint": { "const": false }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Workshop Command Center</title>
+  <link rel="stylesheet" href="command-center.css">
+</head>
+<body>
+  <a class="skip" href="#mission">Skip to command input</a>
+  <div class="world-grid" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="hub-link" href="../../hub/index.html" aria-label="Back to AXM Hub">← HUB</a>
+    <div class="brand"><span class="brand-mark">AXM</span><div><b>WORKSHOP COMMAND CENTER</b><small>HUMAN COMMAND · MACHINE CLARITY · EXPLICIT ACTION</small></div></div>
+    <div class="top-state"><i></i><span id="topState">CONNECTING</span></div>
+  </header>
+
+  <main>
+    <section class="hero-grid" aria-labelledby="commandTitle">
+      <article class="mission panel" id="mission">
+        <div class="section-signal"><span>01</span><b>COMMAND INTAKE</b><i>NOTHING STARTS UNTIL YOU CHOOSE</i></div>
+        <h1 id="commandTitle">What should AXM do?</h1>
+        <p class="lead">Use normal words. AXM turns your request into a visible plan, judges its weak points, and waits for your decision.</p>
+        <form id="commandForm">
+          <label class="command-field"><span>YOUR DIRECTION</span><textarea id="description" required maxlength="3000" placeholder="Example: Build the next version of District Party, improve controller joining, create the missing city assets, test multiplayer, and prepare a reviewed package."></textarea></label>
+          <div class="command-options">
+            <label><span>HOW POLISHED?</span><select id="quality"><option value="DRAFT">Quick draft</option><option value="GOOD" selected>Good working version</option><option value="HIGH">High quality</option></select></label>
+            <label><span>URGENCY</span><input id="priority" type="range" min="0" max="100" value="70"><output id="priorityValue">70</output></label>
+            <label><span>WORK LIMIT / PART</span><select id="pulses"><option value="1">1 pulse</option><option value="2" selected>2 pulses</option><option value="4">4 pulses</option><option value="8">8 pulses</option></select></label>
+            <label><span>REVIEW PANEL</span><select id="reviewSeats"><option value="1">1 vote</option><option value="2" selected>2 votes</option><option value="3">3 votes</option><option value="5">5 votes</option><option value="10">10 votes</option></select></label>
+            <label><span>YOUR NAME</span><input id="actorName" maxlength="120" value="Mike"></label>
+          </div>
+          <div class="command-actions"><button class="primary" type="submit"><span>SHOW ME THE PLAN</span><small>Preview only · no save · no start</small></button><button id="clear" class="ghost" type="button">START OVER</button></div>
+        </form>
+      </article>
+
+      <aside class="core panel" aria-label="Live Workshop core">
+        <div class="section-signal"><span>00</span><b>WORKSHOP CORE</b><i id="lastRefresh">AWAITING SIGNAL</i></div>
+        <div class="core-visual"><img src="assets/command-core.svg" alt="AXM command core connected to five workspace nodes"><div class="core-label"><b id="coreStatus">SCANNING</b><span>LOCAL CONTROL PLANE</span></div></div>
+        <div class="core-facts">
+          <div><span>BODY</span><b id="bodyMode">—</b><small id="bodyPressure">Reading</small></div>
+          <div><span>MODULES</span><b id="moduleCount">—</b><small id="moduleHealth">Scanning</small></div>
+          <div><span>CONTRACTS</span><b id="contractCount">—</b><small id="contractHealth">Scanning</small></div>
+          <div><span>EVIDENCE</span><b id="evidenceCount">—</b><small id="evidenceHealth">Scanning</small></div>
+        </div>
+        <button id="refreshAll" class="scan-button" type="button">↻ RUN FRESH SYSTEM CHECK</button>
+        <p class="truth-line"><i></i>Read-only check. It repairs nothing and changes no permission.</p>
+      </aside>
+    </section>
+
+    <section id="planPanel" class="plan-zone panel hidden" aria-live="polite">
+      <div class="zone-head"><div><span class="eyebrow">02 · PLAN PREVIEW</span><h2 id="planVerdict">Waiting for a direction</h2><p id="planSummary"></p></div><div class="plan-counts"><span id="routeCount">0 PARTS</span><span id="missingCount">0 MISSING</span></div></div>
+      <div class="assessment-grid">
+        <article class="judge-card"><div class="judge-ring" id="judgeRing"><strong id="judgeScore">—</strong><small>/ 100</small></div><div><span class="eyebrow">SYSTEM JUDGMENT · ADVISORY</span><h3 id="judgeVerdict">Not judged</h3><p id="judgeReason"></p><div class="badge-row"><span>Does not fill your seat</span><span>Does not start work</span></div></div></article>
+        <div id="criteria" class="criteria"></div>
+      </div>
+      <h3 class="subhead">What AXM plans to use</h3><div id="routes" class="route-grid"></div>
+      <div id="missingSection"><h3 class="subhead">What AXM still needs</h3><div id="missingHands" class="missing-grid"></div></div>
+      <div class="commit-bar"><div><b>Review the plan above.</b><span>Saving creates an exact-digest review item and queues only already-bounded jobs. Body Pulse is not started.</span></div><button id="commit" class="commit-button" type="button">SAVE PLAN &amp; QUEUE SAFE JOBS</button></div>
+    </section>
+
+    <section id="votePanel" class="vote-zone panel hidden" aria-labelledby="voteTitle">
+      <div class="section-signal"><span>03</span><b>STEWARD VOTE</b><i>YOUR SIDE · EXACT PLAN DIGEST</i></div>
+      <div class="vote-layout"><div><h2 id="voteTitle">Your seat is waiting</h2><p>The system recommendation is evidence, not your vote. Read it, add your reason, then choose. A changed plan gets a new digest and a new review.</p><div class="digest"><span>PLAN DIGEST</span><code id="planDigest">—</code></div><label class="vote-note"><span>WHY ARE YOU VOTING THIS WAY?</span><textarea id="voteNote" maxlength="1000" placeholder="Example: The plan is bounded and the missing pieces are acceptable for this stage."></textarea></label></div><div class="vote-console"><button data-vote="APPROVE" class="vote-up" type="button"><b>↑ UP</b><span>I support this exact plan</span></button><button data-vote="HOLD" class="vote-hold" type="button"><b>◇ HOLD</b><span>Pause for answers or repairs</span></button><button data-vote="REJECT" class="vote-down" type="button"><b>↓ DOWN</b><span>I reject this exact plan</span></button><p id="voteState">No vote recorded by this screen.</p></div></div>
+    </section>
+
+    <section class="room-zone" aria-labelledby="roomsTitle">
+      <div class="zone-head"><div><span class="eyebrow">04 · FIVE PARENT ROOMS</span><h2 id="roomsTitle">Enter a specialist workspace</h2><p>The Command Center stays above the map. The rooms below own the detailed work.</p></div></div>
+      <div class="room-grid">
+        <a class="room create" href="../studio/index.html"><span>01</span><i>✦</i><div><b>CREATE</b><small>Design and make</small></div><em>ENTER →</em></a>
+        <a class="room build" href="../project-room/index.html"><span>02</span><i>⌁</i><div><b>BUILD</b><small>Turn ideas into projects</small></div><em>ENTER →</em></a>
+        <a class="room publish" href="../marketplace-deployment/index.html"><span>03</span><i>⇩</i><div><b>PUBLISH &amp; LIBRARY</b><small>Package and share safely</small></div><em>ENTER →</em></a>
+        <a class="room play" href="../game-forge/index.html"><span>04</span><i>⌘</i><div><b>PLAY</b><small>Games and experiences</small></div><em>ENTER →</em></a>
+        <a class="room team" href="../ai-team/index.html"><span>05</span><i>◎</i><div><b>AI TEAM</b><small>Work with collaborators</small></div><em>ENTER →</em></a>
+      </div>
+    </section>
+
+    <section class="lower-grid">
+      <article class="panel saved-zone"><div class="zone-head compact"><div><span class="eyebrow">05 · SAVED DIRECTIONS</span><h2>Your command queue</h2><p>Continue, pause, finish, or cancel without learning internal status words.</p></div><button id="refreshPlans" class="ghost" type="button">CHECK FOR CHANGES</button></div><div id="directionCounts" class="mini-facts"></div><div id="directions" class="direction-list"><p class="empty">No saved plans yet.</p></div></article>
+      <article class="panel evidence-zone output-zone"><div class="zone-head compact"><div><span class="eyebrow">06 · WORKSHOP OUTPUT</span><h2>What are we actually making?</h2><p id="outputMeaning">Counting real code lines, test lines, assets, and finished goals.</p></div></div><div class="evidence-answer output-answer"><span id="outputSignal">STARTING LINE METER</span><h3 id="outputHeadline">Measuring net code growth…</h3><p id="outputPace">Lines and finished goals are measured separately.</p></div><div class="human-evidence-grid output-facts"><div><span>NET CODE LINES / HOUR</span><b id="codeHour">—</b><small>Added lines minus removed lines</small></div><div><span>NEW ASSET OUTPUTS / HOUR</span><b id="assetHour">—</b><small>Images, audio, video, 3D and delivery assets</small></div><div><span>NET TEST LINES / HOUR</span><b id="testHour">—</b><small>Added verification lines minus removed lines</small></div><div><span>GOALS FINISHED / HOUR</span><b id="doneHour">—</b><small>Explicit lifecycle completion only</small></div></div><div class="hourly-chart"><div class="hourly-head"><span>NET CODE-LINE GROWTH · LAST 24H</span><b id="peakHour">PEAK —</b></div><div id="outputBars" class="output-bars" aria-label="Net code-line growth by hour"></div></div><div class="output-since"><b id="sinceSnapshot">Starting a local aggregate baseline.</b><span id="outputTruth">No fake historical rate is invented.</span></div><div id="latestOutput" class="latest-output"></div><a class="open-room" href="../../hub/index.html">OPEN FULL WORKSHOP GROWTH →</a><details class="evidence-technical"><summary>Cognitive measurement truth</summary><p id="evidenceTechnical">Provider and record inventory unavailable.</p></details></article>
+    </section>
+
+    <section class="decision-pool panel" aria-labelledby="decisionPoolTitle">
+      <div class="zone-head compact"><div><span class="eyebrow">07 · DECISION POOL</span><h2 id="decisionPoolTitle">Discuss what got a hold or down vote</h2><p>Nothing is buried. Keep the reasons, discuss them, then send the direction back for a changed repair or cancel it completely.</p></div><button id="refreshPool" class="ghost" type="button">REFRESH POOL</button></div>
+      <div id="decisionPool" class="decision-list"><p class="empty">No held or rejected direction reviews.</p></div>
+    </section>
+
+    <details class="advanced panel">
+      <summary><span><b>08 · ADVANCED CONTROL DECK</b><small>For technical users and machines · all controls remain explicit</small></span><em>OPEN DECK</em></summary>
+      <div class="advanced-body"><p>Safe reads and navigation can run here. Mutating specialist controls open their owning room; this cockpit never fires an underspecified generic POST.</p><div id="controlCatalog" class="control-grid"></div><pre id="controlOutput">Select a safe read to inspect its result.</pre></div>
+    </details>
+
+    <div id="notice" class="notice" role="status" aria-live="polite"></div>
+  </main>
+
+  <script src="../../shared/direction/axm-direction-review.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

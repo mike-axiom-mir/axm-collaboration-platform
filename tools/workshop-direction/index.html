@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Workshop Direction</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <a href="../../hub/index.html">← Hub</a>
+    <div><span class="eyebrow">YOUR IDEA → A CLEAR PLAN → YOU DECIDE</span><h1>Workshop Direction</h1><p>Tell AXM what you want. It makes a plan using tools the Workshop already has and clearly shows anything still missing.</p></div>
+    <a class="pulseLink" href="../body-pulse/index.html">Body Pulse</a>
+  </header>
+  <main>
+    <section class="hero panel">
+      <div><span class="eyebrow">SIMPLE LOCAL PLANNING · NO EXTRA AI CALLS</span><h2>What should the system build?</h2><p>Tell AXM once. It checks what the Workshop can do, breaks the work into safe parts and shows the missing pieces.</p></div>
+      <div class="bodyState"><small>BODY</small><b id="bodyMode">—</b><span id="bodyPressure">Reading…</span></div>
+    </section>
+
+    <section class="panel composer">
+      <form id="directionForm">
+        <label class="wide"><span>What do you want?</span><textarea id="description" required maxlength="3000" placeholder="Example: Build a cooperative game-night game with reusable revive icons, controller joining, achievements and a verified public-safe package."></textarea></label>
+        <label><span>How polished?</span><select id="quality"><option value="DRAFT">Quick draft</option><option value="GOOD" selected>Good working version</option><option value="HIGH">High quality</option></select></label>
+        <label><span>Urgency (0–100)</span><input id="priority" type="number" min="0" max="100" value="70"></label>
+        <label><span>Work limit per plan part (1–8)</span><input id="pulses" type="number" min="1" max="8" value="2"></label>
+        <label><span>Your name</span><input id="actorName" maxlength="120" value="Mike"></label>
+        <label><span>Who is asking?</span><select id="actorKind"><option value="human">A person</option><option value="machine">A machine</option><option value="collective">A group</option><option value="unknown">Not specified</option></select></label>
+        <div class="formActions wide"><button type="submit">Show me the plan</button><button id="clear" type="button" class="secondary">Start over</button></div>
+      </form>
+      <p class="truth"><b>Step 1:</b> Show the plan. Nothing is saved or started. <b>Step 2:</b> Save it and queue only jobs AXM already knows how to handle. You can pause or cancel later.</p>
+    </section>
+
+    <section id="preview" class="panel preview hidden">
+      <div class="sectionHead"><div><span class="eyebrow">YOUR PLAN — NOTHING STARTED YET</span><h2 id="verdict">—</h2><p id="summary"></p></div><button id="commit">Save plan &amp; queue safe jobs</button></div>
+      <div class="factRow"><span id="routeCount">0 parts</span><span id="handCount">0 things still needed</span><span>up to 8 parts</span><span>cannot approve or publish</span></div>
+      <h3>What AXM plans to use</h3><div id="routes" class="routeGrid"></div>
+      <div id="handSection"><h3>What AXM still needs</h3><p>Missing pieces stay visible. AXM will not pretend they are finished.</p><div id="hands" class="handGrid"></div></div>
+    </section>
+
+    <section class="panel">
+      <div class="sectionHead"><div><span class="eyebrow">YOUR SAVED PLANS</span><h2>Saved plans</h2><p>Pause puts safe queued jobs on hold. Continue lets them proceed again. Finish or cancel closes the plan.</p></div><button id="refresh" class="secondary">Check for changes</button></div>
+      <div id="counts" class="factRow"></div>
+      <div id="directions" class="directions"><p>No saved plans yet.</p></div>
+    </section>
+  </main>
+  <script src="../../shared/direction/axm-direction-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

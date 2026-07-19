@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/scene-composition-report.schema.json",
+  "title": "AXM Scene Composition Report",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "claim",
+    "target_canvas",
+    "operation",
+    "source",
+    "root_layer",
+    "package",
+    "composition_arcs",
+    "variants",
+    "resolver",
+    "geometry",
+    "external_openusd_validation",
+    "checks"
+  ],
+  "properties": {
+    "schema": { "const": "scene-composition-report" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "HOLD"] },
+    "claim": { "type": "string" },
+    "target_canvas": { "type": "object" },
+    "operation": {
+      "enum": ["create", "edit", "inspect", "validate", "workflow"]
+    },
+    "source": { "type": ["object", "null"] },
+    "root_layer": { "type": ["object", "null"] },
+    "package": { "type": "object" },
+    "composition_arcs": { "type": "object" },
+    "variants": { "type": "array" },
+    "resolver": { "type": "object" },
+    "geometry": { "type": "object" },
+    "external_openusd_validation": { "const": false },
+    "checks": { "type": "array", "minItems": 1 }
+  },
+  "additionalProperties": false
+}

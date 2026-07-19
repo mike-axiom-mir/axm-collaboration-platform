@@ -1,0 +1,93 @@
+{
+  "slot": "010",
+  "game_id": "010-living-globe-tycoon",
+  "name": "Living Globe Tycoon · Island Steward",
+  "status": "ACCEPT FOR TEST",
+  "description": "A deep but casual island-scale stewardship game with a living walkable globe, deterministic ecology and economy, and a separate strategic Tycoon desk.",
+  "version": "0.10.0-local-intake",
+  "min_players": 1,
+  "max_players": 2,
+  "allowed_seat_types": ["human", "adapter", "ai"],
+  "play_modes": [
+    {
+      "id": "tycoon",
+      "label": "Tycoon Steward",
+      "description": "Run the bounded 8×8 island economy and let structures emerge from zones, supply, labor and real construction bills.",
+      "party_rule": "party-a-only"
+    },
+    {
+      "id": "walkable-globe",
+      "label": "Living Island Globe",
+      "description": "Walk the island, observe its living systems, complete palace errands and open the causal steward brief.",
+      "party_rule": "party-a-only"
+    }
+  ],
+  "launch": {
+    "server_entry": "runtime/server.js",
+    "client_entry": "/games/010/",
+    "spectator_client_entry": "/games/010/",
+    "ready_path": "/health",
+    "port": 8800,
+    "start_command": "managed-by-game-hub",
+    "local_only_default": true
+  },
+  "join": {
+    "supports_qr": false,
+    "supports_lan_link": false,
+    "supports_room_code": false
+  },
+  "controls": {
+    "profile_id": "axm-living-island-steward-v1",
+    "intent_protocol": "axm.living-world.player-intent/v0.1",
+    "adapter_observation": "axm.living-world.ai-player-observation/v0.1",
+    "phone_controller": false,
+    "keyboard": true,
+    "mouse": true,
+    "touch": true,
+    "shared_screen": true
+  },
+  "session": {
+    "passes_seat_map": false,
+    "returns_result_summary": true,
+    "drop_in_out_later": true,
+    "scale": "bounded-island-game-world"
+  },
+  "rules": {
+    "no_hidden_players": true,
+    "host_launch_required": true,
+    "game_does_not_override_hub_seats": true,
+    "local_authoritative_state": true,
+    "foundation_planet_ownership": false,
+    "runtime_internet_required": false
+  },
+  "verification": {
+    "game_night": {
+      "schema": "axm.game-night-seams/v1",
+      "controller_delivery": "shared-runtime",
+      "controller_evidence": ["runtime/game/index.html", "runtime/game/game/tycoon-steward/index.html"],
+      "state_authority": "server",
+      "authority_scope": "The managed server owns launch/session routing; the experimental game world remains explicitly browser-local inside this package.",
+      "host_reload_recovery": "game-hub-active-launch",
+      "shared_screen_occupies_seat": false,
+      "disconnect_recovery": "pending",
+      "blocking_overlay_escape": "pending",
+      "physical_phone_qa": "not-applicable",
+      "adapter_state_interface": "pending",
+      "adapter_state_evidence": ["docs/AI_NATIVE_SEAT_CONTRACT.md", "runtime/game/AI_PLAYER_SEAT_API.md"]
+    }
+  },
+  "package": {
+    "source_status": "verbatim-v0.10-intake-with-additive-game-hub-wrapper",
+    "required_paths": [
+      "README_FIRST.md",
+      "KNOWN_LIMITS.md",
+      "SOURCE_PACKAGE.json",
+      "runtime/server.js",
+      "runtime/game/index.html",
+      "runtime/game/game/tycoon-steward/index.html",
+      "runtime/game/README.md",
+      "runtime/game/TEST_REPORT.md",
+      "docs/AI_NATIVE_SEAT_CONTRACT.md"
+    ]
+  }
+}

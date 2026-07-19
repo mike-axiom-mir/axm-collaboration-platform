@@ -5,6 +5,18 @@ export interface SeatIdentity {
   sessionId: string;
   seatId: string;
   token: string;
+  inputSourceBindingId?: string;
+  inputSourceEpoch?: number;
+}
+
+export type HumanInputSource = 'phone-touch' | 'keyboard' | 'host-gamepad' | 'device-gamepad';
+
+export interface InputSourceBinding {
+  id: string;
+  epoch: number;
+  inputSource: HumanInputSource;
+  status: 'active' | 'revoked';
+  claimedAt: number;
 }
 
 export interface VectorState {

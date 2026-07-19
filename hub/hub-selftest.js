@@ -14,7 +14,12 @@ const C = require('./module-contract.js');
 const hubHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const hubCss = fs.readFileSync(path.join(__dirname, 'hub-tokens.css'), 'utf8');
 const hubJs = fs.readFileSync(path.join(__dirname, 'hub-shell.js'), 'utf8');
+const presenceJs = fs.readFileSync(path.join(__dirname, 'ai-presence.js'), 'utf8');
 const navJs = fs.readFileSync(path.join(__dirname, 'workshop-navigation.js'), 'utf8');
+const productionSessionJs = fs.readFileSync(path.join(__dirname, 'production-session.js'), 'utf8');
+const productionSessionCss = fs.readFileSync(path.join(__dirname, 'production-session.css'), 'utf8');
+const serverJs = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
+const productionSessionCoreJs = fs.readFileSync(path.join(__dirname, '..', 'shared', 'production-session', 'production-session-core.js'), 'utf8');
 const out = []; let fails = 0;
 function ok(m){ out.push('  PASS  ' + m); }
 function bad(m){ out.push('  FAIL  ' + m); fails++; }
@@ -35,6 +40,20 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
   ? ok('handoff broker: declared-format chooser and explicit proposal are wired') : bad('handoff broker surface missing');
 /readiness-guidance/.test(hubJs) && /Nothing is repaired automatically/.test(hubJs)
   ? ok('readiness: beginner explanation preserves manual repair boundary') : bad('readiness explanation missing');
+/requestActiveShutdown/.test(hubJs) && /hub:shutdown:request/.test(hubJs) && /hub:shutdown:ok/.test(hubJs) && /handlesShutdown/.test(hubJs)
+  ? ok('module lifecycle: declared shutdown checkpoint is awaited before navigation') : bad('module lifecycle: navigation can bypass declared shutdown checkpoint');
+presenceJs.includes("setBridge('connected','ON'") && presenceJs.includes('var ids=[];') && presenceJs.includes("fetchTimed(BRIDGE+'/local-models'")
+  ? ok('presence: Bridge health remains independent from optional local-model availability') : bad('presence: local model outage can still falsely mark Bridge offline');
+/id="productionSessionToggle"/.test(hubHtml) && /id="productionSessionScreen"/.test(hubHtml) && /production-session\.js/.test(hubHtml)
+  ? ok('temporary session: visible Mike/Ivan switch and dialog are wired') : bad('temporary session: switch or dialog wiring missing');
+/Download work &amp; close/.test(hubHtml) && /Discard session &amp; close/.test(hubHtml) && /Nothing is archived automatically/.test(hubHtml)
+  ? ok('temporary session: explicit save/discard close owns retention') : bad('temporary session: close or no-archive truth missing');
+/classList\.toggle\('show'/.test(productionSessionJs) && /\.production-session-overlay\[hidden\]/.test(productionSessionCss)
+  ? ok('temporary session: dialog uses the Hub visible-overlay contract') : bad('temporary session: dialog visibility contract missing');
+/AXM_PRODUCTION_SESSION_HOME/.test(serverJs) && /separateBrowserOrigin/.test(productionSessionCoreJs) && /STATE_ROOT/.test(serverJs) && /EXPORT_ROOT/.test(serverJs)
+  ? ok('temporary session: separate origin, state and output roots are declared') : bad('temporary session: isolation roots missing');
+/shared live runtime is intentionally unavailable/.test(serverJs) && /PRODUCTION_SESSION_LEASE_MS/.test(serverJs) && /explicit-download-and-close/.test(serverJs)
+  ? ok('temporary session: shared bodies held, heartbeat leased, export explicit') : bad('temporary session: body or lifecycle boundary missing');
 
 /* ---- 1. persistence round-trip: write, then reopen over same backend ---- */
 (function persistence(){
@@ -191,22 +210,30 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
   Core.doorHash('let-me-in') !== 'let-me-in' ? ok('door: phrase not stored in plaintext') : bad('phrase stored plaintext');
 
   const workflow = Core.workflowLayout([
-    { id: 'studio' }, { id: 'audio-studio' }, { id: 'film-motion-studio' }, { id: 'ui-ux-builder', integratedInto: 'studio' }, { id: 'project-room' }, { id: 'knowledge-canvas' }, { id: 'finance-world-room' }, { id: 'publish-library' }, { id: 'asset-vault', integratedInto: 'publish-library' }, { id: 'workshop-packager', integratedInto: 'publish-library' }, { id: 'game-forge' }, { id: 'game-hub', integratedInto: 'game-forge' }, { id: 'sandbox', integratedInto: 'game-forge' }, { id: 'ai-team' }, { id: 'agent-command-center', integratedInto: 'ai-team' }, { id: 'chatgpt-connector', integratedInto: 'ai-team' }, { id: 'verifier' }, { id: 'main-hub' }
+    { id: 'studio' }, { id: 'audio-studio' }, { id: 'film-motion-studio' }, { id: 'spatial-studio' }, { id: 'ps2-asset-forge' }, { id: 'ui-ux-builder', integratedInto: 'studio' }, { id: 'project-room' }, { id: 'knowledge-canvas' }, { id: 'learning-lab' }, { id: 'mirror-learning-shell', integratedInto: 'learning-lab' }, { id: 'finance-world-room' }, { id: 'cognitive-resource-meter' }, { id:'cognitive-evidence-explorer', integratedInto:'cognitive-resource-meter' }, { id:'cognitive-calibration-lab', integratedInto:'cognitive-resource-meter' }, { id:'human-attention-ledger', integratedInto:'cognitive-resource-meter' }, { id:'sustainability-metrology-lab', integratedInto:'cognitive-resource-meter' }, { id:'mirror-intake-monitor', integratedInto:'cognitive-resource-meter' }, { id: 'marketplace-deployment' }, { id: 'publish-library', integratedInto: 'marketplace-deployment' }, { id: 'asset-vault', integratedInto: 'publish-library' }, { id: 'workshop-packager', integratedInto: 'publish-library' }, { id: 'game-forge' }, { id: 'game-hub', integratedInto: 'game-forge' }, { id: 'sandbox', integratedInto: 'game-forge' }, { id: 'ai-team' }, { id: 'agent-command-center', integratedInto: 'ai-team' }, { id: 'chatgpt-connector', integratedInto: 'ai-team' }, { id: 'verifier' }, { id: 'main-hub' }
   ], [{ id: 'private', name: 'Private', gate: 'passphrase', hash: 'keep-me', order: 1 }]);
   workflow.assign.studio === 'create' && workflow.assign['game-forge'] === 'play' && workflow.assign['game-hub'] === 'machine'
     ? ok('workflow layout: Create and Play assignments are useful') : bad('workflow layout misplaced Create/Play');
-  workflow.assign['audio-studio'] === 'create' && workflow.assign['film-motion-studio'] === 'create'
-    ? ok('workflow layout: Audio Studio and Film & Motion Studio are in Create') : bad('workflow layout misplaced a production studio');
+  workflow.assign['audio-studio'] === 'create' && workflow.assign['film-motion-studio'] === 'create' && workflow.assign['spatial-studio'] === 'create'
+    ? ok('workflow layout: Audio, Film & Motion, and Spatial Studio are in Create') : bad('workflow layout misplaced a production studio');
+  workflow.assign['ps2-asset-forge'] === 'create'
+    ? ok('workflow layout: PS2 Asset Forge is in Create') : bad('workflow layout misplaced PS2 Asset Forge');
   workflow.assign['ui-ux-builder'] === 'machine'
     ? ok('workflow layout: integrated UI/UX route stays behind Studio') : bad('workflow layout exposed integrated UI/UX route');
   workflow.assign['project-room'] === 'build'
     ? ok('workflow layout: Project Room is in Build') : bad('workflow layout misplaced Project Room');
   workflow.assign['knowledge-canvas'] === 'build'
     ? ok('workflow layout: Knowledge Canvas is in Build') : bad('workflow layout misplaced Knowledge Canvas');
+  workflow.assign['learning-lab'] === 'build' && workflow.assign['mirror-learning-shell'] === 'machine'
+    ? ok('workflow layout: Learning Lab is visible in Build and its school child stays integrated') : bad('workflow layout exposed or misplaced Learning Lab school routes');
   workflow.assign['finance-world-room'] === 'build'
     ? ok('workflow layout: Finance World Room sandbox is in Build') : bad('workflow layout misplaced Finance World Room');
-  workflow.assign['publish-library'] === 'publish' && workflow.assign['asset-vault'] === 'machine' && workflow.assign['workshop-packager'] === 'machine'
-    ? ok('workflow layout: Publish & Library owns output services') : bad('workflow layout exposed fragmented output services');
+  workflow.assign['cognitive-resource-meter'] === 'build'
+    ? ok('workflow layout: Cognitive Resource Meter evidence producer is in Build') : bad('workflow layout misplaced Cognitive Resource Meter');
+  ['cognitive-evidence-explorer','cognitive-calibration-lab','human-attention-ledger','sustainability-metrology-lab','mirror-intake-monitor'].every(id => workflow.assign[id] === 'machine')
+    ? ok('workflow layout: cognitive evidence rooms stay integrated behind the Meter') : bad('workflow layout exposed a technical cognitive evidence room');
+  workflow.assign['marketplace-deployment'] === 'publish' && workflow.assign['publish-library'] === 'machine' && workflow.assign['asset-vault'] === 'machine' && workflow.assign['workshop-packager'] === 'machine'
+    ? ok('workflow layout: Marketplace & Deployment owns the visible publish route') : bad('workflow layout exposed fragmented distribution services');
   workflow.assign['ai-team'] === 'ai-team' && workflow.assign.verifier === 'private'
     ? ok('workflow layout: AI Team and Advanced assignments are useful') : bad('workflow layout misplaced AI/Advanced');
   workflow.assign['agent-command-center'] === 'machine' && workflow.assign['chatgpt-connector'] === 'machine'
@@ -215,18 +242,39 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
     ? ok('workflow layout preserves existing closed-door sign') : bad('workflow layout reset closed-door sign');
   workflow.layers.find(l => l.id === 'machine').hidden && workflow.assign['main-hub'] === 'machine'
     ? ok('workflow layout keeps system internals hidden, not deleted') : bad('workflow layout exposed/lost system internals');
+  Core.GOVERNED_FOUNDATION_WAVE1.concat(Core.GOVERNED_FOUNDATION_WAVE2).every(id => workflow.assign[id] === Core.GOVERNED_FOUNDATION_ASSIGNMENTS[id])
+    ? ok('workflow layout places all twenty governed roadmap foundations by purpose') : bad('workflow layout misplaced a governed roadmap foundation');
+  workflow.assign['asset-filesystem-service'] === 'create' && workflow.assign['recovery-center'] === 'publish'
+    && workflow.assign['machine-host'] === 'ai-team' && workflow.assign['multiplayer-controller-transport'] === 'play'
+    ? ok('workflow layout gives every parent a meaningful governed foundation') : bad('workflow layout left a parent without its governed foundation');
+
+  const roadmapModules = Core.GOVERNED_FOUNDATION_WAVE1.concat(Core.GOVERNED_FOUNDATION_WAVE2).map(id => ({ id }));
+  const roadmapExisting = Core.upgradeFoundationRoadmap(workflow.layers, { studio:'create', 'recovery-center':'private', 'public-release-deployment-adapter':'private' }, roadmapModules);
+  roadmapExisting.changed && roadmapExisting.assign['multiplayer-controller-transport'] === 'play' && roadmapExisting.assign['read-only-mirror-world-adapter'] === 'ai-team'
+    && roadmapExisting.assign['recovery-center'] === 'private' && roadmapExisting.assign['public-release-deployment-adapter'] === 'private'
+    ? ok('upgrade: all roadmap arrivals appear without overwriting custom placements') : bad('upgrade: roadmap placement lost or overwrote a user choice');
+
+  const migratedLegacy = Core.upgradeLegacyOpenLayout(Core.DEFAULT_LAYERS, {}, [{ id:'studio' }, { id:'game-forge' }, { id:'ai-team' }]);
+  migratedLegacy.changed && migratedLegacy.layers.some(l => l.id === 'create') && migratedLegacy.assign.studio === 'create'
+    ? ok('upgrade: untouched flat browser layout gains workflow categories') : bad('upgrade: untouched flat layout stayed flattened');
+  const customLegacy = Core.upgradeLegacyOpenLayout(Core.DEFAULT_LAYERS, { studio:'private' }, [{ id:'studio' }]);
+  !customLegacy.changed && customLegacy.assign.studio === 'private'
+    ? ok('upgrade: custom browser assignments remain untouched') : bad('upgrade: custom browser layout was overwritten');
+  const renamedLegacy = Core.DEFAULT_LAYERS.map(l => Object.assign({}, l, l.id === 'open' ? { name:'My Space' } : {}));
+  !Core.upgradeLegacyOpenLayout(renamedLegacy, {}, [{ id:'studio' }]).changed
+    ? ok('upgrade: renamed browser layer remains user-owned') : bad('upgrade: renamed browser layer was overwritten');
 
   const oldWorkflow = workflow.layers.filter(l => l.id !== 'publish').map(l => Object.assign({}, l, { order: l.order > 2 ? l.order - 1 : l.order }));
-  const oldAssign = Object.assign({}, workflow.assign, { 'publish-library': 'build', 'workshop-packager': 'build', studio: 'create' });
+  const oldAssign = Object.assign({}, workflow.assign, { 'marketplace-deployment': 'build', 'publish-library': 'publish', 'workshop-packager': 'build', studio: 'create' });
   const upgradedPublish = Core.upgradePublishLayer(oldWorkflow, oldAssign, [
-    { id:'publish-library' }, { id:'asset-vault', integratedInto:'publish-library' }, { id:'workshop-packager', integratedInto:'publish-library' }
+    { id:'marketplace-deployment' }, { id:'publish-library', integratedInto:'marketplace-deployment' }, { id:'asset-vault', integratedInto:'publish-library' }, { id:'workshop-packager', integratedInto:'publish-library' }
   ]);
-  upgradedPublish.changed && upgradedPublish.layers.some(l => l.id === 'publish') && upgradedPublish.assign['publish-library'] === 'publish'
-    ? ok('upgrade: existing workflow gains Publish & Library') : bad('upgrade: Publish & Library migration failed');
+  upgradedPublish.changed && upgradedPublish.layers.some(l => l.id === 'publish' && l.name === 'Marketplace & Deployment') && upgradedPublish.assign['marketplace-deployment'] === 'publish'
+    ? ok('upgrade: existing workflow gains Marketplace & Deployment') : bad('upgrade: Marketplace & Deployment migration failed');
   upgradedPublish.assign.studio === 'create' && upgradedPublish.layers.find(l => l.id === 'private').hash === 'keep-me'
     ? ok('upgrade: publish migration preserves assignments and closed-door hash') : bad('upgrade: publish migration damaged user layout');
-  upgradedPublish.assign['asset-vault'] === 'machine' && upgradedPublish.assign['workshop-packager'] === 'machine'
-    ? ok('upgrade: output compatibility views stay behind parent') : bad('upgrade: output children remained exposed');
+  upgradedPublish.assign['publish-library'] === 'machine' && upgradedPublish.assign['asset-vault'] === 'machine' && upgradedPublish.assign['workshop-packager'] === 'machine'
+    ? ok('upgrade: publish and output compatibility views stay behind parent') : bad('upgrade: distribution children remained exposed');
 
   /* THE ROOT CHECK: a layer must never change what a module may do.
      Same passport, same grants, regardless of which layer it sits in. */

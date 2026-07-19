@@ -8,16 +8,16 @@
 <script src="identity-registry.js"></script>
 <style>
 :root{--bg:#090d14;--panel:#111925;--line:#27364a;--text:#e5edf5;--muted:#8b9aab;--cy:#3bd7eb;--green:#66d891;--gold:#e8ba59;--red:#ee786c;--purple:#b69bff}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;line-height:1.45}.wrap{max-width:1120px;margin:auto;padding:24px}h1,h2,h3{margin:0}.eyebrow{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--purple)}.status{margin-left:auto;color:var(--cy);font:11px ui-monospace,monospace}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.panel,.identity{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}.identity{margin-top:0}.identity.nova{border-top:3px solid var(--green)}.identity.axiom{border-top:3px solid var(--cy)}.muted{font-size:12px;color:var(--muted)}button,input,textarea,select{font:inherit;color:var(--text);background:#172234;border:1px solid var(--line);border-radius:9px;padding:8px 10px}button{cursor:pointer}button.go{color:var(--green);border-color:#2f7653}button.cloud{color:var(--cy);border-color:#255c70}button:disabled{opacity:.45;cursor:not-allowed}textarea,input{width:100%}textarea{min-height:70px}.form{display:grid;grid-template-columns:1fr 1fr;gap:9px}.wide{grid-column:1/-1}.chip{font:10px ui-monospace,monospace;border:1px solid var(--line);padding:3px 7px;border-radius:20px}.good{color:var(--green)}.wait{color:var(--gold)}.bad{color:var(--red)}.root,.memory{border:1px solid var(--line);border-radius:10px;padding:9px;margin-top:7px}.root{font-size:12px}.memory small{display:block;color:var(--muted)}.notice{border:1px dashed var(--gold);border-radius:10px;padding:9px 11px;color:var(--gold);margin:12px 0}.answer{white-space:pre-wrap;border-left:3px solid var(--cy);padding:9px 12px;margin-top:9px;background:#0b131e}.scope{display:inline-flex;align-items:center;gap:7px}.scope input{width:auto}pre{white-space:pre-wrap;max-height:320px;overflow:auto;background:#0a111b;padding:10px;border-radius:9px;font:11px ui-monospace,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;line-height:1.45}.wrap{max-width:1120px;margin:auto;padding:24px}h1,h2,h3{margin:0}.eyebrow{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--purple)}.status{margin-left:auto;color:var(--cy);font:11px ui-monospace,monospace}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.panel,.identity{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}.identity{margin-top:0}.identity.nova{border-top:3px solid var(--green)}.identity.axiom{border-top:3px solid var(--cy)}.identity.mirror{border-top:3px solid var(--gold)}.muted{font-size:12px;color:var(--muted)}button,input,textarea,select{font:inherit;color:var(--text);background:#172234;border:1px solid var(--line);border-radius:9px;padding:8px 10px}button{cursor:pointer}button.go{color:var(--green);border-color:#2f7653}button.cloud{color:var(--cy);border-color:#255c70}button:disabled{opacity:.45;cursor:not-allowed}textarea,input{width:100%}textarea{min-height:70px}.form{display:grid;grid-template-columns:1fr 1fr;gap:9px}.wide{grid-column:1/-1}.chip{font:10px ui-monospace,monospace;border:1px solid var(--line);padding:3px 7px;border-radius:20px}.good{color:var(--green)}.wait{color:var(--gold)}.bad{color:var(--red)}.root,.memory{border:1px solid var(--line);border-radius:10px;padding:9px;margin-top:7px}.root{font-size:12px}.memory small{display:block;color:var(--muted)}.notice{border:1px dashed var(--gold);border-radius:10px;padding:9px 11px;color:var(--gold);margin:12px 0}.answer{white-space:pre-wrap;border-left:3px solid var(--cy);padding:9px 12px;margin-top:9px;background:#0b131e}.scope{display:inline-flex;align-items:center;gap:7px}.scope input{width:auto}pre{white-space:pre-wrap;max-height:320px;overflow:auto;background:#0a111b;padding:10px;border-radius:9px;font:11px ui-monospace,monospace}
 </style>
 </head>
 <body><div class="wrap">
   <div class="eyebrow">identity registry · connector locks · explicit sharing</div>
   <div class="row"><h1>AXM Agent Command Center</h1><span class="status" id="boot">starting...</span></div>
-  <div class="notice"><b>Multiple AIs, distinct identities.</b> The original two-identity pattern remains intact; Gemini Local adds a third supervised profile. Private memories stay separate and only deliberately filed shared wisdom crosses a boundary.</div>
+  <div class="notice"><b>Multiple AIs, distinct identities.</b> Nova, Axiom / Mir, Gemini Local, and Mirror keep separate supervised profiles. Private memories stay separate and only deliberately filed shared wisdom crosses a boundary. Mirror's external body remains outside the Workshop.</div>
 
   <section class="panel">
-    <div class="row"><b>Optional default identity</b><select id="defaultIdentity"><option value="">No default</option><option value="nova">Nova</option><option value="axiom-mir">Axiom / Mir</option><option value="gemini-local">Gemini Local (Gemma)</option></select><span class="muted">Preselects an identity only; it does not merge identities or connectors.</span></div>
+    <div class="row"><b>Optional default identity</b><select id="defaultIdentity"><option value="">No default</option><option value="nova">Nova</option><option value="axiom-mir">Axiom / Mir</option><option value="gemini-local">Gemini Local (Gemma)</option><option value="mirror">Mirror</option></select><span class="muted">Preselects an identity only; it does not merge identities or connectors.</span></div>
   </section>
 
   <section class="grid" id="identityCards"></section>
@@ -25,7 +25,7 @@
   <section class="panel">
     <div class="row"><b>File evidence-backed wisdom</b><span class="muted">Private by default. Sharing requires the explicit checkbox.</span></div>
     <div class="form" style="margin-top:10px">
-      <select id="wisdomIdentity"><option value="nova">Nova private memory</option><option value="axiom-mir">Axiom / Mir private memory</option><option value="gemini-local">Gemini Local private memory</option></select>
+      <select id="wisdomIdentity"><option value="nova">Nova private memory</option><option value="axiom-mir">Axiom / Mir private memory</option><option value="gemini-local">Gemini Local private memory</option><option value="mirror">Mirror private memory</option></select>
       <label class="scope"><input type="checkbox" id="shareWisdom"> Put this in shared wisdom</label>
       <textarea class="wide" id="claim" placeholder="What did the system genuinely learn?"></textarea>
       <textarea class="wide" id="evidence" placeholder="Evidence, one item per line"></textarea>
@@ -36,14 +36,14 @@
   </section>
 
   <section class="panel">
-    <div class="row"><b>Separated memory stores</b><button id="refreshBtn">Refresh</button><button id="contextBtn">Preview both contexts</button></div>
+    <div class="row"><b>Separated memory stores</b><button id="refreshBtn">Refresh</button><button id="contextBtn">Preview identity contexts</button></div>
     <div class="grid" id="identityMemories"></div>
     <pre id="contexts" hidden></pre>
   </section>
 
   <section class="panel">
     <div class="row"><b>Identity-routed connector test</b><span class="muted">Each ask receives only its own identity context plus explicit shared wisdom.</span></div>
-    <textarea id="task" placeholder="Ask one of the two identities..."></textarea>
+    <textarea id="task" placeholder="Ask an identity through its explicit connector..."></textarea>
     <div class="row"><button class="go" id="askNova">Ask Nova locally</button><button class="go" id="askGemini">Ask Gemini Local</button><button class="relay" id="novaGemini">Nova → Gemini review</button><button class="cloud" id="askAxiom">Ask Axiom / Mir in cloud</button><span class="muted" id="askStatus"></span></div>
     <div class="answer" id="answer" hidden></div>
   </section>
@@ -52,16 +52,17 @@
 <script>
 (function(){'use strict';
   var $=function(id){return document.getElementById(id);};
-  var health=null,loadedModels=[];
+  var health=null,loadedModels=[],mirrorStatus=null;
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
   function connectorState(p){
     var b=AXMIdentityRegistry.binding(p.id);
     if(b.connector==='local'){var model=b.model||loadedModels[0],ok=!!model&&loadedModels.indexOf(model)>=0;return ok?{label:'ONLINE · '+model,cls:'good'}:{label:'WAITING · '+(b.model||'local model'),cls:'wait'};}
+    if(b.connector==='mirror-native')return mirrorStatus&&mirrorStatus.running?{label:'ONLINE · Seed-0',cls:'good'}:{label:'WAITING · native runtime',cls:'wait'};
     var cloud=!!(health&&health.providers&&health.providers.chatgpt&&health.providers.chatgpt.hasKey);
     return cloud?{label:'ONLINE · ChatGPT',cls:'good'}:{label:'WAITING · cloud credential',cls:'wait'};
   }
   function renderCards(){
-    $('identityCards').innerHTML=AXMIdentityRegistry.profiles().map(function(p){var b=AXMIdentityRegistry.binding(p.id),s=connectorState(p);return '<article class="identity '+(p.id==='nova'?'nova':'axiom')+'"><div class="row"><h2>'+esc(p.name)+'</h2><span class="chip '+s.cls+'">'+esc(s.label)+'</span></div><p>'+esc(p.role)+'</p><p class="muted">identity: '+esc(p.id)+' · connector: '+esc(b.connector)+(b.model?' · model: '+esc(b.model):'')+' · private memories: '+AXMIdentityRegistry.memories(p.id,{includeShared:false}).length+'</p>'+p.roots.map(function(r){return '<div class="root">'+esc(r)+'</div>';}).join('')+'</article>';}).join('');
+    $('identityCards').innerHTML=AXMIdentityRegistry.profiles().map(function(p){var b=AXMIdentityRegistry.binding(p.id),s=connectorState(p),skin=p.id==='nova'?'nova':p.id==='mirror'?'mirror':'axiom';return '<article class="identity '+skin+'"><div class="row"><h2>'+esc(p.name)+'</h2><span class="chip '+s.cls+'">'+esc(s.label)+'</span></div><p>'+esc(p.role)+'</p><p class="muted">identity: '+esc(p.id)+' · connector: '+esc(b.connector)+(b.model?' · model: '+esc(b.model):'')+' · private memories: '+AXMIdentityRegistry.memories(p.id,{includeShared:false}).length+'</p>'+p.roots.map(function(r){return '<div class="root">'+esc(r)+'</div>';}).join('')+'</article>';}).join('');
   }
   function renderMemory(id,target){var list=AXMIdentityRegistry.memories(id,{includeShared:false}).slice(-15).reverse();$(target).innerHTML=list.map(function(m){return '<div class="memory">'+esc(m.text)+'<small>'+esc(m.source)+' · '+esc(m.confidence)+' · '+esc(m.tool)+'</small></div>';}).join('')||'<p class="muted">No private entries yet.</p>';}
   function memoryHtml(id){var list=AXMIdentityRegistry.memories(id,{includeShared:false}).slice(-15).reverse();return list.map(function(m){return '<div class="memory">'+esc(m.text)+'<small>'+esc(m.source)+' · '+esc(m.confidence)+' · '+esc(m.tool)+'</small></div>';}).join('')||'<p class="muted">No entries yet.</p>';}
@@ -69,9 +70,11 @@
   async function inspectConnectors(){
     try{health=await(await fetch('http://127.0.0.1:8787/health')).json();}catch(e){health=null;}
     try{var models=await(await fetch('http://127.0.0.1:8787/local-models')).json();loadedModels=(models&&models.data||[]).map(function(x){return x.id;});}catch(e){loadedModels=[];}
+    try{mirrorStatus=await(await fetch('/api/mirror-native/status')).json();}catch(e){mirrorStatus=null;}
     AXMIdentityRegistry.setConnectorStatus('nova',loadedModels.length?'active':'waiting-for-model');
     AXMIdentityRegistry.setConnectorStatus('gemini-local',loadedModels.indexOf('gemini-local')>=0?'active':'waiting-for-model');
     AXMIdentityRegistry.setConnectorStatus('axiom-mir',health&&health.providers&&health.providers.chatgpt&&health.providers.chatgpt.hasKey?'active':'waiting-for-connector');
+    AXMIdentityRegistry.setConnectorStatus('mirror',mirrorStatus&&mirrorStatus.running?'active':'waiting-for-runtime');
     refresh();
   }
   async function migrateLegacy(){

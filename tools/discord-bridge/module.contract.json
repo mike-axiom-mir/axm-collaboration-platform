@@ -1,0 +1,16 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "discord-bridge",
+  "version": "v0.1",
+  "provides": ["discord-slash-command-proposals", "discord-machine-honest-feed", "discord-visible-pause"],
+  "consumes": ["axm.action/v1", "discord:guild-install", "discord:gateway-guild-events"],
+  "permissions": ["network-optional", "gate", "files"],
+  "handoffs": {
+    "emits": ["axm.discord-proposal/v1"],
+    "accepts": ["axm.action/v1"]
+  },
+  "boundaries": {
+    "writes": ["local:state/discord-bridge", "discord:configured-channel:sanitized-receipts-only"],
+    "refuses": ["credential-browser-readback", "credential-log", "ordinary-message-reading", "message-content-intent", "automatic-training", "automatic-execution", "automatic-proposal-approval", "raw-action-input-posting", "raw-action-output-posting", "unbounded-mentions"]
+  }
+}

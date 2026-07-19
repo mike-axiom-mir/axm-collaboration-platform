@@ -1,13 +1,20 @@
 'use strict';
 
 const crypto = require('node:crypto');
-const { DEFAULT_ROOM } = require('../shared/constants');
+const { BUILD_VERSION, DEFAULT_ROOM, DISCONNECT_TIMEOUT_MS } = require('../shared/constants');
 const { mergeCombatRules } = require('../shared/party-rules');
 const { isValidRoomCode } = require('../shared/validation');
 const { createLaunchContract } = require('../foundation-adapter/launch-contract');
 const { PlayerNormalizationError, normalizeSelectedPlayers } = require('../foundation-adapter/player-normalizer');
 const { getDisplayState } = require('../foundation-adapter/display-router');
 const { createWorldState } = require('./world-state');
+const {
+  GroupSaveError,
+  GroupSaveStore,
+  applyGroupSaveToWorld,
+  createGroupSaveSnapshot,
+} = require('./group-save-store');
+const { createGroupSaveComputerState } = require('./group-save-system');
 const { RoomManager } = require('./room-manager');
 
 function tokensEqual(supplied, expected) {
@@ -75,7 +82,17 @@ class SessionManager {
   constructor(options = {}) {
     this.projectRoot = options.projectRoot;
     this.roomManager = options.roomManager || new RoomManager();
+    this.groupSaveStore = options.groupSaveStore || new GroupSaveStore({
+      projectRoot: this.projectRoot,
+      storageDirectory: options.groupSaveDirectory,
+    });
     this.currentSession = null;
+  }
+
+  createWorld(players, settings) {
+    const world = createWorldState({ players, settings, projectRoot: this.projectRoot });
+    world.groupSaveComputer = createGroupSaveComputerState(world.staticMap, this.groupSaveStore.catalog());
+    return world;
   }
 
   createSession({ players, roomCode = DEFAULT_ROOM, settings = {} }) {
@@ -98,7 +115,7 @@ class SessionManager {
       settings: JSON.parse(JSON.stringify(settings || {})),
       world: null,
     };
-    session.world = createWorldState({ players: session.players, settings: session.settings, projectRoot: this.projectRoot });
+    session.world = this.createWorld(session.players, session.settings);
     this.currentSession = session;
     this.roomManager.attachSession(roomCode, session.id);
     return this.launchResponse(session, true);
@@ -122,7 +139,7 @@ class SessionManager {
 
   restartSession(sessionId, hostToken) {
     const session = this.assertHost(sessionId, hostToken);
-    session.world = createWorldState({ players: session.players, settings: session.settings, projectRoot: this.projectRoot });
+    session.world = this.createWorld(session.players, session.settings);
     session.status = 'running';
     session.endedAt = null;
     this.roomManager.attachSession(session.roomCode, session.id);
@@ -158,6 +175,136 @@ class SessionManager {
     });
     session.settings.combat = JSON.parse(JSON.stringify(session.world.combatRules));
     return { ok: true, sessionId, combatRules: session.world.combatRules };
+  }
+
+  groupSaveCatalog() {
+    return this.groupSaveStore.catalog();
+  }
+
+  connectedExternalPlayers(session, savedSeatSlots) {
+    const allowed = new Set(savedSeatSlots);
+    const connected = [];
+    const now = Date.now();
+    for (const player of session.players) {
+      const actor = session.world.actors[player.actorId];
+      const live = actor?.connected
+        && Number(actor.lastInputAt) > 0
+        && now - Number(actor.lastInputAt) <= DISCONNECT_TIMEOUT_MS;
+      if (!live || !['human', 'adapter'].includes(actor.controller)) continue;
+      if (!allowed.has(player.slot)) {
+        throw new GroupSaveError(
+          `Connected ${player.seatId} is not part of this fixed save roster.`,
+          'SAVE_CONNECTED_ROSTER_MISMATCH',
+          { seatId: player.seatId, savedSeatSlots },
+        );
+      }
+      connected.push(player);
+    }
+    return connected;
+  }
+
+  loadGroupSaveIntoSession(session, save) {
+    const savedSlots = [...save.roster.seatSlots];
+    const connected = this.connectedExternalPlayers(session, savedSlots);
+    if (connected.length > save.roster.seatCount) {
+      throw new GroupSaveError('More external players are connected than the selected save permits.', 'SAVE_TOO_MANY_CONNECTED_PLAYERS');
+    }
+    if ((session.settings?.mode || 'coop_adventure') !== save.mode) {
+      throw new GroupSaveError('This save belongs to another game mode.', 'SAVE_MODE_MISMATCH');
+    }
+    const connectedBySlot = new Map(connected.map((player) => [player.slot, player]));
+    const roster = savedSlots.map((slot, index) => {
+      const external = connectedBySlot.get(slot);
+      if (external) return { ...external, ready: true, selectionOrder: index + 1 };
+      return {
+        slot,
+        seatId: `seat_${slot}`,
+        displayName: `Group AI ${slot}`,
+        controllerType: 'ai',
+        adapterId: `ai-group-save-${slot}`,
+        ready: true,
+        selectionOrder: index + 1,
+      };
+    });
+    const preservedTokens = Object.fromEntries(connected.map((player) => [player.seatId, session.seatTokens[player.seatId]]));
+    const contract = createLaunchContract(roster, {
+      roomCode: session.roomCode,
+      sessionId: session.id,
+      hostToken: session.hostToken,
+      seatTokens: preservedTokens,
+    });
+    const loadedWorld = this.createWorld(contract.players, session.settings);
+    applyGroupSaveToWorld(loadedWorld, save);
+    const connectedIds = new Set(connected.map((player) => player.actorId));
+    for (const actor of Object.values(loadedWorld.actors)) {
+      if (!connectedIds.has(actor.id)) continue;
+      actor.connected = true;
+      actor.lastInputAt = Date.now();
+    }
+    contract.players.forEach((player) => { player.connected = connectedIds.has(player.actorId); });
+    loadedWorld.groupSaveComputer.message = `SLOT ${save.slot} LOADED · ${connected.length} CONNECTED · ${save.roster.seatCount - connected.length} HOST AI FILL`;
+    loadedWorld.groupSaveComputer.messageUntilTick = loadedWorld.tick + 180;
+    session.players = contract.players;
+    session.seatTokens = contract.seatTokens;
+    session.controllerLinks = contract.controllerLinks;
+    session.adapterBindings = contract.adapterBindings;
+    session.partyScreenLinks = contract.partyScreenLinks;
+    session.persistentScreenLinks = contract.persistentScreenLinks;
+    session.world = loadedWorld;
+    session.groupSave = {
+      slot: save.slot,
+      seatCount: save.roster.seatCount,
+      seatSlots: savedSlots,
+      connectedExternalSeats: connected.length,
+      hostAiFilledSeats: save.roster.seatCount - connected.length,
+      loadedAt: Date.now(),
+    };
+    return {
+      ok: true,
+      operation: 'load',
+      ...session.groupSave,
+      players: publicPlayers(session.players),
+    };
+  }
+
+  processPendingGroupSaveOperation(session = this.getRunningSession()) {
+    const state = session?.world?.groupSaveComputer;
+    const pending = state?.pendingOperation;
+    if (!pending) return null;
+    state.pendingOperation = null;
+    try {
+      if (pending.operation === 'save') {
+        const snapshot = createGroupSaveSnapshot(session.world, pending.slot, { buildVersion: BUILD_VERSION });
+        const result = this.groupSaveStore.writeSlot(pending.slot, snapshot);
+        state.catalog = this.groupSaveStore.catalog();
+        state.busy = false;
+        state.message = `SLOT ${pending.slot} SAVED · ${snapshot.roster.seatCount} FIXED SEATS`;
+        state.messageUntilTick = session.world.tick + 180;
+        return { ok: true, operation: 'save', slot: pending.slot, summary: result.summary };
+      }
+      if (pending.operation === 'load') {
+        const result = this.groupSaveStore.readSlot(pending.slot);
+        if (result.status !== 'ready') {
+          throw new GroupSaveError(
+            result.status === 'corrupt' ? 'The selected save is corrupt.' : 'The selected save slot is empty.',
+            result.status === 'corrupt' ? 'SAVE_CORRUPT' : 'SAVE_EMPTY',
+          );
+        }
+        return this.loadGroupSaveIntoSession(session, result.save);
+      }
+      throw new GroupSaveError('Unknown group save operation.', 'INVALID_SAVE_OPERATION');
+    } catch (error) {
+      const activeState = session.world.groupSaveComputer;
+      activeState.busy = false;
+      activeState.confirmation = null;
+      activeState.message = error.code === 'SAVE_CONNECTED_ROSTER_MISMATCH'
+        ? 'LOAD BLOCKED · A CONNECTED SEAT IS OUTSIDE THIS SAVE ROSTER'
+        : error.code === 'SAVE_ROSTER_LOCKED'
+          ? 'SAVE BLOCKED · THIS SLOT IS LOCKED TO ITS ORIGINAL ROSTER'
+          : `SAVE ERROR · ${String(error.code || 'UNKNOWN').replaceAll('_', ' ')}`;
+      activeState.messageUntilTick = session.world.tick + 240;
+      return { ok: false, operation: pending.operation, slot: pending.slot, reason: error.code || 'GROUP_SAVE_ERROR' };
+    }
   }
 
   displayState(partyId) {
@@ -198,6 +345,7 @@ class SessionManager {
       }),
       partyScreenLinks: { ...session.partyScreenLinks },
       persistentScreenLinks: { ...session.persistentScreenLinks },
+      groupSave: session.groupSave ? { ...session.groupSave, seatSlots: [...session.groupSave.seatSlots] } : null,
     };
     if (includeSecrets) response.hostToken = session.hostToken;
     return response;

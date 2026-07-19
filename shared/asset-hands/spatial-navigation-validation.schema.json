@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/spatial-navigation-validation-v1.schema.json",
+  "title": "AXM Spatial Navigation Validation v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "claim",
+    "target_canvas",
+    "operation",
+    "collision",
+    "navigation",
+    "spatial",
+    "budgets",
+    "debug_delivery",
+    "checks"
+  ],
+  "properties": {
+    "schema": { "const": "axm.spatial-navigation-validation/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "HOLD"] },
+    "claim": { "type": "string" },
+    "target_canvas": { "type": "object" },
+    "operation": { "enum": ["create", "edit", "validate"] },
+    "collision": { "type": "object" },
+    "navigation": { "type": "object" },
+    "spatial": { "type": "object" },
+    "budgets": { "type": "object" },
+    "debug_delivery": { "type": "object" },
+    "checks": { "type": "array", "minItems": 1 }
+  },
+  "additionalProperties": false
+}

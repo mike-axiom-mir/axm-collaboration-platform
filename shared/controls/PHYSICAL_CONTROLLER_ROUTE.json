@@ -1,0 +1,92 @@
+{
+  "schema": "axm.shared-controls.physical-controller-route/v1",
+  "status": "DORMANT_RESEARCH_ROUTE",
+  "implemented": false,
+  "defaultInputSource": "phone-touch",
+  "controllerKindsRemain": ["human", "adapter", "ai"],
+  "inputSources": {
+    "workingReference": ["phone-touch"],
+    "planned": ["keyboard", "host-gamepad", "device-gamepad"]
+  },
+  "coreDecision": {
+    "gamepadIsControllerType": false,
+    "gamepadIsInputSource": true,
+    "changingInputPreservesSeatIdentity": true,
+    "changingInputPreservesPartyAndProgression": true,
+    "clientsSendIntentionsOnly": true,
+    "hostOwnsResults": true
+  },
+  "route": [
+    "operating-system gamepad",
+    "host-only gamepad source adapter",
+    "AxmControllerRuntime",
+    "axm-semantic-input-v1",
+    "seat token and sequence gate",
+    "authoritative game host"
+  ],
+  "profileLayers": {
+    "deviceBinding": "schemas/input-source-binding.schema.json",
+    "gameSemantic": "schemas/controller-profile.schema.json"
+  },
+  "assignment": {
+    "strategy": "press-any-button-to-claim-an-explicit-human-seat",
+    "explicitClaimWindowRequired": true,
+    "newButtonEdgeRequired": true,
+    "replacementRequiresConfirmation": true,
+    "gamepadIndexIsPlayerNumber": false,
+    "sessionScopedByDefault": true,
+    "partyScreenPollsGamepads": false
+  },
+  "sourceLease": {
+    "hostPrerequisiteImplemented": true,
+    "exactlyOneActivePerHumanSeat": true,
+    "bindingId": "opaque-session-local",
+    "epoch": "monotonic-per-seat",
+    "packetFields": ["inputSourceBindingId", "inputSourceEpoch"],
+    "rejectPreviousBinding": true,
+    "neutralizeBeforeSwitch": true,
+    "rawGamepadIdPersisted": false,
+    "rawGamepadIdExposedToParty": false
+  },
+  "mapping": {
+    "standardMayUseDefault": true,
+    "nonStandardRequiresExplicitCalibration": true,
+    "missingMappingRequiresExplicitCalibration": true
+  },
+  "authorityTransitions": {
+    "connectedAiIsHumanInputSource": false,
+    "humanToAdapterRequiresSeparateExplicitConsent": true
+  },
+  "disconnect": {
+    "runtimeNeutralizeImplemented": true,
+    "neutralizeImmediately": true,
+    "releaseHeldButtons": true,
+    "preserveHumanSeat": true,
+    "automaticAiTransfer": false,
+    "phoneFallbackAllowed": true
+  },
+  "phases": [
+    {"phase": 1, "name": "host-connected-standard-gamepads", "status": "NOT_IMPLEMENTED"},
+    {"phase": 2, "name": "mixed-local-parties-and-calibration", "status": "NOT_IMPLEMENTED"},
+    {"phase": 3, "name": "player-device-gamepads", "status": "NOT_IMPLEMENTED"},
+    {"phase": 4, "name": "optional-uncommon-device-bridge", "status": "NOT_IMPLEMENTED"}
+  ],
+  "requiredProof": [
+    "one USB gamepad",
+    "one Bluetooth gamepad",
+    "press-to-claim seat assignment",
+    "disconnect neutralization",
+    "return to phone input",
+    "mixed phone and gamepad session",
+    "four simultaneous gamepads",
+    "eight simultaneous gamepads",
+    "focus and fullscreen reliability",
+    "long-session playtest"
+  ],
+  "truth": {
+    "hardwareTested": false,
+    "runtimeAdapterIncluded": false,
+    "compatibilityPromised": false,
+    "softwarePrerequisitesAreHardwareProof": false
+  }
+}

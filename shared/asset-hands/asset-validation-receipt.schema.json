@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.asset-validation-receipt/v1",
+  "title": "AXM Asset Validation Receipt v1",
+  "type": "object",
+  "required": ["schema", "status", "validator", "target_canvas_digest", "artifact_digests", "checks", "createdAt"],
+  "properties": {
+    "schema": { "const": "axm.asset-validation-receipt/v1" },
+    "status": { "enum": ["PASS", "HOLD"] },
+    "validator": { "type": "object", "required": ["id", "version", "capability"] },
+    "target_canvas_digest": { "type": "string", "minLength": 1 },
+    "artifact_digests": { "type": "array", "items": { "type": "object", "required": ["id", "digest", "mime"] } },
+    "checks": { "type": "array", "items": { "type": "object", "required": ["name", "pass"] } },
+    "createdAt": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true
+}

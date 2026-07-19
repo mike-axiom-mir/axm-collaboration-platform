@@ -1,0 +1,9 @@
+{
+  "schema": "axm.module-contract/v1", "id": "machine-host", "version": "v0.1",
+  "provides": ["allowlisted-local-jobs", "bounded-process-capacity", "durable-job-output", "exit-evidence", "explicit-stop"],
+  "consumes": ["service:runtime", "service:gate", "module-selftest-entrypoints"], "permissions": ["machine.execute"],
+  "handoffs": {"emits": ["axm.machine-job/v1", "axm.verification-receipt/v1"], "accepts": ["axm.machine-job-request/v1"]},
+  "boundaries": {"writes": ["state/machine-host/jobs.json", "state/machine-host/logs"], "refuses": ["arbitrary-command", "shell-string", "caller-supplied-executable", "caller-supplied-path", "more-than-two-concurrent-jobs", "hidden-output", "network-authority"]},
+  "lifecycle": {"state_owner": "service", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "automatic"}
+}
+

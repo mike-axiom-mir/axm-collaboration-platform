@@ -1,0 +1,10 @@
+{
+  "id": "secrets-permissions-console", "name": "AXM Secrets & Permissions Console", "version": "v0.1", "status": "TEST", "entry": "index.html", "contract": "module.contract.json", "type": "hub-module", "hubApiVersion": "1.0", "category": "FOUNDATION", "layer": "foundation", "audience": "human-machine", "risk": "HIGH",
+  "tags": ["secrets", "permissions", "credentials", "grants", "rotation", "revocation", "audit"], "uses": ["storage", "gate", "identity"], "permissions": [],
+  "actions": ["store an encrypted connector secret", "inspect secret metadata", "grant a declared module permission", "revoke a secret or permission"],
+  "accepts": ["axm.secret-write-request/v1", "axm.permission-decision-request/v1"],
+  "produces": ["axm.secret-metadata/v1", "axm.permission-receipt/v1"],
+  "readiness": ["storage", "identity", "gate"],
+  "summary": "Encrypt connector secrets with a passphrase-derived key and manage expiry-aware grants for permissions modules actually declare.",
+  "notes": "Secret values are never returned to the browser after storage. Internal consumers require matching scopes and every access attempt is audited."
+}

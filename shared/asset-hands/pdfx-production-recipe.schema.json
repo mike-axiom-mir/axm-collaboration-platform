@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/pdfx-production-recipe-v1.schema.json",
+  "title": "AXM PDF/X Production Recipe v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "target_canvas", "operation", "standard", "profile", "output_condition", "document_schema", "geometry", "safety", "provenance"],
+  "properties": {
+    "schema": {"const": "axm.pdfx-production-recipe/v1"},
+    "version": {"const": "1.0.0"},
+    "id": {"type": "string", "minLength": 1},
+    "target_canvas": {"type": "object"},
+    "operation": {"enum": ["create", "edit", "finish", "validate"]},
+    "standard": {"const": "PDF/X-4"},
+    "profile": {"type": "object", "required": ["description", "sha256", "bytes", "copyright"]},
+    "output_condition": {"const": "Chemical proof"},
+    "document_schema": {"const": "axm.print-document/v1"},
+    "source": {"type": ["object", "null"]},
+    "geometry": {"type": "object", "required": ["trim_mm", "bleed_mm", "page_mm", "minimum_stroke_mm"]},
+    "safety": {"type": "object", "required": ["active_content", "external_references", "unembedded_fonts", "automatic_print"]},
+    "provenance": {"type": "object", "required": ["hand", "hand_version", "seed", "source_artifact_digests"]}
+  },
+  "additionalProperties": false
+}

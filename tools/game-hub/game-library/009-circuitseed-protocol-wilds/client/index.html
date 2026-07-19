@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>CIRCUITSEED — THE PROTOCOL WILDS</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <canvas id="world" aria-label="The Protocol Wilds game view"></canvas>
+  <div class="ambient-grid" aria-hidden="true"></div>
+
+  <header id="topbar" class="topbar hidden">
+    <div class="identity"><span class="seed-mark" aria-hidden="true"></span><div><strong>CIRCUITSEED</strong><small>THE PROTOCOL WILDS</small></div></div>
+    <div class="status-badges"><span>LOCAL ONLY</span><span class="alpha">ALPHA CANDIDATE · WORKING</span></div>
+    <button id="menuButton" class="icon-button" aria-label="Open game menu">☰</button>
+  </header>
+
+  <section id="titleScreen" class="screen title-screen">
+    <div class="title-constellation" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="title-art" aria-hidden="true">
+      <div class="wilds-orbit orbit-one"><i></i><i></i><i></i></div>
+      <div class="wilds-orbit orbit-two"><i></i><i></i><i></i><i></i></div>
+      <div class="wilds-seed"><span></span><b></b></div>
+      <div class="title-kin kin-a"></div><div class="title-kin kin-b"></div><div class="title-kin kin-c"></div>
+      <p>AN UNFINISHED SIGNAL<br><strong>IS WAITING TO MEET YOU</strong></p>
+    </div>
+    <div class="title-copy">
+      <p class="eyebrow">A LOCAL-FIRST AGENT-WORLD ADVENTURE</p>
+      <h1><span>CIRCUIT</span>SEED</h1>
+      <h2>THE PROTOCOL WILDS</h2>
+      <p class="title-promise">Find unfinished technical life. Repair what broke. Build trust. Let what grows remain itself.</p>
+      <div class="title-badges"><span>LOCAL ONLY</span><span>NO ACCOUNT</span><span>NO EXTERNAL AI REQUIRED</span></div>
+      <div class="title-actions">
+        <button id="newButton" class="primary">NEW JOURNEY</button>
+        <button id="continueButton">CONTINUE</button>
+        <button id="profilesButton">PROFILES</button>
+      </div>
+      <p id="titleStatus" class="status-line">Reading the local Workshop…</p>
+    </div>
+    <div class="title-footer"><span>VERY EARLY · LOCAL SERIOUS ALPHA BUILD</span><button id="settingsButton" class="text-button">ACCESSIBILITY & AUDIO</button></div>
+  </section>
+
+  <main id="gameUi" class="game-ui hidden">
+    <aside class="mission-card glass">
+      <div class="section-label">CURRENT SIGNAL</div>
+      <h2 id="missionTitle">First Light</h2>
+      <p id="missionBrief">Move through Lumen Yard.</p>
+      <div id="missionProgress" class="objective-list"></div>
+    </aside>
+    <section id="partyCards" class="party-cards" aria-label="Occupied seats"></section>
+    <section class="field-status glass">
+      <span id="regionLabel">LUMEN YARD</span>
+      <span id="conditionLabel">FIRST LIGHT · CLEAR CURRENT</span>
+      <span id="currencyLabel">¤ 0</span>
+    </section>
+    <section class="field-nav glass" aria-label="Field navigation">
+      <div class="map-head"><span>FIELD MAP</span><b id="mapCoordinates">000 · 000</b></div>
+      <canvas id="miniMap" width="420" height="240" aria-label="Protocol Wilds minimap"></canvas>
+      <div id="nearbyPrompt" class="nearby-prompt"><span>MOVE</span><strong>Explore the visible signal field</strong></div>
+      <button id="journalQuickButton" class="journal-quick">JOURNAL <span id="journalQuickCount">0/10</span></button>
+    </section>
+    <section class="verb-dock glass" aria-label="Field actions">
+      <button data-pulse="scan"><span>◉</span>SCAN</button>
+      <button data-pulse="connect"><span>⌁</span>CONNECT</button>
+      <button data-pulse="deploy"><span>◇</span>DEPLOY</button>
+      <button data-pulse="assist"><span>∞</span>ASSIST</button>
+      <button data-pulse="recover"><span>✦</span>RECOVER</button>
+      <button data-pulse="return"><span>⌂</span>RETURN</button>
+      <button id="workbenchButton"><span>⬡</span>BUILD / SELL</button>
+      <button data-pulse="interact" class="action"><span>↟</span>ACT</button>
+    </section>
+    <section id="eventToast" class="event-toast hidden" role="status"></section>
+    <section id="regionReveal" class="region-reveal hidden" aria-live="polite"><span>ENTERING</span><strong id="regionRevealName"></strong><p id="regionRevealDescription"></p></section>
+    <section id="discoveryReveal" class="discovery-reveal hidden" aria-live="polite"><button id="discoveryRevealClose" aria-label="Close discovery">×</button><span id="discoveryRevealIndex">MEMORY ECHO</span><h2 id="discoveryRevealTitle"></h2><p id="discoveryRevealText"></p><small id="discoveryRevealReward"></small></section>
+  </main>
+
+  <section id="profilePanel" class="modal hidden" aria-modal="true" role="dialog">
+    <div class="modal-card wide">
+      <button class="modal-close" data-close="profilePanel">×</button>
+      <p class="eyebrow">PARTICIPANT-OWNED · LOCAL</p>
+      <h2>Pathfinder profiles</h2>
+      <p class="muted">Your Circuitkin, discoveries, business and checkpoint travel with this explicit local profile. The host world stays separate.</p>
+      <div id="profileList" class="profile-list"></div>
+      <form id="profileForm" class="inline-form">
+        <input id="profileName" maxlength="48" placeholder="Display name" value="Local Pathfinder" aria-label="Profile display name">
+        <select id="identityType" aria-label="Identity type"><option value="human">Human</option><option value="adapter">Connected AI adapter</option><option value="ai">Selected Host AI</option></select>
+        <button type="submit">CREATE LOCAL PROFILE</button>
+      </form>
+      <div class="modal-actions profile-actions">
+        <label class="file-button">IMPORT PORTABLE JSON<input id="importProfileInput" class="visually-hidden" type="file" accept="application/json,.json"></label>
+        <button id="exportProfileButton">EXPORT SELECTED JSON</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="settingsPanel" class="modal hidden" aria-modal="true" role="dialog">
+    <div class="modal-card">
+      <button class="modal-close" data-close="settingsPanel">×</button>
+      <p class="eyebrow">PLAYER CONTROL</p><h2>Accessibility & audio</h2>
+      <label class="setting-row"><span>Text scale</span><input id="textScale" type="range" min="90" max="150" value="100"><output id="textScaleValue">100%</output></label>
+      <label class="setting-row"><span>Master audio</span><input id="audioVolume" type="range" min="0" max="100" value="35"><output id="audioVolumeValue">35%</output></label>
+      <label class="toggle-row"><input id="reducedMotion" type="checkbox"><span>Reduced motion</span></label>
+      <label class="toggle-row"><input id="highContrast" type="checkbox"><span>High contrast</span></label>
+      <p class="muted">Audio begins only after you interact. Settings stay in this browser; authoritative game state does not.</p>
+    </div>
+  </section>
+
+  <section id="starterPanel" class="modal hidden" aria-modal="true" role="dialog">
+    <div class="modal-card extra-wide">
+      <p class="eyebrow">AN UNFINISHED NEED</p><h2>Who will you help first?</h2>
+      <p class="muted">You are not choosing property. Each Circuitseed becomes Circuitkin through repair, trust and a shared decision.</p>
+      <div id="starterChoices" class="starter-grid"></div>
+    </div>
+  </section>
+
+  <section id="workbenchPanel" class="drawer hidden" aria-label="Workbench and local stall">
+    <div class="drawer-head"><div><p class="eyebrow">LUMEN YARD</p><h2>Workbench & local stall</h2></div><button data-close="workbenchPanel">×</button></div>
+    <div class="tabs"><button class="active" data-tab="craftTab">CRAFT</button><button data-tab="businessTab">BUSINESS</button><button data-tab="kinTab">CIRCUITKIN</button><button data-tab="journalTab">JOURNAL</button><button data-tab="requestsTab">REQUESTS</button><button data-tab="networkTab">LOCAL PARTY</button></div>
+    <div id="craftTab" class="tab-content active"><p class="muted">Discovery → processing → useful work. The host validates every ingredient and result.</p><div id="materialShelf" class="material-shelf"></div><div id="recipeList" class="card-list"></div></div>
+    <div id="businessTab" class="tab-content"><div id="businessPaths" class="card-list"></div><div class="shop-controls"><button id="openShopButton">OPEN STALL</button><button id="closeShopButton">CLOSE SAFELY</button></div><h3>Local demand orders</h3><div id="orderList" class="card-list"></div></div>
+    <div id="kinTab" class="tab-content">
+      <div class="collection-summary"><strong id="collectionCount">0 / 30 CONNECTED</strong><span id="collectionBreakdown">20 individual · 10 Confluence specialist designs</span></div>
+      <p class="muted">Scan an unfinished signal, help with its need, then Connect. Every individual has a two-parent Confluence evolution; both parents remain themselves.</p>
+      <details class="codex-panel"><summary>OPEN 30-DESIGN FIELD CODEX</summary><div id="circuitkinCodex" class="codex-grid"></div></details>
+      <h3>Your connected Circuitkin</h3>
+      <div id="circuitkinRoster" class="card-list"></div>
+      <h3>Confluence evolution</h3>
+      <p class="muted">Each parent needs trust 3 and two validated field uses. Evolution combines roles and unlocks a stronger signature action without consuming either parent.</p>
+      <div id="confluenceLab" class="card-list"></div>
+      <h3>Friendly signal simulations</h3>
+      <p class="muted">Practice uses the same host-authoritative tactical actions. It never advances a story encounter.</p>
+      <div class="simulation-controls"><button data-simulation="friendly-1v1">START FRIENDLY 1v1</button><button data-simulation="friendly-2v2">START FRIENDLY 2v2</button></div>
+    </div>
+    <div id="journalTab" class="tab-content">
+      <div class="journal-hero"><div><p class="eyebrow">THE WILDS REMEMBER BACK</p><h3>Memory Echo Archive</h3><p class="muted">Fragments are preserved with their uncertainty, origin, and disagreements intact.</p></div><strong id="journalCount">0 / 10</strong></div>
+      <div id="journalEntries" class="journal-grid"></div>
+      <h3>Field inventory</h3><div id="inventoryShelf" class="inventory-grid"></div>
+      <h3>Milestones</h3><div id="achievementShelf" class="achievement-list"></div>
+    </div>
+    <div id="requestsTab" class="tab-content">
+      <div class="request-board-head"><div><p class="eyebrow">OPTIONAL · PERSISTENT</p><h3>Lumen Yard Signal Board</h3><p class="muted">No timer, no away penalty, no manufactured urgency. Claim work when it is genuinely complete.</p></div><strong id="requestCount">0 / 16</strong></div>
+      <div id="requestBoard" class="request-board"></div>
+    </div>
+    <div id="networkTab" class="tab-content"><p class="boundary-note">This is the current local session only. No public market or central economy is claimed.</p><div id="localShops"></div><h3>Phone controller links</h3><div id="controllerLinks" class="link-list"></div></div>
+  </section>
+
+  <section id="encounterPanel" class="encounter-panel hidden" aria-live="polite">
+    <div class="encounter-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+    <p class="eyebrow">TACTICAL CONTAINMENT</p><h2 id="encounterTitle">Signal fracture</h2>
+    <div class="meter-row"><span>STABILITY</span><div><i id="stabilityMeter"></i></div><b id="stabilityValue">0 / 100</b></div>
+    <div class="meter-row threat"><span>THREAT</span><div><i id="threatMeter"></i></div><b id="threatValue">0</b></div>
+    <div class="meter-row integrity"><span>PARTY</span><div><i id="integrityMeter"></i></div><b id="integrityValue">100</b></div>
+    <p id="recommendations" class="recommendation"></p>
+    <div id="tacticalActions" class="tactical-grid"></div>
+    <div id="encounterLog" class="encounter-log"></div>
+  </section>
+
+  <section id="menuPanel" class="modal hidden" aria-modal="true" role="dialog">
+    <div class="modal-card">
+      <button class="modal-close" data-close="menuPanel">×</button>
+      <p class="eyebrow">LOCAL SESSION</p><h2>Journey menu</h2>
+      <div class="menu-stack"><button id="resumeButton">RESUME</button><button id="menuProfilesButton">PROFILES & EXPORT</button><button id="menuSettingsButton">ACCESSIBILITY & AUDIO</button><a href="/party/" target="_blank">OPEN PARTY SCREEN</a><button id="endSessionButton" class="danger">SAVE, END & RETURN TO TITLE</button></div>
+      <p class="muted">Meaningful events autosave. Ending creates a result summary and leaves the Hub stable.</p>
+    </div>
+  </section>
+
+  <script src="/audio.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

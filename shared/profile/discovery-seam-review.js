@@ -6,7 +6,7 @@ const providerContract=JSON.parse(fs.readFileSync(path.join(__dirname,'profile-s
 const server=fs.readFileSync(path.join(root,'server.js'),'utf8');
 const hub=fs.readFileSync(path.join(root,'hub/index.html'),'utf8');
 const profile=fs.readFileSync(path.join(root,'hub/profile.js'),'utf8');
-const game=fs.readFileSync(path.join(root,'tools/game-hub/index.html'),'utf8');
+const game=fs.readFileSync(path.join(root,'tools/game-hub/game-night.js'),'utf8');
 const studio=fs.readFileSync(path.join(root,'tools/studio/engine.html'),'utf8');
 const project=fs.readFileSync(path.join(root,'tools/project-room/app.js'),'utf8');
 const checks=[
@@ -15,12 +15,17 @@ const checks=[
   [core.includes('unlockedFor')&&core.includes('memberId'),'achievement unlocks bind to stable member identities'],
   [core.includes('participants.forEach'),'equal participant contributions'],
   [core.includes('dedupeKey'),'deduplicated receipts'],
-  [core.includes('code character receipt requires evidence'),'code evidence gate'],
+  [core.includes("definition.evidence")&&core.includes("receipt requires evidence"),'aggregate receipt evidence gate'],
+  [core.includes("sfxCreated")&&core.includes("assetsCreated")&&core.includes("gamesDeveloped"),'extended creative and build metric families'],
+  [core.includes("kill-recorded")&&core.includes("death-recorded"),'verified combat result metrics'],
+  [core.includes("LEGACY_ACHIEVEMENT_ALIASES")&&core.includes("games-played-10"),'overlapping starter achievements migrate without duplicates'],
   [core.includes('CODE_MOODS')&&core.includes('infrastructure')&&core.includes('entertainment')&&core.includes('software'),'purpose-based code mood statistics'],
-  [server.includes("state', 'shared-profile"),'local persistence'],
-  [server.includes("'/api/profile/opt-in'"),'explicit opt-in API'],
-  [server.includes("'delete-local-profile'"),'explicit delete API'],
-  [client.includes("'/api/profile/event'"),'shared browser activity adapter'],
+  [server.includes('PROFILE_STATE_DIR')&&server.includes('shared-profile')&&server.includes('PROFILE_STATE_FILE')&&server.includes('profile.json'),'local persistence'],
+  [server.includes('/api/profile/opt-in'),'explicit opt-in API'],
+  [server.includes('/api/profile/health')&&server.includes('/api/profile/receipt'),'global receipt health and module adapter'],
+  [server.includes('delete-local-profile'),'explicit delete API'],
+  [client.includes("'/api/profile/event'")&&client.includes("'/api/profile/receipt'"),'shared browser activity adapters'],
+  [!client.includes("var human = members.find"),'unmatched module work is never silently credited to the human'],
   [client.includes('recordCodeTask')&&client.includes('code-task:'),'stable machine-native code task receipts'],
   [providerContract.lifecycle==='OPTIONAL_OPT_IN'&&providerContract.portableInterface.includes('reportingHealth'),'portable opt-in provider contract'],
   [provider.includes('WAITING_FOR_RECEIPT')&&provider.includes('continuousSync:false'),'reporting health distinguishes a missing receipt from continuous synchronization'],
@@ -36,10 +41,10 @@ const checks=[
   [profile.includes('holderBoard')&&hub.includes('Current craft holders'),'category holders without an ordered leaderboard'],
   [profile.includes('selectedMemberId')&&profile.includes('data-profile-member')&&hub.includes('profileAchievementOwner'),'clickable identity achievement profiles'],
   [core.includes('submitAssessment')&&core.includes('reviewAssessment')&&profile.includes('reflectionPanel'),'self-authored cross-validated strengths infographic'],
-  [server.includes("'/api/profile/assessment/review'")&&server.includes('local-cross-validation'),'human or AI review route'],
+  [server.includes('/api/profile/assessment/review')&&server.includes('local-cross-validation'),'human or AI review route'],
   [fs.readFileSync(path.join(root,'hub/profile.css'),'utf8').includes('grayscale(1) brightness(.28)'),'locked emblems visibly darken'],
-  [fs.existsSync(path.join(root,'assets/achievements/manifest.json')),'professional artwork slots and manifest'],
-  [game.includes("type:'game-played'"),'successful game launch receipt'],
+  [fs.existsSync(path.join(root,'assets/achievements/manifest.json'))&&fs.existsSync(path.join(root,'assets/achievements/achievement-code-characters-100000-primal.png')),'professional artwork pack and manifest'],
+  [game.includes("type:'game-played'")&&game.includes("dedupeKey:'game-result:'"),'explicit finished game receipt'],
   [studio.includes("type:'picture-made'"),'produced picture receipt'],
   [project.includes("type: 'project-completed'"),'completed project receipt']
   ,[project.includes('projectContributionCandidates')&&project.includes('card.ownerName')&&project.includes('message.authorName'),'project completion credits explicit collaborators']

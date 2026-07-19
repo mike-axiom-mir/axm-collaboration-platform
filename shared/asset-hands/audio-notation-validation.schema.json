@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/audio-notation-validation-v1.schema.json",
+  "title": "AXM Audio Notation Validation v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "status",
+    "claim",
+    "target_canvas",
+    "operation",
+    "source",
+    "timing",
+    "midi",
+    "musicxml",
+    "device",
+    "budgets",
+    "playback_validation",
+    "checks"
+  ],
+  "properties": {
+    "schema": { "const": "axm.audio-notation-validation/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "HOLD"] },
+    "claim": { "type": "string" },
+    "target_canvas": { "type": "object" },
+    "operation": { "enum": ["create", "edit", "inspect", "validate"] },
+    "source": { "type": ["object", "null"] },
+    "timing": { "type": "object" },
+    "midi": { "type": ["object", "null"] },
+    "musicxml": { "type": ["object", "null"] },
+    "device": { "type": ["object", "null"] },
+    "budgets": { "type": "object" },
+    "playback_validation": { "const": false },
+    "checks": { "type": "array", "minItems": 1 }
+  },
+  "additionalProperties": false
+}

@@ -21,15 +21,18 @@ function read(p){ try { return fs.readFileSync(path.join(ROOT,p),'utf8'); } catc
 function sha(p){ const t = fs.readFileSync(path.join(ROOT,p)); return crypto.createHash('sha256').update(t).digest('hex').slice(0,16); }
 
 /* 1 — SPINE INTEGRITY: every copy identical; fingerprint recorded */
-const SPINE_SHA = '418f9ce4fb050602';   /* v1.4.1 canon fingerprint (bump ONLY via merge gate) */
+const SPINE_SHA = 'b618c5762240070c';   /* Mirror Native provider merge gate approved by Mike, 2026-07-16 */
 const spines = [];
 (function find(d){ fs.readdirSync(path.join(ROOT,d),{withFileTypes:true}).forEach(e=>{
   const p = d?d+'/'+e.name:e.name;
   if(e.isDirectory() && e.name!=='node_modules') find(p);
   else if(e.name==='axm-foundation.js') spines.push(p); }); })('');
-spines.forEach(p => sha(p)===SPINE_SHA ? ok('spine intact: '+p)
+const activeSpines = spines.filter(p => !p.replace(/\\/g, '/').startsWith('exports/workshop-packages/'));
+const historicalSpines = spines.filter(p => !activeSpines.includes(p));
+activeSpines.forEach(p => sha(p)===SPINE_SHA ? ok('spine intact: '+p)
   : fail('SPINE CHANGED: '+p+' ('+sha(p)+' != canon '+SPINE_SHA+') — spine changes need the merge gate'));
-if(!spines.length) fail('no axm-foundation.js found at all');
+if(!activeSpines.length) fail('no active axm-foundation.js found at all');
+if(historicalSpines.length) ok('historical package spines preserved outside the current canon lock: '+historicalSpines.length);
 
 /* 2 — MANIFESTS: valid json, required fields, uses declared, id rules, statuses */
 const STATUSES = ['EXPERIMENTAL','TEST','WORKING','CANON','SHELL','BROKEN'];
@@ -124,9 +127,15 @@ if(sh){ sh.includes("status:'proposal'") && sh.includes('rejection_reason')
    shape. START_AXM_FULL uses this same adapter to gate Game Hub only. */
 try {
   const gameV = require('./tools/game-hub/game-package-verifier');
+  const engineSeams = require('./tools/game-hub/game-engine/engine-seam-selftest');
+  const engineResult = engineSeams.run();
+  ok('shared game engine seams: '+engineResult.assertions+' regression assertion(s) passed');
   const gr = gameV.verifyLibrary(path.join(ROOT,'tools','game-hub','game-library'));
+  fs.mkdirSync(path.join(ROOT, 'exports'), { recursive: true });
+  fs.writeFileSync(path.join(ROOT, 'exports', 'game-night-seam-report.json'), JSON.stringify(gr, null, 2));
   if(gr.pass) ok('game-library adapter: '+gr.games.length+' modular game package(s) verified');
   else gr.games.forEach(g => g.errors.forEach(e => fail('game package '+g.game+': '+e)));
+  gr.games.forEach(g => (g.warnings || []).forEach(e => warn('game package '+g.game+': '+e)));
 } catch(e) { fail('game-library adapter could not run: '+e.message); }
 
 /* 10 - DECLARED MODULE CONTRACTS: modules may opt into the shared v1
@@ -140,6 +149,18 @@ try {
   });
   if(!cr.results.length) warn('no modules declare a shared module contract yet');
 } catch(e) { fail('module contract adapter could not run: '+e.message); }
+
+/* 11 - LIFECYCLE SEAM INVENTORY: legacy modules are not falsely failed,
+   but missing reload/disconnect/cleanup decisions can no longer disappear.
+   New module templates declare these seams from birth. */
+try {
+  const seamV = require('./hub/module-seam-audit');
+  const sr = seamV.auditModules(ROOT);
+  fs.mkdirSync(path.join(ROOT, 'exports'), { recursive: true });
+  fs.writeFileSync(path.join(ROOT, 'exports', 'module-seam-gaps.json'), JSON.stringify(sr, null, 2));
+  if (sr.gapCount) warn('module lifecycle seam inventory: '+sr.gapCount+' older gap(s) across '+sr.openModuleCount+' module(s) - see exports/module-seam-gaps.json');
+  else ok('module lifecycle seam inventory complete: '+sr.moduleCount+' module(s) declared');
+} catch(e) { fail('module lifecycle seam inventory could not run: '+e.message); }
 
 /* ---- report ---- */
 const head = 'AXM VERIFY — '+new Date().toISOString()+'\n'+

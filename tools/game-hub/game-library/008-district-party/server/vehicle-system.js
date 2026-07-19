@@ -2,6 +2,7 @@
 
 const { DISCONNECT_TIMEOUT_MS } = require('../shared/constants');
 const { clamp } = require('../shared/validation');
+const { collidesObstacle } = require('./spatial-index');
 
 function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
@@ -150,15 +151,6 @@ function recoverDisconnectedDrivers(world, now = Date.now()) {
     }
   }
   return released;
-}
-
-function collidesObstacle(world, position, radius) {
-  return world.staticMap.obstacles.some((box) => (
-    position.x + radius > box.x
-    && position.x - radius < box.x + box.width
-    && position.y + radius > box.y
-    && position.y - radius < box.y + box.height
-  ));
 }
 
 function vehiclePartyTetherGuard(world, vehicle, proposedPosition) {

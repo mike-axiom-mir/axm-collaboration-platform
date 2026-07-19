@@ -23,10 +23,16 @@ const checks = [
   ['Asset Vault distinguishes available from connected', html.includes('Asset Vault available') && shell.includes('Asset Vault connected')],
   ['Asset Vault has a gated, versioned image-to-layer route', vault.includes("gate('send-to-studio'") && vault.includes("schema:'axm.studio-asset/v1'") && shell.includes("msg.schema!=='axm.studio-asset/v1'") && engine.includes("e.data.schema==='axm.studio-asset/v1'")],
   ['Imported asset provenance survives project save/reload', engine.includes("NL.sourceAsset={schema:'axm.studio-asset/v1'") && engine.includes('sourceAsset:l.sourceAsset||null') && engine.includes('L.sourceAsset=ld.sourceAsset||null')],
+  ['Shared Creation Hands are embedded once and require an explicit versioned handoff', html.includes('id="handsFrame"') && shell.includes('/shared/asset-hands/index.html?host=studio') && shell.includes("msg.type!=='axm-asset-hand-result'") && shell.includes('result.technical.pass!==true')],
+  ['Composition hand results reuse the existing bounded Studio draw engine', shell.includes("item.metadata.schema==='axm.drawpacket/v1'") && engine.includes('axm-studio-apply-hand-drawpacket') && engine.includes('applyDrawPacket(JSON.stringify(e.data.packet||{}))')],
+  ['Target canvas, recipe and validation survive image and draw-packet handoffs', shell.includes('result.target_canvas') && shell.includes('result.creation_recipe') && shell.includes('result.validation_receipt') && engine.includes('targetCanvas:asset.targetCanvas||null')],
+  ['Raster and SVG artifacts use distinct checked Studio paths', shell.includes("artifact.mime==='image/svg+xml'&&artifact.format==='SVG'") && shell.includes("/^image\\/(?:png|jpeg|webp)$/")],
+  ['Mirror has a bounded, native-candidate, receipt-producing Studio route', engine.includes('runMirrorStudioSession') && engine.includes('/axm/v1/organs/studio-candidates') && engine.includes('No human visual brief was supplied') && engine.includes('axm.studio.mirror.last-receipt.v1')],
   ['Vector edits participate in undo and redo', engine.includes('vectorUndoStack') && engine.includes("currentStudioMode==='vector'?vectorUndo()")],
   ['Pixel frames preserve layer state and resist stale loads', engine.includes('layerMetaSnapshot') && engine.includes('frameLoadToken')],
   ['Destructive frame deletion requires confirmation', engine.includes("confirm('Delete frame")],
-  ['Studio contract exposes all ten modes and asset handoff', manifest.version === 'v2.2' && contract.version === 'v2.2' && contract.handoffs.accepts.includes('axm.studio-asset/v1')]
+  ['Studio contract exposes all ten modes and contract-v2 canvas-aware asset handoffs', manifest.version === 'v2.5' && contract.version === 'v2.5' && contract.handoffs.accepts.includes('axm.studio-asset/v1') && contract.handoffs.accepts.includes('axm.asset-hand-result/v1') && contract.consumes.includes('axm.target-canvas/v1') && contract.consumes.includes('axm.asset-hand/v2')],
+  ['Studio preserves operation, source digests and complete artifact inventory without treating them as the preview image', shell.includes('handContract:result.hand.schema') && shell.includes('sourceArtifactDigests:result.creation_recipe') && shell.includes('artifactInventory:result.artifacts.map')]
 ];
 
 let state = Discovery.createSession({

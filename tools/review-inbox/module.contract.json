@@ -1,0 +1,8 @@
+{
+  "schema": "axm.module-contract/v1", "id": "review-inbox", "version": "v0.1",
+  "provides": ["unified-review-queue", "exact-digest-votes", "independent-review-seats", "hold-and-reject", "bounded-one-to-ten-seat-panels", "rejected-item-discussion", "repair-or-cancel-decision-pool", "superseded-artifact-detection"],
+  "consumes": ["axm.review-item/v1", "artifact-sha256", "attributed-review-votes"], "permissions": [],
+  "handoffs": {"emits": ["axm.review-vote/v1", "axm.review-decision/v1", "axm.review-discussion/v1"], "accepts": ["axm.review-item/v1"]},
+  "boundaries": {"writes": ["state/review-inbox/reviews.json", "state/review-inbox/audit.jsonl"], "refuses": ["vote-without-digest", "more-than-ten-requested-votes", "one-identity-filling-multiple-seats", "same-digest-repair-reopen", "approval-after-artifact-change", "automatic-apply", "automatic-promotion", "silent-supersession"]},
+  "lifecycle": {"state_owner": "service", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"}
+}

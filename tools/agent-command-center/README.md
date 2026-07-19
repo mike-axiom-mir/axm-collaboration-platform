@@ -122,6 +122,7 @@ Current profiles:
 - `nova` -> local bridge connector; private Nova memory.
 - `axiom-mir` -> cloud ChatGPT bridge connector; private Axiom/Mir memory.
 - `gemini-local` -> local bridge connector plus the fixed `gemini-local` model identifier; private Google Gemma memory.
+- `mirror` -> external machine-native Seed-0 identity; isolated private wisdom, opted-in profile receipts, and a bounded Studio action surface. Its private body and runtime state remain outside the Workshop.
 
 The default identity is optional and only controls preselection. It never changes a connector lock or merges memories.
 

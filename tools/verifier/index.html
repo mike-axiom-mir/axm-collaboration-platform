@@ -18,6 +18,9 @@ button{padding:8px 13px;border:1px solid #1c7f92;border-radius:9px;background:rg
 button.ghost{border-color:var(--edge);background:transparent;color:var(--text)}
 .bar{display:flex;gap:10px;margin-top:16px}
 .note{color:var(--muted);font-size:12px;margin-top:10px;font-family:ui-monospace,monospace}
+.count{font-size:11px;color:var(--gold);border:1px solid rgba(232,181,74,.35);border-radius:6px;padding:3px 8px;white-space:nowrap}
+.count.good{color:var(--green);border-color:rgba(99,214,138,.35)}
+.seam-detail{display:block;margin-top:4px;color:var(--muted);font-size:11.5px;line-height:1.45}
 </style>
 </head>
 <body>
@@ -40,6 +43,10 @@ button.ghost{border-color:var(--edge);background:transparent;color:var(--text)}
     <button id="retBtn">Retire check</button>
   </div>
   <div id="retList"></div>
+
+  <h2>Lifecycle seam gaps</h2>
+  <p class="sub" style="margin-top:-4px">Reload, disconnect, cleanup and Game Night evidence that still needs a declared answer. Pending stays visible; it is never silently counted as verified.</p>
+  <div id="seamGaps"></div>
 
   <h2>Your checks</h2>
   <div class="form">
@@ -141,6 +148,45 @@ function loadReport(){
   }).catch(function(){ box.innerHTML = ''; });
 }
 
+function seamItem(title, detail, count, good){
+  var d = document.createElement('div'); d.className = 'item';
+  var nm = document.createElement('div'); nm.className = 'nm';
+  var t = document.createElement('div'); t.textContent = title; nm.appendChild(t);
+  if (detail) { var s = document.createElement('span'); s.className = 'seam-detail'; s.textContent = detail; nm.appendChild(s); }
+  var badge = document.createElement('span'); badge.className = 'count' + (good ? ' good' : ''); badge.textContent = count;
+  d.appendChild(nm); d.appendChild(badge); return d;
+}
+
+function loadSeamGaps(){
+  var box = $('seamGaps'); box.innerHTML = '';
+  Promise.all([
+    fetch('/exports/game-night-seam-report.json').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }),
+    fetch('/exports/module-seam-gaps.json').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; })
+  ]).then(function(reports){
+    var games = reports[0], modules = reports[1];
+    if (!games && !modules) {
+      box.appendChild(seamItem('No seam inventory yet', 'Run node verify.js once to generate the current Game Night and module lifecycle reports.', 'not scanned', false));
+      return;
+    }
+    if (games) {
+      box.appendChild(seamItem(
+        'Game Night hard contracts',
+        games.games.length + ' packages checked. Structural failures block launch; pending physical phone, reconnect or overlay evidence remains a warning.',
+        games.failCount ? games.failCount + ' failure(s)' : games.warningCount + ' pending',
+        !games.failCount && !games.warningCount
+      ));
+    }
+    if (modules) {
+      box.appendChild(seamItem(
+        'Older module lifecycle inventory',
+        modules.moduleCount + ' modules scanned for state owner, reload, disconnect and cleanup decisions. This report does not rewrite legacy modules.',
+        modules.gapCount ? modules.gapCount + ' gap(s)' : 'complete',
+        !modules.gapCount
+      ));
+    }
+  });
+}
+
 $('retBtn').onclick = function(){
   var match = $('retMatch').value.trim(), reason = $('retReason').value.trim();
   if (!match) { $('note').textContent = 'match is required (a phrase from the check line)'; return; }
@@ -175,6 +221,6 @@ $('reloadBtn').onclick = loadConfig;
 
 AXMHub.onInit(function(){ AXMHub.log('Verifier ready'); });
 AXMHub.ready({ id:'verifier', name:'Verifier', version:'v1.0', hubApiVersion:'1.0', permissions:[], savesState:true, handlesShutdown:false });
-loadConfig(); loadReport();
+loadConfig(); loadReport(); loadSeamGaps();
 </script>
 </body></html>

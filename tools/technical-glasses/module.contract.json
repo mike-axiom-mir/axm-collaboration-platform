@@ -1,0 +1,49 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "technical-glasses",
+  "version": "v0.1",
+  "provides": [
+    "live-machine-readable-technical-ground-truth",
+    "task-focused-ai-briefing",
+    "source-fingerprint-and-freshness",
+    "module-contract-and-readiness-summary",
+    "prioritized-open-technical-seams",
+    "shared-human-machine-technical-hud",
+    "offline-live-compiler"
+  ],
+  "consumes": [
+    "workshop:tool-manifests",
+    "workshop:module-contracts",
+    "workshop:capability-index",
+    "workshop:live-readiness",
+    "workshop:body-pulse-state",
+    "workshop:source-metadata",
+    "workshop:test-declarations"
+  ],
+  "permissions": ["runtime", "storage"],
+  "handoffs": {
+    "emits": ["axm.technical-glasses/v1", "text/plain/ai-technical-briefing"],
+    "accepts": ["plain-text/task-focus", "axm.technical-focus/v1", "hub:init", "hub:settings:value"]
+  },
+  "lifecycle": {
+    "state_owner": "service",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  },
+  "boundaries": {
+    "writes": ["state/technical-glasses/latest.json:derived-portability-snapshot"],
+    "refuses": [
+      "chat-memory-as-technical-authority",
+      "readme-as-technical-authority",
+      "guessing-missing-state",
+      "hidden-reasoning-capture",
+      "automatic-repair",
+      "automatic-module-open",
+      "permission-change",
+      "canon-or-wisdom-promotion",
+      "structural-scan-as-runtime-proof",
+      "stale-snapshot-as-current-truth"
+    ]
+  }
+}

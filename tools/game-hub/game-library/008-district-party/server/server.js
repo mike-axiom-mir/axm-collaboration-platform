@@ -20,6 +20,7 @@ const { getControllerInfo, routeInput } = require('./input-router');
 const { getAdapterObservation } = require('./seat-observation');
 const { SessionManager } = require('./session-manager');
 const { WorldLoop } = require('./world-loop');
+const { GROUP_SAVE_SLOT_COUNT } = require('./group-save-store');
 
 const MIME_TYPES = Object.freeze({
   '.html': 'text/html; charset=utf-8',
@@ -217,7 +218,9 @@ function createDistrictPartyServer(options = {}) {
   const host = options.host || process.env.HOST || '0.0.0.0';
   const logger = options.logger || console;
   const sessionManager = options.sessionManager || new SessionManager({ projectRoot });
-  const worldLoop = new WorldLoop(() => sessionManager.getRunningSession());
+  const worldLoop = new WorldLoop(() => sessionManager.getRunningSession(), {
+    processSession: (session) => sessionManager.processPendingGroupSaveOperation(session),
+  });
   const pidPath = path.join(projectRoot, '.axm-district-party.pid');
 
   const server = http.createServer(async (request, response) => {
@@ -245,7 +248,28 @@ function createDistrictPartyServer(options = {}) {
           localOnly: true,
           telemetry: false,
           runtimeInternetRequired: false,
+          groupSaveSlots: GROUP_SAVE_SLOT_COUNT,
           lanAddresses: privateLanAddresses(),
+        });
+        return;
+      }
+
+      if (request.method === 'POST' && pathname === '/api/runtime/shutdown') {
+        if (!isLoopbackAddress(request.socket.remoteAddress)) {
+          sendJson(response, 403, { ok: false, error: 'host-local-shutdown-required' });
+          return;
+        }
+        sendJson(response, 202, { ok: true, status: 'shutting-down' });
+        setImmediate(() => server.emit('axm-runtime-shutdown-request'));
+        return;
+      }
+
+      if (request.method === 'GET' && pathname === '/api/group-saves') {
+        sendJson(response, 200, {
+          ok: true,
+          slotCount: GROUP_SAVE_SLOT_COUNT,
+          slots: sessionManager.groupSaveCatalog(),
+          profileAccountsUsed: false,
         });
         return;
       }
@@ -402,13 +426,19 @@ function createDistrictPartyServer(options = {}) {
           resolve();
         });
       });
-      writePidFile();
+      if (process.env.AXM_MANAGED_BY_GAME_HUB !== '1') writePidFile();
       if (options.autoStartLoop !== false) worldLoop.start();
       return server.address();
     },
     async close() {
       worldLoop.stop();
-      if (server.listening) await new Promise((resolve) => server.close(resolve));
+      if (server.listening) await new Promise((resolve) => {
+        server.close(resolve);
+        /* Browser fetch keep-alive sockets must not hold a deliberate local
+           shutdown open until an external SIGKILL leaves a stale PID marker. */
+        if (typeof server.closeIdleConnections === 'function') server.closeIdleConnections();
+        if (typeof server.closeAllConnections === 'function') server.closeAllConnections();
+      });
       removePidFile();
     },
   };
@@ -447,6 +477,7 @@ async function runFromCommandLine() {
     await runtime.close();
     process.exitCode = 0;
   };
+  runtime.server.once('axm-runtime-shutdown-request', shutdown);
   process.once('SIGINT', shutdown);
   process.once('SIGTERM', shutdown);
 }

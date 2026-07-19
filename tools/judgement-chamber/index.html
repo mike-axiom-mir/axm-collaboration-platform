@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Judgement Chamber</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="responsive-fix.css">
+</head>
+<body>
+  <div class="grid" aria-hidden="true"></div>
+  <header class="topbar">
+    <a href="../../hub/index.html" class="back">&larr; HUB</a>
+    <div class="brand"><span>AXM / DUAL PERSPECTIVE</span><h1>Judgement Chamber</h1></div>
+    <div class="truth-badges"><b>HUMAN SEAT</b><b>MACHINE SEAT</b><b>NO SILENT OVERRIDE</b></div>
+  </header>
+
+  <main>
+    <section class="subject-shell panel" aria-labelledby="subjectTitle">
+      <div class="section-line"><span>00</span><b>THE EXACT THING BEING JUDGED</b><i id="subjectState">DRAFT</i></div>
+      <div id="subjectDisplay" class="subject-display">
+        <div><span id="subjectKind" class="kind">NEW SUBJECT</span><h2 id="subjectTitle">Name the item before judging it</h2><p id="subjectDescription">A goal, asset, code change, world rule, curriculum, route, research claim, or anything else can enter through the same exact-subject seam.</p></div>
+        <dl><div><dt>SOURCE</dt><dd id="subjectSource">Not declared</dd></div><div><dt>DIGEST</dt><dd><code id="subjectDigest">Not sealed</code></dd></div><div><dt>EFFECT</dt><dd id="subjectEffect">Not declared</dd></div></dl>
+      </div>
+      <details id="subjectComposer" open>
+        <summary>Define or revise an exact subject</summary>
+        <form id="subjectForm" class="subject-form">
+          <label><span>WHAT KIND OF THING?</span><select id="kind"><option value="goal">Goal / direction</option><option value="asset">Asset / design</option><option value="code-change">Code / module change</option><option value="world-change">World / system change</option><option value="curriculum">Curriculum / lesson</option><option value="research">Research / claim</option><option value="route">Route / process</option><option value="other">Anything else</option></select></label>
+          <label class="wide"><span>EXACT TITLE</span><input id="title" maxlength="180" required placeholder="What are we judging?"></label>
+          <label class="wide"><span>WHAT IS IT, IN PLAIN WORDS?</span><textarea id="description" maxlength="2000" required placeholder="Describe the exact candidate, goal, change, or question. Do not hide the uncomfortable part."></textarea></label>
+          <label><span>SOURCE / OWNER / FILE</span><input id="source" maxlength="300" placeholder="module, file, goal ID, person, or URL"></label>
+          <label><span>WHAT CHANGES IF IT PASSES?</span><input id="effect" maxlength="500" placeholder="The concrete consequence of approval"></label>
+          <label class="wide"><span>PRIMARY EVIDENCE OR NAMED GAP</span><textarea id="evidence" maxlength="1500" placeholder="Tests, observation, receipts, comparison, source — or say exactly what proof is missing."></textarea></label>
+        </form>
+      </details>
+    </section>
+
+    <section class="judgement-map" aria-label="Four-corner judgement and central disagreement flow">
+      <article class="corner purpose panel" data-dimension="purpose"></article>
+      <article class="corner truth panel" data-dimension="truth"></article>
+
+      <section class="middle panel">
+        <div class="section-line"><span>05</span><b>DISAGREEMENT &amp; REPAIR FLOW</b><i id="middleCount">0 IN MIDDLE</i></div>
+        <div class="flow" aria-label="Judgement flow">
+          <div>INTAKE<small>Exact subject</small></div><i>&rarr;</i><div>2 SEATS<small>Independent reasons</small></div><i>&rarr;</i><div class="split">SPLIT / NO<small>Nothing buried</small></div><i>&rarr;</i><div>REPAIR<small>Change + evidence</small></div><i>&rarr;</i><div>RE-VOTE<small>New digest</small></div>
+        </div>
+        <div id="flowVerdict" class="flow-verdict draft"><b>Build the exact judgement</b><span>Complete all four corners before opening a vote.</span></div>
+        <div class="middle-columns">
+          <div><h3>Items needing both minds</h3><p>Any <b>NO</b> or <b>HOLD</b> arrives here. The reason stays attached.</p><div id="repairQueue" class="mini-list"><p class="empty">No split decisions.</p></div></div>
+          <div><h3>Repair this exact item</h3><textarea id="discussion" maxlength="2000" placeholder="What must change, what evidence is missing, or why should it close?"></textarea><div class="inline-actions"><button id="addDiscussion" type="button" class="soft">ADD NOTE</button><button id="routeRepair" type="button">SEND TO REPAIR</button><button id="cancelReview" type="button" class="danger">CLOSE</button></div><button id="reviseReview" class="wide-button" type="button">LOAD AS CHANGED DRAFT</button></div>
+        </div>
+
+        <div class="fabric-goal">
+          <div><span>EXTRA INTAKE / EXISTING PLACE REMAINS</span><h3>Add a Fabric or Workshop goal here</h3><p>This is a second doorway into Workshop Direction. It previews first; saving still creates the normal reviewed direction.</p></div>
+          <form id="goalForm">
+            <textarea id="goalDescription" maxlength="3000" required placeholder="Example: Grow a modular family of street assets for District Party, with technical checks and human + machine review."></textarea>
+            <div class="goal-options"><label>QUALITY<select id="goalQuality"><option value="DRAFT">Draft</option><option value="GOOD" selected>Good</option><option value="HIGH">High</option></select></label><label>PRIORITY<input id="goalPriority" type="number" min="0" max="100" value="70"></label><label>LIMIT / PART<input id="goalPulses" type="number" min="1" max="8" value="2"></label></div>
+            <div class="inline-actions"><button type="submit">PREVIEW GOAL</button><button id="saveGoal" type="button" disabled>SAVE REVIEWED DIRECTION</button><a href="../workshop-direction/index.html">Keep using full Direction &rarr;</a></div>
+          </form>
+          <div id="goalPreview" class="goal-preview">No extra goal previewed.</div>
+        </div>
+      </section>
+
+      <article class="corner care panel" data-dimension="care"></article>
+      <article class="corner growth panel" data-dimension="growth"></article>
+    </section>
+
+    <section class="vote-deck panel" aria-labelledby="voteTitle">
+      <div class="section-line"><span>06</span><b id="voteTitle">TWO KEYS / TWO REASONS</b><i>NO IMPERSONATION</i></div>
+      <div class="vote-grid">
+        <article class="seat human"><span>HUMAN PERSPECTIVE</span><h3>Mike / human seat</h3><label>IDENTITY<input id="humanActor" maxlength="120" value="Mike"></label><label>WHY?<textarea id="humanNote" maxlength="1000" placeholder="Meaning, taste, lived consequence, or any other honest reason."></textarea></label><div class="vote-actions"><button data-seat="human" data-verdict="APPROVE">YES</button><button data-seat="human" data-verdict="HOLD" class="hold">HOLD</button><button data-seat="human" data-verdict="REJECT" class="no">NO</button></div><p id="humanVote">No human vote on this screen.</p></article>
+        <article class="seat machine"><span>MACHINE PERSPECTIVE</span><h3>Codex / machine seat</h3><label>IDENTITY<input id="machineActor" maxlength="120" value="Codex"></label><label>EVIDENCE-BACKED REASON<textarea id="machineNote" maxlength="1000" placeholder="Capability, contradiction, test, uncertainty, resource cost, or another explicit machine-side reason."></textarea></label><div class="vote-actions"><button data-seat="machine" data-verdict="APPROVE">YES</button><button data-seat="machine" data-verdict="HOLD" class="hold">HOLD</button><button data-seat="machine" data-verdict="REJECT" class="no">NO</button></div><p id="machineVote">No machine vote on this screen.</p></article>
+      </div>
+      <div class="open-review"><button id="submitReview" type="button">SEAL EXACT ITEM &amp; OPEN TWO-SEAT REVIEW</button><span id="completeness">Four corners are incomplete.</span></div>
+    </section>
+
+    <section class="library panel">
+      <div class="section-line"><span>07</span><b>JUDGEMENT LIBRARY</b><i id="libraryCount">LOADING</i></div>
+      <div class="library-layout"><div id="reviewList" class="review-list"><p class="empty">Loading review truth…</p></div><div id="reviewDetail" class="review-detail"><p>Select any review item. The page will show exactly what is being judged, including non-Chamber items.</p></div></div>
+    </section>
+    <div id="notice" class="notice" role="status" aria-live="polite"></div>
+  </main>
+
+  <script src="judgement-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

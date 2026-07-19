@@ -1,4 +1,5 @@
 {
+  "schema": "axm.external-collaborator-seat/v1",
   "adapter_id": "example-adapter",
   "display_name": "Example Adapter",
   "status": "RAW / REVIEW / ACCEPT FOR TEST / WORKING / KNOWN FAIL / RETIRED",
@@ -18,6 +19,27 @@
     "requires_consent": true,
     "visible_to_players": true
   },
+  "execution": {
+    "mode": "external-hub-connected",
+    "built_in_host_ai": false,
+    "owns_separate_player_seat": true
+  },
+  "interface": {
+    "input_protocol": "axm-semantic-input-v1",
+    "observation_protocol": "axm-seat-screen-semantics-v1",
+    "observation_scope": "seat-visible-only",
+    "same_authority_gate_as_human": true,
+    "rendered_screen_required": false,
+    "structured_state_required": true,
+    "omniscient_world_state_allowed": false,
+    "private_other_player_state_allowed": false
+  },
+  "continuity": {
+    "seat_token_bound": true,
+    "reconnectable": true,
+    "action_sequence_monotonic": true,
+    "result_receipt_required": true
+  },
   "limits": {
     "can_chat": false,
     "can_control_player": true,
@@ -29,6 +51,7 @@
     "no_hidden_adapter": true,
     "host_must_assign_seat": true,
     "adapter_name_visible_in_lobby": true,
-    "human_override_allowed": true
+    "human_override_allowed": true,
+    "adapter_is_not_relabelled_host_ai": true
   }
 }

@@ -7,6 +7,7 @@
   const setupView = $('setup-view');
   const joinGrid = $('join-grid');
   let activeSession = null;
+  let activeRosterSignature = null;
   let detectedLanOrigin = null;
   let detectedLanOrigins = [];
 
@@ -170,6 +171,7 @@
 
   function renderJoinBoard(session) {
     activeSession = session;
+    activeRosterSignature = rosterSignature(session);
     sessionStorage.setItem('axmDistrictSession', JSON.stringify(session));
     setupView.classList.add('hidden');
     runningView.classList.remove('hidden');
@@ -219,6 +221,27 @@
       $('copy-party-b').textContent = lanPartyBUrl ? 'Copy LAN screen URL' : 'Copy local screen URL';
       $('copy-party-b').onclick = () => navigator.clipboard?.writeText(lanPartyBUrl || localPartyBUrl);
     }
+  }
+
+  function rosterSignature(session) {
+    return JSON.stringify({
+      sessionId: session?.sessionId,
+      players: (session?.players || []).map((player) => [player.seatId, player.controllerType, player.displayName, player.connected]),
+      controllerSeats: (session?.controllerLinks || []).map((link) => link.seatId),
+      adapterSeats: (session?.adapterBindings || []).map((binding) => binding.seatId),
+      groupSaveLoadedAt: session?.groupSave?.loadedAt || null,
+    });
+  }
+
+  async function refreshLoadedRoster() {
+    if (!activeSession) return;
+    const state = await fetch('/api/launcher-state', { cache: 'no-store' }).then((response) => response.json()).catch(() => null);
+    if (!state?.ok || state.status !== 'running' || state.sessionId !== activeSession.sessionId) return;
+    if (rosterSignature(state) === activeRosterSignature) return;
+    renderJoinBoard({ ...activeSession, ...state, hostToken: state.hostToken || activeSession.hostToken });
+    $('session-status').textContent = state.groupSave
+      ? `Loaded save ${state.groupSave.slot} · ${state.groupSave.hostAiFilledSeats} AI fill`
+      : 'Running';
   }
 
   async function request(path, options = {}) {
@@ -284,4 +307,5 @@
     } catch (e) { $('server-status').textContent = 'Local host unavailable'; }
   }
   boot();
+  setInterval(refreshLoadedRoster, 1000);
 })();

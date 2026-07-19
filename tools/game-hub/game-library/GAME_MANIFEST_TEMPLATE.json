@@ -1,5 +1,6 @@
 {
-  "game_id": "example-game",
+  "slot": "010",
+  "game_id": "010-example-game",
   "name": "Example Game",
   "status": "RAW / REVIEW / ACCEPT FOR TEST / WORKING / KNOWN FAIL / RETIRED",
   "description": "Short public description.",
@@ -13,10 +14,11 @@
     "spectator"
   ],
   "launch": {
-    "server_entry": "server.js",
-    "client_entry": "client.html",
-    "controller_path": "/?room=AXM1&player={player}",
-    "start_command": "node server.js",
+    "server_entry": "runtime/server.js",
+    "client_entry": "/games/010/",
+    "controller_path": "/controller/?room=AXM1&player={player}&seat={seat_id}",
+    "port": 8800,
+    "start_command": "managed-by-game-hub",
     "local_only_default": true
   },
   "join": {
@@ -50,5 +52,31 @@
     "adapter_observation_is_seat_visible_only": true,
     "host_launch_required": true,
     "game_does_not_override_hub_seats": true
+  },
+  "verification": {
+    "game_night": {
+      "schema": "axm.game-night-seams/v1",
+      "controller_delivery": "dedicated-path",
+      "controller_evidence": ["client/controller/index.html"],
+      "state_authority": "server",
+      "host_reload_recovery": "game-hub-active-launch",
+      "shared_screen_occupies_seat": false,
+      "disconnect_recovery": "pending",
+      "blocking_overlay_escape": "pending",
+      "physical_phone_qa": "pending",
+      "adapter_state_interface": "pending",
+      "adapter_state_evidence": ["docs/AI_NATIVE_SEAT_CONTRACT.md"]
+    }
+  },
+  "package": {
+    "source_status": "new-package-template",
+    "required_paths": [
+      "README_FIRST.md",
+      "KNOWN_LIMITS.md",
+      "runtime/server.js",
+      "client/index.html",
+      "client/controller/index.html",
+      "docs/AI_NATIVE_SEAT_CONTRACT.md"
+    ]
   }
 }

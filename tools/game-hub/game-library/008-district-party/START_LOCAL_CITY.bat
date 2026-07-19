@@ -16,7 +16,7 @@ if errorlevel 1 (
   exit /b 1
 )
 set "PORT=8795"
-echo AXM DISTRICT PARTY v0.1.7
+echo AXM DISTRICT PARTY v0.2.6 - USER ART PASS
 echo.
 echo Host launcher: http://127.0.0.1:8795/
 echo Party A screen: http://127.0.0.1:8795/party-screen.html?party=party_a

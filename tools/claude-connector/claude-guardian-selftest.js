@@ -69,7 +69,7 @@ const settingsTamper = guardian.evaluatePreToolUse(guardian.normalizeEvent(pre('
 assert.equal(settingsTamper.decision, 'trip');
 
 const credentialRead = guardian.evaluatePreToolUse(guardian.normalizeEvent(pre('Read', {
-  file_path: 'C:\\Users\\miket\\.claude\\credentials.json'
+  file_path: 'C:\\Users\\Example\\.claude\\credentials.json'
 })));
 assert.equal(credentialRead.decision, 'trip');
 
@@ -111,7 +111,7 @@ assert.ok(/require\('\.\.\/shell-guardian\/guardian-hook'\)/.test(guardianSrc));
 assert.ok(!/scheduleGrokKill/.test(guardianSrc));
 assert.ok(/circuit remains tripped until explicit reset/.test(guardianSrc));
 assert.ok(fs.existsSync(path.join(__dirname, 'claude-guardian-control.js')));
-const wrapperSrc = fs.readFileSync('C:\\Users\\miket\\.claude\\bin\\axm-claude-guardian.cmd', 'utf8');
+const wrapperSrc = fs.readFileSync(path.join(__dirname, 'axm-claude-guardian.cmd.template'), 'utf8');
 assert.ok(/node\.exe/i.test(wrapperSrc));
 assert.ok(/claude-guardian\.js/i.test(wrapperSrc));
 assert.ok(/exit \/b %errorlevel%/i.test(wrapperSrc));

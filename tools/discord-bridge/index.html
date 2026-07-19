@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Discord Bridge</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="back" href="../../hub/index.html" aria-label="Back to Hub">‹</a>
+    <div class="mark">AW</div>
+    <div><span class="eyebrow">OPTIONAL COLLABORATION DOORWAY</span><h1>Discord Bridge</h1></div>
+    <button id="pause" class="danger">Pause Discord</button>
+  </header>
+
+  <main>
+    <section class="hero panel">
+      <div>
+        <span class="eyebrow cyan">LOCAL WORKSHOP · DELIBERATE NETWORK EXIT</span>
+        <h2>Bring the collaboration room to Discord—without putting the Workshop inside Discord.</h2>
+        <p>The app can accept attributed slash-command proposals and post deliberately sanitized action receipts. It cannot read ordinary chat, train Mirror, execute requests, or reveal local credentials.</p>
+      </div>
+      <div class="truth-grid" id="truthGrid"></div>
+    </section>
+
+    <div id="notice" class="notice" hidden></div>
+
+    <section class="layout">
+      <div class="column">
+        <section class="panel steps">
+          <div class="section-title"><span>1</span><div><h3>Create the Discord app</h3><p>Do this once in Discord's official Developer Portal.</p></div></div>
+          <ol>
+            <li>Open the Developer Portal and choose <strong>New Application</strong>.</li>
+            <li>Name it <strong>AXM Workshop Bridge</strong>. Discord creates its bot automatically.</li>
+            <li>Copy the <strong>Application ID</strong> from General Information.</li>
+            <li>On the Bot page, reset/copy the bot token. Paste it only into this local screen.</li>
+          </ol>
+          <a class="button secondary" href="https://discord.com/developers/applications" target="_blank" rel="noopener">Open Discord Developer Portal ↗</a>
+        </section>
+
+        <section class="panel">
+          <div class="section-title"><span>2</span><div><h3>Tell the local bridge where it belongs</h3><p>Numeric IDs are routing addresses, not passwords.</p></div></div>
+          <form id="settingsForm">
+            <label>Application ID<input id="applicationId" inputmode="numeric" autocomplete="off" placeholder="Discord Developer Portal → General Information"></label>
+            <label>Server (Guild) ID<input id="guildId" inputmode="numeric" autocomplete="off" placeholder="Right-click AXM Workshop server → Copy Server ID"></label>
+            <label>Feed Channel ID<input id="channelId" inputmode="numeric" autocomplete="off" placeholder="Right-click #machine-honest-feed → Copy Channel ID"></label>
+            <details><summary>Can't see “Copy ID”?</summary><p>Discord Settings → Advanced → turn on Developer Mode. Then right-click the server or channel.</p></details>
+            <button class="button" type="submit">Save local IDs</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="section-title"><span>3</span><div><h3>Store the bot token locally</h3><p>The browser can write it once but can never read it back.</p></div></div>
+          <form id="tokenForm" class="token-row">
+            <input id="botToken" type="password" autocomplete="new-password" placeholder="Paste Discord bot token">
+            <button class="button" type="submit">Store locally</button>
+          </form>
+          <p class="small">Never paste this token into chat, GitHub, a screenshot, or an issue. The public packager excludes it.</p>
+        </section>
+      </div>
+
+      <div class="column">
+        <section class="panel">
+          <div class="section-title"><span>4</span><div><h3>Install it in AXM Workshop</h3><p>The generated link asks only to view a channel, send messages, and expose slash commands.</p></div></div>
+          <a id="installLink" class="button disabled" href="#" target="_blank" rel="noopener">Enter Application ID first</a>
+          <p class="small">Choose your <strong>AXM Workshop</strong> Discord server on Discord's authorization screen.</p>
+        </section>
+
+        <section class="panel controls">
+          <div class="section-title"><span>5</span><div><h3>Choose each permission lane</h3><p>None of these switches grants broad Discord chat visibility.</p></div></div>
+          <label class="switch"><span><strong>Connector enabled</strong><small>Allows an explicit connection.</small></span><input id="enabled" type="checkbox"></label>
+          <label class="switch"><span><strong>Slash commands</strong><small><code>/axm status</code>, <code>/axm propose</code>, <code>/axm pause</code></small></span><input id="commandsEnabled" type="checkbox"></label>
+          <label class="switch"><span><strong>Machine-honest feed</strong><small>Posts sanitized completed/failed Workshop receipts.</small></span><input id="feedPostingEnabled" type="checkbox"></label>
+          <label class="switch disabled-switch"><span><strong>Read ordinary chat</strong><small>Unavailable by architecture in v0.1.</small></span><input type="checkbox" disabled></label>
+          <label class="switch"><span><strong>Lesson intake</strong><small>Reserved for future reviewed lessons; no automatic training.</small></span><input id="lessonIntakeEnabled" type="checkbox"></label>
+          <button id="saveLanes" class="button secondary">Save permission lanes</button>
+        </section>
+
+        <section class="panel connect-card">
+          <h3>Local connection</h3>
+          <p id="connectionText">Checking the sidecar…</p>
+          <div class="button-row">
+            <button id="connect" class="button">Connect now</button>
+            <button id="disconnect" class="button secondary">Disconnect</button>
+            <button id="refresh" class="button ghost">Refresh</button>
+          </div>
+          <p class="small">Restarting the Workshop does not silently reconnect Discord. A human starts the network session.</p>
+        </section>
+
+        <section class="panel community-card">
+          <div class="section-title plain"><div><h3>AXM public community</h3><p>Read-only server window. Loading it makes a direct connection from this browser to Discord.</p></div></div>
+          <div id="widgetGate" class="widget-gate">
+            <div class="mark">AW</div>
+            <strong>Discord stays unloaded by default</strong>
+            <span>Load it only when you want the live member, voice-channel and invite view.</span>
+            <div class="button-row">
+              <a class="button" href="https://discord.gg/sGHMxFkKhs" target="_blank" rel="noopener">Join / open AXM Discord ↗</a>
+              <button id="loadWidget" class="button secondary">Load live community</button>
+            </div>
+          </div>
+          <iframe id="discordWidget" title="AXM Workshop Discord community" data-src="https://discordapp.com/widget?id=1527845306547572847&amp;theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts" hidden></iframe>
+          <p class="small">Permanent invite: <a href="https://discord.gg/sGHMxFkKhs" target="_blank" rel="noopener">discord.gg/sGHMxFkKhs</a> · Public server ID: <code>1527845306547572847</code>. This widget cannot access your local Workshop files.</p>
+        </section>
+
+        <section class="panel">
+          <div class="section-title plain"><div><h3>Discord proposal inbox</h3><p>Suggestions wait here. They do not become lessons or actions.</p></div><button id="loadProposals" class="button ghost">Refresh</button></div>
+          <div id="proposals" class="empty">No proposals loaded.</div>
+        </section>
+      </div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

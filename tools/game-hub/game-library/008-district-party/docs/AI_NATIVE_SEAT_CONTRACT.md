@@ -10,7 +10,9 @@ AXM District Party keeps three controller identities distinct:
 | `adapter` | Connected Workshop AI | No | Never |
 | `ai` | Optional built-in game state machine | No | Yes |
 
-No empty slot becomes an actor. District Dominion accepts one through four ready seats per party, with unequal parties allowed. `hostAiFillEmptySeats` is `false` unless the host deliberately enables the launcher option.
+No empty slot becomes an actor in a new session. District Dominion accepts one through four ready seats per party, with unequal parties allowed. `hostAiFillEmptySeats` is `false` unless the host deliberately enables the launcher option.
+
+The v0.2.4 group-save restore rule is a narrow exception, not a new default: when loading a fixed roster, every saved seat must exist. A saved human/adapter seat that is actively connected retains its token and identity; a saved seat that is not connected becomes built-in `ai` for that restored run. The missing seat's old phone/adapter token is removed. See `docs/GROUP_SAVES.md`.
 
 ## Launch binding
 

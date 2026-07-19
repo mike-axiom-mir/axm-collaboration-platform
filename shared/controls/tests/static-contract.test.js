@@ -38,6 +38,30 @@ test('manifest keeps connected AI separate from optional built-in Host AI', () =
   assert.equal(manifest.githubModified, false);
 });
 
+test('dormant physical-controller route changes the hand, not the seat authority', () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'BUILD_MANIFEST.json')));
+  const route = JSON.parse(fs.readFileSync(path.join(root, 'PHYSICAL_CONTROLLER_ROUTE.json')));
+  const bindingSchema = JSON.parse(fs.readFileSync(path.join(root, 'schemas', 'input-source-binding.schema.json')));
+  const packetSchema = JSON.parse(fs.readFileSync(path.join(root, 'schemas', 'input-packet.schema.json')));
+  assert.deepEqual(manifest.controllerKinds, ['human', 'adapter', 'ai']);
+  assert.deepEqual(manifest.inputSources.workingReference, ['phone-touch']);
+  assert.equal(route.implemented, false);
+  assert.equal(route.coreDecision.gamepadIsControllerType, false);
+  assert.equal(route.coreDecision.gamepadIsInputSource, true);
+  assert.equal(route.coreDecision.changingInputPreservesSeatIdentity, true);
+  assert.equal(route.assignment.gamepadIndexIsPlayerNumber, false);
+  assert.equal(route.assignment.partyScreenPollsGamepads, false);
+  assert.equal(route.sourceLease.exactlyOneActivePerHumanSeat, true);
+  assert.equal(route.sourceLease.rawGamepadIdPersisted, false);
+  assert.equal(route.authorityTransitions.connectedAiIsHumanInputSource, false);
+  assert.equal(route.disconnect.neutralizeImmediately, true);
+  assert.equal(route.disconnect.automaticAiTransfer, false);
+  assert.equal(route.truth.hardwareTested, false);
+  assert.equal(bindingSchema.title, 'AXM input source binding profile v1');
+  assert.deepEqual(packetSchema.dependentRequired.inputSourceBindingId, ['inputSourceEpoch']);
+  assert.deepEqual(packetSchema.dependentRequired.inputSourceEpoch, ['inputSourceBindingId']);
+});
+
 test('reference host runs the gate, consumes a pulse, and produces an observation', () => {
   const run = spawnSync(process.execPath, [path.join(root, 'examples', 'host', 'reference-host.js')], {
     cwd: root,

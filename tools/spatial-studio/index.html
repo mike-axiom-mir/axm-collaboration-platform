@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Spatial Studio</title>
+  <link rel="stylesheet" href="spatial.css">
+  <link rel="stylesheet" href="spatial-hands.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../../hub/index.html" aria-label="Back to AXM Hub"><span class="brand-mark">AXM</span><span><strong>Spatial Studio</strong><small>one 3D + simulation workspace</small></span></a>
+    <div class="project-title"><input id="project-name" value="Untitled Spatial Project" aria-label="Project name"><span id="save-state">local draft</span></div>
+    <div class="top-actions">
+      <button id="new-project" class="quiet">New</button><button id="import-project" class="quiet">Import</button><button id="open-hands" class="quiet">Asset Hands</button><button id="export-project">Save project</button><input id="project-file" type="file" accept="application/json,.json" hidden>
+    </div>
+  </header>
+  <main class="studio-shell">
+    <nav id="mode-rail" class="mode-rail" aria-label="Spatial workflows"></nav>
+    <aside class="scene-panel panel">
+      <div class="panel-head"><div><span class="eyebrow">Scene graph</span><h2>Objects</h2></div><button id="add-object" title="Add selected primitive">＋</button></div>
+      <label class="compact-label">Primitive<select id="primitive-type"><option>cube</option><option>sphere</option><option>cylinder</option><option>cone</option><option>plane</option><option>torus</option></select></label>
+      <div id="object-list" class="object-list"></div>
+      <div class="scene-summary" id="scene-summary"></div>
+    </aside>
+    <section class="viewport-column">
+      <div class="viewport-toolbar">
+        <div><span id="mode-label">Scene assembly</span><small id="truth-label">WebGL preview · parametric scene truth</small></div>
+        <div class="viewport-actions"><button id="frame-proof" class="quiet">Frame proof</button><button id="focus-view" class="quiet">Frame scene</button></div>
+      </div>
+      <div class="viewport-wrap">
+        <canvas id="spatial-canvas" aria-label="Interactive 3D viewport"></canvas>
+        <div class="axis"><span class="x">X</span><span class="y">Y</span><span class="z">Z</span></div>
+        <div id="viewport-status" class="viewport-status">Drag to orbit · wheel to zoom</div>
+        <div id="adapter-warning" class="adapter-warning" hidden></div>
+      </div>
+      <div class="timeline">
+        <button id="play-toggle" aria-label="Play animation">▶</button>
+        <label>Frame <input id="current-frame" type="number" min="0" value="0"></label>
+        <input id="frame-scrubber" type="range" min="0" max="240" value="0">
+        <span id="timeline-readout">0 / 240 · 24 fps</span>
+      </div>
+    </section>
+    <aside class="inspector panel">
+      <div class="panel-head"><div><span class="eyebrow">Active workflow</span><h2 id="inspector-title">Scene</h2></div><span id="mode-badge" class="badge">REAL</span></div>
+
+      <section class="mode-panel active" data-panel="scene">
+        <h3>Transform</h3><div id="selection-empty" class="empty-note">Select an object in the scene graph.</div>
+        <div id="transform-controls">
+          <label>Name<input id="object-name"></label>
+          <div class="vec"><span>Position</span><input id="pos-x" type="number" step="0.1"><input id="pos-y" type="number" step="0.1"><input id="pos-z" type="number" step="0.1"></div>
+          <div class="vec"><span>Rotation</span><input id="rot-x" type="number" step="1"><input id="rot-y" type="number" step="1"><input id="rot-z" type="number" step="1"></div>
+          <div class="vec"><span>Scale</span><input id="scale-x" type="number" step="0.1" min="0.001"><input id="scale-y" type="number" step="0.1" min="0.001"><input id="scale-z" type="number" step="0.1" min="0.001"></div>
+          <label>Parent<select id="object-parent"></select></label><button id="apply-transform">Apply transform</button><button id="delete-object" class="danger">Delete object</button>
+        </div>
+      </section>
+
+      <section class="mode-panel" data-panel="model">
+        <h3>Parametric modeling</h3><p>Editable local geometry recipes. Changes rebuild the mesh without destroying the source recipe.</p>
+        <label>Detail<input id="geometry-detail" type="range" min="3" max="48" value="20"><output id="detail-output">20</output></label>
+        <label>Inflate<input id="geometry-inflate" type="range" min="-0.8" max="2" step="0.05" value="0"><output id="inflate-output">0</output></label>
+        <label>Twist °<input id="geometry-twist" type="range" min="-360" max="360" step="5" value="0"><output id="twist-output">0</output></label>
+        <button id="apply-geometry">Rebuild selected mesh</button><div class="truth-card"><strong>Geometry truth</strong><span>Primitives + inflate + twist are real. Boolean, sculpt and retopology remain future hands.</span></div>
+      </section>
+
+      <section class="mode-panel" data-panel="surface">
+        <h3>Materials + UV seam</h3><label>Assigned material<select id="material-select"></select></label><button id="assign-material">Assign to selected</button>
+        <hr><label>New material name<input id="material-name" value="Spatial material"></label><label>Base colour<input id="material-color" type="color" value="#38d6ec"></label><label>Metallic<input id="material-metallic" type="range" min="0" max="1" step="0.05" value="0"></label><label>Roughness<input id="material-roughness" type="range" min="0.02" max="1" step="0.05" value="0.55"></label><button id="create-material">Create material recipe</button>
+        <div class="adapter-slot"><span>UV unwrap + texture baking</span><b>HAND NEEDED</b><small>Contract slot exists; no false texture solver.</small></div>
+      </section>
+
+      <section class="mode-panel" data-panel="rig">
+        <h3>Rig structure</h3><p>Record bones and object hierarchy now; plug an executable skinning hand in later.</p><label>Rig name<input id="rig-name" value="Object rig"></label><button id="create-rig">Create rig record</button><div id="rig-list" class="receipt-list"></div>
+        <div class="adapter-slot"><span>Skin weights + deformation</span><b>ADAPTER UNAVAILABLE</b><small>Rig records do not claim skinned animation.</small></div>
+      </section>
+
+      <section class="mode-panel" data-panel="animate">
+        <h3>Object animation</h3><label>Property<select id="key-property"></select></label><label>Value<input id="key-value" type="number" step="0.1" value="0"></label><label>Easing<select id="key-easing"><option>linear</option><option>hold</option><option>ease-in</option><option>ease-out</option><option>ease-in-out</option></select></label><button id="add-keyframe">Key selected at current frame</button><div id="key-list" class="receipt-list"></div>
+      </section>
+
+      <section class="mode-panel" data-panel="simulate">
+        <h3>Simulation bench</h3><p>The shared deterministic 2D engine can run a bounded projection proof. It never masquerades as full 3D physics.</p><label>Preview steps<input id="simulation-steps" type="number" min="1" max="600" value="120"></label><button id="run-simulation">Run bounded 2D projection</button><label>Emitter count<input id="emitter-count" type="number" min="1" max="2000" value="80"></label><button id="add-emitter" class="quiet">Add particle recipe</button><div id="simulation-receipts" class="receipt-list"></div>
+        <div class="adapter-grid"><div class="adapter-slot">3D rigid body<b>NEEDED</b></div><div class="adapter-slot">Fluids / cloth<b>NEEDED</b></div><div class="adapter-slot">Hair / volumes<b>NEEDED</b></div></div>
+      </section>
+
+      <section class="mode-panel" data-panel="render">
+        <h3>Camera + render</h3><label>Field of view<input id="camera-fov" type="range" min="15" max="100" value="48"></label><label>Camera target Y<input id="camera-target-y" type="number" step="0.1" value="1"></label><button id="apply-camera">Apply camera</button><label>New light type<select id="light-type"><option>directional</option><option>point</option><option>ambient</option></select></label><button id="add-light" class="quiet">Add light recipe</button><button id="capture-render">Capture WebGL frame</button><div id="render-receipts" class="receipt-list"></div><div class="truth-card"><strong>Renderer</strong><span>Real local WebGL raster preview. No ray-tracing or offline path-tracing claim.</span></div>
+      </section>
+
+      <section class="mode-panel" data-panel="capture">
+        <h3>Capture + voxel bridge</h3><label>Image set name<input id="capture-name" value="Reference image set"></label><label>Image count<input id="capture-count" type="number" min="0" value="12"></label><button id="record-capture">Record capture manifest</button><div class="adapter-slot"><span>Photogrammetry reconstruction</span><b>SOLVER UNAVAILABLE</b><small>The source manifest remains useful and inspectable.</small></div><hr><div class="vec"><span>Voxel XYZ</span><input id="voxel-x" type="number" value="0"><input id="voxel-y" type="number" value="1"><input id="voxel-z" type="number" value="0"></div><label>Voxel size<input id="voxel-size" type="number" min="0.01" step="0.1" value="1"></label><button id="add-voxel">Add voxel</button><div id="capture-list" class="receipt-list"></div>
+      </section>
+
+      <section class="mode-panel" data-panel="templates">
+        <h3>Domain starters</h3><p>Templates are scene recipes, not separate engines.</p><div id="template-grid" class="template-grid"></div><div class="truth-card"><strong>One workspace</strong><span>Product, architecture, fashion, jewelry, landscape and vehicle work share the same scene, materials, timeline and exporter.</span></div>
+      </section>
+
+      <section class="mode-panel" data-panel="deliver">
+        <h3>Deliver + hand off</h3><button id="download-project">Download project JSON</button><button id="download-scene" class="quiet">Download scene packet</button><button id="download-obj" class="quiet">Export real OBJ mesh</button><button id="download-frame" class="quiet">Download current frame PNG</button><hr><label>License / rights note<input id="publish-license" value="Rights review required"></label><label>Provenance<textarea id="publish-provenance">Created locally in AXM Spatial Studio.</textarea></label><button id="publish-inbox">Prepare Publish inbox artifact</button><div id="delivery-log" class="receipt-list"></div><p class="fine-print">Nothing uploads or publishes automatically.</p>
+      </section>
+    </aside>
+  </main>
+  <aside id="hands-drawer" class="hands-drawer" aria-hidden="true">
+    <header><div><span class="eyebrow">SHARED MODULAR CAPABILITY</span><h2>Asset Hands</h2></div><button id="close-hands" aria-label="Close Asset Hands">×</button></header>
+    <iframe id="hands-frame" title="Asset Hands workbench"></iframe>
+  </aside>
+  <button id="hands-backdrop" class="hands-backdrop" aria-label="Close Asset Hands" hidden></button>
+  <footer class="statusbar"><span id="engine-status">Spatial core ready</span><span>Project + Scene + Timeline + Evidence seams</span><nav><a href="../studio/index.html">Studio</a><a href="../film-motion-studio/index.html">Film & Motion</a><a href="../game-forge/index.html">Game Forge</a><a href="../publish-library/index.html">Publish</a></nav></footer>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="../../shared/engines/axm-shared-engines.js"></script>
+  <script src="../../shared/physics/axm-physics-core.js"></script>
+  <script src="../../shared/physics/axm-physics-adapter.js"></script>
+  <script src="spatial-core.js"></script><script src="spatial-geometry.js"></script><script src="spatial-renderer.js"></script><script src="spatial-app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "workshop-direction",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": ["deterministic-goal-compilation", "capability-routing", "quality-exam-plans", "missing-hand-requests", "six-dimension-advisory-steward-assessment", "bounded-one-to-ten-independent-review-queue", "bounded-body-pulse-handoff"],
+  "consumes": ["axm.workshop-capability-index/v1", "axm.body-pulse.goal/v1", "service:review-inbox"],
+  "permissions": [],
+  "handoffs": {"emits":["axm.workshop-direction.plan/v1","axm.workshop-direction.hand-request/v1","axm.workshop-direction.steward-assessment/v1","axm.review-item/v1","axm.body-pulse.goal/v1"],"accepts":["axm.workshop-direction.request/v1"]},
+  "boundaries": {
+    "writes": ["server-local:state/workshop-direction/directions.json", "service:review-inbox:exact-digest-item", "service:body-pulse:goal-records-only"],
+    "refuses": ["repeated-model-inference-required", "automatic-vote", "review-seat-impersonation", "more-than-ten-review-seats", "body-mode-change", "module-auto-enable", "invented-capability", "fake-done", "tool-authority", "file-authority", "network-authority", "promotion-authority", "release-authority", "real-world-authority", "more-than-eight-routes-per-direction"]
+  }
+}

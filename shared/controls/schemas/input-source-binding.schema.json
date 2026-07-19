@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/input-source-binding-v1.json",
+  "title": "AXM input source binding profile v1",
+  "description": "Draft data contract for mapping physical input controls to generic AxmControllerRuntime channels. It does not grant input authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "bindingProfileId", "inputSource", "status", "vectors", "buttons"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "bindingProfileId": {"type": "string", "minLength": 1},
+    "displayName": {"type": "string", "minLength": 1},
+    "inputSource": {"enum": ["keyboard", "host-gamepad", "device-gamepad"]},
+    "status": {"enum": ["DRAFT", "HARDWARE_TESTED"]},
+    "gamepadMapping": {"enum": ["standard", "device-specific", "not-applicable"]},
+    "vectors": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["xAxis", "yAxis"],
+        "properties": {
+          "xAxis": {"type": "integer", "minimum": 0},
+          "yAxis": {"type": "integer", "minimum": 0},
+          "deadZone": {"type": "number", "minimum": 0, "maximum": 0.95},
+          "invertX": {"type": "boolean"},
+          "invertY": {"type": "boolean"}
+        }
+      }
+    },
+    "buttons": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["buttonIndex", "mode"],
+        "properties": {
+          "buttonIndex": {"type": "integer", "minimum": 0},
+          "mode": {"enum": ["held", "pulse-on-press", "analog-threshold"]},
+          "pressThreshold": {"type": "number", "minimum": 0, "maximum": 1},
+          "releaseThreshold": {"type": "number", "minimum": 0, "maximum": 1}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/inspect-codegen-report-v1.schema.json",
+  "title": "AXM Inspect and Codegen Report v1",
+  "type": "object",
+  "required": ["schema", "source", "summary", "facts", "errors", "warnings", "snippets", "status"],
+  "properties": {
+    "schema": { "const": "axm.inspect-codegen-report/v1" },
+    "source": { "type": "object", "required": ["id", "digest", "mime", "format", "content_schema"] },
+    "summary": { "type": "object", "required": ["bytes"] },
+    "facts": { "type": "object" },
+    "errors": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "snippets": { "type": "array", "items": { "type": "object", "required": ["language", "purpose", "text"] } },
+    "status": { "enum": ["PASS", "WARN", "FAIL"] }
+  },
+  "additionalProperties": false
+}

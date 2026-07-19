@@ -14,7 +14,7 @@ All attacks are host-owned. Melee uses a nine-tick windup and ranged shots trave
 
 Party A count scale is 100%, 150%, 200%, 250% for one through four seats. Hold the Relay base waves are 2/3/4 units before scaling, capped at roughly 5/7/9/11 active mission units for one through four players. Cooperative mode uses the resulting 1P counts 2/3/4 and 4P counts 5/8/10.
 
-The cooperative free city contains three Neon Rivals (one of each role). Its persistent rival-gang campaign remains saved/paused scaffolding only. District Dominion is a separate implemented session match for one through four ready seats per party: it uses hired party crews and five temporary control zones, not persistent gang ownership.
+The cooperative free city contains three Neon Rivals (one of each role). Its persistent rival-gang campaign remains saved/paused scaffolding only. District Dominion is a separate implemented session match for one through four ready seats per party: it uses hired party crews and 13 temporary control zones, not persistent gang ownership.
 
 ## Mission service
 
@@ -28,7 +28,7 @@ Results never auto-dismiss. After a two-second input guard, one controller may c
 | --- | --- | ---: | ---: |
 | Supply Sweep | Collect 6 supply boxes | 120 s | DC 15,00 |
 | Hold the Relay | Protect 30 HP through 3 waves | 150 s | DC 25,00 |
-| Courier Chaos | Deliver 5 packages | 180 s | DC 20,00 |
+| Courier Chaos | Deliver 8 packages across the large city | 420 s | DC 20,00 |
 | Call the Heat | Survive voluntary pursuit | 90 s | DC 0,00 |
 
 An individual down during an active mission respawns after five seconds at that mission's group spawn. If all actors are down simultaneously, the mission fails and the party returns alive at 50 HP. Failure removes no money.

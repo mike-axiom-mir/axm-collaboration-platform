@@ -1,0 +1,47 @@
+.drawer {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 20;
+}
+
+.drawer.open { display: block; }
+
+.drawer-shade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: rgba(1, 5, 10, .72);
+  backdrop-filter: blur(4px);
+}
+
+.drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(900px, 92vw);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  border-left: 1px solid var(--line);
+  background: #07111e;
+  box-shadow: -24px 0 70px rgba(0, 0, 0, .5);
+}
+
+.drawer-panel > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #122238, #091522);
+}
+
+.drawer-panel h2 { margin: 3px 0 4px; }
+.drawer-panel p { margin: 0; color: var(--muted); font-size: 11px; }
+.drawer-close { font-size: 20px; line-height: 1; }
+.drawer-panel iframe { width: 100%; height: 100%; border: 0; background: #07111e; }

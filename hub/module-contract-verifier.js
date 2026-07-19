@@ -4,6 +4,12 @@ const fs = require('fs');
 const path = require('path');
 
 const SCHEMA = 'axm.module-contract/v1';
+const LIFECYCLE = {
+  state_owner: new Set(['browser', 'service', 'filesystem', 'mixed', 'none']),
+  reload: new Set(['resume', 'reset', 'not-applicable', 'pending']),
+  disconnect: new Set(['reconnect', 'graceful-degrade', 'not-applicable', 'pending']),
+  cleanup: new Set(['automatic', 'explicit', 'not-applicable', 'pending'])
+};
 
 function validateContract(contract, manifest) {
   const errors = [];
@@ -20,6 +26,12 @@ function validateContract(contract, manifest) {
   }
   if (!contract.boundaries || typeof contract.boundaries !== 'object') errors.push('boundaries object is required');
   else if (!Array.isArray(contract.boundaries.refuses)) errors.push('boundaries.refuses must be an array');
+  if (contract.lifecycle !== undefined) {
+    if (!contract.lifecycle || typeof contract.lifecycle !== 'object') errors.push('lifecycle must be an object');
+    else Object.keys(LIFECYCLE).forEach(field => {
+      if (!LIFECYCLE[field].has(contract.lifecycle[field])) errors.push('lifecycle.' + field + ' is unsupported');
+    });
+  }
   if (manifest) {
     if (contract.id !== manifest.id) errors.push('contract id does not match manifest id');
     const declared = Array.isArray(manifest.uses) ? manifest.uses : [];
@@ -60,4 +72,4 @@ function verifyDeclaredContracts(root) {
   return { pass: results.every(r => r.pass), results };
 }
 
-module.exports = { SCHEMA, validateContract, verifyDeclaredContracts };
+module.exports = { SCHEMA, LIFECYCLE, validateContract, verifyDeclaredContracts };

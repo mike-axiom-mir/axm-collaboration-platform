@@ -12,17 +12,10 @@ const {
   unequipToBag,
 } = require('./inventory-system');
 const { respawnActor } = require('./projectile-system');
+const { interactWithGroupSaveComputer, isGroupSaveMenuOpen } = require('./group-save-system');
+const { collidesObstacle } = require('./spatial-index');
 const { interactWithTerritory } = require('./territory-system');
 const { claimVehicleSeat, exitVehicle, nearestEnterableVehicle } = require('./vehicle-system');
-
-function collidesObstacle(world, position, radius) {
-  return world.staticMap.obstacles.some((box) => (
-    position.x + radius > box.x
-    && position.x - radius < box.x + box.width
-    && position.y + radius > box.y
-    && position.y - radius < box.y + box.height
-  ));
-}
 
 function partyCentre(world, partyId, excludedActorId = null) {
   const members = Object.values(world.actors).filter((actor) => (
@@ -68,7 +61,7 @@ function applyPartyTether(world, actor, movement) {
 }
 
 function moveActor(world, actor, deltaSeconds) {
-  if (actor.currentVehicleId || !actor.alive || isMissionInputLocked(world)) {
+  if (actor.currentVehicleId || !actor.alive || isMissionInputLocked(world) || isGroupSaveMenuOpen(world)) {
     actor.velocity = { x: 0, y: 0 };
     return;
   }
@@ -102,6 +95,8 @@ function processActorAction(world, actor) {
   const territoryResult = interactWithTerritory(world, actor);
   if (territoryResult.ok) return { kind: 'territory', ...territoryResult };
   if (world.territory?.status === 'results') return { ok: false, kind: 'territory', reason: 'territory-results-active' };
+  const saveResult = interactWithGroupSaveComputer(world, actor);
+  if (saveResult.ok) return { kind: 'group-save', ...saveResult };
   const missionResult = interactWithMission(world, actor);
   if (missionResult.ok) return { kind: 'mission', ...missionResult };
   if (actor.currentVehicleId) return { kind: 'vehicle', ...exitVehicle(world, actor.id) };
@@ -232,6 +227,7 @@ function updatePlayers(world, deltaSeconds, now = Date.now()) {
     }
     processActorAction(world, actor);
     moveActor(world, actor, deltaSeconds);
+    if (isGroupSaveMenuOpen(world)) break;
   }
 }
 

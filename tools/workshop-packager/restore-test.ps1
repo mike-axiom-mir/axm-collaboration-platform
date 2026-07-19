@@ -22,6 +22,63 @@ function Assert-Under([string]$Child,[string]$Parent) {
   }
 }
 
+function Get-LongPath([string]$Path) {
+  $full = [System.IO.Path]::GetFullPath($Path)
+  if ($full.StartsWith('\\?\')) { return $full }
+  return '\\?\' + $full
+}
+
+function Get-Sha256LongPath([string]$Path) {
+  $stream = [System.IO.File]::OpenRead((Get-LongPath $Path))
+  $sha = [System.Security.Cryptography.SHA256]::Create()
+  try {
+    return ([System.BitConverter]::ToString($sha.ComputeHash($stream))).Replace('-','').ToLowerInvariant()
+  } finally {
+    $sha.Dispose()
+    $stream.Dispose()
+  }
+}
+
+function Remove-TreeSafely([string]$Target,[string]$Parent) {
+  if (-not (Test-Path -LiteralPath $Target)) { return }
+  Assert-Under $Target $Parent
+  Get-ChildItem -LiteralPath $Target -Recurse -Force -ErrorAction SilentlyContinue | ForEach-Object {
+    if (($_.Attributes -band [System.IO.FileAttributes]::ReadOnly) -ne 0) {
+      $_.Attributes = ($_.Attributes -bxor [System.IO.FileAttributes]::ReadOnly)
+    }
+  }
+  $rootItem = Get-Item -LiteralPath $Target -Force
+  if (($rootItem.Attributes -band [System.IO.FileAttributes]::ReadOnly) -ne 0) {
+    $rootItem.Attributes = ($rootItem.Attributes -bxor [System.IO.FileAttributes]::ReadOnly)
+  }
+  [System.IO.Directory]::Delete((Get-LongPath $Target),$true)
+}
+
+function Expand-PackageZip([string]$ArchivePath,[string]$Destination) {
+  Add-Type -AssemblyName System.IO.Compression
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+  [System.IO.Directory]::CreateDirectory((Get-LongPath $Destination)) | Out-Null
+  $archive = [System.IO.Compression.ZipFile]::OpenRead($ArchivePath)
+  try {
+    foreach ($entry in $archive.Entries) {
+      $relative = $entry.FullName.Replace('/','\')
+      $target = [System.IO.Path]::GetFullPath((Join-Path $Destination $relative))
+      Assert-Under $target $Destination
+      if ([string]::IsNullOrEmpty($entry.Name)) {
+        [System.IO.Directory]::CreateDirectory((Get-LongPath $target)) | Out-Null
+        continue
+      }
+      $parent = Split-Path -Parent $target
+      [System.IO.Directory]::CreateDirectory((Get-LongPath $parent)) | Out-Null
+      $input = $entry.Open()
+      $output = [System.IO.File]::Create((Get-LongPath $target))
+      try { $input.CopyTo($output) } finally { $output.Dispose(); $input.Dispose() }
+    }
+  } finally {
+    $archive.Dispose()
+  }
+}
+
 function Write-Report([bool]$Ok,[string]$Stage,[string]$Detail,[hashtable]$Extra) {
   $report = [ordered]@{
     schema = 'axm.workshop-restore-test/v1'
@@ -49,27 +106,28 @@ if (Test-Path -LiteralPath $RestorePath) { throw 'Restore-test destination alrea
 
 try {
   New-Item -ItemType Directory -Force -Path $TestRoot | Out-Null
-  # Windows PowerShell's Expand-Archive can fail during its own cleanup when a
-  # large archive contains a path it has already expanded.  The .NET extractor
-  # is deterministic here because RestorePath is guaranteed to be new.
-  Add-Type -AssemblyName System.IO.Compression.FileSystem
-  [System.IO.Compression.ZipFile]::ExtractToDirectory($ZipPath,$RestorePath)
+  # Extract each entry through the Win32 long-path namespace. This keeps the
+  # restore proof valid even when a legitimate nested asset exceeds the legacy
+  # 260-character PowerShell path limit.
+  Expand-PackageZip $ZipPath $RestorePath
 
-  $manifestFiles = @(Get-ChildItem -LiteralPath $RestorePath -Recurse -File -Filter 'PACKAGE_MANIFEST.json' -Force)
-  if ($manifestFiles.Count -ne 1) { throw "Expected one PACKAGE_MANIFEST.json, found $($manifestFiles.Count)." }
-  $restoredRoot = Split-Path -Parent $manifestFiles[0].FullName
+  $restoredRoot = [System.IO.Path]::GetFullPath((Join-Path $RestorePath $BaseName))
   Assert-Under $restoredRoot $RestorePath
-  $manifest = Get-Content -LiteralPath $manifestFiles[0].FullName -Raw | ConvertFrom-Json
+  $manifestPath = [System.IO.Path]::GetFullPath((Join-Path $restoredRoot 'PACKAGE_MANIFEST.json'))
+  Assert-Under $manifestPath $restoredRoot
+  if (-not [System.IO.File]::Exists((Get-LongPath $manifestPath))) { throw 'Expected package manifest is missing.' }
+  $manifest = [System.IO.File]::ReadAllText((Get-LongPath $manifestPath)) | ConvertFrom-Json
   if ($manifest.schema -ne 'axm.workshop-package/v1') { throw 'Unexpected package manifest schema.' }
 
   $checked = 0
   foreach ($entry in @($manifest.files)) {
     $candidate = [System.IO.Path]::GetFullPath((Join-Path $restoredRoot ([string]$entry.path).Replace('/','\')))
     Assert-Under $candidate $restoredRoot
-    if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) { throw "Manifest file missing after restore: $($entry.path)" }
-    $item = Get-Item -LiteralPath $candidate
-    if ([int64]$item.Length -ne [int64]$entry.bytes) { throw "Size mismatch after restore: $($entry.path)" }
-    $hash = (Get-FileHash -LiteralPath $candidate -Algorithm SHA256).Hash.ToLowerInvariant()
+    $longCandidate = Get-LongPath $candidate
+    if (-not [System.IO.File]::Exists($longCandidate)) { throw "Manifest file missing after restore: $($entry.path)" }
+    $itemLength = [System.IO.FileInfo]::new($longCandidate).Length
+    if ([int64]$itemLength -ne [int64]$entry.bytes) { throw "Size mismatch after restore: $($entry.path)" }
+    $hash = Get-Sha256LongPath $candidate
     if ($hash -ne ([string]$entry.sha256).ToLowerInvariant()) { throw "SHA-256 mismatch after restore: $($entry.path)" }
     $checked++
   }
@@ -78,9 +136,19 @@ try {
   $verifyPath = Join-Path $restoredRoot 'verify.js'
   if (-not (Test-Path -LiteralPath $verifyPath -PathType Leaf)) { throw 'Restored verify.js is missing.' }
   $node = (Get-Command node.exe -ErrorAction Stop).Source
+
+  $beginnerLaunchTest = Join-Path $restoredRoot 'tests\beginner-launch-selftest.js'
+  if (-not (Test-Path -LiteralPath $beginnerLaunchTest -PathType Leaf)) { throw 'Restored beginner launch self-test is missing.' }
+  $beginnerLaunchOutput = @(& $node $beginnerLaunchTest 2>&1)
+  if ($LASTEXITCODE -ne 0) { throw ('Restored beginner launch contract failed: ' + (($beginnerLaunchOutput | Select-Object -Last 8) -join ' ')) }
+
   $verifyOutput = @(& $node $verifyPath 2>&1)
   $verifyExit = $LASTEXITCODE
-  if ($verifyExit -ne 0) { throw ('Restored AXM verifier failed: ' + (($verifyOutput | Select-Object -Last 8) -join ' ')) }
+  if ($verifyExit -ne 0) {
+    $failureEvidence = @($verifyOutput | Where-Object { [string]$_ -match '\bFAIL\b' } | Select-Object -First 20)
+    if (-not $failureEvidence.Count) { $failureEvidence = @($verifyOutput | Select-Object -First 4) + @($verifyOutput | Select-Object -Last 8) }
+    throw ('Restored AXM verifier failed: ' + ($failureEvidence -join ' '))
+  }
   $verifyText = $verifyOutput -join "`n"
   $verifyHeadline = 'pass'
   if ($verifyText -match '(\d+)\s+FAIL.+?(\d+)\s+warn') {
@@ -115,8 +183,9 @@ try {
   }
   if (-not $health -or -not $health.ok -or $health.body -ne 'axm-workshop') { throw 'Restored Hub health check did not pass.' }
 
-  $report = Write-Report $true 'complete' 'Archive hashes, AXM verifier, and restored Hub startup passed.' @{
+  $report = Write-Report $true 'complete' 'Archive hashes, beginner launcher contract, AXM verifier, and restored Hub startup passed.' @{
     files_checked = $checked
+    beginner_launcher = 'pass'
     verifier = $verifyHeadline
     hub_health = 'pass'
     test_port = $port
@@ -134,7 +203,7 @@ try {
   if (Test-Path -LiteralPath $RestorePath) {
     Assert-Under $RestorePath $TestRoot
     if ((Split-Path -Leaf $RestorePath) -eq $RestoreLeaf -and $RestoreLeaf -like 'rt-*' -and $BaseName -like 'axm-workshop-*') {
-      Remove-Item -LiteralPath $RestorePath -Recurse -Force
+      Remove-TreeSafely $RestorePath $TestRoot
     }
   }
   if (Test-Path -LiteralPath $TestRoot) {

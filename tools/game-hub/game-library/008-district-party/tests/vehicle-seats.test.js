@@ -11,6 +11,7 @@ const {
   recoverDisconnectedDrivers,
   updateVehicles,
 } = require('../server/vehicle-system');
+const { collidesObstacle } = require('../server/spatial-index');
 
 const projectRoot = path.join(__dirname, '..');
 
@@ -73,6 +74,7 @@ test('phone sprint acts as throttle and brake becomes reverse near a stop', () =
 
 test('vehicle occupants cannot drive farther outward beyond party hard range', () => {
   const world = makeWorld();
+  world.staticMap.obstacles = [];
   const vehicle = world.vehicles['vehicle-001'];
   const driver = world.actors['actor-seat-1'];
   const anchor = world.actors['actor-seat-2'];
@@ -115,7 +117,8 @@ test('vehicle exit chooses another side instead of placing actor inside depot co
   const world = makeWorld();
   const vehicle = world.vehicles['vehicle-001'];
   const actor = world.actors['actor-seat-1'];
-  vehicle.position = { x: 620, y: 200 };
+  const depot = world.staticMap.obstacles.find((entry) => entry.id === 'depot-building');
+  vehicle.position = { x: depot.x - 22, y: depot.y + depot.height / 2 };
   vehicle.rotation = Math.PI / 2;
   actor.position = { ...vehicle.position };
   assert.equal(claimVehicleSeat(world, actor.id, vehicle.id, 'driver').ok, true);
@@ -123,13 +126,8 @@ test('vehicle exit chooses another side instead of placing actor inside depot co
   assert.equal(result.ok, true);
   assert.equal(world.vehicles[vehicle.id].driverActorId, null);
   assert.equal(actor.currentVehicleId, null);
-  assert.equal(world.staticMap.obstacles.some((box) => (
-    actor.position.x + actor.radius > box.x
-    && actor.position.x - actor.radius < box.x + box.width
-    && actor.position.y + actor.radius > box.y
-    && actor.position.y - actor.radius < box.y + box.height
-  )), false, 'safe candidate is outside every collision rectangle');
-  assert.ok(actor.position.x < 650, 'actor selected the clear side of the nearby depot');
+  assert.equal(collidesObstacle(world, actor.position, actor.radius), false, 'safe candidate is outside every collision shape');
+  assert.ok(actor.position.x < depot.x, 'actor selected the clear side of the nearby depot');
 });
 
 test('fully blocked vehicle exit is rejected without changing host occupancy', () => {

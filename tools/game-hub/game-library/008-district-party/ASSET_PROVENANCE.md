@@ -6,7 +6,7 @@ Physical-device rendering: **UNTESTED**
 
 ## Source decision
 
-The prototype uses **Kenney RPG Urban Pack 1.0** as its sole curated runtime visual family. Its small pixel scale, characters, city props, vehicle tiles, and packed 16 × 16 tilemap form one coherent source.
+The prototype retains **Kenney RPG Urban Pack 1.0** as its licensed CC0 fallback and small-prop family. v0.2.6 adds a separate user-supplied, AI-assisted AXM visual layer for playable actors, civilians, two vehicle presentations, two shopkeeper previews and four Tilburg-style landmarks. v0.2.7 preserves a second 158-PNG user-supplied interactable-art archive and promotes only 14 inspected candidates. The new assets do not replace collision, physics or host authority.
 
 The official **Kenney Pixel Vehicle Pack 1.0** was also downloaded and preserved because it was requested as a candidate source. It was not placed in the curated runtime set: its side-view vehicle presentation does not match the RPG Urban top-down/oblique city closely enough. No third pack was introduced to hide that mismatch.
 
@@ -14,6 +14,8 @@ The official **Kenney Pixel Vehicle Pack 1.0** was also downloaded and preserved
 |---|---|---|---|---|
 | Kenney RPG Urban Pack 1.0 | https://kenney.nl/assets/rpg-urban-pack | CC0-1.0 | PASS | YES — primary family |
 | Kenney Pixel Vehicle Pack 1.0 | https://kenney.nl/assets/pixel-vehicle-pack | CC0-1.0 | PASS | NO — preserved source only |
+| Mike-authorized AXM/Tilburg project-art batch | Generated under Mike's direction in his ChatGPT platform workspace and supplied in this build session | Authorized for inclusion in this AXM public repository; not CC0 or generally relicensed | 15 originals hashed and preserved | YES — 16 curated runtime outputs |
+| User-supplied interactable alpha pack | Supplied in this build session | AXM responsible-use draft; not legally reviewed | 158 candidates preserved in exact source ZIP | YES — 14 inspected unchanged copies |
 
 The included license files are preserved inside both extracted pack directories, and both original source ZIPs are retained under `assets/third_party/source_zips/`. Exact URLs, archive hashes, sizes, and inventory facts are in `assets/third_party/LICENSE_INDEX.md` and `assets/ASSET_MANIFEST.json`.
 
@@ -81,7 +83,7 @@ No crop, scale, recolour, or atlas combination was applied to these six props.
 - No Kenney logo in the curated runtime set.
 - No audio source was added.
 - No hidden third art pack was mixed in.
-- No AI-generated bitmap was added by this asset task.
+- No unrecorded AI-generated bitmap was added. The v0.2.6 AXM batch is explicitly separated, hashed and documented as user supplied.
 
 ## Verification performed
 
@@ -95,8 +97,70 @@ No crop, scale, recolour, or atlas combination was applied to these six props.
 - Selected PNG dimensions inspected: **PASS**.
 - Curated character, vehicle, and prop contact sheets visually inspected: **PASS**.
 - Static renderer references and local files for 10 selected assets: **PASS** — four player sheets, two NPC sheets, two RPG Urban vehicles, package, and tree.
-- Remaining 15 curated files: **NOT LOADED by v0.1** — the source tile atlas, ten additional vehicle variants, and four additional props remain curated for later map/visual work.
+- Remaining 15 curated files: **NOT LOADED by v0.2** — the source tile atlas, ten additional vehicle variants, and four additional props remain curated for later map/visual work.
 - Automated browser visual rendering: **UNRUN** because the installed Playwright package has no Chromium executable; no large browser download was attempted.
 - Physical-device/gameplay rendering: **UNTESTED**.
 
-Static path integration proves that the renderer requests local files and that the host serves them; it does not prove visual correctness in a browser. The city geometry itself is drawn from structured map data with Canvas shapes, so the selected tile atlas is not loaded in v0.1.
+Static path integration proves that the renderer requests local files and that the host serves them; it does not prove visual correctness in a browser. The city geometry itself is drawn from camera-local structured map chunks with Canvas shapes, so the selected tile atlas is not loaded in v0.2.
+
+## v0.2 geodata boundary
+
+The Tilburg ground geometry is data rather than a third art pack. It comes from the official PDOK BGT OGC API under CC0-1.0 and is documented separately in `GEODATA_PROVENANCE.md` and `data/tilburg-source-index.json`. No Google map imagery or labels were copied. The Kenney art selection and hashes above are unchanged from v0.1.7.
+
+## v0.2.1 artistic city pass
+
+New third-party art: **NONE.** `data/city-art.json` contains original AXM palette overrides, district wayfinding, ground motifs, crosswalks and overview lines. The runtime renderer procedurally creates roof variation, ground texture, road markings, water marks and rail sleepers from local geometry; these are code-generated presentation, not downloaded artwork.
+
+The three v0.2.1 files in `docs/previews/` were rendered from the actual game code and retained only as QA evidence. They combine the documented BGT-derived geometry, original AXM procedural presentation and the same already-recorded Kenney assets used at runtime. No new license or external source is introduced.
+
+## v0.2.2 open-interior floor treatment
+
+New third-party art: **NONE.** The empty-shell floors, grid lines, perimeter colors, thresholds, labels and two venue wayfinders are original Canvas/JSON presentation authored for AXM District Party. `docs/previews/open-venue-shells.png` is QA evidence generated by the actual bundled renderer and is not loaded during gameplay. The future casino remains **NOT IMPLEMENTED**, so no casino artwork or external symbol set is included.
+
+## v0.2.3 minimap and full-map treatment
+
+New third-party art: **NONE.** Both map views are drawn locally by `client/game/ui/city-map.js` from the retained structured map, original AXM city-art overview and authoritative runtime markers. `docs/previews/city-minimap-ui.png` and `docs/previews/city-full-map-ui.png` are QA evidence generated from that same bundled drawing code and are not loaded during gameplay. No external map tiles, imagery, icon pack or online map service is used.
+
+## v0.2.4 group-save computer treatment
+
+No external art was downloaded or added for the group-save update. The Party House terminal is drawn at runtime from original Canvas rectangles, glow and text; the nine-slot overlay is original HTML/CSS. Its structured location is gameplay data, not a third-party asset. Existing Kenney and PDOK provenance remains unchanged.
+
+## v0.2.5 mission-route treatment
+
+New third-party art: **NONE.** The active dispatch rectangle, delivery-zone outlines, route labels and route-deck UI text are original code-drawn Canvas/HTML/CSS presentation. Mission coordinates are authored AXM gameplay anchors on the existing Tilburg-derived map. The update reuses the already documented package, rival and player visuals and introduces no new bitmap, font, audio, map tile or external service.
+
+## v0.2.6 user-supplied visual pass
+
+Fifteen raw PNG inputs supplied by Mike were copied unchanged into `assets/source/user_generated/2026-07-19/raw/` before processing. Their exact SHA-256 hashes are retained in `assets/USER_GENERATED_ASSET_MANIFEST.json`.
+
+The baked checkerboard backgrounds were not true transparency. A background-only visual edit placed each subject against a controlled chroma field, after which the local alpha helper removed the field. Runtime derivatives were trimmed, centred, padded and downscaled to 256×256 for characters/shopkeepers, 256×128 for vehicles, or 512×512 for buildings. Vehicle art was rotated so zero-radian movement points right. The four-player sheet was split into four identities. Subject recolouring was not requested. One first-pass resident matte affected subject colour and is explicitly rejected; the renderer loads `resident_woman_backpack-v2.png`.
+
+Runtime use:
+
+- Four AXM player identities cycle safely across seats 1–8; party markers and seat numbers remain authoritative identity cues.
+- Four resident images are selected by a stable hash of NPC ID, so state-array ordering cannot swap civilian appearances.
+- The red sports presentation is used for `district-runner`; the silver sedan presentation is used for the other current vehicle kind. Kenney vehicles remain local fallbacks.
+- Four building overlays align to already-existing collision footprints and expose open approach points. They add no collision themselves.
+- The neutral shopkeeper is a visual-only city-shop preview. The AXM-styled shopkeeper is a visual-only Party House preview. Both explicitly state that stock is later; no fake shop transaction exists.
+
+Two multi-building source sheets are preserved but not loaded. They need a later deliberate crop, style and collision-placement pass. The darker sheet is intentionally excluded from the current daytime Tilburg family.
+
+Authorization boundary: on 2026-07-19 Mike identified these files as AXM project art generated under his direction in his ChatGPT platform workspace and explicitly authorized their inclusion and redistribution inside this public AXM repository and its public-safe packages. This is not a CC0 declaration or a standalone/general asset license. Full transforms, hashes, roles and rejection notes are in `assets/USER_GENERATED_ASSET_MANIFEST.json`; the project record is `assets/AXM_GENERATED_ART_AUTHORIZATION.md`.
+
+## v0.2.7 interactable alpha-pack curation
+
+New third-party source: **NONE.** Mike supplied `AXM_DISTRICT_PARTY_INTERACTABLE_ALPHA_PACK_2026-07-19.zip` as AI-assisted AXM test art made through his own chats. The unchanged 17,467,852-byte archive is preserved under `assets/source/user_generated/interactable_alpha_pack_2026-07-19/` with SHA-256 `fccbbd80502197dad83043773215d22710ab4e16a087996a8624284bf3963372`.
+
+The pack contains 158 individual PNG candidates across seven categories. Archive testing and safe-path inspection passed. All 158 decode as RGBA; 157 have both fully transparent and fully opaque pixels. Visual inspection still found a partial-alpha phone fragment, checker contamination, speckles and alpha holes. Therefore, the source pack remains an intake archive rather than a runtime directory.
+
+Fourteen unchanged PNG copies were promoted into `assets/selected/interactables/axm_generated/`: five parcels/crates and nine city-prop presentations. The only transform is a descriptive runtime filename. No subject pixels were recoloured, cropped, scaled or regenerated during this pass. Scaling occurs only at Canvas draw time.
+
+Runtime use:
+
+- Courier and supply packages choose a stable visual from the authoritative package ID and kind.
+- Twenty-five city placements are explicitly visual-only.
+- An ATM, vending machine and Party House safe are visibly labelled `RESERVED`; their interactions are not implemented.
+- Breakable windows/doors remain source-only because no host-owned breakable state exists.
+- The renderer changes no collision, package state, mission reward or authority rule.
+
+Authorization boundary: these files are not described as CC0 or open source. Mike's 2026-07-19 authorization permits their inclusion and redistribution inside this public AXM repository and its public-safe packages; it does not create a standalone/general reuse license. Exact per-file paths, dimensions, hashes, use and quarantine notes are in `assets/INTERACTABLE_ASSET_MANIFEST.json`; the readable implementation boundary is in `docs/INTERACTABLE_ASSET_PASS.md`.

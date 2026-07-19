@@ -1,0 +1,9 @@
+{
+  "schema": "axm.module-contract/v1", "id": "device-handoff", "version": "v0.1",
+  "provides": ["handoff-only-lan-sidecar", "expiring-pair-session", "local-qr-link", "selected-file-upload", "hash-receipts", "asset-inbox-delivery"],
+  "consumes": ["private-lan", "browser-file-picker", "service:gate"], "permissions": ["device.listen"],
+  "handoffs": {"emits": ["axm.device-handoff-receipt/v1", "filesystem:assets/inbox/device-handoff"], "accepts": ["explicit-selected-device-files"]},
+  "boundaries": {"writes": ["assets/inbox/device-handoff", "state/device-handoff/receipts.json"], "refuses": ["whole-device-scan", "silent-file-pull", "workshop-lan-exposure", "permanent-listener", "expired-session", "more-than-eight-files-per-batch", "path-escape", "remote-cloud-relay"]},
+  "lifecycle": {"state_owner": "service", "reload": "reset", "disconnect": "graceful-degrade", "cleanup": "explicit"}
+}
+

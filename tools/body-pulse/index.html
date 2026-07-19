@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Body Pulse</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="dormant.css">
+  <link rel="stylesheet" href="hardware-archive.css">
+</head>
+<body>
+  <header>
+    <a href="../evolution-foundry/index.html">← Foundry</a>
+    <div><span class="eyebrow">ONE BODY · MANY QUIET PROCESSES</span><h1>Body Pulse</h1><p>Allocate bounded compute opportunity without giving any module the whole machine—or promotion authority.</p></div>
+    <button id="refresh">Refresh body</button>
+  </header>
+  <main>
+    <section class="mode panel">
+      <div><span class="eyebrow">OVERALL COMMAND</span><h2 id="mode">UNKNOWN</h2><p id="modeNote">Reading the local body…</p></div>
+      <div class="modeButtons"><button data-mode="ACTIVE">Active</button><button data-mode="CONSERVE">Conserve</button><button data-mode="REST">Rest</button><button data-mode="STOPPED">Stop</button></div>
+    </section>
+    <section class="bodyGrid">
+      <article class="panel"><span>Body pressure</span><b id="pressure">—</b></article>
+      <article class="panel"><span>CPU used</span><b id="cpu">—</b></article>
+      <article class="panel"><span>Memory used</span><b id="memory">—</b></article>
+      <article class="panel"><span>GPU used</span><b id="gpu">—</b></article>
+      <article class="panel"><span>Warmest known sensor</span><b id="thermal">—</b></article>
+      <article class="panel"><span>Battery</span><b id="battery">—</b></article>
+      <article class="panel"><span>Unknown signals</span><b id="unknown">—</b></article>
+    </section>
+    <p class="sensorNote" id="bodyNote">Reading local sensor adapters…</p>
+    <section class="panel">
+      <div class="sectionHead"><div><span class="eyebrow">REGISTERED, NOT ENTITLED</span><h2>Module pulse requests</h2><p>Idle keeps a place in the body. Enabled only permits a future lease request.</p></div></div>
+      <div id="modules" class="cards"></div>
+    </section>
+    <section class="panel dormantPanel">
+      <div class="sectionHead"><div><span class="eyebrow">FORGOTTEN, NOT LOST</span><h2>Dormant lines</h2><p>Every quiet registered system remains findable with its gate, reason, goals and last activity. Dormant never means retired.</p></div><b id="dormantCount">0 quiet</b></div>
+      <div id="dormant" class="dormantLines"></div>
+    </section>
+    <section class="panel queuePanel">
+      <div><span class="eyebrow">LIMITED DIRECTION</span><h2>Goal queues</h2><p>A goal needs a module, priority and maximum number of pulses. More goals do not create more body capacity.</p></div>
+      <form id="goalForm"><select id="goalModule" required></select><input id="goalTitle" required maxlength="180" placeholder="What bounded result is needed?"><input id="goalPriority" type="number" min="0" max="100" value="60" title="Priority"><input id="goalPulses" type="number" min="1" max="100" value="1" title="Maximum pulses"><button>Add goal</button></form>
+      <div id="goals" class="goals"></div>
+    </section>
+    <section class="panel archivePanel">
+      <div class="sectionHead"><div><span class="eyebrow">COMPLETED BY DEFAULT · FORGETTABLE BY CHOICE</span><h2>Request archive</h2><p>Completed or cancelled requests move here. Permanent delete removes the stored request and its goal-linked pulse logs after confirmation. Assets, code, products and other outputs are never deleted here.</p></div><div><b id="archiveStats">0 requests · 0 B</b><div class="archiveTools"><button id="deleteSelected" disabled>Delete selected</button><button id="clearArchive" disabled>Clear archive</button></div></div></div>
+      <div id="archive" class="archive"></div>
+    </section>
+    <section class="panel"><span class="eyebrow">NO FAKE DONE</span><h2>Recent pulse receipts</h2><div id="receipts" class="receipts"></div></section>
+    <section class="truth"><b>Boundary:</b> a pulse lease allocates a short opportunity to run one declared module-local action. It never grants file, network, tool, promotion, release, or real-world authority. Sensor sources are named and unavailable measurements remain visibly unknown.</section>
+  </main>
+  <script src="../../shared/pulse/axm-body-pulse-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

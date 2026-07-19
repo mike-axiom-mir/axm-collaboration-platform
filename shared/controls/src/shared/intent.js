@@ -79,6 +79,11 @@ function validateInputPacket(packet, options = {}) {
   if (!identity(packet.sessionId)) errors.push('invalid-session');
   if (!identity(packet.seatId)) errors.push('invalid-seat');
   if (!identity(packet.token)) errors.push('invalid-token');
+  const hasSourceBindingId = packet.inputSourceBindingId !== undefined;
+  const hasSourceEpoch = packet.inputSourceEpoch !== undefined;
+  if (hasSourceBindingId !== hasSourceEpoch) errors.push('incomplete-input-source-binding');
+  if (hasSourceBindingId && !identity(packet.inputSourceBindingId)) errors.push('invalid-input-source-binding');
+  if (hasSourceEpoch && (!Number.isSafeInteger(packet.inputSourceEpoch) || packet.inputSourceEpoch < 0)) errors.push('invalid-input-source-epoch');
   if (!Number.isSafeInteger(packet.seq) || packet.seq < 0) errors.push('invalid-sequence');
   if (!isPlainObject(packet.input)) errors.push('invalid-input');
   return { ok: errors.length === 0, errors };

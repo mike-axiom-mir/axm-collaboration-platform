@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/reference-validation-receipt-v1.schema.json",
+  "title": "AXM Reference Validation Receipt v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "id",
+    "status",
+    "claim",
+    "assurance_scope",
+    "artifact",
+    "target_canvas_digest",
+    "target_canvas_sha256",
+    "validator",
+    "runtime",
+    "checks",
+    "createdAt"
+  ],
+  "properties": {
+    "schema": { "const": "axm.reference-validation-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "MISSING_VALIDATOR",
+        "UNSUPPORTED_ARTIFACT",
+        "TOOL_ERROR"
+      ]
+    },
+    "claim": { "type": "string", "minLength": 1 },
+    "assurance_scope": {
+      "enum": [
+        "structural-corroboration",
+        "schema-conformance",
+        "official-conformance-checker",
+        "native-open",
+        "unavailable"
+      ]
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["id", "role", "mime", "format", "digest", "sha256", "bytes"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "role": { "type": "string" },
+        "mime": { "type": "string", "minLength": 1 },
+        "format": { "type": "string" },
+        "digest": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "bytes": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "target_canvas_digest": { "type": "string", "minLength": 1 },
+    "target_canvas_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "validator": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "implementation",
+        "independence_basis",
+        "independent_from_writers"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "implementation": { "type": "string", "minLength": 1 },
+        "independence_basis": { "type": "string", "minLength": 1 },
+        "independent_from_writers": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["available", "tool", "tool_version", "network_used"],
+      "properties": {
+        "available": { "type": "boolean" },
+        "tool": { "type": "string", "minLength": 1 },
+        "tool_version": { "type": ["string", "null"] },
+        "network_used": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "pass"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "pass": { "type": "boolean" },
+          "details": {}
+        },
+        "additionalProperties": false
+      }
+    },
+    "evidence": { "type": "object" },
+    "createdAt": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

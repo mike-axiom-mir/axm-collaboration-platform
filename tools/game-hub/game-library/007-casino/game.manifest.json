@@ -1,72 +1,109 @@
 {
   "slot": "007",
-  "game_id": "007-lux5-neon-overdrive",
-  "name": "LUX-5 · Neon Overdrive",
-  "status": "PUBLIC TEST",
-  "description": "A polished single-player local slot laboratory with a procedural 3D robot cabinet, deterministic 50,000-outcome sessions and an authoritative conserved ledger.",
-  "version": "0.1.0-public-test",
+  "game_id": "007-casino-alpha",
+  "name": "Casino Alpha: Backroom House War",
+  "status": "TEST-WORKING",
+  "description": "A local authoritative ten-slot 1-4 player story and 1v1-4v4 casino tycoon alpha powered by one 50K Draw Spine, immutable style books, and a reactive robot theater.",
+  "version": "0.3.2-alpha",
   "min_players": 1,
-  "max_players": 1,
-  "allowed_seat_types": ["human"],
+  "max_players": 8,
+  "play_modes": [
+    {
+      "id": "backroom_story",
+      "label": "Backroom Story - solo / co-op",
+      "description": "Ready one to four seats from Party A (seats 1-4). One seat is solo; two to four share story progress.",
+      "party_rule": "party-a-only"
+    },
+    {
+      "id": "house_war",
+      "label": "House War - multiplayer",
+      "description": "Ready equal teams in Party A and Party B for 1v1 through 4v4.",
+      "party_rule": "balanced-parties"
+    }
+  ],
+  "allowed_seat_types": ["human", "adapter", "ai"],
+  "uses": ["game-hub-seats", "party-routing", "local-authority", "axm-50k-draw-spine", "ten-immutable-style-books"],
   "launch": {
-    "server_entry": "lux-5-prototype/runtime/server.js",
-    "client_entry": "/games/007/?room=AXM1&player=p1",
-    "spectator_client_entry": "/games/007/?room=AXM1&player=screen",
-    "ready_path": "/api/health",
+    "server_entry": "alpha/runtime/casino-server.cjs",
+    "client_entry": "/games/007/?role=host",
+    "spectator_client_entry": "/games/007/?role=host",
+    "ready_path": "/state",
     "port": 8797,
     "start_command": "managed-by-game-hub",
     "local_only_default": true
   },
   "join": {
-    "supports_qr": false,
-    "supports_lan_link": false,
-    "supports_room_code": false,
-    "room_code": "AXM1"
+    "supports_qr": true,
+    "supports_lan_link": true,
+    "supports_room_code": true
   },
   "controls": {
-    "profile_id": "axm-pointer-touch-v1",
-    "intent_protocol": "lux5-spin-intention-v1",
-    "phone_controller": false,
+    "phone_controller": true,
     "keyboard": true,
     "mouse": true,
-    "touch": true,
-    "shared_screen": false
+    "touch": true
   },
   "session": {
-    "passes_seat_map": false,
-    "returns_result_summary": false,
-    "drop_in_out_later": false,
-    "target_minutes": 8
+    "passes_seat_map": true,
+    "returns_result_summary": true,
+    "drop_in_out_later": true,
+    "party_a_seats": [1, 2, 3, 4],
+    "party_b_seats": [5, 6, 7, 8]
   },
   "rules": {
     "no_hidden_players": true,
     "host_launch_required": true,
     "game_does_not_override_hub_seats": true,
-    "local_authoritative_state": true,
-    "clients_never_receive_seed_or_future_outcomes": true,
-    "audit_fixture_is_not_served": true
+    "server_authoritative_money": true,
+    "immutable_slot_outcomes": true,
+    "outside_network_required": false
+  },
+  "verification": {
+    "game_night": {
+      "schema": "axm.game-night-seams/v1",
+      "controller_delivery": "runtime-issued",
+      "runtime_metadata_endpoint": "/api/host/bootstrap",
+      "controller_evidence": ["alpha/client/index.html", "alpha/tests/game-hub-integration-selftest.js"],
+      "state_authority": "server",
+      "host_reload_recovery": "game-hub-active-launch",
+      "shared_screen_occupies_seat": false,
+      "disconnect_recovery": "pending",
+      "blocking_overlay_escape": "not-applicable",
+      "physical_phone_qa": "pending",
+      "adapter_state_interface": "pending"
+    }
   },
   "package": {
-    "source_status": "independent-pr13-derived-public-test",
-    "source_sha256": "8abb172a410abfc11024d68d7f61698d72e53e8a745e518892a3b586ab10354e",
+    "source_status": "alpha-implemented-browser-and-physical-phone-qa-required",
     "required_paths": [
       "README.md",
-      "lux-5-prototype/README.md",
-      "lux-5-prototype/runtime/server.js",
-      "lux-5-prototype/runtime/session.js",
-      "lux-5-prototype/runtime/ledger.js",
-      "lux-5-prototype/client/index.html",
-      "lux-5-prototype/client/app.js",
-      "lux-5-prototype/client/vendor/three.module.js",
-      "lux-5-prototype/client/vendor/LICENSE",
-      "lux-5-prototype/client/vendor/SOURCE.json",
-      "slots/lux-5/lux5-rng.js",
+      "README_FIRST.md",
+      "ALPHA_GAMEPLAY_ROUTE.md",
+      "BUILD_REPORT.md",
+      "CODEX_LOCAL_LAYER_DROP.md",
+      "integration/PR14_INTAKE.md",
+      "alpha/README.md",
+      "alpha/runtime/casino-server.cjs",
+      "alpha/runtime/casino-core.js",
+      "alpha/runtime/quest-system.js",
+      "alpha/runtime/game-hub-adapter.js",
+      "alpha/client/index.html",
+      "alpha/client/app.js",
+      "alpha/client/styles.css",
+      "alpha/tests/core-selftest.js",
+      "alpha/tests/server-selftest.js",
+      "alpha/tests/game-hub-integration-selftest.js",
+      "alpha/tests/run-all.js",
+      "alpha/tests/package-selftest.js",
+      "slots/slot-catalog.js",
+      "slots/slot-catalog-selftest.js",
+      "slots/axm-draw-spine.js",
+      "slots/axm-draw-spine-selftest.js",
       "slots/lux-5/lux5-model.js",
-      "slots/lux-5/lux5-outcome-book.js"
+      "slots/lux-5/lux5-rng.js",
+      "slots/lux-5/lux5-outcome-book.js",
+      "slots/lux-5/lux5-math-selftest.js",
+      "slots/lux-5/lux5-book-selftest.js"
     ]
-  },
-  "known_limits": [
-    "Single-player test today; shared seats and AI adapter control are not claimed yet.",
-    "Real touch, WebGL, sound and animation timing still need human playtesting."
-  ]
+  }
 }

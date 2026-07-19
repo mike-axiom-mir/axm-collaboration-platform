@@ -23,6 +23,8 @@ function worldWithTwoAllies() {
 
 test('host projectile collision shows shield spark with FF off and applies damage with FF on', () => {
   const world = worldWithTwoAllies();
+  world.staticMap.obstacles = [];
+  world.staticMap.safeZones = [];
   const attacker = world.actors['actor-seat-1'];
   const target = world.actors['actor-seat-2'];
   attacker.position = { x: 400, y: 500 };

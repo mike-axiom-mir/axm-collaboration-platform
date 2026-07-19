@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/ui-component-spec-v1.schema.json",
+  "title": "AXM UI Component Spec v1",
+  "type": "object",
+  "required": ["schema", "name", "kind", "dimensions", "nineSlice", "states", "scalable", "stateStyles", "interaction", "tokens"],
+  "properties": {
+    "schema": { "const": "axm.ui-component-spec/v1" },
+    "legacy_schema": { "type": "string" },
+    "name": { "type": "string", "minLength": 1 },
+    "kind": { "type": "string", "minLength": 1 },
+    "dimensions": { "type": "object", "required": ["width", "height"], "properties": { "width": { "type": "number", "exclusiveMinimum": 0 }, "height": { "type": "number", "exclusiveMinimum": 0 } }, "additionalProperties": false },
+    "nineSlice": { "type": "object", "required": ["left", "top", "right", "bottom"] },
+    "states": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["default", "hover", "active", "disabled"] } },
+    "scalable": { "type": "boolean" },
+    "stateStyles": { "type": "object" },
+    "interaction": { "type": "object", "required": ["minimumTargetSize", "inputModalities", "direction", "reducedMotion", "focusRing"] },
+    "tokens": { "type": "object", "required": ["surface", "accent", "foreground", "attention", "radius", "contrastRatio"] }
+  },
+  "additionalProperties": false
+}

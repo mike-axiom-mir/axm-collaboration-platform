@@ -4,7 +4,7 @@
   "name": "AXM District Party",
   "status": "PUBLIC TEST",
   "description": "A substantial 1–8 player local shared-screen city game: co-op adventures, asymmetric district battles, vehicles, missions, inventory and equal human/AI control routes.",
-  "version": "0.1.7-public-test",
+  "version": "0.2.7-interactable-public-test",
   "min_players": 1,
   "max_players": 8,
   "default_visible_seats": 4,
@@ -24,6 +24,8 @@
     "supports_qr": true,
     "supports_lan_link": true,
     "supports_room_code": true,
+    "preview_path": "/controller-preview?game_id=008-district-party&preview=1",
+    "preview_via_game_hub": true,
     "room_code": "AXM1",
     "controller_urls_per_human_seat": true,
     "screen_occupies_seat": false
@@ -58,12 +60,30 @@
     "host_ai_fill_empty_seats_default": false,
     "runtime_internet_required": false
   },
+  "verification": {
+    "game_night": {
+      "schema": "axm.game-night-seams/v1",
+      "controller_delivery": "runtime-issued",
+      "runtime_metadata_endpoint": "/api/launcher-state",
+      "controller_evidence": ["client/controller/controller.html", "tests/four-controllers.test.js", "tests/mission-director.test.js"],
+      "state_authority": "server",
+      "host_reload_recovery": "game-hub-active-launch",
+      "shared_screen_occupies_seat": false,
+      "disconnect_recovery": "pending",
+      "blocking_overlay_escape": "pending",
+      "physical_phone_qa": "pending",
+      "adapter_state_interface": "verified",
+      "adapter_state_evidence": ["docs/AI_NATIVE_SEAT_CONTRACT.md", "tests/adapter-control.test.js"]
+    }
+  },
   "package": {
-    "source_status": "independent-pr13-derived-public-test",
-    "source_sha256": "034db7fd5cf3df074539b29674146f3b91f3d53a4569f4025d1614eb84102741",
+    "source_status": "independent-v0.2.7-interactable-pass-public-test",
+    "source_sha256": "2eef767410655daa9bef0ebec294a287c27b774e6baa50f3399ac3c680823df0",
     "required_paths": [
       "README_FIRST.md",
       "ASSET_PROVENANCE.md",
+      "assets/INTERACTABLE_ASSET_MANIFEST.json",
+      "assets/USER_GENERATED_ASSET_MANIFEST.json",
       "KNOWN_LIMITS.md",
       "server/server.js",
       "client/launcher/launcher.html",
@@ -75,6 +95,8 @@
   },
   "known_limits": [
     "Physical phone QR join and two-display play remain marked untested by the source package.",
+    "The optional automated browser test is UNRUN because Playwright is not installed in the package environment.",
+    "User-supplied art remains pending public-license review and must not be promoted beyond local/public-test status yet.",
     "Public TEST means visible and launchable, not production-certified."
   ]
 }
