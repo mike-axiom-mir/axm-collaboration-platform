@@ -1,102 +1,130 @@
-# AXM Workshop
+<p align="center">
+  <img src="site/assets/axm-mark.svg" width="76" alt="AXM Workshop mark">
+</p>
 
-AXM Workshop is a local-first environment where people and optional AI tools
-can build, play, inspect, learn, and collaborate through one modular Hub.
+<h1 align="center">AXM Workshop</h1>
 
-> **Public test Workshop:** this repository is experimental. It is shared so
-> people can try the current foundation and inspect its evidence; it is not a
-> production-certified platform.
+<p align="center">
+  A local-first modular workshop where people and optional AI collaborators can build,<br>
+  play, inspect, learn, and create without surrendering their files or authority.
+</p>
 
-Start with the [AXM Discovery Root](AXM_DISCOVERY_ROOT.md) for a human-readable
-map, or [`registry/public-status.json`](registry/public-status.json) for the
-machine-readable release boundary. Current technical facts come from generated
-registries and Technical Glasses, not from a remembered module count.
+<p align="center">
+  <a href="https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.3.0-experimental"><img alt="Release v0.3.0 experimental" src="https://img.shields.io/badge/release-v0.3.0--experimental-8b5cf6"></a>
+  <a href="https://github.com/mike-axiom-mir/axm-collaboration-platform/actions/workflows/public-launch.yml"><img alt="Public launch checks" src="https://github.com/mike-axiom-mir/axm-collaboration-platform/actions/workflows/public-launch.yml/badge.svg?branch=main"></a>
+  <img alt="Local first" src="https://img.shields.io/badge/local--first-yes-16a085">
+  <img alt="Status experimental" src="https://img.shields.io/badge/status-experimental-f59e0b">
+</p>
 
-## Start in five minutes (Windows)
+<p align="center">
+  <img src="site/assets/axm-workshop-social-v4.jpg" alt="A modular village of connected AXM creative studios" width="100%">
+</p>
 
-1. Select **Code > Download ZIP** on GitHub.
-2. Right-click the downloaded ZIP and select **Extract All**.
+> **Public experimental release.** AXM is runnable and open for evaluation,
+> but it is not production-certified and does not yet carry a broad open-source
+> license. Warnings and unproven boundaries remain visible.
+
+## Start here
+
+| I want to… | Best route |
+|---|---|
+| Run AXM on Windows | [Download the Windows prerelease ZIP](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.3.0-experimental/AXM-Workshop-v0.3.0-experimental-Windows-source.zip) |
+| Try a small browser workroom | [Open the public doorway](https://mike-axiom-mir.github.io/axm-collaboration-platform/) |
+| Understand what is inside | Read the [Discovery Root](AXM_DISCOVERY_ROOT.md) |
+| Inspect current limitations | Read [Public Status](STATUS.md) |
+| Help improve AXM | Read [Contributing](CONTRIBUTING.md) |
+| Orient an AI collaborator | Begin with [AI Start Here](AI_START_HERE.md) |
+
+## Windows: open in five minutes
+
+1. Download the prerelease ZIP above, or select **Code → Download ZIP**.
+2. Right-click the ZIP and select **Extract All**.
 3. Open the extracted folder.
 4. Double-click **`OPEN_AXM_WORKSHOP.cmd`**.
-5. Leave the small server window open. AXM opens the Hub in your browser when
-   it is ready.
+5. Keep the small server window open while using AXM.
 
-If clicking a launcher on GitHub only shows its code, nothing broke: GitHub can
-preview files, but it cannot run a local application. Download and extract the
-complete folder first.
+If GitHub shows its code instead of opening AXM, nothing broke. GitHub previews
+files but cannot run a local application; download and extract the complete
+folder first.
 
-The launcher uses a compatible Node.js already on the computer when available.
-Otherwise, on Windows x64 or ARM64, it clearly announces a one-time download of
-the pinned Node.js 24.17.0 LTS runtime from `nodejs.org`, verifies its SHA-256,
-and installs it only inside this Workshop's private `runtime` folder. No
-administrator permission, `npm install`, account, API key, or AI connection is
-required. The first bootstrap needs an internet connection; later core Hub
-starts are local. See [Beginner Guide](docs/BEGINNER_GUIDE.md) for repairs and
-the exact trust boundary.
+### First-launch trust boundary
+
+The Windows launcher uses a compatible Node.js already on the computer when
+available. Otherwise it announces a one-time download of pinned Node.js 24.17.0
+LTS from `nodejs.org`, verifies SHA-256, and stores it only in AXM's private
+`runtime` folder.
+
+No administrator permission, account, API key, AI connection, or `npm install`
+is required. The first bootstrap needs an internet connection when no compatible
+Node.js runtime is available; later core-Hub starts are local.
+
+See the [Beginner Guide](docs/BEGINNER_GUIDE.md) for troubleshooting and the
+exact launch boundary.
 
 ## macOS and Linux
 
-From the extracted folder, run:
+A compatible Node.js installation is currently required:
 
 ```sh
 ./start-hub.sh
 ```
 
-If the file is not executable yet, run `chmod +x start-hub.sh` once. A compatible
-Node.js installation is currently required on macOS and Linux. The Hub is also
-available with `node server.js --open=hub`.
+If needed, run `chmod +x start-hub.sh` once. You can also use
+`node server.js --open=hub`. A clean first-launch proof for macOS and Linux is
+not yet claimed.
 
 ## What AXM contains
 
-- **Creation systems** for games, assets, audio, film, motion, spatial work,
-  research, learning, publishing, and project direction.
-- **Playable worlds** and controller-aware local game experiments.
-- **Evidence, repair, and governance** with explicit readiness, verification,
-  rollback, permission, and stop boundaries.
-- **Human-machine collaboration** through typed, optional interfaces that do
-  not collapse human and machine identity or authority.
-- **Local operations and delivery** for packaging, diagnostics, heartbeat,
-  updating, source review, and bounded automation.
+AXM is organized as a village of bounded systems rather than one opaque app:
 
-Explore the [capability map](AXM_CAPABILITY_MAP.md), generated
-[`registry/modules.json`](registry/modules.json), or line-oriented
-[`registry/capabilities.jsonl`](registry/capabilities.jsonl). AI collaborators
-should begin with [`AI_START_HERE.md`](AI_START_HERE.md).
+| Area | Examples |
+|---|---|
+| Create | Games, assets, audio, film, motion, spatial work, research and learning |
+| Organize | Projects, goals, decisions, knowledge, checkpoints and portable records |
+| Collaborate | Distinct human and machine seats with visible authority and review gates |
+| Verify | Evidence, readiness, repair, rollback, permissions and truthful status |
+| Operate | Local packaging, diagnostics, Heartbeat, Pulse, updating and bounded automation |
 
-## Launcher choices
+The generated discovery spine currently indexes **177 tool modules** and
+**1,183 declared capabilities**. Declarations are navigation data—not blanket
+runtime proof or authority grants. Explore the [Capability Map](AXM_CAPABILITY_MAP.md),
+[`registry/modules.json`](registry/modules.json), and
+[`registry/capabilities.jsonl`](registry/capabilities.jsonl).
 
-- `OPEN_AXM_WORKSHOP.cmd` - recommended Windows beginner route; core Hub only.
-- `RUN_AXM_ALL.bat` - compatibility alias for the same beginner route.
-- `START_AXM_FULL.bat` - advanced route; attempts optional local services that
-  are actually installed.
-- `start-hub.sh` - recommended macOS/Linux core route.
-- `start-full.sh` - advanced macOS/Linux route.
+## Current release truth
 
-The Workshop binds to `127.0.0.1` by default, so it is reachable only from the
-same device. Deliberately exposing it to a LAN or the internet requires a
-separate authentication and security review.
+| Gate | State |
+|---|---|
+| Deterministic public-safety scan | Pass for the published snapshot |
+| Fresh Windows source launch with no Node.js on `PATH` | Pass |
+| Private runtime download and SHA-256 verification | Pass |
+| Offline first launch | Not claimed |
+| Clean macOS/Linux first launch | Not yet independently proven |
+| Independent first-time-human comprehension test | Not yet run |
+| Production security certification | Not claimed |
 
-## Current truth and proof
+The exact evidence and limitations live in [STATUS.md](STATUS.md) and
+[`registry/public-status.json`](registry/public-status.json).
 
-The exact public gates and known limitations live in [STATUS.md](STATUS.md).
-Source assertions, a real Windows launch smoke test, and public-safety scanning
-are separate proofs; passing one does not silently pass the others.
+## Local and bounded by default
 
-Public packages exclude local logs, saves, sessions, state, backups, secrets,
-private work folders, caches, downloaded runtimes, and raw operational history.
-Public-safe does not mean production-safe; review [Security](SECURITY.md) before
-changing network or machine permissions.
+The core Workshop binds to `127.0.0.1`, making it reachable only from the same
+device. Public packages exclude local logs, saves, sessions, state, backups,
+secrets, private work folders, caches, downloaded runtimes, and raw operational
+history.
 
-The repository currently has **no broad open-source license grant**. Public
-visibility permits reading and evaluation, not automatic redistribution or
-commercial reuse. See [License Status](LICENSE_STATUS.md).
+Optional network bridges and machine permissions are separate capabilities.
+Review [Security](SECURITY.md) before enabling LAN access, connectors, or machine
+execution.
 
-## Help improve the test Workshop
+## Contributing and licensing
 
-- Found a bug? Use the **Bug report** issue template.
-- Have an idea? Use the **Feature request** issue template.
-- Want to contribute? Read [Contributing](CONTRIBUTING.md).
-- Never post tokens, passwords, private logs, or personal data in an issue.
+- Use the issue templates for reproducible bugs and bounded ideas.
+- Read [Contributing](CONTRIBUTING.md) before opening a pull request.
+- Never post tokens, passwords, private logs, personal data, or private paths.
+- This repository currently has **no broad open-source license grant**. Public
+  visibility permits inspection and evaluation, not automatic redistribution
+  or commercial reuse. Read [License Status](LICENSE_STATUS.md).
 
 ## Maintainer verification
 
@@ -105,10 +133,10 @@ npm run discovery:verify
 npm test
 ```
 
-The networked clean-Windows launch proof is intentionally separate:
+The networked Windows proof is intentionally separate:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tests/windows-clean-launch-smoke.ps1
 ```
 
-**Truth before story. Proof before claim. No fake done.**
+<p align="center"><strong>Truth before story · Proof before claim · No fake done</strong></p>

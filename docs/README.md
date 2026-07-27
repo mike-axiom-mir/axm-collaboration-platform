@@ -1,12 +1,23 @@
-# AXM documentation map
+# AXM documentation
 
-As of 2026-07-23, `docs/` is the canonical local documentation home. `docs/from-github/` is an imported reference snapshot and is not automatically synchronized with the live Workshop. When the two disagree, current manifests, contracts, executable tests, Technical Glasses, and the local `docs/` record outrank the imported snapshot.
+Choose the shortest route that answers your question:
 
-- `CONTRIBUTING_SEAMS.md` — how a human or AI adds a module safely.
-- `STATUS_LADDER.md` — the promotion and freshness contract.
-- `HUB_MAP.md` — which Hub is authoritative and why similarly named tools exist.
-- `PORTS.md` — default listeners and explicit LAN exceptions.
-- `RETENTION.md` — current retention boundaries and unresolved policy work.
-- `STEWARDING_SOFTWARE_TOWARD_LIFE.md` — why AXM grows systems through evidence ladders instead of pretending they are finished.
-- `roadmaps/GAME_NIGHT_CONTROLLER_HARDWARE_FUTURE_IDEA.md` — future passive-touch, USB-C and Bluetooth controller-hardware track for AXM Game Nights; research only.
-- `history/patches/` — historical patch notes moved out of first-contact root.
+| Need | Document |
+|---|---|
+| First local launch | [Beginner Guide](BEGINNER_GUIDE.md) |
+| Current public limitations | [Public Status](../STATUS.md) |
+| Module and capability map | [Discovery Root](../AXM_DISCOVERY_ROOT.md) |
+| Add or change a module | [Contribution Seams](CONTRIBUTING_SEAMS.md) |
+| Understand promotion states | [Status Ladder](STATUS_LADDER.md) |
+| Find the authoritative Hub | [Hub Map](HUB_MAP.md) |
+| Review listeners and LAN seams | [Ports](PORTS.md) |
+| Understand retention | [Retention](RETENTION.md) |
+| Read the current release | [v0.3.0 Experimental](releases/v0.3.0-experimental.md) |
+
+`docs/from-github/` is an imported reference snapshot, not an automatically
+synchronized source of truth. Current manifests, contracts, generated
+registries, executable tests, Technical Glasses, and the local `docs/` record
+outrank that snapshot when they disagree.
+
+Historical construction reports and patch notes live under
+[`docs/history/`](history/).

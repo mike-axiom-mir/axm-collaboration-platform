@@ -1,0 +1,116 @@
+AXM WORKSHOP — TOOL FACTORY v0.2 EXPERIMENTAL REPORT
+Generated: 2026-07-11
+
+VERDICT
+
+Agent Tool Forge is now a usable draft-only software foundry rather than a display card.
+It can create a bounded draft, validate it, render a complete file set, calculate deterministic SHA-256 fingerprints, preview every generated file, save/resume locally, and export an actual module ZIP or review JSON.
+
+It still cannot install, overwrite, execute, promote, or canonize. Those remain later governed steps.
+
+FACTORY ARCHITECTURE
+
+Human Hub screen -> index.html -> forge-core.js
+Machine host adapter -> machine.js -> forge-core.js
+
+Both doors use the same normalized draft, validation, render, and fingerprint logic.
+The machine adapter requires a host-supplied authorization decision and refuses unknown actions, including install.
+
+PACKAGE TYPES
+
+- Foundation tool
+- Hub module
+- Dual-door tool
+- Proposal-only analyzer
+- Machine-only capability
+
+Every generated manifest starts EXPERIMENTAL. Risk is a separate LOW / MEDIUM / HIGH field.
+
+USER-FACING CHANGES
+
+1. Agent Tool Forge
+   - new Safe Composer UI
+   - purpose, output, type, risk, tags, capabilities, and boundaries
+   - local save/resume through AXM Foundation
+   - deterministic shared forge core
+   - SHA-256 draft and package fingerprints
+   - deterministic ZIP export
+   - draft-only machine adapter
+   - real Hub passport, so it loads in the Hub inner screen
+
+2. Evidence Desk
+   - now announces a real Hub passport
+   - remains usable standalone
+   - UI gate actor is generic local-user instead of a receipt subject
+   - example updated for Forge v0.2
+
+3. Graft
+   - recognizes Foundation gate and the wider public capability inventory
+   - generated integration plans now keep new packages EXPERIMENTAL
+   - no longer falsely blocks a draft merely because it declares gate
+
+4. Launcher Card module
+   - removed dead Apply behavior that called a server route which does not exist
+   - now previews and exports an exact proposal
+   - explicitly reports applied:false and leaves manifests unchanged
+
+5. Runner
+   - removed dead /api/run dependency
+   - renamed user-facing screen to Verification Desk
+   - reads server health and the latest existing verifier report
+   - exports a proposal-only run request instead of claiming command execution
+
+6. Honest shell labels
+   - Agent Command Center: SHELL
+   - Main Hub module: SHELL
+   - Game Hub screen: SHELL
+   Their manifests no longer present a display/spec screen as TEST functionality.
+
+7. Workshop status and verification
+   - EXPERIMENTAL is now a legal Workshop status
+   - launcher renders an EXPERIMENTAL badge
+   - /api/tools exposes read-only type, audience, risk, summary, and card metadata
+   - verifier checks Hub passport fields, optional risk, and machine entry/action contracts
+
+TEST EVIDENCE
+
+- Agent Tool Forge selftest: 15 PASS, 0 FAIL
+- Evidence Desk selftest: 13 PASS, 0 FAIL
+- Workshop verifier: 0 FAIL, 0 warn
+- Hub selftest: 0 FAIL
+- Route selftest: 0 FAIL
+- Graft selftest: 0 FAIL
+- Skin selftest: 0 FAIL
+- Verify-Plus: 0 core FAIL, 0 user-check FAIL
+- Updated inline browser scripts: 3 PASS syntax compilation
+- Generated dual-door proof ZIP: unzip integrity PASS, 6 files
+- Generated proof package reported installed:false
+- Workshop API smoke check exposed the expected v0.2 metadata and EXPERIMENTAL status lane
+
+BROWSER LIMITATION
+
+The current command runner had the Playwright library but no browser executable, so a fully automated click/render test could not run there. The UI scripts compiled, all deterministic cores passed, the local server/API passed, and the generated ZIP passed archive validation. A manual Hub screen test remains the final user-visible check for this experimental build.
+
+KNOWN NON-GOALS / NEXT GATES
+
+- No governed Module Installer yet.
+- No Machine Host yet.
+- No arbitrary-code Code Forge yet; this is the safer skeleton composer.
+- No module may promote itself.
+- Approval is not yet persisted as actor + action + exact package hash.
+- Command Center remains a SHELL and still needs its own package-assembly UI.
+- Main Hub module remains a SHELL; the operational one-inner-screen experience is /hub/.
+- This private package inherits private runtime/log material from the source archive and is NOT public-safe.
+
+FIRST MANUAL TEST
+
+1. Start the Workshop normally.
+2. Open /hub/.
+3. Select AXM Agent Tool Forge in the module list.
+4. Change the sample name, id, purpose, and boundaries.
+5. Validate, then Build blueprint.
+6. Inspect manifest.json and the SHA-256 fingerprint.
+7. Export module ZIP.
+8. Confirm the Forge still says Installed: NO and Promoted: NO.
+
+That is the intended v0.2 success: real software package creation without silently crossing the install gate.

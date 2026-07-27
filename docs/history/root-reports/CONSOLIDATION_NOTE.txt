@@ -1,0 +1,89 @@
+============================================================
+AXM WORKSHOP — CONSOLIDATION NOTE  (v0.12b)
+What got pulled out of the GitHub spread and put in one place
+Assembled by Claude (Route Guardian) · 2026-07-07
+============================================================
+
+PLAIN VERSION
+  Your work was NOT lost. It was sitting in 4 unmerged GitHub
+  "boxes" (open pull requests). Every box turned out to be the
+  same project with an extra room added on — none of them were
+  broken forks. They have all been emptied into ONE folder that
+  runs like the zip you gave me: open one address, every module
+  shows up as a card.
+
+STARTING POINT
+  Your Fable zip (v0.12a) — the newest, most complete base.
+  It already had: prehub, studio, duo-test, reasoning-shell,
+  forge, forge-line. Spine verified whole.
+
+BROUGHT IN FROM GITHUB (the stuck boxes)
+  From PR #3  (asset-vault branch):
+    + asset-vault            (tool card)
+    + asset-pack-lab         (tool card)
+    + launcher-card-installer(tool card)
+  From PR #6  (prompt-vault branch):
+    + prompt-vault           (tool card)  <- your prompts/templates place
+  From PR #4  (hermes branch): brought into /local_modules
+    + hermes                 <- the model connector shell (any cloud/local)
+    + agent-command-center   <- build identity core + link connectors
+    + agent-tool-forge       <- skill / tool creation
+    + game-hub
+    + main-hub
+  From PR #10 (auto-tech-factory-map branch):
+    + AUTO_TECH_FACTORY_MAP.md (design doc -> /docs/from-github)
+  Identity/routing docs also carried into /docs/from-github:
+    AGENTS.md, AXM_AGENT_ROUTING.md, AXM_TOOL_LIFECYCLE.md,
+    PROJECT_IDENTITY_AND_GOAL.md
+
+DRIFT PROTECTION (the important part)
+  The 4 new TOOLS did not ship their own copy of the backbone.
+  Each was re-seated on the CURRENT canon spine during the merge.
+  Result: one backbone across all 10 tools, byte-identical.
+  Verifier confirms: spine 418f9ce4... intact everywhere.
+
+TWO CARD-TOOLS vs FIVE LOCAL MODULES — honest labels
+  - The 10 items in /tools are LAUNCHER CARDS: click and run.
+  - The 5 items in /local_modules (hermes, command-center,
+    tool-forge, game-hub, main-hub) are RUN-ALONGSIDE modules
+    (their own node runners / plans). They are carried over
+    WHOLE and unchanged. They are NOT yet wired as launcher
+    cards — that wiring is the next real step, not pretended done.
+
+ONE PROPOSED CHANGE (reversible — reject if you dislike it)
+  The verify tool used to FAIL on studio for two buttons it
+  builds at runtime (mBuilt, mUp). That was a blind spot, not a
+  real break. Fix applied the NON-HIDDEN way:
+    - studio now DECLARES those ids in a comment
+      <!-- axm-verify-dynamic-ids: mBuilt mUp -->
+    - verify.js honors declared runtime ids; everything
+      undeclared still fails the check as before.
+  After this: verify = 0 FAIL, 0 warn. Nothing was hidden or
+  loosened silently. If Axiom/Mir reject it, delete the comment
+  line in studio and the 3 added lines in verify.js.
+
+HOW TO RUN
+  Mac/Linux:  ./start.sh      Windows: START_AXM.bat
+  With AI:    ./start-full.sh (set a key first)
+  Opens http://127.0.0.1:8788
+
+GITHUB, FROM HERE ON
+  This folder is now your single source of truth. GitHub goes
+  back to being a backup you push TO, not a maze you dig OUT of.
+============================================================
+
+------------------------------------------------------------
+UPDATE (v0.12c) — MAPFILE SPLIT
+The five modules that were parked together in /local_modules
+are now FIVE separate cards in /tools, each with its OWN mapfile
+(manifest.json), its own landing page in house style, and the
+canon spine — exactly like every other tool:
+  tools/main-hub            tools/agent-command-center
+  tools/agent-tool-forge    tools/hermes
+  tools/game-hub
+agent-tool-forge was the one missing a mapfile — it has one now.
+Their original docs + runtime files were kept inside each folder.
+The runtime servers (game-hub, hermes) still run as their own
+process (see the RUN_*.txt in each folder); the card is the home.
+Library is now 15 cards. Verify: 0 FAIL, 0 warn.
+------------------------------------------------------------
