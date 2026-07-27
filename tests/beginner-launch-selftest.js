@@ -30,6 +30,7 @@ const optionalVips = read('shared/asset-hands/optional-wasm-vips.js');
 const jspdfLoader = read('shared/asset-hands/load-jspdf.js');
 const optionalModule = read('shared/asset-hands/optional-node-module.js');
 const candidateStager = read('scripts/stage-public-candidate.js');
+const gitAttributes = read('.gitattributes');
 
 function availablePowerShell() {
   const candidates = process.platform === 'win32' ? ['powershell.exe', 'pwsh.exe'] : ['pwsh', 'powershell'];
@@ -61,6 +62,7 @@ check(/vendor\/jspdf\/jspdf\.umd\.min\.js/.test(jspdfLoader), 'dependency-free c
 check(/allowedMissingPackages/.test(optionalModule) && /MODULE_NOT_FOUND/.test(optionalModule), 'advanced package gaps remain bounded optional modules during core startup');
 check(/Planner\.collectFiles/.test(candidateStager) && /destination already exists/.test(candidateStager), 'clean-launch proof stages the same public-policy inventory into a separate empty candidate');
 check(/spawn\((['"])explorer\.exe\1,\s*\[url\]/.test(server), 'Windows browser opening avoids shell-built URL commands');
+check(/shared\/cognitive-resource\/contracts\/\*\.json\s+text\s+eol=lf/.test(gitAttributes), 'digest-bound cognitive contracts stay LF-stable after a Windows Git checkout');
 
 const powerShell = availablePowerShell();
 for (const relative of ['scripts/bootstrap-windows-runtime.ps1', 'tests/windows-clean-launch-smoke.ps1']) {
