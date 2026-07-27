@@ -1,8 +1,8 @@
 # AXM Module Lineage Comparator
 
-Status: `EXPERIMENTAL` detached candidate  
-Installed: `false`  
-Promoted: `false`  
+Status: integrated `TEST` module  
+Installed: `true`  
+Promoted: `TEST`  
 CANON: unchanged
 
 This module compares two explicit `axm.module-bundle/v1` JSON artifacts as inert data. It proves exact file-path additions, removals, changes, and unchanged bytes with SHA-256, then shows selected manifest and contract field deltas.

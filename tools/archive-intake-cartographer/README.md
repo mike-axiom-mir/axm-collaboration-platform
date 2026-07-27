@@ -1,6 +1,6 @@
 # AXM Archive Intake Cartographer
 
-Archive Intake Cartographer is a detached, read-only `EXPERIMENTAL` candidate for the seam between “many ZIP checkpoints exist” and “the Merge Gate can review their actual relationship.”
+Archive Intake Cartographer is an integrated, read-only `TEST` module for the seam between “many ZIP checkpoints exist” and “the Merge Gate can review their actual relationship.”
 
 It recursively inventories ZIP files below one explicitly selected root, hashes every accepted archive, reads ZIP central-directory metadata without extracting content, and emits path-overlap relations between every archive pair.
 

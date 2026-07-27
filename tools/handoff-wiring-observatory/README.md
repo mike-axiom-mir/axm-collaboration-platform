@@ -1,8 +1,8 @@
 # AXM Handoff Wiring Observatory
 
-Status: `EXPERIMENTAL` detached candidate  
-Installed: `false`  
-Promoted: `false`  
+Status: integrated `TEST` module  
+Installed: `true`  
+Promoted: `TEST`  
 CANON: unchanged
 
 This module scans an explicit AXM Workshop root and builds an exact-string graph from module `accepts[]` and `produces[]` declarations. When older manifests omit those arrays, it may use the existing `shared/capabilities/capability-metadata.json` record and labels that source as fallback.

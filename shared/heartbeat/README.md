@@ -41,6 +41,15 @@ receipt per granted test. These receipts prove only the named deterministic
 check at that time. The verifier may record findings, but it has no file-editing
 or promotion authority.
 
+The reviewed observatory adapter adds the eighteen integrated intake modules to
+the rotating deck. Each candidate is a fixed Node command over one module
+`selftest.js`; arbitrary shell synthesis is impossible. Before execution, the
+adapter verifies the module's `TEST` status and a reviewed SHA-256 digest over
+its JavaScript and JSON execution surface. Unknown modules, changed digests,
+missing selftests, symlinks or junctions, and non-`TEST` status fail closed.
+Joining the deck adds verification evidence only: repair, permission, network,
+promotion, publishing, and CANON authority remain absent.
+
 The rolling-hour guard permits up to one second of scheduler jitter so an
 on-time anchored beat is not skipped merely because its timer is observed a few
 milliseconds early. Beats substantially earlier than one hour remain held.

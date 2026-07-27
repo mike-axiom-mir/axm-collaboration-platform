@@ -1,6 +1,6 @@
 # AXM Detached Candidate Nursery
 
-This is a detached `EXPERIMENTAL` candidate. It has not been installed, registered in the Hub, staged, promoted, granted permissions, or made CANON.
+This integrated `TEST` module inventories detached candidates. It is installed and registered without new permissions or CANON authority.
 
 ## Why it exists
 

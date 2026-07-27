@@ -108,7 +108,7 @@ try {
       }
     }
   });
-  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'producer-a'), path.join(fixtureRoot, 'tools', 'linked-tool'));
+  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'producer-a'), path.join(fixtureRoot, 'tools', 'linked-tool'), process.platform === 'win32' ? 'junction' : 'dir');
 
   const before = treeReceipt(fixtureRoot);
   const first = Core.scanWorkshop(fixtureRoot, { now: '2026-07-26T00:00:00Z' });

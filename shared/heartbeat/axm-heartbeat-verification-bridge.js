@@ -1,6 +1,7 @@
 'use strict';
 
 const childProcess = require('child_process');
+const ObservatoryDeck = require('./axm-observatory-deck-adapter');
 
 const STATE_SCHEMA = 'axm.heartbeat-verification.state/v1';
 const MODULE_ID = 'heartbeat-verifier';
@@ -10,7 +11,7 @@ const WINDOW_JITTER_TOLERANCE_MS = 1000;
 const RUN_LIMIT = 96;
 const CHECK_TIMEOUT_MS = 120000;
 
-const CHECK_DECK = Object.freeze([
+const CORE_CHECK_DECK = Object.freeze([
   { id: 'server-syntax', label: 'Workshop server syntax', args: ['--check', 'server.js'] },
   { id: 'heartbeat-core', label: 'Platform Heartbeat core', args: ['shared/heartbeat/selftest.js'] },
   { id: 'heartbeat-service', label: 'Platform Heartbeat service', args: ['shared/heartbeat/service-selftest.js'] },
@@ -40,6 +41,7 @@ const CHECK_DECK = Object.freeze([
   { id: 'workshop-updater-service', label: 'Workshop Updater zero-network service', args: ['shared/workshop-updater/service-selftest.js'] },
   { id: 'workshop-updater-surface', label: 'Workshop Update Gate surface', args: ['tools/workshop-updater/selftest.js'] }
 ]);
+const CHECK_DECK = Object.freeze(CORE_CHECK_DECK.concat(ObservatoryDeck.checkDeck()).map(item => Object.freeze(item)));
 
 function nowIso(now) { return new Date(now == null ? Date.now() : now).toISOString(); }
 function clone(value) { return JSON.parse(JSON.stringify(value)); }

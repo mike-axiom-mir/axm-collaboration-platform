@@ -45,6 +45,18 @@ function readRegularJson(file) {
   };
 }
 
+function hasSymlinkSegment(root, target) {
+  const relative = path.relative(root, target);
+  if (!relative || relative.startsWith('..' + path.sep) || path.isAbsolute(relative)) return false;
+  let current = root;
+  for (const part of relative.split(path.sep)) {
+    current = path.join(current, part);
+    if (!fs.existsSync(current)) return false;
+    if (fs.lstatSync(current).isSymbolicLink()) return true;
+  }
+  return false;
+}
+
 function inspectDoor(moduleRoot, declared) {
   if (typeof declared !== 'string' || !declared.trim()) {
     return { declared: false, path: null, state: 'NOT_DECLARED', bytes: null };
@@ -56,6 +68,9 @@ function inspectDoor(moduleRoot, declared) {
   const absolute = path.resolve(moduleRoot, clean);
   if (!absolute.startsWith(moduleRoot + path.sep)) {
     return { declared: true, path: clean, state: 'UNSAFE_PATH', bytes: null };
+  }
+  if (hasSymlinkSegment(moduleRoot, absolute)) {
+    return { declared: true, path: clean, state: 'SYMLINK_REFUSED', bytes: null };
   }
   if (!fs.existsSync(absolute)) {
     return { declared: true, path: clean, state: 'MISSING', bytes: null };

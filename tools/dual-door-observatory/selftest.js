@@ -90,12 +90,14 @@ try {
     entry: '../outside.html',
     machine: { entry: 'missing.js', actions: 'not-an-action-map' }
   });
-  const epsilon = addModule(fixtureRoot, 'epsilon', { entry: 'linked.html' });
-  write(path.join(epsilon, 'real.html'), '<!doctype html>');
-  fs.symlinkSync(path.join(epsilon, 'real.html'), path.join(epsilon, 'linked.html'));
+  const epsilon = addModule(fixtureRoot, 'epsilon', { entry: 'linked-entry/real.html' });
+  const epsilonEntryTarget = path.join(epsilon, 'real-entry');
+  fs.mkdirSync(epsilonEntryTarget, { recursive: true });
+  write(path.join(epsilonEntryTarget, 'real.html'), '<!doctype html>');
+  fs.symlinkSync(epsilonEntryTarget, path.join(epsilon, 'linked-entry'), process.platform === 'win32' ? 'junction' : 'dir');
   const template = addModule(fixtureRoot, '_template');
   write(path.join(template, 'index.html'), '<!doctype html>');
-  fs.symlinkSync(alpha, path.join(fixtureRoot, 'tools', 'linked-alpha'));
+  fs.symlinkSync(alpha, path.join(fixtureRoot, 'tools', 'linked-alpha'), process.platform === 'win32' ? 'junction' : 'dir');
 
   const before = treeReceipt(fixtureRoot);
   const first = Core.scanWorkshop(fixtureRoot, { now: '2026-07-27T00:00:00Z' });

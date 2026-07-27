@@ -118,7 +118,7 @@ try {
   writeJson(path.join(missingDirectory, 'manifest.json'), missingPermissionField);
   fs.writeFileSync(path.join(missingDirectory, 'index.html'), '<!doctype html>');
   writeJson(path.join(missingDirectory, 'module.contract.json'), contract('missing-manifest-field'));
-  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'exact'), path.join(fixtureRoot, 'tools', 'linked-tool'));
+  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'exact'), path.join(fixtureRoot, 'tools', 'linked-tool'), process.platform === 'win32' ? 'junction' : 'dir');
 
   const before = treeReceipt(fixtureRoot);
   const first = Core.scanWorkshop(fixtureRoot, { now: '2026-07-26T00:00:00Z' });

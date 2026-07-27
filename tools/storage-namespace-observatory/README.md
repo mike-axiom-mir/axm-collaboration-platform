@@ -1,6 +1,6 @@
 # AXM Storage Namespace Observatory
 
-Detached `EXPERIMENTAL` graph consumer. It reads only HTML and JavaScript text
+Integrated `TEST` graph consumer. It reads only HTML and JavaScript text
 nodes already bounded by `axm.entry-resource-graph/v1`, and first verifies that
 each current source hash still matches the graph.
 

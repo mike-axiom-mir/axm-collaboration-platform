@@ -78,7 +78,7 @@ try {
   fs.writeFileSync(path.join(fixtureRoot, 'broken', 'invalid.json'), '{ nope');
   fs.mkdirSync(path.join(fixtureRoot, 'state'), { recursive: true });
   writeJson(path.join(fixtureRoot, 'state', 'ignored.json'), { $id: 'axm.ignored/v1' });
-  fs.symlinkSync(path.join(fixtureRoot, 'schemas'), path.join(fixtureRoot, 'linked-schemas'));
+  fs.symlinkSync(path.join(fixtureRoot, 'schemas'), path.join(fixtureRoot, 'linked-schemas'), process.platform === 'win32' ? 'junction' : 'dir');
 
   const before = treeReceipt(fixtureRoot);
   const first = Core.scanWorkshop(fixtureRoot, { now: '2026-07-26T00:00:00Z' });

@@ -1,6 +1,6 @@
 # AXM Verification Entry Observatory
 
-Detached `EXPERIMENTAL` candidate. It maps where verification-shaped entry
+Integrated `TEST` module. It maps where verification-shaped entry
 files and declared package scripts appear without running or approving them.
 
 ## What it owns

@@ -2,6 +2,7 @@
 'use strict';
 const assert = require('assert');
 const Bridge = require('./axm-heartbeat-verification-bridge');
+const ObservatoryDeck = require('./axm-observatory-deck-adapter');
 const PulseCore = require('../pulse/axm-body-pulse-core');
 const PulseService = require('../pulse/axm-body-pulse-service');
 
@@ -24,6 +25,14 @@ const bridge = Bridge.create({
 });
 
 (async () => {
+  assert.equal(Bridge.CHECK_DECK.length, 46);
+  assert.equal(new Set(Bridge.CHECK_DECK.map(item => item.id)).size, Bridge.CHECK_DECK.length);
+  const observatoryChecks = Bridge.CHECK_DECK.filter(item => item.id.startsWith('observatory-'));
+  assert.equal(observatoryChecks.length, 18);
+  assert.deepEqual(observatoryChecks.map(item => item.id), ObservatoryDeck.REVIEWED_MODULES.map(item => 'observatory-' + item.id));
+  assert(observatoryChecks.every(item => item.args[0] === ObservatoryDeck.RUNNER && item.repairAuthority === 'NONE'));
+  const fourWindowCoverage = new Set([1, 2, 3, 4].flatMap(sequence => Bridge.selectedChecks(sequence).map(item => item.id)));
+  assert.equal(fourWindowCoverage.size, Bridge.CHECK_DECK.length, 'four rotating windows must cover the full deck');
   const first = await bridge.onBeat({ beatId: 'beat-1', sequence: 1, kind: 'SCHEDULED' });
   assert.equal(first.status, 'PASS');
   assert.equal(first.checks.length, 15);

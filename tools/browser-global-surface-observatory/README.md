@@ -1,6 +1,6 @@
 # AXM Browser Global Surface Observatory
 
-Detached `EXPERIMENTAL` candidate. It consumes `axm.entry-resource-graph/v1`, rechecks every source hash, and maps explicit `window` / `globalThis` text patterns without loading a browser.
+Integrated `TEST` module. It consumes `axm.entry-resource-graph/v1`, rechecks every source hash, and maps explicit `window` / `globalThis` text patterns without loading a browser.
 
 It distinguishes definitions, `Object.defineProperty`, references, deletions, literal or same-file-constant bracket names, and unresolved dynamic names. Exact definitions in more than one source ownership scope form a review group. That group is evidence for a question, not proof of a collision.
 

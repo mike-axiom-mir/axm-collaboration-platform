@@ -101,7 +101,7 @@ try {
   module(fixtureRoot, 'contract-unknown', {
     accepts: ['axm.unknown/v1']
   }, null);
-  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'single'), path.join(fixtureRoot, 'tools', 'linked-single'));
+  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'single'), path.join(fixtureRoot, 'tools', 'linked-single'), process.platform === 'win32' ? 'junction' : 'dir');
 
   const before = treeReceipt(fixtureRoot);
   const first = Core.scanWorkshop(fixtureRoot, { now: '2026-07-26T00:00:00Z' });
