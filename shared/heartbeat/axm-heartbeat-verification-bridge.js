@@ -6,6 +6,7 @@ const STATE_SCHEMA = 'axm.heartbeat-verification.state/v1';
 const MODULE_ID = 'heartbeat-verifier';
 const MAX_CHECKS_PER_WINDOW = 15;
 const WINDOW_MS = 3600000;
+const WINDOW_JITTER_TOLERANCE_MS = 1000;
 const RUN_LIMIT = 96;
 const CHECK_TIMEOUT_MS = 120000;
 
@@ -102,7 +103,7 @@ function create(options) {
     let state = read();
     const stamp = now();
     if (!beat || beat.kind !== 'SCHEDULED') return { started: false, reason: 'manual-beats-do-not-spend-verification-pulses' };
-    if (state.lastWindowAt && stamp - Date.parse(state.lastWindowAt) < WINDOW_MS) return { started: false, reason: 'fifteen-per-hour-cap' };
+    if (state.lastWindowAt && stamp - Date.parse(state.lastWindowAt) < WINDOW_MS - WINDOW_JITTER_TOLERANCE_MS) return { started: false, reason: 'fifteen-per-hour-cap' };
     const pulseStatus = ensureModule();
     if (pulseStatus.mode !== 'ACTIVE' && pulseStatus.mode !== 'CONSERVE') {
       state.lastWindowAt = nowIso(stamp);
@@ -186,4 +187,4 @@ function create(options) {
   return { onBeat, status, selectedChecks, MODULE_ID, MAX_CHECKS_PER_WINDOW, CHECK_DECK: clone(CHECK_DECK) };
 }
 
-module.exports = { create, STATE_SCHEMA, MODULE_ID, MAX_CHECKS_PER_WINDOW, WINDOW_MS, CHECK_DECK: clone(CHECK_DECK), selectedChecks };
+module.exports = { create, STATE_SCHEMA, MODULE_ID, MAX_CHECKS_PER_WINDOW, WINDOW_MS, WINDOW_JITTER_TOLERANCE_MS, CHECK_DECK: clone(CHECK_DECK), selectedChecks };

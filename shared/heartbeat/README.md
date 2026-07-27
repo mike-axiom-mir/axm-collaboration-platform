@@ -40,3 +40,7 @@ code, duration, and diagnostic summary. Body Pulse also retains one completion
 receipt per granted test. These receipts prove only the named deterministic
 check at that time. The verifier may record findings, but it has no file-editing
 or promotion authority.
+
+The rolling-hour guard permits up to one second of scheduler jitter so an
+on-time anchored beat is not skipped merely because its timer is observed a few
+milliseconds early. Beats substantially earlier than one hour remain held.

@@ -32,9 +32,10 @@ const bridge = Bridge.create({
   assert.equal(first.evidenceAuthority, 'NAMED_DETERMINISTIC_CHECKS_ONLY');
   const held = await bridge.onBeat({ beatId: 'beat-2', sequence: 2, kind: 'SCHEDULED' });
   assert.equal(held.reason, 'fifteen-per-hour-cap');
-  clock += 3600000;
+  clock += Bridge.WINDOW_MS - 500;
   const second = await bridge.onBeat({ beatId: 'beat-2', sequence: 2, kind: 'SCHEDULED' });
   assert.equal(second.status, 'PASS');
+  assert.equal(second.checks.length, 15, 'sub-second scheduler jitter must not skip an hourly window');
   assert.notDeepEqual(first.checks.map(item => item.checkId), second.checks.map(item => item.checkId));
   const manual = await bridge.onBeat({ beatId: 'beat-manual', sequence: 3, kind: 'MANUAL' });
   assert.equal(manual.reason, 'manual-beats-do-not-spend-verification-pulses');
