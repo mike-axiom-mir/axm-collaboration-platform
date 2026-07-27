@@ -121,7 +121,7 @@ start-hub.sh (mac/linux). Same as your START_AXM.bat but it opens
 Run checks from inside the hub: add the Runner module (＋ Modules → Add).
 Buttons for Run verify, Run verify-plus, Health check — output shows inline,
 no terminal. This needs one small route in server.js; it is OPT-IN and was
-NOT added for you. See SERVER_PATCH.txt for the exact block to paste and why
+NOT added for you. See docs/history/root-reports/SERVER_PATCH.txt for the exact block to paste and why
 it's safe (allowlist: verify / verify-plus / health only — no arbitrary
 commands, no shell). Until you paste it, the Runner shows a note explaining
 this and everything else keeps working.

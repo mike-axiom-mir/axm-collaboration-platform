@@ -1,17 +1,50 @@
-# AXM Workshop security posture
+# Security
 
-As of 2026-07-23, the core Workshop server defaults to `127.0.0.1`. Optional bridges, release adapters, source connectors, radio/Spotify features, device handoff, and multiplayer transports have separate explicit network surfaces. “Offline-first” does not mean “the entire tree can never make a network request.” It means the core remains useful without a network and network authority stays declared and bounded.
+AXM Workshop is an experimental local-first system, not a production security
+certification. The core server binds to `127.0.0.1` by default. Optional
+bridges, source connectors, device handoff, multiplayer transports, and machine
+execution are separate permission surfaces.
+
+## Report a vulnerability privately
+
+Do **not** place secrets, exploit details, private paths, or personal data in a
+public issue. Use GitHub's
+[private vulnerability report](https://github.com/mike-axiom-mir/axm-collaboration-platform/security/advisories/new).
+
+For ordinary non-sensitive bugs, use the repository's Bug Report template.
+
+## Supported public line
+
+Security fixes target the current `main` branch and newest experimental
+prerelease. Older public test tags are historical evidence and may not receive
+backports.
 
 ## Secrets
 
-Provider keys enter processes through environment variables such as `ANTHROPIC_API_KEY` and `OPENAI_API_KEY`. Browser tools do not receive those values. The local bridge keeps a random door token in `bridge/bridge-token.txt`; it and local override files are excluded by `.gitignore`. Do not copy tokens, keys, `.env` files, provider authentication stores, or private state into saves, packages, reports, or public releases.
+Provider keys enter local processes through environment variables such as
+`ANTHROPIC_API_KEY` and `OPENAI_API_KEY`. Browser tools do not receive those
+values. The local bridge token and local override files are excluded from public
+packages.
 
-The honest no-key behavior is an unavailable provider route. It must never become a silent success, guessed response, or “AI connected” claim.
+Never copy tokens, keys, `.env` files, provider authentication stores, private
+state, logs, or raw session history into issues, saves, packages, or reports.
+The honest no-key behavior is an unavailable provider route—not a silent
+success, guessed response, or false “AI connected” claim.
 
-## Binding and egress
+## Binding and network access
 
-See [docs/PORTS.md](docs/PORTS.md) for the reviewed default port map and explicit LAN exceptions. Any non-loopback listener is a separate capability requiring deliberate startup and a bounded lifetime. Source and deployment adapters use allowlisted HTTPS routes and explicit review gates; they are not proof that the core Hub itself needs internet access.
+See [`docs/PORTS.md`](docs/PORTS.md) for the reviewed listener map and explicit
+LAN exceptions. Any non-loopback listener is a separate capability requiring
+deliberate startup, authentication review, and a bounded lifetime.
+
+“Local-first” does not mean the entire tree can never make a network request.
+It means the core remains useful locally and network authority stays declared.
+The Windows bootstrap, optional AI providers, connectors, and update routes have
+their own visible network boundaries.
 
 ## Dependency and release checks
 
-`package-lock.json` pins installed package versions. Dependency advisories require an online `npm audit` or a maintained offline advisory database; neither is fabricated by the local verifier. Vendored-library digest locking remains an open roadmap item. Public release still requires its own digest review and signing gates.
+`package-lock.json` pins installed package versions. Dependency advisories
+require an online `npm audit` or maintained advisory database; AXM does not
+fabricate that result. Every public release also requires its own inventory,
+public-safety scan, pull-request checks, and receiver launch evidence.
