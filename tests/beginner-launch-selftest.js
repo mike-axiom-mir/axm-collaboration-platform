@@ -31,6 +31,15 @@ const jspdfLoader = read('shared/asset-hands/load-jspdf.js');
 const optionalModule = read('shared/asset-hands/optional-node-module.js');
 const candidateStager = read('scripts/stage-public-candidate.js');
 
+function availablePowerShell() {
+  const candidates = process.platform === 'win32' ? ['powershell.exe', 'pwsh.exe'] : ['pwsh', 'powershell'];
+  for (const executable of candidates) {
+    const probe = childProcess.spawnSync(executable, ['-NoProfile', '-NonInteractive', '-Command', '$PSVersionTable.PSVersion.Major'], { encoding:'utf8', windowsHide:true });
+    if (!probe.error && probe.status === 0) return executable;
+  }
+  return null;
+}
+
 check(/cd \/d "%~dp0"/i.test(launcher), 'launcher anchors itself to the extracted Workshop folder');
 check(/runtime\\node\\node\.exe/i.test(launcher), 'launcher supports a bundled portable Node runtime');
 check(/where node/i.test(launcher), 'launcher falls back to an installed Node runtime');
@@ -53,10 +62,15 @@ check(/allowedMissingPackages/.test(optionalModule) && /MODULE_NOT_FOUND/.test(o
 check(/Planner\.collectFiles/.test(candidateStager) && /destination already exists/.test(candidateStager), 'clean-launch proof stages the same public-policy inventory into a separate empty candidate');
 check(/spawn\((['"])explorer\.exe\1,\s*\[url\]/.test(server), 'Windows browser opening avoids shell-built URL commands');
 
+const powerShell = availablePowerShell();
 for (const relative of ['scripts/bootstrap-windows-runtime.ps1', 'tests/windows-clean-launch-smoke.ps1']) {
+  if (!powerShell) {
+    console.log('SKIP  ' + relative + ' parse check needs a PowerShell runtime; the Windows clean-launch job remains authoritative');
+    continue;
+  }
   const absolute = path.join(root, relative).replace(/'/g, "''");
   const command = "$errors=$null;[void][System.Management.Automation.Language.Parser]::ParseFile('" + absolute + "',[ref]$null,[ref]$errors);if($errors.Count){$errors|ForEach-Object{$_.Message};exit 1}";
-  const parsed = childProcess.spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', command], { encoding:'utf8', windowsHide:true });
+  const parsed = childProcess.spawnSync(powerShell, ['-NoProfile', '-NonInteractive', '-Command', command], { encoding:'utf8', windowsHide:true });
   check(parsed.status === 0, relative + ' parses as PowerShell');
 }
 
