@@ -29,6 +29,9 @@ assert.equal(status.gates.first_time_human_test.state, 'NOT_RUN');
 assert(proofs.claims.every(row => row.evidence.length && row.does_not_prove.length));
 assert(read('AXM_DISCOVERY_ROOT.md').includes('registry/capabilities.jsonl'));
 assert(read('AI_START_HERE.md').includes('registry/public-status.json'));
+const attributes = read('.gitattributes');
+assert(attributes.includes('registry/*.json text eol=lf'), 'generated JSON registries must be LF-stable on Windows');
+assert(attributes.includes('registry/*.jsonl text eol=lf'), 'generated JSONL registries must be LF-stable on Windows');
 
 const generated = childProcess.spawnSync(process.execPath, ['scripts/generate-public-discovery.js', '--verify'], {
   cwd: root,
