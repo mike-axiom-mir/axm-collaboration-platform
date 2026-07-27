@@ -30,5 +30,17 @@ pure core accepts an injected clock, so cadence and coalescing are deterministic
 under test. The Node service owns the one shared timer; organs must not create
 private scheduling loops. After the first five-check window completed in 2.3
 seconds, Mike explicitly raised the verification bridge to ten allow-listed
-deterministic checks per rolling hour. It records repair
-findings but has no file-editing authority.
+deterministic checks per rolling hour. Two different ten-check windows then
+passed 10/10 in 2.25 and 3.77 seconds. Mike explicitly authorized the next
+gradual step to fifteen allow-listed deterministic checks per rolling hour.
+
+Each window is retained in `state/platform-heartbeat/verification.json` as a
+bounded evidence receipt containing the beat ID, named check, status, exit
+code, duration, and diagnostic summary. Body Pulse also retains one completion
+receipt per granted test. These receipts prove only the named deterministic
+check at that time. The verifier may record findings, but it has no file-editing
+or promotion authority.
+
+The rolling-hour guard permits up to one second of scheduler jitter so an
+on-time anchored beat is not skipped merely because its timer is observed a few
+milliseconds early. Beats substantially earlier than one hour remain held.

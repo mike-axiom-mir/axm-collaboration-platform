@@ -4,8 +4,9 @@ const childProcess = require('child_process');
 
 const STATE_SCHEMA = 'axm.heartbeat-verification.state/v1';
 const MODULE_ID = 'heartbeat-verifier';
-const MAX_CHECKS_PER_WINDOW = 10;
+const MAX_CHECKS_PER_WINDOW = 15;
 const WINDOW_MS = 3600000;
+const WINDOW_JITTER_TOLERANCE_MS = 1000;
 const RUN_LIMIT = 96;
 const CHECK_TIMEOUT_MS = 120000;
 
@@ -102,7 +103,7 @@ function create(options) {
     let state = read();
     const stamp = now();
     if (!beat || beat.kind !== 'SCHEDULED') return { started: false, reason: 'manual-beats-do-not-spend-verification-pulses' };
-    if (state.lastWindowAt && stamp - Date.parse(state.lastWindowAt) < WINDOW_MS) return { started: false, reason: 'ten-per-hour-cap' };
+    if (state.lastWindowAt && stamp - Date.parse(state.lastWindowAt) < WINDOW_MS - WINDOW_JITTER_TOLERANCE_MS) return { started: false, reason: 'fifteen-per-hour-cap' };
     const pulseStatus = ensureModule();
     if (pulseStatus.mode !== 'ACTIVE' && pulseStatus.mode !== 'CONSERVE') {
       state.lastWindowAt = nowIso(stamp);
@@ -114,7 +115,7 @@ function create(options) {
     const checks = selectedChecks(beat.sequence);
     const goalId = 'heartbeat-verification-' + beat.sequence;
     options.bodyPulse.goal({ goalId, moduleId: MODULE_ID, title: 'Heartbeat verification window #' + beat.sequence, priority: 82, maxPulses: MAX_CHECKS_PER_WINDOW, createdBy: 'mike-authorized-heartbeat', requiresReview: true });
-    const run = { beatId: beat.beatId, beatSequence: beat.sequence, goalId, startedAt: nowIso(stamp), completedAt: null, status: 'RUNNING', reason: 'ten-check-window', checks: [] };
+    const run = { beatId: beat.beatId, beatSequence: beat.sequence, goalId, startedAt: nowIso(stamp), completedAt: null, status: 'RUNNING', reason: 'fifteen-check-window', evidenceAuthority: 'NAMED_DETERMINISTIC_CHECKS_ONLY', checks: [] };
     state.running = true;
     state.activeBeatId = beat.beatId;
     state.lastWindowAt = nowIso(stamp);
@@ -186,4 +187,4 @@ function create(options) {
   return { onBeat, status, selectedChecks, MODULE_ID, MAX_CHECKS_PER_WINDOW, CHECK_DECK: clone(CHECK_DECK) };
 }
 
-module.exports = { create, STATE_SCHEMA, MODULE_ID, MAX_CHECKS_PER_WINDOW, WINDOW_MS, CHECK_DECK: clone(CHECK_DECK), selectedChecks };
+module.exports = { create, STATE_SCHEMA, MODULE_ID, MAX_CHECKS_PER_WINDOW, WINDOW_MS, WINDOW_JITTER_TOLERANCE_MS, CHECK_DECK: clone(CHECK_DECK), selectedChecks };
