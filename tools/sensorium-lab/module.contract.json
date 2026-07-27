@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "sensorium-lab",
+  "version": "v1.4.0",
+  "provides": ["canonical-sense-status-view", "capability-and-hold-discovery", "zero-retention-health", "synthetic-status-simulator"],
+  "consumes": ["axm.sensorium-lab-state/v1", "axm.sensorium-runtime-registry/v2", "axm.sensorium-conformance-report/v3"],
+  "permissions": [],
+  "handoffs": {"emits": ["browser-local:axm.sensorium-lab-simulation/v1"], "accepts": ["axm.sensorium-lab-state/v1", "hub:init"]},
+  "lifecycle": {"state_owner": "filesystem", "reload": "reset", "disconnect": "graceful-degrade", "cleanup": "automatic"},
+  "boundaries": {
+    "writes": ["browser-local:axm.sensorium-lab.config.v1:display-preferences-only"],
+    "refuses": ["canonical-state-write", "authority-storage", "expired-authority-restore", "capture", "observation", "permission-change", "automatic-action", "install", "publish", "promote", "source-delete", "synthetic-state-as-proof"]
+  }
+}

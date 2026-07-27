@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "ai-team",
-  "version": "v1.6",
+  "version": "v1.8",
   "provides": [
     "multi-model-collaboration-room",
     "agent-task-and-handoff-views",
@@ -26,7 +26,10 @@
     "recommendation-only-specialist-router",
     "mirror-observable-learning-view",
     "shared-live-technical-ground-truth-view",
-    "task-focused-no-guessing-ai-briefing"
+    "task-focused-no-guessing-ai-briefing",
+    "bounded-orientation-packets",
+    "typed-boundary-register",
+    "orientation-reentry-summary"
   ],
   "consumes": [
     "service:agent-command-center",
@@ -41,15 +44,23 @@
     "service:shell-guardian",
     "service:technical-glasses",
     "workshop:presence-notices",
-    "workshop:connector-status"
+    "workshop:connector-status",
+    "service:orientation-core",
+    "axm.ai-repair-design-request/v1"
   ],
   "permissions": [],
   "handoffs": {
-    "emits": ["axm.collaboration-review/v1", "axm.model-comparison-review/v1", "axm.exploration-proposal/v1", "axm.specialist-result/v1", "axm.technical-glasses/v1"],
-    "accepts": ["axm.collaboration-notice/v1", "axm.ai-team-prompt/v1", "axm.specialist-checkout/v1", "plain-text/task-focus", "hub:init", "hub:settings:value"]
+    "emits": ["axm.collaboration-review/v1", "axm.model-comparison-review/v1", "axm.exploration-proposal/v1", "axm.specialist-result/v1", "axm.technical-glasses/v1", "axm.orientation-packet/v0.1", "axm.orientation-reentry/v0.1"],
+    "accepts": ["axm.collaboration-notice/v1", "axm.ai-team-prompt/v1", "axm.specialist-checkout/v1", "axm.orientation-packet/v0.1", "axm.ai-repair-design-request/v1", "plain-text/task-focus", "hub:init", "hub:settings:value"]
+  },
+  "lifecycle": {
+    "state_owner": "mixed",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
   },
   "boundaries": {
-    "writes": ["browser-local:ai-team-workspace", "browser-local:dataset-and-training-ledger", "local-service:exploration-garden", "local-service:specialist-checkouts", "workshop:notice-acknowledgement", "bridge:local-agent-pause"],
-    "refuses": ["automatic-specialist-checkout", "automatic-skill-activation", "automatic-agent-start-from-recommendation", "hidden-screen-capture", "capability-bridge-as-permission-bypass", "specialist-as-identity-replacement", "specialist-permission-escalation", "specialist-as-independent-review", "silent-notice-approval", "automatic-wisdom-promotion", "automatic-exploration-installation", "connector-memory-merging", "automatic-guardian-reset", "connector-credential-access", "unbounded-agent-autonomy", "chat-memory-as-technical-authority", "readme-as-technical-authority", "technical-glasses-as-action-authority"]
+    "writes": ["browser-local:ai-team-workspace", "browser-local:orientation-ledger", "browser-local:dataset-and-training-ledger", "local-service:exploration-garden", "local-service:specialist-checkouts", "workshop:notice-acknowledgement", "bridge:local-agent-pause"],
+    "refuses": ["automatic-orientation-action", "automatic-consensus", "automatic-shared-knowledge-rewrite", "orientation-as-authority-transfer", "automatic-specialist-checkout", "automatic-skill-activation", "automatic-agent-start-from-recommendation", "hidden-screen-capture", "capability-bridge-as-permission-bypass", "specialist-as-identity-replacement", "specialist-permission-escalation", "specialist-as-independent-review", "silent-notice-approval", "automatic-wisdom-promotion", "automatic-exploration-installation", "connector-memory-merging", "automatic-guardian-reset", "connector-credential-access", "unbounded-agent-autonomy", "chat-memory-as-technical-authority", "readme-as-technical-authority", "technical-glasses-as-action-authority"]
   }
 }

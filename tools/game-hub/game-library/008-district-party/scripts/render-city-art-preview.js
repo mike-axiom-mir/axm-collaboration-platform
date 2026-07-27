@@ -109,14 +109,14 @@ async function main() {
   const cityArt = readJson('data/city-art.json');
   if (cityArt.palette) map.palette = { ...map.palette, ...cityArt.palette };
   const EntityRenderer = rendererClass();
-  const renderer = new EntityRenderer(); renderer.setAssets(await assets()); renderer.setCityArt(cityArt);
+  const renderer = new EntityRenderer(); renderer.setAssets(await assets()); renderer.setCityArt(cityArt); renderer.setPresentationClock(() => 0);
   await renderView({
     file: 'tilburg-city-overview.png', width: 1800, height: 1200, centre: { x: 6144, y: 4096 }, zoom: 1800 / 12288,
-    title: 'AXM DISTRICT PARTY · TILBURG AFTERGLOW', subtitle: 'Complete 12,288 × 8,192 world · 96 chunk overview',
+    title: 'AXM DISTRICT PARTY · TILBURG STREETSCAPE FOUNDATION', subtitle: 'Complete 12,288 × 8,192 world · 96 chunk overview · v0.3.0',
   }, renderer, map, cityArt);
   await renderView({
     file: 'tilburg-centre-art-pass.png', width: 1440, height: 900, centre: { x: 6264, y: 4024 }, zoom: .95,
-    title: 'CITY CENTRE ART PASS', subtitle: 'Road markings · roof massing · central plaza · district wayfinding',
+    title: 'CITY CENTRE STREETSCAPE', subtitle: 'Source-aligned roads · connected roofs · central plaza · district wayfinding',
     actors: [
       { slot: 1, partyId: 'party_a', displayName: 'P1', alive: true, position: { x: 6180, y: 4080 }, facing: { x: 1, y: 0 }, velocity: { x: 0, y: 0 } },
       { slot: 2, partyId: 'party_a', displayName: 'P2', alive: true, position: { x: 6250, y: 4120 }, facing: { x: 0, y: -1 }, velocity: { x: 0, y: 0 } },

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.game-fsm/v1",
+  "title": "AXM portable game FSM",
+  "type": "object",
+  "required": ["schema", "id", "initial", "states"],
+  "properties": {
+    "schema": {"const": "axm.game-fsm/v1"},
+    "id": {"type": "string", "minLength": 1},
+    "initial": {"type": "string", "minLength": 1},
+    "states": {"type": "object", "minProperties": 1}
+  },
+  "additionalProperties": false,
+  "$comment": "Executable guards and actions are not embedded. Transitions reference handler names supplied separately by the host. Runtime validation additionally verifies targets and handler shapes."
+}

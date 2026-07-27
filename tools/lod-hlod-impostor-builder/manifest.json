@@ -1,0 +1,56 @@
+{
+  "id": "lod-hlod-impostor-builder",
+  "name": "LOD, HLOD & Impostor Builder",
+  "rank": 6,
+  "phase": "P0",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "Create",
+  "layer": "create",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "lod",
+    "hlod",
+    "impostor",
+    "performance",
+    "mesh",
+    "streaming",
+    "offline"
+  ],
+  "uses": [
+    "mesh-retopology-optimizer",
+    "local-3d-game-runtime",
+    "canvas",
+    "export"
+  ],
+  "permissions": [
+    "export"
+  ],
+  "actions": [
+    "build a bounded four-level LOD family",
+    "inspect requested versus achieved reduction",
+    "render an eight-view local impostor atlas",
+    "emit deterministic HLOD grouping metadata"
+  ],
+  "accepts": [
+    "model/gltf-binary",
+    "axm.lod-family-request/v1"
+  ],
+  "produces": [
+    "axm.lod-family/v1",
+    "axm.lod-family-verification/v1",
+    "image/rgba"
+  ],
+  "readiness": [
+    "mesh-retopology-optimizer",
+    "human-pop-review",
+    "export"
+  ],
+  "summary": "Build bounded LOD0–LOD3 families, screen-error transitions, eight-view local impostors, and digest-bound HLOD grouping metadata for buildings, vehicles, foliage, and characters.",
+  "notes": "When topology protections prevent a requested reduction the level is marked error-constrained. A rendered impostor atlas proves directional silhouette data, not final textured beauty."
+}

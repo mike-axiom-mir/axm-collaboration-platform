@@ -1,0 +1,17 @@
+{
+  "schema": "axm.verification-category-pack/v1",
+  "id": "publish",
+  "name": "Publishing",
+  "purpose": "Verify packaging, secrets, rights, attribution, digests, installation and restoration before external release.",
+  "native_claim_kinds": ["existence", "static-structure", "authorization", "transport", "persistence", "interaction-journey"],
+  "never_claims": ["legal-certification-without-qualified-review", "beginner-usability-from-a-build-log"],
+  "default_risk": "high",
+  "baseline_claims": [
+    { "id": "publish.package", "need": "The package inventory, version and digests match the released artifact.", "evidence": "static-structure" },
+    { "id": "publish.secrets", "need": "Private paths, credentials, caches and raw logs are absent.", "evidence": "authorization" },
+    { "id": "publish.rights", "need": "Source, licence and attribution records cover distributable assets.", "evidence": "authorization" },
+    { "id": "publish.beginner-run", "need": "A clean beginner machine can install, launch and reach the intended hub.", "evidence": "interaction-journey" },
+    { "id": "publish.update-rollback", "need": "Upgrade, delta and rollback paths preserve user-owned state.", "evidence": "persistence" },
+    { "id": "publish.transport", "need": "The downloaded bytes match the reviewed bytes.", "evidence": "transport" }
+  ]
+}

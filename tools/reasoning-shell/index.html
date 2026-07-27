@@ -30,7 +30,7 @@
   textarea,select,input{width:100%;background:var(--ink);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px;font:inherit;margin-top:6px}
   textarea{min-height:64px}
   .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  button{font:inherit;font-size:13px;cursor:pointer;border-radius:9px;padding:9px 13px;border:1px solid var(--line);background:#1f2731;color:var(--text)}
+  button{font:inherit;font-size:13px;cursor:pointer;border-radius:9px;padding:9px 13px;border:1px solid var(--line);background:#1f2731;color:var(--text);min-height:44px}
   button.go{border-color:#2c6047;color:var(--green)} button.warn{border-color:#5a2c26;color:var(--red)} button.alt{border-color:#4b3a72;color:var(--purple)}
   ul{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
   li{background:#1f2731;border:1px solid var(--line);border-radius:11px;padding:10px 12px;font-size:13px;white-space:pre-wrap}
@@ -40,7 +40,7 @@
 </style>
 </head>
 <body>
-<div class="status" id="boot">starting…</div>
+<div class="status" id="boot" role="status" aria-live="polite">starting…</div>
 <div class="eyebrow">experimental branch · not canon · suggestion, not truth</div>
 <h1>Reasoning Shell</h1>
 <div class="branch">BRANCH RULES: same AXM.ask · same AXMGate · same roots. The shell proposes steps and
@@ -51,6 +51,9 @@ profile by itself. If no AI is connected, the shell still works as a manual step
   <b style="font-size:13px">1 · Profile + task</b>
   <select id="profileSel"></select>
   <div class="mono" id="profileInfo"></div>
+  <label>Recorded condition
+    <select id="conditionSel"><option value="shell-on">Shell on (profile-guided)</option><option value="shell-off">Shell off (comparison baseline)</option></select>
+  </label>
   <textarea id="task" placeholder="The task for the model (one task per session)…"></textarea>
   <div class="row"><button class="go" id="startBtn">Start session</button>
   <button class="alt" id="aarBtn" disabled>Finish → After-Action Report</button></div>
@@ -58,7 +61,7 @@ profile by itself. If no AI is connected, the shell still works as a manual step
 
 <div class="panel">
   <b style="font-size:13px">2 · Step loop</b> <span class="mono" id="stepCount"></span>
-  <ul id="feed"></ul>
+  <ul id="feed" aria-live="polite" aria-relevant="additions"></ul>
   <div class="row">
     <button class="go" id="stepBtn" disabled>Run next step (via AXM.ask)</button>
     <button id="ckOkBtn" disabled>Checkpoint: looks right</button>
@@ -71,7 +74,16 @@ profile by itself. If no AI is connected, the shell still works as a manual step
 <div class="panel">
   <b style="font-size:13px">3 · Session record</b>
   <div class="row"><button id="expBtn" disabled>Export session log (.json)</button></div>
-  <div class="mono" id="tweakBox"></div>
+  <div class="mono" id="tweakBox" aria-live="polite"></div>
+</div>
+
+<div class="panel">
+  <b style="font-size:13px">4 · Compare two exported sessions</b>
+  <p class="hint">Local-only measurement aid: select one shell-on and one shell-off session export. It compares recorded checkpoints and repairs; it does not rate model quality or change profiles.</p>
+  <label>Shell-on export <input id="shellOnFile" type="file" accept="application/json,.json" /></label>
+  <label>Shell-off export <input id="shellOffFile" type="file" accept="application/json,.json" /></label>
+  <div class="row"><button id="compareBtn">Compare logs locally</button></div>
+  <div class="mono" id="comparisonBox" role="status" aria-live="polite"></div>
 </div>
 
 <script>
@@ -79,11 +91,23 @@ profile by itself. If no AI is connected, the shell still works as a manual step
 const SCHEMAS = {
   checkpoint: { format:1, fields:['step','claim','proofLabel','uncertainty','verdict','ts'] },
   route:      { format:1, fields:['step','chosen','rejected'] },  /* rejected[]: {alt, rejection_reason: NON-EMPTY} */
-  session:    { format:1, fields:['profileId','task','steps','checkpoints','routes','startedTs'] },
+  session:    { format:1, fields:['profileId','condition','task','steps','checkpoints','routes','startedTs'] },
   afterAction:{ format:1, fields:['sessionSummary','fakeDoneSuspected','contextLossSuspected','repairs','tweakProposal'] },
   tweak:      { format:1, fields:['profileId','suggestedChange','evidence','status'] }   /* status is ALWAYS 'proposal' here */
 };
 function validRoute(r){ return r.rejected.every(x => typeof x.rejection_reason==='string' && x.rejection_reason.trim().length>0); }
+function sessionMetrics(session){
+  const s = session && session.session ? session.session : session;
+  if(!s || !Array.isArray(s.checkpoints) || !Array.isArray(s.routes) || !Array.isArray(s.steps)) throw new Error('not a Reasoning Shell session export');
+  return { condition:s.condition || 'unknown', accepted:s.steps.length, repairs:s.routes.length,
+    unlabeled:s.checkpoints.filter(c=>!c.proofLabel || c.proofLabel==='unlabeled').length,
+    checkpoints:s.checkpoints.length };
+}
+function compareMetrics(on, off){
+  return 'Recorded comparison only — first export ('+on.condition+'): '+on.accepted+' accepted, '+on.repairs+' repairs, '+on.unlabeled+'/'+on.checkpoints+' unlabeled proofs; '
+    +'second export ('+off.condition+'): '+off.accepted+' accepted, '+off.repairs+' repairs, '+off.unlabeled+'/'+off.checkpoints+' unlabeled proofs.';
+}
+function readExport(file){ return file.text().then(text=>JSON.parse(text)); }
 
 let PROFILES = {}, S = null;   /* S = live session */
 const $ = id => document.getElementById(id);
@@ -95,6 +119,12 @@ function post(txt, tag){ const li=document.createElement('li');
 
 function stepPrompt(){
   const p = PROFILES[S.profileId];
+  if(S.condition==='shell-off') return [
+    'TASK: ' + S.task,
+    'COMPLETED STEPS SO FAR: ' + (S.steps.length ? S.steps.map((s,i)=>(i+1)+'. '+s.summary).join(' | ') : 'none'),
+    'Now do ONLY the next single step.',
+    'End with exactly: CLAIM: <one sentence> | PROOF: source/test/observation/none | UNCERTAINTY: low/medium/high'
+  ].join('\n');
   return [p.systemFrame,
     'TASK: ' + S.task,
     'COMPLETED STEPS SO FAR: ' + (S.steps.length ? S.steps.map((s,i)=>(i+1)+'. '+s.summary).join(' | ') : 'none'),
@@ -164,11 +194,11 @@ async function afterAction(){
 
 $('startBtn').onclick = () => {
   const task = $('task').value.trim(); if(!task) return alert('Give the model one task first.');
-  S = { format:1, profileId: $('profileSel').value, task, steps:[], checkpoints:[], routes:[], startedTs: Date.now() };
-  gate('shell.session.start', { profile:S.profileId });
+  S = { format:1, profileId: $('profileSel').value, condition:$('conditionSel').value, task, steps:[], checkpoints:[], routes:[], startedTs: Date.now() };
+  gate('shell.session.start', { profile:S.profileId, condition:S.condition });
   $('feed').innerHTML=''; $('tweakBox').textContent='';
   $('stepBtn').disabled=false; $('aarBtn').disabled=true; $('expBtn').disabled=true;
-  post('Session started · profile: '+PROFILES[S.profileId].name,'start');
+  post('Session started · '+S.condition+(S.condition==='shell-on' ? ' · profile: '+PROFILES[S.profileId].name : ' · baseline prompt (no profile frame)'),'start');
 };
 $('stepBtn').onclick = runStep;
 $('ckOkBtn').onclick = () => checkpoint('ok');
@@ -177,6 +207,14 @@ $('aarBtn').onclick = afterAction;
 $('expBtn').onclick = () => { const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify({format:1,session:S},null,2)],{type:'application/json'}));
   a.download='shell-session-'+S.startedTs+'.json'; a.click(); };
+$('compareBtn').onclick = async () => {
+  const onFile = $('shellOnFile').files[0], offFile = $('shellOffFile').files[0];
+  if(!onFile || !offFile){ $('comparisonBox').textContent='Choose both exports first.'; return; }
+  try {
+    const values = await Promise.all([readExport(onFile), readExport(offFile)]);
+    $('comparisonBox').textContent = compareMetrics(sessionMetrics(values[0]), sessionMetrics(values[1]));
+  } catch(error) { $('comparisonBox').textContent='Could not compare: '+error.message; }
+};
 
 (async () => {
   const info = await AXM.init({ id:'reasoning-shell', name:'AXM Reasoning Shell', version:'v0.1-branch' });

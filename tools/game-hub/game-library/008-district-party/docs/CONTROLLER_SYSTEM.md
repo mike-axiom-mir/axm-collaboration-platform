@@ -13,6 +13,7 @@ District Party now uses an original reusable twin-stick phone controller designe
 - A gentle response curve preserves slow precision while still reaching full movement.
 - The phone submits at 20 Hz while the authoritative city remains at 30 simulation ticks per second.
 - A four-tick host fire buffer prevents a shot released just before cooldown completion from being silently lost.
+- A quick **INVENTORY** tap preserves the inventory action; a 650 ms hold sends one party-scoped `mapToggle` presentation pulse instead.
 
 The controller does not copy another game's art, branding, layout or assets. It uses the common twin-stick interaction pattern with an original AXM interface.
 
@@ -26,7 +27,7 @@ The controller does not copy another game's art, branding, layout or assets. It 
 | Mission/results menu | Select up/down | Disabled |
 | Inventory open | Disabled | Disabled |
 
-Buttons remain for context action, a forward-fire accessibility fallback, dash/accelerate and brake/reverse. Keyboard testing uses WASD for movement, arrows for aim, Space for held fire, E for action and I for inventory.
+Buttons remain for context action, a forward-fire accessibility fallback, dash/accelerate and brake/reverse. The temporary phone layout labels **HOLD · MAP** on the Inventory button. Keyboard testing uses WASD for movement, arrows for aim, Space for held fire, E for action, I for inventory and M on the shared screen for the map.
 
 ## Reuse contract
 
@@ -36,6 +37,7 @@ Games may remap the meaning of generic intentions, but should retain these bound
 
 - `moveX`/`moveY` and `aimX`/`aimY` are separately normalized vectors.
 - `fire` is a rising-edge pulse; `attack` remains a legacy/keyboard hold field.
+- `mapToggle` is a rising-edge presentation pulse and never carries a desired map mode or gameplay state.
 - The controller sends intention only.
 - The host decides facing, cooldown, ammunition, projectile creation, hits and damage.
 - A party screen never imports or instantiates the controller module.
@@ -51,4 +53,8 @@ The optional game-local Host AI remains controller type `ai`. It may generate in
 
 ## Honest verification boundary
 
-Automated tests verify radial math, protocol sanitation, multi-vector host behavior, quick-release latching, cooldown buffering, passenger aiming, local module loading and static two-stick markup. Actual thumb comfort, different phone aspect ratios, touch sampling and Wi-Fi latency still require physical-device testing.
+Automated tests verify radial math, protocol sanitation, multi-vector host behavior, quick-release latching, map-pulse party isolation, cooldown buffering, passenger aiming, local module loading and static two-stick markup. Live browser verification covers the controller label and party-screen toggle transport. Actual long-press comfort, different phone aspect ratios, touch sampling and Wi-Fi latency still require physical-device testing.
+
+## Future hardware track
+
+The separate [Game Night controller hardware future idea](../../../../../docs/roadmaps/GAME_NIGHT_CONTROLLER_HARDWARE_FUTURE_IDEA.md) records passive-touch, direct USB-C and Bluetooth HID research routes. It is a conceptual product track, not implemented controller behavior. The current touch controller and its existing semantic input contract remain the working baseline until physical prototypes, phone compatibility and multi-player Game Night use have been tested and approved.

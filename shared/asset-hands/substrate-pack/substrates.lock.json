@@ -1,0 +1,255 @@
+{
+  "schema": "axm.external-substrate-lock/v1",
+  "version": "1.7.1",
+  "platform": "windows-x64",
+  "policy": {
+    "runtime_bytes_in_source": false,
+    "network_mode": "explicit-cli-install-only",
+    "digest_algorithm": "sha256",
+    "licence_gate": "reviewed-local-test-not-canon",
+    "automatic_execution": false
+  },
+  "entries": [
+    {
+      "id": "python-cpython",
+      "title": "CPython embeddable runtime",
+      "runtime_version": "3.13.14",
+      "kind": "runtime",
+      "source": { "publisher": "Python Software Foundation", "project_url": "https://www.python.org/", "release_url": "https://www.python.org/downloads/release/python-31314/", "asset_url": "https://www.python.org/ftp/python/3.13.14/python-3.13.14-embed-amd64.zip", "artifact_name": "python-3.13.14-embed-amd64.zip", "sha256": "90b4e5b9898b72d744650524bff92377c367f44bd5fbd09e3148656c080ad907", "size_bytes": 10964839, "allowed_hosts": ["www.python.org"] },
+      "licence": { "spdx": "PSF-2.0", "source_url": "https://docs.python.org/3/license.html", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices" },
+      "installation": { "strategy": "extract-zip", "destination": "python-cpython/3.13.14", "entrypoints": { "python": "python.exe" } },
+      "probe": { "mode": "command", "entrypoint": "python", "args": ["--version"], "version_pattern": "Python 3\\.13\\.14" },
+      "capabilities": ["execute:python313"], "provides_substrates": [], "dependencies": []
+    },
+    {
+      "id": "java-temurin-jre",
+      "title": "Eclipse Temurin OpenJDK JRE",
+      "runtime_version": "21.0.11+10",
+      "kind": "runtime",
+      "source": { "publisher": "Eclipse Adoptium", "project_url": "https://adoptium.net/", "release_url": "https://github.com/adoptium/temurin21-binaries/releases/tag/jdk-21.0.11%2B10", "asset_url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.11%2B10/OpenJDK21U-jre_x64_windows_hotspot_21.0.11_10.zip", "artifact_name": "OpenJDK21U-jre_x64_windows_hotspot_21.0.11_10.zip", "sha256": "be26677aaa20b39a62edcaab4c8857a8b76673b0f45abc0b6143b142b62717e4", "size_bytes": 49005708, "allowed_hosts": ["github.com", "release-assets.githubusercontent.com"], "signature_url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.11%2B10/OpenJDK21U-jre_x64_windows_hotspot_21.0.11_10.zip.sig" },
+      "licence": { "spdx": "GPL-2.0-only WITH Classpath-exception-2.0", "source_url": "https://adoptium.net/about/", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices" },
+      "installation": { "strategy": "extract-zip", "destination": "java-temurin-jre/21.0.11+10", "strip_prefix": "jdk-21.0.11+10-jre/", "entrypoints": { "java": "bin/java.exe" } },
+      "probe": { "mode": "command", "entrypoint": "java", "args": ["-version"], "version_pattern": "21\\.0\\.11" },
+      "capabilities": ["execute:java21"], "provides_substrates": [], "dependencies": []
+    },
+    {
+      "id": "godot",
+      "title": "Godot Engine headless runtime",
+      "runtime_version": "4.7.1-stable",
+      "kind": "runtime",
+      "source": { "publisher": "Godot Engine", "project_url": "https://godotengine.org/", "release_url": "https://github.com/godotengine/godot/releases/tag/4.7.1-stable", "asset_url": "https://github.com/godotengine/godot/releases/download/4.7.1-stable/Godot_v4.7.1-stable_win64.exe.zip", "artifact_name": "Godot_v4.7.1-stable_win64.exe.zip", "sha256": "c7a289051eaefb460b0106b60e9cd5bee0ef55fd102dcb2bed1eb356cf3d90a1", "size_bytes": 84198557, "allowed_hosts": ["github.com", "release-assets.githubusercontent.com"] },
+      "licence": { "spdx": "MIT", "source_url": "https://github.com/godotengine/godot/blob/master/LICENSE.txt", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices" },
+      "installation": { "strategy": "extract-zip", "destination": "godot/4.7.1-stable", "entrypoints": { "godot": "Godot_v4.7.1-stable_win64.exe", "godot_console": "Godot_v4.7.1-stable_win64_console.exe" } },
+      "probe": { "mode": "command", "entrypoint": "godot_console", "args": ["--version"], "version_pattern": "4\\.7\\.1" },
+      "capabilities": ["import:godot-resource", "run:godot-headless", "validate:godot-project"], "provides_substrates": ["godot-runtime"], "dependencies": []
+    },
+    {
+      "id": "blender",
+      "title": "Blender Cycles offline renderer",
+      "runtime_version": "5.2.0",
+      "kind": "runtime",
+      "source": { "publisher": "Blender Foundation", "project_url": "https://www.blender.org/", "release_url": "https://download.blender.org/release/Blender5.2/", "asset_url": "https://download.blender.org/release/Blender5.2/blender-5.2.0-windows-x64.zip", "artifact_name": "blender-5.2.0-windows-x64.zip", "sha256": "2d184b626c001692c362291911293b6a297179d618d95e9e9192c3a80318adc4", "size_bytes": 404954661, "allowed_hosts": ["download.blender.org"] },
+      "licence": { "spdx": "GPL-3.0-or-later", "source_url": "https://developer.blender.org/docs/license/", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "local-install-only-pending-human-release-review", "notes": "The portable upstream build is installed only in the machine-local substrate root. Any public redistribution must satisfy the GPL source and notice obligations." },
+      "installation": { "strategy": "extract-zip", "destination": "blender/5.2.0", "strip_prefix": "blender-5.2.0-windows-x64/", "entrypoints": { "blender": "blender.exe" } },
+      "probe": { "mode": "command", "entrypoint": "blender", "args": ["--version"], "version_pattern": "Blender 5\\.2\\.0" },
+      "capabilities": ["bake:texture", "deform:armature", "execute:blender-python", "render:cycles", "render:eevee", "simulate:rigidbody"], "provides_substrates": ["offline-renderer", "rig-runtime", "simulation-runtime", "texture-baker"], "dependencies": []
+    },
+    {
+      "id": "ffmpeg",
+      "title": "FFmpeg audio and video runtime",
+      "runtime_version": "8.1.2-essentials",
+      "kind": "runtime",
+      "source": { "publisher": "Gyan Doshi / FFmpeg project", "project_url": "https://ffmpeg.org/", "release_url": "https://github.com/GyanD/codexffmpeg/releases/tag/8.1.2", "asset_url": "https://github.com/GyanD/codexffmpeg/releases/download/8.1.2/ffmpeg-8.1.2-essentials_build.zip", "artifact_name": "ffmpeg-8.1.2-essentials_build.zip", "sha256": "db580001caa24ac104c8cb856cd113a87b0a443f7bdf47d8c12b1d740584a2ec", "size_bytes": 109728040, "allowed_hosts": ["github.com", "release-assets.githubusercontent.com"] },
+      "licence": { "spdx": "GPL-3.0-or-later", "source_url": "https://ffmpeg.org/legal.html", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "local-install-only-pending-human-release-review", "notes": "The upstream-linked Gyan essentials build is installed only in the machine-local substrate root. Public redistribution must preserve FFmpeg and bundled-library notices and satisfy the applicable GPL source obligations." },
+      "installation": { "strategy": "extract-zip", "destination": "ffmpeg/8.1.2-essentials", "strip_prefix": "ffmpeg-8.1.2-essentials_build/", "entrypoints": { "ffmpeg": "bin/ffmpeg.exe", "ffprobe": "bin/ffprobe.exe" } },
+      "probe": { "mode": "command", "entrypoint": "ffmpeg", "args": ["-version"], "version_pattern": "ffmpeg version 8\\.1\\.2-essentials_build" },
+      "capabilities": ["decode:audio", "decode:video", "inspect:av-streams", "measure:ebu-r128", "mux:audio-video"], "provides_substrates": ["independent-audio-decoder", "independent-av-decoder", "loudness-meter", "video-muxer"], "dependencies": []
+    },
+    {
+      "id": "pyembroidery",
+      "title": "pyembroidery machine-stitch parser and simulator",
+      "runtime_version": "1.5.1",
+      "kind": "library",
+      "source": { "publisher": "EmbroidePy contributors", "project_url": "https://github.com/EmbroidePy/pyembroidery", "release_url": "https://pypi.org/project/pyembroidery/1.5.1/", "asset_url": "https://files.pythonhosted.org/packages/7a/fa/e1ffc9cf74ae0c952be6f7147abde060a68d2bb3559170914ac19eb9f854/pyembroidery-1.5.1-py2.py3-none-any.whl", "artifact_name": "pyembroidery-1.5.1-py2.py3-none-any.whl", "sha256": "bdc63706986d42fd80efb3541e0995e452eb071f36bccd9ecb4d07bf33307c79", "size_bytes": 137531, "allowed_hosts": ["files.pythonhosted.org", "pypi.org"] },
+      "licence": { "spdx": "MIT", "source_url": "https://github.com/EmbroidePy/pyembroidery/blob/main/LICENSE", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices" },
+      "installation": { "strategy": "python-wheel", "destination": "python-cpython/3.13.14", "dependency_target": "python-cpython" },
+      "probe": { "mode": "python-import", "module": "pyembroidery", "version_expression": "__import__('importlib.metadata',fromlist=['version']).version('pyembroidery')", "version_pattern": "1\\.5\\.1" },
+      "capabilities": ["parse:tajima-dst", "render:stitch-svg", "simulate:embroidery-stitches"], "provides_substrates": ["embroidery-parser-or-simulator"], "dependencies": ["python-cpython"]
+    },
+    {
+      "id": "three-mf-editor-schema",
+      "title": "3MF Editor consolidated validation schema",
+      "runtime_version": "1.0.0-fd223ea781f8",
+      "kind": "configuration",
+      "source": { "publisher": "3MF Consortium", "project_url": "https://github.com/3MFConsortium/3mf_Editor", "release_url": "https://github.com/3MFConsortium/3mf_Editor/releases/tag/v1.0.0", "asset_url": "https://codeload.github.com/3MFConsortium/3mf_Editor/zip/fd223ea781f8d593f92a6c1256c89da095a79fb9", "artifact_name": "3mf-editor-fd223ea781f8d593f92a6c1256c89da095a79fb9.zip", "sha256": "10c60c771b0c52aa70cdadf764384beac31ce250e53b19d3f245aca65985adba", "size_bytes": 12868048, "allowed_hosts": ["codeload.github.com"] },
+      "licence": { "spdx": "BSD-2-Clause", "source_url": "https://github.com/3MFConsortium/3mf_Editor/blob/v1.0.0/LICENSE", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices" },
+      "installation": { "strategy": "extract-zip", "destination": "three-mf-editor-schema/1.0.0", "strip_prefix": "3mf_Editor-fd223ea781f8d593f92a6c1256c89da095a79fb9/CLI_Interface/Example/Schema", "entrypoints": { "schema": "qli_3MF.xsd" } },
+      "probe": { "mode": "configuration", "entrypoint": "schema", "version_pattern": "3dmanufacturing/core/2015/02" },
+      "capabilities": ["schema:3mf-consolidated"], "provides_substrates": [], "dependencies": []
+    },
+    {
+      "id": "three-mf-editor",
+      "title": "3MF Consortium Editor and validation CLI",
+      "runtime_version": "1.0.0-beta-cli",
+      "kind": "validator",
+      "source": { "publisher": "3MF Consortium", "project_url": "https://github.com/3MFConsortium/3mf_Editor", "release_url": "https://github.com/3MFConsortium/3mf_Editor/releases/tag/v1.0.0", "asset_url": "https://github.com/3MFConsortium/3mf_Editor/releases/download/v1.0.0/3MFedit.jar", "artifact_name": "3MFedit.jar", "sha256": "1b9a39e07445b33272515651762fe18e0c3ee7befb63d5e21f9c44b1c2f4532e", "size_bytes": 3224722, "allowed_hosts": ["github.com", "release-assets.githubusercontent.com"] },
+      "licence": { "spdx": "BSD-2-Clause", "source_url": "https://github.com/3MFConsortium/3mf_Editor/blob/v1.0.0/LICENSE", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices", "notes": "The v1.0.0 CLI is explicitly beta. AXM does not trust its headline pass token and requires parsed error records plus positive and negative corpus evidence." },
+      "installation": { "strategy": "single-file", "destination": "three-mf-editor/1.0.0", "entrypoints": { "jar": "3MFedit.jar" } },
+      "probe": { "mode": "zip-entry", "entrypoint": "jar", "zip_entry": "com/qualitylogic/x3mf/StartUp.class", "version_pattern": "com/qualitylogic/x3mf/StartUp\\.class" },
+      "capabilities": ["validate:3mf-core", "validate:3mf-structure", "validate:3mf-xsd"], "provides_substrates": ["official-3mf-validator"], "dependencies": ["java-temurin-jre", "three-mf-editor-schema"]
+    },
+    {
+      "id": "cadquery-ocp-proxy",
+      "title": "CadQuery OCP proxy support",
+      "runtime_version": "7.9.3.1.1",
+      "kind": "library",
+      "source": { "publisher": "CadQuery contributors", "project_url": "https://github.com/CadQuery/OCP", "release_url": "https://pypi.org/project/cadquery-ocp-proxy/7.9.3.1.1/", "asset_url": "https://files.pythonhosted.org/packages/30/c0/04e9363a99fee892de2776820e3dcf04f8825b6edc9580efe3416c9465a7/cadquery_ocp_proxy-7.9.3.1.1-py3-none-any.whl", "artifact_name": "cadquery_ocp_proxy-7.9.3.1.1-py3-none-any.whl", "sha256": "ca4164ec4b54956d9fc3e68c67d555b5486cb963c2f71e18df005ba16b921c91", "size_bytes": 3322, "allowed_hosts": ["files.pythonhosted.org", "pypi.org"] },
+      "licence": { "spdx": "Apache-2.0", "source_url": "https://github.com/CadQuery/OCP/blob/master/LICENSE", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices" },
+      "installation": { "strategy": "python-wheel", "destination": "python-cpython/3.13.14", "dependency_target": "python-cpython" },
+      "probe": { "mode": "python-import", "module": "importlib.metadata", "version_expression": "importlib.metadata.version('cadquery-ocp-proxy')", "version_pattern": "7\\.9\\.3\\.1\\.1" },
+      "capabilities": ["proxy:ocp-shape"], "provides_substrates": [], "dependencies": ["python-cpython"]
+    },
+    {
+      "id": "vtk",
+      "title": "VTK runtime dependency for CadQuery OCP",
+      "runtime_version": "9.6.2",
+      "kind": "library",
+      "source": { "publisher": "VTK contributors / Kitware", "project_url": "https://vtk.org/", "release_url": "https://pypi.org/project/vtk/9.6.2/", "asset_url": "https://files.pythonhosted.org/packages/da/5b/e03640322971339899f982691396038d793ecfde8adbc208a97d501d6b8e/vtk-9.6.2-cp313-cp313-win_amd64.whl", "artifact_name": "vtk-9.6.2-cp313-cp313-win_amd64.whl", "sha256": "4e9ad047a2b658550d5099dc808b26e331a9c94c3226c28453873035b8b48b41", "size_bytes": 81307827, "allowed_hosts": ["files.pythonhosted.org", "pypi.org"] },
+      "licence": { "spdx": "BSD-3-Clause", "source_url": "https://gitlab.kitware.com/vtk/vtk/-/blob/master/Copyright.txt", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "local-install-only-pending-human-release-review", "notes": "Installed as the exact DLL/runtime dependency required by the CadQuery OCP wheel. AXM does not expose or claim VTK rendering in this bounded B-rep/STEP lane; bundled third-party notices require public-release review." },
+      "installation": { "strategy": "python-wheel", "destination": "python-cpython/3.13.14", "dependency_target": "python-cpython" },
+      "probe": { "mode": "python-import", "module": "vtkmodules", "version_expression": "__import__('importlib.metadata',fromlist=['version']).version('vtk')", "version_pattern": "9\\.6\\.2" },
+      "capabilities": ["runtime:vtk-dlls-for-ocp"], "provides_substrates": [], "dependencies": ["python-cpython", "numpy"]
+    },
+    {
+      "id": "cadquery-ocp",
+      "title": "CadQuery Open CASCADE B-rep and STEP kernel",
+      "runtime_version": "7.9.3.1.1",
+      "kind": "library",
+      "source": { "publisher": "CadQuery contributors", "project_url": "https://github.com/CadQuery/OCP", "release_url": "https://pypi.org/project/cadquery-ocp/7.9.3.1.1/", "asset_url": "https://files.pythonhosted.org/packages/74/49/17d58096dde05d49bb5af9ea061668295b1813a822975c86a52b7d74959b/cadquery_ocp-7.9.3.1.1-cp313-cp313-win_amd64.whl", "artifact_name": "cadquery_ocp-7.9.3.1.1-cp313-cp313-win_amd64.whl", "sha256": "425e8e5ebe351bb3dd5b1e01023737566acd28da191d3b9071e24e1b2dd14dae", "size_bytes": 46557671, "allowed_hosts": ["files.pythonhosted.org", "pypi.org"] },
+      "licence": { "spdx": "Apache-2.0 AND LGPL-2.1-only WITH OCCT-exception-1.0", "source_url": "https://github.com/CadQuery/OCP/blob/master/LICENSE", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "local-install-only-pending-human-release-review", "notes": "This bounded machine-local lane exposes Open CASCADE B-rep topology and STEP interchange only. CadQuery-OCP's VTK visualization dependency is intentionally not exposed or claimed; public redistribution requires review of the wrapper, OCCT and bundled third-party notices." },
+      "installation": { "strategy": "python-wheel", "destination": "python-cpython/3.13.14", "dependency_target": "python-cpython" },
+      "probe": { "mode": "python-import", "module": "OCP", "version_expression": "__import__('importlib.metadata',fromlist=['version']).version('cadquery-ocp')", "version_pattern": "7\\.9\\.3\\.1\\.1" },
+      "capabilities": ["build:brep-solid", "check:brep-validity", "export:step", "import:step", "measure:brep-topology"], "provides_substrates": ["brep-step-kernel"], "dependencies": ["python-cpython", "cadquery-ocp-proxy", "vtk"]
+    },
+    {
+      "id": "epubcheck",
+      "title": "W3C EPUBCheck",
+      "runtime_version": "5.3.0",
+      "kind": "validator",
+      "source": { "publisher": "W3C and DAISY Consortium", "project_url": "https://github.com/w3c/epubcheck", "release_url": "https://github.com/w3c/epubcheck/releases/tag/v5.3.0", "asset_url": "https://github.com/w3c/epubcheck/releases/download/v5.3.0/epubcheck-5.3.0.zip", "artifact_name": "epubcheck-5.3.0.zip", "sha256": "6c07e68584b2e2ce2f89fe06e1246dfead3eb36b46b340e7d93524f29dcff6c5", "size_bytes": 33071108, "allowed_hosts": ["github.com", "release-assets.githubusercontent.com"] },
+      "licence": { "spdx": "BSD-3-Clause", "source_url": "https://github.com/w3c/epubcheck/blob/main/LICENSE.md", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices" },
+      "installation": { "strategy": "extract-zip", "destination": "epubcheck/5.3.0", "strip_prefix": "epubcheck-5.3.0/", "entrypoints": { "jar": "epubcheck.jar" } },
+      "probe": { "mode": "command", "dependency_entrypoint": "java-temurin-jre:java", "args": ["-jar", "{entrypoint:jar}", "--version"], "version_pattern": "EPUBCheck v?5\\.3\\.0|5\\.3\\.0" },
+      "capabilities": ["validate:epub33"], "provides_substrates": ["epubcheck"], "dependencies": ["java-temurin-jre"]
+    },
+    {
+      "id": "verapdf",
+      "title": "veraPDF PDF/A and PDF/UA validator",
+      "runtime_version": "1.30.2",
+      "kind": "validator",
+      "source": { "publisher": "veraPDF Consortium", "project_url": "https://verapdf.org/", "release_url": "https://software.verapdf.org/rel/1.30", "asset_url": "https://software.verapdf.org/rel/1.30/verapdf-greenfield-1.30.2-installer.zip", "artifact_name": "verapdf-greenfield-1.30.2-installer.zip", "sha256": "6cc6341cb1af644044054b81f00a6590a7918abb18f762243de115258bcad838", "size_bytes": 32923960, "allowed_hosts": ["software.verapdf.org"], "signature_url": "https://software.verapdf.org/rel/1.30/verapdf-greenfield-1.30.2-installer.zip.asc", "signer_fingerprint": "13DD 102B 4DD6 9354 D12D E5A8 3184 8632 78B1 7FE7" },
+      "licence": { "spdx": "GPL-3.0-or-later OR MPL-2.0", "source_url": "https://github.com/veraPDF/veraPDF-apps", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "local-install-only-pending-human-release-review", "notes": "Dual-licensed upstream. Public release packaging must preserve the chosen licence and notices." },
+      "installation": { "strategy": "izpack", "destination": "verapdf/1.30.2", "entrypoints": { "verapdf": "verapdf.bat" } },
+      "probe": { "mode": "command", "entrypoint": "verapdf", "args": ["--version"], "version_pattern": "veraPDF 1\\.30\\.2" },
+      "capabilities": ["validate:pdfa", "validate:pdfua"], "provides_substrates": ["verapdf"], "dependencies": ["java-temurin-jre"]
+    },
+    {
+      "id": "numpy",
+      "title": "NumPy numerical array runtime",
+      "runtime_version": "2.5.1",
+      "kind": "library",
+      "source": { "publisher": "NumPy Developers", "project_url": "https://numpy.org/", "release_url": "https://pypi.org/project/numpy/2.5.1/", "asset_url": "https://files.pythonhosted.org/packages/10/70/800b3fca480af32df9e8ea9f3d4a0c8feb4b32d7f195d174eabbda4829ad/numpy-2.5.1-cp313-cp313-win_amd64.whl", "artifact_name": "numpy-2.5.1-cp313-cp313-win_amd64.whl", "sha256": "6c3fe51bc6a16453d452997053454f309e8e0ed7b42d6b361ce4ac8c32913d74", "size_bytes": 12425674, "allowed_hosts": ["files.pythonhosted.org", "pypi.org"] },
+      "licence": { "spdx": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0", "source_url": "https://github.com/numpy/numpy/blob/main/LICENSE.txt", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices", "notes": "The wheel includes third-party components; all bundled notices must be preserved for redistribution." },
+      "installation": { "strategy": "python-wheel", "destination": "python-cpython/3.13.14", "dependency_target": "python-cpython" },
+      "probe": { "mode": "python-import", "module": "numpy", "version_expression": "str(numpy.__version__)", "version_pattern": "2\\.5\\.1" },
+      "capabilities": ["arrays:numpy"], "provides_substrates": [], "dependencies": ["python-cpython"]
+    },
+    {
+      "id": "openimageio",
+      "title": "OpenImageIO Python runtime",
+      "runtime_version": "3.1.15.0",
+      "kind": "library",
+      "source": { "publisher": "Academy Software Foundation OpenImageIO", "project_url": "https://github.com/AcademySoftwareFoundation/OpenImageIO", "release_url": "https://github.com/AcademySoftwareFoundation/OpenImageIO/releases/tag/v3.1.15.0", "asset_url": "https://files.pythonhosted.org/packages/db/f0/aeaf22edcd799b7deec1c5ff2992fa93cd76ad2dc6659149169baabce362/openimageio-3.1.15.0-cp313-cp313-win_amd64.whl", "artifact_name": "openimageio-3.1.15.0-cp313-cp313-win_amd64.whl", "sha256": "eed8bbe8b465525b50a4c380fd5b440ef213197ccdbb81ebddc8112e2a2159be", "size_bytes": 7663331, "allowed_hosts": ["files.pythonhosted.org", "pypi.org"] },
+      "licence": { "spdx": "Apache-2.0", "source_url": "https://github.com/AcademySoftwareFoundation/OpenImageIO/blob/main/LICENSE.md", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices" },
+      "installation": { "strategy": "python-wheel", "destination": "python-cpython/3.13.14", "dependency_target": "python-cpython" },
+      "probe": { "mode": "python-import", "module": "OpenImageIO", "version_expression": "str(OpenImageIO.VERSION_STRING)", "version_pattern": "3\\.1\\.15\\.0" },
+      "capabilities": ["diff:pixels", "inspect:image"], "provides_substrates": ["openimageio"], "dependencies": ["python-cpython", "numpy"]
+    },
+    {
+      "id": "openexr",
+      "title": "OpenEXR Python runtime",
+      "runtime_version": "3.4.13",
+      "kind": "library",
+      "source": { "publisher": "Academy Software Foundation OpenEXR", "project_url": "https://github.com/AcademySoftwareFoundation/openexr", "release_url": "https://github.com/AcademySoftwareFoundation/openexr/releases/tag/v3.4.13", "asset_url": "https://files.pythonhosted.org/packages/c2/0e/13eefbedf7509b6361cc34cc569f9417deae23ea996414e16263c3a647f2/openexr-3.4.13-cp313-cp313-win_amd64.whl", "artifact_name": "openexr-3.4.13-cp313-cp313-win_amd64.whl", "sha256": "829b336555d691e43b4e5a1d5cc1280cec2a7284e3632745c585cd9678549590", "size_bytes": 728419, "allowed_hosts": ["files.pythonhosted.org", "pypi.org"] },
+      "licence": { "spdx": "BSD-3-Clause", "source_url": "https://github.com/AcademySoftwareFoundation/openexr/blob/main/LICENSE.md", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices" },
+      "installation": { "strategy": "python-wheel", "destination": "python-cpython/3.13.14", "dependency_target": "python-cpython" },
+      "probe": { "mode": "python-import", "module": "OpenEXR", "version_expression": "str(OpenEXR.__version__)", "version_pattern": "3\\.4\\.13" },
+      "capabilities": ["inspect:openexr"], "provides_substrates": ["openexr"], "dependencies": ["python-cpython", "numpy"]
+    },
+    {
+      "id": "opencolorio",
+      "title": "OpenColorIO runtime",
+      "runtime_version": "2.5.2",
+      "kind": "library",
+      "source": { "publisher": "Academy Software Foundation OpenColorIO", "project_url": "https://github.com/AcademySoftwareFoundation/OpenColorIO", "release_url": "https://github.com/AcademySoftwareFoundation/OpenColorIO/releases/tag/v2.5.2", "asset_url": "https://files.pythonhosted.org/packages/46/3b/4ba827c2d740a904cc93376694c5ac735d3e90bb7128783970f8c3807856/opencolorio-2.5.2-cp313-cp313-win_amd64.whl", "artifact_name": "opencolorio-2.5.2-cp313-cp313-win_amd64.whl", "sha256": "47a68600bb159c2a4a824752c25554ca4f3847089cbc226d05478e284cec17c3", "size_bytes": 3865124, "allowed_hosts": ["files.pythonhosted.org", "pypi.org"] },
+      "licence": { "spdx": "BSD-3-Clause", "source_url": "https://github.com/AcademySoftwareFoundation/OpenColorIO/blob/main/LICENSE", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices" },
+      "installation": { "strategy": "python-wheel", "destination": "python-cpython/3.13.14", "dependency_target": "python-cpython" },
+      "probe": { "mode": "python-import", "module": "PyOpenColorIO", "version_expression": "str(PyOpenColorIO.__version__)", "version_pattern": "2\\.5\\.2" },
+      "capabilities": ["transform:ocio"], "provides_substrates": ["opencolorio"], "dependencies": ["python-cpython", "ocio-aces-config"]
+    },
+    {
+      "id": "ocio-aces-config",
+      "title": "OpenColorIO ACES 2 reference configuration",
+      "runtime_version": "4.0.0-aces2.0-ocio2.5",
+      "kind": "configuration",
+      "source": { "publisher": "Academy Software Foundation OpenColorIO Config ACES", "project_url": "https://github.com/AcademySoftwareFoundation/OpenColorIO-Config-ACES", "release_url": "https://github.com/AcademySoftwareFoundation/OpenColorIO-Config-ACES/releases/tag/v4.0.0", "asset_url": "https://github.com/AcademySoftwareFoundation/OpenColorIO-Config-ACES/releases/download/v4.0.0/cg-config-v4.0.0_aces-v2.0_ocio-v2.5.ocio", "artifact_name": "cg-config-v4.0.0_aces-v2.0_ocio-v2.5.ocio", "sha256": "9e3ec773a7fbc0bb6666e428dedd8ccec4f59b8b6d40506c825cc7a8c02ff2ff", "size_bytes": 32807, "allowed_hosts": ["github.com", "release-assets.githubusercontent.com"] },
+      "licence": { "spdx": "BSD-3-Clause", "source_url": "https://github.com/AcademySoftwareFoundation/OpenColorIO-Config-ACES/blob/main/LICENSE", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices" },
+      "installation": { "strategy": "single-file", "destination": "ocio-aces-config/4.0.0", "entrypoints": { "config": "cg-config-v4.0.0_aces-v2.0_ocio-v2.5.ocio" } },
+      "probe": { "mode": "configuration", "entrypoint": "config", "version_pattern": "ocio_profile_version: 2\\.5|ocio_profile_version: 2" },
+      "capabilities": ["config:aces2"], "provides_substrates": [], "dependencies": []
+    },
+    {
+      "id": "gltf-validator",
+      "title": "Khronos glTF Validator",
+      "runtime_version": "2.0.0-dev.3.10",
+      "kind": "validator",
+      "source": { "publisher": "Khronos Group", "project_url": "https://github.com/KhronosGroup/glTF-Validator", "release_url": "https://github.com/KhronosGroup/glTF-Validator/releases/tag/2.0.0-dev.3.10", "asset_url": "https://github.com/KhronosGroup/glTF-Validator/releases/download/2.0.0-dev.3.10/gltf_validator-2.0.0-dev.3.10-win64.zip", "artifact_name": "gltf_validator-2.0.0-dev.3.10-win64.zip", "sha256": "c5068f51205deedc28acc3529ee7e11ee60e853454f673093398eba80142202c", "size_bytes": 2320898, "allowed_hosts": ["github.com", "release-assets.githubusercontent.com"] },
+      "licence": { "spdx": "Apache-2.0", "source_url": "https://github.com/KhronosGroup/glTF-Validator/blob/main/LICENSE", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices", "notes": "Upstream labels the latest published binary as a prerelease; receipts preserve that fact." },
+      "installation": { "strategy": "extract-zip", "destination": "gltf-validator/2.0.0-dev.3.10", "entrypoints": { "validator": "gltf_validator.exe" } },
+      "probe": { "mode": "command", "entrypoint": "validator", "args": ["--version"], "success_statuses": [0, 1], "version_pattern": "2\\.0\\.0-dev\\.3\\.10" },
+      "capabilities": ["validate:gltf2"], "provides_substrates": ["khronos-gltf-validator"], "dependencies": []
+    },
+    {
+      "id": "ktx-tools",
+      "title": "Khronos KTX Software tools",
+      "runtime_version": "4.4.2",
+      "kind": "validator",
+      "source": { "publisher": "Khronos Group", "project_url": "https://github.com/KhronosGroup/KTX-Software", "release_url": "https://github.com/KhronosGroup/KTX-Software/releases/tag/v4.4.2", "asset_url": "https://github.com/KhronosGroup/KTX-Software/releases/download/v4.4.2/KTX-Software-4.4.2-Windows-x64.exe", "artifact_name": "KTX-Software-4.4.2-Windows-x64.exe", "sha256": "1f323b0fec19794f5e6c0425a61d4b1da396872a10be862d105f4f4b2d2957fe", "size_bytes": 6417024, "allowed_hosts": ["github.com", "release-assets.githubusercontent.com"] },
+      "licence": { "spdx": "Apache-2.0 AND LicenseRef-KTX-Third-Party-Notices", "source_url": "https://github.com/KhronosGroup/KTX-Software/tree/main/LICENSES", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices", "notes": "The installer carries the upstream licence and third-party notice set; public redistribution requires preserving all notices." },
+      "installation": { "strategy": "nsis", "destination": "ktx-tools/4.4.2", "entrypoints": { "ktx": "bin/ktx.exe" } },
+      "probe": { "mode": "command", "entrypoint": "ktx", "args": ["--version"], "version_pattern": "4\\.4\\.2" },
+      "capabilities": ["inspect:ktx2", "transcode:ktx2", "validate:ktx2"], "provides_substrates": ["ktx-tools", "ktx-validator"], "dependencies": []
+    },
+    {
+      "id": "materialx",
+      "title": "MaterialX validator and shader-generation runtime",
+      "runtime_version": "1.39.5",
+      "kind": "library",
+      "source": { "publisher": "Academy Software Foundation MaterialX", "project_url": "https://github.com/AcademySoftwareFoundation/MaterialX", "release_url": "https://github.com/AcademySoftwareFoundation/MaterialX/releases/tag/v1.39.5", "asset_url": "https://files.pythonhosted.org/packages/bb/af/247a36d5f98598f9004f1cbe8b185fd11734a2667eff7f50aeade4fe3c63/materialx-1.39.5-cp313-cp313-win_amd64.whl", "artifact_name": "materialx-1.39.5-cp313-cp313-win_amd64.whl", "sha256": "b00a16b0d1b2ad74157c57836c070397e4465b84ba9d4ad1779bc8c99e65d5c6", "size_bytes": 5746842, "allowed_hosts": ["files.pythonhosted.org", "pypi.org"] },
+      "licence": { "spdx": "Apache-2.0", "source_url": "https://github.com/AcademySoftwareFoundation/MaterialX/blob/main/LICENSE", "review_status": "REVIEWED_FOR_LOCAL_TEST", "redistribution": "permitted-with-notices" },
+      "installation": { "strategy": "python-wheel", "destination": "python-cpython/3.13.14", "dependency_target": "python-cpython" },
+      "probe": { "mode": "python-import", "module": "MaterialX", "version_expression": "str(MaterialX.getVersionString())", "version_pattern": "1\\.39\\.5" },
+      "capabilities": ["generate:shader", "validate:materialx"], "provides_substrates": ["materialx-1.39-runtime"], "dependencies": ["python-cpython"]
+    }
+  ],
+  "compositions": [
+    {
+      "id": "godot-blender-renderer-pair",
+      "title": "Godot and Blender independent renderer pair",
+      "components": ["godot", "blender"],
+      "capabilities": ["compare:cross-renderer", "render:cycles", "render:godot"],
+      "provides_substrates": ["cross-renderer-runtime"],
+      "evidence_basis": "Availability means both exact runtimes passed their live version probes. Asset-bound material parity still requires comparative render receipts and remains review-gated."
+    }
+  ]
+}

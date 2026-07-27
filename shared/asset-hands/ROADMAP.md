@@ -2,7 +2,7 @@
 
 ## Current baseline: completion of the fifteen-hand build
 
-Asset Hands v2.5 has 34 executable creation hands plus the explicit delivery
+Asset Hands v2.5 has 35 executable creation hands plus the explicit delivery
 finisher. The curated visible-gap catalog is empty because all fifteen admitted
 hands were implemented, registered and tested:
 
@@ -20,6 +20,19 @@ This closes the planned list, not the universe of possible hands. Runtime
 diagnosis remains authoritative: an unhandled medium returns
 `UNSUPPORTED_CANVAS`; an understood medium with unmet constraints, source type,
 output, recipe, capability or permission returns `MISSING_HAND`.
+
+The thirty-fifth provider is the bounded Raster Compositor Hand. It accepts
+real PNG sources and a typed composition recipe, applies deterministic sRGB
+RGBA8 layers, masks, offsets, 14 blend modes and 13 filters, then emits a real
+PNG, editable recipe and SHA-256-bound pixel round-trip receipt. It remains
+candidate-only: passing technical checks never grants visual approval or canon.
+
+The additive Universal Component Protocol now supplies a shared composition
+root beneath those providers. Its first human surface is Play Composer: a
+deterministic, no-AI interface that produces typed component graphs, directed
+design branches and ephemeral previews. This widens reuse without weakening the
+admission gates below; a graph contract never substitutes for a domain hand or
+independent validator.
 
 ## Admission gate for every later hand
 
@@ -44,7 +57,9 @@ A convincing preview alone never passes this gate.
 
 ## Release gate for the current GitHub update
 
-1. Run all 70 portable JSON Schema files and resolve every local reference.
+1. Run every portable JSON Schema declared by the live service contract and
+   resolve every local reference; never freeze the release gate to a stale
+   schema count.
 2. Run every hand-focused deterministic/tamper/budget test, including the ten
    completion-wave suites now wired into `npm test`.
 3. Run shared hardening and the Asset Fabric, Studio, Spatial Studio, Film &
@@ -82,7 +97,7 @@ rejection without hand-specific code.
 - Completed: adapter packages bind identity, capabilities and a fixed entrypoint
   with SHA-256 plus a trusted Ed25519 signature; no private signing key is
   stored in the repository.
-- Completed: the Blender 4.x reference adapter confines paths to a configured
+- Completed: the Blender 4.2–5.2 reference adapter confines paths to a configured
   workspace, stages an exact GLB, snapshots the baseline, records a write-ahead
   journal, imports through a fixed Python boundary and refuses overwrite.
 - Completed: a fresh Blender process reopens the real `.blend` and checks source,
@@ -91,7 +106,8 @@ rejection without hand-specific code.
 - Completed: deterministic tests cover tampering, incompatible canvases, crashes
   before prepare commit and after native save, partial application, post-edit
   rollback blocking and idempotent rollback. The same path passed against the
-  official portable Blender 4.4.3 binary after its published SHA-256 matched.
+  official portable Blender 5.2.0 Stable binary after its exact archive and
+  executable SHA-256 values matched. Blender 5.3+ remains visibly unsupported.
 - Completed: Mirror accepts the adapter only through explicit injection and
   consent; built-in reset never auto-connects or resets the native adapter.
 
@@ -113,22 +129,25 @@ admission decision, not an implied capability.
   removal of an invalid per-note `velocity` element.
 - Completed: official OpenUSD `UsdUtils.ComplianceChecker` / `usdchecker`
   providers; the real 26.5 runtime passed generated USDZ and rejected a damaged
-  package. The W3C EPUBCheck adapter is complete but remains visibly missing on
-  the audited machine because Java/EPUBCheck is not installed.
+  package. The pinned Java 21 + W3C EPUBCheck 5.3 substrate now passes a
+  generated EPUB and rejects a deliberately damaged publication in separate
+  fresh JVM processes.
 - Completed: optional verification envelopes survive Asset Fabric, Studio and
   shared handoffs while old saved records remain readable.
-- Remaining: add a package-reviewed live EPUBCheck substrate and decide whether
-  a suitable external PDF/X/PDF/UA certification engine can be redistributed or
-  must remain an operator-configured verifier.
+- Completed: package-reviewed local veraPDF 1.30.2 execution for PDF/A and
+  PDF/UA reports; the bounded tagged PDF is honestly rejected as non-PDF/A.
+- Remaining: add standards-valid PDF/A/UA positive corpora and decide whether a
+  suitable external PDF/X certification engine can be redistributed or must
+  remain an operator-configured verifier.
 - Remaining: add perceptual thresholds and renderer matrices to material parity.
 - Remaining: add scene-scale stress corpora and fuzzed malformed inputs.
 - Remaining: add reproducible benchmark receipts for memory, time and output size.
 
 Exit: important claims are corroborated by an implementation independent of the
-writer wherever practical. **Partially passed:** MusicXML, OpenUSD and bounded
-PDF structure now have live second-implementation evidence; EPUBCheck and formal
-PDF certification remain visible verifier gaps, and performance/stress work is
-still open.
+writer wherever practical. **Partially passed:** MusicXML, OpenUSD, EPUBCheck,
+veraPDF execution and bounded PDF structure now have live second-implementation
+evidence; formal PDF/X and positive PDF/A/UA certification corpora remain
+visible verifier gaps, and performance/stress work is still open.
 
 ### Phase D — next candidate hands, driven by real blocked requests
 

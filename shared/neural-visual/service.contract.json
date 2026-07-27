@@ -1,0 +1,19 @@
+{
+  "schema": "axm.shared-service-contract/v1",
+  "id": "neural-visual-seam",
+  "version": "1.0.0",
+  "status": "EXPERIMENTAL",
+  "schemaFiles": {
+    "axm.neural-visual-request/v1": "neural-visual-request.schema.json",
+    "axm.neural-visual-result/v1": "neural-visual-result.schema.json",
+    "axm.visual-stack-draft/v1": "visual-stack-draft.schema.json"
+  },
+  "provides": ["provider-neutral-neural-visual-request-envelope", "sha256-bound-neural-result-verification", "draft-only-neural-layer-stacking", "deterministic-raster-recipe-handoff"],
+  "accepts": ["axm.visual-stack-draft/v1", "explicit-ai-provider-result"],
+  "produces": ["axm.neural-visual-request/v1", "axm.neural-visual-result/v1", "axm.visual-stack-draft/v1", "axm.raster-composition/v1"],
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": ["browser-local:ephemeral-cross-room-transfer", "user-download"],
+    "refuses": ["fake-generation-without-provider", "automatic-provider-call", "provider-result-without-exact-request-binding", "provider-result-without-sha256-artifact-binding", "neural-result-as-visual-approval", "neural-result-as-canon", "silent-raw-image-archive"]
+  }
+}

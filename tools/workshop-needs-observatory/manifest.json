@@ -1,0 +1,33 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "workshop-needs-observatory",
+  "name": "Workshop Needs Observatory",
+  "version": "v0.3",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "COMMAND",
+  "layer": "build",
+  "audience": "human-machine",
+  "risk": "MEDIUM",
+  "tags": ["needs", "capability-gaps", "inventory", "readiness", "growth", "matching", "limits", "direction"],
+  "uses": ["storage", "modular-intake-gate", "module-contracts", "tools-index"],
+  "permissions": [],
+  "actions": [
+    "record an exact Workshop need",
+    "inventory declared capabilities",
+    "scan declaration drift from UI or CLI without mutating modules",
+    "show missing substrates contracts and hands",
+    "show current module-review candidates without promoting them",
+    "match a quarantined piece to a need",
+    "accept a promoted capability explicitly"
+  ],
+  "accepts": ["axm.workshop-need/v1", "axm.modular-piece-candidate/v1", "axm.tools-index/v1"],
+  "produces": ["axm.workshop-needs-observatory/v1", "axm.workshop-readiness-view/v1", "axm.declaration-drift-audit/v1"],
+  "readiness": ["storage", "modular-intake-gate", "tools-index"],
+  "summary": "One honest page for what the Workshop and its AI collaborators need, what already exists, and which reviewed piece or evidence-backed module is waiting for an explicit human decision.",
+  "notes": "Exact declared capabilities only. Review readiness is evidence for inspection, never approval, promotion, CANON status, authority, or automatic need closure."
+}

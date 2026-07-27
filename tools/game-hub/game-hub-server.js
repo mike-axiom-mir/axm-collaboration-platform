@@ -135,6 +135,13 @@ function normalizeRuntimePath(value) {
   return route.startsWith('/') ? route : '/' + route;
 }
 
+function runtimeBrowserUrl(port, value) {
+  let route = normalizeRuntimePath(value);
+  if (!route) return null;
+  route = route.replace(/^\/games\/\d{3}(?=\/|$)/, '') || '/';
+  return `http://127.0.0.1:${port}${route}`;
+}
+
 function runtimeMetadataFromHostBootstrap(bootstrap) {
   const launch = bootstrap && bootstrap.launch;
   if (!launch) return null;
@@ -242,14 +249,13 @@ async function startGameRuntime(game, mode, selectedPlayers, playMode) {
   const firstHumanIndex = (selectedPlayers || []).findIndex(player => player.type === 'human');
   let clientUrl = firstHumanIndex < 0 ? (launch.spectator_client_entry || launch.client_entry || null) : (launch.client_entry || null);
   if (firstHumanIndex > 0 && clientUrl) clientUrl = clientUrl.replace(/player=p1\b/, 'player=p' + (firstHumanIndex + 1));
-  if (runtimeState && runtimeState.partyScreenLinks) {
-    const screenPath = runtimeState.partyScreenLinks.all || runtimeState.partyScreenLinks.party_a;
-    if (screenPath) clientUrl = `http://127.0.0.1:${port}${screenPath}`;
-  }
+  const displayPath = runtimeState && runtimeState.partyScreenLinks
+    ? (runtimeState.partyScreenLinks.all || runtimeState.partyScreenLinks.party_a)
+    : null;
   return {
     port,
-    clientUrl,
-    spectatorUrl: runtimeState && runtimeState.partyScreenLinks && runtimeState.partyScreenLinks.all ? `http://127.0.0.1:${port}${runtimeState.partyScreenLinks.all}` : (launch.spectator_client_entry || null),
+    clientUrl: runtimeBrowserUrl(port, clientUrl),
+    spectatorUrl: runtimeBrowserUrl(port, displayPath || launch.spectator_client_entry),
     controllerLinks: runtimeState && Array.isArray(runtimeState.controllerLinks) ? runtimeState.controllerLinks : []
   };
 }
@@ -591,4 +597,4 @@ if (require.main === module) {
   process.on('SIGTERM', () => { stopGameRuntime(); process.exit(0); });
 }
 
-module.exports = { GAME_IDLE_TIMEOUT_MS, listenHub, listGames, markRuntimeActivity, runtimeIdleState, server, startGameRuntime, state, stopGameRuntime };
+module.exports = { GAME_IDLE_TIMEOUT_MS, listenHub, listGames, markRuntimeActivity, resolvePlayMode, runtimeBrowserUrl, runtimeIdleState, server, startGameRuntime, state, stopGameRuntime, validatePlayModeRoster };

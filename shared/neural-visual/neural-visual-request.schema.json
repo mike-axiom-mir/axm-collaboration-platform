@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.neural-visual-request/v1",
+  "title": "AXM Neural Visual Request v1",
+  "type": "object",
+  "required": ["schema", "version", "request_id", "source_draft_digest", "operation", "prompt", "negative_prompt", "strength", "seed", "target_canvas", "provider_requirements", "ai_dependent", "authority"],
+  "properties": {
+    "schema": { "const": "axm.neural-visual-request/v1" },
+    "version": { "const": "1.0.0" },
+    "request_id": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "source_draft_digest": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "operation": { "enum": ["refine", "stylize", "inpaint", "outpaint", "relight", "material", "upscale"] },
+    "prompt": { "type": "string", "minLength": 1, "maxLength": 2000 },
+    "negative_prompt": { "type": "string", "maxLength": 1000 },
+    "strength": { "type": "number", "minimum": 0, "maximum": 1 },
+    "seed": { "type": "string", "minLength": 1, "maxLength": 100 },
+    "target_canvas": {
+      "type": "object",
+      "required": ["width", "height", "colour_space", "alpha"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1, "maximum": 2048 },
+        "height": { "type": "integer", "minimum": 1, "maximum": 2048 },
+        "colour_space": { "const": "srgb" },
+        "alpha": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "provider_requirements": {
+      "type": "object",
+      "required": ["image_input", "image_output", "mask_optional", "receipt_required"],
+      "properties": {
+        "image_input": { "type": "boolean" },
+        "image_output": { "const": true },
+        "mask_optional": { "type": "boolean" },
+        "receipt_required": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "ai_dependent": { "const": true },
+    "authority": { "const": "candidate-only" }
+  },
+  "additionalProperties": false
+}

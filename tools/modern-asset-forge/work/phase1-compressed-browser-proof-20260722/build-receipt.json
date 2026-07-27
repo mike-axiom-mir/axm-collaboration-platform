@@ -1,0 +1,360 @@
+{
+  "schema": "axm.modern-asset-forge.build-receipt/v1",
+  "version": "1.0.0",
+  "job_id": "phase1-compressed-browser-proof-20260722",
+  "mode": "diagnostic_smoke",
+  "workload_mode": "batch_optimize",
+  "status": "COMPLETED_WITH_GAPS",
+  "output_root": "phase1-compressed-browser-proof-20260722",
+  "source_sha256": "afcb7802418930dee6f8b7a410f1c78ce401d4c6f8b728336e99f62458237222",
+  "toolchain": {
+    "blender": {
+      "available": true,
+      "status": "READY",
+      "provider": "axm-substrate-pack",
+      "version": "5.2.0",
+      "reason": "exact archive, entrypoints, dependencies and live version probe passed",
+      "evidence_digest": "cda7d88a347c3c8f439a991aa567df31425523ed17dda5267e8207e1e1687ccf",
+      "private_location_retained": false
+    },
+    "validator": {
+      "available": true,
+      "status": "READY",
+      "provider": "axm-substrate-pack",
+      "version": "2.0.0-dev.3.10",
+      "reason": "exact archive, entrypoints, dependencies and live version probe passed",
+      "evidence_digest": "7aa2fae1384b1df6dbb321b0336eab667c01ed96578be93ac60bf037380831f8",
+      "private_location_retained": false
+    },
+    "ktx": {
+      "available": true,
+      "status": "READY",
+      "provider": "axm-substrate-pack",
+      "version": "4.4.2",
+      "reason": "exact archive, entrypoints, dependencies and live version probe passed",
+      "evidence_digest": "347c743f23210c2ca51ddca71f764dd751365dc33902ce6b876448d6eb7b716a",
+      "private_location_retained": false
+    },
+    "transform": {
+      "available": true,
+      "status": "READY_UNPINNED",
+      "provider": "PATH",
+      "version": "4.4.1",
+      "reason": "live command probe passed; version is not bound by the AXM substrate lock",
+      "evidence_digest": "c4650c1208019130cf87a65c435054f668ab023cb208faa439db2e1abd864071",
+      "private_location_retained": false
+    },
+    "gltfpack": {
+      "available": false,
+      "status": "MISSING",
+      "provider": "PATH",
+      "version": null,
+      "reason": "command is not installed or configured",
+      "evidence_digest": null,
+      "private_location_retained": false
+    },
+    "basis": {
+      "available": true,
+      "status": "READY",
+      "provider": "bundled-asset-hand",
+      "version": "2.10-final-snapshot",
+      "reason": "pinned Basis Universal WebAssembly module initialized",
+      "evidence_digest": "10ed9ffdfb1e8ec09da98f43c67eca70ea3c1c89ce3bebffbc347d6db76faf13",
+      "private_location_retained": false
+    },
+    "browser": {
+      "available": true,
+      "status": "READY",
+      "provider": "axm-browser-3d-runtime",
+      "version": "three@0.160.0 + meshoptimizer@1.0.1",
+      "reason": "pinned local Three.js r160 KTX2 and meshoptimizer decoders passed byte-level manifest verification",
+      "evidence_digest": "68820e10726ec9f996edb60bbf21a512f7e292293b583317ff8e5ef68376f9cb",
+      "private_location_retained": false
+    }
+  },
+  "capability_inventory_digest": "9d7cc060a91e87a6bcba9c58b9e7c496c9c6662cc2619dd3abda654739aa6f65",
+  "stages": [
+    {
+      "id": "source-integrity",
+      "status": "PASS",
+      "evidence": [
+        {
+          "kind": "sha256",
+          "value": "afcb7802418930dee6f8b7a410f1c78ce401d4c6f8b728336e99f62458237222"
+        },
+        {
+          "kind": "portable-path",
+          "value": "tools/ps2-asset-forge/proof/exports/storefront-technical-proof.glb"
+        }
+      ],
+      "gaps": [],
+      "detail": {
+        "source_kind": "glb",
+        "source_bytes": 471836,
+        "source_path_retained": false
+      }
+    },
+    {
+      "id": "blender-export",
+      "status": "SKIPPED",
+      "evidence": [
+        {
+          "kind": "source-kind",
+          "value": "glb"
+        }
+      ],
+      "gaps": [
+        {
+          "code": "MF-P1-AUTHORING-TRUTH",
+          "type": "EVIDENCE",
+          "required": false,
+          "reason": "A supplied GLB does not prove the required .blend authoring source or Blender export.",
+          "unblock": "Run canonical_build from a preserved .blend source."
+        }
+      ],
+      "detail": {
+        "counts_as_canonical_export_evidence": false
+      }
+    },
+    {
+      "id": "axm-glb-inspection",
+      "status": "PASS",
+      "evidence": [
+        {
+          "kind": "axm-glb-inspection",
+          "digest": "9560927cfe798457df5692855a12a35813185da1cccd554dd551b295b8a5bfd9"
+        }
+      ],
+      "gaps": [],
+      "detail": {
+        "errors": [],
+        "warnings": [],
+        "metrics": {
+          "scenes": 1,
+          "nodes": 42,
+          "meshes": 28,
+          "primitives": 28,
+          "triangles": 3496,
+          "vertices": 5892,
+          "materials": 16,
+          "textures": 10,
+          "images": 10,
+          "skins": 0,
+          "animations": 0,
+          "accessors": 110,
+          "draw_call_upper_bound": 28,
+          "embedded_bin_bytes": 438252,
+          "extensions_used": [
+            "KHR_materials_emissive_strength",
+            "KHR_materials_unlit",
+            "KHR_texture_transform"
+          ],
+          "extensions_required": []
+        },
+        "scope": "structural-and-metric-inspection-not-khronos-certification"
+      }
+    },
+    {
+      "id": "khronos-gltf-validation",
+      "status": "PASS",
+      "evidence": [
+        {
+          "exit_status": 0,
+          "error": null,
+          "stdout_sha256": "edc54150a79d2f201a779b31fedbc967f7238b7b98447994c4e1d949a8c4d2bf",
+          "stderr_sha256": "a8eb66028bb3b4d3bc0cf809142d5685cbe27fc3781db124306dae04eac214d5"
+        },
+        {
+          "kind": "khronos-report",
+          "digest": "2fa5bce318bcf56320410abcc4ee1635ce55716c421b57186896fbee3f1d0229"
+        }
+      ],
+      "gaps": [],
+      "detail": {
+        "issue_counts": {
+          "errors": 0,
+          "warnings": 0,
+          "infos": 27,
+          "hints": 0,
+          "total": 27
+        },
+        "report_parse_error": null
+      }
+    },
+    {
+      "id": "meshopt-optimization",
+      "status": "DEGRADED",
+      "evidence": [
+        {
+          "exit_status": 0,
+          "error": null,
+          "stdout_sha256": "1843720418e8493bbd5eb81485e69ec0e44f9aa3d20a35f8820f14d07b29f2d5",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "gaps": [
+        {
+          "code": "MF-P1-OPTIMIZER-PIN",
+          "type": "EVIDENCE",
+          "required": true,
+          "reason": "gltf-transform ran but is not pinned by the current substrate lock.",
+          "unblock": "Add a reviewed exact artifact, version probe, and license record before canonical promotion."
+        }
+      ],
+      "detail": {
+        "engine": "gltf-transform",
+        "output_created": true,
+        "source_bytes": 471836,
+        "output_bytes": 250504
+      }
+    },
+    {
+      "id": "ktx2-encode",
+      "status": "PASS",
+      "evidence": [
+        {
+          "kind": "basis-encode-and-decode",
+          "digest": "47cd3c8cdbb39949e42d8ac419204c5184c39b5cc9d78c346732ae5c83932655"
+        }
+      ],
+      "gaps": [],
+      "detail": {
+        "textures": [
+          {
+            "role": "base-color",
+            "colour_space": "srgb",
+            "target_texture_index": 0,
+            "source_sha256": "f3622a03a20c6696065cae9cbe391351be873508af190c2ebd1d420c055787a5",
+            "output_sha256": "6f2096b2d8e4dedbdc630db99abf6942418b50f23dd2bedb5408eff56546518b",
+            "output_bytes": 12983,
+            "width": 512,
+            "height": 512,
+            "levels": 10,
+            "validation_pass": true,
+            "supercompression": "BasisLZ"
+          }
+        ],
+        "profile": "ETC1S-BasisLZ-bounded"
+      }
+    },
+    {
+      "id": "ktx2-gltf-integration",
+      "status": "PASS",
+      "evidence": [
+        {
+          "kind": "binding-receipt",
+          "digest": "5783fa5a1dc20d3190c2dd01d44880c863a69a59ce6e3916db50cc996e18e59b"
+        }
+      ],
+      "gaps": [],
+      "detail": {
+        "output_created": true,
+        "output_sha256": "18058c71fd5b4984252dd5f409d28c6dc28a988dcfec3ad4a89e706d2f6ef317",
+        "mappings": [
+          {
+            "texture_index": 0,
+            "image_index": 10,
+            "buffer_view_index": 50,
+            "byte_offset": 223392,
+            "byte_length": 12983,
+            "ktx2_sha256": "6f2096b2d8e4dedbdc630db99abf6942418b50f23dd2bedb5408eff56546518b"
+          }
+        ],
+        "fallback_sources_removed": true
+      }
+    },
+    {
+      "id": "khronos-post-integration-validation",
+      "status": "PASS",
+      "evidence": [
+        {
+          "exit_status": 0,
+          "error": null,
+          "stdout_sha256": "b5551aecc243b17aefee026ccf843002f68ede93adeee8d13bb38af626ce9cca",
+          "stderr_sha256": "152de6e632f4f0365c5b1a8db616cc8df8380fde11dcbeff58f74297873804ec"
+        },
+        {
+          "kind": "khronos-report",
+          "digest": "45b1d8b6b567d32c1ccf75106d9da4ff598b0d139c071e4c9832050c08257648"
+        }
+      ],
+      "gaps": [],
+      "detail": {
+        "issue_counts": {
+          "errors": 0,
+          "warnings": 2,
+          "infos": 33,
+          "hints": 0,
+          "total": 35
+        },
+        "artifact_sha256": "18058c71fd5b4984252dd5f409d28c6dc28a988dcfec3ad4a89e706d2f6ef317"
+      }
+    },
+    {
+      "id": "khronos-ktx-validation",
+      "status": "PASS",
+      "evidence": [
+        {
+          "artifact_sha256": "6f2096b2d8e4dedbdc630db99abf6942418b50f23dd2bedb5408eff56546518b",
+          "pass": true,
+          "process": {
+            "exit_status": 0,
+            "error": null,
+            "stdout_sha256": "d02910e7e747e9fdac8d543bafa9ce36953d0af37587a6b5f1cd9097d3716df2",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "id": "browser-webgl2-smoke",
+      "status": "PREPARED",
+      "evidence": [
+        {
+          "kind": "smoke-plan",
+          "digest": "acb99366d2c6ba72cac4e05140b57601589c0412796cdb8ff036b4d13960bf30"
+        }
+      ],
+      "gaps": [
+        {
+          "code": "MF-P1-BROWSER-OBSERVATION",
+          "type": "EVIDENCE",
+          "required": true,
+          "reason": "The page is prepared but has not yet produced a live browser receipt.",
+          "unblock": "Open the smoke URL and retain its load/render receipt plus human visual review decision."
+        }
+      ],
+      "detail": {
+        "smoke_url": "/smoke.html?job=phase1-compressed-browser-proof-20260722",
+        "evidence_role": "optimized-candidate-load",
+        "counts_as_canonical_delivery": false
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "id": "glb-phase1-compressed-browser-proof-20260722",
+      "role": "compressed-browser-candidate",
+      "relative_path": "runtime/phase1-compressed-browser-proof-20260722.meshopt-ktx2.glb",
+      "mime": "model/gltf-binary",
+      "sha256": "18058c71fd5b4984252dd5f409d28c6dc28a988dcfec3ad4a89e706d2f6ef317",
+      "bytes": 263704,
+      "canonical": false
+    },
+    {
+      "id": "texture-1",
+      "role": "base-color",
+      "relative_path": "runtime/textures/01-colormap.ktx2",
+      "mime": "image/ktx2",
+      "sha256": "6f2096b2d8e4dedbdc630db99abf6942418b50f23dd2bedb5408eff56546518b",
+      "bytes": 12983,
+      "canonical": false
+    }
+  ],
+  "canonical_delivery_emitted": false,
+  "automatic_installation": false,
+  "network_access_performed": false,
+  "private_location_retained": false,
+  "digest": "117b8b5595a0112262762992d6f6e33c26fed2e74c823d6515682d50bd596e3e"
+}

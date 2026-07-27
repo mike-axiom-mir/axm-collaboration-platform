@@ -34,6 +34,7 @@ test('live HTTP serves title, health, session, same-gate input, seat view and cl
   t.after(async()=>{await new Promise(resolve=>app.server.close(resolve));remove(root)});
   const port=app.server.address().port,base='http://127.0.0.1:'+port;
   let result=await request(base,'/health');assert.equal(result.response.status,200);assert.equal(result.body.localOnly,true);
+  result=await request(base,'/api/launcher-state');assert.equal(result.response.status,200);assert.equal(result.body.partyScreenLinks.all,'/games/009/party/');assert.equal(result.body.authority.world,'circuitseed-server');
   result=await request(base,'/');assert.equal(result.response.status,200);assert.match(result.body,/CIRCUITSEED/);
   result=await request(base,'/api/bootstrap');assert.equal(result.body.hubPlayers.length,2);assert.equal(result.body.economy.businessPaths.length,3);assert.equal(result.body.economy.recipes.length,10);assert.equal(result.body.fieldRequests.total,16);assert.equal(result.body.memoryArchive.total,10);assert.equal(result.body.memoryArchive.entries.length,10);assert.equal(result.body.circuitkin.length,30);assert.deepEqual({individual:result.body.circuitkinRosterModel.individual,confluence:result.body.circuitkinRosterModel.confluence},{individual:20,confluence:10});
   result=await request(base,'/api/session/start',{method:'POST',body:JSON.stringify({players:roster,worldId:'http-world',seed:'http-seed'})});

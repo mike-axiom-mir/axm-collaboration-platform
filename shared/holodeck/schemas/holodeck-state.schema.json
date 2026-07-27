@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.holodeck-state/v1",
+  "title": "AXM Holodeck local deck state",
+  "type": "object",
+  "required": ["schema", "worldId", "worldDigest", "revision", "tick", "player", "entities", "actorSequences", "journal", "stateDigest"],
+  "properties": {
+    "schema": {"const": "axm.holodeck-state/v1"},
+    "revision": {"type":"integer","minimum":0},
+    "tick": {"type":"integer","minimum":0},
+    "player": {"type":"object","required":["position","headingDegrees"]},
+    "entities": {"type":"object"},
+    "stateDigest": {"type":"string"}
+  }
+}

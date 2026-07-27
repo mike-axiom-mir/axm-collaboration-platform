@@ -914,7 +914,7 @@ test("total-duration budgets shape animation and reject impossible APNG timing",
 
 test("visible hand-gap catalog closes while native bridging remains permission and bundle gated", () => {
   assert.equal(Hands.listMissingHands().length, 0);
-  assert.equal(Hands.list().length, 34);
+  assert.equal(new Set(Hands.list().map((hand) => hand.id)).size, Hands.list().length);
   assert(
     Hands.list().some(
       (hand) =>

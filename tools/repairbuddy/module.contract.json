@@ -1,0 +1,66 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "repairbuddy",
+  "version": "v0.4",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "seam-pattern-matching",
+    "shadow-repair-proposals",
+    "escalation-prompt-generation",
+    "pattern-intake-validation",
+    "module-code-inspection",
+    "verifier-linked-live-scan",
+    "human-gated-copy-only-replay",
+    "truth-preserving-verifier-warning-routing",
+    "human-warning-action-desk",
+    "ai-native-bounded-warning-packets",
+    "declared-warning-destination-handoffs"
+  ],
+  "consumes": [
+    "technical-glasses-snapshot",
+    "human-review",
+    "platform-authored-pattern-draft",
+    "axm.game-package-verification/v1",
+    "axm.module-seam-gap-report/v1"
+  ],
+  "permissions": [],
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  },
+  "handoffs": {
+    "emits": [
+      "axm.repairbuddy.report/v1",
+      "axm.repairbuddy.warning-queue/v1",
+      "axm.module-lifecycle-repair-request/v1",
+      "axm.qa-evidence-request/v1",
+      "axm.playtest-evidence-request/v1",
+      "axm.ai-repair-design-request/v1"
+    ],
+    "accepts": [
+      "human:pattern-install",
+      "human:review"
+    ]
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [
+      "frozen-recipe-fields-only-on-explicit-human-replay-with-exact-preconditions-verification-receipt-and-rollback",
+      "exports/repairbuddy/scan-report-escalation-prompts-and-replay-receipts"
+    ],
+    "refuses": [
+      "automatic-repair-application",
+      "proposal-application",
+      "new-code-generation",
+      "recipe-adaptation",
+      "automatic-pattern-installation",
+      "pattern-without-real-lineage",
+      "free-prose-in-proposals",
+      "mutation-of-pure-mirror",
+      "learned-weights",
+      "external-runtime-dependency"
+    ]
+  }
+}

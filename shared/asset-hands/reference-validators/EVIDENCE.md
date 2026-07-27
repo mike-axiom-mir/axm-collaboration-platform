@@ -71,11 +71,14 @@ repository. No private runtime path or raw command log is part of this receipt.
 
 - Claim: W3C EPUBCheck can be invoked through the same bounded registry when
   installed.
-- Evidence: deterministic provider and missing-runtime tests; official CLI
-  contract review.
-- Named seam: Java and EPUBCheck were absent from the audited machine, so no
-  real EPUBCheck result is claimed.
-- Verdict: **MISSING_VALIDATOR** for live conformance; adapter contract **PASS**.
+- Evidence: deterministic provider tests plus the pinned Temurin 21 / W3C
+  EPUBCheck 5.3 live corpus. A generated EPUB passes and a digest-bound damaged
+  publication fails in separate fresh JVM processes.
+- Named seam: the older environment-variable reference provider remains
+  optional; the shared substrate inventory is the authoritative installed
+  route for the new upgrade registry.
+- Verdict: **PASS** for the live generated/damaged corpus on the audited local
+  pack; **MISSING_VALIDATOR** remains correct on machines without the exact pack.
 
 ## `host-handoff-and-compatibility`
 
@@ -89,7 +92,7 @@ repository. No private runtime path or raw command log is part of this receipt.
 
 ## `release-gate-2026-07-19`
 
-- Focused completion gate: **PASS**. All 34 executable Asset Hands, legacy SVG,
+- Focused completion gate: **PASS**. All 35 executable Asset Hands, legacy SVG,
   non-SVG output distinction, native adapters and reference-validator
   adversaries passed.
 - Integration gates: Workshop, Operations and Foundation suites **PASS**.

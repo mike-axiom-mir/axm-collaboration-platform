@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "asset-engine-roundtrip-bridge",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "immutable-glb-source-inspection",
+    "versioned-engine-asset-contract",
+    "scale-axis-pivot-parity-verification",
+    "material-texture-parity-verification",
+    "rig-animation-parity-verification",
+    "machine-readable-structural-diff",
+    "explicit-runtime-loss-registry",
+    "exact-source-digest-receipt"
+  ],
+  "consumes": ["model/gltf-binary", "axm.asset-source-descriptor/v1", "local-3d-game-runtime/native-glb/v0.1"],
+  "permissions": ["export"],
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  },
+  "handoffs": {
+    "emits": ["axm.engine-asset-contract/v1", "axm.asset-engine-roundtrip-verification/v1", "axm.asset-engine-roundtrip/v1"],
+    "accepts": ["same-origin:model/gltf-binary", "human:run-parity-check"]
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": ["user-download:roundtrip-receipt-json"],
+    "refuses": [
+      "source-glb-mutation",
+      "hidden-unit-or-axis-conversion",
+      "hidden-feature-loss",
+      "unsupported-feature-pass",
+      "visual-quality-approval-by-structure",
+      "automatic-library-promotion",
+      "automatic-publication",
+      "runtime-external-network-dependency"
+    ]
+  }
+}

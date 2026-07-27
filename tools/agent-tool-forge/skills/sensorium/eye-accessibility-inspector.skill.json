@@ -1,0 +1,83 @@
+{
+  "schema": "axm.sensorium-skill/v1",
+  "id": "eye-accessibility-inspector",
+  "type": "skill",
+  "sense": "accessible-sight",
+  "pack": "axm-sensorium/1.4.0",
+  "status": "ACCEPT_FOR_TEST",
+  "capability": "visual.inspect.accessibility/v1",
+  "purpose": "Measure bounded live or supplied presentation properties against the AXM accessibility floor and flag violations without restyling or claiming a full audit.",
+  "inputs": [
+    "claim",
+    "targetId",
+    "measuredProperties",
+    "floorPolicy",
+    "observedAt"
+  ],
+  "procedure": [
+    "Read bounded supplied measurements or request them from an injected exact-target computed-style adapter.",
+    "Reuse Visual Kernel contrast math and apply the declared floor: 4.5:1 normal text, 3:1 large text and UI components, 44px targets, critical text at least 10px, and a visible equal for sound signals.",
+    "Attach the measured number to every PASS, FAIL, or UNKNOWN rule result.",
+    "Return UNKNOWN for missing or invalid property groups; partial input is never a silent PASS.",
+    "Seal typed measurements, release the supplied set, and take no direct action."
+  ],
+  "rules": [
+    "Perception is not permission.",
+    "UNKNOWN is preferred to a plausible guess.",
+    "Every use emits a typed receipt and releases raw material."
+  ],
+  "boundaries": [
+    "Does not restyle, repair, or auto-adjust a surface.",
+    "Does not read text content, content meaning, or judge taste.",
+    "Does not claim WCAG certification or a full accessibility audit.",
+    "Does not retain raw pixels or the supplied property set.",
+    "A missing per-use adapter, incomplete element coverage, gradients, background images, transparency, or ancestor opacity remain explicit UNKNOWN results."
+  ],
+  "retention": {
+    "law": "EPHEMERAL BY DEFAULT. Raw sense material is released at the next step. Only a bounded typed receipt survives.",
+    "raw_material": "sense-specific bounded input",
+    "released_when": "before the typed observation is returned",
+    "survives": "specific receipt plus axm.sensorium-receipt/v1 envelope",
+    "raw_retained_after_step": "zero",
+    "accumulation_across_uses": "flat and zero after every release boundary",
+    "receipt_cap": "newest 20 per sense",
+    "deletion_scope": "only material created by the exact sense use, by exact id or path; never a wildcard or recursive sweep"
+  },
+  "receipt": {
+    "schema": "axm.visual-accessibility-observation/v1",
+    "envelopeSchema": "axm.sensorium-receipt/v1"
+  },
+  "runtime": {
+    "routeType": "EXECUTABLE",
+    "module": "eye-accessibility-inspector.js",
+    "factory": "create",
+    "operation": "inspect"
+  },
+  "statuses": {
+    "skillStatus": "ACCEPT_FOR_TEST",
+    "executorStatus": "EXECUTABLE",
+    "adapterStatus": "AVAILABLE",
+    "proofStatus": "RUNTIME_PASS",
+    "authorityStatus": "NO_LEASE"
+  },
+  "requiredHostCapabilities": [
+    "ui.render.computed-style/v1"
+  ],
+  "constraints": [
+    "supplied-measurements-run-locally",
+    "exact-target-browser-read",
+    "bounded-to-200-elements",
+    "content-not-inspected",
+    "complex-backgrounds-unknown",
+    "incomplete-coverage-unknown",
+    "floor-not-taste",
+    "no-auto-fix",
+    "partial-is-unknown-not-pass"
+  ],
+  "resourceBudget": {
+    "maxElements": 200,
+    "rawRetainedBytesAfterSeal": 0
+  },
+  "authorityInherited": false,
+  "promotionGate": "Mike"
+}

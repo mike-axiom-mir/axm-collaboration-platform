@@ -1,0 +1,52 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "automated-playtester-scenario-agent",
+  "version": "v0.2",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "bounded-local-scenario",
+    "visible-outcome-inspection",
+    "typed-experience-artifact",
+    "independent-evidence-verification"
+  ],
+  "consumes": [
+    "human-direction",
+    "bounded-local-fixture",
+    "human-review",
+    "axm.playtest-evidence-request/v1"
+  ],
+  "permissions": [
+    "export"
+  ],
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  },
+  "handoffs": {
+    "emits": [
+      "axm.playtest-scenario-run/v1",
+      "axm.p2-experience-verification/v1"
+    ],
+    "accepts": [
+      "human:explicit-export",
+      "human:review",
+      "axm.playtest-evidence-request/v1"
+    ]
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [
+      "user-download:candidate-receipt-json"
+    ],
+    "refuses": [
+      "automatic-library-promotion",
+      "automatic-apply",
+      "durable-world-state-ownership",
+      "human-approval-by-metric",
+      "undeclared-external-runtime-dependency",
+      "raw-private-session-retention"
+    ]
+  }
+}

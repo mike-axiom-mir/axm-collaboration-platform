@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/modern-asset-forge-asset-manifest-v1.schema.json",
+  "title": "AXM Modern Asset Forge Asset Manifest v1",
+  "type": "object",
+  "required": ["schema", "version", "asset_id", "status", "source", "delivery_policy", "artifacts", "canonical_runtime_artifact_id", "notes", "digest"],
+  "properties": {
+    "schema": { "const": "axm.modern-asset-forge.asset-manifest/v1" },
+    "version": { "const": "1.0.0" },
+    "asset_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,79}$" },
+    "status": { "enum": ["PASS", "COMPLETED_WITH_GAPS", "BLOCKED", "FAIL"] },
+    "source": {
+      "type": "object",
+      "required": ["kind", "relative_path", "sha256", "authoring_truth_proven"],
+      "properties": {
+        "kind": { "enum": ["blend", "glb"] },
+        "relative_path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "license": { "type": "string", "minLength": 1 },
+        "source_url": { "type": ["string", "null"] },
+        "authoring_truth_proven": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "delivery_policy": { "type": "object" },
+    "artifacts": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+    "canonical_runtime_artifact_id": { "type": ["string", "null"] },
+    "notes": { "type": "array", "items": { "type": "string" } },
+    "digest": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "artifact": {
+      "type": "object",
+      "required": ["id", "role", "relative_path", "mime", "sha256", "bytes", "canonical"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "role": { "type": "string", "minLength": 1 },
+        "relative_path": { "type": "string", "minLength": 1 },
+        "mime": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "canonical": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

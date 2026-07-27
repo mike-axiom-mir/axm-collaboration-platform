@@ -198,15 +198,7 @@ class MirrorNativeHostAdapter {
 
   rollbackApplication(snapshot, adapterReceipt) {
     if (!snapshot || snapshot.adapter_id !== this.descriptor.adapter_id) throw new Error('rollback snapshot belongs to another adapter');
-    if (!adapterReceipt || !adapterReceipt.transaction_id) {
-      const before = snapshot.state && snapshot.state.transactions || {};
-      const after = this.readState().transactions || {};
-      const candidates = Object.keys(after).filter(function (transactionId) {
-        return !Object.prototype.hasOwnProperty.call(before, transactionId) && after[transactionId] === 'INSPECTED';
-      });
-      if (candidates.length !== 1) throw new Error('native rollback requires one exact transaction introduced after the pre-apply snapshot');
-      adapterReceipt = { transaction_id: candidates[0] };
-    }
+    if (!adapterReceipt || !adapterReceipt.transaction_id) throw new Error('native rollback requires the exact adapter receipt');
     const beforeRevision = this.currentRevision();
     const result = this.runtime.rollback(adapterReceipt.transaction_id);
     const afterRevision = this.bump(adapterReceipt.transaction_id, 'ROLLED_BACK');

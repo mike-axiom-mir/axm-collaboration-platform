@@ -77,6 +77,11 @@ class MirrorCore {
         root: path.join(this.runtimeDir, 'adapters', 'safe-file-project')
       })
     };
+    this.builtInAdapterIds = new Set(Object.values(this.adapters).map(function (adapter) { return adapter.descriptor.adapter_id; }));
+    (options.additionalAdapters || []).forEach((adapter, index) => {
+      const key = 'additional' + index;
+      this.adapters[key] = adapter;
+    });
     Object.values(this.adapters).forEach((adapter) => this.bridge.register(adapter));
     this.conflictDetector = new ConflictDetector(this.store);
     this.applicationService = new ApplicationService({
@@ -139,8 +144,8 @@ class MirrorCore {
       starts_at: now(),
       expires_at: null,
       revocation_method: 'POST /mirror/consents/:id/revoke',
-      data_categories: ['mock entities', 'mock evidence', 'mock snapshots'],
-      purpose: 'Deterministic local Mirror Core compatibility demonstration',
+      data_categories: clone(adapter.descriptor.data_categories || ['mock entities', 'mock evidence', 'mock snapshots']),
+      purpose: safeText(adapter.descriptor.consent_purpose || 'Deterministic local Mirror Core compatibility demonstration', 1000),
       audit_reference: 'journal:local',
       status: 'active',
       revoked_at: null,
@@ -152,7 +157,10 @@ class MirrorCore {
     this.store.reset();
     this.journal.reset();
     this.snapshots.reset();
-    Object.values(this.adapters).forEach(function (adapter) { adapter.reset(); });
+    Object.values(this.adapters).forEach((adapter) => {
+      if (this.builtInAdapterIds.has(adapter.descriptor.adapter_id) && typeof adapter.reset === 'function') adapter.reset();
+      else if (typeof adapter.disconnect === 'function') adapter.disconnect();
+    });
     this.bridge.refreshRegistrationState();
     Object.values(this.adapters).forEach((adapter) => {
       this.journal.append('adapter_registered', {
@@ -162,7 +170,7 @@ class MirrorCore {
     });
     this.bootstrapActors();
     const mike = this.actor(MIKE_ID);
-    Object.values(this.adapters).forEach((adapter) => {
+    Object.values(this.adapters).filter((adapter) => this.builtInAdapterIds.has(adapter.descriptor.adapter_id)).forEach((adapter) => {
       const receipt = this.consentFor(adapter);
       this.consentEngine.grant(receipt, mike);
       this.bridge.connect(adapter.descriptor.adapter_id, 'approved_apply', mike, receipt.consent_id);

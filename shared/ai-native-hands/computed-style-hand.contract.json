@@ -1,0 +1,43 @@
+{
+  "schema": "axm.capability-contract/v1",
+  "id": "browser-computed-style-reader",
+  "capabilityId": "ui.render.computed-style/v1",
+  "version": "1.0.0",
+  "status": "TEST",
+  "purpose": "Read bounded presentation measurements from one exact same-document DOM root for Sensorium Eye 4 without retaining content, pixels, or mutating the page.",
+  "inputs": {
+    "targetId": "Exact element id or exact data-axm-target-id value; wildcards are refused.",
+    "maxElements": "Positive integer capped at 200.",
+    "observedAt": "Optional ISO timestamp supplied by the host."
+  },
+  "outputs": [
+    "axm.ui-computed-style-measurements/v1"
+  ],
+  "sideEffects": [],
+  "permissions": [
+    "same-document DOM read initiated by the host"
+  ],
+  "resourceBudget": {
+    "maxElements": 200,
+    "rawRetainedBytesAfterSeal": 0,
+    "rawRetainedItemsAfterSeal": 0
+  },
+  "failureRecovery": [
+    "Refuse missing, ambiguous, or wildcard targets.",
+    "Return incomplete coverage so Eye 4 reports UNKNOWN when the element budget is exceeded.",
+    "Return unresolved colour measurements so Eye 4 reports UNKNOWN for gradients, images, ancestor opacity, or transparent canvases."
+  ],
+  "compatibility": {
+    "runtime": "Browser DOM with getComputedStyle and getBoundingClientRect",
+    "sensoriumInjection": "readComputedStyles({targetId,maxElements})",
+    "resultSchema": "axm.ui-computed-style-measurements/v1"
+  },
+  "verification": [
+    "node shared/ai-native-hands/selftest.js",
+    "node shared/sensorium/selftest.js",
+    "live browser fixture at a declared viewport"
+  ],
+  "promotionGate": "Mike",
+  "automaticApply": false,
+  "automaticPublish": false
+}

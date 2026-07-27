@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.universal-component-composition-receipt/v1",
+  "title": "AXM Universal Component Protocol composition receipt v1",
+  "description": "A contract-level composition result. READY_CONTRACT proves routability and integrity, never rendering, manufacture or visual quality.",
+  "type": "object",
+  "required": [
+    "schema",
+    "status",
+    "graph_id",
+    "graph_digest",
+    "target_canvas_digest",
+    "component_digests",
+    "execution_order",
+    "required_capabilities",
+    "resource_summary",
+    "known_losses",
+    "checks",
+    "truth",
+    "created_at",
+    "digest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.universal-component-composition-receipt/v1" },
+    "status": { "enum": ["READY_CONTRACT", "INVALID_GRAPH", "MISSING_COMPONENT", "UNSUPPORTED_CANVAS"] },
+    "graph_id": { "type": "string", "minLength": 1 },
+    "graph_digest": { "$ref": "#/$defs/digest" },
+    "target_canvas_digest": { "$ref": "#/$defs/digest" },
+    "component_digests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["instance_id", "component_id", "component_version", "digest"],
+        "properties": {
+          "instance_id": { "type": "string" },
+          "component_id": { "type": "string" },
+          "component_version": { "type": "string" },
+          "digest": { "$ref": "#/$defs/digest" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "execution_order": { "type": "array", "items": { "type": "string" } },
+    "required_capabilities": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "resource_summary": {
+      "type": "object",
+      "required": ["cpu", "gpu", "peak_memory_bytes", "working_storage_bytes", "native_runtimes"],
+      "properties": {
+        "cpu": { "enum": ["none", "light", "medium", "heavy"] },
+        "gpu": { "enum": ["none", "light", "medium", "heavy"] },
+        "peak_memory_bytes": { "type": ["integer", "null"], "minimum": 0 },
+        "working_storage_bytes": { "type": ["integer", "null"], "minimum": 0 },
+        "native_runtimes": { "type": "array", "uniqueItems": true, "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "known_losses": { "type": "array", "items": { "type": "string" } },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "pass", "details"],
+        "properties": {
+          "id": { "type": "string" },
+          "pass": { "type": "boolean" },
+          "details": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "truth": {
+      "type": "object",
+      "required": ["contract_only", "executed", "rendered", "visually_approved", "manufacturing_approved"],
+      "properties": {
+        "contract_only": { "const": true },
+        "executed": { "const": false },
+        "rendered": { "const": false },
+        "visually_approved": { "const": false },
+        "manufacturing_approved": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "digest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

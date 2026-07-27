@@ -1,0 +1,18 @@
+{
+  "schema": "axm.verification-category-pack/v1",
+  "id": "game",
+  "name": "Games",
+  "purpose": "Verify launch, seats, controls, reconnect, reload, persistence, performance and complete play journeys.",
+  "native_claim_kinds": ["deterministic-behavior", "visual-appearance", "interaction-journey", "persistence", "transport", "performance"],
+  "never_claims": ["fun-from-one-score", "physical-phone-usability-from-source-only"],
+  "default_risk": "medium",
+  "baseline_claims": [
+    { "id": "game.entry", "need": "Title, mode selection and start journey are usable.", "evidence": "interaction-journey" },
+    { "id": "game.seats", "need": "Empty, human, AI and controller seats behave as declared.", "evidence": "deterministic-behavior" },
+    { "id": "game.controls", "need": "Keyboard, gamepad, phone and AI seats receive their declared controls.", "evidence": "interaction-journey" },
+    { "id": "game.play-loop", "need": "At least one complete start-play-outcome-continue journey succeeds.", "evidence": "interaction-journey" },
+    { "id": "game.overlay-recovery", "need": "Pause, inventory, mission and modal overlays restore camera and input.", "evidence": "visual-observation" },
+    { "id": "game.continuity", "need": "Refresh, reconnect and save restore honestly or fail recoverably.", "evidence": "persistence" },
+    { "id": "game.runtime-budget", "need": "Frame, memory, idle and thermal behavior fit the declared body.", "evidence": "performance" }
+  ]
+}

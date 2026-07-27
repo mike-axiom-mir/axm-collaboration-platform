@@ -1,0 +1,49 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "local-3d-game-runtime",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm-native-webgl2-glb-rendering",
+    "embedded-glb-texture-rendering",
+    "digest-bound-same-origin-pack-texture-rendering",
+    "gltf-skeletal-animation-and-skinning",
+    "deterministic-sixty-hertz-game-loop",
+    "keyboard-pointer-third-person-navigation",
+    "local-objective-and-outcome-loop",
+    "live-frame-performance-evidence",
+    "bounded-render-quality-profiles",
+    "ten-module-p0-production-cell-receipt"
+  ],
+  "consumes": [
+    "model/gltf-binary",
+    "local-human-input",
+    "ps2-asset-forge-proof-fixtures",
+    "axm.p0-production-cell/v1"
+  ],
+  "permissions": [],
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  },
+  "handoffs": {
+    "emits": ["axm.local-3d-runtime.frame-evidence/v1", "axm.local-3d-runtime.outcome/v1"],
+    "accepts": ["hub:init", "local-input", "same-origin:model/gltf-binary"]
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "runtime-external-network-dependency",
+      "automatic-world-mutation-or-reset",
+      "full-3d-physics-or-collision-claim",
+      "persistence-claim",
+      "automatic-asset-promotion",
+      "automatic-publication",
+      "multiplayer-claim",
+      "ps3-or-higher-asset-quality-claim"
+    ]
+  }
+}

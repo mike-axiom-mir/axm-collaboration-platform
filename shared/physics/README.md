@@ -38,6 +38,12 @@ Version 0.3.1 provides a deterministic-order 2D prototype solver with:
   removed again by constraint correction;
 - kinetic, potential, total-energy, momentum, penetration, contact, actual
   integration-step and checksum diagnostics;
+- additive contact-capacity receipts with detected, retained/stored, truncated,
+  limit, status and reason fields (cap remains 2,048);
+- additive typed input-normalization receipts for coerce/clamp/fallback events
+  without changing permissive defaults;
+- additive configuration, definition and identity lineage digests alongside the
+  unchanged legacy state checksum;
 - bounded replay traces with sampled body states and checksum lineage;
 - a shared-engine adapter for `step-2d`, `simulate-2d`, `trace-2d`,
   `validate-2d` and `raycast-2d`.
@@ -48,16 +54,26 @@ The versioned evidence layer is intentionally separate from solver policy:
   numerical methods, engine policy, verified behavior and validation claims;
 - `PHYSICS_SOURCE_REGISTER.json` records source authority, supported claims,
   limitations and the corrected provenance of the 2026-07-19 fact-pack intake;
+- `PHYSICS_POLICY_SOURCE_REGISTER.json` independently resolves the policy
+  deep-dive's conversation-local citation markers to reusable primary URLs;
 - `physics-micro-verification.js` runs bounded exact, invariant, metamorphic,
   lifecycle and robustness checks against the current engine;
+- `physics-policy-deep-dive.js` freezes the deeper identity, removal, boundary,
+  hashing, capacity, CCD-attribution and validation-capability observations;
 - `PHYSICS_POLICY_OBSERVATIONS.md` freezes unresolved behavior seams without
-  promoting them into desired behavior; and
-- `PHYSICS_HASH_LINEAGE_PROPOSAL.md` proposes additive receipts without
-  redefining the legacy checksum.
+  promoting them into desired behavior;
+- `PHYSICS_POLICY_DEEP_DIVE.md` routes each research claim to its native proof
+  surface and records supported, failed and unknown conclusions;
+- `PHYSICS_POLICY_CONTRACT_PROPOSAL.json` tracks a partially implemented
+  evidence contract while leaving unresolved product choices undecided; and
+- `PHYSICS_HASH_LINEAGE_PROPOSAL.md` separates implemented additive digests
+  from the stronger input/state/predecessor receipts that remain proposed,
+  without redefining the legacy checksum.
 
 Run `node shared/physics/physics-micro-verification.js` for the concise receipt
-or add `--json` for full measurements. A passing receipt is bounded software
-verification, not scientific validation.
+or add `--json` for full measurements. Run
+`node shared/physics/physics-policy-deep-dive.js` for the policy-gap receipt. A
+passing receipt is bounded software verification, not scientific validation.
 
 The core deliberately does **not** claim scientific validation, continuous
 rigid-body rotation, joints, deformables, fluids, 3D physics or deterministic
@@ -68,10 +84,13 @@ separate evidence and versioned adapters.
 Development is pressure-tested through `physics-canaries.js`,
 `physics-adversarial.js`, `physics-repeat-adversarial.js`,
 `physics-broadphase-adversarial.js`, `physics-manifold-adversarial.js`,
-`physics-warm-start-adversarial.js`, `inventor-seam.js`,
+`physics-warm-start-adversarial.js`, `physics-capacity-receipt-adversarial.js`,
+`physics-normalization-receipt-adversarial.js`,
+`physics-hash-lineage-adversarial.js`, `inventor-seam.js`,
 `inventor-repeat.js`, `inventor-repeat-two.js`, `inventor-repeat-three.js` and
 `inventor-repeat-four.js`, plus the observation-only
-`physics-micro-verification.js`. Passes seven and eight preserve the giant-static
+`physics-micro-verification.js` and `physics-policy-deep-dive.js`. Passes seven
+and eight preserve the giant-static
 fallback and lost sensor-exit truth as failures, then require expanded
 broadphase equivalence and persistent-manifold lineage before promoting the
 hash for new worlds. Dense single-cell scenes may still degenerate honestly to

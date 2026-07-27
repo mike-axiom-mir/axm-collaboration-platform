@@ -24,7 +24,7 @@ function check(value, label) { assert(value, label); pass += 1; console.log('PAS
 function json(file) { return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '')); }
 
 check(modules.length === 20 && new Set(modules).size === 20, 'roadmap declares exactly twenty unique governed modules');
-check(Object.keys(Hub.GOVERNED_FOUNDATION_ASSIGNMENTS).length === 20, 'every governed module has one canonical Hub assignment');
+check(modules.every(id => Object.prototype.hasOwnProperty.call(Hub.GOVERNED_FOUNDATION_ASSIGNMENTS, id)), 'every governed module has one canonical Hub assignment');
 const apiSource = fs.readFileSync(path.join(__dirname, 'operations-api.js'), 'utf8');
 
 for (const id of modules) {

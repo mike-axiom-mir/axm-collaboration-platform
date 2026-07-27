@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.experiment-world/v1",
+  "title": "AXM Experiment World",
+  "type": "object",
+  "required": ["schema", "id", "goal", "mode", "status", "branch", "budgets", "usage", "artifacts", "events", "truth", "worldDigest"],
+  "properties": {
+    "schema": { "const": "axm.experiment-world/v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "goal": { "type": "string", "minLength": 1 },
+    "mode": { "enum": ["directed", "curiosity", "repair", "unknown-hunt"] },
+    "status": { "enum": ["DRAFT", "ACTIVE", "HELD", "FROZEN"] },
+    "branch": { "type": "string", "pattern": "^candidate/" },
+    "budgets": { "type": "object" },
+    "usage": { "type": "object" },
+    "artifacts": { "type": "array", "items": { "type": "object" } },
+    "links": { "type": "array", "items": { "type": "object" } },
+    "events": { "type": "array", "items": { "type": "object" } },
+    "truth": {
+      "type": "object",
+      "required": ["canonicalWorkshopChanged", "mirrorConnected", "arbitraryCodeExecuted", "externalNetworkUsed", "observerCanMutateWorld", "promotionRequiresSeparateReview", "deterministicRehearsal", "resourceUsageMeasured", "resourceEnvelope"],
+      "properties": {
+        "canonicalWorkshopChanged": { "const": false },
+        "mirrorConnected": { "const": false },
+        "arbitraryCodeExecuted": { "const": false },
+        "externalNetworkUsed": { "const": false },
+        "observerCanMutateWorld": { "const": false },
+        "promotionRequiresSeparateReview": { "const": true },
+        "deterministicRehearsal": { "const": true },
+        "resourceUsageMeasured": { "const": false },
+        "resourceEnvelope": { "const": "declared-intent-budget" }
+      },
+      "additionalProperties": false
+    },
+    "worldDigest": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.repairbuddy.replay-recipe/v1",
+  "description": "A frozen copy-only repair learned from one verified Workshop repair. It cannot generate or adapt code.",
+  "type": "object",
+  "required": ["schema", "id", "status", "operation", "target", "match", "copyFields", "expectedVerifierFailures", "lineage"],
+  "properties": {
+    "schema": { "const": "axm.repairbuddy.replay-recipe/v1" },
+    "id": { "type": "string", "pattern": "^replay-[0-9]{4}-[a-z0-9-]+$" },
+    "status": { "const": "ACTIVE_REPLAY" },
+    "operation": { "const": "copy-proven-json-fields" },
+    "target": { "const": "tools/<moduleId>/manifest.json" },
+    "match": { "type": "object", "required": ["type", "absentFields", "usesContains"] },
+    "copyFields": { "type": "object", "minProperties": 1 },
+    "expectedVerifierFailures": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "lineage": { "type": "object", "required": ["sourceRepair", "verifiedBy", "date"] }
+  }
+}

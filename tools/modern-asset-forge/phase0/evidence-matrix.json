@@ -1,0 +1,14 @@
+{
+  "schema": "axm.claim-evidence-matrix/v1",
+  "claims": [
+    { "id": "MF-C00", "claim": "The existing PS2 Asset Forge remains byte-identical to the Phase 0 baseline.", "verdict": "PASS", "proof": ["652-file deterministic tree SHA-256", "PS2 selftest PASS"], "counterevidence": [] },
+    { "id": "MF-C01", "claim": "The current modular hands include real bounded GLB, KTX2, rig, material, geometry, and DCC bridge capabilities.", "verdict": "PASS", "proof": ["34 registered executable hand descriptors", "focused hand audit"], "counterevidence": [] },
+    { "id": "MF-C02", "claim": "Blender authoring and export is executable on this machine.", "verdict": "FAIL", "proof": [], "counterevidence": ["Blender is absent from PATH", "pinned Blender substrate marker is absent"] },
+    { "id": "MF-C03", "claim": "Khronos glTF validation is executable on this machine.", "verdict": "FAIL", "proof": [], "counterevidence": ["gltf_validator is absent", "pinned validator substrate marker is absent"] },
+    { "id": "MF-C04", "claim": "Meshopt optimization is executable on this machine.", "verdict": "FAIL", "proof": [], "counterevidence": ["glTF Transform is absent", "gltfpack is absent"] },
+    { "id": "MF-C05", "claim": "Bounded standalone ETC1S/BasisLZ KTX2 encoding and decoder validation is executable.", "verdict": "PASS", "proof": ["pinned Basis encoder WebAssembly initializes", "KTX2 codec validates and transcodes output"], "counterevidence": ["does not prove UASTC, HDR, or GLB integration"] },
+    { "id": "MF-C06", "claim": "A local WebGL2 viewer can load an uncompressed GLB and emit a browser receipt.", "verdict": "PASS", "proof": ["local Three.js r160 and GLTFLoader are present", "Modern Forge smoke page and receipt endpoint"], "counterevidence": ["live task-specific receipt still required per build"] },
+    { "id": "MF-C07", "claim": "The local browser runtime supports KTX2 and meshopt delivery extensions.", "verdict": "FAIL", "proof": [], "counterevidence": ["matching KTX2Loader/transcoder is absent", "matching meshopt decoder is absent"] },
+    { "id": "MF-C08", "claim": "The complete canonical Phase 1 Blender-to-WebGL2 delivery loop is currently runnable end to end.", "verdict": "FAIL", "proof": [], "counterevidence": ["Blender, Khronos validators, optimizer, GLB KTX2 integration, and browser extension decoders are missing"] }
+  ]
+}

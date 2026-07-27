@@ -18,6 +18,32 @@ AI when and how to use a capability; a hand is the executable, testable module
 that any compatible host can call. The same hand can therefore serve Studio,
 Asset Fabric and future software without copying an AI-specific prompt.
 
+## Universal Component Protocol
+
+`universal-component.schema.json`, `universal-component-graph.schema.json` and
+`universal-component-receipt.schema.json` define the additive Universal
+Component Protocol (UCP). A component is a small immutable, digest-bound piece
+with typed input/output ports, target-canvas compatibility, provenance,
+licensing, resource costs and a declared verification ceiling. Graphs resolve
+exact component id + version + digest references, connect compatible ports,
+remain acyclic and carry no execution authority.
+
+The protocol is deliberately substrate-neutral. A palette may feed a UI theme,
+a PBR material may feed a 3D scene, a motion curve may drive animation, and a
+dimensioned part may enter a fabrication recipe. JSON records the choices and
+relations; a compatible domain hand still has to render, export, simulate or
+manufacture the result, and a field-specific verifier still has to test the
+claim. `READY_CONTRACT` is therefore never relabelled as rendered, beautiful,
+accessible, playable or safe to manufacture.
+
+`play-composer.js` and `play-compose-draft.schema.json` supply the inverse human
+path. Human-readable controls deterministically emit exact UCP pieces and a
+typed graph plus a temporary preview. Directed variation changes one named
+design axis at a time and records parent digest, energy and branch, allowing
+reusable design ingredients to grow without turning randomness or one score
+into taste. The preview is ephemeral until a human explicitly keeps it in a
+host incubator.
+
 ## Target Canvas Contract
 
 The target canvas is separate from the file container. It describes the actual
@@ -40,6 +66,10 @@ Built-in creation providers:
 - Surface & Pattern — seamless screen and game-world tiles.
 - Native Raster Texture — direct bounded PNG pixels and editable procedural
   recipes for screen and game-world surfaces.
+- Bounded Raster Compositor — deterministic sRGB RGBA8 layers, masks, integer
+  offsets, 14 blend modes and 13 filters; emits real PNG, an editable recipe
+  and an exact SHA-256-bound pixel round-trip receipt without granting visual
+  approval.
 - UI Component — responsive and interactive interface components.
 - Pixel & Sprite — pixel grids, spritesheets and timing metadata.
 - Layered Composition — screen compositions and Studio draw packets.
@@ -57,6 +87,9 @@ Built-in creation providers:
   transcode proof.
 - Theme Token — Visual Kernel semantic JSON tokens, CSS variables and a
   contrast-checked preview.
+- Portable Visual FX — fifteen locally generated deterministic effect blocks
+  with CSS, truthful SVG forms and host-neutral parameter tokens. Native app,
+  game-engine and operating-system targets require explicit adapters.
 - Layout & Responsive — editable responsive layout contracts, deterministic
   CSS and a geometry-derived preview.
 - Inspect & Codegen — read-only structural inspection of typed JSON, CSS, SVG,
@@ -154,6 +187,10 @@ Machine-readable JSON artifacts are checked after generation through
 `artifact-schema-catalog.js`. The standalone schema files listed in
 `service.contract.json` are the portable contract surface for other modules and
 future hand implementations.
+
+The UCP runtime and human composer are dependency-free local JavaScript. Run
+`node universal-component-selftest.js` and `node play-composer-selftest.js` for
+determinism, type/cycle/tamper, lineage and ephemeral-preview checks.
 
 ## Reference validators
 

@@ -1,0 +1,32 @@
+{
+  "id": "holodeck-composer",
+  "name": "Holodeck · Composer",
+  "version": "v0.2",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "Worlds",
+  "layer": "create",
+  "audience": "human",
+  "risk": "LOW",
+  "tags": ["holodeck", "world-composer", "human-interface", "live-preview", "observer-mode", "authority-boundary", "deterministic"],
+  "uses": ["holodeck-kernel", "holodeck-screen-adapter", "local-webgl", "shared-three-r160", "browser-storage-explicit", "local-files-export"],
+  "permissions": [],
+  "actions": [
+    "edit a friendly subset of Echo Atrium world data",
+    "compile edits into an immediate screen preview",
+    "try the draft through bounded human intents",
+    "switch to a read-only observer camera without changing world history",
+    "orbit, raise, lower, zoom, or choose observer viewpoints",
+    "explicitly save or load a browser-local draft",
+    "download a canonical world JSON draft",
+    "reset to the untouched template"
+  ],
+  "accepts": ["axm.holodeck-world/v1"],
+  "produces": ["axm.holodeck-world/v1", "axm.holodeck-deck-plan/v1", "axm.holodeck-camera-receipt/v1", "application/json"],
+  "readiness": ["holodeck-kernel", "holodeck-screen-adapter", "echo-atrium-world"],
+  "summary": "A human-facing workbench for changing selected Holodeck world data, compiling it immediately, and switching between history-changing player control and a read-only observer camera.",
+  "notes": "Local draft editor only. It does not import arbitrary worlds, promote canonical data, edit all contracts, or claim VR, hologram, or physical manipulation support."
+}

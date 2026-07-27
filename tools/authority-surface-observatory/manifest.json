@@ -1,0 +1,53 @@
+{
+  "id": "authority-surface-observatory",
+  "name": "AXM Authority Surface Observatory",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "LOW",
+  "tags": [
+    "authority",
+    "permissions",
+    "boundaries",
+    "writes",
+    "refuses",
+    "contracts",
+    "least-authority",
+    "observability",
+    "read-only"
+  ],
+  "uses": [
+    "filesystem-read",
+    "storage"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "actions": [
+    "inventory manifest and contract permission declarations",
+    "map contract write and refusal declarations without resolving targets",
+    "show exact manifest contract and uses drift",
+    "keep missing contracts as unknown authority surfaces",
+    "export an authority map only when an output path is explicit"
+  ],
+  "accepts": [
+    "axm.module-contract/v1",
+    "axm.module-manifest/v1"
+  ],
+  "produces": [
+    "axm.authority-surface-map/v1",
+    "axm.module-authority-surface/v1",
+    "axm.permission-declaration-record/v1"
+  ],
+  "readiness": [
+    "filesystem-read"
+  ],
+  "summary": "A deterministic Workshop-wide map of declared permissions, writes, refusals, and declaration drift that never treats missing authority data as safety or changes a grant.",
+  "notes": "Detached EXPERIMENTAL candidate. Static declarations are not runtime grants, enforcement proof, risk scores, or evidence that permissionless code is safe."
+}

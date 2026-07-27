@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/modern-asset-forge-build-receipt-v1.schema.json",
+  "title": "AXM Modern Asset Forge Build Receipt v1",
+  "type": "object",
+  "required": ["schema", "version", "job_id", "mode", "status", "output_root", "source_sha256", "toolchain", "capability_inventory_digest", "stages", "outputs", "canonical_delivery_emitted", "automatic_installation", "network_access_performed", "private_location_retained", "digest"],
+  "properties": {
+    "schema": { "const": "axm.modern-asset-forge.build-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "job_id": { "type": "string", "minLength": 3 },
+    "mode": { "enum": ["canonical_build", "diagnostic_smoke"] },
+    "workload_mode": { "enum": ["cool_idle", "authoring_interactive", "batch_optimize", "heavy_compute"] },
+    "status": { "enum": ["PASS", "COMPLETED_WITH_GAPS", "BLOCKED", "FAIL"] },
+    "output_root": { "type": "string", "minLength": 1 },
+    "source_sha256": { "$ref": "#/$defs/sha256" },
+    "toolchain": { "type": "object" },
+    "capability_inventory_digest": { "$ref": "#/$defs/sha256" },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "evidence", "gaps"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["PASS", "FAIL", "BLOCKED", "DEGRADED", "SKIPPED", "PREPARED", "UNKNOWN"] },
+          "evidence": { "type": "array" },
+          "gaps": { "type": "array" },
+          "detail": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "outputs": { "type": "array", "items": { "$ref": "asset-manifest.schema.json#/$defs/artifact" } },
+    "canonical_delivery_emitted": { "type": "boolean" },
+    "automatic_installation": { "const": false },
+    "network_access_performed": { "const": false },
+    "private_location_retained": { "const": false },
+    "digest": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": { "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" } },
+  "additionalProperties": false
+}

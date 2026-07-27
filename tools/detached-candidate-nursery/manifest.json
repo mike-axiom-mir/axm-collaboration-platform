@@ -1,0 +1,52 @@
+{
+  "id": "detached-candidate-nursery",
+  "name": "AXM Detached Candidate Nursery",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "LOW",
+  "tags": [
+    "candidate",
+    "nursery",
+    "pre-intake",
+    "bundle",
+    "integrity",
+    "registry",
+    "local-first",
+    "read-only"
+  ],
+  "uses": [
+    "filesystem-read",
+    "storage"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "actions": [
+    "inventory detached local module candidate folders",
+    "validate manifest and contract pairs as inert data",
+    "verify exact bundle-to-folder byte parity",
+    "label candidates draft repair-needed review-required or ready for later intake",
+    "export a registry only when an output path is explicit"
+  ],
+  "accepts": [
+    "filesystem/detached-candidate-root",
+    "axm.module-bundle/v1",
+    "axm.module-candidate-receipt/v1"
+  ],
+  "produces": [
+    "axm.detached-candidate-registry/v1",
+    "axm.detached-candidate-record/v1"
+  ],
+  "readiness": [
+    "filesystem-read"
+  ],
+  "summary": "A read-only nursery for locally grown module candidates before intake, proving whether each exact bundle still matches its folder without staging or installing anything.",
+  "notes": "Detached EXPERIMENTAL candidate. Structural readiness for later intake is not runtime readiness, visual approval, promotion, or CANON."
+}

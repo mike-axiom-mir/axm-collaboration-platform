@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "presentation-spine",
+  "version": "v0.3.0",
+  "provides": ["presentation-profile-preview", "presentation-profile-runtime-helper", "bounded-screen-contract-resolver", "portable-presentation-recipe-composer", "bounded-presentation-recipe-import-export", "deterministic-surface-migration-scan", "read-only-migration-report"],
+  "consumes": ["axm.presentation-spine.profiles/v1", "axm.presentation-recipe/v1", "axm.screen-contract/v1", "axm.visual-kernel.tokens/v1", "axm.skin/v1"],
+  "permissions": [],
+  "handoffs": {"emits": ["axm.presentation-recipe/v1", "axm.screen-contract/v1", "axm.presentation-spine.migration-report/v1"], "accepts": ["axm.presentation-recipe/v1", "axm.screen-contract/v1", "human:appearance-review"]},
+  "boundaries": {
+    "writes": ["explicit-browser-local:presentation-recipe", "explicit-user-download:presentation-recipe", "explicit-cli-output:migration-report-only"],
+    "refuses": ["automatic-host-rewrite", "automatic-profile-apply", "automatic-visual-approval", "automatic-canon-promotion", "behavior-change", "permission-change", "runtime-authority", "hardware-capability-claim", "network-contact"]
+  },
+  "lifecycle": {"state_owner": "browser", "reload": "resume", "disconnect": "not-applicable", "cleanup": "explicit"}
+}

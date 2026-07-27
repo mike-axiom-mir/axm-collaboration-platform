@@ -1,0 +1,64 @@
+{
+  "schema": "axm.holodeck-evidence-routes/v1",
+  "claims": [
+    {
+      "claim_id": "world-contract-validates",
+      "claim": "The Echo Atrium document satisfies the canonical Holodeck world contract and malformed identifiers, references, transforms, and effects are rejected.",
+      "kind": "static-structure",
+      "risk": "medium",
+      "pass_condition": "The validator accepts the example and focused invalid fixtures fail with named errors.",
+      "primary_surface": "parsed schema plus focused validator execution",
+      "counterevidence": "An invalid fixture passes or the example fails.",
+      "secondary_surface_if_needed": "module-contract and discovery verification"
+    },
+    {
+      "claim_id": "compiler-deterministic",
+      "claim": "Equivalent canonical worlds compile to the same ordered deck plan and semantic digest.",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "pass_condition": "Repeated compilation and reordered source arrays produce deep-equal plans and equal digests.",
+      "primary_surface": "focused execution with known inputs",
+      "counterevidence": "Order, clock time, actor identity, or renderer state changes the plan.",
+      "secondary_surface_if_needed": "fresh-process compilation"
+    },
+    {
+      "claim_id": "actor-intent-parity",
+      "claim": "Human and machine actors use the same intent schema and transition rules.",
+      "kind": "behavior",
+      "risk": "high",
+      "pass_condition": "Equivalent bounded intents from human and machine actors produce equivalent world movement and interaction effects without actor-only powers.",
+      "primary_surface": "focused dispatcher execution",
+      "counterevidence": "One actor kind bypasses validation, bounds, collisions, replay protection, or interaction range.",
+      "secondary_surface_if_needed": "live human controls plus exposed machine API"
+    },
+    {
+      "claim_id": "snapshot-restores",
+      "claim": "An explicit local snapshot restores equivalent state in a fresh controller and rejects tampering or another world.",
+      "kind": "persistence",
+      "risk": "high",
+      "pass_condition": "Save, fresh instance restore, and semantic comparison pass; checksum/world mismatches fail.",
+      "primary_surface": "fresh-process or fresh-controller restore",
+      "counterevidence": "State is lost, silently migrated, or accepts a bad checksum.",
+      "secondary_surface_if_needed": "browser reload journey"
+    },
+    {
+      "claim_id": "screen-deck-inhabitable",
+      "claim": "A person can enter Echo Atrium, move, interact with the beacon, observe the gate response, and use the interface at laptop and phone widths.",
+      "kind": "interaction-journey",
+      "risk": "medium",
+      "pass_condition": "The complete bounded journey visibly works without clipping, blank rendering, hidden controls, or console errors.",
+      "primary_surface": "live browser interaction and screenshots",
+      "counterevidence": "The scene is blank, input is ignored, the state change is invisible, or controls overflow.",
+      "secondary_surface_if_needed": "semantic state and intent receipts"
+    },
+    {
+      "claim_id": "scope-honest",
+      "claim": "Version zero is a screen simulation and makes no VR, hologram, physical manipulation, scientific reality, or autonomous world-authority claim.",
+      "kind": "static-structure",
+      "risk": "medium",
+      "pass_condition": "Contracts, UI, documentation, and receipts state the boundary consistently.",
+      "primary_surface": "contract and user-interface inspection",
+      "counterevidence": "Any surface presents a future adapter as currently implemented."
+    }
+  ]
+}

@@ -26,6 +26,28 @@
     return payload;
   }
   function operationResult(payload) { return payload && Object.prototype.hasOwnProperty.call(payload, 'result') ? payload.result : payload; }
+  function metricValue(value, format) {
+    var number = Number(value);
+    if (!Number.isFinite(number)) return 'UNKNOWN';
+    if (format === 'bytes') {
+      var units = ['B','KB','MB','GB','TB'], index = 0, amount = number;
+      while (amount >= 1024 && index < units.length - 1) { amount /= 1024; index++; }
+      return amount.toLocaleString(undefined, { maximumFractionDigits:index ? 1 : 0 }) + ' ' + units[index];
+    }
+    return number.toLocaleString();
+  }
+  function renderDeck(growth, body) {
+    var current = growth && growth.current;
+    document.querySelectorAll('[data-growth-key]').forEach(function (node) {
+      node.textContent = current ? metricValue(current[node.dataset.growthKey], node.dataset.format) : 'UNKNOWN';
+    });
+    document.querySelectorAll('[data-delta-key]').forEach(function (node) {
+      var delta = growth && growth.deltaFromPrevious, key = node.dataset.deltaKey;
+      node.textContent = delta && Number.isFinite(Number(delta[key])) ? signed(delta[key], 0) + ' since saved snapshot' : 'no comparable snapshot';
+    });
+    $('deckObserved').textContent = current && current.measuredAt ? new Date(current.measuredAt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) : 'UNKNOWN';
+    $('mirrorDeckState').textContent = body ? ('Body mode ' + String(body.mode || 'UNKNOWN') + ' · ' + (body.leases || []).length + ' active lease(s). Mirror identity is not inferred.') : 'Signal unavailable. Unknown is not offline.';
+  }
   function post(url, body, headerName, headerValue) {
     var headers = { 'content-type':'application/json' };
     if (headerName) headers[headerName] = headerValue;
@@ -100,7 +122,27 @@
     }).join('') || '<p class="empty">No saved plans yet.</p>';
   }
 
-  function renderSystem(body, glasses, cognitive) {
+  function renderNeeds(needs) {
+    if (!needs || !needs.summary) {
+      $('openNeedCount').textContent = '—';
+      $('openNeedHealth').textContent = 'Owner unavailable';
+      $('reviewCandidateCount').textContent = '—';
+      $('reviewCandidateHealth').textContent = 'Evidence unavailable';
+      return;
+    }
+    $('openNeedCount').textContent = needs.summary.open;
+    $('openNeedHealth').textContent = needs.summary.satisfied + ' accepted explicitly';
+    var readiness = needs.readiness || { state:'UNAVAILABLE', reviewCandidates:[] };
+    if (readiness.state === 'CURRENT') {
+      $('reviewCandidateCount').textContent = readiness.reviewCandidates.length;
+      $('reviewCandidateHealth').textContent = 'Waiting for Mike · not promoted';
+    } else {
+      $('reviewCandidateCount').textContent = '—';
+      $('reviewCandidateHealth').textContent = 'Evidence ' + String(readiness.state || 'UNAVAILABLE').toLowerCase();
+    }
+  }
+
+  function renderSystem(body, glasses, cognitive, needs) {
     if (body) {
       $('bodyMode').textContent = body.mode || 'UNKNOWN';
       $('bodyPressure').textContent = (body.body && body.body.pressure || 'UNKNOWN') + ' pressure · ' + (body.leases || []).length + ' lease(s)';
@@ -117,6 +159,7 @@
       var counts = cognitive.counts || {};
       $('evidenceTechnical').textContent = (cognitive.providers || []).length + ' declared providers · ' + (counts.records || 0) + ' total ledger records · ' + (counts.observations || 0) + ' run observation(s) · ' + (counts.profiles || 0) + ' machine profile(s) · ' + (counts.rateSchedules || 0) + ' rate schedule(s) · automatic capture OFF · no ranking authority.';
     }
+    renderNeeds(needs);
     var healthy = glasses && glasses.counts && glasses.counts.critical === 0 && glasses.counts.high === 0;
     $('coreStatus').textContent = healthy ? 'SYSTEM CLEAR' : glasses ? 'CHECK ISSUES' : 'PARTIAL SIGNAL';
     $('topState').textContent = healthy ? 'LOCAL SYSTEM READY' : 'REVIEW SYSTEM STATE';
@@ -127,21 +170,22 @@
   function renderOutput(growth, directionStatus) {
     if (!growth || !growth.current || !growth.current.activity) return;
     var current = growth.current, activity = current.activity, hour = activity.lastHour || {}, touched = Number(hour.files || 0), velocity = growth.velocity || {};
+    var coverage = velocity.coverage || {}, resumedBlind = velocity.ready && coverage.state === 'RESUMED_AFTER_GAP' && !coverage.hasMeasuredChange && !(activity.latest || []).some(function (item) { return Date.parse(item.modifiedAt) > Date.parse(velocity.baselineAt); });
     var done = (directionStatus && directionStatus.recentEvents || []).filter(function (event) { return event.kind === 'direction-status' && event.status === 'DONE' && Date.parse(event.at) >= Date.now() - 3600000; }).length;
-    $('codeHour').textContent = velocity.ready ? signed(velocity.codeLinesPerHour, 0) : 'WARMING UP';
-    $('assetHour').textContent = velocity.ready ? signed(velocity.assetFilesPerHour, 1) : '—';
-    $('testHour').textContent = velocity.ready ? signed(velocity.testLinesPerHour, 0) : '—';
+    $('codeHour').textContent = resumedBlind ? 'RESUMED' : velocity.ready ? signed(velocity.codeLinesPerHour, 0) : 'WARMING UP';
+    $('assetHour').textContent = resumedBlind ? '—' : velocity.ready ? signed(velocity.assetFilesPerHour, 1) : '—';
+    $('testHour').textContent = resumedBlind ? '—' : velocity.ready ? signed(velocity.testLinesPerHour, 0) : '—';
     $('doneHour').textContent = done;
-    $('outputSignal').textContent = velocity.ready && velocity.codeLinesDelta ? 'CODE GROWING' : touched ? 'METER SAMPLING' : 'QUIET HOUR';
-    $('outputHeadline').textContent = velocity.ready ? (signed(velocity.codeLinesPerHour, 0) + ' net code lines per hour.') : 'Code-line baseline started. The next sample reveals the real pace.';
+    $('outputSignal').textContent = resumedBlind ? 'MEASUREMENT RESUMED' : velocity.ready && velocity.codeLinesDelta ? 'CODE GROWING' : touched ? 'METER SAMPLING' : 'QUIET HOUR';
+    $('outputHeadline').textContent = resumedBlind ? 'Recent work predates the live line baseline.' : velocity.ready ? (signed(velocity.codeLinesPerHour, 0) + ' net code lines per hour.') : 'Code-line baseline started. The next sample reveals the real pace.';
     $('outputMeaning').textContent = Number(current.codeLines || 0).toLocaleString() + ' code lines · ' + Number(current.testLines || 0).toLocaleString() + ' test lines · ' + Number(current.assetFiles || 0).toLocaleString() + ' asset outputs currently in Workshop source.';
     $('outputPace').textContent = done ? (done + ' direction' + (done === 1 ? '' : 's') + ' was explicitly marked finished in the same hour.') : 'Net lines rise when code is added and fall when it is removed. Finished stays separate until a direction is explicitly marked finished.';
     var hourly = growth.hourlyVelocity || [], max = Math.max.apply(null, hourly.map(function (bucket) { return Math.abs(Number(bucket.codeLines || 0)); }).concat([1])), peak = hourly.reduce(function (best, bucket) { return Number(bucket.codeLines || 0) > Number(best.codeLines || 0) ? bucket : best; }, { codeLines:0, startedAt:null });
     $('outputBars').innerHTML = hourly.map(function (bucket) { var amount = Number(bucket.codeLines || 0), height = bucket.measured ? Math.max(3, Math.round(Math.abs(amount) / max * 100)) : 2, label = new Date(bucket.startedAt).toLocaleTimeString([], { hour:'2-digit' }); return '<i class="' + (amount < 0 ? 'negative' : '') + '" style="height:' + height + '%" title="' + signed(amount, 0) + ' net code lines measured around ' + esc(label) + '"><span>' + esc(label) + '</span></i>'; }).join('');
     $('peakHour').textContent = peak.startedAt ? ('PEAK ' + new Date(peak.startedAt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) + ' · ' + signed(peak.codeLines, 0) + ' LINES') : 'PEAK —';
     var rate = growth.rateFromPrevious, delta = growth.deltaFromPrevious || {};
-    $('sinceSnapshot').textContent = velocity.ready ? (signed(velocity.codeLinesDelta, 0) + ' net code lines since ' + new Date(velocity.baselineAt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) + ' · sampled locally every 15 minutes') : (rate && rate.codeLinesPerHour != null ? (signed(delta.codeLines, 0) + ' net code lines · ' + signed(rate.codeLinesPerHour, 1) + '/hour since the last growth snapshot') : 'The first aggregate line-count sample is stored; no fake historical rate is invented.');
-    $('outputTruth').textContent = 'Only aggregate counts are stored · deletions reduce the rate · source contents are never retained · this is not typing speed.';
+    $('sinceSnapshot').textContent = resumedBlind ? ('Sampling resumed at ' + new Date(velocity.baselineAt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) + ' after a ' + Math.max(1, Math.round(Number(coverage.gapBeforeBaselineMinutes || 0) / 60)) + '-hour coverage gap.') : velocity.ready ? (signed(velocity.codeLinesDelta, 0) + ' net code lines since ' + new Date(velocity.baselineAt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) + ' · sampled locally every 15 minutes') : (rate && rate.codeLinesPerHour != null ? (signed(delta.codeLines, 0) + ' net code lines · ' + signed(rate.codeLinesPerHour, 1) + '/hour since the last growth snapshot') : 'The first aggregate line-count sample is stored; no fake historical rate is invented.');
+    $('outputTruth').textContent = resumedBlind ? 'The files below are real recent activity, but net additions before the baseline are unknown rather than zero.' : 'Only aggregate counts are stored · deletions reduce the rate · source contents are never retained · this is not typing speed.';
     $('latestOutput').innerHTML = (activity.latest || []).slice(0,5).map(function (item) { return '<span><b>' + esc(item.kind.toUpperCase()) + '</b>' + esc(item.file.split('/').slice(-2).join('/')) + '<small>' + new Date(item.modifiedAt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) + '</small></span>'; }).join('') || '<span>No file activity in the last 24 hours.</span>';
   }
 
@@ -183,20 +227,28 @@
   }
   async function refreshAll() {
     $('refreshAll').disabled = true; $('topState').textContent = 'SCANNING LOCAL SYSTEM';
-    var results = await Promise.allSettled([api('/api/body-pulse'), api('/api/workshop/technical-glasses'), api('/api/cognitive-resource-meter'), api('/api/workshop-growth'), api('/api/cognitive-resource-meter/command-center-controls'), refreshPlans(), refreshReviews()]);
+    var results = await Promise.allSettled([api('/api/body-pulse'), api('/api/workshop/technical-glasses'), api('/api/cognitive-resource-meter'), api('/api/workshop-growth'), api('/api/cognitive-resource-meter/command-center-controls'), api('/api/workshop-needs'), refreshPlans(), refreshReviews()]);
     var body = results[0].status === 'fulfilled' ? results[0].value.status : null;
     var glasses = results[1].status === 'fulfilled' ? results[1].value : null;
     var cognitive = results[2].status === 'fulfilled' ? operationResult(results[2].value) : null;
     var growth = results[3].status === 'fulfilled' ? results[3].value : null;
     var controls = results[4].status === 'fulfilled' ? operationResult(results[4].value) : null;
-    var directionStatus = results[5].status === 'fulfilled' ? results[5].value : null;
-    renderSystem(body, glasses, cognitive); renderOutput(growth, directionStatus); renderControls(controls);
+    var needs = results[5].status === 'fulfilled' ? operationResult(results[5].value) : null;
+    var directionStatus = results[6].status === 'fulfilled' ? results[6].value : null;
+    renderSystem(body, glasses, cognitive, needs); renderDeck(growth, body); renderOutput(growth, directionStatus); renderControls(controls);
     $('refreshAll').disabled = false;
     var failures = results.filter(function (result) { return result.status === 'rejected'; });
     if (failures.length) notice(failures.length + ' local status source(s) could not be read. Unknown is shown instead.', true);
   }
 
   $('priority').oninput = function () { $('priorityValue').textContent = this.value; };
+  $('deckCommandForm').onsubmit = function (event) {
+    event.preventDefault();
+    var command = $('deckCommand').value.trim();
+    if (!command) return notice('Tell AXM what you want to make or fix first.', true);
+    $('description').value = command;
+    $('commandForm').requestSubmit();
+  };
   $('commandForm').onsubmit = async function (event) {
     event.preventDefault();
     if (!Review) return notice('Direction review engine is unavailable.', true);
@@ -273,8 +325,8 @@
     try { $('controlOutput').textContent = JSON.stringify(operationResult(await api(button.dataset.safeGet)), null, 2); } catch (error) { $('controlOutput').textContent = 'READ FAILED: ' + error.message; }
   };
   $('refreshAll').onclick = refreshAll;
-  $('refreshPlans').onclick = function () { refreshPlans().then(function () { notice('Saved plan state refreshed.'); }).catch(function (error) { notice(error.message, true); }); };
-  $('refreshPool').onclick = function () { Promise.all([refreshPlans(), refreshReviews()]).then(function () { notice('Decision Pool refreshed.'); }).catch(function (error) { notice(error.message, true); }); };
+  $('refreshPlans').onclick = function () { refreshPlans().then(function () { notice('Saved plans refreshed. Nothing was saved or changed.'); }).catch(function (error) { notice(error.message, true); }); };
+  $('refreshPool').onclick = function () { Promise.all([refreshPlans(), refreshReviews()]).then(function () { notice('Plans needing a decision refreshed. Nothing was saved or changed.'); }).catch(function (error) { notice(error.message, true); }); };
 
   refreshAll();
   if (window.parent !== window) window.parent.postMessage({ type:'hub:ready', moduleId:'workshop-command-center' }, '*');

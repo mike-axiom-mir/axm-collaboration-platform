@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.holodeck-state-snapshot/v1",
+  "title": "AXM Holodeck explicit local snapshot",
+  "type": "object",
+  "required": ["schema", "worldId", "worldDigest", "revision", "payload", "truth", "snapshotDigest"],
+  "properties": {
+    "schema": {"const":"axm.holodeck-state-snapshot/v1"},
+    "revision": {"type":"integer","minimum":0},
+    "payload": {"type":"object"},
+    "truth": {"type":"object","required":["browserLocalOnly","authoritativeSharedWorld","automaticSave","automaticRestore"]},
+    "snapshotDigest": {"type":"string"}
+  }
+}

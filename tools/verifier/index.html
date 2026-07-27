@@ -1,226 +1,143 @@
 <!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AXM Hub — Verifier</title>
+<title>AXM Hub - Verification Spine</title>
 <style>
-:root{--space:#080b14;--panel:#0d1320;--edge:#1d2942;--cy:#38d6ec;--green:#63d68a;--red:#e86a5f;--gold:#e8b54a;--muted:#828d9e;--text:#dce2ea}
-html,body{margin:0;height:100%;background:var(--space);color:var(--text);font-family:system-ui,sans-serif}
-.wrap{max-width:760px;margin:0 auto;padding:24px}
-h1{font-size:20px;margin:0 0 4px}.sub{color:var(--muted);margin:0 0 18px;font-size:13px}
-h2{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:22px 0 8px}
-.item{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--edge);border-radius:10px;background:var(--panel);margin-bottom:8px}
-.item .nm{flex:1;font-size:13.5px}.item .d{color:var(--muted);font-size:11.5px}
-.lock{font-size:11px;color:var(--muted);border:1px solid var(--edge);border-radius:6px;padding:3px 8px}
-.form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:13px;border:1px dashed var(--edge);border-radius:10px;margin-bottom:8px}
-select,input{background:#06080f;border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:7px 9px;font-family:inherit;font-size:13px}
-input{min-width:150px}
-button{padding:8px 13px;border:1px solid #1c7f92;border-radius:9px;background:rgba(56,214,236,.1);color:var(--cy);cursor:pointer;font-size:13px}
-button.ghost{border-color:var(--edge);background:transparent;color:var(--text)}
-.bar{display:flex;gap:10px;margin-top:16px}
-.note{color:var(--muted);font-size:12px;margin-top:10px;font-family:ui-monospace,monospace}
-.count{font-size:11px;color:var(--gold);border:1px solid rgba(232,181,74,.35);border-radius:6px;padding:3px 8px;white-space:nowrap}
-.count.good{color:var(--green);border-color:rgba(99,214,138,.35)}
-.seam-detail{display:block;margin-top:4px;color:var(--muted);font-size:11.5px;line-height:1.45}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <h1>Verifier</h1>
-  <p class="sub">Add or remove your own checks — no code editing. Then download <b>verify.config.json</b> and drop it in your project root. Run <b>node hub/verify-plus.js</b> to run the core gate plus your checks.</p>
+:root{--space:#070b13;--panel:#0d1421;--panel2:#101a2a;--edge:#21314b;--cy:#43d9ec;--green:#66db93;--red:#f07168;--gold:#efbd57;--violet:#ae8bff;--muted:#8795aa;--text:#e4eaf2}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% -20%,#142a42 0,var(--space) 42%);color:var(--text);font-family:system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:28px}.eyebrow{color:var(--cy);font:700 11px ui-monospace,monospace;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:28px;margin:5px 0}.sub{color:var(--muted);margin:0 0 18px;font-size:13px;line-height:1.55}h2{font-size:13px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);margin:26px 0 9px}
+.hero,.panel{border:1px solid var(--edge);border-radius:16px;background:rgba(13,20,33,.92);padding:18px}.hero{display:flex;justify-content:space-between;gap:20px;align-items:center}.verdict{font:800 22px ui-monospace,monospace;color:var(--green)}.verdict.HELD,.verdict.HUMAN_REVIEW{color:var(--gold)}.verdict.FAILED{color:var(--red)}
+.meta,.detail{color:var(--muted);font-size:12px;line-height:1.5}.category-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.category{border:1px solid var(--edge);border-radius:12px;padding:13px;background:var(--panel)}.category b{display:block;text-transform:capitalize}.category .status{margin-top:7px;font:11px ui-monospace,monospace;color:var(--cy)}.category p{color:var(--muted);font-size:11px;line-height:1.45;margin:9px 0}.category details{border-top:1px solid var(--edge);padding-top:7px}.category summary{cursor:pointer;color:var(--violet);font-size:10px;text-transform:uppercase;letter-spacing:.6px}.category ul{padding-left:17px;margin:7px 0 0}.category li{color:var(--muted);font-size:10.5px;line-height:1.4;margin-bottom:5px}.category code{color:var(--cy);font-size:9px}
+.attention{border:1px solid rgba(239,189,87,.45);background:linear-gradient(115deg,rgba(239,189,87,.08),rgba(174,139,255,.07));border-radius:16px;padding:17px}.attention.good{border-color:rgba(102,219,147,.35)}
+.item{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--edge);border-radius:10px;background:var(--panel);margin-bottom:8px}.item .nm{flex:1;font-size:13.5px}.item .d{color:var(--muted);font-size:11.5px;line-height:1.45;margin-top:3px}.lock,.pill{font-size:10px;color:var(--muted);border:1px solid var(--edge);border-radius:999px;padding:4px 8px;white-space:nowrap}.pill.active{color:var(--red)}.pill.candidate{color:var(--gold)}.pill.monitor{color:var(--cy)}.pill.manual-review{color:var(--violet)}
+.form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;padding:14px;border:1px dashed var(--edge);border-radius:12px;margin-bottom:10px}.wide{grid-column:span 2}.full{grid-column:1/-1}.field label{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.7px;margin:0 0 5px}.field input,.field select,.field textarea{width:100%;background:#070b12;border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:8px 10px;font:13px inherit}.field textarea{min-height:70px;resize:vertical}
+button{padding:8px 13px;border:1px solid #26869a;border-radius:9px;background:rgba(67,217,236,.1);color:var(--cy);cursor:pointer;font-size:13px}button:hover{filter:brightness(1.2)}button.ghost{border-color:var(--edge);background:transparent;color:var(--text)}button.warn{border-color:#8c6324;color:var(--gold);background:rgba(239,189,87,.08)}button.danger{border-color:#843c3b;color:var(--red);background:rgba(240,113,104,.07)}
+.bar{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.note{color:var(--muted);font-size:12px;margin-top:10px;font-family:ui-monospace,monospace}.count{font-size:11px;color:var(--gold);border:1px solid rgba(239,189,87,.35);border-radius:6px;padding:3px 8px;white-space:nowrap}.count.good{color:var(--green);border-color:rgba(102,219,147,.35)}
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.flow-col{min-width:0;border:1px solid var(--edge);border-radius:12px;padding:9px;background:rgba(7,11,18,.45)}.flow-col h3{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:0 0 8px}.lesson{border:1px solid var(--edge);border-radius:9px;background:var(--panel2);padding:9px;margin-bottom:7px;cursor:pointer}.lesson:hover,.lesson.selected{border-color:var(--cy)}.lesson b{font-size:11px;display:block}.lesson span{font-size:10px;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.muted-box{border:1px dashed var(--edge);border-radius:10px;padding:12px;color:var(--muted);font-size:12px}.hidden{display:none!important}
+@media(max-width:900px){.category-grid{grid-template-columns:repeat(2,1fr)}.form{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.hero{align-items:flex-start;flex-direction:column}}
+@media(max-width:560px){.wrap{padding:14px}.category-grid,.form,.flow{grid-template-columns:1fr}.wide,.full{grid-column:1}.hero{padding:14px}h1{font-size:23px}.item{align-items:flex-start;flex-wrap:wrap}}
+</style></head>
+<body><div class="wrap">
+  <div class="eyebrow">AXM - evidence before confidence</div>
+  <h1>Main Verifier + Verification Spine</h1>
+  <p class="sub">One floor, specialist category judges, named conflicts and a compact memory of failures we choose to never repeat. A category rule cannot silently overrule another field; disagreement enters the review lane.</p>
 
-  <h2>Core floor · retire only with a reason</h2>
-  <p class="sub" style="margin-top:-4px">Core checks aren't deletable like your own — but as tech changes a check can be <b>retired</b>: it stays visible in every report with your reason, is logged permanently, and can be un-retired. Never silent.</p>
-  <div id="coreList"></div>
+  <section class="hero">
+    <div><div id="spineVerdict" class="verdict HELD">NOT SCANNED</div><div id="spineMeta" class="meta">Run <b>node hub/verify-plus.js</b> to create the normalized receipt.</div></div>
+    <div class="field"><label>Target profile</label><select id="targetProfile"></select></div>
+  </section>
 
-  <h2>Retire a core check</h2>
-  <p class="sub" style="margin-top:-4px">Paste a distinctive phrase from the FAIL/warn line you want to retire (click one below to fill it), give a reason, and confirm.</p>
-  <div id="coreReport"></div>
-  <div class="form">
-    <input id="retMatch" type="text" placeholder="match: phrase from the check line">
-    <input id="retReason" type="text" placeholder="reason (required)">
-    <input id="retBy" type="text" placeholder="by (your name)">
-    <input id="retReview" type="text" placeholder="review-by date (optional)">
-    <button id="retBtn">Retire check</button>
+  <h2>Category judges</h2>
+  <div id="categoryGrid" class="category-grid"></div>
+
+  <h2>Contradiction + no-pass lane</h2>
+  <section id="attentionLane" class="attention"><div class="meta">No Verification Spine report loaded yet.</div></section>
+
+  <h2>Failure memory flow</h2>
+  <p class="sub">A raw observation starts as a non-blocking candidate. Only a reproduced, bounded check may become active. Monitor watches without blocking; manual review names judgement that software cannot honestly automate; retired lessons remain visible with their revision history.</p>
+  <div id="failureFlow" class="flow"></div>
+
+  <h2 id="lessonEditorTitle">Add a failure candidate</h2>
+  <div class="form" id="failureForm">
+    <div class="field"><label>Category</label><select id="fmCategory"></select></div>
+    <div class="field"><label>Target profile</label><select id="fmProfile"></select></div>
+    <div class="field"><label>Risk</label><select id="fmRisk"><option>low</option><option selected>medium</option><option>high</option></select></div>
+    <div class="field"><label>Lifecycle</label><select id="fmLifecycle" disabled><option>candidate</option><option>active</option><option>monitor</option><option>manual-review</option><option>retired</option></select></div>
+    <div class="field wide"><label>Title</label><input id="fmTitle" placeholder="What failed or was overlooked?"></div>
+    <div class="field wide"><label>Atomic claim ID</label><input id="fmClaim" placeholder="game.phone-controller.reconnects"></div>
+    <div class="field full"><label>Compact source observation (max 500)</label><textarea id="fmSource" placeholder="What was observed? Keep the lesson, not the whole raw log."></textarea></div>
+    <div class="field"><label>Evidence kind</label><select id="fmEvidence"><option>deterministic-behavior</option><option>static-structure</option><option>interaction-journey</option><option>visual-observation</option><option>state-continuity</option><option>human-judgement</option></select></div>
+    <div class="field wide"><label>Pass condition</label><input id="fmPass" placeholder="Exact observable condition that proves the failure is repaired"></div>
+    <div class="field"><label>Primary evidence surface</label><input id="fmSurface" placeholder="test, receipt, live screen, human gate"></div>
+    <div class="field"><label>Executable check kind</label><select id="fmCheckKind"><option value="">none / human review</option><option value="file-exists">File exists</option><option value="file-contains">File contains text</option><option value="json-has-field">JSON has field</option><option value="manifest-present">Module has manifest</option></select></div>
+    <div class="field"><label>Check path / folder</label><input id="fmCheckPath" placeholder="relative workspace path"></div>
+    <div class="field wide"><label>Check text / field</label><input id="fmCheckValue" placeholder="needle or dotted JSON field"></div>
+    <div class="field"><label>Revision by</label><input id="fmBy" value="Mike + machine seat"></div>
+    <div class="field wide"><label>Revision reason (required when editing)</label><input id="fmReason" placeholder="Why the rule or lifecycle changes"></div>
+    <div class="field"><label>Revision history</label><div id="fmRevisions" class="meta">new candidate</div></div>
+    <div class="field full"><div class="bar"><button id="fmAdd">Add candidate</button><button id="fmSave" class="hidden">Save revision</button><button id="fmActivate" class="warn hidden">Promote active</button><button id="fmMonitor" class="ghost hidden">Move to monitor</button><button id="fmHuman" class="ghost hidden">Require human review</button><button id="fmRetire" class="danger hidden">Retire lesson</button><button id="fmClear" class="ghost">Clear editor</button></div></div>
   </div>
-  <div id="retList"></div>
 
-  <h2>Lifecycle seam gaps</h2>
-  <p class="sub" style="margin-top:-4px">Reload, disconnect, cleanup and Game Night evidence that still needs a declared answer. Pending stays visible; it is never silently counted as verified.</p>
-  <div id="seamGaps"></div>
+  <div class="two">
+    <section class="panel">
+      <h2 style="margin-top:0">Core floor - retire only with a reason</h2>
+      <p class="sub">Core checks stay locked. Retirement never deletes the line: its reason remains visible and is logged.</p>
+      <div id="coreList"></div><div id="coreReport"></div>
+      <div class="form" style="grid-template-columns:1fr 1fr">
+        <div class="field full"><label>Distinct phrase from core line</label><input id="retMatch"></div>
+        <div class="field full"><label>Reason</label><input id="retReason"></div>
+        <div class="field"><label>By</label><input id="retBy" value="Mike"></div>
+        <div class="field"><label>Review date</label><input id="retReview"></div>
+        <div class="field full"><button id="retBtn">Retire core check</button></div>
+      </div><div id="retList"></div>
+    </section>
 
-  <h2>Your checks</h2>
-  <div class="form">
-    <select id="kind"></select>
-    <input id="p1" type="text" placeholder="path e.g. hub/index.html">
-    <input id="p2" type="text" placeholder="text / field / folder">
-    <input id="lblIn" type="text" placeholder="label (optional)">
-    <button id="addBtn">Add check</button>
+    <section class="panel">
+      <h2 style="margin-top:0">Editable checks</h2>
+      <p class="sub">Small deterministic checks owned by the steward. Give each one a category, risk and required/optional meaning.</p>
+      <div class="form" style="grid-template-columns:1fr 1fr">
+        <div class="field"><label>Kind</label><select id="kind"></select></div>
+        <div class="field"><label>Category</label><select id="checkCategory"></select></div>
+        <div class="field full"><label>Path / folder</label><input id="p1"></div>
+        <div class="field full"><label>Text / field</label><input id="p2"></div>
+        <div class="field"><label>Risk</label><select id="checkRisk"><option>low</option><option selected>medium</option><option>high</option></select></div>
+        <div class="field"><label>Gate meaning</label><select id="checkRequired"><option value="true">required</option><option value="false">optional</option></select></div>
+        <div class="field full"><label>Label</label><input id="lblIn"></div>
+        <div class="field full"><button id="addBtn">Add check</button></div>
+      </div><div id="userList"></div>
+    </section>
   </div>
-  <div id="userList"></div>
 
-  <div class="bar">
-    <button id="dlBtn">Download verify.config.json</button>
-    <button class="ghost" id="reloadBtn">Reload current config</button>
-  </div>
-  <div class="note" id="note">loading current config…</div>
+  <h2>Lifecycle seam inventory</h2><div id="seamGaps"></div>
+  <div class="bar"><button id="dlBtn">Download verify.config.json</button><button class="ghost" id="reloadBtn">Reload current config</button></div>
+  <div class="note" id="note">loading current config...</div>
 </div>
 
 <script src="/hub/verify-checks.js"></script>
+<script src="/shared/verification-spine/verification-spine.js"></script>
 <script src="/hub/axm-hub-module.js"></script>
 <script>
-var $ = function(id){ return document.getElementById(id); };
-var config = { userChecks: [], acknowledgedWarnings: [] };
-var nextId = 1;
-
-/* core floor — shown with retirement state */
-function renderCore(){
-  var wrap = $('coreList'); wrap.innerHTML = '';
-  AXMChecks.CORE_GROUPS.forEach(function(g){
-    var d = document.createElement('div'); d.className = 'item';
-    d.innerHTML = '<span class="nm"></span><span class="lock">core</span>';
-    d.querySelector('.nm').textContent = g; wrap.appendChild(d);
-  });
-}
-renderCore();
-
-/* kind picker */
-(function fillKinds(){
-  Object.keys(AXMChecks.KINDS).forEach(function(k){
-    var o = document.createElement('option'); o.value = k; o.textContent = AXMChecks.KINDS[k].label; $('kind').appendChild(o);
-  });
-})();
-
-function renderUser(){
-  var wrap = $('userList'); wrap.innerHTML = '';
-  if (!config.userChecks.length) { wrap.innerHTML = '<div class="item"><span class="nm d">No checks yet — add one above.</span></div>'; }
-  config.userChecks.forEach(function(c){
-    var d = document.createElement('div'); d.className = 'item';
-    var nm = document.createElement('div'); nm.className = 'nm';
-    nm.innerHTML = '<div></div><div class="d"></div>';
-    nm.children[0].textContent = c.label || AXMChecks.KINDS[c.kind].label;
-    nm.children[1].textContent = c.kind + '  ·  ' + (c.path || c.folder || '') + (c.needle ? '  ⊇ "' + c.needle + '"' : '') + (c.field ? '  . ' + c.field : '');
-    var rm = document.createElement('button'); rm.className = 'ghost'; rm.textContent = 'Remove';
-    rm.onclick = function(){ config.userChecks = config.userChecks.filter(function(x){ return x.id !== c.id; }); renderUser(); AXMHub.log('removed check ' + c.id); };
-    d.appendChild(nm); d.appendChild(rm); wrap.appendChild(d);
-  });
-}
-
-$('addBtn').onclick = function(){
-  var kind = $('kind').value, p1 = $('p1').value.trim(), p2 = $('p2').value.trim();
-  if (!p1) { $('note').textContent = 'first field (path/folder) is required'; return; }
-  var c = { id: 'u' + (nextId++), kind: kind, label: $('lblIn').value.trim() };
-  if (kind === 'manifest-present') c.folder = p1; else c.path = p1;
-  if (kind === 'file-contains') c.needle = p2;
-  if (kind === 'json-has-field') c.field = p2;
-  config.userChecks.push(c); $('p1').value = ''; $('p2').value = ''; $('lblIn').value = '';
-  renderUser(); AXMHub.log('added ' + kind + ' check on ' + p1);
-};
-
-function renderRetirements(){
-  var wrap = $('retList'); wrap.innerHTML = '';
-  var rets = config.retirements || [];
-  if (!rets.length) { wrap.innerHTML = '<div class="item"><span class="nm d">No core checks retired.</span></div>'; return; }
-  rets.forEach(function(r){
-    var d = document.createElement('div'); d.className = 'item';
-    var nm = document.createElement('div'); nm.className = 'nm';
-    nm.innerHTML = '<div></div><div class="d"></div>';
-    nm.children[0].textContent = 'RETIRED: "' + r.match + '"';
-    nm.children[1].textContent = r.reason + '  ·  by ' + (r.by || '?') + (r.at ? '  ·  ' + r.at : '') + (r.review ? '  ·  review ' + r.review : '');
-    var un = document.createElement('button'); un.className = 'ghost'; un.textContent = 'Un-retire';
-    un.onclick = function(){ config.retirements = config.retirements.filter(function(x){ return x !== r; }); renderRetirements(); AXMHub.log('un-retired "' + r.match + '"'); };
-    d.appendChild(nm); d.appendChild(un); wrap.appendChild(d);
-  });
-}
-
-function loadReport(){
-  var box = $('coreReport'); box.innerHTML = '';
-  fetch('/exports/verify-report.txt').then(function(r){ return r.ok ? r.text() : null; }).then(function(t){
-    if (!t) { box.innerHTML = '<div class="item"><span class="nm d">No core report yet — run node verify.js once to list any FAIL/warn lines here.</span></div>'; return; }
-    var lines = t.split('\n').filter(function(L){ var k = L.replace(/^\s+/,'').slice(0,4); return k === 'FAIL' || k === 'warn'; });
-    if (!lines.length) { box.innerHTML = '<div class="item"><span class="nm d">Last core report: no FAIL/warn lines. Nothing needs retiring.</span></div>'; return; }
-    lines.forEach(function(L){
-      var d = document.createElement('div'); d.className = 'item';
-      var nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = L.trim();
-      var pick = document.createElement('button'); pick.className = 'ghost'; pick.textContent = 'Use';
-      pick.onclick = function(){ $('retMatch').value = L.trim().replace(/^(FAIL|warn)\s+/,''); };
-      d.appendChild(nm); d.appendChild(pick); box.appendChild(d);
-    });
-  }).catch(function(){ box.innerHTML = ''; });
-}
-
-function seamItem(title, detail, count, good){
-  var d = document.createElement('div'); d.className = 'item';
-  var nm = document.createElement('div'); nm.className = 'nm';
-  var t = document.createElement('div'); t.textContent = title; nm.appendChild(t);
-  if (detail) { var s = document.createElement('span'); s.className = 'seam-detail'; s.textContent = detail; nm.appendChild(s); }
-  var badge = document.createElement('span'); badge.className = 'count' + (good ? ' good' : ''); badge.textContent = count;
-  d.appendChild(nm); d.appendChild(badge); return d;
-}
-
-function loadSeamGaps(){
-  var box = $('seamGaps'); box.innerHTML = '';
-  Promise.all([
-    fetch('/exports/game-night-seam-report.json').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }),
-    fetch('/exports/module-seam-gaps.json').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; })
-  ]).then(function(reports){
-    var games = reports[0], modules = reports[1];
-    if (!games && !modules) {
-      box.appendChild(seamItem('No seam inventory yet', 'Run node verify.js once to generate the current Game Night and module lifecycle reports.', 'not scanned', false));
-      return;
-    }
-    if (games) {
-      box.appendChild(seamItem(
-        'Game Night hard contracts',
-        games.games.length + ' packages checked. Structural failures block launch; pending physical phone, reconnect or overlay evidence remains a warning.',
-        games.failCount ? games.failCount + ' failure(s)' : games.warningCount + ' pending',
-        !games.failCount && !games.warningCount
-      ));
-    }
-    if (modules) {
-      box.appendChild(seamItem(
-        'Older module lifecycle inventory',
-        modules.moduleCount + ' modules scanned for state owner, reload, disconnect and cleanup decisions. This report does not rewrite legacy modules.',
-        modules.gapCount ? modules.gapCount + ' gap(s)' : 'complete',
-        !modules.gapCount
-      ));
-    }
-  });
-}
-
-$('retBtn').onclick = function(){
-  var match = $('retMatch').value.trim(), reason = $('retReason').value.trim();
-  if (!match) { $('note').textContent = 'match is required (a phrase from the check line)'; return; }
-  if (!reason) { $('note').textContent = 'a reason is required to retire a core check'; return; }
-  if (!confirm('This turns off a core safety check.\n\n"' + match + '"\n\nIt will still show in every report with your reason, and be logged. Continue?')) return;
-  config.retirements = config.retirements || [];
-  config.retirements.push({ match: match, reason: reason, by: $('retBy').value.trim() || 'me', at: new Date().toISOString().slice(0,10), review: $('retReview').value.trim() });
-  $('retMatch').value = ''; $('retReason').value = ''; $('retReview').value = '';
-  renderRetirements(); AXMHub.log('retired core check "' + match + '" — ' + reason);
-  $('note').textContent = 'retired — download the config and run node hub/verify-plus.js to apply';
-};
-
-$('dlBtn').onclick = function(){
-  var clean = { _note: config._note || 'YOUR checks + retirements. kinds: file-exists | file-contains | json-has-field | manifest-present',
-                userChecks: config.userChecks, retirements: config.retirements || [], acknowledgedWarnings: config.acknowledgedWarnings || [] };
-  var blob = new Blob([JSON.stringify(clean, null, 2)], { type: 'application/json' });
-  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'verify.config.json'; a.click();
-  AXMHub.log('downloaded verify.config.json (' + config.userChecks.length + ' checks, ' + (config.retirements||[]).length + ' retired)'); AXMHub.save({ userChecks: config.userChecks, retirements: config.retirements });
-  $('note').textContent = 'downloaded — drop verify.config.json into your project root, then run node hub/verify-plus.js';
-};
-
-function loadConfig(){
-  fetch('/verify.config.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
-    if (j) { config = j; config.userChecks = config.userChecks || []; config.retirements = config.retirements || [];
-      var max = 0; config.userChecks.forEach(function(c){ var n = parseInt(String(c.id).replace(/\D/g,''),10); if(n>max) max=n; }); nextId = max+1;
-      $('note').textContent = 'loaded current config · ' + config.userChecks.length + ' checks · ' + config.retirements.length + ' retired'; }
-    else { $('note').textContent = 'no verify.config.json found yet — add checks and download to create it'; config.retirements = config.retirements || []; }
-    renderUser(); renderRetirements();
-  }).catch(function(){ $('note').textContent = 'could not load config (add checks and download to create it)'; renderUser(); });
-}
-$('reloadBtn').onclick = loadConfig;
-
-AXMHub.onInit(function(){ AXMHub.log('Verifier ready'); });
-AXMHub.ready({ id:'verifier', name:'Verifier', version:'v1.0', hubApiVersion:'1.0', permissions:[], savesState:true, handlesShutdown:false });
-loadConfig(); loadReport(); loadSeamGaps();
-</script>
-</body></html>
+var $=function(id){return document.getElementById(id);};
+var FALLBACK_CATEGORIES=['foundation','module','hand','asset','game','organ','world','publish'];
+var FALLBACK_PROFILES=['workshop-full','game-night','mobile-game-asset','ai-organ-experimental','living-world-experimental','public-release'];
+var categories=FALLBACK_CATEGORIES.slice(),profiles=FALLBACK_PROFILES.slice(),categoryDefinitions={};
+var config={userChecks:[],acknowledgedWarnings:[],verificationSpine:{schema:'axm.verification-spine-config/v2',targetProfile:'workshop-full',failureMemory:[]}};
+var nextId=1,selectedLessonId=null,lastSpineReport=null;
+function optionList(select,values,current){select.innerHTML='';values.forEach(function(v){var o=document.createElement('option');o.value=v;o.textContent=v;select.appendChild(o);});if(current&&values.indexOf(current)>=0)select.value=current;}
+function ensureSpine(){config.verificationSpine=config.verificationSpine||{};config.verificationSpine.schema='axm.verification-spine-config/v2';config.verificationSpine.targetProfile=config.verificationSpine.targetProfile||'workshop-full';config.verificationSpine.failureMemory=config.verificationSpine.failureMemory||[];return config.verificationSpine;}
+function setText(node,text){node.textContent=text;return node;}
+function renderCore(){var w=$('coreList');w.innerHTML='';AXMChecks.CORE_GROUPS.forEach(function(g){var d=document.createElement('div');d.className='item';var n=setText(document.createElement('span'),g);n.className='nm';var l=setText(document.createElement('span'),'locked');l.className='lock';d.append(n,l);w.appendChild(d);});}
+function fillKinds(){Object.keys(AXMChecks.KINDS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=AXMChecks.KINDS[k].label;$('kind').appendChild(o);});}
+function renderUser(){var w=$('userList');w.innerHTML='';if(!config.userChecks.length){w.innerHTML='<div class="muted-box">No editable checks yet.</div>';return;}config.userChecks.forEach(function(c){var d=document.createElement('div');d.className='item';var n=document.createElement('div');n.className='nm';var a=setText(document.createElement('div'),c.label||(AXMChecks.KINDS[c.kind]||{}).label||c.kind);var b=setText(document.createElement('div'),(c.category||'foundation')+' / '+(c.risk||'medium')+' / '+(c.required===false?'optional':'required')+' - '+c.kind+' - '+(c.path||c.folder||''));b.className='d';n.append(a,b);var rm=setText(document.createElement('button'),'Remove');rm.className='ghost';rm.onclick=function(){config.userChecks=config.userChecks.filter(function(x){return x.id!==c.id;});renderUser();};d.append(n,rm);w.appendChild(d);});}
+function renderRetirements(){var w=$('retList'),r=config.retirements||[];w.innerHTML='';if(!r.length){w.innerHTML='<div class="muted-box">No core checks retired.</div>';return;}r.forEach(function(x){var d=document.createElement('div');d.className='item';var n=document.createElement('div');n.className='nm';n.append(setText(document.createElement('div'),'RETIRED: '+x.match));var q=setText(document.createElement('div'),x.reason+' - by '+(x.by||'?')+(x.at?' - '+x.at:''));q.className='d';n.append(q);var b=setText(document.createElement('button'),'Un-retire');b.className='ghost';b.onclick=function(){config.retirements=config.retirements.filter(function(y){return y!==x;});renderRetirements();};d.append(n,b);w.appendChild(d);});}
+function lessonById(id){return ensureSpine().failureMemory.find(function(x){return x.id===id;});}
+function renderFailureFlow(){var w=$('failureFlow'),memory=ensureSpine().failureMemory;w.innerHTML='';['candidate','active','monitor','manual-review','retired'].forEach(function(lifecycle){var col=document.createElement('div');col.className='flow-col';var h=setText(document.createElement('h3'),lifecycle+' ('+memory.filter(function(x){return x.lifecycle===lifecycle;}).length+')');col.appendChild(h);memory.filter(function(x){return x.lifecycle===lifecycle;}).forEach(function(x){var d=document.createElement('div');d.className='lesson'+(x.id===selectedLessonId?' selected':'');d.append(setText(document.createElement('b'),x.title));d.append(setText(document.createElement('span'),x.category+' - '+x.risk+' - '+(x.revisions||[]).length+' revisions'));d.onclick=function(){editLesson(x.id);};col.appendChild(d);});w.appendChild(col);});}
+function clearEditor(){selectedLessonId=null;$('lessonEditorTitle').textContent='Add a failure candidate';['fmTitle','fmClaim','fmSource','fmPass','fmSurface','fmCheckPath','fmCheckValue','fmReason'].forEach(function(id){$(id).value='';});$('fmCategory').value=categories[0]||'foundation';$('fmProfile').value=ensureSpine().targetProfile;$('fmRisk').value='medium';$('fmLifecycle').value='candidate';$('fmEvidence').value='deterministic-behavior';$('fmCheckKind').value='';$('fmSource').disabled=false;$('fmAdd').classList.remove('hidden');['fmSave','fmActivate','fmMonitor','fmHuman','fmRetire'].forEach(function(id){$(id).classList.add('hidden');});$('fmRevisions').textContent='new candidate';renderFailureFlow();}
+function editLesson(id){var x=lessonById(id);if(!x)return;selectedLessonId=id;$('lessonEditorTitle').textContent='Revise failure lesson';$('fmCategory').value=x.category;$('fmProfile').value=x.target_profile;$('fmRisk').value=x.risk;$('fmLifecycle').value=x.lifecycle;$('fmTitle').value=x.title;$('fmClaim').value=x.claim_id;$('fmSource').value=x.source.summary;$('fmSource').disabled=true;$('fmEvidence').value=x.evidence_route.kind;$('fmPass').value=x.evidence_route.pass_condition;$('fmSurface').value=x.evidence_route.primary_surface;var c=x.check||{};$('fmCheckKind').value=c.kind||'';$('fmCheckPath').value=c.path||c.folder||'';$('fmCheckValue').value=c.needle||c.field||'';$('fmRevisions').textContent=(x.revisions||[]).length+' revision(s); original observation preserved';$('fmAdd').classList.add('hidden');['fmSave','fmActivate','fmMonitor','fmHuman','fmRetire'].forEach(function(k){$(k).classList.remove('hidden');});renderFailureFlow();}
+function checkFromEditor(){var kind=$('fmCheckKind').value;if(!kind)return null;var c={id:'memory-check-'+String($('fmClaim').value||'lesson').replace(/[^a-z0-9]+/gi,'-').toLowerCase(),kind:kind,label:$('fmTitle').value.trim()};if(kind==='manifest-present')c.folder=$('fmCheckPath').value.trim();else c.path=$('fmCheckPath').value.trim();if(kind==='file-contains')c.needle=$('fmCheckValue').value;if(kind==='json-has-field')c.field=$('fmCheckValue').value.trim();return c;}
+function evidenceRoute(){return{kind:$('fmEvidence').value,pass_condition:$('fmPass').value.trim(),primary_surface:$('fmSurface').value.trim(),counterevidence:''};}
+function validateLessonFields(){if(!$('fmTitle').value.trim()||!$('fmClaim').value.trim()||!$('fmSource').value.trim()||!$('fmPass').value.trim()||!$('fmSurface').value.trim()){$('note').textContent='failure title, claim, compact source, pass condition and evidence surface are required';return false;}return true;}
+function addCandidate(){if(!validateLessonFields())return;var x=AXMVerificationSpine.createFailureCandidate({category:$('fmCategory').value,target_profile:$('fmProfile').value,risk:$('fmRisk').value,title:$('fmTitle').value,claim_id:$('fmClaim').value,source_summary:$('fmSource').value,evidence_kind:$('fmEvidence').value,pass_condition:$('fmPass').value,primary_surface:$('fmSurface').value,check:checkFromEditor()});ensureSpine().failureMemory.push(x);$('note').textContent='candidate added in memory - download config to seal it';clearEditor();}
+function reviseLesson(lifecycle){var x=lessonById(selectedLessonId);if(!x)return;var reason=$('fmReason').value.trim();if(!reason){$('note').textContent='a revision reason is required; failure memory never changes silently';return;}var changes={category:$('fmCategory').value,target_profile:$('fmProfile').value,risk:$('fmRisk').value,title:$('fmTitle').value.trim(),claim_id:$('fmClaim').value.trim(),lifecycle:lifecycle||x.lifecycle,evidence_route:evidenceRoute(),check:checkFromEditor()};var next=AXMVerificationSpine.reviseFailure(x,changes,{by:$('fmBy').value.trim()||'steward',reason:reason});var memory=ensureSpine().failureMemory;memory[memory.indexOf(x)]=next;$('note').textContent='revision appended - '+next.lifecycle+' - download config to seal it';editLesson(next.id);$('fmReason').value='';}
+function renderSpineReport(report){lastSpineReport=report;var v=$('spineVerdict'),m=$('spineMeta');if(!report){v.textContent='NOT SCANNED';v.className='verdict HELD';m.textContent='Run node hub/verify-plus.js to create the normalized receipt.';renderCategoryGrid(null);renderAttention(null);return;}v.textContent=report.verdict;v.className='verdict '+report.verdict;m.textContent='Profile '+report.profile.id+' - '+report.receipt_count+' receipts - '+report.claim_count+' atomic claims - '+report.generated_at;renderCategoryGrid(report);renderAttention(report);}
+function renderCategoryGrid(report){var w=$('categoryGrid');w.innerHTML='';var seen={};((report&&report.categories)||[]).forEach(function(x){seen[x.id]=x;});categories.forEach(function(id){var def=categoryDefinitions[id]||{},d=document.createElement('div');d.className='category';d.append(setText(document.createElement('b'),def.name||id));var s=document.createElement('div');s.className='status';if(!seen[id])s.textContent='NO RECEIPT';else s.textContent=Object.keys(seen[id].statuses).sort().map(function(k){return k+' '+seen[id].statuses[k];}).join(' / ');d.append(s);if(def.purpose)d.append(setText(document.createElement('p'),def.purpose));if((def.baseline_claims||[]).length){var details=document.createElement('details'),summary=setText(document.createElement('summary'),'What this judge requires ('+def.baseline_claims.length+')'),list=document.createElement('ul');details.append(summary);def.baseline_claims.forEach(function(claim){var li=document.createElement('li');li.append(setText(document.createElement('span'),claim.need+' '));var code=setText(document.createElement('code'),'['+claim.evidence+']');li.append(code);list.append(li);});details.append(list);d.append(details);}w.appendChild(d);});}
+function attentionItem(label,text,kind){var d=document.createElement('div');d.className='item';var p=document.createElement('div');p.className='nm';p.append(setText(document.createElement('div'),label));var q=setText(document.createElement('div'),text);q.className='d';p.append(q);var pill=setText(document.createElement('span'),kind);pill.className='pill '+(kind||'');d.append(p,pill);return d;}
+function renderAttention(report){var w=$('attentionLane');w.innerHTML='';if(!report){w.append(setText(document.createElement('div'),'No report yet.'));return;}var rows=[];(report.conflicts||[]).forEach(function(x){rows.push(attentionItem('Conflict: '+x.id,x.reason,'HELD'));});(report.holds||[]).forEach(function(x){rows.push(attentionItem('Hold: '+x.kind,JSON.stringify(x.category||x.detail||x),'HELD'));});(report.failures||[]).forEach(function(x){rows.push(attentionItem('Failure: '+x.claim_id,x.summary,'FAILED'));});(report.human_reviews||[]).forEach(function(x){rows.push(attentionItem('Human review: '+x.claim_id,x.summary,'manual-review'));});if(!rows.length){w.classList.add('good');w.append(attentionItem('No contradiction or rejection waiting','All required category evidence agrees for this target profile.','PASS'));}else{w.classList.remove('good');rows.forEach(function(x){w.appendChild(x);});}}
+function rememberLine(line){clearEditor();$('fmTitle').value=line.slice(0,150);$('fmClaim').value='foundation.remembered-'+Date.now();$('fmSource').value=line;$('fmPass').value='A bounded rerun no longer emits this failure or warning.';$('fmSurface').value='node verify.js / exports/verify-report.txt';$('fmCategory').value='foundation';window.scrollTo({top:$('failureForm').offsetTop-20,behavior:'smooth'});}
+function loadReport(){var box=$('coreReport');box.innerHTML='';fetch('/exports/verify-report.txt').then(function(r){return r.ok?r.text():null;}).then(function(t){if(!t){box.innerHTML='<div class="muted-box">No core report yet.</div>';return;}var lines=t.split('\n').filter(function(L){var k=L.replace(/^\s+/,'').slice(0,4);return k==='FAIL'||k==='warn';});if(!lines.length){box.innerHTML='<div class="muted-box">Last core report has no FAIL/warn lines.</div>';return;}lines.forEach(function(L){var d=document.createElement('div');d.className='item';var n=setText(document.createElement('div'),L.trim());n.className='nm';var use=setText(document.createElement('button'),'Retire');use.className='ghost';use.onclick=function(){$('retMatch').value=L.trim().replace(/^(FAIL|warn)\s+/,'');};var mem=setText(document.createElement('button'),'Remember');mem.className='warn';mem.onclick=function(){rememberLine(L.trim());};d.append(n,mem,use);box.appendChild(d);});});}
+function seamItem(title,detail,count,good){var d=document.createElement('div');d.className='item';var n=document.createElement('div');n.className='nm';n.append(setText(document.createElement('div'),title));var q=setText(document.createElement('div'),detail);q.className='d';n.append(q);var c=setText(document.createElement('span'),count);c.className='count'+(good?' good':'');d.append(n,c);return d;}
+function loadSeamGaps(){var box=$('seamGaps');box.innerHTML='';Promise.all([fetch('/exports/game-night-seam-report.json').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),fetch('/exports/module-seam-gaps.json').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})]).then(function(r){var g=r[0],m=r[1];if(!g&&!m){box.append(seamItem('No seam inventory','Run node verify.js once.','not scanned',false));return;}if(g)box.append(seamItem('Game Night hard contracts',(g.games||[]).length+' packages checked; physical and reconnect evidence remains named.',g.failCount?g.failCount+' failures':g.warningCount+' pending',!g.failCount&&!g.warningCount));if(m)box.append(seamItem('Module lifecycle inventory',m.moduleCount+' modules scanned for state owner, reload, disconnect and cleanup.',m.gapCount?m.gapCount+' gaps':'complete',!m.gapCount));});}
+function loadRegistry(){var entries=[];return fetch('/shared/verification-spine/registry.json').then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){entries=j.categories||[];categories=entries.map(function(x){return x.id;});profiles=(j.profiles||[]).map(function(x){return x.id;});}if(!categories.length)categories=FALLBACK_CATEGORIES.slice();if(!profiles.length)profiles=FALLBACK_PROFILES.slice();return Promise.all(entries.map(function(entry){return fetch('/shared/verification-spine/'+entry.path).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});}));}).then(function(definitions){categoryDefinitions={};(definitions||[]).forEach(function(def){if(def&&def.id)categoryDefinitions[def.id]=def;});optionList($('targetProfile'),profiles,ensureSpine().targetProfile);optionList($('fmCategory'),categories);optionList($('fmProfile'),profiles,ensureSpine().targetProfile);optionList($('checkCategory'),categories);renderCategoryGrid(lastSpineReport);});}
+function loadSpineReport(){fetch('/exports/verification-spine-report.json').then(function(r){return r.ok?r.json():null;}).then(renderSpineReport).catch(function(){renderSpineReport(null);});}
+function loadConfig(){fetch('/verify.config.json').then(function(r){return r.ok?r.json():null;}).then(function(j){if(j)config=j;config.userChecks=config.userChecks||[];config.retirements=config.retirements||[];ensureSpine();var max=0;config.userChecks.forEach(function(c){var n=parseInt(String(c.id).replace(/\D/g,''),10);if(n>max)max=n;});nextId=max+1;$('note').textContent='loaded - '+config.userChecks.length+' editable checks - '+ensureSpine().failureMemory.length+' failure lessons';return loadRegistry();}).then(function(){optionList($('targetProfile'),profiles,ensureSpine().targetProfile);renderUser();renderRetirements();renderFailureFlow();clearEditor();});}
+$('targetProfile').onchange=function(){ensureSpine().targetProfile=this.value;$('fmProfile').value=this.value;$('note').textContent='target profile changed - download config and rerun verifier';};
+$('addBtn').onclick=function(){var kind=$('kind').value,p1=$('p1').value.trim(),p2=$('p2').value.trim();if(!p1){$('note').textContent='path/folder is required';return;}var c={id:'u'+nextId++,kind:kind,label:$('lblIn').value.trim(),category:$('checkCategory').value,risk:$('checkRisk').value,required:$('checkRequired').value==='true'};if(kind==='manifest-present')c.folder=p1;else c.path=p1;if(kind==='file-contains')c.needle=p2;if(kind==='json-has-field')c.field=p2;config.userChecks.push(c);renderUser();};
+$('retBtn').onclick=function(){var match=$('retMatch').value.trim(),reason=$('retReason').value.trim();if(!match||!reason){$('note').textContent='a match and reason are required';return;}if(!confirm('Retire this core check while preserving its visible reason?'))return;config.retirements=config.retirements||[];config.retirements.push({match:match,reason:reason,by:$('retBy').value.trim()||'steward',at:new Date().toISOString().slice(0,10),review:$('retReview').value.trim()});renderRetirements();};
+$('fmAdd').onclick=addCandidate;$('fmSave').onclick=function(){reviseLesson();};$('fmActivate').onclick=function(){reviseLesson('active');};$('fmMonitor').onclick=function(){reviseLesson('monitor');};$('fmHuman').onclick=function(){reviseLesson('manual-review');};$('fmRetire').onclick=function(){reviseLesson('retired');};$('fmClear').onclick=clearEditor;
+$('dlBtn').onclick=function(){ensureSpine();var clean={_note:config._note||'Editable checks, reasoned core retirements and Verification Spine failure memory.',userChecks:config.userChecks,retirements:config.retirements||[],acknowledgedWarnings:config.acknowledgedWarnings||[],verificationSpine:config.verificationSpine};var blob=new Blob([JSON.stringify(clean,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='verify.config.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);AXMHub.save({userChecks:config.userChecks,retirements:config.retirements,failureMemory:ensureSpine().failureMemory});$('note').textContent='downloaded - replace root verify.config.json and run node hub/verify-plus.js';};
+$('reloadBtn').onclick=loadConfig;
+renderCore();fillKinds();loadConfig();loadReport();loadSeamGaps();loadSpineReport();
+AXMHub.onInit(function(){AXMHub.log('Verification Spine ready');});AXMHub.ready({id:'verifier',name:'Verifier',version:'v2.0',hubApiVersion:'1.0',permissions:[],savesState:true,handlesShutdown:false});
+</script></body></html>

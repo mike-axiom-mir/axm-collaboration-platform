@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.sensorium-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "receiptId", "claimId", "senseId", "capabilityId", "capabilityVersion", "seatId", "targetId", "backendId", "observedAt", "sealedAt", "ttlMs", "freshnessStatus", "verdict", "namedSeams", "typedObservationDigest", "specificReceiptSchema", "specificReceiptDigest", "authorityLeaseId", "authorityInherited", "rawRetainedBytesAfterSeal", "rawRetainedItemsAfterSeal", "cleanupComplete"],
+  "properties": {
+    "schema": {"const": "axm.sensorium-receipt/v1"},
+    "receiptId": {"type": "string", "minLength": 1},
+    "claimId": {"type": "string", "minLength": 1},
+    "senseId": {"type": "string", "minLength": 1},
+    "capabilityId": {"type": "string", "minLength": 1},
+    "capabilityVersion": {"type": "string", "minLength": 1},
+    "seatId": {"type": "string", "minLength": 1},
+    "targetId": {"type": "string", "minLength": 1},
+    "backendId": {"type": "string", "minLength": 1},
+    "observedAt": {"type": "string", "format": "date-time"},
+    "sealedAt": {"type": "string", "format": "date-time"},
+    "ttlMs": {"type": "integer", "minimum": 1},
+    "freshnessStatus": {"enum": ["LIVE", "STALE", "UNTIMED", "INVALID_TIMESTAMP", "FUTURE"]},
+    "verdict": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "namedSeams": {"type": "array", "items": {"type": "string"}, "maxItems": 20},
+    "typedObservationDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "specificReceiptSchema": {"type": "string", "minLength": 1},
+    "specificReceiptDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "authorityLeaseId": {"type": ["string", "null"]},
+    "authorityInherited": {"const": false},
+    "rawRetainedBytesAfterSeal": {"const": 0},
+    "rawRetainedItemsAfterSeal": {"const": 0},
+    "cleanupComplete": {"const": true}
+  }
+}

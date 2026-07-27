@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.visual-proof-receipt/v1",
+  "type": "object",
+  "required": ["schema", "version", "receiptId", "claimId", "claimKind", "claim", "targetId", "artifact", "technicalEvidence", "visualEvidence", "technicalVerdict", "visualVerdict", "verdict", "namedSeams", "observedAt", "sealedAt", "visualApproval", "humanApproval", "canonical", "automaticPromotion", "authorityInherited", "rawRetainedBytesAfterSeal", "rawRetainedItemsAfterSeal", "cleanupComplete"],
+  "properties": {
+    "schema": {"const": "axm.visual-proof-receipt/v1"},
+    "version": {"const": "1.0.0"},
+    "receiptId": {"type": "string", "pattern": "^visual-proof-[a-f0-9]{24}$"},
+    "claimId": {"type": "string", "minLength": 1, "maxLength": 500},
+    "claimKind": {"enum": ["appearance", "interaction", "layout", "accessibility", "motion", "artifact-integrity"]},
+    "claim": {"type": "string", "minLength": 1, "maxLength": 1000},
+    "targetId": {"type": "string", "minLength": 1, "maxLength": 500},
+    "artifact": {"$ref": "#/$defs/artifact"},
+    "technicalEvidence": {"type": "array", "maxItems": 12, "items": {"$ref": "#/$defs/evidence"}},
+    "visualEvidence": {"oneOf": [{"$ref": "#/$defs/visualEvidence"}, {"type": "null"}]},
+    "technicalVerdict": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "visualVerdict": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "verdict": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "namedSeams": {"type": "array", "maxItems": 40, "items": {"type": "string", "maxLength": 160}},
+    "observedAt": {"type": "string", "minLength": 1, "maxLength": 80},
+    "sealedAt": {"type": "string", "minLength": 1, "maxLength": 80},
+    "visualApproval": {"const": false},
+    "humanApproval": {"const": false},
+    "canonical": {"const": false},
+    "automaticPromotion": {"const": false},
+    "authorityInherited": {"const": false},
+    "rawRetainedBytesAfterSeal": {"const": 0},
+    "rawRetainedItemsAfterSeal": {"const": 0},
+    "cleanupComplete": {"type": "boolean"}
+  },
+  "$defs": {
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"type": "string"}, "value": {"type": "string"}}, "additionalProperties": false},
+    "artifact": {"type": "object", "required": ["id", "mediaType", "digest"], "properties": {"id": {"type": "string"}, "mediaType": {"type": "string"}, "digest": {"$ref": "#/$defs/digest"}, "width": {"type": "integer", "minimum": 1}, "height": {"type": "integer", "minimum": 1}}, "additionalProperties": false},
+    "evidence": {"type": "object", "required": ["schema", "digest", "verdict", "label"], "properties": {"schema": {"type": "string"}, "digest": {"$ref": "#/$defs/digest"}, "verdict": {"enum": ["PASS", "FAIL", "UNKNOWN"]}, "ref": {"type": "string"}, "label": {"type": "string"}}, "additionalProperties": false},
+    "proofRef": {"type": "object", "required": ["ref"], "properties": {"ref": {"type": "string", "minLength": 1, "maxLength": 500}, "digest": {"$ref": "#/$defs/digest"}}, "additionalProperties": false},
+    "viewport": {"type": "object", "required": ["width", "height"], "properties": {"width": {"type": "integer", "minimum": 1}, "height": {"type": "integer", "minimum": 1}}, "additionalProperties": false},
+    "visualEvidence": {"type": "object", "required": ["backend", "observedAt", "viewport", "device", "verdict", "typedObservation", "namedSeams", "proofRefs", "frameCount", "rollingBufferDigest", "cleanupComplete", "rawVideoArchive"], "properties": {"backend": {"enum": ["BROWSER_PRIMARY", "WINDOWS_FALLBACK", "HOST_SUPPLIED", "OFFLINE_RENDER"]}, "observedAt": {"type": "string", "minLength": 1, "maxLength": 80}, "viewport": {"$ref": "#/$defs/viewport"}, "device": {"type": "string", "maxLength": 80}, "verdict": {"enum": ["PASS", "FAIL", "UNKNOWN"]}, "typedObservation": {"type": "string", "maxLength": 1000}, "namedSeams": {"type": "array", "maxItems": 20, "items": {"type": "string", "maxLength": 160}}, "proofRefs": {"type": "array", "maxItems": 12, "items": {"$ref": "#/$defs/proofRef"}}, "frameCount": {"type": "integer", "minimum": 0}, "rollingBufferDigest": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]}, "cleanupComplete": {"type": "boolean"}, "rawVideoArchive": {"const": false}}, "additionalProperties": false}
+  },
+  "additionalProperties": false
+}

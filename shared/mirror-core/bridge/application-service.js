@@ -194,7 +194,7 @@ class ApplicationService {
     } catch (error) {
       this.reverseCoreEffects(coreEffects, actor);
       if (adapterReceipt) {
-        try { adapter.rollbackApplication(pre); } catch (rollbackError) {}
+        try { adapter.rollbackApplication(pre, adapterReceipt); } catch (rollbackError) {}
       }
       this.store.mutate(function (state) {
         const current = state.proposals[packetId];

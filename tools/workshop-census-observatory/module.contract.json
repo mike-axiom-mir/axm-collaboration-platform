@@ -1,0 +1,58 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "workshop-census-observatory",
+  "version": "v0.1",
+  "provides": [
+    "scope-labeled-workshop-census",
+    "same-scope-count-comparison",
+    "freshness-aware-reference-status",
+    "inventory-fingerprint",
+    "duplicate-manifest-id-evidence",
+    "hub-tool-contract-coverage"
+  ],
+  "consumes": [
+    "filesystem:workshop-source-tree",
+    "axm.workshop-census-reference/v1"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.workshop-census/v1",
+      "axm.workshop-census-comparison/v1"
+    ],
+    "accepts": [
+      "filesystem/workshop-root",
+      "axm.workshop-census-reference/v1"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "user-selected-output:census-json",
+      "user-selected-output:browser-snapshot",
+      "candidate-local-output:module-bundle.json"
+    ],
+    "refuses": [
+      "universal-module-total",
+      "cross-scope-arithmetic",
+      "symlink-following",
+      "source-tree-mutation",
+      "automatic-installation",
+      "automatic-repair",
+      "automatic-promotion",
+      "canon-change",
+      "permission-change",
+      "readiness-from-file-count",
+      "quality-from-file-count",
+      "network-access",
+      "arbitrary-code-execution"
+    ]
+  }
+}

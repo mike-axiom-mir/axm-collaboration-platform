@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.godot-live-project-receipt/v1",
+  "title": "AXM Godot live project receipt",
+  "type": "object",
+  "required": ["schema", "version", "status", "identity", "private_location_retained"],
+  "properties": {
+    "schema": { "const": "axm.godot-live-project-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "VISUAL_OR_BUDGET_HOLD", "FAIL", "MISSING_SUBSTRATE"] },
+    "identity": { "type": "object", "required": ["kind", "fresh_process", "id", "host"], "properties": { "kind": { "const": "native-host" }, "fresh_process": { "const": true }, "id": { "type": "string" }, "host": { "const": "godot" }, "render_mode": { "enum": ["headless", "offscreen-window"] } } },
+    "runtime": { "type": "object" },
+    "project_bundle_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "resource": { "type": "object" },
+    "frame_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "metrics": { "type": ["object", "null"] },
+    "checks": { "type": "array", "items": { "type": "object" } },
+    "diagnostic": { "type": ["string", "null"] },
+    "process_receipts": { "type": "object" },
+    "private_location_retained": { "const": false },
+    "automatic_project_retention": { "const": false },
+    "missing": { "type": "array", "items": { "type": "string" } },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

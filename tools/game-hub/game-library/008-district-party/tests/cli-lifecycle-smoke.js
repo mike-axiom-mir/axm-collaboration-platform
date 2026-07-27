@@ -135,7 +135,7 @@ async function run() {
     npcCount: 11,
     civilianCount: 8,
     rivalCount: 3,
-    vehicleCount: 8,
+    vehicleCount: 6,
     displayStatus: 'running',
     displayRouteIsLocal: true,
     assetStatus: 200,

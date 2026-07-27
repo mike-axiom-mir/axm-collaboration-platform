@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Holodeck · Screen Deck</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="deck-shell">
+    <header class="deck-header">
+      <div>
+        <p class="eyebrow">HOLODECK H0 · SCREEN SUBSTRATE</p>
+        <h1>Echo Atrium</h1>
+        <p class="lede">One canonical world, compiled from modular data points into its first inhabitable skin.</p>
+      </div>
+      <div class="truth-badge" aria-label="Truth boundary">
+        <strong>SCREEN SIMULATION</strong>
+        <span>No VR or hologram claim</span>
+      </div>
+    </header>
+
+    <section class="deck-stage" aria-label="Holodeck Screen Deck">
+      <canvas id="deck-canvas" tabindex="0" aria-label="Interactive three-dimensional Echo Atrium"></canvas>
+      <div class="loading" id="loading" role="status">
+        <span class="loading-ring" aria-hidden="true"></span>
+        <strong>Compiling canonical world</strong>
+        <span id="loading-detail">Validating world data…</span>
+      </div>
+      <div class="stage-top">
+        <div class="objective-card">
+          <span>OBJECTIVE</span>
+          <strong id="objective">Approach the central beacon and awaken it.</strong>
+        </div>
+        <div class="deck-state"><i id="state-light"></i><span id="deck-status">BOOTING</span></div>
+      </div>
+      <div class="reticle" aria-hidden="true"><span></span></div>
+      <div class="interaction-prompt" id="interaction-prompt">Move closer to an interactive entity</div>
+      <div class="stage-bottom">
+        <div class="keyboard-help"><kbd>WASD</kbd> move <kbd>← →</kbd> turn <kbd>E</kbd> interact</div>
+        <div class="position-readout" id="position-readout">POS 0.0 / 5.0 · HEAD 000°</div>
+      </div>
+    </section>
+
+    <aside class="deck-console" aria-label="Deck console">
+      <section class="console-block world-card">
+        <div class="section-title"><span>World model</span><em id="world-version">loading</em></div>
+        <h2 id="world-title">Echo Atrium</h2>
+        <p id="world-description">Loading canonical world description.</p>
+        <dl class="metrics">
+          <div><dt>Entities</dt><dd id="entity-count">—</dd></div>
+          <div><dt>Actions</dt><dd id="action-count">—</dd></div>
+          <div><dt>Revision</dt><dd id="revision">0</dd></div>
+          <div><dt>Plan</dt><dd id="plan-digest">—</dd></div>
+        </dl>
+      </section>
+
+      <section class="console-block controls-card">
+        <div class="section-title"><span>Shared intent controls</span><em>human + machine</em></div>
+        <div class="touch-grid" aria-label="Touch controls">
+          <button type="button" data-command="turn-left" aria-label="Turn left">↶</button>
+          <button type="button" data-command="forward" aria-label="Move forward">▲</button>
+          <button type="button" data-command="turn-right" aria-label="Turn right">↷</button>
+          <button type="button" data-command="strafe-left" aria-label="Strafe left">◀</button>
+          <button class="interact" type="button" data-command="interact" aria-label="Interact">E</button>
+          <button type="button" data-command="strafe-right" aria-label="Strafe right">▶</button>
+          <span></span>
+          <button type="button" data-command="back" aria-label="Move backward">▼</button>
+          <span></span>
+        </div>
+        <div class="machine-row">
+          <button type="button" id="machine-step">Run machine step</button>
+          <span id="last-actor">No intent dispatched yet</span>
+        </div>
+      </section>
+
+      <section class="console-block sensory-card">
+        <div class="section-title"><span>Structured senses</span><em>state, not pixels</em></div>
+        <div class="sensor-summary" id="sensor-summary">Waiting for first frame.</div>
+        <details>
+          <summary>Machine-readable frame</summary>
+          <pre id="sensor-json">{}</pre>
+        </details>
+      </section>
+
+      <section class="console-block persistence-card">
+        <div class="section-title"><span>Local state</span><em>explicit only</em></div>
+        <div class="action-row">
+          <button type="button" id="save-state">Save snapshot</button>
+          <button type="button" id="restore-state">Restore snapshot</button>
+          <button type="button" id="reset-state">Reset deck</button>
+        </div>
+        <p id="save-status">Nothing is saved or restored automatically.</p>
+      </section>
+
+      <section class="boundary-card">
+        <strong>What exists now</strong>
+        <p>A deterministic world compiler, shared human-machine intents, structured simulation senses, explicit local snapshots, and one replaceable WebGL adapter.</p>
+        <strong>What does not exist yet</strong>
+        <p>VR, AR, volumetric holograms, haptics, physical-space manipulation, scientific reality simulation, and autonomous world authority.</p>
+      </section>
+    </aside>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="../../shared/holodeck/core.js"></script>
+  <script src="../../shared/holodeck/world-validator.js"></script>
+  <script src="../../shared/holodeck/world-normalizer.js"></script>
+  <script src="../../shared/holodeck/world-compiler.js"></script>
+  <script src="../../shared/holodeck/state-machine.js"></script>
+  <script src="../../shared/holodeck/intent-dispatcher.js"></script>
+  <script src="../../shared/holodeck/sensor-frame.js"></script>
+  <script src="../../shared/holodeck/persistence.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "anim-kit",
+  "version": "0.1.0-test",
+  "provides": ["animation.procedural.motion", "animation.proof.inspect", "animation.shapeable.pack"],
+  "consumes": ["axm.procedural-motion/v1"],
+  "permissions": ["files", "export"],
+  "handoffs": { "emits": ["axm.procedural-motion-block/v1", "axm.shapeable.block-pack"], "accepts": [] },
+  "boundaries": {
+    "writes": ["user-download:explicit-export"],
+    "refuses": ["automatic-game-installation", "automatic-canon-promotion", "automatic-visual-approval", "hidden-runtime-dependency"]
+  },
+  "lifecycle": { "state_owner": "browser", "reload": "reset", "disconnect": "not-applicable", "cleanup": "automatic" }
+}

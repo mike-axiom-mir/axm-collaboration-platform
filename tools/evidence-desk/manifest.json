@@ -1,31 +1,41 @@
 {
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
   "id": "evidence-desk",
   "name": "AXM Evidence Desk",
-  "version": "v0.1",
+  "version": "v0.2",
   "status": "TEST",
   "entry": "index.html",
+  "contract": "module.contract.json",
   "type": "hub-module",
   "hubApiVersion": "1.0",
-  "audience": "human",
-  "tags": ["evidence", "action-report", "handoff", "verification", "machine-ready"],
-  "uses": ["storage", "gate", "export"],
+  "category": "FOUNDATION",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "MEDIUM",
+  "tags": ["evidence", "claims", "verification", "sha256", "handoff", "integrity", "machine-ready"],
+  "uses": ["storage", "gate", "browser-download", "knowledge-canvas"],
   "permissions": [],
-  "notes": "Builds compact evidence receipts and Action Reports while keeping observation, execution and verification separate. Dual-door module: the human screen now announces a real Hub passport and the bounded machine adapter uses the same declared contract.",
+  "actions": [
+    "route supplied claims to evidence surfaces",
+    "build and verify a SHA-256-sealed evidence receipt",
+    "save or export a draft by explicit human action",
+    "preview and explicitly place a bounded packet in the Knowledge Canvas inbox"
+  ],
+  "accepts": ["axm.evidence-fields/v1", "axm.evidence-fields/v2", "axm.evidence-receipt/v2"],
+  "produces": ["axm.evidence-receipt/v2", "axm.action-report/v2", "axm.evidence-handoff-receipt/v1", "axm.knowledge.research/v1"],
+  "readiness": ["storage", "gate", "sha256-runtime"],
+  "summary": "Route supplied claims to fitting proof surfaces, preserve open questions, and create integrity-verifiable receipts without pretending receipt generation independently proves the world.",
+  "notes": "Evidence Desk keeps declared and effective verdicts separate. PASS without evidence remains open, SHA-256 proves content integrity rather than truth, Knowledge Canvas inbox placement never claims receiver acceptance, and CANON remains a human decision.",
   "machine": {
-    "apiVersion": "1.0",
+    "apiVersion": "2.0",
     "entry": "machine.js",
     "status": "TEST",
     "actions": {
-      "validate": {
-        "description": "Validate supplied evidence fields without saving or exporting.",
-        "effect": "read-only",
-        "inputSchema": { "type": "object", "required": ["title", "goal"] }
-      },
-      "build": {
-        "description": "Build a structured receipt and Action Report from supplied evidence without changing Workshop state.",
-        "effect": "read-only",
-        "inputSchema": { "type": "object", "required": ["title", "goal"] }
-      }
+      "validate": {"description": "Validate supplied evidence fields without saving or exporting.", "effect": "read-only"},
+      "build": {"description": "Build a SHA-256-sealed receipt and Action Report without changing Workshop state.", "effect": "read-only"},
+      "verify": {"description": "Recompute and compare a v2 receipt's canonical SHA-256 content digest.", "effect": "read-only"},
+      "handoff-preview": {"description": "Build a digest-bound Knowledge Canvas packet without writing its inbox.", "effect": "read-only"}
     }
   }
 }

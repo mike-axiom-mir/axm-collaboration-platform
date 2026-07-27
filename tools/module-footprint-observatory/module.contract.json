@@ -1,0 +1,56 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "module-footprint-observatory",
+  "version": "v0.1",
+  "provides": [
+    "per-module-active-file-count",
+    "per-module-active-byte-count",
+    "largest-observed-module-file",
+    "per-module-extension-footprint",
+    "excluded-directory-and-symlink-evidence",
+    "freshness-bound-footprint-observation"
+  ],
+  "consumes": [
+    "filesystem/workshop-root"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.module-footprint-map/v1"
+    ],
+    "accepts": [
+      "filesystem/workshop-root"
+    ]
+  },
+  "boundaries": {
+    "writes": [
+      "explicit-user-selected-output-only"
+    ],
+    "refuses": [
+      "file-content-reading-beyond-manifest-identity",
+      "symlink-following",
+      "generated-state-inclusion",
+      "quality-from-size",
+      "complexity-from-size",
+      "performance-from-size",
+      "readiness-from-size",
+      "duplicate-content-inference",
+      "size-budget-enforcement",
+      "deletion-recommendation",
+      "compression",
+      "packaging",
+      "source-mutation",
+      "installer-staging",
+      "installation",
+      "permission-change",
+      "promotion",
+      "canon-change"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  }
+}

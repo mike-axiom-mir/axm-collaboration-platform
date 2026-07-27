@@ -1,0 +1,49 @@
+AXM BEGINNER PUBLIC LAUNCH REPAIR
+================================
+Date: 2026-07-18 (Europe/Amsterdam)
+Status: WORKING locally; prepared for the next public-safe checkpoint
+
+OBSERVED SEAM
+-------------
+A person downloaded or browsed the GitHub repository, clicked the expected
+"Run AXM All" route, and saw source code instead of a running Hub. GitHub
+previews .bat/.cmd files as source and cannot start a local server from its web
+page. Running a script from inside a ZIP is also an unreliable beginner route.
+
+REPAIR
+------
+- Added OPEN_AXM_WORKSHOP.cmd as the obvious Windows beginner front door.
+- Added RUN_AXM_ALL.bat as a compatibility name.
+- Added a root README with Download ZIP -> Extract All -> Open instructions.
+- Added explicit in-ZIP/missing-folder and missing-Node explanations.
+- Made the launcher prefer a future bundled runtime at
+  runtime\node\node.exe, then fall back to an installed Node.js runtime.
+- Kept optional AI and specialist services in the advanced launcher rather
+  than starting them silently for beginners.
+- Replaced shell-built Windows browser opening with explorer.exe argument
+  passing.
+- Added a launcher contract self-test and wired it into Workshop tests and
+  public-package restore maintenance.
+
+EVIDENCE
+--------
+- Beginner launcher self-test: PASS (10 checks).
+- AXM verifier after repair: 0 FAIL / 0 warn.
+- Fresh public-safe package: axm-workshop-public-20260718-004631-bf9ea8.zip
+- Public secret scan: PASS.
+- Restored manifest hashes: PASS (1,749 files).
+- Restored Hub startup: PASS.
+- Actual OPEN_AXM_WORKSHOP.cmd launch from the separated public copy: PASS.
+- Fresh-copy test URL: http://127.0.0.1:8898/hub/index.html
+- Browser title: AXM Hub.
+- Visible home heading: What do you want to do?
+- Browser console errors during fresh-copy check: 0.
+- Test server stopped after verification.
+
+BOUNDARY
+--------
+No GitHub page can directly execute a local Workshop. Source users must extract
+the repository and have Node.js available. A later portable release may bundle
+the open-source Node runtime; the beginner launcher already supports that seam.
+Nothing was uploaded or published by this repair.
+================================

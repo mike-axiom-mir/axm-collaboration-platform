@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/procedural-motion-block-v1.schema.json",
+  "title": "AXM Procedural Motion Block v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "block_id", "family", "duration_ms", "loop", "source_contract", "payload", "digest", "compatibility", "authority", "provenance"],
+  "properties": {
+    "schema": { "const": "axm.procedural-motion-block/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "block_id": { "type": "string", "minLength": 1 },
+    "label": { "type": "string" },
+    "family": { "enum": ["juice", "camera", "locomotion", "directed-morph"] },
+    "duration_ms": { "type": "number", "exclusiveMinimum": 0 },
+    "loop": { "type": "boolean" },
+    "semantic": { "type": ["string", "null"] },
+    "source_contract": { "const": "axm.procedural-motion/v1" },
+    "payload": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "compatibility": { "type": "object" },
+    "authority": { "type": "object" },
+    "provenance": { "type": "object" }
+  },
+  "additionalProperties": false
+}

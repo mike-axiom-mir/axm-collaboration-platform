@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.deterministic-research-report/v1",
+  "type": "object",
+  "required": ["schema", "version", "goal", "workshop", "route", "gaps", "questions", "hypotheses", "experiments", "backlog", "truth", "researchDigest"],
+  "properties": {
+    "schema": {"const": "axm.deterministic-research-report/v1"},
+    "route": {"enum": ["READY", "DEGRADED", "BLOCKED", "UNKNOWN"]},
+    "gaps": {"type": "array"},
+    "questions": {"type": "array"},
+    "hypotheses": {"type": "array"},
+    "experiments": {"type": "array"},
+    "researchDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "truth": {
+      "type": "object",
+      "required": ["automaticBuild", "automaticPromotion", "automaticPermission"],
+      "properties": {
+        "automaticBuild": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticPermission": {"const": false}
+      }
+    }
+  }
+}

@@ -1,2 +1,128 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AXM Diagnostics</title><link rel="stylesheet" href="../../shared/operations/operations-ui.css"></head><body><header><a href="../../hub/index.html">← Hub</a><div><span class="eyebrow">OBSERVE · CORRELATE · EXPORT EVIDENCE · NEVER AUTO-REPAIR</span><h1>Diagnostics & Operations Center</h1><p>One health view across the Workshop runtime and the new operational foundation.</p></div></header><main><div id="notice" class="notice hidden"></div><section class="panel"><div class="toolbar"><button id="refresh">Refresh snapshot</button><button id="export" class="secondary">Export diagnostic report</button><span id="checked" class="muted"></span></div><div id="facts" class="facts"></div></section><section class="grid"><article class="panel"><h2>Issues needing attention</h2><div id="issues"></div></article><article class="panel"><h2>Operations</h2><div id="operations" class="code">Loading…</div></article></section><section class="panel"><h2>Recent machine jobs</h2><div class="scroll"><table><thead><tr><th>Action</th><th>State</th><th>Started</th><th>Ended</th></tr></thead><tbody id="jobs"></tbody></table></div></section><section class="panel"><div class="toolbar"><label style="min-width:230px">Allowlisted log<select id="logKind"><option>workshop</option><option>machine-jobs</option><option>reviews</option><option>installer</option><option>recovery</option><option>assets</option><option>device-handoff</option><option>secret-access</option><option>permissions</option></select></label><button id="loadLog" class="secondary">Load bounded tail</button></div><div id="log" class="code">No log loaded.</div><p class="truth">Log paths are fixed server-side and output is bounded. Secret audit contains ids, consumers and fingerprints—not values.</p></section></main><script src="../../shared/operations/operations-client.js"></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Diagnostics & Operations Center</title>
+  <link rel="stylesheet" href="../../shared/operations/operations-ui.css">
+  <link rel="stylesheet" href="diagnostics-center.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to diagnostic evidence</a>
+  <header class="diagnostic-header">
+    <a class="hub-link" href="../../hub/index.html" aria-label="Back to AXM Hub">AXM / Hub</a>
+    <div class="header-copy">
+      <span class="eyebrow">OBSERVE / CONTAIN / CORRELATE / EXPORT</span>
+      <div class="title-line">
+        <h1>Diagnostics &amp; Operations Center</h1>
+        <span id="stateChip" class="state-chip state-unknown">Loading</span>
+      </div>
+      <p>Every source reports independently. One failed probe stays visible without hiding the rest of the Workshop.</p>
+      <nav aria-label="Diagnostic sections">
+        <a href="#overview">Overview</a>
+        <a href="#probes">Probes</a>
+        <a href="#logs">Logs</a>
+        <a href="#exports">Exports</a>
+      </nav>
+    </div>
+  </header>
 
+  <main id="main">
+    <div id="notice" class="notice hidden" role="status" aria-live="polite"></div>
+
+    <section id="overview" class="panel hero-panel" aria-labelledby="overviewTitle">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">CURRENT OBSERVATION</span>
+          <h2 id="overviewTitle">Workshop health, with coverage attached</h2>
+        </div>
+        <div class="toolbar">
+          <button id="refresh" type="button">Refresh snapshot</button>
+          <button id="export" type="button" class="secondary">Export evidence report</button>
+        </div>
+      </div>
+      <p id="checked" class="muted">Waiting for the service...</p>
+      <div id="facts" class="metric-grid" aria-label="Diagnostic summary"></div>
+      <div id="coverageBanner" class="coverage-banner"></div>
+    </section>
+
+    <section class="split-grid" aria-label="Current issues and coverage">
+      <article class="panel">
+        <div class="section-heading compact">
+          <div><span class="section-kicker">ATTENTION ROUTE</span><h2>Signals needing attention</h2></div>
+          <span id="issueCount" class="count-chip">0</span>
+        </div>
+        <div id="issues" class="issue-list"></div>
+      </article>
+      <article class="panel">
+        <span class="section-kicker">TRUTH BOUNDARY</span>
+        <h2>What this view can claim</h2>
+        <ul class="truth-list">
+          <li>Probe failures are contained and named.</li>
+          <li>Log paths are fixed on the server and byte bounded.</li>
+          <li>Returned logs are redacted, but never certified secret-free.</li>
+          <li>Health evidence cannot repair, restart, approve, or promote anything.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section id="probes" class="panel" aria-labelledby="probeTitle">
+      <div class="section-heading">
+        <div><span class="section-kicker">SOURCE-BY-SOURCE</span><h2 id="probeTitle">Diagnostic probes</h2></div>
+        <div id="probeLegend" class="legend" aria-label="Probe state legend"></div>
+      </div>
+      <div id="probeGrid" class="probe-grid"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="jobsTitle">
+      <div class="section-heading compact">
+        <div><span class="section-kicker">ALLOWLISTED EXECUTION</span><h2 id="jobsTitle">Recent machine jobs</h2></div>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Action</th><th>State</th><th>Started</th><th>Ended</th></tr></thead>
+          <tbody id="jobs"><tr><td colspan="4">Waiting for machine-host evidence...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="logs" class="panel log-panel" aria-labelledby="logTitle">
+      <div class="section-heading">
+        <div><span class="section-kicker">BOUNDED EVIDENCE TAIL</span><h2 id="logTitle">Allowlisted logs</h2></div>
+        <span id="logSourceSummary" class="count-chip">Loading sources</span>
+      </div>
+      <div class="log-controls">
+        <label>Observed source
+          <select id="logKind" aria-describedby="logSafety"><option value="">Loading...</option></select>
+        </label>
+        <button id="loadLog" type="button" class="secondary" disabled>Load redacted tail</button>
+      </div>
+      <div id="logMeta" class="log-meta muted">No log envelope loaded.</div>
+      <pre id="log" class="code log-output" tabindex="0">Select an available source to inspect its bounded tail.</pre>
+      <p id="logSafety" class="truth warning-truth"><strong>Redaction is a guard, not a guarantee.</strong> Structured sensitive fields and common token patterns are removed before return, but arbitrary text is never certified secret-free.</p>
+    </section>
+
+    <section id="exports" class="panel" aria-labelledby="exportTitle">
+      <div class="section-heading">
+        <div><span class="section-kicker">PERSISTENT LINEAGE</span><h2 id="exportTitle">Diagnostic exports</h2></div>
+        <span id="exportCount" class="count-chip">0 receipts</span>
+      </div>
+      <p class="muted">Every explicit report is paired with a digest receipt. Reading this list does not create or modify an export.</p>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Created</th><th>Snapshot</th><th>Bytes</th><th>SHA-256</th></tr></thead>
+          <tbody id="exportRows"><tr><td colspan="4">No diagnostic reports exported.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <details class="panel raw-panel">
+      <summary>Inspect the normalized operations payload</summary>
+      <pre id="operations" class="code">Waiting for the first snapshot...</pre>
+    </details>
+  </main>
+
+  <script src="../../shared/operations/operations-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

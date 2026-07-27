@@ -1,0 +1,30 @@
+{
+  "schema": "axm.shapeable.block-pack",
+  "schemaVersion": 1,
+  "id": "axm-game-fsm",
+  "name": "AXM Portable Game FSM Blocks",
+  "version": "0.1.0",
+  "source": "Local Opus FSM concept admitted through governed Workshop intake and reconciled with existing Holodeck and animation state machines",
+  "testStatus": "TESTED: definition validation, named handlers, deterministic replay, bounded trace and diagram",
+  "licenseStatus": "AXM LOCAL / PROJECT-OWNED",
+  "blocks": [
+    {
+      "layer": "logic", "type": "axm-game-fsm--machine", "label": "State machine", "subtitle": "portable event logic", "group": "Game logic · state", "icon": "event", "rgb": "66, 210, 255",
+      "description": "A portable game/entity state machine candidate. It selects state but does not own world truth or play animation automatically.", "input": true, "output": true, "targets": ["game", "dashboard", "website", "custom"], "permission": null, "influenceModule": null,
+      "defaults": {"machineId": "entity-state", "initialState": "idle", "notes": ""},
+      "fields": [{"key": "machineId", "label": "Machine id", "type": "text"}, {"key": "initialState", "label": "Initial state", "type": "text"}, {"key": "notes", "label": "State intent", "type": "textarea"}]
+    },
+    {
+      "layer": "logic", "type": "axm-game-fsm--state", "label": "State", "subtitle": "named behavior phase", "group": "Game logic · state", "icon": "state", "rgb": "92, 143, 245",
+      "description": "A named state with an optional procedural motion block reference. The reference is a handoff, not automatic playback.", "input": true, "output": true, "targets": ["game", "dashboard", "website", "custom"], "permission": null, "influenceModule": null,
+      "defaults": {"stateId": "idle", "motionBlock": "idle-bob", "notes": ""},
+      "fields": [{"key": "stateId", "label": "State id", "type": "text"}, {"key": "motionBlock", "label": "Motion block id", "type": "text"}, {"key": "notes", "label": "Behavior notes", "type": "textarea"}]
+    },
+    {
+      "layer": "logic", "type": "axm-game-fsm--transition", "label": "Transition", "subtitle": "event · guard · target", "group": "Game logic · transition", "icon": "route", "rgb": "87, 217, 163",
+      "description": "A discrete event route between states. Guards and actions are named host handlers, never embedded executable code.", "input": true, "output": true, "targets": ["game", "dashboard", "website", "custom"], "permission": null, "influenceModule": null,
+      "defaults": {"event": "MOVE", "targetState": "walk", "guardName": "", "actionName": ""},
+      "fields": [{"key": "event", "label": "Event", "type": "text"}, {"key": "targetState", "label": "Target state", "type": "text"}, {"key": "guardName", "label": "Guard handler name", "type": "text"}, {"key": "actionName", "label": "Action handler name", "type": "text"}]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.ui-computed-style-measurements/v1",
+  "type": "object",
+  "required": ["schema", "capability", "version", "targetId", "observedAt", "measuredProperties", "coverage", "namedSeams", "contentInspected", "rawPixelsRetained", "mutatedSurface", "cleanupComplete"],
+  "properties": {
+    "schema": {"const": "axm.ui-computed-style-measurements/v1"},
+    "capability": {"const": "ui.render.computed-style/v1"},
+    "version": {"const": "1.0.0"},
+    "targetId": {"type": "string", "minLength": 1, "maxLength": 500},
+    "observedAt": {"type": "string"},
+    "measuredProperties": {
+      "type": "object",
+      "required": ["contrastPairs", "interactiveTargets", "criticalText", "signals", "coverage"],
+      "properties": {
+        "contrastPairs": {"type": "array"},
+        "interactiveTargets": {"type": "array"},
+        "criticalText": {"type": "array"},
+        "signals": {"type": "array"},
+        "coverage": {"$ref": "#/$defs/coverage"}
+      }
+    },
+    "coverage": {"$ref": "#/$defs/coverage"},
+    "namedSeams": {"type": "array", "items": {"type": "string"}},
+    "contentInspected": {"const": false},
+    "rawPixelsRetained": {"const": false},
+    "measurementsRetained": {"const": false},
+    "tookNoDirectAction": {"const": true},
+    "mutatedSurface": {"const": false},
+    "cleanupComplete": {"const": true}
+  },
+  "$defs": {
+    "coverage": {
+      "type": "object",
+      "required": ["complete", "inspectedElements", "discoveredElements", "measurementCount", "maxElements"],
+      "properties": {
+        "complete": {"type": "boolean"},
+        "inspectedElements": {"type": "integer", "minimum": 0},
+        "discoveredElements": {"type": "integer", "minimum": 0},
+        "measurementCount": {"type": "integer", "minimum": 0},
+        "maxElements": {"type": "integer", "minimum": 1, "maximum": 200}
+      }
+    }
+  },
+  "additionalProperties": false
+}

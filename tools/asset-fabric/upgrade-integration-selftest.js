@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+'use strict';
+const assert=require('assert');
+const Fabric=require('./fabric-core');
+const Hands=require('../../shared/asset-hands/asset-hands');
+
+const need=Fabric.normalizeNeed({id:'upgrade-vector',title:'Canvas-bound vector',kind:'icon',required_capabilities:['asset.vector.gradient'],required_constraints:['target_canvas.dimensions','target_canvas.colour'],required_operations:['preview','edit'],required_outputs:['image/svg+xml'],target_canvas:{medium:'screen',dimensions:{width:128,height:96,unit:'px'},colour:{space:'srgb',transparency:'allowed'},behaviour:['static','responsive'],intended_use:'icon'}});
+assert.deepEqual(need.required_capabilities,['asset.vector.gradient']);
+const route=Hands.diagnoseUpgrade({schema:Hands.UPGRADE_REQUEST_SCHEMA,required_capabilities:need.required_capabilities,target_canvas:need.target_canvas,intended_use:need.intended_use,quality_requirements:need.quality_requirements,required_outputs:need.required_outputs,editable_recipe_formats:need.editable_recipe_formats,required_constraints:need.required_constraints,required_operations:need.required_operations,available_substrates:[]});
+assert.equal(route.status,'READY_CONTRACT');
+assert.equal(route.selected_hand.id,'asset.vector.advanced-appearance');
+let state=Fabric.baseState();
+const candidate=Fabric.family(need,1)[0];
+state.needs=[need];
+state.candidates=[candidate];
+state=Fabric.attachUpgradeEvidence(state,candidate.id,route,null);
+assert.equal(state.candidates[0].upgradeRoute.selected_hand.id,'asset.vector.advanced-appearance');
+assert.deepEqual(state.candidates[0].capabilityReceipts,[]);
+const external={schema:'axm.external-validator-receipt/v1',status:'PASS',artifact:{digest:candidate.primaryArtifact.digest},digest:'external-receipt'};
+state=Fabric.attachExternalValidation(state,candidate.id,external);
+assert.equal(state.candidates[0].capabilityReceipts[0].digest,'external-receipt');
+assert.throws(()=>Fabric.attachExternalValidation(state,candidate.id,Object.assign({},external,{artifact:{digest:'unbound'}})),/not bound/);
+assert.equal(state.candidates[0].votes.mike,null);
+assert.equal(state.candidates[0].votes['axiom-mir'],null);
+const review=Fabric.machineReviewRequest(state,candidate.id);
+assert.equal(review.upgradeRoute.digest,route.digest);
+assert.equal(review.capabilityReceipts[0].digest,'external-receipt');
+const reloaded=Fabric.normalizeState(JSON.parse(JSON.stringify(state)));
+assert.equal(reloaded.candidates[0].upgradeRoute.digest,route.digest);
+assert.deepEqual(reloaded.needs.find((item)=>item.id==='upgrade-vector'),need);
+const old=Fabric.normalizeState({schema:Fabric.STATE_SCHEMA,version:'0.9.0',generation:0,needs:[{id:'old',kind:'icon'}],candidates:[],vocabulary:[],log:[]});
+assert.deepEqual(old.needs[0].required_capabilities,[]);
+assert.deepEqual(old.needs[0].required_constraints,[]);
+assert.throws(()=>Fabric.attachUpgradeEvidence(state,candidate.id,Object.assign({},route,{status:'MISSING_HAND'})),/non-ready/);
+console.log('Asset Fabric upgrade integration PASS (capability route preserved; approvals remain independent; old state readable)');

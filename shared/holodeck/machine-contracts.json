@@ -1,0 +1,127 @@
+{
+  "schema": "axm.holodeck-machine-registry/v1",
+  "version": "0.1.0",
+  "machines": [
+    {
+      "id": "canonical-core",
+      "capability": "holodeck.core.canonical/v1",
+      "inputs": ["JSON-compatible values"],
+      "outputs": ["stable serialization", "semantic digest", "bounded numeric helpers"],
+      "sideEffects": [],
+      "permissions": [],
+      "resourceBudget": "O(document size), browser and Node compatible",
+      "failureRecovery": "throws before mutation",
+      "compatibility": "axm-stable32x4/v1",
+      "verification": "cross-process digest equality"
+    },
+    {
+      "id": "world-validator",
+      "capability": "holodeck.world.validate/v1",
+      "inputs": ["axm.holodeck-world/v1"],
+      "outputs": ["typed validation result"],
+      "sideEffects": [],
+      "permissions": [],
+      "resourceBudget": "256 entities maximum in v0",
+      "failureRecovery": "returns named errors without repair",
+      "compatibility": "axm.holodeck-world/v1",
+      "verification": "valid and invalid fixtures"
+    },
+    {
+      "id": "world-normalizer",
+      "capability": "holodeck.world.normalize/v1",
+      "inputs": ["validated canonical world"],
+      "outputs": ["stable ordered canonical world"],
+      "sideEffects": [],
+      "permissions": [],
+      "resourceBudget": "bounded clone and sort",
+      "failureRecovery": "rejects invalid input",
+      "compatibility": "axm.holodeck-world/v1",
+      "verification": "reordered set-like arrays normalize equally"
+    },
+    {
+      "id": "world-compiler",
+      "capability": "holodeck.world.compile/v1",
+      "inputs": ["axm.holodeck-world/v1"],
+      "outputs": ["axm.holodeck-deck-plan/v1"],
+      "sideEffects": [],
+      "permissions": [],
+      "resourceBudget": "single bounded in-memory plan",
+      "failureRecovery": "no partial plan on validation failure",
+      "compatibility": "axm.holodeck-render-adapter/v1",
+      "verification": "repeat and fresh-process compilation"
+    },
+    {
+      "id": "state-machine",
+      "capability": "holodeck.state.transition/v1",
+      "inputs": ["deck plan", "prior state", "validated intent outcome"],
+      "outputs": ["revisioned state", "digest-bound receipt"],
+      "sideEffects": [],
+      "permissions": [],
+      "resourceBudget": "128 journal entries maximum",
+      "failureRecovery": "prior state remains unchanged",
+      "compatibility": "axm.holodeck-state/v1",
+      "verification": "revision, replay, bounds, and collision assertions"
+    },
+    {
+      "id": "intent-dispatcher",
+      "capability": "holodeck.intent.dispatch/v1",
+      "inputs": ["axm.holodeck-intent/v1", "deck plan", "state"],
+      "outputs": ["state transition", "axm.holodeck-intent-receipt/v1"],
+      "sideEffects": [],
+      "permissions": ["none; actor kind grants no extra ability"],
+      "resourceBudget": "one discrete bounded intent per call",
+      "failureRecovery": "refusal receipt or pre-mutation exception",
+      "compatibility": "human, machine, and service actors share one schema",
+      "verification": "human-machine parity and replay tests"
+    },
+    {
+      "id": "sensor-frame",
+      "capability": "holodeck.sensor.observe/v1",
+      "inputs": ["deck plan", "state", "observer identity"],
+      "outputs": ["axm.holodeck-sensor-frame/v1"],
+      "sideEffects": [],
+      "permissions": [],
+      "resourceBudget": "world-declared radius and entity cap",
+      "failureRecovery": "rejects invalid state",
+      "compatibility": "same observation shape for human and machine actors",
+      "verification": "post-interaction structured observation",
+      "truthBoundary": "proximity state is not camera vision or occlusion proof"
+    },
+    {
+      "id": "snapshot-machine",
+      "capability": "holodeck.state.snapshot/v1",
+      "inputs": ["deck plan", "verified local state"],
+      "outputs": ["axm.holodeck-state-snapshot/v1"],
+      "sideEffects": [],
+      "permissions": ["browser storage write only when explicitly requested by an adapter"],
+      "resourceBudget": "one bounded JSON snapshot",
+      "failureRecovery": "checksum and world mismatch rejection",
+      "compatibility": "world and world-digest bound",
+      "verification": "serialization, fresh restore, and tamper tests"
+    },
+    {
+      "id": "screen-adapter",
+      "capability": "holodeck.adapter.screen/v1",
+      "inputs": ["axm.holodeck-deck-plan/v1", "axm.holodeck-state/v1"],
+      "outputs": ["WebGL screen projection", "visible intent feedback"],
+      "sideEffects": ["browser-local snapshot only after explicit save"],
+      "permissions": ["local human input", "local WebGL", "browser storage on explicit command"],
+      "resourceBudget": "one Three.js scene, primitive geometry only",
+      "failureRecovery": "visible unsupported-WebGL or load error",
+      "compatibility": "axm.holodeck-render-adapter/v1",
+      "verification": "live laptop and phone journey"
+    },
+    {
+      "id": "echo-atrium-experience",
+      "capability": "holodeck.experience.echo-atrium/v1",
+      "inputs": ["canonical example world"],
+      "outputs": ["one objective and one observable world-state transformation"],
+      "sideEffects": [],
+      "permissions": [],
+      "resourceBudget": "10 primitive entities, one interaction",
+      "failureRecovery": "explicit reset returns to compiled initial state",
+      "compatibility": "axm.holodeck-world/v1",
+      "verification": "approach, interact, gate response, save and restore"
+    }
+  ]
+}

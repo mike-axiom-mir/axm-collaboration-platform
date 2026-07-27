@@ -1,0 +1,33 @@
+{
+  "schema": "axm.live-visual-verification-receipt/v1",
+  "claim": "The diagnostic GLB loads, becomes visibly rendered in an explicit WebGL2 context, and responds to bounded orbit input.",
+  "surface_route": "http://127.0.0.1:8903/smoke.html?job=phase1-existing-glb-20260722",
+  "viewport": { "width": 1280, "height": 720, "device_pixel_ratio_render_scale": 1.25 },
+  "baseline_evidence": "RUNNING: GLBLoader was active while the storefront geometry was already visible.",
+  "action": "Waited for the digest-bound browser receipt, then performed one horizontal orbit drag across the canvas.",
+  "expected_visible_change": "The status changes to PASS, the storefront remains visible, and the camera rotates to a different side without a blank or failed frame.",
+  "observed_sequence": [
+    "Initial stable frame: smoke page and empty/dark scene shell.",
+    "Intermediate frame: storefront visible while status still reported GLB loading.",
+    "Settled frame: PASS with 28 meshes and 3,496 estimated triangles.",
+    "Interaction frame: storefront rotated from a front three-quarter view to a side view; PASS remained stable."
+  ],
+  "typed_observation": {
+    "webgl2_context": true,
+    "gltf_loader_complete": true,
+    "mesh_count": 28,
+    "estimated_triangles": 3496,
+    "orbit_camera_changed": true,
+    "blank_frames_observed": false,
+    "visual_quality_approved": false,
+    "counts_as_canonical_delivery": false
+  },
+  "verdict": "PASS",
+  "named_seam": null,
+  "cadence_limit": "visual.capture.ephemeral-rolling-buffer/v1 was unavailable; three bounded screenshots plus the runtime receipt were used instead",
+  "buffer_digest": "3163d9f141debf6b22170732603e384a8dbbe5a55b3c38489be7a46e121cc19f",
+  "temporary_paths_created": [],
+  "temporary_paths_deleted": [],
+  "cleanup_complete": true,
+  "next_cheapest_test": "After matching KTX2Loader and meshopt decoder substrates exist, repeat against the compressed canonical candidate."
+}

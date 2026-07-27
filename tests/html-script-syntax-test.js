@@ -13,13 +13,14 @@ for(const file of files){
   for(const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)){
     new Function(m[1]);count++;
   }
-  if(file==='tools/project-room/index.html'||file==='tools/chatgpt-connector/index.html'||file==='tools/ui-ux-builder/index.html'||file==='tools/ai-team/index.html'||file==='tools/technical-glasses/index.html'||file==='tools/publish-library/index.html'||file==='tools/game-forge/index.html'||file==='tools/knowledge-canvas/index.html'||file==='tools/finance-world-room/index.html'||file==='tools/cognitive-resource-meter/index.html'||file==='tools/audio-studio/index.html'||file==='tools/film-motion-studio/index.html'||file==='tools/game-hub/index.html'||file==='tools/asset-fabric/index.html'||cognitivePages.has(file)||operationPages.has(file)||file==='shared/asset-hands/index.html'){
-    for(const m of html.matchAll(/<script[^>]*\bsrc=["']([^"']+\.js)["'][^>]*><\/script>/gi)){
-      if(m[1].startsWith('/'))continue;
-      new Function(fs.readFileSync(path.join(path.dirname(file),m[1]),'utf8'));count++;
+  {
+    for(const m of html.matchAll(/<script[^>]*\bsrc=["']([^"']+)["'][^>]*><\/script>/gi)){
+      const source=m[1],localPath=source.split(/[?#]/,1)[0];
+      if(source.startsWith('/')||source.startsWith('//')||/^[a-z][a-z0-9+.-]*:/i.test(source)||!localPath.endsWith('.js'))continue;
+      new Function(fs.readFileSync(path.join(path.dirname(file),localPath),'utf8'));count++;
     }
   }
   if(!count)throw new Error(file+' has no local script to check');
-  console.log('PASS '+file+' · '+count+' inline script(s) compile');pass++;
+  console.log('PASS '+file+' · '+count+' local script(s) compile');pass++;
 }
 console.log('\n'+pass+' PASS · 0 FAIL');

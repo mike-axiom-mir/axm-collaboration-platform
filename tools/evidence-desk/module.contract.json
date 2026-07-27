@@ -1,0 +1,51 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "evidence-desk",
+  "version": "v0.2",
+  "provides": [
+    "typed-claim-evidence-routing",
+    "native-evidence-surface-guidance",
+    "explicit-pass-fail-unknown-verdicts",
+    "pass-check-requires-evidence",
+    "sha256-sealed-evidence-receipt",
+    "receipt-integrity-reverification",
+    "separate-knowledge-handoff-preview",
+    "explicit-gated-knowledge-inbox-write",
+    "truthful-handoff-delivery-state",
+    "responsive-human-machine-evidence-view"
+  ],
+  "consumes": [
+    "human-supplied-observations",
+    "human-supplied-verification-results",
+    "service:browser-storage",
+    "service:gate",
+    "service:knowledge-canvas-inbox",
+    "runtime:sha256"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.evidence-receipt/v2", "axm.action-report/v2", "axm.evidence-handoff-receipt/v1", "axm.knowledge.research/v1"],
+    "accepts": ["axm.evidence-fields/v1", "axm.evidence-fields/v2", "axm.evidence-receipt/v2"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:evidence-desk-draft-by-explicit-action", "browser-local:knowledge-canvas-inbox-by-explicit-action", "user-download:sealed-receipt-or-report-by-explicit-action"],
+    "refuses": [
+      "invented-observation",
+      "pass-check-without-evidence-as-verified",
+      "evidence-surface-mismatch-as-proof",
+      "unknown-claim-as-pass",
+      "sha256-integrity-as-truth-certification",
+      "knowledge-inbox-write-without-preview",
+      "knowledge-inbox-overwrite",
+      "inbox-placement-as-receiver-acceptance",
+      "execution-claim-without-receipt",
+      "automatic-canon-promotion"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  }
+}

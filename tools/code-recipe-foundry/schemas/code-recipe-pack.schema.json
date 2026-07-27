@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-recipe-pack/v1",
+  "title": "AXM Code Recipe Pack",
+  "type": "object",
+  "required": ["schema", "generatedAt", "source", "summary", "recipes", "families", "truth"],
+  "properties": {
+    "schema": {"const": "axm.code-recipe-pack/v1"},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "source": {"type": "object"},
+    "summary": {"type": "object"},
+    "recipes": {"type": "array", "maxItems": 5000, "items": {"$ref": "axm.code-recipe/v1"}},
+    "families": {"type": "array"},
+    "truth": {"type": "object"}
+  },
+  "additionalProperties": false
+}

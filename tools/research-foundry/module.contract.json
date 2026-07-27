@@ -1,0 +1,38 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "research-foundry",
+  "version": "v0.1",
+  "provides": [
+    "research.goal.normalize/v1",
+    "research.workshop.scan/v1",
+    "research.question.compile/v1",
+    "research.hypothesis.route/v1",
+    "research.experiment.plan/v1",
+    "research.backlog.rank/v1",
+    "research.evidence.ingest/v1",
+    "research.report.compile/v1",
+    "research.run.compose/v1",
+    "research.ui.observe/v1"
+  ],
+  "consumes": [
+    "axm.workshop-direction.plan/v1",
+    "axm.module-contract/v1",
+    "capability.compare.requirements/v1",
+    "evidence.route.claim/v1",
+    "provisional-discovery"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.deterministic-research-report/v1", "axm.research-backlog/v1", "axm.research-evidence-ledger/v1"],
+    "accepts": ["axm.research-goal/v1", "axm.workshop-direction.plan/v1", "axm.research-observation/v1"]
+  },
+  "boundaries": {
+    "writes": ["explicit-cli:exports/deterministic-research"],
+    "refuses": [
+      "automatic-build", "automatic-builder-assignment", "automatic-direction-change", "automatic-permission",
+      "automatic-promotion", "automatic-publication", "declared-capability-as-runtime-proof",
+      "semantic-lead-as-exact-match", "model-output-as-executed-evidence", "contradiction-averaging"
+    ]
+  },
+  "lifecycle": {"state_owner": "filesystem", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"}
+}

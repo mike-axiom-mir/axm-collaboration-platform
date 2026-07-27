@@ -4,11 +4,11 @@
   if (root) root.AXMNativeBridgeCodec = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
-  var VERSION = "1.1.0",
+  var VERSION = "1.2.0",
     ADAPTERS = {
       blender: {
         minimum: [4, 2],
-        maximum: [5, 0],
+        maximum: [5, 3],
         command: "blender.import-interchange",
       },
       godot: {

@@ -1,0 +1,39 @@
+{
+  "schema": "axm.shared-service-contract/v1",
+  "id": "visual-proof",
+  "version": "1.0.0",
+  "status": "TEST",
+  "provides": [
+    "visual.proof.receipt/v1",
+    "artifact-technical-and-native-visual-evidence-binding",
+    "deterministic-proof-receipt-sealing-and-verification",
+    "explicit-separation-of-proof-from-visual-approval-and-canon",
+    "motion-cadence-and-cleanup-ceilings"
+  ],
+  "accepts": [
+    "artifact digest reference",
+    "bounded technical evidence references",
+    "optional Sensorium or host visual evidence references",
+    "declared viewport, backend, verdict, seams, and cleanup state"
+  ],
+  "produces": [
+    "axm.visual-proof-receipt/v1"
+  ],
+  "dependencies": [
+    "SHA-256 runtime",
+    "claim-native technical or visual evidence supplied by the caller"
+  ],
+  "boundaries": {
+    "automaticWrites": [],
+    "refuses": [
+      "raw image, pixel, frame, video, blob, data URL, or base64 material",
+      "absolute or parent-traversing proof refs",
+      "visual PASS from proof refs without digests",
+      "provider result as visual approval",
+      "technical validation as appearance proof",
+      "motion pass without three frames or a rolling-buffer digest",
+      "visual pass with incomplete evidence cleanup",
+      "automatic approval, canon, promotion, publish, or authority inheritance"
+    ]
+  }
+}

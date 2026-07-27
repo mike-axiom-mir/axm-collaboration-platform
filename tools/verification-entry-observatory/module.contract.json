@@ -1,0 +1,56 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "verification-entry-observatory",
+  "version": "v0.2",
+  "provides": [
+    "verification-entry-name-inventory",
+    "conventional-selftest-filename-observation",
+    "declared-package-verification-script-observation",
+    "freshness-bound-verification-entry-map",
+    "single-entry-unexecuted-verification-request"
+  ],
+  "consumes": [
+    "filesystem/workshop-root"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.verification-entry-map/v1",
+      "axm.verification-run-request/v1"
+    ],
+    "accepts": [
+      "filesystem/workshop-root"
+    ]
+  },
+  "boundaries": {
+    "writes": [
+      "explicit-user-selected-output-only"
+    ],
+    "refuses": [
+      "source-body-interpretation",
+      "test-execution",
+      "verification-request-execution",
+      "command-argument-or-environment-synthesis",
+      "fixture-input-invention",
+      "declared-command-execution",
+      "entrypoint-executable-proof",
+      "test-passing-proof",
+      "coverage-proof",
+      "readiness-proof",
+      "quality-proof",
+      "machine-host-change",
+      "source-mutation",
+      "filesystem-symlink-following",
+      "installer-staging",
+      "installation",
+      "promotion",
+      "canon-change"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  }
+}

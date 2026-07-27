@@ -8,12 +8,13 @@ const Hands = require('./asset-hands');
 const contract = require('./service.contract.json');
 
 const root = __dirname;
+const sharedRoot = path.resolve(root, '..');
 const schemas = new Map();
 
 function readSchema(filename) {
   const absolute = path.resolve(root, filename);
-  const relative = path.relative(root, absolute);
-  assert(relative && !relative.startsWith('..' + path.sep) && !path.isAbsolute(relative), 'schema path must remain inside Asset Hands');
+  const relative = path.relative(sharedRoot, absolute);
+  assert(relative && !relative.startsWith('..' + path.sep) && !path.isAbsolute(relative), 'schema path must remain inside shared modules');
   const schema = JSON.parse(fs.readFileSync(absolute, 'utf8'));
   schemas.set(filename, schema);
   return schema;
@@ -42,7 +43,7 @@ function walkReferences(value, sourceFile) {
 
 const ids = new Set();
 Object.entries(contract.schemaFiles).forEach(([schemaId, filename]) => {
-  assert(!path.isAbsolute(filename) && !filename.includes('..'), 'schema declaration must be portable');
+  assert(!path.isAbsolute(filename), 'schema declaration must be portable');
   const schema = readSchema(filename);
   assert.equal(typeof schema.$id, 'string', filename + ' must declare a portable JSON Schema id');
   if (schema.properties && schema.properties.schema && schema.properties.schema.const) {

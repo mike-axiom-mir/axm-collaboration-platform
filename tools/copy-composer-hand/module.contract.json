@@ -1,0 +1,24 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "copy-composer-hand",
+  "version": "0.1.0-test",
+  "status": "EXPERIMENTAL",
+  "provides": ["deterministic-short-copy-candidates", "quote-composition", "slogan-composition", "replay-receipts"],
+  "consumes": ["axm.copy.request/v1", "axm.body-pulse.lease/v1"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.copy.candidate/v1", "axm.copy.receipt/v1"],
+    "accepts": ["axm.copy.request/v1"]
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": ["browser-clipboard:human-click-only"],
+    "refuses": ["network-access", "model-call", "file-write", "automatic-publication", "automatic-canon-promotion", "claiming-deterministic-grammar-as-open-ended-authorship", "silent-start"]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

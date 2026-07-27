@@ -1,0 +1,78 @@
+{
+  "schema": "axm.sensorium-skill/v1",
+  "id": "eye-live-visual-verifier",
+  "type": "skill",
+  "sense": "live-sight",
+  "pack": "axm-sensorium/1.4.0",
+  "status": "ACCEPT_FOR_TEST",
+  "capability": "visual.capture.ephemeral-rolling-buffer/v1",
+  "purpose": "Observe a bounded live visual window, seal a digest, and release every raw frame.",
+  "inputs": [
+    "claim",
+    "captureTarget",
+    "expectedChange",
+    "refutingChange",
+    "frameBudget"
+  ],
+  "procedure": [
+    "Name one claim and target.",
+    "Open a bounded rolling buffer through an injected capture adapter.",
+    "Observe a time-ordered sequence.",
+    "Seal a typed digest.",
+    "Release all frames before return."
+  ],
+  "rules": [
+    "Perception is not permission.",
+    "UNKNOWN is preferred to a plausible guess.",
+    "Every use emits a typed receipt and releases raw material."
+  ],
+  "boundaries": [
+    "No automatic capture.",
+    "No click or write authority.",
+    "No raw video archive."
+  ],
+  "retention": {
+    "law": "EPHEMERAL BY DEFAULT. Raw sense material is released at the next step. Only a bounded typed receipt survives.",
+    "raw_material": "sense-specific bounded input",
+    "released_when": "before the typed observation is returned",
+    "survives": "specific receipt plus axm.sensorium-receipt/v1 envelope",
+    "raw_retained_after_step": "zero",
+    "accumulation_across_uses": "flat and zero after every release boundary",
+    "receipt_cap": "newest 20 per sense",
+    "deletion_scope": "only material created by the exact sense use, by exact id or path; never a wildcard or recursive sweep"
+  },
+  "receipt": {
+    "schema": "axm.ephemeral-visual-receipt/v1",
+    "envelopeSchema": "axm.sensorium-receipt/v1"
+  },
+  "runtime": {
+    "routeType": "EXECUTABLE",
+    "module": "../ai-native-hands/ephemeral-vision-hand.js",
+    "factory": "create",
+    "operation": "seal"
+  },
+  "statuses": {
+    "skillStatus": "ACCEPT_FOR_TEST",
+    "executorStatus": "EXECUTABLE",
+    "adapterStatus": "DEGRADED",
+    "proofStatus": "RUNTIME_PASS",
+    "authorityStatus": "NO_LEASE"
+  },
+  "requiredHostCapabilities": [
+    "visual.capture.ephemeral-rolling-buffer/v1"
+  ],
+  "constraints": [
+    "browser-first",
+    "explicit-target",
+    "windows-fallback-new-lease",
+    "WINDOWS_WINDOW_ISOLATION_UNAVAILABLE"
+  ],
+  "resourceBudget": {
+    "maxFrames": 60,
+    "maxBytes": 16000000,
+    "minimumCadenceMs": 250,
+    "rawRetainedBytesAfterSeal": 0
+  },
+  "authorityInherited": false,
+  "promotionGate": "Mike"
+}

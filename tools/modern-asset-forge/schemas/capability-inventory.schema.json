@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/modern-asset-forge-capability-inventory-v1.schema.json",
+  "title": "AXM Modern Asset Forge Capability Inventory v1",
+  "type": "object",
+  "required": ["schema", "version", "observed_at", "automatic_installation", "private_location_retained", "capabilities", "digest"],
+  "properties": {
+    "schema": { "const": "axm.modern-asset-forge.capability-inventory/v1" },
+    "version": { "const": "1.0.0" },
+    "observed_at": { "type": "string", "format": "date-time" },
+    "automatic_installation": { "const": false },
+    "private_location_retained": { "const": false },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["available", "degraded", "unavailable", "unknown"] },
+          "gap_type": { "enum": ["HAND", "SKILL", "AUTHORITY", "SUBSTRATE", "EVIDENCE", "CONTRACT"] },
+          "constraints": { "type": "array", "items": { "type": "string" } },
+          "evidence": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

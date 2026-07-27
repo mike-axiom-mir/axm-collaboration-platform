@@ -1,0 +1,16 @@
+{
+  "schema": "axm.verification-target-profile/v1",
+  "id": "game-organism-experimental",
+  "name": "Experimental Game Organism",
+  "required_categories": ["organ", "game", "module", "foundation"],
+  "optional_categories": ["asset", "hand", "world"],
+  "missing_validator_policy": "hold",
+  "conflict_policy": "hold",
+  "conflict_rules": [
+    {
+      "id": "game-organism-category-authority",
+      "when": ["organ.category-conflict", "organ.canonical-write-request"],
+      "resolution": "hold-for-steward-review"
+    }
+  ]
+}

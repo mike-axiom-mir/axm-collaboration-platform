@@ -1,0 +1,25 @@
+{
+  "schema": "axm.service-contract/v1",
+  "id": "audio-sfx-bake",
+  "version": "0.1.0",
+  "status": "TEST",
+  "consumes": ["axm.audio.sound/v1"],
+  "emits": ["audio/wav", "axm.audio.sfx-bake-receipt/v1"],
+  "capabilities": [
+    "headless-deterministic-sfx-render",
+    "pcm-s16le-mono-wav-encode",
+    "seeded-noise",
+    "seeded-directed-variation"
+  ],
+  "boundaries": {
+    "writes": [],
+    "requires_explicit_caller_write": true,
+    "refuses": [
+      "automatic-file-write",
+      "automatic-publish",
+      "automatic-approval",
+      "webaudio-sample-identity-claim",
+      "human-listening-claim"
+    ]
+  }
+}

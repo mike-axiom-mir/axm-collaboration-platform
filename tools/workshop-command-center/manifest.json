@@ -1,7 +1,9 @@
 {
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
   "id": "workshop-command-center",
   "name": "Workshop Command Center",
-  "version": "v0.1",
+  "version": "v0.5",
   "status": "TEST",
   "entry": "index.html",
   "contract": "module.contract.json",
@@ -11,13 +13,19 @@
   "layer": "build",
   "audience": "human-machine",
   "risk": "MEDIUM",
-  "tags": ["command-center", "beginner", "direction", "goals", "review", "health", "evidence", "navigation"],
-  "uses": ["storage", "body-pulse", "workshop-direction", "review-inbox", "technical-glasses", "cognitive-resource-meter"],
+  "tags": ["command-center", "beginner", "direction", "goals", "needs", "readiness", "review", "health", "evidence", "navigation"],
+  "uses": ["storage", "body-pulse", "workshop-direction", "workshop-needs-observatory", "review-inbox", "technical-glasses", "cognitive-resource-meter", "chroma-studio", "device-handoff", "ui-fx", "presentation-spine"],
   "permissions": [],
-  "actions": ["tell AXM what to do", "preview a bounded plan", "save a reviewed direction", "cast an attributed exact-digest steward vote", "pause continue finish or cancel a saved direction", "inspect live Workshop health", "inspect cognitive evidence counts", "open one of five parent workspaces", "inspect the explicit command catalog"],
-  "accepts": ["axm.workshop-direction.request/v1", "axm.cognitive-resource.command-center-controls/v1"],
+  "actions": ["tell AXM what to do", "preview a bounded plan", "save a reviewed direction", "cast an attributed exact-digest steward vote", "pause continue finish or cancel a saved direction", "inspect live Workshop health", "inspect open-needs and module-review counts", "inspect cognitive evidence counts", "open one of five parent workspaces", "open Chroma Studio", "route to Device Handoff with one explicit QR-session request", "open the UI-FX composer", "open the Presentation Spine migration lab", "inspect the explicit command catalog"],
+  "accepts": ["axm.workshop-direction.request/v1", "axm.workshop-needs-observatory/v1", "axm.workshop-readiness-view/v1", "axm.cognitive-resource.command-center-controls/v1"],
   "produces": ["axm.workshop-direction.plan/v1", "axm.workshop-direction.steward-assessment/v1", "axm.review-vote/v1", "axm.workshop-command-center.snapshot/v1"],
-  "readiness": ["storage", "body-pulse"],
-  "summary": "A beginner-first one-page cockpit above the five Workshop parents for planning, exact-digest steward review, lifecycle control, health, evidence, and navigation.",
-  "notes": "Presentation and explicit request surface only. It never auto-votes, starts Body Pulse, executes generic POST controls, grants permissions, promotes, releases, writes Mirror, or acts on the world."
+  "readiness": ["storage", "body-pulse", "workshop-needs-observatory"],
+  "summary": "A beginner-first one-page cockpit above the Workshop for planning, exact-digest steward review, lifecycle control, needs and readiness awareness, health, evidence, creation handoffs, and navigation.",
+  "notes": "Presentation and explicit request surface only. Chroma and Phone Drop are navigation routes: Chroma owns image work and Device Handoff owns the gated LAN listener. This deck gains no filesystem or network authority."
+  ,"presentation": {
+    "schema": "axm.presentation-policy/v1",
+    "defaultMode": "shared",
+    "sharedProfile": "cockpit",
+    "moduleVisual": true
+  }
 }

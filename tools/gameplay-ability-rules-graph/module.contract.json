@@ -1,0 +1,50 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "gameplay-ability-rules-graph",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "deterministic-local-production-scenario",
+    "visual-output-inspection",
+    "typed-artifact-receipt",
+    "independent-evidence-verification"
+  ],
+  "consumes": [
+    "human-production-direction",
+    "bounded-local-source-recipe",
+    "human-visual-approval"
+  ],
+  "permissions": [
+    "export"
+  ],
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  },
+  "handoffs": {
+    "emits": [
+      "axm.ability-rules/v1",
+      "axm.p1-production-scenario-verification/v1"
+    ],
+    "accepts": [
+      "human:explicit-export",
+      "human:visual-approval"
+    ]
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [
+      "user-download:candidate-receipt-json"
+    ],
+    "refuses": [
+      "automatic-library-promotion",
+      "automatic-candidate-retention",
+      "source-asset-mutation",
+      "quality-approval-by-statistics",
+      "undeclared-external-runtime-dependency",
+      "durable-world-state-ownership"
+    ]
+  }
+}

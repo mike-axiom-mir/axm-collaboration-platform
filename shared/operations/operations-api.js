@@ -8,6 +8,9 @@ const MachineHost = require('./machine-host');
 const RecoveryService = require('./recovery-service');
 const InstallerService = require('./installer-service');
 const WorkbenchService = require('./module-workbench-service');
+const ModularIntakeService = require('../modular-intake/modular-intake-service');
+const NeedsObservatoryService = require('../modular-intake/needs-observatory-service');
+const ReadinessObserver = require('../readiness/readiness-observer');
 const SearchService = require('./search-service');
 const AssetService = require('./asset-filesystem-service');
 const DeviceHandoffService = require('./device-handoff-service');
@@ -25,9 +28,13 @@ const PublicReleaseService = require('./public-release-service');
 const CognitiveResourceService = require('../cognitive-resource/cognitive-resource-service');
 const CognitiveEvidenceLabsService = require('../cognitive-resource/cognitive-evidence-labs-service');
 const EvidenceRetentionService = require('../evidence-retention/evidence-retention-service');
+const HubLifecycleService = require('./hub-lifecycle-service');
+const GitHubSyncService = require('./github-sync-service');
 
 function create(options) {
   const evidenceRetention = EvidenceRetentionService.forStateRoot(options.stateRoot);
+  const hubLifecycle = HubLifecycleService.create(options);
+  const githubSync = GitHubSyncService.create(options);
   const review = ReviewService.create(options);
   const permissions = PermissionService.create(options);
   const secrets = SecretsService.create(options);
@@ -36,8 +43,11 @@ function create(options) {
   const search = SearchService.create(options);
   const assets = AssetService.create(options);
   const handoff = DeviceHandoffService.create(options);
-  const installer = InstallerService.create(Object.assign({}, options, { reviewService: review }));
+  const installer = InstallerService.create(Object.assign({}, options, { reviewService: review, machineHost: machine }));
   const workbench = WorkbenchService.create(Object.assign({}, options, { installerService: installer }));
+  const modularIntake = ModularIntakeService.create(Object.assign({}, options, { reviewService: review, installerService: installer }));
+  const needsObservatory = NeedsObservatoryService.create(Object.assign({}, options, { modularIntakeService: modularIntake }));
+  const readinessObserver = ReadinessObserver.create({ root: options.root, stateRoot: options.stateRoot, humanGate: 'Mike' });
   const qa = QaLabService.create(options);
   const templates = TemplateRuntimeService.create(options);
   const sources = SourceConnectorService.create(Object.assign({}, options, { reviewService: review }));
@@ -67,6 +77,17 @@ function create(options) {
     if (!url.startsWith('/api/')) return false;
 
     if (url === '/api/operations/status' && req.method === 'GET') { reply(res, diagnostics.snapshot()); return true; }
+    if (url === '/api/hub/lifecycle' && req.method === 'GET') { reply(res, hubLifecycle.status()); return true; }
+    if (url === '/api/hub/lifecycle' && req.method === 'POST') { reply(res, body(req, 20000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-hub-lifecycle', 'explicit-local-label'); return hubLifecycle.set(Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
+    if (url === '/api/hub/lifecycle/batch' && req.method === 'POST') { reply(res, body(req, 200000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-hub-lifecycle', 'explicit-verified-batch'); return hubLifecycle.batch(parsed.entries, actor(req, parsed), String(parsed.source || 'verified-batch').slice(0, 80)); })); return true; }
+    if (url === '/api/hub/lifecycle/reconciliation' && req.method === 'GET') { reply(res, hubLifecycle.reconciliationPlan()); return true; }
+    if (url === '/api/hub/lifecycle/reconciliation' && req.method === 'POST') { reply(res, body(req, 30000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-hub-lifecycle', 'explicit-verified-reconciliation'); return hubLifecycle.applyReconciliation(Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
+    if (url === '/api/github-sync' && req.method === 'GET') { reply(res, githubSync.status()); return true; }
+    if (url === '/api/github-sync/plan' && req.method === 'GET') { reply(res, githubSync.buildPlanSummary()); return true; }
+    if (url === '/api/github-sync/plan/full' && req.method === 'POST') { reply(res, body(req, 10000).then(parsed => { explicit(req, 'x-axm-github-sync', 'export-exact-plan'); return githubSync.buildExactPlan(parsed.planDigest); })); return true; }
+    if (url === '/api/github-sync/verify' && req.method === 'POST') { reply(res, body(req, 10000).then(parsed => { explicit(req, 'x-axm-github-sync', 'verify-exact-plan'); return githubSync.verifyPlan(parsed.planDigest); })); return true; }
+    if (url === '/api/github-sync/configure' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-github-sync', 'explicit-configuration'); return githubSync.configure(Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
+    if (url === '/api/github-sync/manual-push' && req.method === 'POST') { reply(res, body(req, 20000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-github-sync', 'manual-reviewed-push'); return machine.run('github-sync-manual-reviewed', Object.assign({}, parsed, { actor: actor(req, parsed) })); }), 202); return true; }
     if (url === '/api/evidence-retention' && req.method === 'GET') { reply(res, evidenceRetention.status()); return true; }
     if (url === '/api/evidence-retention/seal' && req.method === 'POST') { reply(res, body(req, 10000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-evidence', 'explicit-seal'); return evidenceRetention.seal(String(parsed.reason || 'explicit-session-close').slice(0, 200)); })); return true; }
 
@@ -75,13 +96,15 @@ function create(options) {
     if (url === '/api/recovery/configure' && req.method === 'POST') { reply(res, body(req, 20000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-recovery', 'explicit-configure'); return recovery.configure(Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
     if (url === '/api/recovery/restore/preview' && req.method === 'POST') { reply(res, body(req, 100000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-recovery', 'explicit-preview'); return recovery.preview(parsed.snapshotId, parsed.paths, actor(req, parsed)); })); return true; }
     if (url === '/api/recovery/restore/apply' && req.method === 'POST') { reply(res, body(req, 30000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-recovery', 'apply-preview'); requirePermission('recovery-center','recovery.apply'); return recovery.apply(parsed.previewId, Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
+    if (url === '/api/recovery/rollback/preview' && req.method === 'POST') { reply(res, body(req, 30000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-recovery', 'explicit-rollback-preview'); return recovery.previewRollback(parsed.restoreId, actor(req, parsed)); })); return true; }
+    if (url === '/api/recovery/rollback/apply' && req.method === 'POST') { reply(res, body(req, 30000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-recovery', 'apply-rollback-preview'); requirePermission('recovery-center','recovery.apply'); return recovery.applyRollback(parsed.previewId, Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
 
     if (url === '/api/machine-host/actions' && req.method === 'GET') { reply(res, { actions: machine.actions(), arbitraryCommands: false }); return true; }
     if (url === '/api/machine-host/jobs' && req.method === 'GET') { const id = query(req).get('id'); reply(res, id ? machine.get(id) : machine.list()); return true; }
     if (url === '/api/machine-host/run' && req.method === 'POST') { reply(res, body(req, 30000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-machine-host', 'explicit-run'); requirePermission('machine-host','machine.execute'); return machine.run(String(parsed.action || ''), parsed); }), 202); return true; }
     if (url === '/api/machine-host/stop' && req.method === 'POST') { reply(res, body(req, 10000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-machine-host', 'explicit-stop'); requirePermission('machine-host','machine.execute'); return machine.stop(parsed.id); })); return true; }
 
-    if (url === '/api/reviews' && req.method === 'GET') { reply(res, { items: review.list({ state: query(req).get('state') || '' }), summary: review.summary() }); return true; }
+    if (url === '/api/reviews' && req.method === 'GET') { reply(res, { items: review.list({ state: query(req).get('state') || '' }), summary: review.summary(), structuralReview: readinessObserver.snapshot() }); return true; }
     if (url === '/api/reviews' && req.method === 'POST') { reply(res, body(req, 200000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'explicit-submit'); return review.submit(parsed); })); return true; }
     if (url === '/api/reviews/vote' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'exact-digest-vote'); if (parsed.confirmation !== 'REVIEW EXACT DIGEST') throw new Error('exact review confirmation is required'); return review.vote(parsed.id, parsed); })); return true; }
     if (url === '/api/reviews/discuss' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'explicit-discussion'); return review.discuss(parsed.id, parsed); })); return true; }
@@ -89,12 +112,26 @@ function create(options) {
 
     if (url === '/api/installer' && req.method === 'GET') { const moduleId = query(req).get('moduleId'); reply(res, { candidates: installer.list(), backups: moduleId ? installer.backups(moduleId) : [] }); return true; }
     if (url === '/api/installer/stage' && req.method === 'POST') { reply(res, body(req, 45 * 1024 * 1024).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-installer', 'explicit-stage'); return installer.stage(parsed.bundle || parsed, actor(req, parsed)); })); return true; }
+    if (url === '/api/installer/stage-return' && req.method === 'POST') { reply(res, body(req, 43 * 1024 * 1024).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-installer', 'explicit-return-stage'); return installer.stageReturnedZip(parsed.return || parsed, actor(req, parsed)); })); return true; }
     if (url === '/api/installer/apply' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-installer', 'apply-approved-digest'); requirePermission('module-installer','module.install'); return installer.apply(parsed.candidateId, Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
     if (url === '/api/installer/rollback' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-installer', 'explicit-rollback'); requirePermission('module-installer','module.install'); return installer.rollback(parsed.moduleId, parsed.backupId, Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
 
     if (url === '/api/module-workbench' && req.method === 'GET') { const id = query(req).get('id'); reply(res, id ? workbench.readModule(id) : workbench.modules()); return true; }
     if (url === '/api/module-workbench/validate' && req.method === 'POST') { reply(res, body(req, 1000000).then(parsed => workbench.validate(parsed))); return true; }
     if (url === '/api/module-workbench/stage' && req.method === 'POST') { reply(res, body(req, 2000000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-module-workbench', 'explicit-stage-review'); return workbench.stage(parsed, actor(req, parsed)); })); return true; }
+
+    if (url === '/api/modular-intake' && req.method === 'GET') { reply(res, modularIntake.status()); return true; }
+    if (url === '/api/modular-intake/inspect' && req.method === 'POST') { reply(res, body(req, 45 * 1024 * 1024).then(parsed => modularIntake.inspect(parsed.package || parsed))); return true; }
+    if (url === '/api/modular-intake/stage' && req.method === 'POST') { reply(res, body(req, 45 * 1024 * 1024).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-modular-intake', 'explicit-quarantine'); return modularIntake.stage(parsed.package || parsed, actor(req, parsed)); })); return true; }
+    if (url === '/api/modular-intake/review' && req.method === 'POST') { reply(res, body(req, 30000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-modular-intake', 'open-exact-review'); return modularIntake.openReview(parsed.candidateId, actor(req, parsed)); })); return true; }
+    if (url === '/api/modular-intake/promote' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-modular-intake', 'promote-approved-digest'); requirePermission('modular-intake-gate','component.promote'); return modularIntake.promote(parsed.candidateId, Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
+    if (url === '/api/modular-intake/family/propose' && req.method === 'POST') { reply(res, body(req, 200000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-modular-intake', 'propose-neutral-family'); return modularIntake.proposeFamily(parsed.contract || parsed, actor(req, parsed)); })); return true; }
+    if (url === '/api/modular-intake/family/apply' && req.method === 'POST') { reply(res, body(req, 30000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-modular-intake', 'register-approved-family'); requirePermission('modular-intake-gate','component.family.register'); return modularIntake.applyFamily(parsed.proposalId, Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
+
+    if (url === '/api/workshop-needs' && req.method === 'GET') { reply(res, needsObservatory.status()); return true; }
+    if (url === '/api/workshop-needs/create' && req.method === 'POST') { reply(res, body(req, 100000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-needs', 'explicit-create'); return needsObservatory.createNeed(parsed, actor(req, parsed)); })); return true; }
+    if (url === '/api/workshop-needs/match' && req.method === 'POST') { reply(res, body(req, 30000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-needs', 'exact-capability-match'); return needsObservatory.match(parsed.needId, parsed.candidateId, actor(req, parsed)); })); return true; }
+    if (url === '/api/workshop-needs/transition' && req.method === 'POST') { reply(res, body(req, 30000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-needs', 'explicit-transition'); return needsObservatory.transition(parsed.needId, Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
 
     if (url === '/api/permissions' && req.method === 'GET') { reply(res, permissions.status()); return true; }
     if (url === '/api/permissions/decision' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-permission', 'explicit-decision'); if (parsed.confirmation !== 'SET MODULE PERMISSION') throw new Error('exact permission confirmation is required'); return permissions.setGrant(Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
@@ -103,10 +140,12 @@ function create(options) {
     if (url === '/api/secrets/unlock' && req.method === 'POST') { reply(res, body(req, 100000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-secrets', 'explicit-unlock'); return secrets.unlock(parsed.passphrase, actor(req, parsed)); })); return true; }
     if (url === '/api/secrets/lock' && req.method === 'POST') { reply(res, Promise.resolve().then(() => { mutationAllowed(); explicit(req, 'x-axm-secrets', 'explicit-lock'); return secrets.lock(); })); return true; }
     if (url === '/api/secrets/upsert' && req.method === 'POST') { reply(res, body(req, 200000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-secrets', 'explicit-store'); return secrets.upsert(Object.assign({}, parsed, { actor: actor(req, parsed) })); })); return true; }
-    if (url === '/api/secrets/revoke' && req.method === 'POST') { reply(res, body(req, 20000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-secrets', 'explicit-revoke'); return secrets.revoke(parsed.id, actor(req, parsed)); })); return true; }
+    if (url === '/api/secrets/revoke' && req.method === 'POST') { reply(res, body(req, 20000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-secrets', 'explicit-revoke'); if (parsed.confirmation !== 'REVOKE SECRET') throw new Error('exact secret revocation confirmation is required'); return secrets.revoke(parsed.id, actor(req, parsed)); })); return true; }
 
     if (url === '/api/diagnostics' && req.method === 'GET') { reply(res, diagnostics.snapshot()); return true; }
+    if (url === '/api/diagnostics/log-sources' && req.method === 'GET') { reply(res, diagnostics.logSources()); return true; }
     if (url === '/api/diagnostics/logs' && req.method === 'GET') { reply(res, diagnostics.logs(query(req).get('kind') || 'workshop', query(req).get('bytes'))); return true; }
+    if (url === '/api/diagnostics/exports' && req.method === 'GET') { reply(res, diagnostics.exportStatus()); return true; }
     if (url === '/api/diagnostics/export' && req.method === 'POST') { reply(res, body(req, 10000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-diagnostics', 'explicit-export'); return diagnostics.exportReport(actor(req, parsed)); })); return true; }
 
     if (url === '/api/search' && req.method === 'GET') { const params = query(req), q = params.get('q'); reply(res, q ? search.search(q, { limit: params.get('limit'), prefix: params.get('prefix') }) : search.summary()); return true; }
@@ -208,7 +247,7 @@ function create(options) {
   }
 
   function stop() { recovery.stopSchedule(); assets.stopWatcher(); multiplayer.stop('server-shutdown'); handoff.stop(); cognitiveResources.stop(); const evidence = evidenceRetention.seal('server-shutdown'); return { stopped: true, evidence }; }
-  return { handle, stop, services: { review, permissions, secrets, machine, recovery, installer, workbench, search, assets, handoff, diagnostics, qa, templates, sources, media, world, multiplayer, adapters, mirror, novelty, releases, cognitiveResources, cognitiveLabs, evidenceRetention } };
+  return { handle, stop, services: { review, permissions, secrets, machine, recovery, installer, workbench, modularIntake, needsObservatory, search, assets, handoff, diagnostics, qa, templates, sources, media, world, multiplayer, adapters, mirror, novelty, releases, cognitiveResources, cognitiveLabs, evidenceRetention } };
 }
 
 module.exports = { create };

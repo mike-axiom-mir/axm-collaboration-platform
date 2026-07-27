@@ -1,0 +1,75 @@
+{
+  "schema": "axm.sensorium-skill/v1",
+  "id": "touch-environment-probe",
+  "type": "skill",
+  "sense": "touch",
+  "pack": "axm-sensorium/1.4.0",
+  "status": "ACCEPT_FOR_TEST",
+  "capability": "sense.environment.touch/v1",
+  "purpose": "Probe only named OS, path, separator, and tool assumptions without installing or repairing.",
+  "inputs": [
+    "os",
+    "separator",
+    "paths",
+    "tools"
+  ],
+  "procedure": [
+    "Read declared assumptions.",
+    "Probe only exact named items.",
+    "Diff assumed and actual.",
+    "Return mismatches or unknown holds.",
+    "Release probe material."
+  ],
+  "rules": [
+    "Perception is not permission.",
+    "UNKNOWN is preferred to a plausible guess.",
+    "Every use emits a typed receipt and releases raw material."
+  ],
+  "boundaries": [
+    "No home-directory enumeration.",
+    "No install or repair.",
+    "No wildcard path."
+  ],
+  "retention": {
+    "law": "EPHEMERAL BY DEFAULT. Raw sense material is released at the next step. Only a bounded typed receipt survives.",
+    "raw_material": "sense-specific bounded input",
+    "released_when": "before the typed observation is returned",
+    "survives": "specific receipt plus axm.sensorium-receipt/v1 envelope",
+    "raw_retained_after_step": "zero",
+    "accumulation_across_uses": "flat and zero after every release boundary",
+    "receipt_cap": "newest 20 per sense",
+    "deletion_scope": "only material created by the exact sense use, by exact id or path; never a wildcard or recursive sweep"
+  },
+  "receipt": {
+    "schema": "axm.touch-environment-probe/v1",
+    "envelopeSchema": "axm.sensorium-receipt/v1"
+  },
+  "runtime": {
+    "routeType": "EXECUTABLE",
+    "module": "touch-environment-probe.js",
+    "factory": "create",
+    "operation": "probe"
+  },
+  "statuses": {
+    "skillStatus": "ACCEPT_FOR_TEST",
+    "executorStatus": "EXECUTABLE",
+    "adapterStatus": "AVAILABLE",
+    "proofStatus": "RUNTIME_PASS",
+    "authorityStatus": "NO_LEASE"
+  },
+  "requiredHostCapabilities": [
+    "environment.probe.exact-read-only/v1"
+  ],
+  "constraints": [
+    "exact-items-only",
+    "wildcards-refused",
+    "read-only"
+  ],
+  "resourceBudget": {
+    "maxPaths": 40,
+    "maxTools": 20,
+    "rawRetainedBytesAfterSeal": 0
+  },
+  "authorityInherited": false,
+  "promotionGate": "Mike"
+}

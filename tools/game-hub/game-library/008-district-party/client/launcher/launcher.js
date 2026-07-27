@@ -56,6 +56,24 @@
     return $('game-mode').value === 'district_dominion' ? 'district_dominion' : 'coop_adventure';
   }
 
+  function currentMapId() {
+    return $('map-id').value || 'tilburg-streetscape-foundation';
+  }
+
+  async function loadMapCatalog() {
+    const catalog = await fetch('/api/maps', { cache: 'no-store' }).then((response) => response.json()).catch(() => null);
+    if (!catalog?.ok || !Array.isArray(catalog.maps)) return;
+    const select = $('map-id');
+    select.replaceChildren();
+    for (const map of catalog.maps) {
+      const option = document.createElement('option');
+      option.value = map.id;
+      option.textContent = `${map.name}${map.status === 'current' ? '' : ' · ART ALPHA'}`;
+      option.selected = map.id === catalog.defaultMapId;
+      select.appendChild(option);
+    }
+  }
+
   function applyMode(mode, resetDefaults = false) {
     const territory = mode === 'district_dominion';
     $('party-b-setup').classList.toggle('hidden', !territory);
@@ -176,6 +194,7 @@
     setupView.classList.add('hidden');
     runningView.classList.remove('hidden');
     $('room-code').textContent = session.roomCode || 'AXM1';
+    $('session-status').textContent = `${session.mapName || 'City'} · Running`;
     $('contract-json').textContent = JSON.stringify(session, (key, value) => key === 'token' ? '[seat token retained locally]' : value, 2);
     joinGrid.replaceChildren();
     const linksBySeat = new Map((session.controllerLinks || []).map((link) => [link.seatId, link]));
@@ -269,7 +288,7 @@
       const session = await request('/api/session/start', { method: 'POST', body: JSON.stringify({
         roomCode: 'AXM1',
         players,
-        settings: { combat: combatRules(), mode, hostAiFillEmptySeats: fillWithHostAi },
+        settings: { combat: combatRules(), mode, mapId: currentMapId(), hostAiFillEmptySeats: fillWithHostAi },
       }) });
       renderJoinBoard(session);
     } catch (e) {
@@ -297,6 +316,7 @@
 
   async function boot() {
     try {
+      await loadMapCatalog();
       const health = await fetch('/health').then((r) => r.json());
       $('server-status').textContent = health.ok === false ? 'Local host reported an issue' : 'Local host ready';
       $('server-status').classList.add('live');

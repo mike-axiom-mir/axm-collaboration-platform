@@ -1,0 +1,161 @@
+{
+  "schema": "axm.modern-asset-forge.capability-inventory/v1",
+  "version": "1.0.0",
+  "observed_at": "2026-07-22T06:45:36.217Z",
+  "automatic_installation": false,
+  "private_location_retained": false,
+  "capabilities": [
+    {
+      "id": "preserve.ps2",
+      "status": "available",
+      "evidence": "immutable tree digest plus PS2 selftest"
+    },
+    {
+      "id": "contract.manifest",
+      "status": "available",
+      "evidence": "local schemas and selftest"
+    },
+    {
+      "id": "contract.receipt",
+      "status": "available",
+      "evidence": "local schemas and selftest"
+    },
+    {
+      "id": "contract.asset-id",
+      "status": "available",
+      "evidence": "portable id rules in build request"
+    },
+    {
+      "id": "separate.source.delivery",
+      "status": "available",
+      "evidence": "runner uses source root and runtime output roles"
+    },
+    {
+      "id": "enforce.no-network",
+      "status": "available",
+      "evidence": "runner contains no network acquisition stage"
+    },
+    {
+      "id": "govern.workload.mode",
+      "status": "available",
+      "constraints": [
+        "declared scheduling policy only",
+        "no thermal telemetry claim"
+      ],
+      "evidence": "requests must select one of four bounded modes"
+    },
+    {
+      "id": "measure.asset.metrics",
+      "status": "available",
+      "evidence": "GLB inspector records geometry, materials, textures, animation, extensions, draw-call upper bound, and bytes"
+    },
+    {
+      "id": "measure.system.performance",
+      "status": "unavailable",
+      "gap_type": "EVIDENCE",
+      "evidence": "no approved CPU/GPU temperature, RAM/VRAM peak, battery, or sustained throughput observer is connected"
+    },
+    {
+      "id": "inspect.glb.local",
+      "status": "available",
+      "constraints": [
+        "structural and metric inspection only",
+        "not Khronos certification"
+      ]
+    },
+    {
+      "id": "author.blend",
+      "status": "available",
+      "gap_type": "SUBSTRATE",
+      "evidence": "exact archive, entrypoints, dependencies and live version probe passed"
+    },
+    {
+      "id": "export.blender.glb",
+      "status": "available",
+      "gap_type": "SUBSTRATE",
+      "evidence": "exact archive, entrypoints, dependencies and live version probe passed"
+    },
+    {
+      "id": "validate.gltf.khronos",
+      "status": "available",
+      "gap_type": "SUBSTRATE",
+      "evidence": "exact archive, entrypoints, dependencies and live version probe passed"
+    },
+    {
+      "id": "optimize.gltf.transform",
+      "status": "degraded",
+      "gap_type": "SUBSTRATE",
+      "constraints": [
+        "PATH or explicit override is live-probed but not pinned"
+      ],
+      "evidence": "live command probe passed; version is not bound by the AXM substrate lock"
+    },
+    {
+      "id": "compress.meshopt",
+      "status": "degraded",
+      "gap_type": "SUBSTRATE",
+      "constraints": [
+        "optimizer version is not pinned"
+      ],
+      "evidence": "live command probe passed; version is not bound by the AXM substrate lock"
+    },
+    {
+      "id": "encode.ktx2.basis",
+      "status": "available",
+      "gap_type": "SUBSTRATE",
+      "constraints": [
+        "ETC1S BasisLZ only",
+        "4..1024 px",
+        "standalone texture output"
+      ],
+      "evidence": "pinned Basis Universal WebAssembly module initialized"
+    },
+    {
+      "id": "validate.ktx2.independent",
+      "status": "available",
+      "gap_type": "SUBSTRATE",
+      "evidence": "exact archive, entrypoints, dependencies and live version probe passed"
+    },
+    {
+      "id": "integrate.ktx2.gltf",
+      "status": "available",
+      "constraints": [
+        "explicit target texture index required",
+        "fallback texture source removed",
+        "post-integration validation required"
+      ],
+      "evidence": "deterministic local KHR_texture_basisu GLB binding hand"
+    },
+    {
+      "id": "render.webgl2.gltf",
+      "status": "available",
+      "gap_type": "SUBSTRATE",
+      "constraints": [
+        "uncompressed GLB diagnostic lane"
+      ],
+      "evidence": "local Three.js r160 GLTFLoader files present"
+    },
+    {
+      "id": "render.webgl2.ktx2",
+      "status": "available",
+      "gap_type": "SUBSTRATE",
+      "evidence": "pinned local Three.js r160 KTX2 and meshoptimizer decoders passed byte-level manifest verification"
+    },
+    {
+      "id": "render.webgl2.meshopt",
+      "status": "available",
+      "gap_type": "SUBSTRATE",
+      "evidence": "pinned local Three.js r160 KTX2 and meshoptimizer decoders passed byte-level manifest verification"
+    },
+    {
+      "id": "observe.browser.smoke",
+      "status": "available",
+      "gap_type": "EVIDENCE",
+      "constraints": [
+        "receipt proves load/render facts, not visual quality"
+      ],
+      "evidence": "smoke page and receipt endpoint available"
+    }
+  ],
+  "digest": "9d7cc060a91e87a6bcba9c58b9e7c496c9c6662cc2619dd3abda654739aa6f65"
+}

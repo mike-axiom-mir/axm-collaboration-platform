@@ -1,6 +1,93 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AXM Secrets & Permissions</title><link rel="stylesheet" href="../../shared/operations/operations-ui.css"></head><body><header><a href="../../hub/index.html">← Hub</a><div><span class="eyebrow">ENCRYPT · SCOPE · EXPIRE · REVOKE · AUDIT METADATA</span><h1>Secrets & Permissions Console</h1><p>One local control plane for connector credentials and explicit module grants. Secret values never come back to this screen.</p></div></header><main><div id="notice" class="notice hidden"></div><section class="grid">
-<article class="panel"><h2>Encrypted secret vault</h2><div id="vaultFacts" class="facts"></div><label>Vault passphrase<input id="passphrase" type="password" autocomplete="current-password"></label><div class="actions"><button id="initialize">Initialize</button><button id="unlock" class="secondary">Unlock 15 minutes</button><button id="lock" class="secondary">Lock now</button></div><p class="truth">AES-256-GCM; key derived with scrypt. The passphrase is kept only in server memory while unlocked and is never written.</p></article>
-<article class="panel"><h2>Store or rotate secret</h2><label>Secret id<input id="secretId" placeholder="openai-api-key"></label><label>Label<input id="secretLabel" placeholder="OpenAI API key"></label><label>Value<input id="secretValue" type="password" autocomplete="new-password"></label><label>Consumer scopes, comma separated<input id="scopes" placeholder="chatgpt-connector, model-lab"></label><label>Optional expiry<input id="secretExpiry" type="datetime-local"></label><button id="store">Encrypt and store</button></article></section>
-<section class="panel"><h2>Secret metadata</h2><div class="scroll"><table><thead><tr><th>Secret</th><th>Scopes</th><th>Fingerprint</th><th>Status</th><th></th></tr></thead><tbody id="secrets"></tbody></table></div></section>
-<section class="grid"><article class="panel"><h2>Permission decision</h2><label>Module<select id="module"></select></label><label>Declared permission<select id="permission"></select></label><label>Decision<select id="allowed"><option value="true">Allow</option><option value="false">Deny / revoke grant</option></select></label><label>Reason<textarea id="reason" placeholder="Why is this capability needed now?"></textarea></label><label>Optional expiry<input id="grantExpiry" type="datetime-local"></label><label>Type SET MODULE PERMISSION<input id="grantConfirm" autocomplete="off"></label><button id="grant">Record decision</button></article><article class="panel"><h2>Grant ledger</h2><div id="grants" class="code">No decisions recorded.</div></article></section></main><script src="../../shared/operations/operations-client.js"></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Secrets &amp; Permissions</title>
+  <link rel="stylesheet" href="../../shared/operations/operations-ui.css">
+  <link rel="stylesheet" href="secrets-permissions-console.css">
+</head>
+<body>
+  <header>
+    <a href="../../hub/index.html">&larr; Hub</a>
+    <div>
+      <span class="eyebrow">SECRETS &ne; PERMISSIONS &middot; DEFAULT DENY &middot; EXPLICIT REVOCATION</span>
+      <h1>Secrets &amp; Permissions Console</h1>
+      <p>One local control plane for encrypted connector credentials and the smaller set of actions modules explicitly declare as permissions.</p>
+    </div>
+  </header>
 
+  <main>
+    <div id="notice" class="notice hidden"></div>
+
+    <section class="authority-strip" aria-label="Security authority boundary">
+      <div><span>Secret values</span><strong>Write-only from this screen</strong></div>
+      <div><span>Dependency entries</span><strong>Never grant authority by themselves</strong></div>
+      <div><span>No decision</span><strong>Denied by default</strong></div>
+      <div><span>Destructive revoke</span><strong>Exact typed confirmation</strong></div>
+    </section>
+
+    <section id="permissionControl" class="panel permission-zone">
+      <div class="zone-heading">
+        <div><span class="section-kicker">MODULE AUTHORITY</span><h2>Permission decisions</h2><p class="muted">Only entries in a module's <code>manifest.permissions</code> are grantable. Its <code>uses</code> list remains read-only dependency context.</p></div>
+        <div id="permissionFacts" class="facts"></div>
+      </div>
+      <div id="permissionFocus" class="focus-note hidden"></div>
+      <div class="control-grid">
+        <article class="subpanel decision-form">
+          <h3>Record a decision</h3>
+          <label>Module<select id="module"></select></label>
+          <label>Declared permission<select id="permission"></select></label>
+          <label>Decision<select id="allowed"><option value="true">Allow</option><option value="false">Deny / revoke grant</option></select></label>
+          <label>Reason <span class="required">required</span><textarea id="reason" placeholder="Why is this action needed—or why is it being denied?"></textarea></label>
+          <label>Optional expiry<input id="grantExpiry" type="datetime-local"></label>
+          <label>Type <strong>SET MODULE PERMISSION</strong><input id="grantConfirm" autocomplete="off"></label>
+          <button id="grant" disabled>Record explicit decision</button>
+        </article>
+        <article id="permissionBoundary" class="subpanel context-panel">
+          <h3>Selected module boundary</h3>
+          <div id="permissionContext" class="permission-context"><p class="muted">Choose a module permission.</p></div>
+        </article>
+      </div>
+      <div class="ledger-heading"><div><h3>Decision ledger</h3><p class="muted">Effective state is derived live. Expired and no-decision permissions remain denied.</p></div><button id="refresh" class="secondary">Refresh evidence</button></div>
+      <div id="grants" class="ledger-cards"></div>
+    </section>
+
+    <section id="secretCustody" class="panel secret-zone">
+      <div class="zone-heading">
+        <div><span class="section-kicker">LOCAL ENCRYPTED VAULT</span><h2>Secret custody</h2><p class="muted">The browser receives metadata, state, scope, and fingerprints—never stored secret values.</p></div>
+        <div id="vaultFacts" class="facts"></div>
+      </div>
+      <div class="control-grid">
+        <article class="subpanel vault-panel">
+          <h3>Vault lock</h3>
+          <label>Vault passphrase<input id="passphrase" type="password" autocomplete="current-password"></label>
+          <div class="actions"><button id="initialize">Initialize</button><button id="unlock" class="secondary">Unlock 15 minutes</button><button id="lock" class="secondary">Lock now</button></div>
+          <p class="truth">AES-256-GCM with a scrypt-derived key. The passphrase exists only in server memory during an unlocked window and is cleared from this input after every attempt.</p>
+        </article>
+        <article class="subpanel store-panel">
+          <h3>Store or rotate</h3>
+          <label>Secret id<input id="secretId" placeholder="openai-api-key"></label>
+          <label>Label<input id="secretLabel" placeholder="OpenAI API key"></label>
+          <label>Value<input id="secretValue" type="password" autocomplete="new-password"></label>
+          <label>Consumer module ids, comma separated<input id="scopes" placeholder="chatgpt-connector, model-lab"></label>
+          <label>Optional expiry<input id="secretExpiry" type="datetime-local"></label>
+          <button id="store" disabled>Encrypt and store</button>
+        </article>
+      </div>
+    </section>
+
+    <section id="secretInventory" class="panel secret-ledger">
+      <div class="ledger-heading"><div><span class="section-kicker">METADATA ONLY</span><h2>Secret inventory</h2><p class="muted">Expired is distinct from revoked. Neither state can be consumed.</p></div></div>
+      <div id="secrets" class="ledger-cards"></div>
+      <article id="revokePanel" class="revoke-panel">
+        <div><span class="section-kicker">DESTRUCTIVE ACTION</span><h3>Revoke encrypted secret</h3><p id="revokeTarget" class="muted">No secret selected.</p></div>
+        <label>Type <strong>REVOKE SECRET</strong><input id="revokeConfirm" autocomplete="off"></label>
+        <button id="revokeSecret" class="danger" disabled>Revoke selected secret</button>
+      </article>
+    </section>
+  </main>
+  <script src="../../shared/operations/operations-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

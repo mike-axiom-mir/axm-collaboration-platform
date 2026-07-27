@@ -22,8 +22,12 @@ passes AXMGate.submit like any tool · no network beyond AXM.ask.
 
 [INTEGRATION] STUBS (documented, NOT built): registry connector
 ('shell.profile.source') would register here when a second
-consumer exists; measurement harness comparing shell-on vs
-shell-off runs — schemas are ready, harness is TODO.
+consumer exists; local measurement harness compares exported
+shell-on vs shell-off sessions by recorded condition, steps, repairs and
+unlabeled proof labels. It is a counting aid, not a quality
+verdict or profile-tuning authority. The shell-off condition uses
+only the task, prior accepted steps and the output format — no
+profile system frame or repair context.
 
 TEST PLAN (for Mike/Opus): same task ± shell on a small local
 model (Nova) — count fake-done, repairs, completion; on strong
@@ -41,8 +45,9 @@ encode one session's noise — hence proposal-only + evidence).
 MERGEGATE CHECKLIST: [x] shell-only functionality [x] no gate/
 registry modification [x] no shared shell directories [x] empty
 rejection_reason fails (proven) [x] STOP criteria present
-[ ] measurement evidence (REQUIRED before any canon talk)
+[ ] measurement evidence (REQUIRED before any canon talk; the
+    local comparison aid is built, but no real-model evidence exists)
 [ ] Opus cleanup: real registry integration, SOURCE_LINEAGE
-headers, cluster INDEX, harness build, overbuild trim.
+headers, cluster INDEX, overbuild trim.
 UNTESTED: everything on real models. No fake done.
 ============================================================

@@ -1,0 +1,15 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "ui-fx",
+  "version": "v0.1.0",
+  "provides": ["ui-fx.preview", "ui-fx.recipe.compose", "ui-fx.recipe.copy", "ui-fx.visual-kernel-token-binding"],
+  "consumes": ["axm.ui-fx.recipe/v1", "axm.visual-kernel.tokens/v1"],
+  "permissions": ["clipboard-write"],
+  "handoffs": {"emits": ["axm.ui-fx.recipe/v1"], "accepts": ["axm.ui-fx.recipe/v1", "human:appearance-review"]},
+  "boundaries": {
+    "writes": ["system-clipboard:explicit-copy-only"],
+    "refuses": ["automatic-host-apply", "automatic-theme-installation", "automatic-visual-approval", "automatic-canon-promotion", "host-authority", "file-authority", "network-contact"]
+  },
+  "lifecycle": {"state_owner": "browser", "reload": "reset", "disconnect": "not-applicable", "cleanup": "automatic"}
+}
+

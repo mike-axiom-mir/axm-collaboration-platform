@@ -1,0 +1,69 @@
+{
+  "schema": "axm.shared-subsystem-contract/v1",
+  "id": "module-evolution-ledger",
+  "version": "0.1.0",
+  "status": "TEST",
+  "purpose": "Record immutable module lineage, bounded patch intent, pacing holds, and interrupted-activation facts without taking operational authority.",
+  "provides": [
+    "immutable-module-version-lineage",
+    "append-only-known-good-selection-history",
+    "expected-revision-concurrency-guard",
+    "bounded-json-patch-rebase-evaluation",
+    "interrupted-activation-hold-metadata",
+    "configurable-autonomous-upgrade-pacing",
+    "mike-approved-hotfix-pacing-bypass",
+    "pure-module-installer-handoff"
+  ],
+  "consumes": [
+    "axm.module-install-receipt/v1",
+    "axm.verification-receipt/v2",
+    "recovery-center-snapshot-reference",
+    "mike-explicit-approval-reference"
+  ],
+  "emits": [
+    "axm.module-evolution-ledger-event/v1",
+    "axm.module-evolution-ledger.snapshot/v1",
+    "axm.module-evolution-ledger.patch-evaluation/v1",
+    "axm.module-evolution-ledger.recovery-center-handoff/v1"
+  ],
+  "permissions": [],
+  "storage": {
+    "contract": "axm.module-evolution-ledger.local-append-storage/v1",
+    "root": "state/module-evolution-ledger",
+    "shape": "immutable hash-chained event files plus ephemeral exclusive writer lock",
+    "sqliteWal": false,
+    "dependencyFree": true,
+    "claimsFilesystemWideAcid": false,
+    "concurrencyGuarantee": "one local writer at a time; every append rechecks exact expected revision under the writer lock",
+    "abandonedLockBehavior": "hold and report; never steal automatically"
+  },
+  "authority": {
+    "neutralIntake": "Neutral Modular Intake remains inspect, quarantine, family, and compatibility authority.",
+    "moduleFiles": "Module Installer remains the only module file-write and install authority.",
+    "verification": "Verification Spine and specialist verifiers remain verification authorities; a pass is evidence only.",
+    "recovery": "Recovery Center remains snapshot, restore, and rollback authority.",
+    "evidence": "Evidence Retention remains append-only session-evidence authority.",
+    "readiness": "Workshop Needs Observatory remains readiness and gap authority.",
+    "humanGate": "Mike's explicit review, permission, confirmation, and promotion gates remain required."
+  },
+  "writes": [
+    "state/module-evolution-ledger/events/*.json",
+    "state/module-evolution-ledger/writer.lock (ephemeral)"
+  ],
+  "refuses": [
+    "module-file-write",
+    "automatic-install",
+    "automatic-promotion",
+    "automatic-rollback",
+    "restore",
+    "network-research",
+    "provider-execution",
+    "canon-mutation",
+    "permission-grant",
+    "verification-as-permission",
+    "neutral-intake-bypass",
+    "installer-bypass",
+    "recovery-center-bypass",
+    "automatic-lock-stealing"
+  ]
+}

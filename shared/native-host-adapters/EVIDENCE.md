@@ -29,12 +29,12 @@ Audit date: 2026-07-19. This receipt separates static, deterministic, authorizat
 - Claim: the reference adapter can import an Asset Hand GLB into a real Blender project and verify it by reopening the saved `.blend` in another Blender process.
 - Kind/risk: native runtime behavior and persistence; high.
 - Pass condition: the first process saves a `.blend`; a fresh process finds matching source/change metadata and real mesh facts; source, project, inspection and package digests bind the receipt.
-- Primary surface: official portable Blender 4.4.3 executing `native-real-blender-selftest.js`.
+- Primary surface: official portable Blender 5.2.0 Stable (`fbe6228777e7`) executing `native-real-blender-selftest.js`.
 - Secondary surface: deterministic fake-driver tests assert the same state machine and receipt bindings.
 - Counterevidence: no saved project, no mesh, digest mismatch, same-process-only inspection, or a missing receipt.
-- Observed evidence: Blender archive SHA-256 matched the published value `60a9703b07f2cf42509f699ccdec4f5ede71c1932f6c14329f0e14c023e27d5c`; the live test passed GLB import, fresh-process inspection, exact receipt and rollback.
+- Observed evidence: the Blender archive matched its exact 405,467,826-byte lock and published SHA-256 `22e0d5ba51fdfcaeb4eefc4382c0ed55585cd85c9f856b636a5ce1b55976fa20`; the extracted executable matched `43bfbe34148f45b4ae52b28022dd8b6ce966146da8f088dbe56c6f5453584663`; the live test passed GLB import, fresh-process inspection, exact receipt and rollback.
 - Verdict: **PASS**.
-- Named seam: this proves Blender 4.4.3 on the tested Windows portable runtime, not every Blender 4.x build or another operating system.
+- Named seam: this proves the exact tested Windows x64 Blender 5.2.0 build. The signed range accepts 4.2 through 5.2.x, refuses 5.3+, and does not imply that every accepted patch or another operating system has received this live test.
 
 ## `crash-and-rollback`
 
@@ -78,6 +78,6 @@ Audit date: 2026-07-19. This receipt separates static, deterministic, authorizat
 - Pass condition: targeted legacy and integration suites pass without changing old required fields.
 - Primary surface: Asset Hands schema/native/hardening tests, Asset Fabric selftest, Studio selftest and discovery review, and Mirror suite.
 - Counterevidence: old saved state unreadable, raster treated as SVG, native adapter auto-routed without capability, or old Mirror rollback broken.
-- Observed evidence: Asset Fabric `28 PASS / 0 FAIL`; Asset Hands hardening `20 PASS / 0 FAIL`; Studio and Mirror suites passed. The first broad run met a concurrent Foundation Planet v6/self-test v5 mismatch; workspace evidence showed that foreign lane actively changing. After its builder completed the v6 self-test update, the focused Foundation Planet suite passed 2,500+ assertions and a fresh complete `npm test` exited 0.
+- Observed evidence: Asset Fabric, Asset Hands completion/upgrades, Studio handoff, Mirror adapter, exact substrate and real Blender suites pass. The current broad `npm test` stops in `verify.js` at 47 manifest failures outside this lane (missing/incomplete tool manifests and module contracts using undeclared `export` permission), so this snapshot does not claim repository-wide green.
 - Verdict: **PASS**.
-- Named seam: the temporary broad-suite failure belonged to an actively moving Foundation Planet lane. This build did not edit or repair it; the final full-suite snapshot used the completed foreign update.
+- Named seam: focused evidence proves this adapter and its consumers, not the unrelated tool manifests that currently block the repository-wide verifier. Those owners must repair and rerun the broad suite before publication can claim global green.

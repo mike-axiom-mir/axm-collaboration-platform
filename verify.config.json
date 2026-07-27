@@ -1,8 +1,44 @@
 {
   "_note": "YOUR checks — add/delete freely here or in the Verifier module. The core floor (spine, manifests, DOM order, trust files) lives in verify.js and is NOT listed here; it can't be deleted. kinds: file-exists | file-contains | json-has-field | manifest-present",
   "userChecks": [
-    { "id": "u1", "kind": "file-exists", "path": "prompts/local/axm-core.txt", "label": "core roots file is present" },
-    { "id": "u2", "kind": "json-has-field", "path": "tools/hub-test-room/manifest.json", "field": "hubApiVersion", "label": "test-room declares a hub API version" }
+    { "id": "u1", "kind": "file-exists", "path": "prompts/local/axm-core.txt", "label": "core roots file is present", "category": "foundation", "risk": "high", "required": true },
+    { "id": "u2", "kind": "json-has-field", "path": "tools/hub-test-room/manifest.json", "field": "hubApiVersion", "label": "test-room declares a hub API version", "category": "module", "risk": "medium", "required": true }
   ],
-  "acknowledgedWarnings": []
+  "acknowledgedWarnings": [],
+  "verificationSpine": {
+    "schema": "axm.verification-spine-config/v2",
+    "targetProfile": "workshop-full",
+    "failureMemory": [
+      {
+        "schema": "axm.verifier-failure-memory/v1",
+        "id": "game-experience-recovery-2026-07-22",
+        "category": "game",
+        "title": "Game launch must reach a playable experience, not a display or test harness",
+        "claim_id": "game.experience-recovery",
+        "target_profile": "workshop-full",
+        "risk": "high",
+        "lifecycle": "active",
+        "source": {
+          "summary": "Live play exposed stale game ids, forced seat shapes, controller preview side effects, playable/display route confusion, refresh loss, and a rules harness replacing the visible globe.",
+          "observed_at": "2026-07-22",
+          "receipt_id": "game-experience-recovery-selftest"
+        },
+        "evidence_route": {
+          "kind": "interaction-journey",
+          "pass_condition": "The hard game verifier and recovery selftest preserve entry, mode choice, variable seats, controller preview, playable/display routing, refresh recovery and visible-globe default.",
+          "primary_surface": "tools/game-hub/game-experience-recovery-selftest.js",
+          "counterevidence": "Any recurrence in a live game session overrides a static pass and returns the lesson to repair."
+        },
+        "check": {
+          "id": "game-experience-recovery-harness-present",
+          "kind": "file-exists",
+          "path": "tools/game-hub/game-experience-recovery-selftest.js",
+          "label": "Game experience recovery harness remains installed"
+        },
+        "revisions": [],
+        "created_at": "2026-07-22T00:00:00+02:00",
+        "updated_at": "2026-07-22T00:00:00+02:00"
+      }
+    ]
+  }
 }

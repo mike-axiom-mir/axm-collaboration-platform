@@ -86,8 +86,9 @@ values are gameplay parameters and must not be presented as measured data.
 - The promoted spatial hash and the retained all-pairs reference are required
   to agree on bounded equivalence suites. Dense scenes may still approach
   all-pairs work.
-- Active contact and manifold evidence is capped at 2,048 records. Truncation
-  is not currently exposed in diagnostics.
+- Active contact and manifold evidence is capped at 2,048 records. Diagnostics
+  expose detected, retained/stored, truncated, limit, status and reason through
+  the additive contact-capacity receipt.
 - Sleep is a performance/state policy. It is not a physical rest law (S5).
 
 ## Verified behavior
@@ -128,8 +129,9 @@ The suite also freezes observations that are not promoted to desired behavior:
   not unit-normal physical manifolds;
 - nine-decimal `Math.round` quantization is asymmetric at negative half steps;
 - the legacy checksum is a narrow state hash, not a configuration or provenance
-  hash;
-- normalization and 2,048-record truncation are silent;
+  hash; additive configuration/definition/identity lineage digests sit beside it;
+- normalization remains permissive while emitting bounded typed receipts;
+  2,048-record truncation is reported through the contact-capacity receipt;
 - collision category/mask support is limited to bits 0 through 30.
 
 See [`PHYSICS_POLICY_OBSERVATIONS.md`](./PHYSICS_POLICY_OBSERVATIONS.md) for the

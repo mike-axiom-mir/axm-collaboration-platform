@@ -1,0 +1,67 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-recipe-foundry",
+  "version": "v0.3",
+  "provides": [
+    "code.recipe.csv-json.ingest/v1",
+    "code.recipe.validate/v1",
+    "code.recipe.deduplicate.exact/v1",
+    "code.recipe.family.group/v1",
+    "code.recipe.search.local/v1",
+    "code.recipe.pack.export/v1",
+    "code.recipe.intake.receipt/v1",
+    "code.recipe.catalog.installed/v1",
+    "code.recipe.review.hold/v1",
+    "code.recipe.syntax.audit/v1"
+  ],
+  "consumes": [
+    "user-selected:text/csv",
+    "user-selected:application/json",
+    "module-local:code-cheats-1000.code-recipes.json",
+    "axm.code-recipe/v1",
+    "human-provenance-review",
+    "native:node-vm-parse-only",
+    "native:python-ast-parse-only",
+    "native:windows-powershell-ast-parse-only"
+  ],
+  "permissions": ["storage", "export", "clipboard-write"],
+  "handoffs": {
+    "emits": ["axm.code-recipe-pack/v1", "axm.code-recipe-intake-receipt/v1", "axm.code-recipe-syntax-audit/v1"],
+    "accepts": ["text/csv", "application/json", "axm.code-recipe-pack/v1"]
+  },
+  "boundaries": {
+    "writes": [
+      "browser-local:axm.code-recipe-foundry.v1:explicit-save-only",
+      "system-clipboard:explicit-copy-only",
+      "user-download:explicit-json-export-only"
+    ],
+    "refuses": [
+      "snippet-execution",
+      "eval-or-dynamic-code-loading",
+      "automatic-network-fetch",
+      "external-source-url-fetch",
+      "automatic-library-download",
+      "source-url-as-license-proof",
+      "popularity-as-correctness-proof",
+      "ecosystem-popularity-as-snippet-popularity",
+      "semantic-deduplication-without-review",
+      "silent-row-repair",
+      "silent-invalid-row-drop",
+      "review-hold-as-ready",
+      "review-hold-clipboard-copy",
+      "syntax-pass-as-runtime-proof",
+      "syntax-pass-as-correctness-proof",
+      "syntax-pass-as-safety-proof",
+      "unavailable-runtime-install",
+      "formula-or-command-execution",
+      "automatic-promotion",
+      "canon-write"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
+}

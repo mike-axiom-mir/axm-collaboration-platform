@@ -1,0 +1,33 @@
+{
+  "schema": "axm.repairbuddy.pattern-schema/v1",
+  "describes": "axm.repairbuddy.pattern/v1",
+  "requiredFields": {
+    "schema": "must equal axm.repairbuddy.pattern/v1",
+    "id": "pattern-NNNN-kebab-name, unique in patterns/",
+    "name": "human-readable pattern name",
+    "version": "v0.1 style string",
+    "status": "SHADOW (propose only) | RETIRED. No pattern may declare an applying status; Repairbuddy never applies.",
+    "seamCode": "exact Technical Glasses priority code this pattern addresses, e.g. CONTRACT_INVALID",
+    "match": {
+      "messagePattern": "ECMAScript regex source matched against the seam message. Capture groups become typed slots.",
+      "slots": "array of { name, group, type } where group is the 1-based capture group and type is one of: identifier, permission, relative-path, integer"
+    },
+    "proposal": {
+      "operation": "one operation id understood by the kernel: insert-into-manifest-uses | create-missing-file-from-template | report-only",
+      "explanation": "plain-language sentence template; ${slotName} placeholders allowed",
+      "verification": "array of shell commands a human or big model runs to judge the proposal; Repairbuddy itself never executes them"
+    },
+    "lineage": {
+      "sourceRepair": "path to the action report or patch note this pattern was distilled from",
+      "distilledBy": "who distilled it (model or human)",
+      "date": "YYYY-MM-DD",
+      "verifiedBy": "the verification evidence that the source repair passed"
+    }
+  },
+  "boundaries": [
+    "Patterns describe proposals, never applications.",
+    "A pattern with no lineage.sourceRepair is invalid: Repairbuddy only learns from repairs that really happened here.",
+    "Slots render only from capture groups; free prose from any source never reaches a proposal.",
+    "Unknown seamCode or failed match is not an error: it is an escalation."
+  ]
+}

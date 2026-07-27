@@ -1,0 +1,170 @@
+{
+  "schema": "axm-neutral-world-tile-source/v1",
+  "id": "axm-blank-transparent-world-10000x10000",
+  "purpose": "Reusable empty transparent world substrate. All authored terrain and gameplay remain separate layers.",
+  "world": {
+    "width": 10000,
+    "height": 10000,
+    "origin": "north-west",
+    "xAxis": "east",
+    "yAxis": "south",
+    "canonicalUnit": "metre",
+    "unitsPerRasterPixel": 1
+  },
+  "canvasModes": {
+    "flat2d": {
+      "enabled": true,
+      "assetCellPixels": {
+        "width": 128,
+        "height": 128
+      },
+      "footprintMetres": {
+        "width": 1,
+        "depth": 1
+      },
+      "pixelsPerMetre": 128,
+      "note": "Art resolution is independent from world size and is streamed near the camera."
+    },
+    "spatial3d": {
+      "enabled": true,
+      "placementCellMetres": {
+        "width": 1,
+        "depth": 1,
+        "height": 0.5
+      },
+      "authoringSectorMetres": {
+        "width": 100,
+        "depth": 100,
+        "playableDepthLayers": 1,
+        "reservedDepthLayers": 20,
+        "playableHeight": 20,
+        "reservedHeight": 50
+      },
+      "heightPolicyMetres": {
+        "reservedMinimum": -10,
+        "playableMinimum": -0.5,
+        "ground": 0,
+        "playableMaximum": 20,
+        "reservedMaximum": 50,
+        "step": 0.5
+      },
+      "axes": {
+        "x": "east",
+        "y": "up",
+        "z": "south"
+      },
+      "interchange": {
+        "gltfAndGodotScale": 1,
+        "unrealCentimetreScale": 100
+      }
+    }
+  },
+  "scaleReferences": {
+    "crate": {
+      "footprintMetres": {
+        "width": 1,
+        "depth": 1
+      },
+      "heightMetres": 1,
+      "flatPixelsAtNativeScale": {
+        "width": 128,
+        "height": 128
+      }
+    },
+    "adultHuman": {
+      "footprintMetres": {
+        "width": 0.6,
+        "depth": 0.6
+      },
+      "heightMetres": 1.8,
+      "flatFootprintPixelsAtNativeScale": {
+        "width": 77,
+        "height": 77
+      }
+    }
+  },
+  "creativeGrid": {
+    "role": "authoring-sector",
+    "cellWidth": 100,
+    "cellHeight": 100,
+    "unit": "metre",
+    "columns": 100,
+    "rows": 100,
+    "count": 10000
+  },
+  "buildRegion": {
+    "shape": "circle",
+    "x": 100,
+    "y": 100,
+    "width": 9800,
+    "height": 9800,
+    "centerX": 5000,
+    "centerY": 5000,
+    "radius": 4900,
+    "boundaryWidth": 100,
+    "buildable": true
+  },
+  "chunking": {
+    "width": 1000,
+    "height": 1000,
+    "columns": 10,
+    "rows": 10,
+    "possibleCount": 100,
+    "materializedCount": 0,
+    "count": 0,
+    "implicitEmpty": true,
+    "chunks": []
+  },
+  "layers": {
+    "included": [
+      "ground",
+      "road",
+      "sidewalk",
+      "building",
+      "park",
+      "water",
+      "rail"
+    ],
+    "totals": {
+      "ground": 0,
+      "road": 0,
+      "sidewalk": 0,
+      "building": 0,
+      "park": 0,
+      "water": 0,
+      "rail": 0
+    }
+  },
+  "semanticChunksSha256": "26eab0e6ff4d4fb7b11c06194a6072b1252669897fbe3c568fc5ba6efae81bef",
+  "rasterAlignment": {
+    "manifest": "raster-manifest.json",
+    "masterSha256": "c95d883e9341e8d1ff87e40f59ffd76642f9f71c7e6e2b89792a15412e46e265",
+    "width": 10000,
+    "height": 10000,
+    "note": "One hundred possible 1 km loading chunks are virtual and implicit-empty. No transparent PNG is stored until authored content requires an artifact."
+  },
+  "contentPolicy": {
+    "transparentSubstrateOnly": true,
+    "authoredPixelsIncluded": false,
+    "authoredSemanticFeaturesIncluded": false,
+    "runtimeStateIncluded": false
+  },
+  "streamingPolicy": {
+    "strategy": "vision-window-chunk-streaming",
+    "loadingUnit": {
+      "width": 1000,
+      "height": 1000
+    },
+    "recommendedSafetyRingChunks": 1,
+    "fogOfWar": "consumer-owned visibility state; never source deletion",
+    "unloadedChunkMeaning": "not currently rendered; canonical world remains intact",
+    "persistence": "materialize authored chunks only; implicit empty chunks consume no files"
+  },
+  "assetPolicy": "Locally generated deterministic empty RGBA tiles; no external asset or licence.",
+  "provenance": {
+    "originType": "generated",
+    "sourceId": "world-tile-foundry.blank-generator",
+    "createdBy": "Mike + AXM local builders",
+    "licenseId": "AXM-LOCAL"
+  }
+}

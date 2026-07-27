@@ -1,0 +1,188 @@
+{
+  "schema": "axm.holodeck-world/v1",
+  "version": "1.0.0",
+  "id": "world.holodeck.echo-atrium",
+  "title": "Echo Atrium",
+  "description": "A small impossible chamber built entirely from canonical primitives, state, rules, and light. Awaken the central beacon to open the northern gate.",
+  "coordinateSystem": {
+    "type": "cartesian-local",
+    "units": "meters",
+    "handedness": "right"
+  },
+  "environment": {
+    "bounds": {"minX": -10, "maxX": 10, "minZ": -15, "maxZ": 15},
+    "groundY": 0,
+    "gravityMetersPerSecondSquared": 9.81,
+    "skyColor": "#06111f",
+    "groundColor": "#101827",
+    "fogColor": "#06111f",
+    "fogNear": 18,
+    "fogFar": 58,
+    "lights": [
+      {"id":"ambient-blue","kind":"ambient","color":"#9eb7d8","intensity":0.55},
+      {"id":"moon-key","kind":"directional","color":"#c9dcff","intensity":1.3,"position":[6,12,8]},
+      {"id":"beacon-glow","kind":"point","color":"#53f3d2","intensity":2.4,"position":[0,3,0]}
+    ]
+  },
+  "entities": [
+    {
+      "id": "beacon-base",
+      "kind": "structure",
+      "name": "Beacon dais",
+      "description": "A low circular dais scored with luminous routes.",
+      "transform": {"position":[0,0.45,0],"rotation":[0,0,0],"scale":[2.6,0.9,2.6]},
+      "appearance": {"primitive":"cylinder","color":"#26344e","emissive":"#0b5f62","emissiveIntensity":0.35,"metalness":0.72,"roughness":0.3},
+      "collider": {"shape":"circle","radius":1.45,"solid":true},
+      "state": {},
+      "sensorTags": ["ancient-machine", "structure"]
+    },
+    {
+      "id": "beacon-core",
+      "kind": "landmark",
+      "name": "Dormant echo beacon",
+      "description": "A suspended sphere containing a quiet field of teal light.",
+      "transform": {"position":[0,2.15,0],"rotation":[0,0,0],"scale":[0.72,0.72,0.72]},
+      "appearance": {
+        "primitive":"sphere",
+        "color":"#7a8ea8",
+        "emissive":"#174e58",
+        "emissiveIntensity":0.45,
+        "metalness":0.35,
+        "roughness":0.22,
+        "variants":[
+          {"when":{"key":"active","equals":true},"set":{"color":"#d7fff6","emissive":"#31f5cf","emissiveIntensity":4.2}}
+        ]
+      },
+      "state": {"active": false},
+      "sensorTags": ["interactive", "energy", "objective"],
+      "interaction": {
+        "actions": [
+          {
+            "id": "awaken",
+            "label": "Awaken the echo beacon",
+            "rangeMeters": 2.7,
+            "availableWhen": {"entityId":"beacon-core","key":"active","equals":false},
+            "effects": [
+              {"type":"set-state","targetEntityId":"beacon-core","key":"active","value":true},
+              {"type":"set-state","targetEntityId":"north-gate","key":"open","value":true},
+              {"type":"message","text":"The atrium remembers you. The northern gate is open."}
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "north-gate",
+      "kind": "portal",
+      "name": "Northern light gate",
+      "description": "A sealed plane of dark glass framed by two monoliths.",
+      "transform": {"position":[0,2.65,-11.6],"rotation":[0,0,0],"scale":[4.8,5.3,0.42]},
+      "appearance": {
+        "primitive":"box",
+        "color":"#17223a",
+        "emissive":"#183a58",
+        "emissiveIntensity":0.3,
+        "opacity":0.96,
+        "metalness":0.75,
+        "roughness":0.18,
+        "variants":[
+          {"when":{"key":"open","equals":true},"set":{"color":"#8ffff0","emissive":"#31f5cf","emissiveIntensity":2.8,"opacity":0.18,"positionOffset":[0,5.8,0]}}
+        ]
+      },
+      "collider": {"shape":"box","size":[4.8,0.7],"solid":true,"disabledWhen":{"key":"open","equals":true}},
+      "state": {"open": false},
+      "sensorTags": ["portal", "sealed"]
+    },
+    {
+      "id": "north-monolith-left",
+      "kind": "structure",
+      "name": "Left gate monolith",
+      "description": "A tall black frame carrying a thin teal seam.",
+      "transform": {"position":[-3.2,3,-11.6],"rotation":[0,0,0],"scale":[1.15,6,1.15]},
+      "appearance": {"primitive":"box","color":"#101827","emissive":"#167f80","emissiveIntensity":0.55,"metalness":0.8,"roughness":0.26},
+      "collider": {"shape":"box","size":[1.15,1.15],"solid":true},
+      "state": {},
+      "sensorTags": ["architecture"]
+    },
+    {
+      "id": "north-monolith-right",
+      "kind": "structure",
+      "name": "Right gate monolith",
+      "description": "A tall black frame carrying a thin teal seam.",
+      "transform": {"position":[3.2,3,-11.6],"rotation":[0,0,0],"scale":[1.15,6,1.15]},
+      "appearance": {"primitive":"box","color":"#101827","emissive":"#167f80","emissiveIntensity":0.55,"metalness":0.8,"roughness":0.26},
+      "collider": {"shape":"box","size":[1.15,1.15],"solid":true},
+      "state": {},
+      "sensorTags": ["architecture"]
+    },
+    {
+      "id": "orbit-ring-inner",
+      "kind": "prop",
+      "name": "Inner echo ring",
+      "description": "A thin ring orbiting the dormant beacon.",
+      "transform": {"position":[0,2.15,0],"rotation":[90,0,0],"scale":[1.55,1.55,1.55]},
+      "appearance": {"primitive":"ring","color":"#4be4ca","emissive":"#24a997","emissiveIntensity":1.7,"opacity":0.82,"metalness":0.2,"roughness":0.25},
+      "state": {},
+      "sensorTags": ["energy", "ornament"]
+    },
+    {
+      "id": "orbit-ring-outer",
+      "kind": "prop",
+      "name": "Outer echo ring",
+      "description": "A tilted luminous ring describing the field boundary.",
+      "transform": {"position":[0,2.15,0],"rotation":[35,20,68],"scale":[2.15,2.15,2.15]},
+      "appearance": {"primitive":"ring","color":"#6b8dbf","emissive":"#285a9c","emissiveIntensity":1.25,"opacity":0.68,"metalness":0.2,"roughness":0.25},
+      "state": {},
+      "sensorTags": ["energy", "ornament"]
+    },
+    {
+      "id": "west-pillar",
+      "kind": "structure",
+      "name": "Western memory pillar",
+      "description": "A faceted pillar etched with unreadable coordinate lines.",
+      "transform": {"position":[-6,2.2,3],"rotation":[0,22,0],"scale":[1.4,4.4,1.4]},
+      "appearance": {"primitive":"box","color":"#17243a","emissive":"#162f56","emissiveIntensity":0.45,"metalness":0.55,"roughness":0.38},
+      "collider": {"shape":"box","size":[1.6,1.6],"solid":true},
+      "state": {},
+      "sensorTags": ["architecture", "memory"]
+    },
+    {
+      "id": "east-pillar",
+      "kind": "structure",
+      "name": "Eastern memory pillar",
+      "description": "A faceted pillar etched with unreadable coordinate lines.",
+      "transform": {"position":[6,2.2,3],"rotation":[0,-22,0],"scale":[1.4,4.4,1.4]},
+      "appearance": {"primitive":"box","color":"#17243a","emissive":"#162f56","emissiveIntensity":0.45,"metalness":0.55,"roughness":0.38},
+      "collider": {"shape":"box","size":[1.6,1.6],"solid":true},
+      "state": {},
+      "sensorTags": ["architecture", "memory"]
+    },
+    {
+      "id": "arrival-mark",
+      "kind": "landmark",
+      "name": "Arrival glyph",
+      "description": "A luminous ring marking the current embodiment point.",
+      "transform": {"position":[0,0.025,5],"rotation":[-90,0,0],"scale":[1.2,1.2,1.2]},
+      "appearance": {"primitive":"ring","color":"#e9b969","emissive":"#d38b28","emissiveIntensity":1.6,"opacity":0.8,"metalness":0.1,"roughness":0.5},
+      "state": {},
+      "sensorTags": ["spawn", "navigation"]
+    }
+  ],
+  "spawnPoints": [
+    {"id":"arrival","name":"Arrival glyph","position":[0,0,5],"headingDegrees":0}
+  ],
+  "sensor": {"radiusMeters":16,"maxEntities":24},
+  "narrative": {
+    "premise": "The Echo Atrium is dormant. Its central beacon is waiting for a nearby presence.",
+    "objective": "Approach the central beacon and awaken it to open the northern gate.",
+    "completion": {"entityId":"beacon-core","key":"active","equals":true,"message":"Beacon awakened; the northern gate is open."}
+  },
+  "defaultActorKinds": ["human", "machine"],
+  "boundaries": [
+    "fictional-screen-simulation",
+    "browser-local-state",
+    "no-visual-occlusion-claim-in-structured-sensor-frame",
+    "no-vr-ar-hologram-or-physical-manipulator-implementation",
+    "render-coordinates-are-disposable-projections"
+  ]
+}

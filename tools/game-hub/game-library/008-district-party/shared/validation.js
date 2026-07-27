@@ -52,6 +52,7 @@ function sanitizeInputIntent(raw = {}) {
     inventoryPrev: raw.inventoryPrev === true,
     inventoryNext: raw.inventoryNext === true,
     inventoryActivate: raw.inventoryActivate === true,
+    mapToggle: raw.mapToggle === true,
   };
 }
 

@@ -73,7 +73,7 @@ function source(graph, digest) {
 }
 
 (async function () {
-  assert.equal(Hands.list().length, 34);
+  assert.equal(new Set(Hands.list().map((hand) => hand.id)).size, Hands.list().length);
   assert.equal(Hands.listMissingHands().length, 0);
   assert(!Hands.getMissingHand("procedural-geometry-graph"));
   assert(

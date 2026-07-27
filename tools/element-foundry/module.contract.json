@@ -1,0 +1,45 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "element-foundry",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "element-category-browser",
+    "deterministic-element-composer",
+    "behavior-content-appearance-separation",
+    "exact-element-registry",
+    "element-to-ucp-adaptation",
+    "contract-only-composition-receipts",
+    "bounded-future-surface-preview"
+  ],
+  "consumes": [
+    "axm.modular-element/v1",
+    "axm.element-category-registry/v1",
+    "axm.universal-component/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.element-composition/v1", "axm.element-composition-receipt/v1", "axm.universal-component/v1"],
+    "accepts": ["axm.modular-element/v1", "axm.element-composition/v1"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:axm.element-foundry.v1", "user-download:explicit"],
+    "refuses": [
+      "embedded-element-script",
+      "silent-element-installation",
+      "automatic-canon",
+      "automatic-visual-approval",
+      "automatic-manufacturing-approval",
+      "preview-as-runtime-proof",
+      "category-substitution",
+      "missing-element-fallback",
+      "absolute-private-paths"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  }
+}

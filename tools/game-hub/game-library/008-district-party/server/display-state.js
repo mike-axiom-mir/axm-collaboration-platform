@@ -73,6 +73,10 @@ function territoryMissionSnapshot(world, requestedParty) {
 
 function serializeWorldState(session, requestedParty = 'all') {
   const world = session.world;
+  const mapToggleByParty = world.presentation?.mapToggleSequence || {};
+  const mapToggleSequence = requestedParty === 'all'
+    ? Object.values(mapToggleByParty).reduce((sum, value) => sum + (Number(value) || 0), 0)
+    : Number(mapToggleByParty[requestedParty]) || 0;
   const sourceMission = world.territory?.enabled
     ? territoryMissionSnapshot(world, requestedParty)
     : world.mission;
@@ -143,6 +147,7 @@ function serializeWorldState(session, requestedParty = 'all') {
     groupSaveComputer: publicGroupSaveComputer(world.groupSaveComputer),
     loadedGroupSave: world.loadedGroupSave ? { ...world.loadedGroupSave, seatSlots: [...world.loadedGroupSave.seatSlots] } : null,
     territory: world.territory,
+    presentation: { mapToggleSequence },
     tetherRules: world.tetherRules,
     metrics: {
       ...world.metrics,
@@ -185,7 +190,10 @@ function serializeStaticWorld(session) {
       chunking: staticMap.chunking,
       source: staticMap.source,
     },
-    mapUrl: '/data/map.json',
+    mapUrl: staticMap.clientMapUrl || '/data/map.json',
+    cityArtUrl: staticMap.clientCityArtUrl || '/data/city-art.json',
+    mapId: staticMap.mapSelectionId || staticMap.clientMapId || staticMap.id,
+    mapName: staticMap.mapDisplayName || staticMap.id,
     tickRate: 30,
     activePlayerTarget: Object.keys(session.world.actors).length,
     maximumPlayerCapacity: 8,

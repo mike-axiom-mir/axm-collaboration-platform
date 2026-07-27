@@ -1,0 +1,58 @@
+{
+  "id": "pbr-material-baker",
+  "name": "PBR Material Baker",
+  "rank": 3,
+  "phase": "P0",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "Create",
+  "layer": "create",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "materials",
+    "pbr",
+    "textures",
+    "normal-map",
+    "orm",
+    "height",
+    "procedural",
+    "offline",
+    "ps3-foundation"
+  ],
+  "uses": [
+    "local-cpu",
+    "canvas",
+    "export"
+  ],
+  "permissions": [
+    "export"
+  ],
+  "actions": [
+    "bake a seeded PBR material family",
+    "inspect albedo normal ORM emissive and height maps",
+    "review a local reference render",
+    "export explicit PNG candidates and a receipt"
+  ],
+  "accepts": [
+    "axm.pbr-material-recipe/v1",
+    "human-material-direction"
+  ],
+  "produces": [
+    "axm.pbr-material-bake/v1",
+    "axm.pbr-material-verification/v1",
+    "image/png"
+  ],
+  "readiness": [
+    "canvas-2d",
+    "local-cpu",
+    "human-visual-review",
+    "export"
+  ],
+  "summary": "Bake deterministic local albedo, tangent-space normal, packed ORM, emissive, and height maps for six game-material families with measurable signal and explicit review boundaries.",
+  "notes": "The baker provides PS3-era material infrastructure, not a PS3-quality claim. Candidates remain memory-only until explicit export and never promote themselves into the asset library."
+}

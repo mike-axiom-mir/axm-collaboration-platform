@@ -68,9 +68,24 @@ body[data-sidebar-collapsed="true"] .sidebar-toggle span{transform:rotate(180deg
 .mod .ic{width:20px;height:20px;flex:0 0 20px;display:grid;place-items:center;color:inherit;opacity:.9}
 .mod .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mod .life{font-size:8.5px;letter-spacing:.5px;padding:2px 5px;border-radius:5px;border:1px solid var(--line);color:var(--muted)}
-.life.CLAIMED{color:var(--muted)} .life.TEST{color:var(--gold);border-color:var(--gold)}
+.life.CLAIMED{color:var(--muted)} .life.TEST{color:#79aaff;border-color:#4f8fff}
 .life.WORKING{color:var(--green);border-color:var(--green)} .life.SAVED{color:var(--cy);border-color:var(--cy-dim)}
-.life.HOLD{color:var(--red);border-color:var(--red)} .life.CANON{color:var(--purple);border-color:var(--purple)}
+.life.HOLD{color:var(--red);border-color:var(--red)}
+.life.CANON{color:#e4ffe8;border-color:#d7bc70;background:linear-gradient(110deg,rgba(35,126,75,.82),rgba(86,203,126,.34));box-shadow:inset 0 1px rgba(255,255,255,.18),0 0 9px rgba(99,214,138,.22),0 0 5px rgba(232,181,74,.16)}
+
+/* Human-owned local lifecycle picker. Its three choices intentionally stop
+   at WORKING; this surface is never a CANON promotion door. */
+.lifecycle-menu{position:fixed;z-index:120;width:min(310px,calc(100vw - 16px));padding:8px;border:1px solid rgba(56,214,236,.34);border-radius:13px;background:linear-gradient(180deg,rgba(20,31,49,.99),rgba(8,14,25,.99));box-shadow:0 20px 60px rgba(0,0,0,.58);color:var(--text)}
+.lifecycle-menu[hidden]{display:none!important}
+.lifecycle-menu-head{display:grid;gap:3px;padding:8px 9px 10px;border-bottom:1px solid var(--line)}
+.lifecycle-menu-head>span{color:var(--cy);font:800 9px/1 var(--mono);letter-spacing:1.5px}
+.lifecycle-menu-head>b{font-size:14px}.lifecycle-menu-head>small{color:var(--muted);font-size:10.5px}
+.lifecycle-menu>button{display:grid;grid-template-columns:76px 1fr;gap:9px;width:100%;padding:9px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--text);text-align:left;cursor:pointer}
+.lifecycle-menu>button:hover,.lifecycle-menu>button:focus-visible{border-color:var(--cy-dim);background:rgba(56,214,236,.08);outline:none}
+.lifecycle-menu>button.active{background:rgba(56,214,236,.05);border-color:rgba(56,214,236,.16)}
+.lifecycle-menu>button b{font:800 10px/1.35 var(--mono);letter-spacing:.7px}.lifecycle-menu>button span{color:var(--muted);font-size:11px;line-height:1.35}
+.lifecycle-menu>button[data-lifecycle="NEEDS VERIFY"] b{color:#79aaff}.lifecycle-menu>button[data-lifecycle="WORKING"] b{color:var(--green)}
+.lifecycle-menu>p{margin:7px 9px 3px;padding-top:8px;border-top:1px solid var(--line);color:var(--muted-2);font-size:10px;line-height:1.4}
 
 /* ---- viewport: inner flexible ---- */
 .viewport{position:relative;min-width:0;min-height:0;background:#06080f}
@@ -182,6 +197,7 @@ body.skin-asset-empty-bg .vp-error{
 .workflow-copy h3{font-size:20px;margin-bottom:6px}.workflow-copy p{min-height:40px}.workflow-preview{font-size:10px;color:var(--muted-2);line-height:1.5;margin:8px 0}
 .human-label{color:var(--wf);font:800 9px/1 var(--mono);letter-spacing:1.3px;text-transform:uppercase;margin:2px 0 8px}
 .module-card{position:relative;padding-top:68px}.module-card .hcard-icon{position:absolute;left:14px;top:14px;width:40px;height:40px}
+.module-card-life{position:absolute;right:13px;top:15px;font-size:8.5px;letter-spacing:.5px;padding:3px 6px;border-radius:5px;border:1px solid var(--line)}
 .utility-card{border-style:dashed}.utility-card .hcard-icon{font-size:24px}
 .hcard p{margin:0;color:var(--muted);font-size:12px;min-height:32px}
 .hcard .open{margin-top:10px;color:var(--cy);font-size:12.5px}

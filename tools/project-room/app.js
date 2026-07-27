@@ -3,6 +3,9 @@
 
   var Core = window.ProjectRoomCore;
   var STORE = 'axm.project-room.v1';
+  var GUEST_HANDOFF_KEY = 'axm.guest.project-room-handoff.v1';
+  var GUEST_EXPORT_FORMAT = 'axm.guest-session-export/v1';
+  var MAX_GUEST_HANDOFF_BYTES = 1024 * 1024;
   var VIEWS = ['overview', 'board', 'direction', 'timeline', 'knowledge', 'collaboration', 'review', 'versions'];
   var stageInfo = [
     { id: 'ideas', title: 'Ideas', note: 'Captured, not committed' },
@@ -115,7 +118,42 @@
   }
   function switchView(name) { document.querySelectorAll('.tab').forEach(function (b) { var active = b.dataset.view === name; b.classList.toggle('active', active); if (active) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); }); VIEWS.forEach(function (v) { $(v + 'View').hidden = v !== name; }); }
   function downloadExport() { var url = URL.createObjectURL(new Blob([JSON.stringify(room, null, 2)], { type: 'application/json' })), a = document.createElement('a'); a.href = url; a.download = 'AXM_PROJECT_' + room.project.title.replace(/[^a-z0-9]+/gi, '_').replace(/^_|_$/g, '').slice(0, 40) + '_' + new Date().toISOString().slice(0, 10) + '.json'; a.click(); setTimeout(function () { URL.revokeObjectURL(url); }, 1000); toast('Full project backup downloaded.'); }
-  function importFile(file) { if (!file) return; var reader = new FileReader(); reader.onload = function () { try { var imported = Core.normalizeRoom(JSON.parse(reader.result)), s = Core.summary(imported); if (!confirm('Replace this Project Room with the imported project?\n\n' + s.cards + ' cards · ' + s.documents + ' documents · ' + s.versions + ' checkpoints\n\nExport first if you need the current project.')) return; room = imported; saveRoom('import', 'Project import completed.'); renderAll(); } catch (e) { toast('Import refused: ' + e.message); } $('importFile').value = ''; }; reader.readAsText(file); }
+  function unwrapImportDocument(parsed) {
+    if (parsed && parsed.schema === GUEST_EXPORT_FORMAT && parsed.projectRoom) return parsed.projectRoom;
+    if (parsed && parsed.projectRoom && parsed.projectRoom.format === Core.FORMAT) return parsed.projectRoom;
+    return parsed;
+  }
+  function importFile(file) { if (!file) return; if (file.size > MAX_GUEST_HANDOFF_BYTES) { toast('Import refused: Project Room accepts doorway handoffs up to 1 MB.'); return; } var reader = new FileReader(); reader.onload = function () { try { var imported = Core.normalizeRoom(unwrapImportDocument(JSON.parse(reader.result))), s = Core.summary(imported); if (!confirm('Replace this Project Room with the imported project?\n\n' + s.cards + ' cards · ' + s.documents + ' documents · ' + s.versions + ' checkpoints\n\nExport first if you need the current project. Nothing in the import runs automatically.')) return; room = imported; saveRoom('import', 'Project import completed.'); renderAll(); } catch (e) { toast('Import refused: ' + e.message); } $('importFile').value = ''; }; reader.readAsText(file); }
+  function clearGuestHandoffQuery() {
+    try { var url = new URL(location.href); url.searchParams.delete('guest-handoff'); history.replaceState(null, '', url.pathname + url.search + url.hash); } catch (error) {}
+  }
+  function readGuestHandoff() {
+    try {
+      if (new URL(location.href).searchParams.get('guest-handoff') !== '1') return null;
+      var raw = sessionStorage.getItem(GUEST_HANDOFF_KEY);
+      if (!raw) return null;
+      if (raw.length > MAX_GUEST_HANDOFF_BYTES) throw new Error('Guest handoff is larger than 1 MB.');
+      var parsed = JSON.parse(raw), imported = Core.normalizeRoom(unwrapImportDocument(parsed));
+      return { room: imported, summary: Core.summary(imported) };
+    } catch (error) { toast('Guest handoff refused: ' + error.message); return null; }
+  }
+  function setupGuestHandoff() {
+    var pending = readGuestHandoff();
+    if (!pending) { clearGuestHandoffQuery(); return; }
+    $('guestHandoffSummary').textContent = '“' + pending.room.project.title + '” · ' + pending.summary.cards + ' cards · ' + pending.summary.documents + ' documents · ' + pending.summary.versions + ' checkpoints';
+    $('guestHandoffBanner').hidden = false;
+    $('guestHandoffDismiss').onclick = function () { $('guestHandoffBanner').hidden = true; clearGuestHandoffQuery(); toast('Guest handoff left in this tab. The local project was not changed.'); };
+    $('guestHandoffAccept').onclick = function () {
+      if (!confirm('Replace this local Project Room with “' + pending.room.project.title + '”?\n\nExport the current room first if you need it. This imports data only; no module or task will run.')) return;
+      room = pending.room;
+      saveRoom('import', 'Guest workroom project imported by explicit confirmation.');
+      try { sessionStorage.removeItem(GUEST_HANDOFF_KEY); } catch (error) {}
+      $('guestHandoffBanner').hidden = true;
+      clearGuestHandoffQuery();
+      renderAll();
+      toast('Guest project imported into this local Project Room.');
+    };
+  }
 
   document.querySelectorAll('.tab').forEach(function (b) { b.onclick = function () { switchView(b.dataset.view); }; });
   $('ideaForm').onsubmit = function (e) { e.preventDefault(); var title = $('ideaTitle').value.trim(); if (!title) return; room.cards.push(Core.normalizeCard({ title: title, stage: 'ideas' })); $('ideaTitle').value = ''; saveRoom('idea', 'Idea captured: ' + title); renderAll(); };
@@ -155,6 +193,6 @@
     if (restore && confirm('Restore this checkpoint? Current unsaved changes will be replaced, but checkpoint history stays.')) { var result = Core.restoreVersion(room, restore.dataset.restoreVersion); if (!result.ok) toast(result.error); else { room = result.room; saveRoom('', ''); toast('Checkpoint restored: ' + result.version.title); renderAll(); } }
   });
 
-  renderAll(); switchView('overview');
-  if (window.AXMHub) { AXMHub.onInit(function () { AXMHub.log('Project Room ready · merged local project record loaded'); }); AXMHub.ready({ id: 'project-room', name: 'AXM Project Room', version: 'v0.2', hubApiVersion: '1.0', permissions: [], savesState: true, handlesShutdown: false }); }
+  renderAll(); switchView('overview'); setupGuestHandoff();
+  if (window.AXMHub) { AXMHub.onInit(function () { AXMHub.log('Project Room ready · merged local project record loaded'); }); AXMHub.ready({ id: 'project-room', name: 'AXM Project Room', version: 'v0.3', hubApiVersion: '1.0', permissions: [], savesState: true, handlesShutdown: false }); }
 }());

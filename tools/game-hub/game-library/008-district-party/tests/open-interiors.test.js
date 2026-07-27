@@ -30,7 +30,7 @@ test('map reserves one small and one large empty walkable venue shell', () => {
 });
 
 test('both empty venue floors and north door paths are host-collision open', () => {
-  const staticMap = loadStaticMap(root);
+  const staticMap = loadStaticMap(root, 'tilburg-streetscape-foundation');
   assert.equal(staticMap.interiorZones.length, 2, 'host keeps the future attachment zones');
   const openPoints = [
     { id: 'small-centre', x: 6072, y: 4392 },

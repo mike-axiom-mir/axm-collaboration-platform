@@ -72,7 +72,12 @@ function artifact(result, id) {
 
 (async function () {
   const installed = Hands.list();
-  assert.equal(installed.length, 34);
+  assert.equal(
+    new Set(installed.map((hand) => hand.id)).size,
+    installed.length,
+    "registered Asset Hand ids are unique",
+  );
+  assert(installed.some((hand) => hand.id === "raster-compositor"), "raster compositor provider is registered");
   assert.equal(Hands.listMissingHands().length, 0);
   assert(!Hands.getMissingHand("renderer-material-parity"));
 

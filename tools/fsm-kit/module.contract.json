@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "fsm-kit",
+  "version": "0.1.0-test",
+  "provides": ["game.logic.fsm", "game.logic.trace", "game.logic.diagram", "game.logic.shapeable-pack"],
+  "consumes": ["axm.game-fsm/v1"],
+  "permissions": ["files", "export"],
+  "handoffs": {"emits": ["axm.game-fsm-trace/v1", "axm.shapeable.block-pack"], "accepts": ["axm.game-fsm/v1"]},
+  "boundaries": {
+    "writes": ["user-download:explicit-export"],
+    "refuses": ["automatic-world-mutation", "automatic-animation-playback", "embedded-executable-definition", "automatic-canon-promotion"]
+  },
+  "lifecycle": {"state_owner": "browser", "reload": "reset", "disconnect": "not-applicable", "cleanup": "automatic"}
+}

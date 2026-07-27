@@ -13,12 +13,19 @@ const Core = require('./hub-shell.js');
 const C = require('./module-contract.js');
 const hubHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const hubCss = fs.readFileSync(path.join(__dirname, 'hub-tokens.css'), 'utf8');
+const presentationCss = fs.readFileSync(path.join(__dirname, 'shapeable-presentation.css'), 'utf8');
+const professionalCss = fs.readFileSync(path.join(__dirname, 'professional-steward.css'), 'utf8');
+const presentationHostCss = fs.readFileSync(path.join(__dirname, '..', 'shared', 'presentation-spine', 'presentation-host.css'), 'utf8');
+const presentationPolicy = require(path.join(__dirname, '..', 'shared', 'presentation-spine', 'presentation-policy.js'));
+const presentationRecipe = require(path.join(__dirname, '..', 'shared', 'presentation-spine', 'presentation-recipe.js'));
+const screenContract = require(path.join(__dirname, '..', 'shared', 'presentation-spine', 'screen-contract.js'));
 const hubJs = fs.readFileSync(path.join(__dirname, 'hub-shell.js'), 'utf8');
 const presenceJs = fs.readFileSync(path.join(__dirname, 'ai-presence.js'), 'utf8');
 const navJs = fs.readFileSync(path.join(__dirname, 'workshop-navigation.js'), 'utf8');
 const productionSessionJs = fs.readFileSync(path.join(__dirname, 'production-session.js'), 'utf8');
 const productionSessionCss = fs.readFileSync(path.join(__dirname, 'production-session.css'), 'utf8');
 const serverJs = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
+const operationsApiJs = fs.readFileSync(path.join(__dirname, '..', 'shared', 'operations', 'operations-api.js'), 'utf8');
 const productionSessionCoreJs = fs.readFileSync(path.join(__dirname, '..', 'shared', 'production-session', 'production-session-core.js'), 'utf8');
 const out = []; let fails = 0;
 function ok(m){ out.push('  PASS  ' + m); }
@@ -26,6 +33,37 @@ function bad(m){ out.push('  FAIL  ' + m); fails++; }
 function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
 
 /id="sidebarToggle"[^>]+aria-controls="hubSidebar"/.test(hubHtml) ? ok('sidebar: visible collapse/reopen handle exists') : bad('sidebar toggle missing');
+/presentation-policy\.js/.test(hubHtml) && /presentation-recipe\.js/.test(hubHtml) && /id="presentationModeQuick"/.test(hubHtml) && /applyPresentationToFrame/.test(hubJs)
+  ? ok('presentation: Hub owns a visible shared/module control plane') : bad('presentation: control plane wiring missing');
+/setSharedPresentationLayer/.test(hubJs) && /downloadPresentationRecipe/.test(hubJs) && /hub:presentation:recipe/.test(hubJs) && /Portable skin recipe/.test(hubJs)
+  ? ok('presentation: portable layer recipe persists, exports and accepts explicit same-origin composition') : bad('presentation: reusable recipe controls missing');
+/screen-contract\.js/.test(hubHtml) && /id="presentationEditQuick"/.test(hubHtml) && /openScreenEditor/.test(hubJs) && /Body and behavior stay locked/.test(hubJs)
+  ? ok('presentation: bounded Body to Behavior to Presentation to Screen editor is wired') : bad('presentation: bounded screen editor wiring missing');
+screenContract.resolve({id:'verifier',tags:['verification']}).preset === 'instrument' &&
+  screenContract.resolve({id:'technical-art-validator',tags:['visual']}).preset === 'instrument' &&
+  screenContract.resolve({id:'game-world',tags:['game']}).preset === 'expressive' &&
+  screenContract.resolve({id:'verifier',tags:['verification']}).behavior.editable === false
+  ? ok('presentation: deterministic purpose presets expose screen freedom without behavior authority') : bad('presentation: screen contract resolution failed');
+/frameLoadSequence:\s*0/.test(hubJs) && /navigationToken !== this\.frameLoadSequence \|\| this\.active !== id/.test(hubJs)
+  ? ok('navigation: stale module-load timers cannot replace the current screen') : bad('navigation: module-load race guard missing');
+/acceptPaintedFrame/.test(hubJs) && /actual[\s\S]*same-origin paint as a second honest ready signal/.test(hubJs)
+  ? ok('navigation: visible iframe paint is accepted when a host drops its load event') : bad('navigation: iframe paint fallback missing');
+/body\[data-axm-presentation-mode="shared"\]/.test(presentationHostCss) && !/body\[data-axm-presentation-mode="module"\]/.test(presentationHostCss)
+  ? ok('presentation: host styling is scoped to Shared and leaves Module mode alone') : bad('presentation: host styling leaks into module-owned visuals');
+presentationPolicy.resolve({module:{id:'studio'}}).mode === 'shared' && presentationPolicy.resolve({module:{id:'studio'},userMode:'module'}).mode === 'module'
+  ? ok('presentation: shared default and explicit module choice resolve honestly') : bad('presentation: resolution policy is wrong');
+presentationRecipe.validate(presentationRecipe.normalize(presentationRecipe.DEFAULT)).ok && !presentationRecipe.validate(Object.assign({},presentationRecipe.normalize(presentationRecipe.DEFAULT),{permissions:['storage']})).ok
+  ? ok('presentation: recipe is bounded data and refuses permission authority') : bad('presentation: recipe authority boundary failed');
+/shared\/elements\/axm-ui-fx\.css/.test(hubHtml) && /id="presentationSpineNav"/.test(hubHtml) && /fx-tile fx-glow/.test(hubHtml) && /2030 navigation deck/.test(presentationCss)
+  ? ok('sidebar: layered UI-FX and visible 2030 Visual System route are wired') : bad('sidebar UI-FX or Visual System route missing');
+/hub\/professional-steward\.css/.test(hubHtml) && /Presentation only: no navigation, lifecycle, permission, or runtime changes\./.test(professionalCss) && /\.module-card:has\(\.module-card-life\.WORKING\)/.test(professionalCss) && /#presentationProfileQuick\s*\{[\s\S]*?display:\s*none/.test(professionalCss) && /MOBILE OVERLAY/.test(professionalCss)
+  ? ok('visual stewardship: professional layer is wired and status styling stays presentation-only') : bad('visual stewardship: professional layer contract missing');
+/dataset\.navKind = 'module'/.test(hubJs) && /\.mod\[data-nav-kind="module"\]/.test(presentationCss) && /min-height:38px!important/.test(presentationCss) && /flex:0 0 28px!important/.test(presentationCss)
+  ? ok('sidebar: generated modules use compact navigation-deck instruments') : bad('sidebar: compact generated-module contract missing');
+/\.sidebar \.mod:not\(\[data-nav-kind="module"\]\)/.test(presentationCss) && /\.sidebar>\.sidebar-toggle/.test(presentationCss) && /<div id="modList"><\/div>\s*<button class="sidebar-toggle"/.test(hubHtml)
+  ? ok('sidebar: permanent, workflow and layer controls share compact instruments; collapse lives inside rail') : bad('sidebar: complete compact instrument grammar or in-rail collapse control missing');
+/id="sidebarTopToggle"[^>]+aria-controls="hubSidebar"/.test(hubHtml) && /sidebarTopToggle/.test(hubJs) && /\.sidebar-head-toggle/.test(presentationCss)
+  ? ok('sidebar: navigation-deck header exposes the same bounded collapse action') : bad('sidebar: compact header collapse action missing');
 /id="workshopBack"[^>]+aria-label="Go to previous AXM screen"/.test(hubHtml) && /workshop-navigation\.js/.test(hubHtml)
   ? ok('navigation: universal previous-screen control is visible and shared') : bad('navigation: previous-screen control or helper missing');
 /initNavigation/.test(hubJs) && /goBack\(\)/.test(hubJs) && /sessionStorage/.test(hubJs) && /never reads or writes project state/.test(navJs)
@@ -34,6 +72,10 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
 /axm\.hub\.sidebar-collapsed/.test(hubJs) && /toggleSidebar\(\)/.test(hubJs) ? ok('sidebar: preference persists and toggles') : bad('sidebar persistence missing');
 /id="capabilityForm"/.test(hubHtml) && /id="capabilityResults"[^>]+aria-live="polite"/.test(hubHtml) ? ok('capability guide: plain-language form and accessible results exist') : bad('capability guide UI missing');
 /workshop-capability-index\.js/.test(hubHtml) && /renderCapabilityGuide/.test(hubJs) && /openCapability/.test(hubJs) ? ok('capability guide: shared index and explicit open action are wired') : bad('capability guide wiring missing');
+/DETERMINISTIC/.test(hubJs) && /SELF CREATION/.test(hubJs) && /AI ASSISTED/.test(hubJs) && /Nothing starts until you choose/.test(hubJs) && /automaticStart:false/.test(hubJs)
+  ? ok('capability guide: creation exposes three explicit human choices without auto-start') : bad('capability guide: creation choices or no-auto-start boundary missing');
+/"asset-hands"\s*:\s*\{[\s\S]*?state:\s*assetHandsInstalled\s*\?\s*"READY"\s*:\s*"OFFLINE"/.test(serverJs) && /"asset-hands-upgrade-registry"\s*:\s*\{[\s\S]*?state:\s*assetHandUpgradesInstalled\s*\?\s*"READY"\s*:\s*"OFFLINE"/.test(serverJs)
+  ? ok('readiness: installed Creation Hands and upgrades have honest probes') : bad('readiness: Creation Hands probes missing');
 /id="continuityStrip"/.test(hubHtml) && /workshop-continuity\.js/.test(hubHtml) && /loadContinuity/.test(hubJs) && /forgetContinuity/.test(hubJs)
   ? ok('continuity: explicit Continue and Forget surface is wired') : bad('continuity surface missing');
 /id="handoffForm"/.test(hubHtml) && /artifact-handoff-broker\.js/.test(hubHtml) && /findHandoffDestinations/.test(hubJs) && /prepareHandoff/.test(hubJs)
@@ -42,6 +84,14 @@ function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
   ? ok('readiness: beginner explanation preserves manual repair boundary') : bad('readiness explanation missing');
 /requestActiveShutdown/.test(hubJs) && /hub:shutdown:request/.test(hubJs) && /hub:shutdown:ok/.test(hubJs) && /handlesShutdown/.test(hubJs)
   ? ok('module lifecycle: declared shutdown checkpoint is awaited before navigation') : bad('module lifecycle: navigation can bypass declared shutdown checkpoint');
+/id="lifecycleMenu"/.test(hubHtml) && (hubHtml.match(/data-lifecycle=/g) || []).length === 3 && !/data-lifecycle="CANON/.test(hubHtml) && /bindLifecycleMenu/.test(hubJs) && /module-card-life/.test(hubCss)
+  ? ok('module lifecycle: right-click menu reaches local CLAIMED/TEST/WORKING only') : bad('module lifecycle: quick menu missing or exceeded WORKING authority');
+/loadSharedLifecycle/.test(hubJs) && /persistSharedLifecycle/.test(hubJs) && /\/api\/hub\/lifecycle/.test(operationsApiJs) && /explicit-local-label/.test(operationsApiJs)
+  ? ok('module lifecycle: labels synchronize through explicit Workshop state') : bad('module lifecycle: labels remain trapped in one browser profile');
+/lifecycleTruth/.test(hubJs) && /CANON: not granted/.test(hubJs) && /row, \{ id \}/.test(hubJs) && /explicit-verified-reconciliation/.test(operationsApiJs)
+  ? ok('module lifecycle: synchronized labels carry readable evidence and keep CANON manual') : bad('module lifecycle: evidence provenance or CANON boundary is missing');
+/lifeBadge\.setAttribute\('aria-label', 'Status: '/.test(hubJs) && /\.mod \.life\{[\s\S]*?width:9px;[\s\S]*?font-size:0!important/.test(presentationCss) && /\.mod \.life\.HOLD/.test(presentationCss) && /\.mod \.life\.TEST/.test(presentationCss) && /\.mod \.life\.WORKING/.test(presentationCss) && /\.mod \.life\.CANON::after/.test(presentationCss)
+  ? ok('module lifecycle: compact accessible color chips preserve the sidebar name lane') : bad('module lifecycle: compact status chip contract missing');
 presenceJs.includes("setBridge('connected','ON'") && presenceJs.includes('var ids=[];') && presenceJs.includes("fetchTimed(BRIDGE+'/local-models'")
   ? ok('presence: Bridge health remains independent from optional local-model availability') : bad('presence: local model outage can still falsely mark Bridge offline');
 /id="productionSessionToggle"/.test(hubHtml) && /id="productionSessionScreen"/.test(hubHtml) && /production-session\.js/.test(hubHtml)
@@ -65,6 +115,9 @@ presenceJs.includes("setBridge('connected','ON'") && presenceJs.includes('var id
   s1.setLifecycle('studio', 'SAVED CHECKPOINT');
   s1.cacheRegistry([{ id: 'studio' }, { id: 'game-hub' }]);
   s1.appendLog(Core.logEntry('ok', 'opened studio', 't0'));
+  s1.setPresentationMode('studio', 'module');
+  s1.setSharedPresentationProfile('studio');
+  s1.setPresentationLayers({surface:'solid',depth:'dimensional',motion:'still',density:'compact',signal:'quiet'});
 
   /* simulate closing and reopening the hub: brand-new store, same storage */
   const s2 = Core.makeStore(backend);
@@ -74,6 +127,22 @@ presenceJs.includes("setBridge('connected','ON'") && presenceJs.includes('var id
   s2.getLifecycle('studio') === 'SAVED CHECKPOINT' ? ok('reopen: lifecycle survived') : bad('reopen: lifecycle lost');
   s2.cachedRegistry().length === 2 ? ok('reopen: module list survived (2)') : bad('reopen: module list lost');
   s2.readLog().length === 1 ? ok('reopen: action log survived') : bad('reopen: action log lost');
+  s2.getPresentationMode('studio') === 'module' && s2.getSharedPresentationProfile() === 'studio'
+    ? ok('reopen: per-module presentation choice survived') : bad('reopen: presentation choice lost');
+  eq(s2.getPresentationLayers(),{surface:'solid',depth:'dimensional',motion:'still',density:'compact',signal:'quiet'})
+    ? ok('reopen: portable presentation layers survived') : bad('reopen: presentation layers lost');
+})();
+
+/* ---- 1b. quick local lifecycle control: useful, reversible, never CANON ---- */
+(function quickLifecycle(){
+  const toTest = Core.quickLifecycleTransition('CLAIMED', 'NEEDS VERIFY');
+  const toWorking = Core.quickLifecycleTransition('NEEDS VERIFY', 'WORKING');
+  const reset = Core.quickLifecycleTransition('WORKING', 'CLAIMED');
+  const canon = Core.quickLifecycleTransition('WORKING', 'CANON CANDIDATE');
+  toTest.ok && toTest.lifecycle === 'NEEDS VERIFY' && toWorking.ok && toWorking.lifecycle === 'WORKING' && reset.ok && reset.lifecycle === 'CLAIMED'
+    ? ok('quick lifecycle: CLAIMED, TEST and WORKING are reversible local labels') : bad('quick lifecycle: allowed local transition failed');
+  !canon.ok && canon.lifecycle === 'WORKING' && canon.canon !== true && Core.QUICK_LIFECYCLE_STATES.indexOf('CANON CANDIDATE') < 0
+    ? ok('quick lifecycle: convenience control cannot reach CANON') : bad('quick lifecycle: CANON leaked into convenience control');
 })();
 
 /* ---- 2. passport validation ---- */
@@ -119,9 +188,24 @@ presenceJs.includes("setBridge('connected','ON'") && presenceJs.includes('var id
 
   const normalized = Core.normalizeRegistry([{ id: 'project-room', layer: 'build' }]);
   normalized[0].layer === 'build' ? ok('registry preserves a manifest layer suggestion') : bad('registry dropped manifest layer');
-  const rich = Core.normalizeRegistry([{ id:'studio', summary:'Make images', notes:'Local', category:'Create', risk:'LOW', card:{ icon:'studio' }, actions:['draw'], accepts:['image/*'], produces:['axm.image/v1'], readiness:['storage'] }])[0];
-  rich.summary === 'Make images' && rich.notes === 'Local' && rich.category === 'Create' && rich.risk === 'LOW' && rich.card.icon === 'studio' && rich.actions[0] === 'draw' && rich.accepts[0] === 'image/*' && rich.produces[0] === 'axm.image/v1' && rich.readiness[0] === 'storage'
+  const rich = Core.normalizeRegistry([{ id:'studio', summary:'Make images', notes:'Local', category:'Create', risk:'LOW', card:{ icon:'studio' }, presentation:{defaultMode:'shared'}, actions:['draw'], accepts:['image/*'], produces:['axm.image/v1'], readiness:['storage'] }])[0];
+  rich.summary === 'Make images' && rich.notes === 'Local' && rich.category === 'Create' && rich.risk === 'LOW' && rich.card.icon === 'studio' && rich.presentation.defaultMode === 'shared' && rich.actions[0] === 'draw' && rich.accepts[0] === 'image/*' && rich.produces[0] === 'axm.image/v1' && rich.readiness[0] === 'storage'
     ? ok('registry preserves beginner-facing and machine-readable capability metadata') : bad('registry dropped capability metadata');
+  const ranked = Core.normalizeRegistry([{ id:'local-3d-game-runtime', rank:1, phase:'P0' }])[0];
+  ranked.rank === 1 && ranked.phase === 'P0' && /dataset\.roadmapRank/.test(hubJs) && /dataset\.roadmapPhase/.test(hubJs)
+    ? ok('roadmap: Hub cards preserve and expose rank plus phase') : bad('roadmap: rank or phase is hidden from module cards');
+  const rankedLayout = Core.upgradeFoundationRoadmap(Core.workflowLayout([], Core.DEFAULT_LAYERS).layers, {}, [
+    { id:'new-create', rank:3, category:'Create' }, { id:'new-play', rank:29, category:'Play' }, { id:'unranked', category:'Publish' }
+  ]);
+  rankedLayout.changed && rankedLayout.assign['new-create'] === 'create' && rankedLayout.assign['new-play'] === 'play' && !rankedLayout.assign.unranked
+    ? ok('roadmap: ranked arrivals route to their five declared parent rooms') : bad('roadmap: ranked arrival parent routing drifted');
+  const repairedRankedLayout = Core.upgradeRankedRoadmapPlacement(Core.workflowLayout([], Core.DEFAULT_LAYERS).layers, { 'new-create':'build', 'custom-play':'private' }, [
+    { id:'new-create', rank:3, category:'Create' }, { id:'custom-play', rank:29, category:'Play' }
+  ]);
+  repairedRankedLayout.assign['new-create'] === 'create' && repairedRankedLayout.assign['custom-play'] === 'private'
+    ? ok('roadmap: legacy Build fallback is repaired without moving a custom placement') : bad('roadmap: legacy placement repair is too broad');
+  /axm\.hub\.upgrade\.next-50-modules\.v1/.test(hubJs) && /module\.rank >= 1 && module\.rank <= 50/.test(hubJs)
+    ? ok('roadmap: existing browser profiles receive the ranked visibility wave once') : bad('roadmap: existing profiles can hide the entire ranked wave');
 
   /* first run seeds all discovered (no-loss) */
   let res = Core.resolveModules(available, available.map(m => m.id));
@@ -152,6 +236,20 @@ presenceJs.includes("setBridge('connected','ON'") && presenceJs.includes('var id
     ? ok('friendly names remove repeated AXM branding') : bad('friendly Studio name wrong');
   Core.friendlyName({ id: 'unknown', name: 'AXM Example Tool' }) === 'Example Tool'
     ? ok('friendly names fall back safely for future modules') : bad('friendly fallback wrong');
+})();
+
+/* ---- 3b. beginner capability routing: duplicates and blocked doors stay out of the front choice ---- */
+(function beginnerCapabilityRouting(){
+  const grouped = Core.organizeCapabilityRoutes([
+    { destinationId:'studio', score:91, readiness:{ state:'BLOCKED' } },
+    { destinationId:'studio', score:84, readiness:{ state:'READY' } },
+    { destinationId:'spatial-studio', score:73, readiness:{ state:'BLOCKED' } },
+    { destinationId:'publish-library', score:55, readiness:{ state:'AVAILABLE' } }
+  ]);
+  grouped.usable.length === 2 && grouped.usable[0].destinationId === 'studio' && grouped.usable[0].readiness.state === 'READY'
+    ? ok('capability guide: duplicate Studio routes collapse to the usable door') : bad('capability guide: duplicate or blocked Studio route leaked forward');
+  grouped.blocked.length === 1 && grouped.blocked[0].destinationId === 'spatial-studio'
+    ? ok('capability guide: blocked destinations remain visible only as held explanations') : bad('capability guide: blocked destination grouping wrong');
 })();
 
 /* ---- 3c. user-check evaluator (the add/delete-able checks) ---- */

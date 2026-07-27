@@ -1,11 +1,13 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "audio-studio",
-  "version": "v1.0",
+  "version": "v1.1",
   "provides": [
     "single-audio-production-workspace",
     "multitrack-timeline-and-mixer",
     "preserved-sound-forge-engine",
+    "headless-deterministic-sfx-bake",
+    "seeded-sfx-directed-variation",
     "synth-patch-workflow",
     "editable-score-and-midi-export",
     "stereo-spatial-stage",
@@ -15,10 +17,10 @@
     "supported-source-wav-render",
     "review-gated-publish-handoff"
   ],
-  "consumes": ["service:asset-vault", "service:publish-library", "service:ai-team", "service:shared-engines/project-v1"],
+  "consumes": ["service:asset-vault", "service:publish-library", "service:ai-team", "service:shared-engines/project-v1", "service:audio-sfx-bake", "axm.audio.sound/v1"],
   "permissions": ["storage", "export", "files", "ai", "asset-vault", "shared-engines"],
   "handoffs": {
-    "emits": ["axm.audio.sound/v1", "axm.publish-artifact/v1", "axm.audio-studio.project/v1"],
+    "emits": ["axm.audio.sound/v1", "audio/wav", "axm.audio.sfx-bake-receipt/v1", "axm.publish-artifact/v1", "axm.audio-studio.project/v1"],
     "accepts": ["hub:init", "hub:settings:value", "session-local:audio-files"]
   },
   "boundaries": {
@@ -31,7 +33,10 @@
       "pretend-imported-audio-in-mixdown",
       "pretend-professional-mastering",
       "silent-microphone-recording",
-      "direct-unreviewed-ai-sound-application"
+      "direct-unreviewed-ai-sound-application",
+      "automatic-sfx-bake-file-write",
+      "webaudio-sample-identity-claim",
+      "automatic-sfx-quality-approval"
     ]
   }
 }

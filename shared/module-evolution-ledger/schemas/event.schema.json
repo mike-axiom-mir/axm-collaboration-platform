@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.module-evolution-ledger-event/v1",
+  "title": "Module Evolution Ledger Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "revision", "eventId", "type", "at", "actor", "payload", "previousEventDigest", "eventDigest"],
+  "properties": {
+    "schema": {"const": "axm.module-evolution-ledger-event/v1"},
+    "revision": {"type": "integer", "minimum": 1},
+    "eventId": {"type": "string", "minLength": 1, "maxLength": 128},
+    "type": {"enum": ["version.recorded", "known-good.selected", "pacing-policy.configured", "proposal.staged", "proposal.disposition-recorded", "activation.prepared", "activation.started", "activation.observed", "activation.verification-recorded", "activation.accepted", "activation.recovery-handoff-recorded"]},
+    "at": {"type": "string", "format": "date-time"},
+    "actor": {"type": "object", "required": ["kind", "id"], "properties": {"kind": {"type": "string"}, "id": {"type": "string"}}, "additionalProperties": false},
+    "payload": {"type": "object"},
+    "previousEventDigest": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "eventDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

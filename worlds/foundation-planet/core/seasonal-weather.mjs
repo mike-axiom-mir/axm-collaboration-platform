@@ -55,17 +55,31 @@ export function buildSeasonalWeather(lat, lon, baseSample, options = {}) {
     : diagnosticHumidity;
   const diagnosticCloudCover = clamp(humidity * .76 + (1008 - pressureHpa) * .025 + front * .22);
   const cloudLiquidSignal = earthSystem ? clamp(earthSystem.atmosphere.cloudWaterMm / 3) : 0;
+  const cloudIceSignal = earthSystem ? clamp(earthSystem.atmosphere.cloudIceMm / 3) : 0;
   const freeTroposphereCloudLiquidSignal = earthSystem?.atmosphere?.freeTroposphere
     ? clamp(earthSystem.atmosphere.freeTroposphere.cloudWaterMm / 2.4) : 0;
+  const freeTroposphereCloudIceSignal = earthSystem?.atmosphere?.freeTroposphere
+    ? clamp(earthSystem.atmosphere.freeTroposphere.cloudIceMm / 2.4) : 0;
   const cloudCover = earthSystem
     ? clamp(diagnosticCloudCover * .52 + earthSystem.atmosphere.cloudFraction * .24 +
       (earthSystem.atmosphere.freeTroposphere?.cloudFraction || 0) * .14 +
-      cloudLiquidSignal * .06 + freeTroposphereCloudLiquidSignal * .04)
+      cloudLiquidSignal * .04 + cloudIceSignal * .02 +
+      freeTroposphereCloudLiquidSignal * .025 + freeTroposphereCloudIceSignal * .015)
     : diagnosticCloudCover;
   const precipitationPotential = clamp((humidity - .48) * 1.8 + (1007 - pressureHpa) * .026 +
-    pressureGradient * .45 + cloudLiquidSignal * .12);
+    pressureGradient * .45 + cloudLiquidSignal * .08 + cloudIceSignal * .04);
   const precipitationMmHour = precipitationPotential > .16 ? Math.round(Math.pow(precipitationPotential, 1.7) * 13 * 10) / 10 : 0;
-  const precipitationType = precipitationMmHour <= 0 ? 'none' : seasonalTemperatureC < -1.5 ? 'snow' : seasonalTemperatureC < 2 ? 'sleet' : 'rain';
+  const lastPressureDynamics = earthSystem?.atmosphere?.lastPressureColumnDynamicsReceipt;
+  const lastSurfaceRainMm = Number(lastPressureDynamics?.surfaceRainfallMm || 0);
+  const lastSurfaceSnowMm = Number(lastPressureDynamics?.surfaceSnowfallMm || 0);
+  const lastSurfacePrecipitationMm = lastSurfaceRainMm + lastSurfaceSnowMm;
+  const nativeSurfacePhase = lastSurfacePrecipitationMm <= 0
+    ? null
+    : lastSurfaceSnowMm / lastSurfacePrecipitationMm > .8
+      ? 'snow'
+      : lastSurfaceRainMm / lastSurfacePrecipitationMm > .8 ? 'rain' : 'sleet';
+  const precipitationType = precipitationMmHour <= 0 ? 'none' : nativeSurfacePhase ||
+    (seasonalTemperatureC < -1.5 ? 'snow' : seasonalTemperatureC < 2 ? 'sleet' : 'rain');
   const temperatureDemand = Math.max(0, seasonalTemperatureC + 5) * .12;
   const evapotranspirationMmDay = temperatureDemand * (.72 + windSpeedMps * .03) * (1.18 - humidity * .62);
   const expectedRainMmDay = baseSample.annualPrecipMm / 365.25;
@@ -84,7 +98,14 @@ export function buildSeasonalWeather(lat, lon, baseSample, options = {}) {
     : diagnosticSnowpackMm;
   const stormRisk = clamp((1008 - pressureHpa) / 25 + pressureGradient * .7 + cloudCover * .2);
   const lightningRisk = precipitationType === 'rain' && seasonalTemperatureC > 18 ? clamp(stormRisk * .8 + windSpeedMps / 45) : 0;
-  const fuelLoad = baseSample.land ? clamp((baseSample.moisture * .65 + baseSample.habitability * .7) * Math.sqrt(profile.lifeAbundance)) : 0;
+  const landEcology = earthSystem?.kind === 'land' ? earthSystem.land?.ecology : null;
+  const fuelLoad = baseSample.land ? landEcology
+    ? clamp(landEcology.canopyCover * .58 +
+      (1 - Math.exp(-Number(landEcology.carbon?.litterKgCm2 || 0) * 1.4)) * .32 +
+      Number(landEcology.carbon?.liveBiomassKgCm2 || 0) /
+        Math.max(1, Number(landEcology.traits?.matureBiomassCarbonKgCm2 || 1)) * .22)
+    : clamp((baseSample.moisture * .65 + baseSample.habitability * .7) *
+      Math.sqrt(profile.lifeAbundance)) : 0;
   const coldSuppression = clamp((seasonalTemperatureC + 2) / 12);
   const rainSuppression = Math.exp(-precipitationMmHour * 1.15);
   const fireRisk = clamp(droughtIndex * .58 + Math.max(0, seasonalTemperatureC - 16) / 38 + windSpeedMps / 75) * fuelLoad * coldSuppression * rainSuppression;
@@ -99,7 +120,14 @@ export function buildSeasonalWeather(lat, lon, baseSample, options = {}) {
       windSpeedMps: diagnosticWindSpeedMps,
       windDirectionDeg: diagnosticWindDirectionDeg
     },
-    precipitation: { type: precipitationType, mmHour: precipitationMmHour, potential: precipitationPotential },
+    precipitation: {
+      type: precipitationType,
+      mmHour: precipitationMmHour,
+      potential: precipitationPotential,
+      nativeSurfacePhase,
+      lastSurfaceRainMm,
+      lastSurfaceSnowMm
+    },
     evapotranspirationMmDay, droughtIndex, snowpackMm, stormRisk, lightningRisk, fireRisk, naturalIgnition,
     coupling: earthSystem ? {
       schema: earthSystem.schema,
@@ -108,7 +136,151 @@ export function buildSeasonalWeather(lat, lon, baseSample, options = {}) {
       waterBudgetResidualMm: earthSystem.budget.water.residualMm,
       energyBudgetResidualJm2: earthSystem.budget.energy.residualJm2,
       moistEnthalpyResidualJm2: earthSystem.budget.atmosphereEnergy?.residualJm2 ?? null,
+      radiation: earthSystem.budget.energy.radiation ? {
+        schema: earthSystem.budget.energy.radiation.schema,
+        albedo: earthSystem.budget.energy.radiation.albedo,
+        liquidWaterPathMm:
+          earthSystem.budget.energy.radiation.cloudOptics?.liquidWaterPathMm ?? 0,
+        iceWaterPathMm:
+          earthSystem.budget.energy.radiation.cloudOptics?.iceWaterPathMm ?? 0,
+        shortwaveOpticalDepth:
+          earthSystem.budget.energy.radiation.cloudOptics?.shortwaveOpticalDepth ?? 0,
+        longwaveOpticalDepth:
+          earthSystem.budget.energy.radiation.cloudOptics?.longwaveOpticalDepth ?? 0,
+        absorbedShortwaveWm2: earthSystem.budget.energy.radiation.absorbedShortwaveWm2,
+        downwardLongwaveWm2: earthSystem.budget.energy.radiation.downwardLongwaveWm2,
+        upwardLongwaveWm2: earthSystem.budget.energy.radiation.upwardLongwaveWm2,
+        cloudShortwaveForcingWm2:
+          earthSystem.budget.energy.radiation.cloudShortwaveForcingWm2,
+        cloudLongwaveForcingWm2:
+          earthSystem.budget.energy.radiation.cloudLongwaveForcingWm2
+      } : null,
+      cryosphere: {
+        snowWaterEquivalentMm: earthSystem.cryosphere.snowWaterEquivalentMm,
+        snowAgeDays: earthSystem.cryosphere.snowAgeDays,
+        seaIceFraction: earthSystem.cryosphere.seaIceFraction,
+        seaIceThicknessM: earthSystem.cryosphere.seaIceThicknessM,
+        phaseReceiptSchema:
+          earthSystem.cryosphere.lastPhaseChangeReceipt?.schema || null,
+        fusionResidualJm2:
+          earthSystem.cryosphere.lastPhaseChangeReceipt?.residualJm2 ?? null
+      },
+      landEcology: earthSystem.land?.ecology ? {
+        schema: earthSystem.land.ecology.schema,
+        fluxReceiptSchema:
+          earthSystem.land.ecology.lastFluxReceipt?.schema || null,
+        plantFunctionalType:
+          earthSystem.land.ecology.traits?.plantFunctionalType || null,
+        canopyCover: earthSystem.land.ecology.canopyCover,
+        leafAreaIndex: earthSystem.land.ecology.leafAreaIndex,
+        canopyHeightM: earthSystem.land.ecology.canopyHeightM,
+        rootDepthM: earthSystem.land.ecology.rootDepthM,
+        aerodynamicRoughnessM:
+          earthSystem.land.ecology.aerodynamicRoughnessM,
+        liveBiomassCarbonKgCm2:
+          earthSystem.land.ecology.carbon?.liveBiomassKgCm2 ?? 0,
+        litterCarbonKgCm2:
+          earthSystem.land.ecology.carbon?.litterKgCm2 ?? 0,
+        soilOrganicCarbonKgCm2:
+          earthSystem.land.ecology.carbon?.soilOrganicKgCm2 ?? 0,
+        co2PpmProxy: earthSystem.land.ecology.carbon?.co2PpmProxy ?? null,
+        mineralNitrogenKgNm2:
+          earthSystem.land.ecology.nitrogen?.mineralKgNm2 ?? 0,
+        grossPrimaryProductionKgCm2:
+          earthSystem.land.ecology.lastFluxReceipt?.carbon
+            ?.grossPrimaryProductionKgCm2 ?? 0,
+        carbonResidualKgCm2:
+          earthSystem.land.ecology.lastFluxReceipt?.carbon?.residualKgCm2 ?? null,
+        nitrogenResidualKgNm2:
+          earthSystem.land.ecology.lastFluxReceipt?.nitrogen?.residualKgNm2 ?? null
+      } : null,
+      oceanEcology: earthSystem.ocean?.ecology ? {
+        schema: earthSystem.ocean.ecology.schema,
+        fluxReceiptSchema:
+          earthSystem.ocean.ecology.lastFluxReceipt?.schema || null,
+        status: earthSystem.ocean.ecology.lastFluxReceipt?.status ||
+          (earthSystem.ocean.ecology.migrationCheckpoint
+            ? 'migration-checkpoint' : 'awaiting-step'),
+        dissolvedInorganicCarbonKgCm2:
+          earthSystem.ocean.ecology.carbon?.dissolvedInorganicKgCm2 ?? 0,
+        dissolvedOrganicCarbonKgCm2:
+          earthSystem.ocean.ecology.carbon?.dissolvedOrganicKgCm2 ?? 0,
+        phytoplanktonCarbonKgCm2:
+          earthSystem.ocean.ecology.carbon?.phytoplanktonKgCm2 ?? 0,
+        zooplanktonCarbonKgCm2:
+          earthSystem.ocean.ecology.carbon?.zooplanktonKgCm2 ?? 0,
+        dissolvedInorganicNitrogenKgNm2:
+          earthSystem.ocean.ecology.nitrogen?.dissolvedInorganicKgNm2 ?? 0,
+        dissolvedInorganicPhosphorusKgPm2:
+          earthSystem.ocean.ecology.phosphorus?.dissolvedInorganicKgPm2 ?? 0,
+        dissolvedOxygenKgO2m2:
+          earthSystem.ocean.ecology.oxygen?.dissolvedKgO2m2 ?? 0,
+        chlorophyllProxyMgM3:
+          earthSystem.ocean.ecology.waterColumn?.chlorophyllProxyMgM3 ?? 0,
+        oxygenSaturationFraction:
+          earthSystem.ocean.ecology.waterColumn?.oxygenSaturationFraction ?? 0,
+        hypoxiaRisk:
+          earthSystem.ocean.ecology.waterColumn?.hypoxiaRisk ?? 0,
+        grossPrimaryProductionKgCm2:
+          earthSystem.ocean.ecology.lastFluxReceipt?.carbon
+            ?.grossPrimaryProductionKgCm2 ?? 0,
+        airSeaCo2FluxToOceanKgCm2:
+          earthSystem.ocean.ecology.lastFluxReceipt?.carbon
+            ?.airSeaCo2FluxToOceanKgCm2 ?? 0,
+        carbonResidualKgCm2:
+          earthSystem.ocean.ecology.lastFluxReceipt?.carbon?.residualKgCm2 ?? null,
+        nitrogenResidualKgNm2:
+          earthSystem.ocean.ecology.lastFluxReceipt?.nitrogen?.residualKgNm2 ?? null,
+        phosphorusResidualKgPm2:
+          earthSystem.ocean.ecology.lastFluxReceipt?.phosphorus?.residualKgPm2 ?? null,
+        oxygenResidualKgO2m2:
+          earthSystem.ocean.ecology.lastFluxReceipt?.oxygen?.residualKgO2m2 ?? null
+      } : null,
       cloudWaterMm: earthSystem.atmosphere.cloudWaterMm,
+      cloudIceMm: earthSystem.atmosphere.cloudIceMm,
+      convectiveKineticEnergyJm2: earthSystem.atmosphere.convectiveKineticEnergyJm2 ?? 0,
+      verticalVelocityProxyMps: earthSystem.atmosphere.verticalVelocityProxyMps ?? 0,
+      buoyancyWorkJm2: earthSystem.atmosphere.lastVerticalExchangeReceipt?.buoyancyWorkJm2 ?? 0,
+      verticalResolvedEnergyResidualJm2:
+        earthSystem.atmosphere.lastVerticalExchangeReceipt?.resolvedEnergyResidualJm2 ?? null,
+      pressureColumn: earthSystem.atmosphere.pressureColumn ? {
+        schema: earthSystem.atmosphere.pressureColumn.schema,
+        layerCount: earthSystem.atmosphere.pressureColumn.layerCount,
+        modelTopHeightM: earthSystem.atmosphere.pressureColumn.modelTopHeightM,
+        surfaceLayerTemperatureC:
+          earthSystem.atmosphere.pressureColumn.layers?.[0]?.airTemperatureC ?? null,
+        topLayerTemperatureC:
+          earthSystem.atmosphere.pressureColumn.layers?.at(-1)?.airTemperatureC ?? null,
+        vaporWaterMm: earthSystem.atmosphere.pressureColumn.totals?.vaporWaterMm ?? null,
+        cloudWaterMm: earthSystem.atmosphere.pressureColumn.totals?.cloudWaterMm ?? null,
+        cloudIceMm: earthSystem.atmosphere.pressureColumn.totals?.cloudIceMm ?? null,
+        surfaceRainfallMm: lastSurfaceRainMm,
+        surfaceSnowfallMm: lastSurfaceSnowMm,
+        syncReceiptSchema:
+          earthSystem.atmosphere.lastPressureColumnSyncReceipt?.schema || null,
+        syncMoistEnthalpyResidualJm2:
+          earthSystem.atmosphere.lastPressureColumnSyncReceipt?.residuals?.moistEnthalpyJm2 ?? null,
+        dynamicsReceiptSchema:
+          earthSystem.atmosphere.lastPressureColumnDynamicsReceipt?.schema || null,
+        nativeLayerPhaseReceiptCount:
+          earthSystem.atmosphere.lastPressureColumnDynamicsReceipt?.layerPhaseReceipts?.length ?? 0,
+        adjacentExchangeReceiptCount:
+          earthSystem.atmosphere.lastPressureColumnDynamicsReceipt?.adjacentExchangeReceipts?.length ?? 0,
+        verticalInterfaceStateCount:
+          earthSystem.atmosphere.pressureColumn.verticalInterfaces?.length ?? 0,
+        buoyancyReceiptCount:
+          earthSystem.atmosphere.lastPressureColumnDynamicsReceipt
+            ?.pressureInterfaceBuoyancyReceipts?.length ?? 0,
+        maximumUpdraftVelocityMps:
+          earthSystem.atmosphere.pressureColumn.verticalInterfaces?.reduce((maximum, entry) =>
+            Math.max(maximum, Number(entry.updraftVelocityMps || 0)), 0) ?? 0,
+        precipitationDescentRouteCount:
+          earthSystem.atmosphere.lastPressureColumnDynamicsReceipt?.precipitationDescentRoutes?.length ?? 0,
+        nativeWaterResidualMm:
+          earthSystem.atmosphere.lastPressureColumnDynamicsReceipt?.residuals?.waterMm ?? null,
+        nativeResolvedEnergyResidualJm2:
+          earthSystem.atmosphere.lastPressureColumnDynamicsReceipt?.residuals?.resolvedEnergyJm2 ?? null
+      } : null,
       freeTroposphere: earthSystem.atmosphere.freeTroposphere ? {
         schema: earthSystem.atmosphere.freeTroposphere.schema,
         referenceAltitudeM: earthSystem.atmosphere.freeTroposphere.referenceAltitudeM,
@@ -116,6 +288,11 @@ export function buildSeasonalWeather(lat, lon, baseSample, options = {}) {
         airTemperatureC: earthSystem.atmosphere.freeTroposphere.airTemperatureC,
         precipitableWaterMm: earthSystem.atmosphere.freeTroposphere.precipitableWaterMm,
         cloudWaterMm: earthSystem.atmosphere.freeTroposphere.cloudWaterMm,
+        cloudIceMm: earthSystem.atmosphere.freeTroposphere.cloudIceMm,
+        windSpeedMps: earthSystem.atmosphere.freeTroposphere.windSpeedMps,
+        windDirectionDeg: earthSystem.atmosphere.freeTroposphere.windDirectionDeg,
+        eastwardWindMps: earthSystem.atmosphere.freeTroposphere.eastwardWindMps,
+        northwardWindMps: earthSystem.atmosphere.freeTroposphere.northwardWindMps,
         verticalExchangeReceiptSchema:
           earthSystem.atmosphere.lastVerticalExchangeReceipt?.schema || null
       } : null,
@@ -123,7 +300,38 @@ export function buildSeasonalWeather(lat, lon, baseSample, options = {}) {
       statefulSnowAndDrought: true,
       statefulPressureAndWind: true,
       statefulCloudWaterAndLatentHeat: true,
-      statefulTwoLayerAtmosphere: Boolean(earthSystem.atmosphere.freeTroposphere)
+      statefulMixedPhaseCloudsAndFusionHeat: true,
+      statefulMixedPhaseCloudRadiation:
+        earthSystem.truth?.nativeMixedPhaseCloudRadiation === true,
+      statefulCryosphereAlbedoAndFusion:
+        earthSystem.truth?.dynamicCryosphereAlbedo === true &&
+        earthSystem.truth?.cryosphereFusionEnergyReceipted === true,
+      statefulLandEcologyCarbonNitrogen:
+        earthSystem.truth?.persistentLandEcology === true &&
+        earthSystem.truth?.localCarbonBudgetClosed === true &&
+        earthSystem.truth?.localNitrogenBudgetClosed === true,
+      statefulOceanEcologyCarbonNutrientsOxygen:
+        earthSystem.truth?.persistentOceanEcology === true &&
+        earthSystem.truth?.localOceanCarbonBudgetClosed === true &&
+        earthSystem.truth?.localOceanNitrogenBudgetClosed === true &&
+        earthSystem.truth?.localOceanPhosphorusBudgetClosed === true &&
+        earthSystem.truth?.localOceanOxygenFluxClosed === true,
+      statefulTwoLayerAtmosphere: Boolean(earthSystem.atmosphere.freeTroposphere),
+      statefulPressureCoordinateColumn:
+        earthSystem.atmosphere.pressureColumn?.layerCount === 8,
+      statefulNativePressureThermodynamics:
+        earthSystem.atmosphere.lastPressureColumnDynamicsReceipt?.truth
+          ?.nativeLayerSaturationAndPhaseChange === true,
+      statefulNativePressureInterfaceConvection:
+        earthSystem.atmosphere.lastPressureColumnDynamicsReceipt?.truth
+          ?.pressureLevelDynamicsResolved === true,
+      statefulIndependentLayerMomentum: Boolean(
+        earthSystem.atmosphere.freeTroposphere &&
+        Number.isFinite(earthSystem.atmosphere.freeTroposphere.eastwardWindMps) &&
+        Number.isFinite(earthSystem.atmosphere.freeTroposphere.northwardWindMps)
+      ),
+      statefulBoundedBuoyancyConversion:
+        earthSystem.atmosphere.lastVerticalExchangeReceipt?.truth?.buoyancyWorkResolved === true
     } : null,
     summary: precipitationType === 'none' ? (cloudCover > .68 ? 'overcast' : cloudCover > .35 ? 'partly cloudy' : 'clear') :
       `${precipitationType} ${precipitationMmHour > 6 ? 'heavy' : precipitationMmHour > 2 ? 'steady' : 'light'}`,
@@ -133,7 +341,50 @@ export function buildSeasonalWeather(lat, lon, baseSample, options = {}) {
       coupledWaterEnergyColumn: earthSystem !== null,
       coupledPressureAndVectorWind: earthSystem !== null,
       coupledCloudLiquidAndLatentHeat: earthSystem !== null,
+      coupledMixedPhaseCloudsAndFusionHeat: earthSystem !== null,
+      coupledMixedPhaseCloudRadiation:
+        earthSystem?.truth?.nativeMixedPhaseCloudRadiation === true,
+      coupledCryosphereAlbedoAndFusion:
+        earthSystem?.truth?.dynamicCryosphereAlbedo === true &&
+        earthSystem?.truth?.cryosphereFusionEnergyReceipted === true,
+      coupledLandEcologyCarbonNitrogen:
+        earthSystem?.truth?.persistentLandEcology === true &&
+        earthSystem?.truth?.localCarbonBudgetClosed === true &&
+        earthSystem?.truth?.localNitrogenBudgetClosed === true,
+      coupledOceanEcologyCarbonNutrientsOxygen:
+        earthSystem?.truth?.persistentOceanEcology === true &&
+        earthSystem?.truth?.localOceanCarbonBudgetClosed === true &&
+        earthSystem?.truth?.localOceanNitrogenBudgetClosed === true &&
+        earthSystem?.truth?.localOceanPhosphorusBudgetClosed === true &&
+        earthSystem?.truth?.localOceanOxygenFluxClosed === true,
+      coupledPhysiologicalTranspiration:
+        earthSystem?.truth?.physiologicalTranspirationCoupled === true,
+      coupledTypedRainSnowDescent:
+        earthSystem?.atmosphere?.lastPressureColumnDynamicsReceipt?.truth
+          ?.typedRainSnowDescent === true,
       coupledTwoLayerAtmosphere: Boolean(earthSystem?.atmosphere?.freeTroposphere),
+      coupledIndependentLayerMomentum: Boolean(
+        earthSystem?.atmosphere?.freeTroposphere &&
+        Number.isFinite(earthSystem.atmosphere.freeTroposphere.eastwardWindMps)
+      ),
+      coupledBoundedBuoyancyConversion:
+        earthSystem?.atmosphere?.lastVerticalExchangeReceipt?.truth?.buoyancyWorkResolved === true,
+      coupledPressureCoordinateColumn:
+        earthSystem?.atmosphere?.pressureColumn?.layerCount === 8,
+      coupledNativePressureThermodynamics:
+        earthSystem?.atmosphere?.lastPressureColumnDynamicsReceipt?.truth
+          ?.nativeLayerSaturationAndPhaseChange === true,
+      coupledNativePrecipitationDescent:
+        earthSystem?.atmosphere?.lastPressureColumnDynamicsReceipt?.truth
+          ?.precipitationDescentAcrossNativeInterfaces === true,
+      coupledNativeAdjacentLevelExchange:
+        earthSystem?.atmosphere?.lastPressureColumnDynamicsReceipt?.truth
+          ?.adjacentNativeLayerExchange === true,
+      coupledNativePressureInterfaceConvection:
+        earthSystem?.atmosphere?.lastPressureColumnDynamicsReceipt?.truth
+          ?.pressureLevelDynamicsResolved === true,
+      pressureLevelDynamicsResolved:
+        earthSystem?.truth?.pressureLevelDynamicsResolved === true,
       forecast: false,
       scientificModel: false,
       fluidSimulation: false

@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "p34-release-foundation",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "shared-lab-engine",
+    "deterministic-scenario-kernel",
+    "independent-scenario-verifier",
+    "phase-cell-overview"
+  ],
+  "consumes": [
+    "human-review"
+  ],
+  "permissions": [],
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  },
+  "handoffs": {
+    "emits": [
+      "axm.p34-release-cell/v1"
+    ],
+    "accepts": [
+      "human:review"
+    ]
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-writes",
+      "automatic-apply",
+      "automatic-publish",
+      "automatic-library-promotion",
+      "external-runtime-dependency",
+      "state-mutation-from-overview"
+    ]
+  }
+}

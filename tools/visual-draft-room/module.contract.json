@@ -1,0 +1,18 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "visual-draft-room",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": ["human-machine-visual-layer-stack", "optional-neural-candidate-layer-import", "deterministic-raster-composition-recipe-export", "ephemeral-live-preview"],
+  "consumes": ["axm.neural-visual-result/v1", "image/png", "image/jpeg", "image/webp"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.visual-stack-draft/v1", "axm.raster-composition/v1", "axm.neural-visual-request/v1"],
+    "accepts": ["axm.visual-stack-draft/v1", "axm.neural-visual-result/v1", "image/png", "image/jpeg", "image/webp"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:draft-metadata-only", "browser-local:ephemeral-neural-request-transfer", "user-download:explicit"],
+    "refuses": ["ai-required-for-deterministic-editing", "automatic-neural-provider-call", "automatic-neural-layer-import", "persistent-raw-image-checkpoint", "live-preview-as-pixel-verification", "automatic-visual-approval", "automatic-canon", "automatic-host-apply"]
+  },
+  "lifecycle": { "state_owner": "browser", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "automatic" }
+}

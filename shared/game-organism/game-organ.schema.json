@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.game-organ/v1",
+  "title": "AXM governed game organ",
+  "description": "A typed, replaceable game-production capability with candidate-only authority.",
+  "type": "object",
+  "required": ["schema", "id", "version", "category", "title", "ports", "capabilities", "authority", "resource_budget", "verification", "implementation", "digest"],
+  "properties": {
+    "schema": { "const": "axm.game-organ/v1" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$" },
+    "version": { "type": "string", "minLength": 1, "maxLength": 40 },
+    "category": { "enum": ["intent", "design", "world-rules", "physics", "animation", "asset", "assembly", "playtest-eye", "evidence", "repair", "release-gate"] },
+    "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "description": { "type": "string", "maxLength": 1000 },
+    "ports": {
+      "type": "object",
+      "required": ["inputs", "outputs"],
+      "properties": {
+        "inputs": { "type": "array", "items": { "$ref": "#/$defs/port" } },
+        "outputs": { "type": "array", "items": { "$ref": "#/$defs/port" } }
+      },
+      "additionalProperties": false
+    },
+    "capabilities": {
+      "type": "object",
+      "required": ["provides", "requires"],
+      "properties": {
+        "provides": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "requires": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      },
+      "additionalProperties": false
+    },
+    "authority": {
+      "type": "object",
+      "required": ["execution_scope", "canonical_writes", "automatic_promotion", "network", "side_effects"],
+      "properties": {
+        "execution_scope": { "const": "candidate-only" },
+        "canonical_writes": { "const": false },
+        "automatic_promotion": { "const": false },
+        "network": { "const": "none" },
+        "side_effects": { "const": "none" }
+      },
+      "additionalProperties": false
+    },
+    "resource_budget": {
+      "type": "object",
+      "required": ["cpu_weight", "gpu_weight", "peak_memory_mb", "working_storage_mb"],
+      "properties": {
+        "cpu_weight": { "type": "integer", "minimum": 0 },
+        "gpu_weight": { "type": "integer", "minimum": 0 },
+        "peak_memory_mb": { "type": "integer", "minimum": 0 },
+        "working_storage_mb": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "verification": {
+      "type": "object",
+      "required": ["automatic_checks", "human_judgments", "assurance_ceiling"],
+      "properties": {
+        "automatic_checks": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "human_judgments": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "assurance_ceiling": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "implementation": {
+      "type": "object",
+      "required": ["kind", "reference", "status"],
+      "properties": {
+        "kind": { "enum": ["declared-machine", "existing-runtime-reference", "human-gate"] },
+        "reference": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["DECLARED", "AVAILABLE", "EXPERIMENTAL"] }
+      },
+      "additionalProperties": false
+    },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "$defs": {
+    "port": {
+      "type": "object",
+      "required": ["id", "type", "required", "multiple"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$" },
+        "type": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "multiple": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

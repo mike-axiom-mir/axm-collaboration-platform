@@ -1,0 +1,80 @@
+{
+  "schema": "axm.sensorium-skill/v1",
+  "id": "interoception-capacity-gauge",
+  "type": "skill",
+  "sense": "interoception",
+  "pack": "axm-sensorium/1.4.0",
+  "status": "ACCEPT_FOR_TEST",
+  "capability": "sense.interoception.own-capacity/v1",
+  "purpose": "Classify a seat's own host-supplied capacity headroom and recommend timely compaction or handoff without acting.",
+  "inputs": [
+    "seatId",
+    "thresholdPolicy",
+    "observedAt",
+    "ttlMs"
+  ],
+  "procedure": [
+    "Request bounded fill-level signals for the invoking seat from an injected host adapter.",
+    "Refuse cross-seat, missing, invalid, or over-budget readings as UNKNOWN.",
+    "Compute the minimum declared headroom and classify AMPLE, TIGHTENING, or NEAR_LIMIT.",
+    "Recommend continue, compact soon, or seal handoff now.",
+    "Seal the reading and take no direct action."
+  ],
+  "rules": [
+    "Perception is not permission.",
+    "UNKNOWN is preferred to a plausible guess.",
+    "Every use emits a typed receipt and releases raw material."
+  ],
+  "boundaries": [
+    "No context content inspection or summarization.",
+    "No estimation of another seat's capacity.",
+    "No hardware-body substitution for cognitive capacity.",
+    "No automatic compaction, truncation, or handoff.",
+    "Missing host metrics remain an explicit UNKNOWN hold."
+  ],
+  "retention": {
+    "law": "EPHEMERAL BY DEFAULT. Raw sense material is released at the next step. Only a bounded typed receipt survives.",
+    "raw_material": "sense-specific bounded input",
+    "released_when": "before the typed observation is returned",
+    "survives": "specific receipt plus axm.sensorium-receipt/v1 envelope",
+    "raw_retained_after_step": "zero",
+    "accumulation_across_uses": "flat and zero after every release boundary",
+    "receipt_cap": "newest 20 per sense",
+    "deletion_scope": "only material created by the exact sense use, by exact id or path; never a wildcard or recursive sweep"
+  },
+  "receipt": {
+    "schema": "axm.interoception-record/v1",
+    "envelopeSchema": "axm.sensorium-receipt/v1"
+  },
+  "runtime": {
+    "routeType": "EXECUTABLE",
+    "module": "interoception-capacity-gauge.js",
+    "factory": "create",
+    "operation": "sense"
+  },
+  "statuses": {
+    "skillStatus": "ACCEPT_FOR_TEST",
+    "executorStatus": "EXECUTABLE",
+    "adapterStatus": "MISSING_ADAPTER",
+    "proofStatus": "CONTRACT_PASS",
+    "authorityStatus": "NO_LEASE"
+  },
+  "requiredHostCapabilities": [
+    "seat.capacity.read/v1"
+  ],
+  "constraints": [
+    "own-body-only",
+    "fill-level-not-content",
+    "host-metric-required",
+    "recommend-not-act",
+    "stamped-and-expiring",
+    "SEAT_CAPACITY_ADAPTER_UNAVAILABLE"
+  ],
+  "resourceBudget": {
+    "maxSignals": 16,
+    "maxTtlMs": 600000,
+    "rawRetainedBytesAfterSeal": 0
+  },
+  "authorityInherited": false,
+  "promotionGate": "Mike"
+}

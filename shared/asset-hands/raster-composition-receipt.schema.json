@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.raster-composition-receipt/v1",
+  "title": "AXM Raster Composition Receipt v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "engine", "recipe_digest", "layers", "output", "measures", "limits", "unsupported", "authority", "visual_approval", "canonical"],
+  "properties": {
+    "schema": { "const": "axm.raster-composition-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "HOLD"] },
+    "engine": { "type": "object", "required": ["id", "version", "profile"] },
+    "recipe_digest": { "type": "string", "minLength": 1 },
+    "layers": { "type": "array" },
+    "source_artifacts": { "type": "array" },
+    "output": { "type": "object", "required": ["width", "height", "colour_space", "pixel_format", "pixel_digest"] },
+    "measures": { "type": "object" },
+    "limits": { "type": "object" },
+    "unsupported": { "type": "array", "items": { "type": "string" } },
+    "checks": { "type": "array" },
+    "authority": { "const": "candidate-only" },
+    "visual_approval": { "const": false },
+    "canonical": { "const": false }
+  },
+  "additionalProperties": true
+}

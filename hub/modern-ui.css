@@ -99,6 +99,7 @@ body[data-mode="simple"] .direction-home-card{display:none}
 .workflow-nav .nav-arrow{color:#617087;font-size:21px;line-height:1}
 .workflow-nav.active .nav-arrow{color:#9baeff}
 .command-center-nav{min-height:66px!important;margin:3px 0 8px;border-color:rgba(98,216,232,.2)!important;background:radial-gradient(150px 70px at 0 50%,rgba(98,216,232,.12),transparent 74%),rgba(98,216,232,.035)!important}.command-center-nav .ic{color:#75eaf3!important;border:1px solid rgba(98,216,232,.25)!important;background:rgba(98,216,232,.08)!important;box-shadow:0 0 18px rgba(98,216,232,.08)!important}.command-center-nav .nm{display:grid;gap:3px;white-space:normal}.command-center-nav .nm b{color:#effeff;font-size:13px}.command-center-nav .nm small{color:#72a6b3;font-size:9px}.command-center-nav .nav-arrow{color:#68dce8;font-size:20px}.command-center-nav.active{border-color:rgba(98,216,232,.42)!important;box-shadow:0 0 24px rgba(98,216,232,.07)}
+.mirror-command-nav{min-height:64px!important;margin:-3px 0 8px;text-decoration:none;border-color:rgba(169,140,242,.2)!important;background:radial-gradient(150px 70px at 0 50%,rgba(169,140,242,.12),transparent 74%),rgba(169,140,242,.035)!important}.mirror-command-nav .ic{color:#c8b4ff!important;border:1px solid rgba(169,140,242,.28)!important;background:rgba(169,140,242,.08)!important}.mirror-command-nav .nm{display:grid;gap:3px;white-space:normal}.mirror-command-nav .nm b{color:#f4efff;font-size:12px}.mirror-command-nav .nm small{color:#9a89be;font-size:8.5px}.mirror-command-nav .nav-arrow{color:#b89cff;font-size:17px}
 .sidebar-toggle{
   left:230px;top:18px;width:28px;height:42px;border-color:rgba(148,163,184,.18);border-radius:0 10px 10px 0;
   background:#172135;color:#8fa0b6;box-shadow:var(--shadow-sm)
@@ -232,8 +233,22 @@ body[data-nav="right"] .sidebar-toggle{right:230px}
 .overlay{background:rgba(3,7,18,.7);backdrop-filter:blur(8px)}
 :where(.tb-btn,.ai-master,.btn,.sb-btn){box-shadow:none}
 
+/* Keep every command-bar control reachable before the row reaches the edge.
+   Labels collapse to their titled icons; no control or state is removed. */
+.topbar{max-width:100vw;min-width:0}
+@media(max-width:2000px){
+  .topbar{gap:7px;padding-inline:8px}
+  .active-lbl span,.foundation-summary span,.profile-summary span{display:none}
+  .status-dot{font-size:0}.status-dot::before{width:7px;height:7px}
+  .ai-master>span:last-child{display:none}
+  .radio-cluster #btnRadio>span:last-child,.hub-tools>summary>span:last-child{display:none!important}
+  .radio-cluster #btnRadio,.hub-tools>summary{padding-inline:8px}
+}
+
 @media(max-width:1400px){
-  .topbar{gap:8px;padding-inline:14px}.status-dot{font-size:11px}.status-dot::before{width:7px;height:7px}
+  .topbar{gap:6px;padding-inline:8px}.brand{display:none}.status-dot{font-size:0}.status-dot::before{width:7px;height:7px}
+  .view-mode-quick{min-width:38px;width:38px;height:38px;padding:0;place-items:center;text-align:center}.view-mode-quick b{font-size:0}.view-mode-quick b::before{content:"A";font-size:11px}.view-mode-quick small{display:none}
+  body[data-mode="simple"] .view-mode-quick b::before{content:"S"}
 }
 @media(max-width:1050px){
   .brand{font-size:15px}.brand span{font-size:15px}.active-lbl{max-width:150px}

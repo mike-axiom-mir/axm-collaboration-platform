@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.ffmpeg-capability-receipt/v1",
+  "title": "AXM FFmpeg audio/video capability receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "identity", "private_location_retained"],
+  "properties": {
+    "schema": { "const": "axm.ffmpeg-capability-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "FAIL", "MISSING_SUBSTRATE"] },
+    "missing": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "identity": { "type": "object" },
+    "runtime": { "type": "object" },
+    "recipe": { "type": "object" },
+    "recipe_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "provides_substrates": { "type": "array", "uniqueItems": true, "items": { "enum": ["independent-audio-decoder", "independent-av-decoder", "loudness-meter", "video-muxer"] } },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "pass"],
+        "properties": { "name": { "type": "string" }, "pass": { "type": "boolean" } }
+      }
+    },
+    "runs": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "process", "process_pass", "invalid_rejected", "probe", "loudness", "container_digest", "decoded_video_digest", "decoded_video_bytes", "decoded_audio_digest", "decoded_audio_bytes", "diagnostic"],
+        "properties": {
+          "label": { "enum": ["a", "b"] },
+          "process": { "type": "object" },
+          "process_pass": { "type": "boolean" },
+          "invalid_rejected": { "type": "boolean" },
+          "probe": { "type": ["object", "null"] },
+          "loudness": { "type": "object" },
+          "container_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+          "decoded_video_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+          "decoded_video_bytes": { "type": "integer", "minimum": 0 },
+          "decoded_audio_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+          "decoded_audio_bytes": { "type": "integer", "minimum": 0 },
+          "diagnostic": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "private_location_retained": { "const": false },
+    "generated_media_retained": { "const": false },
+    "automatic_media_retention": { "const": false },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

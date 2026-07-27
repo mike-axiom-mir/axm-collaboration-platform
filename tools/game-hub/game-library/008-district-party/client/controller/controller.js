@@ -5,13 +5,15 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
   const $ = (id) => document.getElementById(id);
   const query = new URLSearchParams(location.search);
   const identity = { room: query.get('room') || 'AXM1', sessionId: query.get('session'), seatId: query.get('seat'), token: query.get('token') };
-  const input = { moveX: 0, moveY: 0, aimX: 0, aimY: 0, aimActive: false, action: false, attack: false, fire: false, sprint: false, brake: false, inventoryToggle: false, inventoryPrev: false, inventoryNext: false, inventoryActivate: false };
+  const input = { moveX: 0, moveY: 0, aimX: 0, aimY: 0, aimActive: false, action: false, attack: false, fire: false, sprint: false, brake: false, inventoryToggle: false, inventoryPrev: false, inventoryNext: false, inventoryActivate: false, mapToggle: false };
   const inventorySlotNames = ['MELEE', 'RANGED', 'AMMO', 'SHOES', 'BODY', 'HAT', ...Array.from({ length: 12 }, (_, index) => `BAG ${index + 1}`)];
-  const pulseKeys = ['fire', 'inventoryToggle', 'inventoryPrev', 'inventoryNext', 'inventoryActivate'];
-  const pulseButtonIds = { fire: 'attack', inventoryToggle: 'inventory-toggle', inventoryPrev: 'inventory-prev', inventoryNext: 'inventory-next', inventoryActivate: 'inventory-activate' };
+  const pulseKeys = ['action', 'fire', 'inventoryToggle', 'inventoryPrev', 'inventoryNext', 'inventoryActivate', 'mapToggle'];
+  const pulseButtonIds = { action: 'action', fire: 'attack', inventoryToggle: 'inventory-toggle', inventoryPrev: 'inventory-prev', inventoryNext: 'inventory-next', inventoryActivate: 'inventory-activate', mapToggle: 'inventory-toggle' };
   const pulseGeneration = Object.fromEntries(pulseKeys.map((key) => [key, 0]));
+  const MAP_HOLD_MS = 650;
   let seq = 0, lastActor = null, lastWorld = null, sending = false, stateFailures = 0, inventoryWasOpen = false;
   let moveStick = null, aimStick = null;
+  let inventoryHoldTimer = null, inventoryHoldPointerId = null, inventoryHoldTriggered = false;
 
   document.addEventListener('contextmenu', (e) => e.preventDefault());
   document.addEventListener('gesturestart', (e) => e.preventDefault());
@@ -45,7 +47,6 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
       $('connection').textContent = 'Connected'; $('connection').classList.add('live');
     } catch (e) { $('connection').textContent = 'Input rejected'; $('connection').classList.remove('live'); }
     finally {
-      input.action = false; $('action').classList.remove('pressed');
       sentPulses.forEach(([key, generation]) => {
         if (pulseGeneration[key] !== generation) return;
         input[key] = false;
@@ -213,7 +214,7 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
     el.addEventListener('pointerdown', (e) => { e.preventDefault(); el.setPointerCapture(e.pointerId); set(true); });
     ['pointerup', 'pointercancel', 'pointerleave'].forEach((name) => el.addEventListener(name, () => set(false)));
   }
-  bindHold('action', 'action'); bindHold('sprint', 'sprint'); bindHold('brake', 'brake');
+  bindHold('sprint', 'sprint'); bindHold('brake', 'brake');
 
   function triggerPulse(key) {
     pulseGeneration[key] += 1;
@@ -225,7 +226,41 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
   function bindPulse(id, key) {
     $(id).addEventListener('pointerdown', (event) => { event.preventDefault(); triggerPulse(key); });
   }
-  bindPulse('inventory-toggle', 'inventoryToggle');
+  function finishInventoryGesture(event, cancelled = false) {
+    if (inventoryHoldPointerId === null || event.pointerId !== inventoryHoldPointerId) return;
+    clearTimeout(inventoryHoldTimer);
+    inventoryHoldTimer = null;
+    inventoryHoldPointerId = null;
+    const button = $('inventory-toggle');
+    button.classList.remove('pressed', 'map-hold');
+    if (!cancelled && !inventoryHoldTriggered) triggerPulse('inventoryToggle');
+    inventoryHoldTriggered = false;
+  }
+  function bindInventoryTapOrMapHold() {
+    const button = $('inventory-toggle');
+    button.addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      if (button.disabled || inventoryHoldPointerId !== null) return;
+      inventoryHoldPointerId = event.pointerId;
+      inventoryHoldTriggered = false;
+      button.setPointerCapture(event.pointerId);
+      button.classList.add('pressed');
+      const inventoryOpen = lastActor?.inventoryOpen === true || lastActor?.inventory?.open === true;
+      const menuOpen = lastWorld?.groupSaveComputer?.open === true;
+      if (inventoryOpen || menuOpen) return;
+      inventoryHoldTimer = setTimeout(() => {
+        inventoryHoldTimer = null;
+        inventoryHoldTriggered = true;
+        button.classList.add('map-hold');
+        navigator.vibrate?.([18, 24, 18]);
+        triggerPulse('mapToggle');
+      }, MAP_HOLD_MS);
+    });
+    button.addEventListener('pointerup', (event) => finishInventoryGesture(event));
+    button.addEventListener('pointercancel', (event) => finishInventoryGesture(event, true));
+  }
+  bindPulse('action', 'action');
+  bindInventoryTapOrMapHold();
   bindPulse('attack', 'fire');
   bindPulse('inventory-prev', 'inventoryPrev');
   bindPulse('inventory-next', 'inventoryNext');
@@ -240,7 +275,7 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
       input.moveX = controls ? (keys.has('KeyD') ? 1 : 0) - (keys.has('KeyA') ? 1 : 0) : 0;
       input.moveY = controls ? (keys.has('KeyS') ? 1 : 0) - (keys.has('KeyW') ? 1 : 0) : 0;
       input.aimX = 0; input.aimY = 0; input.aimActive = false;
-      input.action = controls && keys.has('KeyE'); input.attack = false; input.fire = false; input.sprint = false; input.brake = false;
+      input.attack = false; input.fire = false; input.sprint = false; input.brake = false;
       return;
     }
     input.moveX = (keys.has('KeyD') ? 1 : 0) - (keys.has('KeyA') ? 1 : 0);
@@ -248,19 +283,21 @@ import { AxmVirtualStick } from './axm-game-night-controls.js';
     input.aimX = (keys.has('ArrowRight') ? 1 : 0) - (keys.has('ArrowLeft') ? 1 : 0);
     input.aimY = (keys.has('ArrowDown') ? 1 : 0) - (keys.has('ArrowUp') ? 1 : 0);
     input.aimActive = Math.hypot(input.aimX, input.aimY) > 0;
-    input.action = keys.has('KeyE'); input.attack = keys.has('Space'); input.sprint = keys.has('ShiftLeft') || keys.has('ShiftRight'); input.brake = keys.has('ControlLeft') || keys.has('ControlRight');
+    input.attack = keys.has('Space'); input.sprint = keys.has('ShiftLeft') || keys.has('ShiftRight'); input.brake = keys.has('ControlLeft') || keys.has('ControlRight');
   }
   addEventListener('keydown', (e) => {
     if (['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Enter'].includes(e.code)) e.preventDefault();
-    const inventoryKey = { KeyI: 'inventoryToggle', BracketLeft: 'inventoryPrev', BracketRight: 'inventoryNext', Enter: 'inventoryActivate' }[e.code];
-    if (inventoryKey) { if (!e.repeat) triggerPulse(inventoryKey); return; }
-    if (e.repeat && e.code === 'KeyE') return;
+    const pulseKey = { KeyE: 'action', KeyI: 'inventoryToggle', BracketLeft: 'inventoryPrev', BracketRight: 'inventoryNext', Enter: 'inventoryActivate' }[e.code];
+    if (pulseKey) { if (!e.repeat) triggerPulse(pulseKey); return; }
     keys.add(e.code); applyKeys();
   });
   addEventListener('keyup', (e) => { keys.delete(e.code); applyKeys(); });
   addEventListener('blur', () => {
     keys.clear();
-    Object.assign(input, { moveX: 0, moveY: 0, aimX: 0, aimY: 0, aimActive: false, action: false, attack: false, fire: false, sprint: false, brake: false, inventoryToggle: false, inventoryPrev: false, inventoryNext: false, inventoryActivate: false });
+    clearTimeout(inventoryHoldTimer);
+    inventoryHoldTimer = null; inventoryHoldPointerId = null; inventoryHoldTriggered = false;
+    $('inventory-toggle').classList.remove('pressed', 'map-hold');
+    Object.assign(input, { moveX: 0, moveY: 0, aimX: 0, aimY: 0, aimActive: false, action: false, attack: false, fire: false, sprint: false, brake: false, inventoryToggle: false, inventoryPrev: false, inventoryNext: false, inventoryActivate: false, mapToggle: false });
     moveStick.reset();
     aimStick.reset();
     pulseKeys.forEach((key) => $(pulseButtonIds[key]).classList.remove('pressed'));

@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+'use strict';
+const assert=require('assert'),fs=require('fs'),path=require('path');
+const keyer=require('./keyer');
+const read=name=>fs.readFileSync(path.join(__dirname,name),'utf8');
+const manifest=JSON.parse(read('manifest.json')),contract=JSON.parse(read('module.contract.json'));
+const html=read('chroma-studio.html'),app=read('app.js'),css=read('chroma-studio.css');
+assert.equal(manifest.schema,'axm.tool-manifest/v1');
+assert.equal(manifest.id,'chroma-studio');
+assert.equal(manifest.entry,'chroma-studio.html');
+assert.equal(manifest.status,'TEST');
+assert.deepStrictEqual(manifest.permissions,[]);
+assert.equal(contract.version,manifest.version);
+assert(contract.boundaries.refuses.includes('workshop-output-by-default'));
+assert(contract.boundaries.refuses.includes('save-failed-cut'));
+assert(html.includes('../../shared/elements/axm-ui-theme.css'));
+assert(html.includes('id="pickFolder"')&&html.includes('id="useDownloads"'));
+assert(html.includes('../device-handoff/index.html?start=1&amp;from=chroma-studio'));
+assert(app.includes("'/api/assets/filesystem?q=device-handoff&kind=image&limit=500'"));
+assert(app.includes("'/api/assets/filesystem/file?id='"));
+assert(app.includes('Output not selected'));
+assert(app.includes('MAX_PIXELS'));
+assert(!/https?:\/\//.test(html+app+css),'Chroma Studio must have no external runtime dependency');
+function rgba(w,h,fill){const out=new Uint8ClampedArray(w*h*4);for(let i=0;i<w*h;i++)out.set(fill,i*4);return out;}
+const sample=rgba(20,20,[20,220,45,255]);
+for(let y=6;y<14;y++)for(let x=6;x<14;x++)sample.set([235,92,30,255],(y*20+x)*4);
+const cut=keyer.cutImage(sample,20,20);
+assert(cut.ok&&!cut.passThrough,'solid background should be cut');
+assert.equal(cut.px[3],0,'background alpha should be zero');
+assert(cut.px[(10*20+10)*4+3]>240,'subject alpha should survive');
+const clear=rgba(10,10,[10,20,30,255]);for(let i=0;i<10;i++)clear[i*4+3]=0;
+assert(keyer.cutImage(clear,10,10).passThrough,'already-transparent input should pass through');
+const blended=rgba(20,20,[40,180,50,255]);
+assert(!keyer.cutImage(blended,20,20).ok,'background-only image should fail rather than save');
+console.log('PASS Chroma Studio · deterministic local keying · explicit output · phone inbox join · honest manual route');

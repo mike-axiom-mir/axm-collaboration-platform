@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.evidence-receipt/v2",
+  "title": "AXM Evidence Desk sealed receipt v2",
+  "type": "object",
+  "required": ["schema", "format", "v", "generated", "integrity", "title", "goal", "status", "counts", "truth", "observations", "actions", "checks", "changes", "limitations", "next_actions", "warnings", "validation_errors"],
+  "properties": {
+    "schema": {"const": "axm.evidence-receipt/v2"},
+    "format": {"const": "axm-evidence-receipt"},
+    "v": {"const": 2},
+    "generated": {"type": "string"},
+    "integrity": {
+      "type": "object",
+      "required": ["state", "algorithm", "scope", "digest"],
+      "properties": {
+        "state": {"enum": ["UNSEALED", "SEALED"]},
+        "algorithm": {"const": "sha256"},
+        "scope": {"const": "canonical-receipt-content-without-generated-or-integrity"},
+        "digest": {"type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$"}
+      }
+    },
+    "title": {"type": "string"},
+    "goal": {"type": "string"},
+    "status": {"enum": ["INVALID_DRAFT", "EVIDENCE_CONTRADICTED", "EVIDENCE_INCOMPLETE", "VERIFIED_WITH_RECORDED_SCOPE", "OBSERVED_WITH_RECORDED_SCOPE", "EXECUTED_NOT_FULLY_VERIFIED", "DRAFT"]},
+    "counts": {"type": "object"},
+    "truth": {"type": "object"},
+    "observations": {"type": "array"},
+    "actions": {"type": "array"},
+    "checks": {"type": "array"},
+    "changes": {"type": "array"},
+    "limitations": {"type": "array"},
+    "next_actions": {"type": "array"},
+    "warnings": {"type": "array"},
+    "validation_errors": {"type": "array"}
+  },
+  "additionalProperties": true
+}

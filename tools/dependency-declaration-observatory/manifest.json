@@ -1,0 +1,45 @@
+{
+  "id": "dependency-declaration-observatory",
+  "name": "AXM Dependency Declaration Observatory",
+  "version": "v0.2",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "category": "OBSERVE",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "dependency",
+    "topology",
+    "cycle",
+    "declaration",
+    "observability",
+    "read-only"
+  ],
+  "uses": [
+    "storage"
+  ],
+  "permissions": [],
+  "actions": [
+    "map exact declared module dependencies",
+    "separate explicit module references from generic capability tokens",
+    "surface declared dependency cycles and namespaced targets not observed as top-level modules",
+    "prepare one exact declared-cycle packet for human architecture review",
+    "emit a freshness-bound topology receipt"
+  ],
+  "accepts": [
+    "filesystem/workshop-root"
+  ],
+  "produces": [
+    "axm.dependency-declaration-map/v1",
+    "axm.dependency-cycle-review-packet/v1"
+  ],
+  "readiness": [
+    "storage"
+  ],
+  "summary": "Read-only live topology of exact module dependency declarations plus one question-only packet for human review of a selected declared cycle.",
+  "notes": "A review packet exposes exact declarations and unknowns; it does not label a cycle defective, recommend edge removal, resolve versions, order activation, probe readiness, repair declarations, install modules, or change CANON."
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "axm.sensorium-skill/v1",
+  "id": "drift-detector-ambient",
+  "type": "skill",
+  "sense": "self-drift",
+  "pack": "axm-sensorium/1.4.0",
+  "status": "ACCEPT_FOR_TEST",
+  "capability": "sense.behavior.drift/v1",
+  "purpose": "Compare bounded typed receipt features only with the same seat's reviewed baseline.",
+  "inputs": [
+    "seat",
+    "baseline",
+    "receipts"
+  ],
+  "procedure": [
+    "Form a bounded same-seat feature baseline.",
+    "Require reviewed baseline identity.",
+    "Compare declared axes.",
+    "Route possible drift for review.",
+    "Take no direct action."
+  ],
+  "rules": [
+    "Perception is not permission.",
+    "UNKNOWN is preferred to a plausible guess.",
+    "Every use emits a typed receipt and releases raw material."
+  ],
+  "boundaries": [
+    "No cross-identity comparison.",
+    "No punishment or routing change.",
+    "No hidden transcript or reasoning capture."
+  ],
+  "retention": {
+    "law": "EPHEMERAL BY DEFAULT. Raw sense material is released at the next step. Only a bounded typed receipt survives.",
+    "raw_material": "sense-specific bounded input",
+    "released_when": "before the typed observation is returned",
+    "survives": "specific receipt plus axm.sensorium-receipt/v1 envelope",
+    "raw_retained_after_step": "zero",
+    "accumulation_across_uses": "flat and zero after every release boundary",
+    "receipt_cap": "newest 20 per sense",
+    "deletion_scope": "only material created by the exact sense use, by exact id or path; never a wildcard or recursive sweep"
+  },
+  "receipt": {
+    "schema": "axm.drift-detector/v1",
+    "envelopeSchema": "axm.sensorium-receipt/v1"
+  },
+  "runtime": {
+    "routeType": "EXECUTABLE",
+    "module": "drift-detector-ambient.js",
+    "factory": "create",
+    "operation": "observe"
+  },
+  "statuses": {
+    "skillStatus": "ACCEPT_FOR_TEST",
+    "executorStatus": "EXECUTABLE",
+    "adapterStatus": "NOT_REQUIRED",
+    "proofStatus": "RUNTIME_PASS",
+    "authorityStatus": "NO_LEASE"
+  },
+  "requiredHostCapabilities": [],
+  "constraints": [
+    "same-seat-only",
+    "reviewed-baseline-only",
+    "no-hidden-reasoning",
+    "no-direct-action"
+  ],
+  "resourceBudget": {
+    "maxReceiptsPerWindow": 200,
+    "rawRetainedBytesAfterSeal": 0
+  },
+  "authorityInherited": false,
+  "promotionGate": "Mike"
+}

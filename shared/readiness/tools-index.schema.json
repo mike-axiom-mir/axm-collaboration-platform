@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.tools-index/v1",
+  "title": "AXM Deterministic Tool Inventory",
+  "type": "object",
+  "required": ["schema", "sourceDigest", "summary", "promotionQueue", "capabilities", "tools", "truth"],
+  "properties": {
+    "schema": { "const": "axm.tools-index/v1" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "sourceDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "summary": { "type": "object" },
+    "promotionQueue": { "type": "object" },
+    "capabilities": { "type": "array" },
+    "tools": { "type": "array" },
+    "truth": { "type": "object" }
+  },
+  "additionalProperties": false
+}

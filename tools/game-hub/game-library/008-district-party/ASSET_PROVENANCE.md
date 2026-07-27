@@ -1,7 +1,7 @@
 # Asset Provenance — AXM District Party
 
 Status: **PASS for acquisition, licensing evidence, archive checks, curated local selection, and static runtime-path integration**  
-Browser visual rendering: **UNRUN — Playwright Chromium executable unavailable**  
+Browser visual rendering: **PASS — live in-app browser at 1870 × 1037; human visual approval remains required**  
 Physical-device rendering: **UNTESTED**
 
 ## Source decision
@@ -14,7 +14,7 @@ The official **Kenney Pixel Vehicle Pack 1.0** was also downloaded and preserved
 |---|---|---|---|---|
 | Kenney RPG Urban Pack 1.0 | https://kenney.nl/assets/rpg-urban-pack | CC0-1.0 | PASS | YES — primary family |
 | Kenney Pixel Vehicle Pack 1.0 | https://kenney.nl/assets/pixel-vehicle-pack | CC0-1.0 | PASS | NO — preserved source only |
-| Mike-authorized AXM/Tilburg project-art batch | Generated under Mike's direction in his ChatGPT platform workspace and supplied in this build session | Authorized for inclusion in this AXM public repository; not CC0 or generally relicensed | 15 originals hashed and preserved | YES — 16 curated runtime outputs |
+| User-supplied AXM/Tilburg batch | Supplied in this build session | Public license pending review | 15 originals hashed and preserved | YES — 16 curated runtime outputs |
 | User-supplied interactable alpha pack | Supplied in this build session | AXM responsible-use draft; not legally reviewed | 158 candidates preserved in exact source ZIP | YES — 14 inspected unchanged copies |
 
 The included license files are preserved inside both extracted pack directories, and both original source ZIPs are retained under `assets/third_party/source_zips/`. Exact URLs, archive hashes, sizes, and inventory facts are in `assets/third_party/LICENSE_INDEX.md` and `assets/ASSET_MANIFEST.json`.
@@ -98,7 +98,8 @@ No crop, scale, recolour, or atlas combination was applied to these six props.
 - Curated character, vehicle, and prop contact sheets visually inspected: **PASS**.
 - Static renderer references and local files for 10 selected assets: **PASS** — four player sheets, two NPC sheets, two RPG Urban vehicles, package, and tree.
 - Remaining 15 curated files: **NOT LOADED by v0.2** — the source tile atlas, ten additional vehicle variants, and four additional props remain curated for later map/visual work.
-- Automated browser visual rendering: **UNRUN** because the installed Playwright package has no Chromium executable; no large browser download was attempted.
+- Packaged Playwright test: **UNRUN** because the package environment has no Playwright Chromium executable; no large browser download was attempted.
+- Live in-app browser visual rendering: **PASS** at 1870 × 1037 with the real local server, streamed chunks and repeated gameplay frames; this does not replace human visual approval.
 - Physical-device/gameplay rendering: **UNTESTED**.
 
 Static path integration proves that the renderer requests local files and that the host serves them; it does not prove visual correctness in a browser. The city geometry itself is drawn from camera-local structured map chunks with Canvas shapes, so the selected tile atlas is not loaded in v0.2.
@@ -112,6 +113,16 @@ The Tilburg ground geometry is data rather than a third art pack. It comes from 
 New third-party art: **NONE.** `data/city-art.json` contains original AXM palette overrides, district wayfinding, ground motifs, crosswalks and overview lines. The runtime renderer procedurally creates roof variation, ground texture, road markings, water marks and rail sleepers from local geometry; these are code-generated presentation, not downloaded artwork.
 
 The three v0.2.1 files in `docs/previews/` were rendered from the actual game code and retained only as QA evidence. They combine the documented BGT-derived geometry, original AXM procedural presentation and the same already-recorded Kenney assets used at runtime. No new license or external source is introduced.
+
+## v0.3.0 Streetscape Foundation repair
+
+New third-party or user-supplied bitmap art: **NONE.** The repair changes Canvas code and `data/city-art.json` presentation parameters only. Curbs, paving joints, source-aligned lane dashes, connected roof fills, ridges, rooftop units, skylights, street-lamp symbols, park canopies, water glints and rail sleepers are original deterministic Canvas primitives clipped to the recorded BGT material masks. Existing local image assets and their provenance records are unchanged.
+
+## v0.4.0 authored-city alpha
+
+New third-party or user-supplied art: **NONE.** Map 2 is an original deterministic Canvas and JSON presentation with a new independent layout at the same 12,288 x 8,192 target size. The clean master raster and 96 tiles are generated locally from that map package. They do not add a new source or license claim.
+
+Poly Haven, ambientCG and Artaley3D are deferred candidate search locations only. No file was downloaded from them in this pass. Each future selection requires its own source URL, author, exact license evidence, download hash, transform record and runtime role; no blanket CC0 claim is made here.
 
 ## v0.2.2 open-interior floor treatment
 
@@ -145,7 +156,7 @@ Runtime use:
 
 Two multi-building source sheets are preserved but not loaded. They need a later deliberate crop, style and collision-placement pass. The darker sheet is intentionally excluded from the current daytime Tilburg family.
 
-Authorization boundary: on 2026-07-19 Mike identified these files as AXM project art generated under his direction in his ChatGPT platform workspace and explicitly authorized their inclusion and redistribution inside this public AXM repository and its public-safe packages. This is not a CC0 declaration or a standalone/general asset license. Full transforms, hashes, roles and rejection notes are in `assets/USER_GENERATED_ASSET_MANIFEST.json`; the project record is `assets/AXM_GENERATED_ART_AUTHORIZATION.md`.
+License boundary: these files were supplied for this AXM prototype, but no public redistribution license was independently verified or assigned in this session. Do not label them CC0. Review and document permission before a public repository release. Full transforms, hashes, roles and rejection notes are in `assets/USER_GENERATED_ASSET_MANIFEST.json`; the processing method is in `docs/USER_ASSET_PIPELINE.md`.
 
 ## v0.2.7 interactable alpha-pack curation
 
@@ -163,4 +174,4 @@ Runtime use:
 - Breakable windows/doors remain source-only because no host-owned breakable state exists.
 - The renderer changes no collision, package state, mission reward or authority rule.
 
-Authorization boundary: these files are not described as CC0 or open source. Mike's 2026-07-19 authorization permits their inclusion and redistribution inside this public AXM repository and its public-safe packages; it does not create a standalone/general reuse license. Exact per-file paths, dimensions, hashes, use and quarantine notes are in `assets/INTERACTABLE_ASSET_MANIFEST.json`; the readable implementation boundary is in `docs/INTERACTABLE_ASSET_PASS.md`.
+License boundary: these files are not described as CC0 or open source. The working local identifier is `AXM-RESPONSIBLE-USE-ASSET-DRAFT-0.1`, status **NOT LEGALLY REVIEWED**. Public redistribution requires an explicit final permission decision. Exact per-file paths, dimensions, hashes, use and quarantine notes are in `assets/INTERACTABLE_ASSET_MANIFEST.json`; the readable implementation boundary is in `docs/INTERACTABLE_ASSET_PASS.md`.

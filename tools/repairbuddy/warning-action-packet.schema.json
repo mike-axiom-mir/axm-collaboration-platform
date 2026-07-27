@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.repairbuddy.warning-action/v1",
+  "description": "One review-required warning handoff with separate human and AI seats, bounded scope, destination and verifier truth.",
+  "type": "object",
+  "required": ["schema", "id", "state", "artifactKind", "createdAt", "source", "destination", "orientation", "seats", "action", "truth"],
+  "properties": {
+    "schema": { "const": "axm.repairbuddy.warning-action/v1" },
+    "state": { "const": "REVIEW_REQUIRED" },
+    "artifactKind": {
+      "enum": [
+        "axm.module-lifecycle-repair-request/v1",
+        "axm.qa-evidence-request/v1",
+        "axm.playtest-evidence-request/v1",
+        "axm.ai-repair-design-request/v1"
+      ]
+    },
+    "source": { "type": "object" },
+    "destination": { "type": "object" },
+    "orientation": { "type": "object" },
+    "seats": { "type": "object", "required": ["human", "ai"] },
+    "action": { "type": "object" },
+    "truth": {
+      "type": "object",
+      "required": ["warningStillOpen", "artifactDataCopied", "automaticOpen", "automaticApply", "verifierSuppressed", "humanApprovalInferred"]
+    }
+  }
+}

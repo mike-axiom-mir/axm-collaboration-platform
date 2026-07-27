@@ -1,0 +1,54 @@
+{
+  "id": "archive-intake-cartographer",
+  "name": "AXM Archive Intake Cartographer",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "LOW",
+  "tags": [
+    "archive",
+    "zip",
+    "intake",
+    "inventory",
+    "overlap",
+    "deduplication",
+    "path-safety",
+    "local-first",
+    "read-only"
+  ],
+  "uses": [
+    "filesystem-read",
+    "storage"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "actions": [
+    "inventory ZIP archives below an explicitly selected supply root",
+    "deduplicate exact archive bytes by SHA-256",
+    "parse central-directory structure without extraction",
+    "hold unsafe encrypted symlink duplicate-name malformed or unsupported archive structure",
+    "map same-path changed-path subset superset partial-overlap and disjoint relations",
+    "export an archive intake map only when an output path is explicit"
+  ],
+  "accepts": [
+    "filesystem/archive-supply-root",
+    "application/zip"
+  ],
+  "produces": [
+    "axm.archive-intake-map/v1",
+    "axm.archive-intake-record/v1",
+    "axm.archive-overlap-relation/v1"
+  ],
+  "readiness": [
+    "filesystem-read"
+  ],
+  "summary": "A deterministic pre-intake map for folders of ZIP checkpoints, proving exact duplicates and structural path overlap without extracting, executing, installing, merging, or choosing authority.",
+  "notes": "Detached EXPERIMENTAL candidate. Central-directory evidence is not decompressed-content integrity, semantic equivalence, newest-version authority, runtime readiness, promotion, or CANON."
+}

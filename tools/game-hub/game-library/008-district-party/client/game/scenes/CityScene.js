@@ -11,7 +11,7 @@ export class CityScene {
   constructor(canvas, options) {
     this.canvas = canvas; this.ctx = canvas.getContext('2d', { alpha: false }); this.options = options;
     this.renderer = new EntityRenderer(); this.hud = new Hud(options.partyId); this.inventoryOverlay = new InventoryOverlay('inventory-overlays', options.partyId); this.state = null; this.map = null; this.cityArt = null; this.camera = null; this.chunkLoader = null;
-    this.debug = false; this.mapMode = 'minimap'; this.renderFps = 0; this.payloadSize = 0; this.lastFrame = performance.now(); this.frames = 0; this.fpsAt = performance.now(); this.pollFailures = 0; this.running = true;
+    this.debug = false; this.mapMode = 'minimap'; this.remoteMapToggleSequence = null; this.renderFps = 0; this.payloadSize = 0; this.lastFrame = performance.now(); this.frames = 0; this.fpsAt = performance.now(); this.pollFailures = 0; this.running = true;
     this.mapButton = document.getElementById('map-toggle');
     this.mapButton?.addEventListener('click', () => this.toggleMap());
     this.setMapMode('minimap');
@@ -32,11 +32,31 @@ export class CityScene {
     }
   }
   toggleMap() { this.setMapMode(this.mapMode === 'full' ? 'minimap' : 'full'); }
+  applyRemoteMapToggle(world) {
+    const sequence = Number(world?.presentation?.mapToggleSequence);
+    if (!Number.isSafeInteger(sequence) || sequence < 0) return;
+    if (this.remoteMapToggleSequence === null || sequence < this.remoteMapToggleSequence) {
+      this.remoteMapToggleSequence = sequence;
+      return;
+    }
+    const delta = sequence - this.remoteMapToggleSequence;
+    this.remoteMapToggleSequence = sequence;
+    if (delta > 0 && delta % 2 === 1) this.toggleMap();
+  }
   async start() {
+    const worldParams = new URLSearchParams({ roomCode: this.options.room, sessionId: this.options.sessionId });
+    const staticWorld = await fetch(`/api/world?${worldParams}`, { cache: 'no-store' })
+      .then((response) => { if (!response.ok) throw new Error('Authoritative map contract failed to load'); return response.json(); });
+    const mapUrl = staticWorld.mapUrl || '/data/map.json';
+    const cityArtUrl = staticWorld.cityArtUrl || '/data/city-art.json';
+    const cityArtRequest = cityArtUrl === '/data/city-art.json'
+      ? fetch('/data/city-art.json', { cache: 'no-store' })
+      : fetch(cityArtUrl, { cache: 'no-store' });
     [this.map, this.cityArt] = await Promise.all([
-      fetch('/data/map.json', { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error('Static city map failed to load'); return r.json(); }),
-      fetch('/data/city-art.json', { cache: 'no-store' }).then((r) => r.ok ? r.json() : null).catch(() => null),
+      fetch(mapUrl, { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error('Static city map failed to load'); return r.json(); }),
+      cityArtRequest.then((r) => r.ok ? r.json() : null).catch(() => null),
     ]);
+    this.mapSelection = { id: staticWorld.mapId, name: staticWorld.mapName, mapUrl, cityArtUrl };
     if (this.cityArt?.palette) this.map.palette = { ...this.map.palette, ...this.cityArt.palette };
     this.renderer.setAssets(await this.loadAssets()); this.renderer.setCityArt(this.cityArt); this.chunkLoader = new MapChunkLoader(this.map);
     this.camera = new PartyCamera(this.map.world.width, this.map.world.height); this.resize(); await this.poll(); this.pollTimer = setInterval(() => this.poll(), 66); requestAnimationFrame((t) => this.render(t));
@@ -96,7 +116,7 @@ export class CityScene {
       if (!response.ok) throw new Error(`State HTTP ${response.status}`);
       const text = await response.text(); this.payloadSize = new TextEncoder().encode(text).length; const data = JSON.parse(text);
       if (data.ok === false || data.status === 'ended') throw new Error(data.error || 'Session ended');
-      this.state = data; this.inventoryOverlay.update(data.world || data); this.pollFailures = 0; document.getElementById('connection-banner').classList.add('hidden');
+      this.state = data; const world = data.world || data; this.applyRemoteMapToggle(world); this.inventoryOverlay.update(world); this.pollFailures = 0; document.getElementById('connection-banner').classList.add('hidden');
     } catch (e) {
       this.pollFailures++; document.getElementById('connection-banner').classList.remove('hidden'); document.getElementById('connection-banner').textContent = this.pollFailures > 4 ? 'Local session ended or unavailable · persistent screen will recover' : 'Reconnecting to local authoritative host…';
     } finally { this.polling = false; }

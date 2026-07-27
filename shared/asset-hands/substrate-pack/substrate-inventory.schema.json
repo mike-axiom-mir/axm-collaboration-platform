@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.external-substrate-inventory/v1",
+  "title": "AXM external substrate inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "lock_version", "platform", "counts", "available_substrates", "items", "private_location_retained", "automatic_installation", "digest"],
+  "properties": {
+    "schema": { "const": "axm.external-substrate-inventory/v1" },
+    "version": { "const": "1.0.0" },
+    "lock_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "platform": { "const": "windows-x64" },
+    "counts": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+    "composition_counts": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+    "available_substrates": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "runtime_version", "status", "reason", "capabilities", "provides_substrates"],
+        "properties": {
+          "id": { "type": "string" },
+          "runtime_version": { "type": "string" },
+          "status": { "enum": ["READY", "MISSING", "TAMPERED", "DEPENDENCY_HOLD", "PROBE_FAILED", "VERSION_MISMATCH"] },
+          "reason": { "type": "string" },
+          "artifact_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "marker_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "probe_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "capabilities": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+          "provides_substrates": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+          "licence_review_status": { "const": "REVIEWED_FOR_LOCAL_TEST" }
+        }
+      }
+    },
+    "compositions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status", "reason", "components", "capabilities", "provides_substrates", "evidence_basis"],
+        "properties": {
+          "id": { "type": "string" },
+          "status": { "enum": ["READY", "DEPENDENCY_HOLD"] },
+          "reason": { "type": "string" },
+          "components": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "type": "string" } },
+          "capabilities": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+          "provides_substrates": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+          "evidence_basis": { "type": "string" }
+        }
+      }
+    },
+    "private_location_retained": { "const": false },
+    "automatic_installation": { "const": false },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

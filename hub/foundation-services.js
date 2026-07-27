@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   var Core=window.AXMFoundationServices;if(!Core)return;
-  var state=Core.create(),busy=false,timer=null;
+  var state=Core.create(),busy=false,timer=null,probeFailures=Object.create(null),retrying=new Set();
   var $=function(id){return document.getElementById(id);};
   function now(){return new Date().toISOString();}
   function fetchTimed(url,ms,options){
@@ -10,8 +10,23 @@
   }
   async function json(url,ms){var r=await fetchTimed(url,ms);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
   async function text(url,ms){var r=await fetchTimed(url,ms);if(!r.ok)throw new Error('HTTP '+r.status);return r.text();}
-  function apply(id,result){state=Core.reduce(state,Object.assign({type:'PROBE',id:id,at:now()},result));}
-  function failure(id,error){apply(id,{state:'OFFLINE',detail:'Probe unavailable · '+String(error&&error.message||error).slice(0,120),meta:{lines:['still represented','not retired']}});}
+  function apply(id,result){
+    var event=Object.assign({type:'PROBE',id:id,at:now()},result),failed=!!event.probeFailure;
+    delete event.probeFailure;
+    if(!failed){probeFailures[id]=0;retrying.delete(id);}
+    state=Core.reduce(state,event);
+  }
+  function failure(id,error){
+    var previous=state.services[id],count=Number(probeFailures[id]||0)+1,message=String(error&&error.message||error).slice(0,120);
+    probeFailures[id]=count;
+    if(count===1&&previous&&previous.lastCheckedAt&&['READY','AVAILABLE','PAUSED'].indexOf(previous.state)>=0){
+      retrying.add(id);
+      apply(id,{state:previous.state,detail:'Probe retrying · last observed '+previous.state+' · '+message,meta:{lines:(previous.meta&&previous.meta.lines||[]).slice(0,4).concat(['transient probe miss · retry pending'])},probeFailure:true});
+      return;
+    }
+    retrying.delete(id);
+    apply(id,{state:'OFFLINE',detail:'Probe unavailable after retry · '+message,meta:{lines:['still represented','not retired','two consecutive probe misses']},probeFailure:true});
+  }
   async function probeFoundationBundle(){
     var source=await text('/launcher/axm-foundation.js',2200),installed=/AXMWisdom/.test(source)&&/AXMIdentity/.test(source)&&/AXMGate/.test(source)&&/AXMStore/.test(source);
     ['wisdom','identity','gate','storage'].forEach(function(id){
@@ -48,8 +63,9 @@
   }
   function render(){
     var s=Core.summary(state),button=$('foundationToggle'),count=$('foundationCount'),root=$('foundationGrid');
-    if(button){button.className='foundation-summary '+(s.attention?'bad':s.checking?'':'ready');button.setAttribute('aria-label','Foundation services: '+s.healthy+' healthy, '+s.attention+' need attention');button.innerHTML='<span>Foundation</span> '+(s.checking?'checking':s.healthy+'/'+s.total)+(s.attention?' · '+s.attention+'!':'');}
-    if(count){count.textContent=s.checking?'CHECKING':s.attention?(s.attention+' NEED ATTENTION'):(s.healthy+'/'+s.total+' HEALTHY');count.style.color=s.attention?'var(--red)':'var(--green)';}
+    var retryCount=retrying.size;
+    if(button){button.className='foundation-summary '+(s.attention?'bad':retryCount?'retrying':s.checking?'':'ready');button.setAttribute('aria-label','Foundation services: '+s.healthy+' healthy, '+s.attention+' need attention'+(retryCount?', '+retryCount+' probes retrying':''));button.innerHTML='<span>Foundation</span> '+(s.checking?'checking':s.healthy+'/'+s.total)+(s.attention?' · '+s.attention+'!':retryCount?' · '+retryCount+' retry':'');}
+    if(count){count.textContent=s.checking?'CHECKING':s.attention?(s.attention+' NEED ATTENTION'):(s.healthy+'/'+s.total+' HEALTHY'+(retryCount?' · '+retryCount+' RETRYING':''));count.style.color=s.attention?'var(--red)':retryCount?'var(--gold)':'var(--green)';}
     if(!root)return;root.innerHTML='';
     Core.definitions.forEach(function(def){
       var service=state.services[def.id],card=document.createElement('article');card.className='foundation-service';card.dataset.service=def.id;card.dataset.tone=Core.tone(service.state);

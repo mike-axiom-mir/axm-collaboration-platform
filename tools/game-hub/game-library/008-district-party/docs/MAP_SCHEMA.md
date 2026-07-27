@@ -55,4 +55,4 @@ The compiler removes source collision from explicit base/mission clearings and s
 
 This narrow overlay is the future import seam for another generated/emerged city: provide compatible open anchors and zone ids without rewriting the mission director or splitting the authoritative world.
 
-This is a stylized game foundation, not a navigation product. The v0.2.1 Afterglow pass gives the complete city a coherent first art treatment, but most source buildings still use a generated roof vocabulary. Future Tiled import or bespoke landmark art must preserve stable chunk IDs, semantic gameplay layers, one-world authority, and host-owned collision.
+This is a stylized game foundation, not a navigation product. The v0.3.0 Streetscape Foundation makes source roads, pavements, connected roof components, water, rail and parks readable at play scale, but the 16 px classification and generated roof vocabulary remain coarse. Future Tiled import or bespoke landmark art must preserve stable chunk IDs, semantic gameplay layers, one-world authority, and host-owned collision.

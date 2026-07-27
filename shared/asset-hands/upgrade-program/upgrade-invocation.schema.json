@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/asset-hand-upgrade-invocation-v1.schema.json",
+  "title": "AXM Asset Hand upgrade invocation v1",
+  "type": "object",
+  "required": ["schema", "hand_id", "hand_version", "operation", "request_digest", "target_canvas", "target_canvas_digest", "effective_arguments_digest", "constraint_paths", "fallback_used", "digest"],
+  "properties": {
+    "schema": { "const": "axm.asset-hand-upgrade-invocation/v1" },
+    "hand_id": { "type": "string", "minLength": 1 },
+    "hand_version": { "type": "string", "minLength": 1 },
+    "operation": { "type": "string", "minLength": 1 },
+    "request_digest": { "type": "string", "minLength": 1 },
+    "target_canvas": { "$ref": "target-canvas.schema.json" },
+    "target_canvas_digest": { "type": "string", "minLength": 1 },
+    "effective_arguments_digest": { "type": "string", "minLength": 1 },
+    "constraint_paths": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "fallback_used": { "const": false },
+    "digest": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

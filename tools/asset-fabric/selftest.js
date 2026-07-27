@@ -7,6 +7,8 @@ const Core = require("./fabric-core");
 const Creation = require("../governed-evolution-lab/creation-core");
 const Hands = require("../../shared/asset-hands/asset-hands");
 const HandCore = require("../../shared/asset-hands/asset-hand-core");
+const UCP = require("../../shared/asset-hands/universal-component");
+const Composer = require("../../shared/asset-hands/play-composer");
 let pass = 0;
 function test(name, fn) {
   try {
@@ -80,6 +82,214 @@ test("legacy local SVG family remains valid", () => {
   const family = Core.family(Core.baseState().needs[0], 1);
   assert.equal(family.length, 3);
   family.forEach((candidate) => assert(Core.validate(candidate).pass));
+});
+test("UCP graph becomes a first-class governed Fabric candidate and vocabulary recipe", () => {
+  let state = Core.baseState();
+  const candidate = Core.family(state.needs[0], 1)[0];
+  candidate.archiveDecision = "PRESERVE_SOURCE_AND_RECIPE";
+  state.candidates = [candidate];
+  state = Core.vote(state, candidate.id, "mike", true);
+  state = Core.applyMachineReview(state, reviewReceipt(state.candidates[0]));
+  assert(state.candidates[0].votes.mike);
+  assert(state.candidates[0].votes["axiom-mir"]);
+
+  const component = UCP.sealComponent({
+    id: "axm.ui.revive-shape",
+    version: "1.0.0",
+    kind: "shape",
+    title: "Revive icon shape",
+    ports: {
+      inputs: [],
+      outputs: [
+        {
+          id: "draft",
+          type: "visual.draft",
+          required: false,
+          multiple: true,
+        },
+      ],
+    },
+    canvas_compatibility: {
+      mediums: ["ui"],
+      intended_uses: ["icon"],
+      constraints: [],
+    },
+    capabilities: { provides: ["visual.draft"], requires: [] },
+    artifact_refs: [],
+    payload: { shape: "cross", corner_radius: 0.22, inset: 0.18 },
+    provenance: {
+      origin_type: "authored",
+      source_id: "asset-fabric-selftest",
+      source_digest: UCP.sha256("asset-fabric-selftest"),
+      license_id: "CC0-1.0",
+      created_by: "axm-selftest",
+      created_at: "2026-07-22T00:00:00.000Z",
+    },
+    resource_profile: {
+      cpu: "light",
+      gpu: "none",
+      peak_memory_bytes: 2048,
+      working_storage_bytes: 0,
+      native_runtime: null,
+    },
+    verification: {
+      automatic_checks: ["schema-and-digest"],
+      human_judgments: ["readability and taste"],
+      assurance_ceiling: "contract and draft parameters only",
+    },
+    mutability: "immutable",
+  });
+  const registry = UCP.createRegistry([component]);
+  const graph = UCP.sealGraph({
+    id: "axm.graph.revive-icon",
+    title: "Revive icon component graph",
+    target_canvas: candidate.target_canvas,
+    components: [
+      {
+        instance_id: "shape",
+        component_id: component.id,
+        component_version: component.version,
+        component_digest: component.digest,
+        configuration: {},
+      },
+    ],
+    connections: [],
+    outputs: [
+      {
+        id: "draft",
+        instance_id: "shape",
+        port: "draft",
+        role: "ephemeral-preview-draft",
+      },
+    ],
+  });
+  const receipt = UCP.compose(graph, registry, {
+    createdAt: "2026-07-22T00:00:00.000Z",
+  });
+  state = Core.attachComponentGraph(state, candidate.id, graph, receipt);
+  const attached = state.candidates[0];
+  assert.equal(attached.componentGraph.digest, graph.digest);
+  assert.equal(attached.componentReceipt.status, "READY_CONTRACT");
+  assert.equal(attached.votes.mike, null);
+  assert.equal(attached.votes["axiom-mir"], null);
+  const packet = Core.machineReviewRequest(state, candidate.id);
+  assert.equal(packet.componentGraph.digest, graph.digest);
+  assert.equal(packet.componentReceipt.digest, receipt.digest);
+  state = Core.vote(state, candidate.id, "mike", true);
+  state = Core.applyMachineReview(state, reviewReceipt(state.candidates[0]));
+  state = Core.promote(state, candidate.id);
+  assert.equal(state.vocabulary[0].componentGraph.digest, graph.digest);
+  assert.equal(state.vocabulary[0].componentReceipt.digest, receipt.digest);
+});
+test("Fabric refuses a component graph bound to another target canvas", () => {
+  const state = Core.baseState();
+  const candidate = Core.family(state.needs[0], 1)[0];
+  state.candidates = [candidate];
+  const component = UCP.sealComponent({
+    id: "axm.world.ground-seed",
+    version: "1.0.0",
+    kind: "tile",
+    title: "Ground seed",
+    ports: {
+      inputs: [],
+      outputs: [
+        {
+          id: "tile",
+          type: "terrain.tile",
+          required: false,
+          multiple: true,
+        },
+      ],
+    },
+    canvas_compatibility: {
+      mediums: ["game-world"],
+      intended_uses: ["ground-tile"],
+      constraints: [],
+    },
+    capabilities: { provides: ["terrain.tile"], requires: [] },
+    artifact_refs: [],
+    payload: { seed: 7 },
+    provenance: {
+      origin_type: "authored",
+      source_id: "asset-fabric-selftest",
+      source_digest: UCP.sha256("asset-fabric-selftest"),
+      license_id: "CC0-1.0",
+      created_by: "axm-selftest",
+      created_at: "2026-07-22T00:00:00.000Z",
+    },
+    resource_profile: {
+      cpu: "light",
+      gpu: "none",
+      peak_memory_bytes: 1024,
+      working_storage_bytes: 0,
+      native_runtime: null,
+    },
+    verification: {
+      automatic_checks: ["schema-and-digest"],
+      human_judgments: [],
+      assurance_ceiling: "contract only",
+    },
+    mutability: "immutable",
+  });
+  const registry = UCP.createRegistry([component]);
+  const graph = UCP.sealGraph({
+    id: "axm.graph.ground-seed",
+    target_canvas: Core.baseState().needs[1].target_canvas,
+    components: [
+      {
+        instance_id: "ground",
+        component_id: component.id,
+        component_version: component.version,
+        component_digest: component.digest,
+        configuration: {},
+      },
+    ],
+    connections: [],
+    outputs: [
+      {
+        id: "tile",
+        instance_id: "ground",
+        port: "tile",
+        role: "terrain-tile",
+      },
+    ],
+  });
+  const receipt = UCP.compose(graph, registry);
+  assert.throws(
+    () => Core.attachComponentGraph(state, candidate.id, graph, receipt),
+    /target canvas does not match candidate/,
+  );
+});
+test("human play controls become a valid deterministic Fabric candidate only after explicit incubation", () => {
+  const draft = Composer.buildDraft({
+    title: "Human component branch",
+    label: "GO",
+    growth_direction: "balance",
+    growth_energy: 3,
+  });
+  const need = Core.normalizeNeed({
+    title: draft.spec.title,
+    target: "shared",
+    kind: "ui-component",
+    intended_use: "component-draft",
+    width: 640,
+    height: 360,
+    target_canvas: draft.graph.target_canvas,
+    required_outputs: ["image/svg+xml"],
+    editable_recipe_formats: [Core.UCP_GRAPH_SCHEMA],
+  });
+  const candidate = Core.candidateFromComponentDraft(need, 1, draft);
+  assert(candidate.technical.pass);
+  assert.equal(candidate.origin.kind, "human-play-to-compose/v1");
+  assert.equal(candidate.componentGraph.digest, draft.graph.digest);
+  assert.equal(candidate.votes.mike, null);
+  assert.equal(candidate.votes["axiom-mir"], null);
+  const tampered = JSON.parse(JSON.stringify(draft));
+  tampered.preview.svg = tampered.preview.svg.replace("GO", "NO");
+  assert.throws(
+    () => Core.candidateFromComponentDraft(need, 1, tampered),
+    /preview digest mismatch/,
+  );
 });
 test("canvas-aware need routes through compatible hands only", () => {
   const need = Core.baseState().needs[1],
@@ -563,7 +773,22 @@ test("UI loads target canvas, interchange codecs, contract-v2 providers and miss
   assert(html.includes("timeline-sequence.js"));
   assert(html.includes("ktx2-texture-delivery.js"));
   assert(html.includes("native-bridge-codec.js"));
+  assert(html.includes("universal-component.js"));
+  assert(html.includes("play-composer.js"));
+  assert(html.includes('id="composerIncubate"'));
+  assert(
+    html.indexOf("gltf-codec.js") < html.indexOf("uv-material-codec.js"),
+    "glTF codec must load before the UV codec that consumes it",
+  );
+  assert(
+    html.indexOf("gltf-codec.js") < html.indexOf("rigged-gltf-codec.js"),
+    "glTF codec must load before the rigged codec that consumes it",
+  );
   assert(html.includes("native-dcc-bridge.js"));
+  assert(app.includes("Composer.directedVariation"));
+  assert(app.includes("Core.candidateFromComponentDraft"));
+  assert(app.includes("Human Play Composer · typed UCP graph"));
+  assert(app.includes('"unscored"'));
   assert(app.includes("Hands.createFamilyAsync"));
   assert(app.includes("Hands.diagnose"));
   assert(app.includes("data-candidate-bundle"));

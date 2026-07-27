@@ -1,0 +1,87 @@
+{
+  "schema": "axm.module-evolution-ledger.evidence-route/v1",
+  "generatedAt": "2026-07-24T20:12:35.851Z",
+  "overallVerdict": "PASS",
+  "verificationSummary": {
+    "focusedLedgerSelftest": "PASS",
+    "capabilityComparator": "READY",
+    "moduleInstallerSelftest": "PASS",
+    "operationsFoundationSelftest": "PASS (73 checks)",
+    "verificationSpineSelftest": "PASS (31 checks)",
+    "recoveryCenterSelftest": "PASS",
+    "modularIntakeSelftest": "PASS",
+    "broadVerifier": "PASS (0 FAIL, 38 warnings; one MOVING_WORKSPACE stale-index warning after a concurrent foreign-lane edit)"
+  },
+  "claims": [
+    {
+      "claimId": "lineage",
+      "claim": "Version records preserve immutable parent ancestry and explicit known-good selection history.",
+      "kind": "persistence-and-deterministic-behavior",
+      "risk": "medium",
+      "passCondition": "A child derives its complete ancestry, a stale parent is refused, a mutated return value cannot alter reread state, and two Mike-confirmed known-good selections remain in history.",
+      "primarySurface": "node shared/module-evolution-ledger/selftest.js",
+      "counterevidence": "A record can be overwritten, a stale parent appends, or an old known-good selection disappears.",
+      "observedEvidence": "Focused selftest PASS; separate hash-chain tamper case also PASS.",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "concurrency",
+      "claim": "Concurrent stale writes cannot bypass lineage checks.",
+      "kind": "concurrency-and-persistence",
+      "risk": "high",
+      "passCondition": "Two fresh processes race at expected revision 0; exactly one appends and one returns STALE_REVISION; the final chain has one version.",
+      "primarySurface": "two child Node processes in focused selftest",
+      "secondarySurface": "static inspection of lock-plus-revision recheck in local-append-adapter.js",
+      "counterevidence": "Both writers append roots or the event chain has more than one revision.",
+      "observedEvidence": "Focused two-process race PASS.",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "patch-rebase",
+      "claim": "Bounded patch operations preserve unrelated newer fields or become an explicit rebase hold.",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "passCondition": "Unrelated object fields and list additions survive a stale-base patch; a changed touched value returns REBASE_HOLD and no document.",
+      "primarySurface": "focused patch evaluator assertions",
+      "counterevidence": "Newer unrelated data is erased or a touched-path conflict returns a candidate.",
+      "observedEvidence": "Focused selftest PASS.",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "interrupted-activation",
+      "claim": "Interrupted activation is recoverable as metadata without silent install or rollback.",
+      "kind": "restart-persistence-and-authorization",
+      "risk": "high",
+      "passCondition": "A fresh process reads ACTIVATING as INTERRUPTED_HOLD without changing revision; later paths require an external digest, verifier evidence, Mike acceptance, or a Recovery Center handoff with actionPerformed false.",
+      "primarySurface": "fresh-process interrupted inspection in focused selftest",
+      "secondarySurface": "contract and public-method authority inspection",
+      "counterevidence": "Inspection changes state, bytes, or known-good; PASS grants permission; the handoff performs recovery.",
+      "observedEvidence": "Focused restart, evidence-only, and Recovery Center handoff assertions PASS.",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "hotfix-pacing",
+      "claim": "Autonomous pacing cannot block a Mike-approved hotfix.",
+      "kind": "authorization-and-deterministic-behavior",
+      "risk": "high",
+      "passCondition": "A configured open-count/interval policy holds a second autonomous proposal without writing, while an exact Mike-approved hotfix stages at the same revision.",
+      "primarySurface": "focused pacing assertions",
+      "secondarySurface": "contract fixes mikeApprovedHotfixBypass true",
+      "counterevidence": "Hotfix returns a pacing hold or bypasses lineage/patch bounds.",
+      "observedEvidence": "Focused selftest PASS.",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "zero-operational-authority",
+      "claim": "The subsystem has zero install, promote, rollback, restore, network, provider, permission, or CANON authority.",
+      "kind": "static-structure-and-authorization",
+      "risk": "high",
+      "passCondition": "Contract permissions are empty and refuses are explicit; production imports contain no execution/network modules; public API exposes no operational method; writes remain beneath state/module-evolution-ledger.",
+      "primarySurface": "contract/import/public-API/storage-boundary assertions in focused selftest",
+      "secondarySurface": "existing Installer, Operations, Verification Spine, Recovery Center, and broad verifier tests",
+      "counterevidence": "Any operational call, permission, foreign write, network/provider import, or weakened authority test appears.",
+      "observedEvidence": "Focused static/runtime boundary assertions PASS; Module Installer PASS; Operations foundation PASS (73 checks); Verification Spine PASS (31 checks); Recovery Center PASS; Modular Intake PASS; broad verifier PASS with 0 FAIL and 38 warnings. One stale tools-index warning appeared after a concurrent code-recipe-foundry edit and is classified MOVING_WORKSPACE; the other warnings are unrelated existing backlogs.",
+      "verdict": "PASS"
+    }
+  ]
+}

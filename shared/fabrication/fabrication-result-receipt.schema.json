@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.fabrication-result-receipt/v1",
+  "title": "AXM Fabrication Result Receipt v1",
+  "type": "object",
+  "required": ["schema", "candidateDigest", "packageDigest", "adapterDigest", "machineProfileDigest", "operatorReceiptDigest", "material", "settingsDigest", "startedAt", "endedAt", "result", "measurements", "failureNotes", "humanReview", "artifactRefs", "automaticExecution"],
+  "properties": {
+    "schema": { "const": "axm.fabrication-result-receipt/v1" },
+    "candidateDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "packageDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "adapterDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "machineProfileDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "operatorReceiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "material": { "type": "object" },
+    "settingsDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "endedAt": { "type": "string", "format": "date-time" },
+    "result": { "enum": ["PASS", "FAIL", "ABORTED", "UNKNOWN"] },
+    "measurements": { "type": "object" },
+    "failureNotes": { "type": "array", "items": { "type": "string" } },
+    "humanReview": { "type": "object" },
+    "artifactRefs": { "type": "array", "items": { "type": "object" } },
+    "automaticExecution": { "const": false }
+  },
+  "additionalProperties": false
+}

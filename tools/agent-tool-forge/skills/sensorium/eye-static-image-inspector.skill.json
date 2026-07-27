@@ -1,0 +1,75 @@
+{
+  "schema": "axm.sensorium-skill/v1",
+  "id": "eye-static-image-inspector",
+  "type": "skill",
+  "sense": "static-sight",
+  "pack": "axm-sensorium/1.4.0",
+  "status": "ACCEPT_FOR_TEST",
+  "capability": "visual.inspect.static/v1",
+  "purpose": "Wrap a host-supplied static-image observation without claiming capture or motion proof.",
+  "inputs": [
+    "claim",
+    "targetId",
+    "hostObservation",
+    "expectedFacts",
+    "refutingFacts"
+  ],
+  "procedure": [
+    "Require an attributable host-supplied static observation.",
+    "Compare typed visible and absent facts with the bounded claim.",
+    "Return UNKNOWN for motion, timing, or live-state claims.",
+    "Seal a digest and retain no image bytes."
+  ],
+  "rules": [
+    "Perception is not permission.",
+    "UNKNOWN is preferred to a plausible guess.",
+    "Every use emits a typed receipt and releases raw material."
+  ],
+  "boundaries": [
+    "Does not capture an image.",
+    "Does not infer motion from one image.",
+    "Does not inherit host authority."
+  ],
+  "retention": {
+    "law": "EPHEMERAL BY DEFAULT. Raw sense material is released at the next step. Only a bounded typed receipt survives.",
+    "raw_material": "sense-specific bounded input",
+    "released_when": "before the typed observation is returned",
+    "survives": "specific receipt plus axm.sensorium-receipt/v1 envelope",
+    "raw_retained_after_step": "zero",
+    "accumulation_across_uses": "flat and zero after every release boundary",
+    "receipt_cap": "newest 20 per sense",
+    "deletion_scope": "only material created by the exact sense use, by exact id or path; never a wildcard or recursive sweep"
+  },
+  "receipt": {
+    "schema": "axm.static-eye-observation/v1",
+    "envelopeSchema": "axm.sensorium-receipt/v1"
+  },
+  "runtime": {
+    "routeType": "HOST_MEDIATED",
+    "module": "host-mediated-static-eye.js",
+    "factory": null,
+    "operation": "wrapSuppliedEvidence"
+  },
+  "statuses": {
+    "skillStatus": "ACCEPT_FOR_TEST",
+    "executorStatus": "HOST_MEDIATED",
+    "adapterStatus": "DEGRADED",
+    "proofStatus": "RUNTIME_PASS",
+    "authorityStatus": "NO_LEASE"
+  },
+  "requiredHostCapabilities": [
+    "visual.inspect.static/v1"
+  ],
+  "constraints": [
+    "supplied-image-only",
+    "no-capture-claim",
+    "no-live-or-motion-pass"
+  ],
+  "resourceBudget": {
+    "maxImages": 1,
+    "maxTypedFacts": 40,
+    "rawRetainedBytesAfterSeal": 0
+  },
+  "authorityInherited": false,
+  "promotionGate": "Mike"
+}

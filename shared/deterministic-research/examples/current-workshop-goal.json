@@ -1,0 +1,16 @@
+{
+  "title": "Keep the Workshop's missing build knowledge visible",
+  "objective": "Find exact gaps in the current Workshop and in explicit Workshop Direction goals, turn each gap into a falsifiable question and cheapest disconfirming test, then rank what builders or stewards should examine next.",
+  "source": {"kind": "EXPLICIT", "ref": "mike:deterministic-research-system"},
+  "boundaries": ["recommend-only", "no-automatic-build", "no-automatic-permission", "no-automatic-promotion", "no-fuzzy-capability-closure"],
+  "successConditions": ["same semantic inputs produce the same research digest", "every gap has a question, hypothesis, and evidence route", "builder and steward queues remain separate"],
+  "requirements": [
+    {"id": "goal-normalization", "title": "Normalize goals and directions", "capabilities": ["research.goal.normalize/v1"], "required": true, "priority": 100, "gapType": "CONTRACT"},
+    {"id": "workshop-scanning", "title": "Scan current Workshop truth", "capabilities": ["research.workshop.scan/v1"], "required": true, "priority": 100, "gapType": "HAND"},
+    {"id": "question-compilation", "title": "Compile falsifiable research questions", "capabilities": ["research.question.compile/v1", "research.hypothesis.route/v1"], "required": true, "priority": 95, "gapType": "SKILL"},
+    {"id": "experiment-planning", "title": "Design native disconfirming tests", "capabilities": ["research.experiment.plan/v1", "evidence.route.claim/v1"], "required": true, "priority": 95, "gapType": "EVIDENCE"},
+    {"id": "backlog-output", "title": "Produce builder-readable priorities", "capabilities": ["research.backlog.rank/v1", "research.report.compile/v1"], "required": true, "priority": 90, "gapType": "HAND"},
+    {"id": "repeatable-loop", "title": "Ingest evidence and rerun", "capabilities": ["research.evidence.ingest/v1", "research.run.compose/v1"], "required": true, "priority": 90, "gapType": "CONTRACT"},
+    {"id": "observable-output", "title": "Show one shared human-machine view", "capabilities": ["research.ui.observe/v1"], "required": true, "priority": 80, "gapType": "HAND"}
+  ]
+}

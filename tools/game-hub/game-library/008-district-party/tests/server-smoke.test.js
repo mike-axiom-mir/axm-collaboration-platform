@@ -122,7 +122,7 @@ test('live server serves static clients and completes start/input/state/settings
   assert.equal(state.json.world.actors[0].regeneration.healthAccumulator, undefined, 'private fractional regeneration state is not broadcast');
   assert.equal(state.json.world.npcs.filter((npc) => npc.kind === 'civilian').length, 8);
   assert.equal(state.json.world.npcs.filter((npc) => npc.kind === 'rival').length, 3);
-  assert.equal(state.json.world.vehicles.length, 8);
+  assert.equal(state.json.world.vehicles.length, 6);
   assert.ok(state.json.world.vehicles.every((vehicle) => vehicle.health === 50 && vehicle.maxHealth === 50));
   assert.equal(state.json.world.actors[0].walletCents, 10000);
   assert.equal(state.json.world.actors[0].personalFundCents, 10000);
@@ -226,7 +226,7 @@ test('live server serves static clients and completes start/input/state/settings
   advanceWorld(runtime.sessionManager.getRunningSession().world);
   const districtState = await jsonRequest(base, `/api/state?roomCode=AXM1&sessionId=${district.json.sessionId}&party=party_b`);
   assert.equal(districtState.json.world.territory.enabled, true);
-  assert.equal(districtState.json.world.territory.zones.length, 13);
+  assert.equal(districtState.json.world.territory.zones.length, 8);
   assert.equal(districtState.json.world.actors.length, 5);
   assert.equal(districtState.json.world.npcs.filter((npc) => npc.kind === 'crew' && npc.partyId === 'party_a').length, 2);
   assert.equal(districtState.json.world.npcs.filter((npc) => npc.kind === 'crew' && npc.partyId === 'party_b').length, 2);

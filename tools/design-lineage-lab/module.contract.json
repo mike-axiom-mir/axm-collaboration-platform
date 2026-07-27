@@ -1,0 +1,35 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "design-lineage-lab",
+  "version": "v0.1",
+  "provides": [
+    "design.lineage.compile",
+    "design.lineage.deduplicate.exact",
+    "design.lineage.conflicts.reveal",
+    "design.vocabulary.candidate.prepare"
+  ],
+  "consumes": ["axm.design-lineage.bundle/v1"],
+  "permissions": ["export"],
+  "handoffs": {
+    "emits": ["axm.design-lineage.ledger/v1", "axm.design-vocabulary-candidate/v1"],
+    "accepts": ["axm.design-lineage.bundle/v1", "human:explicit-review"]
+  },
+  "boundaries": {
+    "writes": ["user-download:explicit-lineage-receipt"],
+    "refuses": [
+      "raw-image-video-or-chat-retention",
+      "semantic-similarity-claimed-as-exact-duplicate",
+      "automatic-conflict-resolution",
+      "automatic-design-vocabulary-promotion",
+      "taste-reduced-to-score",
+      "source-artifact-rewrite"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}
+

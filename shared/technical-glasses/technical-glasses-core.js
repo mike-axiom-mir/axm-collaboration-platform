@@ -6,7 +6,8 @@ const crypto = require('crypto');
 const ContractVerifier = require('../../hub/module-contract-verifier');
 
 const SCHEMA = 'axm.technical-glasses/v1';
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
+const READINESS_VIEW_SCHEMA = 'axm.workshop-readiness-view/v1';
 const SOURCE_EXTENSIONS = new Set(['.js', '.json', '.html', '.css', '.md', '.txt', '.bat', '.ps1']);
 const SOURCE_ROOTS = ['tools', 'shared', 'hub', 'worlds', 'tests', 'prompts'];
 const SKIP_DIRS = new Set(['node_modules', 'exports', 'logs', 'state', '.git']);
@@ -73,6 +74,39 @@ function fingerprint(root, files) {
 
 function issue(severity, code, moduleId, message, evidence, next) {
   return { severity, code, moduleId: moduleId || null, message, evidence: evidence || null, next: next || null };
+}
+
+function normalizeStructuralReadiness(value) {
+  const fallback = {
+    schema: READINESS_VIEW_SCHEMA,
+    state: 'UNAVAILABLE',
+    source: null,
+    generatedAt: null,
+    sourceDigest: null,
+    summary: null,
+    reviewCandidates: [],
+    reason: 'No shared structural-readiness observation was supplied.',
+    errors: [],
+    truth: {
+      automaticPromotion: false,
+      structuralEligibilityIsRuntimeProof: false,
+      selftestPassIsHumanApproval: false,
+      capabilityCatalogGrantsAuthority: false,
+      missingValuesRemainVisible: true
+    },
+    authority: {
+      humanPromotionRequired: true,
+      humanGate: 'explicit human steward',
+      reviewCandidateMeans: 'Current structural and self-test evidence is available for human review.',
+      reviewCandidateDoesNotMean: ['approved', 'promoted', 'CANON', 'need-satisfied']
+    }
+  };
+  if (!value || value.schema !== READINESS_VIEW_SCHEMA || typeof value.state !== 'string') return fallback;
+  return Object.assign({}, fallback, value, {
+    reviewCandidates: Array.isArray(value.reviewCandidates) ? value.reviewCandidates : [],
+    truth: Object.assign({}, fallback.truth, value.truth || {}),
+    authority: Object.assign({}, fallback.authority, value.authority || {})
+  });
 }
 
 function moduleRecords(root, tools, readiness) {
@@ -182,6 +216,7 @@ function docFreshness(root, latestSourceMs) {
 }
 
 function toBriefing(snapshot) {
+  const structural = snapshot.structuralReadiness;
   const lines = [
     'AXM TECHNICAL GLASSES ' + snapshot.version,
     'Compiled live: ' + snapshot.compiledAt,
@@ -198,6 +233,11 @@ function toBriefing(snapshot) {
     '',
     'WORKSHOP',
     'modules=' + snapshot.counts.modules + ' broken=' + snapshot.counts.broken + ' contracts=' + snapshot.counts.contractsPassing + '/' + snapshot.counts.contractsDeclared + ' priorities=' + snapshot.counts.priorities,
+    '',
+    'STRUCTURAL REVIEW EVIDENCE',
+    'state=' + structural.state + ' reviewCandidates=' + snapshot.counts.reviewCandidates + ' legacyKinds=' + (snapshot.counts.legacyKinds == null ? 'UNKNOWN' : snapshot.counts.legacyKinds),
+    'meaning=' + structural.authority.reviewCandidateMeans,
+    'boundary=review candidate is not approval, promotion, CANON, runtime proof or a satisfied need.',
     '',
     'FOCUS ROUTES'
   ];
@@ -217,6 +257,7 @@ function compile(options) {
   const root = path.resolve(options.root || path.join(__dirname, '..', '..'));
   const tools = Array.isArray(options.tools) ? options.tools : [];
   const readiness = options.readiness && typeof options.readiness === 'object' ? options.readiness : {};
+  const structuralReadiness = normalizeStructuralReadiness(options.structuralReadiness);
   const files = sourceInventory(root);
   const latestSourceMs = files.reduce((max, file) => Math.max(max, file.modifiedMs), 0);
   const records = moduleRecords(root, tools, readiness);
@@ -238,7 +279,15 @@ function compile(options) {
   const compiledAt = new Date(options.now || Date.now()).toISOString();
   const sourceFingerprint = fingerprint(root, files);
   const focusedIds = new Set(focusRoutes.reduce((all, route) => all.concat([route.id, route.destinationId]), []));
-  const priorities = records.priorities.slice().sort((a, b) => {
+  const structuralPriority = structuralReadiness.state === 'CURRENT' ? [] : [issue(
+    ['STALE', 'INVALID'].includes(structuralReadiness.state) ? 'HIGH' : 'MEDIUM',
+    'STRUCTURAL_READINESS_' + structuralReadiness.state,
+    'workshop',
+    structuralReadiness.reason || 'Shared structural-readiness evidence is not current.',
+    structuralReadiness.source || 'shared/readiness/readiness-observer.js',
+    'Refresh or repair the deterministic tools index before using its human-review queue.'
+  )];
+  const priorities = records.priorities.concat(structuralPriority).sort((a, b) => {
     const severity = SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity];
     if (severity) return severity;
     const focusRank = Number(focusedIds.has(b.moduleId)) - Number(focusedIds.has(a.moduleId));
@@ -265,16 +314,20 @@ function compile(options) {
       broken: records.modules.filter(module => module.status === 'BROKEN').length,
       contractsDeclared: records.modules.filter(module => module.evidence.contractDeclared).length,
       contractsPassing: records.modules.filter(module => module.evidence.contractPass === true).length,
+      readinessIndexState: structuralReadiness.state,
+      reviewCandidates: structuralReadiness.state === 'CURRENT' ? structuralReadiness.reviewCandidates.length : 0,
+      legacyKinds: structuralReadiness.state === 'CURRENT' && structuralReadiness.summary ? structuralReadiness.summary.legacyKinds : null,
       priorities: priorities.length,
       critical: priorities.filter(item => item.severity === 'CRITICAL').length,
       high: priorities.filter(item => item.severity === 'HIGH').length
     },
     active: activeState(root),
+    structuralReadiness,
     priorities,
     modules: records.modules,
     recentSources: files.slice().sort((a, b) => b.modifiedMs - a.modifiedMs).slice(0, 24).map(file => ({ path: file.path, modifiedAt: new Date(file.modifiedMs).toISOString(), bytes: file.bytes })),
     authority: {
-      technicalOrder: ['live readiness', 'executable tests and receipts', 'module contracts', 'module manifests', 'implementation source', 'generated Technical Glasses snapshot', 'README narrative'],
+      technicalOrder: ['current deterministic tools index', 'live readiness', 'executable tests and receipts', 'module contracts', 'module manifests', 'implementation source', 'generated Technical Glasses snapshot', 'README narrative'],
       readmeTechnicalAuthority: false,
       chatMemoryTechnicalAuthority: false,
       missingMeansUnknown: true,
@@ -304,6 +357,8 @@ function compile(options) {
       automaticRepair: false,
       permissionChange: false,
       canonChange: false,
+      reviewReadinessIsApproval: false,
+      reviewReadinessIsPromotion: false,
       hiddenReasoningCaptured: false,
       sameViewForHumanAndMachine: true
     }

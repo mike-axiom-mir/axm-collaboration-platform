@@ -1,6 +1,97 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AXM Module Installer</title><link rel="stylesheet" href="../../shared/operations/operations-ui.css"></head><body><header><a href="../../hub/index.html">← Hub</a><div><span class="eyebrow">STAGE → VALIDATE → REVIEW DIGEST → BACK UP → APPLY</span><h1>Governed Installer & Update Manager</h1><p>Real module installation with bounded bundles, exact-artifact review and recoverable updates.</p></div></header><main><div id="notice" class="notice hidden"></div>
-<section class="grid"><article class="panel"><h2>Stage module bundle</h2><p class="muted">Accepts <code>axm.module-bundle/v1</code> JSON. Files are staged outside <code>tools</code> until approved.</p><input id="bundle" type="file" accept="application/json,.json"><label>Staged by<input id="actor" value="Mike"></label><button id="stage">Validate and stage</button><p class="truth">The installer flags host-execution, network and dynamic-code tokens for human review.</p></article>
-<article class="panel"><h2>Apply reviewed candidate</h2><label>Candidate<select id="candidate"></select></label><div id="candidateDetail" class="code">Choose a candidate.</div><label>Type INSTALL REVIEWED MODULE<input id="confirmInstall" autocomplete="off"></label><button id="apply" class="danger">Apply approved digest</button><p><a href="../review-inbox/index.html">Open Review Inbox</a> · <a href="../secrets-permissions-console/index.html">Open permission console</a></p></article></section>
-<section class="panel"><div class="toolbar"><div><h2>Candidate ledger</h2><p class="muted">Warnings are evidence for review; they do not automatically mean malicious code.</p></div><button id="refresh" class="secondary">Refresh</button></div><div class="scroll"><table><thead><tr><th>Module</th><th>Mode</th><th>State</th><th>Digest</th><th>Review</th></tr></thead><tbody id="rows"></tbody></table></div></section>
-<section class="panel"><h2>Rollback installed module</h2><div class="grid"><label>Module id<input id="rollbackModule" placeholder="example-module"></label><label>Backup<select id="backup"></select></label></div><div class="actions"><button id="loadBackups" class="secondary">Load backups</button><label style="flex:1;margin:0">Type ROLL BACK MODULE<input id="confirmRollback" autocomplete="off"></label><button id="rollback" class="danger">Roll back</button></div></section></main><script src="../../shared/operations/operations-client.js"></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Module Installer</title>
+  <link rel="stylesheet" href="../../shared/operations/operations-ui.css">
+  <link rel="stylesheet" href="module-installer.css">
+</head>
+<body>
+  <header>
+    <a href="../../hub/index.html">&larr; Hub</a>
+    <div>
+      <span class="eyebrow">RETURN &rarr; COMPARE BASE &rarr; REVIEW EXACT DIGEST &rarr; BACK UP &rarr; APPLY &rarr; SELF-TEST</span>
+      <h1>Governed Installer &amp; Update Manager</h1>
+      <p>Receive improved current-build ZIPs with exact-base evidence, exact-artifact review, one previous generation, and recoverable updates.</p>
+    </div>
+  </header>
 
+  <main>
+    <div id="notice" class="notice hidden"></div>
+
+    <section class="authority-strip" aria-label="Installer authority boundary">
+      <div><span>Review approval</span><strong>Evidence only</strong></div>
+      <div><span>Install request</span><strong>Permission + typed confirmation</strong></div>
+      <div><span>Final check</span><strong>Digest rechecked before write</strong></div>
+      <div><span>Promotion</span><strong>Never automatic</strong></div>
+    </section>
+
+    <section class="grid">
+      <article class="panel stage-panel">
+        <span class="section-kicker">01 · RETURN INTAKE</span>
+        <h2>Take in an improved build-on ZIP</h2>
+        <p class="muted">Choose the ZIP that came back from a current Workshop Packager build-on export. Its original file ledger must still match the live module exactly.</p>
+        <label>Improved ZIP<input id="returnZip" type="file" accept="application/zip,.zip"></label>
+        <label>Module id <small>(only needed when the ZIP contains several modules)</small><input id="returnModule" placeholder="leave blank for automatic choice"></label>
+        <label>Staged by<input id="actor" value="Mike"></label>
+        <button id="stageReturn">Compare and stage returned ZIP</button>
+        <p class="truth">Only the chosen module may change. Stale exports and changed context are held before review; nothing is written into <code>tools</code> during intake.</p>
+        <details class="advanced-intake">
+          <summary>Advanced: stage a module-bundle JSON</summary>
+          <p class="muted">For builders that already produce <code>axm.module-bundle/v1</code>.</p>
+          <input id="bundle" type="file" accept="application/json,.json">
+          <button id="stage" class="secondary">Validate and stage JSON</button>
+        </details>
+      </article>
+
+      <article class="panel apply-panel">
+        <span class="section-kicker">02 · GOVERNED APPLY</span>
+        <div class="toolbar title-row">
+          <div><h2>Request an installation</h2><p class="muted">The server enforces every gate again.</p></div>
+          <span id="applyState" class="badge warn">WAITING</span>
+        </div>
+        <label>Candidate<select id="candidate"></select></label>
+        <div id="candidateDetail" class="governance-detail"><p class="muted">Choose a candidate.</p></div>
+        <label>Type <strong>INSTALL REVIEWED MODULE</strong><input id="confirmInstall" autocomplete="off"></label>
+        <button id="apply" class="danger" disabled>Request explicit install</button>
+        <p class="route-links"><a href="../review-inbox/index.html">Open Review Inbox</a><span>&middot;</span><a href="../secrets-permissions-console/index.html?module=module-installer&amp;permission=module.install">Open required permission</a></p>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="toolbar ledger-title">
+        <div>
+          <span class="section-kicker">LIVE LINEAGE</span>
+          <h2>Candidate ledger</h2>
+          <p class="muted">Review state is joined read-only from Review Inbox. It cannot grant install authority.</p>
+        </div>
+        <button id="refresh" class="secondary">Refresh evidence</button>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Module</th><th>Candidate</th><th>Exact review</th><th>Digest</th><th>Install request</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel rollback-panel">
+      <span class="section-kicker">RECOVERY PATH</span>
+      <h2>Roll back an installed module</h2>
+      <p class="muted">Each update keeps exactly one previous generation. A failed post-install self-test exposes this direct, explicit rollback path.</p>
+      <div class="grid">
+        <label>Module id<input id="rollbackModule" placeholder="example-module"></label>
+        <label>Backup<select id="backup"></select></label>
+      </div>
+      <div class="actions">
+        <button id="loadBackups" class="secondary">Load backups</button>
+        <label class="confirm-line">Type <strong>ROLL BACK MODULE</strong><input id="confirmRollback" autocomplete="off"></label>
+        <button id="rollback" class="danger">Roll back</button>
+      </div>
+    </section>
+  </main>
+  <script src="../../shared/operations/operations-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

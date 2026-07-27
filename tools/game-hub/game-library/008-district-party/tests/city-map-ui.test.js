@@ -10,10 +10,10 @@ const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8');
 
 function loadCityMapFunctions() {
   const source = read('client/game/ui/city-map.js').replace(/^export /gm, '');
-  return Function(`${source}\nreturn { normalizeMapMode, mapViewportLayout, collectCityMapMarkers };`)();
+  return Function(`${source}\nreturn { MINIMAP_PRESENTATION_ALPHA, normalizeMapMode, mapViewportLayout, collectCityMapMarkers };`)();
 }
 
-const { normalizeMapMode, mapViewportLayout, collectCityMapMarkers } = loadCityMapFunctions();
+const { MINIMAP_PRESENTATION_ALPHA, normalizeMapMode, mapViewportLayout, collectCityMapMarkers } = loadCityMapFunctions();
 const map = { world: { width: 12288, height: 8192 }, layers: {} };
 
 test('city map modes default safely to a persistent minimap', () => {
@@ -22,6 +22,12 @@ test('city map modes default safely to a persistent minimap', () => {
   assert.equal(normalizeMapMode('full'), 'full');
   assert.equal(normalizeMapMode(false), 'hidden');
   assert.equal(normalizeMapMode('external-url'), 'minimap');
+});
+
+test('minimap panel is exactly 75 percent transparent without fading map content', () => {
+  const source = read('client/game/ui/city-map.js');
+  assert.equal(MINIMAP_PRESENTATION_ALPHA, 0.25);
+  assert.match(source, /ctx\.globalAlpha = full \? 1 : MINIMAP_PRESENTATION_ALPHA;[\s\S]*ctx\.globalAlpha = 1;[\s\S]*drawNetwork/);
 });
 
 test('minimap and full-map layouts preserve the Tilburg aspect ratio and stay on screen', () => {
@@ -113,6 +119,7 @@ test('shared screen provides click, keyboard and escape controls without splitti
   assert.match(css, /\.map-open \.mission-hud/);
   assert.match(scene, /this\.mapMode = 'minimap'/);
   assert.match(scene, /e\.code === 'KeyM'/);
+  assert.match(scene, /applyRemoteMapToggle\(world\)/);
   assert.match(scene, /e\.code === 'Escape'/);
   assert.match(scene, /this\.mapButton\?\.addEventListener\('click'/);
   assert.match(scene, /drawCityMap\([^\n]+this\.mapMode, this\.cityArt\)/);

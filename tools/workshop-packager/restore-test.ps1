@@ -79,6 +79,14 @@ function Expand-PackageZip([string]$ArchivePath,[string]$Destination) {
   }
 }
 
+function Assert-SafeRelative([string]$Relative,[string]$Label) {
+  $normalized = $Relative.Replace('\','/').Trim('/')
+  if (-not $normalized -or [System.IO.Path]::IsPathRooted($normalized) -or $normalized.Contains(':') -or ($normalized.Split('/') -contains '..')) {
+    throw "$Label contains an unsafe path: $Relative"
+  }
+  return $normalized
+}
+
 function Write-Report([bool]$Ok,[string]$Stage,[string]$Detail,[hashtable]$Extra) {
   $report = [ordered]@{
     schema = 'axm.workshop-restore-test/v1'
@@ -90,7 +98,7 @@ function Write-Report([bool]$Ok,[string]$Stage,[string]$Detail,[hashtable]$Extra
     temporary_copy_removed = $false
   }
   if ($Extra) { foreach ($key in $Extra.Keys) { $report[$key] = $Extra[$key] } }
-  $report | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath $ReportPath -Encoding UTF8
+  $report | ConvertTo-Json -Depth 9 | Set-Content -LiteralPath $ReportPath -Encoding UTF8
   return $report
 }
 
@@ -106,9 +114,6 @@ if (Test-Path -LiteralPath $RestorePath) { throw 'Restore-test destination alrea
 
 try {
   New-Item -ItemType Directory -Force -Path $TestRoot | Out-Null
-  # Extract each entry through the Win32 long-path namespace. This keeps the
-  # restore proof valid even when a legitimate nested asset exceeds the legacy
-  # 260-character PowerShell path limit.
   Expand-PackageZip $ZipPath $RestorePath
 
   $restoredRoot = [System.IO.Path]::GetFullPath((Join-Path $RestorePath $BaseName))
@@ -118,83 +123,116 @@ try {
   if (-not [System.IO.File]::Exists((Get-LongPath $manifestPath))) { throw 'Expected package manifest is missing.' }
   $manifest = [System.IO.File]::ReadAllText((Get-LongPath $manifestPath)) | ConvertFrom-Json
   if ($manifest.schema -ne 'axm.workshop-package/v1') { throw 'Unexpected package manifest schema.' }
+  if ($manifest.mode -notin @('full','public','module','delta')) { throw 'Unexpected package mode.' }
 
   $checked = 0
+  $manifestPaths = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
   foreach ($entry in @($manifest.files)) {
-    $candidate = [System.IO.Path]::GetFullPath((Join-Path $restoredRoot ([string]$entry.path).Replace('/','\')))
+    $relative = Assert-SafeRelative ([string]$entry.path) 'manifest'
+    if (-not $manifestPaths.Add($relative)) { throw "Duplicate manifest path: $relative" }
+    $candidate = [System.IO.Path]::GetFullPath((Join-Path $restoredRoot $relative.Replace('/','\')))
     Assert-Under $candidate $restoredRoot
     $longCandidate = Get-LongPath $candidate
-    if (-not [System.IO.File]::Exists($longCandidate)) { throw "Manifest file missing after restore: $($entry.path)" }
+    if (-not [System.IO.File]::Exists($longCandidate)) { throw "Manifest file missing after restore: $relative" }
     $itemLength = [System.IO.FileInfo]::new($longCandidate).Length
-    if ([int64]$itemLength -ne [int64]$entry.bytes) { throw "Size mismatch after restore: $($entry.path)" }
+    if ([int64]$itemLength -ne [int64]$entry.bytes) { throw "Size mismatch after restore: $relative" }
     $hash = Get-Sha256LongPath $candidate
-    if ($hash -ne ([string]$entry.sha256).ToLowerInvariant()) { throw "SHA-256 mismatch after restore: $($entry.path)" }
+    if ($hash -ne ([string]$entry.sha256).ToLowerInvariant()) { throw "SHA-256 mismatch after restore: $relative" }
     $checked++
   }
   if ($checked -ne [int]$manifest.file_count) { throw "Manifest count mismatch: checked $checked of $($manifest.file_count)." }
 
-  $verifyPath = Join-Path $restoredRoot 'verify.js'
-  if (-not (Test-Path -LiteralPath $verifyPath -PathType Leaf)) { throw 'Restored verify.js is missing.' }
-  $node = (Get-Command node.exe -ErrorAction Stop).Source
+  $removed = @($manifest.removed_paths | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+  foreach ($entry in $removed) { $null = Assert-SafeRelative ([string]$entry) 'removed-path ledger' }
 
-  $beginnerLaunchTest = Join-Path $restoredRoot 'tests\beginner-launch-selftest.js'
-  if (-not (Test-Path -LiteralPath $beginnerLaunchTest -PathType Leaf)) { throw 'Restored beginner launch self-test is missing.' }
-  $beginnerLaunchOutput = @(& $node $beginnerLaunchTest 2>&1)
-  if ($LASTEXITCODE -ne 0) { throw ('Restored beginner launch contract failed: ' + (($beginnerLaunchOutput | Select-Object -Last 8) -join ' ')) }
+  $isWholeWorkshop = $manifest.mode -in @('full','public')
+  if (-not $isWholeWorkshop) {
+    if ($manifest.mode -eq 'module') {
+      $scopes = @($manifest.selection.scopes)
+      if (-not $scopes.Count) { throw 'Modular package has no selected scopes.' }
+      foreach ($scopeValue in $scopes) {
+        $scope = Assert-SafeRelative ([string]$scopeValue) 'scope'
+        $found = @($manifestPaths | Where-Object { $_ -eq $scope -or $_.StartsWith($scope + '/', [System.StringComparison]::OrdinalIgnoreCase) }).Count
+        if (-not $found) { throw "Selected scope has no restored files: $scope" }
+      }
+    }
+    if ($manifest.mode -eq 'delta' -and $checked -eq 0 -and $removed.Count -eq 0) {
+      throw 'Delta package contains neither changed files nor a removal ledger.'
+    }
+    $report = Write-Report $true 'complete' 'Archive paths and hashes passed scoped-package restore verification.' @{
+      files_checked = $checked
+      package_kind = [string]$manifest.package_kind
+      package_health = 'pass'
+      scope_health = 'pass'
+      removed_paths_checked = $removed.Count
+      beginner_launcher = 'not-applicable'
+      verifier = 'not-applicable-partial-package'
+      hub_health = 'not-applicable-partial-package'
+      started_at = $startedAt
+    }
+  } else {
+    $verifyPath = Join-Path $restoredRoot 'verify.js'
+    if (-not (Test-Path -LiteralPath $verifyPath -PathType Leaf)) { throw 'Restored verify.js is missing.' }
+    $node = (Get-Command node.exe -ErrorAction Stop).Source
 
-  $verifyOutput = @(& $node $verifyPath 2>&1)
-  $verifyExit = $LASTEXITCODE
-  if ($verifyExit -ne 0) {
-    $failureEvidence = @($verifyOutput | Where-Object { [string]$_ -match '\bFAIL\b' } | Select-Object -First 20)
-    if (-not $failureEvidence.Count) { $failureEvidence = @($verifyOutput | Select-Object -First 4) + @($verifyOutput | Select-Object -Last 8) }
-    throw ('Restored AXM verifier failed: ' + ($failureEvidence -join ' '))
-  }
-  $verifyText = $verifyOutput -join "`n"
-  $verifyHeadline = 'pass'
-  if ($verifyText -match '(\d+)\s+FAIL.+?(\d+)\s+warn') {
-    $verifyHeadline = "$($Matches[1]) FAIL · $($Matches[2]) warn"
-  }
+    $beginnerLaunchTest = Join-Path $restoredRoot 'tests\beginner-launch-selftest.js'
+    if (-not (Test-Path -LiteralPath $beginnerLaunchTest -PathType Leaf)) { throw 'Restored beginner launch self-test is missing.' }
+    $beginnerLaunchOutput = @(& $node $beginnerLaunchTest 2>&1)
+    if ($LASTEXITCODE -ne 0) { throw ('Restored beginner launch contract failed: ' + (($beginnerLaunchOutput | Select-Object -Last 8) -join ' ')) }
 
-  $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback,0)
-  $listener.Start()
-  $port = ([System.Net.IPEndPoint]$listener.LocalEndpoint).Port
-  $listener.Stop()
+    $verifyOutput = @(& $node $verifyPath 2>&1)
+    if ($LASTEXITCODE -ne 0) {
+      $failureEvidence = @($verifyOutput | Where-Object { [string]$_ -match '\bFAIL\b' } | Select-Object -First 20)
+      if (-not $failureEvidence.Count) { $failureEvidence = @($verifyOutput | Select-Object -First 4) + @($verifyOutput | Select-Object -Last 8) }
+      throw ('Restored AXM verifier failed: ' + ($failureEvidence -join ' '))
+    }
+    $verifyText = $verifyOutput -join "`n"
+    $verifyHeadline = 'pass'
+    if ($verifyText -match '(\d+)\s+FAIL.+?(\d+)\s+warn') { $verifyHeadline = "$($Matches[1]) FAIL - $($Matches[2]) warn" }
 
-  $psi = New-Object System.Diagnostics.ProcessStartInfo
-  $psi.FileName = $node
-  $psi.Arguments = '"server.js" --open=none'
-  $psi.WorkingDirectory = $restoredRoot
-  $psi.UseShellExecute = $false
-  $psi.CreateNoWindow = $true
-  $psi.RedirectStandardOutput = $true
-  $psi.RedirectStandardError = $true
-  $psi.EnvironmentVariables['AXM_PORT'] = [string]$port
-  $psi.EnvironmentVariables['AXM_NO_BROWSER'] = '1'
-  $serverProcess = New-Object System.Diagnostics.Process
-  $serverProcess.StartInfo = $psi
-  if (-not $serverProcess.Start()) { throw 'Restored Hub process could not start.' }
+    $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback,0)
+    $listener.Start()
+    $port = ([System.Net.IPEndPoint]$listener.LocalEndpoint).Port
+    $listener.Stop()
 
-  $health = $null
-  $deadline = (Get-Date).AddSeconds(15)
-  while ((Get-Date) -lt $deadline) {
-    if ($serverProcess.HasExited) { throw "Restored Hub exited early with code $($serverProcess.ExitCode)." }
-    try { $health = Invoke-RestMethod -Uri ("http://127.0.0.1:$port/api/health") -TimeoutSec 2; break }
-    catch { Start-Sleep -Milliseconds 250 }
-  }
-  if (-not $health -or -not $health.ok -or $health.body -ne 'axm-workshop') { throw 'Restored Hub health check did not pass.' }
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $node
+    $psi.Arguments = '"server.js" --open=none'
+    $psi.WorkingDirectory = $restoredRoot
+    $psi.UseShellExecute = $false
+    $psi.CreateNoWindow = $true
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.EnvironmentVariables['AXM_PORT'] = [string]$port
+    $psi.EnvironmentVariables['AXM_NO_BROWSER'] = '1'
+    $serverProcess = New-Object System.Diagnostics.Process
+    $serverProcess.StartInfo = $psi
+    if (-not $serverProcess.Start()) { throw 'Restored Hub process could not start.' }
 
-  $report = Write-Report $true 'complete' 'Archive hashes, beginner launcher contract, AXM verifier, and restored Hub startup passed.' @{
-    files_checked = $checked
-    beginner_launcher = 'pass'
-    verifier = $verifyHeadline
-    hub_health = 'pass'
-    test_port = $port
-    started_at = $startedAt
+    $health = $null
+    $deadline = (Get-Date).AddSeconds(15)
+    while ((Get-Date) -lt $deadline) {
+      if ($serverProcess.HasExited) { throw "Restored Hub exited early with code $($serverProcess.ExitCode)." }
+      try { $health = Invoke-RestMethod -Uri ("http://127.0.0.1:$port/api/health") -TimeoutSec 2; break }
+      catch { Start-Sleep -Milliseconds 250 }
+    }
+    if (-not $health -or -not $health.ok -or $health.body -ne 'axm-workshop') { throw 'Restored Hub health check did not pass.' }
+
+    $report = Write-Report $true 'complete' 'Archive hashes, beginner launcher contract, AXM verifier, and restored Hub startup passed.' @{
+      files_checked = $checked
+      package_kind = [string]$manifest.package_kind
+      package_health = 'pass'
+      scope_health = 'complete-workshop'
+      removed_paths_checked = $removed.Count
+      beginner_launcher = 'pass'
+      verifier = $verifyHeadline
+      hub_health = 'pass'
+      test_port = $port
+      started_at = $startedAt
+    }
   }
 } catch {
-  $report = Write-Report $false 'failed' $_.Exception.Message @{
-    started_at = $startedAt
-  }
+  $report = Write-Report $false 'failed' $_.Exception.Message @{ started_at = $startedAt }
   throw
 } finally {
   if ($serverProcess -and -not $serverProcess.HasExited) {
@@ -213,9 +251,9 @@ try {
   if ($report -and (Test-Path -LiteralPath $ReportPath)) {
     $saved = Get-Content -LiteralPath $ReportPath -Raw | ConvertFrom-Json
     $saved.temporary_copy_removed = -not (Test-Path -LiteralPath $RestorePath)
-    $saved | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath $ReportPath -Encoding UTF8
+    $saved | ConvertTo-Json -Depth 9 | Set-Content -LiteralPath $ReportPath -Encoding UTF8
     $report = $saved
   }
 }
 
-$report | ConvertTo-Json -Compress -Depth 7
+$report | ConvertTo-Json -Compress -Depth 9

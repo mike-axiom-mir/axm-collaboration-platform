@@ -1,0 +1,140 @@
+{
+  "schema": "axm.modern-asset-forge.capability-inventory/v1",
+  "version": "1.0.0",
+  "observed_at": "2026-07-22T05:58:36.474Z",
+  "automatic_installation": false,
+  "private_location_retained": false,
+  "capabilities": [
+    {
+      "id": "preserve.ps2",
+      "status": "available",
+      "evidence": "immutable tree digest plus PS2 selftest"
+    },
+    {
+      "id": "contract.manifest",
+      "status": "available",
+      "evidence": "local schemas and selftest"
+    },
+    {
+      "id": "contract.receipt",
+      "status": "available",
+      "evidence": "local schemas and selftest"
+    },
+    {
+      "id": "contract.asset-id",
+      "status": "available",
+      "evidence": "portable id rules in build request"
+    },
+    {
+      "id": "separate.source.delivery",
+      "status": "available",
+      "evidence": "runner uses source root and runtime output roles"
+    },
+    {
+      "id": "enforce.no-network",
+      "status": "available",
+      "evidence": "runner contains no network acquisition stage"
+    },
+    {
+      "id": "inspect.glb.local",
+      "status": "available",
+      "constraints": [
+        "structural and metric inspection only",
+        "not Khronos certification"
+      ]
+    },
+    {
+      "id": "author.blend",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "evidence": "command is not installed or configured"
+    },
+    {
+      "id": "export.blender.glb",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "evidence": "command is not installed or configured"
+    },
+    {
+      "id": "validate.gltf.khronos",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "evidence": "command is not installed or configured"
+    },
+    {
+      "id": "optimize.gltf.transform",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "constraints": [
+        "PATH or explicit override is live-probed but not pinned"
+      ],
+      "evidence": "command is not installed or configured"
+    },
+    {
+      "id": "compress.meshopt",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "constraints": [
+        "optimizer version is not pinned"
+      ],
+      "evidence": "command is not installed or configured"
+    },
+    {
+      "id": "encode.ktx2.basis",
+      "status": "available",
+      "gap_type": "SUBSTRATE",
+      "constraints": [
+        "ETC1S BasisLZ only",
+        "4..1024 px",
+        "standalone texture output"
+      ],
+      "evidence": "pinned Basis Universal WebAssembly module initialized"
+    },
+    {
+      "id": "validate.ktx2.independent",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "evidence": "command is not installed or configured"
+    },
+    {
+      "id": "integrate.ktx2.gltf",
+      "status": "unavailable",
+      "gap_type": "HAND",
+      "constraints": [
+        "requires optimizer texture lane and post-integration validation"
+      ],
+      "evidence": "standalone encoding is present; GLB reference rewriting is not independently implemented"
+    },
+    {
+      "id": "render.webgl2.gltf",
+      "status": "available",
+      "gap_type": "SUBSTRATE",
+      "constraints": [
+        "uncompressed GLB diagnostic lane"
+      ],
+      "evidence": "local Three.js r160 GLTFLoader files present"
+    },
+    {
+      "id": "render.webgl2.ktx2",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "evidence": "Three.js KTX2Loader and its matching transcoder bundle are absent"
+    },
+    {
+      "id": "render.webgl2.meshopt",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "evidence": "matching browser meshopt decoder is absent"
+    },
+    {
+      "id": "observe.browser.smoke",
+      "status": "available",
+      "gap_type": "EVIDENCE",
+      "constraints": [
+        "receipt proves load/render facts, not visual quality"
+      ],
+      "evidence": "smoke page and receipt endpoint available"
+    }
+  ],
+  "digest": "611e6249520fb849aa9102a6f90d10db1c093fd7e5f6b462316beba78ddc1329"
+}

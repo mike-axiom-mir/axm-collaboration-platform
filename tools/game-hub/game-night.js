@@ -1,7 +1,7 @@
 (function () {
   'use strict';
-  var API = '/game-api', STORE = 'axm.gameNight.party.v2', FEATURED = ['003-robo-pong-cross','006-lumenwake','007-lux5-neon-overdrive','008-district-party','010-living-globe-tycoon'];
-  var $ = function (id) { return document.getElementById(id); }, online = false, games = [], selectedGameId = null, selectedPlayMode = null, lastLaunch = null, extrasOpen = false, runtimeHealth = null, lobbyPoll = null;
+  var API = '/game-api', STORE = 'axm.gameNight.party.v2', FEATURED = ['003-robo-pong-cross','006-lumenwake','007-casino-alpha','008-district-party','009-circuitseed-protocol-wilds','010-living-globe-tycoon'];
+  var $ = function (id) { return document.getElementById(id); }, online = false, games = [], worlds = [], selectedGameId = null, selectedPlayMode = null, lastLaunch = null, extrasOpen = false, runtimeHealth = null, lobbyPoll = null, bootRetry = null, booting = false;
   var defaults = [
     { name:'Mike', type:'human' }, { name:'Errol', type:'human' }, { name:'Nova', type:'adapter' }, { name:'Codex', type:'adapter' },
     { name:'Gemini', type:'adapter' }, { name:'Claude', type:'adapter' }, { name:'Grok', type:'adapter' }, { name:'Guest', type:'human' }
@@ -148,7 +148,52 @@
   }
   function renderLibrary() {
     var grid=$('gameGrid'); grid.innerHTML=''; FEATURED.forEach(function(id){var item=games.find(function(g){return g.game_id===id;});if(item)grid.appendChild(featureCard(item));});
-    $('allGames').innerHTML=''; games.forEach(function(item){var option=document.createElement('option');option.value=item.game_id;option.textContent=(item.slot||'---')+' · '+item.name;$('allGames').appendChild(option);}); $('allGames').value=selectedGameId;
+    renderChooser();
+  }
+  function safeWorldPath(value) {
+    var route=String(value||'');
+    return /^\/worlds\/[a-z0-9._/-]+\/?$/i.test(route)&&route.indexOf('..')<0?route:'';
+  }
+  function enterableWorlds() {
+    return worlds.filter(function(world){return safeWorldPath(world.path);}).sort(function(a,b){
+      if(a.id==='world.axm.foundation-planet')return -1;
+      if(b.id==='world.axm.foundation-planet')return 1;
+      return String(a.name||a.id).localeCompare(String(b.name||b.id));
+    });
+  }
+  function renderChooser() {
+    var select=$('allGames'); if(!select)return; select.innerHTML='';
+    var gameGroup=document.createElement('optgroup'); gameGroup.label='INSTALLED GAMES';
+    games.forEach(function(item){var option=document.createElement('option');option.value=item.game_id;option.textContent=(item.slot||'---')+' · '+item.name;gameGroup.appendChild(option);});
+    if(!games.length){var waiting=document.createElement('option');waiting.disabled=true;waiting.textContent=online?'No verified games found':'Reconnecting to installed games…';gameGroup.appendChild(waiting);}
+    select.appendChild(gameGroup);
+    var visible=enterableWorlds();
+    if(visible.length){var worldGroup=document.createElement('optgroup');worldGroup.label='WORLD EXPERIENCES';visible.forEach(function(world){var option=document.createElement('option'),route=safeWorldPath(world.path);option.value='world:'+route;option.textContent=(world.id==='world.axm.foundation-planet'?'PLANET · ':'WORLD · ')+(world.name||world.id);worldGroup.appendChild(option);});select.appendChild(worldGroup);}
+    select.value=selectedGameId;
+  }
+  function renderWorldLibrary() {
+    var grid=$('worldGrid'), count=$('worldCount'); if(!grid||!count)return;
+    grid.innerHTML='';
+    var visible=enterableWorlds();
+    count.textContent=visible.length+' WORLD'+(visible.length===1?'':'S');
+    if(!visible.length){grid.innerHTML='<div class="world-empty">No enterable worlds are registered.</div>';return;}
+    visible.forEach(function(world,index){
+      var link=document.createElement('a'), foundation=world.id==='world.axm.foundation-planet';
+      link.className='world-card'+(foundation?' foundation-world':''); link.href=safeWorldPath(world.path); link.target='_blank'; link.rel='noopener';
+      link.innerHTML='<div class="world-kicker">'+(foundation?'PLANET SCALE':'LIVING WORLD')+' · '+String(index+1).padStart(2,'0')+'</div><h3>'+esc(world.name||world.id)+'</h3><p>'+(foundation?'The huge persistent Caelus foundation: orbit, deploy to its surface, inspect climates, water, geology and living systems.':'Open this registered persistent world in its own experience.')+'</p><footer><span>'+esc(world.status||'TEST')+'</span><strong>ENTER WORLD ↗</strong></footer>';
+      grid.appendChild(link);
+    });
+    renderChooser();
+  }
+  async function loadWorldLibrary() {
+    var grid=$('worldGrid'), count=$('worldCount');
+    try {
+      var response=await fetch('/worlds/world-registry.json',{cache:'no-store'}), value=await response.json();
+      if(!response.ok||!Array.isArray(value.worlds))throw new Error('World registry unavailable');
+      worlds=value.worlds; renderWorldLibrary();
+    } catch(error) {
+      worlds=[]; renderChooser(); if(count)count.textContent='WORLDS OFFLINE'; if(grid)grid.innerHTML='<div class="world-empty">World registry unavailable. Game packages remain usable.</div>';
+    }
   }
   function setPlayMode(id) {
     var modes=playModes(), next=modes.find(function(mode){return mode.id===id;})||modes[0]||null; selectedPlayMode=next&&next.id||null;
@@ -161,7 +206,7 @@
   }
   function chooseGame(id) {
     selectedGameId=id; var item=game(), modes=item&&Array.isArray(item.play_modes)?item.play_modes:[];
-    selectedPlayMode=party.playModes&&party.playModes[id]||modes[0]&&modes[0].id||null; extrasOpen=!!(playMode()&&playMode().party_rule==='balanced-parties');
+    var savedMode=party.playModes&&party.playModes[id]; selectedPlayMode=modes.some(function(mode){return mode.id===savedMode;})?savedMode:modes[0]&&modes[0].id||null; extrasOpen=!!(playMode()&&playMode().party_rule==='balanced-parties');
     if(playMode()&&playMode().party_rule==='party-a-only')readyOrder=readyOrder.filter(function(index){return index<4;});
     persist(); renderGame(); renderLibrary(); buildSeats(); $('roomPanel').hidden=true;
   }
@@ -201,8 +246,8 @@
     $('roomPanel').hidden=false; $('roomCode').textContent=launch.room_code||'AXM1'; $('roomTitle').textContent=(launch.session.selected_game&&launch.session.selected_game.name||'Game')+' is ready';
     var humans=(launch.controller_urls||[]).filter(function(c){return c.type==='human';}), primary=humans[0]||null, primaryButton=$('openPrimaryControls'), grid=$('controllerGrid');grid.innerHTML='';humans.forEach(function(c){var card=document.createElement('article');card.className='controller';var qr=document.createElement('div');qr.className='qr';qrInto(qr,c.lan_url,c.name);var info=document.createElement('div');info.innerHTML='<b>'+esc(c.player.toUpperCase()+' · '+c.name)+'</b><div class="url">'+esc(c.lan_url||'Same-Wi-Fi address unavailable')+'</div><small>Optional phone QR, or use these controls in a browser.</small>';var open=document.createElement('button');open.textContent='Open on this device';open.onclick=function(){window.open(withSession(c.local_url,launch),'_blank','noopener');};info.appendChild(open);card.appendChild(qr);card.appendChild(info);grid.appendChild(card);});
     if(!grid.children.length)grid.innerHTML='<p>No phone controller is needed for this game. Open its game screen below.</p>';
-    primaryButton.disabled=!primary; primaryButton.textContent=primary?('Play '+primary.name+' on this laptop'):'No human laptop controls';
-    $('openScreen').disabled=!(launch.spectator_url||launch.client_url); setTimeout(function(){$('roomPanel').scrollIntoView({behavior:'smooth',block:'start'});},50);
+    primaryButton.disabled=!primary; primaryButton.textContent=primary?('Open '+primary.name+' controls'):'No human controls';
+    $('openGame').disabled=!launch.client_url; $('openScreen').disabled=!(launch.spectator_url||launch.client_url); setTimeout(function(){$('roomPanel').scrollIntoView({behavior:'smooth',block:'start'});},50);
   }
   async function finish(reflect) {
     if(!lastLaunch)return; var launch=lastLaunch;
@@ -216,9 +261,30 @@
 
   function brief(h){var p=h&&h.provenance||{};return String(p.brief||p.request_prompt||p.summary||p.generator||'No provenance brief supplied.').replace(/\s+/g,' ').trim().slice(0,240);}
   async function refreshAssets(){var box=$('assetInbox');try{var response=await call('/assets/inbox'),items=response.handoffs||[];if(!items.length){box.innerHTML='<p>No staged proposals.</p>';return;}box.innerHTML='';items.forEach(function(h){var row=document.createElement('div'),dims=h.dimensions&&h.dimensions.width&&h.dimensions.height?(h.dimensions.width+' × '+h.dimensions.height):'dimensions unavailable';row.className='asset';row.innerHTML='<img src="/tools/game-hub/asset-inbox/'+encodeURIComponent(h.id)+'/asset.png" alt=""><div><b>'+esc(h.name||'Unnamed asset')+'</b><small>'+esc(h.target_game_id)+' · '+esc(dims)+' · '+esc(h.status)+'</small><small>'+esc(brief(h))+'</small><small>'+(h.status==='proposal'?'Stored in proposal inbox · not activated':'Accepted into game package')+'</small></div>';if(h.status==='proposal'){var button=document.createElement('button');button.textContent='Accept into game package';button.onclick=async function(){button.disabled=true;try{await call('/assets/accept',{id:h.id});await refreshAssets();}catch(e){button.textContent='Failed';}};row.appendChild(button);}box.appendChild(row);});}catch(e){box.innerHTML='<p>Inbox unavailable: '+esc(e.message)+'</p>';}}
-  async function boot(){try{var responses=await Promise.all([call('/health'),call('/games'),call('/active-launch')]);runtimeHealth=responses[0];games=(responses[1].games||[]).filter(function(item){return item.status!=='manifest-error';});lastLaunch=responses[2].launch||null;var runningGameId=lastLaunch&&lastLaunch.session&&lastLaunch.session.selected_game&&lastLaunch.session.selected_game.game_id;selectedGameId=runningGameId||(party.selectedGameId&&games.some(function(item){return item.game_id===party.selectedGameId;})?party.selectedGameId:(games.find(function(item){return item.game_id===FEATURED[0];})||games[0]||{}).game_id);var modes=playModes();selectedPlayMode=lastLaunch&&lastLaunch.play_mode||party.playModes&&party.playModes[selectedGameId]||modes[0]&&modes[0].id||null;extrasOpen=!!(playMode()&&playMode().party_rule==='balanced-parties');online=true;$('status').textContent='ONLINE · '+games.length+' GAMES';renderLibrary();renderGame();buildSeats();if(lastLaunch){showRoom(lastLaunch);$('status').textContent='ROOM '+lastLaunch.room_code+' · LIVE';}else await syncPartyToServer();await pollLobbySeats();startLobbyPolling();await refreshAssets();}catch(error){online=false;$('status').textContent='OFFLINE · START AXM FULL';buildSeats();}}
+  async function boot(){
+    if(booting)return;
+    booting=true;
+    loadWorldLibrary();
+    try{
+      var responses=await Promise.all([call('/health'),call('/games'),call('/active-launch')]);
+      runtimeHealth=responses[0];games=(responses[1].games||[]).filter(function(item){return item.status!=='manifest-error';});lastLaunch=responses[2].launch||null;
+      var runningGameId=lastLaunch&&lastLaunch.session&&lastLaunch.session.selected_game&&lastLaunch.session.selected_game.game_id;
+      selectedGameId=runningGameId||(party.selectedGameId&&games.some(function(item){return item.game_id===party.selectedGameId;})?party.selectedGameId:(games.find(function(item){return item.game_id===FEATURED[0];})||games[0]||{}).game_id);
+      var modes=playModes(),savedMode=party.playModes&&party.playModes[selectedGameId],liveMode=lastLaunch&&lastLaunch.play_mode;
+      selectedPlayMode=modes.some(function(mode){return mode.id===liveMode;})?liveMode:modes.some(function(mode){return mode.id===savedMode;})?savedMode:modes[0]&&modes[0].id||null;
+      extrasOpen=!!(playMode()&&playMode().party_rule==='balanced-parties');online=true;
+      if(bootRetry){clearTimeout(bootRetry);bootRetry=null;}
+      $('status').textContent='ONLINE · '+games.length+' GAMES';renderLibrary();renderGame();buildSeats();
+      if(lastLaunch){showRoom(lastLaunch);$('status').textContent='ROOM '+lastLaunch.room_code+' · LIVE';}else await syncPartyToServer();
+      await pollLobbySeats();startLobbyPolling();await refreshAssets();
+    }catch(error){
+      online=false;$('status').textContent='RECONNECTING · STARTING GAME SERVICE';renderChooser();buildSeats();
+      if(!bootRetry)bootRetry=setTimeout(function(){bootRetry=null;boot();},1500);
+    }finally{booting=false;}
+  }
 
-  $('allGames').onchange=function(){chooseGame(this.value);}; $('extraSeats').onclick=function(){extrasOpen=!extrasOpen;renderGame();buildSeats();}; $('launch').onclick=launch;
+  $('allGames').onchange=function(){if(this.value.indexOf('world:')===0){var route=safeWorldPath(this.value.slice(6));this.value=selectedGameId;if(route)location.assign(route);return;}chooseGame(this.value);}; $('extraSeats').onclick=function(){extrasOpen=!extrasOpen;renderGame();buildSeats();}; $('launch').onclick=launch;
+  $('openGame').onclick=function(){if(lastLaunch&&lastLaunch.client_url)window.open(withSession(lastLaunch.client_url,lastLaunch),'_blank','noopener');};
   $('openPrimaryControls').onclick=function(){if(!lastLaunch)return;var primary=(lastLaunch.controller_urls||[]).find(function(c){return c.type==='human';});if(primary&&primary.local_url)window.open(withSession(primary.local_url,lastLaunch),'_blank','noopener');};
   $('openScreen').onclick=function(){if(lastLaunch)window.open(withSession(lastLaunch.spectator_url||lastLaunch.client_url,lastLaunch),'_blank','noopener');};
   $('finishReflect').onclick=function(){finish(true).catch(function(e){$('status').textContent='FINISH FAILED · '+e.message;});}; $('stopOnly').onclick=function(){finish(false).catch(function(e){$('status').textContent='STOP FAILED · '+e.message;});};

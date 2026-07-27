@@ -1,40 +1,17 @@
-# Security and Privacy
+# AXM Workshop security posture
 
-AXM Workshop is experimental local-first software. Its default boundary is one
-device, not a public network service.
-
-## Safe default
-
-The Hub and local bridge bind to `127.0.0.1` by default. Do not expose them to a
-LAN or the internet without authentication, scoped authorization, firewall
-rules, and an explicit threat review.
-
-Optional AI, remote-machine, Discord, and controller connections are separate
-capabilities. Discovering a connection does not grant it permission to read,
-write, execute, promote, or publish.
+As of 2026-07-23, the core Workshop server defaults to `127.0.0.1`. Optional bridges, release adapters, source connectors, radio/Spotify features, device handoff, and multiplayer transports have separate explicit network surfaces. “Offline-first” does not mean “the entire tree can never make a network request.” It means the core remains useful without a network and network authority stays declared and bounded.
 
 ## Secrets
 
-Keep provider keys in local environment variables. Never commit or post real
-API keys, passwords, cookies, authorization headers, SSH keys, bridge tokens,
-or session URLs.
+Provider keys enter processes through environment variables such as `ANTHROPIC_API_KEY` and `OPENAI_API_KEY`. Browser tools do not receive those values. The local bridge keeps a random door token in `bridge/bridge-token.txt`; it and local override files are excluded by `.gitignore`. Do not copy tokens, keys, `.env` files, provider authentication stores, or private state into saves, packages, reports, or public releases.
 
-The public package omits `bridge/bridge-token.txt`. The bridge creates a fresh
-random token on first start; deleting the local file rotates it on next start.
+The honest no-key behavior is an unavailable provider route. It must never become a silent success, guessed response, or “AI connected” claim.
 
-## Local evidence
+## Binding and egress
 
-Logs, saves, sessions, generated state, caches, and verifier receipts may
-contain actor names, task details, filenames, timestamps, or machine context.
-They remain local and are excluded from public packages. Share the smallest
-sanitized excerpt that can prove a bug.
+See [docs/PORTS.md](docs/PORTS.md) for the reviewed default port map and explicit LAN exceptions. Any non-loopback listener is a separate capability requiring deliberate startup and a bounded lifetime. Source and deployment adapters use allowlisted HTTPS routes and explicit review gates; they are not proof that the core Hub itself needs internet access.
 
-## Reporting a vulnerability
+## Dependency and release checks
 
-Use GitHub's private vulnerability-reporting route when it is available under
-the repository's **Security** tab. If it is unavailable, open a minimal public
-issue titled `Private security contact requested` without including exploit
-details or secrets. A maintainer can then arrange a private channel.
-
-Ordinary bugs belong in the Bug report template. Remove tokens, private paths,
-personal data, and raw logs before attaching evidence.
+`package-lock.json` pins installed package versions. Dependency advisories require an online `npm audit` or a maintained offline advisory database; neither is fabricated by the local verifier. Vendored-library digest locking remains an open roadmap item. Public release still requires its own digest review and signing gates.

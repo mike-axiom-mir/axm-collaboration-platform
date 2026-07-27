@@ -1,9 +1,8 @@
 {
-  "schema": "axm.module-contract/v1", "id": "workshop-search-provenance", "version": "v0.1",
-  "provides": ["workspace-text-index", "metadata-index", "ranked-search", "source-snippets", "sha256-provenance", "root-filtering"],
-  "consumes": ["public-workshop-source", "project-files", "asset-metadata"], "permissions": [],
+  "schema": "axm.module-contract/v1", "id": "workshop-search-provenance", "version": "v0.2",
+  "provides": ["workspace-text-index", "metadata-index", "ranked-search", "source-snippets", "sha256-provenance", "root-filtering", "structured-code-recipe-index", "code-recipe-hold-aware-search"],
+  "consumes": ["public-workshop-source", "project-files", "asset-metadata", "axm.code-recipe-pack/v1", "axm.code-recipe-syntax-audit/v1"], "permissions": [],
   "handoffs": {"emits": ["axm.search-result/v1", "axm.source-reference/v1"], "accepts": ["axm.search-query/v1"]},
-  "boundaries": {"writes": ["state/workshop-search/index.json"], "refuses": ["private-state-index", "log-index", "backup-index", "bridge-index", "secret-like-file-index", "source-file-mutation", "remote-search-upload"]},
+  "boundaries": {"writes": ["state/workshop-search/index.json"], "refuses": ["private-state-index", "log-index", "backup-index", "bridge-index", "secret-like-file-index", "held-recipe-snippet-index", "recipe-execution", "syntax-pass-as-correctness-proof", "source-file-mutation", "remote-search-upload"]},
   "lifecycle": {"state_owner": "service", "reload": "resume", "disconnect": "not-applicable", "cleanup": "automatic"}
 }
-

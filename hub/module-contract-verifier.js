@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const SCHEMA = 'axm.module-contract/v1';
+const MANIFEST_SCHEMA = 'axm.tool-manifest/v1';
 const LIFECYCLE = {
   state_owner: new Set(['browser', 'service', 'filesystem', 'mixed', 'none']),
   reload: new Set(['resume', 'reset', 'not-applicable', 'pending']),
@@ -34,8 +35,25 @@ function validateContract(contract, manifest) {
   }
   if (manifest) {
     if (contract.id !== manifest.id) errors.push('contract id does not match manifest id');
-    const declared = Array.isArray(manifest.uses) ? manifest.uses : [];
-    (contract.permissions || []).forEach(p => { if (declared.indexOf(p) < 0) errors.push('permission not declared in manifest uses: ' + p); });
+    const requested = Array.isArray(contract.permissions) ? contract.permissions : [];
+    if (manifest.schema === MANIFEST_SCHEMA) {
+      const declared = Array.isArray(manifest.permissions) ? manifest.permissions : [];
+      if (!Array.isArray(manifest.permissions)) errors.push('manifest permissions must be an array');
+      requested.forEach(permission => {
+        if (!declared.includes(permission)) errors.push('contract permission not declared in manifest permissions: ' + permission);
+      });
+      declared.forEach(permission => {
+        if (!requested.includes(permission)) errors.push('manifest permission not declared in contract permissions: ' + permission);
+      });
+    } else {
+      // Legacy unversioned manifests historically placed authority tokens in uses.
+      // Preserve their validation until they are explicitly migrated; modern
+      // manifests keep dependency context and permission authority separate.
+      const legacyDeclared = Array.isArray(manifest.uses) ? manifest.uses : [];
+      requested.forEach(permission => {
+        if (!legacyDeclared.includes(permission)) errors.push('legacy permission not declared in manifest uses: ' + permission);
+      });
+    }
   }
   return { pass: errors.length === 0, errors };
 }
@@ -72,4 +90,4 @@ function verifyDeclaredContracts(root) {
   return { pass: results.every(r => r.pass), results };
 }
 
-module.exports = { SCHEMA, LIFECYCLE, validateContract, verifyDeclaredContracts };
+module.exports = { SCHEMA, MANIFEST_SCHEMA, LIFECYCLE, validateContract, verifyDeclaredContracts };

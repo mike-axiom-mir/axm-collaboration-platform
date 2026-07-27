@@ -159,6 +159,51 @@ function verifyGameDir(gameDir) {
   return { game: manifest.game_id || path.basename(gameDir), slot: manifest.slot || null, manifest: manifestPath, errors: errors.concat(seams.errors), warnings: seams.warnings };
 }
 
+function validateRecoveryRegressions(libraryDir) {
+  const errors = [];
+  const read = file => fs.readFileSync(file, 'utf8');
+  const json = file => JSON.parse(read(file));
+  const contract = json(path.join(__dirname, 'GAME_NIGHT_CONTRACT.json'));
+  const ui = read(path.join(__dirname, 'index.html'));
+  const client = read(path.join(__dirname, 'game-night.js'));
+  const hubSource = read(path.join(__dirname, 'game-hub-server.js'));
+  const hub = require('./game-hub-server');
+  const manifests = fs.readdirSync(libraryDir, { withFileTypes: true })
+    .filter(entry => entry.isDirectory() && entry.name.charAt(0) !== '_')
+    .map(entry => json(path.join(libraryDir, entry.name, 'game.manifest.json')));
+  const byId = new Map(manifests.map(manifest => [manifest.game_id, manifest]));
+  (contract.featuredGames || []).forEach(id => { if (!byId.has(id)) errors.push('featured game id is stale or missing: ' + id); });
+  if (!ui.includes('id="openGame"') || !ui.includes('Open shared TV screen')) errors.push('playable game and shared display actions are not visibly separate');
+  if (!client.includes('lastLaunch.client_url') || !client.includes('lastLaunch.spectator_url||lastLaunch.client_url')) errors.push('launch UI no longer routes playable and spectator URLs separately');
+  if (!client.includes('Preview game controls') || !client.includes("call('/active-launch')")) errors.push('controller preview or refresh recovery route is missing');
+  if (hub.runtimeBrowserUrl(8799, '/games/009/') !== 'http://127.0.0.1:8799/') errors.push('direct child runtime URL still carries its Workshop /games prefix');
+  if (!hubSource.includes('clientUrl: runtimeBrowserUrl(port, clientUrl)') || !hubSource.includes('spectatorUrl: runtimeBrowserUrl(port, displayPath')) errors.push('Game Hub may overwrite the playable URL with display metadata');
+
+  const casino = byId.get('007-casino-alpha');
+  if (!casino) errors.push('Casino current package id is missing');
+  else {
+    const story = (casino.play_modes || []).find(mode => mode.id === 'backroom_story');
+    const war = (casino.play_modes || []).find(mode => mode.id === 'house_war');
+    if (!story || story.party_rule !== 'party-a-only' || !war || war.party_rule !== 'balanced-parties') errors.push('Casino solo/story and balanced multiplayer mode contracts drifted');
+    try { hub.validatePlayModeRoster(war, [{ slot: 1 }, { slot: 5 }]); }
+    catch (error) { errors.push('Casino House War no longer accepts 1v1: ' + error.message); }
+    const casinoApp = read(path.join(libraryDir, '007-casino', 'alpha', 'client', 'app.js'));
+    if (!casinoApp.includes('Backroom Story') || !casinoApp.includes('House War') || !casinoApp.includes('Start local alpha')) errors.push('Casino title/setup route no longer exposes both modes and a start action');
+    if (!(casino.controls && casino.controls.keyboard === true && casino.controls.phone_controller === true)) errors.push('Casino must retain laptop and optional phone controls');
+  }
+
+  const circuitseed = byId.get('009-circuitseed-protocol-wilds');
+  if (!circuitseed || circuitseed.launch.client_entry === circuitseed.launch.spectator_client_entry) errors.push('Circuitseed playable client and party display are not distinct');
+  const circuitServer = read(path.join(libraryDir, '009-circuitseed-protocol-wilds', 'server', 'server.js'));
+  if (!circuitServer.includes('/api/launcher-state')) errors.push('Circuitseed no longer exposes launch metadata to the Game Hub');
+
+  const globe = byId.get('010-living-globe-tycoon');
+  if (!globe || !Array.isArray(globe.play_modes) || globe.play_modes[0].id !== 'walkable-globe') errors.push('Living Globe visible world is no longer the default Tycoon experience');
+  const globeRuntime = require(path.join(libraryDir, '010-living-globe-tycoon', 'runtime', 'server.js'));
+  if (globeRuntime.selectedMode({}) !== 'walkable-globe') errors.push('Living Globe runtime no longer defaults to the visible globe');
+  return errors;
+}
+
 function verifyLibrary(libraryDir) {
   const dirs = fs.readdirSync(libraryDir, { withFileTypes: true }).filter(x => x.isDirectory() && x.name.charAt(0) !== '_');
   const games = dirs.map(x => verifyGameDir(path.join(libraryDir, x.name)));
@@ -173,6 +218,8 @@ function verifyLibrary(libraryDir) {
       if (other) other.errors.push('launch.port conflicts with ' + result.game);
     } else ports.set(port, result.game);
   });
+  const recoveryErrors = validateRecoveryRegressions(libraryDir);
+  if (recoveryErrors.length) games.push({ game: 'game-hub-experience-recovery', slot: null, manifest: path.join(__dirname, 'GAME_NIGHT_CONTRACT.json'), errors: recoveryErrors, warnings: [] });
   return { schema: 'axm.game-package-verification/v1', scope: path.resolve(libraryDir), checkedAt: new Date().toISOString(), games, pass: games.every(x => !x.errors.length), failCount: games.reduce((n, x) => n + x.errors.length, 0), warningCount: games.reduce((n, x) => n + ((x.warnings || []).length), 0) };
 }
 
@@ -190,4 +237,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { GAME_NIGHT_SEAM_SCHEMA, inside, validateManifest, validateGameNightSeams, verifyGameDir, verifyLibrary };
+module.exports = { GAME_NIGHT_SEAM_SCHEMA, inside, validateManifest, validateGameNightSeams, validateRecoveryRegressions, verifyGameDir, verifyLibrary };

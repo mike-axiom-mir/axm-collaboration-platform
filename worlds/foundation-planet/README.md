@@ -31,6 +31,10 @@ Open `/worlds/foundation-planet/` through the Workshop server. Run `node worlds/
 - a deterministic fixed-step authority kernel that accepts bounded controller intent and owns multiplayer movement.
 - sparse stateful land and ocean columns with conserved water and surface-energy ledgers, soil layers, aquifers, snow and sea ice.
 - canonical neighboring-cell transport for atmospheric moisture and heat, groundwater, ocean freshwater and ocean mixed-layer heat.
+- finite clay, silt, sand and gravel ownership with receipted runoff, river-bed and coastal sediment routing across the loaded domain.
+- persistent loaded-reach floodplain water, chemistry, suspended grains and deposits with receipted bankfull overflow and finite return flow.
+- persistent floodplain live, standing-dead and litter carbon/nitrogen partitioned from loaded land-cell biomass by exact paired receipts.
+- persistent floodplain plant phosphorus and live tissue water drawn from the local floodplain through exact uptake receipts, with mortality water returned to the same reservoir.
 
 ## Rungs 2–3: physical history and ecological scale
 
@@ -46,7 +50,7 @@ The catalog now spans 96 archetypes across land, freshwater and ocean food webs.
 
 ## Rung 6: continuous water, physics coordinates and revisioned state
 
-Hydrology now samples a planet-anchored global grid through buffered canonical tiles. A river reach owns one stable `hydro-reach:v2:<grid-x>:<grid-z>` identity, canonical endpoints and a downstream reach link, regardless of which overlapping expedition sector requests it. Loaded sectors report explicit edge handoffs instead of silently terminating water at the render boundary. Catchment area, runoff, discharge, width, depth and stream order remain procedural approximations; depression filling and sediment transport are still future work.
+Hydrology now samples a planet-anchored global grid through buffered canonical tiles. A river reach owns one stable `hydro-reach:v2:<grid-x>:<grid-z>` identity, canonical endpoints and a downstream reach link, regardless of which overlapping expedition sector requests it. Loaded sectors report explicit edge handoffs instead of silently terminating water at the render boundary. Catchment area, runoff, discharge, width, depth and stream order remain procedural approximations; depression filling was future work at this rung, while Rung 36 later adds finite loaded-domain sediment transport without claiming resolved channel morphology.
 
 Every loaded sector also publishes a right-handed meter-scale floating-origin frame with east, radial-up and north axes, latitude-sensitive radial gravity, collision intentions and exact canonical/local coordinate transforms. The current explorer uses an accelerated kinematic ground/swim controller; a general rigid-body engine is deliberately not claimed.
 
@@ -90,7 +94,7 @@ The coarse Earth-system grid and fine canonical drainage grid now exchange water
 
 Loaded reaches advance from the same pre-step state, so a pulse cannot teleport through several channels in one invocation. Reach-to-reach transfers retain exact source and receiver IDs. An ocean outlet delivers freshwater only when the canonical ocean Earth cell containing its mouth is loaded; the mouth receipt, river-storage debit and ocean freshwater credit close one mass ledger. Missing downstream reaches, unloaded sectors and unloaded mouth cells retain the water in channel storage and publish a typed boundary receipt.
 
-The coarse topographic Earth-cell route remains as a fallback for queued water that has no loaded canonical river inlet. Rung 11 is therefore a conservative loaded-basin bridge, not a claim that every global basin is continuously active. A planet-wide depression-filled graph, endorheic spill behavior, floodplains, sediment and channel morphology remain later work.
+The coarse topographic Earth-cell route remains as a fallback for queued water that has no loaded canonical river inlet. Rung 11 is therefore a conservative loaded-basin bridge, not a claim that every global basin is continuously active. At that rung, a planet-wide depression-filled graph, endorheic spill behavior and floodplains remained later work. Rung 36 later adds finite grain routing and Rung 37 bounded floodplain exchange through this bridge, while resolved channel morphology remains unsolved.
 
 ## Rung 12: loaded pressure mass and tangent momentum
 
@@ -124,6 +128,692 @@ A bounded lapse-rate response now exchanges sensible heat, vapor and cloud liqui
 
 Loaded-neighbor atmospheric transport remains a boundary-layer process at this rung, while eastward/northward wind remains column-mean momentum. This is not resolved three-dimensional convection, buoyancy or gravitational-potential work, cloud microphysics, upper-air horizontal transport, turbulence closure, a global circulation model or a scientific forecast.
 
+## Rung 16: independent upper-air transport and geopotential receipts
+
+Loaded boundary-layer and free-troposphere air now travel as independently conserved dry-mass reservoirs. Each layer owns its wind vector and carries vapor, cloud liquid and sensible enthalpy with the moving dry-air parcel; bounded mixing remains separately receipted. Pressure-gradient impulses, Coriolis rotation, tangent momentum and kinetic-energy closure are reported per layer as well as for the combined loaded atmosphere. The hydrostatic pressure partition may now evolve instead of being reset to 25/75 after every step.
+
+Terrain-following transport now records the gravitational potential energy carried between representative layer heights and the exact adjustment work required at the destination. Vertical exchange records equal gross upward and downward geopotential transfers plus independently closed eastward and northward momentum. Existing v8/two-layer saves migrate without inventing upper-air shear or changing stored water.
+
+These receipts expose the energetic boundary honestly; they do not yet solve buoyancy conversion or three-dimensional gravity work. The loaded graph remains a sparse bulk atmosphere rather than a continuous global circulation, angular-momentum, convection, turbulence, cloud-microphysics or scientific forecasting model.
+
+## Rung 17: buoyant overturning and convective kinetic energy
+
+The two-layer vertical exchange is now an explicit closed overturning loop: every dry-air updraft has an equal compensating downdraft, so a local convective step cannot manufacture net layer mass. A lifted parcel uses vapor- and cloud-adjusted virtual temperature to diagnose positive buoyancy only when the lapse rate is supercritical. Bounded buoyancy work converts moist sensible enthalpy into a persistent column convective-kinetic-energy reservoir and a diagnostic vertical-velocity proxy.
+
+Stored convective kinetic energy decays on a declared time scale and returns to sensible heat. Horizontal momentum lost through vertical parcel mixing is likewise thermalized rather than deleted. The v2 vertical receipt closes water, eastward/northward momentum, horizontal kinetic energy, convective kinetic energy, moist-enthalpy mechanical conversion, equal gross pressure/geopotential work and their combined resolved energy. Existing v9 saves migrate with an empty convective reservoir and invalidate the accidentally mis-versioned R16 v1 vertical receipt instead of laundering it into the corrected lineage.
+
+This resolves buoyancy conversion only inside the bounded two-reservoir parameterization. It is not a resolved cloud plume, downdraft shaft, vertical velocity field, entrainment profile, pressure-coordinate circulation, turbulence closure or three-dimensional convection model.
+
+## Rung 18: persisted pressure-coordinate atmosphere
+
+Each Earth-system cell now owns eight bottom-to-top pressure-thickness layers. Every native layer
+persists dry-air mass, temperature, vapor water, cloud liquid, eastward/northward momentum and the
+derived sensible, latent, kinetic and geopotential-energy terms. Contiguous interface pressures and
+terrain-following interface heights are rebuilt with the hypsometric relation using each layer's
+virtual temperature. The highest layer closes the remaining column pressure against a declared
+0.1 hPa geometry floor, avoiding an infinite model-top height while retaining the complete dry-air
+mass.
+
+The existing boundary-layer and free-troposphere fields are now an explicit compatibility projection:
+two native lower layers aggregate into the boundary band and six aggregate into the free band. Local
+phase change, vertical overturning and loaded horizontal transport still act on those two aggregates;
+after each forcing step a typed reconciliation receipt maps the changed pressure, vapor, cloud,
+temperature and tangent momentum back into the eight layers. Pressure-layer masses and reservoirs
+match the aggregate targets while the finer vertical temperature anomalies persist. If native wind
+shear would violate the 90 m/s contract, its anomalies are reduced coherently around the requested
+band mean so aggregate momentum still closes.
+
+Existing v10 saves migrate into the eight-level schema without changing surface pressure,
+atmospheric water, two-band moist enthalpy or tangent momentum. Existing v11 saves restore exactly,
+including the native profile digest and its latest reconciliation receipt. This rung establishes a
+real persistent vertical coordinate, but native pressure-level phase change, vertical transport,
+entrainment and lateral advection remain future work; it does not claim that duplicating current
+two-band forcing across a finer state is already pressure-level dynamics.
+
+## Rung 19: native pressure-level thermodynamics and descent
+
+Local atmospheric thermodynamics now run on all eight pressure levels. Each level derives its own
+saturation capacity from dry-air mass, center pressure and temperature, persists bounded cloud liquid,
+and emits a typed vapor/cloud/latent-heat receipt. Long storms can use bounded condensation/fallout
+subcycles, while every upper-level precipitation source names every crossed native interface and an
+exact surface credit. The established two-band phase receipts remain compatibility summaries for UI
+and older consumers; they no longer drive the actual phase calculation.
+
+All seven adjacent native interfaces now exchange equal gross dry-air parcels plus sensible heat,
+vapor, cloud liquid and tangent momentum. Momentum-mixing kinetic loss is returned to native sensible
+heat. A composite receipt closes native water, moist enthalpy, eastward/northward momentum, horizontal
+kinetic energy and resolved energy and contains the eight phase receipts, seven exchange receipts and
+all precipitation-descent routes. Engine v12 persists this evidence; v11 snapshots migrate without
+inventing a receipt for work they never ran.
+
+This is a genuine native-thermodynamics rung, not the end of atmospheric work. Loaded horizontal
+advection and the bounded buoyancy/convective-kinetic-energy core still operate through the two-band
+compatibility seam, so the broad `pressureLevelDynamicsResolved` claim stays false. Resolved vertical
+momentum, entrainment, turbulence, aerosol/droplet/ice microphysics, three-dimensional convection and
+scientific forecast authority remain later rungs.
+
+## Rung 20: native eight-level horizontal atmosphere
+
+Loaded cardinal neighbors now exchange dry air independently across all eight persisted pressure
+levels. Each level combines bounded pressure-gradient and tangent-wind/Courant transport, and its dry
+air carries native vapor, cloud liquid, absolute sensible enthalpy and tangent momentum. Separate
+native mixing receipts cover those tracers, while pressure-gradient impulses, latitude-aware Coriolis
+rotation and terrain-following geopotential adjustment are recorded at the same level resolution.
+
+The typed domain receipt contains eight ordered conservation ledgers plus exact sender debit and
+receiver credit for every routed quantity. Water, moist enthalpy, eastward/northward momentum,
+horizontal kinetic energy, geopotential energy and resolved energy close after their named forcing,
+mixing and geometry terms. Every destination column persists a compact local receipt tied to the
+domain digest. The lower-two and upper-six UI fields are now projections of the transported native
+state. Their lost within-band kinetic and height variance is explicitly receipted rather than
+misreported as physical loss.
+
+Engine v13 preserves that lineage; v12 snapshots migrate with native-horizontal truth false unless a
+valid receipt actually exists. The broad `pressureLevelDynamicsResolved` claim remains false because
+the buoyancy and convective-kinetic-energy core is still the bounded two-band compatibility model.
+Continuous unloaded-cell circulation, a global angular-momentum solve, resolved vertical momentum,
+entrainment, turbulence and scientific forecast authority remain later work.
+
+## Rung 21: native pressure-interface convection
+
+The last two-band physics dependency has been removed from local atmospheric stepping. All seven
+pressure interfaces now own persistent convective kinetic energy, a bounded updraft velocity and an
+exact compensating downdraft momentum. Each interface lifts the lower parcel through its actual
+hypsometric separation, compares virtual temperature with the adjacent ambient layer, and converts
+only bounded positive buoyancy work from sensible heat into its own kinetic reservoir. Stable motion
+decays on the declared time scale and returns the lost kinetic energy to the two adjacent layers.
+
+The v2 native dynamics receipt and its seven typed buoyancy/interface receipts record pressure and
+geopotential conversion, equal-gross dry-air exchange, bulk entrainment/detrainment, water tracers,
+tangent momentum, vertical momentum, horizontal and convective kinetic energy, thermalization and
+resolved-energy residuals. The v3 vertical receipt remains a compatibility projection for older UI
+consumers; it no longer runs a second two-band physical process. `pressureLevelDynamicsResolved` is
+therefore true for a column only after that native local step has actually produced valid evidence.
+
+Engine v14 persists the seven interface reservoirs. A v13 save maps its old two-band convective
+energy onto the exact boundary/free interface, invalidates obsolete v1/v2 dynamics receipts, and does
+not claim that native interface work occurred before the next real step. This is still a bounded bulk
+column parameterization—not a resolved three-dimensional plume, turbulence closure, cloud
+microphysics, global circulation model or scientific forecast.
+
+## Rung 22: native mixed-phase clouds and typed precipitation
+
+All eight pressure levels now persist cloud liquid and cloud ice independently. Saturation blends
+over water and ice, while condensation, deposition, evaporation, sublimation, cloud freezing and
+cloud melting exchange vaporization and fusion energy with the exact native layer. The declared
+moist-enthalpy convention uses liquid as the phase reference, adds vapor latent energy and subtracts
+cloud-ice fusion energy, so internal phase changes close without hidden heat.
+
+Precipitation routes now carry rain and snow as typed mass. A falling route visits every crossed
+native interface; snow can melt in a warm receiving layer and rain can refreeze in a cold one, with
+the fusion heat applied to that layer and recorded in the route. Land snowpack, ocean rain/snow
+fluxes and visible weather phase consume the physical surface result instead of reclassifying total
+precipitation from a temperature label. Cloud ice is also a native tracer in adjacent vertical and
+loaded horizontal transport.
+
+Engine v15 migrates v14 liquid-only saves by adding explicit zero-valued ice reservoirs without
+inventing mixed-phase history. The v3 dynamics receipt, v2 phase and descent receipts, v2 native
+horizontal receipt and v5 Earth transport receipt close mixed-phase water and fusion-aware energy.
+This remains bounded bulk microphysics: individual droplets, crystals, aerosols, collision and
+coalescence are deliberately not claimed.
+
+## Rung 23: mixed-phase radiation and persistent frozen-surface feedback
+
+The native cloud reservoirs now alter the surface-energy path. Each of the eight pressure levels
+contributes its independent liquid and ice water path to a broadband shortwave optical depth and
+longwave emissivity. The resulting v1 radiation receipt records top-of-atmosphere forcing, clear and
+cloudy transmissivity, absorbed surface sunlight, upward/downward infrared, mixed-phase cloud forcing
+and the dynamic surface albedo. A held clear/cloudy test proves that this is causal: native condensate
+changes both absorbed sunlight and the surface heat tendency under otherwise identical forcing.
+
+Land snow now persists an age that darkens its albedo between fresh snowfall events. Ocean cells retain
+snow on the sea-ice fraction separately from liquid seawater, use salinity to derive the local freezing
+point, and derive ice concentration/thickness from conserved ice water equivalent. Snowmelt,
+sublimation, ice growth and ice melt enter a v1 cryosphere phase receipt. The surface-energy ledger uses
+liquid water as its reference and includes the exact fusion storage change plus the phase enthalpy of
+incoming snow; frozen water therefore cannot change phase for free.
+
+Engine v16 migrates v15 columns with explicit zero-age/no-receipt defaults and does not invent prior
+radiation or fusion evidence. This is a bounded broadband and thermodynamic treatment, not spectral
+radiative transfer, resolved snow grains, brine pockets, leads, ridging, dynamic sea-ice motion or a
+scientific climate model.
+
+## Rung 24: persistent land ecology and coupled carbon-water feedback
+
+Land columns now contain a persistent ecology checkpoint instead of reconstructing vegetation from a
+biome label on every frame. Nine bounded functional types derive canopy cover, leaf area, height, root
+depth, roughness and canopy albedo from the canonical biome and climate. Carbon is retained in living
+biomass, litter, soil organic matter and a local exchangeable atmospheric proxy. Nitrogen is retained
+in living, litter, organic-soil and mineral pools.
+
+Each real Earth-system step records absorbed-light gross primary production, nitrogen-limited retained
+growth, autotrophic and heterotrophic respiration, litterfall, humification, mineralization and uptake.
+The v1 land-ecology flux receipt closes both local carbon and nitrogen exactly. Plant water demand is
+derived from the active canopy and roots; canopy and litter shade bare-soil evaporation. Canopy cover
+also alters surface albedo, while canopy height alters aerodynamic roughness and sensible exchange.
+These are therefore physical feedbacks, not display-only vegetation statistics.
+
+Turning Life off freezes every ecology pool and produces a dormant zero-flux receipt while abiotic
+water, atmosphere, radiation and cryosphere organs continue. Engine v17 migrates v16 columns with an
+empty ecology checkpoint and no fabricated historic receipt; the first subsequent physical step seeds
+and advances the organ from the column's real sample. This remains a bounded functional-type model
+with a local carbon proxy—not individual plants, species succession, mechanistic photosynthesis,
+globally mixed atmospheric CO2, nutrient transport, or a scientific Earth-system model.
+
+## Rung 25: persistent ocean ecology and mixed-layer biogeochemistry
+
+Ocean columns now retain dissolved inorganic and organic carbon, phytoplankton, zooplankton,
+detritus, dissolved and biological nitrogen and phosphorus, and dissolved oxygen beside local
+exchangeable atmospheric carbon and oxygen proxies. Light, temperature, sea ice, nitrogen and
+phosphorus limit marine primary production. Grazing, mortality, oxygen-limited respiration and
+remineralization return matter through the mixed layer, while chlorophyll, euphotic depth, oxygen
+saturation and hypoxia are derived from the persistent reservoirs.
+
+The v1 marine flux receipt independently closes carbon, nitrogen, phosphorus and the declared oxygen
+flux ledger. Turning Life off freezes plankton, marine organic carbon and nutrients but keeps physical
+air-sea C/O2 exchange active. Loaded ocean neighbors simultaneously mix fourteen dissolved,
+plankton and detrital pools with area-weighted element conservation and typed donor/receiver receipts.
+Loaded river mouths add explicit parameterized dissolved C/N/P/O2 concentrations beside freshwater;
+this is deliberately not a claim that upstream river chemistry reservoirs already exist.
+
+Engine v18 migrates v17 ocean columns through an empty checkpoint without inventing plankton or prior
+flux evidence, then initializes the organ on the first real step. The local atmospheric gases are not
+globally mixed, transport covers loaded surface neighbors rather than 3D currents, and plankton are
+bulk functional pools rather than resolved organisms or mechanistic biochemistry.
+
+## Rung 26: persistent river chemistry and exact ocean delivery
+
+Canonical river reaches now retain dissolved inorganic and organic carbon, inorganic nitrogen and
+phosphorus, and dissolved oxygen beside their water storage. A land-to-reach inlet adds a typed,
+explicitly parameterized headwater chemistry boundary. Every loaded reach-to-reach move derives water
+and solutes from the same pre-step state and records equal sender debit and receiver credit, so newly
+received material cannot jump across multiple reaches in one invocation.
+
+At a loaded ocean mouth, the v2 receipt removes the exact persistent C/N/P/O2 pools from the river and
+credits those exact quantities into the receiving marine mixed layer. River-only, ocean-only and
+combined ledgers are separately checked. Unloaded downstream handoffs retain both water and chemistry.
+A v1 water-only basin snapshot migrates with an explicit empty chemistry checkpoint rather than
+inventing historical solutes.
+
+The upstream land-runoff concentrations remain a declared boundary: land ecology does not yet own and
+debit complete C/N/P/O2 export reservoirs. At that rung, in-channel reactions, sediment, floodplains and a global
+always-loaded basin network remain later work.
+
+## Rung 27: persistent estuary processing
+
+Loaded ocean mouths are now persistent material processors rather than transparent pipes. The v1
+estuary organ consumes oxygen while converting a bounded fraction of dissolved organic carbon into
+dissolved inorganic carbon, retains organic carbon, nitrogen and phosphorus in persistent sediment,
+and exposes oxygen-sensitive denitrification as a named nitrogen-gas boundary. The ocean receives
+only the remaining dissolved material, while the full river sender debit is partitioned exactly among
+ocean credit, estuary storage, nitrogen loss and oxygen consumption.
+
+River-only, estuary-only, ocean-only and combined C/N/P/O2 receipts close independently. Basin v2
+snapshots migrate to v3 with explicit empty estuary storage rather than invented historical sediment.
+The implementation is a bounded bulk reactor: it does not resolve tides, salinity wedges, sediment
+resuspension, coastal currents or an atmospheric gas receiver for the declared gas terms.
+
+## Rung 28: persistent deep ocean and biological carbon export
+
+Ocean ecology v2 now carries a persistent deep-water organ below the mixed layer. Signed dissolved
+DIC, DOC, inorganic nitrogen, phosphorus and oxygen exchange follows surface/deep concentration
+gradients. Mixed-layer detritus sinks with its C/N/P composition, deep remineralization returns it to
+dissolved pools only while oxygen is available, and a small fraction moves into persistent seafloor
+organic burial. One typed receipt closes the mixed layer and interior together.
+
+New ocean columns initialize bounded deep reservoirs from their canonical ocean sample. Existing v18
+mixed-layer snapshots migrate into engine v19 with an explicit empty deep checkpoint, never invented
+historical interior matter. Life-off continues physical dissolved exchange but freezes sinking,
+remineralization and burial. This is not a 3D ocean-current solver: gyres, overturning water masses,
+eddies, bathymetric flow and continuous unloaded-cell circulation remain future organs.
+
+## Rung 29: atmosphere-owned local biosphere gases
+
+Each sparse Earth-system column now owns persistent local carbon-dioxide carbon, oxygen and
+nitrogen-gas reservoirs. Land and ocean ecology continue to expose their previous atmospheric fields
+for compatibility, but those values are exact mirrors of the atmosphere-owned state rather than
+duplicate stores. A typed atmosphere-biosphere receipt records land or ocean exchange and closes C/O2
+around every step. Engine v19 saves migrate into v20 by adopting the existing proxy once, with an
+explicit checkpoint and no fabricated historical flux.
+
+At loaded ocean mouths, estuary denitrification now has a real persistent receiver. Basin v4 nests an
+atmospheric boundary-input receipt inside the mouth receipt, credits nitrogen to the receiving coastal
+column, and includes that reservoir in the coupled river/estuary/ocean/atmosphere nitrogen ledger.
+Oxygen consumption remains a named estuary reaction term. Atmospheric gases are still local: there is
+no horizontal gas transport, global mixing, full atmospheric chemistry or scientific composition
+model yet.
+
+## Rung 30: deterministic runtime integrity and handoff
+
+`axm.foundation-planet.system-audit/v1` condenses the major cross-organ claims into a read-only
+machine-verifiable report. It checks the current Earth-column lineage, eight-layer/seven-interface
+pressure shape, local water and energy residuals, atmosphere-owned gas truth, atmosphere-biosphere
+receipt, exact ecology mirrors, deep-ocean lineage, and—when supplied—the latest loaded transport and
+basin receipts. Optional seams that have not produced a receipt are reported as unobserved rather than
+silently passed.
+
+The browser exposes the report through `AXMFoundationPlanet.audit()` and the streaming diagnostics.
+Tests prove both directions: a healthy live-shaped state passes, while a deliberately corrupted
+atmosphere/ecology mirror fails at the named check. The audit mutates nothing and does not convert the
+procedural model into scientific authority; it is a compact trust and handoff seam for later games,
+world organs and AI stewards.
+
+## Rung 31: loaded atmospheric gas transport
+
+Atmosphere-owned carbon-dioxide carbon, oxygen and nitrogen gas now ride the same typed native dry-air
+mass routes used by the eight pressure levels. Every gas route names its parent dry-air transfer,
+sender, receiver, native level and carried mass. All routes are derived from one pre-transport state and
+committed simultaneously, so reversing caller order produces the same state and digest. The domain
+receipt closes area-weighted C/O2/N2 mass, while per-column receipts retain incoming, outgoing and final
+reservoir lineage. Land and ocean ecology gas fields remain exact compatibility mirrors of the
+atmosphere owner after transport.
+
+Engine v20 and atmosphere-gas state v1 snapshots migrate to engine v21/state v2 without inventing a
+historical route. Transport step v7 integrates the gas receipt with the existing native dry-air route
+ledger and exposes its conservation result to the runtime audit and browser diagnostics. This is sparse
+transport between loaded canonical neighbors with explicit unloaded boundaries. It is not global
+mixing, continuous circulation through unloaded cells, resolved atmospheric chemistry or a scientific
+composition model.
+
+## Rung 32: eight-level atmospheric composition
+
+Carbon-dioxide carbon, oxygen and nitrogen gas are now persistent reservoirs in each of the eight
+native pressure layers rather than one whole-column amount copied onto every horizontal route. Land,
+ocean and estuary exchange enters through native layer 0. The local dynamics step consumes the same
+seven adjacent dry-air exchange receipts already produced by the pressure organ and conservatively
+mixes each gas across the named lower/upper interface. A typed vertical receipt retains initial and
+final layer inventories, per-interface net material, throughput and exact C/O2/N2 closure.
+
+Horizontal routes now sample the sender's pre-transport composition at the route's own native level.
+The domain receipt contains eight ordered conservation ledgers and explicitly records that no
+whole-column average was used. Engine v21/state v2 snapshots migrate to engine v22/state v3 by
+partitioning their exact bulk reservoirs according to persisted pressure-layer dry-air fractions; this
+is a migration checkpoint, not fabricated historical vertical or horizontal transport. Transport step
+v8 and route/local receipt v2 provide the new lineage. The eight layers remain bounded bulk composition
+reservoirs, not molecular diffusion, reaction chemistry, three-dimensional plumes, circulation through
+unloaded cells, global mixing or a scientific atmospheric-composition model.
+
+## Rung 33: atmosphere-owned CO2 radiative feedback
+
+The persistent carbon inventory now affects the surface-energy path. A replaceable
+`atmosphere-co2-radiation` organ reads all eight typed gas layers together with their native pressure
+thicknesses and temperatures. It derives a concentration and bounded grey optical depth for each
+path, integrates each layer's temperature-dependent downward-longwave contribution through the
+layers below it, and compares that result with a 420 ppm reference using the same temperature profile.
+The comparison is exactly neutral for a true 420 ppm fixture, responds monotonically above and below
+that reference, and distinguishes equal total carbon placed in warm low air from carbon placed in cold
+high air.
+
+`surface-radiation-receipt/v2` nests the complete eight-layer CO2 receipt. Its cloud-overlap mask and
+bounded surface adjustment enter the existing closed surface-energy ledger, so the result changes
+heat storage rather than merely appearing as a diagnostic. The runtime exposes native ppm, signed
+longwave adjustment and observed layer count. Engine v22 snapshots migrate to v23 by invalidating old
+v1 radiation receipts; the first real post-migration step earns v2 evidence instead of having it
+fabricated during restore.
+
+This is a deliberately modest causality rung, not a spectral or line-by-line radiative-transfer solver.
+The calibration is a bounded broadband grey-gas proxy, cloud overlap is bulk-parameterized, and no
+scientific climate accuracy is claimed. Radiation consumes the atmosphere-owned profile present at
+the start of a local step; biosphere and transport changes therefore affect the following local
+radiation step.
+
+## Rung 34: finite soil-water and runoff biogeochemistry
+
+Land runoff chemistry is no longer created at a river inlet from a concentration formula. Every new
+land column owns finite dissolved inorganic and organic carbon, inorganic nitrogen, inorganic
+phosphorus and dissolved oxygen in its soil-water organ. A wet local step mobilizes a bounded fraction
+from those persistent donors into a persistent runoff-biogeochemistry queue using the same generated
+runoff event. The soil debit and queue credit close per pool; a dry step exports nothing.
+
+Loaded topographic routing moves the same fraction of queued C/N/P/O2 as queued water. A land receiver
+gets an area-weighted queue credit, while a loaded coastal ocean gets an exact dissolved-pool credit.
+Canonical basin capture likewise debits the Earth cell's queue before crediting its persistent river
+reach, and both sides carry one transfer identity. Basin v5 therefore treats land runoff chemistry as
+an internal reservoir in the river/estuary/ocean/atmosphere ledger instead of subtracting an external
+headwater boundary.
+
+Engine v23 saves migrate to v24 with explicit empty soil and runoff checkpoints. The first real local
+step establishes a declared canonical soil initial condition but exports no historical material; only
+a following genuine runoff step may mobilize it. Old transport and basin receipts are invalidated
+rather than relabeled as sender-debit evidence. This remains bounded bulk soil-water chemistry—not
+mechanistic weathering, sorption, redox kinetics, soil horizons, pore flow or a scientific watershed
+model.
+
+## Rung 35: renderer-independent experience membrane
+
+Caelus can now seal the currently loaded sector into
+`axm.foundation-planet.experience-sector-capsule/v1`. The capsule is a deterministic, renderer-free
+projection of canonical coordinates, environment, active layers, physics frame, loaded hydrology,
+Earth-system state and regional ecology. Its world lineage, source revision, save checksum and six
+component digests feed one capsule digest. Reordering set-like rivers, lakes, handoffs or species cannot
+change the result; changing a semantic field does. A changed component under an old digest is refused.
+
+`axm.foundation-planet.experience-lease/v1` makes three different relationships explicit. An observer
+may receive structured state but cannot propose world actions. A player may create a typed
+`axm.foundation-planet.world-action-proposal/v1`, but the proposal carries no apply or reset authority
+and binds itself to the source revision for governed review. A sandbox may fork a complete detached
+candidate in which creative mutation is permitted, but that candidate cannot write back, promote
+itself or become canonical planet state. Every intent is actor-, lease-, capsule- and sequence-bound;
+stale or replayed sequences are refused.
+
+`axm.foundation-planet.experience-protocol-audit/v1` verifies capsule and component digests, the
+authority membrane, lease lineage, intent receipts, unapplied proposals and sandbox detachment without
+mutating Caelus. API v31 exposes capture, lease, dispatch and audit functions. This is preparation for
+future Mirror, Holodeck and Experiment World brokers, not a claim that any of them is connected. Actual
+writeback or automatic integration remains a deliberate human-governed checkpoint.
+
+## Rung 36: finite geomorphic sediment cycle
+
+Land no longer exports an unowned erosion-rate fiction. Each canonical land column owns a finite
+`axm.foundation-planet.surface-sediment-state/v1` inventory split into clay, silt, sand and gravel.
+Soil depth, substrate texture and bulk density establish the declared initial material. Surface
+runoff, rain impact, slope proxy, canopy/litter protection and freeze state mobilize only a bounded
+fraction. The exact surface debit credits a persistent
+`axm.foundation-planet.runoff-sediment-queue/v1`; dry steps export zero and an exhausted grain donor
+cannot go negative.
+
+Loaded topographic transport moves sediment with the exact routed water fraction. Land receivers get
+area-weighted queue credits, while loaded ocean receivers gain persistent suspended and deposited
+coastal material. Canonical basin inlet v5 debits the same land queue before crediting persistent
+river suspended load. Basin engine v6 routes that load from the pre-step reach state, partitions each
+grain between persistent river-bed deposit and downstream export, retains all material at unloaded
+handoffs, and grain-selectively credits a loaded coast at a river mouth. Clay remains more mobile;
+sand and gravel settle more readily. Every surface, neighbor, river and coast seam carries paired
+typed receipts and a per-grain conservation ledger.
+
+Earth engine v24 and basin v5 snapshots migrate with explicit empty sediment checkpoints and no
+invented historical erosion. The first land step after migration establishes finite ownership but
+exports nothing. Old transport and basin receipts are invalidated instead of being relabeled as
+current sediment evidence. The renderer-independent experience capsule now preserves surface,
+runoff and coastal sediment state for future observer/player/game layers, and API v32 exposes the
+organ description and complete state.
+
+This is a finite, persistent geomorphic material cycle—not a scientific erosion or landscape
+evolution solver. Erosion and deposition are bounded bulk parameterizations. Mechanistic soil
+formation, abrasion, entrainment thresholds, channel cross-section evolution, bank migration,
+delta geometry, resolved coastal morphodynamics and a continuously active global sediment network
+remain explicit gaps. Rung 37 below supersedes only the absence of bounded loaded-reach floodplain
+exchange; it does not claim resolved inundation hydraulics.
+
+## Rung 37: persistent conservative floodplains
+
+Loaded canonical reaches now own `axm.foundation-planet.floodplain-state/v1`. The state persists
+overbank water, dissolved C/N/P/O2 chemistry, suspended clay/silt/sand/gravel and deposited mineral
+material beside—not inside—the channel reservoirs. Reach length, width and depth form an explicit
+parameterized bankfull storage threshold. Water above that threshold can cross into floodplain
+storage, while a bounded recession timescale can return only water, chemistry and suspended grains
+the floodplain actually owns.
+
+`axm.foundation-planet.floodplain-exchange-receipt/v1` records both directions, the exact bankfull
+control, grain-selective overbank entrainment, grain-selective settling and combined water, chemistry
+and per-grain residuals. Coarse grains settle more readily; persistent deposits do not disappear when
+the reach leaves the loaded sector. Basin engine v7 includes floodplain reservoirs in the same coupled
+water, chemistry and sediment ledgers as channel, runoff, coast and estuary storage. Unloaded reach
+receipts name retained floodplain water and mineral mass.
+
+Basin v6 snapshots migrate through explicit empty floodplain checkpoints. Their first current step
+cannot invent historical flooding or deposits, and old basin receipts are discarded instead of being
+relabelled as observed floodplain evidence. The read-only system audit independently validates every
+floodplain receipt, and API v33 exposes compact floodplain state to the interface and governed
+experience capsule.
+
+This is a bounded reach-scale storage organ, not a two-dimensional inundation solver or scientific
+flood forecast. It does not rasterize water depth across terrain, resolve levees and bank failure,
+erode channel banks, remobilize old deposits, couple vegetation succession to flooding, or advance
+unloaded reaches continuously.
+
+## Rung 38: persistent flood-pulse memory and habitat potential
+
+Every persisted reach now also owns
+`axm.foundation-planet.floodplain-habitat-state/v1`. This read-only observer
+remembers genuinely observed wet and dry days, consecutive wet and dry
+spells, flood-pulse count, fraction-weighted inundation exposure, a rolling
+30-day hydroperiod, peak inundation and newly observed deposits. Dissolved
+C/N/P and fine deposits provide bounded fertility signals; the observer never
+debits, credits or otherwise mutates the floodplain material state it reads.
+
+`axm.foundation-planet.floodplain-habitat-receipt/v1` binds every memory
+transition to the exact floodplain-exchange digest and before/after material
+digests. It projects a normalized five-part potential mosaic: open water,
+mudflat, reed/sedge, wet meadow and riparian woodland. Basin engine v8
+persists this memory, retains it across unloaded handoffs, produces
+reach-order-invariant receipts and migrates v7 snapshots through an explicit
+checkpoint. The checkpoint records current water and deposit baselines but
+adds no historical days or flood pulses. The system audit independently
+checks normalization, observer purity, memory monotonicity and truth
+boundaries. API v34, the live diagnostics and experience capsules expose the
+compact result.
+
+These fractions describe habitat potential, not living vegetation. Rung 38
+does not create plant biomass, species occupancy, population abundance,
+succession, competition, mortality, seed dispersal, resolved wetland
+topography or scientific wetland forecasts. A later ecology organ may consume
+this potential through its own finite populations and receipts; it must not
+retroactively relabel this observer as those populations.
+
+## Rung 39: bounded flood-event chronicle
+
+Every persisted reach now owns
+`axm.foundation-planet.flood-event-history-state/v1` beside its material
+floodplain and habitat-potential memory. The organ observes the exact current
+floodplain-exchange receipt and records genuine event start, continuation and
+completion boundaries. Each event retains wet duration, observation count,
+peak water, peak inundated fraction, fraction-weighted inundation exposure,
+overbank and return water, dissolved C/N/P/O2 payload, typed overbank grains
+and typed deposited grains. It never owns or mutates those material pools.
+
+Completed events enter a deterministic archive bounded to the most recent 32
+events per reach. Lifetime completion and eviction counts, mean completed
+duration, mean recurrence interval and historical peaks remain compact
+statistics when older detail is evicted. Basin engine v9 binds every
+`axm.foundation-planet.flood-event-transition-receipt/v1` to the exact
+floodplain-exchange digest, includes event state in snapshot/restore and
+unloaded-reach retention, and remains invariant to caller reach order. The
+read-only audit independently rejects material mutation, broken lifecycle
+claims, mismatched exchange lineage and archives beyond the declared bound.
+API v35 and experience capsules expose a compact semantic projection.
+
+Basin v8 snapshots migrate with an empty event checkpoint. If the material is
+already wet, the organ waits for a genuine dry boundary before allowing a new
+event to begin; it never converts an unknown pre-migration wet spell into
+invented history. This is a loaded-reach disturbance chronicle, not resolved
+hydraulics, a continuously simulated global river history, a scientific flood
+frequency model or a forecast. Event completion is recorded at the first dry
+observation while event duration counts only observed wet intervals.
+
+## Rung 40: persistent functional-guild floodplain succession
+
+Every persisted reach now also owns
+`axm.foundation-planet.floodplain-succession-state/v1`. Five functional guilds
+— aquatic pioneers, mudflat annuals, reed/sedge, wet meadow and riparian
+woodland — carry finite seed banks plus juvenile and mature cover. Their daily
+transition includes explicit local seed production, parameterized external
+seed rain, germination, seed decay, recruitment, maturation, ordinary
+mortality, flood-caused mortality and competition. Proposed cover is
+deterministically limited to 0.98, leaving an explicit bare fraction rather
+than silently overfilling the reach.
+
+Every `axm.foundation-planet.floodplain-succession-receipt/v1` binds the
+living transition to the exact habitat-memory and flood-event receipts it
+consumed. Per-guild seed and cover ledgers expose their before, input, loss and
+after terms; the system audit independently checks both closure and the cover
+capacity. Flood tolerance changes disturbance mortality by guild, while a
+completed event can increase bounded recovery seed rain. Turning Life off
+freezes demography and seed banks without deleting history.
+
+Basin engine v10 persists and streams the community, retains its summary at
+unloaded boundaries, and keeps state and receipts invariant to caller reach
+order. A v9 snapshot receives an empty migration checkpoint: its first step
+adds no cover, seeds or living history. API v36, live diagnostics and governed
+experience capsules expose the compact semantic state.
+
+This is genuine functional-guild community state, but it is not plant biomass
+material ownership, species occupancy, resolved individuals, mechanistic
+plant biochemistry or a scientific succession forecast. External seed rain is
+an explicit parameterized boundary. Those stronger claims require their own
+future organs and evidence.
+
+## Rung 41: material-backed floodplain plants
+
+Floodplain cover no longer has to imply matter that the planet cannot locate.
+Each reach now owns
+`axm.foundation-planet.floodplain-plant-matter-state/v1`: live,
+standing-dead and litter carbon and nitrogen for the same five functional
+guilds. New post-R41 juvenile or mature cover demands a finite material target.
+The target is credited only after the reach's deterministic donor Earth cell
+debits its existing land-ecology live biomass through
+`axm.foundation-planet.land-ecology-subgrid-biomass-debit/v1`. Sender and
+receiver receipts carry the same per-guild transfer IDs and the receiver binds
+the exact sender digest.
+
+This is a subgrid ownership partition, not a second independent biomass pool.
+Every basin step audits loaded land live C/N plus all persistent floodplain
+plant C/N before and after transfer. Mortality moves live matter to standing
+dead, and a bounded guild-specific fall rate moves standing dead to litter;
+neither internal transition creates or deletes C/N. Turning Life off freezes
+all plant-matter pools.
+
+Basin engine v11 persists the organ and retains it at unloaded handoffs. A v10
+snapshot initializes an explicit migration checkpoint: existing R40 cover is
+recorded as a legacy unmaterialized baseline, and the first current step
+creates no historical matter. Only genuinely new cover after migration can
+claim donor-backed biomass. API v37, the live diagnostic row, the read-only
+integrity audit and governed experience capsules expose the compact semantic
+state.
+
+Phosphorus and plant water remain unowned here because no compatible plant
+reservoir exists to debit. Decomposition, respiration, nutrient uptake,
+species occupancy, resolved individuals, mechanistic biochemistry and
+scientific biomass calibration also remain explicit future organs rather than
+being inferred from C/N bookkeeping.
+
+## Rung 42: jointly resource-limited floodplain plants
+
+The existing floodplain water and dissolved-phosphorus reservoirs now provide
+the missing compatible owner. Each reach persists
+`axm.foundation-planet.floodplain-plant-resources-state/v1` beside its C/N
+matter. The new organ owns live tissue water and live, standing-dead and
+litter phosphorus for the five functional guilds; its supported-carbon fields
+are non-owning references back to the R41 matter receipt and therefore cannot
+double-count carbon.
+
+New cover is now jointly limited by four finite resources. Its proposed C/N
+demand is first bounded by the loaded donor land cell, while the same growth
+is bounded again by the reach's available floodplain water and dissolved P.
+Only the shared minimum can become cover. Exact per-guild uptake IDs connect
+the floodplain sender debit to the resource receiver. Mortality retains P in
+standing dead, releases live tissue water back to the same local floodplain
+under a second paired ID, and later transfers standing-dead P to litter.
+
+Basin engine v12 includes live tissue water in the whole loaded water ledger
+and plant P in the coupled runoff/river/floodplain/estuary/ocean phosphorus
+ledger. Its independent audit checks both sender and receiver schemas,
+digests, IDs, guild flows, pool closure and non-owning carbon references. Life
+off freezes the organ, unloaded reaches retain it, and forward/reverse reach
+orders must reproduce identical receipts and state.
+
+A v11 save migrates without retroactive nutrient creation: existing R41 C/N
+is recorded as an unsupported legacy checkpoint and receives zero P and zero
+water on that first observation. R42 does not yet model decomposition into
+soil nutrients, root hydraulics, transpiration to the atmosphere,
+photosynthetic stoichiometry, species occupancy, individuals or scientific
+calibration. API v38 and experience capsules expose the bounded state without
+granting write authority.
+
+## Rung 43: resource-backed floodplain detrital return
+
+Standing-dead and litter matter now have a conservative downstream path.
+Every reach persists
+`axm.foundation-planet.floodplain-decomposition-state/v1`, which owns only
+bounded process memory and cumulative observations—not carbon, nitrogen or
+phosphorus. The actual material remains owned by the R41 plant-matter organ,
+the R42 plant-resource organ, and the local floodplain chemistry receiver.
+
+For each guild and detrital pool, decomposition can use only the smaller of
+owned plant carbon and its paired resource-backed carbon reference. This
+leaves legacy unsupported matter untouched. Moisture, Life abundance,
+guild-specific standing-dead and litter rates, and a one-day maximum step
+bound the aggregate transfer. Exact shared transfer IDs connect the plant
+C/N debit, supported-C/P debit, and local floodplain dissolved-organic-C plus
+inorganic-N/P credit. Independent receipts and the basin audit verify each
+schema, digest, ID, quantity and C/N/P residual.
+
+Basin engine v13 persists the organ, includes detrital return in the coupled
+material ledgers, remains invariant to caller reach order, and explicitly
+receipts the cumulative memory of unloaded reaches. A v12 snapshot receives
+an empty migration checkpoint: its first v13 observation performs zero
+transfer and invents no historical decomposition. Life off freezes the
+process and all three transfer paths. API v39, the live diagnostic row and
+renderer-neutral experience capsules expose the compact semantic state.
+
+R43 credits only the existing local floodplain chemistry reservoirs. It does
+not claim atmospheric respiration, oxygen consumption, soil delivery,
+microbial populations, mechanistic biochemistry or scientific calibration.
+Those require compatible persistent receivers and separate evidence-bearing
+organs before they can affect the planet.
+
+## Rung 44: oxygen-limited local floodplain respiration
+
+Decomposition-returned dissolved organic carbon now has a separate,
+conservative aerobic path. Every reach persists
+`axm.foundation-planet.floodplain-respiration-state/v1`, which owns process
+memory only. Its plan may consume only local floodplain-owned dissolved
+organic C and dissolved O2. The paired
+`axm.foundation-planet.floodplain-aerobic-mineralization-receipt/v1` debits
+that DOC, credits exactly equal dissolved inorganic C to the same floodplain,
+and debits O2 at the declared bulk ratio of 32/12 kg O2 per kg C.
+
+Finite local oxygen caps the reaction before chemistry is touched. The
+receipt closes the DOC debit, DIC credit, total carbon and O2 debit, while
+`axm.foundation-planet.floodplain-respiration-receipt/v1` binds the exact
+chemistry digest into persistent observed, dormant and oxygen-limited process
+memory. Life off produces zero reaction and freezes the process. Basin engine
+v14 includes the oxygen sink in its coupled ledger, preserves caller-order
+invariance and explicitly receipts respiration memory retained by unloaded
+reaches. A v13 snapshot gains an empty checkpoint whose first v14 step moves
+no C or O2 and invents no history. API v40, the live diagnostic row and
+renderer-neutral experience capsules expose the state without write
+authority.
+
+R44 is a bounded aerobic mineralization organ, not a microbial ecosystem or
+scientific soil-water respiration model. It has no atmosphere exchange,
+anaerobic pathway, microbial populations, resolved enzyme or redox chemistry,
+temperature calibration, soil receiver or scientific calibration claim.
+
+## Rung 45: paired floodplain-atmosphere gas exchange
+
+Loaded floodplains can now exchange material with the already authoritative
+eight-layer atmosphere without either owner reaching through the other. Every
+reach persists `axm.foundation-planet.floodplain-gas-exchange-state/v1`, a
+process-memory organ that owns no carbon or oxygen. It proposes bounded DIC
+evasion and oxygen-deficit reaeration, then requires two receipts carrying the
+same exchange ID before it can record an observed transition.
+
+`axm.foundation-planet.floodplain-gas-exchange-receipt/v1` debits only local
+floodplain dissolved inorganic carbon and credits only local dissolved oxygen.
+`axm.foundation-planet.atmosphere-floodplain-gas-exchange-receipt/v1` performs
+the opposite sides against native atmosphere layer 0: an exact CO2-carbon
+credit and an exact oxygen debit. It refuses surface-layer oxygen overdraw.
+The basin v15 ledger verifies both owners, quantities, IDs, digests and four
+independent C/O2 residuals; the existing river/floodplain coupled material
+ledger also includes the declared cross-owner transfer. The native atmosphere
+owner declares a 0.001 kg absolute floating-point bound because the receipt
+subtracts tiny local fluxes from planet-cell gas reservoirs; larger residuals
+still fail independently of the basin's separate one-kilogram aggregate bound.
+
+The exchange is physical and therefore continues when Life is disabled. A v14
+save gains zero-history process memory, and its first v15 observation moves no
+material. Missing loaded atmosphere produces an explicit zero-transfer process
+receipt rather than a fabricated air reservoir. Caller order remains
+deterministic, unloaded reach memory is retained, API v41 exposes the live
+diagnostic, and renderer-independent experience capsules carry the compact
+state without granting mutation authority.
+
+R45 uses bounded exchangeable-DIC and oxygen-saturation proxies. It is not a
+bidirectional Henry-law solver, resolved wind/wave or air-water turbulence,
+carbonate speciation model, global atmosphere, calibrated reaeration model or
+scientific gas-flux claim.
+
 ## Why there are two render scales
 
 A real-scale planet cannot render individual trees and a globe-sized continent mesh in one stable coordinate space. Caelus keeps one global latitude/longitude truth and renders it through two views:
@@ -140,7 +830,7 @@ The original globe established seeded randomness, growth clocks, organism condit
 ## Controls
 
 - Orbital: drag to rotate, wheel to change altitude, double-click a location to deploy.
-- Surface: click the world to capture the mouse, use W/A/S/D to move, hold Shift for fast traversal, press Escape to release the cursor.
+- Surface: click the world to capture the mouse, use W/A/S/D to move, look with the mouse or arrow keys, hold Shift for fast traversal, and press Escape to release the cursor. If pointer lock is unavailable, click-drag remains available. Mouse look follows the conventional direction: right turns right and up looks up.
 - Use **Find viable land** or **Relocate expedition** to stream another habitable sector.
 - Use **Follow water** for a computed river reach or **Survey ocean** for a productive marine sector.
 - Use the left console to change condition profiles and toggle systems independently.
@@ -161,4 +851,4 @@ See `docs/FOUNDATION_CONTRACT.md` for the coordinate, layer and future adapter c
 
 ## Honest limits
 
-This is an exploratory procedural world model, not a scientific Earth simulator. Terrain, climate, tectonics, drainage and ecology are plausible abstractions. The loaded river network now has persistent cross-scale routing and ocean-mouth receipts, but no global depression filling, endorheic spill rules, floodplain dynamics, channel morphology or long-term sediment transport. Groundwater exchanges between loaded neighbors but has no three-dimensional aquifer geometry, plate provinces are not a full crustal dynamics solver, and soils have no chemistry horizons yet. Loaded atmosphere cells now conserve dry-air mass, carried tangent momentum and kinetic energy around explicit pressure and Coriolis terms, and carry a conservative bounded two-layer vertical exchange; they still have no global angular-momentum solve, resolved three-dimensional convection, buoyancy/gravitational-work ledger, upper-air horizontal transport, cloud microphysics, turbulence closure, global circulation or ocean-current solver. There is also no general rigid-body engine, automatically running shared host, active multiplayer session, complete species catalog, individual animal AI or interiors yet. The host and controller paths are explicit contracts and tested local services, not an always-on production world.
+This is an exploratory procedural world model, not a scientific Earth simulator. Terrain, climate, tectonics, drainage and ecology are plausible abstractions. The loaded river network has persistent cross-scale routing, ocean-mouth receipts, a finite clay/silt/sand/gravel material cycle and conservative reach-scale floodplain storage, but no global depression filling, endorheic spill rules, resolved two-dimensional inundation, levee or bank-failure dynamics, resolved channel/coastal morphodynamics or continuously active global sediment network. Groundwater exchanges between loaded neighbors but has no three-dimensional aquifer geometry, plate provinces are not a full crustal dynamics solver, and soils have no chemistry horizons yet. Loaded atmosphere cells persist eight pressure levels with per-level dry-air mass, water tracers, sensible heat, tangent momentum, kinetic energy and hydrostatic geometry plus seven pressure-interface convective-energy and compensating-momentum states. Native level saturation, phase change, cloud reservoirs, precipitation descent, adjacent vertical exchange, interface buoyancy and loaded lateral transport are implemented and receipted. Atmosphere-owned C/O2/N2 state closes biosphere exchange, receives estuary nitrogen and is conservatively carried across loaded native dry-air routes, but it has no global mixing, continuous unloaded-cell circulation or resolved atmospheric chemistry. Horizontal terrain adjustment and bounded interface overturning expose geopotential, pressure, buoyancy and kinetic-conversion work rather than hiding it. Native liquid/ice cloud paths drive bounded broadband shortwave/longwave feedback, and native-layer CO2 now adds a reference-relative, temperature-path-aware grey-gas adjustment to the surface ledger; aged land snow, snow on sea ice, sea-ice mass and surface fusion energy persist. This is not spectral, line-by-line or scientifically validated radiative transfer and does not resolve droplet/crystal size distributions, snow grains, brine, leads, ridging or dynamic ice motion. The atmosphere still has no global angular-momentum solve, resolved three-dimensional plumes, continuous unloaded-cell upper-air circulation, resolved aerosol/droplet/ice microphysics, turbulence closure, global circulation or ocean-current solver. There is also no general rigid-body engine, automatically running shared host, active multiplayer session, complete species catalog, individual animal AI or interiors yet. The host and controller paths are explicit contracts and tested local services, not an always-on production world.

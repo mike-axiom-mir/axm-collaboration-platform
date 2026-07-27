@@ -1,2 +1,54 @@
-'use strict';const assert=require('assert'),fs=require('fs'),path=require('path');const dir=__dirname,m=JSON.parse(fs.readFileSync(path.join(dir,'manifest.json'))),c=JSON.parse(fs.readFileSync(path.join(dir,'module.contract.json'))),h=fs.readFileSync(path.join(dir,'index.html'),'utf8'),a=fs.readFileSync(path.join(dir,'app.js'),'utf8');assert.equal(m.id,'recovery-center');assert(m.permissions.includes('recovery.apply'));assert.equal(c.lifecycle.reload,'resume');assert(c.boundaries.refuses.includes('silent-restore'));assert(h.includes('Create verified snapshot')&&h.includes('RESTORE SELECTED FILES'));assert(a.includes('/api/recovery/restore/preview')&&a.includes('apply-preview'));console.log('PASS Recovery Center · snapshot schedule preview safety-copy restore contract');
+#!/usr/bin/env node
+'use strict';
 
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const dir = __dirname;
+const root = path.join(dir, '..', '..');
+const read = file => fs.readFileSync(path.join(root, file), 'utf8');
+const manifest = JSON.parse(read('tools/recovery-center/manifest.json'));
+const contract = JSON.parse(read('tools/recovery-center/module.contract.json'));
+const html = read('tools/recovery-center/index.html');
+const app = read('tools/recovery-center/app.js');
+const css = read('tools/recovery-center/recovery-center.css');
+const service = read('shared/operations/recovery-service.js');
+const api = read('shared/operations/operations-api.js');
+const operationsTest = read('shared/operations/selftest.js');
+
+assert.equal(manifest.schema, 'axm.tool-manifest/v1');
+assert.equal(manifest.kind, 'product');
+assert.equal(manifest.version, 'v0.2');
+assert.equal(manifest.status, 'TEST');
+assert.deepEqual(manifest.permissions, ['recovery.apply']);
+assert(!manifest.uses.includes('recovery.apply'));
+assert(manifest.produces.includes('axm.restore-preview/v2'));
+assert(manifest.produces.includes('axm.recovery-rollback-preview/v1'));
+assert(manifest.produces.includes('axm.recovery-rollback-receipt/v1'));
+assert(contract.provides.includes('current-state-bound-restore-preview'));
+assert(contract.provides.includes('recoverable-restore-rollback'));
+assert(contract.boundaries.refuses.includes('stale-restore-preview'));
+assert(contract.boundaries.refuses.includes('rollback-with-later-overlapping-restore'));
+assert(contract.boundaries.refuses.includes('automatic-rollback'));
+assert(html.includes('RESTORE SELECTED FILES') && html.includes('ROLL BACK RESTORE'));
+assert(html.includes('module=recovery-center&amp;permission=recovery.apply'));
+assert(html.includes('in-process timer') && html.includes('No automatic restore, rollback, upload, or promotion'));
+assert(!/[âÂ]/.test(html + app));
+assert(app.includes("restoreConfirm.value === 'RESTORE SELECTED FILES'"));
+assert(app.includes("rollbackConfirm.value === 'ROLL BACK RESTORE'"));
+assert(app.includes('/api/recovery/rollback/preview') && app.includes('/api/recovery/rollback/apply'));
+assert(app.includes('data.restorePreviews') && app.includes('data.rollbackPreviews'));
+assert(!/localStorage|sessionStorage/.test(app));
+assert(service.includes("schema: 'axm.pre-restore-backup/v2'"));
+assert(service.includes("schema: 'axm.pre-rollback-backup/v1'"));
+assert(service.includes('Workshop changed after restore preview'));
+assert(service.includes('Workshop changed after rollback preview'));
+assert(service.includes("record.state = 'HELD'") && service.includes('previewObservationMutatesLineage: false'));
+assert(service.includes("schema: 'axm.recovery-restore-receipt/v1'"));
+assert(api.includes("explicit(req, 'x-axm-recovery', 'apply-rollback-preview')"));
+assert((api.match(/requirePermission\('recovery-center','recovery\.apply'\)/g) || []).length === 2);
+assert(operationsTest.includes('stale restore refusal leaves every selected target untouched'));
+assert(operationsTest.includes('rollback preserves a pre-rollback safety copy'));
+assert(css.includes('.authority-strip') && css.includes('.rollback-zone') && css.includes('@media(max-width:700px)'));
+
+console.log('PASS Recovery Center - current-state-bound restore, persistent lineage, governed rollback, dual safety copies');

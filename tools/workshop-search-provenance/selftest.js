@@ -1,2 +1,10 @@
-'use strict';const assert=require('assert'),fs=require('fs'),path=require('path'),Search=require('../../shared/operations/search-service');const d=__dirname,m=JSON.parse(fs.readFileSync(path.join(d,'manifest.json'))),c=JSON.parse(fs.readFileSync(path.join(d,'module.contract.json'))),a=fs.readFileSync(path.join(d,'app.js'),'utf8');assert.equal(m.id,'workshop-search-provenance');assert(c.boundaries.refuses.includes('private-state-index'));assert(c.boundaries.refuses.includes('remote-search-upload'));assert(!Search.ROOTS.includes('state')&&!Search.ROOTS.includes('bridge'));assert(a.includes('/api/search/reindex')&&a.includes('sha256'));console.log('PASS Workshop Search · bounded roots snippets hashes provenance private areas excluded');
-
+'use strict';
+const assert=require('assert'),fs=require('fs'),path=require('path'),Search=require('../../shared/operations/search-service');
+const d=__dirname,m=JSON.parse(fs.readFileSync(path.join(d,'manifest.json'))),c=JSON.parse(fs.readFileSync(path.join(d,'module.contract.json'))),a=fs.readFileSync(path.join(d,'app.js'),'utf8');
+assert.equal(m.id,'workshop-search-provenance');assert.equal(m.version,'v0.2');
+assert(c.boundaries.refuses.includes('private-state-index'));assert(c.boundaries.refuses.includes('remote-search-upload'));
+assert(c.boundaries.refuses.includes('held-recipe-snippet-index'));assert(c.boundaries.refuses.includes('recipe-execution'));
+assert(c.provides.includes('structured-code-recipe-index'));assert(!Search.ROOTS.includes('state')&&!Search.ROOTS.includes('bridge'));
+assert.equal(Search.CODE_RECIPE_PACK_REL,'tools/code-recipe-foundry/catalog/code-cheats-1000.code-recipes.json');
+assert(a.includes('/api/search/reindex')&&a.includes('parentSha256')&&a.includes('REVIEW HOLD')&&a.includes('REFERENCE ONLY'));
+console.log('PASS Workshop Search · bounded roots, structured recipes, hold-aware snippets, hashes, provenance, private areas excluded');

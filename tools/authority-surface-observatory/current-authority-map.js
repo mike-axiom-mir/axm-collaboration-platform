@@ -1,0 +1,5326 @@
+'use strict';
+window.AXM_AUTHORITY_SURFACE_MAP = {
+  "schema": "axm.authority-surface-map/v1",
+  "version": "v0.1",
+  "measuredAt": "2026-07-26T21:05:10.407Z",
+  "freshnessTtlMs": 7200000,
+  "source": {
+    "label": "axm-workshop-v4",
+    "fingerprint": "305e3fcd8110cc68ad3e20f5486cf88ff003b8e9417ca95360856d6c8a5a3483",
+    "toolsScope": "top-level tools/<folder>/manifest.json excluding underscore-prefixed folders",
+    "symlinksFollowed": false,
+    "skippedSymlinks": [],
+    "broken": []
+  },
+  "summary": {
+    "modules": 81,
+    "exactDeclarations": 36,
+    "contractAuthorityUnknown": 28,
+    "incompleteDeclarations": 4,
+    "permissionDrift": 13,
+    "permissionOutsideUses": 0,
+    "contractIdDrift": 0,
+    "uniqueDeclaredPermissions": 33,
+    "modulesWithManifestPermissions": 19,
+    "contractsWithDeclaredWrites": 47,
+    "contractsWithDeclaredRefusals": 53
+  },
+  "modules": [
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "agent-command-center",
+      "folder": "agent-command-center",
+      "name": "AXM Agent Command Center",
+      "version": "v0.4",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "ai",
+          "gate",
+          "identity",
+          "storage",
+          "wisdom"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "agent-tool-forge",
+      "folder": "agent-tool-forge",
+      "name": "AXM Agent Tool Forge",
+      "version": "v0.2",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "export",
+          "gate",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "ai-task-talk",
+      "folder": "ai-task-talk",
+      "name": "AI Task & Talk Room",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "ai",
+          "bridge",
+          "gate",
+          "identity",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "ai-team",
+      "folder": "ai-team",
+      "name": "AXM AI Team",
+      "version": "v1.6",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "ai",
+          "bridge",
+          "gate",
+          "identity",
+          "runtime",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "bridge:local-agent-pause",
+          "browser-local:ai-team-workspace",
+          "browser-local:dataset-and-training-ledger",
+          "local-service:exploration-garden",
+          "local-service:specialist-checkouts",
+          "workshop:notice-acknowledgement"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-agent-start-from-recommendation",
+          "automatic-exploration-installation",
+          "automatic-guardian-reset",
+          "automatic-skill-activation",
+          "automatic-specialist-checkout",
+          "automatic-wisdom-promotion",
+          "capability-bridge-as-permission-bypass",
+          "chat-memory-as-technical-authority",
+          "connector-credential-access",
+          "connector-memory-merging",
+          "hidden-screen-capture",
+          "readme-as-technical-authority",
+          "silent-notice-approval",
+          "specialist-as-identity-replacement",
+          "specialist-as-independent-review",
+          "specialist-permission-escalation",
+          "technical-glasses-as-action-authority",
+          "unbounded-agent-autonomy"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "asset-fabric",
+      "folder": "asset-fabric",
+      "name": "AXM Asset Fabric",
+      "version": "v0.9",
+      "status": "EXPERIMENTAL",
+      "riskLabel": "MEDIUM",
+      "state": "INCOMPLETE_DECLARATION",
+      "findings": [
+        "CONTRACT_WRITES_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "asset-hands",
+          "basis-universal-wasm",
+          "creation-incubator",
+          "export",
+          "film-motion-core",
+          "game-runtime-optional",
+          "jspdf",
+          "spatial-core",
+          "storage",
+          "visual-kernel"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-cycle-without-body-pulse-lease",
+          "automatic-game-package-write",
+          "automatic-studio-write",
+          "automatic-vault-promotion",
+          "claiming-ktx2-uastc-hdr-uv-baking-skinning-final-video-pdf-x-or-icc-without-engine-evidence",
+          "claiming-procedural-variation-as-open-ended-creation",
+          "deleting-creation-because-review-attention-is-full",
+          "forcing-dual-review-on-solo-candidate-export",
+          "heartbeat-on-by-default",
+          "incompatible-hand-route",
+          "machine-review-without-candidate-digest",
+          "remote-image-generation",
+          "silent-lower-quality-canvas-substitution",
+          "single-score-winner-erasure",
+          "treating-raster-toolpath-pdf-ktx2-or-3d-as-svg",
+          "unversioned-asset-hand-result",
+          "user-cast-machine-seat"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "asset-filesystem-service",
+      "folder": "asset-filesystem-service",
+      "name": "AXM Asset Filesystem Service",
+      "version": "v0.2",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "asset-vault",
+          "export",
+          "files",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "exports/asset-packs",
+          "state/asset-filesystem-service"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "arbitrary-folder-scan",
+          "asset-source-mutation",
+          "path-escape",
+          "remote-upload",
+          "required-third-party-archive-tool",
+          "silent-pack-install",
+          "whole-device-scan"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "asset-pack-lab",
+      "folder": "asset-pack-lab",
+      "name": "AXM Asset Pack Lab",
+      "version": "v0_1",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "asset-librarian",
+          "gate",
+          "registry",
+          "server-export",
+          "settings",
+          "storage",
+          "template-source"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "asset-vault",
+      "folder": "asset-vault",
+      "name": "AXM Asset Vault",
+      "version": "v0_2",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "asset-librarian",
+          "gate",
+          "optional-ai",
+          "registry",
+          "server-export",
+          "settings",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "audio-studio",
+      "folder": "audio-studio",
+      "name": "AXM Audio Studio",
+      "version": "v1.0",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "PERMISSION_DRIFT",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "ai",
+          "asset-vault",
+          "export",
+          "files",
+          "shared-engines",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "ai",
+          "asset-vault",
+          "export",
+          "files",
+          "shared-engines",
+          "storage"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:axm.audio-studio.project.v1",
+          "browser-local:axm.publish-library.ledger.v1:unreviewed-artifact",
+          "user-download:explicit"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-publish-approval",
+          "automatic-rights-clearance",
+          "direct-unreviewed-ai-sound-application",
+          "pretend-imported-audio-in-mixdown",
+          "pretend-professional-mastering",
+          "pretend-session-file-persistence",
+          "silent-microphone-recording",
+          "voice-cloning-without-provider-rights-and-consent"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "ai",
+          "asset-vault",
+          "export",
+          "files",
+          "shared-engines",
+          "storage"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "body-pulse",
+      "folder": "body-pulse",
+      "name": "Body Pulse",
+      "version": "v0.2",
+      "status": "EXPERIMENTAL",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "host-telemetry",
+          "resource-governance",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "browser-lan-hardware-qa-lab",
+      "folder": "browser-lan-hardware-qa-lab",
+      "name": "Browser, LAN & Hardware QA Lab",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "qa.run"
+        ],
+        "uses": [
+          "gate",
+          "local-network",
+          "qa.run",
+          "runtime"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "qa.run"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "state/browser-lan-hardware-qa"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "arbitrary-url-testing",
+          "silent-hardware-access",
+          "unbounded-load-test",
+          "whole-network-scan"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "chatgpt-connector",
+      "folder": "chatgpt-connector",
+      "name": "ChatGPT Connector",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "PERMISSION_DRIFT",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "bridge",
+          "files",
+          "gate"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "bridge",
+          "files",
+          "gate"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "game-hub:asset-inbox:proposal-only"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "arbitrary-chat-automation",
+          "automatic-game-asset-acceptance",
+          "automatic-login",
+          "cookie-or-token-reuse",
+          "credential-content-read",
+          "non-png-asset-handoff",
+          "process-presence-as-platform-connection",
+          "unproven-mcp-connection-claim"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "bridge",
+          "files",
+          "gate"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "claude-connector",
+      "folder": "claude-connector",
+      "name": "Claude Code Connector",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "HIGH",
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "bridge",
+          "gate",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "cognitive-calibration-lab",
+      "folder": "cognitive-calibration-lab",
+      "name": "Cognitive Calibration & Benchmark Lab",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "cognitive.calibration.write"
+        ],
+        "uses": [
+          "cognitive-resource-meter",
+          "cognitive.calibration.write",
+          "gate",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "cognitive.calibration.write"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "state/cognitive-evidence-labs:calibration-record"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "budget-allocation",
+          "calibrated-accuracy-claim-from-insufficient-evidence",
+          "canon",
+          "cross-dimension-comparison",
+          "model-ranking",
+          "optimization",
+          "permission-change",
+          "selection",
+          "training",
+          "unbound-actual-value",
+          "world-action"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "cognitive-evidence-explorer",
+      "folder": "cognitive-evidence-explorer",
+      "name": "Cognitive Evidence Explorer",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "LOW",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "cognitive-evidence-labs",
+          "cognitive-resource-meter",
+          "runtime"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [],
+        "refusesPresent": true,
+        "refuses": [
+          "budget-allocation",
+          "canon",
+          "composite-intelligence-or-value-score",
+          "cost-calculation",
+          "mirror-write",
+          "permission-change",
+          "private-ledger-bypass",
+          "ranking",
+          "selection",
+          "training",
+          "world-action"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "cognitive-resource-meter",
+      "folder": "cognitive-resource-meter",
+      "name": "Cognitive Resource Meter",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "cognitive.evidence.write",
+          "cognitive.measure.local"
+        ],
+        "uses": [
+          "cognitive.evidence.write",
+          "cognitive.measure.local",
+          "export",
+          "files",
+          "gate",
+          "provider-declarations",
+          "storage",
+          "technical-glasses"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "cognitive.evidence.write",
+          "cognitive.measure.local"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "exports/cognitive-resource-meter:explicit-exact-draft-or-evidence-bundle",
+          "state/cognitive-resource-meter:explicit-volatile-local-meter-window",
+          "state/cognitive-resource-meter:private-content-addressed-ledger"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "absolute-mirror-path",
+          "automatic-network-price-refresh",
+          "budget-allocation",
+          "canon",
+          "composite-intelligence-or-value-score",
+          "cross-accounting-mode-metric",
+          "currency-combination",
+          "external-freshness-certification",
+          "measured-or-billed-cost-claim-from-profile",
+          "mirror-write",
+          "model-hardware-provider-or-plan-selection",
+          "nonlinear-billing-claim",
+          "optimization",
+          "overlapping-meter-double-count",
+          "permission-grant",
+          "prompt-response-hidden-reasoning-secret-identity-or-memory-capture",
+          "provider-unit-to-flops-relabel",
+          "ranking",
+          "release",
+          "required-third-party-runtime",
+          "silent-rate-mutation",
+          "training",
+          "universal-token-to-compute-conversion",
+          "world-action"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "device-handoff",
+      "folder": "device-handoff",
+      "name": "AXM Local Device Handoff Bridge",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "HIGH",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "device.listen"
+        ],
+        "uses": [
+          "device.listen",
+          "files",
+          "gate",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "device.listen"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "assets/inbox/device-handoff",
+          "state/device-handoff/receipts.json"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "expired-session",
+          "more-than-eight-files-per-batch",
+          "path-escape",
+          "permanent-listener",
+          "remote-cloud-relay",
+          "silent-file-pull",
+          "whole-device-scan",
+          "workshop-lan-exposure"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "diagnostics-operations-center",
+      "folder": "diagnostics-operations-center",
+      "name": "AXM Diagnostics & Operations Center",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "LOW",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "capability-index",
+          "logs",
+          "runtime",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "exports/diagnostics/explicit-report"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "arbitrary-log-path",
+          "automatic-repair",
+          "automatic-restart",
+          "health-as-certification",
+          "secret-value-in-report",
+          "unbounded-log-read"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "discord-bridge",
+      "folder": "discord-bridge",
+      "name": "Discord Bridge",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "PERMISSION_DRIFT",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "files",
+          "gate",
+          "network-optional"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "files",
+          "gate",
+          "network-optional"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "discord:configured-channel:sanitized-receipts-only",
+          "local:state/discord-bridge"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-execution",
+          "automatic-proposal-approval",
+          "automatic-training",
+          "credential-browser-readback",
+          "credential-log",
+          "message-content-intent",
+          "ordinary-message-reading",
+          "raw-action-input-posting",
+          "raw-action-output-posting",
+          "unbounded-mentions"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "files",
+          "gate",
+          "network-optional"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "discovery-engine",
+      "folder": "discovery-engine",
+      "name": "AXM Discovery Engine × Stance Forge",
+      "version": "v0.1",
+      "status": "EXPERIMENTAL",
+      "riskLabel": "MEDIUM",
+      "state": "PERMISSION_DRIFT",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "ai",
+          "export",
+          "gate",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "ai",
+          "export",
+          "gate",
+          "storage"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:discovery-engine",
+          "user-download:explicit"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "ai-output-as-executed-evidence",
+          "auto-run-on-open",
+          "fake-independent-validation",
+          "qualified-readiness-claim",
+          "self-promotion-to-truth",
+          "silent-candidate-overwrite",
+          "unbounded-model-loop"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "ai",
+          "export",
+          "gate",
+          "storage"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "duo-test",
+      "folder": "duo-test",
+      "name": "Supervised Local Duo - Nova and Gemini Local",
+      "version": "v3",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "ai",
+          "bridge",
+          "identity",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "evidence-desk",
+      "folder": "evidence-desk",
+      "name": "AXM Evidence Desk",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "export",
+          "gate",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "evolution-foundry",
+      "folder": "evolution-foundry",
+      "name": "AXM Evolution Foundry",
+      "version": "v0.2",
+      "status": "EXPERIMENTAL",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "asset-fabric",
+          "body-pulse",
+          "governed-evolution-lab",
+          "storage",
+          "workshop-direction"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-canonical-promotion",
+          "cross-experiment-write-authority",
+          "hidden-child-process",
+          "parent-owned-heartbeat",
+          "shared-child-state"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "film-motion-studio",
+      "folder": "film-motion-studio",
+      "name": "AXM Film & Motion Studio",
+      "version": "v1.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "PERMISSION_DRIFT",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "asset-hands",
+          "asset-vault",
+          "camera",
+          "export",
+          "files",
+          "gate",
+          "shared-engines",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "asset-hands",
+          "asset-vault",
+          "camera",
+          "export",
+          "files",
+          "gate",
+          "shared-engines",
+          "storage"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:axm.film-motion.project.v1",
+          "browser-local:axm.publish-library.ledger.v1:unreviewed-artifact",
+          "user-download:explicit"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "asset-hand-result-without-technical-pass",
+          "automatic-asset-hand-timeline-placement",
+          "automatic-publish-approval",
+          "automatic-review-approval",
+          "automatic-rights-clearance",
+          "destructive-source-media-editing",
+          "pretend-camera-tracking-without-solver-evidence",
+          "pretend-final-video-encoding",
+          "pretend-session-media-persistence",
+          "silent-camera-or-microphone-access",
+          "unverified-motion-capture-import"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "asset-hands",
+          "asset-vault",
+          "camera",
+          "export",
+          "files",
+          "gate",
+          "shared-engines",
+          "storage"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "finance-world-room",
+      "folder": "finance-world-room",
+      "name": "AXM Finance World Room",
+      "version": "v0.1-experimental",
+      "status": "EXPERIMENTAL",
+      "riskLabel": "MEDIUM",
+      "state": "PERMISSION_DRIFT",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "export",
+          "gate",
+          "network",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "export",
+          "gate",
+          "network",
+          "storage"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:finance-world-room",
+          "user-download:explicit"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-trading",
+          "buy-or-sell-instructions",
+          "composite-score-as-forecast",
+          "hidden-network-fetch",
+          "missing-value-estimation",
+          "self-promotion-to-working-or-canon",
+          "silent-carry-forward",
+          "silent-data-overwrite",
+          "unsourced-observation"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "export",
+          "gate",
+          "network",
+          "storage"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "forge",
+      "folder": "forge",
+      "name": "Tool Forge — make new tools the easy way",
+      "version": "v1",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "export",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "forge-line",
+      "folder": "forge-line",
+      "name": "Forge Line — proposal assembly line (v0.1 STARTER)",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "export",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "foundation-intake-steward",
+      "folder": "foundation-intake-steward",
+      "name": "AXM Foundation Intake Steward",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "LOW",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "catalog",
+          "filesystem-evidence",
+          "growth",
+          "review-inbox",
+          "verification"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [],
+        "refusesPresent": true,
+        "refuses": [
+          "absolute-or-parent-evidence-path",
+          "automatic-canonization",
+          "automatic-module-activation",
+          "catalog-code-execution",
+          "hidden-contract-only-gap",
+          "missing-implementation-evidence",
+          "network-intake",
+          "parent-root-replacement",
+          "secret-intake",
+          "symbolic-link-catalog-input",
+          "unclassified-supply-empty-claim",
+          "unknown-acceptance-test-execution"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "game-forge",
+      "folder": "game-forge",
+      "name": "AXM Game Forge",
+      "version": "v1.2",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "export",
+          "files",
+          "gate",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:game-forge-projects",
+          "exports:game-forge-candidates",
+          "user-download:explicit-project-or-mod-json"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-candidate-installation",
+          "automatic-mod-installation",
+          "automatic-physics-scene-execution",
+          "automatic-test-pass",
+          "cross-engine-bitwise-determinism-claim",
+          "general-3d-physics-claim",
+          "hidden-player-or-ai-seat",
+          "pretend-3d-runtime-execution",
+          "scientific-validation-claim",
+          "separate-engine-module-per-game",
+          "silent-game-package-write"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "game-hub",
+      "folder": "game-hub",
+      "name": "AXM Game Hub",
+      "version": "v0.4",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "INCOMPLETE_DECLARATION",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "files",
+          "gate"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "files",
+          "gate"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "accepted-game-folder:assets/studio",
+          "game-hub:asset-inbox"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "hidden-runtime-launch",
+          "path-escape",
+          "unreviewed-package-write"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "files",
+          "gate"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "geographic-market-map",
+      "folder": "geographic-market-map",
+      "name": "AXM Geographic Market Map",
+      "version": "v0.1-polished-review",
+      "status": "EXPERIMENTAL",
+      "riskLabel": "MEDIUM",
+      "state": "PERMISSION_DRIFT",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "export",
+          "gate",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "export",
+          "gate",
+          "storage"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:geographic-market-map",
+          "user-download:explicit"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "auto-buy-or-sell",
+          "demo-data-as-real-evidence",
+          "missing-market-estimation",
+          "pattern-candidate-as-forecast",
+          "quality-score-as-truth",
+          "self-promotion-to-working-or-canon",
+          "silent-currency-conversion",
+          "silent-evidence-overwrite",
+          "source-free-ranking",
+          "trade-execution",
+          "watch-entry-without-invalidation"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "export",
+          "gate",
+          "storage"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "governed-evolution-lab",
+      "folder": "governed-evolution-lab",
+      "name": "Governed Evolution Lab",
+      "version": "v0.1.1-epoch",
+      "status": "EXPERIMENTAL",
+      "riskLabel": "MEDIUM",
+      "state": "INCOMPLETE_DECLARATION",
+      "findings": [
+        "CONTRACT_WRITES_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "discovery",
+          "evidence",
+          "export",
+          "mirror-native",
+          "project-room",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-generation-without-body-pulse-lease",
+          "candidate-self-certification",
+          "canon-promotion",
+          "canonical-globe-rewrite",
+          "claiming-ecology-as-science",
+          "claiming-open-ended-creation-before-longitudinal-evidence",
+          "claiming-rule-mutation-as-learned-intelligence",
+          "external-network",
+          "mirror-root-or-permission-mutation",
+          "silent-project-room-replacement",
+          "winner-takes-all-archive-erasure",
+          "workshop-source-rewrite"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "graft",
+      "folder": "graft",
+      "name": "Graft",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": []
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "hermes-local",
+      "folder": "hermes",
+      "name": "Hermes Local Runtime Wrapper",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": []
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "hub-test-room",
+      "folder": "hub-test-room",
+      "name": "Test Room",
+      "version": "v1.0",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": []
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "human-attention-ledger",
+      "folder": "human-attention-ledger",
+      "name": "Human Attention Ledger",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "human.attention.write"
+        ],
+        "uses": [
+          "gate",
+          "human.attention.write",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "human.attention.write"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "state/cognitive-evidence-labs:attention-record"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "canon",
+          "employment-decision",
+          "machine-compute-merge",
+          "name-email-or-identity-storage",
+          "non-consensual-capture",
+          "permission-change",
+          "private-memory-capture",
+          "productivity-score",
+          "ranking",
+          "silent-background-timing",
+          "training",
+          "world-action"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "judgement-chamber",
+      "folder": "judgement-chamber",
+      "name": "Judgement Chamber",
+      "version": "v0.1",
+      "status": "EXPERIMENTAL",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "review-inbox",
+          "storage",
+          "workshop-direction"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "service:review-inbox:exact-digest-item",
+          "service:workshop-direction:explicit-goal-only"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-execution",
+          "automatic-promotion",
+          "automatic-vote",
+          "file-authority",
+          "network-authority",
+          "publication-authority",
+          "review-seat-impersonation",
+          "silent-override",
+          "single-score-as-taste",
+          "tool-authority"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "knowledge-canvas",
+      "folder": "knowledge-canvas",
+      "name": "AXM Knowledge Canvas",
+      "version": "v1.1",
+      "status": "TEST",
+      "riskLabel": "LOW",
+      "state": "PERMISSION_DRIFT",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "export",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "export",
+          "storage"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:axm.knowledge-canvas.inbox.v1",
+          "browser-local:axm.knowledge-canvas.project.v1",
+          "browser-local:axm.project-room.v1:explicit-task-or-decision",
+          "user-download:explicit"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-project-room-completion",
+          "automatic-publication",
+          "automatic-source-acceptance",
+          "cloud-sync",
+          "pretend-full-excel-file-compatibility",
+          "pretend-professional-gis-analysis",
+          "research-as-project-task-duplication",
+          "unsourced-claim-promotion"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "export",
+          "storage"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "launcher-card-installer",
+      "folder": "launcher-card-installer",
+      "name": "AXM Launcher Card Proposal",
+      "version": "v0_2",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "asset-librarian",
+          "export",
+          "gate",
+          "registry"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "learning-lab",
+      "folder": "learning-lab",
+      "name": "AXM Learning Lab",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "PERMISSION_DRIFT",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "ai-team",
+          "export",
+          "knowledge-canvas",
+          "mirror-learning-forge",
+          "project-room",
+          "shared-engines",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "export",
+          "shared-engines",
+          "storage"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:axm.learning-lab.project.v1",
+          "learner-private:only-through-child-school-contract",
+          "user-download:explicit"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "authority-from-grade",
+          "automatic-enrollment",
+          "automatic-publication",
+          "automatic-wisdom-or-canon-promotion",
+          "external-network-from-code-sandbox",
+          "forced-study",
+          "hidden-chain-of-thought-capture",
+          "identity-or-memory-merge",
+          "pretend-domain-simulation",
+          "pretend-networked-classroom",
+          "unattributed-learner",
+          "unsandboxed-user-code"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "export",
+          "shared-engines",
+          "storage"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "living-world-ruleset-physics-adapter-kit",
+      "folder": "living-world-ruleset-physics-adapter-kit",
+      "name": "Living World Ruleset & Physics Adapter Kit",
+      "version": "v0.1",
+      "status": "EXPERIMENTAL",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "adapter.register"
+        ],
+        "uses": [
+          "adapter.register",
+          "gate",
+          "shared-physics",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "adapter.register"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "state/living-world-ruleset-physics-kit"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-intent-apply",
+          "revision-free-attachment",
+          "world-ownership",
+          "world-reset"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "living-world-state-server",
+      "folder": "living-world-state-server",
+      "name": "Authoritative Living World State Server",
+      "version": "v0.2",
+      "status": "TEST",
+      "riskLabel": "HIGH",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "world.mutate",
+          "world.restore"
+        ],
+        "uses": [
+          "gate",
+          "storage",
+          "world.mutate",
+          "world.restore"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "world.mutate",
+          "world.restore"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "state/living-world-state-server"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "cross-world-mutation",
+          "lineage-transfer",
+          "missing-expected-revision",
+          "ownership-transfer",
+          "secret-like-world-fields",
+          "silent-reset",
+          "unconfirmed-restore"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "machine-host",
+      "folder": "machine-host",
+      "name": "AXM Authenticated Machine Host",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "HIGH",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "machine.execute"
+        ],
+        "uses": [
+          "gate",
+          "machine.execute",
+          "runtime",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "machine.execute"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "state/machine-host/jobs.json",
+          "state/machine-host/logs"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "arbitrary-command",
+          "caller-supplied-executable",
+          "caller-supplied-path",
+          "hidden-output",
+          "more-than-two-concurrent-jobs",
+          "network-authority",
+          "shell-string"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "main-hub",
+      "folder": "main-hub",
+      "name": "AXM Main Hub",
+      "version": "v0.1",
+      "status": "SHELL",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": []
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "marketplace-deployment",
+      "folder": "marketplace-deployment",
+      "name": "AXM Marketplace & Deployment",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "HIGH",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "backup",
+          "export",
+          "gate",
+          "plugins",
+          "publish-library",
+          "runtime",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:marketplace-deployment-project",
+          "user-download:explicit-plan-or-project-export"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-network-upload",
+          "automatic-plugin-installation",
+          "automatic-update-installation",
+          "credential-storage",
+          "deployment-without-rollback",
+          "distribution-without-rights-review",
+          "grade-review-or-popularity-as-authority",
+          "marketplace-publication",
+          "one-score-as-taste",
+          "payment-processing"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "media-render-transcode-service",
+      "folder": "media-render-transcode-service",
+      "name": "Media Render & Transcode Service",
+      "version": "v0.2",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "media.render"
+        ],
+        "uses": [
+          "export",
+          "files",
+          "gate",
+          "media.render",
+          "review-inbox",
+          "runtime"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "media.render"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "exports/media-renders",
+          "state/media-render-transcode-service"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "arbitrary-ffmpeg-arguments",
+          "automatic-publish",
+          "more-than-two-concurrent-jobs",
+          "path-escape",
+          "required-third-party-codec"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "mirror-intake-monitor",
+      "folder": "mirror-intake-monitor",
+      "name": "Mirror Intake Monitor",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "mirror.intake-receipt.import"
+        ],
+        "uses": [
+          "cognitive-resource-meter",
+          "gate",
+          "mirror.intake-receipt.import",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "mirror.intake-receipt.import"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "state/cognitive-evidence-labs:imported-intake-receipt"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "absolute-mirror-path",
+          "acceptance-inference-from-export",
+          "automatic-network-connection",
+          "canon",
+          "mirror-write",
+          "permission-change",
+          "private-mirror-state-read",
+          "ranking",
+          "receipt-certification",
+          "selection",
+          "training",
+          "world-action"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "mirror-learning-shell",
+      "folder": "mirror-learning-shell",
+      "name": "AI Learning Forge",
+      "version": "v0.2-shared-door",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "identity-core",
+          "mirror-kernel",
+          "profile",
+          "reasoning",
+          "specialists",
+          "training",
+          "wisdom"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "model-lab",
+      "folder": "model-lab",
+      "name": "Model Lab — EXPERIMENTAL",
+      "version": "v0.2",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "ai",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "module-contract-workbench",
+      "folder": "module-contract-workbench",
+      "name": "AXM Module Contract & Manifest Workbench",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "gate",
+          "plugins",
+          "review",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "service:module-installer:staged-candidate-only"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-canon",
+          "automatic-install",
+          "contract-id-mismatch",
+          "direct-installed-module-edit",
+          "pending-lifecycle-as-complete",
+          "undeclared-permission"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "module-installer",
+      "folder": "module-installer",
+      "name": "AXM Governed Installer & Update Manager",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "HIGH",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "module.install"
+        ],
+        "uses": [
+          "backup",
+          "gate",
+          "module.install",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "module.install"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "backups/module-installer",
+          "state/module-installer",
+          "tools/approved-module-id"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "arbitrary-root-write",
+          "digest-drift",
+          "install-without-backup",
+          "network-download",
+          "path-traversal",
+          "silent-overwrite",
+          "symbolic-link-install",
+          "unreviewed-install"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "multiplayer-controller-transport",
+      "folder": "multiplayer-controller-transport",
+      "name": "Multiplayer & Controller Transport",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "HIGH",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "network.listen"
+        ],
+        "uses": [
+          "gate",
+          "local-network",
+          "network.listen",
+          "runtime"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "network.listen"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "state/multiplayer-controller-transport"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "more-than-eight-seats",
+          "more-than-sixty-inputs-per-second",
+          "permanent-listener",
+          "whole-network-discovery",
+          "workshop-lan-exposure"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "novelty-diversity-engine",
+      "folder": "novelty-diversity-engine",
+      "name": "Novelty & Diversity Engine",
+      "version": "v0.1",
+      "status": "EXPERIMENTAL",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "runtime",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "state/novelty-diversity-engine"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-inheritance",
+          "non-reproducible-seed",
+          "unbounded-population",
+          "world-mutation"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "prehub",
+      "folder": "prehub",
+      "name": "Prehub — write, save, load",
+      "version": "v1",
+      "status": "WORKING",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "project-room",
+      "folder": "project-room",
+      "name": "AXM Project Room",
+      "version": "v0.3",
+      "status": "TEST",
+      "riskLabel": "LOW",
+      "state": "PERMISSION_DRIFT",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "export",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "export",
+          "storage"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:axm.project-room.v1",
+          "user-download:explicit"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-done-without-evidence",
+          "automatic-guest-handoff-import",
+          "automatic-task-execution",
+          "cloud-sync",
+          "guest-import-execution",
+          "hidden-owner-assignment",
+          "knowledge-canvas-research-duplication",
+          "sample-data-on-first-open",
+          "separate-project-truth-stores",
+          "silent-checkpoint-restore",
+          "silent-import-overwrite"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "export",
+          "storage"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "prompt-vault",
+      "folder": "prompt-vault",
+      "name": "AXM Prompt Vault",
+      "version": "v0_2",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "gate",
+          "optional-ai",
+          "registry",
+          "server-export",
+          "settings",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "ps2-asset-forge",
+      "folder": "ps2-asset-forge",
+      "name": "PS2 Asset Forge",
+      "version": "v0.2",
+      "status": "EXPERIMENTAL",
+      "riskLabel": "LOW",
+      "state": "INCOMPLETE_DECLARATION",
+      "findings": [
+        "CONTRACT_WRITES_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "export"
+        ],
+        "uses": [
+          "export",
+          "files",
+          "gltf-2.0",
+          "local-cc0-source-library",
+          "three-webgl"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "export"
+        ],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": true,
+        "refuses": [
+          "asset-quality-upgrade-by-render-profile-label",
+          "automatic-generated-variant-retention",
+          "automatic-library-promotion",
+          "glb-export-before-human-approval",
+          "ps3-or-ps4-quality-claim-without-new-evidence",
+          "runtime-network-dependency",
+          "visual-quality-approval-by-code"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "public-release-deployment-adapter",
+      "folder": "public-release-deployment-adapter",
+      "name": "Public Release & Deployment Adapter",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "HIGH",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "release.deploy"
+        ],
+        "uses": [
+          "export",
+          "files",
+          "gate",
+          "identity",
+          "release.deploy",
+          "review-inbox"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "release.deploy"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "exports/public-deployments",
+          "state/public-release-deployment-adapter"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "arbitrary-protocol",
+          "automatic-deploy",
+          "automatic-update",
+          "digest-drift",
+          "private-key-browser-exposure",
+          "unreviewed-deploy"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "publish-library",
+      "folder": "publish-library",
+      "name": "AXM Publish & Library",
+      "version": "v1.1",
+      "status": "TEST",
+      "riskLabel": "HIGH",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "asset-librarian",
+          "export",
+          "gate",
+          "server-export",
+          "shared-output-engine",
+          "storage",
+          "worker-threads"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:artifact-inbox",
+          "browser-local:release-ledger",
+          "user-download:explicit-release-manifest",
+          "user-download:verified-output-artifact"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-artifact-approval",
+          "automatic-launcher-installation",
+          "automatic-release-evidence-acceptance",
+          "marketplace-publication",
+          "output-job-without-verification-receipt",
+          "pretend-format-conversion",
+          "proprietary-cloud-conversion",
+          "public-package-after-secret-scan-failure",
+          "trial-locked-output-engine"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "read-only-mirror-world-adapter",
+      "folder": "read-only-mirror-world-adapter",
+      "name": "Read-only Mirror World Adapter",
+      "version": "v0.1",
+      "status": "EXPERIMENTAL",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "mirror.observe"
+        ],
+        "uses": [
+          "gate",
+          "identity",
+          "mirror.observe",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "mirror.observe"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "state/read-only-mirror-world-adapter"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "expired-consent",
+          "revision-drift",
+          "unconsented-observation",
+          "world-apply",
+          "world-reset"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "reasoning-shell",
+      "folder": "reasoning-shell",
+      "name": "Reasoning Shell — EXPERIMENTAL BRANCH",
+      "version": "v0.1-branch",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "ai",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "recovery-center",
+      "folder": "recovery-center",
+      "name": "AXM Recovery & Rollback Center",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "HIGH",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "recovery.apply"
+        ],
+        "uses": [
+          "backup",
+          "gate",
+          "recovery.apply",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "recovery.apply"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "backups/recovery-center",
+          "explicitly-selected-workshop-files",
+          "exports/workshop-packages",
+          "state/recovery-center"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-cloud-upload",
+          "path-escape",
+          "restore-without-preview",
+          "restore-without-safety-copy",
+          "silent-restore",
+          "unreviewed-delete"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "review-inbox",
+      "folder": "review-inbox",
+      "name": "AXM Review & Promotion Inbox",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "gate",
+          "governance",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "state/review-inbox/audit.jsonl",
+          "state/review-inbox/reviews.json"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "approval-after-artifact-change",
+          "automatic-apply",
+          "automatic-promotion",
+          "more-than-ten-requested-votes",
+          "one-identity-filling-multiple-seats",
+          "same-digest-repair-reopen",
+          "silent-supersession",
+          "vote-without-digest"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "route",
+      "folder": "route",
+      "name": "Route",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": []
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "runner",
+      "folder": "runner",
+      "name": "Verification Desk",
+      "version": "v1.1",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": []
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "sandbox",
+      "folder": "sandbox",
+      "name": "AXM Sandbox",
+      "version": "v0.1-session1",
+      "status": "TEST",
+      "riskLabel": "LOW",
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "gate",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "secrets-permissions-console",
+      "folder": "secrets-permissions-console",
+      "name": "AXM Secrets & Permissions Console",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "HIGH",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "gate",
+          "identity",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "metadata-only-audit-files",
+          "state/secrets-permissions-console/permissions.json",
+          "state/secrets-permissions-console/vault.enc.json"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-grant",
+          "browser-secret-reveal",
+          "secret-value-in-audit",
+          "silent-secret-access",
+          "stored-passphrase",
+          "undeclared-permission-grant",
+          "unscoped-secret"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "shell-guardian",
+      "folder": "shell-guardian",
+      "name": "Shell Guardian",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "HIGH",
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "bridge",
+          "gate",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "skinner",
+      "folder": "skinner",
+      "name": "Skinner",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": []
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "source-connector-hub",
+      "folder": "source-connector-hub",
+      "name": "Source Connector Hub",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "network.fetch"
+        ],
+        "uses": [
+          "gate",
+          "network-optional",
+          "network.fetch",
+          "review-inbox"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "network.fetch"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "state/source-connector-hub"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "arbitrary-url-fetch",
+          "automatic-import",
+          "citation-removal",
+          "redirect-following",
+          "unreviewed-cache-promotion"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "spatial-studio",
+      "folder": "spatial-studio",
+      "name": "AXM Spatial Studio",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "PERMISSION_DRIFT",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "asset-hands",
+          "export",
+          "files",
+          "gate",
+          "publish-library",
+          "shared-engines",
+          "shared-physics",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "export",
+          "files",
+          "gate",
+          "shared-engines",
+          "shared-physics",
+          "storage"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:axm.publish-library.ledger.v1:unreviewed-artifact",
+          "browser-local:axm.spatial.project.v1",
+          "browser-local:axm.spatial.shared.v1",
+          "user-download:explicit"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "asset-hand-result-without-pass-receipt-and-complete-canvas-provenance",
+          "automatic-publish-approval",
+          "automatic-rights-clearance",
+          "destructive-source-overwrite",
+          "pretend-3d-physics-from-2d-projection",
+          "pretend-fluid-cloth-hair-or-volume-simulation",
+          "pretend-path-tracing",
+          "pretend-photogrammetry-reconstruction",
+          "pretend-skin-deformation",
+          "raster-pdf-obj-or-glb-treated-as-an-editable-spatial-project",
+          "silent-project-file-access"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "export",
+          "files",
+          "gate",
+          "shared-engines",
+          "shared-physics",
+          "storage"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "studio",
+      "folder": "studio",
+      "name": "AXM Studio",
+      "version": "v2.5",
+      "status": "TEST",
+      "riskLabel": "LOW",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "ai",
+          "export",
+          "files",
+          "gate",
+          "storage"
+        ],
+        "uses": [
+          "ai",
+          "asset-hands",
+          "asset-vault",
+          "export",
+          "files",
+          "gate",
+          "storage",
+          "visual-kernel"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "ai",
+          "export",
+          "files",
+          "gate",
+          "storage"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:studio-workspaces",
+          "game-hub:asset-inbox",
+          "hub-store:studio",
+          "user-download:explicit"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-asset-hand-result-apply",
+          "automatic-hub-rewrite",
+          "automatic-proposal-acceptance",
+          "automatic-wisdom-promotion",
+          "direct-game-package-write",
+          "discarding-hand-operation-source-digests-or-artifact-inventory",
+          "incompatible-asset-hand-route",
+          "raw-script-from-skin",
+          "remote-asset-reference-in-skin",
+          "silent-identity-swap",
+          "treating-raster-toolpath-or-obj-as-svg",
+          "unsupported-target-canvas-claim"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "sustainability-metrology-lab",
+      "folder": "sustainability-metrology-lab",
+      "name": "Sustainability Metrology Lab",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [
+          "sustainability.evidence.write"
+        ],
+        "uses": [
+          "gate",
+          "storage",
+          "sustainability.evidence.write"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "sustainability.evidence.write"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "state/cognitive-evidence-labs:sustainability-record"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "budget-allocation",
+          "canon",
+          "current-grid-certification",
+          "green-claim",
+          "permission-change",
+          "ranking",
+          "selection",
+          "sustainability-score",
+          "token-to-energy-conversion",
+          "unbound-carbon-factor",
+          "world-action"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "technical-glasses",
+      "folder": "technical-glasses",
+      "name": "AXM Technical Glasses",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "LOW",
+      "state": "PERMISSION_DRIFT",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "capability-index",
+          "gate",
+          "runtime",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "runtime",
+          "storage"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "state/technical-glasses/latest.json:derived-portability-snapshot"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-module-open",
+          "automatic-repair",
+          "canon-or-wisdom-promotion",
+          "chat-memory-as-technical-authority",
+          "guessing-missing-state",
+          "hidden-reasoning-capture",
+          "permission-change",
+          "readme-as-technical-authority",
+          "stale-snapshot-as-current-truth",
+          "structural-scan-as-runtime-proof"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "runtime",
+          "storage"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "template-runtime-pack-engine",
+      "folder": "template-runtime-pack-engine",
+      "name": "Template Runtime & Pack Engine",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "LOW",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "export",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "exports/template-packs",
+          "state/template-runtime-pack-engine"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-ai-fill",
+          "locked-slot-override",
+          "silent-overflow",
+          "unbounded-inheritance"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "ui-ux-builder",
+      "folder": "ui-ux-builder",
+      "name": "AXM UI/UX Builder",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "LOW",
+      "state": "PERMISSION_DRIFT",
+      "findings": [
+        "MANIFEST_CONTRACT_PERMISSION_DRIFT"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "export",
+          "gate",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [
+          "export",
+          "gate",
+          "storage"
+        ],
+        "writesPresent": true,
+        "writes": [
+          "browser-local:axm.uiux-builder.v1",
+          "user-download:explicit"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-hub-rewrite",
+          "automatic-proposal-acceptance",
+          "hidden-navigation-or-emergency-control",
+          "invented-human-approval",
+          "raw-css-import",
+          "review-ready-with-failing-gates",
+          "script-generation-or-execution"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [
+          "export",
+          "gate",
+          "storage"
+        ],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "verifier",
+      "folder": "verifier",
+      "name": "Verifier",
+      "version": "v1.0",
+      "status": "TEST",
+      "riskLabel": null,
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN"
+      ],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": []
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "workshop-command-center",
+      "folder": "workshop-command-center",
+      "name": "Workshop Command Center",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "body-pulse",
+          "cognitive-resource-meter",
+          "review-inbox",
+          "storage",
+          "technical-glasses",
+          "workshop-direction"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "service:review-inbox:explicit-attributed-vote-only",
+          "service:workshop-direction:explicit-request-only"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-apply",
+          "automatic-approval",
+          "automatic-execution",
+          "automatic-vote",
+          "body-mode-change",
+          "budget-allocation",
+          "canon-change",
+          "direct-body-pulse-start",
+          "file-authority",
+          "generic-post-control-execution",
+          "identity-impersonation",
+          "machine-seat-from-human-ui",
+          "mirror-write",
+          "network-authority",
+          "permission-grant",
+          "promotion-authority",
+          "provider-selection",
+          "ranking",
+          "real-world-action",
+          "release-authority",
+          "required-third-party-runtime",
+          "tool-authority",
+          "training"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "workshop-direction",
+      "folder": "workshop-direction",
+      "name": "Workshop Direction",
+      "version": "v0.1",
+      "status": "EXPERIMENTAL",
+      "riskLabel": "MEDIUM",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "body-pulse",
+          "capability-index",
+          "review-inbox",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "server-local:state/workshop-direction/directions.json",
+          "service:body-pulse:goal-records-only",
+          "service:review-inbox:exact-digest-item"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "automatic-vote",
+          "body-mode-change",
+          "fake-done",
+          "file-authority",
+          "invented-capability",
+          "module-auto-enable",
+          "more-than-eight-routes-per-direction",
+          "more-than-ten-review-seats",
+          "network-authority",
+          "promotion-authority",
+          "real-world-authority",
+          "release-authority",
+          "repeated-model-inference-required",
+          "review-seat-impersonation",
+          "tool-authority"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "workshop-packager",
+      "folder": "workshop-packager",
+      "name": "Workshop Packager",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "HIGH",
+      "state": "CONTRACT_AUTHORITY_UNKNOWN",
+      "findings": [
+        "CONTRACT_AUTHORITY_UNKNOWN",
+        "MANIFEST_PERMISSIONS_MISSING"
+      ],
+      "manifest": {
+        "permissionsPresent": false,
+        "permissions": [],
+        "uses": [
+          "export",
+          "files",
+          "gate",
+          "server-export"
+        ]
+      },
+      "contract": {
+        "state": "NOT_DECLARED",
+        "issue": "module contract not declared",
+        "permissionsPresent": false,
+        "permissions": [],
+        "writesPresent": false,
+        "writes": [],
+        "refusesPresent": false,
+        "refuses": []
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    },
+    {
+      "schema": "axm.module-authority-surface/v1",
+      "id": "workshop-search-provenance",
+      "folder": "workshop-search-provenance",
+      "name": "AXM Workshop Search & Provenance Index",
+      "version": "v0.1",
+      "status": "TEST",
+      "riskLabel": "LOW",
+      "state": "EXACT_DECLARATION",
+      "findings": [],
+      "manifest": {
+        "permissionsPresent": true,
+        "permissions": [],
+        "uses": [
+          "capability-index",
+          "files",
+          "storage"
+        ]
+      },
+      "contract": {
+        "state": "DECLARED",
+        "issue": null,
+        "permissionsPresent": true,
+        "permissions": [],
+        "writesPresent": true,
+        "writes": [
+          "state/workshop-search/index.json"
+        ],
+        "refusesPresent": true,
+        "refuses": [
+          "backup-index",
+          "bridge-index",
+          "log-index",
+          "private-state-index",
+          "remote-search-upload",
+          "secret-like-file-index",
+          "source-file-mutation"
+        ]
+      },
+      "deltas": {
+        "manifestOnlyPermissions": [],
+        "contractOnlyPermissions": [],
+        "contractPermissionsOutsideManifestUses": []
+      },
+      "truth": {
+        "declarationsAreRuntimeGrants": false,
+        "writesResolvedOrOpened": false,
+        "refusalsProveEnforcement": false,
+        "permissionlessMeansSafe": false,
+        "riskScoreComputed": false
+      }
+    }
+  ],
+  "permissions": [
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "adapter.register",
+      "manifestDeclarers": [
+        "living-world-ruleset-physics-adapter-kit"
+      ],
+      "contractDeclarers": [
+        "living-world-ruleset-physics-adapter-kit"
+      ],
+      "manifestUsesDeclarers": [
+        "living-world-ruleset-physics-adapter-kit"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "ai",
+      "manifestDeclarers": [
+        "studio"
+      ],
+      "contractDeclarers": [
+        "audio-studio",
+        "discovery-engine",
+        "studio"
+      ],
+      "manifestUsesDeclarers": [
+        "agent-command-center",
+        "ai-task-talk",
+        "ai-team",
+        "audio-studio",
+        "discovery-engine",
+        "duo-test",
+        "model-lab",
+        "reasoning-shell",
+        "studio"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "asset-hands",
+      "manifestDeclarers": [],
+      "contractDeclarers": [
+        "film-motion-studio"
+      ],
+      "manifestUsesDeclarers": [
+        "asset-fabric",
+        "film-motion-studio",
+        "spatial-studio",
+        "studio"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "asset-vault",
+      "manifestDeclarers": [],
+      "contractDeclarers": [
+        "audio-studio",
+        "film-motion-studio"
+      ],
+      "manifestUsesDeclarers": [
+        "asset-filesystem-service",
+        "audio-studio",
+        "film-motion-studio",
+        "studio"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "bridge",
+      "manifestDeclarers": [],
+      "contractDeclarers": [
+        "chatgpt-connector"
+      ],
+      "manifestUsesDeclarers": [
+        "ai-task-talk",
+        "ai-team",
+        "chatgpt-connector",
+        "claude-connector",
+        "duo-test",
+        "shell-guardian"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "camera",
+      "manifestDeclarers": [],
+      "contractDeclarers": [
+        "film-motion-studio"
+      ],
+      "manifestUsesDeclarers": [
+        "film-motion-studio"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "cognitive.calibration.write",
+      "manifestDeclarers": [
+        "cognitive-calibration-lab"
+      ],
+      "contractDeclarers": [
+        "cognitive-calibration-lab"
+      ],
+      "manifestUsesDeclarers": [
+        "cognitive-calibration-lab"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "cognitive.evidence.write",
+      "manifestDeclarers": [
+        "cognitive-resource-meter"
+      ],
+      "contractDeclarers": [
+        "cognitive-resource-meter"
+      ],
+      "manifestUsesDeclarers": [
+        "cognitive-resource-meter"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "cognitive.measure.local",
+      "manifestDeclarers": [
+        "cognitive-resource-meter"
+      ],
+      "contractDeclarers": [
+        "cognitive-resource-meter"
+      ],
+      "manifestUsesDeclarers": [
+        "cognitive-resource-meter"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "device.listen",
+      "manifestDeclarers": [
+        "device-handoff"
+      ],
+      "contractDeclarers": [
+        "device-handoff"
+      ],
+      "manifestUsesDeclarers": [
+        "device-handoff"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "export",
+      "manifestDeclarers": [
+        "ps2-asset-forge",
+        "studio"
+      ],
+      "contractDeclarers": [
+        "audio-studio",
+        "discovery-engine",
+        "film-motion-studio",
+        "finance-world-room",
+        "geographic-market-map",
+        "knowledge-canvas",
+        "learning-lab",
+        "project-room",
+        "ps2-asset-forge",
+        "spatial-studio",
+        "studio",
+        "ui-ux-builder"
+      ],
+      "manifestUsesDeclarers": [
+        "agent-tool-forge",
+        "asset-fabric",
+        "asset-filesystem-service",
+        "audio-studio",
+        "cognitive-resource-meter",
+        "discovery-engine",
+        "evidence-desk",
+        "film-motion-studio",
+        "finance-world-room",
+        "forge",
+        "forge-line",
+        "game-forge",
+        "geographic-market-map",
+        "governed-evolution-lab",
+        "knowledge-canvas",
+        "launcher-card-installer",
+        "learning-lab",
+        "marketplace-deployment",
+        "media-render-transcode-service",
+        "project-room",
+        "ps2-asset-forge",
+        "public-release-deployment-adapter",
+        "publish-library",
+        "spatial-studio",
+        "studio",
+        "template-runtime-pack-engine",
+        "ui-ux-builder",
+        "workshop-packager"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "files",
+      "manifestDeclarers": [
+        "studio"
+      ],
+      "contractDeclarers": [
+        "audio-studio",
+        "chatgpt-connector",
+        "discord-bridge",
+        "film-motion-studio",
+        "game-hub",
+        "spatial-studio",
+        "studio"
+      ],
+      "manifestUsesDeclarers": [
+        "asset-filesystem-service",
+        "audio-studio",
+        "chatgpt-connector",
+        "cognitive-resource-meter",
+        "device-handoff",
+        "discord-bridge",
+        "film-motion-studio",
+        "game-forge",
+        "game-hub",
+        "media-render-transcode-service",
+        "ps2-asset-forge",
+        "public-release-deployment-adapter",
+        "spatial-studio",
+        "studio",
+        "workshop-packager",
+        "workshop-search-provenance"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "gate",
+      "manifestDeclarers": [
+        "studio"
+      ],
+      "contractDeclarers": [
+        "chatgpt-connector",
+        "discord-bridge",
+        "discovery-engine",
+        "film-motion-studio",
+        "finance-world-room",
+        "game-hub",
+        "geographic-market-map",
+        "spatial-studio",
+        "studio",
+        "ui-ux-builder"
+      ],
+      "manifestUsesDeclarers": [
+        "agent-command-center",
+        "agent-tool-forge",
+        "ai-task-talk",
+        "ai-team",
+        "asset-pack-lab",
+        "asset-vault",
+        "browser-lan-hardware-qa-lab",
+        "chatgpt-connector",
+        "claude-connector",
+        "cognitive-calibration-lab",
+        "cognitive-resource-meter",
+        "device-handoff",
+        "discord-bridge",
+        "discovery-engine",
+        "evidence-desk",
+        "film-motion-studio",
+        "finance-world-room",
+        "game-forge",
+        "game-hub",
+        "geographic-market-map",
+        "human-attention-ledger",
+        "launcher-card-installer",
+        "living-world-ruleset-physics-adapter-kit",
+        "living-world-state-server",
+        "machine-host",
+        "marketplace-deployment",
+        "media-render-transcode-service",
+        "mirror-intake-monitor",
+        "module-contract-workbench",
+        "module-installer",
+        "multiplayer-controller-transport",
+        "prompt-vault",
+        "public-release-deployment-adapter",
+        "publish-library",
+        "read-only-mirror-world-adapter",
+        "recovery-center",
+        "review-inbox",
+        "sandbox",
+        "secrets-permissions-console",
+        "shell-guardian",
+        "source-connector-hub",
+        "spatial-studio",
+        "studio",
+        "sustainability-metrology-lab",
+        "technical-glasses",
+        "ui-ux-builder",
+        "workshop-packager"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "human.attention.write",
+      "manifestDeclarers": [
+        "human-attention-ledger"
+      ],
+      "contractDeclarers": [
+        "human-attention-ledger"
+      ],
+      "manifestUsesDeclarers": [
+        "human-attention-ledger"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "machine.execute",
+      "manifestDeclarers": [
+        "machine-host"
+      ],
+      "contractDeclarers": [
+        "machine-host"
+      ],
+      "manifestUsesDeclarers": [
+        "machine-host"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "media.render",
+      "manifestDeclarers": [
+        "media-render-transcode-service"
+      ],
+      "contractDeclarers": [
+        "media-render-transcode-service"
+      ],
+      "manifestUsesDeclarers": [
+        "media-render-transcode-service"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "mirror.intake-receipt.import",
+      "manifestDeclarers": [
+        "mirror-intake-monitor"
+      ],
+      "contractDeclarers": [
+        "mirror-intake-monitor"
+      ],
+      "manifestUsesDeclarers": [
+        "mirror-intake-monitor"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "mirror.observe",
+      "manifestDeclarers": [
+        "read-only-mirror-world-adapter"
+      ],
+      "contractDeclarers": [
+        "read-only-mirror-world-adapter"
+      ],
+      "manifestUsesDeclarers": [
+        "read-only-mirror-world-adapter"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "module.install",
+      "manifestDeclarers": [
+        "module-installer"
+      ],
+      "contractDeclarers": [
+        "module-installer"
+      ],
+      "manifestUsesDeclarers": [
+        "module-installer"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "network",
+      "manifestDeclarers": [],
+      "contractDeclarers": [
+        "finance-world-room"
+      ],
+      "manifestUsesDeclarers": [
+        "finance-world-room"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "network-optional",
+      "manifestDeclarers": [],
+      "contractDeclarers": [
+        "discord-bridge"
+      ],
+      "manifestUsesDeclarers": [
+        "discord-bridge",
+        "source-connector-hub"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "network.fetch",
+      "manifestDeclarers": [
+        "source-connector-hub"
+      ],
+      "contractDeclarers": [
+        "source-connector-hub"
+      ],
+      "manifestUsesDeclarers": [
+        "source-connector-hub"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "network.listen",
+      "manifestDeclarers": [
+        "multiplayer-controller-transport"
+      ],
+      "contractDeclarers": [
+        "multiplayer-controller-transport"
+      ],
+      "manifestUsesDeclarers": [
+        "multiplayer-controller-transport"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "qa.run",
+      "manifestDeclarers": [
+        "browser-lan-hardware-qa-lab"
+      ],
+      "contractDeclarers": [
+        "browser-lan-hardware-qa-lab"
+      ],
+      "manifestUsesDeclarers": [
+        "browser-lan-hardware-qa-lab"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "recovery.apply",
+      "manifestDeclarers": [
+        "recovery-center"
+      ],
+      "contractDeclarers": [
+        "recovery-center"
+      ],
+      "manifestUsesDeclarers": [
+        "recovery-center"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "release.deploy",
+      "manifestDeclarers": [
+        "public-release-deployment-adapter"
+      ],
+      "contractDeclarers": [
+        "public-release-deployment-adapter"
+      ],
+      "manifestUsesDeclarers": [
+        "public-release-deployment-adapter"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "runtime",
+      "manifestDeclarers": [],
+      "contractDeclarers": [
+        "technical-glasses"
+      ],
+      "manifestUsesDeclarers": [
+        "ai-team",
+        "browser-lan-hardware-qa-lab",
+        "cognitive-evidence-explorer",
+        "diagnostics-operations-center",
+        "machine-host",
+        "marketplace-deployment",
+        "media-render-transcode-service",
+        "multiplayer-controller-transport",
+        "novelty-diversity-engine",
+        "technical-glasses"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "shared-engines",
+      "manifestDeclarers": [],
+      "contractDeclarers": [
+        "audio-studio",
+        "film-motion-studio",
+        "learning-lab",
+        "spatial-studio"
+      ],
+      "manifestUsesDeclarers": [
+        "audio-studio",
+        "film-motion-studio",
+        "learning-lab",
+        "spatial-studio"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "shared-physics",
+      "manifestDeclarers": [],
+      "contractDeclarers": [
+        "spatial-studio"
+      ],
+      "manifestUsesDeclarers": [
+        "living-world-ruleset-physics-adapter-kit",
+        "spatial-studio"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "storage",
+      "manifestDeclarers": [
+        "studio"
+      ],
+      "contractDeclarers": [
+        "audio-studio",
+        "discovery-engine",
+        "film-motion-studio",
+        "finance-world-room",
+        "geographic-market-map",
+        "knowledge-canvas",
+        "learning-lab",
+        "project-room",
+        "spatial-studio",
+        "studio",
+        "technical-glasses",
+        "ui-ux-builder"
+      ],
+      "manifestUsesDeclarers": [
+        "agent-command-center",
+        "agent-tool-forge",
+        "ai-task-talk",
+        "ai-team",
+        "asset-fabric",
+        "asset-filesystem-service",
+        "asset-pack-lab",
+        "asset-vault",
+        "audio-studio",
+        "body-pulse",
+        "claude-connector",
+        "cognitive-calibration-lab",
+        "cognitive-resource-meter",
+        "device-handoff",
+        "diagnostics-operations-center",
+        "discovery-engine",
+        "duo-test",
+        "evidence-desk",
+        "evolution-foundry",
+        "film-motion-studio",
+        "finance-world-room",
+        "forge",
+        "forge-line",
+        "game-forge",
+        "geographic-market-map",
+        "governed-evolution-lab",
+        "human-attention-ledger",
+        "judgement-chamber",
+        "knowledge-canvas",
+        "learning-lab",
+        "living-world-ruleset-physics-adapter-kit",
+        "living-world-state-server",
+        "machine-host",
+        "marketplace-deployment",
+        "mirror-intake-monitor",
+        "model-lab",
+        "module-contract-workbench",
+        "module-installer",
+        "novelty-diversity-engine",
+        "prehub",
+        "project-room",
+        "prompt-vault",
+        "publish-library",
+        "read-only-mirror-world-adapter",
+        "reasoning-shell",
+        "recovery-center",
+        "review-inbox",
+        "sandbox",
+        "secrets-permissions-console",
+        "shell-guardian",
+        "spatial-studio",
+        "studio",
+        "sustainability-metrology-lab",
+        "technical-glasses",
+        "template-runtime-pack-engine",
+        "ui-ux-builder",
+        "workshop-command-center",
+        "workshop-direction",
+        "workshop-search-provenance"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "sustainability.evidence.write",
+      "manifestDeclarers": [
+        "sustainability-metrology-lab"
+      ],
+      "contractDeclarers": [
+        "sustainability-metrology-lab"
+      ],
+      "manifestUsesDeclarers": [
+        "sustainability-metrology-lab"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "world.mutate",
+      "manifestDeclarers": [
+        "living-world-state-server"
+      ],
+      "contractDeclarers": [
+        "living-world-state-server"
+      ],
+      "manifestUsesDeclarers": [
+        "living-world-state-server"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    },
+    {
+      "schema": "axm.permission-declaration-record/v1",
+      "permission": "world.restore",
+      "manifestDeclarers": [
+        "living-world-state-server"
+      ],
+      "contractDeclarers": [
+        "living-world-state-server"
+      ],
+      "manifestUsesDeclarers": [
+        "living-world-state-server"
+      ],
+      "truth": {
+        "declarationIsGrant": false,
+        "runtimeUseProven": false,
+        "riskInferred": false
+      }
+    }
+  ],
+  "truth": {
+    "declarationsAreRuntimeGrants": false,
+    "runtimeEnforcementVerified": false,
+    "declaredWriteTargetsResolved": false,
+    "secretValuesRead": false,
+    "permissionlessMeansSafe": false,
+    "refusalsProveEnforcement": false,
+    "riskScoreComputed": false,
+    "modulesRanked": false,
+    "grantsCreated": false,
+    "grantsRevoked": false,
+    "automaticContractRepairPerformed": false,
+    "sourceMutationPerformed": false,
+    "installerStagingPerformed": false,
+    "installationPerformed": false,
+    "rollbackChanged": false,
+    "promotionPerformed": false,
+    "canonChanged": false
+  }
+};

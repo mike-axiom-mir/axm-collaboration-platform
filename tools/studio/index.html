@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AXM Studio — 2D & Interface Workspace</title>
   <link rel="stylesheet" href="studio-shell.css">
+  <link rel="stylesheet" href="../../shared/presentation-spine/presentation-spine.css?v=20260724-spine-1">
 </head>
-<body>
+<body class="axm-spine" data-axm-profile="studio" data-axm-surface="studio">
   <div class="studio-app">
     <header class="studio-topbar">
       <div class="studio-brand">
@@ -17,6 +18,7 @@
       <label class="project-name"><span>Project</span><input id="projectName" maxlength="100" value="Untitled studio project"></label>
       <div class="top-actions">
         <span id="vaultState" class="vault-state available"><i></i>Asset Vault available</span>
+        <button id="openCommandDeck" class="button command-button" aria-haspopup="dialog" aria-label="Open Command Deck"><span>Commands</span><kbd>Ctrl K</kbd></button>
         <button id="openHands" class="button secondary">Creation Hands</button>
         <button id="openAssets" class="button secondary">Assets</button>
         <button id="saveWorkspace" class="button primary" disabled>Save workspace</button>
@@ -64,7 +66,24 @@
       <iframe id="handsFrame" title="AXM shared Asset Hands"></iframe>
     </section>
   </div>
+  <div id="commandDeck" class="command-deck" aria-hidden="true">
+    <button class="command-shade" data-close-commands aria-label="Close Command Deck"></button>
+    <section class="command-panel" role="dialog" aria-modal="true" aria-labelledby="commandDeckTitle">
+      <header class="command-head">
+        <div><span class="eyebrow">Visual action layer</span><h2 id="commandDeckTitle">Command Deck</h2><p>Find an action by what you want to do. Core controls appear first; nothing runs until you choose it.</p></div>
+        <button class="drawer-close" data-close-commands aria-label="Close Command Deck">×</button>
+      </header>
+      <div class="command-search-row">
+        <label class="command-search"><span aria-hidden="true">⌕</span><input id="commandSearch" type="search" autocomplete="off" placeholder="Try “undo”, “add layer”, “vector”, or “export”…" aria-label="Search Studio commands"></label>
+        <label class="advanced-toggle"><input id="commandAdvanced" type="checkbox"><span>Advanced + specialist</span></label>
+      </div>
+      <div id="commandResults" class="command-results" role="listbox" aria-label="Studio commands"></div>
+      <footer class="command-foot"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>Enter</kbd> run</span><span><kbd>Esc</kbd> close</span><b id="commandCount">0 actions</b></footer>
+    </section>
+  </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="../../shared/visual-actions/visual-actions.js"></script>
+  <script src="studio-actions.js"></script>
   <script src="studio-core.js"></script>
   <script src="/hub/axm-hub-module.js"></script>
   <script src="/shared/continuity/workshop-continuity.js"></script>

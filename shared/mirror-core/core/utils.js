@@ -53,11 +53,24 @@ function readJson(file, fallback) {
   }
 }
 
+function renameAtomicWithRetry(source, destination) {
+  const retryable = new Set(['EPERM', 'EACCES', 'EBUSY']);
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    try {
+      fs.renameSync(source, destination);
+      return;
+    } catch (error) {
+      if (!retryable.has(error && error.code) || attempt === 7) throw error;
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 5 * (attempt + 1));
+    }
+  }
+}
+
 function atomicWriteJson(file, value) {
   ensureDir(path.dirname(file));
   const temp = file + '.tmp-' + process.pid + '-' + crypto.randomBytes(3).toString('hex');
   fs.writeFileSync(temp, JSON.stringify(value, null, 2) + '\n', { mode: 0o600 });
-  fs.renameSync(temp, file);
+  renameAtomicWithRetry(temp, file);
   return file;
 }
 
@@ -65,7 +78,7 @@ function atomicWriteText(file, value) {
   ensureDir(path.dirname(file));
   const temp = file + '.tmp-' + process.pid + '-' + crypto.randomBytes(3).toString('hex');
   fs.writeFileSync(temp, String(value), { mode: 0o600 });
-  fs.renameSync(temp, file);
+  renameAtomicWithRetry(temp, file);
   return file;
 }
 

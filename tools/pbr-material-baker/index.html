@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>PBR Material Baker · AXM</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./aspect-fix.css">
+</head>
+<body>
+  <main class="baker-shell">
+    <header class="topbar">
+      <div><span class="eyebrow">CREATE / MATERIAL 03</span><h1>PBR Material Baker</h1><p>Real surface signal for the PS3 rung—made locally, judged honestly.</p></div>
+      <div class="trust-row"><span>AXM-NATIVE CPU</span><span>DETERMINISTIC</span><span>MEMORY-ONLY PREVIEW</span></div>
+    </header>
+
+    <nav class="family-tabs" aria-label="Material family">
+      <button type="button" class="family-tab active" data-family="brick" aria-pressed="true">Brick</button>
+      <button type="button" class="family-tab" data-family="asphalt" aria-pressed="false">Asphalt</button>
+      <button type="button" class="family-tab" data-family="painted-metal" aria-pressed="false">Painted metal</button>
+      <button type="button" class="family-tab" data-family="glass" aria-pressed="false">Glass</button>
+      <button type="button" class="family-tab" data-family="skin" aria-pressed="false">Skin</button>
+      <button type="button" class="family-tab" data-family="vehicle-paint" aria-pressed="false">Vehicle paint</button>
+    </nav>
+
+    <div class="workbench">
+      <aside class="controls">
+        <section>
+          <span class="eyebrow">EDITABLE RECIPE</span>
+          <h2 id="family-title">Weathered brick</h2>
+          <p>Seeded source—not a pile of retained variants.</p>
+        </section>
+        <label><span>Seed</span><input id="seed-input" value="district-brick-01" spellcheck="false"></label>
+        <label><span>Map size</span><select id="size-select"><option value="128">128 × 128</option><option value="256" selected>256 × 256</option><option value="512">512 × 512</option></select></label>
+        <label><span>Normal strength</span><output id="strength-value">3.1</output><input id="strength-input" type="range" min="0.5" max="6" step="0.1" value="3.1"></label>
+        <button class="primary-button" id="bake-button" type="button">Bake material</button>
+        <button class="secondary-button" id="export-button" type="button" disabled>Export reviewed map set</button>
+        <div class="recipe-boundary"><strong>Candidate discipline</strong><p>One preview exists in memory. Export is explicit. Nothing enters the permanent library automatically.</p></div>
+      </aside>
+
+      <section class="preview-column">
+        <div class="preview-heading"><div><span class="eyebrow">REFERENCE RENDER</span><h2 id="preview-title">Weathered brick</h2></div><div class="gate-pill" id="gate-pill">BAKING</div></div>
+        <div class="ball-stage"><canvas id="ball-canvas" aria-label="Local PBR reference render"></canvas><div class="light-label">CPU PBR approximation<br>one directional light</div></div>
+        <dl class="signal-strip">
+          <div><dt>Albedo signal</dt><dd id="albedo-signal">—</dd></div>
+          <div><dt>Height signal</dt><dd id="height-signal">—</dd></div>
+          <div><dt>Normal length</dt><dd id="normal-length">—</dd></div>
+          <div><dt>Verifier</dt><dd id="verify-score">—</dd></div>
+        </dl>
+        <div class="human-gate"><i>H</i><div><strong>Human material gate remains open</strong><p>Signal checks prove the maps are real. They do not decide whether this surface looks right in the game.</p></div></div>
+      </section>
+
+      <section class="map-column">
+        <div class="map-heading"><span class="eyebrow">BAKED MAP SET</span><code id="recipe-digest">waiting for bake</code></div>
+        <div class="map-grid">
+          <article class="map-card"><div><strong>Albedo</strong><small>base colour · sRGB</small></div><canvas id="map-albedo" aria-label="Albedo map"></canvas><code id="hash-albedo">—</code></article>
+          <article class="map-card"><div><strong>Normal</strong><small>OpenGL +Y</small></div><canvas id="map-normal" aria-label="Normal map"></canvas><code id="hash-normal">—</code></article>
+          <article class="map-card"><div><strong>ORM</strong><small>R=AO · G=rough · B=metal</small></div><canvas id="map-orm" aria-label="Packed ORM map"></canvas><code id="hash-orm">—</code></article>
+          <article class="map-card"><div><strong>Height</strong><small>linear relief</small></div><canvas id="map-height" aria-label="Height map"></canvas><code id="hash-height">—</code></article>
+          <article class="map-card"><div><strong>Emissive</strong><small>energy only</small></div><canvas id="map-emissive" aria-label="Emissive map"></canvas><code id="hash-emissive">—</code></article>
+        </div>
+      </section>
+    </div>
+
+    <section class="verification-panel">
+      <div class="verification-heading"><div><span class="eyebrow">INDEPENDENT MATERIAL CHECK</span><h2>What code can prove</h2></div><strong id="verification-total">—</strong></div>
+      <div id="verification-list" class="verification-list"></div>
+      <details><summary>Machine bake receipt <code id="receipt-sha">not compiled</code></summary><pre id="receipt-json"></pre></details>
+    </section>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    { "id": "MF-R00-PRESERVE-PS2", "required": true, "status": "READY", "available": ["preserve.ps2"], "degraded": [], "unknown": [], "missing": [], "declaredConstraints": {} },
+    { "id": "MF-R01-SCHEMAS", "required": true, "status": "READY", "available": ["contract.manifest", "contract.receipt", "contract.asset-id"], "degraded": [], "unknown": [], "missing": [], "declaredConstraints": {} },
+    { "id": "MF-R02-SOURCE-DELIVERY-SPLIT", "required": true, "status": "READY", "available": ["separate.source.delivery"], "degraded": [], "unknown": [], "missing": [], "declaredConstraints": {} },
+    { "id": "MF-R03-BLENDER-EXPORT", "required": true, "status": "BLOCKED", "available": [], "degraded": [], "unknown": [], "missing": ["author.blend", "export.blender.glb"], "declaredConstraints": {} },
+    { "id": "MF-R04-GLTF-VALIDATION", "required": true, "status": "BLOCKED", "available": ["inspect.glb.local"], "degraded": [], "unknown": [], "missing": ["validate.gltf.khronos"], "declaredConstraints": { "inspect.glb.local": ["structural and metric inspection only", "not Khronos certification"] } },
+    { "id": "MF-R05-MESHOPT", "required": true, "status": "BLOCKED", "available": [], "degraded": [], "unknown": [], "missing": ["optimize.gltf.transform", "compress.meshopt"], "declaredConstraints": {} },
+    { "id": "MF-R06-KTX2", "required": true, "status": "BLOCKED", "available": ["encode.ktx2.basis"], "degraded": [], "unknown": [], "missing": ["validate.ktx2.independent", "integrate.ktx2.gltf"], "declaredConstraints": { "encode.ktx2.basis": ["ETC1S BasisLZ only", "4..1024 px", "standalone output"] } },
+    { "id": "MF-R07-WEBGL2-RUNTIME", "required": true, "status": "BLOCKED", "available": ["render.webgl2.gltf", "observe.browser.smoke"], "degraded": [], "unknown": [], "missing": ["render.webgl2.ktx2", "render.webgl2.meshopt"], "declaredConstraints": { "render.webgl2.gltf": ["uncompressed diagnostic GLB lane"], "observe.browser.smoke": ["load/render evidence only", "human visual approval remains separate"] } },
+    { "id": "MF-R08-LOCAL-ONLY", "required": true, "status": "READY", "available": ["enforce.no-network"], "degraded": [], "unknown": [], "missing": [], "declaredConstraints": {} },
+    { "id": "MF-R09-WORKLOAD-MODE", "required": true, "status": "READY", "available": ["govern.workload.mode"], "degraded": [], "unknown": [], "missing": [], "declaredConstraints": { "govern.workload.mode": ["declared scheduling policy only", "no thermal telemetry claim"] } },
+    { "id": "MF-R10-OBSERVABILITY", "required": false, "status": "OPTIONAL_GAP", "available": ["measure.asset.metrics"], "degraded": [], "unknown": [], "missing": ["measure.system.performance"], "declaredConstraints": {} }
+  ],
+  "missingCapabilities": [
+    "author.blend",
+    "compress.meshopt",
+    "export.blender.glb",
+    "integrate.ktx2.gltf",
+    "measure.system.performance",
+    "optimize.gltf.transform",
+    "render.webgl2.ktx2",
+    "render.webgl2.meshopt",
+    "validate.gltf.khronos",
+    "validate.ktx2.independent"
+  ],
+  "proposedHands": [
+    { "capabilityId": "author.blend", "requiredBy": ["MF-R03-BLENDER-EXPORT"], "contractStatus": "SPEC_REQUIRED", "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"] },
+    { "capabilityId": "compress.meshopt", "requiredBy": ["MF-R05-MESHOPT"], "contractStatus": "SPEC_REQUIRED", "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"] },
+    { "capabilityId": "export.blender.glb", "requiredBy": ["MF-R03-BLENDER-EXPORT"], "contractStatus": "SPEC_REQUIRED", "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"] },
+    { "capabilityId": "integrate.ktx2.gltf", "requiredBy": ["MF-R06-KTX2"], "contractStatus": "SPEC_REQUIRED", "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"] },
+    { "capabilityId": "measure.system.performance", "requiredBy": ["MF-R10-OBSERVABILITY"], "contractStatus": "SPEC_REQUIRED", "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"] },
+    { "capabilityId": "optimize.gltf.transform", "requiredBy": ["MF-R05-MESHOPT"], "contractStatus": "SPEC_REQUIRED", "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"] },
+    { "capabilityId": "render.webgl2.ktx2", "requiredBy": ["MF-R07-WEBGL2-RUNTIME"], "contractStatus": "SPEC_REQUIRED", "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"] },
+    { "capabilityId": "render.webgl2.meshopt", "requiredBy": ["MF-R07-WEBGL2-RUNTIME"], "contractStatus": "SPEC_REQUIRED", "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"] },
+    { "capabilityId": "validate.gltf.khronos", "requiredBy": ["MF-R04-GLTF-VALIDATION"], "contractStatus": "SPEC_REQUIRED", "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"] },
+    { "capabilityId": "validate.ktx2.independent", "requiredBy": ["MF-R06-KTX2"], "contractStatus": "SPEC_REQUIRED", "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"] }
+  ],
+  "generated_by": "detect-capability-gaps/compare_capabilities.py",
+  "observed_at": "2026-07-22T06:03:00.000Z"
+}

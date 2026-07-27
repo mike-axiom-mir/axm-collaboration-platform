@@ -1,0 +1,26 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AXM Neural Room</title><link rel="stylesheet" href="styles.css"></head><body>
+<main>
+  <header><div><span class="eyebrow">AXM / AI-NATIVE VISUAL LANE</span><h1>Neural Room</h1><p>Ask an explicit AI provider for one bounded visual pass. Returned pixels remain a candidate layer.</p></div><div id="providerStatus" class="status wait">WAITING FOR PROVIDER</div></header>
+  <section class="truth"><b>AI DEPENDENT</b><span>No connected provider means no generation. A provider pass cannot approve appearance, overwrite the deterministic draft, or become canon.</span></section>
+  <div class="layout">
+    <section class="panel controls"><h2>1 · Shape the pass</h2>
+      <label>Operation<select id="operation"><option>refine</option><option>stylize</option><option>inpaint</option><option>outpaint</option><option>relight</option><option>material</option><option>upscale</option></select></label>
+      <label>Direction<textarea id="prompt" placeholder="What should this pass improve or explore?"></textarea></label>
+      <label>Keep away from<textarea id="negative" placeholder="Artifacts, unwanted style, text, distortion..."></textarea></label>
+      <div class="row"><label>Strength <output id="strengthValue">0.55</output><input id="strength" type="range" min="0" max="1" step="0.05" value="0.55"></label><label>Seed<input id="seed" value="axiom-seed"></label></div>
+      <div class="row"><label>Width<input id="width" type="number" min="1" max="2048" value="1024"></label><label>Height<input id="height" type="number" min="1" max="2048" value="1024"></label></div>
+      <label>Source draft digest<input id="sourceDigest" value="no-source-draft"></label>
+      <div class="actions"><button id="prepare" class="primary">Prepare neural request</button><button id="downloadRequest">Download request</button></div>
+    </section>
+    <section class="panel"><h2>2 · Provider boundary</h2><p class="muted">Send the exact request to any compatible AI provider. Import its JSON result and AXM will check request binding, authority, MIME and the actual image SHA-256.</p>
+      <pre id="requestView">No request prepared.</pre>
+      <label>Paste provider result<textarea id="resultInput" class="code" placeholder='{"schema":"axm.neural-visual-result/v1", ...}'></textarea></label>
+      <div class="actions"><button id="verify">Verify returned proposal</button><label class="file">Load JSON<input id="resultFile" type="file" accept="application/json"></label></div>
+      <div id="resultStatus" class="result neutral">No result inspected.</div>
+    </section>
+    <section class="panel stage"><h2>3 · Candidate projection</h2><div class="projection"><span>EPHEMERAL PROVIDER OUTPUT</span><img id="preview" alt="Verified neural candidate preview"><div id="emptyPreview">Nothing is projected until a verified provider result arrives.</div></div>
+      <div class="actions"><button id="sendDraft" class="primary" disabled>Send candidate layer to Draft Room</button><a href="../visual-draft-room/index.html">Open Draft Room →</a></div><p class="muted">The transfer expires after ten minutes and is deleted after Draft Room imports it.</p>
+    </section>
+  </div>
+</main>
+<script src="../../shared/neural-visual/neural-visual-core.js"></script><script src="/hub/axm-hub-module.js"></script><script src="app.js"></script></body></html>

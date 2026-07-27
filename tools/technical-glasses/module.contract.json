@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "technical-glasses",
-  "version": "v0.1",
+  "version": "v0.2",
   "provides": [
     "live-machine-readable-technical-ground-truth",
     "task-focused-ai-briefing",
@@ -14,13 +14,16 @@
   "consumes": [
     "workshop:tool-manifests",
     "workshop:module-contracts",
+    "axm.tools-index/v1",
+    "axm.workshop-readiness-view/v1",
+    "axm.tool-selftest-results/v1",
     "workshop:capability-index",
     "workshop:live-readiness",
     "workshop:body-pulse-state",
     "workshop:source-metadata",
     "workshop:test-declarations"
   ],
-  "permissions": ["runtime", "storage"],
+  "permissions": [],
   "handoffs": {
     "emits": ["axm.technical-glasses/v1", "text/plain/ai-technical-briefing"],
     "accepts": ["plain-text/task-focus", "axm.technical-focus/v1", "hub:init", "hub:settings:value"]
@@ -42,7 +45,10 @@
       "automatic-module-open",
       "permission-change",
       "canon-or-wisdom-promotion",
+      "review-readiness-as-approval",
+      "review-readiness-as-promotion",
       "structural-scan-as-runtime-proof",
+      "stale-readiness-as-current",
       "stale-snapshot-as-current-truth"
     ]
   }

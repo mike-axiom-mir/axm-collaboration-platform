@@ -11,6 +11,7 @@
 const { execSync } = require('child_process');
 const fs = require('fs'), path = require('path');
 const Checks = require('./verify-checks.js');
+const VerificationRunner = require('../shared/verification-spine/workspace-runner.js');
 const ROOT = path.join(__dirname, '..');
 
 /* ---- 1. core gate: run the real verify.js, capture output + exit ---- */
@@ -34,6 +35,26 @@ const userFail = results.filter(r => !r.ok).length;
 /* ---- 3b. apply retirements to the core output (non-hidden) ---- */
 const ret = Checks.applyRetirements(coreOut, config.retirements);
 const effectiveCoreFail = ret.effectiveFails > 0;
+
+/* ---- 3c. normalize specialist results through the category spine ----
+   The spine does not replace the core or category verifiers. It preserves
+   their authority, names missing evidence and contradictions, and evaluates
+   admitted failure-memory lessons with the same bounded check evaluator. */
+const spineConfig = config.verificationSpine || {};
+let spineReport = null, spineError = null;
+try {
+  spineReport = VerificationRunner.runCurrentWorkspace(ROOT, {
+    coreText: ret.text,
+    effectiveCoreFail: effectiveCoreFail,
+    userResults: results,
+    userChecks: config.userChecks || [],
+    failureMemory: spineConfig.failureMemory || [],
+    profileId: spineConfig.targetProfile || 'workshop-full',
+    evaluateCheck: function (check) { return Checks.evalCheck(check, io); }
+  });
+} catch (error) {
+  spineError = error;
+}
 
 /* append-only provenance: every active retirement is logged each run, so
    the record of what's been turned off never depends on the config alone */
@@ -61,6 +82,30 @@ results.forEach(r => out += '  ' + (r.ok ? 'PASS' : 'FAIL') + '  ' + r.label + '
 out += '\n' + (effectiveCoreFail ? 'CORE FAILED (' + ret.effectiveFails + ' unretired)' : 'core ok')
      + ' · ' + userFail + ' of ' + results.length + ' your-checks failed'
      + (ret.hits.length ? ' · ' + ret.hits.length + ' retired' : '') + '\n';
+out += '\n=== VERIFICATION SPINE V2 ===\n';
+if (spineError) {
+  out += '  HELD  spine could not produce a trustworthy report - ' + spineError.message + '\n';
+} else {
+  out += '  ' + spineReport.verdict + '  profile ' + spineReport.profile.id
+      + ' - ' + spineReport.receipt_count + ' receipts'
+      + ' - ' + spineReport.claim_count + ' atomic claims\n';
+  spineReport.categories.forEach(function (category) {
+    const statuses = Object.keys(category.statuses).sort().map(function (status) {
+      return status + '=' + category.statuses[status];
+    }).join(', ');
+    out += '  ' + category.id + ' - ' + category.claims + ' claims' + (statuses ? ' - ' + statuses : '') + '\n';
+  });
+  if (spineReport.missing_categories.length) out += '  missing required categories: ' + spineReport.missing_categories.join(', ') + '\n';
+  spineReport.conflicts.forEach(function (conflict) { out += '  CONFLICT  ' + conflict.id + ' - ' + conflict.reason + '\n'; });
+  const memory = spineReport.failure_memory;
+  out += '  failure memory - ' + memory.total + ' lessons'
+      + ' (candidate ' + memory.candidates + ', active ' + memory.active + ', monitor ' + memory.monitor
+      + ', human ' + memory.manual_review + ', retired ' + memory.retired + ')\n';
+  out += '  receipt: exports/verification-spine-report.json\n';
+}
 console.log(out);
 
-process.exit(effectiveCoreFail || userFail ? 1 : 0);
+/* HUMAN_REVIEW is deliberately not converted into a pass. A merge/release
+   gate stops until the declared steward review is supplied. */
+const spineBlocks = spineError || ['FAILED', 'HELD', 'HUMAN_REVIEW'].indexOf(spineReport && spineReport.verdict) >= 0;
+process.exit(effectiveCoreFail || userFail || spineBlocks ? 1 : 0);

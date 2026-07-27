@@ -10,6 +10,7 @@ const { advanceWorld } = require('../server/world-loop');
 const { claimVehicleSeat, updateVehicles } = require('../server/vehicle-system');
 const { sanitizeInputIntent } = require('../shared/validation');
 const { INPUT_FIELDS } = require('../shared/protocol');
+const { serializeWorldState } = require('../server/display-state');
 
 const projectRoot = path.join(__dirname, '..');
 const controlModulePath = path.join(projectRoot, 'client', 'controller', 'axm-game-night-controls.js');
@@ -36,12 +37,13 @@ test('radial dead zone removes drift while the response curve reaches full speed
 });
 
 test('host sanitizes movement and aim as two independent normalized vectors', () => {
-  const clean = sanitizeInputIntent({ moveX: 2, moveY: 2, aimX: -3, aimY: 0, aimActive: true, fire: true });
+  const clean = sanitizeInputIntent({ moveX: 2, moveY: 2, aimX: -3, aimY: 0, aimActive: true, fire: true, mapToggle: true });
   assert.ok(Math.abs(Math.hypot(clean.moveX, clean.moveY) - 1) < 1e-9);
   assert.deepEqual({ x: clean.aimX, y: clean.aimY }, { x: -1, y: 0 });
   assert.equal(clean.aimActive, true);
   assert.equal(clean.fire, true);
-  for (const field of ['moveX', 'moveY', 'aimX', 'aimY', 'aimActive', 'fire']) assert.ok(INPUT_FIELDS.includes(field));
+  assert.equal(clean.mapToggle, true);
+  for (const field of ['moveX', 'moveY', 'aimX', 'aimY', 'aimActive', 'fire', 'mapToggle']) assert.ok(INPUT_FIELDS.includes(field));
 });
 
 test('quick release-to-fire survives a release packet and shoots along host-owned aim while strafing', () => {
@@ -65,6 +67,26 @@ test('quick release-to-fire survives a release packet and shoots along host-owne
   assert.ok(Math.abs(actor.facing.x) < 1e-9 && actor.facing.y < -0.99, 'aim stick owns facing independently');
   assert.ok(projectile && Math.abs(projectile.velocity.x) < 1e-9 && projectile.velocity.y < 0, 'host projectile follows aim intent');
   assert.equal(actor.pendingPulses.fire, false);
+});
+
+test('latched controller map pulse increments only its party presentation signal', () => {
+  const { manager, session, token } = oneHumanSession();
+  const actor = session.world.actors['actor-seat-1'];
+  const send = (seq, input) => routeInput(manager, {
+    roomCode: session.roomCode,
+    sessionId: session.id,
+    seatId: actor.seatId,
+    token,
+    seq,
+    input,
+  }, 15_000 + seq);
+  assert.equal(send(1, { mapToggle: true }).ok, true);
+  assert.equal(send(2, { mapToggle: false }).ok, true);
+  assert.equal(actor.pendingPulses.mapToggle, true, 'release packet cannot erase the map pulse');
+  advanceWorld(session.world, { now: 15_010 });
+  assert.equal(actor.pendingPulses.mapToggle, false);
+  assert.equal(serializeWorldState(session, 'party_a').world.presentation.mapToggleSequence, 1);
+  assert.equal(serializeWorldState(session, 'party_b').world.presentation.mapToggleSequence, 0);
 });
 
 test('release fire buffers briefly across an active weapon cooldown', () => {
@@ -114,6 +136,13 @@ test('controller page exposes two original floating sticks and loads the reusabl
   assert.match(css, /touch-action:\s*none/);
   assert.match(controller, /AxmVirtualStick/);
   assert.match(controller, /setInterval\(sendInput, 50\)/);
+  assert.match(controller, /pulseKeys = \['action', 'fire'/, 'ACTION shares the loss-resistant pulse queue');
+  assert.match(controller, /bindPulse\('action', 'action'\)/, 'phone ACTION is a one-tap pulse instead of a lossy hold');
+  assert.match(controller, /MAP_HOLD_MS = 650/);
+  assert.match(controller, /bindInventoryTapOrMapHold\(\)/);
+  assert.match(controller, /triggerPulse\('mapToggle'\)/);
+  assert.match(controller, /KeyE: 'action'/, 'keyboard ACTION uses the same one-shot route');
+  assert.doesNotMatch(controller, /bindHold\('action'/, 'ACTION cannot be cleared by an unrelated in-flight send');
   assert.equal(profile.profileId, 'axm-game-night-twin-stick-v1');
   assert.deepEqual(profile.rightStick.fields, ['aimX', 'aimY', 'aimActive']);
   assert.equal(profile.hostRules.firePulseLatchedUntilTick, true);

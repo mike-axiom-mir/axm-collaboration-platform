@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.sensorium-host-adapter/v1",
+  "type": "object",
+  "required": ["schema", "adapterId", "version", "capabilities", "constraints", "resourceBudget", "authorityRequired", "targetIsolation", "operations"],
+  "properties": {
+    "schema": {"const": "axm.sensorium-host-adapter/v1"},
+    "adapterId": {"type": "string"},
+    "version": {"type": "string"},
+    "capabilities": {"type": "array", "items": {"type": "string"}},
+    "constraints": {"type": "array", "items": {"type": "string"}},
+    "resourceBudget": {"type": "object"},
+    "authorityRequired": {"type": "boolean"},
+    "targetIsolation": {"type": "string"},
+    "operations": {"type": "array", "items": {"enum": ["open", "observe", "seal", "release", "status"]}}
+  }
+}

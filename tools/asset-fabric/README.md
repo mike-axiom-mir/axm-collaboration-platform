@@ -1,4 +1,4 @@
-# AXM Asset Fabric v0.9
+# AXM Asset Fabric v0.12
 
 Asset Fabric is an independent experimental creation line for recurring asset
 needs. It does not live inside Studio and does not continuously call an image
@@ -10,12 +10,14 @@ budgets and intended use. It also declares quality requirements, required
 outputs and editable recipe formats. The shared registry matches the complete
 request to a capable hand before creation.
 
-Nineteen modular local creators cover screen/vector work, native game and screen
-raster textures, ETC1S/BasisLZ KTX2 texture delivery, UI, pixel/sprite families,
-compositions, print, fabric repeats, physical engraving, cut layouts, Visual
-Kernel themes, responsive layouts, read-only inspection, DeviceCMYK PDF, APNG
-animation, bounded OBJ/GLB geometry, MaterialX materials and editable
-AXM/EDL/OTIO timelines.
+Thirty-four modular local creation providers cover screen/vector work, native
+game and screen raster textures, ETC1S/BasisLZ KTX2 texture delivery, UI,
+pixel/sprite families, compositions, print, fabric repeats, physical engraving,
+cut layouts, Visual Kernel themes, responsive layouts, read-only inspection,
+DeviceCMYK PDF, animation and video, bounded OBJ/GLB/OpenUSD geometry,
+MaterialX materials, accessibility/localization, MIDI/MusicXML, spatial
+navigation and permission-gated native application handoffs. The registry and
+runtime diagnostics remain authoritative if that count changes.
 `UNSUPPORTED_CANVAS` and `MISSING_HAND` are visible results; when the registry is
 present they never trigger the legacy SVG fallback.
 
@@ -30,6 +32,32 @@ separate: SVG, PDF, PNG, APNG, KTX2, JSON, DXF, OBJ, GLB, MaterialX and OTIO
 remain distinct artifact types.
 Technical failures are held; safe behavioral novelty and different value
 trade-offs may coexist.
+
+## Universal components and Play Composer
+
+Asset Fabric accepts the `axm.universal-component/v1` protocol: small immutable
+pieces with typed ports, exact ids, versions and digests, canvas compatibility,
+provenance, resource costs and honest assurance ceilings. A versioned
+`axm.universal-component-graph/v1` connects those pieces without granting code
+execution. Its `READY_CONTRACT` receipt proves only that the graph resolves and
+is type/canvas compatible. It does not claim a final render, good taste,
+accessibility, game fitness or manufacturing safety.
+
+The Play Composer reverses the machine-facing path for a human. Friendly
+controls create an `axm.play-compose-draft/v1` containing the exact normalized
+control state, four immutable components, a typed graph and an ephemeral SVG
+preview. The same input is deterministic and works without AI, cloud calls or a
+network. **Grow directed variant** changes only one declared design axis
+(palette, silhouette, weight, balance or contrast), records its parent digest,
+energy and branch, and leaves the other axes available for comparison. Nothing
+is stored until **Keep in incubator** is explicitly chosen; keeping it creates a
+normal unvoted Fabric candidate rather than approving or publishing it.
+
+JSON makes 2D, 3D, audio, document and physical recipes addressable through one
+composition language. It does not make every output executable by itself: each
+target still requires a matching hand, renderer/exporter and field-specific
+validator. Missing realization capability remains `MISSING_HAND` or
+`UNSUPPORTED_CANVAS`.
 
 Asset Fabric consumes normalized `axm.asset-hand/v2` capabilities and retains
 the old v1 state schema. The shared workbench also supports create, edit,

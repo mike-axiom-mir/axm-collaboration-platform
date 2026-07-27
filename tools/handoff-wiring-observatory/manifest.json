@@ -1,0 +1,54 @@
+{
+  "id": "handoff-wiring-observatory",
+  "name": "AXM Handoff Wiring Observatory",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "ARCHITECTURE",
+  "risk": "LOW",
+  "tags": [
+    "handoffs",
+    "interfaces",
+    "artifacts",
+    "producers",
+    "consumers",
+    "adapters",
+    "contracts",
+    "observability",
+    "read-only"
+  ],
+  "uses": [
+    "filesystem-read",
+    "capability-index",
+    "storage"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "actions": [
+    "inventory exact accepts and produces declarations",
+    "map exact producer to consumer artifact wiring",
+    "separate producer-only consumer-only and self-loop-only declarations",
+    "compare authored manifest handoffs with declared contract handoffs",
+    "export a wiring map only when an output path is explicit"
+  ],
+  "accepts": [
+    "axm.workshop-capability-index/v1",
+    "axm.module-contract/v1"
+  ],
+  "produces": [
+    "axm.handoff-wiring-map/v1",
+    "axm.handoff-artifact-record/v1",
+    "axm.handoff-module-envelope/v1"
+  ],
+  "readiness": [
+    "filesystem-read"
+  ],
+  "summary": "A deterministic exact-string map of which module artifacts are produced, consumed, self-looped, or unpaired, without inventing schema compatibility or adapters.",
+  "notes": "Detached EXPERIMENTAL candidate. Multiple providers are evidence, not a collision; unmatched declarations are seams, not automatic failures."
+}

@@ -1,0 +1,8 @@
+{
+  "schema":"axm.module-contract/v1","id":"mesh-retopology-optimizer","version":"v0.1","status":"EXPERIMENTAL",
+  "provides":["native-bounded-vertex-clustering","measured-triangle-reduction","normalized-geometric-error-bound","protected-material-and-primitive-groups","protected-uv-hard-normal-and-joint-semantics","normalized-skin-weight-output","degenerate-triangle-removal","before-after-wireframe-review"],
+  "consumes":["model/gltf-binary","human-silhouette-approval","human-deformation-approval"],"permissions":["export"],
+  "lifecycle":{"state_owner":"browser","reload":"reset","disconnect":"graceful-degrade","cleanup":"automatic"},
+  "handoffs":{"emits":["axm.mesh-optimization/v1","axm.mesh-optimization-verification/v1"],"accepts":["same-origin:model/gltf-binary","human:explicit-export"]},
+  "boundaries":{"automaticWrites":[],"explicitWrites":["user-download:axm-mesh-candidate-json","user-download:optimization-receipt-json"],"refuses":["source-glb-mutation","silent-material-group-loss","silent-uv-or-rig-loss","triangle-target-over-error-bound","silhouette-approval-by-distance-metric","deformation-approval-by-weight-normalization","automatic-library-promotion","runtime-external-network-dependency"]}
+}

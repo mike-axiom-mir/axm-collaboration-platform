@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.experiment-intent/v1",
+  "title": "AXM Experiment Intent",
+  "type": "object",
+  "required": ["schema", "id", "type", "actor"],
+  "properties": {
+    "schema": { "const": "axm.experiment-intent/v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "type": { "enum": ["artifact.create", "artifact.transform", "evidence.record", "experiment.note", "experiment.freeze"] },
+    "actor": {
+      "type": "object",
+      "required": ["id", "kind"],
+      "properties": { "id": { "type": "string" }, "kind": { "enum": ["human", "machine", "service"] } }
+    },
+    "sourceIds": { "type": "array", "items": { "type": "string" } },
+    "effects": { "type": "array", "uniqueItems": true, "maxItems": 8, "items": { "const": "candidate-memory" } },
+    "resource": {
+      "description": "Declared request envelope used by the deterministic rehearsal; not measured hardware telemetry.",
+      "type": "object",
+      "properties": {
+        "timeMinutes": { "type": "number", "minimum": 0, "maximum": 480 },
+        "storageMb": { "type": "number", "minimum": 0, "maximum": 4096 },
+        "computePercent": { "type": "number", "minimum": 0, "maximum": 100 }
+      },
+      "additionalProperties": false
+    },
+    "artifact": { "type": ["object", "null"] }
+  },
+  "additionalProperties": true
+}

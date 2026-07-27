@@ -1,2 +1,22 @@
-'use strict';const assert=require('assert'),fs=require('fs'),path=require('path');const d=__dirname,m=JSON.parse(fs.readFileSync(path.join(d,'manifest.json'))),c=JSON.parse(fs.readFileSync(path.join(d,'module.contract.json'))),h=fs.readFileSync(path.join(d,'index.html'),'utf8'),a=fs.readFileSync(path.join(d,'app.js'),'utf8');assert.equal(m.id,'module-contract-workbench');assert(c.boundaries.refuses.includes('direct-installed-module-edit'));assert.equal(c.lifecycle.cleanup,'automatic');assert(h.includes('manifest.json')&&h.includes('module.contract.json'));assert(a.includes('/api/module-workbench/validate')&&a.includes('explicit-stage-review'));console.log('PASS Module Workbench · inventory edit pair validate staged governed migration');
-
+'use strict';
+const assert=require('assert'),fs=require('fs'),path=require('path');
+const d=__dirname;
+const m=JSON.parse(fs.readFileSync(path.join(d,'manifest.json')));
+const c=JSON.parse(fs.readFileSync(path.join(d,'module.contract.json')));
+const h=fs.readFileSync(path.join(d,'index.html'),'utf8');
+const a=fs.readFileSync(path.join(d,'app.js'),'utf8');
+assert.equal(m.id,'module-contract-workbench');
+assert.equal(m.schema,'axm.tool-manifest/v1');
+assert.equal(m.kind,'product');
+assert.deepEqual(m.permissions,[]);
+assert.equal(c.schema,'axm.module-contract/v1');
+assert(c.boundaries.refuses.includes('direct-installed-module-edit'));
+assert(c.boundaries.refuses.includes('automatic-install'));
+assert(c.boundaries.refuses.includes('automatic-canon'));
+assert.deepEqual(c.lifecycle,{state_owner:'service',reload:'resume',disconnect:'graceful-degrade',cleanup:'automatic'});
+assert.equal(c.lifecycle.cleanup,'automatic');
+assert(h.includes('manifest.json')&&h.includes('module.contract.json'));
+assert(a.includes('/api/module-workbench/validate')&&a.includes('explicit-stage-review'));
+assert(m.accepts.includes('axm.module-lifecycle-repair-request/v1'));
+assert(a.includes("query.get('module')")&&a.includes('context only; nothing was staged'));
+console.log('PASS Module Workbench - inventory, exact deep-link, pair validation and governed staging');

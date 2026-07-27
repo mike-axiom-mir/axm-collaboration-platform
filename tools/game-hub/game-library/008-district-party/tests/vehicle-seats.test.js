@@ -15,7 +15,7 @@ const { collidesObstacle } = require('../server/spatial-index');
 
 const projectRoot = path.join(__dirname, '..');
 
-function makeWorld() {
+function makeWorld(mapId = null) {
   const players = Array.from({ length: 5 }, (_, index) => ({
     actorId: `actor-seat-${index + 1}`,
     seatId: `seat_${index + 1}`,
@@ -25,7 +25,7 @@ function makeWorld() {
     adapterId: null,
     partyId: index < 4 ? 'party_a' : 'party_b',
   }));
-  const world = createWorldState({ players, projectRoot });
+  const world = createWorldState({ players, projectRoot, settings: { mapId } });
   const vehicle = world.vehicles['vehicle-001'];
   Object.values(world.actors).forEach((actor) => { actor.position = { ...vehicle.position }; });
   return world;
@@ -114,7 +114,7 @@ test('exit releases the seat and disconnected driver recovery is host-owned', ()
 });
 
 test('vehicle exit chooses another side instead of placing actor inside depot collision', () => {
-  const world = makeWorld();
+  const world = makeWorld('tilburg-streetscape-foundation');
   const vehicle = world.vehicles['vehicle-001'];
   const actor = world.actors['actor-seat-1'];
   const depot = world.staticMap.obstacles.find((entry) => entry.id === 'depot-building');

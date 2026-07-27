@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+'use strict';
+const assert=require('assert');
+const fs=require('fs');
+const path=require('path');
+const {validateContract}=require('../../hub/module-contract-verifier.js');
+const read=name=>fs.readFileSync(path.join(__dirname,name),'utf8');
+const manifest=JSON.parse(read('manifest.json'));
+const contract=JSON.parse(read('module.contract.json'));
+const html=read('index.html'),app=read('app.js'),styles=read('styles.css');
+const sharedCss=fs.readFileSync(path.join(__dirname,'..','..','shared','elements','axm-ui-fx.css'),'utf8');
+const sharedJs=fs.readFileSync(path.join(__dirname,'..','..','shared','elements','axm-ui-fx.js'),'utf8');
+const checked=validateContract(contract,manifest);
+assert.equal(checked.pass,true,checked.errors.join('; '));
+assert.equal(manifest.status,'TEST');
+assert.equal(contract.version,manifest.version);
+assert.deepStrictEqual(manifest.permissions,['clipboard-write']);
+assert(contract.boundaries.refuses.includes('automatic-host-apply'));
+assert(contract.boundaries.refuses.includes('automatic-visual-approval'));
+assert(contract.boundaries.refuses.includes('network-contact'));
+['fx-surface','fx-glass','fx-bevel','fx-gradient-border','fx-glow','fx-glow-inset','fx-neon','fx-duotone','fx-tile','fx-extrude','fx-scanlines','fx-lift','fx-sheen','fx-breathe','fx-tilt','fx-flicker','fx-corners','fx-active','fx-ok','fx-info','fx-warn','fx-danger','fx-badge'].forEach(name=>assert(sharedCss.includes('.'+name),'missing '+name));
+assert(sharedCss.includes('--fx-accent:var(--axm-brand'));
+assert(sharedCss.includes('--fx-accent2:var(--axm-action'));
+assert(sharedCss.includes('@media(prefers-reduced-motion:reduce)'));
+assert(sharedJs.includes('root.AXMFX='));
+assert(html.includes('../../shared/elements/axm-ui-fx.css'));
+assert(html.includes('../../shared/elements/axm-ui-fx.js'));
+assert(app.includes('navigator.clipboard.writeText'));
+assert(!/fetch\s*\(|https?:\/\/|localStorage|sessionStorage/.test(html+app+styles+sharedJs),'UI-FX must remain local and session-only');
+console.log('PASS UI-FX Composer · 23 named layers · Visual Kernel defaults · explicit copy only');
+

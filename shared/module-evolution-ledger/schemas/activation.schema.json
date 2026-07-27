@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.module-evolution-ledger.activation/v1",
+  "title": "Module Evolution Activation Recovery Metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "attemptId", "moduleId", "fromRecordId", "toRecordId", "sourceDigest", "targetDigest", "installerCandidateId", "installerReviewRef", "recoverySnapshotRef", "mikeApprovalRef", "state", "preparedAt", "preparedBy", "authorityMap"],
+  "properties": {
+    "schema": {"const": "axm.module-evolution-ledger.activation/v1"},
+    "attemptId": {"type": "string"},
+    "moduleId": {"type": "string"},
+    "fromRecordId": {"type": "string"},
+    "toRecordId": {"type": "string"},
+    "sourceDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "targetDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "installerCandidateId": {"type": "string"},
+    "installerReviewRef": {"type": "string"},
+    "recoverySnapshotRef": {"type": "string"},
+    "mikeApprovalRef": {"type": "string"},
+    "state": {"enum": ["PREPARED", "ACTIVATING", "NOT_APPLIED", "AWAITING_VERIFICATION", "AWAITING_MIKE_ACCEPTANCE", "VERIFICATION_HOLD", "RECOVERY_HOLD", "RECOVERY_HANDOFF_RECORDED", "ACCEPTED_AS_OBSERVED"]},
+    "preparedAt": {"type": "string", "format": "date-time"},
+    "preparedBy": {"const": "Mike"},
+    "startedAt": {"type": ["string", "null"]},
+    "installerAttemptRef": {"type": ["string", "null"]},
+    "observation": {"type": ["object", "null"]},
+    "verification": {"type": ["object", "null"]},
+    "recoveryHandoff": {"type": ["object", "null"]},
+    "authorityMap": {"type": "object"}
+  }
+}

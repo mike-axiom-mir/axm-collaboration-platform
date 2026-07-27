@@ -1,0 +1,53 @@
+#!/usr/bin/env node
+'use strict';
+const assert=require('assert');
+const Hands=require('../../shared/asset-hands/asset-hands');
+const Handoff=require('./upgrade-handoff');
+
+const canvas={medium:'screen',dimensions:{width:64,height:64,unit:'px'},colour:{space:'srgb',transparency:'allowed'},behaviour:['static'],intended_use:'icon'};
+const request={schema:Hands.UPGRADE_REQUEST_SCHEMA,required_capabilities:['asset.vector.gradient'],target_canvas:canvas,intended_use:'icon',required_outputs:['image/svg+xml'],required_constraints:['target_canvas.dimensions'],required_operations:['preview','edit'],available_substrates:[]};
+const route=Hands.diagnoseUpgrade(request);
+assert.equal(route.status,'READY_CONTRACT');
+assert.equal(route.selected_hand.id,'asset.vector.advanced-appearance');
+const execution=Hands.invokeUpgrade(route.selected_hand.id,'appearanceSvg',[{stroke:{points:[{x:4,y:4},{x:24,y:24}],widths:[2,6]},gradient:{stops:[{offset:0,colour:'#000000'},{offset:1,colour:'#ffffff'}]},blend_mode:'normal',host_capabilities:['css-mix-blend-mode'],renderer_matrix:{status:'PASS',digest:'renderer-pass'}}],request);
+execution.capability_receipts=[{schema:'axm.external-validator-receipt/v1',status:'PASS',artifact:{digest:execution.artifacts[0].digest},digest:'external-validator-pass'}];
+assert.equal(execution.delivery_status,'OUTPUT_REQUIREMENTS_SATISFIED');
+const handoff=Handoff.create(request,route,execution);
+assert.equal(handoff.status,'EXECUTED_AWAITING_EXPLICIT_IMPORT');
+assert.equal(handoff.importable,true);
+assert.equal(handoff.automatic_apply,false);
+assert(Handoff.validate(handoff).pass);
+assert.equal(handoff.target_canvas.dimensions.width,64);
+assert.equal(handoff.capability_receipts[0].digest,execution.digest);
+assert.equal(handoff.capability_receipts[1].digest,'external-validator-pass');
+assert.equal(handoff.creation_recipe.schema,'axm.asset-creation-recipe/v1');
+const svgArtifact=execution.artifacts.find((item)=>item.mime==='image/svg+xml');
+assert(svgArtifact&&svgArtifact.text);
+const source=Handoff.prepareExplicitImport(handoff,Object.assign({filename:'vector.svg'},svgArtifact));
+assert.equal(source.asset.mime,'image/svg+xml');
+assert.equal(source.asset.svg,svgArtifact.text);
+assert.equal(source.asset.dataUrl,null);
+assert.equal(source.asset.automaticApply,false);
+assert.throws(()=>Handoff.prepareExplicitImport(handoff,{mime:'image/svg+xml',text:svgArtifact.text,digest:'unbound'}),/not bound/);
+
+const rasterCanvas={medium:'screen',dimensions:{width:2,height:2,unit:'px'},colour:{space:'srgb',transparency:'allowed'},behaviour:['static'],intended_use:'icon'};
+const rasterRequest={schema:Hands.UPGRADE_REQUEST_SCHEMA,required_capabilities:['asset.raster.layers'],target_canvas:rasterCanvas,intended_use:'icon',required_outputs:['image/png'],required_constraints:['target_canvas.dimensions'],required_operations:['preview'],available_substrates:[]};
+const rasterRoute=Hands.diagnoseUpgrade(rasterRequest);
+const documentExecution=Hands.invokeUpgrade(rasterRoute.selected_hand.id,'create',[{id:'studio-raster',layers:[{id:'base',rgba8:Buffer.from([255,0,0,255,0,255,0,255,0,0,255,255,255,255,255,255])}]}],rasterRequest);
+assert.equal(documentExecution.delivery_status,'OUTPUT_REQUIREMENTS_HOLD');
+const rasterExecution=Hands.invokeUpgrade(rasterRoute.selected_hand.id,'render',[documentExecution.output],rasterRequest);
+const rasterHandoff=Handoff.create(rasterRequest,rasterRoute,rasterExecution);
+const pngArtifact=rasterExecution.artifacts.find((item)=>item.mime==='image/png');
+assert(pngArtifact&&pngArtifact.dataUrl);
+const raster=Handoff.prepareExplicitImport(rasterHandoff,Object.assign({filename:'raster.png'},pngArtifact));
+assert.equal(raster.asset.mime,'image/png');
+assert.equal(raster.asset.svg,null);
+assert.equal(raster.asset.dataUrl,pngArtifact.dataUrl);
+assert.throws(()=>Handoff.prepareExplicitImport(handoff,{mime:'audio/wav',digest:'wav'}),/does not support/);
+
+const unsupportedRoute=Hands.diagnoseUpgrade(Object.assign({},request,{target_canvas:{medium:'metal',dimensions:{width:10,height:10,unit:'mm'},colour:{space:'grayscale',transparency:'opaque'},behaviour:['static'],intended_use:'engraving'}}));
+const unsupported=Handoff.create(Object.assign({},request,{target_canvas:unsupportedRoute.request.target_canvas}),unsupportedRoute,null);
+assert.equal(unsupported.status,'UNSUPPORTED_CANVAS');
+assert.equal(unsupported.importable,false);
+assert.throws(()=>Handoff.prepareExplicitImport(unsupported,{mime:'image/svg+xml',digest:'x',text:svgArtifact.text}),/not executed/);
+console.log('Studio upgrade handoff PASS (canvas, recipe, receipt-bound SVG/raster and explicit import preserved)');

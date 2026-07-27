@@ -1,0 +1,72 @@
+{
+  "schema": "axm.deterministic-research-machine-registry/v1",
+  "version": "0.1.0",
+  "machines": [
+    {
+      "id": "goal-normalizer", "capabilityId": "research.goal.normalize/v1", "purpose": "Convert explicit goals or Workshop Direction plans into exact research requirements.",
+      "inputs": ["axm.research-goal-draft/v1", "axm.workshop-direction.plan/v1"], "outputs": ["axm.research-goal/v1"], "sideEffects": [], "permissions": [],
+      "resourceBudget": {"maxRequirements": 500, "network": false}, "failureRecovery": "Reject malformed or capability-free goals without changing source state.",
+      "compatibility": "axm.research-goal/v1", "verification": "Stable digest and malformed-goal fixtures.", "promotionGate": "Mike"
+    },
+    {
+      "id": "workshop-scanner", "capabilityId": "research.workshop.scan/v1", "purpose": "Inventory declared Workshop capabilities and typed structural gaps from current files.",
+      "inputs": ["filesystem:Workshop manifests/contracts/state/evidence"], "outputs": ["axm.research-workshop-snapshot/v1"], "sideEffects": [], "permissions": ["read-workshop"],
+      "resourceBudget": {"maxModules": 2000, "network": false}, "failureRecovery": "Unreadable optional sources become absent or unknown; the tool root is required.",
+      "compatibility": "axm.module-contract/v1 plus current manifest schema", "verification": "Fixture Workshop and live contract/seam audit.", "promotionGate": "Mike"
+    },
+    {
+      "id": "gap-classifier", "capabilityId": "capability.compare.requirements/v1", "purpose": "Compare exact goal requirements with the declared inventory and merge observed Workshop gaps.",
+      "inputs": ["axm.research-goal/v1", "axm.research-workshop-snapshot/v1"], "outputs": ["axm.capability-gap-report/v1"], "sideEffects": [], "permissions": [],
+      "resourceBudget": {"maxRequirements": 500, "maxCapabilities": 5000}, "failureRecovery": "Reject duplicates and malformed identifiers; never fuzzy-match a requirement green.",
+      "compatibility": "shared AI-native capability-gap hand v1", "verification": "Known missing/degraded/unknown fixtures.", "promotionGate": "Mike"
+    },
+    {
+      "id": "question-compiler", "capabilityId": "research.question.compile/v1", "purpose": "Turn each typed gap into one falsifiable research question.",
+      "inputs": ["typed-gap-records"], "outputs": ["axm.research-question/v1"], "sideEffects": [], "permissions": [],
+      "resourceBudget": {"maxQuestions": 5000}, "failureRecovery": "Unknown gap types receive an observation-first question.",
+      "compatibility": "typed gap classes HAND/SKILL/AUTHORITY/SUBSTRATE/EVIDENCE/CONTRACT/UNKNOWN", "verification": "One stable question per gap and no truth promotion.", "promotionGate": "Mike"
+    },
+    {
+      "id": "hypothesis-router", "capabilityId": "research.hypothesis.route/v1", "purpose": "Select the cheapest honest reuse, verify, adapt, improve, build, substrate, or authority hypothesis.",
+      "inputs": ["typed-gap-records", "declared-capability-inventory"], "outputs": ["axm.research-hypothesis/v1"], "sideEffects": [], "permissions": [],
+      "resourceBudget": {"maxSemanticLeadsPerGap": 3}, "failureRecovery": "Token-overlap leads remain explicitly unverified and never close gaps.",
+      "compatibility": "exact capability identifiers", "verification": "Route precedence and fuzzy-lead non-satisfaction fixtures.", "promotionGate": "Mike"
+    },
+    {
+      "id": "experiment-designer", "capabilityId": "research.experiment.plan/v1", "purpose": "Design the cheapest disconfirming test on the evidence surface native to each claim.",
+      "inputs": ["axm.research-question/v1", "axm.research-hypothesis/v1"], "outputs": ["axm.research-experiment-plan/v1", "axm.evidence-route/v1"], "sideEffects": [], "permissions": [],
+      "resourceBudget": {"maxStepsPerExperiment": 4}, "failureRecovery": "Unknown claim kinds route to an explicit missing-verifier state.",
+      "compatibility": "shared evidence-router hand v1", "verification": "Claim-kind matrix and counterevidence assertions.", "promotionGate": "Mike"
+    },
+    {
+      "id": "backlog-ranker", "capabilityId": "research.backlog.rank/v1", "purpose": "Rank transparent builder and steward queues without assigning work.",
+      "inputs": ["typed gaps", "hypotheses", "experiments"], "outputs": ["axm.research-backlog/v1"], "sideEffects": [], "permissions": [],
+      "resourceBudget": {"maxItems": 5000}, "failureRecovery": "Stable identifier ordering breaks score ties.",
+      "compatibility": "fixed documented scoring formula v1", "verification": "Ordering, factor transparency, and no-assignment assertions.", "promotionGate": "Mike"
+    },
+    {
+      "id": "evidence-ledger", "capabilityId": "research.evidence.ingest/v1", "purpose": "Ingest digest-bound observations and preserve contradictions instead of averaging them.",
+      "inputs": ["axm.research-observation/v1"], "outputs": ["axm.research-evidence-ledger/v1"], "sideEffects": [], "permissions": [],
+      "resourceBudget": {"maxEvidenceRefsPerObservation": 100}, "failureRecovery": "Reject unknown claims, duplicate observations, missing digests, and broken chains.",
+      "compatibility": "append-only hash chain v1", "verification": "PASS/FAIL conflict and tamper fixtures plus fresh-process reload.", "promotionGate": "Mike"
+    },
+    {
+      "id": "report-compiler", "capabilityId": "research.report.compile/v1", "purpose": "Compile machine-readable and builder-readable research reports with stable semantic digests.",
+      "inputs": ["research run parts"], "outputs": ["axm.deterministic-research-report/v1", "text/markdown"], "sideEffects": [], "permissions": [],
+      "resourceBudget": {"maxMarkdownBacklogItems": 100}, "failureRecovery": "Refuse incomplete composition upstream; never hide FAIL or UNKNOWN.",
+      "compatibility": "axm.deterministic-research-report/v1", "verification": "Same semantic inputs yield same research digest across observation timestamps.", "promotionGate": "Mike"
+    },
+    {
+      "id": "research-runner", "capabilityId": "research.run.compose/v1", "purpose": "Compose all research machines without merging their state or authority.",
+      "inputs": ["axm.research-goal/v1", "Workshop root"], "outputs": ["research report", "inventory", "evidence ledger"], "sideEffects": [], "permissions": ["read-workshop"],
+      "resourceBudget": {"network": false, "modelCalls": 0}, "failureRecovery": "A failed stage aborts the run and leaves source state untouched.",
+      "compatibility": "machine registry v1", "verification": "End-to-end seeded gap and live Workshop runs.", "promotionGate": "Mike"
+    },
+    {
+      "id": "research-observer", "capabilityId": "research.ui.observe/v1", "purpose": "Render the latest report for human and machine collaborators without mutating it.",
+      "inputs": ["axm.deterministic-research-report/v1"], "outputs": ["browser-rendered research view"], "sideEffects": [], "permissions": [],
+      "resourceBudget": {"network": "same-origin report only", "polling": false}, "failureRecovery": "Show a visible missing-report state and never invent fallback findings.",
+      "compatibility": "Research Foundry static view v0.1", "verification": "Laptop/mobile render, queue switching, overflow, and missing-report checks.", "promotionGate": "Mike"
+    }
+  ]
+}

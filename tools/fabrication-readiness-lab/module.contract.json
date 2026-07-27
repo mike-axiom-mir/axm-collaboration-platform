@@ -1,0 +1,29 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "fabrication-readiness-lab",
+  "version": "v0.1",
+  "provides": ["fabrication.readiness.evaluate", "fabrication.gaps.reveal", "fabrication.bounded-package.prepare"],
+  "consumes": ["axm.fabrication-candidate/v1", "axm.fabrication-research-signal/v1"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.fabrication-readiness-evaluation/v1", "axm.fabrication-bounded-test-package/v1"],
+    "accepts": ["axm.fabrication-candidate/v1", "axm.fabrication-research-signal/v1"]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "hardware-execution",
+      "printer-control",
+      "automatic-purchase",
+      "advertisement-as-proof",
+      "vendor-ai-dependency",
+      "silent-gate-bypass"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  }
+}

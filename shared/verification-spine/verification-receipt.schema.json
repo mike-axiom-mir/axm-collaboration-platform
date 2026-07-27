@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.verification-receipt/v2",
+  "type": "object",
+  "required": ["schema", "id", "verifier", "subject", "target_profile", "claims", "created_at"],
+  "properties": {
+    "schema": { "const": "axm.verification-receipt/v2" },
+    "id": { "type": "string", "minLength": 1 },
+    "verifier": {
+      "type": "object",
+      "required": ["id", "version", "category"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "category": { "type": "string", "minLength": 1 }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "required": ["id", "kind"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "type": "string", "minLength": 1 },
+        "version": { "type": "string" },
+        "digest": { "type": "string" }
+      }
+    },
+    "target_profile": { "type": "string", "minLength": 1 },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "required", "risk", "evidence"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["PASS", "FAIL", "WARNING", "UNKNOWN", "MISSING_VALIDATOR", "HUMAN_REVIEW", "NOT_APPLICABLE"] },
+          "required": { "type": "boolean" },
+          "risk": { "enum": ["low", "medium", "high"] },
+          "summary": { "type": "string" },
+          "evidence": { "type": "array" },
+          "limitations": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "created_at": { "type": "string", "minLength": 1 }
+  }
+}

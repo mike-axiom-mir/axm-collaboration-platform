@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Presentation Spine</title>
+  <link rel="stylesheet" href="../../shared/visual-kernel/axm-kernel.css">
+  <link rel="stylesheet" href="../../shared/presentation-spine/presentation-spine.css">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="../../shared/presentation-spine/presentation-spine.js"></script>
+  <script defer src="../../shared/presentation-spine/presentation-recipe.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body class="axm-spine" data-axm-profile="lab">
+  <header class="topbar">
+    <a class="hub" href="../../hub/index.html">← HUB</a>
+    <div class="brand"><span class="brand-mark">AXM</span><div><b>PRESENTATION SPINE</b><small>ONE SYSTEM · FOUR HONEST VISUAL MODES</small></div></div>
+    <span class="spine-chip">TEST · PRESENTATION ONLY</span>
+  </header>
+
+  <main>
+    <section class="hero-grid">
+      <article class="intro spine-surface">
+        <span class="spine-kicker">2030 platform vocabulary</span>
+        <h1>One visual language.<br><em>Different kinds of work.</em></h1>
+        <p>The spine carries depth, hierarchy, motion, controls and telemetry across AXM. Profiles change emphasis without changing authority.</p>
+        <div class="profile-switch" role="group" aria-label="Preview a presentation profile">
+          <button data-profile="cockpit">Cockpit</button>
+          <button data-profile="studio">Studio</button>
+          <button data-profile="dashboard">Dashboard</button>
+          <button class="active" data-profile="lab">Lab</button>
+        </div>
+      </article>
+      <aside class="signal-core spine-surface" aria-label="Live presentation token preview">
+        <div class="orbital"><div class="spine-beacon"></div></div>
+        <span class="spine-kicker">Active profile</span>
+        <strong id="activeProfile">LAB</strong>
+        <p id="profilePurpose">Evidence, comparison and bounded experiments.</p>
+        <div class="signal-row"><i></i><span>presentation only</span><i></i><span>reduced motion ready</span></div>
+      </aside>
+    </section>
+
+    <section class="profile-grid" aria-labelledby="profilesTitle">
+      <header class="section-head"><div><span class="spine-kicker">01 · Profiles</span><h2 id="profilesTitle">Purpose before decoration</h2></div><p>Each surface chooses one base profile. Effects remain optional layers.</p></header>
+      <div class="profiles">
+        <article class="profile-card" data-card-profile="cockpit"><span>01</span><div class="mini-ui cockpit-ui"><i></i><i></i><i></i><b></b></div><h3>Cockpit</h3><p>Command, live state, routes and telemetry.</p></article>
+        <article class="profile-card" data-card-profile="studio"><span>02</span><div class="mini-ui studio-ui"><i></i><i></i><i></i><b></b></div><h3>Studio</h3><p>Tools orbit a visually authoritative canvas.</p></article>
+        <article class="profile-card" data-card-profile="dashboard"><span>03</span><div class="mini-ui dashboard-ui"><i></i><i></i><i></i><b></b></div><h3>Dashboard</h3><p>Overview, discovery, growth and navigation.</p></article>
+        <article class="profile-card selected" data-card-profile="lab"><span>04</span><div class="mini-ui lab-ui"><i></i><i></i><i></i><b></b></div><h3>Lab</h3><p>Evidence, comparison and bounded experiments.</p></article>
+      </div>
+    </section>
+
+    <section class="authority spine-surface" aria-labelledby="authorityTitle">
+      <header class="section-head"><div><span class="spine-kicker">02 / Presentation authority</span><h2 id="authorityTitle">Shared by default. Module by choice.</h2></div><p>The Hub controls presentation without becoming the module's truth.</p></header>
+      <div class="authority-grid">
+        <article><span>SHARED</span><h3>One Workshop language</h3><p>Kernel tokens, the matching profile and the shared glass host layer make independently built tools feel connected.</p><b>DEFAULT</b></article>
+        <article><span>MODULE</span><h3>Creator-owned presentation</h3><p>The original module look stays available. A user can select it per workspace and return to Shared at any time.</p><b>USER CHOICE</b></article>
+        <article><span>BOUNDARY</span><h3>Looks cannot become authority</h3><p>No mode changes data, behavior, permissions, lifecycle, verification status, saved work or routes.</p><b>PRESENTATION ONLY</b></article>
+      </div>
+    </section>
+
+    <section class="recipe-lab spine-surface" aria-labelledby="recipeTitle">
+      <header class="section-head"><div><span class="spine-kicker">03 / Skin recipe layers</span><h2 id="recipeTitle">Compose a reusable presentation recipe</h2></div><p>Choose independent visual layers, preview them here, then explicitly apply or export. Colors, fonts, assets and layout slots remain Skinner territory.</p></header>
+      <div class="recipe-layout">
+        <form class="recipe-controls" id="recipeForm">
+          <label>Profile<select name="profile"><option>auto</option><option>cockpit</option><option>studio</option><option>dashboard</option><option>lab</option></select></label>
+          <label>Surface<select name="surface"><option>glass</option><option>solid</option><option>minimal</option></select></label>
+          <label>Depth<select name="depth"><option>flat</option><option>raised</option><option>dimensional</option></select></label>
+          <label>Motion<select name="motion"><option>still</option><option>responsive</option><option>ambient</option></select></label>
+          <label>Density<select name="density"><option>compact</option><option>balanced</option><option>comfortable</option></select></label>
+          <label>Signal<select name="signal"><option>quiet</option><option>clear</option><option>luminous</option></select></label>
+        </form>
+        <div class="recipe-preview" id="recipePreview" data-surface="glass" data-depth="raised" data-motion="responsive" data-density="balanced" data-signal="clear">
+          <span class="spine-kicker">Live composition</span><strong id="recipeName">SHARED WORKSHOP</strong>
+          <div class="preview-grid"><article><small>SURFACE</small><b id="previewSurface">GLASS</b></article><article><small>DEPTH</small><b id="previewDepth">RAISED</b></article><article><small>SIGNAL</small><b id="previewSignal">CLEAR</b></article></div>
+          <code id="recipeFingerprint">fingerprint pending</code>
+        </div>
+      </div>
+      <div class="recipe-actions"><button type="button" id="applyRecipe">Apply to Shared mode</button><button type="button" id="exportRecipe">Export JSON</button><button type="button" id="importRecipe">Import JSON</button><button type="button" id="resetRecipe">Reset</button><input id="recipeFile" type="file" accept="application/json,.json" hidden></div>
+      <p class="recipe-status" id="recipeStatus" aria-live="polite">Preview only. Nothing changes until you apply.</p>
+    </section>
+
+    <section class="migration spine-surface" aria-labelledby="migrationTitle">
+      <header class="section-head"><div><span class="spine-kicker">02 · Migration map</span><h2 id="migrationTitle">The rest of AXM has a route forward</h2></div><div class="report-status" id="reportStatus">READING REPORT</div></header>
+      <div class="metric-grid" id="metrics">
+        <div class="spine-data"><span>Surfaces</span><b>—</b><small>HTML interfaces inspected</small></div>
+        <div class="spine-data"><span>On spine</span><b>—</b><small>profile + shared seam</small></div>
+        <div class="spine-data"><span>Need migration</span><b>—</b><small>advice only</small></div>
+        <div class="spine-data"><span>External refs</span><b>—</b><small>review separately</small></div>
+      </div>
+      <div class="report-controls"><label>Filter surfaces <input id="filter" type="search" placeholder="hub, studio, verifier…"></label><select id="profileFilter" aria-label="Filter by proposed profile"><option value="">All profiles</option><option>cockpit</option><option>studio</option><option>dashboard</option><option>lab</option></select></div>
+      <div class="surface-list" id="surfaceList"><p>Loading deterministic report…</p></div>
+      <footer><b>BOUNDARY</b><span>The scanner reads and recommends. It cannot rewrite hosts, approve appearance or promote canon.</span><code>node shared/presentation-spine/migration-scanner.js --root . --out tools/presentation-spine/migration-report.json</code></footer>
+    </section>
+  </main>
+</body>
+</html>

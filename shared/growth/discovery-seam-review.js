@@ -5,7 +5,13 @@ const assert=require('assert'),fs=require('fs'),path=require('path'),root=path.r
   [server.includes('/api/workshop-growth')&&server.includes('/api/workshop-growth/capture'),'read and explicit capture APIs'],
   [server.includes('explicit-local-snapshot'),'capture requires explicit local action'],
   [hub.includes('id="growthScreen"')&&hub.includes('id="growthHistory"'),'Hub infographic screen exists'],
+  [hub.includes('id="growthYear"')&&hub.includes('id="growthMonth"')&&core.includes("SNAPSHOT_RETENTION = 'all-compact-history'")&&!core.includes('snapshots.slice(-365)'),'year/month journey keeps all compact snapshots'],
   [hub.includes('id="growthActionStatus"')&&/button\.textContent\s*=\s*'Saving…'/.test(ui)&&ui.includes('Already saved · nothing changed.'),'snapshot action gives immediate visible feedback'],
   [shell.includes('Workshop Growth')&&shell.includes('AXMWorkshopGrowth.open'),'Home card opens infographic'],
-  [ui.includes('deltaFromPrevious')&&ui.includes('countingRules.excluded'),'growth and rules render visibly']
+  [ui.includes('deltaFromPrevious')&&ui.includes('countingRules.excluded'),'growth and rules render visibly'],
+  [core.includes('worldFingerprints')&&core.includes('worldChanges')&&server.includes('worldChangeSignal')&&server.includes('worldDeltaReady')&&ui.includes('Existing worlds updated')&&ui.includes('old and new modules and worlds all count'),'living-world characters stay in totals while deep world upgrades remain explicit'],
+  [core.includes('scanMirror')&&core.includes('mirrorSpecializations')&&server.includes('scanGrowthBodies'),'Mirror family measurement reaches the API'],
+  [hub.includes('id="growthMirrorParent"')&&hub.includes('id="growthMirrorSpecializations"')&&ui.includes('Original Mirror'),'Original Mirror renders first with separate declared specialists'],
+  [ui.includes('sharedParentCode')&&ui.includes('Owned body / source')&&ui.includes('Installed substrates'),'Mirror parent code and installed runtimes stay visibly distinct'],
+  [hub.includes('no private contents read')&&ui.includes('Inventory only')&&ui.includes('organ source files')&&server.includes('lineage-declared, not live-measured'),'Mirror metadata boundary and structural inventory remain explicit']
 ];checks.forEach(([pass,label])=>assert.ok(pass,label));console.log('Workshop Growth seam discovery: PASS ('+checks.length+' seams)');

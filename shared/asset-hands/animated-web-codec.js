@@ -1,4 +1,4 @@
-(function(root,factory){var node=typeof module==='object'&&module.exports,api=factory(node?require('wasm-vips'):root.Vips);if(node)module.exports=api;if(root)root.AXMAnimatedWebCodec=api;}(typeof globalThis!=='undefined'?globalThis:this,function(VipsFactory){
+(function(root,factory){var node=typeof module==='object'&&module.exports,api=factory(node?require('./optional-wasm-vips')():root.Vips);if(node)module.exports=api;if(root)root.AXMAnimatedWebCodec=api;}(typeof globalThis!=='undefined'?globalThis:this,function(VipsFactory){
   'use strict';
   var VERSION='1.0.0',runtimePromise=null;
   function asBytes(value){if(value instanceof Uint8Array)return value;if(value instanceof ArrayBuffer)return new Uint8Array(value);if(ArrayBuffer.isView(value))return new Uint8Array(value.buffer,value.byteOffset,value.byteLength);throw new Error('animated web bytes must be a typed array');}

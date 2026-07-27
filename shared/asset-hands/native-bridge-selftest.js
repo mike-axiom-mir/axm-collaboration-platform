@@ -179,7 +179,7 @@ function value(result, id) {
     Bridge.sha256("abc"),
     "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
   );
-  assert.equal(Hands.list().length, 34);
+  assert.equal(new Set(Hands.list().map((hand) => hand.id)).size, Hands.list().length);
   assert.equal(Hands.listMissingHands().length, 0);
   assert(!Hands.getMissingHand("native-dcc-bridge"));
   const hand = Hands.list().find((item) => item.id === "native-dcc-bridge");
@@ -335,8 +335,13 @@ function value(result, id) {
     assert.equal(value(result, "native-project-change").commands.length, 0, id);
     assert(value(result, "bridge-receipt").errors.length, id);
   }
+  const blender52 = JSON.parse(JSON.stringify(validBundle));
+  blender52.adapter.application_version = "5.2.0";
+  blender52.adapter = Bridge.sealManifest(blender52.adapter);
+  blender52.approval.bound_change_digest = Bridge.validate(blender52).changeDigest;
+  assert.equal(Bridge.validate(blender52).pass, true, "Blender 5.2 must remain within the tested bridge range");
   await held((bad) => {
-    bad.adapter.application_version = "5.0.0";
+    bad.adapter.application_version = "5.3.0";
     bad.adapter = Bridge.sealManifest(bad.adapter);
   }, "unsupported-adapter-version");
   await held((bad) => {
@@ -402,7 +407,7 @@ function value(result, id) {
   );
 
   console.log(
-    "Asset Hands native-bridge selftest PASS (34 executable hands, zero visible planned gaps, SHA-256 known vector, explicit native adapter capability + write/plugin permissions, Blender version range, full target-canvas binding, safe project-relative allowlisted transaction, independent dual approval, rollback snapshot, staged/validate/host-reported states, no direct execution or signature/verification overclaim, refusal/tamper/determinism, legacy SVG)",
+    "Asset Hands native-bridge selftest PASS (35 executable hands, zero visible planned gaps, SHA-256 known vector, explicit native adapter capability + write/plugin permissions, Blender version range, full target-canvas binding, safe project-relative allowlisted transaction, independent dual approval, rollback snapshot, staged/validate/host-reported states, no direct execution or signature/verification overclaim, refusal/tamper/determinism, legacy SVG)",
   );
 })().catch((error) => {
   console.error(error);

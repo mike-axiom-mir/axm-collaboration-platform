@@ -1,7 +1,9 @@
 {
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
   "id": "technical-glasses",
   "name": "AXM Technical Glasses",
-  "version": "v0.1",
+  "version": "v0.2",
   "status": "TEST",
   "entry": "index.html",
   "contract": "module.contract.json",
@@ -14,12 +16,12 @@
   "serviceRole": "shared-live-technical-ground-truth-view",
   "risk": "LOW",
   "tags": ["ai-native", "technical", "ground-truth", "context", "handoff", "freshness", "no-guessing", "observability"],
-  "uses": ["runtime", "storage", "capability-index", "gate"],
+  "uses": ["runtime", "storage", "capability-index", "tools-index", "gate"],
   "permissions": [],
   "actions": ["inspect current technical ground truth", "compile a task-focused AI briefing", "check source freshness", "see important technical seams", "copy context for another AI instance"],
-  "accepts": ["axm.technical-focus/v1", "plain-text/task-focus"],
+  "accepts": ["axm.technical-focus/v1", "plain-text/task-focus", "axm.tools-index/v1", "axm.workshop-readiness-view/v1"],
   "produces": ["axm.technical-glasses/v1", "text/plain/ai-technical-briefing"],
   "readiness": ["runtime", "storage"],
-  "summary": "A live, read-only technical view compiled from current manifests, contracts, readiness, source fingerprints and tests so any human or AI starts from the same evidence instead of guessing from chat memory or stale documentation.",
-  "notes": "Recompiles on every request and refreshes an offline portability snapshot every five minutes while the main Hub runs. README files remain narrative context, never technical authority."
+  "summary": "A live, read-only technical view compiled from current manifests, contracts, readiness, source fingerprints and tests, including the shared structural-review evidence used by the Needs Observatory.",
+  "notes": "Recompiles on every request and refreshes an offline portability snapshot every five minutes while the main Hub runs. A review candidate is evidence for Mike to inspect, never approval, promotion, CANON status or runtime proof. README files remain narrative context, never technical authority."
 }

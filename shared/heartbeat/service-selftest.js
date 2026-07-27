@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+'use strict';
+const assert = require('assert');
+const Service = require('./axm-platform-heartbeat-service');
+let stored = null;
+let clock = 1000;
+const service = Service.create({ read: () => stored, write: value => { stored = value; }, now: () => clock, timers: false });
+let status = service.configure({ profileId: 'steady', enabled: true, actorId: 'test' });
+assert.equal(status.config.cadenceMs, 300000);
+clock = 301000;
+const scheduled = service.pump();
+assert.equal(scheduled.emitted, true);
+assert.equal(scheduled.beat.pulseRequested, false);
+const manual = service.manual({ actorId: 'test' });
+assert.equal(manual.beat.kind, 'MANUAL');
+assert.equal(manual.status.sequence, 2);
+status = service.configure({ cadenceMs: 5000, anchorAt: new Date(clock + 2000).toISOString(), enabled: true, actorId: 'test' });
+assert.equal(status.nextDueAt, new Date(clock + 2000).toISOString());
+assert.equal(status.scheduleMode, 'ANCHORED');
+service.close();
+console.log('PASS platform-heartbeat local service');

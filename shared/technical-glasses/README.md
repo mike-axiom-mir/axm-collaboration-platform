@@ -2,7 +2,7 @@
 
 Technical Glasses is a read-only, AI-native description of the Workshop's current technical ground truth.
 
-It compiles from current manifests, module contracts, source timestamps, live readiness, Body Pulse state and capability routes. It does not use chat memory or a README as technical authority.
+It compiles from current manifests, module contracts, source timestamps, live readiness, Body Pulse state and capability routes. It also consumes the shared structural-readiness observer in `shared/readiness/readiness-observer.js`, which is the same observer used by the Workshop Needs Observatory. It does not use chat memory or a README as technical authority.
 
 ## Machine routes
 
@@ -27,5 +27,7 @@ node shared/technical-glasses/technical-glasses-cli.js --write
 - Observation only.
 - Missing evidence becomes `UNKNOWN`, never a guess.
 - No automatic repair, action, permission change or canon promotion.
+- A human-review candidate means the structural declaration, contract and current self-test evidence are ready for Mike to inspect. It is not approval, promotion, CANON status, runtime proof or a satisfied need.
+- `STALE`, `INVALID` and `UNAVAILABLE` structural evidence stays visible and produces no review candidates.
 - A structural scan does not replace runtime tests or human behavior checks.
 - README files remain useful narrative context, but sit last in the technical authority order.

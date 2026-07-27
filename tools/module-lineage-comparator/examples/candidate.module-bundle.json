@@ -1,0 +1,31 @@
+{
+  "schema": "axm.module-bundle/v1",
+  "requiredSeats": 1,
+  "files": [
+    {
+      "path": "manifest.json",
+      "encoding": "utf8",
+      "content": "{\n  \"id\": \"example-lineage\",\n  \"name\": \"Example Lineage\",\n  \"version\": \"v0.2\",\n  \"status\": \"EXPERIMENTAL\",\n  \"entry\": \"index.html\",\n  \"contract\": \"module.contract.json\",\n  \"uses\": [\"storage\", \"export\"],\n  \"permissions\": [],\n  \"actions\": [\"inspect\", \"export explicit receipt\"],\n  \"accepts\": [\"axm.example.input/v1\"],\n  \"produces\": [\"axm.example.output/v1\", \"axm.example.receipt/v1\"],\n  \"readiness\": [\"storage\"]\n}\n"
+    },
+    {
+      "path": "module.contract.json",
+      "encoding": "utf8",
+      "content": "{\n  \"schema\": \"axm.module-contract/v1\",\n  \"id\": \"example-lineage\",\n  \"version\": \"v0.2\",\n  \"provides\": [\"example-inspection\", \"explicit-example-receipt\"],\n  \"consumes\": [\"axm.example.input/v1\"],\n  \"permissions\": [],\n  \"handoffs\": {\"emits\": [\"axm.example.output/v1\", \"axm.example.receipt/v1\"], \"accepts\": [\"axm.example.input/v1\"]},\n  \"boundaries\": {\"writes\": [\"user-selected-output\"], \"refuses\": [\"automatic-apply\", \"automatic-promotion\"]},\n  \"lifecycle\": {\"state_owner\": \"none\", \"reload\": \"reset\", \"disconnect\": \"not-applicable\", \"cleanup\": \"explicit\"}\n}\n"
+    },
+    {
+      "path": "index.html",
+      "encoding": "utf8",
+      "content": "<!doctype html><title>Example lineage v0.1</title>\n"
+    },
+    {
+      "path": "app.js",
+      "encoding": "utf8",
+      "content": "'use strict';\nconsole.log('candidate');\n"
+    },
+    {
+      "path": "receipt.js",
+      "encoding": "utf8",
+      "content": "'use strict';\nmodule.exports = { explicit: true };\n"
+    }
+  ]
+}

@@ -19,6 +19,40 @@
       <div><span class="eyebrow">OVERALL COMMAND</span><h2 id="mode">UNKNOWN</h2><p id="modeNote">Reading the local body…</p></div>
       <div class="modeButtons"><button data-mode="ACTIVE">Active</button><button data-mode="CONSERVE">Conserve</button><button data-mode="REST">Rest</button><button data-mode="STOPPED">Stop</button></div>
     </section>
+    <section class="heartbeat panel" aria-labelledby="heartbeatTitle">
+      <div class="heartbeatCore" aria-hidden="true"><i></i><i></i><b>1H</b></div>
+      <div class="heartbeatCopy">
+        <span class="eyebrow">PLATFORM HEARTBEAT · WHEN</span>
+        <h2 id="heartbeatTitle"><span id="heartbeatState">READING</span> · <span id="heartbeatCadence">hourly</span></h2>
+        <p id="heartbeatNote">Loading the shared platform clock and deterministic verification bridge.</p>
+        <div class="heartbeatFacts">
+          <span>Next beat <b id="heartbeatNext">—</b></span>
+          <span>Schedule <b id="heartbeatSchedule">interval from change</b></span>
+          <span>Verification <b id="verificationState">—</b></span>
+          <span>Budget <b id="verificationBudget">10 checks/hour</b></span>
+          <span>Repair authority <b>findings only</b></span>
+        </div>
+      </div>
+      <div class="heartbeatControls">
+        <label for="heartbeatProfile">Rhythm</label>
+        <select id="heartbeatProfile">
+          <option value="low">Low · 1 hour</option>
+          <option value="quiet">Quiet · 15 minutes</option>
+          <option value="steady">Steady · 5 minutes</option>
+          <option value="lively">Lively · 1 minute</option>
+        </select>
+        <label for="heartbeatAnchor">Next run · local time</label>
+        <input id="heartbeatAnchor" type="datetime-local" step="1">
+        <p class="heartbeatScheduleHint">Later beats repeat from this time at the selected rhythm. Saving does not run a beat.</p>
+        <div><button id="heartbeatSave">Save schedule</button><button id="heartbeatToggle">Stop heartbeat</button><button id="heartbeatStep" title="Emits a timing receipt only; it does not spend verification pulses.">Manual timing receipt</button></div>
+      </div>
+      <div class="verificationDeck">
+        <div class="sectionHead"><div><span class="eyebrow">ROTATING SAFE ALLOW-LIST</span><h3>Next deterministic checks</h3></div><b id="verificationDeckSize">0 available</b></div>
+        <div id="verificationNext" class="verificationChecks"></div>
+        <div id="verificationRuns" class="verificationRuns"></div>
+        <p class="heartbeatBoundary">The clock may request five bounded Pulse leases per rolling hour. Body Pulse remains the master gate. Passing checks create evidence; they never edit, publish, push, merge, or promote.</p>
+      </div>
+    </section>
     <section class="bodyGrid">
       <article class="panel"><span>Body pressure</span><b id="pressure">—</b></article>
       <article class="panel"><span>CPU used</span><b id="cpu">—</b></article>
@@ -50,6 +84,7 @@
     <section class="truth"><b>Boundary:</b> a pulse lease allocates a short opportunity to run one declared module-local action. It never grants file, network, tool, promotion, release, or real-world authority. Sensor sources are named and unavailable measurements remain visibly unknown.</section>
   </main>
   <script src="../../shared/pulse/axm-body-pulse-client.js"></script>
+  <script src="../../shared/heartbeat/axm-platform-heartbeat-client.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.presentation-recipe/v1",
+  "title": "AXM Presentation Recipe",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "name", "author", "profile", "layers", "authority"],
+  "properties": {
+    "schema": { "const": "axm.presentation-recipe/v1" },
+    "id": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "author": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "profile": { "enum": ["auto", "cockpit", "studio", "dashboard", "lab"] },
+    "authority": { "const": "presentation-only" },
+    "layers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surface", "depth", "motion", "density", "signal"],
+      "properties": {
+        "surface": { "enum": ["glass", "solid", "minimal"] },
+        "depth": { "enum": ["flat", "raised", "dimensional"] },
+        "motion": { "enum": ["still", "responsive", "ambient"] },
+        "density": { "enum": ["compact", "balanced", "comfortable"] },
+        "signal": { "enum": ["quiet", "clear", "luminous"] }
+      }
+    }
+  }
+}
