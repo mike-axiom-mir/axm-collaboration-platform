@@ -1,6 +1,6 @@
 # AXM Protocol Version Observatory
 
-Detached `EXPERIMENTAL` candidate. It maps exact manifest and contract protocol declarations by role and groups only AXM's explicit trailing `/v...` convention.
+Integrated `TEST` module. It maps exact manifest and contract protocol declarations by role and groups only AXM's explicit trailing `/v...` convention.
 
 ## What it owns
 

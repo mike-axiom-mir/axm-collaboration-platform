@@ -1,6 +1,6 @@
 # AXM Schema Identity Observatory
 
-Detached `EXPERIMENTAL` candidate. It scans bounded active JSON as inert data and reports exact `$id`, `schema`, and `schema_version` identity evidence.
+Integrated `TEST` module. It scans bounded active JSON as inert data and reports exact `$id`, `schema`, and `schema_version` identity evidence.
 
 ## What it owns
 

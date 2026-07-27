@@ -63,14 +63,17 @@ try {
   write(path.join(alpha, 'src', 'test-helpers.js'), 'module.exports = {};\n');
   write(path.join(alpha, 'coverage', 'ignored.test.js'), 'ignored');
   write(path.join(alpha, 'state', 'ignored-selftest.js'), 'ignored');
-  fs.symlinkSync(path.join(alpha, 'selftest.js'), path.join(alpha, 'linked-selftest.js'));
+  const linkedTestTarget = path.join(fixtureRoot, 'linked-test-target');
+  fs.mkdirSync(linkedTestTarget, { recursive: true });
+  write(path.join(linkedTestTarget, 'linked-selftest.js'), 'throw new Error("must not execute");\n');
+  fs.symlinkSync(linkedTestTarget, path.join(alpha, 'linked-tests'), process.platform === 'win32' ? 'junction' : 'dir');
   const beta = addModule(fixtureRoot, 'beta', {
     scripts: { test: 'node must-not-run.js', verify: 'node also-must-not-run.js', build: 'node build.js' }
   });
   write(path.join(beta, 'discovery-seam-review.js'), 'throw new Error("must not execute");\n');
   addModule(fixtureRoot, 'gamma');
   addModule(fixtureRoot, '_template');
-  fs.symlinkSync(alpha, path.join(fixtureRoot, 'tools', 'linked-alpha'));
+  fs.symlinkSync(alpha, path.join(fixtureRoot, 'tools', 'linked-alpha'), process.platform === 'win32' ? 'junction' : 'dir');
 
   const before = treeReceipt(fixtureRoot);
   const first = Core.scanWorkshop(fixtureRoot, { now: '2026-07-27T00:00:00Z' });
@@ -102,8 +105,8 @@ try {
   check('excluded output and state directories are not scanned', () => {
     assert.equal(alphaMap.entries.some(entry => entry.path.includes('ignored')), false);
   });
-  check('nested file symlink is skipped and never followed', () => {
-    assert(first.source.skippedSymlinks.includes('tools/alpha/linked-selftest.js'));
+  check('nested symlink directory is skipped and never followed', () => {
+    assert(first.source.skippedSymlinks.includes('tools/alpha/linked-tests'));
     assert.equal(first.source.symlinksFollowed, false);
   });
   check('discovery seam review keeps its distinct role', () => {

@@ -1,6 +1,6 @@
 # AXM Dual Door Observatory
 
-Detached `EXPERIMENTAL` candidate. It maps the human workspace entry and the
+Integrated `TEST` module. It maps the human workspace entry and the
 optional machine action entry declared by each top-level module manifest.
 
 ## What it owns

@@ -204,7 +204,10 @@ try {
   fs.writeFileSync(path.join(supply, 'one.zip'), makeZip([{ name: 'a.txt', content: 'alpha' }]));
   fs.writeFileSync(path.join(nested, 'two.zip'), makeZip([{ name: 'b.txt', content: 'beta' }]));
   fs.writeFileSync(path.join(supply, 'ignored.txt'), 'not an archive');
-  fs.symlinkSync(path.join(supply, 'one.zip'), path.join(supply, 'linked.zip'));
+  const linkedSupplyTarget = path.join(fixtureRoot, 'linked-supply-target');
+  fs.mkdirSync(linkedSupplyTarget, { recursive: true });
+  fs.writeFileSync(path.join(linkedSupplyTarget, 'linked.zip'), makeZip([{ name: 'linked.txt', content: 'must not be followed' }]));
+  fs.symlinkSync(linkedSupplyTarget, path.join(supply, 'linked-dir'), process.platform === 'win32' ? 'junction' : 'dir');
   const before = recursiveFiles(supply);
   const first = Core.scanSupply(supply, { now: '2026-07-26T00:00:00.000Z' });
   const second = Core.scanSupply(supply, { now: '2026-07-26T00:30:00.000Z' });
@@ -215,7 +218,7 @@ try {
     assert(first.archives.some(item => item.relativePath === 'nested/two.zip'));
   });
   check('filesystem symlinks are recorded and never followed', () => {
-    assert.deepEqual(first.source.skippedSymlinks, ['linked.zip']);
+    assert.deepEqual(first.source.skippedSymlinks, ['linked-dir']);
     assert.equal(first.source.symlinksFollowed, false);
   });
   check('scanning performs no filesystem writes', () => {

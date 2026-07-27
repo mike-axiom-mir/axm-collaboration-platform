@@ -100,7 +100,7 @@ try {
   module(fixtureRoot, 'contract-unknown', {
     uses: ['storage']
   }, null);
-  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'alpha'), path.join(fixtureRoot, 'tools', 'linked-alpha'));
+  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'alpha'), path.join(fixtureRoot, 'tools', 'linked-alpha'), process.platform === 'win32' ? 'junction' : 'dir');
 
   const before = treeReceipt(fixtureRoot);
   const first = Core.scanWorkshop(fixtureRoot, { now: '2026-07-26T00:00:00Z' });

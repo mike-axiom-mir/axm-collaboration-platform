@@ -1,6 +1,6 @@
 # AXM Module Footprint Observatory
 
-Detached `EXPERIMENTAL` candidate. It measures the active file footprint of
+Integrated `TEST` module. It measures the active file footprint of
 each top-level Workshop module without turning size into a score.
 
 ## What it owns

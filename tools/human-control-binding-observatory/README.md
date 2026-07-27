@@ -1,6 +1,6 @@
 # AXM Human Control Binding Observatory
 
-Detached `EXPERIMENTAL` candidate. It consumes `axm.entry-resource-graph/v1`, rechecks source hashes, then inventories human-facing controls in each declared entry HTML file.
+Integrated `TEST` module. It consumes `axm.entry-resource-graph/v1`, rechecks source hashes, then inventories human-facing controls in each declared entry HTML file.
 
 It separates inline handlers, native semantic actions, exact selector plus event-binding evidence, selector-only references, and no static match. It also observes missing names, hidden/disabled declarations, and duplicate IDs. Those are static observations, never a verdict that a control is broken or accessible.
 

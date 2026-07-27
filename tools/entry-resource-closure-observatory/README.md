@@ -1,6 +1,6 @@
 # AXM Entry Resource Closure Observatory
 
-Detached `EXPERIMENTAL` candidate. It inspects the manifest-declared human HTML
+Integrated `TEST` module. It inspects the manifest-declared human HTML
 entry of each top-level Workshop module. v0.2 keeps the original direct
 metadata-only closure and adds a separately bounded transitive static graph.
 

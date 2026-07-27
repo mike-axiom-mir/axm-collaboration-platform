@@ -80,7 +80,7 @@ try {
   module(fixtureRoot, 'beta', {
     uses: ['axm.packet/v1']
   }, null, true);
-  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'alpha'), path.join(fixtureRoot, 'tools', 'linked-alpha'));
+  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'alpha'), path.join(fixtureRoot, 'tools', 'linked-alpha'), process.platform === 'win32' ? 'junction' : 'dir');
 
   const before = treeReceipt(fixtureRoot);
   const first = Core.scanWorkshop(fixtureRoot, { now: '2026-07-27T00:00:00Z' });
