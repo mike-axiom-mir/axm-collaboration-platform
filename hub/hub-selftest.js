@@ -60,7 +60,7 @@ presentationRecipe.validate(presentationRecipe.normalize(presentationRecipe.DEFA
   ? ok('visual stewardship: professional layer is wired and status styling stays presentation-only') : bad('visual stewardship: professional layer contract missing');
 /grid-template-columns:\s*repeat\(3,\s*64px\)/.test(professionalCss) && /\.active-lbl b\s*\{[\s\S]*?text-overflow:\s*ellipsis/.test(professionalCss) && /professional-3/.test(hubHtml)
   ? ok('visual stewardship: 1280px command bar uses a balanced presence instrument without clipping') : bad('visual stewardship: responsive command-bar polish missing');
-/<button class="mark profile-entry"[\s\S]*?<b>AXM<\/b><\/button>[\s\S]*?<div class="brand"><span>Hub<\/span><\/div>/.test(hubHtml) && !/<div class="brand">\s*AXM\b/.test(hubHtml)
+/<button class="mark profile-entry"[\s\S]*?<b>AXM<\/b><\/button>[\s\S]*?<div class="brand"><span>Hub<\/span>(?:<small>[^<]+<\/small>)?<\/div>/.test(hubHtml) && !/<div class="brand">\s*AXM\b/.test(hubHtml)
   ? ok('visual stewardship: header presents AXM once, with Hub as its destination label') : bad('visual stewardship: duplicated AXM header identity');
 /dataset\.navKind = 'module'/.test(hubJs) && /\.mod\[data-nav-kind="module"\]/.test(presentationCss) && /min-height:38px!important/.test(presentationCss) && /flex:0 0 28px!important/.test(presentationCss)
   ? ok('sidebar: generated modules use compact navigation-deck instruments') : bad('sidebar: compact generated-module contract missing');
