@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Computed Style Hand · Live Fixture</title>
+  <style>
+    :root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,sans-serif;background:#071018;color:#f7fbff}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:#071018;color:#f7fbff;padding:24px}
+    main{width:min(980px,100%);margin:0 auto}.eyebrow{color:#75ead8;font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+    h1{font-size:clamp(2rem,7vw,4.5rem);line-height:.95;margin:.35rem 0 .65rem}.intro{color:#b6c8d2;max-width:720px;line-height:1.6}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:24px}.fixture{border:1px solid #355064;border-radius:18px;padding:20px;background:#101f2b;color:#f7fbff;min-width:0}
+    .fixture.gradient{background-color:#101f2b;background-image:linear-gradient(135deg,#101f2b,#17415a)}h2{margin:.35rem 0 .55rem}.critical{font-size:16px;color:#f7fbff}
+    button{min-width:132px;min-height:48px;border:1px solid #609eac;border-radius:11px;background:#183542;color:#f7fbff;font:700 16px/1 system-ui;cursor:pointer;padding:0 16px}
+    button:focus-visible{outline:3px solid #75ead8;outline-offset:3px}.signal{margin-top:12px;border-left:4px solid #75ead8;padding:8px 10px;color:#f7fbff}
+    .result{margin-top:18px;border:1px solid #355064;border-radius:14px;background:#09151f;padding:16px;min-height:132px}.result b{color:#75ead8}.result pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#b6c8d2;margin:10px 0 0;font:12px/1.5 ui-monospace,monospace}
+    @media(max-width:700px){body{padding:12px}.grid{grid-template-columns:1fr}.fixture{padding:16px}}
+  </style>
+</head>
+<body>
+  <main>
+    <span class="eyebrow">Runtime proof fixture · TEST only</span>
+    <h1>Computed Style Hand</h1>
+    <p class="intro">The flat target should produce complete bounded measurements. The gradient target must visibly retain an unresolved-background seam instead of pretending its contrast is known.</p>
+    <div class="grid">
+      <section class="fixture" data-axm-target-id="flat-visual-fixture">
+        <span class="eyebrow">Expected measurable target</span>
+        <h2>Flat surface</h2>
+        <p id="flat-critical" class="critical" data-axm-critical-text="true">Critical status remains at sixteen pixels.</p>
+        <button id="flat-action" type="button">Inspect flat</button>
+        <div id="flat-signal" class="signal" data-axm-uses-sound="true" data-axm-visible-equivalent="true">Visible completion signal</div>
+      </section>
+      <section class="fixture gradient" data-axm-target-id="gradient-visual-fixture">
+        <span class="eyebrow">Expected honest uncertainty</span>
+        <h2>Gradient surface</h2>
+        <p id="gradient-critical" class="critical" data-axm-critical-text="true">Contrast varies across this background.</p>
+        <button id="gradient-action" type="button">Inspect gradient</button>
+        <div id="gradient-signal" class="signal" data-axm-uses-sound="false" data-axm-visible-equivalent="true">No sound-only dependency</div>
+      </section>
+    </div>
+    <section class="result" aria-live="polite"><b id="fixture-status">READY · choose one bounded target</b><pre id="fixture-result">No measurement has run.</pre></section>
+  </main>
+  <script src="computed-style-hand.js"></script>
+  <script>
+    (function(){
+      'use strict';
+      var output=document.getElementById('fixture-result'),status=document.getElementById('fixture-status');
+      function inspect(targetId){
+        try{
+          var hand=window.AXMComputedStyleHand.create({maxElements:40});
+          var receipt=hand.read({targetId:targetId});
+          window.__AXM_COMPUTED_STYLE_FIXTURE__=receipt;
+          status.textContent=(receipt.coverage.complete?'COMPLETE':'INCOMPLETE')+' · '+receipt.coverage.inspectedElements+' elements · '+receipt.namedSeams.length+' seams';
+          output.textContent=JSON.stringify({targetId:receipt.targetId,coverage:receipt.coverage,namedSeams:receipt.namedSeams,contrastPairs:receipt.measuredProperties.contrastPairs,interactiveTargets:receipt.measuredProperties.interactiveTargets,criticalText:receipt.measuredProperties.criticalText,signals:receipt.measuredProperties.signals,contentInspected:receipt.contentInspected,rawPixelsRetained:receipt.rawPixelsRetained,mutatedSurface:receipt.mutatedSurface},null,2);
+        }catch(error){status.textContent='UNKNOWN · '+error.message;output.textContent='No substitute target was used.';}
+      }
+      document.getElementById('flat-action').addEventListener('click',function(){inspect('flat-visual-fixture');});
+      document.getElementById('gradient-action').addEventListener('click',function(){inspect('gradient-visual-fixture');});
+    })();
+  </script>
+</body>
+</html>

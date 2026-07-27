@@ -2,6 +2,8 @@
 
 These PNG files were generated from the actual local Canvas renderer, chunk JSON, city-art profile and selected runtime assets. They are QA evidence, not separate concept art and not runtime dependencies.
 
+`preview-sha256.txt` records the byte-identical result of two consecutive frozen-clock preview runs. The injected clock applies only to the QA harness; live gameplay animation keeps the browser clock.
+
 Regenerate when the optional local `@napi-rs/canvas` build dependency is available:
 
 ```sh
@@ -12,6 +14,8 @@ Gameplay does not require that package or these PNG files.
 
 Retained QA views:
 
+- `city-presentation-before-v0.2.9.png` — live 1870 × 1037 exterior gameplay baseline from the failed v0.2.9 treatment.
+- `city-presentation-after-v0.3.0.png` — same live session, party camera, exterior position, and 1870 × 1037 viewport after the streetscape repair.
 - `tilburg-city-overview.png` — complete city foundation.
 - `tilburg-centre-art-pass.png` — central route and landmark treatment.
 - `party-house-art-pass.png` — Party House and nearby city dressing.

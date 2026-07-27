@@ -1,0 +1,240 @@
+'use strict';
+window.AXM_DEPENDENCY_CYCLE_REVIEW_PACKET = {
+  "schema": "axm.dependency-cycle-review-packet/v1",
+  "version": "v0.1",
+  "generatedAt": "2026-07-27T02:16:29.704Z",
+  "sourceMap": {
+    "measuredAt": "2026-07-27T02:16:29.698Z",
+    "freshnessTtlMs": 7200000,
+    "freshnessAtGeneration": {
+      "status": "LIVE",
+      "ageMs": 6,
+      "remainingMs": 7199994
+    },
+    "fingerprint": "3b5d5c76b8bc870eb20ac5a3b9f0ca5599dbcb68af8694e9717a00eed63ba55a"
+  },
+  "reviewFingerprint": "6040f2be11b7a7e27ebe98db8885d47c0c080e23622134a94506d31fa0d0fa67",
+  "selection": {
+    "rule": "EXACT_MEMBER_OF_OBSERVED_DECLARED_CYCLE",
+    "requestedMemberId": "game-hub",
+    "selectedSmallestAutomatically": true
+  },
+  "cycle": {
+    "state": "DECLARED_CYCLE_REVIEW_REQUIRED",
+    "members": [
+      "game-forge",
+      "game-hub",
+      "sandbox"
+    ],
+    "internalEdges": [
+      {
+        "from": "game-forge",
+        "to": "game-hub",
+        "sources": [
+          "contract.consumes"
+        ],
+        "tokens": [
+          "service:game-hub"
+        ]
+      },
+      {
+        "from": "game-forge",
+        "to": "sandbox",
+        "sources": [
+          "contract.consumes"
+        ],
+        "tokens": [
+          "service:sandbox"
+        ]
+      },
+      {
+        "from": "game-hub",
+        "to": "game-forge",
+        "sources": [
+          "manifest.integratedInto"
+        ],
+        "tokens": [
+          "game-forge"
+        ]
+      },
+      {
+        "from": "sandbox",
+        "to": "game-forge",
+        "sources": [
+          "manifest.integratedInto"
+        ],
+        "tokens": [
+          "game-forge"
+        ]
+      }
+    ],
+    "incomingEdges": [],
+    "outgoingEdges": [
+      {
+        "from": "game-forge",
+        "to": "studio",
+        "sources": [
+          "contract.consumes"
+        ],
+        "tokens": [
+          "service:studio"
+        ]
+      }
+    ]
+  },
+  "modules": [
+    {
+      "id": "game-forge",
+      "version": "v1.2",
+      "status": "TEST",
+      "contractState": "PRESENT",
+      "exactTargets": [
+        "game-hub",
+        "sandbox",
+        "studio"
+      ],
+      "explicitTargetsNotTopLevelModules": [
+        "axm-physics-2d"
+      ],
+      "genericTokens": [
+        "axm.game-asset/v1",
+        "export",
+        "files",
+        "game.manifest.json",
+        "gate",
+        "storage"
+      ]
+    },
+    {
+      "id": "game-hub",
+      "version": "v0.4",
+      "status": "TEST",
+      "contractState": "PRESENT",
+      "exactTargets": [
+        "game-forge"
+      ],
+      "explicitTargetsNotTopLevelModules": [],
+      "genericTokens": [
+        "axm.game-asset/v1",
+        "files",
+        "game.manifest.json",
+        "gate"
+      ]
+    },
+    {
+      "id": "sandbox",
+      "version": "v0.1-session1",
+      "status": "TEST",
+      "contractState": "NOT_DECLARED",
+      "exactTargets": [
+        "game-forge"
+      ],
+      "explicitTargetsNotTopLevelModules": [],
+      "genericTokens": [
+        "gate",
+        "storage"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "edge-role:game-forge->game-hub",
+      "kind": "EDGE_ROLE",
+      "prompt": "Is game-forge → game-hub required for startup, runtime cooperation, optional navigation, or presentation only?",
+      "evidence": {
+        "sources": [
+          "contract.consumes"
+        ],
+        "tokens": [
+          "service:game-hub"
+        ]
+      },
+      "answer": null
+    },
+    {
+      "id": "edge-role:game-forge->sandbox",
+      "kind": "EDGE_ROLE",
+      "prompt": "Is game-forge → sandbox required for startup, runtime cooperation, optional navigation, or presentation only?",
+      "evidence": {
+        "sources": [
+          "contract.consumes"
+        ],
+        "tokens": [
+          "service:sandbox"
+        ]
+      },
+      "answer": null
+    },
+    {
+      "id": "edge-role:game-hub->game-forge",
+      "kind": "EDGE_ROLE",
+      "prompt": "Is game-hub → game-forge required for startup, runtime cooperation, optional navigation, or presentation only?",
+      "evidence": {
+        "sources": [
+          "manifest.integratedInto"
+        ],
+        "tokens": [
+          "game-forge"
+        ]
+      },
+      "answer": null
+    },
+    {
+      "id": "edge-role:sandbox->game-forge",
+      "kind": "EDGE_ROLE",
+      "prompt": "Is sandbox → game-forge required for startup, runtime cooperation, optional navigation, or presentation only?",
+      "evidence": {
+        "sources": [
+          "manifest.integratedInto"
+        ],
+        "tokens": [
+          "game-forge"
+        ]
+      },
+      "answer": null
+    },
+    {
+      "id": "contract-boundary:sandbox",
+      "kind": "CONTRACT_BOUNDARY",
+      "prompt": "Which versioned contract, if any, defines sandbox's dependency and failure boundary?",
+      "evidence": {
+        "contractState": "NOT_DECLARED"
+      },
+      "answer": null
+    },
+    {
+      "id": "cycle-runtime-behavior",
+      "kind": "RUNTIME_EVIDENCE",
+      "prompt": "Does runtime evidence show harmless reciprocal integration, ordered startup, degraded operation, or an actual deadlock?",
+      "evidence": null,
+      "answer": null
+    }
+  ],
+  "unknowns": [
+    "runtime call order",
+    "startup requirements",
+    "dependency optionality",
+    "failure and degraded-mode behavior",
+    "whether any deadlock exists",
+    "whether any edge should change"
+  ],
+  "humanDecision": {
+    "state": "UNDECIDED",
+    "acceptedAsIntentional": null,
+    "edgeChangeRequested": null,
+    "notes": null
+  },
+  "truth": {
+    "cycleIsDefect": false,
+    "deadlockProven": false,
+    "runtimeBehaviorProbed": false,
+    "edgeRemovalRecommended": false,
+    "activationOrderSelected": false,
+    "declarationRepairPerformed": false,
+    "sourceMutationPerformed": false,
+    "installerStagingPerformed": false,
+    "permissionChanged": false,
+    "promotionPerformed": false,
+    "canonChanged": false
+  }
+};

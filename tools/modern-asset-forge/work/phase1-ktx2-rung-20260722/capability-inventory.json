@@ -1,0 +1,160 @@
+{
+  "schema": "axm.modern-asset-forge.capability-inventory/v1",
+  "version": "1.0.0",
+  "observed_at": "2026-07-22T06:05:20.567Z",
+  "automatic_installation": false,
+  "private_location_retained": false,
+  "capabilities": [
+    {
+      "id": "preserve.ps2",
+      "status": "available",
+      "evidence": "immutable tree digest plus PS2 selftest"
+    },
+    {
+      "id": "contract.manifest",
+      "status": "available",
+      "evidence": "local schemas and selftest"
+    },
+    {
+      "id": "contract.receipt",
+      "status": "available",
+      "evidence": "local schemas and selftest"
+    },
+    {
+      "id": "contract.asset-id",
+      "status": "available",
+      "evidence": "portable id rules in build request"
+    },
+    {
+      "id": "separate.source.delivery",
+      "status": "available",
+      "evidence": "runner uses source root and runtime output roles"
+    },
+    {
+      "id": "enforce.no-network",
+      "status": "available",
+      "evidence": "runner contains no network acquisition stage"
+    },
+    {
+      "id": "govern.workload.mode",
+      "status": "available",
+      "constraints": [
+        "declared scheduling policy only",
+        "no thermal telemetry claim"
+      ],
+      "evidence": "requests must select one of four bounded modes"
+    },
+    {
+      "id": "measure.asset.metrics",
+      "status": "available",
+      "evidence": "GLB inspector records geometry, materials, textures, animation, extensions, draw-call upper bound, and bytes"
+    },
+    {
+      "id": "measure.system.performance",
+      "status": "unavailable",
+      "gap_type": "EVIDENCE",
+      "evidence": "no approved CPU/GPU temperature, RAM/VRAM peak, battery, or sustained throughput observer is connected"
+    },
+    {
+      "id": "inspect.glb.local",
+      "status": "available",
+      "constraints": [
+        "structural and metric inspection only",
+        "not Khronos certification"
+      ]
+    },
+    {
+      "id": "author.blend",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "evidence": "command is not installed or configured"
+    },
+    {
+      "id": "export.blender.glb",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "evidence": "command is not installed or configured"
+    },
+    {
+      "id": "validate.gltf.khronos",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "evidence": "command is not installed or configured"
+    },
+    {
+      "id": "optimize.gltf.transform",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "constraints": [
+        "PATH or explicit override is live-probed but not pinned"
+      ],
+      "evidence": "command is not installed or configured"
+    },
+    {
+      "id": "compress.meshopt",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "constraints": [
+        "optimizer version is not pinned"
+      ],
+      "evidence": "command is not installed or configured"
+    },
+    {
+      "id": "encode.ktx2.basis",
+      "status": "available",
+      "gap_type": "SUBSTRATE",
+      "constraints": [
+        "ETC1S BasisLZ only",
+        "4..1024 px",
+        "standalone texture output"
+      ],
+      "evidence": "pinned Basis Universal WebAssembly module initialized"
+    },
+    {
+      "id": "validate.ktx2.independent",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "evidence": "command is not installed or configured"
+    },
+    {
+      "id": "integrate.ktx2.gltf",
+      "status": "unavailable",
+      "gap_type": "HAND",
+      "constraints": [
+        "requires optimizer texture lane and post-integration validation"
+      ],
+      "evidence": "standalone encoding is present; GLB reference rewriting is not independently implemented"
+    },
+    {
+      "id": "render.webgl2.gltf",
+      "status": "available",
+      "gap_type": "SUBSTRATE",
+      "constraints": [
+        "uncompressed GLB diagnostic lane"
+      ],
+      "evidence": "local Three.js r160 GLTFLoader files present"
+    },
+    {
+      "id": "render.webgl2.ktx2",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "evidence": "Three.js KTX2Loader and its matching transcoder bundle are absent"
+    },
+    {
+      "id": "render.webgl2.meshopt",
+      "status": "unavailable",
+      "gap_type": "SUBSTRATE",
+      "evidence": "matching browser meshopt decoder is absent"
+    },
+    {
+      "id": "observe.browser.smoke",
+      "status": "available",
+      "gap_type": "EVIDENCE",
+      "constraints": [
+        "receipt proves load/render facts, not visual quality"
+      ],
+      "evidence": "smoke page and receipt endpoint available"
+    }
+  ],
+  "digest": "4296dd868b1971dce0adff94ef395f3b53e48d05899dd4c950a145c1735235f5"
+}

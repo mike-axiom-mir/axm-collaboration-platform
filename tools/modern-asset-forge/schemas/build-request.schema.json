@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/modern-asset-forge-build-request-v1.schema.json",
+  "title": "AXM Modern Asset Forge Build Request v1",
+  "type": "object",
+  "required": ["schema", "job_id", "mode", "workload_mode", "source", "output_root", "target", "delivery", "textures", "validation"],
+  "properties": {
+    "schema": { "const": "axm.modern-asset-forge.build-request/v1" },
+    "job_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,79}$" },
+    "mode": { "enum": ["canonical_build", "diagnostic_smoke"] },
+    "workload_mode": { "enum": ["cool_idle", "authoring_interactive", "batch_optimize", "heavy_compute"] },
+    "source": {
+      "type": "object",
+      "required": ["kind", "path", "license", "source_url"],
+      "properties": {
+        "kind": { "enum": ["blend", "glb"] },
+        "path": { "$ref": "#/$defs/relativePath" },
+        "license": { "type": "string", "minLength": 1 },
+        "source_url": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "output_root": { "$ref": "#/$defs/relativePath" },
+    "target": { "const": "browser_webgl2" },
+    "delivery": {
+      "type": "object",
+      "required": ["format", "texture_codec", "mesh_compression", "webgpu_optional"],
+      "properties": {
+        "format": { "const": "glb" },
+        "texture_codec": { "const": "ktx2_basisu" },
+        "mesh_compression": { "const": "meshopt" },
+        "webgpu_optional": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "textures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "format", "role", "colour_space"],
+        "properties": {
+          "path": { "$ref": "#/$defs/relativePath" },
+          "format": { "const": "png" },
+          "role": { "enum": ["base-color", "normal", "orm", "emissive", "opacity"] },
+          "colour_space": { "enum": ["srgb", "linear"] },
+          "transparency": { "enum": ["opaque", "optional", "required"] },
+          "tileable": { "type": "boolean" },
+          "max_mip_levels": { "type": "integer", "minimum": 1, "maximum": 12 },
+          "quality": { "type": "integer", "minimum": 1, "maximum": 255 },
+          "target_texture_index": { "type": "integer", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": ["khronos_gltf", "khronos_ktx", "browser_smoke", "human_visual_review"],
+      "properties": {
+        "khronos_gltf": { "const": true },
+        "khronos_ktx": { "const": true },
+        "browser_smoke": { "const": true },
+        "human_visual_review": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "tool_overrides": {
+      "type": "object",
+      "properties": {
+        "blender": { "type": "string", "minLength": 1 },
+        "gltf_validator": { "type": "string", "minLength": 1 },
+        "gltf_transform": { "type": "string", "minLength": 1 },
+        "gltfpack": { "type": "string", "minLength": 1 },
+        "ktx": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?![A-Za-z]:)(?![/\\\\])(?!.*(?:^|[/\\\\])\\.\\.(?:[/\\\\]|$)).+$"
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "mode": { "const": "canonical_build" } }, "required": ["mode"] },
+      "then": { "properties": { "source": { "properties": { "kind": { "const": "blend" } } } } }
+    }
+  ],
+  "additionalProperties": false
+}

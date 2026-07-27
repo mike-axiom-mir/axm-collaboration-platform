@@ -1,7 +1,9 @@
 {
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
   "id": "recovery-center",
   "name": "AXM Recovery & Rollback Center",
-  "version": "v0.1",
+  "version": "v0.2",
   "status": "TEST",
   "entry": "index.html",
   "contract": "module.contract.json",
@@ -11,13 +13,13 @@
   "layer": "foundation",
   "audience": "human-machine",
   "risk": "HIGH",
-  "tags": ["backup", "recovery", "restore", "rollback", "snapshots"],
-  "uses": ["storage", "backup", "gate", "recovery.apply"],
+  "tags": ["backup", "recovery", "restore", "rollback", "snapshots", "lineage", "default-deny"],
+  "uses": ["storage", "backup", "gate", "workshop-packager", "secrets-permissions-console"],
   "permissions": ["recovery.apply"],
-  "actions": ["create a verified Workshop snapshot", "preview a selective restore", "apply a confirmed restore", "configure private snapshot scheduling"],
-  "accepts": ["axm.recovery-request/v1", "axm.workshop-package/v1"],
-  "produces": ["axm.recovery-snapshot/v1", "axm.recovery-restore-receipt/v1"],
-  "readiness": ["storage", "backup", "gate", "workshop-packager"],
-  "summary": "Create verified full snapshots, schedule private backups, preview selective restores and preserve pre-restore copies.",
-  "notes": "Restore is exact-preview only, never deletes absent files, and requires a separate permission grant plus typed confirmation."
+  "actions": ["create a verified Workshop snapshot", "configure an in-process private snapshot schedule", "preview a current-state-bound selective restore", "apply a confirmed restore", "inspect persistent restore lineage", "preview and apply a confirmed restore rollback"],
+  "accepts": ["axm.recovery-request/v1", "axm.workshop-package/v1", "axm.permission-status/v1"],
+  "produces": ["axm.recovery-status/v1", "axm.recovery-snapshot/v1", "axm.restore-preview/v2", "axm.recovery-restore-receipt/v1", "axm.recovery-rollback-preview/v1", "axm.recovery-rollback-receipt/v1"],
+  "readiness": ["storage", "backup", "gate", "workshop-packager", "secrets-permissions-console"],
+  "summary": "Create verified private snapshots, bind selective restore previews to both snapshot and current bytes, and roll applied restores back through a second preview and safety-copy boundary.",
+  "notes": "Restore and rollback both require a fresh exact preview, recovery.apply permission, exact typed confirmation, and a safety copy. Scheduling is an in-process timer while the Workshop server runs; it does not install an OS task. Nothing restores, rolls back, deletes, uploads, or promotes automatically."
 }

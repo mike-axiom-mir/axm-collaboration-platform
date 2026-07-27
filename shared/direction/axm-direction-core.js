@@ -5,7 +5,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  var VERSION = '0.1.0';
+  var VERSION = '0.2.0';
   var REQUEST_SCHEMA = 'axm.workshop-direction.request/v1';
   var PLAN_SCHEMA = 'axm.workshop-direction.plan/v1';
   var HAND_REQUEST_SCHEMA = 'axm.workshop-direction.hand-request/v1';
@@ -14,6 +14,7 @@
   var STATUSES = ['OPEN', 'PAUSED', 'DONE', 'CANCELLED'];
 
   var RULES = [
+    { id: 'written-copy', label: 'Quotes and short copy', words: ['quote','quotes','slogan','slogans','motto','mottos','tagline','taglines','caption','captions','copywriting','inspiring','inspirational'], moduleId: 'copy-composer-hand', action: 'Compose a bounded deterministic short-copy candidate', outputs: ['axm.copy.candidate/v1','axm.copy.receipt/v1'], exams: ['requested-subject','bounded-length','deterministic-replay','candidate-only-authority'] },
     { id: 'visual-assets', label: 'Reusable visual assets', words: ['asset','assets','icon','icons','sprite','sprites','badge','badges','texture','textures','tile','tiles','skin','skins','pack'], moduleId: 'asset-fabric', action: 'Generate a requirement-driven visual family', outputs: ['axm.asset-fabric.candidate/v1'], exams: ['technical-integrity','declared-dimensions','visual-family-diversity'] },
     { id: 'studio-design', label: 'Creative design', words: ['image','images','picture','pictures','poster','graphic','graphics','drawing','draw','paint','photo','ui','ux','interface','website','logo','design'], moduleId: 'studio', action: 'Create or edit the requested visual design', outputs: ['axm.studio-project/v2','image/png'], exams: ['canvas-integrity','requested-format','visual-review'] },
     { id: 'game-build', label: 'Game development', words: ['game','games','gameplay','level','levels','npc','quest','multiplayer','controller','playtest','hud'], moduleId: 'game-forge', action: 'Build and verify the requested game feature', outputs: ['axm.game-forge-project/v1'], exams: ['runtime-starts','input-contract','playtest-receipt'] },
@@ -27,6 +28,7 @@
   ];
 
   var AUTOMATED_HANDS = {
+    'copy-composer-hand': { handId: 'copy-composer', contract: 'axm.copy.request/v1', authority: 'candidate-text-only' },
     'asset-fabric': { handId: 'asset-fabric-heartbeat', contract: 'axm.asset-fabric.heartbeat/v1', authority: 'incubator-candidate-only' },
     'governed-evolution-lab': { handId: 'living-world-heartbeat', contract: 'axm.governed-evolution.heartbeat/v1', authority: 'disposable-lineage-only' }
   };

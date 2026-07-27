@@ -1,0 +1,263 @@
+/* AXM professional stewardship pass v1
+   Presentation only: no navigation, lifecycle, permission, or runtime changes. */
+:root {
+  --hub-pro-line: color-mix(in srgb, var(--hub-logic, #44d7ca) 19%, rgba(125, 151, 176, .3));
+  --hub-pro-surface: rgba(7, 17, 28, .94);
+  --hub-pro-surface-raised: rgba(12, 25, 38, .97);
+  --hub-pro-muted: #90a7b8;
+  --hub-pro-shadow: 0 18px 46px rgba(0, 0, 0, .28), inset 0 1px rgba(255, 255, 255, .035);
+}
+
+#homeScreen {
+  scrollbar-gutter: stable;
+}
+
+.home-hero {
+  border-radius: 16px;
+  background:
+    radial-gradient(620px 260px at 82% 0, rgba(var(--hub-capability-rgb, 156, 124, 255), .12), transparent 68%),
+    linear-gradient(145deg, rgba(8, 22, 34, .98), rgba(5, 13, 22, .98));
+  box-shadow: var(--hub-pro-shadow);
+}
+
+.hero-layout {
+  gap: 24px;
+  padding: 22px 24px;
+}
+
+.home-hero h1 {
+  max-width: 16ch;
+  font-size: clamp(34px, 4vw, 46px);
+  line-height: 1.02;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+
+.home-hero p {
+  max-width: 64ch;
+  color: var(--hub-pro-muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.hero-system-deck {
+  border-radius: 12px;
+  border-color: var(--hub-pro-line);
+  background: linear-gradient(145deg, rgba(13, 29, 43, .96), rgba(6, 14, 24, .98));
+  box-shadow: 0 20px 48px rgba(0, 0, 0, .3), inset 0 1px rgba(255, 255, 255, .04);
+}
+
+.capability-search {
+  min-height: 50px;
+  border-color: var(--hub-pro-line);
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .2), inset 0 1px rgba(255, 255, 255, .025);
+}
+
+.capability-search:focus-within {
+  border-color: color-mix(in srgb, var(--hub-logic, #44d7ca) 66%, white 8%);
+  box-shadow: 0 0 0 3px rgba(var(--hub-logic-rgb, 68, 215, 202), .1), 0 14px 34px rgba(0, 0, 0, .24);
+}
+
+.capability-prompt {
+  min-height: 30px;
+}
+
+.home-grid {
+  gap: 14px;
+}
+
+.home-grid::before {
+  color: #6f8c9e;
+  font-size: 8px;
+  letter-spacing: .14em;
+}
+
+.hcard,
+.hcard:not(.workflow-card),
+.workflow-card,
+.command-center-home-card {
+  border-radius: 12px;
+  box-shadow: var(--hub-pro-shadow);
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.workflow-card {
+  min-height: 182px;
+  padding: 20px;
+}
+
+.workflow-card .workflow-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 11px;
+}
+
+.workflow-card h3 {
+  font-size: 18px;
+  letter-spacing: -.015em;
+}
+
+.workflow-card p {
+  color: var(--hub-pro-muted);
+  font-size: 12px;
+  line-height: 1.58;
+}
+
+.command-center-home-card {
+  min-height: 168px;
+  border-radius: 14px !important;
+}
+
+.command-home-copy h3 {
+  letter-spacing: -.025em;
+}
+
+.command-home-copy p {
+  color: var(--hub-pro-muted) !important;
+  line-height: 1.55;
+}
+
+/* The mode selector already carries the presentation choice. Keep the
+   profile available in the control title, but spend the visible slot on EDIT. */
+.presentation-quick {
+  flex: 0 0 auto;
+  min-width: 174px;
+  grid-template-columns: auto 1fr auto;
+}
+
+#presentationProfileQuick {
+  display: none;
+}
+
+@media (max-width: 1320px) {
+  .presentation-quick {
+    min-width: 148px;
+    grid-template-columns: 1fr auto;
+  }
+  .presentation-quick > span { display: none; }
+}
+
+.module-card {
+  --module-state: var(--hub-logic, #44d7ca);
+  min-height: 178px;
+  padding: 70px 20px 20px;
+  border-color: color-mix(in srgb, var(--module-state) 22%, var(--hub-pro-line));
+  background:
+    radial-gradient(180px 110px at 100% 0, color-mix(in srgb, var(--module-state) 10%, transparent), transparent 72%),
+    linear-gradient(145deg, var(--hub-pro-surface-raised), var(--hub-pro-surface));
+}
+
+.module-card:has(.module-card-life.HOLD) { --module-state: #7e91a5; }
+.module-card:has(.module-card-life.TEST) { --module-state: #f0bd68; }
+.module-card:has(.module-card-life.WORKING) { --module-state: #62d8e8; }
+.module-card:has(.module-card-life.SAVED) { --module-state: #65d6a1; }
+.module-card:has(.module-card-life.CANON) { --module-state: #bd92f5; }
+
+.module-card:hover {
+  border-color: color-mix(in srgb, var(--module-state) 52%, var(--hub-pro-line));
+  box-shadow: 0 20px 46px rgba(0, 0, 0, .3), 0 0 28px color-mix(in srgb, var(--module-state) 8%, transparent);
+}
+
+.module-card h3 {
+  font-size: 17px;
+  letter-spacing: -.012em;
+}
+
+.module-card p {
+  color: var(--hub-pro-muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.module-card .hcard-icon {
+  border: 1px solid color-mix(in srgb, var(--module-state) 25%, transparent);
+  background: color-mix(in srgb, var(--module-state) 9%, rgba(7, 17, 28, .92));
+}
+
+.module-card-life {
+  width: auto;
+  min-width: 0;
+  padding: 4px 7px;
+  border-color: color-mix(in srgb, var(--module-state) 38%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--module-state) 10%, rgba(5, 13, 22, .88));
+  color: color-mix(in srgb, var(--module-state) 80%, white 20%);
+  font: 800 8px/1 var(--axm-font-mono, monospace);
+  letter-spacing: .08em;
+  text-indent: 0;
+}
+
+.continuity-strip,
+.handoff-strip {
+  border-color: var(--hub-pro-line);
+  border-radius: 12px;
+  box-shadow: var(--hub-pro-shadow);
+}
+
+.continuity-item,
+.handoff-result {
+  border-radius: 9px;
+}
+
+@media (max-width: 1080px) {
+  .hero-layout { gap: 18px; padding-inline: 18px; }
+  .home-grid { gap: 12px; }
+}
+
+@media (max-width: 760px) {
+  /* MOBILE OVERLAY: keep the work surface full width while the navigation
+     remains the existing explicit open/close rail. */
+  .body,
+  body[data-nav="right"] .body,
+  body[data-nav="rail"] .body,
+  body[data-sidebar-collapsed="true"] .body,
+  body[data-nav="right"][data-sidebar-collapsed="true"] .body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .viewport { grid-column: 1; min-width: 0; }
+  .sidebar {
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: 20;
+    width: min(310px, calc(100vw - 48px));
+    max-width: none;
+    box-shadow: 18px 0 48px rgba(0, 0, 0, .46);
+  }
+  body[data-nav="right"] .sidebar { inset: 0 0 0 auto; }
+  body[data-sidebar-collapsed="true"] .sidebar {
+    width: 0;
+    background: transparent !important;
+    box-shadow: none;
+  }
+  .home-hero { border-radius: 12px; }
+  .hero-layout { padding: 17px 14px; }
+  .home-hero h1 { font-size: clamp(29px, 10vw, 36px); }
+  .capability-search { border-radius: 9px; }
+  .workflow-card,
+  .module-card { min-height: 156px; }
+  .command-center-home-card {
+    display: block;
+    min-height: 0;
+    padding: 22px !important;
+    text-align: left;
+  }
+  .command-home-core {
+    width: 58px;
+    height: 58px;
+    margin-bottom: 18px;
+  }
+  .command-home-core i { transform: translate(26px, -17px); }
+  .command-home-copy > span { display: block; }
+  .command-home-copy h3 { font-size: 22px !important; }
+  .command-home-state {
+    min-width: 0;
+    margin-top: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hcard,
+  .workflow-card,
+  .command-center-home-card { transition: none; }
+}

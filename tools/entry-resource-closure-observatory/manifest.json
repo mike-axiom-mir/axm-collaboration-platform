@@ -1,0 +1,47 @@
+{
+  "id": "entry-resource-closure-observatory",
+  "name": "AXM Entry Resource Closure Observatory",
+  "version": "v0.2",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "category": "OBSERVE",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "entry",
+    "html",
+    "resources",
+    "closure",
+    "static",
+    "read-only"
+  ],
+  "uses": [
+    "storage"
+  ],
+  "permissions": [],
+  "actions": [
+    "read each top-level module manifest and its declared HTML entry",
+    "extract a finite set of static quoted script style and media references",
+    "presence-check local targets without reading their bodies",
+    "separate local missing paths from remote runtime dynamic and safety-held references",
+    "emit a freshness-bound entry resource closure map",
+    "follow bounded static HTML CSS and JavaScript references into a transitive graph",
+    "hash local text nodes and record cycles limits and unresolved edges without execution"
+  ],
+  "accepts": [
+    "filesystem/workshop-root"
+  ],
+  "produces": [
+    "axm.entry-resource-closure-map/v1",
+    "axm.entry-resource-graph/v1"
+  ],
+  "readiness": [
+    "storage"
+  ],
+  "summary": "Read-only direct closure plus a bounded transitive static resource graph for manifest-declared human HTML entries.",
+  "notes": "The direct v1 map still reads referenced files as metadata only. The v0.2 graph separately reads bounded local HTML, CSS, and JavaScript text for static pattern extraction and hashing. It does not build syntax trees, execute code, resolve dynamic or bare package references, fetch networks, load a browser, render, decode media, prove readiness, or change CANON."
+}

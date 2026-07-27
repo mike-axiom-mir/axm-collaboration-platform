@@ -1,9 +1,22 @@
 {
-  "schema": "axm.module-contract/v1", "id": "secrets-permissions-console", "version": "v0.1",
-  "provides": ["passphrase-encrypted-secret-vault", "scoped-secret-consumption", "secret-rotation", "secret-revocation", "declared-permission-ledger", "expiry-aware-grants", "metadata-only-audit"],
-  "consumes": ["module-manifests", "human-passphrase", "service:gate"], "permissions": [],
-  "handoffs": {"emits": ["axm.permission-decision/v1", "axm.secret-metadata/v1"], "accepts": ["axm.permission-request/v1", "explicit-secret-input"]},
-  "boundaries": {"writes": ["state/secrets-permissions-console/vault.enc.json", "state/secrets-permissions-console/permissions.json", "metadata-only-audit-files"], "refuses": ["browser-secret-reveal", "stored-passphrase", "undeclared-permission-grant", "unscoped-secret", "silent-secret-access", "secret-value-in-audit", "automatic-grant"]},
-  "lifecycle": {"state_owner": "service", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"}
+  "schema": "axm.module-contract/v1",
+  "id": "secrets-permissions-console",
+  "version": "v0.2",
+  "provides": ["passphrase-encrypted-secret-vault", "scoped-secret-consumption", "secret-rotation", "typed-secret-revocation", "manifest-permission-only-catalog", "dependency-permission-separation", "deny-by-default-permission-status", "reasoned-expiry-aware-decisions", "metadata-only-audit"],
+  "consumes": ["module-manifests", "human-passphrase", "service:gate"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.permission-decision/v1", "axm.permission-status/v1", "axm.secret-metadata/v1", "axm.secret-vault-status/v1"],
+    "accepts": ["axm.permission-request/v1", "axm.permission-focus/v1", "explicit-secret-input"]
+  },
+  "boundaries": {
+    "writes": ["state/secrets-permissions-console/vault.enc.json", "state/secrets-permissions-console/permissions.json", "metadata-only-audit-files"],
+    "refuses": ["browser-secret-reveal", "stored-passphrase", "undeclared-permission-grant", "dependency-as-permission", "permission-decision-without-reason", "invalid-or-past-expiry", "unscoped-secret", "silent-secret-access", "secret-value-in-audit", "one-click-secret-revocation", "automatic-grant"]
+  },
+  "lifecycle": {
+    "state_owner": "service",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
 }
-

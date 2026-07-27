@@ -8,6 +8,8 @@ const os=require('os');
 const path=require('path');
 const Hands=require('./index');
 
+const fixtureHtml=fs.readFileSync(path.join(__dirname,'computed-style-fixture.html'),'utf8');
+
 let checks=0;
 function check(value,message){assert.ok(value,message);checks++;console.log('PASS '+message);}
 
@@ -34,6 +36,25 @@ function check(value,message){assert.ok(value,message);checks++;console.log('PAS
   check(/^[a-f0-9]{64}$/.test(seal.bufferDigest)&&seal.rawVideoArchive===false,'Eye seals a tiny digest receipt without a raw-video archive');
   const memoryCleanup=eye.cleanup(seal);
   check(memoryCleanup.cleanupComplete&&eye.status().frames===0&&memoryCleanup.temporaryFramesDeleted===3,'Eye wipes every buffered frame after sealing');
+
+  const Computed=Hands.computedStyle;
+  check(Computed.opaqueHex(Computed.parseCssColor('rgb(255, 255, 255)'))==='#ffffff'&&Computed.opaqueHex(Computed.parseCssColor('#000'))==='#000000','Computed Style normalizes browser colours deterministically');
+  function fakeElement(tagName,id,attributes,style,box){
+    attributes=attributes||{};
+    return{tagName:tagName,id:id||'',parentElement:null,_style:style||{},_box:box||{width:100,height:24},_children:[],getAttribute:function(name){return Object.prototype.hasOwnProperty.call(attributes,name)?attributes[name]:null;},getBoundingClientRect:function(){return this._box;},querySelectorAll:function(selector){return selector==='*'?this._children.slice():[];}};
+  }
+  const fixture=fakeElement('MAIN','visual-fixture',{}, {display:'block',visibility:'visible',opacity:'1',backgroundColor:'rgb(0, 0, 0)',backgroundImage:'none',color:'rgb(255, 255, 255)',fontSize:'16px',fontWeight:'400'},{width:640,height:480});
+  const copy=fakeElement('P','body-copy',{'data-axm-critical-text':'true'}, {display:'block',visibility:'visible',opacity:'1',backgroundColor:'transparent',backgroundImage:'none',color:'rgb(255, 255, 255)',fontSize:'16px',fontWeight:'400'},{width:300,height:24});
+  const button=fakeElement('BUTTON','save-button',{}, {display:'block',visibility:'visible',opacity:'1',backgroundColor:'rgb(32, 32, 32)',backgroundImage:'none',color:'rgb(255, 255, 255)',fontSize:'16px',fontWeight:'700'},{width:96,height:48});
+  const signal=fakeElement('DIV','completion-signal',{'data-axm-uses-sound':'true','data-axm-visible-equivalent':'true'}, {display:'block',visibility:'visible',opacity:'1',backgroundColor:'transparent',backgroundImage:'none',color:'rgb(255, 255, 255)',fontSize:'16px',fontWeight:'400'},{width:100,height:24});
+  copy.parentElement=fixture;button.parentElement=fixture;signal.parentElement=fixture;fixture._children=[copy,button,signal];
+  const fakeDocument={getElementById:function(id){return id==='visual-fixture'?fixture:null;},querySelectorAll:function(){return[];}};
+  const styleHand=Computed.create({document:fakeDocument,getComputedStyle:function(element){return element._style;},maxElements:12});
+  const measured=styleHand.read({targetId:'visual-fixture',observedAt:'2026-07-24T12:00:00.000Z'});
+  check(measured.schema===Computed.RESULT_SCHEMA&&measured.coverage.complete&&measured.contentInspected===false&&measured.mutatedSurface===false,'Computed Style reads one exact bounded DOM root without content inspection or mutation');
+  check(measured.measuredProperties.contrastPairs.length===2&&measured.measuredProperties.interactiveTargets[0].heightPx===48&&measured.measuredProperties.criticalText.length===1&&measured.measuredProperties.signals[0].visibleEquivalent===true,'Computed Style emits Eye 4 contrast, target, critical-text and signal measurements');
+  assert.throws(function(){styleHand.read({targetId:'missing-target'});},/exact visual target/);checks++;console.log('PASS Computed Style refuses an unavailable exact target');
+  check(fixtureHtml.includes('data-axm-target-id="flat-visual-fixture"')&&fixtureHtml.includes('data-axm-target-id="gradient-visual-fixture"')&&fixtureHtml.includes('AXMComputedStyleHand.create')&&fixtureHtml.includes('aria-live="polite"'),'Computed Style live fixture exposes bounded flat and honest gradient journeys');
 
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'axm-ai-native-hands-')),stateRoot=path.join(temp,'state'),ownedRoot=path.join(temp,'eye-temp');fs.mkdirSync(ownedRoot,{recursive:true});const chunk=path.join(ownedRoot,'chunk-1.webm'),bytes=Buffer.from('ephemeral-only');fs.writeFileSync(chunk,bytes);const digest=crypto.createHash('sha256').update(bytes).digest('hex'),curator=Hands.sessionCurator.create({stateRoot});const manifest={schema:Hands.sessionCurator.MANIFEST_SCHEMA,owner:Hands.sessionCurator.EYE_OWNER,bufferId:'eye-buffer-one',ownedRoot:ownedRoot,files:[{relativePath:'chunk-1.webm',sha256:digest}]};
   const preview=curator.cleanupEphemeral(manifest,{apply:false,record:false});

@@ -131,6 +131,17 @@ function clearInventoryPulses(actor) {
   }
 }
 
+function processMapToggle(world, actor) {
+  if (!actor.input.mapToggle) return false;
+  world.presentation ||= { mapToggleSequence: { party_a: 0, party_b: 0 } };
+  world.presentation.mapToggleSequence ||= { party_a: 0, party_b: 0 };
+  const current = Number(world.presentation.mapToggleSequence[actor.partyId]) || 0;
+  world.presentation.mapToggleSequence[actor.partyId] = current + 1;
+  actor.input.mapToggle = false;
+  if (actor.pendingPulses) actor.pendingPulses.mapToggle = false;
+  return true;
+}
+
 function suppressGameplayInput(actor) {
   actor.input.moveX = 0;
   actor.input.moveY = 0;
@@ -202,6 +213,7 @@ function refreshExternalInputState(actor, now) {
     actor.input.inventoryPrev = false;
     actor.input.inventoryNext = false;
     actor.input.inventoryActivate = false;
+    actor.input.mapToggle = false;
     actor.inputHeld = {};
     actor.pendingPulses = {};
     actor.fireQueuedUntilTick = null;
@@ -219,6 +231,7 @@ function updatePlayers(world, deltaSeconds, now = Date.now()) {
       continue;
     }
     refreshExternalInputState(actor, now);
+    processMapToggle(world, actor);
     if (isMissionInputLocked(world)) {
       actor.inventoryOpen = false;
       clearInventoryPulses(actor);
@@ -238,6 +251,7 @@ module.exports = {
   moveInventoryCursor,
   partyCentre,
   processInventoryInput,
+  processMapToggle,
   processActorAction,
   refreshExternalInputState,
   updatePlayers,

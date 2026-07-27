@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Holodeck · Composer</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <p>HOLODECK H0 · HUMAN WORKBENCH</p>
+        <h1>Composer</h1>
+        <span>Change friendly world data and see it compile immediately.</span>
+      </div>
+      <div class="top-actions">
+        <span class="truth-chip">LOCAL DRAFT · NOT PROMOTED</span>
+        <button class="quiet" type="button" id="reset-template">Reset template</button>
+        <button class="primary" type="button" id="download-world">Download world</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="editor-panel" aria-label="World editor">
+        <section class="editor-intro">
+          <span class="step">01 · CHOOSE A MOOD</span>
+          <h2>Start with a look</h2>
+          <p>Presets only change presentation data. The beacon, gate, rules, and objective remain real world parts.</p>
+          <div class="preset-grid" role="group" aria-label="World appearance presets">
+            <button type="button" data-preset="echo"><i class="swatch echo"></i>Echo</button>
+            <button type="button" data-preset="ember"><i class="swatch ember"></i>Sun forge</button>
+            <button type="button" data-preset="ocean"><i class="swatch ocean"></i>Ocean</button>
+            <button type="button" data-preset="orchid"><i class="swatch orchid"></i>Orchid</button>
+          </div>
+        </section>
+
+        <form id="composer-form">
+          <section class="form-section">
+            <div class="section-heading"><span>02 · NAME THE EXPERIENCE</span><em>text</em></div>
+            <label class="wide-field">
+              <span>World title</span>
+              <input id="world-title" name="title" type="text" maxlength="160" autocomplete="off">
+            </label>
+            <label class="wide-field">
+              <span>Objective shown to the visitor</span>
+              <textarea id="world-objective" name="objective" maxlength="1000" rows="3"></textarea>
+            </label>
+          </section>
+
+          <section class="form-section">
+            <div class="section-heading"><span>03 · PAINT THE WORLD</span><em>color</em></div>
+            <div class="color-grid">
+              <label><input id="sky-color" type="color"><span>Sky</span><output data-color-output="sky-color"></output></label>
+              <label><input id="ground-color" type="color"><span>Ground</span><output data-color-output="ground-color"></output></label>
+              <label><input id="beacon-color" type="color"><span>Dormant beacon</span><output data-color-output="beacon-color"></output></label>
+              <label><input id="beacon-active-color" type="color"><span>Awake beacon</span><output data-color-output="beacon-active-color"></output></label>
+              <label><input id="accent-color" type="color"><span>Energy accent</span><output data-color-output="accent-color"></output></label>
+              <label><input id="gate-color" type="color"><span>Closed gate</span><output data-color-output="gate-color"></output></label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <div class="section-heading"><span>04 · MOVE THE DATA POINTS</span><em>meters</em></div>
+            <label class="range-field">
+              <span>Beacon size <output id="beacon-scale-value"></output></span>
+              <input id="beacon-scale" type="range" min="0.35" max="1.5" step="0.01" aria-label="Beacon size">
+            </label>
+            <label class="range-field">
+              <span>Beacon left / right <output id="beacon-x-value"></output></span>
+              <input id="beacon-x" type="range" min="-4" max="4" step="0.25" aria-label="Beacon left or right position">
+            </label>
+            <label class="range-field">
+              <span>Starting distance <output id="spawn-distance-value"></output></span>
+              <input id="spawn-distance" type="range" min="3.2" max="10" step="0.2" aria-label="Starting distance">
+            </label>
+            <label class="range-field">
+              <span>Fog distance <output id="fog-far-value"></output></span>
+              <input id="fog-far" type="range" min="24" max="90" step="2" aria-label="Fog distance">
+            </label>
+          </section>
+        </form>
+
+        <section class="draft-actions">
+          <button type="button" id="save-draft">Save draft here</button>
+          <button type="button" id="load-draft">Load saved draft</button>
+          <p id="draft-status">Edits are temporary until you explicitly save or download.</p>
+        </section>
+      </aside>
+
+      <section class="preview-panel" aria-label="Compiled world preview">
+        <div class="preview-heading">
+          <div>
+            <span class="step">LIVE COMPILED PREVIEW</span>
+            <h2 id="preview-title">Echo Atrium</h2>
+          </div>
+          <div class="preview-tools">
+            <div class="view-mode-switch" role="group" aria-label="Experience mode">
+              <button type="button" class="selected" data-view-mode="player">Player</button>
+              <button type="button" data-view-mode="observer">Observer</button>
+            </div>
+            <div class="compile-chip"><i></i><span id="compile-status">COMPILING</span></div>
+          </div>
+        </div>
+
+        <div class="stage-wrap">
+          <canvas id="preview-canvas" tabindex="0" aria-label="Interactive preview of the composed Holodeck world"></canvas>
+          <div class="stage-hud">
+            <div class="objective-hud"><span>OBJECTIVE</span><strong id="preview-objective">Loading world…</strong></div>
+            <div class="stage-state" id="stage-state">READY</div>
+          </div>
+          <div class="reticle" aria-hidden="true"><span></span></div>
+          <div class="world-message" id="world-message">Compiling the first preview…</div>
+          <div class="stage-footer">
+            <span id="player-position">POS 0.0 / 5.0</span>
+            <span id="preview-revision">REV 0</span>
+          </div>
+          <div class="loading" id="loading" role="status"><i></i><strong>Building your draft</strong></div>
+        </div>
+
+        <div class="play-strip">
+          <div id="player-copy">
+            <strong>Try the world</strong>
+            <span>These controls use the same human intent dispatcher as the Screen Deck.</span>
+          </div>
+          <div id="observer-copy" hidden>
+            <strong>Watch without changing history</strong>
+            <span>The camera can move anywhere here; the world revision cannot.</span>
+            <div class="observer-presets" role="group" aria-label="Observer camera presets">
+              <button type="button" class="selected" data-observer-preset="orbit">Orbit</button>
+              <button type="button" data-observer-preset="overhead">Overhead</button>
+              <button type="button" data-observer-preset="beacon">Beacon</button>
+              <button type="button" data-observer-preset="gate">Gate</button>
+            </div>
+          </div>
+          <div class="play-controls" id="player-controls" role="group" aria-label="Preview movement controls">
+            <button type="button" data-command="turn-left" aria-label="Turn left">↶</button>
+            <button type="button" data-command="forward" aria-label="Move forward">▲</button>
+            <button type="button" data-command="turn-right" aria-label="Turn right">↷</button>
+            <button type="button" data-command="strafe-left" aria-label="Strafe left">◀</button>
+            <button class="interact" type="button" data-command="interact" aria-label="Interact">E</button>
+            <button type="button" data-command="strafe-right" aria-label="Strafe right">▶</button>
+          </div>
+          <div class="play-controls observer-controls" id="observer-controls" role="group" aria-label="Observer camera controls" hidden>
+            <button type="button" data-camera-command="orbit-left" aria-label="Orbit camera left">↶</button>
+            <button type="button" data-camera-command="rise" aria-label="Raise camera">▲</button>
+            <button type="button" data-camera-command="orbit-right" aria-label="Orbit camera right">↷</button>
+            <button type="button" data-camera-command="zoom-in" aria-label="Zoom camera in">＋</button>
+            <button class="observer-center" type="button" data-camera-command="lower" aria-label="Lower camera">▼</button>
+            <button type="button" data-camera-command="zoom-out" aria-label="Zoom camera out">−</button>
+          </div>
+        </div>
+
+        <section class="compile-receipt">
+          <div><span>Plan digest</span><strong id="plan-digest">—</strong></div>
+          <div><span>World nodes</span><strong id="node-count">—</strong></div>
+          <div><span>Rules</span><strong id="rule-count">—</strong></div>
+          <div><span>Boundary</span><strong>SCREEN TEST</strong></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="../../shared/holodeck/core.js"></script>
+  <script src="../../shared/holodeck/world-validator.js"></script>
+  <script src="../../shared/holodeck/world-normalizer.js"></script>
+  <script src="../../shared/holodeck/world-compiler.js"></script>
+  <script src="../../shared/holodeck/state-machine.js"></script>
+  <script src="../../shared/holodeck/intent-dispatcher.js"></script>
+  <script src="../../shared/holodeck/sensor-frame.js"></script>
+  <script src="../../shared/holodeck/persistence.js"></script>
+  <script src="./draft-model.js"></script>
+  <script src="./observer-camera.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

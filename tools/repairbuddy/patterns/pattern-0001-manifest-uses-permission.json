@@ -1,0 +1,28 @@
+{
+  "schema": "axm.repairbuddy.pattern/v1",
+  "id": "pattern-0001-manifest-uses-permission",
+  "name": "Contract permission missing from manifest uses",
+  "version": "v0.1",
+  "status": "SHADOW",
+  "seamCode": "CONTRACT_INVALID",
+  "match": {
+    "messagePattern": "permission not declared in manifest uses: ([a-z][a-z0-9-]*)",
+    "slots": [
+      { "name": "permission", "group": 1, "type": "permission" }
+    ]
+  },
+  "proposal": {
+    "operation": "insert-into-manifest-uses",
+    "explanation": "The module contract declares permission \"${permission}\" but the manifest uses array does not carry it. Canon (21 healthy modules at distillation time) declares contract permissions inside manifest uses. Proposed repair: append \"${permission}\" to the uses array of the module manifest, changing nothing else.",
+    "verification": [
+      "node -e \"const V=require('./hub/module-contract-verifier.js');const r=V.verifyDeclaredContracts(process.cwd());const f=r.results.filter(x=>!x.pass);console.log(f.length?f:'ALL CONTRACTS PASS')\"",
+      "node shared/technical-glasses/technical-glasses-cli.js --focus=\"contract seam recheck\""
+    ]
+  },
+  "lineage": {
+    "sourceRepair": "ACTION_REPORT_POLISH_2026-07-20.md",
+    "distilledBy": "Claude (Cowork session, 2026-07-20)",
+    "date": "2026-07-20",
+    "verifiedBy": "41 manifests repaired with this exact operation; hub/module-contract-verifier.js then reported 101/101 contracts pass; Technical Glasses fingerprint moved 64fe833094caf20c -> dd4190de4908dc09 with HIGH seams cleared."
+  }
+}

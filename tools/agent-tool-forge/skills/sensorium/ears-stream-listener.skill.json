@@ -1,0 +1,77 @@
+{
+  "schema": "axm.sensorium-skill/v1",
+  "id": "ears-stream-listener",
+  "type": "skill",
+  "sense": "hearing",
+  "pack": "axm-sensorium/1.4.0",
+  "status": "ACCEPT_FOR_TEST",
+  "capability": "sense.hearing.bounded-stream/v1",
+  "purpose": "Read one bounded event window, treat silence as data, and release the stream buffer.",
+  "inputs": [
+    "claim",
+    "source",
+    "expectedEvents",
+    "refutingEvents",
+    "windowMs"
+  ],
+  "procedure": [
+    "Open one named bounded stream window.",
+    "Prefer refuting evidence.",
+    "Record silence and eviction.",
+    "Seal matched typed events and digest.",
+    "Release the buffer."
+  ],
+  "rules": [
+    "Perception is not permission.",
+    "UNKNOWN is preferred to a plausible guess.",
+    "Every use emits a typed receipt and releases raw material."
+  ],
+  "boundaries": [
+    "Does not alter the source log.",
+    "Does not keep a transcript.",
+    "Does not listen beyond the declared window."
+  ],
+  "retention": {
+    "law": "EPHEMERAL BY DEFAULT. Raw sense material is released at the next step. Only a bounded typed receipt survives.",
+    "raw_material": "sense-specific bounded input",
+    "released_when": "before the typed observation is returned",
+    "survives": "specific receipt plus axm.sensorium-receipt/v1 envelope",
+    "raw_retained_after_step": "zero",
+    "accumulation_across_uses": "flat and zero after every release boundary",
+    "receipt_cap": "newest 20 per sense",
+    "deletion_scope": "only material created by the exact sense use, by exact id or path; never a wildcard or recursive sweep"
+  },
+  "receipt": {
+    "schema": "axm.ears-listen-digest/v1",
+    "envelopeSchema": "axm.sensorium-receipt/v1"
+  },
+  "runtime": {
+    "routeType": "EXECUTABLE",
+    "module": "ears-stream-listener.js",
+    "factory": "create",
+    "operation": "listen"
+  },
+  "statuses": {
+    "skillStatus": "ACCEPT_FOR_TEST",
+    "executorStatus": "EXECUTABLE",
+    "adapterStatus": "AVAILABLE",
+    "proofStatus": "RUNTIME_PASS",
+    "authorityStatus": "NO_LEASE"
+  },
+  "requiredHostCapabilities": [
+    "stream.read.bounded/v1"
+  ],
+  "constraints": [
+    "named-stream-only",
+    "bounded-events",
+    "source-untouched"
+  ],
+  "resourceBudget": {
+    "maxEvents": 200,
+    "maxBytes": 512000,
+    "maxWindowMs": 60000,
+    "rawRetainedBytesAfterSeal": 0
+  },
+  "authorityInherited": false,
+  "promotionGate": "Mike"
+}

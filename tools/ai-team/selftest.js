@@ -26,6 +26,9 @@ assert.ok(js.includes("'/api/exploration'")&&js.includes('Wisdom saved as candid
 assert.ok(js.includes("'/api/specialists'")&&js.includes('no permissions granted')&&js.includes('capability bridge')&&js.includes('structured output validated')&&js.includes('learning remains candidate'));
 assert.ok(js.includes("specialistCall('/recommend'")&&js.includes('Recommendation ready · nothing assigned')&&js.includes('Checkout form prepared · still not assigned'));
 assert.ok(html.includes('runtime-profiles.js')&&html.includes('capability-bridges.js')&&html.includes('specialist-router.js'));
-assert.equal(manifest.id,'ai-team');assert.equal(contract.version,'v1.6');
+assert.ok(html.includes('orientation.css')&&html.includes('/shared/orientation/axm-orientation-core.js')&&html.includes('id="orientationList"')&&html.includes('id="saveOrientation"')&&html.includes('What did we actually observe?')&&html.includes('What do we think it means?'));
+assert.ok(js.includes("ORIENTATION_STORE='axm.ai-team.orientation-ledger.v0.1'")&&js.includes('Orientation.create')&&js.includes('Orientation.reentry')&&js.includes('Copy re-entry summary')&&js.includes('no automatic resume, approval, authority transfer, or copied project state'));
+assert.equal(manifest.id,'ai-team');assert.equal(contract.version,'v1.8');assert.equal(contract.lifecycle.state_owner,'mixed');assert.ok(manifest.accepts.includes('axm.ai-repair-design-request/v1'));
 assert.ok(contract.boundaries.refuses.includes('automatic-guardian-reset'));
-console.log('AI Team selftest: PASS (14 views, live Technical Glasses, Mirror learning route, recommendation-only Specialist Router, AI-native masks, capability bridges, evidence and Guardian)');
+assert.ok(contract.boundaries.refuses.includes('automatic-shared-knowledge-rewrite'));
+console.log('AI Team selftest: PASS (14 views, bounded orientation, live Technical Glasses, Mirror learning route, recommendation-only Specialist Router, AI-native masks, capability bridges, evidence and Guardian)');

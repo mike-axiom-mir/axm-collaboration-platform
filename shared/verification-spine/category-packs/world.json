@@ -1,0 +1,17 @@
+{
+  "schema": "axm.verification-category-pack/v1",
+  "id": "world",
+  "name": "Worlds",
+  "purpose": "Verify state continuity, invariants, multi-seed behavior, resource use, novelty disclosure and rollback.",
+  "native_claim_kinds": ["deterministic-behavior", "persistence", "performance", "resource-safety", "quality"],
+  "never_claims": ["open-ended-quality-from-one-metric", "real-world-safety-from-simulation"],
+  "default_risk": "high",
+  "baseline_claims": [
+    { "id": "world.replay", "need": "A seed and action stream reproduce the inspected state.", "evidence": "deterministic-behavior" },
+    { "id": "world.invariants", "need": "Declared ecological, economic and gameplay invariants survive multiple seeds.", "evidence": "deterministic-behavior" },
+    { "id": "world.continuity", "need": "Snapshots, migration and rollback preserve world lineage.", "evidence": "persistence" },
+    { "id": "world.novelty", "need": "Unscored new structures are disclosed rather than silently passed.", "evidence": "human-judgement" },
+    { "id": "world.play-pressure", "need": "The world remains viable under declared player pressure models.", "evidence": "quality" },
+    { "id": "world.body-budget", "need": "Simulation pace, memory and heat fit the available machine body.", "evidence": "resource-safety" }
+  ]
+}

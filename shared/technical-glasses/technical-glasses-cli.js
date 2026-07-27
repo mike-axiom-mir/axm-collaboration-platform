@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const Glasses = require('./technical-glasses-core');
 const Capabilities = require('../capabilities/workshop-capability-index');
+const ReadinessObserver = require('../readiness/readiness-observer');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const focusArg = process.argv.find(value => value.startsWith('--focus='));
@@ -40,7 +41,14 @@ function tools() {
 
 const catalog = tools();
 const focusRoutes = focus ? Capabilities.search(catalog, focus, { limit: 8 }) : [];
-const snapshot = Glasses.compile({ root: ROOT, tools: catalog, readiness: {}, focus, focusRoutes });
+const snapshot = Glasses.compile({
+  root: ROOT,
+  tools: catalog,
+  readiness: {},
+  structuralReadiness: ReadinessObserver.create({ root: ROOT, humanGate: 'Mike' }).snapshot(),
+  focus,
+  focusRoutes
+});
 if (writeMode) {
   const target = path.join(ROOT, 'state', 'technical-glasses', 'latest.json');
   Glasses.writeSnapshot(target, snapshot);

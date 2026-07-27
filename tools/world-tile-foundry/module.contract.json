@@ -1,0 +1,53 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "world-tile-foundry",
+  "version": "v0.1",
+  "provides": [
+    "world.tile.blank-transparent.create/v1",
+    "world.tile.source.inspect/v1",
+    "world.tile.remap.edit/v1",
+    "world.tile.overlay.draw/v1",
+    "world.tile.remap.export/v1",
+    "world.grid.sparse.configure/v1",
+    "world.canvas.flat-128px-per-metre/v1",
+    "world.canvas.spatial-metric/v1",
+    "world.project.isolated-workspace/v1",
+    "world.component.self-made.export/v1"
+  ],
+  "consumes": [
+    "axm-neutral-world-tile-source/v1",
+    "axm-neutral-world-chunk/v1",
+    "axm-transparent-world-raster/v1",
+    "axm-clean-city-raster/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.world-tile-edit-project/v1", "axm.world-tile-remap/v1", "axm.universal-component/v1"],
+    "accepts": ["axm-neutral-world-tile-source/v1", "axm-neutral-world-chunk/v1", "axm.world-tile-edit-project/v1"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:explicit-draft", "user-download:explicit-project-or-remap", "user-download:explicit-self-made-component"],
+    "refuses": [
+      "canonical-world-write",
+      "raster-as-authority",
+      "runtime-state-import",
+      "automatic-game-install",
+      "automatic-promotion",
+      "visual-quality-approval",
+      "schema-coercion",
+      "base-digest-mismatch",
+      "third-party-as-self-made",
+      "unknown-provenance-as-self-made",
+      "frame-as-world-truth",
+      "reserved-height-as-playable",
+      "empty-grid-preallocation",
+      "cross-workspace-unsaved-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  }
+}

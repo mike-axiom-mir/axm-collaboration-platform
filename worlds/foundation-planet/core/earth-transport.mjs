@@ -1,25 +1,106 @@
 import { PLANET_DEFAULTS } from './planet-model.mjs';
 import {
   EARTH_SYSTEM_COLUMN_SCHEMA,
+  atmosphereGeopotentialEnergyJm2,
+  atmosphereLayerDryAirMassesKgM2,
+  atmosphereLayerGeopotentialHeightsM,
   atmosphereLayerHeatCapacitiesJm2K,
+  atmosphereLayerMoistEnthalpiesJm2,
   atmosphereMoistEnthalpyJm2,
   atmosphereSensibleHeatJm2,
   atmosphereWaterStorageMm,
   boundaryLayerVaporCapacityMm,
-  earthCellIdentity
+  earthCellIdentity,
+  freeTroposphereVaporCapacityMm
 } from './earth-system.mjs';
+import {
+  validatePressureColumn
+} from './pressure-column.mjs';
+import {
+  EARTH_OCEAN_ECOLOGY_SCHEMA,
+  applyLandRunoffBiogeochemistryInput,
+  OCEAN_ECOLOGY_TRANSPORT_POOLS,
+  oceanEcologyElementTotals,
+  oceanEcologyTransportValue,
+  setOceanEcologyTransportValue
+} from './ocean-ecology.mjs';
+import {
+  RUNOFF_BIOGEOCHEMISTRY_QUEUE_SCHEMA,
+  debitRunoffBiogeochemistryQueue,
+  creditRunoffBiogeochemistryQueue,
+  runoffBiogeochemistryAbsoluteElements,
+  runoffBiogeochemistryAbsolutePools
+} from './soil-biogeochemistry.mjs';
+import {
+  RUNOFF_SEDIMENT_QUEUE_SCHEMA,
+  COASTAL_SEDIMENT_STATE_SCHEMA,
+  debitRunoffSedimentQueue,
+  creditRunoffSedimentQueue,
+  runoffSedimentAbsoluteGrains,
+  creditCoastalSediment,
+  normalizeCoastalSediment,
+  sedimentGrainTotal,
+  geomorphicSedimentDescription
+} from './geomorphic-sediment.mjs';
+import {
+  ATMOSPHERE_PRESSURE_HORIZONTAL_TRANSPORT_SCHEMA,
+  ATMOSPHERE_PRESSURE_LAYER_MASS_ROUTE_SCHEMA,
+  ATMOSPHERE_PRESSURE_LAYER_TRACER_ROUTE_SCHEMA,
+  ATMOSPHERE_PRESSURE_LAYER_IMPULSE_SCHEMA,
+  ATMOSPHERE_PRESSURE_LAYER_CORIOLIS_SCHEMA,
+  ATMOSPHERE_PRESSURE_LAYER_GEOPOTENTIAL_ROUTE_SCHEMA,
+  ATMOSPHERE_PRESSURE_COLUMN_HORIZONTAL_LOCAL_SCHEMA,
+  pressureHorizontalTransportDescription,
+  transportNativePressureColumns
+} from './pressure-transport.mjs';
+import {
+  ATMOSPHERE_BIOGEOCHEMISTRY_ROUTE_SCHEMA,
+  ATMOSPHERE_BIOGEOCHEMISTRY_TRANSPORT_SCHEMA,
+  atmosphereBiogeochemistryDomainTotals,
+  atmosphereBiogeochemistryTransportDescription,
+  transportAtmosphereBiogeochemistry
+} from './atmosphere-biogeochemistry-transport.mjs';
+
+export {
+  ATMOSPHERE_PRESSURE_HORIZONTAL_TRANSPORT_SCHEMA,
+  ATMOSPHERE_PRESSURE_LAYER_MASS_ROUTE_SCHEMA,
+  ATMOSPHERE_PRESSURE_LAYER_TRACER_ROUTE_SCHEMA,
+  ATMOSPHERE_PRESSURE_LAYER_IMPULSE_SCHEMA,
+  ATMOSPHERE_PRESSURE_LAYER_CORIOLIS_SCHEMA,
+  ATMOSPHERE_PRESSURE_LAYER_GEOPOTENTIAL_ROUTE_SCHEMA,
+  ATMOSPHERE_PRESSURE_COLUMN_HORIZONTAL_LOCAL_SCHEMA,
+  ATMOSPHERE_BIOGEOCHEMISTRY_ROUTE_SCHEMA,
+  ATMOSPHERE_BIOGEOCHEMISTRY_TRANSPORT_SCHEMA
+};
 
 export const EARTH_TRANSPORT_GRAPH_SCHEMA = 'axm.foundation-planet.earth-transport-graph/v1';
-export const EARTH_TRANSPORT_STEP_SCHEMA = 'axm.foundation-planet.earth-transport-step/v2';
+export const EARTH_TRANSPORT_STEP_SCHEMA = 'axm.foundation-planet.earth-transport-step/v10';
+export const PREVIOUS_EARTH_TRANSPORT_STEP_SCHEMA =
+  'axm.foundation-planet.earth-transport-step/v9';
+export const LEGACY_EARTH_TRANSPORT_STEP_SCHEMA =
+  'axm.foundation-planet.earth-transport-step/v8';
+export const OCEAN_ECOLOGY_TRANSPORT_RECEIPT_SCHEMA =
+  'axm.foundation-planet.ocean-ecology-transport-receipt/v1';
 export const EARTH_BOUNDARY_RECEIPT_SCHEMA = 'axm.foundation-planet.earth-boundary-receipt/v1';
 export const EARTH_RUNOFF_ROUTE_SCHEMA = 'axm.foundation-planet.runoff-route-receipt/v1';
 export const EARTH_ATMOSPHERE_MASS_ROUTE_SCHEMA = 'axm.foundation-planet.atmosphere-mass-route-receipt/v1';
 export const EARTH_ATMOSPHERE_IMPULSE_SCHEMA = 'axm.foundation-planet.atmosphere-pressure-impulse-receipt/v1';
 export const EARTH_ATMOSPHERE_CORIOLIS_SCHEMA = 'axm.foundation-planet.atmosphere-coriolis-receipt/v1';
+export const EARTH_ATMOSPHERE_LAYER_MASS_ROUTE_SCHEMA =
+  'axm.foundation-planet.atmosphere-layer-mass-route-receipt/v1';
+export const EARTH_ATMOSPHERE_LAYER_IMPULSE_SCHEMA =
+  'axm.foundation-planet.atmosphere-layer-pressure-impulse-receipt/v1';
+export const EARTH_ATMOSPHERE_LAYER_CORIOLIS_SCHEMA =
+  'axm.foundation-planet.atmosphere-layer-coriolis-receipt/v1';
+export const EARTH_ATMOSPHERE_GEOPOTENTIAL_ROUTE_SCHEMA =
+  'axm.foundation-planet.atmosphere-geopotential-route-receipt/v1';
 
 const WATER_HEAT_CAPACITY_J_M3_K = 4.186e6;
 const MAX_CLOUD_WATER_MM = 12;
+const MAX_FREE_TROPOSPHERE_WATER_MM = 20;
+const MAX_FREE_TROPOSPHERE_CLOUD_WATER_MM = 8;
 const STANDARD_GRAVITY_MPS2 = 9.80665;
+const ABSOLUTE_ZERO_OFFSET_K = 273.15;
 const MIN_SURFACE_PRESSURE_HPA = 850;
 const MAX_SURFACE_PRESSURE_HPA = 1085;
 const MAX_WIND_SPEED_MPS = 90;
@@ -113,8 +194,24 @@ function heatCapacityJm2K(column) {
   return 2.35e6 + finite(column.substrate?.soilDepthM) * 1.15e6;
 }
 
-function windProjectionMps(column, axis, directionSign) {
-  const atmosphere = column.atmosphere || {};
+function atmosphereLayer(column, layerId = 'boundary-layer') {
+  return layerId === 'free-troposphere'
+    ? column.atmosphere?.freeTroposphere || {}
+    : column.atmosphere || {};
+}
+
+function layerPressureHpa(column, layerId = 'boundary-layer') {
+  return layerId === 'free-troposphere'
+    ? finite(column.atmosphere?.freeTroposphere?.pressureThicknessHpa)
+    : finite(column.atmosphere?.boundaryLayerPressureHpa);
+}
+
+function atmosphereLayerMassKg(column, areaM2, layerId = 'boundary-layer') {
+  return layerPressureHpa(column, layerId) * 100 / STANDARD_GRAVITY_MPS2 * areaM2;
+}
+
+function windProjectionMps(column, axis, directionSign, layerId = 'boundary-layer') {
+  const atmosphere = atmosphereLayer(column, layerId);
   const speed = clamp(finite(atmosphere.windSpeedMps), 0, MAX_WIND_SPEED_MPS);
   const radians = finite(atmosphere.windDirectionDeg) * Math.PI / 180;
   const fallback = axis === 'east-west' ? Math.sin(radians) * speed : Math.cos(radians) * speed;
@@ -125,24 +222,29 @@ function windProjectionMps(column, axis, directionSign) {
 }
 
 function atmosphereMassKg(column, areaM2) {
-  return finite(column.atmosphere?.surfacePressureHpa, 1013.25) * 100 / STANDARD_GRAVITY_MPS2 * areaM2;
+  return (layerPressureHpa(column, 'boundary-layer') +
+    layerPressureHpa(column, 'free-troposphere')) * 100 /
+    STANDARD_GRAVITY_MPS2 * areaM2;
 }
 
-function atmosphereWind(column) {
-  const speed = clamp(finite(column.atmosphere?.windSpeedMps), 0, MAX_WIND_SPEED_MPS);
-  const radians = finite(column.atmosphere?.windDirectionDeg) * Math.PI / 180;
+function atmosphereWind(column, layerId = 'boundary-layer') {
+  const atmosphere = atmosphereLayer(column, layerId);
+  const speed = clamp(finite(atmosphere.windSpeedMps), 0, MAX_WIND_SPEED_MPS);
+  const radians = finite(atmosphere.windDirectionDeg) * Math.PI / 180;
   return {
-    eastwardMps: finite(column.atmosphere?.eastwardWindMps, Math.sin(radians) * speed),
-    northwardMps: finite(column.atmosphere?.northwardWindMps, Math.cos(radians) * speed)
+    eastwardMps: finite(atmosphere.eastwardWindMps, Math.sin(radians) * speed),
+    northwardMps: finite(atmosphere.northwardWindMps, Math.cos(radians) * speed)
   };
 }
 
-function syncAtmosphereWind(column, eastwardMps, northwardMps) {
+function syncAtmosphereWind(column, layerId, eastwardMps, northwardMps) {
+  const atmosphere = atmosphereLayer(column, layerId);
   const speed = Math.hypot(eastwardMps, northwardMps);
-  column.atmosphere.eastwardWindMps = eastwardMps;
-  column.atmosphere.northwardWindMps = northwardMps;
-  column.atmosphere.windSpeedMps = speed;
-  if (speed > 1e-12) column.atmosphere.windDirectionDeg = ((Math.atan2(eastwardMps, northwardMps) * 180 / Math.PI) + 360) % 360;
+  atmosphere.eastwardWindMps = eastwardMps;
+  atmosphere.northwardWindMps = northwardMps;
+  atmosphere.windSpeedMps = speed;
+  if (speed > 1e-12) atmosphere.windDirectionDeg =
+    ((Math.atan2(eastwardMps, northwardMps) * 180 / Math.PI) + 360) % 360;
 }
 
 function transferProposal(kind, a, b, signedAmount, metadata = {}) {
@@ -184,6 +286,115 @@ function sum(columns, selector) {
   return total;
 }
 
+function oceanEcologyDomainTotals(columns, areas) {
+  const totals = {
+    oceanEcologyCarbonKg: 0,
+    oceanEcologyNitrogenKg: 0,
+    oceanEcologyPhosphorusKg: 0,
+    oceanEcologyOxygenKg: 0
+  };
+  for (const column of columns) {
+    if (column.kind !== 'ocean' || !column.ocean?.ecology) continue;
+    const area = areas.get(column.id);
+    const elements = oceanEcologyElementTotals(column.ocean.ecology);
+    totals.oceanEcologyCarbonKg += elements.carbonKgCm2 * area;
+    totals.oceanEcologyNitrogenKg += elements.nitrogenKgNm2 * area;
+    totals.oceanEcologyPhosphorusKg += elements.phosphorusKgPm2 * area;
+    totals.oceanEcologyOxygenKg += elements.oxygenKgO2m2 * area;
+  }
+  return totals;
+}
+
+function runoffBiogeochemistryDomainTotals(columns, areas) {
+  const totals = {
+    runoffBiogeochemistryCarbonKg: 0,
+    runoffBiogeochemistryNitrogenKg: 0,
+    runoffBiogeochemistryPhosphorusKg: 0,
+    runoffBiogeochemistryOxygenKg: 0
+  };
+  for (const column of columns) {
+    if (column.kind !== 'land') continue;
+    const pools = runoffBiogeochemistryAbsolutePools(
+      column.routing?.runoffBiogeochemistryQueue,
+      areas.get(column.id)
+    );
+    const elements = runoffBiogeochemistryAbsoluteElements(pools);
+    totals.runoffBiogeochemistryCarbonKg += elements.carbon;
+    totals.runoffBiogeochemistryNitrogenKg += elements.nitrogen;
+    totals.runoffBiogeochemistryPhosphorusKg += elements.phosphorus;
+    totals.runoffBiogeochemistryOxygenKg += elements.oxygen;
+  }
+  return totals;
+}
+
+function runoffSedimentDomainTotals(columns, areas) {
+  const totals = {
+    runoffSedimentClayKg: 0,
+    runoffSedimentSiltKg: 0,
+    runoffSedimentSandKg: 0,
+    runoffSedimentGravelKg: 0
+  };
+  for (const column of columns) {
+    if (column.kind !== 'land') continue;
+    const grains = runoffSedimentAbsoluteGrains(
+      column.routing?.runoffSedimentQueue,
+      areas.get(column.id)
+    );
+    totals.runoffSedimentClayKg += grains.clay;
+    totals.runoffSedimentSiltKg += grains.silt;
+    totals.runoffSedimentSandKg += grains.sand;
+    totals.runoffSedimentGravelKg += grains.gravel;
+  }
+  return totals;
+}
+
+function coastalSedimentDomainTotals(columns, areas) {
+  const totals = {
+    coastalSedimentClayKg: 0,
+    coastalSedimentSiltKg: 0,
+    coastalSedimentSandKg: 0,
+    coastalSedimentGravelKg: 0
+  };
+  for (const column of columns) {
+    if (column.kind !== 'ocean') continue;
+    const area = areas.get(column.id);
+    const state = normalizeCoastalSediment(column.ocean?.coastalSediment);
+    totals.coastalSedimentClayKg += (state.suspendedKgM2.clay +
+      state.depositedKgM2.clay) * area;
+    totals.coastalSedimentSiltKg += (state.suspendedKgM2.silt +
+      state.depositedKgM2.silt) * area;
+    totals.coastalSedimentSandKg += (state.suspendedKgM2.sand +
+      state.depositedKgM2.sand) * area;
+    totals.coastalSedimentGravelKg += (state.suspendedKgM2.gravel +
+      state.depositedKgM2.gravel) * area;
+  }
+  return totals;
+}
+
+function runoffReceivingOceanDomainTotals(columns, areas) {
+  const totals = {
+    runoffReceivingOceanCarbonKg: 0,
+    runoffReceivingOceanNitrogenKg: 0,
+    runoffReceivingOceanPhosphorusKg: 0,
+    runoffReceivingOceanOxygenKg: 0
+  };
+  for (const column of columns) {
+    if (column.kind !== 'ocean' || !column.ocean?.ecology) continue;
+    const area = areas.get(column.id);
+    const ecology = column.ocean.ecology;
+    totals.runoffReceivingOceanCarbonKg += (
+      finite(ecology.carbon?.dissolvedInorganicKgCm2) +
+      finite(ecology.carbon?.dissolvedOrganicKgCm2)) * area;
+    totals.runoffReceivingOceanNitrogenKg +=
+      finite(ecology.nitrogen?.dissolvedInorganicKgNm2) * area;
+    totals.runoffReceivingOceanPhosphorusKg +=
+      finite(ecology.phosphorus?.dissolvedInorganicKgPm2) * area;
+    totals.runoffReceivingOceanOxygenKg +=
+      finite(ecology.oxygen?.dissolvedKgO2m2) * area;
+  }
+  return totals;
+}
+
 function applyPairTransfers(columnsById, transfers, getter, setter) {
   const deltas = new Map();
   for (const transfer of transfers) {
@@ -196,10 +407,18 @@ function applyPairTransfers(columnsById, transfers, getter, setter) {
   }
 }
 
-function applyAtmosphereMassAndMomentum(sorted, columnsById, areas, massTransfers, pressureImpulses, durationDays) {
+function applyAtmosphereLayerMassAndMomentum(
+  sorted,
+  columnsById,
+  areas,
+  massTransfers,
+  pressureImpulses,
+  durationDays,
+  layerId
+) {
   const states = new Map(sorted.map(column => {
-    const massKg = atmosphereMassKg(column, areas.get(column.id));
-    const wind = atmosphereWind(column);
+    const massKg = atmosphereLayerMassKg(column, areas.get(column.id), layerId);
+    const wind = atmosphereWind(column, layerId);
     return [column.id, {
       massKg,
       eastwardMomentumKgMps: massKg * wind.eastwardMps,
@@ -213,10 +432,24 @@ function applyAtmosphereMassAndMomentum(sorted, columnsById, areas, massTransfer
       Math.max(1, 2 * state.massKg), 0);
   const initialKineticEnergyJ = totalKineticEnergyJ();
   const massReceipts = [];
+  let geopotentialAdjustmentWorkJ = 0;
   for (const transfer of massTransfers) {
     const donor = states.get(transfer.donorId);
     const receiver = states.get(transfer.receiverId);
-    const donorWind = atmosphereWind(columnsById.get(transfer.donorId));
+    const donorColumn = columnsById.get(transfer.donorId);
+    const receiverColumn = columnsById.get(transfer.receiverId);
+    const donorWind = atmosphereWind(donorColumn, layerId);
+    const donorHeights = atmosphereLayerGeopotentialHeightsM(donorColumn);
+    const receiverHeights = atmosphereLayerGeopotentialHeightsM(receiverColumn);
+    const senderGeopotentialHeightM = layerId === 'free-troposphere'
+      ? donorHeights.freeTroposphereM : donorHeights.boundaryLayerM;
+    const receiverGeopotentialHeightM = layerId === 'free-troposphere'
+      ? receiverHeights.freeTroposphereM : receiverHeights.boundaryLayerM;
+    const carriedGeopotentialEnergyJ = transfer.amount * STANDARD_GRAVITY_MPS2 *
+      senderGeopotentialHeightM;
+    const adjustmentWorkJ = transfer.amount * STANDARD_GRAVITY_MPS2 *
+      (receiverGeopotentialHeightM - senderGeopotentialHeightM);
+    geopotentialAdjustmentWorkJ += adjustmentWorkJ;
     donor.massKg -= transfer.amount;
     receiver.massKg += transfer.amount;
     donor.eastwardMomentumKgMps -= transfer.amount * donorWind.eastwardMps;
@@ -224,13 +457,22 @@ function applyAtmosphereMassAndMomentum(sorted, columnsById, areas, massTransfer
     donor.northwardMomentumKgMps -= transfer.amount * donorWind.northwardMps;
     receiver.northwardMomentumKgMps += transfer.amount * donorWind.northwardMps;
     massReceipts.push({
-      schema: EARTH_ATMOSPHERE_MASS_ROUTE_SCHEMA,
+      schema: EARTH_ATMOSPHERE_LAYER_MASS_ROUTE_SCHEMA,
+      transferId: transfer.transferId,
       edgeId: transfer.edgeId,
+      layerId,
       senderCellId: transfer.donorId,
       receiverCellId: transfer.receiverId,
       dryAirMassKg: round(transfer.amount, 3),
       carriedEastwardMomentumKgMps: round(transfer.amount * donorWind.eastwardMps, 3),
-      carriedNorthwardMomentumKgMps: round(transfer.amount * donorWind.northwardMps, 3)
+      carriedNorthwardMomentumKgMps: round(transfer.amount * donorWind.northwardMps, 3),
+      geopotential: {
+        schema: EARTH_ATMOSPHERE_GEOPOTENTIAL_ROUTE_SCHEMA,
+        senderHeightM: round(senderGeopotentialHeightM, 6),
+        receiverHeightM: round(receiverGeopotentialHeightM, 6),
+        carriedEnergyJ: round(carriedGeopotentialEnergyJ, 3),
+        adjustmentWorkJ: round(adjustmentWorkJ, 3)
+      }
     });
   }
   const afterMassKineticEnergyJ = totalKineticEnergyJ();
@@ -284,7 +526,8 @@ function applyAtmosphereMassAndMomentum(sorted, columnsById, areas, massTransfer
     const afterKineticEnergyJ = (state.eastwardMomentumKgMps ** 2 + state.northwardMomentumKgMps ** 2) /
       Math.max(1, 2 * state.massKg);
     coriolisReceipts.push({
-      schema: EARTH_ATMOSPHERE_CORIOLIS_SCHEMA,
+      schema: EARTH_ATMOSPHERE_LAYER_CORIOLIS_SCHEMA,
+      layerId,
       cellId: column.id,
       latitudeDeg: round(column.coordinate.latitudeDeg, 9),
       coriolisParameterPerSecond: round(coriolisParameterPerSecond, 15),
@@ -297,14 +540,21 @@ function applyAtmosphereMassAndMomentum(sorted, columnsById, areas, massTransfer
   const afterCoriolisKineticEnergyJ = totalKineticEnergyJ();
   for (const column of sorted) {
     const state = states.get(column.id);
-    column.atmosphere.surfacePressureHpa = state.massKg * STANDARD_GRAVITY_MPS2 / areas.get(column.id) / 100;
-    syncAtmosphereWind(column,
+    const pressureThicknessHpa = state.massKg * STANDARD_GRAVITY_MPS2 /
+      areas.get(column.id) / 100;
+    if (layerId === 'free-troposphere') {
+      column.atmosphere.freeTroposphere.pressureThicknessHpa = pressureThicknessHpa;
+    } else {
+      column.atmosphere.boundaryLayerPressureHpa = pressureThicknessHpa;
+    }
+    syncAtmosphereWind(column, layerId,
       state.eastwardMomentumKgMps / state.massKg,
       state.northwardMomentumKgMps / state.massKg
     );
   }
   const impulseReceipts = pressureImpulses.map(impulse => ({
-    schema: EARTH_ATMOSPHERE_IMPULSE_SCHEMA,
+    schema: EARTH_ATMOSPHERE_LAYER_IMPULSE_SCHEMA,
+    layerId,
     edgeId: impulse.edgeId,
     axis: impulse.axis,
     pressureDifferenceHpa: round(impulse.pressureDifferenceHpa, 9),
@@ -327,7 +577,8 @@ function applyAtmosphereMassAndMomentum(sorted, columnsById, areas, massTransfer
     afterCoriolisKineticEnergyJ,
     momentumMixingDissipationJ: initialKineticEnergyJ - afterMassKineticEnergyJ,
     pressureWorkJ: afterPressureKineticEnergyJ - afterMassKineticEnergyJ,
-    coriolisWorkJ: afterCoriolisKineticEnergyJ - afterPressureKineticEnergyJ
+    coriolisWorkJ: afterCoriolisKineticEnergyJ - afterPressureKineticEnergyJ,
+    geopotentialAdjustmentWorkJ
   };
 }
 
@@ -383,6 +634,89 @@ function transferTotals(transfers) {
   return round(transfers.reduce((total, transfer) => total + transfer.amount, 0), 3);
 }
 
+function splitDryAirTransfersByLayer(transfers, columnsById, areas) {
+  const result = { boundary: [], free: [] };
+  for (const transfer of transfers) {
+    const donor = columnsById.get(transfer.donorId);
+    const areaM2 = areas.get(transfer.donorId);
+    const boundaryMassKg = atmosphereLayerMassKg(donor, areaM2, 'boundary-layer');
+    const freeMassKg = atmosphereLayerMassKg(donor, areaM2, 'free-troposphere');
+    const totalMassKg = Math.max(1, boundaryMassKg + freeMassKg);
+    const boundaryAmountKg = transfer.amount * boundaryMassKg / totalMassKg;
+    const freeAmountKg = transfer.amount - boundaryAmountKg;
+    result.boundary.push({
+      ...transfer,
+      kind: 'boundary-layer-dry-air',
+      layerId: 'boundary-layer',
+      transferId: `${transfer.edgeId}:boundary:${transfer.donorId}>${transfer.receiverId}`,
+      amount: boundaryAmountKg
+    });
+    result.free.push({
+      ...transfer,
+      kind: 'free-troposphere-dry-air',
+      layerId: 'free-troposphere',
+      transferId: `${transfer.edgeId}:free:${transfer.donorId}>${transfer.receiverId}`,
+      amount: freeAmountKg
+    });
+  }
+  return result;
+}
+
+function advectiveTracerTransfers(layerTransfers, columnsById, areas, layerId) {
+  const vapor = [];
+  const cloud = [];
+  const heat = [];
+  for (const transfer of layerTransfers) {
+    const donor = columnsById.get(transfer.donorId);
+    const donorAreaM2 = areas.get(transfer.donorId);
+    const donorLayerMassKg = atmosphereLayerMassKg(donor, donorAreaM2, layerId);
+    const parcelFraction = clamp(transfer.amount / Math.max(1, donorLayerMassKg), 0, 1);
+    const layer = atmosphereLayer(donor, layerId);
+    const capacities = atmosphereLayerHeatCapacitiesJm2K(donor);
+    const heatCapacityJm2K = layerId === 'free-troposphere'
+      ? capacities.freeTroposphereJm2K : capacities.boundaryLayerJm2K;
+    const metadata = {
+      edgeId: transfer.edgeId,
+      layerId,
+      transportMode: 'dry-air-advection',
+      sourceMassTransferId: transfer.transferId
+    };
+    vapor.push({
+      kind: `${layerId}-vapor-advection`,
+      donorId: transfer.donorId,
+      receiverId: transfer.receiverId,
+      amount: finite(layer.precipitableWaterMm) * donorAreaM2 * parcelFraction,
+      ...metadata
+    });
+    cloud.push({
+      kind: `${layerId}-cloud-advection`,
+      donorId: transfer.donorId,
+      receiverId: transfer.receiverId,
+      amount: finite(layer.cloudWaterMm) * donorAreaM2 * parcelFraction,
+      ...metadata
+    });
+    heat.push({
+      kind: `${layerId}-sensible-enthalpy-advection`,
+      donorId: transfer.donorId,
+      receiverId: transfer.receiverId,
+      amount: (finite(layer.airTemperatureC) + ABSOLUTE_ZERO_OFFSET_K) *
+        heatCapacityJm2K * donorAreaM2 * parcelFraction,
+      ...metadata
+    });
+  }
+  return { vapor, cloud, heat };
+}
+
+function carriedTransferTotalsByMassId(transfers) {
+  const totals = new Map();
+  for (const transfer of transfers) {
+    if (!transfer.sourceMassTransferId) continue;
+    totals.set(transfer.sourceMassTransferId,
+      (totals.get(transfer.sourceMassTransferId) || 0) + transfer.amount);
+  }
+  return totals;
+}
+
 function routeRunoff(sorted, byId, activeEdges, areas, duration) {
   const adjacency = new Map(sorted.map(column => [column.id, []]));
   for (const edge of activeEdges) {
@@ -412,15 +746,25 @@ function routeRunoff(sorted, byId, activeEdges, areas, duration) {
     const routedFraction = 1 - Math.exp(-duration / travelTimeDays);
     const amount = source.routing.runoffQueueMm * areas.get(source.id) * routedFraction;
     if (amount <= 1e-12) continue;
+    const transferId = `runoff:${stableDigest({
+      donorId: source.id,
+      receiverId: downstream.id,
+      day: round(source.lastDay, 8),
+      duration: round(duration, 8),
+      amountKg: round(amount, 6)
+    }).slice('fnv1a32:'.length)}`;
     proposals.push({
       kind: 'runoff-routing',
+      transferId,
       donorId: source.id,
       receiverId: downstream.id,
       amount,
+      routedFraction,
       destinationKind: downstream.kind
     });
     receipts.push({
       schema: EARTH_RUNOFF_ROUTE_SCHEMA,
+      transferId,
       sourceCellId: source.id,
       destinationCellId: downstream.id,
       destinationKind: downstream.kind,
@@ -459,13 +803,163 @@ function routeRunoff(sorted, byId, activeEdges, areas, duration) {
     column.ocean.salinityPsu = clamp(referenceSalinityPsu * referenceWaterMm /
       Math.max(1, referenceWaterMm + column.ocean.freshwaterAnomalyMm), 2, 43);
   }
+  const chemistryReceiptByTransferId = new Map();
+  const chemistryElements = {
+    carbon: 0, nitrogen: 0, phosphorus: 0, oxygen: 0
+  };
+  for (const proposal of proposals) {
+    const source = byId.get(proposal.donorId);
+    const debit = debitRunoffBiogeochemistryQueue(
+      source.routing.runoffBiogeochemistryQueue,
+      proposal.routedFraction,
+      areas.get(source.id),
+      {
+        transferId: proposal.transferId,
+        sourceCellId: source.id,
+        destinationId: proposal.receiverId,
+        destinationKind: proposal.destinationKind
+      }
+    );
+    source.routing.runoffBiogeochemistryQueue = debit.queue;
+    proposal.biogeochemistryPoolsKg = debit.poolsKg;
+    const elements = runoffBiogeochemistryAbsoluteElements(debit.poolsKg);
+    for (const element of Object.keys(chemistryElements)) {
+      chemistryElements[element] += elements[element];
+    }
+    chemistryReceiptByTransferId.set(proposal.transferId, {
+      senderDebit: debit.receipt,
+      receiverCredit: null
+    });
+  }
+  for (const proposal of proposals) {
+    const receiver = byId.get(proposal.receiverId);
+    let receiverCredit;
+    if (proposal.destinationKind === 'land') {
+      const credit = creditRunoffBiogeochemistryQueue(
+        receiver.routing.runoffBiogeochemistryQueue,
+        proposal.biogeochemistryPoolsKg,
+        areas.get(receiver.id),
+        {
+          transferId: proposal.transferId,
+          sourceCellId: proposal.donorId,
+          destinationId: receiver.id,
+          waterFraction: proposal.routedFraction
+        }
+      );
+      receiver.routing.runoffBiogeochemistryQueue = credit.queue;
+      receiverCredit = credit.receipt;
+    } else {
+      const credit = applyLandRunoffBiogeochemistryInput(
+        receiver.ocean.ecology,
+        proposal.amount,
+        areas.get(receiver.id),
+        {
+          ocean: receiver.ocean,
+          explicitInputsKg: proposal.biogeochemistryPoolsKg,
+          transferId: proposal.transferId
+        }
+      );
+      receiver.ocean.ecology = credit.state;
+      receiverCredit = credit.receipt;
+    }
+    chemistryReceiptByTransferId.get(proposal.transferId).receiverCredit =
+      receiverCredit;
+  }
+  for (const receipt of receipts) {
+    if (!receipt.transferId) continue;
+    receipt.runoffBiogeochemistryTransfer =
+      chemistryReceiptByTransferId.get(receipt.transferId);
+  }
+  const sedimentReceiptByTransferId = new Map();
+  const sedimentGrainsKg = { clay: 0, silt: 0, sand: 0, gravel: 0 };
+  const oceanSedimentGrainsKg = { clay: 0, silt: 0, sand: 0, gravel: 0 };
+  for (const proposal of proposals) {
+    const source = byId.get(proposal.donorId);
+    const debit = debitRunoffSedimentQueue(
+      source.routing.runoffSedimentQueue,
+      proposal.routedFraction,
+      areas.get(source.id),
+      {
+        transferId: proposal.transferId,
+        sourceCellId: source.id,
+        destinationId: proposal.receiverId,
+        destinationKind: proposal.destinationKind
+      }
+    );
+    source.routing.runoffSedimentQueue = debit.queue;
+    proposal.sedimentGrainsKg = debit.grainsKg;
+    for (const grain of Object.keys(sedimentGrainsKg)) {
+      sedimentGrainsKg[grain] += debit.grainsKg[grain];
+      if (proposal.destinationKind === 'ocean') {
+        oceanSedimentGrainsKg[grain] += debit.grainsKg[grain];
+      }
+    }
+    sedimentReceiptByTransferId.set(proposal.transferId, {
+      senderDebit: debit.receipt,
+      receiverCredit: null
+    });
+  }
+  for (const proposal of proposals) {
+    const receiver = byId.get(proposal.receiverId);
+    let receiverCredit;
+    if (proposal.destinationKind === 'land') {
+      const credit = creditRunoffSedimentQueue(
+        receiver.routing.runoffSedimentQueue,
+        proposal.sedimentGrainsKg,
+        areas.get(receiver.id),
+        {
+          transferId: proposal.transferId,
+          sourceCellId: proposal.donorId,
+          destinationId: receiver.id,
+          waterFraction: proposal.routedFraction
+        }
+      );
+      receiver.routing.runoffSedimentQueue = credit.queue;
+      receiverCredit = credit.receipt;
+    } else {
+      const credit = creditCoastalSediment(
+        receiver.ocean.coastalSediment,
+        proposal.sedimentGrainsKg,
+        areas.get(receiver.id),
+        {
+          transferId: proposal.transferId,
+          sourceId: proposal.donorId,
+          destinationCellId: receiver.id
+        }
+      );
+      receiver.ocean.coastalSediment = credit.state;
+      receiverCredit = credit.receipt;
+    }
+    sedimentReceiptByTransferId.get(proposal.transferId).receiverCredit =
+      receiverCredit;
+  }
+  for (const receipt of receipts) {
+    if (!receipt.transferId) continue;
+    receipt.runoffSedimentTransfer =
+      sedimentReceiptByTransferId.get(receipt.transferId);
+  }
   receipts.sort((a, b) => a.sourceCellId.localeCompare(b.sourceCellId));
   return {
     proposals,
     receipts,
     routedKg: proposals.reduce((total, proposal) => total + proposal.amount, 0),
     deliveredToOceanKg: proposals.filter(proposal => proposal.destinationKind === 'ocean')
-      .reduce((total, proposal) => total + proposal.amount, 0)
+      .reduce((total, proposal) => total + proposal.amount, 0),
+    biogeochemistryElementsKg: chemistryElements,
+    sedimentGrainsKg,
+    oceanSedimentGrainsKg,
+    sedimentKg: sedimentGrainTotal(sedimentGrainsKg),
+    oceanSedimentKg: sedimentGrainTotal(oceanSedimentGrainsKg),
+    oceanBiogeochemistryElementsKg: proposals
+      .filter(proposal => proposal.destinationKind === 'ocean')
+      .reduce((totals, proposal) => {
+        const elements = runoffBiogeochemistryAbsoluteElements(
+          proposal.biogeochemistryPoolsKg);
+        for (const element of Object.keys(totals)) {
+          totals[element] += elements[element];
+        }
+        return totals;
+      }, { carbon: 0, nitrogen: 0, phosphorus: 0, oxygen: 0 })
   };
 }
 
@@ -499,67 +993,16 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
     bDay: byId.get(edge.bId).lastDay
   }));
 
-  const atmosphereWater = [];
-  const atmosphereCloudWater = [];
-  const atmosphereHeat = [];
-  const atmosphereDryAir = [];
-  const pressureImpulses = [];
   const groundwater = [];
   const oceanFreshwater = [];
   const oceanHeat = [];
+  const oceanEcology = [];
   for (const edge of activeEdges) {
     const a = byId.get(edge.aId);
     const b = byId.get(edge.bId);
     const areaA = areas.get(a.id);
     const areaB = areas.get(b.id);
     const sharedArea = Math.min(areaA, areaB);
-    const directionSign = a.id === edge.aId ? 1 : -1;
-    const wind = (windProjectionMps(a, edge.axis, directionSign) + windProjectionMps(b, edge.axis, directionSign)) * .5;
-    const windFraction = clamp(Math.abs(wind) * duration * 86_400 / Math.max(1, edge.centerDistanceM) * .18, 0, .12);
-
-    const pressureDifferenceHpa = finite(a.atmosphere.surfacePressureHpa, 1013.25) -
-      finite(b.atmosphere.surfacePressureHpa, 1013.25);
-    atmosphereDryAir.push(transferProposal('atmosphere-dry-air', a, b,
-      pressureDifferenceHpa * 100 / STANDARD_GRAVITY_MPS2 * sharedArea * .045 * duration,
-      { edgeId: edge.id }
-    ));
-    const pressureDrivenDeltaMps = clamp(pressureDifferenceHpa * .035 * duration, -6, 6) * edge.aToBSign;
-    const aPressureImpulseKgMps = atmosphereMassKg(a, areaA) * pressureDrivenDeltaMps * .5;
-    const bPressureImpulseKgMps = atmosphereMassKg(b, areaB) * pressureDrivenDeltaMps * .5;
-    pressureImpulses.push({
-      edgeId: edge.id,
-      aId: a.id,
-      bId: b.id,
-      axis: edge.axis,
-      pressureDifferenceHpa,
-      aEastwardImpulseKgMps: edge.axis === 'east-west' ? aPressureImpulseKgMps : 0,
-      aNorthwardImpulseKgMps: edge.axis === 'north-south' ? aPressureImpulseKgMps : 0,
-      bEastwardImpulseKgMps: edge.axis === 'east-west' ? bPressureImpulseKgMps : 0,
-      bNorthwardImpulseKgMps: edge.axis === 'north-south' ? bPressureImpulseKgMps : 0
-    });
-
-    const moistureDifferenceMm = finite(a.atmosphere.precipitableWaterMm) - finite(b.atmosphere.precipitableWaterMm);
-    const moistureFraction = .022 * duration + windFraction * .28;
-    atmosphereWater.push(transferProposal('atmosphere-water', a, b,
-      moistureDifferenceMm * sharedArea * moistureFraction,
-      { edgeId: edge.id }
-    ));
-    const cloudWaterDifferenceMm = finite(a.atmosphere.cloudWaterMm) - finite(b.atmosphere.cloudWaterMm);
-    atmosphereCloudWater.push(transferProposal('atmosphere-cloud-water', a, b,
-      cloudWaterDifferenceMm * sharedArea * clamp(.016 * duration + windFraction * .34, 0, .09),
-      { edgeId: edge.id }
-    ));
-
-    const atmosphereCapacity = Math.min(
-      atmosphereLayerHeatCapacitiesJm2K(a).boundaryLayerJm2K * areaA,
-      atmosphereLayerHeatCapacitiesJm2K(b).boundaryLayerJm2K * areaB
-    );
-    const atmosphereFraction = clamp(.018 * duration + windFraction * .32, 0, .08);
-    atmosphereHeat.push(transferProposal('atmosphere-heat', a, b,
-      (finite(a.atmosphere.airTemperatureC) - finite(b.atmosphere.airTemperatureC)) * atmosphereCapacity * atmosphereFraction,
-      { edgeId: edge.id }
-    ));
-
     if (a.kind === 'land' && b.kind === 'land') {
       const headA = finite(a.surface.elevationM) - finite(a.land.waterTableDepthM);
       const headB = finite(b.surface.elevationM) - finite(b.land.waterTableDepthM);
@@ -589,85 +1032,154 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
           Math.min(capacityA, capacityB) * .009 * duration,
         { edgeId: edge.id }
       ));
+      if (a.ocean.ecology && b.ocean.ecology) {
+        for (const pool of OCEAN_ECOLOGY_TRANSPORT_POOLS) {
+          const differenceKgM2 = oceanEcologyTransportValue(a.ocean.ecology,
+            pool.id) - oceanEcologyTransportValue(b.ocean.ecology, pool.id);
+          oceanEcology.push(transferProposal('ocean-ecology-tracer', a, b,
+            differenceKgM2 * sharedArea * .006 * duration,
+            { edgeId: edge.id, poolId: pool.id, element: pool.element }
+          ));
+        }
+      }
     }
   }
 
   const clean = proposals => proposals.filter(Boolean);
-  const boundedAtmosphereWater = constrainedTransfers(clean(atmosphereWater), byId, {
-    minimum: column => .2 * areas.get(column.id),
-    maximum: column => finite(column.atmosphere.precipitableWaterMm) * areas.get(column.id),
-    capacity: column => 75 * areas.get(column.id)
-  });
-  const boundedAtmosphereCloudWater = constrainedTransfers(clean(atmosphereCloudWater), byId, {
-    minimum: () => 0,
-    maximum: column => finite(column.atmosphere.cloudWaterMm) * areas.get(column.id),
-    capacity: column => MAX_CLOUD_WATER_MM * areas.get(column.id)
-  });
-  const boundedAtmosphereDryAir = constrainedTransfers(clean(atmosphereDryAir), byId, {
-    minimum: column => MIN_SURFACE_PRESSURE_HPA * 100 / STANDARD_GRAVITY_MPS2 * areas.get(column.id),
-    maximum: column => atmosphereMassKg(column, areas.get(column.id)),
-    capacity: column => MAX_SURFACE_PRESSURE_HPA * 100 / STANDARD_GRAVITY_MPS2 * areas.get(column.id)
-  });
   const boundedGroundwater = constrainedTransfers(clean(groundwater), byId, {
     minimum: () => 0,
     maximum: column => finite(column.land.groundwaterStorageMm) * areas.get(column.id),
     capacity: column => finite(column.substrate.aquiferCapacityMm) * areas.get(column.id)
   });
-  const cleanAtmosphereHeat = clean(atmosphereHeat);
   const cleanOceanFreshwater = clean(oceanFreshwater);
   const cleanOceanHeat = clean(oceanHeat);
+  const boundedOceanEcology = [];
+  for (const pool of OCEAN_ECOLOGY_TRANSPORT_POOLS) {
+    const proposals = clean(oceanEcology).filter(entry =>
+      entry.poolId === pool.id);
+    boundedOceanEcology.push(...constrainedTransfers(proposals, byId, {
+      minimum: () => 0,
+      maximum: column => oceanEcologyTransportValue(column.ocean.ecology,
+        pool.id) * areas.get(column.id),
+      capacity: () => Number.MAX_VALUE
+    }));
+  }
 
+  const layerSensibleHeatJ = (column, layerId) => {
+    const capacities = atmosphereLayerHeatCapacitiesJm2K(column);
+    const capacityJm2K = layerId === 'free-troposphere'
+      ? capacities.freeTroposphereJm2K : capacities.boundaryLayerJm2K;
+    return finite(atmosphereLayer(column, layerId).airTemperatureC) * capacityJm2K *
+      areas.get(column.id);
+  };
+  const layerMoistEnthalpyJ = (column, layerId) => {
+    const layers = atmosphereLayerMoistEnthalpiesJm2(column);
+    return (layerId === 'free-troposphere'
+      ? layers.freeTroposphereJm2 : layers.boundaryLayerJm2) * areas.get(column.id);
+  };
+  const layerEastwardMomentum = (column, layerId) =>
+    atmosphereLayerMassKg(column, areas.get(column.id), layerId) *
+      atmosphereWind(column, layerId).eastwardMps;
+  const layerNorthwardMomentum = (column, layerId) =>
+    atmosphereLayerMassKg(column, areas.get(column.id), layerId) *
+      atmosphereWind(column, layerId).northwardMps;
+  const layerKineticEnergy = (column, layerId) => {
+    const wind = atmosphereWind(column, layerId);
+    return atmosphereLayerMassKg(column, areas.get(column.id), layerId) *
+      (wind.eastwardMps ** 2 + wind.northwardMps ** 2) * .5;
+  };
+
+  const initialDryAirMassKgByCellAndLayer = new Map(sorted.map(column => [
+    column.id,
+    column.atmosphere.pressureColumn.layers.map(layer =>
+      finite(layer.pressureThicknessHpa) * 100 / 9.80665 *
+      areas.get(column.id))
+  ]));
   const initial = {
+    ...atmosphereBiogeochemistryDomainTotals(sorted, areas),
+    ...oceanEcologyDomainTotals(sorted, areas),
+    ...runoffBiogeochemistryDomainTotals(sorted, areas),
+    ...runoffSedimentDomainTotals(sorted, areas),
+    ...coastalSedimentDomainTotals(sorted, areas),
+    ...runoffReceivingOceanDomainTotals(sorted, areas),
     atmosphereDryAirKg: sum(sorted, column => atmosphereMassKg(column, areas.get(column.id))),
+    atmosphereBoundaryDryAirKg: sum(sorted, column =>
+      atmosphereLayerMassKg(column, areas.get(column.id), 'boundary-layer')),
+    atmosphereFreeDryAirKg: sum(sorted, column =>
+      atmosphereLayerMassKg(column, areas.get(column.id), 'free-troposphere')),
     atmosphereWaterKg: sum(sorted, column => atmosphereWaterStorageMm(column) * areas.get(column.id)),
-    atmosphereVaporWaterKg: sum(sorted, column => finite(column.atmosphere.precipitableWaterMm) * areas.get(column.id)),
-    atmosphereCloudWaterKg: sum(sorted, column => finite(column.atmosphere.cloudWaterMm) * areas.get(column.id)),
+    atmosphereVaporWaterKg: sum(sorted, column => (finite(column.atmosphere.precipitableWaterMm) +
+      finite(column.atmosphere.freeTroposphere.precipitableWaterMm)) * areas.get(column.id)),
+    atmosphereBoundaryVaporWaterKg: sum(sorted, column =>
+      finite(column.atmosphere.precipitableWaterMm) * areas.get(column.id)),
+    atmosphereFreeVaporWaterKg: sum(sorted, column =>
+      finite(column.atmosphere.freeTroposphere.precipitableWaterMm) * areas.get(column.id)),
+    atmosphereCloudWaterKg: sum(sorted, column => (finite(column.atmosphere.cloudWaterMm) +
+      finite(column.atmosphere.freeTroposphere.cloudWaterMm)) * areas.get(column.id)),
+    atmosphereBoundaryCloudWaterKg: sum(sorted, column =>
+      finite(column.atmosphere.cloudWaterMm) * areas.get(column.id)),
+    atmosphereFreeCloudWaterKg: sum(sorted, column =>
+      finite(column.atmosphere.freeTroposphere.cloudWaterMm) * areas.get(column.id)),
+    atmosphereCloudIceKg: sum(sorted, column => (finite(column.atmosphere.cloudIceMm) +
+      finite(column.atmosphere.freeTroposphere.cloudIceMm)) * areas.get(column.id)),
+    atmosphereBoundaryCloudIceKg: sum(sorted, column =>
+      finite(column.atmosphere.cloudIceMm) * areas.get(column.id)),
+    atmosphereFreeCloudIceKg: sum(sorted, column =>
+      finite(column.atmosphere.freeTroposphere.cloudIceMm) * areas.get(column.id)),
     groundwaterKg: sum(sorted.filter(column => column.land), column => column.land.groundwaterStorageMm * areas.get(column.id)),
     oceanFreshwaterKg: sum(sorted.filter(column => column.ocean), column => column.ocean.freshwaterAnomalyMm * areas.get(column.id)),
     runoffQueueKg: sum(sorted, column => finite(column.routing?.runoffQueueMm) * areas.get(column.id)),
     atmosphereHeatJ: sum(sorted, column => atmosphereSensibleHeatJm2(column) * areas.get(column.id)),
+    atmosphereBoundaryHeatJ: sum(sorted, column => layerSensibleHeatJ(column, 'boundary-layer')),
+    atmosphereFreeHeatJ: sum(sorted, column => layerSensibleHeatJ(column, 'free-troposphere')),
     atmosphereMoistEnthalpyJ: sum(sorted, column => atmosphereMoistEnthalpyJm2(column) * areas.get(column.id)),
-    atmosphereEastwardMomentumKgMps: sum(sorted, column => atmosphereMassKg(column, areas.get(column.id)) * atmosphereWind(column).eastwardMps),
-    atmosphereNorthwardMomentumKgMps: sum(sorted, column => atmosphereMassKg(column, areas.get(column.id)) * atmosphereWind(column).northwardMps),
-    atmosphereKineticEnergyJ: sum(sorted, column => atmosphereMassKg(column, areas.get(column.id)) *
-      (atmosphereWind(column).eastwardMps ** 2 + atmosphereWind(column).northwardMps ** 2) * .5),
+    atmosphereBoundaryMoistEnthalpyJ: sum(sorted, column =>
+      layerMoistEnthalpyJ(column, 'boundary-layer')),
+    atmosphereFreeMoistEnthalpyJ: sum(sorted, column =>
+      layerMoistEnthalpyJ(column, 'free-troposphere')),
+    atmosphereEastwardMomentumKgMps: sum(sorted, column =>
+      layerEastwardMomentum(column, 'boundary-layer') +
+      layerEastwardMomentum(column, 'free-troposphere')),
+    atmosphereBoundaryEastwardMomentumKgMps: sum(sorted, column =>
+      layerEastwardMomentum(column, 'boundary-layer')),
+    atmosphereFreeEastwardMomentumKgMps: sum(sorted, column =>
+      layerEastwardMomentum(column, 'free-troposphere')),
+    atmosphereNorthwardMomentumKgMps: sum(sorted, column =>
+      layerNorthwardMomentum(column, 'boundary-layer') +
+      layerNorthwardMomentum(column, 'free-troposphere')),
+    atmosphereBoundaryNorthwardMomentumKgMps: sum(sorted, column =>
+      layerNorthwardMomentum(column, 'boundary-layer')),
+    atmosphereFreeNorthwardMomentumKgMps: sum(sorted, column =>
+      layerNorthwardMomentum(column, 'free-troposphere')),
+    atmosphereKineticEnergyJ: sum(sorted, column =>
+      layerKineticEnergy(column, 'boundary-layer') +
+      layerKineticEnergy(column, 'free-troposphere')),
+    atmosphereBoundaryKineticEnergyJ: sum(sorted, column =>
+      layerKineticEnergy(column, 'boundary-layer')),
+    atmosphereFreeKineticEnergyJ: sum(sorted, column =>
+      layerKineticEnergy(column, 'free-troposphere')),
+    atmosphereGeopotentialEnergyJ: sum(sorted, column =>
+      atmosphereGeopotentialEnergyJm2(column) * areas.get(column.id)),
     oceanHeatJ: sum(sorted.filter(column => column.ocean), column => column.ocean.mixedLayerTemperatureC * heatCapacityJm2K(column) * areas.get(column.id))
   };
-
-  const atmosphereDynamics = applyAtmosphereMassAndMomentum(
-    sorted, byId, areas, boundedAtmosphereDryAir, pressureImpulses, duration
+  const nativeAtmosphereTransport = transportNativePressureColumns(
+    sorted,
+    activeEdges,
+    areas,
+    duration,
+    { reason: 'loaded-native-pressure-horizontal-transport' }
   );
-  for (const column of sorted) {
-    if (!column.atmosphere.freeTroposphere) continue;
-    column.atmosphere.boundaryLayerPressureHpa = column.atmosphere.surfacePressureHpa * .25;
-    column.atmosphere.freeTroposphere.pressureThicknessHpa =
-      column.atmosphere.surfacePressureHpa - column.atmosphere.boundaryLayerPressureHpa;
-  }
-  applyPairTransfers(byId, boundedAtmosphereWater,
-    column => column.atmosphere.precipitableWaterMm * areas.get(column.id),
-    (column, massKg) => {
-      column.atmosphere.precipitableWaterMm = massKg / areas.get(column.id);
-      column.atmosphere.relativeHumidity = clamp(
-        column.atmosphere.precipitableWaterMm /
-          Math.max(.01, boundaryLayerVaporCapacityMm(column.atmosphere.airTemperatureC)),
-        .01, 1
-      );
-    }
-  );
-  applyPairTransfers(byId, boundedAtmosphereCloudWater,
-    column => finite(column.atmosphere.cloudWaterMm) * areas.get(column.id),
-    (column, massKg) => {
-      column.atmosphere.cloudWaterMm = massKg / areas.get(column.id);
-    }
-  );
-  applyPairTransfers(byId, cleanAtmosphereHeat,
-    column => column.atmosphere.airTemperatureC *
-      atmosphereLayerHeatCapacitiesJm2K(column).boundaryLayerJm2K * areas.get(column.id),
-    (column, heatJ) => {
-      column.atmosphere.airTemperatureC = heatJ /
-        (atmosphereLayerHeatCapacitiesJm2K(column).boundaryLayerJm2K * areas.get(column.id));
-    }
-  );
+  const atmosphereBiogeochemistryTransport =
+    transportAtmosphereBiogeochemistry(
+      sorted,
+      nativeAtmosphereTransport.receipt.massRouteReceipts,
+      areas,
+      {
+        durationDays: duration,
+        initialDryAirMassKgByCellAndLayer,
+        reason: 'loaded-native-dry-air-gas-transport'
+      }
+    );
   applyPairTransfers(byId, boundedGroundwater,
     column => column.land.groundwaterStorageMm * areas.get(column.id),
     (column, massKg) => {
@@ -695,6 +1207,18 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
       column.surface.temperatureC = column.ocean.mixedLayerTemperatureC;
     }
   );
+  for (const pool of OCEAN_ECOLOGY_TRANSPORT_POOLS) {
+    const transfers = boundedOceanEcology.filter(entry =>
+      entry.poolId === pool.id);
+    applyPairTransfers(byId, transfers,
+      column => oceanEcologyTransportValue(column.ocean.ecology, pool.id) *
+        areas.get(column.id),
+      (column, massKg) => {
+        setOceanEcologyTransportValue(column.ocean.ecology, pool.id,
+          massKg / areas.get(column.id));
+      }
+    );
+  }
   const runoffRouting = routeRunoff(sorted, byId, activeEdges, areas, duration);
 
   for (const column of sorted) {
@@ -707,19 +1231,24 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
     column.truth.neighborTransportReady = true;
     column.truth.conservativeNeighborAtmosphereMomentumReady = true;
     column.truth.pressureGradientMomentumForcingReceipted = true;
-    column.atmosphere.surfacePressureHpa = round(column.atmosphere.surfacePressureHpa, 12);
     if (column.atmosphere.freeTroposphere) {
       column.atmosphere.boundaryLayerPressureHpa = round(
-        column.atmosphere.surfacePressureHpa * .25,
+        column.atmosphere.boundaryLayerPressureHpa,
         12
       );
       column.atmosphere.freeTroposphere.pressureThicknessHpa = round(
-        column.atmosphere.surfacePressureHpa - column.atmosphere.boundaryLayerPressureHpa,
+        column.atmosphere.freeTroposphere.pressureThicknessHpa,
+        12
+      );
+      column.atmosphere.surfacePressureHpa = round(
+        column.atmosphere.boundaryLayerPressureHpa +
+          column.atmosphere.freeTroposphere.pressureThicknessHpa,
         12
       );
     }
     column.atmosphere.precipitableWaterMm = round(column.atmosphere.precipitableWaterMm, 12);
     column.atmosphere.cloudWaterMm = round(finite(column.atmosphere.cloudWaterMm), 12);
+    column.atmosphere.cloudIceMm = round(finite(column.atmosphere.cloudIceMm), 12);
     column.atmosphere.airTemperatureC = round(column.atmosphere.airTemperatureC, 12);
     column.atmosphere.relativeHumidity = round(clamp(
       column.atmosphere.precipitableWaterMm /
@@ -731,6 +1260,79 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
     column.atmosphere.northwardWindMps = round(column.atmosphere.northwardWindMps, 12);
     column.atmosphere.windSpeedMps = round(column.atmosphere.windSpeedMps, 12);
     column.atmosphere.windDirectionDeg = round(column.atmosphere.windDirectionDeg, 12);
+    column.atmosphere.freeTroposphere.precipitableWaterMm = round(
+      column.atmosphere.freeTroposphere.precipitableWaterMm,
+      12
+    );
+    column.atmosphere.freeTroposphere.cloudWaterMm = round(
+      finite(column.atmosphere.freeTroposphere.cloudWaterMm),
+      12
+    );
+    column.atmosphere.freeTroposphere.cloudIceMm = round(
+      finite(column.atmosphere.freeTroposphere.cloudIceMm),
+      12
+    );
+    column.atmosphere.freeTroposphere.airTemperatureC = round(
+      column.atmosphere.freeTroposphere.airTemperatureC,
+      12
+    );
+    column.atmosphere.freeTroposphere.relativeHumidity = round(clamp(
+      column.atmosphere.freeTroposphere.precipitableWaterMm /
+        Math.max(.01, freeTroposphereVaporCapacityMm(
+          column.atmosphere.freeTroposphere.airTemperatureC
+        )),
+      .01,
+      1
+    ), 12);
+    column.atmosphere.freeTroposphere.eastwardWindMps = round(
+      column.atmosphere.freeTroposphere.eastwardWindMps,
+      12
+    );
+    column.atmosphere.freeTroposphere.northwardWindMps = round(
+      column.atmosphere.freeTroposphere.northwardWindMps,
+      12
+    );
+    column.atmosphere.freeTroposphere.windSpeedMps = round(
+      column.atmosphere.freeTroposphere.windSpeedMps,
+      12
+    );
+    column.atmosphere.freeTroposphere.windDirectionDeg = round(
+      column.atmosphere.freeTroposphere.windDirectionDeg,
+      12
+    );
+    column.atmosphere.relativeHumidity = round(clamp(
+      column.atmosphere.precipitableWaterMm /
+        Math.max(.01, boundaryLayerVaporCapacityMm(column.atmosphere.airTemperatureC)),
+      .01,
+      1
+    ), 12);
+    column.atmosphere.freeTroposphere.relativeHumidity = round(clamp(
+      column.atmosphere.freeTroposphere.precipitableWaterMm /
+        Math.max(.01, freeTroposphereVaporCapacityMm(
+          column.atmosphere.freeTroposphere.airTemperatureC
+        )),
+      .01,
+      1
+    ), 12);
+    column.truth.pressureCoordinateColumnPersisted =
+      validatePressureColumn(column.atmosphere.pressureColumn);
+    column.truth.pressureColumnConservativeProjection =
+      column.atmosphere.lastPressureColumnSyncReceipt?.truth?.dryAirMassClosed === true &&
+      column.atmosphere.lastPressureColumnSyncReceipt?.truth?.waterClosed === true &&
+      column.atmosphere.lastPressureColumnSyncReceipt?.truth?.momentumClosed === true &&
+      column.atmosphere.lastPressureColumnSyncReceipt?.truth?.moistEnthalpyClosed === true;
+    column.truth.pressureColumnHydrostaticInterfaces =
+      column.atmosphere.lastPressureColumnSyncReceipt?.truth?.hydrostaticInterfacesMonotonic === true;
+    column.truth.nativePressureLevelHorizontalTransport = true;
+    column.truth.loadedAtmosphericBiogeochemistryTransport =
+      column.atmosphere.biogeochemistry?.truth?.horizontallyTransported === true;
+    column.truth.pressureLevelDynamicsResolved =
+      column.atmosphere.lastPressureColumnDynamicsReceipt?.truth?.
+        pressureLevelDynamicsResolved === true &&
+      column.truth.nativePressureLevelHorizontalTransport === true;
+    column.truth.freeTroposphereHorizontalTransport = true;
+    column.truth.independentLayerAtmosphericMomentum = true;
+    column.truth.terrainFollowingGeopotentialAdjustmentReceipted = true;
     if (column.land) {
       column.land.groundwaterStorageMm = round(column.land.groundwaterStorageMm, 12);
       column.land.waterTableDepthM = round(column.land.waterTableDepthM, 12);
@@ -740,48 +1342,250 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
     column.routing.cumulativeRoutedRunoffMm = round(column.routing.cumulativeRoutedRunoffMm, 12);
     column.routing.cumulativeChannelizedRunoffMm = round(finite(column.routing.cumulativeChannelizedRunoffMm), 12);
     column.truth.runoffCanEnterCanonicalRiverReach = true;
+    column.truth.persistentRunoffBiogeochemistryQueue =
+      column.kind !== 'land' ||
+      column.routing.runoffBiogeochemistryQueue?.schema ===
+        RUNOFF_BIOGEOCHEMISTRY_QUEUE_SCHEMA;
+    column.truth.runoffBiogeochemistryMovesWithWater = true;
+    column.truth.persistentRunoffSedimentQueue =
+      column.kind !== 'land' ||
+      column.routing.runoffSedimentQueue?.schema ===
+        RUNOFF_SEDIMENT_QUEUE_SCHEMA;
+    column.truth.runoffSedimentMovesWithWater = true;
+    column.truth.persistentCoastalSediment = column.kind !== 'ocean' ||
+      column.ocean?.coastalSediment?.schema ===
+        COASTAL_SEDIMENT_STATE_SCHEMA;
+    column.truth.parameterizedLandRunoffChemistryBoundary = false;
     if (column.ocean) {
       column.ocean.freshwaterAnomalyMm = round(column.ocean.freshwaterAnomalyMm, 12);
       column.ocean.salinityPsu = round(column.ocean.salinityPsu, 12);
       column.ocean.mixedLayerTemperatureC = round(column.ocean.mixedLayerTemperatureC, 12);
       column.ocean.heatContentJm2 = round(column.ocean.heatContentJm2, 3);
       column.surface.temperatureC = round(column.surface.temperatureC, 12);
+      column.truth.loadedOceanBiogeochemicalTransport =
+        column.ocean.ecology?.schema ===
+          EARTH_OCEAN_ECOLOGY_SCHEMA;
     }
   }
 
   const final = {
+    ...atmosphereBiogeochemistryDomainTotals(sorted, areas),
+    ...oceanEcologyDomainTotals(sorted, areas),
+    ...runoffBiogeochemistryDomainTotals(sorted, areas),
+    ...runoffSedimentDomainTotals(sorted, areas),
+    ...coastalSedimentDomainTotals(sorted, areas),
+    ...runoffReceivingOceanDomainTotals(sorted, areas),
     atmosphereDryAirKg: sum(sorted, column => atmosphereMassKg(column, areas.get(column.id))),
+    atmosphereBoundaryDryAirKg: sum(sorted, column =>
+      atmosphereLayerMassKg(column, areas.get(column.id), 'boundary-layer')),
+    atmosphereFreeDryAirKg: sum(sorted, column =>
+      atmosphereLayerMassKg(column, areas.get(column.id), 'free-troposphere')),
     atmosphereWaterKg: sum(sorted, column => atmosphereWaterStorageMm(column) * areas.get(column.id)),
-    atmosphereVaporWaterKg: sum(sorted, column => finite(column.atmosphere.precipitableWaterMm) * areas.get(column.id)),
-    atmosphereCloudWaterKg: sum(sorted, column => finite(column.atmosphere.cloudWaterMm) * areas.get(column.id)),
+    atmosphereVaporWaterKg: sum(sorted, column => (finite(column.atmosphere.precipitableWaterMm) +
+      finite(column.atmosphere.freeTroposphere.precipitableWaterMm)) * areas.get(column.id)),
+    atmosphereBoundaryVaporWaterKg: sum(sorted, column =>
+      finite(column.atmosphere.precipitableWaterMm) * areas.get(column.id)),
+    atmosphereFreeVaporWaterKg: sum(sorted, column =>
+      finite(column.atmosphere.freeTroposphere.precipitableWaterMm) * areas.get(column.id)),
+    atmosphereCloudWaterKg: sum(sorted, column => (finite(column.atmosphere.cloudWaterMm) +
+      finite(column.atmosphere.freeTroposphere.cloudWaterMm)) * areas.get(column.id)),
+    atmosphereBoundaryCloudWaterKg: sum(sorted, column =>
+      finite(column.atmosphere.cloudWaterMm) * areas.get(column.id)),
+    atmosphereFreeCloudWaterKg: sum(sorted, column =>
+      finite(column.atmosphere.freeTroposphere.cloudWaterMm) * areas.get(column.id)),
+    atmosphereCloudIceKg: sum(sorted, column => (finite(column.atmosphere.cloudIceMm) +
+      finite(column.atmosphere.freeTroposphere.cloudIceMm)) * areas.get(column.id)),
+    atmosphereBoundaryCloudIceKg: sum(sorted, column =>
+      finite(column.atmosphere.cloudIceMm) * areas.get(column.id)),
+    atmosphereFreeCloudIceKg: sum(sorted, column =>
+      finite(column.atmosphere.freeTroposphere.cloudIceMm) * areas.get(column.id)),
     groundwaterKg: sum(sorted.filter(column => column.land), column => column.land.groundwaterStorageMm * areas.get(column.id)),
     oceanFreshwaterKg: sum(sorted.filter(column => column.ocean), column => column.ocean.freshwaterAnomalyMm * areas.get(column.id)),
     runoffQueueKg: sum(sorted, column => finite(column.routing?.runoffQueueMm) * areas.get(column.id)),
     atmosphereHeatJ: sum(sorted, column => atmosphereSensibleHeatJm2(column) * areas.get(column.id)),
+    atmosphereBoundaryHeatJ: sum(sorted, column => layerSensibleHeatJ(column, 'boundary-layer')),
+    atmosphereFreeHeatJ: sum(sorted, column => layerSensibleHeatJ(column, 'free-troposphere')),
     atmosphereMoistEnthalpyJ: sum(sorted, column => atmosphereMoistEnthalpyJm2(column) * areas.get(column.id)),
-    atmosphereEastwardMomentumKgMps: sum(sorted, column => atmosphereMassKg(column, areas.get(column.id)) * atmosphereWind(column).eastwardMps),
-    atmosphereNorthwardMomentumKgMps: sum(sorted, column => atmosphereMassKg(column, areas.get(column.id)) * atmosphereWind(column).northwardMps),
-    atmosphereKineticEnergyJ: sum(sorted, column => atmosphereMassKg(column, areas.get(column.id)) *
-      (atmosphereWind(column).eastwardMps ** 2 + atmosphereWind(column).northwardMps ** 2) * .5),
+    atmosphereBoundaryMoistEnthalpyJ: sum(sorted, column =>
+      layerMoistEnthalpyJ(column, 'boundary-layer')),
+    atmosphereFreeMoistEnthalpyJ: sum(sorted, column =>
+      layerMoistEnthalpyJ(column, 'free-troposphere')),
+    atmosphereEastwardMomentumKgMps: sum(sorted, column =>
+      layerEastwardMomentum(column, 'boundary-layer') +
+      layerEastwardMomentum(column, 'free-troposphere')),
+    atmosphereBoundaryEastwardMomentumKgMps: sum(sorted, column =>
+      layerEastwardMomentum(column, 'boundary-layer')),
+    atmosphereFreeEastwardMomentumKgMps: sum(sorted, column =>
+      layerEastwardMomentum(column, 'free-troposphere')),
+    atmosphereNorthwardMomentumKgMps: sum(sorted, column =>
+      layerNorthwardMomentum(column, 'boundary-layer') +
+      layerNorthwardMomentum(column, 'free-troposphere')),
+    atmosphereBoundaryNorthwardMomentumKgMps: sum(sorted, column =>
+      layerNorthwardMomentum(column, 'boundary-layer')),
+    atmosphereFreeNorthwardMomentumKgMps: sum(sorted, column =>
+      layerNorthwardMomentum(column, 'free-troposphere')),
+    atmosphereKineticEnergyJ: sum(sorted, column =>
+      layerKineticEnergy(column, 'boundary-layer') +
+      layerKineticEnergy(column, 'free-troposphere')),
+    atmosphereBoundaryKineticEnergyJ: sum(sorted, column =>
+      layerKineticEnergy(column, 'boundary-layer')),
+    atmosphereFreeKineticEnergyJ: sum(sorted, column =>
+      layerKineticEnergy(column, 'free-troposphere')),
+    atmosphereGeopotentialEnergyJ: sum(sorted, column =>
+      atmosphereGeopotentialEnergyJm2(column) * areas.get(column.id)),
     oceanHeatJ: sum(sorted.filter(column => column.ocean), column => column.ocean.mixedLayerTemperatureC * heatCapacityJm2K(column) * areas.get(column.id))
   };
   const residual = Object.fromEntries(Object.keys(initial).map(key => [key.replace(/(KgMps|Kg|J)$/, 'Residual$1'), final[key] - initial[key]]));
+  const nativeTransportReceipt = nativeAtmosphereTransport.receipt;
   const pressureForcing = {
-    eastwardKgMps: pressureImpulses.reduce((total, impulse) => total +
-      impulse.aEastwardImpulseKgMps + impulse.bEastwardImpulseKgMps, 0) * atmosphereDynamics.impulseScale,
-    northwardKgMps: pressureImpulses.reduce((total, impulse) => total +
-      impulse.aNorthwardImpulseKgMps + impulse.bNorthwardImpulseKgMps, 0) * atmosphereDynamics.impulseScale
+    eastwardKgMps: nativeTransportReceipt.transfers.pressureForcingEastwardKgMps,
+    northwardKgMps: nativeTransportReceipt.transfers.pressureForcingNorthwardKgMps
   };
   const coriolisForcing = {
-    eastwardKgMps: atmosphereDynamics.coriolisReceipts.reduce((total, receipt) => total + receipt.eastwardImpulseKgMps, 0),
-    northwardKgMps: atmosphereDynamics.coriolisReceipts.reduce((total, receipt) => total + receipt.northwardImpulseKgMps, 0)
+    eastwardKgMps: nativeTransportReceipt.transfers.coriolisForcingEastwardKgMps,
+    northwardKgMps: nativeTransportReceipt.transfers.coriolisForcingNorthwardKgMps
   };
+  const bandForcing = (receipts, start, end, coriolis = false) => receipts
+    .filter(entry => entry.layerIndex >= start && entry.layerIndex < end)
+    .reduce((totals, entry) => {
+      totals.eastwardKgMps += coriolis
+        ? finite(entry.eastwardImpulseKgMps)
+        : finite(entry.aEastwardImpulseKgMps) + finite(entry.bEastwardImpulseKgMps);
+      totals.northwardKgMps += coriolis
+        ? finite(entry.northwardImpulseKgMps)
+        : finite(entry.aNorthwardImpulseKgMps) + finite(entry.bNorthwardImpulseKgMps);
+      return totals;
+    }, { eastwardKgMps: 0, northwardKgMps: 0 });
+  const boundaryPressureForcing = bandForcing(nativeTransportReceipt.impulseReceipts, 0, 2);
+  const freePressureForcing = bandForcing(nativeTransportReceipt.impulseReceipts, 2, 8);
+  const boundaryCoriolisForcing = bandForcing(nativeTransportReceipt.coriolisReceipts, 0, 2, true);
+  const freeCoriolisForcing = bandForcing(nativeTransportReceipt.coriolisReceipts, 2, 8, true);
   residual.atmosphereEastwardMomentumResidualKgMps -= pressureForcing.eastwardKgMps + coriolisForcing.eastwardKgMps;
   residual.atmosphereNorthwardMomentumResidualKgMps -= pressureForcing.northwardKgMps + coriolisForcing.northwardKgMps;
-  residual.atmosphereKineticEnergyResidualJ += atmosphereDynamics.momentumMixingDissipationJ -
-    atmosphereDynamics.pressureWorkJ - atmosphereDynamics.coriolisWorkJ;
+  residual.atmosphereBoundaryEastwardMomentumResidualKgMps -=
+    boundaryPressureForcing.eastwardKgMps + boundaryCoriolisForcing.eastwardKgMps;
+  residual.atmosphereFreeEastwardMomentumResidualKgMps -=
+    freePressureForcing.eastwardKgMps + freeCoriolisForcing.eastwardKgMps;
+  residual.atmosphereBoundaryNorthwardMomentumResidualKgMps -=
+    boundaryPressureForcing.northwardKgMps + boundaryCoriolisForcing.northwardKgMps;
+  residual.atmosphereFreeNorthwardMomentumResidualKgMps -=
+    freePressureForcing.northwardKgMps + freeCoriolisForcing.northwardKgMps;
+  const totalMomentumMixingDissipationJ =
+    nativeTransportReceipt.transfers.momentumMixingDissipationJ;
+  const totalPressureWorkJ = nativeTransportReceipt.transfers.pressureWorkJ;
+  const totalCoriolisWorkJ = nativeTransportReceipt.transfers.coriolisWorkJ;
+  const boundaryLevels = nativeTransportReceipt.levelSummaries.slice(0, 2);
+  const freeLevels = nativeTransportReceipt.levelSummaries.slice(2);
+  const sumLevelField = (levels, field) => levels.reduce((total, entry) =>
+    total + finite(entry[field]), 0);
+  const boundaryMomentumMixingDissipationJ = sumLevelField(
+    boundaryLevels,
+    'momentumMixingDissipationJ'
+  );
+  const freeMomentumMixingDissipationJ = sumLevelField(
+    freeLevels,
+    'momentumMixingDissipationJ'
+  );
+  const boundaryPressureWorkJ = sumLevelField(boundaryLevels, 'pressureWorkJ');
+  const freePressureWorkJ = sumLevelField(freeLevels, 'pressureWorkJ');
+  const boundaryCoriolisWorkJ = sumLevelField(boundaryLevels, 'coriolisWorkJ');
+  const freeCoriolisWorkJ = sumLevelField(freeLevels, 'coriolisWorkJ');
+  residual.atmosphereHeatResidualJ -= totalMomentumMixingDissipationJ;
+  residual.atmosphereBoundaryHeatResidualJ -= boundaryMomentumMixingDissipationJ;
+  residual.atmosphereFreeHeatResidualJ -= freeMomentumMixingDissipationJ;
+  residual.atmosphereMoistEnthalpyResidualJ -= totalMomentumMixingDissipationJ;
+  residual.atmosphereBoundaryMoistEnthalpyResidualJ -=
+    boundaryMomentumMixingDissipationJ;
+  residual.atmosphereFreeMoistEnthalpyResidualJ -= freeMomentumMixingDissipationJ;
+  residual.atmosphereKineticEnergyResidualJ += totalMomentumMixingDissipationJ -
+    totalPressureWorkJ - totalCoriolisWorkJ;
+  residual.atmosphereBoundaryKineticEnergyResidualJ +=
+    boundaryMomentumMixingDissipationJ - boundaryPressureWorkJ -
+    boundaryCoriolisWorkJ;
+  residual.atmosphereFreeKineticEnergyResidualJ +=
+    freeMomentumMixingDissipationJ - freePressureWorkJ - freeCoriolisWorkJ;
+  const nativeBoundaryInitialKineticEnergyJ = sumLevelField(
+    boundaryLevels.map(level => level.initial),
+    'horizontalKineticEnergyJ'
+  );
+  const nativeBoundaryFinalKineticEnergyJ = sumLevelField(
+    boundaryLevels.map(level => level.final),
+    'horizontalKineticEnergyJ'
+  );
+  const nativeFreeInitialKineticEnergyJ = sumLevelField(
+    freeLevels.map(level => level.initial),
+    'horizontalKineticEnergyJ'
+  );
+  const nativeFreeFinalKineticEnergyJ = sumLevelField(
+    freeLevels.map(level => level.final),
+    'horizontalKineticEnergyJ'
+  );
+  const boundaryCompatibilityProjectionKineticVarianceAdjustmentJ =
+    (nativeBoundaryFinalKineticEnergyJ - final.atmosphereBoundaryKineticEnergyJ) -
+    (nativeBoundaryInitialKineticEnergyJ - initial.atmosphereBoundaryKineticEnergyJ);
+  const freeCompatibilityProjectionKineticVarianceAdjustmentJ =
+    (nativeFreeFinalKineticEnergyJ - final.atmosphereFreeKineticEnergyJ) -
+    (nativeFreeInitialKineticEnergyJ - initial.atmosphereFreeKineticEnergyJ);
+  const compatibilityProjectionKineticVarianceAdjustmentJ =
+    boundaryCompatibilityProjectionKineticVarianceAdjustmentJ +
+    freeCompatibilityProjectionKineticVarianceAdjustmentJ;
+  residual.atmosphereKineticEnergyResidualJ +=
+    compatibilityProjectionKineticVarianceAdjustmentJ;
+  residual.atmosphereBoundaryKineticEnergyResidualJ +=
+    boundaryCompatibilityProjectionKineticVarianceAdjustmentJ;
+  residual.atmosphereFreeKineticEnergyResidualJ +=
+    freeCompatibilityProjectionKineticVarianceAdjustmentJ;
+  const geopotentialAdjustmentWorkJ =
+    nativeTransportReceipt.transfers.geopotentialRouteWorkJ +
+    nativeTransportReceipt.transfers.hydrostaticGeometryAdjustmentJ;
+  residual.atmosphereGeopotentialEnergyResidualJ -= geopotentialAdjustmentWorkJ;
+  const compatibilityProjectionGeopotentialVarianceAdjustmentJ =
+    (finite(nativeTransportReceipt.final.geopotentialEnergyJ) -
+      final.atmosphereGeopotentialEnergyJ) -
+    (finite(nativeTransportReceipt.initial.geopotentialEnergyJ) -
+      initial.atmosphereGeopotentialEnergyJ);
+  residual.atmosphereGeopotentialEnergyResidualJ +=
+    compatibilityProjectionGeopotentialVarianceAdjustmentJ;
   residual.oceanFreshwaterResidualKg -= runoffRouting.deliveredToOceanKg;
   residual.runoffQueueResidualKg += runoffRouting.deliveredToOceanKg;
+  for (const [element, suffix] of Object.entries({
+    carbon: 'Carbon',
+    nitrogen: 'Nitrogen',
+    phosphorus: 'Phosphorus',
+    oxygen: 'Oxygen'
+  })) {
+    const delivered = runoffRouting.oceanBiogeochemistryElementsKg[element];
+    residual[`runoffBiogeochemistry${suffix}ResidualKg`] += delivered;
+    residual[`oceanEcology${suffix}ResidualKg`] -= delivered;
+    residual[`runoffReceivingOcean${suffix}ResidualKg`] -= delivered;
+  }
+  for (const [grain, suffix] of Object.entries({
+    clay: 'Clay', silt: 'Silt', sand: 'Sand', gravel: 'Gravel'
+  })) {
+    const delivered = runoffRouting.oceanSedimentGrainsKg[grain];
+    residual[`runoffSediment${suffix}ResidualKg`] += delivered;
+    residual[`coastalSediment${suffix}ResidualKg`] -= delivered;
+  }
+  const atmosphereMassReceipts = nativeTransportReceipt.massRouteReceipts;
+  const oceanEcologyReceipts = boundedOceanEcology
+    .map(transfer => ({
+      schema: OCEAN_ECOLOGY_TRANSPORT_RECEIPT_SCHEMA,
+      edgeId: transfer.edgeId,
+      poolId: transfer.poolId,
+      element: transfer.element,
+      donorCellId: transfer.donorId,
+      receiverCellId: transfer.receiverId,
+      amountKg: round(transfer.amount, 9),
+      simultaneous: true
+    }))
+    .sort((a, b) => a.edgeId.localeCompare(b.edgeId) ||
+      a.poolId.localeCompare(b.poolId) ||
+      a.donorCellId.localeCompare(b.donorCellId));
+  const oceanEcologyTransferTotals = Object.fromEntries(
+    ['carbon', 'nitrogen', 'phosphorus', 'oxygen'].map(element => [element,
+      round(oceanEcologyReceipts
+        .filter(entry => entry.element === element)
+        .reduce((total, entry) => total + entry.amountKg, 0), 6)]));
   const receipt = {
     schema: EARTH_TRANSPORT_STEP_SCHEMA,
     graphSchema: EARTH_TRANSPORT_GRAPH_SCHEMA,
@@ -791,29 +1595,113 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
     activeEdgeCount: activeEdges.length,
     skippedEdges,
     boundaryReceipts: boundaries,
-    atmosphereMassReceipts: atmosphereDynamics.massReceipts,
-    atmosphereImpulseReceipts: atmosphereDynamics.impulseReceipts,
-    atmosphereCoriolisReceipts: atmosphereDynamics.coriolisReceipts,
+    nativePressureTransportReceipt: nativeTransportReceipt,
+    atmosphereMassReceipts,
+    atmosphereTracerReceipts: nativeTransportReceipt.tracerRouteReceipts,
+    atmosphereImpulseReceipts: nativeTransportReceipt.impulseReceipts,
+    atmosphereCoriolisReceipts: nativeTransportReceipt.coriolisReceipts,
+    atmosphereBiogeochemistryTransportReceipt:
+      atmosphereBiogeochemistryTransport.receipt,
+    atmosphereBiogeochemistryRouteReceipts:
+      atmosphereBiogeochemistryTransport.receipt.routes,
+    oceanEcologyReceipts,
     runoffReceipts: runoffRouting.receipts,
     transfers: {
-      atmosphereDryAirKg: transferTotals(boundedAtmosphereDryAir),
-      atmosphereWaterKg: transferTotals(boundedAtmosphereWater) + transferTotals(boundedAtmosphereCloudWater),
-      atmosphereVaporWaterKg: transferTotals(boundedAtmosphereWater),
-      atmosphereCloudWaterKg: transferTotals(boundedAtmosphereCloudWater),
-      atmosphereHeatJ: transferTotals(cleanAtmosphereHeat),
+      atmosphereDryAirKg: nativeTransportReceipt.transfers.dryAirKg,
+      atmosphereBoundaryDryAirKg: nativeTransportReceipt.transfers.boundaryDryAirKg,
+      atmosphereFreeDryAirKg: nativeTransportReceipt.transfers.freeDryAirKg,
+      atmosphereWaterKg: nativeTransportReceipt.transfers.vaporWaterKg +
+        nativeTransportReceipt.transfers.cloudWaterKg +
+        nativeTransportReceipt.transfers.cloudIceKg,
+      atmosphereVaporWaterKg: nativeTransportReceipt.transfers.vaporWaterKg,
+      atmosphereBoundaryVaporWaterKg:
+        nativeTransportReceipt.transfers.boundaryVaporWaterKg,
+      atmosphereFreeVaporWaterKg: nativeTransportReceipt.transfers.freeVaporWaterKg,
+      atmosphereCloudWaterKg: nativeTransportReceipt.transfers.cloudWaterKg,
+      atmosphereBoundaryCloudWaterKg:
+        nativeTransportReceipt.transfers.boundaryCloudWaterKg,
+      atmosphereFreeCloudWaterKg: nativeTransportReceipt.transfers.freeCloudWaterKg,
+      atmosphereCloudIceKg: nativeTransportReceipt.transfers.cloudIceKg,
+      atmosphereBoundaryCloudIceKg:
+        nativeTransportReceipt.transfers.boundaryCloudIceKg,
+      atmosphereFreeCloudIceKg: nativeTransportReceipt.transfers.freeCloudIceKg,
+      atmosphereBiogeochemistryCarbonKgC:
+        atmosphereBiogeochemistryTransport.receipt.transfers.carbonKgC,
+      atmosphereBiogeochemistryOxygenKgO2:
+        atmosphereBiogeochemistryTransport.receipt.transfers.oxygenKgO2,
+      atmosphereBiogeochemistryNitrogenKgN:
+        atmosphereBiogeochemistryTransport.receipt.transfers.nitrogenKgN,
+      atmosphereHeatJ: nativeTransportReceipt.transfers.sensibleHeatJ,
+      atmosphereBoundaryHeatJ: nativeTransportReceipt.transfers.boundarySensibleHeatJ,
+      atmosphereFreeHeatJ: nativeTransportReceipt.transfers.freeSensibleHeatJ,
       pressureForcingEastwardKgMps: round(pressureForcing.eastwardKgMps, 3),
       pressureForcingNorthwardKgMps: round(pressureForcing.northwardKgMps, 3),
       coriolisForcingEastwardKgMps: round(coriolisForcing.eastwardKgMps, 3),
       coriolisForcingNorthwardKgMps: round(coriolisForcing.northwardKgMps, 3),
-      pressureImpulseLimiterScale: round(atmosphereDynamics.impulseScale, 12),
-      momentumMixingDissipationJ: round(atmosphereDynamics.momentumMixingDissipationJ, 3),
-      pressureWorkJ: round(atmosphereDynamics.pressureWorkJ, 3),
-      coriolisWorkJ: round(atmosphereDynamics.coriolisWorkJ, 3),
+      boundaryPressureImpulseLimiterScale:
+        nativeTransportReceipt.transfers.pressureImpulseLimiterScale,
+      freePressureImpulseLimiterScale:
+        nativeTransportReceipt.transfers.pressureImpulseLimiterScale,
+      pressureImpulseLimiterScale:
+        nativeTransportReceipt.transfers.pressureImpulseLimiterScale,
+      momentumMixingDissipationJ: round(totalMomentumMixingDissipationJ, 3),
+      boundaryMomentumMixingDissipationJ: round(boundaryMomentumMixingDissipationJ, 3),
+      freeMomentumMixingDissipationJ: round(freeMomentumMixingDissipationJ, 3),
+      pressureWorkJ: round(totalPressureWorkJ, 3),
+      boundaryPressureWorkJ: round(boundaryPressureWorkJ, 3),
+      freePressureWorkJ: round(freePressureWorkJ, 3),
+      coriolisWorkJ: round(totalCoriolisWorkJ, 3),
+      boundaryCoriolisWorkJ: round(boundaryCoriolisWorkJ, 3),
+      freeCoriolisWorkJ: round(freeCoriolisWorkJ, 3),
+      compatibilityProjectionKineticVarianceAdjustmentJ: round(
+        compatibilityProjectionKineticVarianceAdjustmentJ,
+        3
+      ),
+      boundaryCompatibilityProjectionKineticVarianceAdjustmentJ: round(
+        boundaryCompatibilityProjectionKineticVarianceAdjustmentJ,
+        3
+      ),
+      freeCompatibilityProjectionKineticVarianceAdjustmentJ: round(
+        freeCompatibilityProjectionKineticVarianceAdjustmentJ,
+        3
+      ),
+      compatibilityProjectionGeopotentialVarianceAdjustmentJ: round(
+        compatibilityProjectionGeopotentialVarianceAdjustmentJ,
+        3
+      ),
+      geopotentialAdjustmentWorkJ: round(geopotentialAdjustmentWorkJ, 3),
+      geopotentialRouteWorkJ:
+        nativeTransportReceipt.transfers.geopotentialRouteWorkJ,
+      hydrostaticGeometryAdjustmentJ:
+        nativeTransportReceipt.transfers.hydrostaticGeometryAdjustmentJ,
       groundwaterKg: transferTotals(boundedGroundwater),
       oceanFreshwaterKg: transferTotals(cleanOceanFreshwater),
       oceanHeatJ: transferTotals(cleanOceanHeat),
+      oceanEcologyCarbonKg: oceanEcologyTransferTotals.carbon,
+      oceanEcologyNitrogenKg: oceanEcologyTransferTotals.nitrogen,
+      oceanEcologyPhosphorusKg: oceanEcologyTransferTotals.phosphorus,
+      oceanEcologyOxygenKg: oceanEcologyTransferTotals.oxygen,
       runoffRoutedKg: round(runoffRouting.routedKg, 3),
-      runoffDeliveredToOceanKg: round(runoffRouting.deliveredToOceanKg, 3)
+      runoffDeliveredToOceanKg: round(runoffRouting.deliveredToOceanKg, 3),
+      runoffBiogeochemistryCarbonKg: round(
+        runoffRouting.biogeochemistryElementsKg.carbon, 9),
+      runoffBiogeochemistryNitrogenKg: round(
+        runoffRouting.biogeochemistryElementsKg.nitrogen, 9),
+      runoffBiogeochemistryPhosphorusKg: round(
+        runoffRouting.biogeochemistryElementsKg.phosphorus, 9),
+      runoffBiogeochemistryOxygenKg: round(
+        runoffRouting.biogeochemistryElementsKg.oxygen, 9),
+      runoffSedimentKg: round(runoffRouting.sedimentKg, 9),
+      runoffSedimentClayKg: round(
+        runoffRouting.sedimentGrainsKg.clay, 9),
+      runoffSedimentSiltKg: round(
+        runoffRouting.sedimentGrainsKg.silt, 9),
+      runoffSedimentSandKg: round(
+        runoffRouting.sedimentGrainsKg.sand, 9),
+      runoffSedimentGravelKg: round(
+        runoffRouting.sedimentGrainsKg.gravel, 9),
+      runoffSedimentDeliveredToOceanKg: round(
+        runoffRouting.oceanSedimentKg, 9)
     },
     conservation: Object.fromEntries(Object.entries(residual).map(([key, value]) => [key, round(value, 3)])),
     truth: {
@@ -824,6 +1712,8 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
       explicitUnloadedBoundaries: true,
       atmosphereCoupledToLocalPrecipitationBudget: true,
       cloudLiquidWaterTransportConservative: true,
+      cloudIceWaterTransportConservative: true,
+      mixedPhaseWaterTransportConservative: true,
       moistEnthalpyTransportConservative: true,
       surfacePressureRepresentsDryAirColumnMass: true,
       dryAirMassExchangeConservative: true,
@@ -833,9 +1723,44 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
       coriolisDeflectionReceipted: true,
       coriolisKineticEnergyNeutral: true,
       atmosphericKineticEnergyLedger: true,
+      nativePressureLevelHorizontalTransport: true,
+      allEightNativePressureLevelsTransported: true,
+      nativeLayerSenderReceiverReceipts: true,
+      nativeLayerPressureGradientForcingReceipted: true,
+      nativeLayerCoriolisReceipted: true,
+      nativeLayerResolvedEnergyLedger: true,
+      compatibilityBandsAreProjection: true,
+      compatibilityBandKineticVarianceReceipted: true,
+      compatibilityBandGeopotentialVarianceReceipted: true,
       boundaryLayerHorizontalTransport: true,
-      upperAirHorizontalTransport: false,
+      upperAirHorizontalTransport: true,
+      independentLayerMomentumTransport: true,
+      dryAirCarriesLayerTracersAndSensibleEnthalpy: true,
+      loadedAtmosphericBiogeochemistryTransport: true,
+      nativePressureLayerAtmosphericBiogeochemistryTransport: true,
+      wholeColumnAverageAtmosphericGasTransport: false,
+      atmosphericBiogeochemistryConservative:
+        atmosphereBiogeochemistryTransport.receipt.truth
+          .carbonOxygenNitrogenConservative,
+      globalAtmosphericBiogeochemistryMixing: false,
+      variableHydrostaticLayerPressurePartition: true,
+      terrainFollowingGeopotentialAdjustmentReceipted: true,
+      loadedOceanBiogeochemicalTracerMixing: true,
+      oceanBiogeochemicalElementLedgers: true,
+      buoyancyConversionResolved: false,
       runoffQueueRoutedByTopography: true,
+      persistentRunoffBiogeochemistryQueue: true,
+      runoffBiogeochemistryMovesWithSameWaterFraction: true,
+      runoffBiogeochemistrySenderDebited: true,
+      landAndOceanRunoffReceiversCredited: true,
+      persistentRunoffSedimentQueue: true,
+      runoffSedimentMovesWithSameWaterFraction: true,
+      runoffSedimentSenderDebited: true,
+      landAndCoastalSedimentReceiversCredited: true,
+      runoffSedimentConservative: Object.entries(residual)
+        .filter(([key]) => /^(runoff|coastal)Sediment.*ResidualKg$/.test(key))
+        .every(([, value]) => Math.abs(value) < 1),
+      parameterizedLandRunoffChemistryBoundary: false,
       runoffNeverDroppedAtSparseBoundary: true,
       globalCirculationModel: false,
       globalAngularMomentumModel: false,
@@ -852,11 +1777,26 @@ export function earthTransportDescription() {
     stepSchema: EARTH_TRANSPORT_STEP_SCHEMA,
     boundaryReceiptSchema: EARTH_BOUNDARY_RECEIPT_SCHEMA,
     runoffRouteReceiptSchema: EARTH_RUNOFF_ROUTE_SCHEMA,
-    atmosphereMassRouteReceiptSchema: EARTH_ATMOSPHERE_MASS_ROUTE_SCHEMA,
-    atmospherePressureImpulseReceiptSchema: EARTH_ATMOSPHERE_IMPULSE_SCHEMA,
-    atmosphereCoriolisReceiptSchema: EARTH_ATMOSPHERE_CORIOLIS_SCHEMA,
+    oceanEcologyTransportReceiptSchema: OCEAN_ECOLOGY_TRANSPORT_RECEIPT_SCHEMA,
+    atmosphereBiogeochemistryTransport:
+      atmosphereBiogeochemistryTransportDescription(),
+    geomorphicSediment: geomorphicSedimentDescription(),
+    nativePressureTransport: pressureHorizontalTransportDescription(),
+    atmospherePressureTransportReceiptSchema:
+      ATMOSPHERE_PRESSURE_HORIZONTAL_TRANSPORT_SCHEMA,
+    atmosphereMassRouteReceiptSchema: ATMOSPHERE_PRESSURE_LAYER_MASS_ROUTE_SCHEMA,
+    atmosphereTracerRouteReceiptSchema: ATMOSPHERE_PRESSURE_LAYER_TRACER_ROUTE_SCHEMA,
+    atmospherePressureImpulseReceiptSchema: ATMOSPHERE_PRESSURE_LAYER_IMPULSE_SCHEMA,
+    atmosphereCoriolisReceiptSchema: ATMOSPHERE_PRESSURE_LAYER_CORIOLIS_SCHEMA,
+    atmosphereGeopotentialRouteReceiptSchema:
+      ATMOSPHERE_PRESSURE_LAYER_GEOPOTENTIAL_ROUTE_SCHEMA,
+    atmosphereColumnLocalReceiptSchema:
+      ATMOSPHERE_PRESSURE_COLUMN_HORIZONTAL_LOCAL_SCHEMA,
+    legacyAtmosphereMassRouteReceiptSchema: EARTH_ATMOSPHERE_MASS_ROUTE_SCHEMA,
+    legacyAtmospherePressureImpulseReceiptSchema: EARTH_ATMOSPHERE_IMPULSE_SCHEMA,
+    legacyAtmosphereCoriolisReceiptSchema: EARTH_ATMOSPHERE_CORIOLIS_SCHEMA,
     topology: 'cardinal neighbors on canonical spherical surface cells with dateline wrapping',
-    processes: ['surface-pressure-dry-air-mass-exchange', 'dry-air-carried-column-mean-momentum-transport', 'receipted-loaded-pressure-gradient-forcing', 'rotation-aware-coriolis-deflection', 'atmospheric-kinetic-energy-ledger', 'boundary-layer-water-vapor-mixing', 'boundary-layer-cloud-liquid-water-mixing', 'boundary-layer-sensible-heat-mixing', 'two-layer-atmospheric-moist-enthalpy-ledger', 'hydraulic-head-groundwater-flow', 'ocean-freshwater-mixing', 'ocean-mixed-layer-heat-mixing', 'topographic-runoff-routing'],
+    processes: ['eight-native-pressure-level-dry-air-advection', 'native-dry-air-carried-momentum-vapor-cloud-and-sensible-enthalpy', 'level-specific-loaded-atmosphere-carbon-oxygen-and-nitrogen-gas-advection', 'eight-level-pressure-gradient-forcing', 'eight-level-rotation-aware-coriolis-deflection', 'eight-level-atmospheric-kinetic-and-resolved-energy-ledgers', 'native-level-vapor-cloud-and-sensible-heat-mixing', 'native-level-terrain-and-hydrostatic-geopotential-adjustment-work', 'native-level-moist-enthalpy-ledger', 'hydraulic-head-groundwater-flow', 'ocean-freshwater-mixing', 'ocean-mixed-layer-heat-mixing', 'ocean-carbon-nitrogen-phosphorus-oxygen-and-plankton-mixing', 'topographic-runoff-routing', 'same-fraction-runoff-carbon-nitrogen-phosphorus-and-oxygen-routing', 'same-fraction-runoff-clay-silt-sand-and-gravel-routing', 'direct-land-runoff-to-ocean-biogeochemistry-credit', 'direct-land-runoff-to-coastal-sediment-credit'],
     simultaneous: true,
     cellAreaWeighted: true,
     explicitSparseBoundaries: true,
@@ -865,8 +1805,21 @@ export function earthTransportDescription() {
     coriolisChangesDirectionWithoutDoingWork: true,
     cloudLiquidWaterTransportConservative: true,
     moistEnthalpyTransportConservative: true,
+    nativePressureLevelHorizontalTransport: true,
+    allEightNativePressureLevelsTransported: true,
+    compatibilityBandsAreProjection: true,
     boundaryLayerHorizontalTransport: true,
-    upperAirHorizontalTransport: false,
+    upperAirHorizontalTransport: true,
+    loadedAtmosphericBiogeochemistryTransport: true,
+    globallyMixedAtmosphericBiogeochemistry: false,
+    independentLayerMomentumTransport: true,
+    variableHydrostaticLayerPressurePartition: true,
+    terrainFollowingGeopotentialAdjustmentReceipted: true,
+    loadedOceanBiogeochemicalTracerMixing: true,
+    oceanBiogeochemicalElementLedgers: true,
+    persistentRunoffBiogeochemistryQueue: true,
+    parameterizedLandRunoffChemistryBoundary: false,
+    buoyancyConversionResolved: false,
     maximumStepDays: 1,
     globalCirculationModel: false,
     globalAngularMomentumModel: false,

@@ -1,0 +1,478 @@
+{
+  "schema": "axm.sensorium-runtime-registry/v2",
+  "version": "1.4.0",
+  "status": "TEST",
+  "generatedFrom": "shared/sensorium/canonical/sensorium.json",
+  "sourceDigest": "554f8262774d35e070e7a8166e958faea3ad6b0d308a2644a7165aae20edc110",
+  "promotionGate": "Mike",
+  "authority": "Every adapter and lease is injected per use. Registry presence grants nothing.",
+  "retentionLaw": "EPHEMERAL BY DEFAULT. Raw sense material is released at the next step. Only a bounded typed receipt survives.",
+  "counts": {
+    "skills": 13,
+    "executableRoutes": 12,
+    "hostMediatedRoutes": 1
+  },
+  "statusVocabulary": {
+    "skillStatus": [
+      "DRAFT",
+      "ACCEPT_FOR_TEST",
+      "REVIEWED"
+    ],
+    "executorStatus": [
+      "EXECUTABLE",
+      "HOST_MEDIATED",
+      "MISSING_EXECUTOR",
+      "NOT_APPLICABLE"
+    ],
+    "adapterStatus": [
+      "AVAILABLE",
+      "DEGRADED",
+      "MISSING_ADAPTER",
+      "BLOCKED",
+      "NOT_REQUIRED"
+    ],
+    "proofStatus": [
+      "UNTESTED",
+      "CONTRACT_PASS",
+      "RUNTIME_PASS",
+      "JOURNEY_PASS",
+      "FAIL",
+      "UNKNOWN"
+    ],
+    "authorityStatus": [
+      "NO_LEASE",
+      "LEASED",
+      "DENIED",
+      "EXPIRED"
+    ]
+  },
+  "senses": [
+    {
+      "id": "eye-static-image-inspector",
+      "displayName": "Eye 1 - supplied image",
+      "sense": "static-sight",
+      "capability": "visual.inspect.static/v1",
+      "capabilityId": "visual.inspect.static",
+      "capabilityVersion": "v1",
+      "routeType": "HOST_MEDIATED",
+      "module": "host-mediated-static-eye.js",
+      "factory": null,
+      "operation": "wrapSuppliedEvidence",
+      "specificReceiptSchema": "axm.static-eye-observation/v1",
+      "skillStatus": "ACCEPT_FOR_TEST",
+      "executorStatus": "HOST_MEDIATED",
+      "adapterStatus": "DEGRADED",
+      "proofStatus": "RUNTIME_PASS",
+      "authorityStatus": "NO_LEASE",
+      "requiredHostCapabilities": [
+        "visual.inspect.static/v1"
+      ],
+      "constraints": [
+        "supplied-image-only",
+        "no-capture-claim",
+        "no-live-or-motion-pass"
+      ],
+      "resourceBudget": {
+        "maxImages": 1,
+        "maxTypedFacts": 40,
+        "rawRetainedBytesAfterSeal": 0
+      }
+    },
+    {
+      "id": "eye-live-visual-verifier",
+      "displayName": "Eye 2 - live visual verifier",
+      "sense": "live-sight",
+      "capability": "visual.capture.ephemeral-rolling-buffer/v1",
+      "capabilityId": "visual.capture.ephemeral-rolling-buffer",
+      "capabilityVersion": "v1",
+      "routeType": "EXECUTABLE",
+      "module": "../ai-native-hands/ephemeral-vision-hand.js",
+      "factory": "create",
+      "operation": "seal",
+      "specificReceiptSchema": "axm.ephemeral-visual-receipt/v1",
+      "skillStatus": "ACCEPT_FOR_TEST",
+      "executorStatus": "EXECUTABLE",
+      "adapterStatus": "DEGRADED",
+      "proofStatus": "RUNTIME_PASS",
+      "authorityStatus": "NO_LEASE",
+      "requiredHostCapabilities": [
+        "visual.capture.ephemeral-rolling-buffer/v1"
+      ],
+      "constraints": [
+        "browser-first",
+        "explicit-target",
+        "windows-fallback-new-lease",
+        "WINDOWS_WINDOW_ISOLATION_UNAVAILABLE"
+      ],
+      "resourceBudget": {
+        "maxFrames": 60,
+        "maxBytes": 16000000,
+        "minimumCadenceMs": 250,
+        "rawRetainedBytesAfterSeal": 0
+      },
+      "routing": {
+        "primary": "BROWSER_PRIMARY",
+        "fallback": "WINDOWS_FALLBACK",
+        "fallbackCapability": "visual.capture.windows-native/v1",
+        "fallbackModule": "../ai-native-hands/windows-native-capture-hand.js",
+        "automaticActivation": false,
+        "permissionTransfer": false,
+        "nativeScopes": [
+          "screen.primary",
+          "screen.virtual"
+        ],
+        "exactWindowIsolation": false,
+        "windowIsolationHold": "WINDOWS_WINDOW_ISOLATION_UNAVAILABLE"
+      }
+    },
+    {
+      "id": "eye-change-differ",
+      "displayName": "Eye 3 - before/after change differ",
+      "sense": "comparative-sight",
+      "capability": "visual.diff.between-stills/v1",
+      "capabilityId": "visual.diff.between-stills",
+      "capabilityVersion": "v1",
+      "routeType": "EXECUTABLE",
+      "module": "eye-change-differ.js",
+      "factory": "create",
+      "operation": "diff",
+      "specificReceiptSchema": "axm.visual-change-observation/v1",
+      "skillStatus": "ACCEPT_FOR_TEST",
+      "executorStatus": "EXECUTABLE",
+      "adapterStatus": "NOT_REQUIRED",
+      "proofStatus": "RUNTIME_PASS",
+      "authorityStatus": "NO_LEASE",
+      "requiredHostCapabilities": [],
+      "constraints": [
+        "two-typed-observations-required",
+        "same-target-required",
+        "same-fact-dimensions-required",
+        "distinct-ordered-timestamps-required",
+        "no-cause-claim",
+        "no-capture",
+        "receipts-only-never-raw"
+      ],
+      "resourceBudget": {
+        "maxObservations": 2,
+        "maxTypedFacts": 80,
+        "rawRetainedBytesAfterSeal": 0
+      }
+    },
+    {
+      "id": "eye-accessibility-inspector",
+      "displayName": "Eye 4 - accessibility floor inspector",
+      "sense": "accessible-sight",
+      "capability": "visual.inspect.accessibility/v1",
+      "capabilityId": "visual.inspect.accessibility",
+      "capabilityVersion": "v1",
+      "routeType": "EXECUTABLE",
+      "module": "eye-accessibility-inspector.js",
+      "factory": "create",
+      "operation": "inspect",
+      "specificReceiptSchema": "axm.visual-accessibility-observation/v1",
+      "skillStatus": "ACCEPT_FOR_TEST",
+      "executorStatus": "EXECUTABLE",
+      "adapterStatus": "AVAILABLE",
+      "proofStatus": "RUNTIME_PASS",
+      "authorityStatus": "NO_LEASE",
+      "requiredHostCapabilities": [
+        "ui.render.computed-style/v1"
+      ],
+      "constraints": [
+        "supplied-measurements-run-locally",
+        "exact-target-browser-read",
+        "bounded-to-200-elements",
+        "content-not-inspected",
+        "complex-backgrounds-unknown",
+        "incomplete-coverage-unknown",
+        "floor-not-taste",
+        "no-auto-fix",
+        "partial-is-unknown-not-pass"
+      ],
+      "resourceBudget": {
+        "maxElements": 200,
+        "rawRetainedBytesAfterSeal": 0
+      }
+    },
+    {
+      "id": "ears-stream-listener",
+      "displayName": "Ears - bounded stream",
+      "sense": "hearing",
+      "capability": "sense.hearing.bounded-stream/v1",
+      "capabilityId": "sense.hearing.bounded-stream",
+      "capabilityVersion": "v1",
+      "routeType": "EXECUTABLE",
+      "module": "ears-stream-listener.js",
+      "factory": "create",
+      "operation": "listen",
+      "specificReceiptSchema": "axm.ears-listen-digest/v1",
+      "skillStatus": "ACCEPT_FOR_TEST",
+      "executorStatus": "EXECUTABLE",
+      "adapterStatus": "AVAILABLE",
+      "proofStatus": "RUNTIME_PASS",
+      "authorityStatus": "NO_LEASE",
+      "requiredHostCapabilities": [
+        "stream.read.bounded/v1"
+      ],
+      "constraints": [
+        "named-stream-only",
+        "bounded-events",
+        "source-untouched"
+      ],
+      "resourceBudget": {
+        "maxEvents": 200,
+        "maxBytes": 512000,
+        "maxWindowMs": 60000,
+        "rawRetainedBytesAfterSeal": 0
+      }
+    },
+    {
+      "id": "time-sense-ttl-verifier",
+      "displayName": "Time - TTL verifier",
+      "sense": "time",
+      "capability": "sense.time.ttl/v1",
+      "capabilityId": "sense.time.ttl",
+      "capabilityVersion": "v1",
+      "routeType": "EXECUTABLE",
+      "module": "time-sense-ttl-verifier.js",
+      "factory": "create",
+      "operation": "check",
+      "specificReceiptSchema": "axm.time-sense-ttl/v1",
+      "skillStatus": "ACCEPT_FOR_TEST",
+      "executorStatus": "EXECUTABLE",
+      "adapterStatus": "NOT_REQUIRED",
+      "proofStatus": "RUNTIME_PASS",
+      "authorityStatus": "NO_LEASE",
+      "requiredHostCapabilities": [],
+      "constraints": [
+        "ttl-from-observation-time",
+        "shortest-input-ttl",
+        "future-is-not-live"
+      ],
+      "resourceBudget": {
+        "maxTtlMs": 31536000000,
+        "rawRetainedBytesAfterSeal": 0
+      }
+    },
+    {
+      "id": "touch-environment-probe",
+      "displayName": "Touch - environment probe",
+      "sense": "touch",
+      "capability": "sense.environment.touch/v1",
+      "capabilityId": "sense.environment.touch",
+      "capabilityVersion": "v1",
+      "routeType": "EXECUTABLE",
+      "module": "touch-environment-probe.js",
+      "factory": "create",
+      "operation": "probe",
+      "specificReceiptSchema": "axm.touch-environment-probe/v1",
+      "skillStatus": "ACCEPT_FOR_TEST",
+      "executorStatus": "EXECUTABLE",
+      "adapterStatus": "AVAILABLE",
+      "proofStatus": "RUNTIME_PASS",
+      "authorityStatus": "NO_LEASE",
+      "requiredHostCapabilities": [
+        "environment.probe.exact-read-only/v1"
+      ],
+      "constraints": [
+        "exact-items-only",
+        "wildcards-refused",
+        "read-only"
+      ],
+      "resourceBudget": {
+        "maxPaths": 40,
+        "maxTools": 20,
+        "rawRetainedBytesAfterSeal": 0
+      }
+    },
+    {
+      "id": "handoff-continuity-steward",
+      "displayName": "Continuity - handoff",
+      "sense": "memory-across-time",
+      "capability": "sense.continuity.handoff/v1",
+      "capabilityId": "sense.continuity.handoff",
+      "capabilityVersion": "v1",
+      "routeType": "EXECUTABLE",
+      "module": "handoff-continuity-steward.js",
+      "factory": "create",
+      "operation": "write",
+      "specificReceiptSchema": "axm.handoff-record/v1",
+      "skillStatus": "ACCEPT_FOR_TEST",
+      "executorStatus": "EXECUTABLE",
+      "adapterStatus": "AVAILABLE",
+      "proofStatus": "RUNTIME_PASS",
+      "authorityStatus": "NO_LEASE",
+      "requiredHostCapabilities": [
+        "continuity.storage.owned/v1"
+      ],
+      "constraints": [
+        "append-only",
+        "access-reread",
+        "no-raw-sense-material"
+      ],
+      "resourceBudget": {
+        "maxFacts": 30,
+        "maxHolds": 30,
+        "rawRetainedBytesAfterSeal": 0
+      }
+    },
+    {
+      "id": "compaction-steward",
+      "displayName": "Compaction - provenance",
+      "sense": "tidy-forgetting",
+      "capability": "sense.provenance.compaction/v1",
+      "capabilityId": "sense.provenance.compaction",
+      "capabilityVersion": "v1",
+      "routeType": "EXECUTABLE",
+      "module": "compaction-steward.js",
+      "factory": "create",
+      "operation": "apply",
+      "specificReceiptSchema": "axm.compaction-record/v1",
+      "skillStatus": "ACCEPT_FOR_TEST",
+      "executorStatus": "EXECUTABLE",
+      "adapterStatus": "AVAILABLE",
+      "proofStatus": "RUNTIME_PASS",
+      "authorityStatus": "NO_LEASE",
+      "requiredHostCapabilities": [
+        "provenance.storage.owned-hot-cold/v1"
+      ],
+      "constraints": [
+        "preview-first",
+        "exact-confirmation",
+        "hash-before-replace",
+        "raw-sensory-bulk-refused"
+      ],
+      "resourceBudget": {
+        "maxItems": 50,
+        "rawRetainedBytesAfterSeal": 0
+      }
+    },
+    {
+      "id": "drift-detector-ambient",
+      "displayName": "Drift - same-seat baseline",
+      "sense": "self-drift",
+      "capability": "sense.behavior.drift/v1",
+      "capabilityId": "sense.behavior.drift",
+      "capabilityVersion": "v1",
+      "routeType": "EXECUTABLE",
+      "module": "drift-detector-ambient.js",
+      "factory": "create",
+      "operation": "observe",
+      "specificReceiptSchema": "axm.drift-detector/v1",
+      "skillStatus": "ACCEPT_FOR_TEST",
+      "executorStatus": "EXECUTABLE",
+      "adapterStatus": "NOT_REQUIRED",
+      "proofStatus": "RUNTIME_PASS",
+      "authorityStatus": "NO_LEASE",
+      "requiredHostCapabilities": [],
+      "constraints": [
+        "same-seat-only",
+        "reviewed-baseline-only",
+        "no-hidden-reasoning",
+        "no-direct-action"
+      ],
+      "resourceBudget": {
+        "maxReceiptsPerWindow": 200,
+        "rawRetainedBytesAfterSeal": 0
+      }
+    },
+    {
+      "id": "corroboration-triangulator",
+      "displayName": "Corroboration - cross-seat triangulator",
+      "sense": "cross-seat-corroboration",
+      "capability": "sense.consensus.claim-corroboration/v1",
+      "capabilityId": "sense.consensus.claim-corroboration",
+      "capabilityVersion": "v1",
+      "routeType": "EXECUTABLE",
+      "module": "corroboration-triangulator.js",
+      "factory": "create",
+      "operation": "corroborate",
+      "specificReceiptSchema": "axm.corroboration-record/v1",
+      "skillStatus": "ACCEPT_FOR_TEST",
+      "executorStatus": "EXECUTABLE",
+      "adapterStatus": "NOT_REQUIRED",
+      "proofStatus": "RUNTIME_PASS",
+      "authorityStatus": "NO_LEASE",
+      "requiredHostCapabilities": [],
+      "constraints": [
+        "distinct-seats-required",
+        "same-claim-and-capability-version-required",
+        "one-bounded-observation-per-seat",
+        "no-tiebreak",
+        "divergence-routes-to-gate",
+        "receipts-only-never-raw"
+      ],
+      "resourceBudget": {
+        "maxReceipts": 32,
+        "rawRetainedBytesAfterSeal": 0
+      }
+    },
+    {
+      "id": "interoception-capacity-gauge",
+      "displayName": "Interoception - own-capacity gauge",
+      "sense": "interoception",
+      "capability": "sense.interoception.own-capacity/v1",
+      "capabilityId": "sense.interoception.own-capacity",
+      "capabilityVersion": "v1",
+      "routeType": "EXECUTABLE",
+      "module": "interoception-capacity-gauge.js",
+      "factory": "create",
+      "operation": "sense",
+      "specificReceiptSchema": "axm.interoception-record/v1",
+      "skillStatus": "ACCEPT_FOR_TEST",
+      "executorStatus": "EXECUTABLE",
+      "adapterStatus": "MISSING_ADAPTER",
+      "proofStatus": "CONTRACT_PASS",
+      "authorityStatus": "NO_LEASE",
+      "requiredHostCapabilities": [
+        "seat.capacity.read/v1"
+      ],
+      "constraints": [
+        "own-body-only",
+        "fill-level-not-content",
+        "host-metric-required",
+        "recommend-not-act",
+        "stamped-and-expiring",
+        "SEAT_CAPACITY_ADAPTER_UNAVAILABLE"
+      ],
+      "resourceBudget": {
+        "maxSignals": 16,
+        "maxTtlMs": 600000,
+        "rawRetainedBytesAfterSeal": 0
+      }
+    },
+    {
+      "id": "taint-sniffer",
+      "displayName": "Taint Sniffer - incoming material",
+      "sense": "chemoreception",
+      "capability": "sense.integrity.taint/v1",
+      "capabilityId": "sense.integrity.taint",
+      "capabilityVersion": "v1",
+      "routeType": "EXECUTABLE",
+      "module": "taint-sniffer.js",
+      "factory": "create",
+      "operation": "sniff",
+      "specificReceiptSchema": "axm.taint-sniffer-record/v1",
+      "skillStatus": "ACCEPT_FOR_TEST",
+      "executorStatus": "EXECUTABLE",
+      "adapterStatus": "NOT_REQUIRED",
+      "proofStatus": "RUNTIME_PASS",
+      "authorityStatus": "NO_LEASE",
+      "requiredHostCapabilities": [],
+      "constraints": [
+        "caller-supplied-material-only",
+        "bounded-to-256-kibibytes",
+        "deterministic-signals-only",
+        "warning-not-guilt",
+        "no-fetch-or-execution",
+        "no-block-or-quarantine",
+        "no-raw-excerpts-in-receipt"
+      ],
+      "resourceBudget": {
+        "maxBytes": 262144,
+        "maxSignals": 12,
+        "rawRetainedBytesAfterSeal": 0
+      }
+    }
+  ]
+}

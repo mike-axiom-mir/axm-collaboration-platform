@@ -1,0 +1,79 @@
+{
+  "schema": "axm.sensorium-skill/v1",
+  "id": "handoff-continuity-steward",
+  "type": "skill",
+  "sense": "memory-across-time",
+  "pack": "axm-sensorium/1.4.0",
+  "status": "ACCEPT_FOR_TEST",
+  "capability": "sense.continuity.handoff/v1",
+  "purpose": "Carry typed facts, holds, and next steps across processes while re-reading access.",
+  "inputs": [
+    "workLine",
+    "turnId",
+    "seat",
+    "verifiedFacts",
+    "assumedFacts",
+    "openHolds",
+    "decisions",
+    "nextStep"
+  ],
+  "procedure": [
+    "Write one typed record at turn end.",
+    "Separate verified and assumed facts.",
+    "Append exact holds and next step.",
+    "Read in a fresh process.",
+    "Re-read access instead of inheriting it."
+  ],
+  "rules": [
+    "Perception is not permission.",
+    "UNKNOWN is preferred to a plausible guess.",
+    "Every use emits a typed receipt and releases raw material."
+  ],
+  "boundaries": [
+    "Continuity is not authority.",
+    "No prior record rewrite.",
+    "No raw sensory payload."
+  ],
+  "retention": {
+    "law": "EPHEMERAL BY DEFAULT. Raw sense material is released at the next step. Only a bounded typed receipt survives.",
+    "raw_material": "sense-specific bounded input",
+    "released_when": "before the typed observation is returned",
+    "survives": "specific receipt plus axm.sensorium-receipt/v1 envelope",
+    "raw_retained_after_step": "zero",
+    "accumulation_across_uses": "flat and zero after every release boundary",
+    "receipt_cap": "newest 20 per sense",
+    "deletion_scope": "only material created by the exact sense use, by exact id or path; never a wildcard or recursive sweep"
+  },
+  "receipt": {
+    "schema": "axm.handoff-record/v1",
+    "envelopeSchema": "axm.sensorium-receipt/v1"
+  },
+  "runtime": {
+    "routeType": "EXECUTABLE",
+    "module": "handoff-continuity-steward.js",
+    "factory": "create",
+    "operation": "write"
+  },
+  "statuses": {
+    "skillStatus": "ACCEPT_FOR_TEST",
+    "executorStatus": "EXECUTABLE",
+    "adapterStatus": "AVAILABLE",
+    "proofStatus": "RUNTIME_PASS",
+    "authorityStatus": "NO_LEASE"
+  },
+  "requiredHostCapabilities": [
+    "continuity.storage.owned/v1"
+  ],
+  "constraints": [
+    "append-only",
+    "access-reread",
+    "no-raw-sense-material"
+  ],
+  "resourceBudget": {
+    "maxFacts": 30,
+    "maxHolds": 30,
+    "rawRetainedBytesAfterSeal": 0
+  },
+  "authorityInherited": false,
+  "promotionGate": "Mike"
+}

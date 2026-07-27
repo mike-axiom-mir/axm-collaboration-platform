@@ -43,6 +43,86 @@
         </article>
         <article><span>Heartbeat beats</span><b id="beatCount">0</b></article>
       </section>
+      <section class="panel play-composer" aria-labelledby="composerTitle">
+        <header>
+          <div>
+            <span class="eyebrow">HUMAN PLAY → MACHINE-READABLE PIECES</span>
+            <h2 id="composerTitle">Play Composer</h2>
+            <p>
+              Move ordinary controls. The same gesture always emits the same
+              UCP components, typed graph and temporary draft—no AI required.
+            </p>
+          </div>
+          <span id="composerStatus" class="composer-status">READY_CONTRACT</span>
+        </header>
+        <div class="composer-workbench">
+          <div class="composer-controls">
+            <label>
+              Draft goal
+              <input id="composerDraftTitle" maxlength="80" value="New shared visual component" />
+            </label>
+            <label>
+              Words
+              <input id="composerLabel" maxlength="16" value="AXM" />
+            </label>
+            <label>
+              Shape
+              <select id="composerShape">
+                <option value="rounded-square">Rounded square</option>
+                <option value="circle">Circle</option>
+                <option value="diamond">Diamond</option>
+                <option value="capsule">Capsule</option>
+              </select>
+            </label>
+            <label>
+              Grow which piece?
+              <select id="composerDirection">
+                <option value="palette">Palette language</option>
+                <option value="silhouette">Silhouette family</option>
+                <option value="weight">Visual weight</option>
+                <option value="balance">Spacing + balance</option>
+                <option value="contrast">Contrast system</option>
+              </select>
+            </label>
+            <label>
+              Direction energy
+              <input id="composerEnergy" type="range" min="1" max="5" step="1" value="2" />
+            </label>
+            <div class="composer-colours">
+              <label>Primary <input id="composerPrimary" type="color" value="#35e6ff" /></label>
+              <label>Secondary <input id="composerSecondary" type="color" value="#6f54ff" /></label>
+              <label>Canvas <input id="composerBackground" type="color" value="#07101d" /></label>
+            </div>
+            <label>Gradient angle <input id="composerAngle" type="range" min="0" max="360" value="135" /></label>
+            <label>Roundness <input id="composerRoundness" type="range" min="0" max="1" step="0.01" value="0.28" /></label>
+            <label>Scale <input id="composerScale" type="range" min="0.25" max="0.92" step="0.01" value="0.64" /></label>
+            <label>Outline <input id="composerStroke" type="range" min="0" max="20" step="0.5" value="3" /></label>
+            <label>Glow <input id="composerGlow" type="range" min="0" max="24" step="0.5" value="10" /></label>
+            <div class="composer-actions">
+              <button id="composerRemix" type="button">Grow directed variant</button>
+              <button id="composerDownload" type="button">Download UCP</button>
+              <button id="composerIncubate" type="button" class="primary">Keep in incubator</button>
+            </div>
+          </div>
+          <div class="composer-stage">
+            <div class="composer-preview">
+              <span class="composer-stage-label">LIVE UCP DRAFT</span>
+              <img id="composerPreview" alt="Ephemeral deterministic component draft" />
+              <span class="composer-projection-meta">CONTRACT SPACE · HUMAN VIEW · NOT FINAL RENDER</span>
+            </div>
+            <div class="composer-flow" aria-label="Universal component graph">
+              <span>Palette</span><b>→</b><span>Geometry</span><b>↘</b>
+              <span>Composition</span><b>→</b><span>Draft</span>
+              <i>Palette → Type ↗</i>
+            </div>
+            <p id="composerTruth" class="composer-truth"></p>
+            <details>
+              <summary>See the JSON the interface made</summary>
+              <pre id="composerJson"></pre>
+            </details>
+          </div>
+        </div>
+      </section>
       <section class="grid">
         <article class="panel needs">
           <header>
@@ -340,7 +420,9 @@
         <div id="vocabulary" class="cards"></div>
       </section>
       <section class="truth">
-        <b>Honest v0.9:</b> each need declares a target canvas before creation.
+        <b>Honest v0.12:</b> each need declares a target canvas before creation.
+        Human play becomes typed UCP JSON first; a compatible hand must still
+        realize and verify every requested output.
         Contract-v2 hands must understand its operation, medium, units, colour,
         physical behaviour, performance budget, intended use, inputs, outputs
         and editable recipe formats. Primary delivery stays distinct from
@@ -367,6 +449,7 @@
     <script src="../film-motion-studio/film-motion-core.js"></script>
     <script src="../../shared/vendor/jspdf/jspdf.umd.min.js"></script>
     <script src="../../shared/asset-hands/raster-codec.js"></script>
+    <script src="../../shared/asset-hands/gltf-codec.js"></script>
     <script src="../../shared/asset-hands/colour-codec.js"></script>
     <script src="../../shared/asset-hands/pdfx-codec.js"></script>
     <script src="../../shared/asset-hands/uv-material-codec.js"></script>
@@ -383,8 +466,9 @@
     <script src="../../shared/asset-hands/spatial-navigation-codec.js"></script>
     <script src="../../shared/asset-hands/audio-notation-codec.js"></script>
     <script src="../../shared/asset-hands/native-bridge-codec.js"></script>
+    <script src="../../shared/asset-hands/universal-component.js"></script>
+    <script src="../../shared/asset-hands/play-composer.js"></script>
     <script src="../../shared/asset-hands/pdf-codec.js"></script>
-    <script src="../../shared/asset-hands/gltf-codec.js"></script>
     <script src="../../shared/asset-hands/otio-codec.js"></script>
     <script src="../../shared/asset-hands/hands/vector-form.js"></script>
     <script src="../../shared/asset-hands/hands/surface-pattern.js"></script>

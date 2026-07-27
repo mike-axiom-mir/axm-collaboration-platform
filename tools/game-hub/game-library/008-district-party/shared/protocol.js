@@ -16,6 +16,6 @@ module.exports = Object.freeze({
   CLIENT_ROLE: Object.freeze({ controller: 'controller', party: 'party' }),
   INPUT_FIELDS: Object.freeze([
     'moveX', 'moveY', 'aimX', 'aimY', 'aimActive', 'action', 'attack', 'fire', 'sprint', 'brake',
-    'inventoryToggle', 'inventoryPrev', 'inventoryNext', 'inventoryActivate',
+    'inventoryToggle', 'inventoryPrev', 'inventoryNext', 'inventoryActivate', 'mapToggle',
   ]),
 });

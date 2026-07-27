@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Code Recipe Foundry · AXM</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="back" href="../../hub/index.html" aria-label="Back to Workshop Hub">← Hub</a>
+    <div class="title-block">
+      <p class="eyebrow">IMPORT → VALIDATE → GROUP → REVIEW → EXPORT</p>
+      <h1>Code Recipe Foundry</h1>
+      <p>Turn bounded CSV or JSON catalogs into modular, provenance-visible recipe packs. Snippets remain inert text.</p>
+    </div>
+    <div class="trust" aria-label="Module boundaries">
+      <span>TEST</span><span>LOCAL-FIRST</span><span>NEVER EXECUTES CODE</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="truth-banner" id="truthBanner" aria-live="polite">
+      <strong>Recovered catalog:</strong>
+      <span>1,000 JSON/CSV-matched entries are installed locally: 937 quick recipes, 63 visible review holds, and 111 parse-only syntax passes.</span>
+    </section>
+
+    <section class="panel intake-panel">
+      <div class="panel-head">
+        <div><p class="eyebrow">BOUNDED INTAKE</p><h2>Bring the real artifact</h2></div>
+        <span class="limit">CSV / JSON · 5 MiB · 5,000 rows</span>
+      </div>
+      <div class="installed-catalog">
+        <div><strong>Code Cheats 1000</strong><span>25 categories × 40 · 111 parse-only passes · no measured popularity · snippets never execute</span></div>
+        <button class="primary" id="loadInstalledButton" type="button">Load installed catalog</button>
+      </div>
+      <div class="intake-grid">
+        <label class="file-drop" for="fileInput">
+          <span>Select CSV or JSON</span>
+          <small>XLSX must first be exported as UTF-8 CSV; no spreadsheet library is silently downloaded.</small>
+          <input id="fileInput" type="file" accept=".csv,.json,text/csv,application/json">
+        </label>
+        <div class="paste-area">
+          <label for="sourceLabel">Source label</label>
+          <input id="sourceLabel" value="platform-code-cheats" maxlength="120">
+          <label for="format">Pasted format</label>
+          <select id="format"><option value="auto">Detect CSV / JSON</option><option value="csv">CSV</option><option value="json">JSON</option></select>
+          <label for="pasteInput">Or paste rows</label>
+          <textarea id="pasteInput" rows="7" placeholder="rank,title,snippet,description,primaryLanguage,tags,sourceUrl,popularityIndicator,familyKey"></textarea>
+          <button class="primary" id="validateButton" type="button">Validate pasted intake</button>
+        </div>
+      </div>
+      <p class="notice" id="notice" aria-live="polite">Waiting for a real CSV or JSON artifact.</p>
+    </section>
+
+    <section class="stats" id="stats" aria-label="Intake summary"></section>
+
+    <section class="panel catalog-panel">
+      <div class="panel-head responsive-head">
+        <div><p class="eyebrow">LOCAL REFERENCE</p><h2>Validated recipes</h2></div>
+        <div class="actions">
+          <button id="saveButton" type="button" disabled>Save locally</button>
+          <button id="exportPackButton" type="button" disabled>Export pack</button>
+          <button id="exportReceiptButton" type="button" disabled>Export receipt</button>
+          <button class="danger" id="clearButton" type="button">Clear</button>
+        </div>
+      </div>
+      <div class="filters">
+        <label>Search<input id="query" type="search" placeholder="JSON, retry, file…"></label>
+        <label>Language<select id="languageFilter"><option value="">All languages</option></select></label>
+        <label>Family<select id="familyFilter"><option value="">All families</option></select></label>
+        <label>Review<select id="reviewFilter"><option value="">Ready + holds</option><option value="SOURCE_REVIEW_REQUIRED">Quick recipes</option><option value="STRUCTURE_HOLD">Review holds</option></select></label>
+        <label>Difficulty<select id="difficultyFilter"><option value="">All levels</option></select></label>
+        <label>Syntax evidence<select id="syntaxFilter"><option value="">All syntax states</option></select></label>
+      </div>
+      <div class="catalog-status"><span id="catalogStatus">0 shown</span><button id="showMoreButton" type="button" disabled>Show 100 more</button></div>
+      <div class="catalog" id="catalog">
+        <div class="empty"><strong>No catalog is loaded in this session.</strong><span>Load the installed catalog or import a compatible JSON/CSV pack.</span></div>
+      </div>
+    </section>
+
+    <div class="lower-grid">
+      <section class="panel">
+        <div class="panel-head"><div><p class="eyebrow">VISIBLE REJECTS</p><h2>Intake issues</h2></div><span id="issueCount">0</span></div>
+        <div class="issues" id="issues"><p class="muted">No intake has been validated.</p></div>
+      </section>
+      <section class="panel field-guide">
+        <div class="panel-head"><div><p class="eyebrow">PORTABLE CONTRACT</p><h2>Canonical fields</h2></div><code>axm.code-recipe/v1</code></div>
+        <p><code>rank</code>, <code>title</code>, <code>snippet</code>, <code>description</code>, <code>primaryLanguage</code>, <code>domain</code>, <code>tags</code>, <code>sourceUrl</code>, <code>popularityIndicator</code>, <code>popularityScope</code>, <code>familyKey</code>.</p>
+        <ul>
+          <li>Six physical lines maximum per snippet.</li>
+          <li>Family keys group variants; they do not delete language-specific recipes.</li>
+          <li>Popularity is context, never correctness or safety proof.</li>
+          <li>Every accepted recipe remains source-review required; structural holds are not quick-copy recipes.</li>
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <script src="/hub/axm-hub-module.js"></script>
+  <script src="recipe-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

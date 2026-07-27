@@ -31,7 +31,7 @@
 - **NOT IMPLEMENTED — ATM, vending, safe storage, cash-register, key/card/phone, loot-container, door or window interactions.**
 - **NOT IMPLEMENTED — breakable health, replacement states, debris, repair or loot drops.**
 - **PARTIAL — asset style:** the new assets are detailed oblique renders over a low-resolution top-down city. The tested scale is readable, but a future factory should normalize view angle, lighting, palette and pixel density.
-- **BOUNDED — project-art authorization:** `AXM-PROJECT-ART-PUBLIC-REPO-AUTHORIZATION-2026-07-19` permits inclusion in this AXM public repository and its public-safe packages. It is not CC0, a recognised open-source asset license, or permission for standalone/general reuse.
+- **PARTIAL — custom license:** `AXM-RESPONSIBLE-USE-ASSET-DRAFT-0.1` is a working intent, not a reviewed or recognised open-source license. Public distribution remains pending.
 
 ## Shopkeepers and stores
 

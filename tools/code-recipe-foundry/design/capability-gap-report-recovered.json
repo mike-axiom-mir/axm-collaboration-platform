@@ -1,0 +1,120 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "bounded-modular-intake",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "code.recipe.csv-json.ingest/v1",
+        "code.recipe.validate/v1",
+        "code.recipe.intake.receipt/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "code.recipe.csv-json.ingest/v1": [
+          "CSV or JSON",
+          "5 MiB",
+          "5,000 rows",
+          "user-selected input"
+        ],
+        "code.recipe.validate/v1": [
+          "structural validation",
+          "six physical snippet lines",
+          "source content remains unverified"
+        ],
+        "code.recipe.intake.receipt/v1": [
+          "row-level errors and warnings",
+          "no raw execution"
+        ]
+      }
+    },
+    {
+      "id": "family-preserving-reference",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "code.recipe.deduplicate.exact/v1",
+        "code.recipe.family.group/v1",
+        "code.recipe.search.local/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "code.recipe.deduplicate.exact/v1": [
+          "exact language + snippet + source identity only"
+        ],
+        "code.recipe.family.group/v1": [
+          "declared or visibly title-derived family key",
+          "semantic review still required"
+        ],
+        "code.recipe.search.local/v1": [
+          "browser-local filter",
+          "no source fetch"
+        ]
+      }
+    },
+    {
+      "id": "portable-output",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "code.recipe.pack.export/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "code.recipe.pack.export/v1": [
+          "explicit JSON download",
+          "not promotion"
+        ]
+      }
+    },
+    {
+      "id": "platform-deep-search-catalog",
+      "required": false,
+      "status": "READY",
+      "available": [
+        "code.recipe.catalog.platform-1000/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "code.recipe.catalog.platform-1000/v1": [
+          "bundle SHA-256 pinned",
+          "1,000 JSON/CSV-matched rows",
+          "937 quick recipes",
+          "63 visible holds",
+          "editorial ranking, popularity not measured",
+          "source correctness and licensing unverified"
+        ]
+      }
+    },
+    {
+      "id": "visible-structural-holds",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "code.recipe.review.hold/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "code.recipe.review.hold/v1": [
+          "62 snippets over six lines",
+          "one consequential command missing a safety note",
+          "held snippets cannot be copied as quick recipes"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

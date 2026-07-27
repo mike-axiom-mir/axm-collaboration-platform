@@ -1,0 +1,75 @@
+{
+  "schema": "axm.sensorium-skill/v1",
+  "id": "corroboration-triangulator",
+  "type": "skill",
+  "sense": "cross-seat-corroboration",
+  "pack": "axm-sensorium/1.4.0",
+  "status": "ACCEPT_FOR_TEST",
+  "capability": "sense.consensus.claim-corroboration/v1",
+  "purpose": "Compare sealed same-claim receipts from distinct seats without voting, ranking seats, or choosing a winner.",
+  "inputs": [
+    "claimId",
+    "receiptEnvelopes",
+    "corroborationPolicy"
+  ],
+  "procedure": [
+    "Validate bounded sealed receipt envelopes for one claim.",
+    "Count each distinct seat once and refuse ambiguous same-seat observations.",
+    "Require one capability family and version.",
+    "Compare verdict, typed-observation digest, and named seams.",
+    "Return CONVERGENT, DIVERGENT, INSUFFICIENT, or INCOMPARABLE and take no action."
+  ],
+  "rules": [
+    "Perception is not permission.",
+    "UNKNOWN is preferred to a plausible guess.",
+    "Every use emits a typed receipt and releases raw material."
+  ],
+  "boundaries": [
+    "No raw frames, transcripts, readings, or payloads.",
+    "No voting, averaging, seat ranking, or tiebreaking.",
+    "Agreement is evidence, not canon or authority.",
+    "Divergence routes to a human or independent gate."
+  ],
+  "retention": {
+    "law": "EPHEMERAL BY DEFAULT. Raw sense material is released at the next step. Only a bounded typed receipt survives.",
+    "raw_material": "sense-specific bounded input",
+    "released_when": "before the typed observation is returned",
+    "survives": "specific receipt plus axm.sensorium-receipt/v1 envelope",
+    "raw_retained_after_step": "zero",
+    "accumulation_across_uses": "flat and zero after every release boundary",
+    "receipt_cap": "newest 20 per sense",
+    "deletion_scope": "only material created by the exact sense use, by exact id or path; never a wildcard or recursive sweep"
+  },
+  "receipt": {
+    "schema": "axm.corroboration-record/v1",
+    "envelopeSchema": "axm.sensorium-receipt/v1"
+  },
+  "runtime": {
+    "routeType": "EXECUTABLE",
+    "module": "corroboration-triangulator.js",
+    "factory": "create",
+    "operation": "corroborate"
+  },
+  "statuses": {
+    "skillStatus": "ACCEPT_FOR_TEST",
+    "executorStatus": "EXECUTABLE",
+    "adapterStatus": "NOT_REQUIRED",
+    "proofStatus": "RUNTIME_PASS",
+    "authorityStatus": "NO_LEASE"
+  },
+  "requiredHostCapabilities": [],
+  "constraints": [
+    "distinct-seats-required",
+    "same-claim-and-capability-version-required",
+    "one-bounded-observation-per-seat",
+    "no-tiebreak",
+    "divergence-routes-to-gate",
+    "receipts-only-never-raw"
+  ],
+  "resourceBudget": {
+    "maxReceipts": 32,
+    "rawRetainedBytesAfterSeal": 0
+  },
+  "authorityInherited": false,
+  "promotionGate": "Mike"
+}

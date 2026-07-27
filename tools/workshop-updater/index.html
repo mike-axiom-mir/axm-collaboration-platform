@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Workshop Update Gate</title>
+  <link rel="stylesheet" href="styles.css?v=2">
+</head>
+<body>
+  <header class="topbar">
+    <a href="/hub/index.html" class="back">← Hub</a>
+    <div class="identity">
+      <span class="eyebrow">LOCAL-FIRST FOUNDATION · OPTIONAL WEB</span>
+      <h1>Workshop Update Gate</h1>
+      <p>The Workshop stays independent. GitHub is contacted only after its owner explicitly turns this module on.</p>
+    </div>
+    <button id="refresh" class="secondary">Refresh state</button>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="heroTitle">
+      <div>
+        <span class="eyebrow">NETWORK BOUNDARY</span>
+        <div class="title-row"><h2 id="heroTitle">Updater <span id="enabledWord">OFF</span></h2><span id="networkBadge" class="badge off">ZERO NETWORK</span></div>
+        <p id="heroNote">No updater network request can occur while this switch is off.</p>
+      </div>
+      <div class="source">
+        <span>Canonical source</span>
+        <a href="https://github.com/mike-axiom-mir/axm-collaboration-platform" target="_blank" rel="noreferrer">mike-axiom-mir/axm-collaboration-platform</a>
+        <small>main · source cannot be changed in this module</small>
+      </div>
+    </section>
+
+    <section class="control-grid">
+      <article class="panel control-panel">
+        <span class="eyebrow">OWNER CHOICE</span>
+        <h2>When the Workshop may look</h2>
+        <div class="fields">
+          <label>Mode<select id="mode"><option value="CHECK_ONLY">Check only</option><option value="AUTO_STAGE">Check + stage verified archive</option></select></label>
+          <label>Check interval<select id="interval"><option value="3600000">Every hour</option><option value="21600000">Every 6 hours</option><option value="43200000">Every 12 hours</option><option value="86400000" selected>Every 24 hours</option><option value="604800000">Every 7 days</option></select></label>
+        </div>
+        <label class="confirmation">Enable confirmation<input id="confirmation" autocomplete="off" placeholder="ENABLE WORKSHOP UPDATE CHECKS"></label>
+        <label class="confirmation" id="stageConfirmationWrap" hidden>Verified download confirmation<input id="stageConfirmation" autocomplete="off" placeholder="ALLOW VERIFIED UPDATE DOWNLOADS"></label>
+        <div class="actions">
+          <button id="enable">Enable chosen mode</button>
+          <button id="disable" class="danger">Turn updater off</button>
+          <button id="check" class="secondary" disabled>Check GitHub now</button>
+        </div>
+        <p class="micro">Enabling schedules the first eligible check; it does not contact GitHub immediately. “Check now” is a separate explicit action.</p>
+      </article>
+
+      <article class="panel status-panel">
+        <span class="eyebrow">CURRENT STATE</span>
+        <h2 id="stateTitle">OFF · LOCAL ONLY</h2>
+        <dl class="facts">
+          <div><dt>Next eligible check</dt><dd id="nextCheck">—</dd></div>
+          <div><dt>Last check</dt><dd id="lastCheck">never</dd></div>
+          <div><dt>Installed release</dt><dd id="installed">unknown</dd></div>
+          <div><dt>Remote release</dt><dd id="remote">not read</dd></div>
+          <div><dt>Heartbeat bridge</dt><dd id="heartbeat">held off</dd></div>
+          <div><dt>Pulse gate</dt><dd id="pulseGate">disabled module · 1 lease/check</dd></div>
+        </dl>
+        <p id="error" class="error" hidden></p>
+      </article>
+    </section>
+
+    <section class="path" aria-label="Update trust path">
+      <article><span class="step">1</span><span class="eyebrow">WHEN + HOW MANY</span><h3>Heartbeat + one Pulse lease</h3><p>A due scheduled beat must receive one bounded lease before resolving main and reading its exact commit.</p><span id="checkState" class="line-state">WAITING</span></article>
+      <article><span class="step">2</span><span class="eyebrow">TRUST</span><h3>Signature + archive digest</h3><p>Require a promoted Ed25519 key, exact SHA-256, exact bytes and canonical archive URL.</p><span id="trustState" class="line-state">NO KEY PROMOTED</span></article>
+      <article><span class="step">3</span><span class="eyebrow">STAGE</span><h3>Local candidate only</h3><p>Keep verified bytes under local state. No extraction and no source overwrite.</p><span id="stageState" class="line-state">EMPTY</span></article>
+      <article class="held"><span class="step">4</span><span class="eyebrow">INSTALL GATE</span><h3>Whole-Workshop installer</h3><p>Still missing: conflict-aware apply, stopped-Hub replacement, boot proof and complete rollback generation.</p><span class="line-state">HELD · NOT BUILT</span></article>
+    </section>
+
+    <section class="panel receipt-panel">
+      <div class="title-row"><div><span class="eyebrow">APPEND-ONLY PROOF</span><h2>Recent updater receipts</h2></div><span id="receiptCount" class="badge">0 RECEIPTS</span></div>
+      <div id="receipts" class="receipts"><p class="muted">No updater action has been recorded.</p></div>
+    </section>
+
+    <aside class="truth">This module has no install authority. OFF means no updater web traffic; ON grants only the selected bounded read or verified staging behavior.</aside>
+  </main>
+  <script src="app.js?v=2"></script>
+</body>
+</html>

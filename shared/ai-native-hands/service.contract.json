@@ -1,13 +1,14 @@
 {
   "schema": "axm.shared-service-contract/v1",
   "id": "ai-native-hands",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "status": "TEST",
   "provides": [
     "evidence.route.claim/v1",
     "capability.compare.requirements/v1",
     "evidence.curate.session/v1",
     "visual.capture.ephemeral-rolling-buffer/v1",
+    "ui.render.computed-style/v1",
     "visual.capture.windows-native/v1"
   ],
   "accepts": [
@@ -15,6 +16,7 @@
     "normalized capability requirements and declared inventory",
     "state-root evidence events and exact Eye-owned cleanup manifest",
     "explicit-consented browser MediaStream",
+    "exact same-document DOM target and bounded element budget",
     "active human-approved native visual capture lease"
   ],
   "produces": [
@@ -23,17 +25,43 @@
     "axm.ephemeral-cleanup-receipt/v1",
     "axm.ephemeral-visual-receipt/v1",
     "axm.ephemeral-contact-sheet/v1",
+    "axm.ui-computed-style-measurements/v1",
     "axm.windows-native-capture/v1"
   ],
   "dependencies": [
     "shared/evidence-retention/evidence-retention-service.js",
     "browser MediaDevices and Canvas APIs for portable visual capture",
+    "browser DOM, getComputedStyle and getBoundingClientRect for exact-target presentation measurements",
     "built-in Windows .NET C# compiler, Windows Forms and System.Drawing for native visual capture"
   ],
   "routing": {
-    "preferredOnWindows": "visual.capture.windows-native/v1",
-    "portableFallback": "visual.capture.ephemeral-rolling-buffer/v1",
-    "requiresHumanApprovedLease": true
+    "primary": "visual.capture.ephemeral-rolling-buffer/v1",
+    "windowsFallback": "visual.capture.windows-native/v1",
+    "windowsFallbackConditions": [
+      "native Windows app or game",
+      "browser capture unavailable or stalled",
+      "browser surface differs from the user-visible Windows surface"
+    ],
+    "requiresFreshBaselineAfterSwitch": true,
+    "requiresHumanApprovedLease": true,
+    "permissionTransferBetweenBackends": false,
+    "nativeScopes": [
+      "screen.primary",
+      "screen.virtual"
+    ],
+    "exactWindowIsolation": false,
+    "windowIsolationHold": "WINDOWS_WINDOW_ISOLATION_UNAVAILABLE"
+  },
+  "computedStyleRouting": {
+    "capability": "ui.render.computed-style/v1",
+    "implementation": "shared/ai-native-hands/computed-style-hand.js",
+    "targetIsolation": "EXACT_DECLARED_DOM_ROOT",
+    "maxElements": 200,
+    "contentInspected": false,
+    "rawPixelsRetained": false,
+    "complexBackgroundPolicy": "UNKNOWN",
+    "truncatedCoveragePolicy": "UNKNOWN",
+    "automaticMutation": false
   },
   "boundaries": {
     "automaticWrites": ["append governed evidence", "seal explicitly selected session", "delete digest-matched Eye-owned temporary files"],
@@ -41,6 +69,9 @@
       "automatic verdict",
       "automatic dependency installation",
       "automatic permission grant or capture-lease activation",
+      "cross-origin DOM inspection",
+      "wildcard or ambiguous DOM target",
+      "content or pixel retention from computed-style inspection",
       "raw-video memory archive",
       "user or source media deletion",
       "path-pattern cleanup",

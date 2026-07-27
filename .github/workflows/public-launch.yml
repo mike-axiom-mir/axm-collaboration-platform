@@ -1,0 +1,41 @@
+name: Verify AXM public launch
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discovery-and-static-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the public candidate
+        uses: actions/checkout@v4
+      - name: Use the declared Node.js line
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.17.0
+      - name: Verify the discovery spine
+        run: node tests/public-discovery-selftest.js
+      - name: Verify the beginner launch contract
+        run: node tests/beginner-launch-selftest.js
+
+  windows-clean-launch:
+    runs-on: windows-latest
+    steps:
+      - name: Check out the public candidate
+        uses: actions/checkout@v4
+      - name: Launch from a clean path with no Node.js on PATH
+        shell: powershell
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File tests/windows-clean-launch-smoke.ps1 -ReceiptPath "$env:RUNNER_TEMP\axm-windows-clean-launch.json"
+      - name: Preserve the launch receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: axm-windows-clean-launch-receipt
+          path: ${{ runner.temp }}\axm-windows-clean-launch.json
+          if-no-files-found: error

@@ -1,0 +1,79 @@
+{
+  "status": "PASS_WITH_NOTED_RUNNER_LIMITS",
+  "run_date": "2026-07-23",
+  "version": "0.13.0-beta",
+  "templates": 7,
+  "catalog_blocks": 77,
+  "agent_proposal_verbs": 17,
+  "influence_modules": 9,
+  "drag_drop": {
+    "grid_size": 12,
+    "alignment_threshold": 7,
+    "mouse_native_drag": "PASS",
+    "touch_palette_drag": "PASS",
+    "shift_free_placement": "PASS",
+    "continuous_edge_autoscroll": "PASS",
+    "single_history_unit": "PASS",
+    "pointer_cancel_restores_source": "IMPLEMENTED"
+  },
+  "browser_errors": 0,
+  "unexpected_external_requests": 0,
+  "executed_suites": [
+    {
+      "runner": "python tests/smoke_drag_drop_polish.py",
+      "status": "PASS",
+      "scope": "Real Chromium landing preview, snap, alignment, Shift free placement, continuous edge auto-scroll, Undo/Redo and real touch palette drag"
+    },
+    {
+      "runner": "python tests/smoke_influence_studio.py",
+      "status": "PASS",
+      "scope": "Real Chromium Per-Block Influence Studio, safe preview, asset request, code boundary, generated behavior and mobile layout regression"
+    },
+    {
+      "runner": "python tests/smoke_agent_workbench.py",
+      "status": "PASS",
+      "scope": "Real Chromium Young AI Workbench, human review gates, stale-source blocking, Undo/Redo, semantic controls and mobile layout regression"
+    },
+    {
+      "runner": "node tests/model_influence_system.cjs",
+      "status": "PASS",
+      "scope": "Dependency-free influence modules, asset request, legacy backfill, AI influence verbs, code boundary and standalone structured behavior"
+    },
+    {
+      "runner": "node tests/model_agent_protocol.cjs",
+      "status": "PASS",
+      "scope": "Dependency-free shared project/proposal protocol regression with 17 verbs"
+    }
+  ],
+  "static_checks": {
+    "status": "PASS",
+    "items": [
+      "node --check model.js",
+      "node --check app.js",
+      "node --check tests/model_agent_protocol.cjs",
+      "node --check tests/model_influence_system.cjs",
+      "node --check tests/smoke.cjs",
+      "python -m py_compile tests/smoke_drag_drop_polish.py tests/smoke_agent_workbench.py tests/smoke_influence_studio.py",
+      "134 HTML IDs are unique",
+      "130 cached DOM IDs resolve",
+      "0 remote runtime URLs"
+    ]
+  },
+  "expanded_node_browser_suite": {
+    "runner": "node tests/smoke.cjs",
+    "status": "RUNNER_UNAVAILABLE",
+    "reason": "The optional Node playwright module is not installed in this environment."
+  },
+  "navigation_shell_check": {
+    "status": "ENVIRONMENT_BLOCKED",
+    "reason": "The execution environment blocked both file:// and localhost browser navigation before page load. Focused Python Chromium suites loaded the shipped HTML, CSS and JavaScript together."
+  },
+  "visual_evidence": [
+    "tests/drag-drop-polish-desktop.png",
+    "tests/drag-drop-polish-mobile.png",
+    "tests/per-block-influence-desktop.png",
+    "tests/per-block-influence-mobile.png",
+    "tests/young-ai-workbench.png",
+    "tests/young-ai-workbench-mobile.png"
+  ]
+}

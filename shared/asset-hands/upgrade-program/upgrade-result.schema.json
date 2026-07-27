@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/asset-hand-upgrade-result-v1.schema.json",
+  "title": "AXM Asset Hand upgrade result v1",
+  "type": "object",
+  "required": ["schema", "status", "request", "compatible_hands", "rejections", "missing"],
+  "properties": {
+    "schema": { "const": "axm.asset-hand-upgrade-result/v1" },
+    "status": { "enum": ["READY_CONTRACT", "MISSING_HAND", "UNSUPPORTED_CANVAS", "MISSING_SUBSTRATE", "REVIEW_REQUIRED", "EXECUTED"] },
+    "delivery_status": { "enum": ["OUTPUT_REQUIREMENTS_HOLD", "OUTPUT_REQUIREMENTS_SATISFIED"] },
+    "request": { "type": "object" },
+    "selected_hand": { "type": ["object", "null"] },
+    "route_plan": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["hand", "role", "covers"],
+        "properties": {
+          "hand": { "type": "object" },
+          "role": { "enum": ["requested", "dependency"] },
+          "covers": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "compatible_hands": { "type": "array", "items": { "type": "object" } },
+    "rejections": { "type": "array", "items": { "type": "object" } },
+    "missing": { "type": "array", "items": { "type": "string" } },
+    "invocation": { "type": ["object", "null"] },
+    "artifacts": { "type": "array", "items": { "type": "object" } },
+    "creation_recipe": { "type": "object" },
+    "preview": { "type": ["object", "null"] },
+    "validation_receipt": { "type": "object" },
+    "provenance": { "type": "object" },
+    "output": {},
+    "digest": { "type": "string" }
+  },
+  "additionalProperties": true
+}

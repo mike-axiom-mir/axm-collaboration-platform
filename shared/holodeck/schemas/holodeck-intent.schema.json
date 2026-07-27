@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.holodeck-intent/v1",
+  "title": "AXM Holodeck shared human-machine intent",
+  "type": "object",
+  "required": ["schema", "actor", "sequence", "kind", "payload"],
+  "properties": {
+    "schema": {"const": "axm.holodeck-intent/v1"},
+    "actor": {"type": "object", "required": ["id", "kind"], "properties": {"id": {"type":"string"}, "kind": {"enum":["human","machine","service"]}, "name": {"type":"string"}}},
+    "sequence": {"type": "integer", "minimum": 1},
+    "kind": {"enum": ["MOVE", "TURN", "INTERACT"]},
+    "payload": {"type": "object"}
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.tool-manifest/v1",
+  "title": "AXM Tool Manifest",
+  "type": "object",
+  "required": ["schema", "id", "name", "version", "status", "entry", "kind", "uses", "permissions"],
+  "properties": {
+    "schema": { "const": "axm.tool-manifest/v1" },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["EXPERIMENTAL", "TEST", "WORKING", "CANON", "SHELL", "BROKEN"] },
+    "entry": { "type": "string", "minLength": 1 },
+    "kind": { "enum": ["product", "service", "scaffold", "adapter", "machine-capability"] },
+    "uses": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "permissions": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "contract": { "type": "string", "minLength": 1 },
+    "folderAlias": { "type": "string", "minLength": 1 },
+    "verifiedAt": { "type": ["string", "null"], "format": "date-time" },
+    "audience": { "enum": ["human", "machine", "human-machine"] }
+  },
+  "additionalProperties": true
+}

@@ -2,7 +2,7 @@
   "schema": "axm.tool-manifest/v1",
   "id": "body-pulse",
   "name": "Body Pulse",
-  "version": "v0.2",
+  "version": "v0.4",
   "status": "EXPERIMENTAL",
   "entry": "index.html",
   "category": "BUILD",
@@ -11,10 +11,10 @@
   "tags": ["heartbeat", "goals", "resource-governance", "automation", "receipts", "local-first"],
   "uses": ["storage", "host-telemetry", "resource-governance"],
   "permissions": [],
-  "summary": "Coordinate bounded automatic work against one visible body budget and shared goal queues.",
-  "actions": ["inspect body pressure", "set overall pulse mode", "enable or idle modules", "find dormant systems", "queue bounded goals", "pause resume or complete goals", "inspect archive retention", "forget archived request records", "inspect lease receipts"],
-  "accepts": ["axm.body-pulse.module/v1", "axm.body-pulse.goal/v1"],
-  "produces": ["axm.body-pulse.lease/v1", "axm.body-pulse.receipt/v1"],
+  "summary": "Coordinate one adjustable Platform Heartbeat with bounded Body Pulse opportunities, deterministic verification receipts, visible host pressure, and shared goal queues.",
+  "actions": ["inspect platform heartbeat", "set heartbeat rhythm", "set heartbeat next run time", "emit a manual timing receipt", "inspect rotating deterministic checks", "inspect body pressure", "set overall pulse mode", "enable or idle modules", "find dormant systems", "queue bounded goals", "pause resume or complete goals", "inspect archive retention", "forget archived request records", "inspect lease receipts"],
+  "accepts": ["axm.platform-heartbeat.state/v1", "axm.platform-heartbeat.beat/v1", "axm.body-pulse.module/v1", "axm.body-pulse.goal/v1"],
+  "produces": ["axm.heartbeat-verification.status/v1", "axm.body-pulse.lease/v1", "axm.body-pulse.receipt/v1"],
   "readiness": ["runtime", "storage"],
-  "notes": "A pulse grants compute opportunity only. It grants no tool, file, network, promotion, release or real-world authority."
+  "notes": "Heartbeat decides when eligibility is checked; Pulse limits how many opportunities may run; gates decide whether. Deterministic verification has findings-only repair authority and no edit, publish, push, merge, promotion or real-world authority."
 }

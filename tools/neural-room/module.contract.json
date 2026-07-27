@@ -1,0 +1,18 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "neural-room",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": ["provider-neutral-neural-pass-authoring", "exact-request-result-verification", "ephemeral-neural-layer-handoff"],
+  "consumes": ["axm.visual-stack-draft/v1", "axm.neural-visual-result/v1", "provider:explicit-ai-visual-result"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.neural-visual-request/v1", "axm.neural-visual-result/v1", "axm.visual-stack-draft/v1"],
+    "accepts": ["axm.visual-stack-draft/v1", "axm.neural-visual-result/v1"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:ephemeral-neural-result-transfer", "user-download:explicit"],
+    "refuses": ["fake-generation-without-provider", "automatic-network-call", "automatic-provider-selection", "unbound-provider-result", "artifact-digest-mismatch", "automatic-draft-apply", "automatic-visual-approval", "automatic-canon", "silent-raw-image-archive"]
+  },
+  "lifecycle": { "state_owner": "browser", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "automatic" }
+}

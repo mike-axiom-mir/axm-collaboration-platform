@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.external-substrate-lock/v1",
+  "title": "AXM external substrate lock",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "platform", "policy", "entries"],
+  "properties": {
+    "schema": { "const": "axm.external-substrate-lock/v1" },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "platform": { "const": "windows-x64" },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtime_bytes_in_source", "network_mode", "digest_algorithm", "licence_gate", "automatic_execution"],
+      "properties": {
+        "runtime_bytes_in_source": { "const": false },
+        "network_mode": { "const": "explicit-cli-install-only" },
+        "digest_algorithm": { "const": "sha256" },
+        "licence_gate": { "const": "reviewed-local-test-not-canon" },
+        "automatic_execution": { "const": false }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": { "$ref": "#/$defs/entry" }
+    },
+    "compositions": {
+      "type": "array",
+      "maxItems": 20,
+      "items": { "$ref": "#/$defs/composition" }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "composition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "components", "capabilities", "provides_substrates", "evidence_basis"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]{1,79}$" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "components": { "type": "array", "minItems": 2, "maxItems": 10, "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]{1,79}$" } },
+        "capabilities": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9:._-]+$" } },
+        "provides_substrates": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$" } },
+        "evidence_basis": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "runtime_version", "kind", "source", "licence", "installation", "probe", "capabilities", "provides_substrates", "dependencies"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]{1,79}$" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "runtime_version": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "kind": { "enum": ["runtime", "validator", "library", "configuration"] },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["publisher", "project_url", "release_url", "asset_url", "artifact_name", "sha256", "size_bytes", "allowed_hosts"],
+          "properties": {
+            "publisher": { "type": "string", "minLength": 1, "maxLength": 160 },
+            "project_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+            "release_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+            "asset_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+            "artifact_name": { "type": "string", "pattern": "^[A-Za-z0-9_.+()-]+$", "maxLength": 180 },
+            "sha256": { "$ref": "#/$defs/sha256" },
+            "size_bytes": { "type": "integer", "minimum": 1, "maximum": 1500000000 },
+            "allowed_hosts": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Za-z0-9.-]+$" } },
+            "signature_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+            "signer_fingerprint": { "type": "string", "pattern": "^[A-F0-9 ]{16,80}$" }
+          }
+        },
+        "licence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["spdx", "source_url", "review_status", "redistribution"],
+          "properties": {
+            "spdx": { "type": "string", "minLength": 1, "maxLength": 120 },
+            "source_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+            "review_status": { "const": "REVIEWED_FOR_LOCAL_TEST" },
+            "redistribution": { "enum": ["permitted-with-notices", "local-install-only-pending-human-release-review"] },
+            "notes": { "type": "string", "maxLength": 500 }
+          }
+        },
+        "installation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["strategy", "destination"],
+          "properties": {
+            "strategy": { "enum": ["extract-zip", "python-wheel", "single-file", "nsis", "izpack"] },
+            "destination": { "type": "string", "pattern": "^[A-Za-z0-9_./-]+$", "maxLength": 160 },
+            "dependency_target": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]{1,79}$" },
+            "strip_prefix": { "type": "string", "pattern": "^[A-Za-z0-9_.+()/-]+$", "maxLength": 160 },
+            "entrypoints": { "type": "object", "additionalProperties": { "type": "string", "pattern": "^[A-Za-z0-9_.+()\\\\/-]+$", "maxLength": 220 } }
+          }
+        },
+        "probe": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "version_pattern"],
+          "properties": {
+            "mode": { "enum": ["command", "python-import", "configuration", "zip-entry"] },
+            "entrypoint": { "type": "string", "maxLength": 80 },
+            "zip_entry": { "type": "string", "pattern": "^[A-Za-z0-9_.+()/-]+$", "maxLength": 220 },
+            "dependency_entrypoint": { "type": "string", "maxLength": 80 },
+            "args": { "type": "array", "maxItems": 20, "items": { "type": "string", "maxLength": 1000 } },
+            "success_statuses": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "integer", "minimum": 0, "maximum": 255 } },
+            "module": { "type": "string", "pattern": "^[A-Za-z0-9_.]+$" },
+            "version_expression": { "type": "string", "maxLength": 500 },
+            "version_pattern": { "type": "string", "minLength": 1, "maxLength": 200 }
+          }
+        },
+        "capabilities": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9:._-]+$" } },
+        "provides_substrates": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$" } },
+        "dependencies": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.-]{1,79}$" } }
+      }
+    }
+  }
+}

@@ -8,6 +8,12 @@ The catalog contains **291 reusable CC0 source GLBs** from five independently at
 
 The forge keeps exactly one generated preview in memory. Forging again replaces it. It does not save variants, add them to the Library, or promote them automatically. A human approval action is required before GLB export becomes available.
 
+## Shared gameplay animation spine
+
+The street benchmark is the first live adopter of `shared/game-animation-foundation`. Animated pedestrians now use semantic clip matching, typed state transitions, explicit cross-fades, timed foot contacts and action events, deterministic recovery rules, and a reusable engine-neutral verifier. Their visible route is deliberately small: idle, walk out, pause, emote, walk back. The character skin is replaceable; the motion contract stays the same.
+
+This proves a reusable game-animation seam, not a finished street game. Input, collision, camera gameplay, missions, NPC intent, and human approval of motion quality remain separate work. Code can verify state coverage and event timing; it cannot decide that the motion looks good.
+
 ## Local render polish
 
 The viewport now has three explicit renderer profiles: **PS2 Native** (the default), **PS3 Preview**, and **PS3 High Preview**. The two preview profiles add a local r160-compatible bright pass, separable bloom, subtle vignette, and bounded film grain. They do not rewrite source materials, add another light rig, change recipes, or affect exported GLBs.

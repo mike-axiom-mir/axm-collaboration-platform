@@ -1,0 +1,6257 @@
+'use strict';
+window.AXM_SCHEMA_IDENTITY_MAP = {
+  "schema": "axm.schema-identity-map\u002fv1",
+  "version": "v0.1",
+  "measuredAt": "2026-07-26T21:52:05.167Z",
+  "freshnessTtlMs": 7200000,
+  "source": {
+    "label": "axm-workshop-v4",
+    "fingerprint": "3b9184223bc5c9e196dfc0b3359be08991fd0d8a06cf1bc868c39eef109a3427",
+    "jsonFilesRead": 621,
+    "jsonBytesRead": 15392539,
+    "exclusions": [
+      ".cache",
+      ".git",
+      "backups",
+      "coverage",
+      "exports",
+      "local-data",
+      "logs",
+      "node_modules",
+      "state"
+    ],
+    "symlinksFollowed": false,
+    "skippedSymlinks": []
+  },
+  "summary": {
+    "definitionOccurrences": 107,
+    "uniqueDefinitionIds": 107,
+    "uniqueDefinitions": 107,
+    "repeatedIdenticalDefinitions": 0,
+    "divergentSameIdDefinitions": 0,
+    "referenceOccurrences": 187,
+    "uniqueReferenceIds": 79,
+    "referencesWithLocalDefinition": 1,
+    "referencesWithoutLocalDefinition": 78,
+    "parseFailures": 0,
+    "formatNotes": 2
+  },
+  "definitionGroups": [
+    {
+      "identity": "axm-district-party:\u002f\u002fschemas\u002fgroup-save-v1.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "c03eadb1b8f0a0af4395b715653f65df4059a3112239b64faf86a1ad4881d5cc"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm-district-party:\u002f\u002fschemas\u002fgroup-save-v1.json",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f008-district-party\u002fdata\u002fgroup-save-schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "2ccadddebde92bd4a2930a3747c0292a93690788cf73e9d0ff8afab6b52a83ea",
+          "definitionSha256": "c03eadb1b8f0a0af4395b715653f65df4059a3112239b64faf86a1ad4881d5cc",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm-district-party:\u002f\u002fschemas\u002fitem-v0.1.1.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "f6b82ff71b17fb60badb02751b19d79b8fd0e48a38ee4367a216155068491038"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm-district-party:\u002f\u002fschemas\u002fitem-v0.1.1.json",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f008-district-party\u002fdata\u002fitem-schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "0bb52fd5b01931aa6ce6444c41959080b9c93154e6350bc7f76f355cb0616be9",
+          "definitionSha256": "f6b82ff71b17fb60badb02751b19d79b8fd0e48a38ee4367a216155068491038",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.asset-artifact\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "f919c32c861216ff48991d3bc168203ee12d3d5f231bfd07bc7255c98a62d9b2"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.asset-artifact\u002fv1",
+          "path": "shared\u002fasset-hands\u002fasset-artifact.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "14d815bba5f864bd224dd1c10c580f99e3a130fd383c768fa03fd35019385a45",
+          "definitionSha256": "f919c32c861216ff48991d3bc168203ee12d3d5f231bfd07bc7255c98a62d9b2",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.asset-artifact",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.asset-brief\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "31db91827f1d41ff3420470ff92b16e786e000596be81f984c81ed1d033e779e"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.asset-brief\u002fv1",
+          "path": "shared\u002fasset-hands\u002fasset-brief.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "2d6da67a7ca371814ad352f763a258a77892b9b7179bcf69f457a92ebc05c609",
+          "definitionSha256": "31db91827f1d41ff3420470ff92b16e786e000596be81f984c81ed1d033e779e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.asset-brief",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.asset-creation-recipe\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "019eaf1e927222f6e42a684f0544fee2ee1bae8f486023676df76605253a99af"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.asset-creation-recipe\u002fv1",
+          "path": "shared\u002fasset-hands\u002fasset-creation-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "4bcbe677d85f77ae1b7272af8d29178ee58ccd9eea19476121888bf10d892be7",
+          "definitionSha256": "019eaf1e927222f6e42a684f0544fee2ee1bae8f486023676df76605253a99af",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.asset-creation-recipe",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.asset-fabric.machine-review-receipt\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "0ef1fc78f443d2cba1f7fcb9ad168ca74266897a3ccfc61452f73b756e6ea1ba"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.asset-fabric.machine-review-receipt\u002fv1",
+          "path": "tools\u002fasset-fabric\u002fmachine-review-receipt.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "76cb8d3e2c06812f3cdb2a179ee5e0d326ffa571f040d25473b352ac67a94206",
+          "definitionSha256": "0ef1fc78f443d2cba1f7fcb9ad168ca74266897a3ccfc61452f73b756e6ea1ba",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.asset-fabric.machine-review-receipt",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.asset-hand-family\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "2a7b6af3a08936b40ad4d9979aa7199a6416c1f9d852890f3ee5b7b7c4d807e1"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.asset-hand-family\u002fv1",
+          "path": "shared\u002fasset-hands\u002fasset-hand-family.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "30c492da54043fdc526d8e05be8446e4ac5a26828a0900c1558a179faf9f34df",
+          "definitionSha256": "2a7b6af3a08936b40ad4d9979aa7199a6416c1f9d852890f3ee5b7b7c4d807e1",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.asset-hand-family",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.asset-hand-result\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "21957fb1a066533e2a8b5534928b60ec0d3ad72f766387c7de62f0a0db423b7c"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.asset-hand-result\u002fv1",
+          "path": "shared\u002fasset-hands\u002fasset-hand-result.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "f11e4f082678591107cc878a6fac0c13b4d5c00a35911284b339bc4d52bba6a4",
+          "definitionSha256": "21957fb1a066533e2a8b5534928b60ec0d3ad72f766387c7de62f0a0db423b7c",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.asset-hand-result",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.asset-validation-receipt\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "6a6cdda67d30fb90f999a3f12823d261fcdf32ac2b8730df605904c8263eff1e"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.asset-validation-receipt\u002fv1",
+          "path": "shared\u002fasset-hands\u002fasset-validation-receipt.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "cec7ef092e5e52d26345060d80fb97e5d5322761b5b72d677ef00d01ff00f292",
+          "definitionSha256": "6a6cdda67d30fb90f999a3f12823d261fcdf32ac2b8730df605904c8263eff1e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.asset-validation-receipt",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.controls.action-intention\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "99afa4d26661d25dfaf1147319e099abe4aea8f2898f3d4ba7f6e2c70e05694f"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.controls.action-intention\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002finteraction\u002faction-intention.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "b7a4446e82fd70b336772c95db4547e938d14500b17c822de2a1085329b02696",
+          "definitionSha256": "99afa4d26661d25dfaf1147319e099abe4aea8f2898f3d4ba7f6e2c70e05694f",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.controls.action-intention",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.controls.observation\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "63f7ec698a8ed658a63756ce2d8bcec071ec9ae74e80bdd92c86db46e2566847"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.controls.observation\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002finteraction\u002fobservation-envelope.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "be2f353e05756ae90ba9d0e52b699a92981e66fa1627fa3902dc4a34335561a5",
+          "definitionSha256": "63f7ec698a8ed658a63756ce2d8bcec071ec9ae74e80bdd92c86db46e2566847",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.controls.observation",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.controls.seat-binding\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "52611ffeeae3c558032e58820a307fd71a3a1855d44ea3b44353b1c807432fed"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.controls.seat-binding\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002finteraction\u002fseat-binding.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "184f4880ba9cf8d7f3e5ae47858261286d88ca4353adf482b0c20b87f73f5f75",
+          "definitionSha256": "52611ffeeae3c558032e58820a307fd71a3a1855d44ea3b44353b1c807432fed",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.controls.seat-binding",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.controls.surface\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "2dc026fec6bbc56109a6df8195ea902f35472d26ec450de6cdee46bf10e5c34b"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.controls.surface\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002finteraction\u002fcontrol-surface.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "bd589366367f8dc8bb3a4097fdcaad999831d6fb5747e8275ec4e5cda635c1d8",
+          "definitionSha256": "2dc026fec6bbc56109a6df8195ea902f35472d26ec450de6cdee46bf10e5c34b",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.controls.surface",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.game-asset-pack\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "365c701ea40b7ab6063bcfffb050da51e1c85f04253b27d44a5d9624bfae9639"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.game-asset-pack\u002fv1",
+          "path": "shared\u002fgame-asset-foundation\u002fgame-asset-pack.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "3df11a92eaf64956dc0d43f749745280efa1893fa6a3f7197e76833a4737bded",
+          "definitionSha256": "365c701ea40b7ab6063bcfffb050da51e1c85f04253b27d44a5d9624bfae9639",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-asset-pack",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.actor\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "6bb404c6612b2283550fa1c0facacbca04b4b306dec4d96a2591570c3a508836"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.actor\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002factor.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "292a204157b0a2b858159a58b375362c1980ea32c753fa8c8c6565ab78015797",
+          "definitionSha256": "6bb404c6612b2283550fa1c0facacbca04b4b306dec4d96a2591570c3a508836",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.actor",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.adapter\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "5fb563d6ce461e9b4468d03ba2a7cbc788cf72c768ae221b4aba70f92ad6f63d"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.adapter\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002fadapter.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "6ac4a8cb0583f8ed5b8c6d389cb4b679ef42d640d4d39b905de65af569b949f4",
+          "definitionSha256": "5fb563d6ce461e9b4468d03ba2a7cbc788cf72c768ae221b4aba70f92ad6f63d",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.adapter",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.capability\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "0145a29f37ac939dbf5401b84760b176f073be6fec9cc78114bf7d7a9af4f068"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.capability\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002fcapability.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "32e2d3e5b129d17bc1c4a276d7a3251d8193f01dd9b990b3022b9615b22b749d",
+          "definitionSha256": "0145a29f37ac939dbf5401b84760b176f073be6fec9cc78114bf7d7a9af4f068",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.capability",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.change-packet\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "bed7e6cebb58172b678a26b39990ecd956c9c28055dd9e01c02bb001991e9521"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.change-packet\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002fproposal.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "988b57c5bdd8152c28e9c07d967e9a10e6470519678576c36ed2e99792b9a9dd",
+          "definitionSha256": "bed7e6cebb58172b678a26b39990ecd956c9c28055dd9e01c02bb001991e9521",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.change-packet",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.cognitive-resource-economics-profile-draft\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "679b5f39d32bafb7c7198b5e92c9a72a9da574ea9728eed0908ec5d5daa33b91"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.cognitive-resource-economics-profile-draft\u002fv1",
+          "path": "shared\u002fcognitive-resource\u002fcontracts\u002fcognitive-resource-economics-profile-draft.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "fa66b93360b0a43da9ac35bd6b128d2c62e9e341d06a4f1fad9c15f31f073ef3",
+          "definitionSha256": "679b5f39d32bafb7c7198b5e92c9a72a9da574ea9728eed0908ec5d5daa33b91",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.cognitive-resource-economics-profile-draft",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.cognitive-work-observation-draft\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "0965116c037a57c0af115f80d62266e533a9aa7531938bcfe8e5a617619eb708"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.cognitive-work-observation-draft\u002fv1",
+          "path": "shared\u002fcognitive-resource\u002fcontracts\u002fcognitive-work-observation-draft.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "74a135eca16239f502d73ecbee296ae49fa8a09316cae4437188b923c500286d",
+          "definitionSha256": "0965116c037a57c0af115f80d62266e533a9aa7531938bcfe8e5a617619eb708",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.cognitive-work-observation-draft",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.consent\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "eda69f0e8a5346d1f80ffe017497cd706180ed7b6c98e640d8b6211ef5073737"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.consent\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002fconsent.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "9d64673bc16cf03281c5bddfa6a58094c24dbaec33331a711f3eeba855602d61",
+          "definitionSha256": "eda69f0e8a5346d1f80ffe017497cd706180ed7b6c98e640d8b6211ef5073737",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.consent",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.entity\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "454ba1636e389981543e59783ce7250c5839f433a24ba36255cff079be030b0e"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.entity\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002fentity.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "084d17c85e9e427a67de28be2fd05e3dba4628f5ee875bc47d1196ff23e0b28e",
+          "definitionSha256": "454ba1636e389981543e59783ce7250c5839f433a24ba36255cff079be030b0e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.entity",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.event\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "c9979871d06735264f6ca30e877a0e692c5db72ad3aa9470c22b319b2dcf90ec"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.event\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002fevent.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "a19e45a83bfd6cec5ae691559a05867680272adea0e7631bb23a2f2668c067ca",
+          "definitionSha256": "c9979871d06735264f6ca30e877a0e692c5db72ad3aa9470c22b319b2dcf90ec",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.event",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.evidence\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "a80747ad33be79f969166a650f732f462cab026d5615c952c140f4efc271890d"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.evidence\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002fevidence.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "096d459afcd300cd841268d6aa63fd3a15c7052a0c260f27ffaa3c2dda88e93b",
+          "definitionSha256": "a80747ad33be79f969166a650f732f462cab026d5615c952c140f4efc271890d",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.evidence",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.foundation-contract\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "8a8114076ea4a48509fc0154c55d8df47287a20268addac4d9ab19d138f2b787"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.foundation-contract\u002fv1",
+          "path": "shared\u002fmirror-core\u002ffoundation-adapter\u002ffoundation-contract.json",
+          "pointer": "\u002f",
+          "fileSha256": "c613f546be62ed92eb118ad03b215aff9de7aceca0448378d19c733bba2e9ccd",
+          "definitionSha256": "8a8114076ea4a48509fc0154c55d8df47287a20268addac4d9ab19d138f2b787",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.foundation-contract",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.mapping\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "b69597b36de9702c3516259ed00c1d59d9d2eabbcb17bf9226fa1dc56e0f2a9a"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.mapping\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002fmapping.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "17e79be3493ed3e1aaf6d6e47c1264bc9018dbcd693d43d27ac651e0a1364406",
+          "definitionSha256": "b69597b36de9702c3516259ed00c1d59d9d2eabbcb17bf9226fa1dc56e0f2a9a",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.mapping",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.relation\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "abd87f15fb10887b2426c6869c698cc114a8384b011fbca8d28ff7727b1558b5"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.relation\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002frelation.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "ad3e4fcb44d88f810c256ef9a240b6c9a9ab9dd30ce2a5a9bcabf2fce1073232",
+          "definitionSha256": "abd87f15fb10887b2426c6869c698cc114a8384b011fbca8d28ff7727b1558b5",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.relation",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.snapshot\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "448884ed3d87ffe7e5b33e16487408163dbbf613015715105f8b24d68bb679c3"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.snapshot\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002fsnapshot.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "48f238db3af4e67c11c8925f5d0e0069b133d3d700a22fe0fb228310f22577f4",
+          "definitionSha256": "448884ed3d87ffe7e5b33e16487408163dbbf613015715105f8b24d68bb679c3",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.snapshot",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.type.capability\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "9035399d975bed6fb850e59a08ed8ef6163673b6c3ff754700335e4673d723ac"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.type.capability\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002ftypes\u002fcapability.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "14eda52148690f5d0fbe3c7d59e50f7d4484eb50fdd70cfb96883d98c2b438f9",
+          "definitionSha256": "9035399d975bed6fb850e59a08ed8ef6163673b6c3ff754700335e4673d723ac",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.type.capability",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.type.evidence\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "cfd66f35f8a400a6f1af333b7182598070e4a42ad7bdef0875da1a1f2cff387e"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.type.evidence\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002ftypes\u002fevidence.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "16e9d94e6755f75e39773dfc699ece540e186cabc144b427102961f4b3eb345a",
+          "definitionSha256": "cfd66f35f8a400a6f1af333b7182598070e4a42ad7bdef0875da1a1f2cff387e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.type.evidence",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.type.material\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "fae5e691a12cf2ac08b2bdbf04e90c131869f1e404d1a56cec817c0dec31ee11"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.type.material\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002ftypes\u002fmaterial.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "f1a85777fbab1bbc4780bebd70a185fbca5afe57784fe4fb93de487baca1ac06",
+          "definitionSha256": "fae5e691a12cf2ac08b2bdbf04e90c131869f1e404d1a56cec817c0dec31ee11",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.type.material",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.type.organisation\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "5f018d938ecb8c8a57350a5a776f190b1c97e5f26d2e3c50c960e03c331b2232"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.type.organisation\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002ftypes\u002forganisation.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "c6b6a2a8ff4c2b18243eb43ada4ff39d041cf6a13e7b1c60ec962eb9b0b4c39c",
+          "definitionSha256": "5f018d938ecb8c8a57350a5a776f190b1c97e5f26d2e3c50c960e03c331b2232",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.type.organisation",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.type.process\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "c4491abb9bcd1d78a91afaf5c0260c9a10736119a8974e479860568e9cde7738"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.type.process\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002ftypes\u002fprocess.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "145b0c7ce4d9e4eabaa6e6dfac7e49f48b4f3e00dd1a41606b09c509ee6f6d5e",
+          "definitionSha256": "c4491abb9bcd1d78a91afaf5c0260c9a10736119a8974e479860568e9cde7738",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.type.process",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.type.project\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "41337041928366afd119384b9846b9a781e0c4ecb39b5f12504b68e8d7fbe08e"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.type.project\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002ftypes\u002fproject.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "6b2e67129998fc292e5015c5d26823ba00ef77e3e748df199eb27ece86986f05",
+          "definitionSha256": "41337041928366afd119384b9846b9a781e0c4ecb39b5f12504b68e8d7fbe08e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.type.project",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.mirror.type.structure\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "3125565d1191db9e8b8a6fc54f40b944ce7694ad18040c1e341b46a36866d0df"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.mirror.type.structure\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002ftypes\u002fstructure.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "56239093305d688a4b4ef57f052abbb269df9ee19890a68b4aec12ab803a3566",
+          "definitionSha256": "3125565d1191db9e8b8a6fc54f40b944ce7694ad18040c1e341b46a36866d0df",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.type.structure",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.missing-asset-hand-catalog\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "aa9764832aed587220b54d1b9bd031e550ad39192bbd057f867a5527515eaf48"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.missing-asset-hand-catalog\u002fv1",
+          "path": "shared\u002fasset-hands\u002fmissing-hands-catalog.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "2bc64ca9c28325e6c6a14ee912bdd884d05c10d638cf344cc6d7d061eef15d22",
+          "definitionSha256": "aa9764832aed587220b54d1b9bd031e550ad39192bbd057f867a5527515eaf48",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.missing-asset-hand-catalog",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "axm.party.session\u002fv1",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "9945e066924880c88e20f902d06ef9bddb72e1923cad23ae1350507a010631a9"
+      ],
+      "occurrences": [
+        {
+          "identity": "axm.party.session\u002fv1",
+          "path": "shared\u002fmirror-core\u002fschemas\u002finteraction\u002fparty-session.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "bd79a9f3c9f5d40ad09a41cbb349fad99c68aefd0f66cb7136e0b8c8f7ffa3e6",
+          "definitionSha256": "9945e066924880c88e20f902d06ef9bddb72e1923cad23ae1350507a010631a9",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.party.session",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002faccessibility-validation-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "69466ea9f73691c768605ad8ee40506ace8404eb2ea31f91bb5cdc466507932c"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002faccessibility-validation-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002faccessibility-validation.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "0add6826e9d3ecd78301f578fcab0c53b223d5529273ede32fdc489b60cc54dc",
+          "definitionSha256": "69466ea9f73691c768605ad8ee40506ace8404eb2ea31f91bb5cdc466507932c",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002faccessible-document-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "b530ec4780261731c6ea8c91d0b7f5aa7bb9cf7efe734c310cc99e4a8b254fd0"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002faccessible-document-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002faccessible-document-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "e0e46f36b5da2ea824231d2ca67c52329c465f878b27bd7f643a7205b84bc057",
+          "definitionSha256": "b530ec4780261731c6ea8c91d0b7f5aa7bb9cf7efe734c310cc99e4a8b254fd0",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002faccessible-document-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "df94b6feb023120f7f866c263b0f825b5c470b50be5c1e554210b6ac41371607"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002faccessible-document-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002faccessible-document.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "f0436cb139c19a74678d5ec0473740d661ca021619b88b2d2f65f8a7daea0784",
+          "definitionSha256": "df94b6feb023120f7f866c263b0f825b5c470b50be5c1e554210b6ac41371607",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fanimated-raster-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "b0449b5e51d66c0cf443b0b7229fc8c1a0d34dba188c78497c9ba9fada90d5ff"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fanimated-raster-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fanimated-raster-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "a9deeebb6bbc91d4323438b3129474a1df3a7a0bf16d1a0c0ab87e0eb8644474",
+          "definitionSha256": "b0449b5e51d66c0cf443b0b7229fc8c1a0d34dba188c78497c9ba9fada90d5ff",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fanimated-web-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "13cf62f431af825e20b1f76c3e629d93f6e90eed7c8ea4129d6f3dd80abbf340"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fanimated-web-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fanimated-web-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "ed90b3652fd79321eb93c7aa5c44aa18bbeaed924a0858b49496554e05b152d4",
+          "definitionSha256": "13cf62f431af825e20b1f76c3e629d93f6e90eed7c8ea4129d6f3dd80abbf340",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fanimated-web-validation-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "1bbb0999f72e72ecd521c254a32f342156c32d2f53cc4c75267581af210f98cd"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fanimated-web-validation-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fanimated-web-validation.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "ae35e3418d1c7b806edef7606fa093efeab9f1c3613088d5afc46b05f4959c0a",
+          "definitionSha256": "1bbb0999f72e72ecd521c254a32f342156c32d2f53cc4c75267581af210f98cd",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fanimation-clip-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "c1024d216c657dc9b00f2d12fe8ed75950a16a701bfc5f2b8b0a9c5d01a29221"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fanimation-clip-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fanimation-clip.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "9ea18a0356960093eb966c44676210ee2dff1ebae4a1b897024680b74a19a729",
+          "definitionSha256": "c1024d216c657dc9b00f2d12fe8ed75950a16a701bfc5f2b8b0a9c5d01a29221",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fasset-hand-gap-report-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "7a8e635f523b8d1324481689a273ecfc8f66781ae2b13ca48a2910c6570e09fa"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fasset-hand-gap-report-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fasset-hand-gap-report.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "550928928973b20242a540b8f5849600d726af2e58b55df7b947969a1e4c3731",
+          "definitionSha256": "7a8e635f523b8d1324481689a273ecfc8f66781ae2b13ca48a2910c6570e09fa",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fasset-hand-v2.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "aa354c39d48cfb58fcf08e08a14851328059814266df330bf66ec096bd182c32"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fasset-hand-v2.schema.json",
+          "path": "shared\u002fasset-hands\u002fasset-hand-v2.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "bad2018c66fa5190a99a9a4978f220460dc9f324bfb262597d7ed740787d00f5",
+          "definitionSha256": "aa354c39d48cfb58fcf08e08a14851328059814266df330bf66ec096bd182c32",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fasset-source-artifact-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "16a9e168e730d7246465d6382e34514bf048998d48a91981e38d96fab789c7e2"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fasset-source-artifact-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fasset-source-artifact.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "b9058656fa5365fcc03330afc501e173a42819d434b8605d3d58587fc7b5807e",
+          "definitionSha256": "16a9e168e730d7246465d6382e34514bf048998d48a91981e38d96fab789c7e2",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fasset-verification-envelope-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "6fe20a6b24330d34fcd221a589d186dea7ee969c6348403b54b0fa87de02f8ce"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fasset-verification-envelope-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002freference-validators\u002fasset-verification-envelope.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "2b47534560f73e30aeaf1c11261aee51ac7a474afcb512429f34298fe1e442e9",
+          "definitionSha256": "6fe20a6b24330d34fcd221a589d186dea7ee969c6348403b54b0fa87de02f8ce",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002faudio-device.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "412f2e0f75f4dd3fe7a99a2c08adbff1c597775d118a265c91f68bca9bf4a4ba"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002faudio-device.schema.json",
+          "path": "shared\u002fasset-hands\u002faudio-device.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "946a557a735d11e40bf1f56981336953a07301bbb2ceaa6f28a7da61d0ad6f0a",
+          "definitionSha256": "412f2e0f75f4dd3fe7a99a2c08adbff1c597775d118a265c91f68bca9bf4a4ba",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002faudio-notation-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "fceb36824d8f4a953ab0331e379730886dd3f4a77fda07aa54b3c623dfe79eb6"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002faudio-notation-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002faudio-notation-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "106b30b0db9d53252a7f0ddafa8bf0c0fdd20db9ff3824eeb969e7f3d6842b8c",
+          "definitionSha256": "fceb36824d8f4a953ab0331e379730886dd3f4a77fda07aa54b3c623dfe79eb6",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002faudio-notation-validation-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "cf085649f2280e593501c465a7997d2cbba4e66a5fa9d44dd5ae144216c7eb64"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002faudio-notation-validation-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002faudio-notation-validation.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "0874dd504e9f44907f479b163a20a5719de6cd88731e917a65ab1ff45f393ab6",
+          "definitionSha256": "cf085649f2280e593501c465a7997d2cbba4e66a5fa9d44dd5ae144216c7eb64",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fbridge-receipt.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "e5cf9c40a41abcb7b067bb030fdc38dc5ca1473c41fab140a920a700041c1b26"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fbridge-receipt.schema.json",
+          "path": "shared\u002fasset-hands\u002fbridge-receipt.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "e767e2eed42cba7e2b14f2f70a11f8b43f9ec260e1896816fbd3ccf35a5313fa",
+          "definitionSha256": "e5cf9c40a41abcb7b067bb030fdc38dc5ca1473c41fab140a920a700041c1b26",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fcnc-simulation-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "f94f1fd5c2ecaa347a5d95718f4062b22145e0dc7261f168f2c9b6d669799673"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fcnc-simulation-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fcnc-simulation-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "1688612dc3c40ba03852dd1e54d9da1e07d5e60c32523f6df55e20b26952f53c",
+          "definitionSha256": "f94f1fd5c2ecaa347a5d95718f4062b22145e0dc7261f168f2c9b6d669799673",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fcollision-mesh.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "2e7203f1722f77f8e4581b7a1c3fc99ad6e949995cae92317570b37588b24f7b"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fcollision-mesh.schema.json",
+          "path": "shared\u002fasset-hands\u002fcollision-mesh.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "8641d827a7d555d0fc69b830c51e9f1a193526f4d916fdc7c019bd1a0e4296f7",
+          "definitionSha256": "2e7203f1722f77f8e4581b7a1c3fc99ad6e949995cae92317570b37588b24f7b",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fcolour-validation-report-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "f5d59201fd56b69a9950e90f3caac80e9b316fe36651bac9a32f560a2480404b"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fcolour-validation-report-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fcolour-validation-report.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "fe57497a13ea49c5dce270533c1689deffaef3d0d9d6e94aaefabaedde7f2364",
+          "definitionSha256": "f5d59201fd56b69a9950e90f3caac80e9b316fe36651bac9a32f560a2480404b",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fcontroller-profile-v1.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "6a736e207158b849cd6148727093bc573a0a1a15eb07a5e942d35ec37a5aa432"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fcontroller-profile-v1.json",
+          "path": "shared\u002fcontrols\u002fschemas\u002fcontroller-profile.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "cc9757ac3a7a9fde26e3ef4f9e1cba3c35e175110b4a885aa2e8fe3aafec12ca",
+          "definitionSha256": "6a736e207158b849cd6148727093bc573a0a1a15eb07a5e942d35ec37a5aa432",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fcut-layout-spec-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "dc711fa58e4a318a804c65218826b3f0253bab69b6121e890ff3a9a089a36c7a"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fcut-layout-spec-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fcut-layout-spec.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "ded13e1dac9b32aeeb371e55cc897b81a9071e3a592d2fd63c4934d5ba76859a",
+          "definitionSha256": "dc711fa58e4a318a804c65218826b3f0253bab69b6121e890ff3a9a089a36c7a",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fdrawpacket-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "b74a22cd8d4c09eb82e70243969e1b4a68a2baac463121a653dae69a50118c76"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fdrawpacket-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fdrawpacket.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "f77ec39b4a3844f5e7d240a5d8629c2ea541cdf5e59adecef97f787e5fb7b471",
+          "definitionSha256": "b74a22cd8d4c09eb82e70243969e1b4a68a2baac463121a653dae69a50118c76",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002ffabric-production-spec-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "04b4050ca8687421c0eb23bba1e970272f15d9e1fa5927c130e1cd5164a6a90e"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002ffabric-production-spec-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002ffabric-production-spec.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "497c6c893f3045fe2b07869f1a28d925c28e0519ca9c07d310ca1e67ac000eb0",
+          "definitionSha256": "04b4050ca8687421c0eb23bba1e970272f15d9e1fa5927c130e1cd5164a6a90e",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002ffinal-video-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "556a8b073d61c1b3834b94ddb887353a7b8326d02f1ebb437762b3f45e1e10e6"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002ffinal-video-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002ffinal-video-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "e070f166aa47d54bb1c3b3d4a4389e095754748c420063d58aa5506d8d1b1a63",
+          "definitionSha256": "556a8b073d61c1b3834b94ddb887353a7b8326d02f1ebb437762b3f45e1e10e6",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002ffont-shaping-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "00de76da34bea5f5f60816558d5cad79777dac4ee85ebae1f4c709eef84cf2d6"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002ffont-shaping-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002ffont-shaping-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "e63049af26163f9f0b3f49661dabb70b4ab9017bef8076b40c760dd583d70755",
+          "definitionSha256": "00de76da34bea5f5f60816558d5cad79777dac4ee85ebae1f4c709eef84cf2d6",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fgeometry-graph-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "f65f5b5c80c0db6674753f98295cc6374da5e312ef113cc908962b907fdd5873"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fgeometry-graph-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fgeometry-graph-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "d563528425dc15b848e19a4e9a9e31ca65916baa03dbbe114ccbf2c62d50d32b",
+          "definitionSha256": "f65f5b5c80c0db6674753f98295cc6374da5e312ef113cc908962b907fdd5873",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fgeometry-graph-validation-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "74345c23ada034306471df97264c0ad89d4fd82391c6bec59700f6ed115537a4"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fgeometry-graph-validation-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fgeometry-graph-validation.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "74fb12b9bce0cddda3fbe4e619569717384ee20d36a92b9a4398eb82b7ae764b",
+          "definitionSha256": "74345c23ada034306471df97264c0ad89d4fd82391c6bec59700f6ed115537a4",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fgeometry-graph.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "56af66819de54c64f7c25275959d5041be684e738f48056d78f6093b19f1bd82"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fgeometry-graph.schema.json",
+          "path": "shared\u002fasset-hands\u002fgeometry-graph.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "8555524be554b52d0316309893235c6c33e155650d1ef525a2f3fc01b48a4c94",
+          "definitionSha256": "56af66819de54c64f7c25275959d5041be684e738f48056d78f6093b19f1bd82",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fglyph-run-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "67b8bc2c6341e14b52bc9f2e5edeb79f1a95862dc5379b762097c3aaebd59794"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fglyph-run-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fglyph-run.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "951c03872b805d4a127de804e17fda307da1d9ca54434275dbb4ebd412167da2",
+          "definitionSha256": "67b8bc2c6341e14b52bc9f2e5edeb79f1a95862dc5379b762097c3aaebd59794",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002finput-source-binding-v1.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "63f9eccc047918af8891514098bc696e85b25b31589625940f58caedaec3dc83"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002finput-source-binding-v1.json",
+          "path": "shared\u002fcontrols\u002fschemas\u002finput-source-binding.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "ee942e5c02f69ee8fd11c23cdd43d639aebce0cf3ad7d2a863aac4fcdddf4c39",
+          "definitionSha256": "63f9eccc047918af8891514098bc696e85b25b31589625940f58caedaec3dc83",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002finspect-codegen-report-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "70168d8b24bd0e27cd71cd77aca6a464d72c309b5bb1b1297fae823338632cb3"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002finspect-codegen-report-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002finspect-codegen-report.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "a6dd8eca28ca19ce2b4d39e7635d2838572042273ca756309d57c91647650376",
+          "definitionSha256": "70168d8b24bd0e27cd71cd77aca6a464d72c309b5bb1b1297fae823338632cb3",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fktx2-texture-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "8363a5321949654e2e0109379998b5726ea3db37b1adc2d0f91321d7ef5c4e94"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fktx2-texture-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fktx2-texture-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "b0274bfcc3c9dbc5cc931d2f865c2d4ec6bd2ddd430143e5bb5e6440b904c6a4",
+          "definitionSha256": "8363a5321949654e2e0109379998b5726ea3db37b1adc2d0f91321d7ef5c4e94",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fktx2-validation-report-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "faa43ee55acfcf40b55ec0cd0c06fa85cbef5e0952c512727a6eb7e16f0f47c8"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fktx2-validation-report-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fktx2-validation-report.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "bf7e2cd5e246434a122ea06a3f619178456f0d2764ea6d057a3e8c996cce8901",
+          "definitionSha256": "faa43ee55acfcf40b55ec0cd0c06fa85cbef5e0952c512727a6eb7e16f0f47c8",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002flocalization-report-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "a165985bea06faca8601620fd7da3c4445e5170075338222cbd0daa7d2831f18"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002flocalization-report-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002flocalization-report.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "9d31e6d4a23f0dcd273fcb662208b65b66e55c1d085d90f5613d228bf226488c",
+          "definitionSha256": "a165985bea06faca8601620fd7da3c4445e5170075338222cbd0daa7d2831f18",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002flocalization-source-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "f2219110c46201498b57bc194e75a0208d52c2faf531fb11eca0716237d4c3dc"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002flocalization-source-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002flocalization-source.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "c5f68aef558fd3905fb25a1a53bd1ef91e0e4f938e35110cdb50f8e965b93ecf",
+          "definitionSha256": "f2219110c46201498b57bc194e75a0208d52c2faf531fb11eca0716237d4c3dc",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fmachine-export-approval-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "1ce0af778608a35e2f7e25125b4948ebdb61735680e21e281822712b6264290e"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fmachine-export-approval-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fmachine-export-approval.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "7bb86591456b461f0090898b35fbcc3a98b4e15bf6d86aea8c21efdb8ae7d7b1",
+          "definitionSha256": "1ce0af778608a35e2f7e25125b4948ebdb61735680e21e281822712b6264290e",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fmaterial-graph-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "d9a3829ad432235eaa86406dbf19038e99f65697059dd7571f57dd83bf89477b"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fmaterial-graph-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fmaterial-graph.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "6013a5a8918edc59f56624f110444b591f41bacb0b6fc38336660b087f82baca",
+          "definitionSha256": "d9a3829ad432235eaa86406dbf19038e99f65697059dd7571f57dd83bf89477b",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fmaterial-parity-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "18942d19ef5dfe24803e1890e05010e80f9f58cc592c773fcd4037fd54fd55d2"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fmaterial-parity-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fmaterial-parity-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "505fc1f1cd09eeb9549f5efe193464b889ac3f0b2ee0e12493bf449c1a21d55b",
+          "definitionSha256": "18942d19ef5dfe24803e1890e05010e80f9f58cc592c773fcd4037fd54fd55d2",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fmaterial-parity-report-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "4d3e5448a99d72158cd2168774a9cba50277ae2e745e940c4c8605e3ce9cc865"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fmaterial-parity-report-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fmaterial-parity-report.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "d9912f05058b978db829c13ffe0960fe3cacebb87adfe7c1c00408cbdd77ed4a",
+          "definitionSha256": "4d3e5448a99d72158cd2168774a9cba50277ae2e745e940c4c8605e3ce9cc865",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fmusical-sequence-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "69decb6c156b44712a75aafc25a17b25dfad9e450eada280a9d14a1551607a7f"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fmusical-sequence-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fmusical-sequence.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "f83073475aaa35ce2253fde65b4c517e2c23c16a4e9c5568a9ac5e1abce23ada",
+          "definitionSha256": "69decb6c156b44712a75aafc25a17b25dfad9e450eada280a9d14a1551607a7f",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fnative-bridge-bundle-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "194d0258c73c6955d8c4555d69245ed5b86d3ce9cc47f2a6580a8149c49e17cb"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fnative-bridge-bundle-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fnative-bridge-bundle.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "a870446c9645271a96d33044f99b919f7d239d337165fb9cdafeb28b36d793d6",
+          "definitionSha256": "194d0258c73c6955d8c4555d69245ed5b86d3ce9cc47f2a6580a8149c49e17cb",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fnative-bridge-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "0640dd99a9dfd96e0448e4481a8cd3f3eb84d2b2d773b0845014c5bbf47de5e7"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fnative-bridge-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fnative-bridge-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "937bb52038727b17e090bcae24603b5acd03a0314a7d1435056679327ef3fdfe",
+          "definitionSha256": "0640dd99a9dfd96e0448e4481a8cd3f3eb84d2b2d773b0845014c5bbf47de5e7",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fnative-project-change.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "81f4152811699dc8b4e6341d95fb50d72b238edc9d082ac22452fc52f8b7a5b1"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fnative-project-change.schema.json",
+          "path": "shared\u002fasset-hands\u002fnative-project-change.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "f40eb2b63a590838319dbb2e7c2d74f8e6bdd28455b9194edb417f0edd0f7598",
+          "definitionSha256": "81f4152811699dc8b4e6341d95fb50d72b238edc9d082ac22452fc52f8b7a5b1",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fnative-raster-spec-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "5ed486c82cb5f122d0dea6fd9fb4e9acda85f32588c736ce8955b198f8bc7be6"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fnative-raster-spec-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fnative-raster-spec.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "b4d993af83358982c2c38e9304d1acacccf2b41aa3110ff6f60b069234e14e41",
+          "definitionSha256": "5ed486c82cb5f122d0dea6fd9fb4e9acda85f32588c736ce8955b198f8bc7be6",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fnavigation-mesh.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "78f71284c710fbe7cfe2d509ba38f0c95a6659531a233ebc49f37051d817256c"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fnavigation-mesh.schema.json",
+          "path": "shared\u002fasset-hands\u002fnavigation-mesh.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "0166be78f0a8441ac93c443765c82e9688b521431dee75ba6c52556b1050ac66",
+          "definitionSha256": "78f71284c710fbe7cfe2d509ba38f0c95a6659531a233ebc49f37051d817256c",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fopenusd-scene-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "70821afe3d2c34e326821c7328127b159a3f052888ccd30f788f9cdcd0d58776"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fopenusd-scene-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fopenusd-scene-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "dbd175c4784bc8c03ec1d2f337a319b22ae7356b7fba4e315135de2f1efd5d1c",
+          "definitionSha256": "70821afe3d2c34e326821c7328127b159a3f052888ccd30f788f9cdcd0d58776",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fpdfx-production-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "bb6e6eb44e7d4163eced699dc34bb72d1f92583405df426b947d5c7b84b16ec8"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fpdfx-production-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fpdfx-production-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "73ecb52f619d1c466779df0ca02f0d9bba2bfd676d8adfaa0b1c4a7142aa63c1",
+          "definitionSha256": "bb6e6eb44e7d4163eced699dc34bb72d1f92583405df426b947d5c7b84b16ec8",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fpdfx-validation-report-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "e70ff5299d7b515b03d4e783359d9c5cb361347c1232ca334f246b77acc3ac3a"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fpdfx-validation-report-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fpdfx-validation-report.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "a182a11e3ddfc6000c29a6ab76d762334545b9bd79efeb7bbf2531129495f4e4",
+          "definitionSha256": "e70ff5299d7b515b03d4e783359d9c5cb361347c1232ca334f246b77acc3ac3a",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fphysical-tooling-spec-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "1681f6f1290425547c64b1df8c8c5b71a2932c22571d15310814b0395d92e5a2"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fphysical-tooling-spec-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fphysical-tooling-spec.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "a11f84b994af772288f0d6425bf217dbf7d3cc5c11a24eb6aec681e53d5bf095",
+          "definitionSha256": "1681f6f1290425547c64b1df8c8c5b71a2932c22571d15310814b0395d92e5a2",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fprint-document-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "6d50a839ebf7692546a29a5957ac5f5493547aebce986d032e7f34acfb46fee1"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fprint-document-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fprint-document.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "949fe8e26c17c78f1b1c41f5d4f56a59de0b38793cc20c284135228e3e12c01d",
+          "definitionSha256": "6d50a839ebf7692546a29a5957ac5f5493547aebce986d032e7f34acfb46fee1",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fprint-production-spec-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "51f5b0ea225b3521493ae22d54df253d6a4433442c2c1559c20c35c7e87b7ea5"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fprint-production-spec-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fprint-production-spec.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "e34f9d25024e7b115863b66cf8fbb6bea4d48c29df08efc6a68ab72958c6322a",
+          "definitionSha256": "51f5b0ea225b3521493ae22d54df253d6a4433442c2c1559c20c35c7e87b7ea5",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002freference-validation-receipt-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "fca37b0bc6eceacfce6fb2b69a2f3dd266a15df85af204207ab167aa3e1d2ae5"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002freference-validation-receipt-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002freference-validators\u002freference-validation-receipt.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "f8b764052770caefe6a861b91fe4fbfe6e343705d4cbd59468e5c0312895e2de",
+          "definitionSha256": "fca37b0bc6eceacfce6fb2b69a2f3dd266a15df85af204207ab167aa3e1d2ae5",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fresponsive-layout-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "579fea38b611cb27da966806046d1e1ba7ea6a1dec40cfde95335bd3eca138fe"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fresponsive-layout-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fresponsive-layout.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "08612f4f87881e343ef641eb520581684e615043ad8643abddb2a0c804f71b73",
+          "definitionSha256": "579fea38b611cb27da966806046d1e1ba7ea6a1dec40cfde95335bd3eca138fe",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002frigged-animation-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "8362b4bb153e84d37cf996ba850f2f951c71d1d8710ad661373d5a14074572a5"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002frigged-animation-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002frigged-animation-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "9c7bcfd651c2c89f0a8ccc8c42cca6d98e234077cd57d991ec07983beeb8ad1a",
+          "definitionSha256": "8362b4bb153e84d37cf996ba850f2f951c71d1d8710ad661373d5a14074572a5",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002frigged-animation-validation-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "8257e9f809c209d3695301f4f960dfe2d7b731338a2b6517a49579739b1525bf"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002frigged-animation-validation-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002frigged-animation-validation.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "80fc22cdf1fec2b2ddfc57c443006bade2e4bc27f947dd04cb6fbfa16ee9fa66",
+          "definitionSha256": "8257e9f809c209d3695301f4f960dfe2d7b731338a2b6517a49579739b1525bf",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fscene-composition-report.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "3e0faeb23c5035634cc55151deea70fa8b10e924ab5f0fd72fdc09be1f5b93b3"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fscene-composition-report.schema.json",
+          "path": "shared\u002fasset-hands\u002fscene-composition-report.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "2fc1a7903f399cd9fe501e47e417a3fbcddc69cc5a76f0be12bb6b2cede94b7f",
+          "definitionSha256": "3e0faeb23c5035634cc55151deea70fa8b10e924ab5f0fd72fdc09be1f5b93b3",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fseat-screen-semantics-v1.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "9d314a273f7b73f3eca017992122870e8b59816a6afe0c4d915a83e8a6186cb1"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fseat-screen-semantics-v1.json",
+          "path": "shared\u002fcontrols\u002fschemas\u002fseat-observation.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "4df0a817c5ef9a4c360be01f2e5cd33225d0a5b5d94922998e6cf983b463fd15",
+          "definitionSha256": "9d314a273f7b73f3eca017992122870e8b59816a6afe0c4d915a83e8a6186cb1",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fsemantic-input-packet-v1.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "977d22a9d8ea3d449d2d76dcff6233cc71dd8bb262113878eabca0730b7cc142"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fsemantic-input-packet-v1.json",
+          "path": "shared\u002fcontrols\u002fschemas\u002finput-packet.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "b8e4a1c60f11c6b980953a99267577e1a180e631c4017f5974243357bf92bc08",
+          "definitionSha256": "977d22a9d8ea3d449d2d76dcff6233cc71dd8bb262113878eabca0730b7cc142",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fspatial-navigation-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "d0f890987df52ed43cd9ca1d237627f6d7b52ece8e59a49d3dd319390bc35061"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fspatial-navigation-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fspatial-navigation-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "123aa0fab98e6b1d31470473d669cff35e80e7ec5618fedb842187d3ec84cfd7",
+          "definitionSha256": "d0f890987df52ed43cd9ca1d237627f6d7b52ece8e59a49d3dd319390bc35061",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fspatial-navigation-validation-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "3e692c01044e9ce620a8940b9fdec4932121e85f6960e6fae32dd7d1efb9c8d7"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fspatial-navigation-validation-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fspatial-navigation-validation.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "3ca7b4302478607671193caa9ca676de4aa43c8afceb0b21a9e1f5f1459b315f",
+          "definitionSha256": "3e692c01044e9ce620a8940b9fdec4932121e85f6960e6fae32dd7d1efb9c8d7",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fsprite-atlas-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "9184434aa6f4aa443bf96a17d9fa391bcb99c47fb2ecd6546a2daa14dade077e"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fsprite-atlas-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fsprite-atlas.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "c15a410875a986a4df60c73a39538f2ce85b78ce2bd7d8d96c133d83d67cc755",
+          "definitionSha256": "9184434aa6f4aa443bf96a17d9fa391bcb99c47fb2ecd6546a2daa14dade077e",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002ftarget-canvas-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "505e247c3ae9887b1cec561e0c06200384db06baddca2ae3bd3a8e6253e1f2f4"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002ftarget-canvas-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002ftarget-canvas.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "e12f45d099a0506ac952c58a4549f513b4f5a0f5e2a5a70437474af66e0bf0a1",
+          "definitionSha256": "505e247c3ae9887b1cec561e0c06200384db06baddca2ae3bd3a8e6253e1f2f4",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002ftoolpath-simulation-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "5eb1b4e149b1a760f447088ee72d68da94d39ad248257412f85b803850c8aa5f"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002ftoolpath-simulation-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002ftoolpath-simulation.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "bb60a4b9551c6f55d3d6c786cbb142f0f4c4bbe049f48edf75d51548d32ccad1",
+          "definitionSha256": "5eb1b4e149b1a760f447088ee72d68da94d39ad248257412f85b803850c8aa5f",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fui-component-spec-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "3f2d8f2dd5aeeb0a37708889d2d2ca3a2c4329263641ce2ab4755b1849dd95d7"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fui-component-spec-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fui-component-spec.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "726bff0955151a00a2e5366d62f942b977cb2ec934ac195f0cf0726dc2572b7a",
+          "definitionSha256": "3f2d8f2dd5aeeb0a37708889d2d2ca3a2c4329263641ce2ab4755b1849dd95d7",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fusd-scene-composition-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "202c8ee5a7401942f6a46d53a2d04b363afc29a26a9a86862f070f9dce580904"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fusd-scene-composition-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fusd-scene-composition.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "b07b739539492d414bc5b09ca35230ed9f55953d645dbc9818733d31a3e6e626",
+          "definitionSha256": "202c8ee5a7401942f6a46d53a2d04b363afc29a26a9a86862f070f9dce580904",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fuv-layout-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "7cdaf17f4bc43f7e01004b2bd0ecfece3c96a7af5bc857c353fe000f90c07406"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fuv-layout-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fuv-layout.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "af77041b8c102806dd7108150e1184adcbf8469fda1c6a26f7a90c2d05518bb7",
+          "definitionSha256": "7cdaf17f4bc43f7e01004b2bd0ecfece3c96a7af5bc857c353fe000f90c07406",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fuv-material-bake-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "9b32cb608c17d054b79d305181fb7df41a1c8ff8fc3ed80ca7c7ed068b8f4cdf"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fuv-material-bake-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fuv-material-bake-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "621222417a6cb3ff5de47d23547af7a09240b0543927af3f91a8d20bf5d765cf",
+          "definitionSha256": "9b32cb608c17d054b79d305181fb7df41a1c8ff8fc3ed80ca7c7ed068b8f4cdf",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fuv-material-validation-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "89dbaf7f670ba9c5955ae1e4d2ed872bd4b833d25a744423a085017d51315793"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fuv-material-validation-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fuv-material-validation.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "96e3c6bf511cd5d3a7b9277abc8eee5d0228ecac4592a76233c3ead3490607d5",
+          "definitionSha256": "89dbaf7f670ba9c5955ae1e4d2ed872bd4b833d25a744423a085017d51315793",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fvideo-validation-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "fd7443c033b8ae3576c2b1b667b23215a53dacdc6365d5c136045102bdbcb333"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fvideo-validation-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fvideo-validation.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "83b1f6941a39c0466413ecfa2dfa8e45103793df68a257e3daabc5f2549fb25d",
+          "definitionSha256": "fd7443c033b8ae3576c2b1b667b23215a53dacdc6365d5c136045102bdbcb333",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fvisual-kernel-tokens-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "c798eb7a25e153bcd4ad4ee022acb7aad5b9b35c540bf0cffd9e016194c90bf0"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fvisual-kernel-tokens-v1.schema.json",
+          "path": "shared\u002fvisual-kernel\u002fvisual-kernel.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "d9d38d81a90aa03e1a1680d4d94db683d1484c6817f96a421f9c0a0bce734c4d",
+          "definitionSha256": "c798eb7a25e153bcd4ad4ee022acb7aad5b9b35c540bf0cffd9e016194c90bf0",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    },
+    {
+      "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fwide-colour-raster-recipe-v1.schema.json",
+      "state": "UNIQUE_DEFINITION",
+      "definitionDigests": [
+        "d60b7a76492292f0c620947e73b748c121e8408cd1df65557cfeb855ca8fa82b"
+      ],
+      "occurrences": [
+        {
+          "identity": "https:\u002f\u002faxm.local\u002fschemas\u002fwide-colour-raster-recipe-v1.schema.json",
+          "path": "shared\u002fasset-hands\u002fwide-colour-raster-recipe.schema.json",
+          "pointer": "\u002f",
+          "fileSha256": "2effd339ff854a7bd1bdc8bc97710e3a65bf33ac01c5c9f27d7893f5fda0faae",
+          "definitionSha256": "d60b7a76492292f0c620947e73b748c121e8408cd1df65557cfeb855ca8fa82b",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "semanticEquivalenceProven": false,
+        "compatibilityProven": false,
+        "collisionAutomaticallyResolved": false
+      }
+    }
+  ],
+  "referenceGroups": [
+    {
+      "identity": "axm.achievement-emblem-set\u002fv2",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.achievement-emblem-set\u002fv2",
+          "field": "schema",
+          "path": "assets\u002fachievements\u002fmanifest.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "e293cbc8dc13f953f7975f646e5043b055190ff95f9a3a55bdc3330173157716",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.achievement-emblem-set",
+            "version": "v2"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.asset-catalog\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.asset-catalog\u002fv1",
+          "field": "schema",
+          "path": "assets\u002flocal\u002fgame-vault\u002fshooter-weapons\u002findex.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "e3b60004fba6498f8311e3d845742454e14c5ebf43229164f3b15e9f28e44bf5",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.asset-catalog",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.asset-manifest\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.asset-manifest\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f009-circuitseed-protocol-wilds\u002fassets\u002fASSET_MANIFEST.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "20d6afe50a95535ec056447a08db5ebd2e4fc0a368fcba6d91e4748b1a82f055",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.asset-manifest",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.asset-provenance\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.asset-provenance\u002fv1",
+          "field": "schema",
+          "path": "site\u002fassets\u002faxm-front-door-v4.provenance.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "ca72b17cf4406eabce8b17a474f9e3e52718cbf6306df081ca676a11ad85c54f",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.asset-provenance",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.circuitseed-build-manifest\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.circuitseed-build-manifest\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f009-circuitseed-protocol-wilds\u002fBUILD_MANIFEST.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "8a289b66d68e599f24f0ae3d495f739ff5331e90b98e491c6326ee305ca99532",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.circuitseed-build-manifest",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.circuitseed-catalog\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.circuitseed-catalog\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f009-circuitseed-protocol-wilds\u002fdata\u002fcircuitkin.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "d655dc845d230fb78f3cba54d503f6c233b967089eb951dfdf22f2333d74d844",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.circuitseed-catalog",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.circuitseed-expedition-modifiers\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.circuitseed-expedition-modifiers\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f009-circuitseed-protocol-wilds\u002fdata\u002fexpedition-modifiers.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "208f60df8e7229957fd8d06487baa7f2cf717b0a6018cfb5e861b8ae2c67862c",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.circuitseed-expedition-modifiers",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.circuitseed-field-requests\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.circuitseed-field-requests\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f009-circuitseed-protocol-wilds\u002fdata\u002ffield-requests.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "4958b56b39b5ab2a54043d1c36985e57108b22981c3c28ba708830fef60c11a2",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.circuitseed-field-requests",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.circuitseed-item-catalog\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.circuitseed-item-catalog\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f009-circuitseed-protocol-wilds\u002fdata\u002fitems.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "d7af06f68cef26f8425d3bf5c831817ee518f99c9fc50417baac045b862143ca",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.circuitseed-item-catalog",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.circuitseed-memory-echoes\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.circuitseed-memory-echoes\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f009-circuitseed-protocol-wilds\u002fdata\u002flore.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "1c6603596b6ffff214a72f88c8b940d114a999766408a20d4fa4c4ccc7849f61",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.circuitseed-memory-echoes",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.circuitseed-missions\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.circuitseed-missions\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f009-circuitseed-protocol-wilds\u002fdata\u002fmissions.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "f8fdb7f2eea664448858ed7b5ce83f1f5c443a166c1a3bffe8434b037747794f",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.circuitseed-missions",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.circuitseed-recipes\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.circuitseed-recipes\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f009-circuitseed-protocol-wilds\u002fdata\u002frecipes.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "3733d71bcb59457f9e4b48d9a9ea0df5e10c59740fcf73285dff9ce07a8b2e48",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.circuitseed-recipes",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.circuitseed-router-profile\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.circuitseed-router-profile\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f009-circuitseed-protocol-wilds\u002fprofiles\u002frouter-profile.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "bee447fdf8591403a83d75fb9f60338b119e92c824ec6cbc453433d4eafbb0ad",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.circuitseed-router-profile",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.circuitseed-source-reference\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.circuitseed-source-reference\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f009-circuitseed-protocol-wilds\u002fSOURCE_REFERENCE.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "2d2fea11c296160d230cb499b0ca574b13dd89306e082ff72e3e881cb0ead727",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.circuitseed-source-reference",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.circuitseed-world-bones\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.circuitseed-world-bones\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f009-circuitseed-protocol-wilds\u002fdata\u002fworld.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "e4a1cb454ff3743c912ba66136326016be141173b994de984ae8f3f58142f33e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.circuitseed-world-bones",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.cognitive-resource-hand-provider-catalog\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.cognitive-resource-hand-provider-catalog\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fcognitive-resource\u002fprovider-declarations.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "0071d09dd88134e7ca11c95af860d054bf4b398122b78d4b533d394157167808",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.cognitive-resource-hand-provider-catalog",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.cognitive-resource.command-center-controls\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.cognitive-resource.command-center-controls\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fcognitive-resource\u002fcommand-center-controls.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "8560b4d5dee0d36b4e7056be9cc13c2aaa85d6ed05d5c8485913ea0143a6e05d",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.cognitive-resource.command-center-controls",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.creation-rung-contract\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.creation-rung-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgoverned-evolution-lab\u002fcreation-rung.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "941b3200c39dc887da61c1ed37c3b263b1e09b69baa8721e2f0f334e47cf33a9",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.creation-rung-contract",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.external-collaborator-seat\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.external-collaborator-seat\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fadapters\u002fADAPTER_SEAT_TEMPLATE.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "e2436a80836a879cb9086cc3ec0dd061dfbe064075400b3a30a19c7de5dd288b",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.external-collaborator-seat",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.foundation-implementation-map\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.foundation-implementation-map\u002fv1",
+          "field": "schema",
+          "path": "shared\u002ffoundation-intake\u002ffoundation-map.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "ca03e7e3c7216480639dedbe3303f4c3e25829bd2c84d69318a0f8212cb865da",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.foundation-implementation-map",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.foundation-intake-ledger\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.foundation-intake-ledger\u002fv1",
+          "field": "schema",
+          "path": "tools\u002ffoundation-intake-steward\u002ffoundation-ledger.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "1508926a483b659338a18b46c210e402b1da5ddc420a43354caa5fa46960e39d",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.foundation-intake-ledger",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.foundation-planet-manifest\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.foundation-planet-manifest\u002fv1",
+          "field": "schema",
+          "path": "worlds\u002ffoundation-planet\u002fworld.manifest.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "78a2ee8e4057b40ae67fc0a54e7a2c6cb652cd3fd260cd911f06e366751ca11f",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.foundation-planet-manifest",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.foundation-service-integration\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.foundation-service-integration\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fmirror-core\u002fAXM_INTEGRATION.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "cd19ed0f32e7aa6c5a23cc0ec1b5766e1495d1e37fc261b37cf58b73d2571c2c",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.foundation-service-integration",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.foundation-service-plane\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.foundation-service-plane\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fservices\u002fservice-contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "d40d7a720005c048e4ef9780003d4baa08df45c534e508e649704c6ad525562f",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.foundation-service-plane",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.game-asset-capability-inventory\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.game-asset-capability-inventory\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fgame-asset-foundation\u002fcapability-inventory.after.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "ae9df0a9dce6fd33caabf0991795ca4c42d2fb671826c12897fc009b2b0f0a7d",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-asset-capability-inventory",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.game-asset-capability-inventory\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fgame-asset-foundation\u002fcapability-inventory.before.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "cc0df486ea687c9cd0d90b31d20cec0c0d4f1c440de4a4e59fc751230b5148c0",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-asset-capability-inventory",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.game-asset-capability-requirements\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.game-asset-capability-requirements\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fgame-asset-foundation\u002fcapability-requirements.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "88bad045f881fcffcc390c2c3c37fcd34957cf18f5718d661a8bd1c7d83e5ec5",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-asset-capability-requirements",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.game-asset-quality-ladder\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.game-asset-quality-ladder\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fgame-asset-foundation\u002fquality-ladder.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "891cbfb5c767f19675bb89052129f8fccbb80b785b3fcd3d8eb63e58bf7cb3ad",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-asset-quality-ladder",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.game-asset\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.game-asset\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fasset-inbox\u002fasset-1783798252430-0f8dc8\u002fhandoff.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "200c37119ba1307ea006a202f31b258a7295a27ce73fe2b19cf8c52c223d10e0",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-asset",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.game-intake-source\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.game-intake-source\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fSOURCE_PACKAGE.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "941d58fd61de6169772b5e8c8bd0e3b1e7e268852c46431ba0dce39c03b357da",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-intake-source",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.game-night-seams\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.game-night-seams\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fGAME_NIGHT_SEAM_CONTRACT.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "16ffa2eec4c609d9c80c34ddece3d6ad52fba97119754046d886f38774ad7152",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-night-seams",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.game-night-seams\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f002-robo-pong\u002fgame.manifest.json",
+          "pointer": "\u002fverification\u002fgame_night\u002fschema",
+          "fileSha256": "63576987b2e75c15f5b454d50221472be59cb0d1bd7d8da0fe955b73c7481b5e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-night-seams",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.game-night-seams\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f003-robo-pong-cross\u002fgame.manifest.json",
+          "pointer": "\u002fverification\u002fgame_night\u002fschema",
+          "fileSha256": "372ba7beac5b0bbbfa0429ee6681957ccf5dba0a8f9fe88bf3665da1bde4c632",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-night-seams",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.game-night-seams\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f004-relaybound\u002fgame.manifest.json",
+          "pointer": "\u002fverification\u002fgame_night\u002fschema",
+          "fileSha256": "c85f8ead35ca53f2d13fe5331a56b4d43247cce8b412ef08f36b8f7ebb816c8b",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-night-seams",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.game-night-seams\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f005-briarfront\u002fgame.manifest.json",
+          "pointer": "\u002fverification\u002fgame_night\u002fschema",
+          "fileSha256": "bbea2b1882230919fbd5245d25023b476047c84e6779cdd68ea3773ae497d165",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-night-seams",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.game-night-seams\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f006-lumenwake\u002fgame.manifest.json",
+          "pointer": "\u002fverification\u002fgame_night\u002fschema",
+          "fileSha256": "8e9c5a1f0cd75d7f9223ca84e82beddd703c0c84102b8272fa824bf2c79de38d",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-night-seams",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.game-night-seams\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f007-casino\u002fgame.manifest.json",
+          "pointer": "\u002fverification\u002fgame_night\u002fschema",
+          "fileSha256": "346fce4ee1aabc11ef0e861b67b228d0daa5112accbf2dbddcb22ae2df46c7ae",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-night-seams",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.game-night-seams\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f008-district-party\u002fgame.manifest.json",
+          "pointer": "\u002fverification\u002fgame_night\u002fschema",
+          "fileSha256": "457fe4eaa552d61e7f7dea287d7b2df544134feedfb45720863ea758f129d35b",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-night-seams",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.game-night-seams\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f009-circuitseed-protocol-wilds\u002fgame.manifest.json",
+          "pointer": "\u002fverification\u002fgame_night\u002fschema",
+          "fileSha256": "ea8d1a43b4a409b84dd38ab0c19986fd75cb0728296475b595909371e01307e1",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-night-seams",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.game-night-seams\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fgame.manifest.json",
+          "pointer": "\u002fverification\u002fgame_night\u002fschema",
+          "fileSha256": "bd4b1115b0194afc07a5279ddbeb881200bd9ea5c0dd0933440561e7aad58d94",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-night-seams",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.game-night-seams\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002fGAME_MANIFEST_TEMPLATE.json",
+          "pointer": "\u002fverification\u002fgame_night\u002fschema",
+          "fileSha256": "06b7cd269ec6f7f51b06979ce49b859668ba0120c7c3e95440c249c62caf8469",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-night-seams",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.game-night\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.game-night\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fGAME_NIGHT_CONTRACT.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "af20c0ece82dff48c66230d625bfbbeb1bfe69fe4b1eb76c79b0fd58f0d8df65",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.game-night",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.living-world-manifest\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.living-world-manifest\u002fv1",
+          "field": "schema",
+          "path": "worlds\u002fliving-globe\u002fworld.manifest.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "e64bca8c140b690321470dd78eb0d4e57785c457ab1f68928588ec7f3a90a49c",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.living-world-manifest",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.living-world-manifest\u002fv10",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.living-world-manifest\u002fv10",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fworld.manifest.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "dda36f74020fcb2a8a1caa50497cbcdb2b63745b935d55b69dfe5fb7286a303e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.living-world-manifest",
+            "version": "v10"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.local-achievement-pack\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.local-achievement-pack\u002fv1",
+          "field": "schema",
+          "path": "assets\u002fachievements\u002fpacks\u002fachievement-badges-v1\u002fsource-manifest.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "a4356c73c81111e9186c3842bbb8866d2ab2386e58da40ae34f7ce5982e5fe5d",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.local-achievement-pack",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.local-radio\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.local-radio\u002fv1",
+          "field": "schema",
+          "path": "assets\u002faudio\u002fradio\u002findex.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "d454ecdd9129333957f3abfff229ffc7d4e19ad55658375f6d39eb45f8201285",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.local-radio",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.market-dictionary\u002f0.2",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.market-dictionary\u002f0.2",
+          "field": "schema",
+          "path": "tools\u002fgeographic-market-map\u002fmarket-dictionary.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "97bab43331876d6cde0c0b81278f77bf00bb32d13152330333922ab9272e611c",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.mirror.adapter-descriptor\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.mirror.adapter-descriptor\u002fv1",
+          "field": "schema_version",
+          "path": "worlds\u002fliving-globe\u002fmirror-adapter.descriptor.json",
+          "pointer": "\u002fschema_version",
+          "fileSha256": "a8207fe0c688ab192d66d2f763650fe35327ae168271ea006675836c86d790e1",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.adapter-descriptor",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.mirror.build-manifest\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.mirror.build-manifest\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fmirror-core\u002fBUILD_MANIFEST.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "5284a8e56aab8ae806312bed753709f5b2355a8227cf07660b075bcc8c1706fb",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.build-manifest",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.mirror.demo-expected\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.mirror.demo-expected\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fmirror-core\u002fdemo\u002fexpected-results.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "3fea0dc7c4bcf20acf30da47144711a5e5883d524b41300f099f9ba238760620",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.demo-expected",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.mirror.evidence\u002fv1",
+      "state": "LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.mirror.evidence\u002fv1",
+          "field": "schema_version",
+          "path": "shared\u002fmirror-core\u002fdemo\u002fseed-platform.json",
+          "pointer": "\u002fevidence\u002f0\u002fschema_version",
+          "fileSha256": "d6ff9ebbdefbe9c6fbfd5756acfc724c65dbf2ab42a0a98c411b840b316ccd16",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.evidence",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.mirror.evidence\u002fv1",
+          "field": "schema_version",
+          "path": "shared\u002fmirror-core\u002fdemo\u002fseed-world.json",
+          "pointer": "\u002fevidence\u002f0\u002fschema_version",
+          "fileSha256": "f1e1e050ce60448ef3d5dbae8c4a48c5094420c23dd9c775ad8b248ffa540270",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.evidence",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.mirror.source-reference\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.mirror.source-reference\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fmirror-core\u002fSOURCE_REFERENCE.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "d439e9b2a3ad994c22a69d6aafde624d1b7e1ba7925d7fb69cca1fee6d4610fd",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mirror.source-reference",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.missing-provider-relation\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.missing-provider-relation\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fcognitive-resource\u002fmissing-provider-relation.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "d634233e412c438b6e6b78ebdc50720ae8b2e67f3407ebe5fd9828b6d0b8f127",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.missing-provider-relation",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.mock-system\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.mock-system\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fmirror-core\u002fdemo\u002fseed-platform.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "d6ff9ebbdefbe9c6fbfd5756acfc724c65dbf2ab42a0a98c411b840b316ccd16",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mock-system",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.mock-system\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fmirror-core\u002fdemo\u002fseed-world.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "f1e1e050ce60448ef3d5dbae8c4a48c5094420c23dd9c775ad8b248ffa540270",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.mock-system",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.module-contract\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002factivation-recovery\u002fdependency-resolver.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "042d630972c593d2469722cdb197d4f1f0c275912183d91fa5f22f35e8bda63a",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002factivation-recovery\u002fknown-good-pointer.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "13bce90bd6a1dac19c81796fe6fd8403659459ca403e7f7162a1fe2ecaee6632",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002factivation-recovery\u002fpost-activation-verifier.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "dbd020132d255baa87403e12aae341bb47bc65a84a48095f6f535cb7d91e5f5a",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002ffoundation-convergence\u002fblueprint-contract-validator.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "bda129ac52c695d0e3f897dbbbb724b3f7c04112f106872760d060c9aa007490",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002ffoundation-convergence\u002fleast-authority-planner.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "337526a4063538219a4eeab360463e6e9ecaa81a9e43acab9f202deda6330d78",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002ffoundation-convergence\u002fskeleton-rule-saver.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "5db2b77485450ee76488c091c66dd31fd504ec39d2a9989c388b26a0bba7780d",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fgovernance-integrity\u002fauthority-expansion-detector.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "dab2c9284e89dab7ece3634ba6e1bcd835cbec907e90cf8315b2b4a8aee28617",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fgovernance-integrity\u002fcontrol-parity-auditor.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "858b5a2ef4f49a543c0252ceb7b9958ff38f2c0f0db3f3d8b669399b78b58fd6",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fgovernance-integrity\u002fdissent-ledger.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "82dcc17d1c545625c57db897fa76eb3e5f3d91d44a9a80c2b9ac4cbda2c5b6a8",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fidentity-continuity\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "5c71b2b664b0bb230dfe3e4aef0b130011e6c706fb6b70490030a4ccf1e45aee",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fmirror-core\u002fdemo\u002fseed-platform.json",
+          "pointer": "\u002fentities\u002fmodule-workshop-planning\u002fstate\u002fschema",
+          "fileSha256": "d6ff9ebbdefbe9c6fbfd5756acfc724c65dbf2ab42a0a98c411b840b316ccd16",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fportable-composition\u002fcompatibility-checker.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "f628cb1885d053054ed1530ff7a7f24e283f4b31670367d1cb9952129063cb15",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fportable-composition\u002fcomponent-protocol-validator.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "d175630b00074652a62c61f3652f0bd1dcb6242f22ac953ddf84cdfe80f37951",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fportable-composition\u002finformation-loss-validator.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "422232d46c30da27380488d0afddbfa7be39ce504f8aee25fbc4bcfbf59b7ca1",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fportable-composition\u002ftyped-port-validator.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "ac0a7e9605e3943b0b5798dc0bf1ce5a8f238af8d646e8d755e1f822485485ef",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fresearch-integrity\u002fcategory-suggestion-evaluator.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "f0474d5fffa0b22f520ad4c377e7723fbd444280ebbcbe79ca6399c31edffe1c",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fresearch-integrity\u002fresearch-deduplicator.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "a9e7bd46e7c445d6e3a177b33af1892fe6352490a1d8dd23b472c97ff9b63901",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fresearch-integrity\u002ftrust-label-evaluator.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "8b5e2b33478d34b01f107a7d220822479e0ff00c3f5ca44fdf2bd1d975df5b7e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fresearch-integrity\u002funcertainty-register.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "8ce4d9eed2fce4de9318808a443f10d4b6492a18a51c48c808dda82dcb3ca688",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002f_module-template\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "9491bab56aee406cde181f25e9917fe9cb0f6297234f7815ca78a3583212c424",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fai-task-talk\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "50e4e8579393a90ac13bf2ae3fd55dd87790dedacad7239bc7fbb15ad1e5641c",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fai-team\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "e468d6025035607217edcac9ca71c8d7d17da60965b451cc879a645349b2939f",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fasset-fabric\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "67306f073af105b2009478daaecb8952bd057092bcb0ff57b919bd464f530ec3",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fasset-filesystem-service\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "5f113ad934ea765bbe55607b60d5e3d98d7c216714e71baa45d5267604a5cfb2",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002faudio-studio\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "110e66bacdcd6ec1129386d622955ae59baae7206d3a11c6d7fa44403d8dfca3",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fbody-pulse\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "cc1229a6a68822a5d65b5712d07c834801d98098296457f9fac0c1cc2652536f",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fbrowser-lan-hardware-qa-lab\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "55c930b7317816e7388cac10c9b0e91a5e2a48b4c8bf46d271eb6d8ccaab9783",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fchatgpt-connector\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "68f2a0195b1ba580438c92fff2341bdd6a43d65b6532c8d51eb79c79371a186c",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fclaude-connector\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "e7e1aa80c9facde920ee16424471e51770d0d8501b997496e6cc5ee115662c82",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fcognitive-calibration-lab\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "c6921ef254fbb33711843799140dfebb1c467652bdfcbefbe908e0bbf5e72a7a",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fcognitive-evidence-explorer\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "7441cbeb0ff3250342955183b2277c2c7f1839d68dd5cdf09c13a30a4272dd0f",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fcognitive-resource-meter\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "6e503acd149d8592ce244032015e2d0e0d8ab07dbfcdd994ac081890328a3b8a",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fdevice-handoff\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "99179177c998708610d8b63c6af7d83a6e10741aaabb383ca014a3922da34455",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fdiagnostics-operations-center\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "a36c359a04bc91388344834076aea413023413c12beca806710667aed1ec8ea0",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fdiscord-bridge\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "9952a1705e2cd70f1f0b602d6b15e56891bc8418b9f367a82fd175fe3b763ebb",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fdiscovery-engine\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "6f72b569141b16d5692a3160170de6ed82a6d10d4de4a30b35b8b29bb23cc901",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fevolution-foundry\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "2e1952c2a7d65b445813996ad16ac80fdedbfecd563ab9ce2ba47bd12f9c1370",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002ffilm-motion-studio\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "d738c75f735d1330200b6a167f3d0d82b7490965cb31d81b79094154dd5f9a4e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002ffinance-world-room\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "bb3e064878281da31e7fe3c947c1f3d7cbc63a85f04a6d431e31590feee952a7",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002ffoundation-intake-steward\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "a342467e45eca2e73f10c9a7e6674b9f05c1ec4e670ee15e2d0a7f0b6d73ec00",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-forge\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "556c76e85f39545cc7ebc431c5433d9d6a54fa4dbcd6b2b9c5c406060db96638",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "3996aacd9c937b1997ce440f983a5a90ff48034b170af88ff10a2118b09b4991",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "d93f37ac194aef55f0561df6095d3d0b6b78e4d2048e5959e9d90e720f5e2156",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "683285382423fc736a735d9161681231236d5295eb4fa824e40c40e9f141054e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgeographic-market-map\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "9858b1e2f8650aad4db497559af0832c8076707863a04dd75e282d289f1beb42",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgoverned-evolution-lab\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "24f8acce91fb11dded1e818e08eb72a88d9af98f2e35c72101b95d8d39c90745",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fhuman-attention-ledger\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "c16981d71e28216c789c4aeaa897bcf0297605ea1c01b36f8cbeb4dc84b006fe",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fjudgement-chamber\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "1a37a8297e11101cd02fa7aae7ed1eac3e7e4407386c0fd8781e00c4ca57fdce",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fknowledge-canvas\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "2001402ba9cda6e4896afc0d24f70470203c1117fbf244044dadd0fb2c1fead4",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002flearning-lab\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "6b3337b43e9e041f215f87cfd026a445d6a8b7090b7ca58e83d4bfba21be68ab",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fliving-world-ruleset-physics-adapter-kit\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "a65a6329269ed8370835b839761d1b2bee47da56b4d6b13e13b0851af58cb938",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fliving-world-state-server\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "86d90d3191462b30308ac6927c1f999b45a59343eec7badde8836a2e6fe2a778",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fmachine-host\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "ee1a6c6093096a001c39436597f921635bcd6b802e6d1f83a7da6a7008b98aaa",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fmarketplace-deployment\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "3376966b11173b0e952e798839ebb25e030c9973eb8ba43792191dbfb7c07f91",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fmedia-render-transcode-service\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "640c10658848bc662c93432a37962cf1ee1e62470da22defb32ed7b4cf4b5160",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fmirror-intake-monitor\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "9da2265518274632ff0f922f26cfec6c4643fadcfe6923b43e3216c731b60964",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fmirror-learning-shell\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "39371b0bbf8774f829cf8fffc8aa446c6114a4e32efa37a22bc33f1f4b2287e8",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fmodule-contract-workbench\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "a955c82f5e563efeed6133b1f755d1a854c203a47f78343a7cf6985e1b1f6380",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fmodule-installer\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "e41338e7906578990073a9343d617c19bf80c865b450b7f11c2d9625ff268ac0",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fmultiplayer-controller-transport\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "5b166cf5fbe77e9f039e7970dc4e8228c9c563aaa31959f3918a69b060c81314",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fnovelty-diversity-engine\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "76c7e71849ac5ddbff9d7f0b22607c01e6647a4fe0d7b38c21c83d1e3530e748",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fproject-room\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "195ff276717664b56540265b0f0bd8d84d5485e67cc2de489117937c30a4daea",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fps2-asset-forge\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "beb1d51adf62fd1656d1b9f6b50343e1b661b2808757d051385130dedcd11340",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fpublic-release-deployment-adapter\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "c275a331e7c70b8460f2b7a1c4e9c8c80e2a80fe359c6fea7abb7511b158d211",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fpublish-library\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "dbc050c9e5fe69b38d2d93bb708a8ee33c41c7eb27b9ebf96404d15c9c31a1fb",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fread-only-mirror-world-adapter\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "28db9400a476e79117403c9e3571f30ac0fd8364ab697cb2f147cc1237c8800d",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002frecovery-center\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "4ca51cbb9e00175fd035c5c534be0986c98b908d66326843db2e0ef75b4e3fe9",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002freview-inbox\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "b6faf1d0ce5035359d1399312ff1b8dedfa6998e81beaf119da24076ed04cdcb",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fsecrets-permissions-console\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "342f4455903e2ab9b324804c0e7c709dfc433d3d212eba89ee12b4e63585a989",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fshell-guardian\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "a55af632831793c1ac7a11268b1621cfc0d261fae32421d262c0e00d51feb546",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fsource-connector-hub\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "f3fd3db09661d6bfafcdf07f8bd93313937141b9bbac117db8c24699e830bf6c",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fspatial-studio\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "e8bf0d69a771bfbfd453bcba8c44a7f6e0ee10667eec341be5ca6eb07bcfe0af",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fstudio\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "0034ba4ac17568a19f6e03f16ef2ce51d912aec279f53cca0269607dc89bd9b9",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fsustainability-metrology-lab\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "b4a05f0001bf75ddb1a04e29ef8a13a9cfacb18174380ab40bd64148ac3d91ab",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002ftechnical-glasses\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "de740ba5ef172efbb0bb4d298cec7b09dd351d3d67f86a59b40762b5c9e8ff90",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002ftemplate-runtime-pack-engine\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "b6f6edc3b71986c51a9db07e2a6d7245bc2bdf1fd1877396cb69e4d8b45e35b1",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fui-ux-builder\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "a7fee666276df11a982482d545940bc75df33fed1bb3efbe30ece7333fb32887",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fworkshop-command-center\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "940eb34276050eed62cd398fd0c98ca3ef2b5ed4b1b1649a425aed145c59828f",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fworkshop-direction\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "43d39c69a7cd9cc414a87b7f3773fd51411651d84acaf11d8be0d471c107e466",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fworkshop-packager\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "cc2ee06e796d73e34c7d146f8348b688aa0c15c408b5bdb36a34ca6a12483c2a",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.module-contract\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fworkshop-search-provenance\u002fmodule.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "47f0e7d3f8ad4fe99f6f124aba20f4ad706626098de657914c5c3bd825703e31",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.module-contract",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.museum-catalog\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.museum-catalog\u002fv1",
+          "field": "schema",
+          "path": "museum\u002fcatalog.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "575fe9c765a74c2110ad6e770dc29bc048dbe849e3424a67fe3904c0ac7a67e6",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.museum-catalog",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.native-host-adapter-package\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.native-host-adapter-package\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fnative-host-adapters\u002fblender\u002fpackage-template.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "7204da9e3485f1403e172d45e3f6761f4ce32e878c5c1bfbb70ff9c073d116b8",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.native-host-adapter-package",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.optional-profile-service\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.optional-profile-service\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fprofile\u002fprofile-service.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "e0f1a09d4ee7437dcdd674193dea4667565888592c099b27bedf8646e319e3ee",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.optional-profile-service",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.output-dependencies\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.output-dependencies\u002fv1",
+          "field": "schema",
+          "path": "shared\u002foutput\u002flicense-registry.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "8c8600de3e777b4b6a2fa1e8d9eed6c2836e1ca4884309ff27d66946991bdc88",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.output-dependencies",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.physics-micro-verification-receipt\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.physics-micro-verification-receipt\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fphysics\u002fPHYSICS_MICRO_VERIFICATION_REPORT.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "f8b1b94cf2f841b6460b3d3774eeaea02d41fd3a2806bd0f9a295cd32a0f6425",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.physics-micro-verification-receipt",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.physics-source-register\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.physics-source-register\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fphysics\u002fPHYSICS_SOURCE_REGISTER.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "c53fd8b65bf88f7f814f1db7044f0c952c6d7756a6ef60334369b1ca5b2dc367",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.physics-source-register",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.ps2-asset-forge.catalog\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.ps2-asset-forge.catalog\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fps2-asset-forge\u002fgenerated\u002fsource-catalog.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "07d2f6e77bbbe01913986a3c401bd6f846d9f7bd6aa6e2c49cf3ad565597c4ec",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.ps2-asset-forge.catalog",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.ps2-asset-forge.source-manifest\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.ps2-asset-forge.source-manifest\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fps2-asset-forge\u002fgenerated\u002fsource-manifest.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "eba60951f89b4031e211db7732a94ee8d1c21d80836e9a2f9571e55f31cf11fb",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.ps2-asset-forge.source-manifest",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.robo_pong.ai_backend_config.v0.5",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.robo_pong.ai_backend_config.v0.5",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f002-robo-pong\u002fruntime\u002fai-backend.config.example.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "58c3e9f085165c6a3f8cbb96cd6f2e888fe17967c53107be959b5631367d1c2c",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.safe-project-fixture\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.safe-project-fixture\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fmirror-core\u002fstorage\u002ffixtures\u002fsafe-project\u002fproject.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "c376bbf6e0de9498ef454614d87b629091ff1f5f8747ccc68a397310c3de1da9",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.safe-project-fixture",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.service-contract\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.service-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fgame-asset-foundation\u002fservice.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "3f44a0435a97d35bc256d9d85cd8d72d8f95fbaa075deb27fbf8ea659adfc131",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.service-contract",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.shared-controls-integration\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.shared-controls-integration\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fcontrols\u002fAXM_INTEGRATION.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "c5543d286ff37da9ab68a71b30460f989fdffd388aa8212e3eb5e8806b905097",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.shared-controls-integration",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.shared-controls.physical-controller-route\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.shared-controls.physical-controller-route\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fcontrols\u002fPHYSICAL_CONTROLLER_ROUTE.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "e0d2aa41d2c69b90dd4dac18747b12014afbb39d1bac431040451dd5aba46598",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.shared-controls.physical-controller-route",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.shared-engine-contract\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.shared-engine-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fengines\u002fengine-contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "33027c2e82a17abaedebe31b900be16b0e8a4ee3d5b1404469fdd97ccd85bd5e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.shared-engine-contract",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.shared-service-contract\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.shared-service-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fai-native-hands\u002fservice.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "5d0672f06719c234714c3ce0810c8536c19ebcef42ff90d2e9a51f0135cf9bc2",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.shared-service-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.shared-service-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fasset-hands\u002fservice.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "cbe9e260264c6233cb9860fe45f679441283b16da644d494d50a6036f754a0ed",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.shared-service-contract",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.shared-service-contract\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fvisual-kernel\u002fservice.contract.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "4f376a253678b4627be182af97395b684ba6d58dbcdaeed55b8240fa701784fe",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.shared-service-contract",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.skin-vault\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.skin-vault\u002fv1",
+          "field": "schema",
+          "path": "assets\u002flocal\u002fskin-vault\u002findex.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "5c25f72801f594d04dbc041ced1199dfeb3b6633d28786424e87699afc4cef5e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.skin-vault",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.skin\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.skin\u002fv1",
+          "field": "schema",
+          "path": "assets\u002flocal\u002fskin-vault\u002faxm-village-of-truth\u002fskin.config.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "ce19e6f16d99d88639ab87cbd48904b4993cd103c16c58577e9244d0eee3d2a3",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.skin",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.skin\u002fv1",
+          "field": "schema",
+          "path": "skins\u002fnostalgia-lab\u002fskin.config.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "98a4b8d62cbd1d8354093d4c7ab21884f8680a817c5f3b51bc3cd90666102e23",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.skin",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.source-package\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.source-package\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f008-district-party\u002fSOURCE_PACKAGE.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "4d667c63a4d46267868e2affc5c547c760aa9cce9cb590eeeb9549dd3bf60c0d",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.source-package",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.tool-manifest\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.tool-manifest\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fbody-pulse\u002fmanifest.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "db55e7ebe04861ea16c590169e74346eb10ddeb8167a9700efa470483fe85c70",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.tool-manifest",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.tycoon-steward.export\u002fv0.1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.tycoon-steward.export\u002fv0.1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fexamples\u002fstarter-world.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "257207c029300f49cbfe3910b2b4109ca557f55f559f31a7c04d37df302b457a",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.tycoon-steward.export",
+            "version": "v0.1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.tycoon-steward.ledger\u002fv0.1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.tycoon-steward.ledger\u002fv0.1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fexamples\u002fstarter-world.json",
+          "pointer": "\u002fstate\u002fledger\u002fschema",
+          "fileSha256": "257207c029300f49cbfe3910b2b4109ca557f55f559f31a7c04d37df302b457a",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.tycoon-steward.ledger",
+            "version": "v0.1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.tycoon-steward.prng\u002fxorshift32-v1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.tycoon-steward.prng\u002fxorshift32-v1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fexamples\u002fsample-receipts.json",
+          "pointer": "\u002freceipts\u002f0\u002fseedPostState\u002fschema",
+          "fileSha256": "a3e38b7f0b68a050beb491bad1fd160904f22c1be3b0bb800310ec512cea3b31",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        },
+        {
+          "identity": "axm.tycoon-steward.prng\u002fxorshift32-v1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fexamples\u002fsample-receipts.json",
+          "pointer": "\u002freceipts\u002f0\u002fseedPreState\u002fschema",
+          "fileSha256": "a3e38b7f0b68a050beb491bad1fd160904f22c1be3b0bb800310ec512cea3b31",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        },
+        {
+          "identity": "axm.tycoon-steward.prng\u002fxorshift32-v1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fexamples\u002fsample-receipts.json",
+          "pointer": "\u002freceipts\u002f1\u002fseedPostState\u002fschema",
+          "fileSha256": "a3e38b7f0b68a050beb491bad1fd160904f22c1be3b0bb800310ec512cea3b31",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        },
+        {
+          "identity": "axm.tycoon-steward.prng\u002fxorshift32-v1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fexamples\u002fsample-receipts.json",
+          "pointer": "\u002freceipts\u002f1\u002fseedPreState\u002fschema",
+          "fileSha256": "a3e38b7f0b68a050beb491bad1fd160904f22c1be3b0bb800310ec512cea3b31",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        },
+        {
+          "identity": "axm.tycoon-steward.prng\u002fxorshift32-v1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fexamples\u002fstarter-world.json",
+          "pointer": "\u002fstate\u002fprng\u002fschema",
+          "fileSha256": "257207c029300f49cbfe3910b2b4109ca557f55f559f31a7c04d37df302b457a",
+          "protocol": {
+            "future": false,
+            "convention": "UNPARSED_VERSION_CONVENTION",
+            "family": null,
+            "version": null
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.tycoon-steward.receipt-export\u002fv0.1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.tycoon-steward.receipt-export\u002fv0.1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fexamples\u002fsample-receipts.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "a3e38b7f0b68a050beb491bad1fd160904f22c1be3b0bb800310ec512cea3b31",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.tycoon-steward.receipt-export",
+            "version": "v0.1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.tycoon-steward.receipt\u002fv0.1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.tycoon-steward.receipt\u002fv0.1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fexamples\u002fsample-receipts.json",
+          "pointer": "\u002freceipts\u002f0\u002fschema",
+          "fileSha256": "a3e38b7f0b68a050beb491bad1fd160904f22c1be3b0bb800310ec512cea3b31",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.tycoon-steward.receipt",
+            "version": "v0.1"
+          }
+        },
+        {
+          "identity": "axm.tycoon-steward.receipt\u002fv0.1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fexamples\u002fsample-receipts.json",
+          "pointer": "\u002freceipts\u002f1\u002fschema",
+          "fileSha256": "a3e38b7f0b68a050beb491bad1fd160904f22c1be3b0bb800310ec512cea3b31",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.tycoon-steward.receipt",
+            "version": "v0.1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.tycoon-steward.region\u002fv0.1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.tycoon-steward.region\u002fv0.1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fexamples\u002fstarter-world.json",
+          "pointer": "\u002fstate\u002fmap\u002fschema",
+          "fileSha256": "257207c029300f49cbfe3910b2b4109ca557f55f559f31a7c04d37df302b457a",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.tycoon-steward.region",
+            "version": "v0.1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.tycoon-steward.sample-sequence\u002fv0.1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.tycoon-steward.sample-sequence\u002fv0.1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fexamples\u002fsample-decisions.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "ffe3e1c4e2af016812046a9d03dc23d2d28a1f8f8f0bbc667b8a0632f39f368b",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.tycoon-steward.sample-sequence",
+            "version": "v0.1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.tycoon-steward.state\u002fv0.1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.tycoon-steward.state\u002fv0.1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fgame\u002ftycoon-steward\u002fexamples\u002fstarter-world.json",
+          "pointer": "\u002fstate\u002fschema",
+          "fileSha256": "257207c029300f49cbfe3910b2b4109ca557f55f559f31a7c04d37df302b457a",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.tycoon-steward.state",
+            "version": "v0.1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.ui-kit\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.ui-kit\u002fv1",
+          "field": "schema",
+          "path": "assets\u002fui-kit\u002fui-kit.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "dd18f40ea4e4afc816990b4bdae1746ad993ec4e35ed6fa5e59248f96faa7baa",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.ui-kit",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.vendor-manifest\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.vendor-manifest\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fasset-hands\u002fvendor\u002ffonts\u002fnoto\u002fAXM-VENDOR-MANIFEST.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "8fcacfc0ab1d1e063025afc47b62987cd23a1e1b8f2004c922bdaa14661d464c",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.vendor-manifest",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.vendor-manifest\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fasset-hands\u002fvendor\u002fharfbuzz\u002fAXM-VENDOR-MANIFEST.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "422d49f31458e53ab230ffe21d8106b762a295e123961c6d53b69de4b038e163",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.vendor-manifest",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.vendor-manifest\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fasset-hands\u002fvendor\u002ficc\u002fAXM-VENDOR-MANIFEST.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "33c4f7f65626959af467c6a8edfedec04586525ced52ef17a0df5a1e2271af6e",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.vendor-manifest",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.vendor-manifest\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fasset-hands\u002fvendor\u002fwasm-vips\u002fAXM-VENDOR-MANIFEST.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "456aa13cd2e765fe724dca27e06d335cdb2fdd84e137fd0f7c619ecc12d4694d",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.vendor-manifest",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.vendored-dependency\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.vendored-dependency\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fasset-hands\u002fvendor\u002fbasis-universal\u002fAXM-VENDOR-MANIFEST.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "3c66d50cf694a1c2286acd67dbced2ac044d2f1e0f43deec96854ac006dc4063",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.vendored-dependency",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.vendored-dependency\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fvendor\u002fthree-r160\u002fSOURCE.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "ef68c68a845406325d713d76ade7bae9df22c64a2d1e821d3fe7cfd332cd5698",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.vendored-dependency",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.vendored-dependency\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f007-casino\u002flux-5-prototype\u002fclient\u002fvendor\u002fSOURCE.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "ef68c68a845406325d713d76ade7bae9df22c64a2d1e821d3fe7cfd332cd5698",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.vendored-dependency",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.vendored-dependency\u002fv1",
+          "field": "schema",
+          "path": "tools\u002fgame-hub\u002fgame-library\u002f010-living-globe-tycoon\u002fruntime\u002fgame\u002fvendor\u002fSOURCE.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "ef68c68a845406325d713d76ade7bae9df22c64a2d1e821d3fe7cfd332cd5698",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.vendored-dependency",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.visual-kernel.registry\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.visual-kernel.registry\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fvisual-kernel\u002fvisual-kernel.tokens.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "e378603a665468b6705429c1beeb9724afcd9b1b79f7850f7d0e48b7469c7e3d",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.visual-kernel.registry",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.workshop-capability-metadata\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.workshop-capability-metadata\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fcapabilities\u002fcapability-metadata.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "fd25040cd37f0a241a21c89e1f8da9d4267a54a579bdd75c953670fabd27aeee",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.workshop-capability-metadata",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.workshop-package\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.workshop-package\u002fv1",
+          "field": "schema",
+          "path": "PACKAGE_MANIFEST.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "ee6ff1c84cd3d059cfec9008130e46cfe474baf5c3ae3213e833cddf08738c9f",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.workshop-package",
+            "version": "v1"
+          }
+        },
+        {
+          "identity": "axm.workshop-package\u002fv1",
+          "field": "schema",
+          "path": "PUBLIC_MANIFEST.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "f9988202aa57aac26e955d22777a352e7987a0c765040263dee8c3e197aa7d48",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.workshop-package",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.workshop-readiness-guidance\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.workshop-readiness-guidance\u002fv1",
+          "field": "schema",
+          "path": "shared\u002fcapabilities\u002freadiness-guidance.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "9392995317e16fa7b5cf3df33ce5a4879e37fe95d9aacb9f9ed6f183d498687b",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.workshop-readiness-guidance",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    },
+    {
+      "identity": "axm.world-registry\u002fv1",
+      "state": "NO_LOCAL_DEFINITION_OBSERVED",
+      "occurrences": [
+        {
+          "identity": "axm.world-registry\u002fv1",
+          "field": "schema",
+          "path": "worlds\u002fworld-registry.json",
+          "pointer": "\u002fschema",
+          "fileSha256": "bb2e4db10dc1bee082a55753a3c1e5fbbcb3939fd374543f0b2ae5d13f547bcc",
+          "protocol": {
+            "future": false,
+            "convention": "AXM_SLASH_VERSION",
+            "family": "axm.world-registry",
+            "version": "v1"
+          }
+        }
+      ],
+      "truth": {
+        "definitionRequiredInThisWorkshop": false,
+        "externalRegistryChecked": false,
+        "referenceValidityProven": false
+      }
+    }
+  ],
+  "parseFailures": [],
+  "formatNotes": [
+    {
+      "path": "PACKAGE_MANIFEST.json",
+      "code": "UTF8_BOM_PRESENT"
+    },
+    {
+      "path": "PUBLIC_MANIFEST.json",
+      "code": "UTF8_BOM_PRESENT"
+    }
+  ],
+  "scopeBoundary": "Exact local JSON identity observation only. Reuse is not compatibility; absence of a local definition is not invalidity; divergent definitions are held for human review.",
+  "truth": {
+    "jsonSchemaValidationPerformed": false,
+    "externalRegistryChecked": false,
+    "semanticCompatibilityInferred": false,
+    "schemasRegistered": false,
+    "adaptersGenerated": false,
+    "sourceMutationPerformed": false,
+    "installerStagingPerformed": false,
+    "installationPerformed": false,
+    "permissionChanged": false,
+    "promotionPerformed": false,
+    "canonChanged": false
+  }
+};

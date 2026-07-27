@@ -68,6 +68,11 @@ function create(options) {
       priority: 55, activeCadenceMs: 900000, idleCadenceMs: 3600000,
       cost: { cpu: 2, memory: 1, gpu: 0 }, authority: 'incubator-only', promotionGate: 'optional-project-constitution-or-explicit-export'
     });
+    if (!state.modules['copy-composer-hand']) state = Pulse.registerModule(state, {
+      moduleId: 'copy-composer-hand', name: 'Copy Composer Hand', goalQueueId: 'copy-composer-goals', enabled: false,
+      priority: 45, activeCadenceMs: 60000, idleCadenceMs: 3600000,
+      cost: { cpu: 0.1, memory: 0.1, gpu: 0 }, authority: 'candidate-text-only', promotionGate: 'explicit-human-acceptance'
+    });
     if (!state.modules['governed-evolution-lab']) state = Pulse.registerModule(state, {
       moduleId: 'governed-evolution-lab', name: 'Living World Lineage', goalQueueId: 'world-lineage-goals', enabled: false,
       priority: 60, activeCadenceMs: 900000, idleCadenceMs: 7200000,
@@ -87,6 +92,9 @@ function create(options) {
   }
 
   function sample(state) {
+    if (typeof options.measure === 'function') {
+      return Pulse.sampleBody(state, options.measure(), Date.now());
+    }
     const current = cpuSnapshot();
     const totalDelta = current.total - previousCpu.total;
     const idleDelta = current.idle - previousCpu.idle;

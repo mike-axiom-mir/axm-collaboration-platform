@@ -206,6 +206,10 @@ test('shared native registry selects compatible signed packages and fails unsupp
     source_mime: 'model/gltf-binary', operations: ['create-directory', 'import-asset', 'set-metadata', 'refresh-index']
   };
   assert.equal(registry.diagnose(request).status, 'MATCHED');
+  assert.equal(registry.diagnose(Object.assign({}, request, { application_version: '5.2.0' })).status, 'MATCHED');
+  const futureVersion = registry.diagnose(Object.assign({}, request, { application_version: '5.3.0' }));
+  assert.equal(futureVersion.status, 'MISSING_NATIVE_CAPABILITY');
+  assert(futureVersion.rejections[0].reasons.includes('APPLICATION_VERSION_UNSUPPORTED'));
   const profile = registry.hostProfile(request);
   assert(profile.capabilities.includes('native-dcc-adapter'));
   assert(profile.permissions.includes('filesystem:write'));
@@ -348,8 +352,7 @@ test('Mirror can inject the native adapter without auto-consent, then approve, i
   const built = makeBundle(value.runtime, value.workspace, 'mirror');
   const adapter = new MirrorNativeHostAdapter({ runtime: value.runtime });
   const mirrorRuntime = path.join(value.root, 'mirror-runtime');
-  const core = new MirrorCore({ rootDir: MIRROR_ROOT, runtimeDir: mirrorRuntime });
-  core.bridge.register(adapter);
+  const core = new MirrorCore({ rootDir: MIRROR_ROOT, runtimeDir: mirrorRuntime, additionalAdapters: [adapter] });
   assert.equal(adapter.connection.mode, 'disconnected');
   const mike = core.actor(MIKE_ID);
   const consent = core.consentFor(adapter);

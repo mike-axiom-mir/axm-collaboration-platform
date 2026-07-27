@@ -40,7 +40,7 @@ class BlenderDriver {
     this.executable = path.resolve(options.executable || '');
     this.entrypoint = path.resolve(options.entrypoint || '');
     this.minimumVersion = versionTuple(options.minimumVersion || '4.2');
-    this.maximumVersion = versionTuple(options.maximumVersionExclusive || '5.0');
+    this.maximumVersion = versionTuple(options.maximumVersionExclusive || '5.3');
     this.runner = options.runner || childProcess.spawnSync;
     if (!fs.existsSync(this.executable)) throw new Error('configured Blender executable does not exist');
     if (!fs.existsSync(this.entrypoint)) throw new Error('configured Blender adapter entrypoint does not exist');

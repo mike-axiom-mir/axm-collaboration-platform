@@ -1,0 +1,39 @@
+{
+  "schema": "axm.future-heartbeat-verifier/v1",
+  "id": "github-public-sync-plan-verifier",
+  "status": "PARKED",
+  "purpose": "Allow Heartbeat to request deterministic read-only re-verification of an already reviewed GitHub sync plan before any future automation design is considered.",
+  "trigger": {
+    "owner": "heartbeat",
+    "defaultEnabled": false,
+    "minimumCadence": "PT1H",
+    "pulseLeaseRequired": true
+  },
+  "accepts": [
+    "axm.github-sync-plan/v1:planDigest"
+  ],
+  "invokes": {
+    "method": "githubSync.verifyPlan(planDigest)",
+    "writes": false
+  },
+  "emits": [
+    "axm.github-sync-verification/v1"
+  ],
+  "requiredChecks": [
+    "plan-digest-match",
+    "public-safety",
+    "clean-dedicated-branch",
+    "no-delete-policy",
+    "no-merge-authority"
+  ],
+  "authority": {
+    "copyFiles": false,
+    "commit": false,
+    "push": false,
+    "createPullRequest": false,
+    "merge": false,
+    "promote": false,
+    "canon": false
+  },
+  "activationGate": "Separate Mike + Codex review is required before wiring this parked contract into Heartbeat."
+}

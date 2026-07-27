@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.module-evolution-ledger.version-record/v1",
+  "title": "Immutable Module Evolution Version Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "recordId", "moduleId", "semanticVersion", "contentDigest", "parentRecordId", "ancestry", "recordKind", "createdAt", "createdBy", "sourceRefs", "metadata", "recordDigest"],
+  "properties": {
+    "schema": {"const": "axm.module-evolution-ledger.version-record/v1"},
+    "recordId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"},
+    "moduleId": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$"},
+    "semanticVersion": {"type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"},
+    "contentDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "parentRecordId": {"type": ["string", "null"]},
+    "ancestry": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "recordKind": {"enum": ["baseline", "candidate", "observed-installed"]},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "createdBy": {"type": "string", "minLength": 1, "maxLength": 120},
+    "sourceRefs": {"type": "array", "maxItems": 16, "items": {"type": "string", "minLength": 1, "maxLength": 512}},
+    "metadata": {"type": "object"},
+    "recordDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

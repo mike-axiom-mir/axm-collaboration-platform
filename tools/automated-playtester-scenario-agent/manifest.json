@@ -1,0 +1,56 @@
+{
+  "id": "automated-playtester-scenario-agent",
+  "name": "Automated Playtester & Scenario Agent",
+  "version": "v0.2",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "AI Team",
+  "layer": "ai-team",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "rank": 33,
+  "phase": "P2",
+  "tags": [
+    "game-experience",
+    "deterministic",
+    "local-first",
+    "no-external-runtime",
+    "evidence-bound"
+  ],
+  "uses": [
+    "local-cpu",
+    "canvas",
+    "web-crypto",
+    "axm-native-foundation",
+    "export"
+  ],
+  "permissions": [
+    "export"
+  ],
+  "actions": [
+    "compile a bounded non-persistent scenario",
+    "inspect visible outcome, failures, and ownership",
+    "rebuild and seal an independent verification receipt",
+    "explicitly export the reviewed candidate receipt"
+  ],
+  "accepts": [
+    "human-direction",
+    "bounded-local-fixture",
+    "axm.playtest-evidence-request/v1"
+  ],
+  "produces": [
+    "axm.playtest-scenario-run/v1",
+    "axm.p2-experience-verification/v1"
+  ],
+  "readiness": [
+    "local-only",
+    "deterministic-replay",
+    "human-review-separate",
+    "machine-readable-evidence"
+  ],
+  "summary": "Run bounded reproducible player journeys, reject false completion, retain only selected proof frames, and yield instantly to people.",
+  "notes": "AXM-native and dependency-free at runtime. Preview and verification write nothing, promotion remains off, and human approval is never inferred from metrics."
+}

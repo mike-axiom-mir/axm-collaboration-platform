@@ -1,0 +1,31 @@
+{
+  "schema": "axm.capability-gap.hand-specifications/v1",
+  "hands": [
+    {
+      "capability_id": "workshop.update.install.transactional",
+      "purpose": "Apply one already signed, hash-matching Workshop release while the Hub is stopped without overwriting local modifications silently.",
+      "inputs_and_schemas": ["axm.workshop-update-candidate/v1", "axm.workshop-update-manifest/v1", "axm.workshop-installed-release/v1", "axm.public-file-ledger/v1", "human:explicit-install-consent"],
+      "outputs_and_schemas": ["axm.workshop-update-plan/v1", "axm.workshop-update-install-receipt/v1", "axm.workshop-installed-release/v1", "axm.workshop-restart-handoff/v1"],
+      "side_effects": ["write a new public Workshop generation outside the live tree", "switch the stopped launcher to the verified generation", "preserve local state, backups, logs, exports and user-owned additions"],
+      "permissions_and_consent": ["explicit local owner install confirmation", "valid promoted release signature", "no permission inherited from check or staging"],
+      "resource_budget": { "archive_bytes_max": 536870912, "disk_free_minimum": "two complete public generations plus archive", "network_during_apply": false },
+      "failure_and_recovery_behavior": "Never modify the running tree. An interrupted build leaves the old generation selected; an interrupted switch must be recoverable from an external launcher receipt.",
+      "compatibility_version_contract": "Updater and release manifest versions must overlap; migrations must declare forward and rollback compatibility before selection.",
+      "verification_contract": "Verify every staged file digest, boot a disposable copy, run the public release verification profile, switch only while Hub is stopped, then prove the selected generation boots.",
+      "promotion_gate": "Passing evidence plus explicit local owner install confirmation. No heartbeat, signature, or review receipt may substitute for that consent."
+    },
+    {
+      "capability_id": "workshop.update.rollback.whole-workshop",
+      "purpose": "Restore exactly one retained complete Workshop generation after a failed or rejected update.",
+      "inputs_and_schemas": ["axm.workshop-update-install-receipt/v1", "axm.workshop-generation-backup/v1", "human:explicit-rollback-consent"],
+      "outputs_and_schemas": ["axm.workshop-update-rollback-receipt/v1", "axm.workshop-installed-release/v1"],
+      "side_effects": ["switch the stopped launcher to the retained prior generation", "retain the rejected generation for diagnosis until explicit cleanup"],
+      "permissions_and_consent": ["explicit local owner rollback confirmation", "current-generation digest must match the install receipt"],
+      "resource_budget": { "retained_generations": 1, "network_during_rollback": false },
+      "failure_and_recovery_behavior": "Refuse rollback on digest drift. An interrupted switch leaves a launcher-readable recovery receipt and never deletes either complete generation.",
+      "compatibility_version_contract": "Rollback is allowed only to the exact generation recorded immediately before the selected install.",
+      "verification_contract": "Boot the restored generation locally and confirm its installed-release ledger matches the retained backup receipt.",
+      "promotion_gate": "Explicit local owner rollback confirmation; never automatic, including after failed post-install verification."
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.external-validator-receipt/v1",
+  "title": "AXM external validator receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "validator", "artifact", "status", "reason", "runtime", "executor", "report", "checks", "scope", "authority", "id", "digest"],
+  "properties": {
+    "schema": { "const": "axm.external-validator-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "validator": { "type": "object", "required": ["id", "title"], "properties": { "id": { "type": "string" }, "title": { "type": "string" } } },
+    "artifact": { "type": "object", "required": ["id", "mime", "digest", "bytes"], "properties": { "id": { "type": "string" }, "mime": { "type": "string" }, "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }, "bytes": { "type": "integer", "minimum": 1 } } },
+    "status": { "enum": ["PASS", "FAIL", "MISSING_SUBSTRATE", "TOOL_ERROR", "UNBOUND_REPORT", "FIXTURE_PASS", "FIXTURE_FAIL"] },
+    "reason": { "type": "string" },
+    "runtime": { "type": ["object", "null"] },
+    "executor": { "type": ["object", "null"] },
+    "report": { "type": ["object", "null"] },
+    "checks": { "type": "array", "items": { "type": "object" } },
+    "scope": { "type": "array", "items": { "type": "string" } },
+    "authority": { "const": "external-validator-required" },
+    "official_report_format": { "type": "string" },
+    "independence_basis": { "type": "string" },
+    "id": { "type": "string" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

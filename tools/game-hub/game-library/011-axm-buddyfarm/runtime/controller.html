@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <title>BuddyFarm Controller</title>
+  <style>
+    :root{color-scheme:dark;--leaf:#75d68d;--sun:#ffd36c;--panel:#10251c;--line:#9de7ab55}
+    *{box-sizing:border-box;touch-action:manipulation;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;background:#07150e;color:#fff5d0;font-family:"Segoe UI",system-ui,sans-serif;overscroll-behavior:none}
+    body{display:grid;place-items:center;background:radial-gradient(circle at 50% 0,#2d5c36,#07150e 64%);padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+    main{width:min(520px,100%);display:grid;gap:13px}.top,.status,.controls{border:1px solid var(--line);border-radius:22px;background:#10251ce8;box-shadow:0 20px 60px #0007,inset 0 1px #fff1}.top{display:flex;align-items:center;gap:12px;padding:14px}.mark{display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:#255c36;color:var(--sun);font-size:25px}.top h1{margin:0;font-size:22px}.top p{margin:2px 0 0;color:#a8c9a9;font:700 10px ui-monospace,monospace;letter-spacing:.1em}.dot{margin-left:auto;width:10px;height:10px;border-radius:50%;background:#ff886f;box-shadow:0 0 14px currentColor}.dot.ok{background:#72e6a0}
+    .status{padding:13px 16px}.status small{color:#a3c8aa;font:700 10px ui-monospace,monospace;letter-spacing:.12em}.status strong{display:block;margin-top:5px;font-size:17px}.status p{margin:8px 0 0;color:#d4e2cc;font-size:13px;line-height:1.35}
+    .controls{padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:center}.dpad{display:grid;grid-template-columns:repeat(3,72px);grid-template-rows:repeat(3,72px);justify-content:center}.dpad button,.act{border:1px solid #bce8bd66;background:#193a29;color:#f8edc4;border-radius:18px;font-size:26px;font-weight:900;box-shadow:0 5px 0 #07140e;cursor:pointer}.dpad button:active,.act:active{transform:translateY(4px);box-shadow:0 1px 0 #07140e;background:#2e6741}.up{grid-column:2}.left{grid-column:1;grid-row:2}.right{grid-column:3;grid-row:2}.down{grid-column:2;grid-row:3}.seed{grid-column:2;grid-row:2;display:grid;place-items:center;color:#9bdd78;font-size:24px}.actions{display:grid;gap:14px;justify-items:center}.act{width:128px;height:128px;border-radius:50%;justify-self:center;font-size:18px;line-height:1.05}.act.work{background:radial-gradient(circle at 40% 30%,#ffd97a,#da9145 72%);border-color:#ffe8a9;color:#40260e}.act.interact{width:112px;height:66px;border-radius:20px;background:#275946;color:#ecffda}.act span{display:block;font:800 9px ui-monospace,monospace;letter-spacing:.08em;margin-top:7px}.note{text-align:center;color:#98b69c;font-size:12px;margin:0}.note strong{color:#e7dca9}
+    @media(max-width:520px){.controls{grid-template-columns:1fr}.dpad{grid-template-columns:repeat(3,64px);grid-template-rows:repeat(3,64px)}.act{width:130px;height:130px}}
+  </style>
+</head>
+<body>
+  <main>
+    <section class="top"><div class="mark">✦</div><div><h1 id="name">BuddyFarm</h1><p id="seat">CONNECTING</p></div><i id="dot" class="dot"></i></section>
+    <section class="status"><small id="scene">GRASSLAND</small><strong id="day">Day 1</strong><p id="message">Connecting to the shared farm…</p></section>
+    <section class="controls" aria-label="BuddyFarm touch controls">
+      <div class="dpad">
+        <button class="up" data-move="up" aria-label="Move up">▲</button><button class="left" data-move="left" aria-label="Move left">◀</button><div class="seed">❉</div><button class="right" data-move="right" aria-label="Move right">▶</button><button class="down" data-move="down" aria-label="Move down">▼</button>
+      </div>
+      <div class="actions"><button id="action" class="act interact" aria-label="Action: tap for story, hold 0.2 seconds to travel">ACTION<span>TAP STORY · HOLD 0.2 SEC TRAVEL</span></button><button id="work" class="act work" aria-label="Use context-aware field work">WORK<span>SMART FIELD ACTION</span></button></div>
+    </section>
+    <p class="note"><strong>ACTION</strong> safely resolves story, travel, fishing or combat context. <strong>WORK</strong> handles farming and gathering.</p>
+  </main>
+  <script>
+    (function(){
+      const player=new URLSearchParams(location.search).get('player')||'p2';let busy=false;
+      async function state(){try{const r=await fetch('/api/state',{cache:'no-store'}),v=await r.json(),a=v.state&&v.state.actors[player];if(!a)throw new Error('This seat is not active');document.getElementById('name').textContent=a.name;document.getElementById('seat').textContent=player.toUpperCase()+' · '+a.type.toUpperCase();document.getElementById('scene').textContent=a.scene.toUpperCase();document.getElementById('day').textContent='Day '+v.state.day+' · '+v.state.farm.growthTokens+' growth tokens';document.getElementById('message').textContent=v.state.message;document.getElementById('dot').classList.add('ok')}catch(e){document.getElementById('message').textContent=e.message;document.getElementById('dot').classList.remove('ok')}}
+      async function send(action){if(busy)return;busy=true;try{await fetch('/api/action',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({player,action})});if(navigator.vibrate)navigator.vibrate(18);await state()}finally{busy=false}}
+      document.querySelectorAll('[data-move]').forEach(button=>button.addEventListener('pointerdown',event=>{event.preventDefault();send({type:'move',direction:button.dataset.move})}));let actionStarted=0;const actionButton=document.getElementById('action');actionButton.addEventListener('pointerdown',event=>{event.preventDefault();actionStarted=performance.now();actionButton.setPointerCapture(event.pointerId)});actionButton.addEventListener('pointerup',event=>{event.preventDefault();const holdMs=actionStarted?Math.round(performance.now()-actionStarted):0;actionStarted=0;send({type:'action',holdMs})});actionButton.addEventListener('pointercancel',()=>{actionStarted=0});document.getElementById('work').addEventListener('pointerdown',event=>{event.preventDefault();send({type:'work'})});state();setInterval(state,900);
+    })();
+  </script>
+</body>
+</html>

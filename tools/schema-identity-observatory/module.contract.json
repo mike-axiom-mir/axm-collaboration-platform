@@ -1,0 +1,50 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "schema-identity-observatory",
+  "version": "v0.1",
+  "provides": [
+    "exact-json-schema-identity-inventory",
+    "same-id-definition-digest-comparison",
+    "schema-reference-presence-map",
+    "freshness-bound-schema-observation"
+  ],
+  "consumes": [
+    "filesystem/workshop-root"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.schema-identity-map/v1"
+    ],
+    "accepts": [
+      "filesystem/workshop-root"
+    ]
+  },
+  "boundaries": {
+    "writes": [
+      "explicit-user-selected-output-only"
+    ],
+    "refuses": [
+      "schema-registration",
+      "schema-semantic-validation",
+      "compatibility-inference",
+      "same-id-automatic-merge",
+      "adapter-generation",
+      "source-repair",
+      "source-mutation",
+      "filesystem-symlink-following",
+      "network-access",
+      "installer-staging",
+      "module-installation",
+      "permission-change",
+      "promotion",
+      "canon-change"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  }
+}

@@ -4,14 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>AXM Game Night</title>
-  <link rel="stylesheet" href="game-night.css">
+  <link rel="stylesheet" href="game-night.css?v=20260720-world-shelf-1">
   <link rel="stylesheet" href="game-modes.css">
   <link rel="stylesheet" href="game-night-seat-fix.css?v=20260718-1">
+  <link rel="stylesheet" href="../../shared/presentation-spine/presentation-spine.css?v=20260724-spine-1">
   <script src="axm-foundation.js"></script>
   <script src="vendor/qrcode.js"></script>
   <script src="/shared/profile/axm-profile-client.js"></script>
 </head>
-<body>
+<body class="axm-spine" data-axm-profile="cockpit" data-axm-surface="game-hub">
   <header class="hero">
     <div><div class="eyebrow">AXM · local game night</div><h1>Choose a game. Keep the party.</h1><p>Four seats by default, four more when a game needs them. Humans and AI use the same visible lobby.</p></div>
     <div class="runtime" id="status">CHECKING RUNTIME</div>
@@ -32,8 +33,14 @@
     </section>
 
     <section class="library">
-      <div class="section-head"><div><div class="eyebrow">Game Night shelf</div><h2>Featured public tests</h2></div><select id="allGames" aria-label="Choose any installed game"></select></div>
+      <div class="section-head"><div><div class="eyebrow">Game Night shelf</div><h2>Featured public tests</h2></div><select id="allGames" aria-label="Choose any installed game or world experience"></select></div>
       <div class="game-grid" id="gameGrid"></div>
+    </section>
+
+    <section class="library world-library" aria-labelledby="worldLibraryTitle">
+      <div class="section-head"><div><div class="eyebrow">World experiences</div><h2 id="worldLibraryTitle">Enter a living world</h2></div><div class="runtime" id="worldCount">CHECKING WORLDS</div></div>
+      <p class="world-truth">Worlds are persistent foundations, not game packages. Entering one opens its own bounded controls without readying or changing the Game Night party.</p>
+      <div class="world-grid" id="worldGrid"><div class="world-empty">Checking the world registry…</div></div>
     </section>
 
     <section class="panel launch-panel">
@@ -44,7 +51,7 @@
     <section class="panel room-panel" id="roomPanel" hidden>
       <div class="section-head"><div><div class="eyebrow">Live room</div><h2 id="roomTitle">Room AXM1</h2></div><div class="room-code" id="roomCode">AXM1</div></div>
       <div class="controller-grid" id="controllerGrid"></div>
-      <div class="room-actions"><button class="primary" id="openPrimaryControls">Play on this laptop</button><button id="openScreen">Open shared TV screen</button><button class="gold" id="finishReflect">Finish & reflect</button><button class="danger" id="stopOnly">Stop without result</button></div>
+      <div class="room-actions"><button class="primary" id="openGame">Open playable game</button><button id="openPrimaryControls">Open player controls</button><button id="openScreen">Open shared TV screen</button><button class="gold" id="finishReflect">Finish & reflect</button><button class="danger" id="stopOnly">Stop without result</button></div>
       <p class="truth">Laptop controls are the default. Phone controllers are optional QR links. The shared TV screen is view-only and never replaces a player's controls.</p>
     </section>
 
@@ -52,6 +59,6 @@
   </main>
 
   <a class="back" href="/hub/index.html">← Back to AXM Hub</a>
-  <script src="game-night.js?v=20260719-living-tycoon-1"></script>
+  <script src="game-night.js?v=20260724-runtime-reconnect-1"></script>
 </body>
 </html>

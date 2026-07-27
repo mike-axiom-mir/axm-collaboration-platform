@@ -1,13 +1,22 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "workshop-packager",
-  "version": "v0.1",
-  "provides": ["private-workshop-backup", "public-safe-workshop-package", "package-manifest", "ai-native-restore-verification"],
-  "consumes": ["workshop-filesystem"],
+  "version": "v0.3",
+  "provides": ["private-workshop-backup", "public-safe-workshop-package", "modular-workshop-slice", "current-build-on-zip", "build-on-return-guide", "exact-build-on-base-ledger", "github-delta-package", "package-manifest", "ai-native-restore-verification"],
+  "consumes": ["workshop-filesystem", "explicit-github-baseline-request"],
   "permissions": ["files", "export", "gate", "server-export"],
-  "handoffs": {"emits": ["axm.workshop-package/v1"], "accepts": []},
+  "handoffs": {
+    "emits": ["axm.workshop-package/v1", "axm.package-plan/v1", "axm.build-on-handoff/v1"],
+    "accepts": ["axm.workshop-package-request/v1"]
+  },
   "boundaries": {
     "writes": ["exports/workshop-packages", "exports/workshop-packages/.restore-tests (temporary only)"],
-    "refuses": ["source-overwrite", "network-upload", "public-package-with-secret-finding", "unverified-archive", "path-escape"]
+    "refuses": ["source-overwrite", "network-upload", "automatic-delete-from-delta", "dependency-guessing", "private-scope-package", "public-package-with-secret-finding", "unverified-archive", "path-escape", "symbolic-link-scope", "install-authority-in-export"]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
   }
 }

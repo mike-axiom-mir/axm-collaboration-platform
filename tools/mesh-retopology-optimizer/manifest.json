@@ -1,0 +1,55 @@
+{
+  "id": "mesh-retopology-optimizer",
+  "name": "Mesh Retopology & Optimizer",
+  "rank": 4,
+  "phase": "P0",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "Create",
+  "layer": "create",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "mesh",
+    "retopology",
+    "optimization",
+    "lod",
+    "uv",
+    "rigging",
+    "gltf",
+    "offline"
+  ],
+  "uses": [
+    "local-3d-game-runtime",
+    "gltf-2.0",
+    "export"
+  ],
+  "permissions": [
+    "export"
+  ],
+  "actions": [
+    "optimize a building vehicle or rigged person",
+    "set triangle and geometric error targets",
+    "compare source and candidate wireframes",
+    "export an explicit AXM mesh candidate"
+  ],
+  "accepts": [
+    "model/gltf-binary",
+    "axm.mesh-optimization-request/v1"
+  ],
+  "produces": [
+    "axm.mesh-optimization/v1",
+    "axm.mesh-optimization-verification/v1"
+  ],
+  "readiness": [
+    "local-glb-parser",
+    "human-silhouette-review",
+    "export"
+  ],
+  "summary": "Create bounded game-mesh candidates with measured triangle reduction, protected UV/material/normal/rig semantics, geometric error receipts, and before/after wireframes.",
+  "notes": "The native vertex-clustering route preserves declared seams and joint sets, removes degenerates, and refuses to equate geometric metrics with human silhouette or deformation approval."
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/visual-route-receipt.schema.json",
+  "title": "AXM Visual Grammar Route Receipt",
+  "type": "object",
+  "required": [
+    "schema",
+    "status",
+    "profile_id",
+    "profile_digest",
+    "graph_digest",
+    "required_capabilities",
+    "missing_capabilities",
+    "role_inventory",
+    "checks",
+    "truth",
+    "created_at",
+    "digest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.visual-route-receipt/v1" },
+    "status": {
+      "enum": [
+        "READY_CONTRACT",
+        "CAPABILITY_INVENTORY_REQUIRED",
+        "MISSING_HANDS",
+        "MISSING_COMPONENT",
+        "MISSING_ROLE",
+        "UNSUPPORTED_CANVAS",
+        "INVALID_PROFILE"
+      ]
+    },
+    "profile_id": { "type": "string" },
+    "profile_digest": { "type": "string" },
+    "graph_digest": { "type": "string" },
+    "required_capabilities": { "type": "array", "items": { "type": "string" } },
+    "missing_capabilities": { "type": "array", "items": { "type": "string" } },
+    "role_inventory": { "type": "array", "items": { "type": "object" } },
+    "checks": { "type": "array", "items": { "type": "object" } },
+    "truth": {
+      "type": "object",
+      "required": ["contract_only", "executed", "rendered", "visually_approved", "canon_promoted"],
+      "properties": {
+        "contract_only": { "const": true },
+        "executed": { "const": false },
+        "rendered": { "const": false },
+        "visually_approved": { "const": false },
+        "canon_promoted": { "const": false }
+      }
+    },
+    "created_at": { "type": "string" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "axm.repairbuddy.replay-recipe/v1",
+  "id": "replay-0001-hub-manifest-required-fields",
+  "status": "ACTIVE_REPLAY",
+  "operation": "copy-proven-json-fields",
+  "target": "tools/<moduleId>/manifest.json",
+  "match": {
+    "type": "hub-module",
+    "absentFields": ["hubApiVersion", "permissions"],
+    "usesContains": ["export"]
+  },
+  "copyFields": {
+    "hubApiVersion": "1.0",
+    "permissions": ["export"]
+  },
+  "expectedVerifierFailures": [
+    "hub-module missing hubApiVersion",
+    "hub-module permissions must be an array"
+  ],
+  "lineage": {
+    "sourceRepair": "tools/repairbuddy/ACTION_REPORT_MANIFEST_HUB_FIELDS_2026-07-22.md",
+    "verifiedBy": "node verify.js plus Repair Buddy isolated replay selftest",
+    "date": "2026-07-22"
+  }
+}

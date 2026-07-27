@@ -1,18 +1,18 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "workshop-command-center",
-  "version": "v0.1",
+  "version": "v0.5",
   "status": "TEST",
-  "provides": ["beginner-one-page-cockpit", "direction-preview-and-explicit-commit", "six-dimension-steward-assessment", "explicit-human-review-seat", "saved-direction-lifecycle-controls", "read-only-system-and-cognitive-summary", "five-parent-workspace-launchpad", "advanced-explicit-control-catalog"],
-  "consumes": ["axm.workshop-direction.plan/v1", "axm.workshop-direction.steward-assessment/v1", "axm.review-item/v1", "axm.technical-glasses/v1", "axm.cognitive-resource-meter-status/v1", "axm.body-pulse.status/v1", "axm.cognitive-resource.command-center-controls/v1"],
+  "provides": ["beginner-one-page-cockpit", "direction-preview-and-explicit-commit", "six-dimension-steward-assessment", "explicit-human-review-seat", "saved-direction-lifecycle-controls", "read-only-system-needs-and-cognitive-summary", "five-parent-workspace-launchpad", "chroma-studio-navigation", "explicit-phone-drop-navigation", "ui-fx-navigation", "presentation-spine-navigation", "advanced-explicit-control-catalog"],
+  "consumes": ["axm.workshop-direction.plan/v1", "axm.workshop-direction.steward-assessment/v1", "axm.workshop-needs-observatory/v1", "axm.workshop-readiness-view/v1", "axm.review-item/v1", "axm.technical-glasses/v1", "axm.cognitive-resource-meter-status/v1", "axm.body-pulse.status/v1", "axm.cognitive-resource.command-center-controls/v1", "axm.presentation-spine.profiles/v1", "route:chroma-studio", "route:device-handoff:explicit-session-request", "route:ui-fx", "route:presentation-spine"],
   "permissions": [],
   "handoffs": {
     "emits": ["axm.workshop-direction.request/v1", "axm.review-vote/v1"],
-    "accepts": ["axm.workshop-direction.status/v1", "axm.technical-glasses/v1", "axm.cognitive-resource-meter-status/v1", "axm.body-pulse.status/v1"]
+    "accepts": ["axm.workshop-direction.status/v1", "axm.workshop-needs-observatory/v1", "axm.workshop-readiness-view/v1", "axm.technical-glasses/v1", "axm.cognitive-resource-meter-status/v1", "axm.body-pulse.status/v1"]
   },
   "lifecycle": {"state_owner": "service", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"},
   "boundaries": {
     "writes": ["service:workshop-direction:explicit-request-only", "service:review-inbox:explicit-attributed-vote-only"],
-    "refuses": ["automatic-vote", "identity-impersonation", "machine-seat-from-human-ui", "automatic-approval", "automatic-apply", "automatic-execution", "generic-post-control-execution", "body-mode-change", "direct-body-pulse-start", "tool-authority", "file-authority", "network-authority", "permission-grant", "provider-selection", "budget-allocation", "ranking", "training", "mirror-write", "promotion-authority", "release-authority", "canon-change", "real-world-action", "required-third-party-runtime"]
+    "refuses": ["automatic-vote", "identity-impersonation", "machine-seat-from-human-ui", "automatic-approval", "automatic-apply", "automatic-execution", "generic-post-control-execution", "body-mode-change", "direct-body-pulse-start", "tool-authority", "file-authority", "network-authority", "permission-grant", "provider-selection", "budget-allocation", "ranking", "training", "mirror-write", "need-acceptance-authority", "readiness-as-approval", "readiness-as-promotion", "promotion-authority", "release-authority", "canon-change", "real-world-action", "required-third-party-runtime"]
   }
 }

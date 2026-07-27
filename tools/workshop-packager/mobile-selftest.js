@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 'use strict';
-const fs = require('fs');
-const path = require('path');
 const crypto = require('crypto');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const Planner = require('./package-planner');
+const Packager = require('./packager-service');
 
 const root = path.resolve(__dirname, '..', '..');
 const html = fs.readFileSync(path.join(root, 'hub', 'index.html'), 'utf8');
@@ -11,6 +14,8 @@ const adapter = fs.readFileSync(path.join(root, 'hub', 'mobile-device.js'), 'utf
 const launcher = fs.readFileSync(path.join(root, 'mobile', 'start-axm-phone.sh'), 'utf8');
 const builder = fs.readFileSync(path.join(__dirname, 'build-mobile-self-extracting.ps1'), 'utf8');
 const publicPackager = fs.readFileSync(path.join(__dirname, 'package-workshop.ps1'), 'utf8');
+const restoreTest = fs.readFileSync(path.join(__dirname, 'restore-test.ps1'), 'utf8');
+const packagerUi = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const server = fs.readFileSync(path.join(root, 'server.js'), 'utf8');
 const failures = [];
 function check(value, message) { if (!value) failures.push(message); }
@@ -24,9 +29,46 @@ check(/127\.0\.0\.1:8788/.test(launcher) && /start_one hub/.test(launcher), 'pho
 check(/full_active_workshop = \$true/.test(builder) && !/node_modules'\)/.test(builder.split('$excludedDirs')[1].split(')')[0]), 'builder preserves the full active dependency tree');
 check(/PAYLOAD_SHA256/.test(builder) && /embedded payload hash does not match/.test(builder), 'self-extracting payload is hash gated');
 check(/bridge-token\.txt/.test(builder) && /latest-screen\.jpg/.test(builder), 'transfer excludes live keys and screen captures');
+
 const nestedPrivateNames = (publicPackager.match(/\$privateDirNames\s*=\s*@\(([\s\S]*?)\n\s*\)/) || [,''])[1];
-check(!/(?:^|[,'"\s])runtime(?:[,'"\s]|$)/i.test(nestedPrivateNames), 'public packager preserves declared game runtimes');
-check(/Join-Path \$Root 'runtime'/.test(publicPackager), 'public packager still excludes private top-level runtime state');
+check(!/(?:^|[,'"\s])runtime(?:[,'"\s]|$)/i.test(nestedPrivateNames), 'public packager preserves declared nested game runtimes');
+check(/Join-Path \$Root 'runtime'/.test(publicPackager), 'public packager excludes private top-level runtime state');
+check(/ValidateSet\('full','public','module','delta'\)/.test(publicPackager), 'packager exposes four typed modes');
+check(/axm\.package-plan\/v1/.test(publicPackager) && /removed_paths/.test(publicPackager), 'packager consumes a typed plan and preserves the deletion ledger');
+check(/not-applicable-partial-package/.test(restoreTest) && /Selected scope has no restored files/.test(restoreTest), 'restore test distinguishes partial packages from whole Workshop boots');
+check(/Current build-on ZIP/.test(packagerUi) && /Create build-on ZIP/.test(packagerUi) && /Create changed\/new ZIP/.test(packagerUi), 'human UI exposes current build-on and GitHub-delta flows');
+check(/BUILD_ON_GUIDE\.md/.test(publicPackager) && /axm\.build-on-handoff\/v1/.test(publicPackager), 'modular sender includes a plain-language return guide and typed exact-base handoff');
+check(/export_id=\$BaseName/.test(publicPackager) && /intended_return_schema='axm\.workshop-package-return\/v1'/.test(publicPackager), 'build-on handoff records its export identity and intended receiver schema');
+check(/catalog: WorkshopPackager\.catalog\(\)/.test(server) && /github_repo: parsed\.github_repo/.test(server), 'server routes catalog and bounded delta inputs');
+
+const catalog = Packager.catalog();
+check(catalog.length > 20, 'catalog discovers packageable Workshop boundaries');
+check(['module', 'parent-module', 'game', 'world', 'shared-system'].every(kind => catalog.some(item => item.kind === kind)), 'catalog includes modules, parents, games, worlds, and shared systems');
+check(Packager.normalizeOptions({ mode: 'module', scopes: ['tools/workshop-packager'] }).scopes[0] === 'tools/workshop-packager', 'service accepts a safe modular scope');
+try { Packager.normalizeOptions({ mode: 'module', scopes: ['../outside'] }); check(false, 'service refuses escaping scopes'); }
+catch (_) { check(true, 'service refuses escaping scopes'); }
+
+const plannerRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-package-plan-'));
+try {
+  fs.mkdirSync(path.join(plannerRoot, 'tools', 'demo', 'runtime'), { recursive: true });
+  fs.mkdirSync(path.join(plannerRoot, 'state'), { recursive: true });
+  fs.writeFileSync(path.join(plannerRoot, 'tools', 'demo', 'index.js'), 'hello\n');
+  fs.writeFileSync(path.join(plannerRoot, 'tools', 'demo', 'runtime', 'game.js'), 'game\n');
+  fs.writeFileSync(path.join(plannerRoot, 'state', 'private.json'), '{}\n');
+  const planned = Planner.collectFiles(plannerRoot, ['tools/demo']);
+  check(planned.files.has('tools/demo/index.js') && planned.files.has('tools/demo/runtime/game.js'), 'modular planner preserves nested game runtime content');
+  check(!planned.files.has('state/private.json'), 'modular planner excludes body-level private state');
+  check(Planner.gitBlobSha(path.join(plannerRoot, 'tools', 'demo', 'index.js')) === 'ce013625030ba8dba906f756967f9e9ca394464a', 'GitHub delta uses canonical Git blob hashing');
+  const syntheticDelta = Planner.diffAgainstTree(planned.files, [
+    { type: 'blob', path: 'tools/demo/index.js', sha: 'ce013625030ba8dba906f756967f9e9ca394464a' },
+    { type: 'blob', path: 'tools/demo/removed.js', sha: '1111111111111111111111111111111111111111' },
+    { type: 'blob', path: 'state/remote-private.json', sha: '2222222222222222222222222222222222222222' }
+  ], ['tools/demo']);
+  check(syntheticDelta.changed.length === 1 && syntheticDelta.changed[0] === 'tools/demo/runtime/game.js', 'delta includes only changed or new local files');
+  check(syntheticDelta.removed.length === 1 && syntheticDelta.removed[0] === 'tools/demo/removed.js', 'delta records remote-only paths without deleting them');
+} finally {
+  fs.rmSync(plannerRoot, { recursive: true, force: true });
+}
 
 const bundle = process.env.AXM_MOBILE_BUNDLE;
 if (bundle) {
@@ -50,8 +92,8 @@ if (bundle) {
 }
 
 if (failures.length) {
-  console.error('mobile workshop selftest: FAIL');
+  console.error('workshop packager selftest: FAIL');
   failures.forEach(item => console.error('  - ' + item));
   process.exit(1);
 }
-console.log('mobile workshop selftest: PASS' + (bundle ? ' (source + embedded bundle)' : ' (source)'));
+console.log('workshop packager selftest: PASS' + (bundle ? ' (source + embedded bundle)' : ' (source)'));

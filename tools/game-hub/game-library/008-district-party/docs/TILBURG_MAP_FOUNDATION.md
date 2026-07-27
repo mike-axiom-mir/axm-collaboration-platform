@@ -17,11 +17,11 @@ The city is not loaded as one giant frame. Party screens stream a camera-local n
 - Persistent compact minimap on each party screen; press `M` or the visible button for the full city map
 - Debug overlay on `D`, including chunk cache counts
 
-## v0.2.1 Afterglow presentation
+## v0.3.0 Streetscape Foundation presentation
 
-`data/city-art.json` adds one local presentation profile without changing map authority or collision. Cached chunk surfaces now include deterministic ground variation, tiled pavement, road edges/markings, water waves, rail sleepers, connected roof masses and bounded green dressing. Thirteen district seals, eight original landmark ground motifs and eight street-paint details improve wayfinding. The overview also draws a schematic arterial/waterway network and landmark points.
+`data/city-art.json` adds one local presentation profile without changing map authority or collision. Cached chunk surfaces include curb-defined roads, warm jointed pavement, selective source-aligned markings, connected varied roof components, water glints, rail sleepers, park canopies and sparse street lamps. Thirteen district seals, eight original landmark ground motifs and authored street-paint details improve wayfinding. The overview also draws a schematic arterial/waterway network and landmark points.
 
-Three PNGs in `docs/previews/` were generated through the actual runtime renderer and visually inspected. They are release evidence, not replacement runtime textures.
+The PNGs in `docs/previews/` were generated through the actual runtime renderer and visually inspected by an agent. They are QA evidence, not replacement runtime textures, and human visual approval remains required.
 
 ## v0.2.2 open-interior foundation
 
@@ -45,4 +45,4 @@ The whole map continues to exist; only presentation and local collision queries 
 
 ## Honest boundary
 
-This is a coherent first city-art pass over the ground and systems foundation. Bespoke address-level buildings, exhaustive street furniture, furnished/activity-driven interiors beyond the two empty shells, traffic streaming, named streets, a proper road graph and territory campaign persistence remain later work. The source-derived layout resembles Tilburg at arcade scale but is not a finished artistic or navigational recreation.
+This is a playable streetscape foundation over the ground and systems foundation. Bespoke address-level buildings, exhaustive street furniture, furnished/activity-driven interiors beyond the two empty shells, traffic streaming, named streets, a proper road graph and territory campaign persistence remain later work. The source-derived layout resembles Tilburg at arcade scale but is not a finished artistic or navigational recreation.

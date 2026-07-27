@@ -357,8 +357,8 @@ function run() {
     missingCatalog = Hands.listMissingHands();
   assert.equal(
     Hands.list().length,
-    34,
-    "all thirty-four admitted creation hands must be executable",
+    36,
+    "all thirty-six admitted creation hands must be executable",
   );
   assert.equal(
     missingCatalog.length,
@@ -449,7 +449,7 @@ function run() {
         id: "advanced-3d",
         status: "PARTIAL",
         reason:
-          "OBJ, GLB, MaterialX, UV/PBR baking, skin deformation, material parity, OpenUSD/USDZ and ETC1S KTX2 are executable; the signed Blender 4.x reference adapter now applies and reopens real projects, while UASTC/HDR textures, B-rep CAD and other native hosts remain outside installed capability.",
+          "OBJ, GLB, MaterialX, UV/PBR baking, skin deformation, material parity, OpenUSD/USDZ and ETC1S KTX2 are executable; the signed Blender 4.2–5.2 reference adapter now applies and reopens real projects, while UASTC/HDR textures, B-rep CAD and other native hosts remain outside installed capability.",
       },
     ],
     limitations: [
@@ -475,13 +475,13 @@ function run() {
     "VERIFIED DeviceCMYK PDF, APNG, KTX2, GLB, MaterialX and OTIO containers are executable",
   );
   console.log(
-    "VERIFIED the curated fifteen-hand gap catalog is closed with thirty-four executable providers",
+    "VERIFIED the curated fifteen-hand gap catalog remains closed with thirty-six executable providers",
   );
   console.log(
     "OPEN independent external conformance, additional native host adapters and advanced KTX2 variants remain honestly bounded",
   );
   console.log(
-    "PARTIAL advanced 3D excludes UASTC/HDR textures, B-rep CAD and independent inspection for native hosts other than the Blender 4.x reference adapter",
+    "PARTIAL advanced 3D excludes UASTC/HDR textures, B-rep CAD and independent inspection for native hosts other than the Blender 4.2–5.2 reference adapter",
   );
   console.log(
     "Asset Hands Discovery stance: " +

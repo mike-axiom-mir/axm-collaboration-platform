@@ -1,0 +1,50 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "mirror-holo-shoebox",
+  "version": "v0.1",
+  "provides": [
+    "experiment.world.candidate/v1",
+    "experiment.intent.bounded/v1",
+    "experiment.observe.holographic/v1",
+    "experiment.sensor-frame.structured/v1",
+    "experiment.checkpoint.explicit/v1",
+    "artifact.unknown-capsule/v1"
+  ],
+  "consumes": ["axm.experiment-intent/v1", "axm.experiment-checkpoint/v1"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.experiment-world/v1", "axm.experiment-sensor-frame/v1", "axm.experiment-checkpoint/v1", "application/json"],
+    "accepts": ["axm.experiment-intent/v1", "axm.experiment-checkpoint/v1"]
+  },
+  "boundaries": {
+    "writes": [
+      "browser-memory:disposable-candidate",
+      "browser-local:axm.mirror-holo-shoebox.checkpoint.v1:explicit-only",
+      "user-download:experiment-checkpoint-json:explicit-only"
+    ],
+    "refuses": [
+      "automatic-checkpoint-save",
+      "automatic-checkpoint-restore",
+      "automatic-canonical-promotion",
+      "canonical-workshop-write",
+      "canonical-mirror-write",
+      "arbitrary-code-execution-v0",
+      "external-network-access",
+      "credential-read",
+      "outside-filesystem-write",
+      "permission-self-expansion",
+      "automatic-installation",
+      "automatic-publishing",
+      "fake-live-mirror-claim",
+      "observer-mutates-candidate",
+      "unknown-artifact-coercion",
+      "resource-budget-bypass"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
+}

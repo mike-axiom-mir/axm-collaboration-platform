@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/visual-fx-recipe-v1.schema.json",
+  "title": "AXM portable visual FX recipe v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "effect", "outputs", "target_canvas", "provenance", "authority"],
+  "properties": {
+    "schema": { "const": "axm.visual-fx-recipe/v1" },
+    "version": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "effect": {
+      "type": "object",
+      "required": ["name", "kind", "parameters"],
+      "properties": {
+        "name": { "enum": ["linearGradient", "radialGradient", "conicGradient", "glow", "neon", "softShadow", "longShadow", "rimBevel", "spotlight", "vignette", "grain", "scanlines", "sheen", "frostedGlass", "gradientBorder"] },
+        "kind": { "type": "string", "minLength": 1 },
+        "parameters": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["css", "svg", "tokens"],
+      "properties": {
+        "css": { "type": "boolean" },
+        "svg": { "type": "boolean" },
+        "tokens": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "target_canvas": { "type": "object" },
+    "portability": {
+      "type": "object",
+      "properties": {
+        "adapters_required": { "type": "array", "items": { "type": "string" } },
+        "known_limits": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["origin", "creator", "source"],
+      "properties": {
+        "origin": { "const": "local-generated" },
+        "creator": { "const": "Opus for Mike Tobi / AXM" },
+        "source": { "type": "string", "minLength": 1 }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "required": ["automatic_apply", "visual_approval", "canonical"],
+      "properties": {
+        "automatic_apply": { "const": false },
+        "visual_approval": { "const": false },
+        "canonical": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

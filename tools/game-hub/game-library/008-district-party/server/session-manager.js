@@ -322,6 +322,8 @@ class SessionManager {
       sessionId: session.id,
       status: session.status,
       mode: session.settings?.mode || 'coop_adventure',
+      mapId: session.world?.staticMap?.mapSelectionId || session.settings?.mapId || null,
+      mapName: session.world?.staticMap?.mapDisplayName || session.world?.staticMap?.id || null,
       players,
       controllerLinks: session.controllerLinks.map((link) => includeSecrets ? { ...link } : {
         seatId: link.seatId,

@@ -1,0 +1,18 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "chroma-studio",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": ["deterministic-solid-background-keying", "transparent-png-encoding", "phone-inbox-watch", "already-transparent-pass-through", "honest-manual-review-routing", "compact-run-receipt"],
+  "consumes": ["axm.asset-filesystem-index/v1", "filesystem:assets/inbox/device-handoff", "explicit-browser-file-selection", "browser-downloads-default-outside-workshop", "optional-explicit-browser-output-choice"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["image/png", "axm.chroma-run-receipt/v1"],
+    "accepts": ["axm.device-handoff-receipt/v1", "image/png", "image/jpeg", "image/webp"]
+  },
+  "boundaries": {
+    "writes": ["browser-downloads-outside-workshop", "user-chosen-folder", "explicit-browser-download"],
+    "refuses": ["workshop-output-by-default", "remote-upload", "model-call", "silent-save", "save-failed-cut", "whole-device-scan", "unsupported-format", "unbounded-image-memory", "visual-quality-as-proven"]
+  },
+  "lifecycle": {"state_owner": "browser", "reload": "reset", "disconnect": "graceful-degrade", "cleanup": "automatic"}
+}

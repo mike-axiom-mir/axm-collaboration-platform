@@ -53,7 +53,7 @@ class RollbackService {
       }
     });
     this.journal.append('rollback_started', { actor, system: application.system_id, related_packet: application.packet_id, payload: { application_id: applicationId, pre_snapshot_id: pre.snapshot_id } });
-    const adapterResult = adapter.rollbackApplication(pre);
+    const adapterResult = adapter.rollbackApplication(pre, application.adapter_receipt);
     if (!adapterResult.ok) throw new Error('adapter rollback failed');
     this.reverseCoreEffects(application.core_effects, actor);
     const restored = this.snapshots.capture(adapter, actor, 'post-rollback', application.packet_id);

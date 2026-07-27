@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>RepairBuddy · AXM</title>
+<style>
+:root{color-scheme:dark}
+body{margin:0;background:linear-gradient(160deg,#0c1b25,#071017);color:#c8d6de;font:15px/1.5 system-ui,sans-serif}
+.shell{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+.eyebrow{font:700 11px/1 ui-monospace,monospace;letter-spacing:.14em;color:#5de3e2;text-transform:uppercase}
+h1{margin:.2em 0 .1em;font-size:30px;color:#eef6f9}
+h2{margin:0;font-size:17px;color:#e2edf2}
+.intro{color:#9db0bc;max-width:70ch}
+.trust{display:flex;gap:8px;margin:10px 0 22px;flex-wrap:wrap}
+.trust span{font:700 10px/1 ui-monospace,monospace;letter-spacing:.1em;border:1px solid #29505d;border-radius:20px;padding:6px 11px;color:#8fb0ba}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.panel{background:#0d1d27cc;border:1px solid #1d3947;border-radius:14px;padding:18px}
+.panel header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;gap:10px}
+.pill{font:700 11px/1 ui-monospace,monospace;border-radius:16px;padding:6px 12px;background:#123041;color:#5de3e2}
+.pill.warn{background:#3a2a12;color:#ffc36a}
+.item{display:flex;gap:10px;padding:10px 8px;border-top:1px solid #16303c}
+.item i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px;background:#123c33;color:#67e6b2}
+.item.esc i{background:#41321a;color:#ffc36a}
+.item.evidence i{background:#173b4d;color:#8ed7ff}
+.item small{display:block;color:#7f96a2}
+.item code{color:#9fd7d4;font-size:12px}
+button{font:700 13px/1 inherit;border:1px solid #2a6d76;background:#0f2f38;color:#8ff5ee;border-radius:9px;padding:10px 14px;cursor:pointer}
+button:hover{background:#134049}
+input,select{background:#09141b;color:#c8d6de;border:1px solid #1d3947;border-radius:9px;padding:10px;font:13px/1.3 system-ui,sans-serif;box-sizing:border-box}
+select{min-width:280px;flex:1}
+input{min-width:220px;flex:1}
+textarea{width:100%;min-height:150px;background:#09141b;color:#c8d6de;border:1px solid #1d3947;border-radius:9px;padding:10px;font:12px/1.5 ui-monospace,monospace;box-sizing:border-box}
+pre{background:#09141b;border:1px solid #1d3947;border-radius:9px;padding:12px;font-size:11.5px;white-space:pre-wrap;max-height:320px;overflow:auto}
+.verdict{margin-top:10px;font:700 12px/1.4 ui-monospace,monospace}
+.verdict.ok{color:#67e6b2}.verdict.bad{color:#ff9d94}
+.note{color:#7f96a2;font-size:13px}
+#seam-list{max-height:520px;overflow:auto;padding-right:4px}
+.action-controls,.actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.seat{border:1px solid #1d3947;background:#09141b;border-radius:11px;padding:14px}
+.seat h3{margin:0 0 6px;color:#e2edf2;font-size:15px}.seat ol{margin:8px 0 0;padding-left:20px}.seat li{margin:5px 0}
+.action-summary{border-left:3px solid #2a6d76;margin:14px 0;padding:7px 12px;color:#a9bbc4}
+.action-link{display:inline-block;text-decoration:none;font:700 13px/1 system-ui,sans-serif;border:1px solid #2a6d76;background:#0f2f38;color:#8ff5ee;border-radius:9px;padding:10px 14px}
+.action-link:hover{background:#134049}.status-line{min-height:20px;margin-top:9px;color:#7f96a2;font-size:12px}
+@media(max-width:720px){.action-grid{grid-template-columns:1fr}.action-controls{align-items:stretch}.action-controls input,.action-controls select{width:100%;min-width:0}}
+</style></head>
+<body><main class="shell">
+<span class="eyebrow">Mirror lineage · Experimental · Shadow only</span>
+<h1>RepairBuddy</h1>
+<p class="intro">A deterministic repair-memory module. It proposes from typed patterns, and can replay only a frozen, previously verified recipe after an explicit human preview gate. It cannot write new code or adapt a recipe. Pure Mirror at <code>C:\AXM_MIRROR_LOCAL</code> is untouched.</p>
+<div class="trust"><span>NO LEARNED WEIGHTS</span><span>NO AUTOMATIC WRITES</span><span>COPY-ONLY REPLAY</span><span>LINEAGE-BOUND MEMORY</span><span>UNKNOWN = STOP</span></div>
+
+<div class="grid">
+<section class="panel"><header><div><span class="eyebrow">Seam scan</span><h2>What RepairBuddy recognizes today</h2></div><span class="pill" id="coverage">loading…</span></header>
+<div id="seam-list"><p class="note">Reading the latest Technical Glasses snapshot…</p></div></section>
+
+<section class="panel"><header><div><span class="eyebrow">Pattern memory</span><h2>Learned repair patterns</h2></div><span class="pill" id="pattern-count">…</span></header>
+<div id="pattern-list"></div>
+<p class="note">Patterns live in <code>tools/repairbuddy/patterns/</code>. Each one must cite the real repair it was distilled from.</p></section>
+</div>
+
+<section class="panel" style="margin-top:16px"><header><div><span class="eyebrow">Verifier warning queue</span><h2>What can be replayed, tested, or still needs design</h2></div><span class="pill" id="warning-count">loading...</span></header>
+<div id="warning-list"><p class="note">Reading the last verifier-to-RepairBuddy route...</p></div>
+<p class="note">Warnings stay warnings until their own verifier passes. <code>EVIDENCE_REQUIRED</code> needs a real interaction or device receipt; <code>REPAIR_DESIGN_REQUIRED</code> needs implementation and review; only <code>REPLAYABLE</code> may use a frozen recipe.</p></section>
+
+<section class="panel" style="margin-top:16px"><header><div><span class="eyebrow">Human + AI action desk</span><h2>Choose one warning and hand it over without losing authority</h2></div><span class="pill" id="action-kind">waiting</span></header>
+<div class="action-controls"><input id="action-search" type="search" placeholder="Filter by game, module or warning" aria-label="Filter warning actions"><select id="action-warning" aria-label="Warning action"><option>Run the verifier to load warnings</option></select></div>
+<div class="action-summary"><strong id="action-subject">No warning selected.</strong><div id="action-next">The action packet will keep the original warning and verifier visible.</div><small id="action-verify"></small></div>
+<div class="action-grid">
+  <article class="seat"><span class="eyebrow">Human seat · decision owner</span><h3>What you control</h3><ol id="human-actions"><li>Choose a warning.</li></ol></article>
+  <article class="seat"><span class="eyebrow">AI seat · bounded builder</span><h3>What an AI may do</h3><ol id="ai-actions"><li>Wait for a bounded packet.</li></ol></article>
+</div>
+<div class="actions" style="margin-top:14px"><button id="copy-human">Copy human checklist</button><button id="copy-ai">Copy AI brief</button><button id="copy-action-json">Copy JSON packet</button><a class="action-link" id="open-owner" href="#">Open owner module</a></div>
+<div class="status-line" id="action-status" role="status">Nothing opens or applies automatically.</div>
+<pre id="action-json">No action packet loaded.</pre></section>
+
+<section class="panel" style="margin-top:16px"><header><div><span class="eyebrow">Eyes &amp; hands · CLI</span><h2>Look underneath and repair with your say-so</h2></div></header>
+<p class="note">RepairBuddy reads the real files beneath a seam. <code>warnings --details</code> shows the exact routed next actions. <code>scan</code> runs proposal-only pattern matching. A write requires <code>replay &lt;recipeId&gt; &lt;moduleId&gt;</code> for a preview, followed by the same command with <code>--apply</code>. Replay requires exact verifier failures, exact preconditions, fixed copied values, a human gate, a receipt, and rollback on verifier failure. Unknown or changed cases stop. <code>eyes &lt;moduleId&gt;</code> prints a structured module observation.</p></section>
+
+<section class="panel" style="margin-top:16px"><header><div><span class="eyebrow">Escalation · make me a new organ</span><h2>Prompt for a platform AI</h2></div><button id="copy-prompt">Copy prompt</button></header>
+<p class="note">Pick an unmatched seam above (or the first one is chosen for you). Paste this prompt into a big model on a platform. It explains the seam, the workshop rules, and the exact pattern format to return.</p>
+<pre id="escalation-prompt">No escalations right now — every current seam is either matched or none loaded yet.</pre></section>
+
+<section class="panel" style="margin-top:16px"><header><div><span class="eyebrow">Intake · feed the file back</span><h2>Validate a returned pattern</h2></div><button id="validate">Validate pattern</button></header>
+<p class="note">Paste the JSON pattern the platform AI produced. RepairBuddy validates it against <code>pattern.schema.json</code> with the same gate its selftest uses. Nothing is installed automatically: if it passes, save it as a new file in <code>tools/repairbuddy/patterns/</code> and reload this page — same rhythm as pure Mirror's sealed independent packs.</p>
+<textarea id="intake" placeholder='{"schema":"axm.repairbuddy.pattern/v1", ...}'></textarea>
+<div class="verdict" id="verdict"></div></section>
+</main>
+
+<script type="module">
+import {validatePattern, compileReport, buildEscalationPrompt} from './repairbuddy-kernel.mjs';
+import {buildWarningActionPacket, humanChecklist, aiPrompt} from './warning-action-packet.mjs';
+const $=id=>document.getElementById(id);
+const KNOWN_PATTERN_FILES=['pattern-0001-manifest-uses-permission.json'];
+
+async function loadJson(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error(url+' → HTTP '+r.status);return r.json()}
+
+let currentEscalation=null,currentWarningQueue=null,currentActionPacket=null;
+
+function renderActionDesk(){
+  if(!currentWarningQueue)return;
+  const item=currentWarningQueue.items.find(candidate=>candidate.id===$('action-warning').value);
+  if(!item)return;
+  currentActionPacket=buildWarningActionPacket(item);
+  $('action-kind').textContent=item.classification;
+  $('action-kind').classList.toggle('warn',item.classification!=='REPLAYABLE');
+  $('action-subject').textContent=item.subject.id+' - '+item.message;
+  $('action-next').textContent=item.repair.next;
+  $('action-verify').textContent='Verify: '+item.repair.verifyCommand;
+  const list=(id,actions)=>{$(id).replaceChildren(...actions.map(action=>{const li=document.createElement('li');li.textContent=action;return li;}));};
+  list('human-actions',currentActionPacket.seats.human.actions);
+  list('ai-actions',currentActionPacket.seats.ai.actions);
+  $('open-owner').textContent='Open '+currentActionPacket.destination.moduleId;
+  $('open-owner').href=currentActionPacket.destination.route;
+  $('action-json').textContent=JSON.stringify(currentActionPacket,null,2);
+  $('action-status').textContent='Review required · nothing opened, applied, staged or marked verified.';
+}
+
+function populateActionChoices(){
+  if(!currentWarningQueue)return;
+  const query=$('action-search').value.trim().toLowerCase();
+  const previous=$('action-warning').value;
+  const items=currentWarningQueue.items.filter(item=>!query||[item.subject.id,item.message,item.code,item.classification].join(' ').toLowerCase().includes(query));
+  const groups={};items.forEach(item=>(groups[item.classification]||(groups[item.classification]=[])).push(item));
+  const select=$('action-warning');select.replaceChildren();
+  Object.keys(groups).sort().forEach(name=>{const group=document.createElement('optgroup');group.label=name;groups[name].forEach(item=>{const option=document.createElement('option');option.value=item.id;option.textContent=item.subject.id+' - '+item.message;group.append(option);});select.append(group);});
+  if(items.some(item=>item.id===previous))select.value=previous;
+  if(items.length)renderActionDesk();
+  else{$('action-subject').textContent='No warnings match that filter.';$('action-status').textContent='Try a game, module, code or warning phrase.';}
+}
+try{
+  const patterns=[];
+  for(const f of KNOWN_PATTERN_FILES){try{patterns.push(await loadJson('./patterns/'+f))}catch(e){}}
+  const invalid=patterns.filter(p=>!validatePattern(p).pass);
+  const valid=patterns.filter(p=>validatePattern(p).pass);
+  $('pattern-count').textContent=valid.length+' valid'+(invalid.length?(' · '+invalid.length+' rejected'):'');
+  $('pattern-list').innerHTML=valid.map(p=>`<div class="item"><i>P</i><div><strong>${p.name}</strong><small>${p.id} · seam ${p.seamCode} · distilled ${p.lineage.date} from <code>${p.lineage.sourceRepair}</code></small></div></div>`).join('')||'<p class="note">No patterns yet.</p>';
+
+  const glasses=await loadJson('/api/workshop/technical-glasses');
+  const seams=(glasses.priorities||[]).slice(0,40);
+  const report=compileReport(seams,valid,{compiledAt:glasses.compiledAt,fingerprint:glasses.freshness&&glasses.freshness.fingerprint});
+  $('coverage').textContent=report.matched+'/'+report.seams+' seams matched';
+  if(report.escalations>report.matched)$('coverage').classList.add('warn');
+  $('seam-list').innerHTML=report.results.map((r,i)=>r.state==='MATCHED'
+    ?`<div class="item"><i>✓</i><div><strong>${r.moduleId||'workshop'}</strong> — ${r.explanation}<small>pattern ${r.patternId} · verify: <code>${r.verification[0]}</code> · proposal only, nothing applied</small></div></div>`
+    :`<div class="item esc"><i>?</i><div><strong>${r.moduleId||'workshop'}</strong> — ${r.seam.message}<small>${r.seam.severity} ${r.seam.code} · no pattern knows this yet → escalate</small></div></div>`
+  ).join('')||'<p class="note">No open seams in the snapshot. Quiet workshop.</p>';
+
+  const firstEsc=report.results.find(r=>r.state==='ESCALATE');
+  if(firstEsc){currentEscalation=firstEsc.seam;$('escalation-prompt').textContent=buildEscalationPrompt(currentEscalation,{});}
+}catch(error){
+  $('seam-list').innerHTML='<p class="note">Could not read the glasses snapshot: '+error.message+'. Open this page through the Workshop server and recompile Technical Glasses.</p>';
+  $('coverage').textContent='no snapshot';
+}
+
+try{
+  const queue=await loadJson('../../exports/repairbuddy-warning-queue.json');
+  currentWarningQueue=queue;
+  const s=queue.summary||{};
+  $('warning-count').textContent=(s.routedItems||0)+' routed';
+  if((s.evidenceRequired||0)+(s.repairDesignRequired||0)>0)$('warning-count').classList.add('warn');
+  const icons={REPLAYABLE:'R',EVIDENCE_REQUIRED:'E',REPAIR_DESIGN_REQUIRED:'D'};
+  const classes={REPLAYABLE:'',EVIDENCE_REQUIRED:'evidence',REPAIR_DESIGN_REQUIRED:'esc'};
+  const rows=(queue.groups||[]).map(group=>{
+    const row=document.createElement('div');row.className='item '+(classes[group.classification]||'esc');
+    const icon=document.createElement('i');icon.textContent=icons[group.classification]||'?';
+    const body=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('small');
+    title.textContent=group.code+' - '+group.count;
+    detail.textContent=group.classification+' · owner '+group.owner+' · '+group.subjects.join(', ');
+    body.append(title,detail);row.append(icon,body);return row;
+  });
+  if(rows.length)$('warning-list').replaceChildren(...rows);
+  else $('warning-list').innerHTML='<p class="note">No routed verifier warnings. Quiet gate.</p>';
+  populateActionChoices();
+}catch(error){
+  $('warning-list').innerHTML='<p class="note">No warning queue yet. Run <code>node verify.js</code> once to build it.</p>';
+  $('warning-count').textContent='not scanned';
+}
+
+$('action-warning').addEventListener('change',renderActionDesk);
+$('action-search').addEventListener('input',populateActionChoices);
+async function copyAction(button,text){try{await navigator.clipboard.writeText(text);const prior=button.textContent;button.textContent='Copied';$('action-status').textContent='Copied locally. No action was applied.';setTimeout(()=>button.textContent=prior,1200);}catch(error){$('action-status').textContent='Clipboard unavailable: '+error.message;}}
+$('copy-human').addEventListener('click',()=>currentActionPacket&&copyAction($('copy-human'),humanChecklist(currentActionPacket)));
+$('copy-ai').addEventListener('click',()=>currentActionPacket&&copyAction($('copy-ai'),aiPrompt(currentActionPacket)));
+$('copy-action-json').addEventListener('click',()=>currentActionPacket&&copyAction($('copy-action-json'),JSON.stringify(currentActionPacket,null,2)));
+
+$('copy-prompt').addEventListener('click',async()=>{await navigator.clipboard.writeText($('escalation-prompt').textContent);$('copy-prompt').textContent='Copied';setTimeout(()=>$('copy-prompt').textContent='Copy prompt',1200)});
+$('validate').addEventListener('click',()=>{
+  const v=$('verdict');v.className='verdict';
+  let parsed;try{parsed=JSON.parse($('intake').value)}catch(e){v.classList.add('bad');v.textContent='NOT JSON: '+e.message;return}
+  const result=validatePattern(parsed);
+  if(result.pass){v.classList.add('ok');v.textContent='PATTERN VALID · save it as tools/repairbuddy/patterns/'+parsed.id+'.json, add the filename to KNOWN_PATTERN_FILES in index.html, run node selftest.js, reload.'}
+  else{v.classList.add('bad');v.textContent='REJECTED:\n· '+result.errors.join('\n· ')}
+});
+</script></body></html>

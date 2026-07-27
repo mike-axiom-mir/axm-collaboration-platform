@@ -1,0 +1,47 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "fx-blocks",
+  "version": "v0.1.0",
+  "provides": [
+    "visual-fx.preview",
+    "visual-fx.recipe.export",
+    "visual-fx.shapeable-pack.export"
+  ],
+  "consumes": [
+    "axm.visual-fx-recipe/v1"
+  ],
+  "permissions": [
+    "export"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.visual-fx-recipe/v1",
+      "axm.shapeable.block-pack"
+    ],
+    "accepts": [
+      "axm.visual-fx-recipe/v1"
+    ]
+  },
+  "boundaries": {
+    "writes": [
+      "user-download:explicit-recipe",
+      "user-download:explicit-block-pack"
+    ],
+    "refuses": [
+      "automatic-host-apply",
+      "automatic-visual-approval",
+      "native-adapter-claim",
+      "engine-shader-claim",
+      "operating-system-theme-installation",
+      "canonical-promotion",
+      "network-contact"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}
+

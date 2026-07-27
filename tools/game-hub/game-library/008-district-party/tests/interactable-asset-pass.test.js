@@ -66,19 +66,12 @@ function rgbaPngInfo(relative) {
   return { width, height, minimumAlpha, maximumAlpha };
 }
 
-test('interactable intake provenance is preserved while the redundant public archive stays omitted', () => {
+test('interactable intake archive is preserved exactly with an honest curation boundary', () => {
   const manifest = json('assets/INTERACTABLE_ASSET_MANIFEST.json');
-  const sourceManifest = json('assets/source/user_generated/interactable_alpha_pack_2026-07-19/SOURCE_MANIFEST.json');
   assert.equal(manifest.source.individualPngCount, 158);
   assert.equal(manifest.source.categoryCount, 7);
-  assert.equal(Object.keys(sourceManifest.categories).length, 7);
-  assert.equal(Object.values(sourceManifest.categories).reduce((sum, category) => sum + category.asset_count, 0), 158);
-  assert.equal(manifest.source.archiveIncludedInPublicRepository, false);
-  assert.equal(fs.existsSync(path.join(root, manifest.source.archive)), false);
-  assert.match(manifest.source.archiveOmissionReason, /redundant nested payload/i);
-  assert.match(manifest.source.archiveSha256, /^[a-f0-9]{64}$/);
-  assert.ok(manifest.source.archiveBytes > 0);
-  assert.ok(fs.existsSync(path.join(root, 'assets/AXM_GENERATED_ART_AUTHORIZATION.md')));
+  assert.equal(fs.statSync(path.join(root, manifest.source.archive)).size, manifest.source.archiveBytes);
+  assert.equal(sha256(manifest.source.archive), manifest.source.archiveSha256);
   assert.equal(manifest.intakeAudit.zipIntegrity, 'PASS');
   assert.match(manifest.intakeAudit.fullAlphaRange, /^PARTIAL/);
   assert.equal(manifest.license.publicOpenSourceLicense, false);

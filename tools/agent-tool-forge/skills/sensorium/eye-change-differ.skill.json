@@ -1,0 +1,81 @@
+{
+  "schema": "axm.sensorium-skill/v1",
+  "id": "eye-change-differ",
+  "type": "skill",
+  "sense": "comparative-sight",
+  "pack": "axm-sensorium/1.4.0",
+  "status": "ACCEPT_FOR_TEST",
+  "capability": "visual.diff.between-stills/v1",
+  "purpose": "Compare two attributable typed observations of the same target at different times and report exactly what changed without inferring why.",
+  "inputs": [
+    "claim",
+    "targetId",
+    "beforeObservation",
+    "afterObservation",
+    "expectedChange",
+    "refutingChange"
+  ],
+  "procedure": [
+    "Require two attributable typed observations of the same target with ordered timestamps.",
+    "Require the same fact identifiers at both times, using present=false for known absence.",
+    "Classify each fact as SAME, CHANGED, APPEARED, or DISAPPEARED.",
+    "Treat an optional structural-hash delta as corroborating evidence only.",
+    "Judge only the named expected or refuting change and seal value digests without raw values."
+  ],
+  "rules": [
+    "Perception is not permission.",
+    "UNKNOWN is preferred to a plausible guess.",
+    "Every use emits a typed receipt and releases raw material."
+  ],
+  "boundaries": [
+    "Does not capture or interpret an image.",
+    "Does not infer the cause of a change.",
+    "Does not compare different targets or incomplete fact dimensions.",
+    "Does not treat one observation as a change.",
+    "Does not retain supplied fact values or inherit host authority."
+  ],
+  "retention": {
+    "law": "EPHEMERAL BY DEFAULT. Raw sense material is released at the next step. Only a bounded typed receipt survives.",
+    "raw_material": "sense-specific bounded input",
+    "released_when": "before the typed observation is returned",
+    "survives": "specific receipt plus axm.sensorium-receipt/v1 envelope",
+    "raw_retained_after_step": "zero",
+    "accumulation_across_uses": "flat and zero after every release boundary",
+    "receipt_cap": "newest 20 per sense",
+    "deletion_scope": "only material created by the exact sense use, by exact id or path; never a wildcard or recursive sweep"
+  },
+  "receipt": {
+    "schema": "axm.visual-change-observation/v1",
+    "envelopeSchema": "axm.sensorium-receipt/v1"
+  },
+  "runtime": {
+    "routeType": "EXECUTABLE",
+    "module": "eye-change-differ.js",
+    "factory": "create",
+    "operation": "diff"
+  },
+  "statuses": {
+    "skillStatus": "ACCEPT_FOR_TEST",
+    "executorStatus": "EXECUTABLE",
+    "adapterStatus": "NOT_REQUIRED",
+    "proofStatus": "RUNTIME_PASS",
+    "authorityStatus": "NO_LEASE"
+  },
+  "requiredHostCapabilities": [],
+  "constraints": [
+    "two-typed-observations-required",
+    "same-target-required",
+    "same-fact-dimensions-required",
+    "distinct-ordered-timestamps-required",
+    "no-cause-claim",
+    "no-capture",
+    "receipts-only-never-raw"
+  ],
+  "resourceBudget": {
+    "maxObservations": 2,
+    "maxTypedFacts": 80,
+    "rawRetainedBytesAfterSeal": 0
+  },
+  "authorityInherited": false,
+  "promotionGate": "Mike"
+}

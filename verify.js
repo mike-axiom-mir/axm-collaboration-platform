@@ -7,16 +7,18 @@
    here is one Fable performed by hand during the build sessions,
    now automated so ANY future AI's zip is self-checkable at
    Mike's merge gate before a byte is trusted.
-   Output: console + exports/verify-report.txt. Honest exit code:
+   Output: console + exports/verify-report.txt + verify-report.json. Honest exit code:
    0 = all pass · 1 = failures found.
    ============================================================ */
 'use strict';
 const fs = require('fs'), path = require('path'), crypto = require('crypto');
+const ToolReadiness = require('./shared/readiness/tool-readiness');
 const ROOT = __dirname;
-const out = []; let fails = 0, warns = 0;
-function ok(m){ out.push('  PASS  ' + m); }
-function fail(m){ out.push('  FAIL  ' + m); fails++; }
-function warn(m){ out.push('  warn  ' + m); warns++; }
+const out = [], records = []; let fails = 0, warns = 0;
+let gameWarningReport = null, moduleSeamReport = null;
+function ok(m){ out.push('  PASS  ' + m); records.push({verdict:'PASS',message:m}); }
+function fail(m){ out.push('  FAIL  ' + m); records.push({verdict:'FAIL',message:m}); fails++; }
+function warn(m){ out.push('  warn  ' + m); records.push({verdict:'WARN',message:m}); warns++; }
 function read(p){ try { return fs.readFileSync(path.join(ROOT,p),'utf8'); } catch(e){ return null; } }
 function sha(p){ const t = fs.readFileSync(path.join(ROOT,p)); return crypto.createHash('sha256').update(t).digest('hex').slice(0,16); }
 
@@ -69,7 +71,10 @@ fs.readdirSync(toolsDir,{withFileTypes:true}).forEach(e=>{
 /* 3 — DOM ORDER + NO HARDCODED ASSET PATHS in every html (the v0.3 lesson) */
 (function scanHtml(d){ fs.readdirSync(path.join(ROOT,d),{withFileTypes:true}).forEach(e=>{
   const p = d?d+'/'+e.name:e.name;
-  if(e.isDirectory()) return scanHtml(p);
+  if(e.isDirectory()) {
+    if(['node_modules','exports','backups','state','logs'].includes(e.name)) return;
+    return scanHtml(p);
+  }
   if(!e.name.endsWith('.html')) return;
   const h = read(p);
   const pos = h.lastIndexOf('<script>');
@@ -131,6 +136,7 @@ try {
   const engineResult = engineSeams.run();
   ok('shared game engine seams: '+engineResult.assertions+' regression assertion(s) passed');
   const gr = gameV.verifyLibrary(path.join(ROOT,'tools','game-hub','game-library'));
+  gameWarningReport = gr;
   fs.mkdirSync(path.join(ROOT, 'exports'), { recursive: true });
   fs.writeFileSync(path.join(ROOT, 'exports', 'game-night-seam-report.json'), JSON.stringify(gr, null, 2));
   if(gr.pass) ok('game-library adapter: '+gr.games.length+' modular game package(s) verified');
@@ -156,18 +162,71 @@ try {
 try {
   const seamV = require('./hub/module-seam-audit');
   const sr = seamV.auditModules(ROOT);
+  moduleSeamReport = sr;
   fs.mkdirSync(path.join(ROOT, 'exports'), { recursive: true });
   fs.writeFileSync(path.join(ROOT, 'exports', 'module-seam-gaps.json'), JSON.stringify(sr, null, 2));
   if (sr.gapCount) warn('module lifecycle seam inventory: '+sr.gapCount+' older gap(s) across '+sr.openModuleCount+' module(s) - see exports/module-seam-gaps.json');
   else ok('module lifecycle seam inventory complete: '+sr.moduleCount+' module(s) declared');
 } catch(e) { fail('module lifecycle seam inventory could not run: '+e.message); }
 
+/* 12 - REPAIRBUDDY WARNING ROUTE: warnings keep their original verifier
+   authority, while a structured queue says which ones need evidence, a
+   repair design, or an exact frozen replay. Routing never suppresses a warn. */
+try {
+  const warningRouter = require('./tools/repairbuddy/verifier-warning-router');
+  const queue = warningRouter.buildWarningQueue(gameWarningReport, moduleSeamReport, { root: ROOT });
+  const checked = warningRouter.validateWarningQueue(queue);
+  if (!checked.pass) throw new Error(checked.errors.join('; '));
+  fs.mkdirSync(path.join(ROOT, 'exports'), { recursive: true });
+  fs.writeFileSync(path.join(ROOT, 'exports', 'repairbuddy-warning-queue.json'), JSON.stringify(queue, null, 2));
+  ok('RepairBuddy warning route: '+queue.summary.routedItems+' item(s) from '+queue.summary.routedVerifierWarningLines+' warning line(s); '+queue.summary.replayable+' replayable, '+queue.summary.evidenceRequired+' evidence, '+queue.summary.repairDesignRequired+' repair design');
+} catch(e) { fail('RepairBuddy warning routing could not run: '+e.message); }
+
+/* 13 - TOOL READINESS INDEX: promotion evidence and missing declarations stay
+   visible without automatically promoting, archiving, or granting authority. */
+try {
+  const liveIndex = ToolReadiness.buildIndex(ROOT);
+  const checked = ToolReadiness.validateIndex(liveIndex);
+  if(!checked.pass) checked.errors.forEach(error => fail('tools index: '+error));
+  else ok('tools index schema valid: '+liveIndex.summary.tools+' tools · '+liveIndex.summary.capabilities+' contract capabilities');
+  const idMismatches = liveIndex.tools.filter(tool => tool.id !== tool.folder && !(JSON.parse(read(tool.manifest.path)||'{}').folderAlias === tool.folder));
+  idMismatches.forEach(tool => fail('tool id must match folder: '+tool.folder+' declares '+tool.id));
+  const missingPermissions = liveIndex.tools.filter(tool => !tool.permissionsDeclared);
+  const missingContracts = liveIndex.tools.filter(tool => !tool.contract.present);
+  const missingSelftests = liveIndex.tools.filter(tool => !tool.selftest.paths.length);
+  const missingKinds = liveIndex.tools.filter(tool => tool.kind === 'UNDECLARED');
+  if(missingPermissions.length) warn('manifest completeness backlog: '+missingPermissions.length+' tool(s) omit permissions · '+missingPermissions.map(tool=>tool.id).join(','));
+  else ok('all tool manifests declare permissions');
+  if(missingContracts.length) warn('module contract backlog: '+missingContracts.length+' tool(s) have no contract · '+missingContracts.map(tool=>tool.id).join(','));
+  else ok('all tools have module contracts');
+  if(missingSelftests.length) warn('selftest backlog: '+missingSelftests.length+' tool(s) have no executable selftest · '+missingSelftests.map(tool=>tool.id).join(','));
+  else ok('all tools have executable selftests');
+  if(missingKinds.length) warn('manifest kind migration backlog: '+missingKinds.length+' tool(s) remain legacy UNDECLARED');
+  else ok('all tool manifests declare kind');
+  liveIndex.promotionQueue.claimsNeedingReverification.forEach(item => warn('promotion claim needs reverification: '+item.id+' · '+item.blockers.join('; ')));
+  const stored = JSON.parse(read('tools-index.json')||'null');
+  const storedCheck = ToolReadiness.validateIndex(stored);
+  if(!storedCheck.pass) warn('tools-index.json missing or invalid; run npm run index:tools');
+  else if(stored.sourceDigest !== liveIndex.sourceDigest) warn('tools-index.json is stale for current manifests/contracts/selftests; run npm run index:tools');
+  else ok('tools-index.json matches current structural source digest');
+} catch(e) { fail('tool readiness index could not run: '+e.message); }
+
 /* ---- report ---- */
-const head = 'AXM VERIFY — '+new Date().toISOString()+'\n'+
+const generatedAt = new Date().toISOString();
+const head = 'AXM VERIFY — '+generatedAt+'\n'+
   fails+' FAIL · '+warns+' warn · spine '+SPINE_SHA+'\n'+
   'A failing zip is not evil — it is UNREVIEWED. Hand this report to the builder.\n\n';
 const report = head + out.join('\n') + '\n';
 console.log(report);
 try { fs.mkdirSync(path.join(ROOT,'exports'),{recursive:true});
-  fs.writeFileSync(path.join(ROOT,'exports','verify-report.txt'), report); } catch(e){}
+  fs.writeFileSync(path.join(ROOT,'exports','verify-report.txt'), report);
+  fs.writeFileSync(path.join(ROOT,'exports','verify-report.json'), JSON.stringify({
+    schema:'axm.verify-report/v1',
+    generatedAt,
+    summary:{passes:records.filter(row=>row.verdict==='PASS').length,failures:fails,warnings:warns,verdict:fails?'FAIL':'PASS'},
+    spineSha256Prefix:SPINE_SHA,
+    checks:records,
+    truth:{warningsSuppressed:false,automaticRepair:false,automaticPromotion:false}
+  },null,2)+'\n');
+} catch(e){}
 process.exit(fails ? 1 : 0);

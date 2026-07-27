@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Mirror Holo Shoebox</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="cosmic-field" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="identity">
+        <div class="mark" aria-hidden="true"><span>AXM</span></div>
+        <div>
+          <p>EXPERIMENT WORLD / H0</p>
+          <h1>Mirror Holo Shoebox <small>ALPHA 01</small></h1>
+          <span>Creative freedom inside. Zero silent authority outside.</span>
+        </div>
+      </div>
+      <div class="truth-strip">
+        <span class="truth-chip candidate"><i></i>CANDIDATE WORLD</span>
+        <span class="truth-chip degraded"><i></i>MIRROR CONTRACT READY / NOT CONNECTED</span>
+        <span class="truth-chip blocked"><i></i>CANON LOCKED</span>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="direction-rail panel" aria-label="Experiment controls">
+        <div class="panel-heading">
+          <span>01 / DIRECTION</span>
+          <strong>Open a possibility</strong>
+        </div>
+        <label class="field-label" for="goal">Direction, question or curiosity</label>
+        <textarea id="goal" rows="4" maxlength="1000">Create something useful or interesting without assuming whether it should become code, an image, a game, a world, or something unnamed.</textarea>
+
+        <div class="mode-grid" role="group" aria-label="Exploration mode">
+          <button type="button" data-mode="directed">Directed</button>
+          <button type="button" class="selected" data-mode="curiosity">Curiosity</button>
+          <button type="button" data-mode="repair">Repair</button>
+          <button type="button" data-mode="unknown-hunt">Unknown hunt</button>
+        </div>
+
+        <div class="budget-heading"><span>DECLARED INTENT BUDGET</span><em>request ceiling · not telemetry</em></div>
+        <label class="range-field">
+          <span>Time <output id="time-output">5 min</output></span>
+          <input id="time-budget" type="range" min="1" max="60" value="5" step="1">
+        </label>
+        <label class="range-field">
+          <span>Storage <output id="storage-output">50 MB</output></span>
+          <input id="storage-budget" type="range" min="5" max="500" value="50" step="5">
+        </label>
+        <label class="range-field">
+          <span>Compute <output id="compute-output">20%</output></span>
+          <input id="compute-budget" type="range" min="5" max="50" value="20" step="5">
+        </label>
+
+        <button class="primary full" type="button" id="open-world">Open new shoebox</button>
+
+        <section class="pulse-box">
+          <div>
+            <span>LOCAL REHEARSAL</span>
+            <strong>Mirror-compatible pulses</strong>
+            <p>Exercises the contract deterministically. It does not pretend live Mirror is acting.</p>
+          </div>
+          <div class="button-pair">
+            <button type="button" id="pulse-once">Run 1 pulse</button>
+            <button type="button" id="pulse-five">Run 5 pulses</button>
+          </div>
+          <button class="quiet full" type="button" id="pause-pulses" disabled>Pause pulses</button>
+        </section>
+
+        <div class="checkpoint-actions">
+          <button type="button" id="save-checkpoint">Save here</button>
+          <button type="button" id="load-checkpoint">Restore saved</button>
+          <button type="button" id="download-checkpoint">Download</button>
+          <button type="button" class="danger" id="discard-world">Discard box</button>
+        </div>
+        <p class="storage-truth" id="storage-truth">Nothing saves automatically. Discard only clears this tool's own browser checkpoint.</p>
+      </aside>
+
+      <section class="holo-panel panel" aria-label="Transparent experiment globe">
+        <div class="stage-heading">
+          <div>
+            <span>02 / TRANSPARENT OBSERVER</span>
+            <h2 id="world-title">Disposable possibility universe</h2>
+          </div>
+          <div class="view-tabs" role="group" aria-label="Observer projection">
+            <button type="button" class="selected" data-view="world">World</button>
+            <button type="button" data-view="anatomy">Anatomy</button>
+            <button type="button" data-view="evidence">Evidence</button>
+            <button type="button" data-view="timeline">Timeline</button>
+          </div>
+        </div>
+
+        <div class="holo-stage" id="holo-stage">
+          <div class="stage-grid" aria-hidden="true"></div>
+          <div class="membrane-label top"><span>READ-ONLY WORKSHOP LIBRARY</span></div>
+          <div class="membrane-label bottom"><span>NO AUTHORITY BEYOND THIS SURFACE</span></div>
+          <div class="holo-globe" aria-hidden="true">
+            <div class="sphere sphere-back"></div>
+            <div class="latitude lat-a"></div><div class="latitude lat-b"></div><div class="latitude lat-c"></div>
+            <div class="longitude long-a"></div><div class="longitude long-b"></div><div class="longitude long-c"></div>
+            <div class="core-light"></div>
+            <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="orbit orbit-c"></div>
+          </div>
+          <svg class="link-layer" id="link-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <div class="artifact-layer" id="artifact-layer" role="list" aria-label="Experiment artifacts"></div>
+          <div class="stage-empty" id="stage-empty">
+            <strong>THE BOX IS OPEN</strong>
+            <span>Run one bounded pulse or send a typed intent through the machine port.</span>
+          </div>
+          <div class="observer-badge"><i></i><span>OBSERVER ONLY</span><strong id="frame-digest">frame pending</strong></div>
+        </div>
+
+        <div class="world-metrics">
+          <div><span>Artifacts</span><strong id="metric-artifacts">1 / 24</strong></div>
+          <div><span>Declared storage</span><strong id="metric-storage">0 / 50 MB</strong></div>
+          <div><span>Declared compute</span><strong id="metric-compute">0 / 20%</strong></div>
+          <div><span>World state</span><strong id="metric-state">DRAFT</strong></div>
+          <div><span>Promotion</span><strong class="blocked-text">BLOCKED</strong></div>
+        </div>
+
+        <div class="stage-actions">
+          <button type="button" id="open-port">Open machine intent port</button>
+          <button type="button" class="freeze" id="freeze-candidate">Freeze candidate for review</button>
+        </div>
+      </section>
+
+      <aside class="inspector-rail panel" aria-label="Artifact and boundary inspector">
+        <div class="panel-heading">
+          <span>03 / EXACT TRUTH</span>
+          <strong>Candidate inspector</strong>
+        </div>
+        <section class="artifact-inspector" id="artifact-inspector">
+          <div class="artifact-symbol intent" id="inspector-symbol"><span>01</span></div>
+          <p id="inspector-kind">INTENT</p>
+          <h2 id="inspector-title">Creative direction</h2>
+          <p id="inspector-summary">The human direction that opened this disposable candidate world.</p>
+          <dl>
+            <div><dt>Creator</dt><dd id="inspector-creator">human</dd></div>
+            <div><dt>Inputs</dt><dd id="inspector-inputs">none</dd></div>
+            <div><dt>Evidence</dt><dd id="inspector-evidence">0 receipts</dd></div>
+            <div><dt>Digest</dt><dd id="inspector-digest">pending</dd></div>
+          </dl>
+          <details>
+            <summary>Typed facets</summary>
+            <pre id="inspector-facets">{}</pre>
+          </details>
+        </section>
+
+        <section class="membrane-card">
+          <div class="card-heading"><span>CAPABILITY MEMBRANE</span><em id="capability-count">4 ready / 3 blocked</em></div>
+          <div id="capability-list" class="capability-list"></div>
+        </section>
+
+        <section class="promotion-card">
+          <span>OUTER DOOR</span>
+          <strong>No automatic canon</strong>
+          <p>A frozen candidate still needs an external diff, evidence route and human review. This module cannot open that door.</p>
+          <div class="door-lock"><i></i> PROMOTION HELD</div>
+        </section>
+      </aside>
+    </main>
+
+    <section class="timeline-panel panel" aria-label="Experiment timeline">
+      <div class="timeline-heading">
+        <div><span>04 / EVOLUTION TRACE</span><strong>Every pulse remains visible</strong></div>
+        <div class="timeline-truth"><i></i> compact events only / no raw capture archive</div>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </section>
+  </div>
+
+  <dialog id="intent-dialog">
+    <form method="dialog" class="dialog-shell">
+      <div class="dialog-heading">
+        <div><span>MACHINE PORT / TYPED ONLY</span><h2>Send one bounded intent</h2></div>
+        <button value="cancel" aria-label="Close machine port">X</button>
+      </div>
+      <p>This is the future Mirror seam. It changes only the in-memory candidate graph. Network, canonical writes, installation, publishing and process execution are refused by the kernel.</p>
+      <textarea id="intent-json" rows="16" spellcheck="false"></textarea>
+      <div class="dialog-actions">
+        <span id="intent-status">Edit the JSON or use the safe example.</span>
+        <button type="button" class="primary" id="apply-intent">Apply typed intent</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="../../shared/experiment-world/experiment-world.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

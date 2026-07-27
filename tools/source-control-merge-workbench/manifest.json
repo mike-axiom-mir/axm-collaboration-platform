@@ -1,0 +1,79 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "id": "source-control-merge-workbench",
+  "name": "Source Control & Merge Workbench",
+  "version": "v0.4",
+  "status": "TEST",
+  "verifiedAt": "2026-07-24T15:30:00.000Z",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "kind": "service",
+  "hubApiVersion": "1.0",
+  "category": "Build",
+  "layer": "build",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "rank": 43,
+  "phase": "P3",
+  "tags": [
+    "source-control",
+    "deterministic-plan",
+    "public-safe",
+    "machine-runner",
+    "manual-review-gate",
+    "one-use-plan-digest",
+    "dedicated-branch",
+    "evidence-bound"
+  ],
+  "uses": [
+    "local-git-runtime",
+    "separate-git-working-copy",
+    "git-credential-manager-or-existing-git-auth",
+    "workshop-public-safe-policy",
+    "machine-host-background-job-ledger"
+  ],
+  "permissions": [
+    "export",
+    "machine.execute"
+  ],
+  "actions": [
+    "inspect a separate clean Git working copy",
+    "build a deterministic public-safe sync plan",
+    "render a compact review summary and export the complete exact plan",
+    "configure a dedicated automation branch with manual push only",
+    "verify a reviewed plan digest without writing",
+    "run the fixed local sync runner as a bounded background job only with the exact reviewed digest and confirmation",
+    "commit only planned changed or new public-safe files",
+    "push the dedicated automation branch without merging",
+    "emit a draft pull-request candidate handoff",
+    "restore the clean pre-commit state when a remote push fails"
+  ],
+  "accepts": [
+    "human-direction",
+    "separate-git-working-copy",
+    "existing-git-authentication",
+    "manual-reviewed-plan-digest"
+  ],
+  "produces": [
+    "axm.source-merge-review/v1",
+    "axm.github-sync-plan/v1",
+    "axm.github-sync-plan-summary/v1",
+    "axm.github-sync-verification/v1",
+    "axm.github-sync-receipt/v1",
+    "axm.github-pr-candidate/v1",
+    "axm.p34-release-verification/v1"
+  ],
+  "readiness": [
+    "git-installed",
+    "separate-clean-working-copy",
+    "automation-branch-checked-out",
+    "credential-free-github-remote-url",
+    "existing-git-authentication",
+    "explicit-mike-configuration",
+    "exact-reviewed-plan-digest",
+    "exact-manual-push-confirmation"
+  ],
+  "summary": "Let the local computer prepare, verify, and manually push one exact public-safe Workshop plan to a dedicated GitHub automation branch, with no deletion, credential storage, direct main push, pull-request creation, merge, or CANON authority.",
+  "notes": "The fixed runner requires the exact digest of a freshly reviewed plan plus a typed manual confirmation. The Hub shows a bounded summary and exports the complete exact plan on request. Push work runs in Machine Host so the interface stays responsive; a failed remote push restores the clean pre-commit state when possible. Heartbeat's future seam is read-only verification; unattended push is reserved and unavailable."
+}

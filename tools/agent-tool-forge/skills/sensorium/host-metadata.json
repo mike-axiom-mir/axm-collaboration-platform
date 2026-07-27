@@ -1,0 +1,188 @@
+{
+  "schema": "axm.sensorium-host-metadata/v1",
+  "version": "1.4.0",
+  "capabilities": [
+    {
+      "id": "eye-static-image-inspector",
+      "capability": "visual.inspect.static/v1",
+      "routeType": "HOST_MEDIATED",
+      "requiredHostCapabilities": [
+        "visual.inspect.static/v1"
+      ],
+      "constraints": [
+        "supplied-image-only",
+        "no-capture-claim",
+        "no-live-or-motion-pass"
+      ]
+    },
+    {
+      "id": "eye-live-visual-verifier",
+      "capability": "visual.capture.ephemeral-rolling-buffer/v1",
+      "routeType": "EXECUTABLE",
+      "requiredHostCapabilities": [
+        "visual.capture.ephemeral-rolling-buffer/v1"
+      ],
+      "constraints": [
+        "browser-first",
+        "explicit-target",
+        "windows-fallback-new-lease",
+        "WINDOWS_WINDOW_ISOLATION_UNAVAILABLE"
+      ]
+    },
+    {
+      "id": "eye-change-differ",
+      "capability": "visual.diff.between-stills/v1",
+      "routeType": "EXECUTABLE",
+      "requiredHostCapabilities": [],
+      "constraints": [
+        "two-typed-observations-required",
+        "same-target-required",
+        "same-fact-dimensions-required",
+        "distinct-ordered-timestamps-required",
+        "no-cause-claim",
+        "no-capture",
+        "receipts-only-never-raw"
+      ]
+    },
+    {
+      "id": "eye-accessibility-inspector",
+      "capability": "visual.inspect.accessibility/v1",
+      "routeType": "EXECUTABLE",
+      "requiredHostCapabilities": [
+        "ui.render.computed-style/v1"
+      ],
+      "constraints": [
+        "supplied-measurements-run-locally",
+        "exact-target-browser-read",
+        "bounded-to-200-elements",
+        "content-not-inspected",
+        "complex-backgrounds-unknown",
+        "incomplete-coverage-unknown",
+        "floor-not-taste",
+        "no-auto-fix",
+        "partial-is-unknown-not-pass"
+      ]
+    },
+    {
+      "id": "ears-stream-listener",
+      "capability": "sense.hearing.bounded-stream/v1",
+      "routeType": "EXECUTABLE",
+      "requiredHostCapabilities": [
+        "stream.read.bounded/v1"
+      ],
+      "constraints": [
+        "named-stream-only",
+        "bounded-events",
+        "source-untouched"
+      ]
+    },
+    {
+      "id": "time-sense-ttl-verifier",
+      "capability": "sense.time.ttl/v1",
+      "routeType": "EXECUTABLE",
+      "requiredHostCapabilities": [],
+      "constraints": [
+        "ttl-from-observation-time",
+        "shortest-input-ttl",
+        "future-is-not-live"
+      ]
+    },
+    {
+      "id": "touch-environment-probe",
+      "capability": "sense.environment.touch/v1",
+      "routeType": "EXECUTABLE",
+      "requiredHostCapabilities": [
+        "environment.probe.exact-read-only/v1"
+      ],
+      "constraints": [
+        "exact-items-only",
+        "wildcards-refused",
+        "read-only"
+      ]
+    },
+    {
+      "id": "handoff-continuity-steward",
+      "capability": "sense.continuity.handoff/v1",
+      "routeType": "EXECUTABLE",
+      "requiredHostCapabilities": [
+        "continuity.storage.owned/v1"
+      ],
+      "constraints": [
+        "append-only",
+        "access-reread",
+        "no-raw-sense-material"
+      ]
+    },
+    {
+      "id": "compaction-steward",
+      "capability": "sense.provenance.compaction/v1",
+      "routeType": "EXECUTABLE",
+      "requiredHostCapabilities": [
+        "provenance.storage.owned-hot-cold/v1"
+      ],
+      "constraints": [
+        "preview-first",
+        "exact-confirmation",
+        "hash-before-replace",
+        "raw-sensory-bulk-refused"
+      ]
+    },
+    {
+      "id": "drift-detector-ambient",
+      "capability": "sense.behavior.drift/v1",
+      "routeType": "EXECUTABLE",
+      "requiredHostCapabilities": [],
+      "constraints": [
+        "same-seat-only",
+        "reviewed-baseline-only",
+        "no-hidden-reasoning",
+        "no-direct-action"
+      ]
+    },
+    {
+      "id": "corroboration-triangulator",
+      "capability": "sense.consensus.claim-corroboration/v1",
+      "routeType": "EXECUTABLE",
+      "requiredHostCapabilities": [],
+      "constraints": [
+        "distinct-seats-required",
+        "same-claim-and-capability-version-required",
+        "one-bounded-observation-per-seat",
+        "no-tiebreak",
+        "divergence-routes-to-gate",
+        "receipts-only-never-raw"
+      ]
+    },
+    {
+      "id": "interoception-capacity-gauge",
+      "capability": "sense.interoception.own-capacity/v1",
+      "routeType": "EXECUTABLE",
+      "requiredHostCapabilities": [
+        "seat.capacity.read/v1"
+      ],
+      "constraints": [
+        "own-body-only",
+        "fill-level-not-content",
+        "host-metric-required",
+        "recommend-not-act",
+        "stamped-and-expiring",
+        "SEAT_CAPACITY_ADAPTER_UNAVAILABLE"
+      ]
+    },
+    {
+      "id": "taint-sniffer",
+      "capability": "sense.integrity.taint/v1",
+      "routeType": "EXECUTABLE",
+      "requiredHostCapabilities": [],
+      "constraints": [
+        "caller-supplied-material-only",
+        "bounded-to-256-kibibytes",
+        "deterministic-signals-only",
+        "warning-not-guilt",
+        "no-fetch-or-execution",
+        "no-block-or-quarantine",
+        "no-raw-excerpts-in-receipt"
+      ]
+    }
+  ]
+}

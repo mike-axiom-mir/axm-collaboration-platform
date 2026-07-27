@@ -1,0 +1,52 @@
+{
+  "id": "module-lineage-comparator",
+  "name": "AXM Module Lineage Comparator",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "LOW",
+  "tags": [
+    "module-bundle",
+    "lineage",
+    "comparison",
+    "sha256",
+    "manifest",
+    "contract",
+    "review",
+    "local-first",
+    "read-only"
+  ],
+  "uses": [
+    "filesystem-read",
+    "storage"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "actions": [
+    "compare two explicit axm.module-bundle/v1 artifacts",
+    "prove added removed changed and unchanged file paths by SHA-256",
+    "compare selected manifest and contract fields without semantic guessing",
+    "hold malformed unsafe oversized or digest-drifted bundles",
+    "export a lineage comparison only when an output path is explicit"
+  ],
+  "accepts": [
+    "axm.module-bundle/v1"
+  ],
+  "produces": [
+    "axm.module-lineage-comparison/v1",
+    "axm.module-file-delta/v1",
+    "axm.module-contract-delta/v1"
+  ],
+  "readiness": [
+    "filesystem-read"
+  ],
+  "summary": "A deterministic two-bundle comparator that proves exact file and declared-contract differences without merging, choosing a winner, inferring freshness, staging, or installing.",
+  "notes": "Detached EXPERIMENTAL candidate. Baseline and candidate are directional labels only; they never mean older, newer, safer, accepted, or CANON."
+}

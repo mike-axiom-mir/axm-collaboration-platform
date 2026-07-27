@@ -73,4 +73,4 @@ npm run test:browser
 
 ## Public-release gate
 
-The 2026-07-19 gate is satisfied for inclusion in this AXM public repository and its public-safe packages by Mike's recorded authorization in `assets/AXM_GENERATED_ART_AUTHORIZATION.md`. That authorization is not CC0 and does not grant standalone/general reuse. Preserve the authorization and provenance files whenever these art directories are packaged.
+The new art is user supplied for the AXM prototype but has no independently verified public redistribution license. Before any GitHub/public-safe export, assign and record permission or exclude `assets/source/user_generated`, `assets/generated/user_generated` and `assets/selected/*/axm_generated` from that export.

@@ -1,11 +1,22 @@
 (function () {
   'use strict';
   var Core = window.AXMStudioCore;
+  var VisualActions = window.AXMVisualActions;
+  var StudioActions = window.AXMStudioActions;
+  var actionRegistry = VisualActions.createRegistry(StudioActions.ACTIONS);
   var STORE = 'axm.studio.workspace.v2';
   var $ = function (id) { return document.getElementById(id); };
   var state;
   try { state = Core.normalize(JSON.parse(localStorage.getItem(STORE) || 'null')); }
   catch (error) { state = Core.baseState(); }
+  var pendingGoal = null;
+  var pendingGoalDelivered = false;
+  try {
+    pendingGoal = JSON.parse(sessionStorage.getItem('axm.capability.goal-handoff.v1') || 'null');
+    if (!pendingGoal || pendingGoal.schema !== 'axm.capability-goal-handoff/v1' || pendingGoal.destinationId !== 'studio') pendingGoal = null;
+    else sessionStorage.removeItem('axm.capability.goal-handoff.v1');
+  } catch (error) { pendingGoal = null; }
+  if (pendingGoal && /\b(crest|logo|icon|vector|emblem|badge)\b/i.test(pendingGoal.goal || '')) state.mode = 'vector';
 
   var icons = {
     brush:'<path d="M4 20c3 0 5-2 5-5l8-8-4-4-8 8c-3 0-5 2-5 5"/><path d="M14 4l6 6"/>',
@@ -74,20 +85,124 @@
     if (!$('handsFrame').dataset.loaded) {
       $('handsFrame').dataset.loaded='1';
       var canvas=handCanvasForMode(state.mode);
-      $('handsFrame').src='/shared/asset-hands/index.html?host=studio&kind='+encodeURIComponent(handKindForMode(state.mode))+'&medium='+encodeURIComponent(canvas.medium)+'&use='+encodeURIComponent(canvas.use)+'&target='+encodeURIComponent(state.projectName||'studio');
+      var handGoal=pendingGoal&&pendingGoal.goal||state.projectName||'studio';
+      var params=new URLSearchParams({host:'studio',kind:handKindForMode(state.mode),medium:canvas.medium,use:canvas.use,target:handGoal,title:handGoal,purpose:handGoal});
+      var requestedOutputs=[];
+      if(/\bPNG\b/i.test(handGoal))requestedOutputs.push('image/png');
+      if(/\bSVG\b/i.test(handGoal))requestedOutputs.push('image/svg+xml');
+      if(requestedOutputs.length)params.set('outputs',requestedOutputs.join(','));
+      if(/\b(editable|editability|source)\b/i.test(handGoal))params.set('editable','required');
+      $('handsFrame').src='/shared/asset-hands/index.html?'+params.toString();
     }
   }
   function closeHands() { var drawer=$('handsDrawer'); drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); }
 
-  renderNav(); $('projectName').value=state.projectName;
+  var commandSelection = 0;
+  var commandReturnFocus = null;
+  var commandHandlers = {
+    'studio.mode':function(action, payload){ selectMode(payload.mode); return {completed:true}; },
+    'studio.service':function(action, payload){ if(payload.service==='assets')openAssets();else if(payload.service==='hands')openHands();else throw new Error('unknown Studio service');return {completed:true}; },
+    'studio.workspace':function(action, payload){ if(payload.command!=='save-workspace')throw new Error('unknown workspace command');$('saveWorkspace').click();return {completed:true}; },
+    'studio.canvas':function(action, payload){
+      if(!payload.command)throw new Error('canvas command is missing');
+      $('canvasFrame').contentWindow.postMessage({type:'axm-studio-command',schema:VisualActions.SCHEMA,actionId:action.id,command:payload.command},'*');
+      return {pending:true};
+    }
+  };
+  function commandPlatform(){ return /Mac/i.test(navigator.platform||navigator.userAgent||'')?'macos':'windows'; }
+  function commandContexts(){
+    var mode=Core.byId(state.mode),contexts=['studio'];
+    if(mode.route==='canvas')contexts.push('canvas',mode.id);
+    else contexts.push(mode.id);
+    return contexts;
+  }
+  function commandCapabilities(){
+    var capabilities=['studio.shell'];
+    if(!$('saveWorkspace').disabled)capabilities.push('studio.canvas');
+    return capabilities;
+  }
+  function availableCommands(){
+    return actionRegistry.search($('commandSearch').value,{
+      contexts:commandContexts(),
+      includeAdvanced:$('commandAdvanced').checked,
+      platform:commandPlatform(),
+      capabilities:commandCapabilities(),
+      handlers:commandHandlers
+    });
+  }
+  function selectCommand(index){
+    var buttons=[].slice.call(document.querySelectorAll('.command-item'));
+    if(!buttons.length){commandSelection=0;return;}
+    commandSelection=(index+buttons.length)%buttons.length;
+    buttons.forEach(function(button,i){button.classList.toggle('selected',i===commandSelection);button.setAttribute('aria-selected',i===commandSelection?'true':'false');});
+    buttons[commandSelection].scrollIntoView({block:'nearest'});
+  }
+  function runCommand(id){
+    var chosen=actionRegistry.get(id);
+    var result=actionRegistry.dispatch(id,commandHandlers,{capabilities:commandCapabilities(),mode:state.mode});
+    if(!result.ok){toast('Command unavailable · '+result.status);return;}
+    closeCommandDeck();
+    if(result.value&&result.value.pending)$('statusText').textContent='Running '+chosen.title+'…';
+  }
+  function renderCommandDeck(){
+    var results=availableCommands(),list=$('commandResults');list.innerHTML='';
+    $('commandCount').textContent=results.length+' action'+(results.length===1?'':'s');
+    if(!results.length){var empty=document.createElement('div');empty.className='command-empty';empty.textContent='No matching action in this Studio mode. Try another word or enable advanced + specialist.';list.appendChild(empty);return;}
+    results.forEach(function(action){
+      var button=document.createElement('button');button.className='command-item';button.type='button';button.dataset.actionId=action.id;button.setAttribute('role','option');button.disabled=action.availability!=='READY';
+      var copy=document.createElement('span');copy.className='command-copy';
+      var titleRow=document.createElement('span');titleRow.className='command-title-row';
+      var title=document.createElement('b');title.textContent=action.title;titleRow.appendChild(title);
+      var level=document.createElement('span');level.className='command-level '+action.level;level.textContent=action.level;titleRow.appendChild(level);
+      if(action.destructive){var danger=document.createElement('span');danger.className='command-danger';danger.textContent='◇';danger.title='Existing confirmation gate stays active';titleRow.appendChild(danger);}
+      var summary=document.createElement('p');summary.textContent=action.summary;copy.appendChild(titleRow);copy.appendChild(summary);
+      var meta=document.createElement('span');meta.className='command-meta';
+      var family=document.createElement('span');family.className='command-family';family.textContent=action.family;meta.appendChild(family);
+      if(action.trigger){var trigger=document.createElement('kbd');trigger.className='command-trigger';trigger.textContent=action.trigger;meta.appendChild(trigger);}
+      button.appendChild(copy);button.appendChild(meta);button.onclick=function(){runCommand(action.id);};list.appendChild(button);
+    });
+    selectCommand(Math.min(commandSelection,results.length-1));
+  }
+  function openCommandDeck(){
+    commandReturnFocus=document.activeElement;closeAssets();closeHands();
+    $('commandDeck').classList.add('open');$('commandDeck').setAttribute('aria-hidden','false');
+    commandSelection=0;renderCommandDeck();setTimeout(function(){$('commandSearch').focus();$('commandSearch').select();},0);
+  }
+  function closeCommandDeck(){
+    $('commandDeck').classList.remove('open');$('commandDeck').setAttribute('aria-hidden','true');
+    if(commandReturnFocus&&commandReturnFocus.focus)commandReturnFocus.focus();
+  }
+
+  renderNav(); $('projectName').value=pendingGoal&&pendingGoal.goal?String(pendingGoal.goal).slice(0,100):state.projectName;
   $('projectName').addEventListener('change',function(){state.projectName=this.value; persist('Project name saved');});
   $('saveWorkspace').onclick=function(){state.projectName=$('projectName').value;this.disabled=true;$('canvasFrame').contentWindow.postMessage({type:'axm-studio-save',download:false},'*');persist('Studio shell saved · artwork checkpoint pending');};
   $('openAssets').onclick=openAssets; $('openAssetsRail').onclick=openAssets;
   $('openHands').onclick=openHands; $('openHandsRail').onclick=openHands;
+  $('openCommandDeck').onclick=openCommandDeck;
   document.querySelectorAll('[data-close-assets]').forEach(function(b){b.onclick=closeAssets;});
   document.querySelectorAll('[data-close-hands]').forEach(function(b){b.onclick=closeHands;});
-  window.addEventListener('keydown',function(e){if(e.key==='Escape'){closeAssets();closeHands();}});
-  $('canvasFrame').addEventListener('load',function(){$('saveWorkspace').disabled=false;selectMode(state.mode,true);});
+  document.querySelectorAll('[data-close-commands]').forEach(function(b){b.onclick=closeCommandDeck;});
+  $('commandSearch').addEventListener('input',function(){commandSelection=0;renderCommandDeck();});
+  $('commandAdvanced').addEventListener('change',function(){commandSelection=0;renderCommandDeck();});
+  $('commandSearch').addEventListener('keydown',function(e){
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();selectCommand(commandSelection+(e.key==='ArrowDown'?1:-1));}
+    else if(e.key==='Enter'){var selected=document.querySelector('.command-item.selected:not(:disabled)');if(selected){e.preventDefault();runCommand(selected.dataset.actionId);}}
+  });
+  window.addEventListener('keydown',function(e){
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCommandDeck();return;}
+    if(e.key==='Escape'){if($('commandDeck').classList.contains('open'))closeCommandDeck();else{closeAssets();closeHands();}}
+  });
+  function onCanvasReady(){
+    $('saveWorkspace').disabled=false;selectMode(state.mode,true);
+    if($('commandDeck').classList.contains('open'))renderCommandDeck();
+    if(!pendingGoal||pendingGoalDelivered)return;
+    pendingGoalDelivered=true;
+    $('canvasFrame').contentWindow.postMessage({type:'axm-studio-goal',schema:pendingGoal.schema,goal:pendingGoal.goal,creationMode:pendingGoal.creationMode,automaticStart:false},'*');
+    if(pendingGoal.creationMode==='deterministic'){$('statusText').textContent='Goal loaded · choose a deterministic Creation Hand';openHands();}
+    else if(pendingGoal.creationMode==='ai')$('statusText').textContent='AI brief loaded · you choose when the AI takes a turn';
+    else $('statusText').textContent='Goal loaded · editable Studio tools are ready';
+  }
+  $('canvasFrame').addEventListener('load',onCanvasReady);
 
   /* Nested Studio panels use their existing Hub bridge. Studio answers their
      ready/save/log messages and forwards the meaningful state to the real Hub. */
@@ -101,6 +216,16 @@
     if(msg.type==='hub:log'&&window.AXMHub)AXMHub.log('Studio · '+String(msg.msg||''),msg.level||'info');
   });
   window.addEventListener('message',function(ev){if(ev.data&&ev.data.type==='axm-studio-saved'){$('saveWorkspace').disabled=false;if(ev.data.ok===false){$('statusText').textContent='Artwork save failed · '+(ev.data.error||'storage unavailable');toast('Artwork was not saved — '+(ev.data.error||'storage unavailable'));return;}$('statusText').textContent='Artwork checkpoint saved';$('saveState').textContent='Saved '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});toast('Studio workspace and artwork saved');}});
+  window.addEventListener('message',function(ev){
+    var msg=ev.data;if(ev.source!==$('canvasFrame').contentWindow||!msg)return;
+    if(msg.type==='axm-studio-canvas-ready'){onCanvasReady();return;}
+    if(msg.type==='axm-studio-open-command-deck'){openCommandDeck();return;}
+    if(msg.type==='axm-studio-command-result'&&msg.schema===VisualActions.RESULT_SCHEMA){
+      var command=actionRegistry.get(msg.actionId),label=command?command.title:'Studio command';
+      $('statusText').textContent=msg.ok?label+' ready':label+' refused · '+String(msg.status||'unavailable');
+      toast(msg.ok?label:(label+' unavailable · '+String(msg.status||'unknown')));
+    }
+  });
   window.addEventListener('message',function(ev){
     var msg=ev.data;if(!msg||msg.type!=='axm-asset-hand-result'||msg.schema!=='axm.asset-hand-result/v1'||ev.source!==$('handsFrame').contentWindow)return;
     var result=msg.result||{};

@@ -1,0 +1,16 @@
+{
+  "schema": "axm.verification-category-pack/v1",
+  "id": "hand",
+  "name": "Hands",
+  "purpose": "Verify exact capability, typed inputs and outputs, bounded side effects and honest failure behavior.",
+  "native_claim_kinds": ["static-structure", "deterministic-behavior", "transport", "authorization"],
+  "never_claims": ["taste", "fitness-for-every-target"],
+  "default_risk": "medium",
+  "baseline_claims": [
+    { "id": "hand.capability", "need": "The exact capability and assurance ceiling are declared.", "evidence": "static-structure" },
+    { "id": "hand.typed-io", "need": "Inputs, outputs and artifact ownership are schema-bound.", "evidence": "static-structure" },
+    { "id": "hand.side-effects", "need": "Filesystem, network, compute and external side effects are bounded.", "evidence": "authorization" },
+    { "id": "hand.runtime", "need": "A representative execution produces a valid typed result.", "evidence": "deterministic-behavior" },
+    { "id": "hand.honest-miss", "need": "Unsupported inputs return a typed miss rather than fake completion.", "evidence": "deterministic-behavior" }
+  ]
+}

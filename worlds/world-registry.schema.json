@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.world-registry/v1",
+  "title": "AXM World Registry",
+  "type": "object",
+  "required": ["schema", "worlds"],
+  "properties": {
+    "schema": { "const": "axm.world-registry/v1" },
+    "worlds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "path", "status", "state_owner", "game_rulesets_own_world"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^world\\.[a-z0-9.-]+$" },
+          "name": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "pattern": "^/worlds/[a-z0-9-]+/$" },
+          "status": { "type": "string", "minLength": 1 },
+          "state_owner": { "type": "string", "minLength": 1 },
+          "game_rulesets_own_world": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

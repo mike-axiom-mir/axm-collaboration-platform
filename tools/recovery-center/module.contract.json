@@ -1,12 +1,22 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "recovery-center",
-  "version": "v0.1",
-  "provides": ["verified-private-snapshots", "scheduled-backups", "selective-restore-preview", "pre-restore-safety-copy", "recoverable-rollback"],
-  "consumes": ["service:workshop-packager", "service:storage", "service:gate"],
+  "version": "v0.2",
+  "provides": ["verified-private-snapshots", "in-process-scheduled-backups", "current-state-bound-restore-preview", "expiring-restore-preview", "pre-restore-safety-copy", "persistent-restore-lineage", "governed-rollback-preview", "pre-rollback-safety-copy", "recoverable-restore-rollback"],
+  "consumes": ["service:workshop-packager", "service:storage", "service:gate", "service:secrets-permissions-console"],
   "permissions": ["recovery.apply"],
-  "handoffs": {"emits": ["axm.recovery-snapshot/v1", "axm.restore-preview/v1", "axm.pre-restore-backup/v1"], "accepts": ["axm.recovery-request/v1"]},
-  "boundaries": {"writes": ["exports/workshop-packages", "backups/recovery-center", "state/recovery-center", "explicitly-selected-workshop-files"], "refuses": ["silent-restore", "unreviewed-delete", "restore-without-preview", "restore-without-safety-copy", "path-escape", "automatic-cloud-upload"]},
-  "lifecycle": {"state_owner": "service", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"}
+  "handoffs": {
+    "emits": ["axm.recovery-status/v1", "axm.recovery-snapshot/v1", "axm.restore-preview/v2", "axm.recovery-restore-receipt/v1", "axm.recovery-rollback-preview/v1", "axm.pre-restore-backup/v2", "axm.pre-rollback-backup/v1", "axm.recovery-rollback-receipt/v1"],
+    "accepts": ["axm.recovery-request/v1", "axm.workshop-package/v1", "axm.permission-status/v1"]
+  },
+  "boundaries": {
+    "writes": ["exports/workshop-packages", "backups/recovery-center", "state/recovery-center", "explicitly-selected-workshop-files"],
+    "refuses": ["silent-restore", "stale-restore-preview", "restore-after-current-state-drift", "snapshot-digest-drift", "restore-without-permission", "restore-without-exact-confirmation", "restore-without-safety-copy", "silent-rollback", "stale-rollback-preview", "rollback-after-current-state-drift", "rollback-with-later-overlapping-restore", "rollback-without-permission", "rollback-without-exact-confirmation", "rollback-without-safety-copy", "unpreviewed-delete", "path-escape", "symbolic-link-target", "automatic-cloud-upload", "automatic-restore", "automatic-rollback", "automatic-promotion"]
+  },
+  "lifecycle": {
+    "state_owner": "service",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
 }
-

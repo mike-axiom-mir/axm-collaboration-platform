@@ -16,6 +16,20 @@ request surface, not a new authority layer.
 7. Discuss HOLD and DOWN decisions in the Decision Pool, then route the same
    direction to a changed repair digest or cancel it completely.
 
+The default Mike view keeps that path visible as **tell AXM -> see the plan ->
+choose**. Quality, priority, bounded step count, and reviewer count stay
+available under Optional controls instead of competing with the command box.
+Every refresh-only control says that it saves nothing. In particular, Refresh
+saved plans performs only `GET /api/workshop-direction`; it does not create a
+Workshop Growth snapshot or change plan state.
+
+The Workshop-health scan also performs a read-only `GET /api/workshop-needs`.
+It shows the open-need count and the number of modules whose current contract
+and self-test evidence is waiting for Mike's review, then links back to the
+Workshop Needs Observatory as the owning room. The cockpit does not copy need
+state, expose need acceptance, or turn review readiness into approval,
+promotion, or CANON status. Unavailable or stale readiness remains unknown.
+
 ## Output panel
 
 The Workshop Output panel reports files changed during the last 60 minutes by
@@ -33,6 +47,7 @@ event is labelled finished.
 - no generic POST execution from the advanced catalog
 - no permission, tool, file, network, provider, budget, promotion, release,
   canon, Mirror-write, or world authority
+- no need acceptance or readiness-as-promotion authority
 - no required third-party runtime
 
 Status is `TEST`. The room needs browser and human operator trials before any

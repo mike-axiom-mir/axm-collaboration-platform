@@ -1,10 +1,12 @@
 {
-  "id": "workshop-search-provenance", "name": "AXM Workshop Search & Provenance Index", "version": "v0.1", "status": "TEST", "entry": "index.html", "contract": "module.contract.json", "type": "hub-module", "hubApiVersion": "1.0", "category": "KNOWLEDGE", "layer": "create", "audience": "human-machine", "risk": "LOW",
-  "tags": ["search", "index", "provenance", "files", "knowledge", "sources"], "uses": ["files", "storage", "capability-index"], "permissions": [],
-  "actions": ["search Workshop source and project files", "inspect file provenance and hashes", "rebuild the bounded local index"],
+  "schema": "axm.tool-manifest/v1",
+  "id": "workshop-search-provenance", "name": "AXM Workshop Search & Provenance Index", "version": "v0.2", "status": "TEST", "entry": "index.html", "kind": "service", "contract": "module.contract.json", "type": "hub-module", "hubApiVersion": "1.0", "category": "KNOWLEDGE", "layer": "create", "audience": "human-machine", "risk": "LOW",
+  "tags": ["search", "index", "provenance", "files", "knowledge", "sources", "code-recipes"], "uses": ["files", "storage", "capability-index", "code-recipe-foundry"], "permissions": [],
+  "actions": ["search Workshop source and project files", "search structured code-recipe references", "inspect file, pack and syntax provenance", "rebuild the bounded local index"],
   "accepts": ["text/plain", "axm.workshop-search-query/v1"],
   "produces": ["axm.workshop-search-results/v1"],
   "readiness": ["files", "storage"],
-  "summary": "Search Workshop source, tools, projects, docs and asset metadata with hashes, paths, snippets and explicit private-area exclusions.",
-  "notes": "State, logs, backups, exports, bridge material and secret-like names are excluded. Indexing never changes source files."
+  "verifiedAt": "2026-07-24T20:12:25.359Z",
+  "summary": "Search Workshop source, tools, projects, docs, asset metadata and structured code-recipe references with hashes, paths, review holds and explicit private-area exclusions.",
+  "notes": "State, logs, backups, exports, bridge material and secret-like names are excluded. Recipe snippets never execute, and held recipe code is excluded from the searchable projection. Indexing never changes source files."
 }

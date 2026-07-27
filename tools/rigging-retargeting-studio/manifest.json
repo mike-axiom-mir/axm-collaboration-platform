@@ -1,0 +1,55 @@
+{
+  "id": "rigging-retargeting-studio",
+  "name": "Rigging & Retargeting Studio",
+  "rank": 8,
+  "phase": "P0",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "Create",
+  "audience": "human-machine",
+  "layer": "create",
+  "risk": "LOW",
+  "summary": "Map a 31-joint humanoid explicitly, retarget all 22 current clips onto tall and compact bodies, measure foot contact and joint error, verify weights, and expose IK, constraints, sockets, and human pose review.",
+  "tags": [
+    "rigging",
+    "retargeting",
+    "animation",
+    "humanoid",
+    "ik",
+    "offline"
+  ],
+  "uses": [
+    "native-glb",
+    "native-math",
+    "canvas",
+    "export"
+  ],
+  "permissions": [
+    "export"
+  ],
+  "actions": [
+    "inspect explicit humanoid mapping",
+    "compare source tall and compact bodies",
+    "play every retargeted clip",
+    "measure foot slide and joint error",
+    "export a digest-bound retarget bundle"
+  ],
+  "accepts": [
+    "model/gltf-binary",
+    "axm.humanoid-retarget-profile/v1"
+  ],
+  "produces": [
+    "axm.rig-retarget-bundle/v1",
+    "axm.rig-retarget-verification/v1"
+  ],
+  "readiness": [
+    "normalized-skin-weights",
+    "explicit-joint-map",
+    "human-extreme-pose-review",
+    "explicit-export"
+  ],
+  "entry": "index.html",
+  "notes": "The preview and metrics do not approve deformation quality. Extreme poses and foot contact stay a required human gate."
+}

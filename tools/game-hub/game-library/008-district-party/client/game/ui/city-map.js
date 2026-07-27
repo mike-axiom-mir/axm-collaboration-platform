@@ -1,4 +1,5 @@
 const PARTY_COLOURS = Object.freeze({ party_a: '#59e0b8', party_b: '#e98aff' });
+export const MINIMAP_PRESENTATION_ALPHA = 0.25;
 const clamp = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
 const partyColour = (partyId) => PARTY_COLOURS[partyId] || '#e8dca6';
 const centreOf = (entry = {}) => ({
@@ -271,9 +272,11 @@ export function drawCityMap(ctx, viewport, map, world, camera, partyId, requeste
   if (full) {
     ctx.fillStyle = '#020906ee'; ctx.fillRect(0, 0, viewport.width, viewport.height);
   }
+  ctx.globalAlpha = full ? 1 : MINIMAP_PRESENTATION_ALPHA;
   ctx.fillStyle = '#07110ef2';
   ctx.fillRect(layout.x - (full ? 12 : 6), layout.y - (full ? 12 : 20), layout.width + (full ? 24 : 12), layout.height + (full ? 24 : 26));
   ctx.fillStyle = map.palette?.ground || '#233a35'; ctx.fillRect(layout.x, layout.y, layout.width, layout.height);
+  ctx.globalAlpha = 1;
   ctx.strokeStyle = full ? '#b8e7d5dd' : '#b8e7d5aa'; ctx.lineWidth = full ? 2 : 1; ctx.strokeRect(layout.x, layout.y, layout.width, layout.height);
   if (full) {
     ctx.fillStyle = '#d9fff2'; ctx.font = '900 20px system-ui'; ctx.textAlign = 'center';

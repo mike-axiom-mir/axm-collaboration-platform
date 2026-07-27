@@ -1,0 +1,46 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "holodeck-composer",
+  "version": "v0.2",
+  "provides": [
+    "holodeck.world.compose/v1",
+    "holodeck.view.observe/v1",
+    "holodeck.view.camera-control/v1",
+    "holodeck.view.authority-boundary/v1"
+  ],
+  "consumes": [
+    "axm.holodeck-world/v1",
+    "holodeck.world.validate/v1",
+    "holodeck.world.compile/v1",
+    "holodeck.intent.dispatch/v1",
+    "holodeck.adapter.screen/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.holodeck-world/v1", "axm.holodeck-deck-plan/v1", "axm.holodeck-camera-receipt/v1", "application/json"],
+    "accepts": ["axm.holodeck-world/v1"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:axm.holodeck.composer.draft.v1:explicit-only", "user-download:world-json:explicit-only"],
+    "refuses": [
+      "automatic-draft-save",
+      "automatic-draft-restore",
+      "automatic-world-promotion",
+      "arbitrary-world-import-v0",
+      "complete-schema-editor-claim",
+      "observer-camera-mutates-world-state",
+      "observer-camera-dispatches-player-intent",
+      "render-coordinate-as-canonical-state",
+      "vr-or-ar-implementation-claim",
+      "hologram-hardware-claim",
+      "physical-world-manipulation-claim",
+      "runtime-network-dependency"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
+}

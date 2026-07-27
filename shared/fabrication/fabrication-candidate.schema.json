@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.fabrication-candidate/v1",
+  "title": "AXM Fabrication Candidate v1",
+  "type": "object",
+  "required": ["schema", "id", "digest", "source", "adapter", "physical", "technical", "reviews", "machine", "hardwareCommand"],
+  "properties": {
+    "schema": { "const": "axm.fabrication-candidate/v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source": { "type": "object" },
+    "adapter": { "type": "object" },
+    "physical": { "type": "object" },
+    "technical": { "type": "object" },
+    "reviews": { "type": "object" },
+    "machine": { "type": "object" },
+    "hardwareCommand": { "type": "null" }
+  },
+  "additionalProperties": false
+}

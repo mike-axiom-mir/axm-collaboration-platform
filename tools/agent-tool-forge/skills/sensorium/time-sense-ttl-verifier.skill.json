@@ -1,0 +1,73 @@
+{
+  "schema": "axm.sensorium-skill/v1",
+  "id": "time-sense-ttl-verifier",
+  "type": "skill",
+  "sense": "time",
+  "pack": "axm-sensorium/1.4.0",
+  "status": "ACCEPT_FOR_TEST",
+  "capability": "sense.time.ttl/v1",
+  "purpose": "Stamp evidence age and refuse malformed, future, untimed, or stale facts as current.",
+  "inputs": [
+    "fact",
+    "observedAt",
+    "ttlMs",
+    "at",
+    "decisionTtlMs"
+  ],
+  "procedure": [
+    "Validate the observation timestamp.",
+    "Assign bounded TTL by volatility.",
+    "Calculate age at intended use.",
+    "Return LIVE, STALE, UNTIMED, INVALID_TIMESTAMP, or FUTURE.",
+    "Inherit the shortest TTL."
+  ],
+  "rules": [
+    "Perception is not permission.",
+    "UNKNOWN is preferred to a plausible guess.",
+    "Every use emits a typed receipt and releases raw material."
+  ],
+  "boundaries": [
+    "Freshness is not truth.",
+    "Does not re-observe.",
+    "Does not authorize action."
+  ],
+  "retention": {
+    "law": "EPHEMERAL BY DEFAULT. Raw sense material is released at the next step. Only a bounded typed receipt survives.",
+    "raw_material": "sense-specific bounded input",
+    "released_when": "before the typed observation is returned",
+    "survives": "specific receipt plus axm.sensorium-receipt/v1 envelope",
+    "raw_retained_after_step": "zero",
+    "accumulation_across_uses": "flat and zero after every release boundary",
+    "receipt_cap": "newest 20 per sense",
+    "deletion_scope": "only material created by the exact sense use, by exact id or path; never a wildcard or recursive sweep"
+  },
+  "receipt": {
+    "schema": "axm.time-sense-ttl/v1",
+    "envelopeSchema": "axm.sensorium-receipt/v1"
+  },
+  "runtime": {
+    "routeType": "EXECUTABLE",
+    "module": "time-sense-ttl-verifier.js",
+    "factory": "create",
+    "operation": "check"
+  },
+  "statuses": {
+    "skillStatus": "ACCEPT_FOR_TEST",
+    "executorStatus": "EXECUTABLE",
+    "adapterStatus": "NOT_REQUIRED",
+    "proofStatus": "RUNTIME_PASS",
+    "authorityStatus": "NO_LEASE"
+  },
+  "requiredHostCapabilities": [],
+  "constraints": [
+    "ttl-from-observation-time",
+    "shortest-input-ttl",
+    "future-is-not-live"
+  ],
+  "resourceBudget": {
+    "maxTtlMs": 31536000000,
+    "rawRetainedBytesAfterSeal": 0
+  },
+  "authorityInherited": false,
+  "promotionGate": "Mike"
+}

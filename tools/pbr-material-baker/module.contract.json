@@ -1,0 +1,37 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "pbr-material-baker",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "seeded-local-pbr-material-baking",
+    "non-flat-albedo-normal-height-signal",
+    "open-gl-tangent-space-normal-map",
+    "independently-decodable-packed-orm",
+    "emissive-map-output",
+    "six-game-material-families",
+    "local-cpu-reference-render",
+    "exact-map-pixel-digest-receipts"
+  ],
+  "consumes": ["axm.pbr-material-recipe/v1", "human-material-direction", "human-visual-approval"],
+  "permissions": ["export"],
+  "lifecycle": {"state_owner":"browser","reload":"reset","disconnect":"graceful-degrade","cleanup":"automatic"},
+  "handoffs": {
+    "emits": ["axm.pbr-material-bake/v1", "axm.pbr-material-verification/v1", "image/png"],
+    "accepts": ["human-material-direction", "human:explicit-export"]
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": ["user-download:png-map-set", "user-download:bake-receipt-json"],
+    "refuses": [
+      "automatic-library-promotion",
+      "automatic-candidate-retention",
+      "visual-quality-approval-by-statistics",
+      "flat-map-labelled-as-baked-signal",
+      "undeclared-normal-map-convention",
+      "undeclared-channel-packing",
+      "ps3-quality-claim-from-map-presence",
+      "runtime-external-network-dependency"
+    ]
+  }
+}

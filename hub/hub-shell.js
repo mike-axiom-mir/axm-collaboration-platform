@@ -22,7 +22,7 @@
     'multiplayer-controller-transport', 'living-world-ruleset-physics-adapter-kit', 'read-only-mirror-world-adapter', 'novelty-diversity-engine', 'public-release-deployment-adapter'
   ]);
   const GOVERNED_FOUNDATION_ASSIGNMENTS = Object.freeze({
-    'asset-filesystem-service':'create', 'device-handoff':'create',
+    'asset-filesystem-service':'create', 'device-handoff':'create', 'presentation-spine':'create', 'ui-fx':'create',
     'module-installer':'build', 'module-contract-workbench':'build', 'diagnostics-operations-center':'build', 'workshop-search-provenance':'build',
     'recovery-center':'publish', 'review-inbox':'publish',
     'machine-host':'ai-team', 'secrets-permissions-console':'ai-team',
@@ -32,6 +32,19 @@
     'multiplayer-controller-transport':'play', 'living-world-ruleset-physics-adapter-kit':'play',
     'read-only-mirror-world-adapter':'ai-team'
   });
+  const ROADMAP_PARENT_LAYERS = Object.freeze({ Create:'create', Build:'build', Publish:'publish', Play:'play', 'AI Team':'ai-team' });
+  /* Fast human-owned labels for the local Hub only. Deliberately capped at
+     WORKING: CANON remains in the separate governed promotion path. */
+  const QUICK_LIFECYCLE_STATES = Object.freeze(['CLAIMED', 'NEEDS VERIFY', 'WORKING']);
+
+  function quickLifecycleTransition(current, target) {
+    const previous = String(current || 'CLAIMED');
+    const next = String(target || '').trim();
+    if (QUICK_LIFECYCLE_STATES.indexOf(next) < 0) {
+      return { ok:false, previous, lifecycle:previous, reason:'quick lifecycle stops at WORKING' };
+    }
+    return { ok:true, previous, lifecycle:next, changed:previous !== next, authority:'LOCAL_LIFECYCLE_ONLY', canon:false };
+  }
 
   /* ---- HubStore: one persistence interface, swappable backend ----
      browser -> localStorage ; node/self-test -> in-memory map.
@@ -85,7 +98,32 @@
       getAssign() { return p(backend.get(NS + 'assign')) || {}; },
       setAssign(map) { backend.set(NS + 'assign', j(map)); },
       getActiveLayer() { return backend.get(NS + 'activeLayer') || null; },
-      setActiveLayer(id) { backend.set(NS + 'activeLayer', id); }
+      setActiveLayer(id) { backend.set(NS + 'activeLayer', id); },
+      getPresentationMode(id) { const value = backend.get(NS + 'presentation.mode.' + id); return value === 'shared' || value === 'module' ? value : null; },
+      setPresentationMode(id, mode) {
+        if (mode !== 'shared' && mode !== 'module') throw new Error('Unknown presentation mode: ' + mode);
+        backend.set(NS + 'presentation.mode.' + id, mode);
+      },
+      getSharedPresentationProfile() {
+        const value = backend.get(NS + 'presentation.profile');
+        return ['auto','cockpit','studio','dashboard','lab'].indexOf(value) >= 0 ? value : 'auto';
+      },
+      setSharedPresentationProfile(profile) {
+        if (['auto','cockpit','studio','dashboard','lab'].indexOf(profile) < 0) throw new Error('Unknown shared profile: ' + profile);
+        backend.set(NS + 'presentation.profile', profile);
+      },
+      getPresentationLayers() {
+        const value = p(backend.get(NS + 'presentation.layers'));
+        const defaults = { surface:'glass', depth:'raised', motion:'responsive', density:'balanced', signal:'clear' };
+        const allowed = {surface:['glass','solid','minimal'],depth:['flat','raised','dimensional'],motion:['still','responsive','ambient'],density:['compact','balanced','comfortable'],signal:['quiet','clear','luminous']};
+        if (!value || typeof value !== 'object' || Array.isArray(value)) return defaults;
+        Object.keys(defaults).forEach(key => { if (allowed[key].indexOf(value[key]) >= 0) defaults[key] = value[key]; });
+        return defaults;
+      },
+      setPresentationLayers(layers) {
+        if (!layers || typeof layers !== 'object' || Array.isArray(layers)) throw new Error('Presentation layers must be an object');
+        backend.set(NS + 'presentation.layers', j(layers));
+      }
     };
   }
 
@@ -94,11 +132,13 @@
     return (apiTools || []).map(t => ({
       id: t.id, name: t.name || t.id, folder: t.folder || t.id,
       entry: t.entry || 'index.html', version: t.version || '?',
+      rank: Number.isInteger(t.rank) ? t.rank : null, phase: t.phase || null,
       status: t.status || 'TEST', tags: t.tags || [], uses: t.uses || [],
       audience: t.audience || 'human', layer: t.layer || null,
       integratedInto: t.integratedInto || null, serviceRole: t.serviceRole || null,
       summary: t.summary || '', notes: t.notes || '', category: t.category || '',
       risk: t.risk || null, card: t.card && typeof t.card === 'object' ? t.card : null,
+      presentation: t.presentation && typeof t.presentation === 'object' ? t.presentation : null,
       actions: t.actions || [], accepts: t.accepts || [], produces: t.produces || [], readiness: t.readiness || [],
       capabilityMetadataSource: t.capabilityMetadataSource || 'manifest'
     }));
@@ -232,7 +272,7 @@
       { id: 'machine', name: 'System Internals', gate: 'none', order: 6, audience: 'machine', hidden: true, host: 'local', note: 'Hub internals and test rooms; hidden from the everyday sidebar.' }
     ];
     const groups = {
-      create: ['studio','audio-studio','film-motion-studio','spatial-studio','ps2-asset-forge','asset-filesystem-service','device-handoff','template-runtime-pack-engine','media-render-transcode-service'],
+      create: ['studio','audio-studio','film-motion-studio','spatial-studio','ps2-asset-forge','asset-filesystem-service','device-handoff','template-runtime-pack-engine','media-render-transcode-service','presentation-spine','ui-fx'],
       build: ['agent-tool-forge','browser-lan-hardware-qa-lab','cognitive-resource-meter','diagnostics-operations-center','evidence-desk','evolution-foundry','finance-world-room','forge','forge-line','graft','knowledge-canvas','learning-lab','living-world-state-server','module-contract-workbench','module-installer','novelty-diversity-engine','project-room','sandbox','source-connector-hub','workshop-search-provenance'],
       publish: ['marketplace-deployment','recovery-center','review-inbox','public-release-deployment-adapter'],
       play: ['game-forge','multiplayer-controller-transport','living-world-ruleset-physics-adapter-kit'],
@@ -244,7 +284,9 @@
     Object.keys(groups).forEach(layerId => groups[layerId].forEach(id => { assign[id] = layerId; }));
     (modules || []).forEach(m => {
       if (m.integratedInto) assign[m.id] = 'machine';
-      else if (!assign[m.id]) assign[m.id] = 'build';
+      else if (!assign[m.id]) assign[m.id] = Number.isInteger(m.rank) && m.rank >= 1 && m.rank <= 50
+        ? (ROADMAP_PARENT_LAYERS[m.category] || 'build')
+        : 'build';
     });
     return { layers, assign };
   }
@@ -307,16 +349,65 @@
   function upgradeFoundationRoadmap(layers, assign, modules) {
     const ls = Array.isArray(layers) ? layers.map(l => Object.assign({}, l)) : [], as = Object.assign({}, assign || {}), ids = ls.map(l => l.id);
     if (!['create','build','publish','play','ai-team','private','machine'].every(id => ids.indexOf(id) >= 0)) return { layers:ls, assign:as, changed:false };
-    let changed = false; (modules || []).forEach(module => { const layer = GOVERNED_FOUNDATION_ASSIGNMENTS[module.id]; if (layer && !as[module.id]) { as[module.id]=layer; changed=true; } });
+    let changed = false; (modules || []).forEach(module => {
+      const rankedLayer = Number.isInteger(module.rank) && module.rank >= 1 && module.rank <= 50 ? ROADMAP_PARENT_LAYERS[module.category] : null;
+      const layer = GOVERNED_FOUNDATION_ASSIGNMENTS[module.id] || rankedLayer;
+      if (layer && !as[module.id]) { as[module.id]=layer; changed=true; }
+    });
+    return { layers:ls, assign:as, changed };
+  }
+
+  /* Early builds of the ranked wave reached existing browser profiles before
+     their parent metadata was routed. The old generic fallback placed those
+     arrivals in Build. Repair only that exact fallback once; all other custom
+     placements remain untouched. */
+  function upgradeRankedRoadmapPlacement(layers, assign, modules) {
+    const ls = Array.isArray(layers) ? layers.map(layer => Object.assign({}, layer)) : [], as = Object.assign({}, assign || {}), ids = ls.map(layer => layer.id);
+    if (!['create','build','publish','play','ai-team'].every(id => ids.indexOf(id) >= 0)) return { layers:ls, assign:as, changed:false };
+    let changed = false;
+    (modules || []).forEach(module => {
+      if (!Number.isInteger(module.rank) || module.rank < 1 || module.rank > 50) return;
+      const target = ROADMAP_PARENT_LAYERS[module.category];
+      if (!target) return;
+      if (!as[module.id] || (as[module.id] === 'build' && target !== 'build')) { as[module.id] = target; changed = true; }
+    });
     return { layers:ls, assign:as, changed };
   }
 
   /* Compatibility name for callers saved before the full-roadmap migration. */
   const upgradeFoundationWave2 = upgradeFoundationRoadmap;
 
+  /* Human-facing routes are destination-first. Integrated compatibility
+     modules may point at the same workspace, but showing each internal match
+     makes a capable front door look broken. Keep the strongest honest result
+     per destination and separate usable routes from explanations. */
+  function organizeCapabilityRoutes(matches) {
+    const stateRank = { READY:0, AVAILABLE:1, NEEDS_ACTION:2, BLOCKED:3, UNKNOWN:4 };
+    const byDestination = {};
+    (matches || []).forEach(match => {
+      const id = match.destinationId || match.id;
+      if (!id) return;
+      const state = match.readiness && match.readiness.state || 'UNKNOWN';
+      const current = byDestination[id];
+      if (!current) { byDestination[id] = match; return; }
+      const currentState = current.readiness && current.readiness.state || 'UNKNOWN';
+      if ((stateRank[state] == null ? 9 : stateRank[state]) < (stateRank[currentState] == null ? 9 : stateRank[currentState])
+        || (state === currentState && Number(match.score || 0) > Number(current.score || 0))) byDestination[id] = match;
+    });
+    const ordered = Object.keys(byDestination).map(id => byDestination[id]).sort((a,b) => {
+      const as=a.readiness&&a.readiness.state||'UNKNOWN', bs=b.readiness&&b.readiness.state||'UNKNOWN';
+      return (stateRank[as] == null ? 9 : stateRank[as]) - (stateRank[bs] == null ? 9 : stateRank[bs]) || Number(b.score||0)-Number(a.score||0);
+    });
+    return {
+      usable: ordered.filter(match => ['READY','AVAILABLE','NEEDS_ACTION'].indexOf(match.readiness&&match.readiness.state||'UNKNOWN') >= 0),
+      blocked: ordered.filter(match => ['READY','AVAILABLE','NEEDS_ACTION'].indexOf(match.readiness&&match.readiness.state||'UNKNOWN') < 0)
+    };
+  }
+
   return { NS, memoryBackend, localStorageBackend, makeStore, normalizeRegistry, logEntry, resolveModules, promoteIntegratedParents,
-           DEFAULT_LAYERS, GOVERNED_FOUNDATION_WAVE1, GOVERNED_FOUNDATION_WAVE2, GOVERNED_FOUNDATION_ASSIGNMENTS,
-           doorHash, layerOf, resolveLayers, checkDoor, workflowLayout, upgradeLegacyOpenLayout, upgradePublishLayer, upgradeFoundationRoadmap, upgradeFoundationWave2, friendlyName };
+           DEFAULT_LAYERS, GOVERNED_FOUNDATION_WAVE1, GOVERNED_FOUNDATION_WAVE2, GOVERNED_FOUNDATION_ASSIGNMENTS, ROADMAP_PARENT_LAYERS,
+           QUICK_LIFECYCLE_STATES, quickLifecycleTransition,
+           doorHash, layerOf, resolveLayers, checkDoor, workflowLayout, upgradeLegacyOpenLayout, upgradePublishLayer, upgradeFoundationRoadmap, upgradeRankedRoadmapPlacement, upgradeFoundationWave2, friendlyName, organizeCapabilityRoutes };
 });
 
 /* ============================================================
@@ -332,12 +423,93 @@ if (typeof window !== 'undefined') (function () {
   const hhmm = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const Hub = window.AXMHubShell = {
-    registry: [], visible: [], enabled: [], active: null, homeLayer: null, mode: 'simple', sidebarCollapsed: false, records: {}, store, continuityRecords: [], navigation: null, pendingShutdown: null,
+    registry: [], visible: [], enabled: [], active: null, homeLayer: null, mode: 'simple', sidebarCollapsed: false, records: {}, store, continuityRecords: [], navigation: null, pendingShutdown: null, frameLoadSequence: 0,
     layers: [], assign: {}, unlocked: [], revealed: [],   /* unlocked+revealed = this session only */
     /* lifecycle badge classes for the sidebar */
     lifeClass(l) {
       return ({ 'CLAIMED': 'CLAIMED', 'NEEDS VERIFY': 'TEST', 'WORKING': 'WORKING',
         'SAVED CHECKPOINT': 'SAVED', 'TEST-HOLD': 'HOLD', 'CANON CANDIDATE': 'CANON' }[l]) || 'CLAIMED';
+    },
+    lifecycleTruth(id, lifecycle) {
+      const record = this.records[id] || {};
+      const evidence = record.evidence || null;
+      const parts = ['Status: ' + shortLife(lifecycle)];
+      if (!evidence) return parts.concat(['Evidence: local label only', 'CANON: not granted']).join(' · ');
+      const basis = ({
+        CURRENT_SELFTEST_AND_STRUCTURAL_REVIEW_READY:'current build checks passed',
+        CURRENT_MANIFEST_CLAIM:'current declared Working checks passed',
+        PRESERVED_EXPLICIT_LOCAL_JUDGMENT:'preserved explicit local judgment',
+        DECLARED_TEST_WITH_NAMED_HOLDS:'test build with remaining checks',
+        NOT_YET_VERIFIED:'verification still needed'
+      })[evidence.basis] || String(evidence.basis || 'evidence recorded').toLowerCase().replace(/_/g, ' ');
+      parts.push('Evidence: ' + basis);
+      if (evidence.manifestStatus) parts.push('Manifest: ' + evidence.manifestStatus);
+      if (evidence.selftestVerdict) parts.push('Selftest: ' + evidence.selftestVerdict);
+      if (evidence.visualEvidenceState === 'LEGACY_RUNTIME_AND_EYE_REFERENCE') parts.push('Visual check: recorded earlier');
+      else if (evidence.visualEvidenceState === 'LIVE_BROWSER_VERIFIED_2026-07-24') parts.push('Visual check: current live browser');
+      const remaining = Array.isArray(evidence.namedHolds) ? evidence.namedHolds.slice(0, 3) : [];
+      if (remaining.length) parts.push('Still needs: ' + remaining.join('; '));
+      parts.push('CANON: not granted');
+      return parts.join(' · ');
+    },
+    closeLifecycleMenu() {
+      const menu = $('lifecycleMenu');
+      if (!menu) return;
+      menu.hidden = true;
+      menu.removeAttribute('data-module-id');
+    },
+    openLifecycleMenu(id, clientX, clientY) {
+      const module = this.registry.find(item => item.id === id);
+      const menu = $('lifecycleMenu');
+      if (!module || !menu) return;
+      const lifecycle = store.getLifecycle(id);
+      menu.dataset.moduleId = id;
+      $('lifecycleMenuName').textContent = Core.friendlyName(module);
+      $('lifecycleMenuState').textContent = 'Current: ' + shortLife(lifecycle);
+      [...menu.querySelectorAll('[data-lifecycle]')].forEach(button => {
+        const active = button.dataset.lifecycle === lifecycle;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+      menu.hidden = false;
+      const margin = 8;
+      const x = Math.max(margin, Math.min(Number(clientX) || margin, window.innerWidth - menu.offsetWidth - margin));
+      const y = Math.max(margin, Math.min(Number(clientY) || margin, window.innerHeight - menu.offsetHeight - margin));
+      menu.style.left = x + 'px'; menu.style.top = y + 'px';
+      const selected = menu.querySelector('[aria-current="true"]') || menu.querySelector('[data-lifecycle]');
+      if (selected) selected.focus();
+    },
+    bindLifecycleMenu(element, module) {
+      if (!element || !module) return;
+      element.dataset.lifecycleMenu = 'true';
+      element.oncontextmenu = event => {
+        event.preventDefault(); event.stopPropagation();
+        this.openLifecycleMenu(module.id, event.clientX, event.clientY);
+      };
+      element.onkeydown = event => {
+        if ((event.shiftKey && event.key === 'F10') || event.key === 'ContextMenu') {
+          event.preventDefault();
+          const rect = element.getBoundingClientRect();
+          this.openLifecycleMenu(module.id, rect.left + Math.min(rect.width, 36), rect.top + Math.min(rect.height, 36));
+        }
+      };
+      element.title = (element.title ? element.title + ' · ' : '') + 'Right-click to change Workshop status (stops at WORKING)';
+    },
+    async setQuickLifecycle(id, target) {
+      const module = this.registry.find(item => item.id === id);
+      const result = Core.quickLifecycleTransition(store.getLifecycle(id), target);
+      if (!module || !result.ok) {
+        this.log('warn', 'local lifecycle change refused · quick menu stops at WORKING');
+        this.closeLifecycleMenu(); return false;
+      }
+      store.setLifecycle(id, result.lifecycle);
+      if (!this.records[id]) this.records[id] = { id, lifecycle:result.lifecycle, evidence:null };
+      else { this.records[id].lifecycle = result.lifecycle; this.records[id].evidence = null; }
+      this.closeLifecycleMenu();
+      this.renderSidebar(); this.renderHome();
+      const shared = await this.persistSharedLifecycle(id, result.lifecycle, 'hub-menu');
+      this.log(shared ? (result.lifecycle === 'WORKING' ? 'ok' : 'info') : 'warn', Core.friendlyName(module) + ' lifecycle → ' + shortLife(result.lifecycle) + (shared ? ' · shared across Workshop browsers · no CANON authority' : ' · browser fallback only; shared state unavailable'));
+      return true;
     },
     initNavigation() {
       const Nav = window.AXMWorkshopNavigation;
@@ -409,12 +581,11 @@ if (typeof window !== 'undefined') (function () {
     setSidebarCollapsed(collapsed, silent) {
       this.sidebarCollapsed = !!collapsed;
       document.body.dataset.sidebarCollapsed = this.sidebarCollapsed ? 'true' : 'false';
-      const b = $('sidebarToggle');
-      if (b) {
+      [$('sidebarToggle'), $('sidebarTopToggle')].filter(Boolean).forEach(b => {
         b.setAttribute('aria-expanded', this.sidebarCollapsed ? 'false' : 'true');
         b.setAttribute('aria-label', this.sidebarCollapsed ? 'Expand navigation' : 'Collapse navigation');
         b.title = this.sidebarCollapsed ? 'Expand navigation' : 'Collapse navigation';
-      }
+      });
       try { localStorage.setItem('axm.hub.sidebar-collapsed', this.sidebarCollapsed ? 'true' : 'false'); } catch (e) {}
       if (!silent) this.log('info', this.sidebarCollapsed ? 'navigation collapsed · workspace expanded' : 'navigation expanded');
     },
@@ -423,6 +594,42 @@ if (typeof window !== 'undefined') (function () {
       const e = Core.logEntry(level, msg, now());
       store.appendLog(e);
       const tail = $('logTail'); if (tail) tail.textContent = hhmm() + '  ' + msg;
+    },
+    async loadSharedLifecycle() {
+      try {
+        const response = await fetch('/api/hub/lifecycle');
+        const envelope = await response.json();
+        const shared = envelope && envelope.ok && envelope.result;
+        if (!response.ok || !shared || !shared.lifecycles) throw new Error(envelope && envelope.error || 'shared lifecycle unavailable');
+        let applied = 0;
+        Object.keys(shared.lifecycles).forEach(id => {
+          if (!this.registry.some(module => module.id === id)) return;
+          const row = shared.lifecycles[id];
+          if (!row || !row.lifecycle) return;
+          store.setLifecycle(id, row.lifecycle);
+          this.records[id] = Object.assign({}, this.records[id] || { id }, row, { id });
+          applied += 1;
+        });
+        if (applied) this.log('ok', 'synchronized ' + applied + ' Workshop lifecycle label' + (applied === 1 ? '' : 's') + ' across browser profiles');
+        return applied;
+      } catch (error) {
+        this.log('warn', 'shared lifecycle unavailable · this browser keeps its last local labels');
+        return 0;
+      }
+    },
+    async persistSharedLifecycle(id, lifecycle, source) {
+      try {
+        const response = await fetch('/api/hub/lifecycle', {
+          method:'POST',
+          headers:{ 'content-type':'application/json', 'x-axm-hub-lifecycle':'explicit-local-label' },
+          body:JSON.stringify({ id, lifecycle, source:source || 'hub-menu', actor:'local-user' })
+        });
+        const envelope = await response.json();
+        if (!response.ok || !envelope.ok) throw new Error(envelope && envelope.error || 'shared lifecycle update failed');
+        return true;
+      } catch (error) {
+        return false;
+      }
     },
     async loadRegistry() {
       let tools = [];
@@ -574,6 +781,32 @@ if (typeof window !== 'undefined') (function () {
           localStorage.setItem(marker, 'done');
         }
       } catch (e) {}
+      /* One-time visibility migration for the ranked 1..50 game-production
+         wave. Rank metadata identifies this exact delivery; later manual
+         hiding stays user-owned because the marker is never cleared. */
+      try {
+        const marker = 'axm.hub.upgrade.next-50-modules.v1';
+        if (!localStorage.getItem(marker)) {
+          const arrivals = this.registry.filter(module => Number.isInteger(module.rank) && module.rank >= 1 && module.rank <= 50);
+          let added = 0;
+          arrivals.forEach(module => { if (en.indexOf(module.id) < 0) { en.push(module.id); added += 1; } });
+          if (added) { store.setEnabled(en); this.log('ok', 'added ' + added + ' ranked game-production foundation dashboard(s)'); }
+          localStorage.setItem(marker, 'done');
+        }
+      } catch (e) {}
+      /* One-time visibility upgrade for the shared visual system. It preserves
+         every saved layer and assignment and never re-enables a tool after a
+         later explicit hide. */
+      try {
+        const marker = 'axm.hub.upgrade.presentation-spine-visible.v1';
+        if (!localStorage.getItem(marker)) {
+          ['presentation-spine','ui-fx'].forEach(id => {
+            if (this.registry.some(module => module.id === id) && en.indexOf(id) < 0) en.push(id);
+          });
+          store.setEnabled(en);
+          localStorage.setItem(marker, 'done');
+        }
+      } catch (e) {}
       /* New browser profiles start with the beginner workflow. Older Edge or
          in-app-browser profiles may still carry the untouched flat Open
          layout; migrate only that exact legacy shape. */
@@ -603,10 +836,23 @@ if (typeof window !== 'undefined') (function () {
         store.setLayers(ly); store.setAssign(as);
         this.log('ok', 'placed governed roadmap foundations into the existing workflow');
       }
+      try {
+        const marker = 'axm.hub.upgrade.next-50-placement.v1';
+        if (!localStorage.getItem(marker)) {
+          const rankedUpgrade = Core.upgradeRankedRoadmapPlacement(ly, as, this.registry);
+          if (rankedUpgrade.changed) {
+            ly = rankedUpgrade.layers; as = rankedUpgrade.assign;
+            store.setLayers(ly); store.setAssign(as);
+            this.log('ok', 'placed ranked modules into their five parent workspaces');
+          }
+          localStorage.setItem(marker, 'done');
+        }
+      } catch (e) {}
       this.layers = ly; this.assign = as;
       /* unlocks are session-only: closing the hub re-locks the door */
       try { this.unlocked = JSON.parse(sessionStorage.getItem('axm.hub.unlocked') || '[]'); } catch (e) { this.unlocked = []; }
       try { this.revealed = JSON.parse(sessionStorage.getItem('axm.hub.revealed') || '[]'); } catch (e) { this.revealed = []; }
+      await this.loadSharedLifecycle();
       this.resolve();
     },
     resolve() {
@@ -631,6 +877,15 @@ if (typeof window !== 'undefined') (function () {
     renderSidebar() {
       const nav = $('modList'); nav.innerHTML = '';
       const commandDoor = $('commandCenterNav'); if (commandDoor) commandDoor.hidden = !this.registry.some(m => m.id === 'workshop-command-center');
+      const commandModule = this.registry.find(m => m.id === 'workshop-command-center');
+      if (commandDoor && commandModule) this.bindLifecycleMenu(commandDoor, commandModule);
+      const visualDoor = $('presentationSpineNav');
+      const visualModule = this.visible.find(m => m.id === 'presentation-spine');
+      if (visualDoor) {
+        visualDoor.hidden = !visualModule;
+        visualDoor.onclick = visualModule ? () => this.open('presentation-spine') : null;
+        if (visualModule) this.bindLifecycleMenu(visualDoor, visualModule);
+      }
       const groups = Core.resolveLayers(this.visible, this.layers, this.assign, this.unlocked, this.revealed);
       if (this.mode === 'simple') {
         const labels = {
@@ -677,15 +932,20 @@ if (typeof window !== 'undefined') (function () {
           e.style.cssText = 'color:var(--muted-2);letter-spacing:0;text-transform:none;font-size:11px';
           e.textContent = 'no modules here yet'; nav.appendChild(e); return;
         }
-        g.modules.filter(m => m.id !== 'workshop-command-center').forEach(m => {
+        g.modules.filter(m => m.id !== 'workshop-command-center' && m.id !== 'presentation-spine').forEach(m => {
           const life = store.getLifecycle(m.id);
-          const b = document.createElement('button'); b.className = 'mod'; b.dataset.id = m.id; b.dataset.layer = g.id;
-          b.innerHTML = '<span class="ic">' + iconFor(m) + '</span><span class="nm"></span>'
+          const b = document.createElement('button'); b.className = 'mod fx-lift'; b.dataset.id = m.id; b.dataset.layer = g.id; b.dataset.navKind = 'module';
+          b.innerHTML = '<span class="ic fx-tile fx-glow">' + iconFor(m) + '</span><span class="nm"></span>'
             + '<span class="life ' + this.lifeClass(life) + '"></span>';
           b.querySelector('.nm').textContent = Core.friendlyName(m);
           b.title = m.name + ' · ' + m.id;
-          b.querySelector('.life').textContent = shortLife(life);
+          const lifeBadge = b.querySelector('.life');
+          const lifeLabel = shortLife(life);
+          lifeBadge.textContent = lifeLabel;
+          lifeBadge.setAttribute('aria-label', 'Status: ' + lifeLabel);
+          lifeBadge.title = this.lifecycleTruth(m.id, life);
           b.onclick = () => this.open(m.id);
+          this.bindLifecycleMenu(b, m);
           nav.appendChild(b);
         });
       });
@@ -728,11 +988,21 @@ if (typeof window !== 'undefined') (function () {
       const title = $('homeTitle'), intro = $('homeIntro');
       this.renderSystemDeck();
       const makeModuleCard = m => {
-        const c = document.createElement('button'); c.type = 'button'; c.className = 'hcard module-card'; c.title = m.name + ' · ' + m.id;
-        c.innerHTML = '<div class="hcard-icon">' + iconFor(m) + '</div><h3></h3><p></p><div class="open">Open →</div>';
+        const priority = Number.isInteger(m.rank) ? '#' + String(m.rank).padStart(2, '0') : null;
+        const identity = [priority, m.phase, m.name, m.id].filter(Boolean);
+        const lifecycle = store.getLifecycle(m.id);
+        const c = document.createElement('button'); c.type = 'button'; c.className = 'hcard module-card'; c.title = identity.join(' · '); c.dataset.id = m.id;
+        c.innerHTML = '<div class="hcard-icon">' + iconFor(m) + '</div><span class="life module-card-life"></span><h3></h3><p></p><div class="open">Open →</div>';
+        const lifecycleBadge = c.querySelector('.module-card-life');
+        lifecycleBadge.textContent = shortLife(lifecycle);
+        lifecycleBadge.classList.add(this.lifeClass(lifecycle));
+        lifecycleBadge.setAttribute('aria-label', 'Status: ' + shortLife(lifecycle));
+        lifecycleBadge.title = this.lifecycleTruth(m.id, lifecycle);
         c.querySelector('h3').textContent = Core.friendlyName(m);
-        c.querySelector('p').textContent = (m.tags || []).slice(0,3).join(' · ') || m.status;
-        c.onclick = () => this.open(m.id); return c;
+        c.querySelector('p').textContent = [priority, m.phase, ...(m.tags || []).slice(0, 3)].filter(Boolean).join(' · ') || m.status;
+        if (priority) c.dataset.roadmapRank = String(m.rank);
+        if (m.phase) c.dataset.roadmapPhase = m.phase;
+        c.onclick = () => this.open(m.id); this.bindLifecycleMenu(c, m); return c;
       };
       const selected = this.homeLayer && groups.find(x => x.id === this.homeLayer && !x.locked && !x.hidden);
       if (selected) {
@@ -801,21 +1071,45 @@ if (typeof window !== 'undefined') (function () {
       try { const response=await fetch('/api/workshop/capabilities?q='+encodeURIComponent(q),{cache:'no-store'}); if(!response.ok)throw Error('HTTP '+response.status); matches=(await response.json()).matches||[]; }
       catch(e){ matches=window.AXMCapabilityIndex.search(this.registry,q,{limit:6}); this.log('warn','capability readiness unavailable · local recommendations kept'); }
       if (!matches.length) { const empty=document.createElement('div'); empty.className='capability-empty'; empty.textContent='No clear route yet. Try a simpler goal, or open a workspace below and explore freely.'; out.appendChild(empty); return; }
-      matches.forEach(match => {
-        const b=document.createElement('button'); b.type='button'; b.className='capability-result';
-        const title=document.createElement('b'); title.textContent=Core.friendlyName(this.registry.find(x=>x.id===match.destinationId)||{id:match.destinationId,name:match.destinationName});
-        const summary=document.createElement('span'); summary.textContent=match.summary||match.reason;
-        const readiness=match.readiness&&match.readiness.state||'UNKNOWN'; b.dataset.readiness=readiness;
-        const ready=document.createElement('small'); ready.textContent='Readiness '+readiness.replace('_',' ');
-        const note=document.createElement('small'); note.textContent=(match.integratedInto?'Inside '+match.destinationName+' · ':'')+match.reason+' · choose to open';
-        b.appendChild(title); b.appendChild(summary); b.appendChild(ready);
-        if(match.readiness&&match.readiness.attention&&match.readiness.attention.length){const guidance=document.createElement('span');const first=match.readiness.attention[0];guidance.className='readiness-guidance';guidance.textContent=first.label+': '+first.nextStep+' Nothing is repaired automatically.';b.appendChild(guidance);}
-        b.appendChild(note); b.onclick=()=>this.openCapability(match.destinationId); out.appendChild(b);
-      });
-      this.log('info','capability guide · '+matches.length+' recommendation(s) for "'+q+'"');
+      const routes=Core.organizeCapabilityRoutes(matches), primary=routes.usable[0], makeCard=(match,blocked,hideOpen) => {
+        const card=document.createElement('article');card.className='capability-result';
+        const readiness=match.readiness&&match.readiness.state||'UNKNOWN';card.dataset.readiness=readiness;
+        const title=document.createElement('b');title.textContent=Core.friendlyName(this.registry.find(x=>x.id===match.destinationId)||{id:match.destinationId,name:match.destinationName});
+        const summary=document.createElement('span');summary.textContent=match.summary||match.reason;
+        const ready=document.createElement('small');ready.textContent=blocked?'Not usable yet · '+readiness.replace('_',' '):'Usable now · '+readiness.replace('_',' ');
+        card.appendChild(title);card.appendChild(summary);card.appendChild(ready);
+        if(blocked&&match.readiness&&match.readiness.attention&&match.readiness.attention.length){const guidance=document.createElement('span'),first=match.readiness.attention[0];guidance.className='readiness-guidance';guidance.textContent=first.label+': '+first.nextStep;card.appendChild(guidance);}
+        if(!blocked&&!hideOpen){const open=document.createElement('button');open.type='button';open.className='capability-open';open.textContent='Open '+title.textContent;open.onclick=()=>this.openCapability(match.destinationId,{goal:q,creationMode:'self'});card.appendChild(open);}
+        return card;
+      };
+      if(primary){
+        const intro=document.createElement('section');intro.className='capability-best';
+        const eyebrow=document.createElement('small');eyebrow.textContent='BEST PLACE TO START';
+        const heading=document.createElement('h3');heading.textContent='AXM can route this goal.';
+        const text=document.createElement('p');text.textContent='Choose how you want the work to happen. Nothing starts until you choose.';
+        const isStudioCreation=primary.destinationId==='studio'&&/\b(design|draw|paint|create|make|crest|logo|icon|art|image|skin|poster|sprite)\b/i.test(q);
+        intro.appendChild(eyebrow);intro.appendChild(heading);intro.appendChild(text);intro.appendChild(makeCard(primary,false,isStudioCreation));
+        if(isStudioCreation){
+          const chooser=document.createElement('div');chooser.className='creation-mode-chooser';
+          const chooserTitle=document.createElement('h4');chooserTitle.textContent='How do you want to create it?';chooser.appendChild(chooserTitle);
+          [
+            ['deterministic','DETERMINISTIC','Make a bounded draft','Workshop Creation Hands build an editable candidate from declared rules.'],
+            ['self','SELF CREATION','I want to make it','Open the editable Studio tools with this goal already loaded.'],
+            ['ai','AI ASSISTED','Create with AI help','Your brief waits in Studio until an AI is connected; nothing starts automatically.']
+          ].forEach(option=>{const button=document.createElement('button');button.type='button';button.className='creation-mode';button.dataset.mode=option[0];const label=document.createElement('small');label.textContent=option[1];const name=document.createElement('b');name.textContent=option[2];const detail=document.createElement('span');detail.textContent=option[3];button.appendChild(label);button.appendChild(name);button.appendChild(detail);button.onclick=()=>this.openCapability(primary.destinationId,{goal:q,creationMode:option[0]});chooser.appendChild(button);});
+          intro.appendChild(chooser);
+        }
+        out.appendChild(intro);
+      }
+      if(routes.usable.length>1){const more=document.createElement('details');more.className='capability-alternatives';const summary=document.createElement('summary');summary.textContent='Other usable places ('+(routes.usable.length-1)+')';const grid=document.createElement('div');grid.className='capability-grid';routes.usable.slice(1).forEach(match=>grid.appendChild(makeCard(match,false)));more.appendChild(summary);more.appendChild(grid);out.appendChild(more);}
+      if(routes.blocked.length){const blocked=document.createElement('details');blocked.className='capability-alternatives capability-blocked';const summary=document.createElement('summary');summary.textContent='Not usable yet ('+routes.blocked.length+')';const note=document.createElement('p');note.textContent='These are explanations, not recommendations. Nothing is repaired automatically.';const grid=document.createElement('div');grid.className='capability-grid';routes.blocked.forEach(match=>grid.appendChild(makeCard(match,true)));blocked.appendChild(summary);blocked.appendChild(note);blocked.appendChild(grid);out.appendChild(blocked);}
+      if(!primary){const empty=document.createElement('div');empty.className='capability-empty';empty.textContent='AXM found related modules, but none can honestly do this yet. Open “Not usable yet” to see what is missing.';out.insertBefore(empty,out.firstChild);}
+      this.log('info','capability guide · '+routes.usable.length+' usable destination(s) · '+routes.blocked.length+' held for "'+q+'"');
     },
-    openCapability(id) {
+    openCapability(id, options) {
+      options=options||{};
       const module=this.registry.find(x=>x.id===id); if (!module) return this.log('warn','capability destination unavailable: '+id);
+      if(options.goal){try{sessionStorage.setItem('axm.capability.goal-handoff.v1',JSON.stringify({schema:'axm.capability-goal-handoff/v1',destinationId:id,goal:String(options.goal).slice(0,600),creationMode:['deterministic','self','ai'].indexOf(options.creationMode)>=0?options.creationMode:'self',createdAt:now(),automaticStart:false}));}catch(e){this.log('warn','could not preserve capability goal handoff');}}
       if (this.enabled.indexOf(id)<0) this.enable(id);
       this.open(id);
     },
@@ -882,7 +1176,9 @@ if (typeof window !== 'undefined') (function () {
     },
     async showHome(layerId, options) {
       options = options || {};
+      const navigationToken = ++this.frameLoadSequence;
       if (this.active && options.skipShutdown !== true) await this.requestActiveShutdown();
+      if (navigationToken !== this.frameLoadSequence) return;
       this.active = null;
       this.homeLayer = layerId || null;
       $('viewFrame').style.display = 'none';
@@ -891,6 +1187,7 @@ if (typeof window !== 'undefined') (function () {
          it midway down made the workflow cards look as if they had vanished. */
       $('homeScreen').scrollTop = 0;
       $('activeName').textContent = this.homeLayer ? ((this.layers.find(l => l.id === this.homeLayer) || {}).name || 'Home') : 'Home';
+      this.updatePresentationQuick();
       [...document.querySelectorAll('.mod')].forEach(x => x.classList.remove('active'));
       const workflowHome = this.homeLayer && document.querySelector('.workflow-nav[data-layer="' + this.homeLayer + '"]');
       if (workflowHome) workflowHome.classList.add('active');
@@ -911,16 +1208,32 @@ if (typeof window !== 'undefined') (function () {
       const lid = Core.layerOf(m, this.layers, this.assign);
       const grp = Core.resolveLayers(this.visible, this.layers, this.assign, this.unlocked, this.revealed).find(g => g.id === lid);
       if (grp && grp.locked) { this.knock(lid); if (this.unlocked.indexOf(lid) < 0) return; }
+      const navigationToken = ++this.frameLoadSequence;
       if (this.active && options.skipShutdown !== true) await this.requestActiveShutdown();
+      if (navigationToken !== this.frameLoadSequence) return;
       this.active = id;
+      this.updatePresentationQuick();
       $('homeScreen').style.display = 'none';
       const err = $('vpError'); err.classList.remove('show');
       const load = $('vpLoading'); load.classList.add('show');
       const f = $('viewFrame'); f.style.display = 'block';
       /* blank-screen guard: if the frame hasn't reported ready or painted, show recovery */
       let painted = false;
+      let paintProbe = null;
       const url = '/tools/' + encodeURIComponent(m.folder) + '/' + m.entry;
+      const acceptPaintedFrame = () => {
+        if (navigationToken !== this.frameLoadSequence || this.active !== id) return false;
+        try {
+          painted = !!(f.contentDocument && f.contentDocument.body && f.contentDocument.body.childNodes.length);
+          if (!painted) return false;
+          load.classList.remove('show');
+          this.applyPresentationToFrame(m);
+          if (paintProbe) { clearInterval(paintProbe); paintProbe = null; }
+          return true;
+        } catch (e) { return false; }
+      };
       f.onload = () => {
+        if (navigationToken !== this.frameLoadSequence || this.active !== id) return;
         load.classList.remove('show');
         try {
           const loadedRoute = (f.contentWindow.location.pathname || '') + (f.contentWindow.location.search || '') + (f.contentWindow.location.hash || '');
@@ -932,13 +1245,31 @@ if (typeof window !== 'undefined') (function () {
             this.showHome(null, { skipShutdown: true });
             return;
           }
-          painted = !!(f.contentDocument && f.contentDocument.body && f.contentDocument.body.childNodes.length);
+          acceptPaintedFrame();
         }
         catch (e) { painted = true; /* cross-doc but loaded = not blank */ }
+        if (paintProbe) { clearInterval(paintProbe); paintProbe = null; }
         if (!painted) this.showError(m, 'Module loaded but its screen is empty.');
       };
-      f.onerror = () => { load.classList.remove('show'); this.showError(m, 'Module failed to load.'); };
-      setTimeout(() => { if (load.classList.contains('show')) { load.classList.remove('show'); this.showError(m, 'Module timed out.'); } }, 8000);
+      f.onerror = () => {
+        if (navigationToken !== this.frameLoadSequence || this.active !== id) return;
+        if (paintProbe) { clearInterval(paintProbe); paintProbe = null; }
+        load.classList.remove('show'); this.showError(m, 'Module failed to load.');
+      };
+      /* Some embedded local documents paint correctly without emitting a
+         reliable iframe load event in every browser host. Observe the actual
+         same-origin paint as a second honest ready signal. */
+      paintProbe = setInterval(() => {
+        if (navigationToken !== this.frameLoadSequence || this.active !== id) {
+          clearInterval(paintProbe); paintProbe = null; return;
+        }
+        acceptPaintedFrame();
+      }, 250);
+      setTimeout(() => {
+        if (navigationToken !== this.frameLoadSequence || this.active !== id) return;
+        if (paintProbe) { clearInterval(paintProbe); paintProbe = null; }
+        if (load.classList.contains('show') && !acceptPaintedFrame()) { load.classList.remove('show'); this.showError(m, 'Module timed out.'); }
+      }, 8000);
       f.src = url;
       $('activeName').textContent = Core.friendlyName(m);
       [...document.querySelectorAll('.mod')].forEach(x => x.classList.toggle('active', x.dataset.id === id));
@@ -951,6 +1282,109 @@ if (typeof window !== 'undefined') (function () {
       if (options.history !== false) this.recordScreen({ kind: 'module', id: id, label: Core.friendlyName(m) });
       else this.refreshBackButton();
     },
+    presentationResolution(module) {
+      if (!window.AXMPresentationPolicy || !module) return null;
+      return window.AXMPresentationPolicy.resolve({
+        module,
+        userMode: store.getPresentationMode(module.id),
+        sharedProfile: store.getSharedPresentationProfile()
+      });
+    },
+    screenContract(module) {
+      if (!window.AXMScreenContract || !module) return null;
+      return window.AXMScreenContract.resolve(module);
+    },
+    sharedPresentationRecipe() {
+      if (!window.AXMPresentationRecipe) return null;
+      return window.AXMPresentationRecipe.normalize({
+        schema: window.AXMPresentationRecipe.SCHEMA,
+        id: 'shared-workshop',
+        name: 'Shared Workshop',
+        author: 'Mike + AXM',
+        profile: store.getSharedPresentationProfile(),
+        layers: store.getPresentationLayers()
+      });
+    },
+    boundedPresentationRecipe(module) {
+      const recipe = this.sharedPresentationRecipe();
+      const contract = this.screenContract(module);
+      return window.AXMScreenContract && recipe && contract
+        ? window.AXMScreenContract.limitRecipe(window.AXMPresentationRecipe, recipe, contract)
+        : recipe;
+    },
+    applyPresentationToFrame(module) {
+      const frame = $('viewFrame'), resolution = this.presentationResolution(module);
+      if (!frame || !resolution || !frame.contentDocument) return { applied:false, reason:'presentation-policy-unavailable' };
+      try {
+        const result = window.AXMPresentationPolicy.applyToDocument(frame.contentDocument, resolution);
+        let recipeResult = null;
+        if (window.AXMPresentationRecipe) {
+          recipeResult = resolution.mode === 'shared'
+            ? window.AXMPresentationRecipe.applyToDocument(frame.contentDocument, this.boundedPresentationRecipe(module), {mode:'shared'})
+            : window.AXMPresentationRecipe.clearFromDocument(frame.contentDocument);
+        }
+        this.updatePresentationQuick();
+        if (result.applied) this.log('info', Core.friendlyName(module) + ' look: ' + resolution.mode + (resolution.mode === 'shared' ? ' / ' + resolution.profile + (recipeResult && recipeResult.fingerprint ? ' / '+recipeResult.fingerprint : '') : ' / module-owned'));
+        return Object.assign({}, result, { recipe:recipeResult });
+      } catch (error) {
+        this.log('warn', 'presentation switch unavailable for ' + module.id + ' - module view kept');
+        return { applied:false, reason:error.message };
+      }
+    },
+    setActivePresentationMode(mode) {
+      const module = this.registry.find(item => item.id === this.active);
+      if (!module) return;
+      const contract = this.screenContract(module);
+      if (contract && !contract.presentation.modeEditable) return;
+      store.setPresentationMode(module.id, mode);
+      this.applyPresentationToFrame(module);
+    },
+    setSharedPresentationLayer(layer, value) {
+      if (!window.AXMPresentationRecipe || !window.AXMPresentationRecipe.LAYERS[layer] || window.AXMPresentationRecipe.LAYERS[layer].indexOf(value) < 0) {
+        throw new Error('Unknown presentation layer choice: ' + layer + '/' + value);
+      }
+      const layers = store.getPresentationLayers(); layers[layer] = value; store.setPresentationLayers(layers);
+      const module = this.registry.find(item => item.id === this.active);
+      if (module) this.applyPresentationToFrame(module);
+    },
+    downloadPresentationRecipe() {
+      const recipe = this.sharedPresentationRecipe(); if (!recipe) return;
+      const blob = new Blob([JSON.stringify(recipe, null, 2) + '\n'], {type:'application/json'});
+      const href = URL.createObjectURL(blob), anchor = document.createElement('a');
+      anchor.href = href; anchor.download = 'axm-shared-presentation-' + window.AXMPresentationRecipe.fingerprint(recipe) + '.json';
+      document.body.appendChild(anchor); anchor.click(); anchor.remove(); setTimeout(() => URL.revokeObjectURL(href), 0);
+      this.log('ok', 'presentation recipe exported: ' + window.AXMPresentationRecipe.fingerprint(recipe));
+    },
+    resetPresentationRecipe(screenOnly) {
+      const recipe = window.AXMPresentationRecipe && window.AXMPresentationRecipe.DEFAULT;
+      if (!recipe) return;
+      store.setSharedPresentationProfile(recipe.profile); store.setPresentationLayers(Object.assign({}, recipe.layers));
+      const module = this.registry.find(item => item.id === this.active); if (module) this.applyPresentationToFrame(module);
+      this.log('info', 'shared presentation recipe reset');
+      screenOnly ? this.openScreenEditor() : this.openSettings();
+    },
+    updatePresentationQuick() {
+      const control = $('presentationQuick'), select = $('presentationModeQuick'), note = $('presentationProfileQuick'), edit = $('presentationEditQuick');
+      const module = this.registry.find(item => item.id === this.active);
+      if (!control || !select) return;
+      control.hidden = !module;
+      if (!module) return;
+      const resolution = this.presentationResolution(module);
+      if (!resolution) { control.hidden = true; return; }
+      const contract = this.screenContract(module);
+      select.value = resolution.mode;
+      select.disabled = !resolution.moduleVisual || !!(contract && !contract.presentation.modeEditable);
+      if (note) note.textContent = resolution.mode === 'shared' ? resolution.profile : 'own';
+      if (edit) {
+        edit.disabled = !contract || !contract.presentation.editable;
+        edit.title = contract
+          ? contract.preset + ' screen · editable: ' + (contract.presentation.editableLayers.join(', ') || 'mode only')
+          : 'Screen contract unavailable';
+      }
+      control.title = resolution.mode === 'shared'
+        ? 'Shared ' + resolution.profile + ' presentation. Module behavior and data are unchanged.' + (contract ? ' ' + contract.preset + ' edit boundary.' : '')
+        : 'This module keeps its own visual design. Module behavior and data are unchanged.';
+    },
     showError(m, why) {
       const err = $('vpError'); err.classList.add('show');
       $('viewFrame').style.display = 'none';
@@ -962,6 +1396,16 @@ if (typeof window !== 'undefined') (function () {
     /* ---- bridge: receive a module's postMessage, run the pure reducer ---- */
     onMessage(ev) {
       const msg = ev.data; if (!msg || typeof msg.type !== 'string' || msg.type.indexOf('hub:') !== 0) return;
+      if (msg.type === 'hub:presentation:recipe') {
+        if ((!ev.origin || ev.origin !== location.origin) || this.active !== 'presentation-spine' || ev.source !== $('viewFrame').contentWindow || !window.AXMPresentationRecipe) return;
+        const checked = window.AXMPresentationRecipe.validate(msg.recipe);
+        if (!checked.ok) { this.log('error', 'presentation recipe refused: ' + checked.errors[0]); return; }
+        const recipe = window.AXMPresentationRecipe.normalize(msg.recipe);
+        store.setSharedPresentationProfile(recipe.profile); store.setPresentationLayers(Object.assign({}, recipe.layers));
+        this.applyPresentationToFrame(this.registry.find(item => item.id === this.active));
+        this.log('ok', 'shared presentation recipe applied: ' + window.AXMPresentationRecipe.fingerprint(recipe));
+        return;
+      }
       if (msg.type === 'hub:shutdown:ok') {
         const pending = this.pendingShutdown;
         if (pending && pending.id === this.active && ev.source === $('viewFrame').contentWindow) pending.finish({ requested: true, acknowledged: true });
@@ -975,10 +1419,15 @@ if (typeof window !== 'undefined') (function () {
         this.recordContinuity(record); return;
       }
       const cur = this.records[id] || { id, lifecycle: store.getLifecycle(id) };
+      const previousLifecycle = store.getLifecycle(id);
       cur.id = id;
       const { record, intents } = C.reduce(cur, msg);
+      if (previousLifecycle !== record.lifecycle) record.evidence = null;
       this.records[id] = record;
       store.setLifecycle(id, record.lifecycle);
+      if (previousLifecycle !== record.lifecycle) this.persistSharedLifecycle(id, record.lifecycle, 'module-message').then(shared => {
+        if (!shared) this.log('warn', id + ' lifecycle changed locally but shared state was unavailable');
+      });
       intents.forEach(it => {
         if (it.kind === 'log') this.log(it.level, it.msg);
         if (it.kind === 'persist-settings') store.setSettings(it.id, it.settings);
@@ -999,22 +1448,72 @@ if (typeof window !== 'undefined') (function () {
       [...document.querySelectorAll('.mod')].forEach(x => x.classList.toggle('active', x.dataset.id === id));
     },
     /* ---- shared screens ---- */
-    openSettings() {
+    openSettings(options) {
+      options = options || {};
+      const screenOnly = !!options.screenOnly;
       const s = $('setBody'); s.innerHTML = '';
+      const title = $('setTitle'), subtitle = $('setSubtitle');
+      if (title) title.textContent = screenOnly ? 'Edit screen' : 'Settings';
+      if (subtitle) subtitle.textContent = screenOnly
+        ? 'Presentation can move, restyle, or simplify the visible screen without changing behavior, permissions, saved work, or the runtime body.'
+        : 'Global hub settings and the active module\'s declared settings.';
       const gs = store.getState();
-      s.appendChild(rowEl('Last module on reopen', gs.lastModuleId || '(home)', ''));
+      if (!screenOnly) s.appendChild(rowEl('Last module on reopen', gs.lastModuleId || '(home)', ''));
+      s.appendChild(choiceRow('Shared visual profile', 'Used when a workspace is set to Shared. Auto selects a profile from its declared purpose.',
+        ['auto','cockpit','studio','dashboard','lab'], store.getSharedPresentationProfile(), value => {
+          store.setSharedPresentationProfile(value);
+          const module = this.registry.find(item => item.id === this.active);
+          if (module) this.applyPresentationToFrame(module);
+        }));
+      if (window.AXMPresentationRecipe) {
+        const layers = store.getPresentationLayers();
+        const labels = {
+          surface:['Surface material','Glass, solid, or minimal module surfaces.'],
+          depth:['Depth','Flat, raised, or dimensional separation.'],
+          motion:['Motion','Still, responsive, or ambient movement; reduced-motion always wins.'],
+          density:['Density','Compact, balanced, or comfortable control spacing.'],
+          signal:['Signal','Quiet, clear, or luminous emphasis.']
+        };
+        const activeModule = this.registry.find(item => item.id === this.active);
+        const activeContract = this.screenContract(activeModule);
+        const editableLayers = screenOnly && activeContract
+          ? activeContract.presentation.editableLayers
+          : Object.keys(window.AXMPresentationRecipe.LAYERS);
+        if (screenOnly && activeContract) s.appendChild(rowEl(
+          activeContract.preset + ' screen contract',
+          editableLayers.length ? editableLayers.join(' / ') : 'fixed presentation',
+          'Body and behavior stay locked. Screen edits are presentation-only.'
+        ));
+        Object.keys(window.AXMPresentationRecipe.LAYERS).forEach(layer => {
+          if (!screenOnly || editableLayers.indexOf(layer) >= 0) {
+            s.appendChild(choiceRow(labels[layer][0], labels[layer][1], window.AXMPresentationRecipe.LAYERS[layer], layers[layer], value => this.setSharedPresentationLayer(layer,value)));
+          }
+        });
+        s.appendChild(actionRow('Portable skin recipe', 'Exports presentation data only—no CSS, scripts, permissions, behavior or saved work.', [
+          {label:'Download recipe', action:()=>this.downloadPresentationRecipe()},
+          {label:'Reset layers', action:()=>this.resetPresentationRecipe(screenOnly)}
+        ]));
+        s.appendChild(rowEl('Base skin', 'Open Skinner for colors, fonts, assets and layout slots.', 'Recipes compose those foundations; they do not duplicate them.'));
+      }
       const id = this.active;
       if (id) {
         const rec = this.records[id] || {};
         const sc = rec.passport && rec.passport.settingsSchema;
         s.appendChild(rowEl('Active module', id, 'lifecycle: ' + store.getLifecycle(id)));
-        if (sc) Object.keys(sc).forEach(k => {
+        const module = this.registry.find(item => item.id === id);
+        const resolution = this.presentationResolution(module);
+        const contract = this.screenContract(module);
+        s.appendChild(choiceRow('Active module look', 'Shared keeps the Workshop visually coherent. Module preserves the creator\'s own presentation.',
+          ['shared','module'], resolution ? resolution.mode : 'shared', value => this.setActivePresentationMode(value),
+          (resolution && !resolution.moduleVisual) || (contract && !contract.presentation.modeEditable)));
+        if (!screenOnly && sc) Object.keys(sc).forEach(k => {
           const cur = store.getSettings(id)[k]; s.appendChild(settingRow(id, k, sc[k], cur, this));
         });
-        else s.appendChild(rowEl('Module settings', 'none declared', 'this module exposes no settings schema'));
+        else if (!screenOnly) s.appendChild(rowEl('Module settings', 'none declared', 'this module exposes no settings schema'));
       }
       $('setScreen').classList.add('show');
     },
+    openScreenEditor() { this.openSettings({screenOnly:true}); },
     refreshPerm() {
       const s = $('permBody'); if (!s) return; s.innerHTML = '';
       const id = this.active; const rec = id && this.records[id];
@@ -1221,8 +1720,11 @@ if (typeof window !== 'undefined') (function () {
         if (window.AXMWorkshopGrowth) window.AXMWorkshopGrowth.open();
       };
       $('sidebarToggle').onclick = () => this.toggleSidebar();
+      $('sidebarTopToggle').onclick = () => this.toggleSidebar();
       $('modeToggle').onclick = () => this.toggleMode();
       $('viewModeQuick').onclick = () => this.toggleMode();
+      $('presentationModeQuick').onchange = event => this.setActivePresentationMode(event.target.value);
+      $('presentationEditQuick').onclick = () => this.openScreenEditor();
       const systemSource = $('systemStatus');
       if (systemSource && window.MutationObserver) {
         new MutationObserver(() => this.renderSystemDeck()).observe(systemSource, { childList:true, characterData:true, subtree:true, attributes:true });
@@ -1234,6 +1736,14 @@ if (typeof window !== 'undefined') (function () {
       $('btnLayers').onclick = () => this.openLayers();
       $('capabilityForm').onsubmit = e => { e.preventDefault(); this.renderCapabilityGuide(); };
       $('handoffForm').onsubmit = e => { e.preventDefault(); this.findHandoffDestinations(); };
+      const lifecycleMenu = $('lifecycleMenu');
+      if (lifecycleMenu) {
+        [...lifecycleMenu.querySelectorAll('[data-lifecycle]')].forEach(button => button.onclick = () => this.setQuickLifecycle(lifecycleMenu.dataset.moduleId, button.dataset.lifecycle));
+        document.addEventListener('pointerdown', event => { if (!lifecycleMenu.hidden && !lifecycleMenu.contains(event.target)) this.closeLifecycleMenu(); });
+        document.addEventListener('keydown', event => { if (event.key === 'Escape') this.closeLifecycleMenu(); });
+        window.addEventListener('resize', () => this.closeLifecycleMenu());
+        document.addEventListener('scroll', () => this.closeLifecycleMenu(), true);
+      }
       document.querySelectorAll('[data-capability-query]').forEach(b => b.onclick = () => this.renderCapabilityGuide(b.dataset.capabilityQuery));
       [...document.querySelectorAll('[data-close]')].forEach(b => b.onclick = () => $(b.dataset.close).classList.remove('show'));
       this.loadRegistry().then(() => {
@@ -1274,6 +1784,27 @@ if (typeof window !== 'undefined') (function () {
       if (f && f.contentWindow) f.contentWindow.postMessage({ type: 'hub:settings:value', settings: hub.store.getSettings(id) }, '*');
     };
     r.appendChild(input); return r;
+  }
+  function choiceRow(label, description, options, current, onChange, disabled) {
+    const r = document.createElement('div'); r.className = 'row presentation-setting-row';
+    const wrap = document.createElement('div');
+    const title = document.createElement('div'); title.className = 'k'; title.textContent = label;
+    const note = document.createElement('div'); note.className = 'd'; note.textContent = description;
+    wrap.appendChild(title); wrap.appendChild(note); r.appendChild(wrap);
+    const select = document.createElement('select'); select.disabled = !!disabled;
+    options.forEach(value => { const option = document.createElement('option'); option.value = value; option.textContent = value.charAt(0).toUpperCase() + value.slice(1); select.appendChild(option); });
+    select.value = current; select.onchange = () => onChange(select.value); r.appendChild(select);
+    return r;
+  }
+  function actionRow(label, description, actions) {
+    const r = document.createElement('div'); r.className = 'row presentation-setting-row presentation-action-row';
+    const wrap = document.createElement('div');
+    const title = document.createElement('div'); title.className = 'k'; title.textContent = label;
+    const note = document.createElement('div'); note.className = 'd'; note.textContent = description;
+    wrap.appendChild(title); wrap.appendChild(note); r.appendChild(wrap);
+    const controls = document.createElement('div'); controls.className = 'presentation-actions';
+    (actions || []).forEach(item => { const button = document.createElement('button'); button.type = 'button'; button.textContent = item.label; button.onclick = item.action; controls.appendChild(button); });
+    r.appendChild(controls); return r;
   }
   function shortLife(l) { return ({ 'NEEDS VERIFY': 'TEST', 'SAVED CHECKPOINT': 'SAVED', 'CANON CANDIDATE': 'CANON', 'TEST-HOLD': 'HOLD' }[l]) || l; }
   function workflowIcon(id) {

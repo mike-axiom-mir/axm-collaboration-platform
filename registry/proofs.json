@@ -1,0 +1,54 @@
+{
+  "schema": "axm.public-proofs/v1",
+  "generated_at": "2026-07-27T08:09:16.022Z",
+  "claims": [
+    {
+      "id": "discovery-structure",
+      "claim": "The public capability and module maps match tools-index.json.",
+      "evidence": [
+        "scripts/generate-public-discovery.js",
+        "tests/public-discovery-selftest.js"
+      ],
+      "proves": [
+        "static structure",
+        "registry consistency"
+      ],
+      "does_not_prove": [
+        "runtime behavior",
+        "usability",
+        "human approval"
+      ]
+    },
+    {
+      "id": "windows-clean-launch",
+      "claim": "The extracted Windows source candidate can bootstrap a pinned runtime and answer the Hub health route.",
+      "evidence": [
+        "tests/windows-clean-launch-smoke.ps1",
+        ".github/workflows/public-launch.yml"
+      ],
+      "proves": [
+        "Windows x64/ARM64 first-run launch when nodejs.org is reachable"
+      ],
+      "does_not_prove": [
+        "offline first launch",
+        "macOS/Linux launch",
+        "first-time human comprehension"
+      ]
+    },
+    {
+      "id": "public-safety",
+      "claim": "The exact outgoing snapshot contains no configured public-safety blockers.",
+      "evidence": [
+        "tools/workshop-packager/package-planner.js",
+        "shared/operations/github-sync-service.js"
+      ],
+      "proves": [
+        "only the exact digest verified during publication"
+      ],
+      "does_not_prove": [
+        "production security",
+        "license clearance for every future use"
+      ]
+    }
+  ]
+}

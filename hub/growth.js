@@ -1,26 +1,75 @@
 (function () {
   'use strict';
-  var $ = function (id) { return document.getElementById(id); }, data = null;
+  var $ = function (id) { return document.getElementById(id); }, data = null, activeYear = '', activeMonth = '';
   function fmt(n) { return Number(n || 0).toLocaleString(); }
-  function bytes(n) { n = Number(n || 0); if (n < 1024) return n + ' B'; if (n < 1048576) return (n / 1024).toFixed(1) + ' KB'; return (n / 1048576).toFixed(1) + ' MB'; }
+  function bytes(n) { n = Number(n || 0); if (n < 1024) return n + ' B'; if (n < 1048576) return (n / 1024).toFixed(1) + ' KB'; if (n < 1073741824) return (n / 1048576).toFixed(1) + ' MB'; return (n / 1073741824).toFixed(2) + ' GB'; }
   function delta(n) { n = Number(n || 0); return (n > 0 ? '+' : '') + fmt(n); }
   function metric(value, label, note) { return '<article class="growth-metric"><b>' + (typeof value === 'string' ? value : fmt(value)) + '</b><span>' + label + '</span><small>' + note + '</small></article>'; }
   function orbit(value, label) { return '<div class="growth-orbit"><div><b>' + fmt(value) + '</b><span>' + label + '</span></div></div>'; }
-  function deltaRow(label, value) { return '<div class="growth-delta"><span>' + label + '</span><b class="' + (Number(value) === 0 ? 'zero' : '') + '">' + delta(value) + '</b></div>'; }
+  function component(value, label, note) { return '<div class="growth-component"><b>' + fmt(value) + '</b><span>' + label + '</span><small>' + note + '</small></div>'; }
+  function capability(value, label, note, tone) { return '<article class="growth-capability ' + tone + '"><span>' + label + '</span><b>' + fmt(value) + '</b><small>' + note + '</small></article>'; }
+  function deltaRow(label, value, note) { var unavailable = value == null; return '<div class="growth-delta"><span>' + label + (note ? '<small>' + note + '</small>' : '') + '</span><b class="' + (unavailable || Number(value) === 0 ? 'zero' : '') + '">' + (unavailable ? '—' : delta(value)) + '</b></div>'; }
+
+  function attr(value) { return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function yearKey(value) { var date = new Date(value); return Number.isNaN(date.getTime()) ? '' : String(date.getFullYear()); }
+  function monthKey(value) { var date = new Date(value); return Number.isNaN(date.getTime()) ? '' : date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0'); }
+  function monthLabel(key) { var parts = String(key || '').split('-'), date = new Date(Number(parts[0]), Number(parts[1]) - 1, 1); return Number.isNaN(date.getTime()) ? 'Unknown month' : date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }); }
+  function renderYearPicker(history) {
+    var years = Array.from(new Set(history.map(function (snapshot) { return yearKey(snapshot.capturedAt); }).filter(Boolean))).sort();
+    if (!years.length) { activeYear = ''; $('growthYear').replaceChildren(); $('growthYear').disabled = true; return []; }
+    if (!activeYear || years.indexOf(activeYear) === -1) activeYear = years[years.length - 1];
+    var select = $('growthYear'), fragment = document.createDocumentFragment();
+    years.forEach(function (key) { var option = document.createElement('option'); option.value = key; option.textContent = key; option.selected = key === activeYear; fragment.appendChild(option); });
+    select.replaceChildren(fragment); select.disabled = false;
+    return history.filter(function (snapshot) { return yearKey(snapshot.capturedAt) === activeYear; });
+  }
+  function renderMonthPicker(history) {
+    var months = Array.from(new Set(history.map(function (snapshot) { return monthKey(snapshot.capturedAt); }).filter(Boolean))).sort();
+    if (!months.length) { activeMonth = ''; $('growthMonth').replaceChildren(); $('growthMonth').disabled = true; return []; }
+    if (!activeMonth || (activeMonth !== 'all' && months.indexOf(activeMonth) === -1)) activeMonth = months[months.length - 1];
+    var select = $('growthMonth'), fragment = document.createDocumentFragment(), all = document.createElement('option');
+    all.value = 'all'; all.textContent = 'All months'; all.selected = activeMonth === 'all'; fragment.appendChild(all);
+    months.forEach(function (key) { var option = document.createElement('option'); option.value = key; option.textContent = monthLabel(key); option.selected = key === activeMonth; fragment.appendChild(option); });
+    select.replaceChildren(fragment); select.disabled = false;
+    return activeMonth === 'all' ? history : history.filter(function (snapshot) { return monthKey(snapshot.capturedAt) === activeMonth; });
+  }
+
+  function renderMirror() {
+    var mirror = data.current && data.current.mirror, parent = $('growthMirrorParent'), specialists = $('growthMirrorSpecializations'), deltas = $('growthMirrorDeltas');
+    if (!mirror || mirror.available !== true) {
+      parent.innerHTML = '<div class="growth-mirror-unavailable"><b>Original Mirror is not installed in this local body.</b><span>The Workshop remains usable; Mirror growth will appear when its configured local root is available.</span></div>';
+      specialists.innerHTML = '<div class="growth-empty">No local Mirror specializations to show.</div>';
+      deltas.innerHTML = '<div class="growth-empty">Mirror history begins when the body is available.</div>';
+      return;
+    }
+    parent.innerHTML = '<article class="growth-mirror-parent"><div class="growth-mirror-identity"><div class="growth-mirror-sigil" aria-hidden="true">M</div><div><span>PARENT BODY · ORIGINAL FIRST</span><h4>Original Mirror</h4><p>' + fmt(mirror.totalFiles) + ' installed files · ' + bytes(mirror.bytes) + ' total local footprint</p></div><b class="growth-mirror-status">FILESYSTEM MEASURED</b></div><div class="growth-mirror-measures"><div><span>Owned body / source</span><b>' + bytes(mirror.bodyBytes) + '</b><small>' + fmt(mirror.characters) + ' characters · ' + fmt(mirror.lines) + ' lines</small></div><div><span>Living state</span><b>' + bytes(mirror.stateBytes) + '</b><small>' + fmt(mirror.stateFiles) + ' files</small></div><div><span>Installed substrates</span><b>' + bytes(mirror.substrateBytes) + '</b><small>Blender, Python, media and validation runtimes</small></div><div><span>Repository history</span><b>' + bytes(mirror.historyBytes) + '</b><small>Git continuity, not active source</small></div><div><span>Outputs + logs</span><b>' + bytes(Number(mirror.outputBytes || 0) + Number(mirror.logBytes || 0)) + '</b><small>kept separate from body growth</small></div></div><div class="growth-mirror-anatomy"><div><b>' + fmt(mirror.organs) + '</b><span>organ source files</span></div><div><b>' + fmt(mirror.tests) + '</b><span>test files</span></div><div><b>' + fmt(mirror.contracts) + '</b><span>contract JSON files</span></div><div><b>' + fmt(mirror.trainingFiles) + '</b><span>training files</span></div><div><b>' + fmt(mirror.modules) + '</b><span>module directories</span></div><small>Inventory only · not a capability or intelligence score</small></div></article>';
+    var rows = Array.isArray(mirror.specializations) ? mirror.specializations : [];
+    specialists.innerHTML = rows.length ? rows.map(function (row) {
+      return '<article class="growth-mirror-specialist"><div><span>' + attr(row.kind === 'identity-branch' ? 'IDENTITY BRANCH' : 'SPECIALIST BODY') + '</span><h5>' + attr(row.displayName) + '</h5></div><b class="growth-mirror-specialist-status">' + attr(row.status) + '</b><p>' + bytes(row.bytes) + ' · ' + fmt(row.files) + ' footprint files</p><small>' + (row.sharedParentCode === false ? 'separate code body' : 'shares Original Mirror code · footprint only') + (row.activeRuntime ? ' · runtime declared active in lineage · not live-measured' : ' · no active runtime declared') + '</small></article>';
+    }).join('') : '<div class="growth-empty">No declared Mirror specializations yet.</div>';
+    var md = data.mirrorDeltaFromPrevious, change = data.mirrorSpecializationChanges || {}, ready = data.mirrorDeltaReady === true && md;
+    deltas.innerHTML = ready ? deltaRow('Installed footprint', md.bytes, 'body + state + substrates + history') + deltaRow('Owned body / source', md.bodyBytes) + deltaRow('Living state', md.stateBytes) + deltaRow('Installed substrates', md.substrateBytes) + deltaRow('Repository history', md.historyBytes) + deltaRow('Specializations', md.specializationCount) + deltaRow('Specialists added', change.ready ? (change.added || []).length : null) + deltaRow('Specialists updated', change.ready ? (change.updated || []).length : null) : '<div class="growth-empty">Mirror baseline begins with the next saved snapshot.</div>';
+  }
 
   function render() {
     if (!data) return;
-    var c = data.current, d = data.deltaFromPrevious || {}, h = data.history || [], schedule = data.schedule || {}, total = Math.max(1, c.totalFiles), textPct = Math.round(c.textFiles / total * 100);
+    var c = data.current, d = data.deltaFromPrevious || {}, h = data.history || [], schedule = data.schedule || {}, total = Math.max(1, c.totalFiles), textPct = Math.round(c.textFiles / total * 100), componentReady = data.componentDeltaReady === true, worldReady = data.worldDeltaReady === true, capabilityReady = data.capabilityDeltaReady === true, changes = data.moduleChanges || {}, worldChanges = data.worldChanges || {};
     $('growthPrimary').innerHTML = metric(c.totalFiles, 'active files', fmt(c.textFiles) + ' text · ' + fmt(c.binaryFiles) + ' binary') + metric(c.characters, 'text characters', fmt(c.lines) + ' lines') + metric(c.lines, 'lines', 'UTF-8 source and documents') + metric(bytes(c.bytes), 'active size', 'generated copies excluded');
-    $('growthOrbits').innerHTML = orbit(c.modules, 'tool modules') + orbit(c.games, 'games') + orbit(c.tests, 'test files');
+    $('growthOrbits').innerHTML = orbit(c.modules, 'top-level tools') + orbit(c.worlds, 'living worlds') + orbit(c.games, 'games') + orbit(c.tests, 'test files');
+    $('growthCapabilities').innerHTML = capability(c.exactCapabilities, 'Exact capabilities', 'unique machine-declared abilities after overlap is merged', 'exact') + capability(c.capabilityDeclarations, 'Capability declarations', 'provider-local breadth and reuse across modules', 'declared');
+    var handBreakdown = c.handBreakdown || {}, handNote = handBreakdown.creation != null ? fmt(handBreakdown.creation) + ' creation · ' + fmt(handBreakdown.aiNative) + ' AI-native · ' + fmt(handBreakdown.sensoryAdapters) + ' sensory adapters separate' : 'creation + AI-native';
+    $('growthComponents').innerHTML = component(c.hands, 'executable hands', handNote) + component(c.schemas, 'typed schemas', 'declared data shapes') + component(c.protocols, 'protocol seams', 'named exchange rules') + component(c.validators, 'verifier programs', 'executable checks');
     $('growthComposition').innerHTML = '<div class="growth-bar"><i class="text" style="width:' + textPct + '%"></i><i class="binary" style="width:' + (100 - textPct) + '%"></i></div><div class="growth-legend"><span>TEXT ' + textPct + '%</span><span>BINARY ' + (100 - textPct) + '%</span></div>';
-    $('growthDeltas').innerHTML = h.length ? deltaRow('Files since previous snapshot', d.totalFiles) + deltaRow('Characters since previous snapshot', d.characters) + deltaRow('Lines since previous snapshot', d.lines) + deltaRow('Modules since previous snapshot', d.modules) : '<div class="growth-empty">Save the first snapshot to begin measuring daily growth.</div>';
-    var max = Math.max.apply(null, h.map(function (s) { return Number(s.characters) || 0; }).concat([1]));
-    $('growthHistory').innerHTML = h.length ? h.slice(-20).map(function (s) { var height = Math.max(4, Math.round(Number(s.characters || 0) / max * 100)); return '<div class="growth-snapshot" style="height:' + height + '%" title="' + fmt(s.characters) + ' characters · ' + fmt(s.totalFiles) + ' files"><span>' + new Date(s.capturedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + '</span></div>'; }).join('') : '<div class="growth-empty">No saved snapshots yet.</div>';
+    $('growthDeltas').innerHTML = h.length ? deltaRow('Files', d.totalFiles) + deltaRow('Characters', d.characters, 'net active-source change; old and new modules and worlds all count') + deltaRow('Lines', d.lines, 'net world, game, tool, test and document growth') + deltaRow('Exact capabilities', capabilityReady ? d.exactCapabilities : null, capabilityReady ? 'unique contract identifiers' : 'capability-aware baseline begins next snapshot') + deltaRow('Capability declarations', capabilityReady ? d.capabilityDeclarations : null, capabilityReady ? 'provider-local reuse and overlap' : 'capability-aware baseline begins next snapshot') + deltaRow('New top-level tools', d.modules) + deltaRow(changes.exact ? 'Existing tools updated' : 'Tool folders touched', changes.exact ? changes.updated : changes.touched, changes.exact ? 'compact fingerprint comparison' : 'legacy snapshot · timestamp signal') + deltaRow('New living worlds', worldReady ? d.worlds : null, worldReady ? '' : 'baseline begins next snapshot') + deltaRow(worldChanges.exact ? 'Existing worlds updated' : 'World folders touched', worldChanges.exact ? worldChanges.updated : worldChanges.touched, worldChanges.exact ? 'compact per-world fingerprint comparison' : 'legacy snapshot · timestamp signal') + deltaRow('Executable hands', componentReady ? d.hands : null, componentReady ? '' : 'baseline begins next snapshot') + deltaRow('Typed schemas', componentReady ? d.schemas : null, componentReady ? '' : 'baseline begins next snapshot') + deltaRow('Protocol seams', componentReady ? d.protocols : null, componentReady ? '' : 'baseline begins next snapshot') + deltaRow('Verifier programs', componentReady ? d.validators : null, componentReady ? '' : 'baseline begins next snapshot') : '<div class="growth-empty">Save the first snapshot to begin measuring daily growth.</div>';
+    var yearHistory = renderYearPicker(h), visibleHistory = renderMonthPicker(yearHistory), max = Math.max.apply(null, h.map(function (s) { return Number(s.characters) || 0; }).concat([1]));
+    $('growthHistory').innerHTML = visibleHistory.length ? visibleHistory.map(function (s) { var height = Math.max(4, Math.round(Number(s.characters || 0) / max * 100)), capabilityNote = Number(s.measurementVersion || 0) >= 7 ? ' · ' + fmt(s.exactCapabilities) + ' exact capabilities' : ' · capability baseline not recorded yet'; return '<div class="growth-snapshot" style="height:' + height + '%" title="' + fmt(s.characters) + ' characters · ' + fmt(s.totalFiles) + ' files' + capabilityNote + ' · ' + attr(s.label || 'Workshop snapshot') + '"><span>' + new Date(s.capturedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + '</span></div>'; }).join('') : '<div class="growth-empty">No saved snapshots for this period.</div>';
+    var totalMonths = new Set(h.map(function (s) { return monthKey(s.capturedAt); }).filter(Boolean)).size, totalYears = new Set(h.map(function (s) { return yearKey(s.capturedAt); }).filter(Boolean)).size, period = activeMonth === 'all' ? activeYear : monthLabel(activeMonth);
+    $('growthMonthSummary').textContent = h.length ? period + ' · ' + visibleHistory.length + ' saved moment' + (visibleHistory.length === 1 ? '' : 's') + ' · ' + h.length + ' retained across ' + totalMonths + ' month' + (totalMonths === 1 ? '' : 's') + ' / ' + totalYears + ' year' + (totalYears === 1 ? '' : 's') : 'The first compact snapshot will begin the journey.';
+    renderMirror();
     $('growthAutoEnabled').checked = schedule.enabled !== false;
     $('growthAutoTime').value = schedule.localTime || '05:00';
     $('growthScheduleSummary').textContent = (schedule.enabled === false ? 'Daily snapshot paused' : 'Daily at ' + (schedule.localTime || '05:00') + ' local time') + (schedule.lastCapturedAt ? ' · last ' + new Date(schedule.lastCapturedAt).toLocaleString() : '') + ' · compact metrics only';
-    $('growthRules').innerHTML = '<b>Honest counting scope:</b> active workshop files only. Excluded: ' + data.countingRules.excluded.join(', ') + '. Daily records store aggregate counts, not screenshots or file lists. The original baseline remains in history; the visible delta compares with the latest snapshot.';
+    $('growthRules').innerHTML = '<b>Honest counting scope:</b> active workshop files only. Excluded: ' + data.countingRules.excluded.join(', ') + '. Foundation Planet and every future <code>worlds/*</code> source file contribute to the same character and line totals as games and tools; compact world fingerprints make deep upgrades visible without double-counting them as new tools. Exact capabilities deduplicate machine-declared provides/produces identifiers; capability declarations retain provider-local overlap so reuse stays visible. Human-facing action prose never inflates either count. Hands are executable files in the two shared hand registries; schemas, named protocol seams and verifier programs are counted by their declared file roles. Daily records store aggregate counts plus short per-tool and per-world fingerprints—not screenshots, source content or file lists. Compact snapshots remain in the monthly journey; the visible delta compares with the latest snapshot.<br><b>Mirror family:</b> ' + attr(data.countingRules.mirrorSignal || 'local file metadata only; private contents are not read; parent code is counted once') + '. Clone cards retain only compact declared footprints in daily history.';
   }
 
   function setStatus(message, isError) { var inline = $('growthActionStatus'), detail = $('growthStatus'); inline.textContent = message || ''; inline.classList.toggle('error', !!isError); detail.textContent = message || ''; detail.style.color = isError ? '#ff8190' : ''; }
@@ -35,5 +84,7 @@
   $('growthCapture').onclick = capture;
   $('growthRefresh').onclick = function () { setStatus('Refreshing current workshop totals…', false); refresh().then(function () { setStatus('Current totals refreshed.', false); }); };
   $('growthScheduleSave').onclick = saveSchedule;
+  $('growthYear').onchange = function () { activeYear = $('growthYear').value; activeMonth = ''; render(); };
+  $('growthMonth').onchange = function () { activeMonth = $('growthMonth').value; render(); };
   window.AXMWorkshopGrowth = { open: open, refresh: refresh };
 }());

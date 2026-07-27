@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.experiment-sensor-frame/v1",
+  "title": "AXM Experiment Sensor Frame",
+  "type": "object",
+  "required": ["schema", "worldId", "worldDigest", "observer", "status", "artifacts", "links", "truth", "frameDigest"],
+  "properties": {
+    "schema": { "const": "axm.experiment-sensor-frame/v1" },
+    "worldId": { "type": "string" },
+    "worldDigest": { "type": "string" },
+    "observer": { "type": "object" },
+    "status": { "enum": ["DRAFT", "ACTIVE", "HELD", "FROZEN"] },
+    "artifacts": { "type": "array", "items": { "type": "object" } },
+    "links": { "type": "array", "items": { "type": "object" } },
+    "truth": { "type": "object" },
+    "frameDigest": { "type": "string" }
+  },
+  "additionalProperties": true
+}

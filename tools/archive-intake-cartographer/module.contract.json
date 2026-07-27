@@ -1,0 +1,67 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "archive-intake-cartographer",
+  "version": "v0.1",
+  "provides": [
+    "bounded-archive-supply-inventory",
+    "exact-archive-sha256-deduplication",
+    "zip-central-directory-structure-map",
+    "unsafe-archive-entry-path-detection",
+    "encrypted-symlink-duplicate-name-and-unsupported-zip-holds",
+    "same-path-change-and-entry-identity-evidence",
+    "archive-subset-superset-partial-overlap-and-disjoint-relations",
+    "freshness-bound-archive-intake-receipt"
+  ],
+  "consumes": [
+    "filesystem:explicit-archive-supply-root",
+    "application/zip"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.archive-intake-map/v1",
+      "axm.archive-intake-record/v1",
+      "axm.archive-overlap-relation/v1"
+    ],
+    "accepts": [
+      "filesystem/archive-supply-root",
+      "application/zip"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "user-selected-output:archive-intake-map-json",
+      "user-selected-output:browser-archive-map-snapshot",
+      "candidate-local-output:module-bundle.json"
+    ],
+    "refuses": [
+      "symbolic-link-following",
+      "archive-extraction",
+      "archive-entry-execution",
+      "decompressed-content-integrity-claim",
+      "crc-as-cryptographic-proof",
+      "filename-overlap-as-semantic-equivalence",
+      "newest-version-authority-inference",
+      "automatic-deduplicate-delete",
+      "automatic-merge",
+      "installer-staging",
+      "module-installation",
+      "source-mutation",
+      "permission-change",
+      "rollback-change",
+      "promotion",
+      "canon-change",
+      "network-intake",
+      "runtime-readiness-claim",
+      "visual-approval-claim"
+    ]
+  }
+}

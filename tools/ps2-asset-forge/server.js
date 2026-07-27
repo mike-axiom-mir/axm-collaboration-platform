@@ -5,6 +5,8 @@ const http = require('node:http');
 const path = require('node:path');
 
 const root = path.resolve(__dirname);
+const animationRoot = path.resolve(__dirname, '..', '..', 'shared', 'game-animation-foundation');
+const animationPrefix = '/shared/game-animation-foundation/';
 const port = Number(process.env.AXM_PS2_FORGE_PORT || 8902);
 const types = {
   '.css': 'text/css; charset=utf-8',
@@ -21,8 +23,11 @@ const types = {
 const server = http.createServer((request, response) => {
   const pathname = decodeURIComponent(new URL(request.url, 'http://127.0.0.1').pathname);
   const requested = pathname === '/' ? '/index.html' : pathname;
-  const file = path.resolve(root, `.${requested}`);
-  if (file !== root && !file.startsWith(`${root}${path.sep}`)) {
+  const servesAnimationSpine = requested.startsWith(animationPrefix);
+  const allowedRoot = servesAnimationSpine ? animationRoot : root;
+  const relative = servesAnimationSpine ? requested.slice(animationPrefix.length) : `.${requested}`;
+  const file = path.resolve(allowedRoot, relative);
+  if (file !== allowedRoot && !file.startsWith(`${allowedRoot}${path.sep}`)) {
     response.writeHead(403).end('Forbidden');
     return;
   }

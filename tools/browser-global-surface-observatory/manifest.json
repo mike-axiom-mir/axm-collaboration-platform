@@ -1,0 +1,29 @@
+{
+  "id": "browser-global-surface-observatory",
+  "name": "AXM Browser Global Surface Observatory",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "category": "OBSERVE",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": ["browser-global", "window", "globalThis", "static-source", "graph-consumer", "read-only"],
+  "uses": ["browser-global"],
+  "permissions": [],
+  "actions": [
+    "verify graph-bounded HTML and JavaScript source hashes before analysis",
+    "inventory exact window and globalThis definition reference deletion and defineProperty patterns",
+    "resolve literal and same-file constant bracket names",
+    "group exact browser-global definitions across distinct source ownership scopes",
+    "prepare one question-only browser-global review packet"
+  ],
+  "accepts": ["filesystem/workshop-root", "axm.entry-resource-graph/v1"],
+  "produces": ["axm.browser-global-surface/v1", "axm.browser-global-review-request/v1"],
+  "readiness": ["browser-global"],
+  "summary": "Read-only static map of explicit browser-global patterns and exact multi-owner definition review seams over a verified entry resource graph.",
+  "notes": "It is not a JavaScript parser. It never loads a browser, executes scripts, reads or mutates runtime globals, proves ownership or harm, grants permission, installs, or changes CANON."
+}

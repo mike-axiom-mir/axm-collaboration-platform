@@ -49,7 +49,7 @@ test('official BGT source index retains exact acquisition counts, snapshot and C
 });
 
 test('compiled gameplay spawns and commands are host-collision-safe', () => {
-  const staticMap = loadStaticMap(root);
+  const staticMap = loadStaticMap(root, 'tilburg-streetscape-foundation');
   const territory = readJson('data/territory-zones.json');
   const entries = [
     ...staticMap.playerSpawns.map((entry) => ({ ...entry, radius: 10 })),
@@ -68,7 +68,7 @@ test('compiled gameplay spawns and commands are host-collision-safe', () => {
 });
 
 test('spatial queries touch nearby buckets instead of scanning the complete city feature set', () => {
-  const staticMap = loadStaticMap(root);
+  const staticMap = loadStaticMap(root, 'tilburg-streetscape-foundation');
   const aroundBase = { left: 6200, right: 7300, top: 5800, bottom: 6800 };
   const nearby = queryFeatures(staticMap, 'obstacles', aroundBase);
   assert.ok(nearby.length > 0);
@@ -81,7 +81,7 @@ test('static world endpoint advertises the local chunk manifest without broadcas
   const launch = manager.createSession({ players: [{ slot: 1, controllerType: 'human' }] });
   const payload = serializeStaticWorld(manager.getSession(launch.sessionId));
   const serialized = JSON.stringify(payload);
-  assert.equal(payload.mapUrl, '/data/map.json');
+  assert.equal(payload.mapUrl, '/data/maps/tilburg-authored-city-alpha/map.json');
   assert.equal(payload.map.chunking.chunks.length, 96);
   assert.ok(serialized.length < 100_000);
   assert.doesNotMatch(serialized, /"obstacles"/);

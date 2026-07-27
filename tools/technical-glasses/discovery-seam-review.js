@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 const fs=require('fs'),path=require('path');
-const read=file=>fs.readFileSync(path.join(__dirname,file),'utf8'),server=fs.readFileSync(path.join(__dirname,'..','..','server.js'),'utf8'),core=fs.readFileSync(path.join(__dirname,'..','..','shared','technical-glasses','technical-glasses-core.js'),'utf8'),ai=fs.readFileSync(path.join(__dirname,'..','ai-team','ai-team-core.js'),'utf8');
+const read=file=>fs.readFileSync(path.join(__dirname,file),'utf8'),root=path.join(__dirname,'..','..'),server=fs.readFileSync(path.join(root,'server.js'),'utf8'),core=fs.readFileSync(path.join(root,'shared','technical-glasses','technical-glasses-core.js'),'utf8'),cli=fs.readFileSync(path.join(root,'shared','technical-glasses','technical-glasses-cli.js'),'utf8'),observer=fs.readFileSync(path.join(root,'shared','readiness','readiness-observer.js'),'utf8'),observatory=fs.readFileSync(path.join(root,'shared','modular-intake','needs-observatory-service.js'),'utf8'),ai=fs.readFileSync(path.join(__dirname,'..','ai-team','ai-team-core.js'),'utf8');
 const checks=[
  ['Every API request recompiles current source',server.includes('compileTechnicalGlasses(focus)')&&server.includes('/api/workshop/technical-glasses')],
  ['Portable text and structured JSON share one snapshot',server.includes('/api/workshop/technical-glasses.txt')&&server.includes('snapshot.briefing')],
@@ -14,6 +14,8 @@ const checks=[
  ['AI Team exposes the shared view',ai.includes("id:'technical'")&&ai.includes("route:'technical'" )],
  ['UI refuses a stale cache when live compilation fails',read('technical-glasses-app.js').includes('no cached result was substituted')],
  ['Visible refresh is bounded while hidden tabs idle',read('technical-glasses-app.js').includes('if(!document.hidden)compile(true)')],
- ['Any instance receives evidence paths and reading order',core.includes('instructionsForAnyAI')&&core.includes('readingOrder')&&core.includes('evidence:')]
+ ['Any instance receives evidence paths and reading order',core.includes('instructionsForAnyAI')&&core.includes('readingOrder')&&core.includes('evidence:')],
+ ['One shared observer supplies the server, CLI and Needs Observatory',server.includes('ReadinessObserver.create')&&cli.includes('ReadinessObserver.create')&&observatory.includes('ReadinessObserver.create')&&observer.includes("hold('STALE'")],
+ ['Human-review evidence cannot impersonate approval or promotion',core.includes('reviewReadinessIsApproval: false')&&core.includes('reviewReadinessIsPromotion: false')&&read('technical-glasses-app.js').includes('human review required')]
 ];
-let failed=0;checks.forEach(([name,pass])=>{console.log((pass?'PASS  ':'OPEN  ')+name);if(!pass)failed++;});console.log('Technical Glasses discovery seam review: '+(failed?'OPEN '+failed:'PASS · 12 controls'));if(failed)process.exit(1);
+let failed=0;checks.forEach(([name,pass])=>{console.log((pass?'PASS  ':'OPEN  ')+name);if(!pass)failed++;});console.log('Technical Glasses discovery seam review: '+(failed?'OPEN '+failed:'PASS - 14 controls'));if(failed)process.exit(1);

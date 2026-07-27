@@ -1,7 +1,9 @@
 # AXM Physics Hash and Lineage Proposal
 
-Status: design proposal only. It does not redefine `checksum(world)`, change
-serialization or alter v0.3.1 behavior.
+Status: partially implemented as additive evidence on 2026-07-24. It does not
+redefine `checksum(world)` or alter v0.3.1 solver behavior. Configuration,
+definition and identity digests plus a non-predecessor-bound lineage bundle now
+exist; the stronger input/state/predecessor lineage design remains proposed.
 
 ## Problem
 
@@ -11,22 +13,33 @@ It deliberately or historically ignores configuration, body definitions,
 pending forces, contacts, engine version and provenance. Calling it a complete
 replay or configuration hash would therefore overstate what it proves.
 
-## Proposed separated receipts
+RFC 8785 is a useful candidate for canonical JSON-safe structure, but its
+ECMAScript number serialization emits both positive and negative zero as `0`
+and excludes NaN and Infinity. The local signed-zero canary likewise shows that
+the legacy checksum collapses `+0` and `-0`. Configuration JSON and authoritative
+numeric state therefore need different encoding rules; see source D11 in
+`PHYSICS_POLICY_SOURCE_REGISTER.json`.
 
-| Receipt | Purpose | Candidate contents |
-| --- | --- | --- |
-| `legacyStateChecksum` | Backward-compatible v0.3.1 divergence marker | Exactly today's `checksum(world)` bytes and algorithm |
-| `configurationHash` | Establish which model/policies were requested | World schema; engine/version; gravity; timestep, solver, substep, sleep, broadphase, warm-start and bounds policies; ordered normalized body definitions including IDs, order keys, type, shape, mass, material, damping, gravity scale, filters, sensor/enabled/sleep flags |
-| `inputTraceHash` | Establish external actions applied after configuration | Canonical ordered records of force, impulse, velocity, add/remove and step requests, with sequence number and normalized payload |
-| `stateHashV2` | Detect broader state divergence | Configuration hash reference plus time, accumulator, step/integration counts, body state, pending force, active contacts/manifolds and migration state |
-| `lineageHash` | Bind an output to its inputs and predecessor | Domain tag, schema version, configuration hash, input-trace hash, predecessor lineage hash and state hash |
+## Separated receipt roadmap
+
+| Receipt | Status | Purpose | Contents or candidate contents |
+| --- | --- | --- | --- |
+| `legacyStateChecksum` | Preserved | Backward-compatible v0.3.1 divergence marker | Exactly today's `checksum(world)` bytes and algorithm |
+| `configurationHash` | Implemented additive v1 | Establish which world model/policies were requested | World schema; engine/version; gravity; timestep, solver, substep, sleep, broadphase, warm-start and bounds policies |
+| `definitionHash` | Implemented additive v1 | Bind normalized physical body definitions | Sorted IDs, shapes, mass, material, damping, gravity scale and filters |
+| `identityHash` | Implemented additive v1 | Bind the current identity-relevant body roster | Sorted IDs, type, enabled/sensor and sleep-permission flags |
+| `lineageHashes` | Implemented additive v1 bundle | Carry the three implemented digests together | Configuration, definition and identity digests; not an input trace or predecessor chain |
+| `inputTraceHash` | Proposed | Establish external actions applied after configuration | Canonical ordered records of force, impulse, velocity, add/remove and step requests, with sequence number and normalized payload |
+| `stateHashV2` | Proposed | Detect broader state divergence | Configuration hash reference plus time, accumulator, step/integration counts, IEEE-754-bit-preserving body state, pending force, active contacts/manifolds and migration state |
+| `lineageHash` | Proposed | Bind an output to its inputs and predecessor | Domain tag, schema version, configuration hash, input-trace hash, predecessor lineage hash and state hash |
 
 ## Canonicalization requirements
 
 - Use explicit schema and algorithm identifiers; never infer them from hash
   length.
 - Encode strings as UTF-8 and numbers with a documented representation. Reject
-  non-finite values before hashing.
+  non-finite values before JSON hashing; preserve signed zero and other declared
+  IEEE-754 distinctions in the authoritative numeric-state encoding.
 - Sort only fields declared order-insensitive. Preserve action sequence and any
   solver order that can affect results.
 - Distinguish absent, `null`, false and zero.
@@ -41,18 +54,22 @@ replay or configuration hash would therefore overstate what it proves.
 ## ID-order implication
 
 The micro suite shows that a pure ID rename can change a low-iteration stacked
-result because IDs influence solver ordering. A future `configurationHash`
-must therefore include IDs and the effective solver order. If semantic IDs are
-later decoupled from numerical order, that migration needs its own behavior
-version and replay evidence.
+result because IDs influence solver ordering. The additive `definitionHash` and
+`identityHash` include IDs, but they do not claim to encode a separate solver
+schedule. A future predecessor-bound lineage contract must bind the effective
+schedule and its version. If semantic IDs are later decoupled from numerical
+order, that migration needs its own behavior version and replay evidence.
 
 ## Compatibility path
 
-1. Add new receipt fields alongside `diagnostics.checksum`.
+1. **Done:** add configuration, definition and identity receipt fields alongside
+   `diagnostics.checksum`.
 2. Label the existing field `legacyStateChecksum` in documentation while
    keeping its value and algorithm byte-for-byte unchanged.
-3. Produce both receipts during a deprecation window.
-4. Add golden vectors, mutation-sensitivity tables and serialization tests.
+3. Keep the additive digests beside the legacy checksum; no deprecation is
+   authorized by this pass.
+4. **Partial:** mutation-sensitivity and stability tests exist; golden vectors,
+   cross-runtime evidence and broader serialization tests remain.
 5. Advance the engine/schema version only when consumers can distinguish the
    new contract.
 

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.external-substrate-install-receipt/v1",
+  "title": "AXM external substrate installation receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "substrate", "status", "source_artifact_sha256", "source_size_bytes", "verification", "downloaded", "executed_installer", "private_location_retained", "automatic_installation", "licence_review_status", "digest"],
+  "properties": {
+    "schema": { "const": "axm.external-substrate-install-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "substrate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "runtime_version"],
+      "properties": { "id": { "type": "string" }, "runtime_version": { "type": "string" } }
+    },
+    "status": { "enum": ["INSTALLED", "ALREADY_INSTALLED"] },
+    "source_artifact_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source_size_bytes": { "type": "integer", "minimum": 1 },
+    "verification": { "type": "object" },
+    "downloaded": { "type": "boolean" },
+    "executed_installer": { "type": "boolean" },
+    "private_location_retained": { "const": false },
+    "automatic_installation": { "const": false },
+    "licence_review_status": { "const": "REVIEWED_FOR_LOCAL_TEST" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

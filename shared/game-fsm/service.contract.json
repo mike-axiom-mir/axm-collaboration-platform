@@ -1,0 +1,19 @@
+{
+  "schema": "axm.service-contract/v1",
+  "id": "game-fsm",
+  "version": "0.1.0",
+  "status": "TEST",
+  "consumes": ["axm.game-fsm/v1", "named guard/action registries", "discrete events"],
+  "emits": ["axm.game-fsm-trace/v1", "state id", "optional motion-block selection"],
+  "capabilities": ["portable event state transitions", "named guards and actions", "bounded deterministic trace", "state diagram"],
+  "boundaries": {
+    "state_owner": "caller runtime",
+    "trace_limit_default": 200,
+    "refuses": ["embedded executable definition code", "automatic world-state authority", "automatic animation playback", "automatic canon promotion"]
+  },
+  "distinctions": {
+    "holodeck_state_machine": "owns revisioned and digest-bound world state; not replaced",
+    "game_animation_spine": "owns timed animation frames, events and cross-fades; not replaced",
+    "game_fsm": "selects portable gameplay/entity state from discrete events"
+  }
+}

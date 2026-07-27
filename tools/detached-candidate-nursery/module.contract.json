@@ -1,0 +1,62 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "detached-candidate-nursery",
+  "version": "v0.1",
+  "provides": [
+    "detached-candidate-supply-inventory",
+    "manifest-contract-structural-check",
+    "bundle-to-folder-byte-parity",
+    "candidate-authority-conflict-detection",
+    "pre-intake-status-classification",
+    "detached-archive-digest-index"
+  ],
+  "consumes": [
+    "filesystem:detached-candidate-root",
+    "axm.module-bundle/v1",
+    "axm.module-candidate-receipt/v1"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.detached-candidate-registry/v1",
+      "axm.detached-candidate-record/v1"
+    ],
+    "accepts": [
+      "filesystem/detached-candidate-root",
+      "axm.module-bundle/v1",
+      "axm.module-candidate-receipt/v1"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "user-selected-output:candidate-registry-json",
+      "user-selected-output:browser-registry-snapshot",
+      "candidate-local-output:module-bundle.json"
+    ],
+    "refuses": [
+      "candidate-code-execution",
+      "symbolic-link-following",
+      "candidate-source-mutation",
+      "automatic-repair",
+      "installer-staging",
+      "module-installation",
+      "permission-change",
+      "promotion",
+      "canon-change",
+      "candidate-deletion",
+      "archive-extraction",
+      "network-intake",
+      "runtime-readiness-claim",
+      "visual-approval-claim",
+      "self-referential-bundle-verdict"
+    ]
+  }
+}

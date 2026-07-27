@@ -5,9 +5,10 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  var VERSION = '0.1.0';
+  var VERSION = '0.2.0';
   var ARTIFACT_SCHEMA = 'axm.workshop-direction.review-artifact/v1';
   var ASSESSMENT_SCHEMA = 'axm.workshop-direction.steward-assessment/v1';
+  var BOUNDED_AUTHORITIES = ['NONE', 'workspace-local-only', 'incubator-candidate-only', 'disposable-lineage-only', 'candidate-text-only'];
 
   function clone(value) { return JSON.parse(JSON.stringify(value)); }
   function clamp(value) { return Math.max(0, Math.min(100, Math.round(Number(value) || 0))); }
@@ -50,7 +51,7 @@
     var available = routes.filter(function (route) { return route.execution && route.execution.mode !== 'UNAVAILABLE'; }).length;
     var bounded = routes.every(function (route) {
       var authority = String(route.execution && route.execution.authority || 'NONE');
-      return ['NONE', 'workspace-local-only', 'incubator-candidate-only', 'disposable-lineage-only'].indexOf(authority) >= 0;
+      return BOUNDED_AUTHORITIES.indexOf(authority) >= 0;
     });
     var exams = routes.reduce(function (sum, route) { return sum + (route.qualityExams || []).length; }, 0);
     var routeCount = Math.max(1, routes.length);
@@ -90,5 +91,5 @@
     };
   }
 
-  return { VERSION: VERSION, ARTIFACT_SCHEMA: ARTIFACT_SCHEMA, ASSESSMENT_SCHEMA: ASSESSMENT_SCHEMA, artifact: artifact, judge: judge };
+  return { VERSION: VERSION, ARTIFACT_SCHEMA: ARTIFACT_SCHEMA, ASSESSMENT_SCHEMA: ASSESSMENT_SCHEMA, BOUNDED_AUTHORITIES: BOUNDED_AUTHORITIES.slice(), artifact: artifact, judge: judge };
 });

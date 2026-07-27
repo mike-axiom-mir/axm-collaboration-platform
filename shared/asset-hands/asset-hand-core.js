@@ -462,7 +462,7 @@
       var value =
         typeof raw.text === "string" ? raw.text.slice(0, 2000000) : "";
       var dataUrl =
-        typeof raw.dataUrl === "string" ? raw.dataUrl.slice(0, 4000000) : "";
+        typeof raw.dataUrl === "string" ? raw.dataUrl.slice(0, 24000000) : "";
       var contentSchema = text(
         raw.content_schema ||
           raw.contentSchema ||

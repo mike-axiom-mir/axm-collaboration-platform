@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+'use strict';
+
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const dir = __dirname;
+const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
+const contract = JSON.parse(fs.readFileSync(path.join(dir, 'module.contract.json'), 'utf8'));
+const html = fs.readFileSync(path.join(dir, 'index.html'), 'utf8');
+const app = fs.readFileSync(path.join(dir, 'app.js'), 'utf8');
+const css = fs.readFileSync(path.join(dir, 'styles.css'), 'utf8');
+const server = fs.readFileSync(path.join(dir, '..', '..', 'server.js'), 'utf8');
+const heartbeatBridge = fs.readFileSync(path.join(dir, '..', '..', 'shared', 'heartbeat', 'axm-heartbeat-verification-bridge.js'), 'utf8');
+
+assert.equal(manifest.schema, 'axm.tool-manifest/v1');
+assert.equal(manifest.id, 'workshop-updater');
+assert.equal(manifest.version, 'v0.1');
+assert.equal(manifest.status, 'TEST');
+assert.deepEqual(manifest.permissions.slice().sort(), contract.permissions.slice().sort());
+assert(contract.provides.includes('zero-network-off-state'));
+assert(contract.provides.includes('ed25519-release-verification'));
+assert(contract.boundaries.refuses.includes('network-while-disabled'));
+assert(contract.boundaries.refuses.includes('automatic-install'));
+assert(contract.boundaries.refuses.includes('live-workshop-overwrite'));
+assert(html.includes('Workshop Update Gate'));
+assert(html.includes('ZERO NETWORK'));
+assert(html.includes('Whole-Workshop installer'));
+assert(html.includes('Heartbeat + one Pulse lease'));
+assert(html.includes('ENABLE WORKSHOP UPDATE CHECKS'));
+assert(html.includes('ALLOW VERIFIED UPDATE DOWNLOADS'));
+assert(app.includes('/api/workshop-updater/check'));
+assert(app.includes('explicit-update-check'));
+assert(app.includes('status.pulseBridge'));
+assert(css.includes('.path') && css.includes('.badge.off'));
+assert(server.includes('WorkshopUpdaterService.onBeat(beat)'));
+assert(server.includes('url === "/api/workshop-updater"'));
+assert(server.includes('explicit-updater-config'));
+assert(server.includes('explicit-update-check'));
+assert(heartbeatBridge.includes("id: 'workshop-updater-core'"));
+assert(heartbeatBridge.includes("id: 'workshop-updater-service'"));
+assert(heartbeatBridge.includes("id: 'workshop-updater-surface'"));
+console.log('PASS Workshop Update Gate surface - dormant default, explicit GitHub read, signed staging, install held');

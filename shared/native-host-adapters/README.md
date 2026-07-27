@@ -14,7 +14,7 @@ The portable `axm.native-bridge-bundle/v1` remains data, approval and target-can
 
 ## Blender reference adapter
 
-The reference package supports Blender 4.2 through the last 4.x release and imports GLB 2.0 into a workspace-confined `.blend` project. `blender/blender-host.py` is a fixed entrypoint. Bundle metadata is written as Blender custom properties, then checked by a separate background Blender invocation.
+The reference package supports Blender 4.2 through tested Blender 5.2.x hosts and imports GLB 2.0 into a workspace-confined `.blend` project. The maximum remains exclusive at 5.3 so a future, untested Blender release is refused visibly. `blender/blender-host.py` is a fixed entrypoint. Bundle metadata is written as Blender custom properties, then checked by a separate background Blender invocation.
 
 The driver always records the actual Blender executable SHA-256. An installation can additionally pin an expected executable digest; only an exact match sets `host_executable_digest_verified=true`. Package-signature trust and native-binary checksum trust remain separate claims.
 
@@ -22,4 +22,4 @@ No private signing key is stored here. Installation tooling must seal the packag
 
 `registry.js` is the shared capability-negotiation layer. It grants the existing `native-dcc-adapter` host capability only when a trusted installed package matches application version, target canvas, source MIME and every requested operation. Its visible refusal states are `MISSING_NATIVE_ADAPTER`, `MISSING_NATIVE_CAPABILITY` and `UNSUPPORTED_CANVAS`.
 
-`native-real-blender-selftest.js` is the live reference test. Pass an explicit portable Blender executable with `--blender` and, when the installation has pinned it, the extracted executable digest with `--blender-sha256`; the runtime itself should remain outside this repository.
+`native-real-blender-selftest.js` is the live reference test. Pass an explicit portable Blender executable with `--blender`, the claimed application version with `--blender-version`, and, when the installation has pinned it, the extracted executable digest with `--blender-sha256`; the runtime itself should remain outside this repository.

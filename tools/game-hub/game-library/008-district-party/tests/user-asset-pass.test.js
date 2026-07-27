@@ -63,14 +63,15 @@ test('curated runtime art has local RGBA PNGs at bounded browser sizes', () => {
   }
 });
 
-test('party runtime loads modern art locally and keeps legacy fallbacks', () => {
+test('party runtime keeps modern art available but restores animated legacy players', () => {
   const scene = readText('client/game/scenes/CityScene.js');
   const renderer = readText('client/game/rendering/entity-renderer.js');
   for (const key of ['modernPlayer1', 'resident1', 'sportRed', 'sedanSilver', 'shopkeeperNeutral', 'shopkeeperAxm', 'buildingCafe', 'buildingRow']) {
     assert.match(scene, new RegExp(`${key}:`), `${key} has a local load contract`);
   }
   assert.doesNotMatch(scene, /resident_woman_backpack\.png'/, 'rejected first matte is not loaded');
-  assert.match(renderer, /modernSprite \|\| legacySprite/);
+  assert.match(renderer, /if \(legacySprite\) \{ const frame = this\.frameFor\(actor\)/, 'animated legacy sheet is the active player route');
+  assert.match(renderer, /else if \(modernSprite\)/, 'single-frame modern player remains a fallback for later repair');
   assert.match(renderer, /modernResident/);
   assert.match(renderer, /hashString\(npc\.id\)/, 'civilian appearance is stable across state order changes');
   assert.match(renderer, /modernPlayer\$\{identity\}/, 'slots 5-8 safely cycle the four visible identities');
@@ -78,7 +79,7 @@ test('party runtime loads modern art locally and keeps legacy fallbacks', () => 
 
 test('landmark art aligns with existing host collision and leaves an open approach', () => {
   const art = json('data/city-art.json');
-  const staticMap = loadStaticMap(root);
+  const staticMap = loadStaticMap(root, 'tilburg-streetscape-foundation');
   assert.equal(art.buildingOverlays.length, 4);
   assert.equal(art.staticCharacters.length, 2);
   for (const building of art.buildingOverlays) {

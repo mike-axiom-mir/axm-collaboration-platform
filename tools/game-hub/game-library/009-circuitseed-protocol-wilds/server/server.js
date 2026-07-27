@@ -265,6 +265,14 @@ function createHttpServer(runtime = createRuntime()) {
       const url = new URL(req.url, 'http://127.0.0.1'); const pathname = url.pathname;
       if (req.method === 'OPTIONS') return sendJson(res, 200, { ok: true });
       if (req.method === 'GET' && pathname === '/health') return sendJson(res, 200, { ok: true, gameId: GAME_ID, status: 'ALPHA CANDIDATE / WORKING', localOnly: true, runtimeInternetRequired: false, port: Number(process.env.PORT || 8799), sessionStatus: runtime.sessionManager.current?.status || 'waiting', maxSeats: 8, defaultAiFill: false, circuitkinRoster: circuitkinData.rosterModel, dataSchemas: { profile: 'axm.circuitseed-router-profile/v1', world: 'axm.circuitseed-world-save/v1', ledger: 'axm.circuitseed-session-ledger/v1' } });
+      if (req.method === 'GET' && pathname === '/api/launcher-state') return sendJson(res, 200, {
+        ok: true,
+        schema: 'axm.game-runtime-launcher-state/v1',
+        gameId: GAME_ID,
+        controllerLinks: [],
+        partyScreenLinks: { all: '/games/009/party/' },
+        authority: { session: 'circuitseed-server', world: 'circuitseed-server', launch: 'game-hub' }
+      });
       if (req.method === 'GET' && pathname === '/api/bootstrap') return sendJson(res, 200, { ok: true, game: { id: GAME_ID, title: 'CIRCUITSEED', subtitle: 'THE PROTOCOL WILDS', descriptor: 'A local-first agent-world adventure', status: 'ALPHA CANDIDATE / WORKING', localOnly: true, managedByGameHub: process.env.AXM_MANAGED_BY_GAME_HUB === '1' }, hubPlayers: runtime.hubPlayers.map(({ seat_id, seatId, slot, type, display_name, displayName, adapter_id, adapterId }) => ({ seatId: seat_id || seatId, slot, type, displayName: display_name || displayName, adapterId: adapter_id || adapterId || null })), profiles: runtime.profileStore.list(), worlds: runtime.worldStore.list(), circuitkin: circuitkinData.designs, circuitkinRosterModel: circuitkinData.rosterModel, missions: missionData.stages.map(item => ({ id: item.id, kind: item.kind, title: item.title })), missionDetails: missionData.stages, modifiers: modifiers.modifiers, economy: economyData, fieldRequests: { title: requestData.boardTitle, total: requestData.requests.length }, memoryArchive: { title: loreData.archiveTitle, total: loreData.entries.length, entries: loreData.entries.map(({ text, ...entry }) => entry) }, itemCatalog: itemData.items, worldMap: { size: worldBones.size, regions: worldBones.regions, paths: worldBones.paths }, controls: controlProfile, currentSession: runtime.sessionManager.current ? runtime.sessionManager.launchResponse(false) : null });
       if (req.method === 'GET' && pathname === '/api/profiles') return sendJson(res, 200, { ok: true, profiles: runtime.profileStore.list() });
       if (req.method === 'POST' && pathname === '/api/profile/create') { const body = await readBody(req); return sendJson(res, 201, { ok: true, profile: runtime.profileStore.create(body) }); }

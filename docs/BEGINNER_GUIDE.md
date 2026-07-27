@@ -11,13 +11,19 @@ try the core Workshop.
 4. Double-click `OPEN_AXM_WORKSHOP.cmd`.
 5. Keep the server window open while using AXM.
 
-The launcher checks whether it is still inside a ZIP, finds a bundled portable
-Node runtime when present, falls back to an installed Node.js LTS, waits for the
-Hub to become healthy, and then opens the correct browser address.
+The launcher prefers its private `runtime\node\node.exe`, then a compatible
+Node.js already on the computer. If neither exists on Windows x64 or ARM64, it
+announces a one-time download of Node.js 24.17.0 LTS from `nodejs.org`, checks
+the pinned SHA-256, and copies only `node.exe` into this Workshop's private
+runtime folder. It does not request administrator permission, install a system
+service, change system Node.js, run `npm install`, or upload Workshop data.
+
+The first bootstrap needs internet access. Later core Hub starts are local.
 
 ## macOS or Linux
 
-Open a terminal in the extracted folder and run:
+Install a compatible Node.js release, open a terminal in the extracted folder,
+and run:
 
 ```sh
 chmod +x start-hub.sh
@@ -31,17 +37,21 @@ chmod +x start-hub.sh
 You opened the launcher on GitHub or inside the ZIP. Download the complete ZIP,
 extract it, and launch the file from the extracted folder.
 
-### Windows says Node.js is missing
+### Runtime download or verification failed
 
-Install the current [Node.js LTS](https://nodejs.org/en/download), close the
-message window, and double-click `OPEN_AXM_WORKSHOP.cmd` again. The core Hub
-does not require `npm install`.
+Read `AXM_START_REPORT.txt` beside the launcher. Check that the computer can
+reach `https://nodejs.org`, then run `OPEN_AXM_WORKSHOP.cmd` again. AXM removes
+an unverified download and will not execute it.
+
+If the automatic route is unavailable, install the current Node.js LTS from
+<https://nodejs.org/en/download> and retry. The core Hub does not require
+`npm install`.
 
 ### The browser did not open
 
 Leave the server window open and visit <http://127.0.0.1:8788/hub/index.html>.
-If that page does not load, copy only the non-sensitive error text from the
-server window into a Bug report.
+The server tries a small range of later local ports if 8788 is busy; its window
+prints the exact address in use.
 
 ### The port is already in use
 
@@ -56,9 +66,8 @@ included test experiences can be explored without an AI provider account.
 
 ## Stopping safely
 
-Close the server window when you are finished. Workspaces that implement saved
-state keep that state in their declared local boundary; public source packages
-do not contain your local saves or history.
+Close the server window when you are finished. Public source packages do not
+contain your downloaded runtime, local saves, logs, or history.
 
 ## Asking for help
 

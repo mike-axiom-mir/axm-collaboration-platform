@@ -1,18 +1,18 @@
 # ACTION REPORT
 
-Build name: AXM District Party — Tilburg Interactable Asset Pass
-Version: 0.2.7-local
-Date: 2026-07-19
-Local build path: `/workspace/scratch/baf602bc61cd/AXM_DISTRICT_PARTY_TILBURG_LOCAL_v0_2_7_INTERACTABLE_PASS`
-Full ZIP path: `/workspace/scratch/baf602bc61cd/AXM_DISTRICT_PARTY_TILBURG_LOCAL_v0_2_7_INTERACTABLE_PASS_COMPLETE.zip`
+Build name: AXM District Party — Tilburg Interactable Asset Pass  
+Version: 0.2.7-local  
+Date: 2026-07-19  
+Local build path: `/workspace/scratch/baf602bc61cd/AXM_DISTRICT_PARTY_TILBURG_LOCAL_v0_2_7_INTERACTABLE_PASS`  
+Full ZIP path: `/workspace/scratch/baf602bc61cd/AXM_DISTRICT_PARTY_TILBURG_LOCAL_v0_2_7_INTERACTABLE_PASS_COMPLETE.zip`  
 Focused port ZIP path: `/workspace/scratch/baf602bc61cd/AXM_DISTRICT_PARTY_INTERACTABLE_ASSET_v0_2_7_PORTKIT.zip`
 
 ## SOURCE USED
 
-Repository: `mike-axiom-mir/axm-collaboration-platform`
-PR: 13 — read-only direction
-PR head SHA: `33a87549259d8b4a7ce4753ee1fab49e0ee8091d`
-Immediate implementation base: preserved, validated local v0.2.6 asset-pass directory
+Repository: `mike-axiom-mir/axm-collaboration-platform`  
+PR: 13 — read-only direction  
+PR head SHA: `33a87549259d8b4a7ce4753ee1fab49e0ee8091d`  
+Immediate implementation base: preserved, validated local v0.2.6 asset-pass directory  
 New intake: user-supplied `AXM_DISTRICT_PARTY_INTERACTABLE_ALPHA_PACK_2026-07-19.zip`
 
 The Foundation source trace remains in `docs/PR13_SOURCE_TRACE.md`. No Workshop/GitHub checkout was used as the active build folder.
@@ -43,24 +43,24 @@ The server mission, AI, economy, vehicle, inventory, combat and world-authority 
 
 ## GITHUB WRITE CHECK
 
-Branch created: NO
-Commit created: NO
-Push performed: NO
-PR changed: NO
+Branch created: NO  
+Commit created: NO  
+Push performed: NO  
+PR changed: NO  
 Repository working tree altered: NO — build is outside a Git working tree; no GitHub write command was used.
 
 ## ASSETS
 
-Downloaded from internet: NONE
-User archive integrity: PASS
-Source individual PNGs: 158 across 7 categories
-RGBA decode: PASS — 158/158
-Complete alpha range: PARTIAL — 157/158
-Curated runtime files: 14
-Curated hashes and alpha: PASS
-Source ZIP preserved in the original intake evidence: YES; omitted from the public repository as a redundant nested payload
-Legacy Kenney fallbacks retained: YES
-Authorization: `AXM-PROJECT-ART-PUBLIC-REPO-AUTHORIZATION-2026-07-19` — **authorized for inclusion in the AXM public repository; not CC0/open source and not a general asset license**
+Downloaded from internet: NONE  
+User archive integrity: PASS  
+Source individual PNGs: 158 across 7 categories  
+RGBA decode: PASS — 158/158  
+Complete alpha range: PARTIAL — 157/158  
+Curated runtime files: 14  
+Curated hashes and alpha: PASS  
+Source ZIP preserved: YES  
+Legacy Kenney fallbacks retained: YES  
+License: `AXM-RESPONSIBLE-USE-ASSET-DRAFT-0.1` — **NOT LEGALLY REVIEWED; not CC0/open source**
 
 No selected bitmap was regenerated, recoloured, cropped or rescaled on disk. Runtime copies are byte-identical to their source entries and only receive descriptive filenames. Canvas draw-time scaling is documented separately.
 
@@ -79,7 +79,7 @@ No selected bitmap was regenerated, recoloured, cropped or rescaled on disk. Run
 
 - Source pack is useful intake material but not wholesale runtime-ready; some images retain cleanup defects.
 - New detailed oblique props are readable at tested Canvas scale, but a future local asset factory should standardize angle, light, palette and pixel density.
-- Project-art inclusion is authorized for this AXM public repository; this remains narrower than an OSI/open-content or general standalone asset license.
+- The working responsible-use license expresses intent but is not legally reviewed or an OSI/open-content license.
 
 ## NOT IMPLEMENTED
 
@@ -91,17 +91,17 @@ No selected bitmap was regenerated, recoloured, cropped or rescaled on disk. Run
 
 ## TESTS
 
-PASS: archive integrity and safe relative path scan.
-PASS: focused interactable suite — 6/6.
-PASS: complete regression suite — 176/176.
-PASS: CLI lifecycle with new asset/manifest HTTP gates and clean PID shutdown.
-PASS: focused port kit overlaid on untouched v0.2.6 — 176/176 plus CLI lifecycle.
-PASS: actual Canvas renderer generated nine art scenes.
-PASS: compact/full map preview generation.
-PASS: full candidate ZIP — 1,067 entries, compressed data/path/symlink/exclusion gates clean.
-PASS: focused candidate ZIP — 67 entries, compressed data/path/symlink gates clean.
-PASS: clean extraction byte comparison; extracted full candidate passes focused 6/6 plus CLI.
-UNRUN: automated Chromium browser smoke — optional executable unavailable.
+PASS: archive integrity and safe relative path scan.  
+PASS: focused interactable suite — 6/6.  
+PASS: complete regression suite — 176/176.  
+PASS: CLI lifecycle with new asset/manifest HTTP gates and clean PID shutdown.  
+PASS: focused port kit overlaid on untouched v0.2.6 — 176/176 plus CLI lifecycle.  
+PASS: actual Canvas renderer generated nine art scenes.  
+PASS: compact/full map preview generation.  
+PASS: full candidate ZIP — 1,067 entries, compressed data/path/symlink/exclusion gates clean.  
+PASS: focused candidate ZIP — 67 entries, compressed data/path/symlink gates clean.  
+PASS: clean extraction byte comparison; extracted full candidate passes focused 6/6 plus CLI.  
+UNRUN: automated Chromium browser smoke — optional executable unavailable.  
 UNTESTED: physical phones, eight people, two displays, Windows and private LAN.
 
 Final archive/extraction results are recorded in `TEST_REPORT.md`.
@@ -110,7 +110,7 @@ Final archive/extraction results are recorded in `TEST_REPORT.md`.
 
 - Blindly overwriting Local Codex's newer laptop files could regress later bug fixes; use the focused port kit and merge six existing seams carefully.
 - High-detail props can look stylistically sharper than the procedural city at close zoom.
-- Standalone/general reuse still requires a separate rights-holder license decision; repository inclusion is authorized.
+- Public release requires a final rights-holder license decision.
 
 ## NEXT SAFEST STEP
 

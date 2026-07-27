@@ -30,7 +30,7 @@ class VerificationService {
       integrity_hash: null,
       storage_reference: 'application:' + applicationId,
       claim_scope: ['application:' + applicationId, 'adapter:' + application.adapter_id],
-      limitations: ['verifies the mock adapter state hash and revision only', 'does not prove physical or real-world truth'],
+      limitations: Array.isArray(report.limitations) ? clone(report.limitations) : ['verifies only the state exposed by the selected adapter', 'does not prove physical or real-world truth'],
       verification_status: report.ok ? 'checked' : 'failed',
       extensions: { report: clone(report) }
     };

@@ -1,9 +1,22 @@
 {
-  "schema": "axm.module-contract/v1", "id": "module-installer", "version": "v0.1",
-  "provides": ["module-bundle-intake", "path-and-size-validation", "exact-digest-review-gate", "atomic-module-install", "versioned-update-backup", "module-rollback"],
-  "consumes": ["axm.module-bundle/v1", "service:review-inbox", "service:backup", "service:gate"], "permissions": ["module.install"],
-  "handoffs": {"emits": ["axm.review-item/v1", "axm.module-install-receipt/v1", "axm.module-install-backup/v1"], "accepts": ["axm.module-bundle/v1", "axm.review-vote/v1"]},
-  "boundaries": {"writes": ["state/module-installer", "backups/module-installer", "tools/approved-module-id"], "refuses": ["path-traversal", "symbolic-link-install", "unreviewed-install", "digest-drift", "arbitrary-root-write", "silent-overwrite", "install-without-backup", "network-download"]},
-  "lifecycle": {"state_owner": "service", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"}
+  "schema": "axm.module-contract/v1",
+  "id": "module-installer",
+  "version": "v0.3",
+  "provides": ["module-bundle-intake", "returned-build-on-zip-intake", "exact-export-base-binding", "path-and-size-validation", "read-only-install-governance-lineage", "exact-digest-review-gate", "atomic-module-install", "single-generation-update-backup", "post-install-selftest-lineage", "rollback-current-digest-guard", "module-rollback"],
+  "consumes": ["axm.workshop-package-return/v1", "axm.workshop-package/v1", "axm.module-bundle/v1", "service:review-inbox", "service:backup", "service:gate", "service:machine-host"],
+  "permissions": ["module.install"],
+  "handoffs": {
+    "emits": ["axm.review-item/v1", "axm.module-install-governance-view/v1", "axm.module-install-receipt/v1", "axm.module-install-backup/v1", "axm.module-post-install-verification/v1"],
+    "accepts": ["axm.workshop-package-return/v1", "axm.workshop-package/v1", "axm.module-bundle/v1", "axm.review-vote/v1"]
+  },
+  "boundaries": {
+    "writes": ["state/module-installer", "backups/module-installer", "tools/approved-module-id"],
+    "refuses": ["path-traversal", "symbolic-link-install", "unselected-file-return", "changed-context-return", "stale-build-on-base", "ambiguous-multiple-module-return", "unreviewed-install", "digest-drift", "rollback-current-digest-drift", "arbitrary-root-write", "silent-overwrite", "install-without-backup", "unbounded-backup-retention", "network-download", "review-approval-as-install-authority", "structural-readiness-as-install-approval", "automatic-install", "automatic-rollback", "automatic-promotion"]
+  },
+  "lifecycle": {
+    "state_owner": "service",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
 }
-

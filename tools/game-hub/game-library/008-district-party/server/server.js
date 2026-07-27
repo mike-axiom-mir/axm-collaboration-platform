@@ -21,6 +21,7 @@ const { getAdapterObservation } = require('./seat-observation');
 const { SessionManager } = require('./session-manager');
 const { WorldLoop } = require('./world-loop');
 const { GROUP_SAVE_SLOT_COUNT } = require('./group-save-store');
+const { publicMapCatalog } = require('./map-catalog');
 
 const MIME_TYPES = Object.freeze({
   '.html': 'text/html; charset=utf-8',
@@ -292,6 +293,11 @@ function createDistrictPartyServer(options = {}) {
 
       if (request.method === 'GET' && (pathname === '/api/launcher-state' || pathname === '/api/session')) {
         sendJson(response, 200, sessionManager.launcherState(isLoopbackAddress(request.socket.remoteAddress)));
+        return;
+      }
+
+      if (request.method === 'GET' && pathname === '/api/maps') {
+        sendJson(response, 200, { ok: true, ...publicMapCatalog(projectRoot) });
         return;
       }
 

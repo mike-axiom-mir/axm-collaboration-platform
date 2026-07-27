@@ -1,0 +1,58 @@
+{
+  "id": "asset-engine-roundtrip-bridge",
+  "name": "Asset ↔ Engine Round-trip Bridge",
+  "rank": 2,
+  "phase": "P0",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "Build",
+  "layer": "build",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "assets",
+    "3d",
+    "gltf",
+    "runtime",
+    "round-trip",
+    "parity",
+    "provenance",
+    "offline",
+    "validation"
+  ],
+  "uses": [
+    "local-3d-game-runtime",
+    "gltf-2.0",
+    "files",
+    "export"
+  ],
+  "permissions": [
+    "export"
+  ],
+  "actions": [
+    "inspect a local GLB source without changing it",
+    "compile an engine asset contract",
+    "compare source and runtime semantics",
+    "export an exact-digest parity receipt"
+  ],
+  "accepts": [
+    "model/gltf-binary",
+    "axm.asset-source-descriptor/v1"
+  ],
+  "produces": [
+    "axm.engine-asset-contract/v1",
+    "axm.asset-engine-roundtrip-verification/v1",
+    "axm.asset-engine-roundtrip/v1"
+  ],
+  "readiness": [
+    "local-3d-game-runtime",
+    "same-origin-glb-source",
+    "export"
+  ],
+  "summary": "Preserve and verify source identity, scale, axes, pivots, materials, textures, rigs, animation, bounds, and declared losses across the authoring-to-runtime boundary.",
+  "notes": "The bridge reads source bytes and emits a semantic engine contract plus an independent parity receipt. It never edits the GLB, hides unsupported features, promotes assets, or claims visual approval."
+}

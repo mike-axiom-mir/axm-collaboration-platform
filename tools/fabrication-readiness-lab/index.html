@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Fabrication Readiness Lab</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AXM / RESEARCH / PHYSICAL OUTPUT</p>
+        <h1>Fabrication Readiness Lab</h1>
+        <p class="lede">Prepare one governed digital recipe for a future physical object—without connecting a printer or mistaking marketing for evidence.</p>
+      </div>
+      <div class="boundary" aria-label="Safety boundary">
+        <span class="pulse"></span>
+        <div><strong>No printer attached</strong><small>Digital foundation only</small></div>
+      </div>
+    </header>
+
+    <section class="signal panel">
+      <div>
+        <p class="eyebrow">RESEARCH SIGNAL 01</p>
+        <h2>Full-colour 3D + UV fabrication</h2>
+        <p>A Facebook printer advertisement revealed a useful future route. It did not prove quality, openness, safety, cost, repeatability, or suitability.</p>
+      </div>
+      <div class="signal-state">
+        <span>UNVERIFIED ADVERTISING</span>
+        <small>No purchase decision</small>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="panel recipe-panel">
+        <div class="panel-head">
+          <div><p class="eyebrow">DIGITAL RECIPE</p><h2>Readiness simulator</h2></div>
+          <button id="resetButton" class="ghost" type="button">Reset</button>
+        </div>
+
+        <div class="form-grid">
+          <label>Process family
+            <select id="processFamily">
+              <option value="full-colour-3d">Full-colour 3D</option>
+              <option value="uv-surface">UV surface</option>
+              <option value="filament-3d">Filament 3D</option>
+              <option value="resin-3d">Resin 3D</option>
+              <option value="laser-cut-engrave">Laser cut / engrave</option>
+              <option value="cnc">CNC</option>
+              <option value="hybrid">Hybrid</option>
+            </select>
+          </label>
+          <label>Interchange format<input id="format" value="3MF" autocomplete="off"></label>
+          <label>Width (mm)<input id="width" type="number" min="1" value="80"></label>
+          <label>Height (mm)<input id="height" type="number" min="1" value="120"></label>
+          <label>Depth (mm)<input id="depth" type="number" min="1" value="45"></label>
+          <label>Tolerance (mm)<input id="tolerance" type="number" min="0" step="0.01" value="0.20"></label>
+        </div>
+
+        <fieldset>
+          <legend>Evidence available</legend>
+          <label class="check"><input id="technical" type="checkbox"> Independent technical validation receipts</label>
+          <label class="check"><input id="machine" type="checkbox"> Native machine profile and offline route verified</label>
+          <label class="check"><input id="humanVisual" type="checkbox"> Human approved appearance</label>
+          <label class="check"><input id="machineVote" type="checkbox"> Machine recommends bounded test</label>
+          <label class="check"><input id="operator" type="checkbox"> Human operator approved one bounded test</label>
+        </fieldset>
+
+        <button id="evaluateButton" class="primary" type="button">Evaluate readiness</button>
+        <p class="fineprint">This button evaluates declared evidence. It cannot connect to or operate hardware.</p>
+      </article>
+
+      <article class="panel result-panel" aria-live="polite">
+        <p class="eyebrow">HONEST RESULT</p>
+        <div id="statusBadge" class="status review">TECHNICAL REVIEW REQUIRED</div>
+        <h2 id="resultTitle">The digital route is promising, but not proven.</h2>
+        <p id="resultText">Add independent technical receipts before either steward spends judgment on appearance or a physical test.</p>
+        <ol id="gapList" class="gaps"></ol>
+        <div class="sealed">
+          <span>AUTOMATIC EXECUTION</span><strong>FORBIDDEN</strong>
+          <span>HARDWARE COMMAND</span><strong>NONE</strong>
+          <span>PURCHASE DECISION</span><strong>NONE</strong>
+        </div>
+        <button id="packageButton" class="secondary" type="button" disabled>Prepare one bounded test package</button>
+        <pre id="packageOutput" hidden></pre>
+      </article>
+    </section>
+
+    <section class="route panel">
+      <div><p class="eyebrow">ROADMAP</p><h2>From pixels to matter, one gate at a time</h2></div>
+      <div class="route-line" role="list">
+        <article class="active" role="listitem"><span>NOW</span><h3>Digital foundation</h3><p>Contracts, physical metadata, evidence routing, receipts and human gates.</p></article>
+        <article role="listitem"><span>LATER</span><h3>External test lane</h3><p>Makerspace or print-service tests with operator evidence and result receipts.</p></article>
+        <article role="listitem"><span>FAR LATER</span><h3>Hardware adapter</h3><p>A replaceable vendor adapter only after native verification—never the source of truth.</p></article>
+      </div>
+    </section>
+
+    <footer><span>UCP → ASSET HANDS → VALIDATION → DUAL REVIEW → BOUNDED TEST</span><span>v0.1 · RESEARCH HOLD</span></footer>
+  </main>
+  <script src="../../shared/fabrication/fabrication-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

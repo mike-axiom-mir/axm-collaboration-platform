@@ -1,0 +1,89 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "source-control-merge-workbench",
+  "version": "v0.4",
+  "status": "TEST",
+  "provides": [
+    "source-merge-review",
+    "public-safe-source-inventory",
+    "deterministic-github-sync-plan",
+    "bounded-github-sync-plan-summary",
+    "exact-full-plan-export",
+    "read-only-reviewed-plan-verification",
+    "manual-digest-locked-github-sync",
+    "background-manual-push-job",
+    "failed-push-clean-state-recovery",
+    "dedicated-automation-branch-push",
+    "draft-pr-candidate-handoff",
+    "credential-free-sync-receipt",
+    "independent-evidence-verification"
+  ],
+  "consumes": [
+    "human-direction",
+    "separate-clean-git-working-copy",
+    "local-git-runtime",
+    "existing-git-authentication",
+    "machine-host-background-job-ledger",
+    "manual-reviewed-plan-digest",
+    "exact-manual-push-confirmation"
+  ],
+  "permissions": [
+    "export",
+    "machine.execute"
+  ],
+  "lifecycle": {
+    "state_owner": "service",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  },
+  "handoffs": {
+    "emits": [
+      "axm.source-merge-review/v1",
+      "axm.github-sync-plan/v1",
+      "axm.github-sync-plan-summary/v1",
+      "axm.github-sync-verification/v1",
+      "axm.github-sync-receipt/v1",
+      "axm.github-pr-candidate/v1"
+    ],
+    "accepts": [
+      "human:explicit-configuration",
+      "human:reviewed-plan-digest-and-confirmation",
+      "machine:read-only-plan-verification",
+      "host:existing-git-authentication"
+    ]
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [
+      "state/github-sync/config.json",
+      "state/github-sync/receipts.jsonl",
+      "configured-separate-working-copy:reviewed-plan-add-or-update",
+      "configured-separate-working-copy:manual-dedicated-branch-commit-and-push"
+    ],
+    "refuses": [
+      "live-workshop-git-mutation",
+      "repository-initialization",
+      "repository-clone",
+      "dirty-working-copy",
+      "detached-head",
+      "unapproved-remote-change",
+      "direct-main-push",
+      "non-automation-branch-push",
+      "tracked-file-deletion",
+      "credential-storage",
+      "credential-bearing-remote-url",
+      "public-safety-scan-failure",
+      "source-digest-drift",
+      "plan-digest-drift",
+      "unbounded-plan-rendering",
+      "foreground-hub-blocking-push",
+      "unattended-github-push",
+      "heartbeat-push-authority",
+      "automatic-pull-request-creation",
+      "automatic-github-merge",
+      "automatic-library-promotion",
+      "canon-authority"
+    ]
+  }
+}

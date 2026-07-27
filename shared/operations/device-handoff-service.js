@@ -66,7 +66,14 @@ function create(options) {
   async function createSession(input) {
     await startServer(input && input.port); const id = U.uid('handoff'), token = crypto.randomBytes(24).toString('base64url'), ttlMinutes = Math.max(2, Math.min(30, Number(input && input.ttlMinutes) || 10)), address = privateIpv4();
     const session = { id, token, createdAt: U.now(), expiresAt: Date.now() + ttlMinutes * 60 * 1000, remainingUploads: 3, received: 0, actor: String(input && input.actor || 'local-user').slice(0, 120) }; sessions.set(id, session);
-    setTimeout(() => sessions.delete(id), ttlMinutes * 60 * 1000 + 5000).unref(); const base = 'http://' + (address || '127.0.0.1') + ':' + activePort, url = base + '/receive/' + id + '?token=' + encodeURIComponent(token);
+    const expiryTimer = setTimeout(() => {
+      const expired = sessions.delete(id);
+      if (!expired) return;
+      saveReceipt({ type: 'session-expired', sessionId: id, selectedFilesOnly: true, listenerStopRequested: sessions.size === 0 });
+      if (!sessions.size) stop();
+    }, ttlMinutes * 60 * 1000 + 5000);
+    if (expiryTimer.unref) expiryTimer.unref();
+    const base = 'http://' + (address || '127.0.0.1') + ':' + activePort, url = base + '/receive/' + id + '?token=' + encodeURIComponent(token);
     saveReceipt({ type: 'session-created', sessionId: id, actor: session.actor, expiresAt: new Date(session.expiresAt).toISOString(), lanAddressAvailable: !!address, selectedFilesOnly: true }); return { id, url, localUrl: 'http://127.0.0.1:' + activePort + '/receive/' + id + '?token=' + encodeURIComponent(token), expiresAt: new Date(session.expiresAt).toISOString(), lanAddressAvailable: !!address, selectedFilesOnly: true, wholeDeviceScan: false };
   }
   function stop() { return new Promise(resolve => { sessions.clear(); if (!server) return resolve(status()); const closing = server; server = null; activePort = null; closing.close(() => resolve(status())); }); }
@@ -75,4 +82,3 @@ function create(options) {
 }
 
 module.exports = { privateIpv4, create };
-

@@ -1,0 +1,90 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "preserve-map-1",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "baseline.hash",
+        "regression.preview"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "author-map-2",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "map.generate",
+        "runtime.select",
+        "host.collision",
+        "art.procedural"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "art.procedural": [
+          "Original deterministic canvas primitives only in this pass"
+        ]
+      }
+    },
+    {
+      "id": "verify-live-play",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "browser.observe",
+        "controller.interact",
+        "performance.observe"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "approve-appearance",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "human.visual.approval"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "human.visual.approval": [
+          "Owner approval remains pending after implementation"
+        ]
+      }
+    },
+    {
+      "id": "future-asset-pass",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "asset.acquire",
+        "asset.license.verify"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "asset.acquire": [
+          "Explicitly deferred to a later pass"
+        ],
+        "asset.license.verify": [
+          "Verify each selected asset at acquisition time; no blanket source claim"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

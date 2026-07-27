@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.three-mf-capability-receipt/v1",
+  "title": "AXM official 3MF validator capability receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "identity", "private_location_retained"],
+  "properties": {
+    "schema": { "const": "axm.three-mf-capability-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "FAIL", "MISSING_SUBSTRATE"] },
+    "missing": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "identity": { "type": "object" },
+    "runtime": { "type": "object" },
+    "recipe": { "type": "object" },
+    "recipe_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source": { "type": "object" },
+    "known_upstream_headline_bug_observed": { "type": "boolean" },
+    "checks": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["name", "pass"], "properties": { "name": { "type": "string" }, "pass": { "type": "boolean" } } } },
+    "cases": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "object", "additionalProperties": false, "required": ["label", "process", "process_pass", "report_summary", "reports", "diagnostic"], "properties": { "label": { "enum": ["valid", "invalid"] }, "process": { "type": "object" }, "process_pass": { "type": "boolean" }, "report_summary": { "type": "object" }, "reports": { "type": "array", "items": { "type": "object" } }, "diagnostic": { "type": ["string", "null"] } } } },
+    "provides_substrates": { "type": "array", "uniqueItems": true, "items": { "const": "official-3mf-validator" } },
+    "private_location_retained": { "const": false },
+    "generated_package_retained": { "const": false },
+    "automatic_package_retention": { "const": false },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

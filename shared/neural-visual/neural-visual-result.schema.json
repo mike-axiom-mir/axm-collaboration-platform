@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.neural-visual-result/v1",
+  "title": "AXM Neural Visual Result v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "request_digest", "provider", "artifact", "claims", "ai_dependent", "authority", "visual_approval", "canonical"],
+  "properties": {
+    "schema": { "const": "axm.neural-visual-result/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PROPOSED", "BLOCKED", "FAILED"] },
+    "request_digest": { "type": "string", "pattern": "^sha256-[a-f0-9]{64}$" },
+    "provider": {
+      "type": "object",
+      "required": ["id", "model", "receipt_id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "model": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "receipt_id": { "type": "string", "minLength": 1, "maxLength": 160 }
+      },
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": ["object", "null"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "mime": { "enum": ["image/png", "image/jpeg", "image/webp"] },
+        "width": { "type": "integer", "minimum": 1, "maximum": 2048 },
+        "height": { "type": "integer", "minimum": 1, "maximum": 2048 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "data_url": { "type": "string", "maxLength": 24000000 }
+      },
+      "required": ["id", "mime", "width", "height", "sha256", "data_url"],
+      "additionalProperties": false
+    },
+    "claims": { "type": "array", "maxItems": 30, "items": { "type": "string", "maxLength": 240 } },
+    "ai_dependent": { "const": true },
+    "authority": { "const": "candidate-only" },
+    "visual_approval": { "const": false },
+    "canonical": { "const": false }
+  },
+  "allOf": [
+    { "if": { "properties": { "status": { "const": "PROPOSED" } } }, "then": { "properties": { "artifact": { "type": "object" } } } },
+    { "if": { "properties": { "status": { "enum": ["BLOCKED", "FAILED"] } } }, "then": { "properties": { "artifact": { "type": "null" } } } }
+  ],
+  "additionalProperties": false
+}

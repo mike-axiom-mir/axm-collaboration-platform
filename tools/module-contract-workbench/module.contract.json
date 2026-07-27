@@ -1,9 +1,8 @@
 {
-  "schema": "axm.module-contract/v1", "id": "module-contract-workbench", "version": "v0.1",
+  "schema": "axm.module-contract/v1", "id": "module-contract-workbench", "version": "v0.2",
   "provides": ["module-lifecycle-inventory", "manifest-editor", "contract-editor", "pair-validation", "governed-migration-staging"],
-  "consumes": ["module-manifest", "axm.module-contract/v1", "axm.module-seam-gap-report/v1", "service:module-installer"], "permissions": [],
-  "handoffs": {"emits": ["axm.module-bundle/v1", "axm.review-item/v1"], "accepts": ["module-manifest", "axm.module-contract/v1"]},
+  "consumes": ["module-manifest", "axm.module-contract/v1", "axm.module-seam-gap-report/v1", "axm.module-lifecycle-repair-request/v1", "service:module-installer"], "permissions": [],
+  "handoffs": {"emits": ["axm.module-bundle/v1", "axm.review-item/v1"], "accepts": ["module-manifest", "axm.module-contract/v1", "axm.module-lifecycle-repair-request/v1"]},
   "boundaries": {"writes": ["service:module-installer:staged-candidate-only"], "refuses": ["direct-installed-module-edit", "contract-id-mismatch", "undeclared-permission", "pending-lifecycle-as-complete", "automatic-install", "automatic-canon"]},
   "lifecycle": {"state_owner": "service", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "automatic"}
 }
-

@@ -1,0 +1,312 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.gameplay-organ/v1",
+  "title": "AXM runtime gameplay organ",
+  "description": "A bounded, deterministic gameplay organ whose effects are owned by an authoritative server and must be telegraphed before they occur.",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "version",
+    "family",
+    "title",
+    "interface",
+    "owned_state",
+    "authority",
+    "activation",
+    "determinism",
+    "bounds",
+    "conflicts",
+    "refusals",
+    "receipts",
+    "failure",
+    "migration",
+    "verification",
+    "implementation",
+    "digest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.gameplay-organ/v1" },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$"
+    },
+    "family": { "enum": ["zone", "nature", "machine"] },
+    "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "description": { "type": "string", "maxLength": 1000 },
+    "interface": {
+      "type": "object",
+      "required": ["inputs", "outputs"],
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/typedPort" }
+        },
+        "outputs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/typedPort" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "owned_state": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/ownedState" }
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "truth_owner",
+        "client_scope",
+        "grants_from_planning"
+      ],
+      "properties": {
+        "truth_owner": { "const": "authoritative-server" },
+        "client_scope": { "const": "intent-and-presentation-only" },
+        "grants_from_planning": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "activation": {
+      "type": "object",
+      "required": ["causes", "telegraph", "effect"],
+      "properties": {
+        "causes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "telegraph": {
+          "type": "object",
+          "required": ["receipt_type", "minimum_lead_ticks", "matching_key"],
+          "properties": {
+            "receipt_type": { "const": "organ.telegraph" },
+            "minimum_lead_ticks": { "type": "integer", "minimum": 1 },
+            "matching_key": { "const": "activation_id" }
+          },
+          "additionalProperties": false
+        },
+        "effect": {
+          "type": "object",
+          "required": ["receipt_type", "matching_key"],
+          "properties": {
+            "receipt_type": { "const": "organ.effect" },
+            "matching_key": { "const": "activation_id" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "determinism": {
+      "type": "object",
+      "required": ["pure", "seed_inputs", "forbidden_sources"],
+      "properties": {
+        "pure": { "const": true },
+        "seed_inputs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "forbidden_sources": {
+          "type": "array",
+          "contains": { "const": "wall-clock" },
+          "items": {
+            "enum": ["wall-clock", "system-random", "network"]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "bounds": {
+      "type": "object",
+      "required": ["spatial", "time", "resources"],
+      "properties": {
+        "spatial": {
+          "type": "object",
+          "required": ["kind", "ids"],
+          "properties": {
+            "kind": { "enum": ["anchor-set", "node-set", "whole-arena"] },
+            "ids": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 }
+            }
+          },
+          "additionalProperties": false
+        },
+        "time": {
+          "type": "object",
+          "required": ["max_active_ticks", "cooldown_ticks"],
+          "properties": {
+            "max_active_ticks": { "type": "integer", "minimum": 1 },
+            "cooldown_ticks": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "resources": {
+          "type": "object",
+          "required": ["max_activations", "max_receipts_per_activation"],
+          "properties": {
+            "max_activations": { "type": "integer", "minimum": 1 },
+            "max_receipts_per_activation": { "type": "integer", "minimum": 2 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "conflicts": {
+      "type": "object",
+      "required": ["precedence", "exclusive_with", "on_conflict"],
+      "properties": {
+        "precedence": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "exclusive_with": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$"
+          }
+        },
+        "on_conflict": { "const": "refuse" }
+      },
+      "additionalProperties": false
+    },
+    "refusals": {
+      "type": "array",
+      "uniqueItems": true,
+      "allOf": [
+        { "contains": { "const": "non-authoritative-truth-request" } },
+        { "contains": { "const": "missing-prior-telegraph" } },
+        { "contains": { "const": "out-of-bounds" } },
+        { "contains": { "const": "conflict" } },
+        { "contains": { "const": "unseeded-variation" } }
+      ],
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "receipts": {
+      "type": "object",
+      "required": ["append_only", "types", "replay_inputs"],
+      "properties": {
+        "append_only": { "const": true },
+        "types": {
+          "type": "array",
+          "uniqueItems": true,
+          "allOf": [
+            { "contains": { "const": "organ.telegraph" } },
+            { "contains": { "const": "organ.effect" } },
+            { "contains": { "const": "authority.refused" } }
+          ],
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "replay_inputs": {
+          "type": "array",
+          "uniqueItems": true,
+          "allOf": [
+            { "contains": { "const": "seed" } },
+            { "contains": { "const": "ordered-input-stream" } },
+            { "contains": { "const": "organ-version" } }
+          ],
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "failure": {
+      "type": "object",
+      "required": ["mode", "state_recovery"],
+      "properties": {
+        "mode": { "const": "disable-and-receipt" },
+        "state_recovery": {
+          "const": "restore-last-authoritative-state"
+        }
+      },
+      "additionalProperties": false
+    },
+    "migration": {
+      "type": "object",
+      "required": [
+        "automatic",
+        "requires_exact_version",
+        "human_review_required"
+      ],
+      "properties": {
+        "automatic": { "const": false },
+        "requires_exact_version": { "const": true },
+        "human_review_required": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "verification": {
+      "type": "object",
+      "required": [
+        "automatic_checks",
+        "human_judgments",
+        "assurance_ceiling"
+      ],
+      "properties": {
+        "automatic_checks": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "human_judgments": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "assurance_ceiling": { "const": "headless-contract-only" }
+      },
+      "additionalProperties": false
+    },
+    "implementation": {
+      "type": "object",
+      "required": ["kind", "reference", "status"],
+      "properties": {
+        "kind": { "enum": ["stub", "runtime-module"] },
+        "reference": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["DECLARED", "EXPERIMENTAL"] }
+      },
+      "additionalProperties": false
+    },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "$defs": {
+    "typedPort": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$"
+        },
+        "type": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "ownedState": {
+      "type": "object",
+      "required": ["id", "type", "initial"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$"
+        },
+        "type": { "type": "string", "minLength": 1 },
+        "initial": {}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.verifier-failure-memory/v1",
+  "type": "object",
+  "required": ["schema", "id", "category", "title", "claim_id", "target_profile", "risk", "lifecycle", "source", "evidence_route", "revisions", "created_at", "updated_at"],
+  "properties": {
+    "schema": { "const": "axm.verifier-failure-memory/v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "category": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "claim_id": { "type": "string", "minLength": 1 },
+    "target_profile": { "type": "string", "minLength": 1 },
+    "risk": { "enum": ["low", "medium", "high"] },
+    "lifecycle": { "enum": ["candidate", "active", "monitor", "manual-review", "retired"] },
+    "source": {
+      "type": "object",
+      "required": ["summary", "observed_at"],
+      "properties": {
+        "summary": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "observed_at": { "type": "string", "minLength": 1 },
+        "receipt_id": { "type": "string" },
+        "digest": { "type": "string" }
+      }
+    },
+    "evidence_route": {
+      "type": "object",
+      "required": ["kind", "pass_condition", "primary_surface"],
+      "properties": {
+        "kind": { "type": "string", "minLength": 1 },
+        "pass_condition": { "type": "string", "minLength": 1 },
+        "primary_surface": { "type": "string", "minLength": 1 },
+        "counterevidence": { "type": "string" }
+      }
+    },
+    "check": { "type": ["object", "null"] },
+    "revisions": { "type": "array" },
+    "created_at": { "type": "string", "minLength": 1 },
+    "updated_at": { "type": "string", "minLength": 1 }
+  }
+}

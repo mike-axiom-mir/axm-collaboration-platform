@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>P3/P4 Release Foundation · AXM</title><link rel="stylesheet" href="lab.css"></head>
+<body data-module="p34-release-foundation"><main class="shell"><header class="topbar"><div><span class="eyebrow" id="module-rank">Build / P3–P4 / SHARED FOUNDATION</span><h1 id="module-name">P3/P4 Release Foundation</h1><p class="intro" id="module-intro">The shared deterministic engine behind the P3 and P4 release modules. This page renders the sealed release-cell receipt and routes to every member module. It changes nothing.</p></div><div class="trust"><span>AXM-NATIVE</span><span>OFFLINE</span><span>READ-ONLY OVERVIEW</span></div></header>
+<section class="toolbar"><span class="status-pill" id="status">LOADING CELL</span><span class="visual-note" id="cell-note"></span></section>
+<div class="workbench"><section class="panel"><div class="panel-head"><div><span class="eyebrow">MEMBER MODULES</span><h2>Modules built on this foundation</h2></div><code id="member-count"></code></div><div class="check-list" id="module-list"></div></section>
+<aside class="panel evidence-panel"><div class="panel-head"><div><span class="eyebrow">CELL EVIDENCE</span><h2>Sealed cell measurements</h2></div></div><div class="metric-grid" id="metric-grid"></div><div class="boundary" id="boundary">This foundation writes nothing automatically, applies nothing, publishes nothing, promotes nothing to the permanent library, and declares zero external runtime dependencies. Run <code>node selftest.js</code> and <code>node cell-selftest.js</code> in this folder to reverify.</div></aside></div>
+<div class="footer-grid"><section class="panel receipt"><span class="eyebrow">EXACT CELL RECEIPT</span><h2 id="receipt-sha">not loaded</h2><pre id="receipt-json"></pre></section></div></main>
+<script type="module">
+const $=id=>document.getElementById(id);
+const CELL='./p34-release-cell.json';
+function metric(label,value){return `<dl class="metric"><dt>${label}</dt><dd>${value}</dd></dl>`}
+try{
+  const cell=await (await fetch(CELL,{cache:'no-store'})).json();
+  const pass=cell.status==='pass';
+  $('status').dataset.state=cell.status;$('status').textContent=pass?'CELL PASS':'CELL '+String(cell.status).toUpperCase();
+  $('cell-note').textContent=`${cell.schema} · sealed receipt, recompiled only by the cell selftest`;
+  $('member-count').textContent=`${cell.moduleCount} modules`;
+  $('metric-grid').innerHTML=[
+    metric('module checks',cell.moduleChecks),
+    metric('verification checks',cell.verificationChecks),
+    metric('automatic writes',cell.automaticWrites),
+    metric('automatic apply',cell.automaticApply?'ON':'OFF'),
+    metric('automatic publish',cell.automaticPublish?'ON':'OFF'),
+    metric('library promotion',cell.libraryPromotion),
+    metric('external runtime deps',cell.externalRuntimeDependencies)
+  ].join('');
+  $('module-list').innerHTML=cell.modules.map(m=>`<div class="check ${m.status==='pass'?'':'fail'}"><i>${m.status==='pass'?'✓':'!'}</i><div><strong><a href="../${m.id}/index.html">${m.name}</a></strong><small>${m.category} · priority ${String(m.rank).padStart(2,'0')} · ${m.scenarioChecks} scenario + ${m.verificationChecks} verification checks · ${m.receiptSha256.slice(0,16)}…</small></div></div>`).join('');
+  $('receipt-sha').textContent=cell.receiptSha256;
+  $('receipt-json').textContent=JSON.stringify(cell,null,2);
+  document.body.dataset.cellStatus=cell.status;
+}catch(error){
+  $('status').textContent='CELL UNREADABLE';
+  $('receipt-json').textContent=String(error.stack||error.message);
+}
+</script></body></html>

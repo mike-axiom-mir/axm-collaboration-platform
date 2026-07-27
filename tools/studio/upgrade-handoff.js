@@ -1,0 +1,36 @@
+(function(root,factory){var api=factory();if(typeof module==='object'&&module.exports)module.exports=api;if(root)root.AXMStudioUpgradeHandoff=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
+'use strict';
+var SCHEMA='axm.studio-upgrade-handoff/v1',SOURCE_SCHEMA='axm.studio-asset/v1',RESULT_SCHEMA='axm.asset-hand-upgrade-result/v1';
+function clone(value){return JSON.parse(JSON.stringify(value));}
+function hash(value){var s=JSON.stringify(value),out=2166136261;for(var i=0;i<s.length;i++){out^=s.charCodeAt(i);out=Math.imul(out,16777619);}return(out>>>0).toString(16).padStart(8,'0');}
+function outputKind(mime){mime=String(mime||'');if(mime==='image/svg+xml')return'vector';if(/^image\/(?:png|jpeg|webp)$/.test(mime))return'raster';if(/^audio\//.test(mime))return'audio';if(/^video\//.test(mime))return'video';if(/^model\//.test(mime))return'3d';if(/json/.test(mime))return'structured-data';return'other';}
+function create(request,diagnosis,execution){
+  request=request&&typeof request==='object'?clone(request):{};
+  if(!diagnosis||diagnosis.schema!==RESULT_SCHEMA)throw Error('versioned upgrade diagnosis required');
+  if(execution&&execution.schema!==RESULT_SCHEMA)throw Error('versioned upgrade execution required');
+  var ready=diagnosis.status==='READY_CONTRACT',executed=execution&&execution.status==='EXECUTED',deliveryReady=executed&&execution.delivery_status==='OUTPUT_REQUIREMENTS_SATISFIED';
+  if(execution&&!executed)throw Error('only an EXECUTED upgrade result may be attached');
+  if(executed&&execution.selected_hand&&diagnosis.selected_hand&&execution.selected_hand.id!==diagnosis.selected_hand.id)throw Error('upgrade execution hand does not match route');
+  var target=diagnosis.request&&diagnosis.request.target_canvas||request.target_canvas||null;
+  if(!target)throw Error('target canvas required');
+  if(executed&&execution.invocation&&hash(execution.invocation.target_canvas)!==hash(target))throw Error('upgrade execution canvas does not match handoff');
+  var receipts=executed?[clone(execution)].concat(clone(execution.capability_receipts||[])):[];
+  var out={schema:SCHEMA,version:'1.0.0',status:ready?(executed?(deliveryReady?'EXECUTED_AWAITING_EXPLICIT_IMPORT':'EXECUTED_OUTPUT_REQUIREMENT_HOLD'):'ROUTED_AWAITING_EXECUTION'):diagnosis.status,importable:!!(ready&&deliveryReady),automatic_apply:false,request:request,target_canvas:clone(target),target_canvas_original:clone(request.target_canvas_original||diagnosis.request&&diagnosis.request.target_canvas_original||target),intended_use:String(request.intended_use||diagnosis.request&&diagnosis.request.intended_use||target.intended_use||''),quality_requirements:clone(request.quality_requirements||diagnosis.request&&diagnosis.request.quality_requirements||{}),required_outputs:clone(request.required_outputs||diagnosis.request&&diagnosis.request.required_outputs||[]),editable_recipe_formats:clone(request.editable_recipe_formats||diagnosis.request&&diagnosis.request.editable_recipe_formats||[]),capability_route:clone(diagnosis),capability_receipts:receipts,selected_hand:clone(diagnosis.selected_hand||null),missing:clone(execution&&execution.missing||diagnosis.missing||[]),creation_recipe:executed?clone(execution.creation_recipe||null):null,validation_receipt:executed?clone(execution.validation_receipt||null):null,preview:executed?clone(execution.preview||null):null,provenance:{kind:'shared-asset-hand-upgrade/v1',hand_id:diagnosis.selected_hand&&diagnosis.selected_hand.id||null,hand_version:diagnosis.selected_hand&&diagnosis.selected_hand.version||null,route_digest:diagnosis.digest||null,execution_digest:execution&&execution.digest||null,execution_provenance:executed?clone(execution.provenance||null):null}};
+  out.digest=hash(out);return out;
+}
+function validate(handoff){var errors=[];if(!handoff||handoff.schema!==SCHEMA)errors.push('handoff schema mismatch');if(!handoff||!handoff.target_canvas)errors.push('target canvas missing');if(!handoff||!handoff.capability_route||handoff.capability_route.schema!==RESULT_SCHEMA)errors.push('capability route missing');if(handoff&&handoff.automatic_apply!==false)errors.push('automatic apply must remain false');if(handoff&&handoff.status==='EXECUTED_AWAITING_EXPLICIT_IMPORT'&&(!Array.isArray(handoff.capability_receipts)||handoff.capability_receipts.length<1||handoff.capability_receipts[0].schema!==RESULT_SCHEMA))errors.push('executed handoff requires its execution receipt first');if(handoff&&handoff.status==='EXECUTED_AWAITING_EXPLICIT_IMPORT'&&handoff.importable!==true)errors.push('executed delivery must be explicitly importable');if(handoff&&handoff.status!=='EXECUTED_AWAITING_EXPLICIT_IMPORT'&&handoff.importable!==false)errors.push('held or missing delivery cannot be importable');if(handoff&&hash(Object.assign({},handoff,{digest:undefined}))!==handoff.digest)errors.push('handoff digest mismatch');return{pass:!errors.length,errors:errors};}
+function prepareExplicitImport(handoff,artifact){
+  var checked=validate(handoff);if(!checked.pass)throw Error('invalid Studio upgrade handoff: '+checked.errors.join(', '));
+  if(handoff.status!=='EXECUTED_AWAITING_EXPLICIT_IMPORT'||handoff.importable!==true)throw Error('upgrade handoff is not executed and importable');
+  artifact=artifact&&typeof artifact==='object'?clone(artifact):{};var kind=outputKind(artifact.mime);
+  if(['vector','raster'].indexOf(kind)<0)throw Error('Studio layered canvas does not support this artifact type: '+String(artifact.mime||''));
+  if(!artifact.digest)throw Error('artifact digest required');
+  if(handoff.required_outputs.length&&handoff.required_outputs.indexOf(artifact.mime)<0)throw Error('artifact MIME was not requested by the canvas contract');
+  var receipt=handoff.capability_receipts[0],known=receipt&&Array.isArray(receipt.artifacts)?receipt.artifacts:[];
+  if(!known.some(function(item){return item.digest===artifact.digest&&item.mime===artifact.mime;}))throw Error('artifact is not bound to the upgrade execution receipt');
+  if(kind==='vector'&&(!artifact.text||!/^<svg[\s>]/.test(artifact.text)||!/<\/svg>$/.test(artifact.text)))throw Error('complete SVG artifact required');
+  if(kind==='raster'&&!/^data:image\/(?:png|jpeg|webp);base64,/.test(String(artifact.dataUrl||'')))throw Error('bounded raster data URL required');
+  return{schema:SOURCE_SCHEMA,type:'axm-studio-import-asset',asset:{id:String(artifact.id||'upgrade-'+artifact.digest.slice(0,12)),name:String(artifact.filename||handoff.intended_use||'Upgrade asset'),mime:artifact.mime,dataUrl:kind==='raster'?artifact.dataUrl:null,svg:kind==='vector'?artifact.text:null,artifactDigest:artifact.digest,targetCanvas:clone(handoff.target_canvas),targetCanvasOriginal:clone(handoff.target_canvas_original),creationRecipe:clone(handoff.creation_recipe),validationReceipt:clone(handoff.validation_receipt),upgradeHandoff:clone(handoff),upgradeRouteDigest:handoff.capability_route.digest||null,upgradeReceiptDigests:handoff.capability_receipts.map(function(item){return item.digest;}),automaticApply:false}};
+}
+return{VERSION:'1.0.0',SCHEMA:SCHEMA,SOURCE_SCHEMA:SOURCE_SCHEMA,outputKind:outputKind,create:create,validate:validate,prepareExplicitImport:prepareExplicitImport};
+});

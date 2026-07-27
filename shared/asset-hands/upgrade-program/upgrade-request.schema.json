@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/asset-hand-upgrade-request-v1.schema.json",
+  "title": "AXM Asset Hand upgrade request v1",
+  "type": "object",
+  "required": ["schema", "required_capabilities", "target_canvas"],
+  "properties": {
+    "schema": { "const": "axm.asset-hand-upgrade-request/v1" },
+    "required_capabilities": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "target_canvas": { "$ref": "target-canvas.schema.json" },
+    "intended_use": { "type": "string" },
+    "quality_requirements": { "type": "object" },
+    "required_outputs": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "editable_recipe_formats": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "required_constraints": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "required_operations": { "type": "array", "uniqueItems": true, "items": { "enum": ["preview", "validate", "edit"] } },
+    "available_substrates": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "require_production_acceptance": { "type": "boolean" }
+  },
+  "additionalProperties": true
+}

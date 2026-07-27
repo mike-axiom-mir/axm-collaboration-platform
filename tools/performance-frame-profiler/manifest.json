@@ -1,0 +1,58 @@
+{
+  "id": "performance-frame-profiler",
+  "name": "Frame & Render Performance Profiler",
+  "rank": 10,
+  "phase": "P0",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "Build",
+  "audience": "human-machine",
+  "layer": "build",
+  "risk": "LOW",
+  "summary": "Profile native and post-processed Forge scenes with separate warm-up/measurement windows, CPU stages, GPU timers when supported, shader compile cost, draw/triangle/texture/stall counters, percentiles, spikes, overhead, and digest-bound worst-state screenshots.",
+  "tags": [
+    "performance",
+    "profiler",
+    "webgl2",
+    "frames",
+    "gpu",
+    "offline"
+  ],
+  "uses": [
+    "local-3d-game-runtime",
+    "webgl2-timer-query",
+    "sha256",
+    "canvas",
+    "gpu-timing",
+    "export"
+  ],
+  "permissions": [
+    "export"
+  ],
+  "actions": [
+    "profile native and post-processed scenes",
+    "inspect P50 P95 and worst frames",
+    "compare CPU and GPU stages",
+    "open exact screenshot timing receipts",
+    "export a bounded profile suite"
+  ],
+  "accepts": [
+    "axm.local-3d-runtime.scene/v1",
+    "model/gltf-binary"
+  ],
+  "produces": [
+    "axm.frame-profile-suite/v1",
+    "axm.frame-profile-verification/v1",
+    "image/png"
+  ],
+  "readiness": [
+    "separate-warmup-window",
+    "declared-overhead",
+    "exact-worst-state-replay",
+    "explicit-gpu-support-state"
+  ],
+  "entry": "index.html",
+  "notes": "GPU timings fail typed when the timer-query extension is unavailable. Overdraw is an explicit pressure proxy until the renderer gains a pixel-exact analysis pass."
+}

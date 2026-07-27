@@ -1,0 +1,53 @@
+{
+  "schema": "axm.tool-promotion-ladder/v1",
+  "version": "1.0.0",
+  "freshnessDays": 30,
+  "automaticPromotion": false,
+  "levels": [
+    {
+      "id": "EXPERIMENTAL",
+      "requires": [
+        "valid manifest",
+        "entry exists",
+        "uses and permissions are explicit",
+        "kind is declared"
+      ]
+    },
+    {
+      "id": "TEST",
+      "requires": [
+        "all EXPERIMENTAL requirements",
+        "valid declared module contract",
+        "executable selftest",
+        "risk-appropriate negative-path evidence"
+      ]
+    },
+    {
+      "id": "WORKING",
+      "requires": [
+        "all TEST requirements",
+        "selftest passes against the current selftest digest",
+        "verifiedAt is valid and no older than freshnessDays",
+        "no unresolved high-risk capability or evidence hold"
+      ]
+    },
+    {
+      "id": "CANON",
+      "requires": [
+        "all WORKING requirements",
+        "explicit Mike merge-gate decision",
+        "compatibility and deprecation path",
+        "representative runtime evidence"
+      ]
+    }
+  ],
+  "sideStates": {
+    "SHELL": "Visible scaffold or compatibility shell; never promotion-eligible until completed or explicitly archived.",
+    "BROKEN": "Known non-working state; remains visible until repaired or explicitly archived."
+  },
+  "truth": {
+    "selftestPassIsNotPromotion": true,
+    "structuralEligibilityIsNotRuntimeProof": true,
+    "humanMergeGateRequiredForCanon": true
+  }
+}

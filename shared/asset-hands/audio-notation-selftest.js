@@ -83,7 +83,7 @@ function sequenceSource(value, digest) {
 
 (async function () {
   assert(Hands.TARGET_CANVAS_MEDIUMS.includes("audio-device"));
-  assert.equal(Hands.list().length, 34);
+  assert.equal(new Set(Hands.list().map((hand) => hand.id)).size, Hands.list().length);
   assert.equal(Hands.listMissingHands().length, 0);
   assert(!Hands.getMissingHand("audio-notation-device"));
   const canvasInspection = TargetCanvas.inspect(brief().target_canvas);

@@ -1,0 +1,65 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "handoff-wiring-observatory",
+  "version": "v0.1",
+  "provides": [
+    "bounded-workshop-handoff-inventory",
+    "exact-producer-consumer-artifact-map",
+    "producer-only-consumer-only-and-self-loop-separation",
+    "manifest-metadata-source-attribution",
+    "manifest-contract-handoff-delta",
+    "freshness-bound-wiring-receipt"
+  ],
+  "consumes": [
+    "filesystem:explicit-workshop-root",
+    "axm.workshop-capability-metadata/v1",
+    "axm.module-contract/v1"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.handoff-wiring-map/v1",
+      "axm.handoff-artifact-record/v1",
+      "axm.handoff-module-envelope/v1"
+    ],
+    "accepts": [
+      "axm.workshop-capability-index/v1",
+      "axm.module-contract/v1"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "user-selected-output:handoff-wiring-map-json",
+      "user-selected-output:browser-wiring-snapshot",
+      "candidate-local-output:module-bundle.json"
+    ],
+    "refuses": [
+      "symbolic-link-following",
+      "schema-name-normalization",
+      "wildcard-compatibility-inference",
+      "semantic-compatibility-inference",
+      "multi-provider-as-collision-claim",
+      "unmatched-handoff-as-runtime-failure",
+      "automatic-adapter-generation",
+      "automatic-rewire",
+      "source-mutation",
+      "installer-staging",
+      "module-installation",
+      "permission-change",
+      "rollback-change",
+      "promotion",
+      "canon-change",
+      "network-intake",
+      "runtime-readiness-claim",
+      "visual-approval-claim"
+    ]
+  }
+}

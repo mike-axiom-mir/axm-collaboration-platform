@@ -1,0 +1,44 @@
+{
+  "id": "protocol-version-observatory",
+  "name": "AXM Protocol Version Observatory",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "category": "OBSERVE",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "protocol",
+    "version",
+    "schema",
+    "handoff",
+    "migration",
+    "observability",
+    "read-only"
+  ],
+  "uses": [
+    "storage"
+  ],
+  "permissions": [],
+  "actions": [
+    "inventory exact declared protocol tokens by role",
+    "group only slash-versioned AXM protocol families",
+    "surface multiple declared versions and mixed unparsed family tokens",
+    "preserve future-prefixed declarations visibly"
+  ],
+  "accepts": [
+    "filesystem/workshop-root"
+  ],
+  "produces": [
+    "axm.protocol-version-surface/v1"
+  ],
+  "readiness": [
+    "storage"
+  ],
+  "summary": "Read-only protocol version surface that groups exact AXM slash-version declarations without treating multiple versions as incompatibility or inventing migrations.",
+  "notes": "This observatory does not validate protocols, infer compatibility, choose a preferred version, rewrite declarations, generate adapters or migrations, install modules, or change CANON."
+}

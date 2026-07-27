@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>World Tile Foundry · AXM</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="grid-profile.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../../hub/index.html"><span class="brand-mark">AXM</span><span>World Tile Foundry</span></a>
+    <div class="truth-strip">
+      <span class="truth-pill"><i></i> Non-destructive</span>
+      <span class="truth-pill muted">Blank = default</span>
+      <span class="truth-pill muted">Semantics = truth</span>
+      <span class="truth-pill muted">Frame ≠ world</span>
+    </div>
+    <button id="fitButton" class="button ghost">Fit world</button>
+  </header>
+
+  <main class="shell">
+    <aside class="panel left-panel">
+      <section>
+        <div class="eyebrow">01 · SOURCE</div>
+        <h1>Start empty.<br>Build in layers.</h1>
+        <p class="lead">The default is a verified 10 × 10 km transparent world: 10,000 authoring sectors, no inherited city, and vision-window chunk loading ready.</p>
+        <button id="newProjectButton" class="button accent wide">New game build in another tab</button>
+        <button id="loadDefaultButton" class="button primary wide">New blank transparent world</button>
+        <button id="loadCityButton" class="button ghost wide">Open Tilburg reference instead</button>
+        <label class="button ghost wide file-button">Open another package<input id="packageInput" type="file" webkitdirectory multiple></label>
+        <div id="sourceStatus" class="status-card">Waiting for the blank world…</div>
+      </section>
+
+      <section>
+        <div class="section-title"><span>02 · LAYERS</span><span id="featureCount">0 features</span></div>
+        <div id="layerList" class="layer-list"></div>
+        <label class="switch-row"><input id="overlayToggle" type="checkbox" checked><span>Show semantic overlay</span></label>
+      </section>
+
+      <section>
+        <div class="section-title"><span>03 · DIRECTION</span><span>draft only</span></div>
+        <label class="field"><span>Project name</span><input id="projectName" value="Blank shared world draft"></label>
+        <label class="field"><span>Canvas profile</span><select id="canvasMode"><option value="flat2d">2D flat · 128 px per metre</option><option value="spatial3d">3D spatial · metre scale</option></select></label>
+        <label class="field"><span>Real-scale reference</span><select id="referenceItem"><option value="crate">1 m crate</option><option value="human">1.8 m human</option><option value="none">No reference</option></select></label>
+        <p class="microcopy">Flat art uses 128 × 128 px per 1 m cell. Spatial placement uses 1 × 1 × 0.5 m snaps: one underground layer and 20 m up are playable now; 20 underground layers and height through 50 m stay reserved.</p>
+        <details class="grid-profile">
+          <summary>Customize sparse world grid</summary>
+          <label class="field"><span>Playable form</span><select id="worldShape"><option value="circle">Circle</option><option value="rounded-rect">Rounded rectangle</option><option value="rectangle">Rectangle</option><option value="hexagon">Hexagon</option><option value="polygon">Custom polygon</option></select></label>
+          <div class="form-grid"><label class="field"><span>Width · m</span><input id="worldWidth" type="number" min="100" value="10000"></label><label class="field"><span>Depth · m</span><input id="worldDepth" type="number" min="100" value="10000"></label></div>
+          <div class="form-grid"><label class="field"><span>Sector · m</span><input id="sectorSize" type="number" min="1" value="100"></label><label class="field"><span>Loading chunk · m</span><input id="loadingChunkSize" type="number" min="10" value="1000"></label></div>
+          <div class="form-grid"><label class="field"><span>Playable up · m</span><input id="playableHeight" type="number" min="0.5" step="0.5" value="20"></label><label class="field"><span>Reserved up · m</span><input id="reservedHeight" type="number" min="0.5" step="0.5" value="50"></label></div>
+          <div class="form-grid"><label class="field"><span>Playable down · layers</span><input id="playableDepthLayers" type="number" min="1" step="1" value="1"></label><label class="field"><span>Reserved down · layers</span><input id="reservedDepthLayers" type="number" min="1" step="1" value="20"></label></div>
+          <label class="field polygon-field"><span>Polygon points · normalized x,y pairs</span><textarea id="polygonPoints" rows="2">0.50,0.01;0.99,0.25;0.99,0.75;0.50,0.99;0.01,0.75;0.01,0.25</textarea></label>
+          <button id="applyGridProfileButton" class="button primary wide">Create virtual grid profile</button>
+          <p class="microcopy">Empty cells and chunks stay implicit. Only authored changes become saved objects.</p>
+        </details>
+        <label class="field"><span>Scene frame · editor only</span><select id="frameTheme"><option value="nature">Nature table</option><option value="waterfall">Waterfall rim</option><option value="volcano">Volcanic rim</option><option value="stone">Stone table</option><option value="holo">Holographic table</option><option value="none">No frame</option></select></label>
+        <p class="microcopy">A swappable illusion around the rounded play space. It never becomes exported terrain.</p>
+        <button id="farmButton" class="button accent wide">Apply farm starter</button>
+        <p class="microcopy">A starting vocabulary only. Every remap remains editable.</p>
+        <div id="remapList" class="remap-list"></div>
+      </section>
+    </aside>
+
+    <section class="viewport-panel">
+      <div class="viewport-toolbar">
+        <div class="tool-group">
+          <button class="tool active" data-mode="select">Select</button>
+          <button class="tool" data-mode="pan">Pan</button>
+          <button class="tool" data-mode="draw">Draw rectangle</button>
+        </div>
+        <div id="coordinateReadout" class="coordinates">x 0 · y 0 · 100%</div>
+      </div>
+      <div id="canvasWrap" class="canvas-wrap">
+        <canvas id="worldCanvas" width="1200" height="760" aria-label="Semantic world map editor"></canvas>
+        <div id="loadingOverlay" class="loading-overlay"><span></span><strong>Loading verified world</strong><small>100 loading chunks + 10,000 authoring sectors</small></div>
+      </div>
+      <div class="legend">
+        <span><i class="road"></i> road</span><span><i class="building"></i> building</span><span><i class="park"></i> park</span><span><i class="water"></i> water</span><span><i class="rail"></i> rail</span>
+        <strong id="revisionLabel">Revision 0</strong>
+      </div>
+    </section>
+
+    <aside class="panel right-panel">
+      <section>
+        <div class="eyebrow">04 · INSPECT</div>
+        <h2 id="selectionTitle">Select a feature</h2>
+        <p id="selectionMeta" class="lead small">Click a semantic shape to inspect its gameplay meaning.</p>
+        <div class="form-grid">
+          <label class="field"><span>Material</span><input id="materialInput" disabled></label>
+          <label class="field"><span>Role</span><input id="roleInput" disabled></label>
+          <label class="field"><span>Layer</span><select id="layerInput" disabled></select></label>
+          <label class="field"><span>Navigation priority</span><input id="priorityInput" type="number" disabled></label>
+          <label class="field"><span>Elevation · metres</span><input id="elevationInput" type="number" step="0.5" disabled></label>
+          <label class="field"><span>Height · metres</span><input id="heightInput" type="number" step="0.5" min="0" disabled></label>
+          <label class="switch-row"><input id="walkableInput" type="checkbox" disabled><span>Walkable</span></label>
+          <label class="switch-row"><input id="collidableInput" type="checkbox" disabled><span>Collidable</span></label>
+        </div>
+        <div class="button-row">
+          <button id="applyFeatureButton" class="button primary" disabled>Apply change</button>
+          <button id="restoreFeatureButton" class="button ghost" disabled>Restore</button>
+          <button id="removeFeatureButton" class="button danger" disabled>Remove</button>
+        </div>
+      </section>
+
+      <section class="draw-card">
+        <div class="section-title"><span>DRAW SETTINGS</span><span>semantic</span></div>
+        <label class="field"><span>New layer</span><select id="drawLayer"></select></label>
+        <label class="field"><span>New material</span><input id="drawMaterial" value="farm_grass"></label>
+        <label class="field"><span>New role</span><input id="drawRole" value="editable_zone"></label>
+        <p class="microcopy">Choose Draw rectangle, then drag on the map. This adds patch geometry; it never paints the source raster.</p>
+      </section>
+
+      <section class="handoff-card">
+        <div class="eyebrow">05 · HANDOFF</div>
+        <h2>Carry the world forward.</h2>
+        <div id="changeSummary" class="change-summary">No changes yet.</div>
+        <button id="saveDraftButton" class="button ghost wide">Save explicit draft here</button>
+        <button id="loadDraftButton" class="button ghost wide">Load saved draft</button>
+        <button id="downloadProjectButton" class="button ghost wide">Download editable project</button>
+        <button id="downloadHandoffButton" class="button primary wide">Download builder handoff</button>
+        <button id="downloadComponentButton" class="button ghost wide">Save self-made map component</button>
+        <p class="microcopy">Only locally authored work can use this route. It creates a reviewable component handoff and never promotes itself.</p>
+        <label class="button ghost wide file-button">Import project JSON<input id="projectInput" type="file" accept="application/json,.json"></label>
+        <div class="boundary-note"><strong>BASE NEVER CHANGED</strong><span>No game is installed or promoted from this page.</span></div>
+      </section>
+    </aside>
+  </main>
+  <footer><span id="footerStatus">World Tile Foundry · TEST</span><span>explicit drafts · exact source digest · human promotion</span></footer>
+
+  <script src="world-tile-foundry.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "dual-door-observatory",
+  "version": "v0.2",
+  "provides": [
+    "human-workspace-entry-inventory",
+    "optional-machine-entry-inventory",
+    "machine-action-declaration-shape-observation",
+    "freshness-bound-dual-door-map",
+    "bounded-door-review-request-preparation"
+  ],
+  "consumes": [
+    "filesystem/workshop-root"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.dual-door-map/v1",
+      "axm.door-review-request/v1"
+    ],
+    "accepts": [
+      "filesystem/workshop-root"
+    ]
+  },
+  "boundaries": {
+    "writes": [
+      "explicit-user-selected-output-only"
+    ],
+    "refuses": [
+      "entry-code-loading",
+      "human-entry-rendering",
+      "machine-action-execution",
+      "door-review-request-execution",
+      "test-input-invention",
+      "command-argument-or-environment-synthesis",
+      "route-proof",
+      "action-semantics-proof",
+      "mandatory-machine-door-inference",
+      "human-machine-action-parity-requirement",
+      "readiness-proof",
+      "permission-grant",
+      "source-mutation",
+      "filesystem-symlink-following",
+      "installer-staging",
+      "installation",
+      "promotion",
+      "canon-change"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  }
+}

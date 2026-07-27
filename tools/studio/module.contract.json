@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "studio",
-  "version": "v2.5",
+  "version": "v2.7",
   "provides": [
     "layered-2d-canvas",
     "drawing-and-painting",
@@ -24,16 +24,24 @@
     "provenance-preserving-hand-result-import",
     "target-canvas-recipe-and-validation-preservation",
     "distinct-svg-and-raster-hand-result-import",
-    "optional-reference-validation-envelope-preservation"
+    "optional-reference-validation-envelope-preservation",
+    "fifty-hand-upgrade-route-handoff",
+    "canvas-bound-capability-receipt-preservation",
+    "digest-bound-external-validator-receipt-preservation",
+    "type-safe-explicit-upgrade-artifact-import",
+    "searchable-visual-action-command-deck",
+    "core-advanced-specialist-progressive-disclosure",
+    "capability-gated-named-command-dispatch",
+    "platform-aware-command-trigger-labels"
   ],
-  "consumes": ["identity:nova", "identity:gemini-local", "axm.drawpacket/v1", "axm.asset-hand/v2", "axm.asset-source-artifact/v1", "axm.asset-hand-result/v1", "axm.target-canvas/v1", "axm.asset-creation-recipe/v1", "axm.asset-validation-receipt/v1", "axm.asset-verification-envelope/v1", "axm.visual-kernel.tokens/v1", "service:asset-vault", "service:asset-hands"],
+  "consumes": ["identity:nova", "identity:gemini-local", "axm.drawpacket/v1", "axm.asset-hand/v2", "axm.asset-hand-extension/v1", "axm.asset-hand-upgrade-result/v1", "axm.external-validator-receipt/v1", "axm.studio-upgrade-handoff/v1", "service:asset-hands-upgrade-registry/v1", "axm.asset-source-artifact/v1", "axm.asset-hand-result/v1", "axm.target-canvas/v1", "axm.asset-creation-recipe/v1", "axm.asset-validation-receipt/v1", "axm.asset-verification-envelope/v1", "axm.visual-kernel.tokens/v1", "axm.presentation-spine.profiles/v1", "service:visual-actions/v1", "axm.visual-action/v1", "service:asset-vault", "service:asset-hands"],
   "permissions": ["storage", "ai", "export", "files", "gate"],
   "handoffs": {
     "emits": ["axm.game-asset/v1", "axm.uiux-proposal/v1", "axm-asset-pack", "skin.config.json"],
-    "accepts": ["axm.drawpacket/v1", "axm.asset-hand-result/v1", "axm.asset-source-artifact/v1", "axm.uiux-workspace/v1", "axm.studio-asset/v1", "axm-asset-vault", "skin.config.json"]
+    "accepts": ["axm.drawpacket/v1", "axm.asset-hand-result/v1", "axm.asset-hand-upgrade-result/v1", "axm.external-validator-receipt/v1", "axm.studio-upgrade-handoff/v1", "axm.asset-source-artifact/v1", "axm.uiux-workspace/v1", "axm.studio-asset/v1", "axm-asset-vault", "skin.config.json"]
   },
   "boundaries": {
     "writes": ["hub-store:studio", "browser-local:studio-workspaces", "game-hub:asset-inbox", "user-download:explicit"],
-    "refuses": ["direct-game-package-write", "automatic-hub-rewrite", "automatic-proposal-acceptance", "automatic-asset-hand-result-apply", "incompatible-asset-hand-route", "unsupported-target-canvas-claim", "treating-raster-toolpath-or-obj-as-svg", "discarding-hand-operation-source-digests-or-artifact-inventory", "automatic-wisdom-promotion", "silent-identity-swap", "raw-script-from-skin", "remote-asset-reference-in-skin"]
+    "refuses": ["direct-game-package-write", "automatic-hub-rewrite", "automatic-proposal-acceptance", "automatic-asset-hand-result-apply", "automatic-upgrade-handoff-apply", "incompatible-asset-hand-route", "unsupported-target-canvas-claim", "missing-upgrade-substrate-or-review-claim", "treating-raster-toolpath-or-obj-as-svg", "discarding-upgrade-capability-route-or-receipts", "discarding-hand-operation-source-digests-or-artifact-inventory", "automatic-wisdom-promotion", "silent-identity-swap", "raw-script-from-skin", "remote-asset-reference-in-skin", "arbitrary-command-or-script-execution", "implicit-native-source-application-control", "bypassing-existing-destructive-confirmation"]
   }
 }

@@ -44,6 +44,6 @@ Two supplied multi-building sheets remain staged only. One flawed resident matte
 
 ## Licensing boundary
 
-Mike identified this batch as AXM project art generated under his direction in his ChatGPT platform workspace. On 2026-07-19 he authorized its inclusion and redistribution inside this public AXM repository and its public-safe packages. It is intentionally not described as CC0 and no standalone/general reuse license is implied. See `assets/AXM_GENERATED_ART_AUTHORIZATION.md`.
+The batch was supplied for AXM prototype use. No public license assignment was independently verified here. It is intentionally not described as CC0. Before publishing this art, Mike or the future release steward should record an explicit permission/license decision.
 
 Machine-readable details: `assets/USER_GENERATED_ASSET_MANIFEST.json`.

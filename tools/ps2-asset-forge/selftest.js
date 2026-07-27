@@ -27,7 +27,9 @@ function parseGlb(name) {
   const sourceManifest = json('generated/source-manifest.json');
   const html = read('index.html');
   const app = read('app.js');
+  const server = read('server.js');
   const postProcess = read('post-process.mjs');
+  const animationSpine = path.join(root, '..', '..', 'shared', 'game-animation-foundation', 'animation-spine.mjs');
 
   assert.strictEqual(manifest.id, 'ps2-asset-forge');
   assert.strictEqual(manifest.category, 'Create');
@@ -67,6 +69,12 @@ function parseGlb(name) {
   assert(html.includes('<option value="high">PS3 High Preview</option>'));
   assert(html.includes('ALPHA 02'));
   assert(app.includes('preview only exists in memory'));
+  assert(app.includes('/shared/game-animation-foundation/animation-spine.mjs'));
+  assert(app.includes('updateAnimationActor'));
+  assert(app.includes('dataset.animationStates'));
+  assert(html.includes('id="motion-status"'));
+  assert(server.includes("'/shared/game-animation-foundation/'"), 'standalone server must expose only the shared animation spine mount');
+  assert(fs.existsSync(animationSpine), 'shared game-animation spine must exist');
   assert(app.includes('dom.exportGlb.disabled = verdict !== \'approved\''));
   assert(app.includes("if (!exportRoot.children.length || dom.exportGlb.disabled) return;"));
   assert(!/fetch\(['\"]https?:/i.test(app), 'runtime must not fetch remote sources');

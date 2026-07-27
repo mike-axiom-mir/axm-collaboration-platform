@@ -57,7 +57,7 @@ This pass deliberately treats the complete pack as intake material and `assets/s
 
 ## License boundary
 
-Mike identified the images as AXM project art generated under his direction in his ChatGPT platform workspace. On 2026-07-19 he authorized their inclusion and redistribution inside this public AXM repository and its public-safe packages under `AXM-PROJECT-ART-PUBLIC-REPO-AUTHORIZATION-2026-07-19`. They are not labelled CC0, are not covered by an open-source asset license, and are not granted for standalone/general reuse.
+Mike described the images as test assets made in his own chats. They are accepted for this local AXM prototype under a working permission direction, not labelled CC0. `AXM-RESPONSIBLE-USE-ASSET-DRAFT-0.1` is a project draft and **not legally reviewed or an open-source license**. Public redistribution should wait for explicit final permission text.
 
 ## Validation
 
@@ -67,3 +67,4 @@ Mike identified the images as AXM project art generated under his direction in h
 - Actual Canvas preview generation: **PASS**
 - Automated Chromium browser smoke: see `TEST_REPORT.md`
 - Physical phones/displays: **UNTESTED**
+

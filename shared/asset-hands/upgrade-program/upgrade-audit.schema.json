@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/asset-hand-upgrade-audit-v1.schema.json",
+  "title": "AXM Asset Hand upgrade acceptance audit v1",
+  "type": "object",
+  "required": ["schema", "version", "program_version", "total", "counts", "available_substrates", "items", "digest"],
+  "properties": {
+    "schema": { "const": "axm.asset-hand-upgrade-audit/v1" },
+    "version": { "const": "1.0.0" },
+    "program_version": { "type": "string" },
+    "total": { "const": 50 },
+    "counts": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+    "available_substrates": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "items": {
+      "type": "array",
+      "minItems": 50,
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "required": ["hand_id", "rank", "wave", "title", "implementation_status", "acceptance_state", "status", "gap_types", "missing_substrates", "required_substrates", "pass_condition", "primary_evidence", "counterevidence"],
+        "properties": {
+          "hand_id": { "type": "string" },
+          "rank": { "type": "integer", "minimum": 1, "maximum": 50 },
+          "wave": { "type": "integer", "minimum": 1, "maximum": 4 },
+          "title": { "type": "string" },
+          "implementation_status": { "const": "executable-contract" },
+          "acceptance_state": { "enum": ["MISSING", "PARTIAL", "READY"] },
+          "status": { "enum": ["MISSING_SUBSTRATE", "REVIEW_REQUIRED", "READY"] },
+          "gap_types": { "type": "array", "items": { "type": "string" } },
+          "missing_substrates": { "type": "array", "items": { "type": "string" } },
+          "required_substrates": { "type": "array", "items": { "type": "string" } },
+          "pass_condition": { "type": "string" },
+          "primary_evidence": { "type": "string" },
+          "counterevidence": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "digest": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

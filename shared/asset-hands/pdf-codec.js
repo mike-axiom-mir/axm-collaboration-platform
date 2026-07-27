@@ -1,6 +1,6 @@
 (function (root, factory) {
   var node = typeof module === "object" && module.exports,
-    JsPDF = node ? require("jspdf").jsPDF : root.jspdf && root.jspdf.jsPDF;
+    JsPDF = node ? require("./load-jspdf")().jsPDF : root.jspdf && root.jspdf.jsPDF;
   var api = factory(JsPDF);
   if (node) module.exports = api;
   if (root) root.AXMPdfCodec = api;

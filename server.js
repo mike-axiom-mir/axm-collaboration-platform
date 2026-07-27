@@ -30,14 +30,19 @@ const SpecialistRouter = require("./shared/specialists/specialist-router");
 const PhysicsCore = require("./shared/physics/axm-physics-core");
 const WorkshopCapabilities = require("./shared/capabilities/workshop-capability-index");
 const TechnicalGlasses = require("./shared/technical-glasses/technical-glasses-core");
+const ReadinessObserver = require("./shared/readiness/readiness-observer");
 const WorkshopContinuity = require("./shared/continuity/workshop-continuity");
 const ArtifactHandoffBroker = require("./shared/handoffs/artifact-handoff-broker");
 const StaticBoundary = require("./shared/services/static-boundary");
 const BodyPulseServiceFactory = require("./shared/pulse/axm-body-pulse-service");
+const PlatformHeartbeatServiceFactory = require("./shared/heartbeat/axm-platform-heartbeat-service");
+const HeartbeatVerificationBridgeFactory = require("./shared/heartbeat/axm-heartbeat-verification-bridge");
+const WorkshopUpdaterServiceFactory = require("./shared/workshop-updater/axm-workshop-updater-service");
 const DirectionServiceFactory = require("./shared/direction/axm-direction-service");
 const ProductionSessionCore = require("./shared/production-session/production-session-core");
 const ProductionSessionServiceFactory = require("./shared/production-session/production-session-service");
 const OperationsApiFactory = require("./shared/operations/operations-api");
+const AssetHands = require("./shared/asset-hands/asset-hands");
 
 const ROOT = __dirname;
 const PRODUCTION_SESSION_ID = String(
@@ -131,6 +136,20 @@ const SPECIALIST_STATE_DIR = path.join(STATE_ROOT, "specialist-library");
 const SPECIALIST_STATE_FILE = path.join(SPECIALIST_STATE_DIR, "library.json");
 const BODY_PULSE_STATE_DIR = path.join(STATE_ROOT, "body-pulse");
 const BODY_PULSE_STATE_FILE = path.join(BODY_PULSE_STATE_DIR, "pulse.json");
+const PLATFORM_HEARTBEAT_STATE_DIR = path.join(STATE_ROOT, "platform-heartbeat");
+const PLATFORM_HEARTBEAT_STATE_FILE = path.join(
+  PLATFORM_HEARTBEAT_STATE_DIR,
+  "heartbeat.json",
+);
+const HEARTBEAT_VERIFICATION_STATE_FILE = path.join(
+  PLATFORM_HEARTBEAT_STATE_DIR,
+  "verification.json",
+);
+const WORKSHOP_UPDATER_STATE_DIR = path.join(STATE_ROOT, "workshop-updater");
+const WORKSHOP_UPDATER_STATE_FILE = path.join(
+  WORKSHOP_UPDATER_STATE_DIR,
+  "state.json",
+);
 const DIRECTION_STATE_DIR = path.join(STATE_ROOT, "workshop-direction");
 const DIRECTION_STATE_FILE = path.join(DIRECTION_STATE_DIR, "directions.json");
 const TECHNICAL_GLASSES_STATE_DIR = path.join(STATE_ROOT, "technical-glasses");
@@ -415,6 +434,13 @@ function saveGrowthState(growth) {
   );
 }
 
+function scanGrowthBodies() {
+  return GrowthMetrics.attachMirror(
+    GrowthMetrics.scan(ROOT),
+    GrowthMetrics.scanMirror(MIRROR_NATIVE_HOME),
+  );
+}
+
 function localDateKey(date) {
   const pad = (value) => String(value).padStart(2, "0");
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
@@ -425,7 +451,7 @@ function runDailyGrowthCapture() {
     today = localDateKey(new Date());
   if (!growth.schedule.enabled || growth.schedule.lastCaptureDate === today)
     return null;
-  const current = GrowthMetrics.scan(ROOT);
+  const current = scanGrowthBodies();
   const result = GrowthMetrics.capture(
     growth,
     current,
@@ -443,7 +469,7 @@ function runDailyGrowthCapture() {
   return result;
 }
 
-function scheduleNextGrowthCapture() {
+function scheduleNextGrowthCapture(options) {
   if (GROWTH_DAILY_TIMER) clearTimeout(GROWTH_DAILY_TIMER);
   GROWTH_DAILY_TIMER = null;
   if (IS_PRODUCTION_SESSION) return;
@@ -456,7 +482,8 @@ function scheduleNextGrowthCapture() {
   const today = localDateKey(now);
   if (
     target.getTime() <= now.getTime() &&
-    growth.schedule.lastCaptureDate === today
+    (growth.schedule.lastCaptureDate === today ||
+      (options && options.skipOverdue === true))
   )
     target.setDate(target.getDate() + 1);
   const delay =
@@ -484,16 +511,18 @@ function captureGrowthVelocity() {
   return result;
 }
 
-function scheduleGrowthVelocity() {
+function scheduleGrowthVelocity(options) {
   if (GROWTH_VELOCITY_TIMER) clearInterval(GROWTH_VELOCITY_TIMER);
   GROWTH_VELOCITY_TIMER = null;
   if (IS_PRODUCTION_SESSION) return;
-  try {
-    captureGrowthVelocity();
-  } catch (error) {
-    slog(
+  if (!(options && options.skipInitial === true)) {
+    try {
+      captureGrowthVelocity();
+    } catch (error) {
+      slog(
       `Workshop code-line baseline failed · ${String(error.message || error).slice(0, 160)}`,
     );
+    }
   }
   GROWTH_VELOCITY_TIMER = setInterval(() => {
     try {
@@ -862,6 +891,8 @@ function scanTools() {
       id: m.id || e.name,
       name: m.name || e.name,
       version: m.version || "v?",
+      rank: Number.isInteger(m.rank) ? m.rank : null,
+      phase: m.phase || null,
       status: STATUSES.indexOf(m.status) >= 0 ? m.status : "TEST",
       entry: m.entry || "index.html",
       tags: Array.isArray(m.tags) ? m.tags : [],
@@ -876,6 +907,10 @@ function scanTools() {
       risk: m.risk || null,
       summary: m.summary || authored.summary || "",
       card: m.card && typeof m.card === "object" ? m.card : null,
+      presentation:
+        m.presentation && typeof m.presentation === "object"
+          ? m.presentation
+          : null,
       actions: Array.isArray(m.actions)
         ? m.actions
         : Array.isArray(authored.actions)
@@ -948,6 +983,90 @@ const BodyPulseService = BodyPulseServiceFactory.create({
   write: writeBodyPulseState,
 });
 
+function readPlatformHeartbeatState() {
+  try {
+    return JSON.parse(fs.readFileSync(PLATFORM_HEARTBEAT_STATE_FILE, "utf8"));
+  } catch (e) {
+    return null;
+  }
+}
+
+function writePlatformHeartbeatState(state) {
+  fs.mkdirSync(PLATFORM_HEARTBEAT_STATE_DIR, { recursive: true });
+  fs.writeFileSync(
+    PLATFORM_HEARTBEAT_STATE_FILE,
+    JSON.stringify(state, null, 2) + "\n",
+    "utf8",
+  );
+}
+
+function readHeartbeatVerificationState() {
+  try {
+    return JSON.parse(fs.readFileSync(HEARTBEAT_VERIFICATION_STATE_FILE, "utf8"));
+  } catch (e) {
+    return null;
+  }
+}
+
+function writeHeartbeatVerificationState(state) {
+  fs.mkdirSync(PLATFORM_HEARTBEAT_STATE_DIR, { recursive: true });
+  fs.writeFileSync(
+    HEARTBEAT_VERIFICATION_STATE_FILE,
+    JSON.stringify(state, null, 2) + "\n",
+    "utf8",
+  );
+}
+
+function readWorkshopUpdaterState() {
+  try {
+    return JSON.parse(fs.readFileSync(WORKSHOP_UPDATER_STATE_FILE, "utf8"));
+  } catch (e) {
+    return null;
+  }
+}
+
+function writeWorkshopUpdaterState(state) {
+  fs.mkdirSync(WORKSHOP_UPDATER_STATE_DIR, { recursive: true });
+  fs.writeFileSync(
+    WORKSHOP_UPDATER_STATE_FILE,
+    JSON.stringify(state, null, 2) + "\n",
+    "utf8",
+  );
+}
+
+const WorkshopUpdaterService = WorkshopUpdaterServiceFactory.create({
+  root: ROOT,
+  stateRoot: STATE_ROOT,
+  bodyPulse: BodyPulseService,
+  read: readWorkshopUpdaterState,
+  write: writeWorkshopUpdaterState,
+});
+
+const HeartbeatVerificationBridge = HeartbeatVerificationBridgeFactory.create({
+  root: ROOT,
+  bodyPulse: BodyPulseService,
+  read: readHeartbeatVerificationState,
+  write: writeHeartbeatVerificationState,
+  bootstrapPulseMode: "CONSERVE",
+  bootstrapActor: "mike-authorized-heartbeat-v0.1",
+});
+
+const PlatformHeartbeatService = PlatformHeartbeatServiceFactory.create({
+  read: readPlatformHeartbeatState,
+  write: writePlatformHeartbeatState,
+  onBeat: (beat) => Promise.all([
+    HeartbeatVerificationBridge.onBeat(beat),
+    WorkshopUpdaterService.onBeat(beat),
+  ]),
+  onBeatError: (error, beat) => {
+    console.error(
+      "AXM heartbeat verification bridge error",
+      beat && beat.beatId ? beat.beatId : "unknown-beat",
+      error && error.message ? error.message : error,
+    );
+  },
+});
+
 function readDirectionState() {
   try {
     return JSON.parse(fs.readFileSync(DIRECTION_STATE_FILE, "utf8"));
@@ -980,6 +1099,14 @@ function readinessSnapshot() {
       path.join(ROOT, "launcher", "axm-foundation.js"),
     );
   const toolIds = new Set(scanTools().map((tool) => tool.id));
+  const assetHandsInstalled = fs.existsSync(
+      path.join(ROOT, "shared", "asset-hands", "asset-hands.js"),
+    ) && fs.existsSync(
+      path.join(ROOT, "shared", "asset-hands", "service.contract.json"),
+    );
+  const assetHandUpgradesInstalled = fs.existsSync(
+    path.join(ROOT, "shared", "asset-hands", "upgrade-program", "foundation-index.js"),
+  );
   return {
     storage: {
       state: foundation ? "READY" : "OFFLINE",
@@ -1038,6 +1165,18 @@ function readinessSnapshot() {
         ? "Asset service installed"
         : "Asset service missing",
     },
+    "asset-hands": {
+      state: assetHandsInstalled ? "READY" : "OFFLINE",
+      detail: assetHandsInstalled
+        ? "Executable Creation Hands and their service contract are installed"
+        : "Creation Hands service or contract is missing",
+    },
+    "asset-hands-upgrade-registry": {
+      state: assetHandUpgradesInstalled ? "READY" : "OFFLINE",
+      detail: assetHandUpgradesInstalled
+        ? "Modular Creation Hand upgrade registry is installed"
+        : "Creation Hand upgrade registry is missing",
+    },
     plugins: {
       state: toolIds.size ? "READY" : "OFFLINE",
       detail: toolIds.size + " module manifests discovered",
@@ -1079,16 +1218,18 @@ function readinessGuidance() {
 }
 
 function readinessFor(tool, snapshot) {
-  const guide = readinessGuidance().services;
+  const guidance = readinessGuidance();
+  const guide = guidance.services;
   const requirements = (tool.readiness || []).map((id) =>
     Object.assign(
       { id },
-      guide[id] || {
-        label: id,
-        why: "A declared workspace dependency.",
-        nextStep: "Inspect the workspace status before continuing.",
+      guide[id] || Object.assign({}, guidance.fallback || {
+        label: "Declared capability",
+        why: "The module declares this capability as a prerequisite, but no specialized explanation has been registered yet.",
+        nextStep: "Open the declaring module, inspect its exact readiness evidence and capability-gap report, and stop if the requirement is missing.",
         route: "/hub/index.html",
-      },
+        specialized: false,
+      }, { label: (guidance.fallback&&guidance.fallback.label||"Declared capability")+": "+id }),
       snapshot[id] || {
         state: "UNKNOWN",
         detail: "No readiness probe declared",
@@ -1146,6 +1287,11 @@ function compileTechnicalGlasses(focus) {
     root: ROOT,
     tools,
     readiness: readinessSnapshot(),
+    structuralReadiness: ReadinessObserver.create({
+      root: ROOT,
+      stateRoot: STATE_ROOT,
+      humanGate: "Mike",
+    }).snapshot(),
     focus: query,
     focusRoutes,
   });
@@ -1157,17 +1303,19 @@ function refreshTechnicalGlassesSnapshot() {
   return snapshot;
 }
 
-function scheduleTechnicalGlassesSnapshot() {
+function scheduleTechnicalGlassesSnapshot(options) {
   if (TECHNICAL_GLASSES_TIMER) clearInterval(TECHNICAL_GLASSES_TIMER);
   TECHNICAL_GLASSES_TIMER = null;
   if (IS_PRODUCTION_SESSION) return;
-  try {
-    refreshTechnicalGlassesSnapshot();
-  } catch (error) {
-    slog(
+  if (!(options && options.skipInitial === true)) {
+    try {
+      refreshTechnicalGlassesSnapshot();
+    } catch (error) {
+      slog(
       "technical glasses snapshot failed · " +
         String(error.message || error).slice(0, 180),
     );
+    }
   }
   TECHNICAL_GLASSES_TIMER = setInterval(
     () => {
@@ -1511,6 +1659,8 @@ function productionSessionRuntimeBlocked(rawUrl) {
     "/games/006",
     "/games/007",
     "/games/008",
+    "/games/009",
+    "/games/010",
     "/services/mirror-core",
     "/services/ai-learning-forge",
     "/services/mirror-native",
@@ -1543,6 +1693,10 @@ const server = http.createServer((req, res) => {
     return proxyLocal(req, res, "/games/007", 8797);
   if (rawUrl === "/games/008" || rawUrl.startsWith("/games/008/"))
     return proxyLocal(req, res, "/games/008", 8798);
+  if (rawUrl === "/games/009" || rawUrl.startsWith("/games/009/"))
+    return proxyLocal(req, res, "/games/009", 8799);
+  if (rawUrl === "/games/010" || rawUrl.startsWith("/games/010/"))
+    return proxyLocal(req, res, "/games/010", 8800);
   if (
     rawUrl === "/services/mirror-core" ||
     rawUrl.startsWith("/services/mirror-core/")
@@ -1635,6 +1789,44 @@ const server = http.createServer((req, res) => {
       host: HOST + ":" + ACTIVE_PORT,
       root: path.basename(ROOT),
       productionSession: productionSessionInfo(),
+    });
+  }
+  if (url === "/api/asset-hands/upgrades" && req.method === "GET") {
+    return send(res, 200, {
+      ok: true,
+      schema: "axm.asset-hand-upgrade-catalog/v1",
+      registryVersion: AssetHands.UPGRADE_REGISTRY_VERSION,
+      hands: AssetHands.listUpgradeHands(),
+    });
+  }
+  if (url === "/api/asset-hands/substrates" && req.method === "GET") {
+    return send(res, 200, {
+      ok: true,
+      inventory: AssetHands.externalSubstrateInventory(),
+    });
+  }
+  if (url === "/api/asset-hands/upgrades/audit" && req.method === "GET") {
+    return send(res, 200, { ok: true, audit: AssetHands.auditInstalledUpgradeHands() });
+  }
+  if (
+    (url === "/api/asset-hands/upgrades/diagnose" ||
+      url === "/api/asset-hands/upgrades/plan") &&
+    req.method === "POST"
+  ) {
+    return readJsonBody(req, 100000, (error, input) => {
+      if (error) return send(res, 400, { ok: false, error: error.message });
+      try {
+        const result =
+          url === "/api/asset-hands/upgrades/plan"
+            ? AssetHands.planUpgradeHandsWithInstalledSubstrates(input || {})
+            : AssetHands.diagnoseUpgradeWithInstalledSubstrates(input || {});
+        return send(res, 200, { ok: true, result });
+      } catch (routeError) {
+        return send(res, 400, {
+          ok: false,
+          error: String(routeError.message || routeError),
+        });
+      }
     });
   }
   if (url === "/api/production-sessions/status" && req.method === "GET") {
@@ -1792,6 +1984,90 @@ const server = http.createServer((req, res) => {
     } catch (error) {
       return send(res, 500, { ok: false, error: error.message });
     }
+  }
+  if (url === "/api/platform-heartbeat" && req.method === "GET") {
+    try {
+      const status = PlatformHeartbeatService.status();
+      status.verificationBridge = HeartbeatVerificationBridge.status();
+      status.pulseBridge = {
+        state: "GATED_DETERMINISTIC_VERIFICATION",
+        automaticPulseRequests: true,
+        masterGate: "Body Pulse must be ACTIVE or CONSERVE",
+        maxChecksPerHour: status.verificationBridge.maxChecksPerHour,
+        repairAuthority: status.verificationBridge.repairAuthority,
+      };
+      status.updateBridge = WorkshopUpdaterService.status();
+      return send(res, 200, { ok: true, status });
+    } catch (error) {
+      return send(res, 500, { ok: false, error: error.message });
+    }
+  }
+  if (url === "/api/workshop-updater" && req.method === "GET") {
+    try {
+      return send(res, 200, { ok: true, status: WorkshopUpdaterService.status() });
+    } catch (error) {
+      return send(res, 500, { ok: false, error: error.message });
+    }
+  }
+  if (url === "/api/workshop-updater/config" && req.method === "POST") {
+    if (String(req.headers["x-axm-workshop-updater"] || "") !== "explicit-updater-config")
+      return send(res, 403, { ok: false, error: "explicit updater configuration header required" });
+    return readJsonBody(req, 20000, (error, parsed) => {
+      if (error) return send(res, 400, { ok: false, error: error.message });
+      try {
+        return send(res, 200, { ok: true, status: WorkshopUpdaterService.configure(parsed || {}) });
+      } catch (serviceError) {
+        return send(res, 400, { ok: false, error: serviceError.message });
+      }
+    });
+  }
+  if (url === "/api/workshop-updater/check" && req.method === "POST") {
+    if (String(req.headers["x-axm-workshop-updater"] || "") !== "explicit-update-check")
+      return send(res, 403, { ok: false, error: "explicit update check header required" });
+    return readJsonBody(req, 10000, async (error) => {
+      if (error) return send(res, 400, { ok: false, error: error.message });
+      try {
+        return send(res, 200, { ok: true, status: await WorkshopUpdaterService.check({ reason: "EXPLICIT" }) });
+      } catch (serviceError) {
+        return send(res, 400, { ok: false, error: serviceError.message, status: serviceError.updaterStatus || WorkshopUpdaterService.status() });
+      }
+    });
+  }
+  if (url === "/api/platform-heartbeat/config" && req.method === "POST") {
+    if (String(req.headers["x-axm-heartbeat"] || "") !== "explicit-heartbeat-config")
+      return send(res, 403, { ok: false, error: "explicit heartbeat configuration header required" });
+    return readJsonBody(req, 20000, (error, parsed) => {
+      if (error) return send(res, 400, { ok: false, error: error.message });
+      try {
+        return send(res, 200, { ok: true, status: PlatformHeartbeatService.configure(parsed || {}) });
+      } catch (serviceError) {
+        return send(res, 400, { ok: false, error: serviceError.message });
+      }
+    });
+  }
+  if (url === "/api/platform-heartbeat/manual" && req.method === "POST") {
+    if (String(req.headers["x-axm-heartbeat"] || "") !== "explicit-manual-beat")
+      return send(res, 403, { ok: false, error: "explicit manual heartbeat header required" });
+    return readJsonBody(req, 10000, (error, parsed) => {
+      if (error) return send(res, 400, { ok: false, error: error.message });
+      try {
+        return send(res, 200, Object.assign({ ok: true }, PlatformHeartbeatService.manual(parsed || {})));
+      } catch (serviceError) {
+        return send(res, 400, { ok: false, error: serviceError.message });
+      }
+    });
+  }
+  if (url === "/api/platform-heartbeat/preview" && req.method === "POST") {
+    if (String(req.headers["x-axm-heartbeat"] || "") !== "heartbeat-preview-only")
+      return send(res, 403, { ok: false, error: "heartbeat preview header required" });
+    return readJsonBody(req, 10000, (error, parsed) => {
+      if (error) return send(res, 400, { ok: false, error: error.message });
+      try {
+        return send(res, 200, { ok: true, preview: PlatformHeartbeatService.preview(parsed || {}) });
+      } catch (serviceError) {
+        return send(res, 400, { ok: false, error: serviceError.message });
+      }
+    });
   }
   if (url === "/api/body-pulse/register" && req.method === "POST") {
     if (
@@ -2913,11 +3189,13 @@ const server = http.createServer((req, res) => {
   }
   if (url === "/api/workshop-growth" && req.method === "GET") {
     try {
-      const current = GrowthMetrics.scan(ROOT),
+      const current = scanGrowthBodies(),
         history = loadGrowthState(),
         baseline = history.snapshots[0] || null,
         previous = history.snapshots[history.snapshots.length - 1] || null;
       const deltaFromPrevious = GrowthMetrics.delta(current, previous),
+        moduleChanges = GrowthMetrics.moduleChanges(current, previous),
+        worldChanges = GrowthMetrics.worldChanges(current, previous),
         elapsedHours = previous
           ? Math.max(
               1 / 60,
@@ -2952,9 +3230,31 @@ const server = http.createServer((req, res) => {
         ok: true,
         current,
         history: history.snapshots,
+        historyRetention: history.retention,
         schedule: history.schedule,
         deltaFromBaseline: GrowthMetrics.delta(current, baseline),
         deltaFromPrevious,
+        mirrorDeltaFromPrevious: GrowthMetrics.mirrorDelta(
+          current.mirror,
+          previous && previous.mirror,
+        ),
+        mirrorSpecializationChanges: GrowthMetrics.mirrorSpecializationChanges(
+          current.mirror,
+          previous && previous.mirror,
+        ),
+        mirrorDeltaReady: !!(
+          previous &&
+          previous.mirror &&
+          previous.mirror.available
+        ),
+        componentDeltaReady:
+          !!previous && Number(previous.measurementVersion || 0) >= 4,
+        worldDeltaReady:
+          !!previous && Number(previous.measurementVersion || 0) >= 6,
+        capabilityDeltaReady:
+          !!previous && Number(previous.measurementVersion || 0) >= 7,
+        moduleChanges,
+        worldChanges,
         rateFromPrevious,
         velocity: GrowthMetrics.velocity(
           current,
@@ -2975,7 +3275,17 @@ const server = http.createServer((req, res) => {
           velocitySignal:
             "15-minute local aggregate snapshots count net code lines, test lines, and asset outputs; no source contents are retained",
           snapshotShape:
-            "compact aggregate metrics; no screenshot, extension table, or largest-file list",
+            "compact aggregate metrics plus short per-tool fingerprints; no screenshot, source content, extension table, or largest-file list",
+          snapshotRetention:
+            "all compact workshop snapshots remain in chronological history and the Hub groups them by month; aggregate velocity samples remain rolling",
+          moduleChangeSignal:
+            "path, byte-size and modification-stamp fingerprints per top-level tool; legacy snapshots use a clearly labelled timestamp fallback",
+          worldChangeSignal:
+            "all source characters and lines under worlds are included in the Workshop totals; compact per-world fingerprints separately reveal new or deeply updated living worlds",
+          capabilitySignal:
+            "exact capabilities are unique machine-declared provides/produces identifiers; declarations count provider-local reuse and overlap; prose actions never inflate either number",
+          mirrorSignal:
+            "local filesystem metadata only; private state contents are not read; Original Mirror owned body, state, installed substrates, repository history, outputs and logs remain separate; specialization footprints never duplicate shared parent code; runtime state is lineage-declared, not live-measured",
         },
       });
     } catch (e) {
@@ -2994,7 +3304,7 @@ const server = http.createServer((req, res) => {
     readJsonBody(req, 8192, (error, input) => {
       if (error) return send(res, 400, { ok: false, error: error.message });
       try {
-        const current = GrowthMetrics.scan(ROOT),
+        const current = scanGrowthBodies(),
           result = GrowthMetrics.capture(
             loadGrowthState(),
             current,
@@ -3259,12 +3569,13 @@ const server = http.createServer((req, res) => {
     const services = Object.keys(snapshot).map((id) =>
       Object.assign(
         { id },
-        guide.services[id] || {
-          label: id,
-          why: "Declared Workshop dependency.",
-          nextStep: "Inspect status before continuing.",
+        guide.services[id] || Object.assign({}, guide.fallback || {
+          label: "Declared capability",
+          why: "The module declares this capability as a prerequisite, but no specialized explanation has been registered yet.",
+          nextStep: "Open the declaring module, inspect its exact readiness evidence and capability-gap report, and stop if the requirement is missing.",
           route: "/hub/index.html",
-        },
+          specialized: false,
+        }, { label: (guide.fallback&&guide.fallback.label||"Declared capability")+": "+id }),
         snapshot[id],
         { automaticRepair: false },
       ),
@@ -3403,6 +3714,7 @@ const server = http.createServer((req, res) => {
         ok: true,
         active: false,
         packages: [],
+        catalog: WorkshopPackager.catalog(),
         unavailable:
           "Main Workshop packaging is intentionally outside the temporary session boundary",
       });
@@ -3410,6 +3722,11 @@ const server = http.createServer((req, res) => {
       ok: true,
       active: WorkshopPackager.isActive(),
       packages: WorkshopPackager.list(),
+      catalog: WorkshopPackager.catalog(),
+      delta_defaults: {
+        github_repo: "mike-axiom-mir/axm-collaboration-platform",
+        git_ref: "main",
+      },
     });
   }
   if (url === "/api/game-forge/candidates" && req.method === "GET") {
@@ -3557,7 +3874,7 @@ const server = http.createServer((req, res) => {
     let buf = "";
     req.on("data", (c) => {
       buf += c;
-      if (buf.length > 4096) req.destroy();
+      if (buf.length > 16384) req.destroy();
     });
     req.on("end", () => {
       let parsed;
@@ -3569,6 +3886,9 @@ const server = http.createServer((req, res) => {
       WorkshopPackager.create({
         mode: parsed.mode,
         keep_copy: parsed.keep_copy === true,
+        scopes: Array.isArray(parsed.scopes) ? parsed.scopes : [],
+        github_repo: parsed.github_repo,
+        git_ref: parsed.git_ref,
       })
         .then((result) => {
           slog(
@@ -3676,6 +3996,7 @@ const server = http.createServer((req, res) => {
       res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
       res.setHeader("Cross-Origin-Resource-Policy", "same-origin");
     }
+    res.setHeader("Cache-Control", "no-store");
     send(
       res,
       200,
@@ -3758,9 +4079,9 @@ function listenOn(port, attemptsLeft) {
     console.log("");
     const target = openTarget();
     if (target) openBrowser(base + target);
-    scheduleNextGrowthCapture();
-    scheduleGrowthVelocity();
-    scheduleTechnicalGlassesSnapshot();
+    scheduleNextGrowthCapture({ skipOverdue: true });
+    scheduleGrowthVelocity({ skipInitial: true });
+    scheduleTechnicalGlassesSnapshot({ skipInitial: true });
     startProductionSessionLease();
   };
   server.once("error", onError);

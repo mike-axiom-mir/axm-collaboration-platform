@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Chroma Studio</title>
+  <link rel="stylesheet" href="../../shared/elements/axm-ui-theme.css">
+  <link rel="stylesheet" href="chroma-studio.css">
+</head>
+<body class="axm-app axm-stars">
+  <a class="skip" href="#workspace">Skip to image workspace</a>
+  <header class="topbar">
+    <a class="back" href="../../hub/index.html">&larr; HUB</a>
+    <div class="identity"><span class="mark" aria-hidden="true"></span><div><small>AXM CREATE HAND · TEST</small><h1>CHROMA STUDIO</h1></div></div>
+    <span class="axm-pill"><span class="axm-dot"></span>LOCAL · DETERMINISTIC</span>
+  </header>
+
+  <main id="workspace">
+    <section class="hero axm-gradient-border"><div>
+      <div><span class="kicker">PHONE PHOTO → HONEST CUT → TRANSPARENT PNG</span><h2>Remove the background without sending the picture away.</h2><p>Solid backgrounds are keyed locally. Uncertain cuts stop for manual review instead of being saved.</p></div>
+      <div class="hero-actions"><a class="axm-btn" href="../device-handoff/index.html?start=1&amp;from=chroma-studio">OPEN PHONE DROP + QR</a><button class="axm-btn brand" id="pickFiles" type="button">CHOOSE LOCAL IMAGES</button></div>
+    </div></section>
+
+    <div id="notice" class="notice ok" role="status" aria-live="polite">Ready. Transparent PNGs save to Browser Downloads outside the Workshop by default.</div>
+
+    <section class="control-grid">
+      <article class="axm-panel output-panel">
+        <span class="axm-corner tl"></span><span class="axm-corner br"></span>
+        <h3>01 · OUTPUT GATE</h3>
+        <h2>Where should transparent PNGs go?</h2>
+        <p id="outputDescription">Browser Downloads is ready outside the Workshop. Choose a dedicated folder only when you want one.</p>
+        <div class="action-row"><button class="axm-btn brand" id="pickFolder" type="button">CHOOSE SAVE FOLDER</button><button class="axm-btn" id="useDownloads" type="button">USE BROWSER DOWNLOADS</button></div>
+        <div class="truth-row"><span id="outputState" class="state ok">DEFAULT READY</span><span id="folderName">Browser Downloads · outside Workshop</span></div>
+      </article>
+
+      <article class="axm-panel phone-panel">
+        <span class="axm-corner tl"></span><span class="axm-corner br"></span>
+        <h3>02 · PHONE INBOX</h3>
+        <h2>Watch Device Handoff</h2>
+        <p>Only JPEG, PNG and WebP files explicitly selected on the paired device are read.</p>
+        <label class="switch"><input id="watchInbox" type="checkbox" checked><span>Watch for new phone photos</span></label>
+        <div class="action-row"><button class="axm-btn" id="checkInbox" type="button">CHECK INBOX NOW</button><a class="axm-btn" href="../device-handoff/index.html">OPEN HANDOFF STATUS</a></div>
+        <div class="truth-row"><span id="inboxState" class="state">WAITING</span><span id="inboxDetail">No inbox check yet</span></div>
+      </article>
+    </section>
+
+    <section class="drop axm-panel" id="dropZone" tabindex="0" role="button" aria-label="Choose or drop local images">
+      <span class="drop-icon" aria-hidden="true">◇</span><div><h2>Drop images here</h2><p>JPEG · PNG · WebP · sequential processing · 32 megapixel safety ceiling</p></div>
+      <input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden>
+    </section>
+
+    <section class="summary" aria-label="Current Chroma run totals">
+      <div class="axm-stat"><span id="cutCount" class="n brand">0</span><span class="l">CUT</span></div>
+      <div class="axm-stat"><span id="passCount" class="n">0</span><span class="l">ALREADY CLEAR</span></div>
+      <div class="axm-stat"><span id="manualCount" class="n">0</span><span class="l">NEEDS MANUAL</span></div>
+      <div class="axm-stat"><span id="savedCount" class="n">0</span><span class="l">SAVED</span></div>
+      <button class="axm-btn" id="receiptBtn" type="button">SAVE RUN RECEIPT</button>
+    </section>
+
+    <section><div class="section-head"><div><span class="kicker">03 · REVIEW SURFACE</span><h2>Exact results</h2></div><button class="axm-btn" id="clearResults" type="button">CLEAR PREVIEWS</button></div><div id="results" class="result-grid"><p class="empty">No images processed yet.</p></div></section>
+  </main>
+
+  <footer><b>TEST · NOT CANON</b><span>Browser memory only · no model · no remote upload · failed cuts never save</span></footer>
+  <script src="keyer.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

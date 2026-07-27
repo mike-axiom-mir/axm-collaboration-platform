@@ -1,0 +1,22 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "prehub",
+  "version": "v1",
+  "provides": ["local-note-authoring", "named-local-save", "local-save-resume"],
+  "consumes": ["service:foundation-storage"],
+  "permissions": ["storage"],
+  "handoffs": {
+    "emits": ["axm.local-note/v1"],
+    "accepts": ["text/plain"]
+  },
+  "boundaries": {
+    "writes": ["foundation:local-storage"],
+    "refuses": ["network-required", "automatic-ai-use", "silent-canon-promotion"]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
+}

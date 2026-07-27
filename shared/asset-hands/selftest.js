@@ -45,7 +45,7 @@ function assertRequiredSchema(schema, value) {
 
 assert.equal(
   Hands.list().length,
-  34,
+  36,
   "all admitted modular creation hands should be registered",
 );
 assert.equal(
@@ -898,5 +898,5 @@ assert.equal(Finisher.descriptor().id, "delivery-finisher");
 assert.equal(Finisher.descriptor().schema, Core.HAND_SCHEMA);
 assert.ok(Finisher.source(legacySvg).text.startsWith("<svg"));
 console.log(
-  "AXM Asset Hands selftest: PASS (Hand Contract v2, 34 providers, 0 curated gaps, real cross-format interchange, legacy state and honest dynamic failure)",
+  "AXM Asset Hands selftest: PASS (Hand Contract v2, 36 providers, 0 curated gaps, real cross-format interchange, legacy state and honest dynamic failure)",
 );

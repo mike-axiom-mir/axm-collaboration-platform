@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.universal-component-graph/v1",
+  "title": "AXM Universal Component Protocol graph v1",
+  "description": "A portable, digest-bound composition of exact component versions for one declared target canvas.",
+  "type": "object",
+  "required": ["schema", "id", "version", "target_canvas", "components", "connections", "outputs", "policy", "digest"],
+  "properties": {
+    "schema": { "const": "axm.universal-component-graph/v1" },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$",
+      "maxLength": 160
+    },
+    "version": { "type": "string", "minLength": 1, "maxLength": 40 },
+    "title": { "type": "string", "maxLength": 200 },
+    "target_canvas": { "$ref": "target-canvas.schema.json" },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {
+        "type": "object",
+        "required": ["instance_id", "component_id", "component_version", "component_digest", "configuration"],
+        "properties": {
+          "instance_id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$", "maxLength": 160 },
+          "component_id": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "component_version": { "type": "string", "minLength": 1, "maxLength": 40 },
+          "component_digest": { "$ref": "#/$defs/digest" },
+          "configuration": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "connections": {
+      "type": "array",
+      "maxItems": 16384,
+      "items": {
+        "type": "object",
+        "required": ["from", "to", "relation"],
+        "properties": {
+          "from": { "$ref": "#/$defs/endpoint" },
+          "to": { "$ref": "#/$defs/endpoint" },
+          "relation": {
+            "enum": ["feeds", "applies", "contains", "drives", "inherits", "constrains", "adapts"]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "required": ["id", "instance_id", "port", "role"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "instance_id": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "port": { "type": "string", "minLength": 1, "maxLength": 100 },
+          "role": { "type": "string", "minLength": 1, "maxLength": 100 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "policy": {
+      "type": "object",
+      "required": ["acyclic", "missing_component", "loss_policy", "execution_authority"],
+      "properties": {
+        "acyclic": { "const": true },
+        "missing_component": { "const": "fail" },
+        "loss_policy": { "enum": ["refuse", "declare"] },
+        "execution_authority": { "const": "none" }
+      },
+      "additionalProperties": false
+    },
+    "digest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "endpoint": {
+      "type": "object",
+      "required": ["instance_id", "port"],
+      "properties": {
+        "instance_id": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "port": { "type": "string", "minLength": 1, "maxLength": 100 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,80 @@
+{
+  "schema": "axm.sensorium-skill/v1",
+  "id": "taint-sniffer",
+  "type": "skill",
+  "sense": "chemoreception",
+  "pack": "axm-sensorium/1.4.0",
+  "status": "ACCEPT_FOR_TEST",
+  "capability": "sense.integrity.taint/v1",
+  "purpose": "Inspect one bounded incoming handoff for concrete integrity and injection-shaped warning signals without declaring guilt or taking action.",
+  "inputs": [
+    "materialId",
+    "mediaType",
+    "material",
+    "expectedSha256",
+    "observedAt"
+  ],
+  "procedure": [
+    "Require one exact material identity and one caller-supplied bounded string or byte array.",
+    "Compute SHA-256 and compare an optional expected digest.",
+    "For declared text, inspect deterministic encoding, control-character, binary-signature, injection-shaped, credential-shaped, and declared-JSON signals.",
+    "Return NO_TAINT_SIGNAL, TAINT_SIGNALLED, or UNKNOWN with named signals and no raw excerpt.",
+    "Route warnings to review, release the sample, and take no direct action."
+  ],
+  "rules": [
+    "Perception is not permission.",
+    "UNKNOWN is preferred to a plausible guess.",
+    "Every use emits a typed receipt and releases raw material."
+  ],
+  "boundaries": [
+    "No path or URL fetching and no material execution.",
+    "No malware verdict, reputation lookup, signer validation, or semantic intent judgment.",
+    "No automatic trust, block, quarantine, deletion, promotion, or permission change.",
+    "A warning is not proof of guilt; no warning is not proof of safety.",
+    "Raw material and matched excerpts never enter the retained receipt."
+  ],
+  "retention": {
+    "law": "EPHEMERAL BY DEFAULT. Raw sense material is released at the next step. Only a bounded typed receipt survives.",
+    "raw_material": "sense-specific bounded input",
+    "released_when": "before the typed observation is returned",
+    "survives": "specific receipt plus axm.sensorium-receipt/v1 envelope",
+    "raw_retained_after_step": "zero",
+    "accumulation_across_uses": "flat and zero after every release boundary",
+    "receipt_cap": "newest 20 per sense",
+    "deletion_scope": "only material created by the exact sense use, by exact id or path; never a wildcard or recursive sweep"
+  },
+  "receipt": {
+    "schema": "axm.taint-sniffer-record/v1",
+    "envelopeSchema": "axm.sensorium-receipt/v1"
+  },
+  "runtime": {
+    "routeType": "EXECUTABLE",
+    "module": "taint-sniffer.js",
+    "factory": "create",
+    "operation": "sniff"
+  },
+  "statuses": {
+    "skillStatus": "ACCEPT_FOR_TEST",
+    "executorStatus": "EXECUTABLE",
+    "adapterStatus": "NOT_REQUIRED",
+    "proofStatus": "RUNTIME_PASS",
+    "authorityStatus": "NO_LEASE"
+  },
+  "requiredHostCapabilities": [],
+  "constraints": [
+    "caller-supplied-material-only",
+    "bounded-to-256-kibibytes",
+    "deterministic-signals-only",
+    "warning-not-guilt",
+    "no-fetch-or-execution",
+    "no-block-or-quarantine",
+    "no-raw-excerpts-in-receipt"
+  ],
+  "resourceBudget": {
+    "maxBytes": 262144,
+    "maxSignals": 12,
+    "rawRetainedBytesAfterSeal": 0
+  },
+  "authorityInherited": false,
+  "promotionGate": "Mike"
+}

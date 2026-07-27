@@ -1,0 +1,18 @@
+{
+  "schema": "axm.visual-modularity-audit/v1",
+  "auditedAt": "2026-07-22",
+  "verdict": "FOUNDATION_READY_MANIPULATION_PARTIAL",
+  "areas": [
+    { "area": "universal typed components", "status": "READY", "evidence": "shared/asset-hands/universal-component.js" },
+    { "area": "target canvas profiles", "status": "READY", "evidence": "shared/asset-hands/target-canvas.js" },
+    { "area": "colour and design tokens", "status": "READY_CONTRACT", "evidence": "shared/asset-hands/upgrade-program/dtcg-tokens.js" },
+    { "area": "raster layers, masks and adjustments", "status": "READY_BOUNDED", "evidence": "shared/asset-hands/raster-compositor.js; shared/asset-hands/raster-compositor-selftest.js", "hold": "Deterministic sRGB RGBA8 only: 14 blend modes, 13 filters, masks, offsets and bounded PNG input/output; no editor-parity overclaim." },
+    { "area": "vector gradients, strokes and blends", "status": "DEGRADED", "evidence": "shared/asset-hands/upgrade-program/vector-engine.js", "hold": "Host/render parity remains target-specific." },
+    { "area": "materials, textures and renderer comparison", "status": "READY_CONTRACT", "evidence": "shared/asset-hands/upgrade-program/renderer-matrix.js", "hold": "Native substrates and live render evidence remain required." },
+    { "area": "Hub skin manipulation", "status": "DEGRADED", "evidence": "hub/skin-core.js", "hold": "Hub v1 is intentionally limited to tokens, layout choices and declared vault imagery." },
+    { "area": "cross-domain visual grammar", "status": "READY_CONTRACT", "evidence": "shared/visual-grammar/visual-grammar-core.js", "hold": "Contract and routing do not themselves render or judge appearance." },
+    { "area": "reversible legacy Hub adapter", "status": "READY_CONTRACT", "evidence": "shared/visual-grammar/hub-skin-adapter.js", "hold": "Live application still uses the existing Hub renderer and visual gate." },
+    { "area": "universal compositor/filter runtime", "status": "READY_BOUNDED", "evidence": "shared/asset-hands/hands/raster-compositor.js", "hold": "Ready for bounded static sRGB RGBA8 raster composition. GPU shaders, arbitrary transforms/resampling, HDR/wide-gamut/CMYK/ICC, neural effects, 3D, video and animation remain separate missing hands." },
+    { "area": "cross-module visual proof receipts", "status": "READY_CONTRACT", "evidence": "shared/visual-proof/visual-proof.js; shared/visual-proof/selftest.js", "hold": "The receipt binds existing technical and native visual evidence. It does not render, inspect, approve, promote, or replace native visual observation." }
+  ]
+}

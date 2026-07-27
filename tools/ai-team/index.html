@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="ai-team.css">
   <link rel="stylesheet" href="ai-team-polish.css">
   <link rel="stylesheet" href="specialist-library.css">
+  <link rel="stylesheet" href="orientation.css">
 </head>
 <body>
   <div class="team-app">
@@ -25,6 +26,25 @@
           <section class="hero-panel"><div><span class="eyebrow">Shared operating picture</span><h3>Coordinate the team without merging the minds.</h3><p>Conversation, tasks, prompts, models and safety now live in one place. Each identity keeps its own connector, memory boundary and evidence trail.</p></div><div class="hero-stats"><div><b id="liveCount">0</b><span>available</span></div><div><b id="noticeCount">0</b><span>open notices</span></div><div><b id="healthyCount">0</b><span>healthy services</span></div></div></section>
 
           <section class="attention-panel"><header><div><span class="eyebrow">Attention & human review</span><h3>Questions, proposals and warnings</h3></div><span class="manual-badge">Manual decisions only</span></header><div id="attentionInbox" class="attention-list"><div class="empty">Checking for raised hands…</div></div><p class="boundary">Automatic approval is never implied. Opening a notice preserves its context; acknowledging it is a separate human action.</p></section>
+
+          <section class="orientation-panel">
+            <header><div><span class="eyebrow">Orientation desk</span><h3>Leave the next mind a clean place to continue.</h3><p>Keep what was actually observed separate from what you think it means. Name uncertainty, the exact boundary, and the smallest honest next test.</p></div><span><b id="orientationCount">0</b> saved cards</span></header>
+            <div class="orientation-layout">
+              <section class="orientation-builder" aria-label="Create an orientation card">
+                <div class="orientation-pair"><label>Who is working?<input id="orientationOwner" maxlength="160" placeholder="Nova, Claude, Mike, or a team"></label><label>Kind<select id="orientationOwnerKind"><option value="ai">AI</option><option value="human">Human</option><option value="team">Team</option><option value="machine">Machine</option></select></label></div>
+                <label>What are we trying to do?<textarea id="orientationPurpose" maxlength="1200" placeholder="The purpose of this piece of work"></textarea></label>
+                <label>Where are we now?<textarea id="orientationTerrain" maxlength="1200" placeholder="Current focus, screen, file, question, or situation"></textarea></label>
+                <div class="orientation-evidence-grid"><label>What did we actually observe?<textarea id="orientationObservations" maxlength="5000" placeholder="One observed fact per line"></textarea></label><label>What do we think it means?<textarea id="orientationInterpretations" maxlength="5000" placeholder="One working interpretation per line"></textarea></label></div>
+                <label>What remains uncertain or unseen?<textarea id="orientationUncertainties" maxlength="5000" placeholder="One uncertainty or blind spot per line"></textarea></label>
+                <div class="orientation-boundary-row"><label>Boundary, if any<select id="orientationBoundaryType"><option value="">No named boundary</option></select></label><label class="orientation-blocking"><input id="orientationBlocking" type="checkbox"> This stops progress until resolved</label></div>
+                <label>What happened at the boundary?<textarea id="orientationBoundaryNote" maxlength="1200" placeholder="Short concrete description; leave empty when there is no boundary"></textarea></label>
+                <label>Smallest honest next test<textarea id="orientationNextTest" maxlength="1200" placeholder="What should the next person or AI check first?"></textarea></label>
+                <button id="saveOrientation" class="button primary-small">Save orientation card</button>
+                <p class="boundary">This saves a local re-entry card only. It cannot start an AI, approve a claim, change permissions, or rewrite shared knowledge.</p>
+              </section>
+              <section class="orientation-ledger"><header><div><span class="eyebrow">Recent re-entry points</span><h4>Append-only local ledger</h4></div><small>Newest first</small></header><div id="orientationList" class="orientation-list"><div class="empty">No orientation cards yet.</div></div></section>
+            </div>
+          </section>
 
           <section class="workflow-grid">
             <button data-open-view="collaborate" class="workflow-card cyan"><span>01</span><b>Talk & delegate</b><p>Conversation, supervised tasks and handoffs.</p><em>Open collaboration →</em></button>
@@ -119,8 +139,9 @@
   <script src="/shared/specialists/capability-bridges.js"></script>
   <script src="/shared/specialists/axm-specialist-library.js"></script>
   <script src="/shared/specialists/specialist-router.js"></script>
+  <script src="/shared/orientation/axm-orientation-core.js"></script>
   <script src="ai-team-core.js"></script>
   <script src="/hub/axm-hub-module.js"></script>
-  <script src="ai-team.js?v=20260718-technical-glasses-1"></script>
+  <script src="ai-team.js?v=20260723-orientation-1"></script>
 </body>
 </html>

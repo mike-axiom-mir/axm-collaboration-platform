@@ -25,7 +25,7 @@ const seams = [
   ['same-network requirement is declared', contract.controllerFlow.sameWifiRequiredForLiveInput === true],
   ['cached shell capability is declared', contract.controllerFlow.cachedShellWhereGameSupportsIt === true],
   ['AI uses the declared action vocabulary', contract.controllerFlow.adapterUsesDeclaredActionVocabulary === true],
-  ['public shelf contains 003 006 007 008', ['003-robo-pong-cross','006-lumenwake','007-lux5-neon-overdrive','008-district-party'].every(id => contract.featuredGames.includes(id))],
+  ['public shelf contains the current featured game IDs', ['003-robo-pong-cross','006-lumenwake','007-casino-alpha','008-district-party','009-circuitseed-protocol-wilds','010-living-globe-tycoon'].every(id => contract.featuredGames.includes(id)) && !contract.featuredGames.includes('007-lux5-neon-overdrive')],
   ['profile tracking is explicitly opt-in', profileContract.lifecycle === 'OPTIONAL_OPT_IN'],
   ['unknown authorship is never given to the human', profileContract.localHttpAdapter.some(line => line.includes('never reassigned'))],
   ['receipt retries are deduplicated', profileContract.rules.some(line => line.includes('dedupe'))],

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Asset ↔ Engine Round-trip Bridge · AXM</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="bridge-shell">
+    <header class="topbar">
+      <div>
+        <span class="eyebrow">BUILD / PIPELINE 02</span>
+        <h1>Asset <b>↔</b> Engine Bridge</h1>
+        <p>Prove what survives the trip. Refuse what does not.</p>
+      </div>
+      <div class="trust-row">
+        <span>READ-ONLY SOURCE</span><span>AXM-NATIVE</span><span>OFFLINE</span>
+      </div>
+    </header>
+
+    <section class="control-rail">
+      <div class="asset-switcher" role="group" aria-label="Proof asset">
+        <button type="button" class="asset-choice active" data-asset="storefront" aria-pressed="true">
+          <i>01</i><span><strong>District storefront</strong><small>AFCB7802…7222</small></span>
+        </button>
+        <button type="button" class="asset-choice" data-asset="pedestrian" aria-pressed="false">
+          <i>02</i><span><strong>Animated pedestrian</strong><small>B4488637…5D63</small></span>
+        </button>
+      </div>
+      <button class="primary-button" id="run-button" type="button">Run parity check</button>
+      <button class="secondary-button" id="export-button" type="button" disabled>Export receipt</button>
+      <a class="runtime-link" href="../local-3d-game-runtime/index.html">Open live runtime ↗</a>
+    </section>
+
+    <section class="workspace">
+      <div class="verdict-card" id="verdict-card" data-status="working">
+        <div class="verdict-icon" id="verdict-icon">···</div>
+        <div>
+          <span class="eyebrow">ROUND-TRIP VERDICT</span>
+          <h2 id="verdict-title">Reading exact source bytes</h2>
+          <p id="verdict-copy">No source mutation. No guessed parity.</p>
+        </div>
+        <div class="write-meter"><strong id="write-count">0</strong><span>source bytes written</span></div>
+      </div>
+
+      <div class="pipeline" aria-label="Round-trip pipeline">
+        <article><span>1</span><i>AUTHORING SOURCE</i><strong id="source-name">—</strong><small id="source-digest">Waiting for source</small></article>
+        <b aria-hidden="true">→</b>
+        <article><span>2</span><i>ENGINE CONTRACT</i><strong>AXM native / v1</strong><small>Explicit axes, units and losses</small></article>
+        <b aria-hidden="true">→</b>
+        <article><span>3</span><i>INDEPENDENT DIFF</i><strong id="check-total">—</strong><small>Nothing hidden by import success</small></article>
+      </div>
+
+      <dl class="metric-row">
+        <div><dt>Source</dt><dd id="byte-count">—</dd><small>immutable bytes</small></div>
+        <div><dt>Nodes</dt><dd id="node-count">—</dd><small>hierarchy entries</small></div>
+        <div><dt>Meshes</dt><dd id="mesh-count">—</dd><small>render meshes</small></div>
+        <div><dt>Materials</dt><dd id="material-count">—</dd><small>PBR contracts</small></div>
+        <div><dt>Rigs</dt><dd id="skin-count">—</dd><small>skin mappings</small></div>
+        <div><dt>Clips</dt><dd id="animation-count">—</dd><small>animations</small></div>
+      </dl>
+
+      <div class="evidence-grid">
+        <section class="panel checks-panel">
+          <div class="panel-heading"><div><span class="eyebrow">PARITY MATRIX</span><h3>Before ↔ after</h3></div><strong id="pass-count">—</strong></div>
+          <div id="check-list" class="check-list" aria-live="polite"></div>
+        </section>
+
+        <section class="panel loss-panel">
+          <div class="panel-heading"><div><span class="eyebrow">LOSS REGISTRY</span><h3>Nothing swept away</h3></div><strong id="loss-count">—</strong></div>
+          <div id="loss-list" class="loss-list" aria-live="polite"></div>
+          <div class="boundary-box">
+            <strong>Structure is not beauty</strong>
+            <p>A parity pass proves technical preservation. Human visual review still owns appearance and promotion.</p>
+          </div>
+        </section>
+      </div>
+
+      <details class="receipt-panel">
+        <summary><span>Machine receipt</span><code id="receipt-digest">not compiled</code></summary>
+        <pre id="receipt-json">Run the bridge to compile a receipt.</pre>
+      </details>
+    </section>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

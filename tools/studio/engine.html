@@ -109,6 +109,17 @@ input[type=color]{width:30px;height:26px;border:1px solid var(--edge);border-rad
 .duet-assets{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}.duet-asset{border:1px solid var(--edge);border-radius:8px;overflow:hidden;background:#050914}.duet-asset img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}.duet-asset b{display:block;font-size:9px;padding:5px 7px;color:var(--cyan)}.duet-out{white-space:pre-wrap;max-height:190px;overflow:auto;background:#06080f;border:1px solid var(--edge);border-radius:8px;padding:8px;font:9.5px/1.45 ui-monospace,monospace;color:var(--muted);margin-top:8px}.duet-state{font:9px ui-monospace,monospace;color:var(--gold);margin-top:6px}
 .advanced-panel{display:none;border-color:var(--cyan-dim)}.advanced-panel.on{display:block}.advanced-note{font-size:9px;color:var(--muted);line-height:1.45;margin:-2px 0 8px}.advanced-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px}.advanced-actions button{border:1px solid var(--edge);border-radius:7px;background:var(--panel-2);color:var(--muted);padding:6px 4px;font-size:9px;cursor:pointer}.advanced-actions button:hover,.advanced-actions button.on{border-color:var(--cyan);color:var(--cyan)}.advanced-actions button.danger{color:var(--red);border-color:rgba(255,93,108,.38)}.vector-list{max-height:120px;overflow:auto;margin-top:7px}.vector-item{display:flex;align-items:center;gap:6px;border:1px solid var(--edge);border-radius:7px;padding:6px;margin-bottom:4px;font-size:9px;color:var(--muted);cursor:pointer}.vector-item.on{border-color:var(--cyan);color:var(--text);background:rgba(56,214,236,.06)}.vector-item i{width:8px;height:8px;border-radius:50%}.vector-options{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}.vector-options label{font-size:8px;color:var(--muted);display:flex;align-items:center;gap:5px}.vector-options input[type=color]{width:28px}.vector-options input[type=range]{min-width:0}.timeline-head{display:flex;align-items:center;gap:5px;margin-bottom:7px}.timeline-head button{width:30px;height:27px;border:1px solid var(--edge);border-radius:7px;background:var(--panel-2);color:var(--muted);cursor:pointer}.timeline-head button.on{border-color:var(--green);color:var(--green)}.timeline-head label{margin-left:auto;font-size:8px;color:var(--muted);display:flex;align-items:center;gap:4px}.frames{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;max-height:180px;overflow:auto}.frame{position:relative;aspect-ratio:1;border:1px solid var(--edge);border-radius:7px;background:#050914 center/contain no-repeat;cursor:pointer}.frame.on{border-color:var(--gold);box-shadow:0 0 0 1px rgba(232,181,74,.25)}.frame span{position:absolute;left:3px;bottom:3px;background:rgba(2,5,9,.82);border-radius:4px;padding:1px 4px;color:#fff;font:8px ui-monospace,monospace}.frame small{position:absolute;right:3px;top:3px;background:rgba(2,5,9,.82);border-radius:4px;padding:1px 3px;color:var(--cyan);font:7px ui-monospace,monospace}.frame-controls{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}.frame-controls button{border:1px solid var(--edge);border-radius:7px;background:var(--panel-2);color:var(--muted);padding:6px 3px;font-size:8.5px;cursor:pointer}.frame-controls button:hover{border-color:var(--cyan);color:var(--cyan)}.frame-duration{display:flex;align-items:center;gap:6px;margin-top:7px;color:var(--muted);font-size:8px}.frame-duration input{width:55px;background:#06080f;border:1px solid var(--edge);border-radius:6px;color:var(--text);padding:4px}
 .stage.pixel-mode{background-color:#06080f;background-image:linear-gradient(rgba(56,214,236,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(56,214,236,.055) 1px,transparent 1px);background-size:12px 12px}.stage.pixel-mode canvas{image-rendering:pixelated}
+@media(max-width:720px){
+  html,body{overflow:auto}
+  body.embedded .layout{display:flex;flex-direction:column;height:auto;min-height:100vh;overflow:visible}
+  body.embedded .center{order:1;min-height:340px;justify-content:flex-start;padding:10px;overflow:hidden}
+  body.embedded .col.left{order:2;width:100%;overflow:visible;border-right:0;border-top:1px solid var(--edge);padding:10px}
+  body.embedded .col.right{order:3;width:100%;overflow:visible;border-left:0;border-top:1px solid var(--edge);padding:10px}
+  body.embedded .block{width:100%;margin-bottom:10px}
+  body.embedded .stage{flex:none;max-width:100%}
+  body.embedded .stat{width:100%;padding:0 8px;line-height:1.45}
+  body.embedded .tools-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
 </style></head><body>
 <script>if(new URLSearchParams(location.search).get('embedded')==='1')document.body.classList.add('embedded');</script>
 <div class="top"><div class="mark"><span>AXM</span></div><h1>AXM STUDIO</h1><a class="hub-btn" href="/hub/index.html">← Hub</a><span class="tag">creative sandbox · v1.1 · spine · stickers · atlas · AI</span></div>
@@ -337,7 +348,7 @@ function applyGoalTools(){const L=active();const g=GOALS[L.goal];$('goalName').t
   if(g.forceFinish&&finish==='flat'){finish=g.forceFinish;document.querySelectorAll('#finish button').forEach(x=>x.classList.toggle('on',x.dataset.fin===finish));}}
 
 /* Studio v2 shell: one persistent canvas, multiple creative contexts. */
-let pendingStudioMode=null,currentStudioMode='paint';
+let pendingStudioMode=null,currentStudioMode='paint',pendingStudioGoal=null,studioBootReady=false;
 function applyStudioMode(msg){
   if(!msg||msg.type!=='axm-studio-mode')return;
   pendingStudioMode=msg;
@@ -355,7 +366,42 @@ function applyStudioMode(msg){
   renderLayers();
   setStat('Studio mode: '+String(msg.mode||'paint')+' — same project, focused tools.');
 }
-window.addEventListener('message',e=>{applyStudioMode(e.data);if(e.data&&e.data.type==='axm-studio-save')saveProject(false);if(e.data&&e.data.schema==='axm.studio-asset/v1'&&e.data.type==='axm-studio-import-asset')importStudioImageAsset(e.data.asset);if(e.data&&e.data.type==='axm-studio-apply-hand-drawpacket'){try{const packet=applyDrawPacket(JSON.stringify(e.data.packet||{})),owner=packet.owner==='ai2'?'ai2':'ai1',target=layers.filter(l=>l.owner===owner).slice(-1)[0];if(target)target.sourceAsset={schema:'axm.studio-asset/v1',sourceSchema:String(e.data.source&&e.data.source.schema||''),id:String(e.data.source&&e.data.source.resultId||''),resultDigest:String(e.data.source&&e.data.source.resultDigest||''),handId:String(e.data.source&&e.data.source.handId||''),handVersion:String(e.data.source&&e.data.source.handVersion||''),handContract:String(e.data.source&&e.data.source.handContract||''),operationMode:String(e.data.source&&e.data.source.operationMode||'create'),sourceArtifactDigests:Array.isArray(e.data.source&&e.data.source.sourceArtifactDigests)?e.data.source.sourceArtifactDigests:[],artifactInventory:Array.isArray(e.data.source&&e.data.source.artifactInventory)?e.data.source.artifactInventory:[],artifactDigest:String(e.data.source&&e.data.source.artifactDigest||''),targetCanvas:e.data.source&&e.data.source.targetCanvas||null,targetCanvasOriginal:e.data.source&&e.data.source.targetCanvasOriginal||null,targetCanvasValidation:e.data.source&&e.data.source.targetCanvasValidation||null,canvasTransformReceipt:e.data.source&&e.data.source.canvasTransformReceipt||null,fallbackPolicy:e.data.source&&e.data.source.fallbackPolicy||null,creationRecipe:e.data.source&&e.data.source.creationRecipe||null,validationReceipt:e.data.source&&e.data.source.validationReceipt||null,referenceValidation:e.data.source&&e.data.source.referenceValidation||null,mime:'application/json'};}catch(error){setStat('Creation Hand draw packet refused — '+error.message);}}});
+function applyStudioGoal(msg){
+  if(!msg||msg.type!=='axm-studio-goal')return;
+  const goal=String(msg.goal||'').trim().slice(0,600),mode=['deterministic','self','ai'].includes(msg.creationMode)?msg.creationMode:'self';
+  if(!goal)return;
+  pendingStudioGoal={type:'axm-studio-goal',goal,creationMode:mode};
+  if(!studioBootReady)return;
+  if(mode==='ai'){
+    $('brief').value=goal;idOf('ai1').briefing=goal;$('briefCount').textContent=goal.length+'/600';
+    $('chatIn').value=goal;sysMsg('AI-assisted goal loaded. Press Send when you want the connected AI to take one turn. Nothing started automatically.');
+  }else if(mode==='deterministic')sysMsg('Deterministic goal loaded. Choose a Creation Hand in the open drawer; every candidate remains editable and reviewable.');
+  else sysMsg('Self-creation goal loaded. Use the focused editable tools; AI and heartbeat remain off unless you choose them.');
+  setStat((mode==='ai'?'AI-assisted':mode==='deterministic'?'Deterministic':'Self-creation')+' goal ready — no automatic start.');
+}
+const VISUAL_ACTION_BUTTONS={
+  'history.undo':'undo','history.redo':'redo','project.export-png':'save','project.export-2x':'saveHi','project.export-3x':'saveHi3',
+  'project.save-file':'saveProj','project.load-file':'loadProj','project.new':'newProj','layer.add':'addLayer','layer.clear':'clear',
+  'view.focus-canvas':'focusCanvas','view.toggle-all-tools':'showall','asset.import-image':'impImg','selection.copy-region':'selCopy','selection.cut-region':'selCut',
+  'palette.previous':'palPrev','palette.next':'palNext','palette.save-color':'palSave','wheel.presets':'presetWheelBtn','wheel.blueprints':'bpWheelBtn','wheel.stickers':'stickerWheelBtn',
+  'vector.new-path':'vectorNew','vector.finish-path':'vectorFinish','vector.toggle-close':'vectorClose','vector.toggle-smooth':'vectorSmooth','vector.delete-node':'vectorDeleteNode','vector.delete-path':'vectorDelete','vector.duplicate-path':'vectorDuplicate',
+  'animation.add-frame':'frameAdd','animation.duplicate-frame':'frameDuplicate','animation.delete-frame':'frameDelete','animation.play':'framePlay','animation.stop':'frameStop','animation.toggle-onion':'onionToggle','animation.export':'frameExport'
+};
+function visualActionResult(msg,ok,status){
+  parent.postMessage({type:'axm-studio-command-result',schema:'axm.visual-action-result/v1',actionId:String(msg.actionId||''),ok:ok,status:status},'*');
+}
+function runStudioVisualAction(msg){
+  if(!msg||msg.type!=='axm-studio-command'||msg.schema!=='axm.visual-action/v1'){return;}
+  const command=String(msg.command||''),buttonId=VISUAL_ACTION_BUTTONS[command];
+  if(buttonId){const button=$(buttonId);if(!button){visualActionResult(msg,false,'CONTROL_UNAVAILABLE');return;}button.click();visualActionResult(msg,true,'DISPATCHED_TO_CONTROL');return;}
+  if(command.startsWith('tool.')){const id=command.slice(5);if(!TOOL_REGISTRY.some(item=>item.id===id)){visualActionResult(msg,false,'UNKNOWN_TOOL');return;}setTool(id);setStat('Tool selected: '+TOOL_REGISTRY.find(item=>item.id===id).label+'.');visualActionResult(msg,true,'APPLIED');return;}
+  if(command.startsWith('filter.')){const id=command.slice(7),filter=FILTERS.find(item=>item.name.toLowerCase()===id),layer=active();if(!filter){visualActionResult(msg,false,'UNKNOWN_FILTER');return;}if(!layer||layer.locked){visualActionResult(msg,false,layer?'ACTIVE_LAYER_LOCKED':'ACTIVE_LAYER_UNAVAILABLE');return;}applyFilter(filter);visualActionResult(msg,true,'APPLIED');return;}
+  if(command.startsWith('finish.')){const id=command.slice(7),button=document.querySelector('#finish [data-fin="'+id+'"]');if(!button){visualActionResult(msg,false,'UNKNOWN_FINISH');return;}button.click();setStat('Finish selected: '+id+'.');visualActionResult(msg,true,'APPLIED');return;}
+  if(command.startsWith('symmetry.')){const routes={off:'off',vertical:'v',horizontal:'h',quad:'both',radial:'radial'},id=routes[command.slice(9)],button=document.querySelector('#sym [data-sym="'+id+'"]');if(!button){visualActionResult(msg,false,'UNKNOWN_SYMMETRY');return;}button.click();visualActionResult(msg,true,'APPLIED');return;}
+  visualActionResult(msg,false,'UNSUPPORTED_COMMAND');
+}
+window.addEventListener('message',e=>runStudioVisualAction(e.data));
+window.addEventListener('message',e=>{applyStudioMode(e.data);applyStudioGoal(e.data);if(e.data&&e.data.type==='axm-studio-save')saveProject(false);if(e.data&&e.data.schema==='axm.studio-asset/v1'&&e.data.type==='axm-studio-import-asset')importStudioImageAsset(e.data.asset);if(e.data&&e.data.type==='axm-studio-apply-hand-drawpacket'){try{const packet=applyDrawPacket(JSON.stringify(e.data.packet||{})),owner=packet.owner==='ai2'?'ai2':'ai1',target=layers.filter(l=>l.owner===owner).slice(-1)[0];if(target)target.sourceAsset={schema:'axm.studio-asset/v1',sourceSchema:String(e.data.source&&e.data.source.schema||''),id:String(e.data.source&&e.data.source.resultId||''),resultDigest:String(e.data.source&&e.data.source.resultDigest||''),handId:String(e.data.source&&e.data.source.handId||''),handVersion:String(e.data.source&&e.data.source.handVersion||''),handContract:String(e.data.source&&e.data.source.handContract||''),operationMode:String(e.data.source&&e.data.source.operationMode||'create'),sourceArtifactDigests:Array.isArray(e.data.source&&e.data.source.sourceArtifactDigests)?e.data.source.sourceArtifactDigests:[],artifactInventory:Array.isArray(e.data.source&&e.data.source.artifactInventory)?e.data.source.artifactInventory:[],artifactDigest:String(e.data.source&&e.data.source.artifactDigest||''),targetCanvas:e.data.source&&e.data.source.targetCanvas||null,targetCanvasOriginal:e.data.source&&e.data.source.targetCanvasOriginal||null,targetCanvasValidation:e.data.source&&e.data.source.targetCanvasValidation||null,canvasTransformReceipt:e.data.source&&e.data.source.canvasTransformReceipt||null,fallbackPolicy:e.data.source&&e.data.source.fallbackPolicy||null,creationRecipe:e.data.source&&e.data.source.creationRecipe||null,validationReceipt:e.data.source&&e.data.source.validationReceipt||null,referenceValidation:e.data.source&&e.data.source.referenceValidation||null,mime:'application/json'};}catch(error){setStat('Creation Hand draw packet refused — '+error.message);}}});
 
 /* ===== finish helpers ===== */
 function hexRgba(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16),255];}
@@ -1056,13 +1102,17 @@ $('stageGameAsset').onclick=stageGameAsset;
   await loadGameAssetTargets();
   consumeCollaborationNotice();
   if(pendingStudioMode)applyStudioMode(pendingStudioMode);
-  setStat('AXM Studio ready — full spine, all tools. Creative = everything; goals filter it.');
+  studioBootReady=true;
+  if(pendingStudioGoal)applyStudioGoal(pendingStudioGoal);
+  else setStat('AXM Studio ready — full spine, all tools. Creative = everything; goals filter it.');
+  parent.postMessage({type:'axm-studio-canvas-ready'},'*');
 })();
 
 /* tooltips on tools */
 document.querySelectorAll('.tool').forEach(el=>{const n=el.querySelector('span');if(n)el.title=n.textContent;});
 /* keyboard shortcuts */
 document.addEventListener('keydown',e=>{const t=e.target.tagName;if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT')return;
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();parent.postMessage({type:'axm-studio-open-command-deck'},'*');return;}
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();if(e.shiftKey){$('redo')&&$('redo').click();}else{$('undo')&&$('undo').click();}return;}
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();$('save')&&$('save').click();return;}
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='e'){e.preventDefault();$('saveProj')&&$('saveProj').click();return;}

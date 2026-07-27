@@ -1,0 +1,46 @@
+{
+  "id": "dual-door-observatory",
+  "name": "AXM Dual Door Observatory",
+  "version": "v0.2",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "category": "OBSERVE",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "human-door",
+    "machine-door",
+    "entry",
+    "actions",
+    "manifest",
+    "read-only"
+  ],
+  "uses": [
+    "storage"
+  ],
+  "permissions": [],
+  "actions": [
+    "inventory manifest-declared human workspace entries",
+    "inventory optional manifest-declared machine action entries",
+    "separate string-array and object-map action declaration shapes",
+    "check entry path presence without loading entry code",
+    "emit a freshness-bound dual-door map",
+    "prepare one exact human-door or machine-action review request without opening or executing it"
+  ],
+  "accepts": [
+    "filesystem/workshop-root"
+  ],
+  "produces": [
+    "axm.dual-door-map/v1",
+    "axm.door-review-request/v1"
+  ],
+  "readiness": [
+    "storage"
+  ],
+  "summary": "Read-only map of human workspace doors and optional machine action doors declared by top-level Workshop modules.",
+  "notes": "Optional machine-door absence is not a defect. A review request contains no command, arguments, environment values, or fixture and cannot open or execute itself. This observatory does not load UI or machine code, execute actions, require action parity, grant permissions, prove readiness, or change CANON."
+}

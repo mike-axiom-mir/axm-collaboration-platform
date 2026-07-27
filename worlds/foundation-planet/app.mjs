@@ -12,12 +12,40 @@ import { buildSeasonalWeather } from './core/seasonal-weather.mjs';
 import { EarthSystemEngine, earthCellIdentity, earthSystemDescription } from './core/earth-system.mjs';
 import { earthTransportDescription, transportEarthSystemColumns } from './core/earth-transport.mjs';
 import { BasinRoutingEngine, basinRoutingDescription } from './core/basin-routing.mjs';
+import { floodplainDescription } from './core/floodplain.mjs';
+import { floodplainHabitatDescription } from './core/floodplain-habitat.mjs';
+import { floodEventHistoryDescription } from './core/flood-event-history.mjs';
+import { floodplainSuccessionDescription } from './core/floodplain-succession.mjs';
+import { floodplainPlantMatterDescription } from './core/floodplain-plant-matter.mjs';
+import { floodplainPlantResourcesDescription } from './core/floodplain-plant-resources.mjs';
+import { floodplainDecompositionDescription } from './core/floodplain-decomposition.mjs';
+import { floodplainRespirationDescription } from './core/floodplain-respiration.mjs';
+import { floodplainGasExchangeDescription } from './core/floodplain-gas-exchange.mjs';
+import { runoffBiogeochemistryPoolElements } from './core/soil-biogeochemistry.mjs';
+import {
+  geomorphicSedimentDescription, sedimentGrainTotal
+} from './core/geomorphic-sediment.mjs';
 import { createPhysicsSectorDescriptor, physicsDescription } from './core/physics-contract.mjs';
 import { WorldStateStore, worldStateDescription } from './core/world-state.mjs';
 import {
   createHostBootstrap, createHostPatch, createSectorSubscription, hostDescription, probeFoundationHost
 } from './core/host-protocol.mjs';
 import { authorityDescription } from './core/world-authority.mjs';
+import {
+  applySurfaceLook, isSurfaceControlKey, isSurfaceLookKey,
+  surfaceControlsDescription, surfaceMovementIntent
+} from './core/surface-controls.mjs';
+import {
+  auditFoundationSystem, foundationSystemAuditDescription
+} from './core/system-audit.mjs';
+import {
+  EXPERIENCE_SOURCE_SCHEMA,
+  auditExperienceProtocol,
+  createExperienceSectorCapsule,
+  dispatchExperienceIntent,
+  experienceProtocolDescription,
+  openExperienceLease
+} from './core/experience-protocol.mjs';
 
 const WORLD_CONTRACT = Object.freeze({
   schema: 'axm.foundation-planet/v1',
@@ -32,11 +60,12 @@ const WORLD_CONTRACT = Object.freeze({
   replaceable_conditions: true,
   living_layers_independently_controllable: true,
   physics_connection: 'floating-origin-sector-frame-v1',
-  earth_system_connection: 'closed-two-layer-atmosphere-basin-routing-v2',
+  earth_system_connection: 'audited-native-pressure-radiative-cryosphere-atmosphere-soil-runoff-river-flood-event-habitat-succession-plant-matter-coast-biogeochemistry-and-finite-sediment-v18',
   authoritative_shared_state: false,
   authoritative_host_seam: 'named-world-host-v1',
   multiplayer_input_seam: 'axm.controller-input/v1',
-  scientific_claim: false
+  scientific_claim: false,
+  experience_connection: 'digest-bound-sector-capsule-observer-player-sandbox-v1'
 });
 
 const SAVE_KEY = 'AXM_FOUNDATION_PLANET_SAVE_V2';
@@ -69,7 +98,8 @@ const surface = {
   center: { ...state.location }, playerX: 0, playerZ: 0,
   velocityX: 0, velocityZ: 0,
   yaw: Number(saved?.surface?.yaw ?? 0), pitch: Number(saved?.surface?.pitch ?? -0.08),
-  groundY: 0, sector: null, currentSample: null, marine: false
+  groundY: 0, sector: null, currentSample: null, marine: false,
+  dragging: false, lastX: 0, lastY: 0
 };
 const keys = Object.create(null);
 const layers = new LayerSystem();
@@ -141,9 +171,9 @@ const ui = Object.fromEntries([
   'moistureLabel','habitabilityLabel','annualRainLabel','soilDepthLabel','annualRain','soilDepth','plateId','bedrock','plateBoundary','seasonNow','weatherSummary','dayLength',
   'seasonalTemp','pressure','wind','precipitation','snowpack','drought','droughtBar','fireRisk','fireBar',
   'profileSelect','layerList','lifeMaster',
-  'sectorSize','vegetationCount','faunaCount','riverCount','lakeCount','riverHandoffs','physicsFrame','persistenceRevision','hostAuthority','earthCell','soilWater','groundwaterDepth','runoffFlux','waterBudget','energyBudget','seaIce','regionalAnimals','activeRealms','aquaticSpecies','keystoneSpecies','foodWebBalance',
-  'transportDomain','transportWater','transportClosure','airMassRoute','momentumClosure','rotationDeflection','kineticClosure','cloudPhaseChange','verticalAtmosphere','convectiveExchange','moistEnthalpyClosure',
-  'atmosphereWater','runoffQueue','runoffDestination','channelStorage','channelClosure','riverMouth',
+  'sectorSize','vegetationCount','faunaCount','riverCount','lakeCount','riverHandoffs','physicsFrame','persistenceRevision','hostAuthority','earthCell','soilWater','groundwaterDepth','runoffFlux','waterBudget','energyBudget','radiationBudget','co2RadiativeFeedback','cryospherePhase','seaIce','canopyPhysiology','carbonFlux','carbonPools','nitrogenCycle','marineProductivity','marineCarbon','marineNutrients','marineOxygen','marineDeepOcean','regionalAnimals','activeRealms','aquaticSpecies','keystoneSpecies','foodWebBalance',
+  'transportDomain','transportWater','transportClosure','airMassRoute','momentumClosure','rotationDeflection','kineticClosure','cloudPhaseChange','verticalAtmosphere','pressureColumn','convectiveExchange','buoyancyConversion','upperAirTransport','layerWindShear','geopotentialClosure','moistEnthalpyClosure',
+  'atmosphereWater','atmosphereBiogeochemistry','atmosphereGasProfile','atmosphereGasTransport','integrityAudit','experienceSeam','runoffQueue','runoffBiogeochemistry','mineralSediment','runoffDestination','channelStorage','floodplainStorage','floodplainHabitat','floodEvents','floodplainSuccession','floodplainPlantMatter','floodplainPlantResources','floodplainDecomposition','floodplainRespiration','floodplainGasExchange','channelChemistry','estuaryStorage','channelClosure','riverMouth',
   'populationChange','ageCohorts','migrationNet','activeFire','fps','speciesCount','speciesList','modeLabel',
   'modeHelp','randomLand','freshwater','marineSurvey','resetView','scaleLabel','heading','loading','loadingStatus','loadingBar'
 ].map(id => [id, document.getElementById(id)]));
@@ -531,17 +561,31 @@ function buildGeologyFeatures(centerSample) {
 
 function buildSurfaceLife(centerSample) {
   const vegetation = surface.sector.vegetation;
+  const oceanEcology = surface.marine ? localEarthSystem?.ocean?.ecology : null;
+  const marineLifeActive = layers.livingEnabled() && currentProfile.lifeAbundance > 0;
+  const marineVitality = oceanEcology ? clamp(
+    (.2 + Number(oceanEcology.waterColumn?.chlorophyllProxyMgM3 || 0) / 2.5) *
+      (1 - Number(oceanEcology.waterColumn?.hypoxiaRisk || 0) * .65),
+    marineLifeActive ? .18 : .05,
+    1
+  ) : 1;
+  const visibleVegetation = surface.marine
+    ? vegetation.slice(0, Math.round(vegetation.length * marineVitality))
+    : vegetation;
   const trunkGeometry = surface.marine ? new THREE.IcosahedronGeometry(.0017, 0) : new THREE.CylinderGeometry(.0007, .00135, .012, 5);
   if (!surface.marine) trunkGeometry.translate(0, .006, 0);
   const canopyGeometry = surface.marine ? new THREE.IcosahedronGeometry(.0032, 0) : new THREE.ConeGeometry(.0053, .019, 7);
   if (!surface.marine) canopyGeometry.translate(0, .017, 0);
-  const producerBaseColor = surface.marine ? '#63c9a8' : '#5d4028';
-  const producerCrownColor = surface.marine ? '#8be3c7' : '#4a915a';
-  surfaceVegetation = new THREE.InstancedMesh(trunkGeometry, new THREE.MeshStandardMaterial({ color: producerBaseColor, roughness: 1, emissive: producerBaseColor, emissiveIntensity: surface.marine ? .55 : .16 }), Math.max(1, vegetation.length));
-  surfaceCanopies = new THREE.InstancedMesh(canopyGeometry, new THREE.MeshStandardMaterial({ color: producerCrownColor, roughness: .92, emissive: producerCrownColor, emissiveIntensity: surface.marine ? .48 : .16 }), Math.max(1, vegetation.length));
+  const hypoxicMarine = Number(oceanEcology?.waterColumn?.hypoxiaRisk || 0) > .45;
+  const producerBaseColor = surface.marine
+    ? hypoxicMarine ? '#9b8664' : '#4bc7a1' : '#5d4028';
+  const producerCrownColor = surface.marine
+    ? hypoxicMarine ? '#c2a879' : '#72efc1' : '#4a915a';
+  surfaceVegetation = new THREE.InstancedMesh(trunkGeometry, new THREE.MeshStandardMaterial({ color: producerBaseColor, roughness: 1, emissive: producerBaseColor, emissiveIntensity: surface.marine ? .18 + marineVitality * .45 : .16 }), Math.max(1, visibleVegetation.length));
+  surfaceCanopies = new THREE.InstancedMesh(canopyGeometry, new THREE.MeshStandardMaterial({ color: producerCrownColor, roughness: .92, emissive: producerCrownColor, emissiveIntensity: surface.marine ? .16 + marineVitality * .4 : .16 }), Math.max(1, visibleVegetation.length));
   surfaceVegetation.castShadow = surfaceCanopies.castShadow = true;
   const dummy = new THREE.Object3D();
-  vegetation.forEach((tree, index) => {
+  visibleVegetation.forEach((tree, index) => {
     const y = surface.marine
       ? localTerrainY(0, tree.xKm, tree.zKm, centerSample.elevationM) - (.014 + (index % 11) * .008)
       : localTerrainY(tree.elevationM, tree.xKm, tree.zKm, centerSample.elevationM);
@@ -550,7 +594,7 @@ function buildSurfaceLife(centerSample) {
     surfaceVegetation.setMatrixAt(index, dummy.matrix);
     surfaceCanopies.setMatrixAt(index, dummy.matrix);
   });
-  surfaceVegetation.count = vegetation.length; surfaceCanopies.count = vegetation.length;
+  surfaceVegetation.count = visibleVegetation.length; surfaceCanopies.count = visibleVegetation.length;
   surfaceRoot.add(surfaceVegetation, surfaceCanopies);
 
   const soilPositions = [];
@@ -665,9 +709,27 @@ function applyEnvironmentVisuals() {
   }
   const activeFire = surface.sector?.community?.dynamics?.activeFire === true;
   if (surfaceFire) surfaceFire.visible = weatherVisible && layers.enabled('vegetation') && activeFire;
+  const landEcology = localEarthSystem?.kind === 'land'
+    ? localEarthSystem.land?.ecology : null;
+  if (landEcology && surface.sector && !surface.marine) {
+    const maximumCover = Math.max(.01,
+      Number(landEcology.traits?.maximumCanopyCover || .01));
+    const development = clamp(landEcology.canopyCover / maximumCover, 0, 1);
+    const visiblePlantCount = Math.round(surface.sector.vegetation.length *
+      clamp(.08 + development * .92, 0, 1));
+    if (surfaceVegetation) surfaceVegetation.count = visiblePlantCount;
+    if (surfaceCanopies) surfaceCanopies.count = visiblePlantCount;
+  }
   if (surfaceCanopies) {
     surfaceCanopies.material.color.set(surface.marine ? '#8be3c7' : '#4a915a');
-    if (!surface.marine) surfaceCanopies.material.color.lerp(new THREE.Color(activeFire ? '#65432e' : '#7b6b35'), clamp(seasonalWeather.droughtIndex * .5 + (activeFire ? .45 : 0)));
+    if (!surface.marine) {
+      const physiologyStress = 1 - Number(landEcology?.physiology?.waterStress ?? 1);
+      surfaceCanopies.material.color.lerp(
+        new THREE.Color(activeFire ? '#65432e' : '#7b6b35'),
+        clamp(seasonalWeather.droughtIndex * .38 + physiologyStress * .34 +
+          (activeFire ? .45 : 0))
+      );
+    }
     surfaceCanopies.material.emissive.copy(surfaceCanopies.material.color);
   }
 }
@@ -805,7 +867,12 @@ function synchronizeEarthTransportDomain() {
         earthSystem.columnsForProfile(state.profileId),
         localHydrology,
         stepDays,
-        { profileId: state.profileId, startDay: transportDay }
+        {
+          profileId: state.profileId,
+          startDay: transportDay,
+          livingEnabled: layers.livingEnabled(),
+          lifeAbundance: currentProfile.lifeAbundance
+        }
       );
       const result = transportEarthSystemColumns(basinResult.columns, stepDays);
       transportDay += stepDays;
@@ -821,6 +888,99 @@ function synchronizeEarthTransportDomain() {
   localEarthSystem = earthSystem.getAt(state.location.lat, state.location.lon, state.profileId);
 }
 
+function currentSystemAudit() {
+  return localEarthSystem ? auditFoundationSystem({
+    column: localEarthSystem,
+    earthTransportReceipt: lastEarthTransportReceipt,
+    basinRoutingReceipt: lastBasinRoutingReceipt
+  }) : null;
+}
+
+function currentExperienceSource() {
+  const persistence = worldState.descriptor();
+  return {
+    schema: EXPERIENCE_SOURCE_SCHEMA,
+    worldId: PLANET_DEFAULTS.id,
+    lineageId: persistence.lineageId,
+    revision: persistence.revision,
+    stateChecksum: persistence.checksum,
+    host: sharedHostStatus,
+    profileId: state.profileId,
+    clock: { day: state.day, year: state.year },
+    location: {
+      lat: state.location.lat,
+      lon: state.location.lon,
+      elevationM: surface.currentSample?.elevationM || 0
+    },
+    sectorSizeKm: SURFACE_SIZE_KM,
+    sample: surface.currentSample || {},
+    weather: seasonalWeather,
+    layers: layers.snapshot(),
+    hydrology: localHydrology ? {
+      summary: localHydrology.summary,
+      rivers: localHydrology.rivers,
+      lakes: localHydrology.lakes,
+      handoffs: localHydrology.handoffs,
+      truth: localHydrology.truth
+    } : {},
+    earthSystem: localEarthSystem || {},
+    physics: localPhysics || {},
+    community: surface.sector?.community || {},
+    regionalCommunity: surface.sector?.community?.regional?.summary || null,
+    ecosystemDynamics: surface.sector?.community?.dynamics || null,
+    observedSpecies: surface.sector?.community?.observedSpecies || []
+  };
+}
+
+function currentExperienceCapsule(options = {}) {
+  return createExperienceSectorCapsule(currentExperienceSource(), options);
+}
+
+function currentExperienceStatus() {
+  if (!localEarthSystem) return null;
+  const capsule = currentExperienceCapsule();
+  const actor = { id: 'foundation-runtime-audit', kind: 'service' };
+  const leases = Object.fromEntries(['observer', 'player', 'sandbox'].map(mode => [
+    mode,
+    openExperienceLease(capsule, {
+      id: `runtime-${mode}-contract-check`, mode, actor, maximumIntents: 1
+    })
+  ]));
+  const observerProbe = dispatchExperienceIntent(capsule, leases.observer, {
+    schema: 'axm.foundation-planet.experience-intent/v1',
+    id: 'runtime-observer-authority-probe', sequence: 0,
+    kind: 'WORLD_ACTION_PROPOSE', actor,
+    action: { kind: 'runtime-authority-probe' }
+  });
+  const playerProbe = dispatchExperienceIntent(capsule, leases.player, {
+    schema: 'axm.foundation-planet.experience-intent/v1',
+    id: 'runtime-player-proposal-probe', sequence: 0,
+    kind: 'WORLD_ACTION_PROPOSE', actor,
+    action: { kind: 'runtime-proposal-probe' }
+  });
+  const sandboxProbe = dispatchExperienceIntent(capsule, leases.sandbox, {
+    schema: 'axm.foundation-planet.experience-intent/v1',
+    id: 'runtime-sandbox-detachment-probe', sequence: 0,
+    kind: 'SANDBOX_FORK', actor,
+    payload: { branch: 'runtime-detachment-probe' }
+  });
+  return {
+    schema: 'axm.foundation-planet.experience-status/v1',
+    capsuleDigest: capsule.capsuleDigest,
+    sourceRevision: capsule.source.revision,
+    modes: capsule.access.modes,
+    truth: capsule.truth,
+    audit: auditExperienceProtocol({
+      capsule,
+      leases: [observerProbe.lease, playerProbe.lease, sandboxProbe.lease],
+      receipts: [observerProbe.receipt, playerProbe.receipt,
+        sandboxProbe.receipt],
+      proposals: [playerProbe.proposal],
+      sandboxForks: [sandboxProbe.sandboxFork]
+    })
+  };
+}
+
 function updateDiagnostics() {
   ui.vegetationCount.textContent = layers.enabled('vegetation') ? (surface.sector?.vegetation.length || 0).toLocaleString() : 'OFF';
   ui.faunaCount.textContent = layers.enabled('fauna') ? String(surface.sector?.fauna.length || 0) : 'OFF';
@@ -831,6 +991,103 @@ function updateDiagnostics() {
   ui.persistenceRevision.textContent = `r${worldState.descriptor().revision}`;
   updateHostDiagnostic();
   ui.earthCell.textContent = localEarthSystem ? `${localEarthSystem.profileId} ${localEarthSystem.kind} / step ${localEarthSystem.stepCount}` : '--';
+  const integrityAudit = currentSystemAudit();
+  const integrityFailure = integrityAudit?.checks.find(item =>
+    item.status === 'FAIL');
+  const integrityFailures = integrityAudit?.checks.filter(item =>
+    item.status === 'FAIL') || [];
+  const plantMatterAudit = integrityAudit?.checks.find(item =>
+    item.id === 'floodplain-plant-matter-receipts');
+  const plantResourcesAudit = integrityAudit?.checks.find(item =>
+    item.id === 'floodplain-plant-resources-receipts');
+  const decompositionAudit = integrityAudit?.checks.find(item =>
+    item.id === 'floodplain-decomposition-receipts');
+  const respirationAudit = integrityAudit?.checks.find(item =>
+    item.id === 'floodplain-respiration-receipts');
+  const gasExchangeAudit = integrityAudit?.checks.find(item =>
+    item.id === 'floodplain-atmosphere-gas-exchange-receipts');
+  document.body.dataset.integrityFailureActive = integrityFailure?.id || '';
+  document.body.dataset.floodplainPlantMatterAudit =
+    plantMatterAudit?.status || 'NOT_APPLICABLE';
+  document.body.dataset.floodplainPlantMatterTransferIds =
+    String(lastBasinRoutingReceipt?.truth
+      ?.exactLandEcologyFloodplainPlantTransferIds === true);
+  document.body.dataset.floodplainPlantMatterCarbonResidualKgC = String(
+    lastBasinRoutingReceipt?.conservation
+      ?.loadedLandFloodplainPlantCarbonResidualKgC ?? 'unobserved');
+  document.body.dataset.floodplainPlantMatterNitrogenResidualKgN = String(
+    lastBasinRoutingReceipt?.conservation
+      ?.loadedLandFloodplainPlantNitrogenResidualKgN ?? 'unobserved');
+  document.body.dataset.floodplainPlantResourcesAudit =
+    plantResourcesAudit?.status || 'NOT_APPLICABLE';
+  document.body.dataset.floodplainPlantResourcesTransferIds = String(
+    lastBasinRoutingReceipt?.truth
+      ?.exactFloodplainPlantResourceTransferIds === true);
+  document.body.dataset.floodplainPlantResourcesWaterResidualKg = String(
+    lastBasinRoutingReceipt?.conservation
+      ?.plantResourceWaterResidualKg ?? 'unobserved');
+  document.body.dataset.floodplainPlantResourcesPhosphorusResidualKgP =
+    String(lastBasinRoutingReceipt?.conservation
+      ?.plantResourcePhosphorusResidualKgP ?? 'unobserved');
+  document.body.dataset.floodplainDecompositionAudit =
+    decompositionAudit?.status || 'NOT_APPLICABLE';
+  document.body.dataset.floodplainDecompositionTransferIds = String(
+    lastBasinRoutingReceipt?.truth
+      ?.exactFloodplainDecompositionTransferIds === true);
+  document.body.dataset.floodplainDecompositionCarbonResidualKgC = String(
+    lastBasinRoutingReceipt?.conservation
+      ?.detritalReturnCarbonResidualKgC ?? 'unobserved');
+  document.body.dataset.floodplainDecompositionNitrogenResidualKgN = String(
+    lastBasinRoutingReceipt?.conservation
+      ?.detritalReturnNitrogenResidualKgN ?? 'unobserved');
+  document.body.dataset.floodplainDecompositionPhosphorusResidualKgP =
+    String(lastBasinRoutingReceipt?.conservation
+      ?.detritalReturnPhosphorusResidualKgP ?? 'unobserved');
+  document.body.dataset.floodplainRespirationAudit =
+    respirationAudit?.status || 'NOT_APPLICABLE';
+  document.body.dataset.floodplainRespirationEvidenceBound = String(
+    lastBasinRoutingReceipt?.truth
+      ?.floodplainRespirationEvidenceBound === true);
+  document.body.dataset.floodplainRespirationCarbonResidualKgC = String(
+    lastBasinRoutingReceipt?.conservation
+      ?.floodplainDocToDicCarbonResidualKgC ?? 'unobserved');
+  document.body.dataset.floodplainRespirationOxygenResidualKgO2 = String(
+    lastBasinRoutingReceipt?.conservation
+      ?.floodplainOxygenConsumptionResidualKgO2 ?? 'unobserved');
+  document.body.dataset.floodplainGasExchangeAudit =
+    gasExchangeAudit?.status || 'NOT_APPLICABLE';
+  document.body.dataset.floodplainGasExchangeEvidenceBound = String(
+    lastBasinRoutingReceipt?.truth
+      ?.floodplainGasExchangeEvidenceBound === true);
+  document.body.dataset.floodplainGasExchangeCarbonResidualKgC = String(
+    lastBasinRoutingReceipt?.conservation
+      ?.floodplainAtmosphereCarbonTransferResidualKgC ?? 'unobserved');
+  document.body.dataset.floodplainGasExchangeOxygenResidualKgO2 = String(
+    lastBasinRoutingReceipt?.conservation
+      ?.floodplainAtmosphereOxygenTransferResidualKgO2 ?? 'unobserved');
+  if (integrityFailure) {
+    document.body.dataset.integrityLastFailure = integrityFailure.id;
+    document.body.dataset.integrityLastFailureEvidence =
+      JSON.stringify(integrityFailure.evidence || {}).slice(0, 3000);
+  }
+  document.body.dataset.integrityFailuresEvidence = JSON.stringify(
+    integrityFailures.map(item => ({
+      id: item.id,
+      evidence: item.evidence || {}
+    }))).slice(0, 12000);
+  ui.integrityAudit.textContent = integrityAudit
+    ? `${integrityAudit.verdict} · ${integrityAudit.counts.pass} pass / ${integrityAudit.counts.fail} fail / ${integrityAudit.counts.notApplicable} n/a${integrityFailure ? ` · ${integrityFailure.id}` : ''}`
+    : '--';
+  try {
+    const experienceStatus = currentExperienceStatus();
+    document.body.dataset.experienceCapsule =
+      experienceStatus?.capsuleDigest || '';
+    ui.experienceSeam.textContent = experienceStatus
+      ? `CAPSULE ${experienceStatus.capsuleDigest.slice(-8)} · ${experienceStatus.modes.join('/')} · ${experienceStatus.audit.counts.pass} pass / ${experienceStatus.audit.counts.fail} fail / ${experienceStatus.audit.counts.notApplicable} n/a`
+      : '--';
+  } catch (error) {
+    ui.experienceSeam.textContent = `REFUSED · ${error.message}`;
+  }
   const activeProfileColumnCount = earthSystem.columnsForProfile(state.profileId).length;
   ui.transportDomain.textContent = lastEarthTransportReceipt
     ? `${lastEarthTransportReceipt.columnCount} cells / ${lastEarthTransportReceipt.activeEdgeCount} edges`
@@ -845,43 +1102,186 @@ function updateDiagnostics() {
     Number.isFinite(lastEarthTransportReceipt?.conservation?.atmosphereEastwardMomentumResidualKgMps) &&
     Number.isFinite(lastEarthTransportReceipt?.conservation?.atmosphereNorthwardMomentumResidualKgMps);
   ui.airMassRoute.textContent = hasMomentumReceipt
-    ? `${(lastEarthTransportReceipt.transfers.atmosphereDryAirKg / 1e9).toFixed(2)} Gkg · ${lastEarthTransportReceipt.atmosphereMassReceipts?.length || 0} edges`
-    : lastEarthTransportReceipt ? 'awaiting v2 step' : '--';
+    ? `${lastEarthTransportReceipt.nativePressureTransportReceipt?.layerCount || 0}/8 levels · ${(lastEarthTransportReceipt.transfers.atmosphereDryAirKg / 1e9).toFixed(2)} Gkg · ${lastEarthTransportReceipt.atmosphereMassReceipts?.length || 0} routes`
+    : lastEarthTransportReceipt ? 'awaiting native pressure transport' : '--';
   ui.momentumClosure.textContent = hasMomentumReceipt
     ? `${lastEarthTransportReceipt.conservation.atmosphereEastwardMomentumResidualKgMps.toExponential(1)} E / ${lastEarthTransportReceipt.conservation.atmosphereNorthwardMomentumResidualKgMps.toExponential(1)} N`
-    : lastEarthTransportReceipt ? 'awaiting v2 step' : '--';
+    : lastEarthTransportReceipt ? 'awaiting v3 step' : '--';
   const localRotationReceipt = lastEarthTransportReceipt?.atmosphereCoriolisReceipts?.find(
     receipt => receipt.cellId === localEarthSystem?.id
   );
   ui.rotationDeflection.textContent = localRotationReceipt
     ? `${(localRotationReceipt.rotationRadians * 180 / Math.PI).toFixed(1)}°/step · ${lastEarthTransportReceipt.transfers.coriolisWorkJ.toExponential(1)} J work`
     : lastEarthTransportReceipt ? 'awaiting rotation step' : '--';
-  ui.kineticClosure.textContent = Number.isFinite(lastEarthTransportReceipt?.conservation?.atmosphereKineticEnergyResidualJ)
-    ? `${(lastEarthTransportReceipt.transfers.momentumMixingDissipationJ / 1e9).toFixed(2)} GJ mixed · ${lastEarthTransportReceipt.conservation.atmosphereKineticEnergyResidualJ.toExponential(1)} J residual`
+  const nativeHorizontalResiduals =
+    lastEarthTransportReceipt?.nativePressureTransportReceipt?.residuals;
+  ui.kineticClosure.textContent = Number.isFinite(nativeHorizontalResiduals?.horizontalKineticEnergyJ)
+    ? `${(lastEarthTransportReceipt.transfers.momentumMixingDissipationJ / 1e9).toFixed(2)} GJ mixed · ${nativeHorizontalResiduals.horizontalKineticEnergyJ.toExponential(1)} J native residual`
     : lastEarthTransportReceipt ? 'awaiting energy step' : '--';
   const localPhaseChange = localEarthSystem?.atmosphere?.lastPhaseChangeReceipt;
   const localFreePhaseChange = localEarthSystem?.atmosphere?.lastFreeTropospherePhaseReceipt;
   const localVerticalExchange = localEarthSystem?.atmosphere?.lastVerticalExchangeReceipt;
-  ui.cloudPhaseChange.textContent = localPhaseChange
+  const localPressureDynamics = localEarthSystem?.atmosphere?.lastPressureColumnDynamicsReceipt;
+  ui.cloudPhaseChange.textContent = localPressureDynamics
+    ? `${localPressureDynamics.condensationMm.toFixed(2)} mm cond + ${localPressureDynamics.depositionMm.toFixed(2)} mm dep · ${localPressureDynamics.cloudEvaporationMm.toFixed(2)} mm evap + ${localPressureDynamics.cloudSublimationMm.toFixed(2)} mm sub · ${localPressureDynamics.surfaceRainfallMm.toFixed(2)} rain / ${localPressureDynamics.surfaceSnowfallMm.toFixed(2)} snow`
+    : localPhaseChange
     ? `${localPhaseChange.condensationMm.toFixed(2)} mm cond · ${localPhaseChange.cloudEvaporationMm.toFixed(2)} mm evap · ${localPhaseChange.precipitationMm.toFixed(2)} mm precip`
     : localEarthSystem ? 'awaiting phase step' : '--';
   ui.verticalAtmosphere.textContent = localEarthSystem?.atmosphere?.freeTroposphere
-    ? `${localEarthSystem.atmosphere.boundaryLayerPressureHpa.toFixed(1)} hPa BL + ${localEarthSystem.atmosphere.freeTroposphere.pressureThicknessHpa.toFixed(1)} hPa FT · ${(localVerticalExchange?.finalLapseRateKPerKm ?? ((localEarthSystem.atmosphere.airTemperatureC - localEarthSystem.atmosphere.freeTroposphere.airTemperatureC) / (localEarthSystem.atmosphere.freeTroposphere.referenceAltitudeM / 1000))).toFixed(2)} K/km`
-    : localEarthSystem ? 'awaiting two-layer migration' : '--';
+    ? `${localEarthSystem.atmosphere.boundaryLayerPressureHpa.toFixed(1)} hPa BL + ${localEarthSystem.atmosphere.freeTroposphere.pressureThicknessHpa.toFixed(1)} hPa FT · ${localEarthSystem.atmosphere.pressureColumn?.verticalInterfaces?.length ?? 0}/7 native interfaces`
+    : localEarthSystem ? 'awaiting pressure-column migration' : '--';
+  const localPressureColumn = localEarthSystem?.atmosphere?.pressureColumn;
+  const localPressureSync = localEarthSystem?.atmosphere?.lastPressureColumnSyncReceipt;
+  const localPressureHorizontal =
+    localEarthSystem?.atmosphere?.lastPressureColumnHorizontalTransportReceipt;
+  const nativeHorizontalLevelCount =
+    localPressureHorizontal?.layerCount ||
+    lastEarthTransportReceipt?.nativePressureTransportReceipt?.levelSummaries?.length || 0;
+  ui.pressureColumn.textContent = localPressureColumn?.layers?.length
+    ? `${localPressureColumn.layers.length} levels · ${(localPressureColumn.modelTopHeightM / 1000).toFixed(1)} km top · ${localPressureColumn.layers[0].airTemperatureC.toFixed(1)}→${localPressureColumn.layers.at(-1).airTemperatureC.toFixed(1)} °C · ${localPressureDynamics?.adjacentExchangeReceipts?.length ?? 0}/7 vertical · ${nativeHorizontalLevelCount}/8 horizontal · ${(localPressureDynamics?.residuals?.resolvedEnergyJm2 ?? localPressureSync?.residuals?.moistEnthalpyJm2 ?? 0).toExponential(1)} J/m²`
+    : localEarthSystem ? 'awaiting pressure-column migration' : '--';
   ui.convectiveExchange.textContent = localVerticalExchange
-    ? `${(localVerticalExchange.exchangeFraction * 100).toFixed(2)}% · ${localVerticalExchange.vaporUpwardMm.toFixed(3)} mm vapor / ${localVerticalExchange.cloudWaterUpwardMm.toFixed(3)} mm cloud up · ${localVerticalExchange.moistEnthalpyResidualJm2.toExponential(1)} J/m²`
+    ? `${localVerticalExchange.nativeInterfaceCount}/7 interfaces · ${localPressureDynamics.activeAdjacentInterfaceCount}/7 exchanging · ${localVerticalExchange.resolvedEnergyResidualJm2.toExponential(1)} J/m²`
     : localEarthSystem ? 'awaiting vertical step' : '--';
+  ui.buoyancyConversion.textContent = localVerticalExchange &&
+    Number.isFinite(localVerticalExchange.buoyancyWorkJm2)
+    ? `${(localVerticalExchange.buoyancyWorkJm2 / 1e6).toFixed(3)} MJ/m² buoyant · ${(localVerticalExchange.finalConvectiveKineticEnergyJm2 / 1e6).toFixed(3)} MJ/m² CKE · ${localVerticalExchange.verticalVelocityProxyMps.toFixed(2)} m/s max w`
+    : localEarthSystem ? 'awaiting v3 interface-energy receipt' : '--';
+  const hasUpperTransport = lastEarthTransportReceipt?.truth?.upperAirHorizontalTransport === true &&
+    Number.isFinite(lastEarthTransportReceipt?.transfers?.atmosphereFreeDryAirKg);
+  ui.upperAirTransport.textContent = hasUpperTransport
+    ? `6 upper native levels · ${(lastEarthTransportReceipt.transfers.atmosphereFreeDryAirKg / 1e9).toFixed(2)} Gkg dry · ${(lastEarthTransportReceipt.transfers.atmosphereFreeVaporWaterKg / 1e9).toFixed(2)} Gkg vapor · ${(lastEarthTransportReceipt.transfers.atmosphereFreeHeatJ / 1e12).toFixed(2)} TJ`
+    : lastEarthTransportReceipt ? 'awaiting native upper-air step' : '--';
+  const localFreeAtmosphere = localEarthSystem?.atmosphere?.freeTroposphere;
+  const layerWindShearMps = localFreeAtmosphere
+    ? Math.hypot(
+      localFreeAtmosphere.eastwardWindMps - localEarthSystem.atmosphere.eastwardWindMps,
+      localFreeAtmosphere.northwardWindMps - localEarthSystem.atmosphere.northwardWindMps
+    ) : null;
+  ui.layerWindShear.textContent = localFreeAtmosphere
+    ? `${localEarthSystem.atmosphere.windSpeedMps.toFixed(1)} m/s BL · ${localFreeAtmosphere.windSpeedMps.toFixed(1)} m/s FT · Δ${layerWindShearMps.toFixed(1)}`
+    : '--';
+  ui.geopotentialClosure.textContent = Number.isFinite(
+    lastEarthTransportReceipt?.conservation?.atmosphereGeopotentialEnergyResidualJ
+  )
+    ? `${(lastEarthTransportReceipt.transfers.geopotentialAdjustmentWorkJ / 1e12).toFixed(2)} TJ terrain work · ${lastEarthTransportReceipt.conservation.atmosphereGeopotentialEnergyResidualJ.toExponential(1)} J residual`
+    : lastEarthTransportReceipt ? 'awaiting geopotential receipt' : '--';
   ui.moistEnthalpyClosure.textContent = localPhaseChange && Number.isFinite(localEarthSystem?.budget?.atmosphereEnergy?.residualJm2)
     ? `${((localPhaseChange.latentHeatingJm2 + Number(localFreePhaseChange?.latentHeatingJm2 || 0)) / 1e6).toFixed(2)} MJ/m² latent · ${localEarthSystem.budget.atmosphereEnergy.residualJm2.toExponential(1)} J/m² residual`
     : localEarthSystem ? 'awaiting moist-energy step' : '--';
   ui.atmosphereWater.textContent = localEarthSystem
-    ? `${localEarthSystem.atmosphere.precipitableWaterMm.toFixed(2)}+${localEarthSystem.atmosphere.cloudWaterMm.toFixed(2)} mm BL · ${(localEarthSystem.atmosphere.freeTroposphere?.precipitableWaterMm || 0).toFixed(2)}+${(localEarthSystem.atmosphere.freeTroposphere?.cloudWaterMm || 0).toFixed(2)} mm FT · boundary ${localEarthSystem.budget.water.atmosphericBoundaryMoistureMm.toFixed(2)} mm`
+    ? `${localEarthSystem.atmosphere.precipitableWaterMm.toFixed(2)}v+${localEarthSystem.atmosphere.cloudWaterMm.toFixed(2)}l+${localEarthSystem.atmosphere.cloudIceMm.toFixed(2)}i mm BL · ${(localEarthSystem.atmosphere.freeTroposphere?.precipitableWaterMm || 0).toFixed(2)}v+${(localEarthSystem.atmosphere.freeTroposphere?.cloudWaterMm || 0).toFixed(2)}l+${(localEarthSystem.atmosphere.freeTroposphere?.cloudIceMm || 0).toFixed(2)}i mm FT · boundary ${localEarthSystem.budget.water.atmosphericBoundaryMoistureMm.toFixed(2)} mm`
+    : '--';
+  const atmosphereGas = localEarthSystem?.atmosphere?.biogeochemistry;
+  ui.atmosphereBiogeochemistry.textContent = atmosphereGas
+    ? `${atmosphereGas.co2Ppm.toFixed(1)} ppm CO₂ · ${(atmosphereGas.oxygenFractionProxy * 100).toFixed(2)}% O₂ · ${atmosphereGas.cumulative.estuaryNitrogenGasInputKgNm2.toExponential(2)} kgN/m² estuary N₂`
+    : '--';
+  const atmosphereGasLayers = atmosphereGas?.layers || [];
+  const surfaceGasLayer = atmosphereGasLayers[0];
+  const topGasLayer = atmosphereGasLayers.at(-1);
+  const verticalGasReceipt = atmosphereGas?.lastVerticalTransportReceipt;
+  ui.atmosphereGasProfile.textContent = atmosphereGasLayers.length === 8
+    ? `8 levels · ${surfaceGasLayer.co2PpmProxy.toFixed(1)}→${topGasLayer.co2PpmProxy.toFixed(1)} ppm CO₂ · ${verticalGasReceipt?.interfaceCount || 0}/7 vertical`
+    : atmosphereGas ? 'awaiting native gas-layer migration' : '--';
+  const atmosphereGasTransport = lastEarthTransportReceipt?.
+    atmosphereBiogeochemistryTransportReceipt;
+  ui.atmosphereGasTransport.textContent = atmosphereGasTransport
+    ? `${atmosphereGasTransport.layerSummaries?.length || 0}/8 levels · ${atmosphereGasTransport.routeCount} routes · ${(atmosphereGasTransport.transfers.carbonKgC / 1e9).toFixed(2)} GkgC · ${(atmosphereGasTransport.transfers.oxygenKgO2 / 1e12).toFixed(2)} TkgO₂ · ${atmosphereGasTransport.conservation.carbonResidualKgC.toExponential(1)} kgC residual`
     : '--';
   ui.runoffQueue.textContent = localEarthSystem
     ? `${localEarthSystem.routing.runoffQueueMm.toFixed(3)} mm queued · ${lastEarthTransportReceipt ? (lastEarthTransportReceipt.transfers.runoffRoutedKg / 1e6).toFixed(2) : '0.00'} Mkg moved`
     : '--';
+  const runoffChemistry = localEarthSystem?.kind === 'land'
+    ? runoffBiogeochemistryPoolElements(
+        localEarthSystem.routing.runoffBiogeochemistryQueue)
+    : null;
+  const soilChemistry = localEarthSystem?.kind === 'land'
+    ? runoffBiogeochemistryPoolElements(
+        localEarthSystem.land.soilBiogeochemistry)
+    : null;
+  const latestOceanRunoff = localEarthSystem?.kind === 'ocean'
+    ? localEarthSystem.ocean.ecology?.lastRunoffInputReceipt : null;
+  ui.runoffBiogeochemistry.textContent = runoffChemistry && soilChemistry
+    ? `${(runoffChemistry.carbon * 1000).toFixed(3)} gC/m² · ${(runoffChemistry.nitrogen * 1000).toFixed(3)} gN/m² · ${(runoffChemistry.phosphorus * 1e6).toFixed(2)} mgP/m² queued · ${(soilChemistry.carbon * 1000).toFixed(2)} gC/m² soil`
+    : latestOceanRunoff
+      ? `${latestOceanRunoff.inputs.carbonKgC.toFixed(2)} kgC · ${latestOceanRunoff.inputs.nitrogenKgN.toFixed(2)} kgN · ${latestOceanRunoff.inputs.phosphorusKgP.toFixed(3)} kgP received`
+      : localEarthSystem ? 'no local land-runoff chemistry queue' : '--';
   const basinStatus = basinRouting.descriptor(state.profileId);
-  ui.channelStorage.textContent = `${(basinStatus.activeProfileStoredWaterKg / 1e9).toFixed(3)} Gkg / ${basinStatus.activeProfileReachStates} reaches`;
+  const riverSediment = basinStatus.activeProfileStoredMineralSediment;
+  const localSurfaceSediment = localEarthSystem?.kind === 'land'
+    ? localEarthSystem.land.surfaceSediment : null;
+  const localCoastalSediment = localEarthSystem?.kind === 'ocean'
+    ? localEarthSystem.ocean.coastalSediment : null;
+  const runoffSedimentKgM2 = localEarthSystem?.kind === 'land'
+    ? sedimentGrainTotal(localEarthSystem.routing.runoffSedimentQueue
+        ?.suspendedKgM2) : 0;
+  const coastalSuspendedKgM2 = localCoastalSediment
+    ? sedimentGrainTotal(localCoastalSediment.suspendedKgM2) : 0;
+  const coastalDepositedKgM2 = localCoastalSediment
+    ? sedimentGrainTotal(localCoastalSediment.depositedKgM2) : 0;
+  ui.mineralSediment.textContent = !localEarthSystem ? '--'
+    : localSurfaceSediment
+      ? `${localSurfaceSediment.effectiveSoilDepthM.toFixed(3)} m surface · ${runoffSedimentKgM2.toFixed(4)} kg/m² runoff · ${(riverSediment.suspendedKg / 1000).toFixed(2)} t river / ${(riverSediment.bedDepositKg / 1000).toFixed(2)} t bed`
+      : `${coastalSuspendedKgM2.toFixed(4)} kg/m² coast water · ${coastalDepositedKgM2.toFixed(4)} kg/m² deposited · ${(riverSediment.suspendedKg / 1000).toFixed(2)} t river`;
+  ui.channelStorage.textContent = `${(basinStatus.activeProfileChannelWaterKg / 1e9).toFixed(3)} Gkg / ${basinStatus.activeProfileReachStates} reaches`;
+  const floodplainStorage = basinStatus.activeProfileFloodplain;
+  ui.floodplainStorage.textContent = floodplainStorage
+    ? `${(floodplainStorage.waterKg / 1e9).toFixed(3)} Gkg water / ${(floodplainStorage.totalSedimentKg / 1000).toFixed(2)} t sediment / ${floodplainStorage.activeReachCount}/${floodplainStorage.reachCount} reaches`
+    : '--';
+  const floodplainHabitat = basinStatus.activeProfileFloodplainHabitat;
+  ui.floodplainHabitat.textContent = floodplainHabitat &&
+    floodplainHabitat.reachCount > 0
+    ? `${floodplainHabitat.dominantClass || 'unobserved'} / ${(floodplainHabitat.rollingHydroperiod30d * 100).toFixed(2)}% hydroperiod / ${floodplainHabitat.floodPulseCount} pulses / ${floodplainHabitat.observedReachCount}/${floodplainHabitat.reachCount} observed`
+    : 'no reach memory yet';
+  const floodEvents = basinStatus.activeProfileFloodEvents;
+  ui.floodEvents.textContent = floodEvents && floodEvents.reachCount > 0
+    ? `${floodEvents.activeEventCount} active / ${floodEvents.completedEventCount} completed / ${floodEvents.archivedEventCount} archived / ${floodEvents.meanRecurrenceIntervalDays == null ? 'recurrence unobserved' : `${floodEvents.meanRecurrenceIntervalDays.toFixed(2)} d mean recurrence`}`
+    : 'no event history yet';
+  const succession = basinStatus.activeProfileFloodplainSuccession;
+  ui.floodplainSuccession.textContent = succession &&
+    succession.reachCount > 0
+    ? `${succession.dominantGuild} / ${(succession.meanTotalCoverFraction * 100).toFixed(3)}% living cover / ${(succession.meanMatureCoverFraction * 100).toFixed(3)}% mature / ${succession.colonizedReachCount}/${succession.reachCount} colonized`
+    : 'no living succession yet';
+  const plantMatter = basinStatus.activeProfileFloodplainPlantMatter;
+  const plantMassLabel = (value, element) => value >= 1000
+    ? `${(value / 1000).toFixed(3)} t${element}`
+    : `${value.toFixed(3)} kg${element}`;
+  ui.floodplainPlantMatter.textContent = plantMatter &&
+    plantMatter.reachCount > 0
+    ? `${plantMatter.dominantGuild} / ${plantMassLabel(plantMatter.live.carbonKgC, 'C')} live / ${plantMassLabel(plantMatter.standingDead.carbonKgC + plantMatter.litter.carbonKgC, 'C')} detritus / ${plantMassLabel(plantMatter.total.nitrogenKgN, 'N')} / ${plantMatter.materializedReachCount}/${plantMatter.reachCount} materialized`
+    : 'no materialized plant matter yet';
+  const plantResources = basinStatus.activeProfileFloodplainPlantResources;
+  const plantPhosphorusLabel = value => value >= 1
+    ? `${value.toFixed(3)} kgP`
+    : value >= .001 ? `${(value * 1000).toFixed(3)} gP`
+      : `${(value * 1e6).toFixed(3)} mgP`;
+  ui.floodplainPlantResources.textContent = plantResources &&
+    plantResources.reachCount > 0
+    ? `${plantResources.dominantGuild} / ${plantPhosphorusLabel(plantResources.total.phosphorusKgP)} / ${plantResources.total.liveWaterKg.toFixed(3)} kg tissue water / ${plantResources.resourcedReachCount}/${plantResources.reachCount} resourced`
+    : 'no P/water-backed plant growth yet';
+  const decomposition = basinStatus.activeProfileFloodplainDecomposition;
+  ui.floodplainDecomposition.textContent = decomposition &&
+    decomposition.reachCount > 0
+    ? `${plantMassLabel(decomposition.cumulativeFloodplainReturn.carbonKgC, 'C')} / ${plantMassLabel(decomposition.cumulativeFloodplainReturn.nitrogenKgN, 'N')} / ${plantPhosphorusLabel(decomposition.cumulativeFloodplainReturn.phosphorusKgP)} returned / ${decomposition.activeReachCount}/${decomposition.reachCount} active`
+    : 'no resource-backed detrital return yet';
+  const respiration = basinStatus.activeProfileFloodplainRespiration;
+  ui.floodplainRespiration.textContent = respiration &&
+    respiration.reachCount > 0
+    ? `${plantMassLabel(respiration.cumulativeMineralization.dissolvedOrganicCarbonConsumedKgC, 'C')} DOC to DIC / ${plantMassLabel(respiration.cumulativeMineralization.dissolvedOxygenConsumedKgO2, 'O2')} consumed / ${respiration.oxygenLimitedReachCount} O2-limited / ${respiration.activeReachCount}/${respiration.reachCount} active`
+    : 'no local aerobic mineralization yet';
+  const gasExchange = basinStatus.activeProfileFloodplainGasExchange;
+  ui.floodplainGasExchange.textContent = gasExchange &&
+    gasExchange.reachCount > 0
+    ? `${plantMassLabel(gasExchange.cumulativeExchange.carbonToAtmosphereKgC, 'C')} to air / ${plantMassLabel(gasExchange.cumulativeExchange.oxygenToFloodplainKgO2, 'O2')} reaerated / ${gasExchange.atmosphereUnavailableReachCount} air-unloaded / ${gasExchange.activeReachCount}/${gasExchange.reachCount} active`
+    : 'no paired floodplain-atmosphere gas exchange yet';
+  const riverChemistry = basinStatus.activeProfileStoredChemistry;
+  ui.channelChemistry.textContent = riverChemistry
+    ? `${riverChemistry.carbonKgC.toFixed(2)} kgC · ${(riverChemistry.nitrogenKgN * 1000).toFixed(2)} gN · ${(riverChemistry.phosphorusKgP * 1000).toFixed(2)} gP · ${riverChemistry.oxygenKgO2.toFixed(2)} kgO₂`
+    : '--';
+  const estuaryStorage = basinStatus.activeProfileEstuaryStorage;
+  ui.estuaryStorage.textContent = estuaryStorage
+    ? `${estuaryStorage.carbonKgC.toFixed(2)} kgC · ${(estuaryStorage.nitrogenKgN * 1000).toFixed(2)} gN · ${(estuaryStorage.phosphorusKgP * 1000).toFixed(2)} gP retained`
+    : '--';
   ui.channelClosure.textContent = lastBasinRoutingReceipt
     ? `${lastBasinRoutingReceipt.conservation.waterResidualKg.toExponential(1)} kg`
     : '--';
@@ -913,12 +1313,65 @@ function updateDiagnostics() {
   ui.waterBudget.textContent = localEarthSystem
     ? `${localEarthSystem.budget.water.residualMm.toExponential(1)} mm`
     : '--';
-  ui.energyBudget.textContent = localEarthSystem
-    ? `${localEarthSystem.budget.energy.netSurfaceFluxWm2.toFixed(1)} W/m2 / residual ${localEarthSystem.budget.energy.residualJm2.toExponential(1)} J/m2`
+  const localEnergyBudget = localEarthSystem?.budget?.energy;
+  const cryospherePhaseChangeWm2 = Number(localEnergyBudget?.cryospherePhaseChangeWm2);
+  ui.energyBudget.textContent = localEnergyBudget
+    ? `${localEnergyBudget.netSurfaceFluxWm2.toFixed(1)} W/m2 · fusion ${Number.isFinite(cryospherePhaseChangeWm2) ? `${cryospherePhaseChangeWm2.toFixed(1)} W/m2` : 'awaiting phase step'} · residual ${localEnergyBudget.residualJm2.toExponential(1)} J/m2`
     : '--';
+  const localRadiation = localEarthSystem?.budget?.energy?.radiation;
+  ui.radiationBudget.textContent = localRadiation
+    ? `${localRadiation.absorbedShortwaveWm2.toFixed(1)} SW↓ · ${localRadiation.downwardLongwaveWm2.toFixed(1)} LW↓ / ${localRadiation.upwardLongwaveWm2.toFixed(1)} LW↑ · τ ${localRadiation.cloudOptics.shortwaveOpticalDepth.toFixed(1)}/${localRadiation.cloudOptics.longwaveOpticalDepth.toFixed(1)}`
+    : localEarthSystem ? 'awaiting local radiation step' : '--';
+  const atmosphereCo2RadiativeCoupling = localRadiation
+    ?.atmosphereCo2RadiativeCoupling;
+  ui.co2RadiativeFeedback.textContent = atmosphereCo2RadiativeCoupling
+    ? `${atmosphereCo2RadiativeCoupling.pressureWeightedCo2Ppm.toFixed(1)} ppm · ${atmosphereCo2RadiativeCoupling.appliedSurfaceAdjustmentWm2 >= 0 ? '+' : ''}${atmosphereCo2RadiativeCoupling.appliedSurfaceAdjustmentWm2.toFixed(3)} W/m² · ${atmosphereCo2RadiativeCoupling.layerCount}/8 grey layers`
+    : localEarthSystem ? 'awaiting native-layer CO2 radiation step' : '--';
+  const localCryospherePhase = localEarthSystem?.cryosphere?.lastPhaseChangeReceipt;
+  ui.cryospherePhase.textContent = localCryospherePhase
+    ? `${localCryospherePhase.snowmeltMm.toFixed(2)} mm snowmelt · ${localCryospherePhase.seaIceFreezeMm.toFixed(2)} mm freeze / ${localCryospherePhase.seaIceMeltMm.toFixed(2)} mm melt · ${localCryospherePhase.residualJm2.toExponential(1)} J/m2`
+    : localEarthSystem ? 'awaiting frozen-phase step' : '--';
   ui.seaIce.textContent = !localEarthSystem ? '--' : !layers.enabled('cryosphere') ? 'OFF' : localEarthSystem.kind === 'ocean'
-    ? `${Math.round(localEarthSystem.cryosphere.seaIceFraction * 100)}% / ${localEarthSystem.cryosphere.seaIceThicknessM.toFixed(2)} m`
-    : `${Math.round(localEarthSystem.cryosphere.snowWaterEquivalentMm)} mm SWE`;
+    ? `${Math.round(localEarthSystem.cryosphere.seaIceFraction * 100)}% / ${localEarthSystem.cryosphere.seaIceThicknessM.toFixed(2)} m · ${localEarthSystem.cryosphere.snowWaterEquivalentMm.toFixed(1)} mm snow`
+    : `${Math.round(localEarthSystem.cryosphere.snowWaterEquivalentMm)} mm SWE · age ${localEarthSystem.cryosphere.snowAgeDays.toFixed(1)} d`;
+  const localLandEcology = localEarthSystem?.kind === 'land'
+    ? localEarthSystem.land?.ecology : null;
+  const localEcologyReceipt = localLandEcology?.lastFluxReceipt;
+  const landLifeActive = layers.livingEnabled() && currentProfile.lifeAbundance > 0;
+  ui.canopyPhysiology.textContent = !localEarthSystem ? '--' : !localLandEcology
+    ? 'ocean column'
+    : !landLifeActive ? 'DORMANT · reservoirs preserved'
+    : `${Math.round(localLandEcology.canopyCover * 100)}% cover · LAI ${localLandEcology.leafAreaIndex.toFixed(2)} · ${localLandEcology.canopyHeightM.toFixed(1)} m canopy / ${localLandEcology.rootDepthM.toFixed(2)} m roots`;
+  ui.carbonFlux.textContent = !localLandEcology ? '--' : !landLifeActive
+    ? 'DORMANT · 0 exchange'
+    : localEcologyReceipt
+      ? `${(localEcologyReceipt.carbon.grossPrimaryProductionKgCm2 * 1000).toFixed(2)} gC/m² GPP · ${((localEcologyReceipt.carbon.autotrophicRespirationKgCm2 + localEcologyReceipt.carbon.heterotrophicRespirationKgCm2) * 1000).toFixed(2)} gC/m² resp · ${localEcologyReceipt.carbon.netAtmosphereExchangeKgCm2 >= 0 ? '+' : ''}${(localEcologyReceipt.carbon.netAtmosphereExchangeKgCm2 * 1000).toFixed(2)} gC/m² air`
+      : 'awaiting ecology step';
+  ui.carbonPools.textContent = !localLandEcology ? '--'
+    : `${localLandEcology.carbon.liveBiomassKgCm2.toFixed(2)} live + ${localLandEcology.carbon.litterKgCm2.toFixed(2)} litter + ${localLandEcology.carbon.soilOrganicKgCm2.toFixed(2)} soil kgC/m² · ${localLandEcology.carbon.co2PpmProxy.toFixed(0)} ppm local proxy`;
+  ui.nitrogenCycle.textContent = !localLandEcology ? '--' : localEcologyReceipt
+    ? `${(localLandEcology.nitrogen.mineralKgNm2 * 1000).toFixed(2)} gN/m² mineral · ${(localEcologyReceipt.nitrogen.plantUptakeKgNm2 * 1000).toFixed(3)} gN/m² uptake · ${localEcologyReceipt.nitrogen.residualKgNm2.toExponential(1)} residual`
+    : `${(localLandEcology.nitrogen.mineralKgNm2 * 1000).toFixed(2)} gN/m² mineral · migration checkpoint`;
+  const localOceanEcology = localEarthSystem?.kind === 'ocean'
+    ? localEarthSystem.ocean?.ecology : null;
+  const localOceanReceipt = localOceanEcology?.lastFluxReceipt;
+  const oceanLifeActive = layers.livingEnabled() && currentProfile.lifeAbundance > 0;
+  ui.marineProductivity.textContent = !localEarthSystem ? '--' : !localOceanEcology
+    ? 'land column'
+    : !oceanLifeActive ? 'DORMANT · physical chemistry active'
+    : localOceanReceipt
+      ? `${(localOceanReceipt.carbon.grossPrimaryProductionKgCm2 * 1000).toFixed(2)} gC/m² GPP · ${(localOceanEcology.carbon.phytoplanktonKgCm2 * 1000).toFixed(2)} gC/m² phyto · ${localOceanEcology.waterColumn.chlorophyllProxyMgM3.toFixed(2)} mg/m³ chl proxy`
+      : 'awaiting marine ecology step';
+  ui.marineCarbon.textContent = !localOceanEcology ? '--'
+    : `${localOceanEcology.carbon.dissolvedInorganicKgCm2.toFixed(2)} DIC + ${localOceanEcology.carbon.dissolvedOrganicKgCm2.toFixed(3)} DOC kgC/m² · ${localOceanEcology.carbon.co2PpmProxy.toFixed(0)} ppm local air proxy${localOceanReceipt ? ` · ${localOceanReceipt.carbon.airSeaCo2FluxToOceanKgCm2.toExponential(1)} air-sea` : ''}`;
+  ui.marineNutrients.textContent = !localOceanEcology ? '--'
+    : `${(localOceanEcology.nitrogen.dissolvedInorganicKgNm2 * 1000).toFixed(2)} gN/m² + ${(localOceanEcology.phosphorus.dissolvedInorganicKgPm2 * 1000).toFixed(3)} gP/m² dissolved${localOceanReceipt ? ` · residual ${localOceanReceipt.nitrogen.residualKgNm2.toExponential(1)} N / ${localOceanReceipt.phosphorus.residualKgPm2.toExponential(1)} P` : ' · migration checkpoint'}`;
+  ui.marineOxygen.textContent = !localOceanEcology ? '--'
+    : `${localOceanEcology.oxygen.dissolvedKgO2m2.toFixed(2)} kgO₂/m² · ${Math.round(localOceanEcology.waterColumn.oxygenSaturationFraction * 100)}% sat · hypoxia ${Math.round(localOceanEcology.waterColumn.hypoxiaRisk * 100)}%${localOceanReceipt ? ` · ${localOceanReceipt.oxygen.residualKgO2m2.toExponential(1)} residual` : ''}`;
+  const localDeepOcean = localOceanEcology?.deepOcean;
+  const localDeepReceipt = localOceanReceipt?.deepOcean;
+  ui.marineDeepOcean.textContent = !localDeepOcean ? '--'
+    : `${localDeepOcean.deepWaterDepthM.toFixed(0)} m · ${localDeepOcean.carbon.dissolvedInorganicKgCm2.toFixed(1)} kgC/m² DIC · ${(localDeepOcean.carbon.seafloorBuriedOrganicKgCm2 * 1000).toExponential(2)} gC/m² buried${localDeepReceipt ? ` · ${(localDeepReceipt.particleExport.sinkingCarbonKgCm2 * 1000).toExponential(2)} gC/m² export` : ''}`;
   const regional = surface.sector?.community?.regional?.summary;
   const dynamics = surface.sector?.community?.dynamics;
   const livingEnabled = layers.livingEnabled() && currentProfile.lifeAbundance > 0;
@@ -945,8 +1398,8 @@ function updateModePresentation() {
   ui.modeHelp.textContent = state.mode === 'orbit'
     ? 'Drag to rotate · wheel to change altitude · double-click land to deploy'
     : surface.marine
-      ? 'Marine survey · click water for mouse look · W A S D to swim · Shift to traverse faster'
-      : 'Click world for mouse look · W A S D to move · Shift to traverse faster · Esc releases cursor';
+      ? 'W A S D swim · click for mouse look or drag · arrows also look · Shift traverses faster'
+      : 'W A S D move · click for mouse look or drag · arrows also look · Shift traverses faster';
 }
 
 function setMode(mode, options = {}) {
@@ -1112,13 +1565,10 @@ function updateOrbitCamera() {
 }
 
 function updateSurface(dt, now) {
+  Object.assign(surface, applySurfaceLook(surface, { deltaSeconds: dt, keys }));
   const sprint = keys.ShiftLeft || keys.ShiftRight;
   const speedKmS = surface.marine ? (sprint ? .032 : .009) : (sprint ? .045 : .008);
-  let forward = (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0);
-  let strafe = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
-  const length = Math.hypot(forward, strafe) || 1; forward /= length; strafe /= length;
-  const inputX = Math.sin(surface.yaw) * forward + Math.cos(surface.yaw) * strafe;
-  const inputZ = -Math.cos(surface.yaw) * forward + Math.sin(surface.yaw) * strafe;
+  const { forward, strafe, x: inputX, z: inputZ } = surfaceMovementIntent(surface.yaw, keys);
   const response = 1 - Math.exp(-(forward || strafe ? 9 : 5.5) * dt);
   surface.velocityX += (inputX * speedKmS - surface.velocityX) * response;
   surface.velocityZ += (inputZ * speedKmS - surface.velocityZ) * response;
@@ -1263,15 +1713,27 @@ function bindUI() {
   canvas.addEventListener('pointerdown', event => {
     if (state.mode === 'orbit') {
       orbit.dragging = true; orbit.lastX = event.clientX; orbit.lastY = event.clientY; canvas.setPointerCapture?.(event.pointerId);
-    } else canvas.requestPointerLock?.();
+    } else {
+      surface.dragging = true; surface.lastX = event.clientX; surface.lastY = event.clientY;
+      canvas.setPointerCapture?.(event.pointerId);
+      const lockRequest = canvas.requestPointerLock?.();
+      lockRequest?.catch?.(() => {});
+    }
   });
   canvas.addEventListener('pointermove', event => {
-    if (state.mode !== 'orbit' || !orbit.dragging) return;
-    orbit.yaw -= (event.clientX - orbit.lastX) * .005;
-    orbit.pitch = clamp(orbit.pitch + (event.clientY - orbit.lastY) * .004, -1.43, 1.43);
-    orbit.lastX = event.clientX; orbit.lastY = event.clientY;
+    if (state.mode === 'orbit' && orbit.dragging) {
+      orbit.yaw -= (event.clientX - orbit.lastX) * .005;
+      orbit.pitch = clamp(orbit.pitch + (event.clientY - orbit.lastY) * .004, -1.43, 1.43);
+      orbit.lastX = event.clientX; orbit.lastY = event.clientY;
+    } else if (state.mode === 'surface' && surface.dragging && document.pointerLockElement !== canvas) {
+      Object.assign(surface, applySurfaceLook(surface, {
+        mouseX: event.clientX - surface.lastX,
+        mouseY: event.clientY - surface.lastY
+      }));
+      surface.lastX = event.clientX; surface.lastY = event.clientY;
+    }
   });
-  const endDrag = () => { orbit.dragging = false; };
+  const endDrag = () => { orbit.dragging = false; surface.dragging = false; };
   canvas.addEventListener('pointerup', endDrag); canvas.addEventListener('pointercancel', endDrag);
   canvas.addEventListener('wheel', event => {
     if (state.mode !== 'orbit') return;
@@ -1293,11 +1755,28 @@ function bindUI() {
   });
   document.addEventListener('mousemove', event => {
     if (state.mode !== 'surface' || document.pointerLockElement !== canvas) return;
-    surface.yaw -= event.movementX * .0022;
-    surface.pitch = clamp(surface.pitch - event.movementY * .0018, -1.35, 1.2);
+    Object.assign(surface, applySurfaceLook(surface, {
+      mouseX: event.movementX,
+      mouseY: event.movementY
+    }));
   });
-  addEventListener('keydown', event => { keys[event.code] = true; });
+  document.addEventListener('pointerlockchange', () => {
+    if (document.pointerLockElement === canvas) surface.dragging = false;
+  });
+  addEventListener('keydown', event => {
+    keys[event.code] = true;
+    if (state.mode === 'surface' && isSurfaceControlKey(event.code)) {
+      event.preventDefault();
+      if (!event.repeat && isSurfaceLookKey(event.code)) {
+        Object.assign(surface, applySurfaceLook(surface, {
+          deltaSeconds: 1 / 30,
+          keys: { [event.code]: true }
+        }));
+      }
+    }
+  });
   addEventListener('keyup', event => { keys[event.code] = false; });
+  addEventListener('blur', () => Object.keys(keys).forEach(code => { keys[code] = false; }));
   addEventListener('resize', () => {
     camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight);
   });
@@ -1311,8 +1790,21 @@ function installWorldAPI() {
       model: modelDescription(), geophysics: geophysicsDescription(), hydrology: hydrologyDescription(),
       earthSystem: earthSystemDescription(), earthTransport: earthTransportDescription(),
       basinRouting: basinRoutingDescription(),
+      geomorphicSediment: geomorphicSedimentDescription(),
+      floodplain: floodplainDescription(),
+      floodplainHabitat: floodplainHabitatDescription(),
+      floodEventHistory: floodEventHistoryDescription(),
+      floodplainSuccession: floodplainSuccessionDescription(),
+      floodplainPlantMatter: floodplainPlantMatterDescription(),
+      floodplainPlantResources: floodplainPlantResourcesDescription(),
+      floodplainDecomposition: floodplainDecompositionDescription(),
+      floodplainRespiration: floodplainRespirationDescription(),
+      floodplainGasExchange: floodplainGasExchangeDescription(),
+      systemAudit: foundationSystemAuditDescription(),
+      experienceProtocol: experienceProtocolDescription(),
       physics: physicsDescription(), persistence: worldStateDescription(),
       host: hostDescription(), authorityKernel: authorityDescription(),
+      surfaceControls: surfaceControlsDescription(),
       speciesCatalog: catalogDescription(), layerCatalog: LAYER_DEFINITIONS
     })),
     snapshot: () => JSON.parse(JSON.stringify({
@@ -1323,6 +1815,8 @@ function installWorldAPI() {
       earthSystem: localEarthSystem ? JSON.parse(JSON.stringify(localEarthSystem)) : null,
       earthTransport: lastEarthTransportReceipt ? JSON.parse(JSON.stringify(lastEarthTransportReceipt)) : null,
       basinRouting: lastBasinRoutingReceipt ? JSON.parse(JSON.stringify(lastBasinRoutingReceipt)) : null,
+      systemAudit: currentSystemAudit(),
+      experience: currentExperienceStatus(),
       physics: localPhysics || null,
       regionalCommunity: surface.sector?.community?.regional?.summary || null,
       ecosystemDynamics: surface.sector?.community?.dynamics || null,
@@ -1354,14 +1848,57 @@ function installWorldAPI() {
           columnCount: lastEarthTransportReceipt.columnCount,
           activeEdgeCount: lastEarthTransportReceipt.activeEdgeCount,
           boundaryReceiptCount: lastEarthTransportReceipt.boundaryReceipts.length,
+          nativePressureTransportReceipt:
+            lastEarthTransportReceipt.nativePressureTransportReceipt,
+          atmosphereBiogeochemistryTransportReceipt:
+            lastEarthTransportReceipt.atmosphereBiogeochemistryTransportReceipt,
+          atmosphereMassReceipts: lastEarthTransportReceipt.atmosphereMassReceipts,
           transfers: lastEarthTransportReceipt.transfers,
-          conservation: lastEarthTransportReceipt.conservation
+          conservation: lastEarthTransportReceipt.conservation,
+          truth: lastEarthTransportReceipt.truth
         } : null,
         basinRouting: lastBasinRoutingReceipt ? {
           schema: lastBasinRoutingReceipt.schema,
           digest: lastBasinRoutingReceipt.digest,
           loadedReachCount: lastBasinRoutingReceipt.loadedReachCount,
           inletReceipts: lastBasinRoutingReceipt.inletReceipts,
+          floodplainReceipts: lastBasinRoutingReceipt.floodplainReceipts,
+          floodplainHabitatReceipts:
+            lastBasinRoutingReceipt.floodplainHabitatReceipts,
+          floodEventReceipts:
+            lastBasinRoutingReceipt.floodEventReceipts,
+          floodplainSuccessionReceipts:
+            lastBasinRoutingReceipt.floodplainSuccessionReceipts,
+          floodplainPlantMatterReceipts:
+            lastBasinRoutingReceipt.floodplainPlantMatterReceipts,
+          floodplainPlantResourcesReceipts:
+            lastBasinRoutingReceipt.floodplainPlantResourcesReceipts,
+          floodplainPlantResourceDebitReceipts:
+            lastBasinRoutingReceipt.floodplainPlantResourceDebitReceipts,
+          floodplainPlantWaterReturnReceipts:
+            lastBasinRoutingReceipt.floodplainPlantWaterReturnReceipts,
+          floodplainPlantDetritusMatterDebitReceipts:
+            lastBasinRoutingReceipt
+              .floodplainPlantDetritusMatterDebitReceipts,
+          floodplainPlantDetritusResourceDebitReceipts:
+            lastBasinRoutingReceipt
+              .floodplainPlantDetritusResourceDebitReceipts,
+          floodplainDetritalReturnCreditReceipts:
+            lastBasinRoutingReceipt.floodplainDetritalReturnCreditReceipts,
+          floodplainDecompositionReceipts:
+            lastBasinRoutingReceipt.floodplainDecompositionReceipts,
+          floodplainAerobicMineralizationReceipts:
+            lastBasinRoutingReceipt.floodplainAerobicMineralizationReceipts,
+          floodplainRespirationReceipts:
+            lastBasinRoutingReceipt.floodplainRespirationReceipts,
+          floodplainGasExchangeReceipts:
+            lastBasinRoutingReceipt.floodplainGasExchangeReceipts,
+          atmosphereFloodplainGasExchangeReceipts:
+            lastBasinRoutingReceipt.atmosphereFloodplainGasExchangeReceipts,
+          floodplainGasExchangeProcessReceipts:
+            lastBasinRoutingReceipt.floodplainGasExchangeProcessReceipts,
+          landEcologySubgridDebitReceipts:
+            lastBasinRoutingReceipt.landEcologySubgridDebitReceipts,
           routeReceipts: lastBasinRoutingReceipt.routeReceipts,
           boundaryReceipts: lastBasinRoutingReceipt.boundaryReceipts,
           transfers: lastBasinRoutingReceipt.transfers,
@@ -1377,13 +1914,50 @@ function installWorldAPI() {
         } : null
       },
       persistence: worldState.descriptor(),
-       limitations: ['Procedural exploration model', 'Browser-local state remains active until explicitly attached to the named-world host', 'Loaded dry-air, Coriolis and tangent-energy ledgers plus bounded two-layer vertical exchange are not a global circulation, angular-momentum, resolved 3D convection, cloud-microphysics, buoyancy-work, upper-air-horizontal-transport, or scientific forecast model', 'River routing advances only through loaded canonical reaches and retains unresolved handoffs', 'No global depression-filled basin graph yet', 'No general rigid-body engine yet']
+       limitations: [
+         'Procedural exploration model',
+         'Browser-local state remains active until explicitly attached to the named-world host',
+         'Eight native levels and seven native interfaces own mixed-phase cloud reservoirs, typed rain/snow descent, adjacent exchange, virtual-temperature buoyancy, vertical momentum, convective kinetic energy and loaded horizontal transport',
+         'Native liquid/ice paths drive broadband cloud radiation; aged snow, sea ice and persistent canopy state drive surface albedo, roughness, water and fusion-energy feedbacks',
+         'Land ecology conserves carbon and nitrogen inside each loaded local exchange column; its atmosphere-facing carbon field mirrors the persistent local atmosphere owner and is not a globally mixed tracer',
+         'Ocean ecology conserves mixed-layer plus persistent deep-ocean carbon, nitrogen and phosphorus with an oxygen flux ledger; its atmosphere-facing C/O2 fields mirror the local atmosphere owner and horizontal exchange covers loaded surface neighbors only',
+         'Land owns finite dissolved soil-water C/N/P/O2 and a persistent runoff queue; the same routed water fraction debits that queue before exact land, river, estuary or loaded-ocean receiver credits',
+         'Land owns finite clay/silt/sand/gravel surface material; surface runoff moves a receipted fraction through loaded neighbors and persistent river suspended/bed reservoirs into grain-selective coastal deposition, but erosion and deposition remain bounded bulk parameterizations rather than resolved channel or coastal morphodynamics',
+         'Loaded river reaches own persistent floodplain water, chemistry, suspended grains and deposits; overbank and return flow use a geometry-derived bankfull threshold, but no resolved inundation hydraulics or flood forecast is claimed',
+         'Floodplain habitat memory observes wet and dry exposure, flood pulses, deposits and dissolved fertility without mutating material; its normalized mosaic is potential habitat, not plant biomass, species occupancy or population state',
+         'Flood-event history keeps at most 32 completed events per reach plus explicit eviction counts; it observes magnitude, duration and material payload but is not a scientific frequency analysis or forecast',
+         'Floodplain succession owns functional-guild seed banks and cover; paired organs materialize new cover as live, standing-dead and litter C/N from loaded land biomass and as live tissue water plus live/dead/litter P from the local floodplain. A bounded decomposition organ debits only resource-backed standing-dead/litter C/N/P and credits local floodplain organic C plus inorganic N/P under exact IDs. A separate oxygen-limited aerobic respiration organ debits only that floodplain-owned dissolved organic C, credits equal local dissolved inorganic C, and consumes local dissolved O2 at the declared bulk stoichiometry; atmosphere exchange, anaerobic pathways, microbial populations, soil return, transpiration, individuals, species occupancy and scientific calibration remain unresolved',
+         'Experience capsules are renderer-independent read-only projections; observer leases cannot propose actions, player leases create unapplied proposals only, detached sandboxes cannot write back, and Mirror/Holodeck/Experiment World remain unconnected',
+         'Estuary respiration, retention and denitrification are bounded bulk reactions; nitrogen gas credits the persistent local atmosphere while oxygen consumption remains an explicit reaction term',
+         'Carbon dioxide, oxygen and estuary nitrogen gas persist in eight atmosphere-owned native levels; surface exchange targets the lowest level, seven interface receipts mix them vertically, and level-specific dry-air routes move them horizontally across loaded cells',
+         'Surface radiation reads the atmosphere-owned eight-level CO2 profile present at step start and applies a bounded reference-relative grey-gas longwave adjustment; local biosphere and transport changes therefore affect the following local radiation step',
+         'CO2 radiation uses native pressure thickness and temperature paths with a bulk cloud-overlap mask, but it is not spectral, line-by-line, or scientifically validated radiative transfer',
+         'Native gas levels are conservative composition proxies, not resolved molecular diffusion or atmospheric chemistry; unloaded boundaries remain explicit and the gases are not globally mixed',
+         'The atmosphere, cloud-optics, radiation, cryosphere and ecology solvers are bounded bulk parameterizations, not resolved particles, plant individuals, mechanistic photosynthetic or plankton biochemistry, dynamic sea-ice motion, 3D turbulence or ocean circulation, global circulation, angular momentum, or scientific forecasts',
+         'River routing advances only through loaded canonical reaches and retains unresolved handoffs',
+         'No global depression-filled basin graph yet',
+         'No general rigid-body engine yet'
+       ]
     }),
     persistence: () => JSON.parse(JSON.stringify(worldState.descriptor())),
     physicsSector: () => JSON.parse(JSON.stringify(localPhysics)),
     earthSystemColumn: () => JSON.parse(JSON.stringify(localEarthSystem)),
     earthTransport: () => JSON.parse(JSON.stringify(lastEarthTransportReceipt)),
     basinRouting: () => JSON.parse(JSON.stringify(lastBasinRoutingReceipt)),
+    audit: () => JSON.parse(JSON.stringify(currentSystemAudit())),
+    captureExperienceSector: (options = {}) => JSON.parse(JSON.stringify(
+      currentExperienceCapsule(options))),
+    openExperienceLease: (options = {}, capsuleOptions = {}) => {
+      const capsule = currentExperienceCapsule(capsuleOptions);
+      return JSON.parse(JSON.stringify({
+        capsule,
+        lease: openExperienceLease(capsule, options)
+      }));
+    },
+    dispatchExperienceIntent: (capsule, lease, intent) => JSON.parse(JSON.stringify(
+      dispatchExperienceIntent(capsule, lease, intent))),
+    auditExperienceProtocol: input => JSON.parse(JSON.stringify(
+      auditExperienceProtocol(input || { capsule: currentExperienceCapsule() }))),
     host: () => JSON.parse(JSON.stringify(sharedHostStatus)),
     proposeHostBootstrap: () => createHostBootstrap(currentHostSource()),
     proposeHostPatch: (expectedRevision = sharedHostStatus.revision ?? 0, options = {}) => createHostPatch(currentHostSource(), expectedRevision, options),
@@ -1398,7 +1972,29 @@ function installWorldAPI() {
     }),
     refreshHostStatus: () => refreshSharedHost().then(status => JSON.parse(JSON.stringify(status)))
   });
-  document.body.dataset.api = 'AXMFoundationPlanet/v11';
+  document.body.dataset.api = 'AXMFoundationPlanet/v41';
+  document.body.dataset.experienceProtocol =
+    'axm.foundation-planet.experience-protocol/v1';
+  document.body.dataset.geomorphicSediment =
+    'axm.foundation-planet.surface-sediment-state/v1';
+  document.body.dataset.floodplain =
+    'axm.foundation-planet.floodplain-state/v1';
+  document.body.dataset.floodplainHabitat =
+    'axm.foundation-planet.floodplain-habitat-state/v1';
+  document.body.dataset.floodEventHistory =
+    'axm.foundation-planet.flood-event-history-state/v1';
+  document.body.dataset.floodplainSuccession =
+    'axm.foundation-planet.floodplain-succession-state/v1';
+  document.body.dataset.floodplainPlantMatter =
+    'axm.foundation-planet.floodplain-plant-matter-state/v1';
+  document.body.dataset.floodplainPlantResources =
+    'axm.foundation-planet.floodplain-plant-resources-state/v1';
+  document.body.dataset.floodplainDecomposition =
+    'axm.foundation-planet.floodplain-decomposition-state/v1';
+  document.body.dataset.floodplainRespiration =
+    'axm.foundation-planet.floodplain-respiration-state/v1';
+  document.body.dataset.floodplainGasExchange =
+    'axm.foundation-planet.floodplain-gas-exchange-state/v1';
 }
 
 async function start() {
@@ -1419,7 +2015,7 @@ async function start() {
   updateLayerVisibility();
   updateDiagnostics();
   installWorldAPI();
-  if (!savedEnvelope) saveNow('world-lineage-created', { version: '0.15.0' });
+  if (!savedEnvelope) saveNow('world-lineage-created', { version: '0.19.0' });
   await refreshSharedHost();
   updateLoading('Foundation planet online', 100);
   state.ready = true;

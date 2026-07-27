@@ -1,0 +1,150 @@
+{
+  "schema": "axm.physics-policy-source-register/v1",
+  "date": "2026-07-19",
+  "target": "axm-physics-2d v0.3.1",
+  "intake": {
+    "artifact": "AXM Physics Policy and Determinism Deep Dive",
+    "citationMarkersReusable": false,
+    "resolution": "Conversation-internal citation markers were replaced by independently opened primary URLs. Claims not supported at AXM's capability level remain open."
+  },
+  "sources": [
+    {
+      "id": "D1",
+      "title": "Box2D Simulation Documentation",
+      "url": "https://box2d.org/documentation/md_simulation.html",
+      "authority": "primary engine documentation",
+      "supports": ["creation-order determinism", "deterministic event order", "contact and sensor destruction events", "64K generation limit", "contact capacities", "TOI CCD and sensor CCD exclusion"],
+      "limit": "Box2D policy is prior art, not an AXM contract.",
+      "status": "PRIMARY_PAGE_OPENED_AND_TARGET_TEXT_LOCATED"
+    },
+    {
+      "id": "D2",
+      "title": "Determinism",
+      "url": "https://box2d.org/posts/2024/08/determinism/",
+      "authority": "primary Box2D author post",
+      "supports": ["contact order affects sequential results", "determinism needs continuous testing", "algorithmic/cross-platform/rollback distinctions"],
+      "limit": "Implementation experience, not a general proof that one schedule is canonical.",
+      "status": "PRIMARY_PAGE_OPENED"
+    },
+    {
+      "id": "D3",
+      "title": "Box2D Geometry Documentation",
+      "url": "https://box2d.org/documentation/group__geometry.html",
+      "authority": "primary engine API documentation",
+      "supports": ["ray and shape casts treat initial overlap as a miss", "shape-cast canEncroach semantics", "point-overlap APIs"],
+      "limit": "Does not publish a complete cross-shape exact-tangency matrix.",
+      "status": "PRIMARY_PAGE_OPENED_AND_TARGET_TEXT_LOCATED"
+    },
+    {
+      "id": "D4",
+      "title": "Solver2D",
+      "url": "https://box2d.org/posts/2024/02/solver2d/",
+      "authority": "primary Box2D author post",
+      "supports": ["solver family is an engineering choice", "islands, threading, SIMD, graph coloring and CCD complicate comparisons"],
+      "limit": "Does not specify an AXM schedule or prove a preferred solver.",
+      "status": "PRIMARY_PAGE_OPENED"
+    },
+    {
+      "id": "D5",
+      "title": "Rapier JavaScript Determinism",
+      "url": "https://rapier.rs/docs/user_guides/javascript/determinism/",
+      "authority": "primary engine documentation",
+      "supports": ["same initial values and exact add/remove order are preconditions", "snapshot byte hashes can match across machines for the declared build"],
+      "limit": "Rapier WASM guarantees do not transfer to AXM's JavaScript solver.",
+      "status": "PRIMARY_PAGE_OPENED"
+    },
+    {
+      "id": "D6",
+      "title": "Rapier JavaScript Scene Queries",
+      "url": "https://rapier.rs/docs/user_guides/javascript/scene_queries/",
+      "authority": "primary engine documentation",
+      "supports": ["ray and point queries expose a solid-mode choice", "query families need explicit semantics"],
+      "limit": "Does not choose AXM defaults.",
+      "status": "PRIMARY_PAGE_OPENED"
+    },
+    {
+      "id": "D7",
+      "title": "Rapier Advanced Collision Detection",
+      "url": "https://rapier.rs/docs/user_guides/templates/advanced_collision_detection/",
+      "authority": "primary engine documentation",
+      "supports": ["removed collision events have a REMOVED flag", "broad-phase pairs and actual contact evidence are distinct"],
+      "limit": "AXM has a different event schema and must implement its own causal receipt.",
+      "status": "PRIMARY_PAGE_OPENED"
+    },
+    {
+      "id": "D8",
+      "title": "Rapier JavaScript Colliders",
+      "url": "https://rapier.rs/docs/user_guides/javascript/colliders/",
+      "authority": "primary engine documentation",
+      "supports": ["removed collider identifiers may later be reused"],
+      "limit": "The JavaScript page documents reuse but does not by itself specify AXM generations.",
+      "status": "PRIMARY_PAGE_OPENED"
+    },
+    {
+      "id": "D9",
+      "title": "Rapier JavaScript Rigid Body CCD",
+      "url": "https://rapier.rs/docs/user_guides/javascript/rigid_body_ccd/",
+      "authority": "primary engine documentation",
+      "supports": ["CCD uses motion clamping at first contact time", "CCD substeps have separate cost and behavior"],
+      "limit": "Backend-specific CCD behavior, not present in AXM v0.3.1.",
+      "status": "PRIMARY_PAGE_OPENED"
+    },
+    {
+      "id": "D10",
+      "title": "Rapier2D RigidBodyDesc API",
+      "url": "https://rapier.rs/javascript2d/classes/RigidBodyDesc.html",
+      "authority": "primary engine API documentation",
+      "supports": ["soft CCD is predictive and distinct from regular CCD"],
+      "limit": "API documentation does not create an engine-independent CCD taxonomy by itself.",
+      "status": "PRIMARY_PAGE_OPENED"
+    },
+    {
+      "id": "D11",
+      "title": "RFC 8785: JSON Canonicalization Scheme",
+      "url": "https://www.rfc-editor.org/rfc/rfc8785.html",
+      "authority": "published RFC",
+      "supports": ["deterministic JSON property/number serialization", "positive and negative zero both serialize as 0", "NaN and Infinity are excluded"],
+      "limit": "JCS is suitable for JSON-safe structure but cannot preserve every IEEE-754 bit distinction.",
+      "status": "PRIMARY_SPECIFICATION_OPENED"
+    },
+    {
+      "id": "D12",
+      "title": "Adaptive Precision Floating-Point Arithmetic and Fast Robust Geometric Predicates",
+      "url": "https://www.cs.cmu.edu/~quake/robust.html",
+      "authority": "author-hosted peer-reviewed paper and code",
+      "supports": ["ordinary floating-point orientation/incircle signs can be wrong near degeneracy", "adaptive exact predicates can stabilize those named tests"],
+      "limit": "Does not directly solve AXM circle/box distance classification or choose a solver tolerance.",
+      "status": "PRIMARY_AUTHOR_PAGE_OPENED"
+    },
+    {
+      "id": "D13",
+      "title": "Small Steps in Physics Simulation",
+      "url": "https://diglib.eg.org/items/322424d5-a24f-490a-a6bb-542233852032",
+      "doi": "10.1145/3309486.3340247",
+      "authority": "peer-reviewed publisher repository",
+      "supports": ["many smaller XPBD substeps can outperform one step with many iterations in the studied workloads"],
+      "limit": "Not a universal result for AXM's sequential impulse solver.",
+      "status": "PUBLISHER_RECORD_OPENED"
+    },
+    {
+      "id": "D14",
+      "title": "An Improved Jacobi Solver for Particle Simulation",
+      "url": "https://diglib.eg.org/items/dc85ea89-7fc4-4150-b870-4ee011935cda",
+      "doi": "10.2312/vriphys.20141231",
+      "authority": "peer-reviewed publisher repository",
+      "supports": ["Jacobi/Gauss-Seidel alternatives exist for constrained simulation", "solver choice affects parallelization and convergence tradeoffs"],
+      "limit": "Particle-simulation evidence is not a production 2D rigid-body contract.",
+      "status": "PUBLISHER_RECORD_OPENED"
+    },
+    {
+      "id": "D15",
+      "title": "Low-cost double pendulum for high-quality data collection with open-source video tracking and analysis",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9041261/",
+      "doi": "10.1016/j.ohx.2020.e00138",
+      "authority": "peer-reviewed open-access experimental paper",
+      "supports": ["experimental double-pendulum tracking with angle uncertainties and parameter error bounds"],
+      "limit": "Not applicable to AXM v0.3.1 because the current core has no rotation or joints.",
+      "status": "PRIMARY_OPEN_ACCESS_PAPER_OPENED_CAPABILITY_MISMATCH"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "axm.verification-category-pack/v1",
+  "id": "module",
+  "name": "Modules",
+  "purpose": "Verify manifests, permissions, handoffs, state ownership and lifecycle decisions.",
+  "native_claim_kinds": ["existence", "static-structure", "deterministic-behavior", "persistence", "authorization"],
+  "never_claims": ["taste", "universal-usability"],
+  "default_risk": "medium",
+  "baseline_claims": [
+    { "id": "module.manifest", "need": "Identity, version, status, entrypoint and dependencies are declared.", "evidence": "static-structure" },
+    { "id": "module.permissions", "need": "Requested authority is declared and least-privilege.", "evidence": "authorization" },
+    { "id": "module.state-owner", "need": "State owner, reload and migration behavior are named.", "evidence": "persistence" },
+    { "id": "module.lifecycle", "need": "Start, shutdown, disconnect and cleanup behavior is bounded.", "evidence": "deterministic-behavior" },
+    { "id": "module.handoff", "need": "Accepted and produced artifact contracts are typed.", "evidence": "static-structure" }
+  ]
+}

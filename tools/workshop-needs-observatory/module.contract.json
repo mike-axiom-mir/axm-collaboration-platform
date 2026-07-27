@@ -1,0 +1,39 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "workshop-needs-observatory",
+  "version": "v0.3",
+  "provides": [
+    "workshop.needs.observe",
+    "workshop.need.reconcile",
+    "workshop.readiness.observe/v1",
+    "capability-inventory",
+    "typed-gap-surface",
+    "declaration-drift-audit"
+  ],
+  "consumes": ["axm.module-contract/v1", "axm.modular-piece-candidate/v1", "axm.tools-index/v1"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.workshop-need/v1", "axm.workshop-needs-observatory/v1", "axm.workshop-readiness-view/v1"],
+    "accepts": ["axm.modular-piece-candidate/v1", "axm.tools-index/v1"]
+  },
+  "boundaries": {
+    "writes": ["state/workshop-needs-observatory"],
+    "refuses": [
+      "auto-building",
+      "auto-promotion",
+      "silent-need-closure",
+      "fuzzy-capability-claim",
+      "unknown-category-coercion",
+      "readiness-as-approval",
+      "readiness-as-promotion",
+      "stale-readiness-as-current",
+      "declared-capability-as-runtime-proof"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "service",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
+}

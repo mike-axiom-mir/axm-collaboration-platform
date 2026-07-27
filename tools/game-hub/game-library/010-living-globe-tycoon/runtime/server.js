@@ -23,14 +23,14 @@ const MIME = {
 };
 
 function selectedMode(env) {
-  const value = String((env || process.env).AXM_GAME_PLAY_MODE || 'tycoon').trim();
-  return value === 'walkable-globe' ? 'walkable-globe' : 'tycoon';
+  const value = String((env || process.env).AXM_GAME_PLAY_MODE || 'walkable-globe').trim();
+  return value === 'rules-lab' || value === 'tycoon' ? 'rules-lab' : 'walkable-globe';
 }
 
 function modeEntry(mode) {
-  return mode === 'walkable-globe'
-    ? GAME_PREFIX
-    : GAME_PREFIX + 'game/tycoon-steward/';
+  return mode === 'rules-lab'
+    ? GAME_PREFIX + 'game/tycoon-steward/'
+    : GAME_PREFIX;
 }
 
 function safeFile(urlPath) {

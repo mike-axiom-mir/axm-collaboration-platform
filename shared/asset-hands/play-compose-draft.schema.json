@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.play-compose-draft/v1",
+  "title": "AXM human play-to-compose draft v1",
+  "description": "A deterministic human-authored control state, exact Universal Component graph, contract receipt and ephemeral preview. It is a draft contract, never a final render or taste approval.",
+  "type": "object",
+  "required": ["schema", "version", "input_digest", "spec", "components", "graph", "receipt", "preview", "truth", "digest"],
+  "properties": {
+    "schema": { "const": "axm.play-compose-draft/v1" },
+    "version": { "type": "string", "minLength": 1, "maxLength": 40 },
+    "input_digest": { "$ref": "#/$defs/digest" },
+    "spec": {
+      "type": "object",
+      "required": ["title", "label", "shape", "primary", "secondary", "background", "angle", "roundness", "scale", "stroke", "glow", "x", "y", "growth_direction", "growth_energy", "parent_input_digest", "branch"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "label": { "type": "string", "minLength": 1, "maxLength": 16 },
+        "shape": { "enum": ["circle", "rounded-square", "diamond", "capsule"] },
+        "primary": { "$ref": "#/$defs/colour" },
+        "secondary": { "$ref": "#/$defs/colour" },
+        "background": { "$ref": "#/$defs/colour" },
+        "angle": { "type": "integer", "minimum": 0, "maximum": 360 },
+        "roundness": { "type": "number", "minimum": 0, "maximum": 1 },
+        "scale": { "type": "number", "minimum": 0.25, "maximum": 0.92 },
+        "stroke": { "type": "number", "minimum": 0, "maximum": 20 },
+        "glow": { "type": "number", "minimum": 0, "maximum": 24 },
+        "x": { "type": "number", "minimum": 0.2, "maximum": 0.8 },
+        "y": { "type": "number", "minimum": 0.2, "maximum": 0.8 },
+        "growth_direction": { "enum": ["palette", "silhouette", "weight", "balance", "contrast"] },
+        "growth_energy": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "parent_input_digest": { "anyOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }] },
+        "branch": { "type": "integer", "minimum": 0, "maximum": 9999 }
+      },
+      "additionalProperties": false
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": { "$ref": "universal-component.schema.json" }
+    },
+    "graph": { "$ref": "universal-component-graph.schema.json" },
+    "receipt": { "$ref": "universal-component-receipt.schema.json" },
+    "preview": {
+      "type": "object",
+      "required": ["mime", "svg", "digest", "ephemeral", "persisted"],
+      "properties": {
+        "mime": { "const": "image/svg+xml" },
+        "svg": { "type": "string", "minLength": 32, "maxLength": 600000 },
+        "digest": { "$ref": "#/$defs/digest" },
+        "ephemeral": { "const": true },
+        "persisted": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "truth": {
+      "type": "object",
+      "required": ["deterministic", "ai_required", "rendered_final", "visually_approved"],
+      "properties": {
+        "deterministic": { "const": true },
+        "ai_required": { "const": false },
+        "rendered_final": { "const": false },
+        "visually_approved": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "digest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "colour": { "type": "string", "pattern": "^#[a-f0-9]{6}$" }
+  },
+  "additionalProperties": false
+}

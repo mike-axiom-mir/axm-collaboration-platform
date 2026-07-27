@@ -1,0 +1,17 @@
+{
+  "schema": "axm.verification-category-pack/v1",
+  "id": "asset",
+  "name": "Assets",
+  "purpose": "Verify format, decoding, dimensions, canvas fit, provenance, rights and technical delivery properties.",
+  "native_claim_kinds": ["existence", "static-structure", "deterministic-behavior", "quality", "authorization"],
+  "never_claims": ["objective-beauty", "game-runtime-fitness-without-a-target-profile"],
+  "default_risk": "medium",
+  "baseline_claims": [
+    { "id": "asset.decode", "need": "The claimed format decodes in its reference validator or runtime.", "evidence": "deterministic-behavior" },
+    { "id": "asset.canvas-fit", "need": "Dimensions, alpha, colour, layers and canvas constraints match the target.", "evidence": "static-structure" },
+    { "id": "asset.provenance", "need": "Source, author, rights, transforms and digest are traceable.", "evidence": "authorization" },
+    { "id": "asset.target-budget", "need": "Size, memory and performance budgets fit the named target profile.", "evidence": "performance" },
+    { "id": "asset.quality-gate", "need": "Taste or visual quality remains a steward judgement, not one optimized score.", "evidence": "human-judgement" },
+    { "id": "asset.lineage", "need": "Derived exports stay bound to their editable source and validation receipt.", "evidence": "persistence" }
+  ]
+}

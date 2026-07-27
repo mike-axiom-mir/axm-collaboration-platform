@@ -1,0 +1,120 @@
+'use strict';
+window.AXM_ENVIRONMENT_PROBE_REQUEST = {
+  "schema": "axm.environment-probe-request\u002fv1",
+  "version": "v0.2",
+  "generatedAt": "2026-07-27T03:07:50.769Z",
+  "fingerprint": "6563937a18f94ab2c652b121a18fc63579ba234142be3e6a1f3815d7f282a4f0",
+  "selectedModule": {
+    "id": "body-pulse",
+    "folder": "body-pulse",
+    "version": "v0.2",
+    "contractState": "NOT_DECLARED"
+  },
+  "sourceObservation": {
+    "schema": "axm.host-assumption-map\u002fv1",
+    "measuredAt": "2026-07-27T03:07:50.766Z",
+    "freshnessTtlMs": 7200000,
+    "fingerprint": "60020b002fcef917bec1bc854d5c0178b2d1071beb04f0bde7cec003b8a9b1f5",
+    "freshnessAtRequest": {
+      "status": "LIVE",
+      "ageMs": 3,
+      "remainingMs": 7199997
+    }
+  },
+  "summary": {
+    "assumptions": 3,
+    "assumptionOccurrences": 4,
+    "checksRequested": 3,
+    "checksRun": 0
+  },
+  "assumptions": [
+    {
+      "token": "host-telemetry",
+      "state": "DECLARED_NOT_PROBED",
+      "kinds": [
+        "HOST_RESOURCE_DECLARATION"
+      ],
+      "roles": [
+        "manifest.uses"
+      ],
+      "occurrences": 1
+    },
+    {
+      "token": "runtime",
+      "state": "DECLARED_NOT_PROBED",
+      "kinds": [
+        "RUNTIME_OR_TOOL_DECLARATION"
+      ],
+      "roles": [
+        "manifest.readiness"
+      ],
+      "occurrences": 1
+    },
+    {
+      "token": "storage",
+      "state": "DECLARED_NOT_PROBED",
+      "kinds": [
+        "FILESYSTEM_DECLARATION"
+      ],
+      "roles": [
+        "manifest.readiness",
+        "manifest.uses"
+      ],
+      "occurrences": 2
+    }
+  ],
+  "checks": [
+    {
+      "id": "CHECK_DECLARED_STORAGE_OR_PATH_BOUNDARY",
+      "state": "REQUEST_NOT_RUN",
+      "executionAuthority": "TOUCH_ENVIRONMENT_PROBE",
+      "readOnlyRequested": true,
+      "secretValuesRequested": false,
+      "observation": null,
+      "decision": null,
+      "sourceKinds": [
+        "FILESYSTEM_DECLARATION"
+      ]
+    },
+    {
+      "id": "CHECK_NAMED_HOST_RESOURCE",
+      "state": "REQUEST_NOT_RUN",
+      "executionAuthority": "TOUCH_ENVIRONMENT_PROBE",
+      "readOnlyRequested": true,
+      "secretValuesRequested": false,
+      "observation": null,
+      "decision": null,
+      "sourceKinds": [
+        "HOST_RESOURCE_DECLARATION"
+      ]
+    },
+    {
+      "id": "CHECK_RUNTIME_OR_TOOL_AVAILABILITY",
+      "state": "REQUEST_NOT_RUN",
+      "executionAuthority": "TOUCH_ENVIRONMENT_PROBE",
+      "readOnlyRequested": true,
+      "secretValuesRequested": false,
+      "observation": null,
+      "decision": null,
+      "sourceKinds": [
+        "RUNTIME_OR_TOOL_DECLARATION"
+      ]
+    }
+  ],
+  "scopeBoundary": "This is a bounded request for Touch Environment Probe to inspect one selected module read-only. It contains no commands, does not request secret values, and does not execute any check.",
+  "truth": {
+    "requestOnly": true,
+    "actualProbePerformed": false,
+    "environmentValuesCaptured": false,
+    "compatibilityProven": false,
+    "readinessProven": false,
+    "permissionChanged": false,
+    "dependencyInstalled": false,
+    "pathRewritten": false,
+    "sourceMutationPerformed": false,
+    "installerStagingPerformed": false,
+    "installationPerformed": false,
+    "promotionPerformed": false,
+    "canonChanged": false
+  }
+};

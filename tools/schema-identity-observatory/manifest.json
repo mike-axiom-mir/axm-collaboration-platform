@@ -1,0 +1,44 @@
+{
+  "id": "schema-identity-observatory",
+  "name": "AXM Schema Identity Observatory",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "category": "OBSERVE",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "schema",
+    "identity",
+    "namespace",
+    "digest",
+    "collision",
+    "observability",
+    "read-only"
+  ],
+  "uses": [
+    "storage"
+  ],
+  "permissions": [],
+  "actions": [
+    "scan bounded active JSON for exact schema identities",
+    "distinguish identical schema reuse from divergent same-id definitions",
+    "map schema references to locally observed definitions",
+    "emit a freshness-bound observation receipt"
+  ],
+  "accepts": [
+    "filesystem/workshop-root"
+  ],
+  "produces": [
+    "axm.schema-identity-map/v1"
+  ],
+  "readiness": [
+    "storage"
+  ],
+  "summary": "Read-only exact schema identity mapping across active Workshop JSON, with divergent same-ID definitions held visibly instead of guessed compatible.",
+  "notes": "The observatory does not validate schema semantics, register schemas, infer compatibility, generate adapters, repair files, install modules, or change CANON."
+}

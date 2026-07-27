@@ -1,7 +1,7 @@
 # Casino Workbench · Ten-Slot Alpha
 
-Status: **WORKING / TEST**
-Version: `0.3.2-alpha`
+Status: **WORKING / TEST**  
+Version: `0.3.2-alpha`  
 Publication: local workbench only; no GitHub action and no live-library promotion
 
 This local package contains one authoritative casino game with two routes:

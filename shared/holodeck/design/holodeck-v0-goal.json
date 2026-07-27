@@ -1,0 +1,84 @@
+{
+  "id": "holodeck-v0-screen-deck",
+  "title": "Compile one canonical world into an inhabitable Screen Deck",
+  "objective": "Create the first substrate-independent Holodeck atom: validate one canonical world model, compile it deterministically into a renderer-neutral deck plan, let human and machine actors use the same bounded intent contract, expose structured sensory frames, preserve explicit local state snapshots, and render a small interactive world through a screen adapter.",
+  "source": {
+    "kind": "EXPLICIT",
+    "ref": "mike:holodeck-foundation-2026-07-23"
+  },
+  "boundaries": [
+    "no-hologram-hardware-claim",
+    "no-vr-or-ar-runtime-claim",
+    "no-physical-world-manipulation-claim",
+    "render-coordinates-are-not-canonical-world-state",
+    "human-and-machine-use-the-same-intent-shape",
+    "browser-local-state-only",
+    "no-automatic-world-promotion",
+    "every-substrate-remains-an-adapter"
+  ],
+  "successConditions": [
+    "the same canonical world produces the same normalized deck plan and semantic digest",
+    "a human keyboard or touch input and a machine request enter through the same intent dispatcher",
+    "an interaction changes bounded world state and is visible in the next sensory frame",
+    "an explicit snapshot restores equivalent state in a fresh controller",
+    "the screen deck remains a replaceable adapter rather than the owner of world meaning"
+  ],
+  "requirements": [
+    {
+      "id": "canonical-world-model",
+      "title": "Validate a substrate-independent canonical world",
+      "capabilities": ["holodeck.world.validate/v1"],
+      "required": true,
+      "priority": 100,
+      "gapType": "CONTRACT"
+    },
+    {
+      "id": "deterministic-world-compiler",
+      "title": "Compile canonical meaning into a stable deck plan",
+      "capabilities": ["holodeck.world.compile/v1"],
+      "required": true,
+      "priority": 100,
+      "gapType": "HAND"
+    },
+    {
+      "id": "shared-actor-intents",
+      "title": "Dispatch identical bounded intents for human and machine actors",
+      "capabilities": ["holodeck.intent.dispatch/v1"],
+      "required": true,
+      "priority": 95,
+      "gapType": "CONTRACT"
+    },
+    {
+      "id": "structured-sensory-frame",
+      "title": "Expose world state as a compact machine-readable sensory frame",
+      "capabilities": ["holodeck.sensor.observe/v1"],
+      "required": true,
+      "priority": 95,
+      "gapType": "HAND"
+    },
+    {
+      "id": "revisioned-local-snapshot",
+      "title": "Snapshot and restore explicit local deck state",
+      "capabilities": ["holodeck.state.snapshot/v1"],
+      "required": true,
+      "priority": 90,
+      "gapType": "HAND"
+    },
+    {
+      "id": "screen-substrate-adapter",
+      "title": "Render and inhabit the deck through a screen adapter",
+      "capabilities": ["holodeck.adapter.screen/v1"],
+      "required": true,
+      "priority": 90,
+      "gapType": "SUBSTRATE"
+    },
+    {
+      "id": "first-experience",
+      "title": "Provide one complete interactive example world",
+      "capabilities": ["holodeck.experience.echo-atrium/v1"],
+      "required": true,
+      "priority": 85,
+      "gapType": "HAND"
+    }
+  ]
+}

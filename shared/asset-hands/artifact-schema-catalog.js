@@ -6,6 +6,18 @@
   "use strict";
   var VERSION = "1.0.0";
   var RULES = {
+    "axm.visual-fx-recipe/v1": {
+      required: ["schema", "version", "id", "effect", "outputs", "target_canvas", "provenance", "authority"],
+      arrays: [],
+    },
+    "axm.raster-composition/v1": {
+      required: ["schema", "version", "id", "canvas", "layers", "global_filters"],
+      arrays: ["layers", "global_filters"],
+    },
+    "axm.raster-composition-receipt/v1": {
+      required: ["schema", "version", "status", "engine", "recipe_digest", "layers", "output", "measures", "limits", "unsupported", "authority", "visual_approval", "canonical"],
+      arrays: ["layers", "unsupported"],
+    },
     "axm.native-raster-spec/v1": {
       required: [
         "schema",

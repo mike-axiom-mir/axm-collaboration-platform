@@ -141,6 +141,17 @@ async function main() {
     await controller.locator('#connection.live').waitFor({ timeout: 5000 });
     for (const id of ['stick','aim-stick','action','attack','sprint','brake','shield','money','party-money','inventory-toggle','inventory-prev','inventory-next','inventory-activate']) if (await controller.locator(`#${id}`).count() !== 1) throw new Error(`Controller control missing: ${id}`);
     if (!/^DC \d{1,3}(?:\.\d{3})*,\d{2}$/.test(await controller.locator('#party-money').textContent())) throw new Error('Controller did not show its Party A reinforcement fund.');
+    const inventoryButton = controller.locator('#inventory-toggle');
+    const inventoryBox = await inventoryButton.boundingBox();
+    if (!inventoryBox) throw new Error('Controller inventory button has no interactive bounds.');
+    await controller.mouse.move(inventoryBox.x + inventoryBox.width / 2, inventoryBox.y + inventoryBox.height / 2);
+    await controller.mouse.down();
+    await controller.waitForTimeout(700);
+    await controller.mouse.up();
+    await gameFrame.locator('body.map-open').waitFor({ timeout: 3000 });
+    if ((await inventoryButton.locator('#inventory-state').textContent()) !== 'closed') throw new Error('Inventory hold also opened the inventory.');
+    await gameFrame.locator('#map-toggle').click();
+    if (await gameFrame.locator('body.map-open').count() !== 0) throw new Error('Map did not close after the controller hold test.');
 
     await launcher.locator('#restart-session').click();
     await launcher.locator('#session-status').filter({ hasText: 'Restarted' }).waitFor({ timeout: 3000 });
@@ -150,7 +161,7 @@ async function main() {
 
     if (externalRequests.length) throw new Error(`External runtime request(s): ${externalRequests.join(', ')}`);
     if (consoleErrors.length) throw new Error(`Browser console error(s): ${consoleErrors.join(' | ')}`);
-    console.log(JSON.stringify({ status: 'PASS', launcher: true, groupSaveSlots: 9, sparseOneVsOneDefault: true, phoneQrCards: qrImages, privateLanDetected: detectedLan, localQrGenerator: true, defaultHostAiCards: 0, partyAScreen: true, partyBScreen: true, canvas: true, userArtImagesDecoded: visualAssetProbe.length, minimapAndFullMap: true, groupSaveOverlayContract: true, partyRelativeFourCornerHud: true, territoryChips: 13, controller: true, restart: true, returnToWaiting: true, externalRequests: 0 }, null, 2));
+    console.log(JSON.stringify({ status: 'PASS', launcher: true, groupSaveSlots: 9, sparseOneVsOneDefault: true, phoneQrCards: qrImages, privateLanDetected: detectedLan, localQrGenerator: true, defaultHostAiCards: 0, partyAScreen: true, partyBScreen: true, canvas: true, userArtImagesDecoded: visualAssetProbe.length, minimapAndFullMap: true, inventoryHoldMapToggle: true, groupSaveOverlayContract: true, partyRelativeFourCornerHud: true, territoryChips: 13, controller: true, restart: true, returnToWaiting: true, externalRequests: 0 }, null, 2));
   } finally {
     await browser?.close();
     await runtime.close();

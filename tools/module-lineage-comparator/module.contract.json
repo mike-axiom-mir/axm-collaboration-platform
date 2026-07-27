@@ -1,0 +1,65 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "module-lineage-comparator",
+  "version": "v0.1",
+  "provides": [
+    "bounded-module-bundle-decoding",
+    "exact-bundle-canonical-digest",
+    "file-add-remove-change-and-unchanged-evidence",
+    "selected-manifest-field-delta",
+    "selected-contract-field-delta",
+    "different-module-identity-hold",
+    "freshness-bound-lineage-receipt"
+  ],
+  "consumes": [
+    "axm.module-bundle/v1",
+    "filesystem:two-explicit-bundle-json-files"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.module-lineage-comparison/v1",
+      "axm.module-file-delta/v1",
+      "axm.module-contract-delta/v1"
+    ],
+    "accepts": [
+      "axm.module-bundle/v1"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "user-selected-output:module-lineage-comparison-json",
+      "user-selected-output:browser-lineage-snapshot",
+      "candidate-local-output:module-bundle.json"
+    ],
+    "refuses": [
+      "symbolic-link-following",
+      "unsafe-bundle-path",
+      "bundle-file-execution",
+      "archive-extraction",
+      "semantic-equivalence-inference",
+      "baseline-as-older-inference",
+      "candidate-as-newer-inference",
+      "winner-selection",
+      "automatic-merge",
+      "source-mutation",
+      "installer-staging",
+      "module-installation",
+      "permission-change",
+      "rollback-change",
+      "promotion",
+      "canon-change",
+      "network-intake",
+      "runtime-readiness-claim",
+      "visual-approval-claim"
+    ]
+  }
+}

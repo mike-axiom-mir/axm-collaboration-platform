@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Local 3D Game Runtime · AXM</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="runtime-shell">
+    <header class="topbar">
+      <div class="identity">
+        <span class="eyebrow">PLAY / RUNTIME 01</span>
+        <h1>District Night Shift</h1>
+        <p>A real, local 3D vertical slice running on AXM's own renderer.</p>
+      </div>
+      <div class="trust-strip" aria-label="Runtime boundaries">
+        <span>AXM NATIVE WEBGL2</span><span>NO THREE.JS</span><span>NO RUNTIME NETWORK</span>
+      </div>
+    </header>
+
+    <section class="stage" aria-label="Playable 3D district">
+      <canvas id="game-canvas" aria-label="3D game view" tabindex="0"></canvas>
+      <div class="loading-panel" id="loading-panel" role="status">
+        <span class="loading-orbit" aria-hidden="true"></span>
+        <strong id="loading-title">Starting native renderer</strong>
+        <span id="loading-detail">Reading local GLB structures and embedded textures…</span>
+      </div>
+      <div class="stage-top">
+        <div class="mission-chip"><span>OBJECTIVE</span><strong>Survey the three amber markers</strong></div>
+        <div class="stage-controls">
+          <label class="quality-control" title="Presentation profile only; this does not certify asset quality.">Render
+            <select id="quality-select">
+              <option value="PERFORMANCE">Performance</option>
+              <option value="PS2_BASELINE" selected>PS2 baseline</option>
+              <option value="PS3_PREVIEW">PS3 lighting preview</option>
+            </select>
+          </label>
+          <button class="icon-button" id="light-button" type="button" aria-pressed="false">☾ Night</button>
+        </div>
+      </div>
+      <div class="crosshair" aria-hidden="true"></div>
+      <div class="stage-bottom">
+        <div class="control-hint"><kbd>WASD</kbd> Move <kbd>SHIFT</kbd> Sprint <kbd>DRAG</kbd> Look <kbd>P</kbd> Pause</div>
+        <div class="runtime-badge"><span id="position-value">POS +0.0 / +8.0</span><i id="runtime-light"></i><span id="runtime-state">READY</span></div>
+      </div>
+      <section class="outcome" id="outcome" hidden>
+        <span class="eyebrow">DISTRICT SURVEY</span>
+        <h2>Route complete</h2>
+        <p id="outcome-copy">All markers verified.</p>
+        <button class="primary-button" id="replay-button" type="button">Run it again</button>
+      </section>
+    </section>
+
+    <aside class="command-panel">
+      <section class="panel-block mission-block">
+        <div class="section-heading"><span>Mission</span><strong id="beacon-count">0 / 3</strong></div>
+        <div class="progress-track"><i id="mission-progress"></i></div>
+        <ol class="beacon-list" id="beacon-list"></ol>
+        <div class="actions">
+          <button class="primary-button" id="start-button" type="button">Start patrol</button>
+          <button class="secondary-button" id="pause-button" type="button" disabled>Pause</button>
+          <button class="ghost-button" id="reset-button" type="button">Reset</button>
+        </div>
+      </section>
+
+      <section class="panel-block telemetry-block">
+        <div class="section-heading"><span>Live evidence</span><em>not estimates</em></div>
+        <dl class="telemetry-grid">
+          <div><dt>Frame</dt><dd id="fps-value">—</dd><small>frames / sec</small></div>
+          <div><dt>GPU work</dt><dd id="draw-value">—</dd><small>draw calls</small></div>
+          <div><dt>Geometry</dt><dd id="triangle-value">—</dd><small>triangles</small></div>
+          <div><dt>Simulation</dt><dd id="tick-value">0</dd><small>fixed ticks</small></div>
+        </dl>
+      </section>
+
+      <section class="panel-block asset-block">
+        <div class="section-heading"><span>Loaded local assets</span><em id="asset-total">0</em></div>
+        <div id="asset-list" class="asset-list"></div>
+      </section>
+
+      <section class="panel-block production-block">
+        <div class="section-heading"><span>P0 production cell</span><em id="cell-total">loading</em></div>
+        <div id="cell-list" class="cell-list"></div>
+        <code id="cell-sha">—</code>
+      </section>
+
+      <section class="boundary-note">
+        <strong>Honest boundary</strong>
+        <p>This is a navigation slice. Render presets change lighting, fog, pixel density, vignette, grain, and highlight response—not model or texture quality. Full 3D collision and physics belong to module #17 and are not integrated into this slice. Connected receipts are candidates, not library promotion. Progress is memory-only and resets on reload.</p>
+      </section>
+    </aside>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

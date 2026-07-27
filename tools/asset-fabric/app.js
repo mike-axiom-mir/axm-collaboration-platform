@@ -5,9 +5,13 @@
   var Core = window.AXMAssetFabric;
   var Creation = window.AXMCreationIncubator;
   var Hands = window.AXMAssetHands;
+  var Composer = window.AXMPlayComposer;
   var Pulse = window.AXMBodyPulseClient;
   var PULSE_MODULE_ID = "asset-fabric";
   var state;
+  var composerDraft = null;
+  var composerParentDigest = null;
+  var composerBranch = 0;
   var heartbeatTimer = null;
   var $ = function (id) {
     return document.getElementById(id);
@@ -73,6 +77,143 @@
   }
   function dataUrl(svg) {
     return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  }
+  function composerValues() {
+    return {
+      title: $("composerDraftTitle").value,
+      label: $("composerLabel").value,
+      shape: $("composerShape").value,
+      primary: $("composerPrimary").value,
+      secondary: $("composerSecondary").value,
+      background: $("composerBackground").value,
+      angle: $("composerAngle").value,
+      roundness: $("composerRoundness").value,
+      scale: $("composerScale").value,
+      stroke: $("composerStroke").value,
+      glow: $("composerGlow").value,
+      growth_direction: $("composerDirection").value,
+      growth_energy: $("composerEnergy").value,
+      parent_input_digest: composerParentDigest,
+      branch: composerBranch,
+    };
+  }
+  function applyComposerSpec(spec) {
+    $("composerDraftTitle").value = spec.title;
+    $("composerLabel").value = spec.label;
+    $("composerShape").value = spec.shape;
+    $("composerPrimary").value = spec.primary;
+    $("composerSecondary").value = spec.secondary;
+    $("composerBackground").value = spec.background;
+    $("composerAngle").value = spec.angle;
+    $("composerRoundness").value = spec.roundness;
+    $("composerScale").value = spec.scale;
+    $("composerStroke").value = spec.stroke;
+    $("composerGlow").value = spec.glow;
+    $("composerDirection").value = spec.growth_direction;
+    $("composerEnergy").value = spec.growth_energy;
+    composerParentDigest = spec.parent_input_digest;
+    composerBranch = spec.branch;
+  }
+  function renderComposer() {
+    try {
+      composerDraft = Composer.buildDraft(composerValues());
+      $("composerPreview").src = dataUrl(composerDraft.preview.svg);
+      $("composerStatus").textContent = composerDraft.receipt.status;
+      $("composerStatus").classList.remove("error");
+      $("composerTruth").textContent =
+        "4 immutable pieces · " +
+        composerDraft.graph.connections.length +
+        " typed links · grow " +
+        composerDraft.spec.growth_direction +
+        " at energy " +
+        composerDraft.spec.growth_energy +
+        " · zero AI · preview temporary until you choose Keep";
+      $("composerJson").textContent = JSON.stringify(
+        {
+          schema: composerDraft.schema,
+          input_digest: composerDraft.input_digest,
+          components: composerDraft.components.map(function (component) {
+            return {
+              id: component.id,
+              version: component.version,
+              kind: component.kind,
+              digest: component.digest,
+              payload: component.payload,
+            };
+          }),
+          graph: composerDraft.graph,
+          receipt: composerDraft.receipt,
+          truth: composerDraft.truth,
+        },
+        null,
+        2,
+      );
+    } catch (error) {
+      composerDraft = null;
+      $("composerStatus").textContent = "INVALID_DRAFT";
+      $("composerStatus").classList.add("error");
+      $("composerTruth").textContent = error.message;
+    }
+  }
+  function incubateComposerDraft() {
+    if (!composerDraft) return;
+    var need = Core.normalizeNeed({
+      title: composerDraft.spec.title,
+      target: "shared",
+      kind: "ui-component",
+      intended_use: "component-draft",
+      width: 640,
+      height: 360,
+      size: 640,
+      transparent: false,
+      purpose:
+        "Human-authored deterministic component draft from Play Composer",
+      target_canvas: composerDraft.graph.target_canvas,
+      required_outputs: ["image/svg+xml"],
+      editable_recipe_formats: [Core.UCP_GRAPH_SCHEMA],
+      fallback_policy: {
+        generalist: "forbidden",
+        lossy_conversion: "forbidden",
+      },
+      quality_requirements: {
+        require_preview: true,
+        require_validation: true,
+        require_editable_source: true,
+        minimum_quality_score: 0,
+        strict_validation: true,
+      },
+    });
+    state.generation = Number(state.generation || 0) + 1;
+    var candidate = Core.candidateFromComponentDraft(
+      need,
+      state.generation,
+      composerDraft,
+    );
+    if (
+      !state.needs.some(function (existing) {
+        return existing.id === need.id;
+      })
+    )
+      state.needs.push(need);
+    if (
+      !state.candidates.some(function (existing) {
+        return existing.id === candidate.id;
+      })
+    ) {
+      state.candidates.push(candidate);
+      state.log.push({
+        at: new Date().toISOString(),
+        kind: "human-play-compose-incubated",
+        candidateId: candidate.id,
+        graphDigest: composerDraft.graph.digest,
+        inputDigest: composerDraft.input_digest,
+      });
+    }
+    state.activeNeedId = need.id;
+    save();
+    render();
+    $("composerTruth").textContent =
+      "Explicitly kept in the incubator. Votes begin empty; READY_CONTRACT still does not mean visually approved.";
   }
   function esc(value) {
     return String(value == null ? "" : value).replace(
@@ -373,6 +514,8 @@
   }
 
   function candidateCard(candidate) {
+    var humanComponentDraft =
+      candidate.origin && candidate.origin.kind === "human-play-to-compose/v1";
     var humanUp = candidate.votes.mike && candidate.votes.mike.value === "UP";
     var hasMachineReceipt = Core.validMachineReview(candidate);
     var machineUp =
@@ -409,7 +552,9 @@
           " · v" +
           esc(candidate.assetHand.version) +
           "</span>"
-        : '<span class="creator">Legacy procedural provider</span>') +
+        : humanComponentDraft
+          ? '<span class="creator">Human Play Composer · typed UCP graph</span>'
+          : '<span class="creator">Legacy procedural provider</span>') +
       '<span class="creator">' +
       esc(candidate.need.target_canvas.medium) +
       " / " +
@@ -423,9 +568,14 @@
       (candidate.technical.pass ? "TECH PASS" : "HOLD") +
       "</span>" +
       '<span class="tag novel">' +
-      esc(candidate.archiveDecision) +
+      esc(
+        candidate.archiveDecision ||
+          (humanComponentDraft ? "UCP DRAFT" : "UNASSESSED"),
+      ) +
       '</span><span class="tag">novel ' +
-      Number(candidate.novelty).toFixed(2) +
+      (Number.isFinite(Number(candidate.novelty))
+        ? Number(candidate.novelty).toFixed(2)
+        : "unscored") +
       "</span></div>" +
       '<div class="votes"><button data-human-vote="' +
       candidate.id +
@@ -1133,6 +1283,43 @@
     save();
     render();
   };
+  [
+    "composerDraftTitle",
+    "composerLabel",
+    "composerShape",
+    "composerPrimary",
+    "composerSecondary",
+    "composerBackground",
+    "composerAngle",
+    "composerRoundness",
+    "composerScale",
+    "composerStroke",
+    "composerGlow",
+    "composerDirection",
+    "composerEnergy",
+  ].forEach(function (id) {
+    $(id).addEventListener("input", renderComposer);
+    $(id).addEventListener("change", renderComposer);
+  });
+  $("composerRemix").onclick = function () {
+    var next = Composer.directedVariation(
+      composerValues(),
+      $("composerDirection").value,
+      Number($("composerEnergy").value),
+      composerBranch + 1,
+    );
+    applyComposerSpec(next);
+    renderComposer();
+  };
+  $("composerDownload").onclick = function () {
+    if (!composerDraft) return;
+    download(
+      "axm-play-compose-" + composerDraft.input_digest.slice(0, 12) + ".json",
+      "application/json",
+      JSON.stringify(composerDraft, null, 2),
+    );
+  };
+  $("composerIncubate").onclick = incubateComposerDraft;
   $("importMachineReview").onclick = function () {
     $("machineReceiptFile").click();
   };
@@ -1159,5 +1346,6 @@
   });
   window.addEventListener("beforeunload", stopHeartbeat);
   load();
+  renderComposer();
   render();
 })();

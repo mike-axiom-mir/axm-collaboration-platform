@@ -1,4 +1,4 @@
-# AXM Project Room v0.2
+# AXM Project Room v0.3
 
 Project Room is the single local-first project workspace. It merges related project capabilities into views over one portable record instead of creating separate modules.
 
@@ -20,6 +20,8 @@ Project Room is the single local-first project workspace. It merges related proj
 - Record version: `2`
 - Existing v1 rooms migrate forward automatically; cards, goals and milestones remain.
 - Imports require explicit replacement confirmation.
+- Public guest-session exports may be imported as normal files. A same-tab local handoff shows a preview and requires explicit confirmation before replacing the current room.
+- Guest imports are data only. They never start a module, task or other execution path.
 - Checkpoint restore requires explicit confirmation and preserves checkpoint history.
 
 ## Boundaries

@@ -1,0 +1,45 @@
+{
+  "id": "verification-entry-observatory",
+  "name": "AXM Verification Entry Observatory",
+  "version": "v0.2",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "category": "OBSERVE",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "verification",
+    "selftest",
+    "inventory",
+    "receipts",
+    "read-only"
+  ],
+  "uses": [
+    "storage"
+  ],
+  "permissions": [],
+  "actions": [
+    "inventory test-shaped module-local files by relative name",
+    "identify conventional selftest and discovery-seam-review filenames",
+    "inventory matching package script declarations without executing them",
+    "keep name matches separate from executable and passing proof",
+    "emit a freshness-bound verification-entry map",
+    "prepare one exact mapped entry as a bounded unexecuted verification request"
+  ],
+  "accepts": [
+    "filesystem/workshop-root"
+  ],
+  "produces": [
+    "axm.verification-entry-map/v1",
+    "axm.verification-run-request/v1"
+  ],
+  "readiness": [
+    "storage"
+  ],
+  "summary": "Read-only map of verification-shaped entries plus one bounded request for an existing execution owner to inspect and run separately.",
+  "notes": "A filename or prepared request is inventory evidence only. The request contains no command, arguments, environment values, or fixture. Machine Host, module owners, Evidence Desk, Technical Glasses, and Workshop verification programs retain execution, receipt, readiness, and gate authority."
+}

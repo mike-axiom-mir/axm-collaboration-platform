@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.universal-component/v1",
+  "title": "AXM Universal Component Protocol component v1",
+  "description": "An immutable or explicitly versioned, canvas-aware building block that can be referenced by recipes and composition graphs without embedding an executable identity.",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "version",
+    "kind",
+    "title",
+    "ports",
+    "canvas_compatibility",
+    "capabilities",
+    "artifact_refs",
+    "payload",
+    "provenance",
+    "resource_profile",
+    "verification",
+    "mutability",
+    "digest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.universal-component/v1" },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$",
+      "maxLength": 160
+    },
+    "version": { "type": "string", "minLength": 1, "maxLength": 40 },
+    "kind": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$",
+      "maxLength": 100
+    },
+    "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "description": { "type": "string", "maxLength": 1000 },
+    "ports": {
+      "type": "object",
+      "required": ["inputs", "outputs"],
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "maxItems": 128,
+          "items": { "$ref": "#/$defs/port" }
+        },
+        "outputs": {
+          "type": "array",
+          "maxItems": 128,
+          "items": { "$ref": "#/$defs/port" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "canvas_compatibility": {
+      "type": "object",
+      "required": ["mediums", "intended_uses", "constraints"],
+      "properties": {
+        "mediums": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 80 }
+        },
+        "intended_uses": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 100 }
+        },
+        "constraints": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 120 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "capabilities": {
+      "type": "object",
+      "required": ["provides", "requires"],
+      "properties": {
+        "provides": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 120 }
+        },
+        "requires": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 120 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifact_refs": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "required": ["id", "role", "mime", "digest"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "role": { "type": "string", "minLength": 1, "maxLength": 100 },
+          "mime": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "digest": { "$ref": "#/$defs/digest" },
+          "storage_ref": { "type": ["string", "null"], "maxLength": 500 },
+          "bytes": { "type": ["integer", "null"], "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "payload": {
+      "type": "object",
+      "description": "Small typed parameters or references. Large bytes belong in digest-bound artifact_refs."
+    },
+    "adapter": {
+      "type": "object",
+      "required": ["from_types", "to_types", "required_hand", "known_losses"],
+      "properties": {
+        "from_types": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 120 }
+        },
+        "to_types": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 120 }
+        },
+        "required_hand": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "known_losses": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "type": "string", "minLength": 1, "maxLength": 240 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["origin_type", "source_id", "source_digest", "license_id", "created_by", "created_at"],
+      "properties": {
+        "origin_type": {
+          "enum": ["authored", "generated", "imported", "derived", "adapted"]
+        },
+        "source_id": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "source_digest": { "$ref": "#/$defs/digest" },
+        "license_id": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "created_by": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": true
+    },
+    "resource_profile": {
+      "type": "object",
+      "required": ["cpu", "gpu", "peak_memory_bytes", "working_storage_bytes", "native_runtime"],
+      "properties": {
+        "cpu": { "enum": ["none", "light", "medium", "heavy"] },
+        "gpu": { "enum": ["none", "light", "medium", "heavy"] },
+        "peak_memory_bytes": { "type": ["integer", "null"], "minimum": 0 },
+        "working_storage_bytes": { "type": ["integer", "null"], "minimum": 0 },
+        "native_runtime": { "type": ["string", "null"], "maxLength": 120 }
+      },
+      "additionalProperties": false
+    },
+    "verification": {
+      "type": "object",
+      "required": ["automatic_checks", "human_judgments", "assurance_ceiling"],
+      "properties": {
+        "automatic_checks": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 160 }
+        },
+        "human_judgments": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 160 }
+        },
+        "assurance_ceiling": { "type": "string", "minLength": 1, "maxLength": 240 }
+      },
+      "additionalProperties": false
+    },
+    "mutability": { "enum": ["immutable", "versioned"] },
+    "digest": { "$ref": "#/$defs/digest" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "adapter" } }, "required": ["kind"] },
+      "then": { "required": ["adapter"] }
+    }
+  ],
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "port": {
+      "type": "object",
+      "required": ["id", "type", "required", "multiple"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$",
+          "maxLength": 100
+        },
+        "type": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "required": { "type": "boolean" },
+        "multiple": { "type": "boolean" },
+        "description": { "type": "string", "maxLength": 300 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

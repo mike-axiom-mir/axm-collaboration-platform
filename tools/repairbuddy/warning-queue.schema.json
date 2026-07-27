@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.repairbuddy.warning-queue/v1",
+  "description": "Truth-preserving routing from verifier warnings to replay, evidence collection, or repair design.",
+  "type": "object",
+  "required": ["schema", "generatedAt", "source", "summary", "groups", "items", "truth"],
+  "properties": {
+    "schema": { "const": "axm.repairbuddy.warning-queue/v1" },
+    "generatedAt": { "type": "string" },
+    "source": { "type": "object" },
+    "summary": {
+      "type": "object",
+      "required": ["routedItems", "routedVerifierWarningLines", "replayable", "evidenceRequired", "repairDesignRequired"]
+    },
+    "groups": { "type": "array" },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "source", "subject", "code", "message", "classification", "automaticRepair", "surface", "repair"],
+        "properties": {
+          "classification": { "enum": ["REPLAYABLE", "EVIDENCE_REQUIRED", "REPAIR_DESIGN_REQUIRED"] },
+          "automaticRepair": { "type": "boolean" }
+        }
+      }
+    },
+    "truth": {
+      "type": "object",
+      "required": ["automaticRepairsApplied", "verifierWarningsSuppressed", "warningsRemainOpenUntilSourceVerifierPasses", "note"]
+    }
+  }
+}

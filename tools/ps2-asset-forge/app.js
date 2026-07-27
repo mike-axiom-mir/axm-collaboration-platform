@@ -5,6 +5,7 @@ import { OrbitControls } from './vendor/OrbitControls.js';
 import { clone as cloneSkeleton } from './vendor/SkeletonUtils.js';
 import { buildHandoff, createRecipe } from './forge-core.mjs';
 import { LocalPostProcess } from './post-process.mjs';
+import { buildHumanoidGameplayGraph, createAnimationController } from '/shared/game-animation-foundation/animation-spine.mjs';
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
@@ -29,6 +30,7 @@ const dom = {
   statTriangles: $('#stat-triangles'),
   statMaterials: $('#stat-materials'),
   statAnimations: $('#stat-animations'),
+  motionStatus: $('#motion-status'),
   statDraws: $('#stat-draws'),
   catalogTotal: $('#catalog-total'),
   catalogTris: $('#catalog-tris'),
@@ -89,6 +91,7 @@ const loader = new GLTFLoader();
 const exporter = new GLTFExporter();
 const sourceCache = new Map();
 const mixers = [];
+const animationActors = [];
 const usedSources = new Map();
 let currentAnimations = [];
 let catalog;
@@ -164,6 +167,7 @@ function resetRoots() {
   exportRoot.name = 'AXM_PS2_ASSET_CANDIDATE';
   scene.add(environmentRoot, exportRoot);
   mixers.splice(0, mixers.length);
+  animationActors.splice(0, animationActors.length);
   currentAnimations = [];
   usedSources.clear();
   inspectedAsset = null;
@@ -513,8 +517,30 @@ async function addSource(asset, options = {}) {
 
   if ((gltf.animations || []).length && options.animate !== false) {
     const mixer = new THREE.AnimationMixer(source);
-    const preferred = gltf.animations.find((clip) => /idle/i.test(clip.name)) || gltf.animations[0];
-    mixer.clipAction(preferred).play();
+    if (asset.kind === 'pedestrian' && options.motion) {
+      const graph = buildHumanoidGameplayGraph(gltf.animations, { id: `axm.ps2-street.${asset.id}` });
+      const controller = createAnimationController(graph);
+      const clips = new Map(gltf.animations.map((clip) => [clip.name, clip]));
+      const actions = new Map();
+      for (const state of graph.states) {
+        const clip = clips.get(state.clip);
+        if (!clip) continue;
+        const action = mixer.clipAction(clip);
+        action.enabled = true;
+        action.clampWhenFinished = !state.loop;
+        action.setLoop(state.loop ? THREE.LoopRepeat : THREE.LoopOnce, state.loop ? Infinity : 1);
+        actions.set(state.id, action);
+      }
+      actions.get(graph.initial_state)?.reset().play();
+      animationActors.push({
+        wrapper, mixer, controller, graph, actions, activeState: graph.initial_state,
+        basePosition: wrapper.position.clone(), baseRotation: wrapper.rotation.y,
+        elapsedMs: options.motion.phaseOffsetMs || 0, segment: '', motion: options.motion
+      });
+    } else {
+      const preferred = gltf.animations.find((clip) => /idle/i.test(clip.name)) || gltf.animations[0];
+      mixer.clipAction(preferred).play();
+    }
     mixers.push(mixer);
     currentAnimations.push(...gltf.animations);
   }
@@ -571,8 +597,8 @@ async function buildStreet(recipe) {
     addSource(getAsset('kenney-city-commercial', buildings[2]), { height: 4.65, x: 6.35, z: -5.05 }),
     addSource(getAsset('kenney-car-kit', recipe.selections.vehicle), { length: 3.8, x: 1.15, z: 0.85, rotationY: -0.34 }),
     addSource(getAsset('kenney-retro-urban', 'truck-grey'), { length: 3.7, x: 8.35, z: 2.15, rotationY: Math.PI + 0.08 }),
-    addSource(getAsset('quaternius-animated-men', recipe.selections.pedestrian), { height: 1.78, x: -2.0, z: 3.58, rotationY: 2.7 }),
-    addSource(getAsset('quaternius-animated-men', recipe.selections.pedestrian === 'man-in-suit' ? 'man-casual-a' : 'man-in-suit'), { height: 1.76, x: 4.15, z: -3.05, rotationY: 0.45 }),
+    addSource(getAsset('quaternius-animated-men', recipe.selections.pedestrian), { height: 1.78, x: -2.0, z: 3.58, rotationY: 2.7, motion: { axis: 'x', distance: 2.2, phaseOffsetMs: 0 } }),
+    addSource(getAsset('quaternius-animated-men', recipe.selections.pedestrian === 'man-in-suit' ? 'man-casual-a' : 'man-in-suit'), { height: 1.76, x: 4.15, z: -3.05, rotationY: 0.45, motion: { axis: 'x', distance: 1.65, phaseOffsetMs: 5200 } }),
     addSource(getAsset('kenney-retro-urban', 'detail-bench'), { width: 1.7, x: -5.35, z: -3.15, rotationY: Math.PI }),
     addSource(getAsset('kenney-retro-urban', recipe.wear > 45 ? 'detail-dumpster-open' : 'detail-dumpster-closed'), { maxSize: 1.35, x: 6.7, z: -3.35, rotationY: Math.PI })
   ]);
@@ -665,6 +691,43 @@ function updateStats() {
   dom.statMaterials.textContent = formatNumber(materials.size);
   dom.statAnimations.textContent = formatNumber(currentAnimations.length);
   dom.statDraws.textContent = formatNumber(draws);
+  if (dom.motionStatus) dom.motionStatus.textContent = animationActors.length
+    ? `${animationActors.length} actors | typed transitions live`
+    : 'static preview | no motion actor';
+  document.body.dataset.animationActorCount = String(animationActors.length);
+}
+
+function streetMotionFrame(elapsedMs, distance) {
+  const time = elapsedMs % 16000;
+  if (time < 2500) return { segment: 'idle-origin', speed: 0, offset: 0, reverse: false };
+  if (time < 6500) return { segment: 'walk-out', speed: 1.15, offset: distance * ((time - 2500) / 4000), reverse: false };
+  if (time < 8000) return { segment: 'idle-far', speed: 0, offset: distance, reverse: false };
+  if (time < 10000) return { segment: 'emote-far', speed: 0, offset: distance, reverse: false, emote: true };
+  if (time < 14000) return { segment: 'walk-back', speed: 1.15, offset: distance * (1 - ((time - 10000) / 4000)), reverse: true };
+  return { segment: 'idle-origin', speed: 0, offset: 0, reverse: false };
+}
+
+function updateAnimationActor(actor, deltaMs) {
+  actor.elapsedMs += deltaMs;
+  const motion = streetMotionFrame(actor.elapsedMs, actor.motion.distance);
+  actor.controller.setParameter('speed', motion.speed);
+  if (motion.segment !== actor.segment && motion.emote && actor.graph.states.some((state) => state.id === 'emote')) actor.controller.trigger('emote');
+  actor.segment = motion.segment;
+  const frame = actor.controller.update(deltaMs);
+  if (frame.transition_started) {
+    const previous = actor.actions.get(frame.transition_started.from);
+    const next = actor.actions.get(frame.transition_started.to);
+    if (next) {
+      next.reset().play();
+      if (previous && previous !== next) next.crossFadeFrom(previous, frame.transition_started.duration_ms / 1000, true);
+    }
+    actor.activeState = frame.transition_started.to;
+  }
+  actor.wrapper.position.copy(actor.basePosition);
+  actor.wrapper.position[actor.motion.axis] += motion.offset;
+  actor.wrapper.rotation.y = actor.baseRotation + (motion.reverse ? Math.PI : 0);
+  actor.wrapper.userData.axmAnimationFrame = frame;
+  return frame;
 }
 
 async function forge(input = {}) {
@@ -838,7 +901,9 @@ const clock = new THREE.Clock();
 function animate() {
   requestAnimationFrame(animate);
   const delta = Math.min(clock.getDelta(), 0.05);
+  const animationFrames = animationActors.map((actor) => updateAnimationActor(actor, delta * 1000));
   for (const mixer of mixers) mixer.update(delta);
+  document.body.dataset.animationStates = animationFrames.map((frame) => frame.state).join(',');
   controls.update();
   postProcess.render(scene, camera, delta);
 }

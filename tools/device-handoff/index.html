@@ -1,2 +1,23 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AXM Device Handoff</title><link rel="stylesheet" href="../../shared/operations/operations-ui.css"><style>#qr img{max-width:260px;background:#fff;padding:10px;border-radius:12px}.url{overflow-wrap:anywhere}</style></head><body><header><a href="../../hub/index.html">← Hub</a><div><span class="eyebrow">START TEMPORARY DOOR → SCAN QR → CHOOSE FILES → HASH RECEIPT → STOP</span><h1>Local Device Handoff Bridge</h1><p>A small LAN doorway for selected phone, tablet or laptop files. The rest of the Workshop stays on loopback.</p></div></header><main><div id="notice" class="notice hidden"></div><section class="grid"><article class="panel"><h2>Temporary handoff session</h2><label>Session lifetime<select id="ttl"><option value="5">5 minutes</option><option value="10" selected>10 minutes</option><option value="20">20 minutes</option></select></label><div class="actions"><button id="start">Start QR session</button><button id="stop" class="danger">Stop LAN doorway</button></div><p class="truth">Requires <code>device.listen</code>. The sidecar serves only its upload page and writes only into the asset inbox.</p><p><a href="../secrets-permissions-console/index.html">Manage permission grant</a></p></article><article class="panel"><h2>Scan from sending device</h2><div id="qr"></div><p id="url" class="url muted">No active session.</p><p id="expiry" class="muted"></p></article></section><section class="panel"><div class="toolbar"><h2>Status and receipts</h2><button id="refresh" class="secondary">Refresh</button></div><div id="facts" class="facts"></div><div id="receipts" class="code">No receipts yet.</div><p class="truth">A receipt records names, sizes, hashes and the sender address. It never records or requests a whole-device file listing.</p></section></main><script src="../game-hub/vendor/qrcode.js"></script><script src="../../shared/operations/operations-client.js"></script><script src="app.js"></script></body></html>
-
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Device Handoff</title>
+  <link rel="stylesheet" href="../../shared/operations/operations-ui.css">
+  <style>#qr img{max-width:260px;background:#fff;padding:10px;border-radius:12px}.url{overflow-wrap:anywhere}.route-note{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.route-note a{display:inline-flex;padding:10px 14px;border:1px solid #4ddac5;border-radius:10px;text-decoration:none}</style>
+</head>
+<body>
+  <header><a href="../../hub/index.html">&larr; Hub</a><div><span class="eyebrow">START TEMPORARY DOOR → SCAN QR → CHOOSE FILES → HASH RECEIPT → AUTO-STOP</span><h1>Local Device Handoff Bridge</h1><p>A small LAN doorway for selected phone, tablet or laptop files. The rest of the Workshop stays on loopback.</p></div></header>
+  <main>
+    <div id="notice" class="notice hidden"></div>
+    <section class="grid">
+      <article class="panel"><h2>Temporary handoff session</h2><label>Session lifetime<select id="ttl"><option value="5">5 minutes</option><option value="10" selected>10 minutes</option><option value="20">20 minutes</option></select></label><div class="actions"><button id="start">Start QR session</button><button id="stop" class="danger">Stop LAN doorway</button></div><p class="truth">Requires <code>device.listen</code>. The sidecar serves only its upload page and writes only into the asset inbox. When the final session expires, its listener closes automatically.</p><p><a href="../secrets-permissions-console/index.html">Manage permission grant</a></p></article>
+      <article class="panel"><h2>Scan from sending device</h2><div id="qr"></div><p id="url" class="url muted">No active session.</p><p id="expiry" class="muted"></p></article>
+    </section>
+    <section class="panel"><div class="toolbar"><h2>Status and receipts</h2><button id="refresh" class="secondary">Refresh</button></div><div id="facts" class="facts"></div><div id="receipts" class="code">No receipts yet.</div><p class="truth">A receipt records names, sizes, hashes and the sender address. It never records or requests a whole-device file listing.</p></section>
+    <section class="panel route-note"><div><span class="eyebrow">NEXT LOCAL HAND</span><h2>Remove the photo background</h2><p class="muted">Chroma Studio watches this module’s image inbox and saves transparent PNGs to Browser Downloads outside the Workshop by default.</p></div><a href="../chroma-studio/chroma-studio.html">Open Chroma Studio →</a></section>
+  </main>
+  <script src="../game-hub/vendor/qrcode.js"></script><script src="../../shared/operations/operations-client.js"></script><script src="app.js"></script>
+</body>
+</html>

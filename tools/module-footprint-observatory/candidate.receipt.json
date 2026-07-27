@@ -1,0 +1,106 @@
+{
+  "schema": "axm.module-candidate-receipt/v1",
+  "candidate": {
+    "id": "module-footprint-observatory",
+    "name": "AXM Module Footprint Observatory",
+    "version": "v0.1",
+    "status": "EXPERIMENTAL",
+    "location": "detached-local-candidate"
+  },
+  "createdAt": "2026-07-27T02:17:00Z",
+  "intent": "Fill the unowned per-module active footprint seam without replacing Workshop Census, Asset Filesystem, Packager, Technical Glasses, or human size judgments.",
+  "environmentProbe": {
+    "contract": "Node.js metadata-only recursive scanner below top-level tools/<module> roots",
+    "osAssumed": "filesystem host supported by Node.js",
+    "osActual": "Linux 6.12.13 x86_64",
+    "nodeActual": "v24.14.0",
+    "paths": {
+      "workshopReadable": true,
+      "detachedCandidateRootWritable": true
+    },
+    "tools": {
+      "node": "v24.14.0",
+      "zip": "3.0 available for final packaging only",
+      "unzip": "6.00 available for independent integrity verification only"
+    },
+    "mismatches": [
+      {
+        "code": "ENVIRONMENT_SEAM",
+        "fact": "The shell default clock displayed +03:00 while the user context Europe/Amsterdam displayed +02:00.",
+        "effect": "Candidate receipts and observations use JavaScript UTC ISO timestamps; no scheduling decision depends on the shell offset."
+      }
+    ],
+    "unknownHolds": [],
+    "safeToProceedAsContracted": true,
+    "rawReadingsReleased": true
+  },
+  "inventoryBeforeBuild": {
+    "duplicateFound": false,
+    "preservedAdjacentOwners": [
+      "Workshop Census owns named module and file-type scope counts.",
+      "Asset Filesystem owns asset content hashes, duplicates, retrieval, watching, and packs.",
+      "Workshop Packager owns backup and public-safe packaging.",
+      "Technical Glasses owns readiness truth."
+    ],
+    "boundedGap": "No current module or detached candidate owns exact per-top-level-module active regular-file count, byte count, largest-file path, extension-byte mix, and skipped/excluded evidence without turning size into judgment."
+  },
+  "freshWorkshopEvidence": {
+    "technicalGlasses": {
+      "compiledAt": "2026-07-27T02:16:17.771Z",
+      "fingerprint": "8af07d339a9a870b5f0b439a6d9609c1f47ee634ff7df30b05dee9ad454c4c25",
+      "modules": 81,
+      "contractsDeclared": 53,
+      "contractsPassing": 53,
+      "broken": 0,
+      "bodyMode": "STOPPED"
+    },
+    "census": {
+      "measuredAt": "2026-07-27T02:16:17.864Z",
+      "fingerprint": "adb1d48bb8c1608ba2b1ea06203544a8d9e2a7f0f49bb7d40f1e2891facf72aa",
+      "hubRegisteredTools": 81,
+      "hubToolsWithDeclaredContracts": 53
+    },
+    "freshnessTtlMs": 7200000,
+    "freshnessAtBuild": "LIVE"
+  },
+  "candidateEvidence": {
+    "schema": "axm.module-footprint-map/v1",
+    "measuredAt": "2026-07-27T02:16:29.778Z",
+    "footprintFingerprint": "47ed28963458a63b84b645fed416161b4ebcfde68403f5c54e94a2ed58491788",
+    "scope": "regular active files below top-level tools/<module> roots after named directory exclusions",
+    "summary": {
+      "modules": 81,
+      "files": 2571,
+      "bytes": 138675769,
+      "modulesWithSkippedSymlinks": 0,
+      "skippedSymlinks": 0,
+      "excludedDirectories": 3,
+      "invalidManifests": 0,
+      "readIssues": 0
+    }
+  },
+  "verification": {
+    "selftest": {
+      "status": "PASS",
+      "checks": 24,
+      "fixtureAndLiveWorkshop": true
+    },
+    "browserVisualJudgment": "NOT_RUN"
+  },
+  "authority": {
+    "installed": false,
+    "registered": false,
+    "staged": false,
+    "promoted": false,
+    "canonChanged": false,
+    "permissionsChanged": false,
+    "rollbackBodiesChanged": false,
+    "sizeBudgetApplied": false,
+    "deletionRecommended": false,
+    "packagingPerformed": false,
+    "sourceMutated": false,
+    "networkUsed": false,
+    "githubUsed": false
+  },
+  "smallestNextIntakeTest": "Mike accepts or corrects the active-source directory exclusions and confirms that byte totals remain evidence rather than a quality or deletion score."
+}

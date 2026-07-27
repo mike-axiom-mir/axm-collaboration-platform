@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.embroidery-capability-receipt/v1",
+  "title": "AXM embroidery parser and simulator capability receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "identity", "private_location_retained"],
+  "properties": {
+    "schema": { "const": "axm.embroidery-capability-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["PASS", "FAIL", "MISSING_SUBSTRATE"] },
+    "missing": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "identity": { "type": "object" },
+    "runtime": { "type": "object" },
+    "recipe": { "type": "object" },
+    "recipe_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source": { "type": "object" },
+    "provides_substrates": { "type": "array", "uniqueItems": true, "items": { "const": "embroidery-parser-or-simulator" } },
+    "checks": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["name", "pass"], "properties": { "name": { "type": "string" }, "pass": { "type": "boolean" } } } },
+    "runs": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "object", "additionalProperties": false, "required": ["label", "process", "process_pass", "metrics", "diagnostic"], "properties": { "label": { "enum": ["a", "b"] }, "process": { "type": "object" }, "process_pass": { "type": "boolean" }, "metrics": { "type": ["object", "null"] }, "diagnostic": { "type": ["string", "null"] } } } },
+    "counterexample": { "type": "object" },
+    "private_location_retained": { "const": false },
+    "generated_design_retained": { "const": false },
+    "automatic_design_retention": { "const": false },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

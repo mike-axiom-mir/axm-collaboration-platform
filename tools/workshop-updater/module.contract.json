@@ -1,0 +1,24 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "workshop-updater",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": ["workshop-update-network-opt-in", "canonical-github-main-check", "commit-pinned-release-manifest-read", "ed25519-release-verification", "bounded-update-archive-staging", "heartbeat-due-update-check", "body-pulse-gated-update-check", "zero-network-off-state"],
+  "consumes": ["scheduled-platform-heartbeat", "bounded-body-pulse-lease", "github-public-api", "axm.workshop-update-manifest/v1", "pinned-release-trust-key", "explicit-human-network-consent"],
+  "permissions": ["network.read", "files.stage"],
+  "handoffs": {
+    "emits": ["axm.workshop-update-candidate/v1", "axm.workshop-updater.check-receipt/v1", "axm.workshop-update-install-gap/v1"],
+    "accepts": ["scheduled-platform-heartbeat", "human:explicit-updater-configuration", "axm.workshop-update-manifest/v1"]
+  },
+  "boundaries": {
+    "writes": ["state/workshop-updater/state.json", "state/workshop-updater/staging/commit-sha.zip", "state/workshop-updater/staging/commit-sha.candidate.json"],
+    "networkReads": ["api.github.com canonical commit receipt", "raw.githubusercontent.com commit-pinned AXM_UPDATE_MANIFEST.json", "codeload.github.com commit-pinned archive when AUTO_STAGE is separately enabled and trusted"],
+    "refuses": ["network-while-disabled", "repository-switch", "branch-switch", "unsigned-release", "unknown-release-key", "unpinned-archive-url", "archive-hash-mismatch", "archive-size-mismatch", "archive-over-512-mib", "archive-extraction", "live-workshop-overwrite", "automatic-install", "automatic-delete", "automatic-restart", "automatic-rollback", "automatic-promotion", "github-push", "github-merge", "canon-authority"]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
+}

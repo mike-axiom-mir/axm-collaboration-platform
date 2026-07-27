@@ -1,0 +1,118 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "bounded-modular-intake",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "code.recipe.csv-json.ingest/v1",
+        "code.recipe.validate/v1",
+        "code.recipe.intake.receipt/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "code.recipe.csv-json.ingest/v1": [
+          "CSV or JSON",
+          "5 MiB",
+          "5,000 rows",
+          "user-selected input"
+        ],
+        "code.recipe.validate/v1": [
+          "structural validation",
+          "six physical snippet lines",
+          "source content remains unverified"
+        ],
+        "code.recipe.intake.receipt/v1": [
+          "row-level errors and warnings",
+          "no raw execution"
+        ]
+      }
+    },
+    {
+      "id": "family-preserving-reference",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "code.recipe.deduplicate.exact/v1",
+        "code.recipe.family.group/v1",
+        "code.recipe.search.local/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "code.recipe.deduplicate.exact/v1": [
+          "exact language + snippet + source identity only"
+        ],
+        "code.recipe.family.group/v1": [
+          "declared or visibly title-derived family key",
+          "semantic review still required"
+        ],
+        "code.recipe.search.local/v1": [
+          "browser-local filter",
+          "no source fetch"
+        ]
+      }
+    },
+    {
+      "id": "portable-output",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "code.recipe.pack.export/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "code.recipe.pack.export/v1": [
+          "explicit JSON download",
+          "not promotion"
+        ]
+      }
+    },
+    {
+      "id": "platform-deep-search-catalog",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "code.recipe.catalog.platform-1000/v1"
+      ],
+      "declaredConstraints": {
+        "code.recipe.catalog.platform-1000/v1": [
+          "narrative report received",
+          "claimed temporary HTML/CSV/XLSX artifacts absent"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "code.recipe.catalog.platform-1000/v1"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "code.recipe.catalog.platform-1000/v1",
+      "requiredBy": [
+        "platform-deep-search-catalog"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

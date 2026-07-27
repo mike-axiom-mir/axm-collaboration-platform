@@ -1,0 +1,19 @@
+{
+  "schema": "axm.verification-target-profile/v1",
+  "id": "mobile-game-asset",
+  "name": "Mobile Game Asset",
+  "required_categories": ["asset", "game"],
+  "optional_categories": ["hand", "publish"],
+  "missing_validator_policy": "hold",
+  "conflict_policy": "hold",
+  "conflict_rules": [
+    {
+      "id": "high-resolution-versus-low-vram",
+      "when_all": [
+        { "claim_id": "asset.texture.4k-present", "status": "PASS" },
+        { "claim_id": "game.target.low-vram", "status": "PASS" }
+      ],
+      "reason": "The asset is valid, but the declared mobile target cannot safely carry its current texture budget."
+    }
+  ]
+}

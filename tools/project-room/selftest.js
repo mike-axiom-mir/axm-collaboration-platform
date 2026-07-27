@@ -1,5 +1,7 @@
 'use strict';
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const Core = require('./project-room-core.js');
 
 const empty = Core.emptyRoom();
@@ -71,4 +73,12 @@ assert.equal(summary.documents, 1);
 assert.equal(summary.versions, 1);
 assert.throws(() => Core.normalizeRoom({ format: 'something-else', cards: [] }), /not an AXM Project Room/);
 
-console.log('Project Room selftest: PASS (v1 migration, merged records, timeline, evidence gate, checkpoints, restore)');
+const appSource = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+const htmlSource = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+assert.ok(appSource.includes("axm.guest-session-export/v1"));
+assert.ok(appSource.includes("axm.guest.project-room-handoff.v1"));
+assert.ok(appSource.includes('Nothing in the import runs automatically'));
+assert.ok(/guestHandoffAccept/.test(htmlSource) && /guestHandoffDismiss/.test(htmlSource));
+assert.ok(/current Project Room stays untouched until you explicitly accept/i.test(htmlSource));
+
+console.log('Project Room selftest: PASS (v1 migration, merged records, timeline, evidence gate, checkpoints, restore, explicit guest handoff)');

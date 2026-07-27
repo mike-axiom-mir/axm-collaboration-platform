@@ -1,0 +1,8 @@
+{
+  "schema":"axm.module-contract/v1","id":"modular-intake-gate","version":"v0.1",
+  "provides":["component.quarantine.stage","component.family.resolve","component.compatibility.verify","component.review.digest","component.promote.atomic","component.module.route","component.backup.request"],
+  "consumes":["axm.modular-piece-package/v1","service:review-inbox","service:module-installer"],"permissions":["component.promote","component.family.register"],
+  "handoffs":{"emits":["axm.modular-piece-candidate/v1","axm.component-backup-request/v1","axm.module-bundle/v1"],"accepts":["axm.modular-piece-package/v1","axm.review-item/v1"]},
+  "boundaries":{"writes":["state/modular-intake","intakes/modular-pieces/promoted"],"refuses":["auto-execution","unknown-family-coercion","arbitrary-destination","unreviewed-promotion","digest-drift","silent-overwrite","module-installer-bypass","network-fetch"]},
+  "lifecycle":{"state_owner":"service","reload":"resume","disconnect":"graceful-degrade","cleanup":"explicit"}
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.holodeck-world/v1",
+  "title": "AXM Holodeck canonical world",
+  "type": "object",
+  "required": ["schema", "id", "title", "coordinateSystem", "environment", "entities", "spawnPoints"],
+  "properties": {
+    "schema": {"const": "axm.holodeck-world/v1"},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._:-]{0,119}$"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 160},
+    "coordinateSystem": {
+      "type": "object",
+      "required": ["type", "units", "handedness"],
+      "properties": {
+        "type": {"const": "cartesian-local"},
+        "units": {"const": "meters"},
+        "handedness": {"const": "right"}
+      }
+    },
+    "environment": {"type": "object", "required": ["bounds"]},
+    "entities": {"type": "array", "minItems": 1, "maxItems": 256, "items": {"type": "object", "required": ["id", "kind", "name", "transform", "appearance"]}},
+    "spawnPoints": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id", "position", "headingDegrees"]}},
+    "boundaries": {"type": "array", "items": {"type": "string"}}
+  }
+}

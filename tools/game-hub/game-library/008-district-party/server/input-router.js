@@ -27,7 +27,7 @@ function routeInput(sessionManager, packet, now = Date.now()) {
   const nextInput = sanitizeInputIntent(packet.input);
   actor.inputHeld ||= {};
   actor.pendingPulses ||= {};
-  for (const field of ['action', 'fire', 'inventoryToggle', 'inventoryPrev', 'inventoryNext', 'inventoryActivate']) {
+  for (const field of ['action', 'fire', 'inventoryToggle', 'inventoryPrev', 'inventoryNext', 'inventoryActivate', 'mapToggle']) {
     const held = nextInput[field] === true;
     if (actor.alive && held && actor.inputHeld[field] !== true) actor.pendingPulses[field] = true;
     actor.inputHeld[field] = held;

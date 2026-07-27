@@ -1,10 +1,108 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AXM Recovery Center</title><link rel="stylesheet" href="../../shared/operations/operations-ui.css"></head><body>
-<header><a href="../../hub/index.html">← Hub</a><div><span class="eyebrow">SNAPSHOT → VERIFY → PREVIEW → SAFETY COPY → RESTORE</span><h1>Recovery & Rollback Center</h1><p>Private full snapshots with restore proof, scheduled capture, and selective recovery that never silently deletes current files.</p></div></header>
-<main><div id="notice" class="notice hidden"></div><section class="grid">
-<article class="panel"><h2>Create recovery snapshot</h2><p class="muted">Uses the verified Workshop Packager, retains an unpacked copy, and runs the restore test.</p><label>Reason<input id="reason" value="Manual recovery checkpoint"></label><button id="snapshot">Create verified snapshot</button></article>
-<article class="panel"><h2>Schedule</h2><label><span>Daily local time</span><input id="localTime" type="time" value="04:30"></label><label><span><input id="enabled" type="checkbox" style="width:auto"> Enable daily snapshot</span></label><button id="schedule">Save schedule</button></article>
-</section><section class="panel"><div class="toolbar"><div><h2>Retained snapshots</h2><p class="muted">Only full snapshots with retained folders can be selectively restored.</p></div><button id="refresh" class="secondary">Refresh</button></div><div id="facts" class="facts"></div><div class="scroll"><table><thead><tr><th>Snapshot</th><th>Created</th><th>Files</th><th>Restore test</th></tr></thead><tbody id="snapshots"></tbody></table></div></section>
-<section class="grid"><article class="panel"><h2>1. Preview selected paths</h2><label>Snapshot<select id="snapshotId"></select></label><label>Files or folders, one per line<textarea id="paths" placeholder="tools/studio&#10;state/shared-profile/profile.json"></textarea></label><button id="preview">Build exact restore preview</button><p class="truth">Exports and dependency folders are refused. Snapshot hashes are checked before the preview is issued.</p></article>
-<article class="panel"><h2>2. Apply preview</h2><div id="previewResult" class="code">No restore preview yet.</div><label>Type RESTORE SELECTED FILES<input id="confirmation" autocomplete="off"></label><button id="apply" class="danger" disabled>Restore selected files</button><p class="truth">Requires the <code>recovery.apply</code> grant in Secrets & Permissions Console. Current files are copied to backups/recovery-center first.</p></article></section></main>
-<script src="../../shared/operations/operations-client.js"></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Recovery &amp; Rollback Center</title>
+  <link rel="stylesheet" href="../../shared/operations/operations-ui.css">
+  <link rel="stylesheet" href="recovery-center.css">
+</head>
+<body>
+  <header>
+    <a href="../../hub/index.html">&larr; Hub</a>
+    <div>
+      <span class="eyebrow">SNAPSHOT &rarr; CURRENT-STATE PREVIEW &rarr; SAFETY COPY &rarr; RESTORE &rarr; ROLLBACK</span>
+      <h1>Recovery &amp; Rollback Center</h1>
+      <p>Private snapshots and selective recovery whose previews expire when time or Workshop bytes move.</p>
+    </div>
+  </header>
 
+  <main>
+    <div id="notice" class="notice hidden"></div>
+
+    <section class="authority-strip" aria-label="Recovery authority boundary">
+      <div><span>Restore preview</span><strong>Binds snapshot and current bytes</strong></div>
+      <div><span>Apply authority</span><strong>Separate permission plus exact phrase</strong></div>
+      <div><span>Rollback</span><strong>Second preview and second safety copy</strong></div>
+      <div><span>Automation</span><strong>No automatic restore, rollback, upload, or promotion</strong></div>
+    </section>
+
+    <section class="panel overview-panel">
+      <div class="zone-heading">
+        <div><span class="section-kicker">LIVE RECOVERY POSTURE</span><h2>Recovery readiness</h2><p class="muted">Status is read-only. The schedule is an in-process timer, not an installed operating-system task.</p></div>
+        <button id="refresh" class="secondary">Refresh evidence</button>
+      </div>
+      <div id="facts" class="facts"></div>
+    </section>
+
+    <section class="control-grid">
+      <article class="panel snapshot-panel">
+        <span class="section-kicker">PRIVATE CHECKPOINT</span>
+        <h2>Create verified snapshot</h2>
+        <p class="muted">Uses Workshop Packager, retains an unpacked copy, and keeps restore-test evidence.</p>
+        <label>Reason<input id="reason" value="Manual recovery checkpoint"></label>
+        <button id="snapshot">Create verified snapshot</button>
+      </article>
+      <article class="panel schedule-panel">
+        <span class="section-kicker">SERVER-RUNTIME TIMER</span>
+        <h2>Private schedule</h2>
+        <p class="muted">Runs only while this Workshop server process is alive. It installs no OS scheduler entry.</p>
+        <label>Daily local time<input id="localTime" type="time" value="04:30"></label>
+        <label class="check-label"><input id="enabled" type="checkbox"> Enable in-process daily snapshot</label>
+        <button id="schedule">Save explicit schedule</button>
+      </article>
+    </section>
+
+    <section id="snapshotInventory" class="panel">
+      <div class="zone-heading">
+        <div><span class="section-kicker">RETAINED SOURCES</span><h2>Verified snapshot inventory</h2><p class="muted">Only retained full snapshots can supply a restore preview. Local manifest paths are not exposed.</p></div>
+      </div>
+      <div class="scroll"><table><thead><tr><th>Snapshot</th><th>Created</th><th>Files</th><th>Restore test</th><th>Manifest digest</th></tr></thead><tbody id="snapshots"></tbody></table></div>
+    </section>
+
+    <section id="restoreFlow" class="panel restore-zone">
+      <div class="zone-heading">
+        <div><span class="section-kicker">SELECTIVE RESTORE</span><h2>Fresh restore boundary</h2><p class="muted">A preview expires after 15 minutes and becomes unusable immediately if either snapshot or selected current bytes change.</p></div>
+        <a class="permission-link" href="../secrets-permissions-console/index.html?module=recovery-center&amp;permission=recovery.apply">Open exact recovery.apply permission context</a>
+      </div>
+      <div class="control-grid">
+        <article class="subpanel">
+          <h3>1. Select snapshot paths</h3>
+          <label>Snapshot<select id="snapshotId"></select></label>
+          <label>Files or folders, one per line<textarea id="paths" placeholder="tools/studio&#10;state/shared-profile/profile.json"></textarea></label>
+          <button id="preview">Build current-state-bound preview</button>
+          <p class="truth">Exports, dependency folders, path escapes, symbolic links, and oversized selections are refused.</p>
+        </article>
+        <article id="restoreBoundary" class="subpanel apply-panel">
+          <h3>2. Inspect and explicitly apply</h3>
+          <div id="previewResult" class="preview-empty">No restore preview yet.</div>
+          <label>Type <strong>RESTORE SELECTED FILES</strong><input id="confirmation" autocomplete="off"></label>
+          <button id="apply" class="danger" disabled>Restore previewed files</button>
+          <p class="truth">The server independently rechecks preview expiry, snapshot manifest, selected source hashes, current target hashes, permission, and confirmation before writing.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="restoreLineage" class="panel lineage-zone">
+      <div class="zone-heading">
+        <div><span class="section-kicker">PERSISTENT RECEIPTS</span><h2>Restore lineage</h2><p class="muted">Each completed restore records the exact file set and pre-restore safety location. Preparing rollback never applies it.</p></div>
+      </div>
+      <div id="restores" class="ledger-cards"></div>
+    </section>
+
+    <section id="rollbackFlow" class="panel rollback-zone">
+      <div class="zone-heading">
+        <div><span class="section-kicker">GOVERNED REVERSAL</span><h2>Rollback a completed restore</h2><p class="muted">Rollback restores replaced files and removes only files that exact restore created. Later overlapping restores or current-byte drift hold the rollback.</p></div>
+      </div>
+      <div id="rollbackResult" class="preview-empty">Choose “Prepare rollback” on an eligible restore receipt.</div>
+      <div class="rollback-confirm">
+        <label>Type <strong>ROLL BACK RESTORE</strong><input id="rollbackConfirmation" autocomplete="off"></label>
+        <button id="rollbackApply" class="danger" disabled>Apply previewed rollback</button>
+      </div>
+      <p class="truth">Before rollback changes anything, the currently restored bytes are copied again to a pre-rollback safety folder.</p>
+    </section>
+  </main>
+  <script src="../../shared/operations/operations-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

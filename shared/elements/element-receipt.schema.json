@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.element-composition-receipt/v1",
+  "title": "AXM Element Composition Receipt v1",
+  "type": "object",
+  "required": ["schema", "status", "composition_id", "composition_digest", "element_digests", "categories", "ucp_components", "checks", "truth", "created_at", "digest"],
+  "properties": {
+    "schema": { "const": "axm.element-composition-receipt/v1" },
+    "status": { "enum": ["READY_CONTRACT", "INVALID_COMPOSITION", "MISSING_ELEMENT", "CATEGORY_CONFLICT", "UNSUPPORTED_TARGET"] },
+    "composition_id": { "type": "string" },
+    "composition_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "element_digests": { "type": "array", "items": { "type": "object" } },
+    "categories": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "ucp_components": { "type": "array", "items": { "type": "object" } },
+    "checks": { "type": "array", "items": { "type": "object", "required": ["id", "pass", "details"] } },
+    "truth": {
+      "type": "object",
+      "required": ["contract_only", "executed", "rendered", "visually_approved", "installed"],
+      "properties": {
+        "contract_only": { "const": true },
+        "executed": { "const": false },
+        "rendered": { "const": false },
+        "visually_approved": { "const": false },
+        "installed": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

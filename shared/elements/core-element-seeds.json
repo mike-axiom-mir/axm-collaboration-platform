@@ -1,0 +1,183 @@
+{
+  "schema": "axm.element-seed-catalog/v1",
+  "version": "1.0.0",
+  "title": "AXM Core Element Seeds",
+  "seeds": [
+    {
+      "id": "axm.element.interface.command-panel",
+      "category": "interface",
+      "kind": "panel",
+      "title": "Command Panel",
+      "description": "A bounded glass surface with named header, body and action regions.",
+      "facets": { "appearance": { "surface": "glass", "border": "luminous", "depth": 2 }, "content": { "slots": ["header", "body", "actions"] }, "spatial": { "layout": "grid", "min_width": 280 } },
+      "ports": { "inputs": [], "outputs": [{ "id": "surface", "type": "element.interface.surface", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.interface.panel"], "requires": [] },
+      "compatibility": { "contexts": ["dashboard", "tool", "game-hud"], "canvases": ["screen-2d", "spatial-screen"], "constraints": ["header-remains-visible"] }
+    },
+    {
+      "id": "axm.element.interface.metric-cell",
+      "category": "interface",
+      "kind": "metric-cell",
+      "title": "Metric Cell",
+      "description": "A compact labelled value surface with honest unknown and warning states.",
+      "facets": { "appearance": { "surface": "recessed", "value_scale": "large" }, "content": { "slots": ["label", "value", "unit", "evidence"] }, "behavior": { "states": ["unknown", "ready", "warning", "blocked"] } },
+      "ports": { "inputs": [{ "id": "metric", "type": "content.metric", "required": false, "multiple": false }], "outputs": [{ "id": "surface", "type": "element.interface.metric", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.interface.metric"], "requires": [] },
+      "compatibility": { "contexts": ["dashboard", "tool", "game-hud"], "canvases": ["screen-2d", "spatial-screen"], "constraints": ["unknown-is-not-zero"] }
+    },
+    {
+      "id": "axm.element.interface.status-orb",
+      "category": "interface",
+      "kind": "status-indicator",
+      "title": "Status Orb",
+      "description": "A labelled status light whose colour never carries meaning alone.",
+      "facets": { "appearance": { "shape": "orb", "halo": true }, "content": { "slots": ["label", "state"] }, "behavior": { "states": ["idle", "ready", "degraded", "blocked"] } },
+      "ports": { "inputs": [{ "id": "state", "type": "content.state", "required": false, "multiple": false }], "outputs": [{ "id": "indicator", "type": "element.interface.status", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.interface.status"], "requires": [] },
+      "compatibility": { "contexts": ["dashboard", "tool", "game-hud"], "canvases": ["screen-2d", "spatial-screen"], "constraints": ["state-needs-text-label"] }
+    },
+    {
+      "id": "axm.element.visual.cosmic-field",
+      "category": "visual",
+      "kind": "atmosphere",
+      "title": "Cosmic Field",
+      "description": "A layered colour field with restrained stars and no embedded image dependency.",
+      "facets": { "appearance": { "tokens": { "void": "#050914", "cyan": "#31dcff", "violet": "#a66cff", "gold": "#ffc968" }, "layers": ["void", "nebula", "stars"] } },
+      "ports": { "inputs": [], "outputs": [{ "id": "theme", "type": "appearance.theme", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.visual.atmosphere"], "requires": [] },
+      "compatibility": { "contexts": ["dashboard", "tool", "game-hud"], "canvases": ["screen-2d", "spatial-screen"], "constraints": ["text-contrast-minimum"] }
+    },
+    {
+      "id": "axm.element.visual.energy-grid",
+      "category": "visual",
+      "kind": "grid",
+      "title": "Energy Grid",
+      "description": "A scalable line grid for spatial orientation rather than decoration alone.",
+      "facets": { "appearance": { "line_color": "#31dcff", "line_alpha": 0.13, "cell": 32 }, "spatial": { "projection": "perspective", "origin": "center" } },
+      "ports": { "inputs": [{ "id": "theme", "type": "appearance.theme", "required": false, "multiple": false }], "outputs": [{ "id": "field", "type": "appearance.grid", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.visual.grid"], "requires": [] },
+      "compatibility": { "contexts": ["dashboard", "tool", "world-view"], "canvases": ["screen-2d", "spatial-screen", "game-world"], "constraints": ["non-interactive"] }
+    },
+    {
+      "id": "axm.element.interaction.primary-action",
+      "category": "interaction",
+      "kind": "action",
+      "title": "Primary Action",
+      "description": "A declared, focusable action intent with no embedded handler code.",
+      "facets": { "behavior": { "actions": ["activate"], "states": ["idle", "focus", "pressed", "disabled"], "authority": "host-bound" }, "content": { "slots": ["label", "shortcut"] } },
+      "ports": { "inputs": [{ "id": "enabled", "type": "content.boolean", "required": false, "multiple": false }], "outputs": [{ "id": "intent", "type": "interaction.intent", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.interaction.action"], "requires": ["host.action.bind"] },
+      "compatibility": { "contexts": ["dashboard", "tool", "game-hud"], "canvases": ["screen-2d", "spatial-screen"], "constraints": ["minimum-target-44px", "keyboard-focus-visible"] }
+    },
+    {
+      "id": "axm.element.interaction.rotary-selector",
+      "category": "interaction",
+      "kind": "selector",
+      "title": "Rotary Selector",
+      "description": "A bounded choice selector that cycles a declared option list deterministically.",
+      "facets": { "behavior": { "actions": ["previous", "next", "select"], "wrap": false, "states": ["idle", "focus", "selected"] }, "content": { "slots": ["label", "options", "current"] } },
+      "ports": { "inputs": [{ "id": "options", "type": "content.options", "required": false, "multiple": false }], "outputs": [{ "id": "choice", "type": "interaction.choice", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.interaction.selector"], "requires": ["host.action.bind"] },
+      "compatibility": { "contexts": ["dashboard", "tool", "game-hud"], "canvases": ["screen-2d", "spatial-screen"], "constraints": ["choice-remains-visible"] }
+    },
+    {
+      "id": "axm.element.spatial.orbit-anchor",
+      "category": "spatial",
+      "kind": "anchor",
+      "title": "Orbit Anchor",
+      "description": "A named spatial anchor with bounded orbit rings and coordinate ownership.",
+      "facets": { "spatial": { "coordinate_space": "local", "origin": [0, 0, 0], "rings": [0.72, 1, 1.28], "bounds": "declared" }, "appearance": { "stroke": "energy", "depth_cue": true } },
+      "ports": { "inputs": [], "outputs": [{ "id": "anchor", "type": "spatial.anchor", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.spatial.anchor"], "requires": [] },
+      "compatibility": { "contexts": ["dashboard", "tool", "world-view"], "canvases": ["screen-2d", "spatial-screen", "game-world"], "constraints": ["coordinate-owner-declared"] }
+    },
+    {
+      "id": "axm.element.spatial.region-grid",
+      "category": "spatial",
+      "kind": "region",
+      "title": "Region Grid",
+      "description": "A named layout region system for composition placement.",
+      "facets": { "spatial": { "coordinate_space": "layout", "regions": ["header", "primary", "secondary", "rail", "footer"], "collision": "no-overlap-by-default" } },
+      "ports": { "inputs": [], "outputs": [{ "id": "regions", "type": "spatial.regions", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.spatial.regions"], "requires": [] },
+      "compatibility": { "contexts": ["dashboard", "tool", "world-view"], "canvases": ["screen-2d", "spatial-screen", "game-world"], "constraints": ["named-regions-only"] }
+    },
+    {
+      "id": "axm.element.media.signal-pulse",
+      "category": "media",
+      "kind": "cue",
+      "title": "Signal Pulse",
+      "description": "A short reduced-motion-safe emphasis cue.",
+      "facets": { "temporal": { "duration_ms": 900, "easing": "ease-out", "loop": false, "reduced_motion": "opacity-only" }, "appearance": { "channels": ["opacity", "halo"] } },
+      "ports": { "inputs": [{ "id": "trigger", "type": "interaction.intent", "required": false, "multiple": true }], "outputs": [{ "id": "cue", "type": "media.cue", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.media.cue"], "requires": [] },
+      "compatibility": { "contexts": ["dashboard", "tool", "game-hud"], "canvases": ["screen-2d", "spatial-screen"], "constraints": ["reduced-motion-route-required"] }
+    },
+    {
+      "id": "axm.element.media.timeline-marker",
+      "category": "media",
+      "kind": "marker",
+      "title": "Timeline Marker",
+      "description": "A labelled temporal marker with exact time and evidence slot.",
+      "facets": { "temporal": { "timebase": "milliseconds", "tracks": ["label", "event", "evidence"] }, "content": { "slots": ["label", "timestamp", "receipt"] } },
+      "ports": { "inputs": [{ "id": "event", "type": "content.event", "required": false, "multiple": true }], "outputs": [{ "id": "marker", "type": "media.marker", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.media.marker"], "requires": [] },
+      "compatibility": { "contexts": ["dashboard", "tool", "timeline"], "canvases": ["screen-2d", "spatial-screen"], "constraints": ["timestamp-required"] }
+    },
+    {
+      "id": "axm.element.logic.visible-gate",
+      "category": "logic",
+      "kind": "gate",
+      "title": "Visible Gate",
+      "description": "A deterministic state gate whose refusal reason remains exposed.",
+      "facets": { "behavior": { "states": ["unknown", "blocked", "ready"], "transitions": ["observe", "admit", "refuse"], "default": "unknown", "silent_pass": false }, "content": { "slots": ["state", "reason", "evidence"] } },
+      "ports": { "inputs": [{ "id": "evidence", "type": "content.evidence", "required": false, "multiple": true }], "outputs": [{ "id": "state", "type": "content.state", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.logic.gate"], "requires": [] },
+      "compatibility": { "contexts": ["dashboard", "tool", "world-rule"], "canvases": ["screen-2d", "state-graph"], "constraints": ["no-silent-pass"] }
+    },
+    {
+      "id": "axm.element.logic.variant-cycle",
+      "category": "logic",
+      "kind": "variant-cycle",
+      "title": "Directed Variant Cycle",
+      "description": "Cycles an allowlisted variation sequence without unconstrained randomness.",
+      "facets": { "behavior": { "states": ["nexus", "aurora", "foundry"], "transition": "next", "random": false, "wrap": true } },
+      "ports": { "inputs": [{ "id": "intent", "type": "interaction.intent", "required": false, "multiple": true }], "outputs": [{ "id": "variant", "type": "appearance.variant", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.logic.directed-variation"], "requires": [] },
+      "compatibility": { "contexts": ["dashboard", "tool"], "canvases": ["screen-2d", "state-graph"], "constraints": ["allowlisted-variants-only"] }
+    },
+    {
+      "id": "axm.element.content.identity-title",
+      "category": "content",
+      "kind": "title",
+      "title": "Identity Title",
+      "description": "A semantic title block kept independent from font, colour and layout.",
+      "facets": { "content": { "role": "heading", "slots": ["eyebrow", "title", "subtitle"], "default": { "eyebrow": "AXM / ELEMENTS", "title": "COMPOSITION NEXUS", "subtitle": "Small parts. Larger possibility." } } },
+      "ports": { "inputs": [], "outputs": [{ "id": "text", "type": "content.text", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.content.title"], "requires": [] },
+      "compatibility": { "contexts": ["dashboard", "tool", "game-hud"], "canvases": ["screen-2d", "spatial-screen"], "constraints": ["semantic-heading-order"] }
+    },
+    {
+      "id": "axm.element.content.metric-record",
+      "category": "content",
+      "kind": "metric",
+      "title": "Metric Record",
+      "description": "A labelled value with unit, timestamp and evidence status.",
+      "facets": { "content": { "fields": ["label", "value", "unit", "observed_at", "evidence_state"], "unknown": "explicit" } },
+      "ports": { "inputs": [], "outputs": [{ "id": "metric", "type": "content.metric", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.content.metric"], "requires": [] },
+      "compatibility": { "contexts": ["dashboard", "tool", "game-hud"], "canvases": ["screen-2d", "data-record"], "constraints": ["timestamp-and-unit-visible"] }
+    },
+    {
+      "id": "axm.element.fabrication.colour-shell",
+      "category": "fabrication",
+      "kind": "shell-part",
+      "title": "Colour Shell Part",
+      "description": "A physical shell region with explicit material, UV and tolerance declarations.",
+      "facets": { "physical": { "units": "mm", "material_slot": "declared", "tolerance_mm": 0.2, "manufacturing_status": "unverified" }, "appearance": { "colour_space": "srgb", "uv_region": "required" }, "spatial": { "coordinate_space": "object-local", "watertight": "unknown" } },
+      "ports": { "inputs": [{ "id": "material", "type": "material.physical", "required": false, "multiple": false }], "outputs": [{ "id": "part", "type": "fabrication.part", "required": false, "multiple": true }] },
+      "capabilities": { "provides": ["element.fabrication.part"], "requires": ["validator.fabrication.geometry"] },
+      "compatibility": { "contexts": ["fabrication", "prototype"], "canvases": ["physical-object", "mesh-3d"], "constraints": ["manufacturing-approval-required"] }
+    }
+  ]
+}

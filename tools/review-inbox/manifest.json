@@ -1,10 +1,11 @@
 {
-  "id": "review-inbox", "name": "AXM Review & Promotion Inbox", "version": "v0.1", "status": "TEST", "entry": "index.html", "contract": "module.contract.json", "type": "hub-module", "hubApiVersion": "1.0", "category": "GOVERNANCE", "layer": "governance", "audience": "human-machine", "risk": "MEDIUM",
-  "tags": ["review", "promotion", "approval", "digest", "merge", "evidence"], "uses": ["storage", "gate", "governance"], "permissions": [],
+  "schema": "axm.tool-manifest/v1", "kind": "product",
+  "id": "review-inbox", "name": "AXM Review & Promotion Inbox", "version": "v0.2", "status": "TEST", "entry": "index.html", "contract": "module.contract.json", "type": "hub-module", "hubApiVersion": "1.0", "category": "GOVERNANCE", "layer": "governance", "audience": "human-machine", "risk": "MEDIUM",
+  "tags": ["review", "promotion", "approval", "digest", "merge", "evidence"], "uses": ["storage", "gate", "governance", "tools-index"], "permissions": [],
   "actions": ["submit an exact artifact for review", "queue one to ten independent seats", "cast an independent review decision", "inspect approval evidence", "discuss a held or rejected item", "send an item to changed-digest repair", "cancel a review item"],
-  "accepts": ["axm.review-candidate/v1"],
+  "accepts": ["axm.review-candidate/v1", "axm.workshop-readiness-view/v1", "axm.tools-index/v1"],
   "produces": ["axm.review-receipt/v1", "axm.review-discussion/v1", "axm.review-decision/v1"],
   "readiness": ["storage", "identity", "gate"],
-  "summary": "One durable queue for exact-artifact review, one-to-ten independent seats, discussion, repair routing, cancellation, holds, rejection and digest-bound approval.",
-  "notes": "Approval never applies an action by itself. The consuming service must verify the approved digest again."
+  "summary": "One human review surface for read-only structural module evidence and a separate durable exact-artifact queue with one-to-ten independent seats, repair routing and digest-bound decisions.",
+  "notes": "Structural candidates never enter the digest queue automatically and cannot be voted on. Exact-digest approval never applies an action by itself; the consuming service must verify the approved digest again."
 }

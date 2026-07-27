@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.evidence-fields/v2",
+  "title": "AXM Evidence Desk input fields v2",
+  "type": "object",
+  "required": ["title", "goal"],
+  "properties": {
+    "schema": {"const": "axm.evidence-fields/v2"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 300},
+    "goal": {"type": "string", "minLength": 1, "maxLength": 4000},
+    "source_checkpoint": {"type": "string", "maxLength": 2000},
+    "actor": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": {"type": "string", "maxLength": 200},
+        "type": {"type": "string", "maxLength": 80}
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim", "kind", "risk", "verdict"],
+        "properties": {
+          "id": {"type": "string", "maxLength": 100},
+          "claim": {"type": "string", "minLength": 1, "maxLength": 8000},
+          "kind": {"enum": ["existence", "static-structure", "deterministic-behavior", "visual-appearance", "motion-timing", "interaction-journey", "persistence", "transport", "authorization", "performance", "resource-safety", "learning-improvement", "quality", "taste-meaning", "other"]},
+          "risk": {"enum": ["LOW", "MEDIUM", "HIGH"]},
+          "verdict": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+          "pass_condition": {"type": "string", "maxLength": 4000},
+          "primary_surface": {"type": "string", "maxLength": 120},
+          "observed_evidence": {"type": "string", "maxLength": 8000},
+          "counterevidence": {"type": "string", "maxLength": 4000},
+          "source_kind": {"type": "string", "maxLength": 120},
+          "source": {"type": "string", "maxLength": 2000},
+          "named_seam": {"type": "string", "maxLength": 1000}
+        }
+      }
+    },
+    "actions": {"type": "array"},
+    "checks": {"type": "array"},
+    "changes": {"type": "array"},
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "next_actions": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

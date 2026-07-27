@@ -8,6 +8,7 @@ const { initializeActorVitals } = require('./base-system');
 const { createInventory } = require('./inventory-system');
 const { createHostileNpc } = require('./npc-factory');
 const { createEconomyState } = require('./economy-system');
+const { resolveMapSelection } = require('./map-catalog');
 
 const STATIC_MAP_CACHE = new Map();
 
@@ -99,8 +100,9 @@ function cloneStaticMap(staticMap) {
   };
 }
 
-function loadStaticMap(projectRoot) {
-  const mapPath = path.join(projectRoot, 'data', 'map.json');
+function loadStaticMap(projectRoot, mapId = null) {
+  const selection = resolveMapSelection(projectRoot, mapId);
+  const mapPath = selection.files.map;
   const cached = STATIC_MAP_CACHE.get(mapPath);
   if (cached) return cloneStaticMap(cached);
   try {
@@ -110,7 +112,7 @@ function loadStaticMap(projectRoot) {
       return cloneStaticMap(parsed);
     }
     if (parsed?.world && Number(parsed.world.width) > 0 && Number(parsed.world.height) > 0) {
-      const normalized = normalizeClientMap(parsed, projectRoot);
+      const normalized = normalizeClientMap(parsed, projectRoot, selection);
       STATIC_MAP_CACHE.set(mapPath, normalized);
       return cloneStaticMap(normalized);
     }
@@ -143,22 +145,26 @@ function loadChunkLayers(clientMap, projectRoot) {
   if (clientMap.chunking?.enabled !== true || !Array.isArray(clientMap.chunking.chunks)) return combined;
   for (const entry of clientMap.chunking.chunks) {
     const relative = String(entry.path || '').replace(/^\/+/, '');
-    if (!relative.startsWith('data/map-chunks/')) continue;
-    const chunk = readOptionalJson(path.join(projectRoot, relative), null);
+    if (!relative.startsWith('data/')) continue;
+    const dataRoot = path.resolve(projectRoot, 'data');
+    const chunkPath = path.resolve(projectRoot, relative);
+    if (!chunkPath.startsWith(`${dataRoot}${path.sep}`)) continue;
+    const chunk = readOptionalJson(chunkPath, null);
     if (!chunk?.layers) continue;
     for (const layer of Object.keys(combined)) combined[layer].push(...(chunk.layers[layer] || []));
   }
   return combined;
 }
 
-function normalizeClientMap(clientMap, projectRoot) {
+function normalizeClientMap(clientMap, projectRoot, suppliedSelection = null) {
+  const selection = suppliedSelection || resolveMapSelection(projectRoot, null);
   const layers = clientMap.layers || {};
   const chunkLayers = loadChunkLayers(clientMap, projectRoot);
-  const routeData = readOptionalJson(path.join(projectRoot, 'data', 'npc-routes.json'), { routes: [] });
-  const missionData = readOptionalJson(path.join(projectRoot, 'data', 'missions.json'), {});
-  const missionLayoutData = readOptionalJson(path.join(projectRoot, 'data', 'mission-layouts.json'), { modes: {} });
-  const vehicleData = readOptionalJson(path.join(projectRoot, 'data', 'vehicle-spawns.json'), {});
-  const territoryData = readOptionalJson(path.join(projectRoot, 'data', 'territory-zones.json'), {});
+  const routeData = readOptionalJson(selection.files.routes || path.join(selection.dataDirectory, 'npc-routes.json'), { routes: [] });
+  const missionData = readOptionalJson(selection.files.missions || path.join(selection.dataDirectory, 'missions.json'), {});
+  const missionLayoutData = readOptionalJson(selection.files.missionLayouts || path.join(selection.dataDirectory, 'mission-layouts.json'), { modes: {} });
+  const vehicleData = readOptionalJson(selection.files.vehicles || path.join(selection.dataDirectory, 'vehicle-spawns.json'), {});
+  const territoryData = readOptionalJson(selection.files.territory || path.join(selection.dataDirectory, 'territory-zones.json'), {});
   const mode = missionData.courier_chaos || {};
   const pickup = (layers.mission_zones || []).find((zone) => zone.kind === 'pickup')
     || { id: 'depot-zone', x: 650, y: 330, w: 220, h: 70 };
@@ -228,6 +234,10 @@ function normalizeClientMap(clientMap, projectRoot) {
     },
     territory: territoryData,
     clientMapId: clientMap.id,
+    mapSelectionId: selection.id,
+    mapDisplayName: selection.name,
+    clientMapUrl: selection.mapUrl,
+    clientCityArtUrl: selection.cityArtUrl,
     chunking: clientMap.chunking || null,
     spatialCellSize: Number(clientMap.chunking?.chunkSize) || 512,
   };
@@ -252,7 +262,7 @@ function createActor(player, spawn) {
     input: {
       moveX: 0, moveY: 0, aimX: 0, aimY: 0, aimActive: false,
       action: false, attack: false, fire: false, sprint: false, brake: false,
-      inventoryToggle: false, inventoryPrev: false, inventoryNext: false, inventoryActivate: false,
+      inventoryToggle: false, inventoryPrev: false, inventoryNext: false, inventoryActivate: false, mapToggle: false,
     },
     inventory: createInventory(),
     inventoryOpen: false,
@@ -495,7 +505,7 @@ function addTerritorySupportZones(staticMap) {
 }
 
 function createWorldState({ players, settings = {}, projectRoot }) {
-  const staticMap = loadStaticMap(projectRoot);
+  const staticMap = loadStaticMap(projectRoot, settings.mapId);
   const territoryMode = settings.mode === 'district_dominion';
   if (territoryMode) addTerritorySupportZones(staticMap);
   const actors = {};
@@ -569,6 +579,9 @@ function createWorldState({ players, settings = {}, projectRoot }) {
       territoryModeActive: territory.enabled,
     },
     combatRules: mergeCombatRules(settings.combat || settings.combatRules || {}),
+    presentation: {
+      mapToggleSequence: { party_a: 0, party_b: 0 },
+    },
     tetherRules: {
       soft: Number(settings.tether?.soft) || PARTY_TETHER.soft,
       warning: Number(settings.tether?.warning) || PARTY_TETHER.warning,

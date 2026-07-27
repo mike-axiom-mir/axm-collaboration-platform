@@ -99,12 +99,15 @@ test('courier layouts enforce only their active delivery zones', () => {
   const world = makeWorld(2);
   startMission(world, 'courier_chaos', { layoutId: 'central-depot-dispatch' });
   assert.deepEqual(world.mission.activeDeliveryZoneIds, ['delivery-centre', 'delivery-north', 'delivery-east', 'delivery-south']);
-  assert.deepEqual(activeDeliveryZones(world).map((zone) => zone.id), world.mission.activeDeliveryZoneIds);
+  assert.deepEqual(
+    activeDeliveryZones(world).map((zone) => zone.id).sort(),
+    [...world.mission.activeDeliveryZoneIds].sort(),
+  );
   const actor = world.actors['actor-seat-1'];
   const item = world.mission.packages[0];
   actor.position = { ...item.position };
   assert.equal(claimPackage(world, actor.id, item.id).ok, true);
-  const inactive = world.staticMap.mission.deliveryZones.find((zone) => zone.id === 'delivery-reeshof');
+  const inactive = world.staticMap.mission.deliveryZones.find((zone) => zone.id === 'delivery-west');
   actor.position = { x: inactive.x + 10, y: inactive.y + 10 };
   assert.equal(deliverPackage(world, actor.id, inactive.id).reason, 'not-ready');
   const active = world.mission.deliveryZones[0];

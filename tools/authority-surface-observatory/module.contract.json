@@ -1,0 +1,67 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "authority-surface-observatory",
+  "version": "v0.1",
+  "provides": [
+    "bounded-workshop-authority-inventory",
+    "manifest-contract-permission-parity-map",
+    "contract-permission-versus-manifest-uses-map",
+    "declared-write-and-refusal-surface",
+    "unknown-contract-authority-holds",
+    "freshness-bound-authority-receipt"
+  ],
+  "consumes": [
+    "filesystem:explicit-workshop-root",
+    "axm.module-manifest/v1",
+    "axm.module-contract/v1"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.authority-surface-map/v1",
+      "axm.module-authority-surface/v1",
+      "axm.permission-declaration-record/v1"
+    ],
+    "accepts": [
+      "axm.module-contract/v1",
+      "axm.module-manifest/v1"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "user-selected-output:authority-surface-map-json",
+      "user-selected-output:browser-authority-snapshot",
+      "candidate-local-output:module-bundle.json"
+    ],
+    "refuses": [
+      "symbolic-link-following",
+      "declared-write-target-resolution",
+      "permission-as-runtime-grant-inference",
+      "permissionless-as-safe-inference",
+      "refusal-as-enforcement-proof",
+      "automatic-risk-score",
+      "module-ranking",
+      "secret-reading",
+      "grant-creation",
+      "grant-revocation",
+      "automatic-contract-repair",
+      "source-mutation",
+      "installer-staging",
+      "module-installation",
+      "rollback-change",
+      "promotion",
+      "canon-change",
+      "network-intake",
+      "runtime-readiness-claim",
+      "visual-approval-claim"
+    ]
+  }
+}

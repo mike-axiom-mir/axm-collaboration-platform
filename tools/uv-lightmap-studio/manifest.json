@@ -1,0 +1,55 @@
+{
+  "id": "uv-lightmap-studio",
+  "name": "UV & Lightmap Studio",
+  "rank": 5,
+  "phase": "P0",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "Create",
+  "layer": "create",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "uv",
+    "lightmap",
+    "atlas",
+    "texel-density",
+    "mip-padding",
+    "gltf",
+    "offline"
+  ],
+  "uses": [
+    "local-3d-game-runtime",
+    "gltf-2.0",
+    "canvas",
+    "export"
+  ],
+  "permissions": [
+    "export"
+  ],
+  "actions": [
+    "inspect source UV0 coverage and range",
+    "measure texel density",
+    "author a non-overlapping UV1 atlas",
+    "export a reviewed UV mesh candidate"
+  ],
+  "accepts": [
+    "model/gltf-binary",
+    "axm.uv-lightmap-request/v1"
+  ],
+  "produces": [
+    "axm.uv-lightmap-mesh/v1",
+    "axm.uv-lightmap-verification/v1"
+  ],
+  "readiness": [
+    "local-glb-parser",
+    "human-checker-review",
+    "export"
+  ],
+  "summary": "Inspect primary UVs and author deterministic non-overlapping lightmap UV1 charts with measurable density, padding, mip survival, and attribute-preserving receipts.",
+  "notes": "The conservative first unwrap gives every triangle an isolated chart. It guarantees overlap safety but reports low atlas utilization honestly; future chart merging must improve efficiency without weakening the gate."
+}

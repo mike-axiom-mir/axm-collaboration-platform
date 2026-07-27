@@ -1,0 +1,258 @@
+{
+  "schema": "axm.modern-asset-forge.build-receipt/v1",
+  "version": "1.0.0",
+  "job_id": "phase1-existing-glb-20260722",
+  "mode": "diagnostic_smoke",
+  "status": "BLOCKED",
+  "output_root": "phase1-existing-glb-20260722",
+  "source_sha256": "afcb7802418930dee6f8b7a410f1c78ce401d4c6f8b728336e99f62458237222",
+  "toolchain": {
+    "blender": {
+      "available": false,
+      "status": "MISSING",
+      "provider": "PATH",
+      "version": null,
+      "reason": "command is not installed or configured",
+      "evidence_digest": null,
+      "private_location_retained": false
+    },
+    "validator": {
+      "available": false,
+      "status": "MISSING",
+      "provider": "PATH",
+      "version": null,
+      "reason": "command is not installed or configured",
+      "evidence_digest": null,
+      "private_location_retained": false
+    },
+    "ktx": {
+      "available": false,
+      "status": "MISSING",
+      "provider": "PATH",
+      "version": null,
+      "reason": "command is not installed or configured",
+      "evidence_digest": null,
+      "private_location_retained": false
+    },
+    "transform": {
+      "available": false,
+      "status": "MISSING",
+      "provider": "PATH",
+      "version": null,
+      "reason": "command is not installed or configured",
+      "evidence_digest": null,
+      "private_location_retained": false
+    },
+    "gltfpack": {
+      "available": false,
+      "status": "MISSING",
+      "provider": "PATH",
+      "version": null,
+      "reason": "command is not installed or configured",
+      "evidence_digest": null,
+      "private_location_retained": false
+    },
+    "basis": {
+      "available": true,
+      "status": "READY",
+      "provider": "bundled-asset-hand",
+      "version": "2.10-final-snapshot",
+      "reason": "pinned Basis Universal WebAssembly module initialized",
+      "evidence_digest": "10ed9ffdfb1e8ec09da98f43c67eca70ea3c1c89ce3bebffbc347d6db76faf13",
+      "private_location_retained": false
+    }
+  },
+  "capability_inventory_digest": "611e6249520fb849aa9102a6f90d10db1c093fd7e5f6b462316beba78ddc1329",
+  "stages": [
+    {
+      "id": "source-integrity",
+      "status": "PASS",
+      "evidence": [
+        {
+          "kind": "sha256",
+          "value": "afcb7802418930dee6f8b7a410f1c78ce401d4c6f8b728336e99f62458237222"
+        },
+        {
+          "kind": "portable-path",
+          "value": "tools/ps2-asset-forge/proof/exports/storefront-technical-proof.glb"
+        }
+      ],
+      "gaps": [],
+      "detail": {
+        "source_kind": "glb",
+        "source_bytes": 471836,
+        "source_path_retained": false
+      }
+    },
+    {
+      "id": "blender-export",
+      "status": "SKIPPED",
+      "evidence": [
+        {
+          "kind": "source-kind",
+          "value": "glb"
+        }
+      ],
+      "gaps": [
+        {
+          "code": "MF-P1-AUTHORING-TRUTH",
+          "type": "EVIDENCE",
+          "required": false,
+          "reason": "A supplied GLB does not prove the required .blend authoring source or Blender export.",
+          "unblock": "Run canonical_build from a preserved .blend source."
+        }
+      ],
+      "detail": {
+        "counts_as_canonical_export_evidence": false
+      }
+    },
+    {
+      "id": "axm-glb-inspection",
+      "status": "PASS",
+      "evidence": [
+        {
+          "kind": "axm-glb-inspection",
+          "digest": "9560927cfe798457df5692855a12a35813185da1cccd554dd551b295b8a5bfd9"
+        }
+      ],
+      "gaps": [],
+      "detail": {
+        "errors": [],
+        "warnings": [],
+        "metrics": {
+          "scenes": 1,
+          "nodes": 42,
+          "meshes": 28,
+          "primitives": 28,
+          "triangles": 3496,
+          "vertices": 5892,
+          "materials": 16,
+          "textures": 10,
+          "images": 10,
+          "skins": 0,
+          "animations": 0,
+          "accessors": 110,
+          "draw_call_upper_bound": 28,
+          "embedded_bin_bytes": 438252,
+          "extensions_used": [
+            "KHR_materials_emissive_strength",
+            "KHR_materials_unlit",
+            "KHR_texture_transform"
+          ],
+          "extensions_required": []
+        },
+        "scope": "structural-and-metric-inspection-not-khronos-certification"
+      }
+    },
+    {
+      "id": "khronos-gltf-validation",
+      "status": "BLOCKED",
+      "evidence": [],
+      "gaps": [
+        {
+          "code": "MF-P1-VALIDATOR",
+          "type": "SUBSTRATE",
+          "required": true,
+          "reason": "command is not installed or configured",
+          "unblock": "Install and live-probe the pinned Khronos glTF Validator substrate, or provide an approved executable override."
+        }
+      ]
+    },
+    {
+      "id": "meshopt-optimization",
+      "status": "BLOCKED",
+      "evidence": [],
+      "gaps": [
+        {
+          "code": "MF-P1-OPTIMIZER",
+          "type": "SUBSTRATE",
+          "required": true,
+          "reason": "Neither glTF Transform nor gltfpack is installed or configured.",
+          "unblock": "Install one reviewed optimizer without changing the meshopt requirement, then rerun."
+        }
+      ]
+    },
+    {
+      "id": "ktx2-encode",
+      "status": "BLOCKED",
+      "evidence": [],
+      "gaps": [
+        {
+          "code": "MF-P1-TEXTURE-INPUT",
+          "type": "CONTRACT",
+          "required": true,
+          "reason": "No PNG texture sources were declared, so KTX2 delivery cannot be proven.",
+          "unblock": "Declare bounded PNG base-color, normal, ORM, or emissive inputs with explicit color-space roles."
+        }
+      ]
+    },
+    {
+      "id": "ktx2-gltf-integration",
+      "status": "BLOCKED",
+      "evidence": [],
+      "gaps": [
+        {
+          "code": "MF-P1-KTX2-INTEGRATION-UPSTREAM",
+          "type": "CONTRACT",
+          "required": true,
+          "reason": "No encoded KTX2 texture is available for GLB integration.",
+          "unblock": "Complete the KTX2 encoding stage first."
+        }
+      ]
+    },
+    {
+      "id": "khronos-ktx-validation",
+      "status": "BLOCKED",
+      "evidence": [],
+      "gaps": [
+        {
+          "code": "MF-P1-KTX-VALIDATOR-UPSTREAM",
+          "type": "CONTRACT",
+          "required": true,
+          "reason": "No KTX2 output is available for independent validation.",
+          "unblock": "Complete KTX2 encoding first."
+        }
+      ]
+    },
+    {
+      "id": "browser-webgl2-smoke",
+      "status": "PREPARED",
+      "evidence": [
+        {
+          "kind": "smoke-plan",
+          "digest": "dcae551dc88f5fd84fa793edf894435cf04e5eeff40a3f7ea33170b286ed9efe"
+        }
+      ],
+      "gaps": [
+        {
+          "code": "MF-P1-BROWSER-OBSERVATION",
+          "type": "EVIDENCE",
+          "required": true,
+          "reason": "The page is prepared but has not yet produced a live browser receipt.",
+          "unblock": "Open the smoke URL and retain its load/render receipt plus human visual review decision."
+        }
+      ],
+      "detail": {
+        "smoke_url": "/smoke.html?job=phase1-existing-glb-20260722",
+        "evidence_role": "diagnostic-unoptimized-load",
+        "counts_as_canonical_delivery": false
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "id": "glb-phase1-existing-glb-20260722",
+      "role": "diagnostic-unoptimized-smoke-input",
+      "relative_path": "runtime/phase1-existing-glb-20260722.diagnostic-source.glb",
+      "mime": "model/gltf-binary",
+      "sha256": "afcb7802418930dee6f8b7a410f1c78ce401d4c6f8b728336e99f62458237222",
+      "bytes": 471836,
+      "canonical": false
+    }
+  ],
+  "canonical_delivery_emitted": false,
+  "automatic_installation": false,
+  "network_access_performed": false,
+  "private_location_retained": false,
+  "digest": "fef5e42cc4c31d93d4f1856bedb0c1fee7e5e0f2df860db59f1615e7c8080b4b"
+}

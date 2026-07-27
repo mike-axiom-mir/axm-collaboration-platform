@@ -38,12 +38,12 @@ function canvas() {
   }).canvas;
 }
 
-function bridgeBundle(runtime, staged, targetCanvas) {
+function bridgeBundle(runtime, staged, targetCanvas, applicationVersion) {
   const projectRoot = 'projects/real-blender';
   const projectFile = projectRoot + '/real-blender.blend';
   const baseline = runtime.baselineForProject(projectFile);
   const adapter = Bridge.sealManifest({
-    id: 'blender', contract_version: '1.0.0', application_version: '4.4.3',
+    id: 'blender', contract_version: '1.0.0', application_version: applicationVersion,
     canvas_mediums: ['3d-surface'], units: ['m'], colour_spaces: ['material-channel'],
     transparency_modes: ['opaque'], behaviours: ['static'], intended_uses: ['native-bridge'],
     supported_constraints: TargetCanvas.requestedConstraints(targetCanvas)
@@ -76,7 +76,8 @@ function bridgeBundle(runtime, staged, targetCanvas) {
 
 (function main() {
   const executable = argument('--blender');
-  if (!executable) throw new Error('usage: node native-real-blender-selftest.js --blender <absolute Blender executable>');
+  if (!executable) throw new Error('usage: node native-real-blender-selftest.js --blender <absolute Blender executable> [--blender-version 5.2.0]');
+  const applicationVersion = argument('--blender-version') || '4.4.3';
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-real-blender-'));
   const workspace = path.join(root, 'workspace');
   const blenderRoot = path.resolve(__dirname, 'blender');
@@ -114,12 +115,13 @@ function bridgeBundle(runtime, staged, targetCanvas) {
       trustStore: { 'ephemeral-real-test': { public_key: pair.publicKey, package_ids: [manifest.package_id] } },
       driver
     });
-    const bundle = bridgeBundle(runtime, staged, targetCanvas);
+    const bundle = bridgeBundle(runtime, staged, targetCanvas, applicationVersion);
     const prepared = runtime.prepare({ bundle, targetCanvas, sourcePath: staged });
     const receipt = runtime.apply(prepared.transaction_id);
     assert.equal(receipt.independently_verified, true);
     if (argument('--blender-sha256')) assert.equal(receipt.host_executable_digest_verified, true);
     assert.equal(runtime.read(prepared.transaction_id).inspection.independent_process, true);
+    assert.equal(runtime.read(prepared.transaction_id).inspection.blender_version.split('.').slice(0, 2).join('.'), applicationVersion.split('.').slice(0, 2).join('.'));
     assert(runtime.read(prepared.transaction_id).inspection.mesh_count >= 1);
     assert(runtime.read(prepared.transaction_id).inspection.polygons > 0);
     assert.equal(runtime.rollback(prepared.transaction_id).ok, true);

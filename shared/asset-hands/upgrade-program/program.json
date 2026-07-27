@@ -1,0 +1,959 @@
+{
+  "schema": "axm.asset-hands.upgrade-program/v1",
+  "version": "1.0.0",
+  "status": "active-build-material",
+  "objective": "Build and honestly verify all fifty shared Asset Hands upgrades for present and future human, AI and software hosts.",
+  "admission_rule": "An upgrade becomes READY only when its native proof surface satisfies the declared pass condition and no required FAIL or UNKNOWN is hidden.",
+  "upgrades": [
+    {
+      "rank": 1,
+      "id": "asset.quality.human-visual-gate",
+      "title": "Human visual-quality benchmark and promotion gate",
+      "wave": 1,
+      "class": "EVIDENCE",
+      "state": "PARTIAL",
+      "gap_types": ["EVIDENCE", "AUTHORITY"],
+      "capabilities": ["asset.quality.benchmark", "asset.quality.human-review", "asset.promotion.fail-closed"],
+      "depends_on": [],
+      "acceptance": {
+        "claim_kind": "quality",
+        "risk": "high",
+        "pass_condition": "A digest-bound human review against declared references and criteria is required before technical candidates become promotion-eligible.",
+        "primary_surface": "human visual review receipt",
+        "counterevidence": "Technical scores or a machine vote can promote a candidate without human visual review.",
+        "secondary_surface": "candidate and reference artifact inspection"
+      }
+    },
+    {
+      "rank": 2,
+      "id": "asset.family.art-direction",
+      "title": "Coherent asset-family art-direction hand",
+      "wave": 1,
+      "class": "NEW_HAND",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "CONTRACT", "EVIDENCE"],
+      "capabilities": ["asset.family.style-contract", "asset.family.generate", "asset.family.coherence-validate"],
+      "depends_on": ["asset.quality.human-visual-gate"],
+      "acceptance": {
+        "claim_kind": "quality",
+        "risk": "high",
+        "pass_condition": "At least three real family members are generated from one style contract and pass technical, coherence and human visual review gates.",
+        "primary_surface": "generated family artifacts and coherence receipt",
+        "counterevidence": "The hand emits only a plan, or family members ignore the declared style contract.",
+        "secondary_surface": "human family-level visual review"
+      }
+    },
+    {
+      "rank": 3,
+      "id": "asset.registry.conformance-matrix",
+      "title": "Generated hand-conformance matrix and descriptor linter",
+      "wave": 1,
+      "class": "CORE",
+      "state": "PARTIAL",
+      "gap_types": ["CONTRACT", "EVIDENCE"],
+      "capabilities": ["asset.registry.lint", "asset.registry.test-coverage", "asset.registry.conformance-receipt"],
+      "depends_on": [],
+      "acceptance": {
+        "claim_kind": "static-structure",
+        "risk": "high",
+        "pass_condition": "Every installed descriptor field that makes a capability claim maps to schema-valid evidence and uncovered or contradictory claims fail conformance.",
+        "primary_surface": "parsed descriptors, schemas and test receipts",
+        "counterevidence": "An installed provider declares an output, operation or canvas without mapped evidence.",
+        "secondary_surface": "focused execution of generated fixtures"
+      }
+    },
+    {
+      "rank": 4,
+      "id": "asset.edit.universal-kernel",
+      "title": "Universal editing and recovery kernel",
+      "wave": 1,
+      "class": "CORE",
+      "state": "PARTIAL",
+      "gap_types": ["CONTRACT", "HAND"],
+      "capabilities": ["asset.edit.select", "asset.edit.transform", "asset.edit.arrange", "asset.edit.hierarchy", "asset.edit.mask", "asset.edit.undo-redo"],
+      "depends_on": ["asset.registry.conformance-matrix"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "high",
+        "pass_condition": "Shared bounded operations edit compatible document models deterministically and undo or redo restores exact digest-bound state.",
+        "primary_surface": "operation replay and state digest assertions",
+        "counterevidence": "A failed operation partially mutates state or undo restores a different digest.",
+        "secondary_surface": "fresh-process save and reload"
+      }
+    },
+    {
+      "rank": 5,
+      "id": "asset.runtime.substrate-manager",
+      "title": "Pinned runtime-substrate manager",
+      "wave": 1,
+      "class": "CORE",
+      "state": "PARTIAL",
+      "gap_types": ["SUBSTRATE", "CONTRACT", "EVIDENCE"],
+      "capabilities": ["asset.runtime.inventory", "asset.runtime.verify-package", "asset.runtime.resolve-exact", "asset.runtime.visible-missing"],
+      "depends_on": ["asset.registry.conformance-matrix"],
+      "acceptance": {
+        "claim_kind": "authorization",
+        "risk": "high",
+        "pass_condition": "Only hash-verified, licence-reviewed and version-compatible runtimes satisfy exact requests; absent or unreviewed runtimes remain visible.",
+        "primary_surface": "runtime inventory and package verification receipts",
+        "counterevidence": "A path, executable name or declared version alone marks a runtime READY.",
+        "secondary_surface": "real runtime version probe"
+      }
+    },
+    {
+      "rank": 6,
+      "id": "asset.host.negotiation-sdk",
+      "title": "Host capability-negotiation SDK",
+      "wave": 1,
+      "class": "CORE",
+      "state": "PARTIAL",
+      "gap_types": ["CONTRACT"],
+      "capabilities": ["asset.host.negotiate", "asset.host.explain-route", "asset.host.fixture"],
+      "depends_on": ["asset.registry.conformance-matrix", "asset.runtime.substrate-manager"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "high",
+        "pass_condition": "A minimal new host computes READY, MISSING_HAND or UNSUPPORTED_CANVAS routes and exact rejection reasons without hand-specific code.",
+        "primary_surface": "generic host negotiation fixtures",
+        "counterevidence": "A host needs an ID-specific branch to route an installed hand.",
+        "secondary_surface": "Asset Fabric, Studio and future-host parity test"
+      }
+    },
+    {
+      "rank": 7,
+      "id": "asset.interchange.roundtrip-ledger",
+      "title": "Round-trip import and export layer with loss ledger",
+      "wave": 1,
+      "class": "CORE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "CONTRACT", "EVIDENCE"],
+      "capabilities": ["asset.interchange.import", "asset.interchange.export", "asset.interchange.loss-ledger", "asset.interchange.source-retain"],
+      "depends_on": ["asset.registry.conformance-matrix"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "high",
+        "pass_condition": "Each supported round trip retains the original source and reports preserved, declared-lost and unexpectedly-changed semantic facts.",
+        "primary_surface": "round-trip receipt and semantic comparison",
+        "counterevidence": "A lossy conversion reports success without a declared loss or source retention.",
+        "secondary_surface": "independent parser for both containers"
+      }
+    },
+    {
+      "rank": 8,
+      "id": "asset.performance.benchmark-receipts",
+      "title": "Reproducible performance-receipt engine",
+      "wave": 1,
+      "class": "EVIDENCE",
+      "state": "MISSING",
+      "gap_types": ["EVIDENCE"],
+      "capabilities": ["asset.performance.measure", "asset.performance.budget", "asset.performance.receipt"],
+      "depends_on": ["asset.registry.conformance-matrix"],
+      "acceptance": {
+        "claim_kind": "performance",
+        "risk": "medium",
+        "pass_condition": "Named workloads record duration, peak memory, output bytes and relevant domain budgets with environment and repetition metadata.",
+        "primary_surface": "measured benchmark receipts",
+        "counterevidence": "A general performance claim is inferred from one unnamed or unmeasured run.",
+        "secondary_surface": "repeated baseline comparison"
+      }
+    },
+    {
+      "rank": 9,
+      "id": "asset.validation.fuzz-stress-corpus",
+      "title": "Shared fuzz, malformed-input and scene-stress corpus",
+      "wave": 1,
+      "class": "EVIDENCE",
+      "state": "PARTIAL",
+      "gap_types": ["EVIDENCE"],
+      "capabilities": ["asset.validation.mutate", "asset.validation.fuzz", "asset.validation.stress", "asset.validation.crash-receipt"],
+      "depends_on": ["asset.performance.benchmark-receipts"],
+      "acceptance": {
+        "claim_kind": "resource-safety",
+        "risk": "high",
+        "pass_condition": "Deterministic corrupt, oversized, cyclic and path-hostile cases fail closed within declared time and memory bounds.",
+        "primary_surface": "bounded fuzz and stress execution receipts",
+        "counterevidence": "Any malformed case crashes the host, escapes its path boundary or silently succeeds.",
+        "secondary_surface": "fresh-process isolation run"
+      }
+    },
+    {
+      "rank": 10,
+      "id": "asset.extension.signed-sandbox",
+      "title": "Signed, sandboxed third-party hand runtime",
+      "wave": 1,
+      "class": "CORE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "AUTHORITY", "SUBSTRATE", "CONTRACT"],
+      "capabilities": ["asset.extension.verify-signature", "asset.extension.permission-sandbox", "asset.extension.resource-bound", "asset.extension.revoke"],
+      "depends_on": ["asset.runtime.substrate-manager", "asset.host.negotiation-sdk", "asset.validation.fuzz-stress-corpus"],
+      "acceptance": {
+        "claim_kind": "authorization",
+        "risk": "high",
+        "pass_condition": "A signed external hand executes only its declared entrypoint and granted capabilities under time and output bounds, while tampered or revoked packages fail.",
+        "primary_surface": "signature, permission and sandbox adversarial tests",
+        "counterevidence": "Sandboxed code can access filesystem, process, network or undeclared host capabilities.",
+        "secondary_surface": "fresh-process package execution"
+      }
+    },
+    {
+      "rank": 11,
+      "id": "asset.adapter.godot-runtime",
+      "title": "Godot native asset adapter and runtime-performance gate",
+      "wave": 2,
+      "class": "ADAPTER",
+      "state": "MISSING",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.adapter.godot.import", "asset.adapter.godot.inspect", "asset.adapter.godot.performance", "asset.adapter.godot.rollback"],
+      "depends_on": ["asset.extension.signed-sandbox", "asset.performance.benchmark-receipts"],
+      "acceptance": {
+        "claim_kind": "interaction-journey",
+        "risk": "high",
+        "pass_condition": "A fresh Godot project imports, displays and exercises generated assets while proving material, animation, collision, memory and frame budgets.",
+        "primary_surface": "fresh Godot process and project receipts",
+        "counterevidence": "Only file parsing or a non-Godot preview is used as engine-import proof.",
+        "secondary_surface": "live rendered frames and measured runtime telemetry"
+      }
+    },
+    {
+      "rank": 12,
+      "id": "asset.render.cross-renderer-matrix",
+      "title": "Cross-renderer reference matrix",
+      "wave": 2,
+      "class": "EVIDENCE",
+      "state": "PARTIAL",
+      "gap_types": ["EVIDENCE", "SUBSTRATE"],
+      "capabilities": ["asset.render.reference-scene", "asset.render.capture-matrix", "asset.render.perceptual-diff"],
+      "depends_on": ["asset.adapter.godot-runtime", "asset.performance.benchmark-receipts"],
+      "acceptance": {
+        "claim_kind": "visual-appearance",
+        "risk": "high",
+        "pass_condition": "The same camera, light, material and geometry corpus is rendered by independent backends and compared under declared perceptual thresholds.",
+        "primary_surface": "multi-renderer captured frames and diff reports",
+        "counterevidence": "Material parity is inferred from one renderer or illustrative SVG previews.",
+        "secondary_surface": "human inspection of threshold-edge cases"
+      }
+    },
+    {
+      "rank": 13,
+      "id": "asset.adapter.native-expansion-kit",
+      "title": "Native-adapter expansion kit",
+      "wave": 2,
+      "class": "ADAPTER",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "CONTRACT", "AUTHORITY"],
+      "capabilities": ["asset.adapter.package-sdk", "asset.adapter.apply", "asset.adapter.inspect", "asset.adapter.rollback"],
+      "depends_on": ["asset.extension.signed-sandbox"],
+      "acceptance": {
+        "claim_kind": "persistence",
+        "risk": "high",
+        "pass_condition": "At least one non-Blender host passes signed apply, fresh-process inspect, changed-baseline protection and idempotent rollback.",
+        "primary_surface": "native host adapter transaction tests",
+        "counterevidence": "A host reports success without reopening and independently inspecting its saved project.",
+        "secondary_surface": "permission denial and crash recovery tests"
+      }
+    },
+    {
+      "rank": 14,
+      "id": "asset.validator.epubcheck-live",
+      "title": "Live EPUBCheck validator substrate",
+      "wave": 2,
+      "class": "EVIDENCE",
+      "state": "MISSING",
+      "gap_types": ["SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.validator.epubcheck.execute", "asset.validator.epub33.conformance"],
+      "depends_on": ["asset.runtime.substrate-manager"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "high",
+        "pass_condition": "The reviewed official EPUBCheck runtime passes generated EPUB 3.3 and rejects a deliberately damaged publication.",
+        "primary_surface": "official EPUBCheck structured report",
+        "counterevidence": "The adapter contract or internal ZIP parser is presented as live EPUB conformance.",
+        "secondary_surface": "known-pass and known-fail W3C corpus"
+      }
+    },
+    {
+      "rank": 15,
+      "id": "asset.validator.verapdf-accessibility",
+      "title": "veraPDF PDF/UA and PDF/A validator",
+      "wave": 2,
+      "class": "EVIDENCE",
+      "state": "MISSING",
+      "gap_types": ["SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.validator.pdfua", "asset.validator.pdfa", "asset.validator.verapdf.report"],
+      "depends_on": ["asset.runtime.substrate-manager"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "high",
+        "pass_condition": "A reviewed veraPDF runtime emits bound PDF/UA or PDF/A reports and rejects a known-invalid tagged document.",
+        "primary_surface": "veraPDF validation report",
+        "counterevidence": "Internal tagged-structure checks are relabelled PDF/UA conformance.",
+        "secondary_surface": "veraPDF reference corpus"
+      }
+    },
+    {
+      "rank": 16,
+      "id": "asset.validator.pdfx-formal",
+      "title": "Formal external PDF/X validation route",
+      "wave": 2,
+      "class": "EVIDENCE",
+      "state": "MISSING",
+      "gap_types": ["SUBSTRATE", "EVIDENCE", "AUTHORITY"],
+      "capabilities": ["asset.validator.pdfx.external", "asset.validator.pdfx.report"],
+      "depends_on": ["asset.runtime.substrate-manager"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "high",
+        "pass_condition": "A licence-reviewed independent ISO 15930 validator verifies generated PDF/X and rejects a known-invalid output-intent or page-box case.",
+        "primary_surface": "external PDF/X conformance report",
+        "counterevidence": "The bundled writer or pypdf structural corroboration certifies PDF/X.",
+        "secondary_surface": "print-operator review where machine checks are incomplete"
+      }
+    },
+    {
+      "rank": 17,
+      "id": "asset.validator.openimageio-openexr",
+      "title": "OpenImageIO and OpenEXR image inspection",
+      "wave": 2,
+      "class": "EVIDENCE",
+      "state": "MISSING",
+      "gap_types": ["SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.validator.image.metadata", "asset.validator.image.pixel-diff", "asset.validator.openexr"],
+      "depends_on": ["asset.runtime.substrate-manager"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "high",
+        "pass_condition": "Independent tools verify dimensions, channels, bit depth, colour metadata, mip levels and thresholded pixel differences for supported images.",
+        "primary_surface": "OpenImageIO and OpenEXR tool reports",
+        "counterevidence": "Filename extensions or the producing codec are the only image evidence.",
+        "secondary_surface": "reference test-image corpus"
+      }
+    },
+    {
+      "rank": 18,
+      "id": "asset.colour.ocio-aces2",
+      "title": "OpenColorIO and ACES 2 colour pipeline",
+      "wave": 2,
+      "class": "IMPROVE",
+      "state": "MISSING",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.colour.scene-linear", "asset.colour.aces2-transform", "asset.colour.display-proof"],
+      "depends_on": ["asset.validator.openimageio-openexr"],
+      "acceptance": {
+        "claim_kind": "visual-appearance",
+        "risk": "high",
+        "pass_condition": "Pinned OCIO configurations transform scene-linear masters to declared displays with numeric and rendered reference-image agreement.",
+        "primary_surface": "OCIO processor output and reference image comparison",
+        "counterevidence": "Colour-space labels change without transforming pixel values.",
+        "secondary_surface": "calibrated-display human proof review"
+      }
+    },
+    {
+      "rank": 19,
+      "id": "asset.validator.gltf-render-fidelity",
+      "title": "glTF validator and Khronos render-fidelity corpus",
+      "wave": 2,
+      "class": "EVIDENCE",
+      "state": "PARTIAL",
+      "gap_types": ["SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.validator.gltf.official", "asset.validator.gltf.render-fidelity"],
+      "depends_on": ["asset.render.cross-renderer-matrix"],
+      "acceptance": {
+        "claim_kind": "visual-appearance",
+        "risk": "high",
+        "pass_condition": "Generated glTF passes an independent validator and relevant Khronos material, animation, skin and compression render-fidelity cases.",
+        "primary_surface": "official validator report and rendered corpus diffs",
+        "counterevidence": "Only AXM's own GLB parser accepts the asset.",
+        "secondary_surface": "fresh native engine import"
+      }
+    },
+    {
+      "rank": 20,
+      "id": "asset.texture.ktx2-uastc-hdr",
+      "title": "KTX2 UASTC, HDR and transcoder matrix",
+      "wave": 2,
+      "class": "IMPROVE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.texture.ktx2.uastc", "asset.texture.ktx2.hdr", "asset.texture.ktx2.transcode-matrix"],
+      "depends_on": ["asset.validator.openimageio-openexr", "asset.performance.benchmark-receipts"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "high",
+        "pass_condition": "Official KTX tooling produces and transcodes UASTC and supported HDR profiles while decoded pixels and GPU budgets stay within declared thresholds.",
+        "primary_surface": "KTX reference tool and multi-target transcode receipts",
+        "counterevidence": "ETC1S output is relabelled UASTC or HDR without appropriate payloads.",
+        "secondary_surface": "GPU runtime texture upload"
+      }
+    },
+    {
+      "rank": 21,
+      "id": "asset.material.materialx139-matrix",
+      "title": "MaterialX 1.39 multi-renderer validation",
+      "wave": 2,
+      "class": "IMPROVE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.material.materialx139", "asset.material.shader-generate", "asset.material.multi-renderer-validate"],
+      "depends_on": ["asset.render.cross-renderer-matrix", "asset.colour.ocio-aces2"],
+      "acceptance": {
+        "claim_kind": "visual-appearance",
+        "risk": "high",
+        "pass_condition": "Schema-valid MaterialX 1.39 graphs generate for multiple backends and reference renders remain within declared material-specific thresholds.",
+        "primary_surface": "MaterialX validator, shader generation and renderer matrix",
+        "counterevidence": "A syntactically valid graph is assumed visually portable without backend execution.",
+        "secondary_surface": "human look-development review"
+      }
+    },
+    {
+      "rank": 22,
+      "id": "asset.tokens.dtcg2025",
+      "title": "DTCG design-token interchange",
+      "wave": 2,
+      "class": "IMPROVE",
+      "state": "MISSING",
+      "gap_types": ["HAND", "CONTRACT", "EVIDENCE"],
+      "capabilities": ["asset.tokens.dtcg.import", "asset.tokens.dtcg.resolve", "asset.tokens.dtcg.export", "asset.tokens.extensions-preserve"],
+      "depends_on": ["asset.interchange.roundtrip-ledger"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "medium",
+        "pass_condition": "DTCG 2025.10 tokens, aliases, composite types and unknown extensions round-trip without semantic loss or type inference.",
+        "primary_surface": "DTCG fixture round trips and resolver assertions",
+        "counterevidence": "Unknown extensions disappear or types are guessed from values.",
+        "secondary_surface": "CSS and host-theme projection comparison"
+      }
+    },
+    {
+      "rank": 23,
+      "id": "asset.accessibility.wcag22-live",
+      "title": "Live WCAG 2.2 interaction validator",
+      "wave": 2,
+      "class": "EVIDENCE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "EVIDENCE"],
+      "capabilities": ["asset.accessibility.keyboard", "asset.accessibility.focus", "asset.accessibility.target-size", "asset.accessibility.reflow", "asset.accessibility.reduced-motion"],
+      "depends_on": ["asset.host.negotiation-sdk"],
+      "acceptance": {
+        "claim_kind": "interaction-journey",
+        "risk": "high",
+        "pass_condition": "Real keyboard, pointer and viewport journeys verify focus, target size, reflow, contrast, reduced motion and no hidden blocking state.",
+        "primary_surface": "live browser interaction journey",
+        "counterevidence": "Static schema or source inspection is presented as usability proof.",
+        "secondary_surface": "assistive technology or human accessibility review"
+      }
+    },
+    {
+      "rank": 24,
+      "id": "asset.ui.interactive-prototype",
+      "title": "Interactive prototype, journey and state hand",
+      "wave": 3,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "CONTRACT", "EVIDENCE"],
+      "capabilities": ["asset.ui.states", "asset.ui.transitions", "asset.ui.input-map", "asset.ui.prototype-run"],
+      "depends_on": ["asset.edit.universal-kernel", "asset.accessibility.wcag22-live", "asset.tokens.dtcg2025"],
+      "acceptance": {
+        "claim_kind": "interaction-journey",
+        "risk": "high",
+        "pass_condition": "A generated prototype runs declared states and transitions under real inputs and exports an implementation handoff with accessibility evidence.",
+        "primary_surface": "live bounded prototype journey",
+        "counterevidence": "Static screenshots or component metadata are called an interactive prototype.",
+        "secondary_surface": "responsive device matrix"
+      }
+    },
+    {
+      "rank": 25,
+      "id": "asset.raster.nondestructive-document",
+      "title": "Non-destructive raster-document hand",
+      "wave": 3,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "CONTRACT", "EVIDENCE"],
+      "capabilities": ["asset.raster.layers", "asset.raster.masks", "asset.raster.adjustments", "asset.raster.blend-modes", "asset.raster.project-save"],
+      "depends_on": ["asset.edit.universal-kernel", "asset.validator.openimageio-openexr", "asset.colour.ocio-aces2"],
+      "acceptance": {
+        "claim_kind": "persistence",
+        "risk": "high",
+        "pass_condition": "Real bitmap layers, masks and adjustment stacks survive save, fresh-process reload and rerender with matching structure and pixels.",
+        "primary_surface": "project reopen plus independent image comparison",
+        "counterevidence": "Only a flattened PNG or declarative layer list exists.",
+        "secondary_surface": "native raster host import"
+      }
+    },
+    {
+      "rank": 26,
+      "id": "asset.raster.brush-ink",
+      "title": "Pressure brush, ink and calligraphy engine",
+      "wave": 3,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "EVIDENCE"],
+      "capabilities": ["asset.raster.stroke", "asset.raster.pressure", "asset.raster.stabilize", "asset.raster.brush-tip"],
+      "depends_on": ["asset.raster.nondestructive-document"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "medium",
+        "pass_condition": "Timestamped pressure and pointer samples replay into stable brush geometry and pixels under bounded smoothing and textured-tip rules.",
+        "primary_surface": "stroke replay and pixel comparison",
+        "counterevidence": "Pressure metadata is stored but has no effect on the rendered stroke.",
+        "secondary_surface": "live stylus journey"
+      }
+    },
+    {
+      "rank": 27,
+      "id": "asset.raster.retouch-matting",
+      "title": "Selection, matting, retouch and controlled-warp hand",
+      "wave": 3,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "EVIDENCE"],
+      "capabilities": ["asset.raster.select-region", "asset.raster.alpha-matte", "asset.raster.heal-clone", "asset.raster.warp"],
+      "depends_on": ["asset.raster.nondestructive-document"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "high",
+        "pass_condition": "Bounded selections, mattes, sampled repairs and warps modify only declared regions while retaining source and operation provenance.",
+        "primary_surface": "before, mask and after pixel assertions",
+        "counterevidence": "Pixels outside the declared region change or source sampling is unrecorded.",
+        "secondary_surface": "visual edge-quality review"
+      }
+    },
+    {
+      "rank": 28,
+      "id": "asset.vector.precision-path",
+      "title": "Precision vector-path editing",
+      "wave": 3,
+      "class": "IMPROVE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "EVIDENCE"],
+      "capabilities": ["asset.vector.bezier-edit", "asset.vector.path-split-join", "asset.vector.offset", "asset.vector.boolean"],
+      "depends_on": ["asset.edit.universal-kernel"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "medium",
+        "pass_condition": "Bezier edits and boolean operations produce finite, closed or intentionally open paths with stable bounds and parser-valid SVG output.",
+        "primary_surface": "geometry assertions and independent SVG parsing",
+        "counterevidence": "Operations emit self-intersections, NaN coordinates or invalid path syntax.",
+        "secondary_surface": "round-trip through a native vector host"
+      }
+    },
+    {
+      "rank": 29,
+      "id": "asset.vector.advanced-appearance",
+      "title": "Advanced vector appearance",
+      "wave": 3,
+      "class": "IMPROVE",
+      "state": "MISSING",
+      "gap_types": ["HAND", "CONTRACT", "EVIDENCE"],
+      "capabilities": ["asset.vector.variable-stroke", "asset.vector.gradient", "asset.vector.blend", "asset.vector.appearance-loss-map"],
+      "depends_on": ["asset.vector.precision-path", "asset.interchange.roundtrip-ledger"],
+      "acceptance": {
+        "claim_kind": "visual-appearance",
+        "risk": "medium",
+        "pass_condition": "Variable strokes, gradients and blends render consistently in the reference matrix or record exact host-specific losses and fallbacks.",
+        "primary_surface": "cross-renderer vector corpus",
+        "counterevidence": "Unsupported appearance silently flattens or changes without a loss receipt.",
+        "secondary_surface": "native vector host comparison"
+      }
+    },
+    {
+      "rank": 30,
+      "id": "asset.typography.production",
+      "title": "Production typography and font hand",
+      "wave": 3,
+      "class": "IMPROVE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "EVIDENCE"],
+      "capabilities": ["asset.type.paragraph", "asset.type.bidi", "asset.type.line-break", "asset.type.text-path", "asset.type.variable-font", "asset.type.subset"],
+      "depends_on": ["asset.validator.openimageio-openexr"],
+      "acceptance": {
+        "claim_kind": "visual-appearance",
+        "risk": "high",
+        "pass_condition": "Paragraphs across representative scripts shape, break, align and subset without missing glyphs, clipped text or changed logical reading order.",
+        "primary_surface": "HarfBuzz glyph evidence and rendered paragraph corpus",
+        "counterevidence": "Glyph runs pass while paragraph layout clips or reorders content incorrectly.",
+        "secondary_surface": "native browser and PDF text extraction"
+      }
+    },
+    {
+      "rank": 31,
+      "id": "asset.document.multipage-story",
+      "title": "Multi-page, artboard and story-layout hand",
+      "wave": 3,
+      "class": "IMPROVE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "CONTRACT", "EVIDENCE"],
+      "capabilities": ["asset.document.pages", "asset.document.master-page", "asset.document.text-flow", "asset.document.table-footnote", "asset.document.imposition"],
+      "depends_on": ["asset.typography.production", "asset.validator.verapdf-accessibility"],
+      "acceptance": {
+        "claim_kind": "visual-appearance",
+        "risk": "high",
+        "pass_condition": "Multi-page content flows without loss across pages, tables and footnotes while reading order, page boxes and imposition remain verifiable.",
+        "primary_surface": "rendered page corpus and extracted structure",
+        "counterevidence": "The model supports one page or breaks logical reading order at page boundaries.",
+        "secondary_surface": "PDF/UA and print preflight"
+      }
+    },
+    {
+      "rank": 32,
+      "id": "asset.print.packaging-production",
+      "title": "Advanced print and packaging production",
+      "wave": 3,
+      "class": "IMPROVE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.print.dieline", "asset.print.spot-colour", "asset.print.overprint", "asset.print.trap", "asset.print.separation", "asset.print.barcode"],
+      "depends_on": ["asset.validator.pdfx-formal", "asset.document.multipage-story"],
+      "acceptance": {
+        "claim_kind": "quality",
+        "risk": "high",
+        "pass_condition": "Dielines, spot plates, overprint, trapping, separations and barcodes survive preflight and physical mock-up review for the declared process.",
+        "primary_surface": "formal preflight and separations inspection",
+        "counterevidence": "A screen preview is used as calibrated press or packaging proof.",
+        "secondary_surface": "human print-operator review"
+      }
+    },
+    {
+      "rank": 33,
+      "id": "asset.fabric.material-behaviour",
+      "title": "Fabric-material behaviour and colourway hand",
+      "wave": 3,
+      "class": "IMPROVE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "EVIDENCE"],
+      "capabilities": ["asset.fabric.weave-knit", "asset.fabric.colourway", "asset.fabric.shrink-stretch", "asset.fabric.garment-map"],
+      "depends_on": ["asset.colour.ocio-aces2", "asset.render.cross-renderer-matrix"],
+      "acceptance": {
+        "claim_kind": "quality",
+        "risk": "high",
+        "pass_condition": "Repeat scale, colourway, grain, stretch, shrink and seam placement alter production outputs and material previews under declared fabric profiles.",
+        "primary_surface": "fabric production spec and mapped material renders",
+        "counterevidence": "Fabric behaviour is metadata added after an unchanged flat repeat.",
+        "secondary_surface": "printed swatch or operator review"
+      }
+    },
+    {
+      "rank": 34,
+      "id": "asset.garment.pattern-grading",
+      "title": "Garment pattern, grading and marker-layout hand",
+      "wave": 3,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "EVIDENCE"],
+      "capabilities": ["asset.garment.pattern", "asset.garment.grade", "asset.garment.seam-notch", "asset.garment.marker-layout"],
+      "depends_on": ["asset.fabric.material-behaviour", "asset.vector.precision-path"],
+      "acceptance": {
+        "claim_kind": "quality",
+        "risk": "high",
+        "pass_condition": "Sized pattern pieces preserve seam allowances, notches, grain and matching edges while marker layout respects material width and repeat.",
+        "primary_surface": "geometric fit and marker assertions",
+        "counterevidence": "Pieces overlap, matched seams differ beyond tolerance or grain constraints are ignored.",
+        "secondary_surface": "human pattern-maker review"
+      }
+    },
+    {
+      "rank": 35,
+      "id": "asset.fabric.embroidery-stitch",
+      "title": "Embroidery and stitch-production hand",
+      "wave": 3,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.embroidery.digitize", "asset.embroidery.path", "asset.embroidery.thread-map", "asset.embroidery.machine-validate"],
+      "depends_on": ["asset.vector.precision-path", "asset.fabric.material-behaviour"],
+      "acceptance": {
+        "claim_kind": "quality",
+        "risk": "high",
+        "pass_condition": "Artwork becomes bounded stitch paths with density, pull compensation, colour changes and machine limits verified by an independent parser or simulator.",
+        "primary_surface": "stitch simulation and container parser",
+        "counterevidence": "A vector preview is relabelled as embroidery machine output.",
+        "secondary_surface": "operator-reviewed test stitch"
+      }
+    },
+    {
+      "rank": 36,
+      "id": "asset.cad.brep-step-parametric",
+      "title": "Parametric B-rep CAD and STEP hand",
+      "wave": 3,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.cad.constraint-sketch", "asset.cad.brep-solid", "asset.cad.feature-history", "asset.cad.step-export"],
+      "depends_on": ["asset.runtime.substrate-manager", "asset.performance.benchmark-receipts"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "high",
+        "pass_condition": "Constraint-driven sketches produce valid B-rep solids and STEP export that an independent CAD kernel reopens within declared geometric tolerances.",
+        "primary_surface": "independent CAD-kernel topology and tolerance checks",
+        "counterevidence": "A triangulated mesh is relabelled B-rep or STEP.",
+        "secondary_surface": "native CAD host round trip"
+      }
+    },
+    {
+      "rank": 37,
+      "id": "asset.cad.sheet-metal",
+      "title": "Sheet-metal fabrication hand",
+      "wave": 3,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "EVIDENCE"],
+      "capabilities": ["asset.cad.sheet-metal", "asset.cad.bend-rule", "asset.cad.unfold-refold", "asset.cad.flat-pattern"],
+      "depends_on": ["asset.cad.brep-step-parametric"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "high",
+        "pass_condition": "Thickness, bend allowance, relief and tooling rules produce a flat pattern that refolds into the source part within tolerance.",
+        "primary_surface": "unfold and refold geometric comparison",
+        "counterevidence": "The flat pattern ignores bend allowance or cannot reconstruct the part.",
+        "secondary_surface": "fabrication operator review"
+      }
+    },
+    {
+      "rank": 38,
+      "id": "asset.manufacturing.3mf",
+      "title": "3MF additive-manufacturing hand",
+      "wave": 3,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.3mf.core", "asset.3mf.material", "asset.3mf.production", "asset.3mf.validate"],
+      "depends_on": ["asset.cad.brep-step-parametric", "asset.runtime.substrate-manager"],
+      "acceptance": {
+        "claim_kind": "deterministic-behavior",
+        "risk": "high",
+        "pass_condition": "Watertight unit-aware material-aware 3MF packages pass official conformance tests and reopen with matching build objects and metadata.",
+        "primary_surface": "3MF conformance suite and independent package reopen",
+        "counterevidence": "An STL-like mesh in a ZIP is called production 3MF.",
+        "secondary_surface": "slicer import and build preview"
+      }
+    },
+    {
+      "rank": 39,
+      "id": "asset.manufacturing.verified-cam",
+      "title": "Verified CAM postprocessor and machine-profile system",
+      "wave": 3,
+      "class": "IMPROVE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "AUTHORITY", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.cam.machine-profile", "asset.cam.postprocess", "asset.cam.stock-fixture", "asset.cam.simulate", "asset.cam.operator-gate"],
+      "depends_on": ["asset.cad.brep-step-parametric", "asset.runtime.substrate-manager"],
+      "acceptance": {
+        "claim_kind": "resource-safety",
+        "risk": "high",
+        "pass_condition": "Machine-specific output binds post version, stock, fixtures and limits, passes independent simulation and still requires operator approval before execution.",
+        "primary_surface": "machine-profile simulation and approval receipt",
+        "counterevidence": "Generic or unapproved G-code is described as machine-ready.",
+        "secondary_surface": "bounded dry run on declared hardware"
+      }
+    },
+    {
+      "rank": 40,
+      "id": "asset.3d.high-low-bake",
+      "title": "High-to-low texture baking and tangent verification",
+      "wave": 4,
+      "class": "IMPROVE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "EVIDENCE"],
+      "capabilities": ["asset.3d.high-low-bake", "asset.3d.normal-ao-curvature", "asset.3d.tangent-verify"],
+      "depends_on": ["asset.texture.ktx2-uastc-hdr", "asset.render.cross-renderer-matrix"],
+      "acceptance": {
+        "claim_kind": "visual-appearance",
+        "risk": "high",
+        "pass_condition": "Normal, AO, curvature and packed maps reproduce the high-resolution source on the low mesh under the declared tangent convention and error bounds.",
+        "primary_surface": "bake maps, tangent checks and reference renders",
+        "counterevidence": "A procedural flat map is described as a high-to-low bake.",
+        "secondary_surface": "native engine material comparison"
+      }
+    },
+    {
+      "rank": 41,
+      "id": "asset.3d.retopology-lod-compression",
+      "title": "Retopology, remesh, LOD and mesh-compression hand",
+      "wave": 4,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.3d.retopology", "asset.3d.remesh", "asset.3d.lod", "asset.3d.mesh-compress", "asset.3d.silhouette-error"],
+      "depends_on": ["asset.3d.high-low-bake", "asset.performance.benchmark-receipts"],
+      "acceptance": {
+        "claim_kind": "quality",
+        "risk": "high",
+        "pass_condition": "Descending LODs retain manifold topology, UV intent and declared silhouette error while independent decompression reproduces the encoded mesh.",
+        "primary_surface": "topology, error and decoder receipts",
+        "counterevidence": "Triangle reduction alone is used as LOD quality proof.",
+        "secondary_surface": "distance-stepped live render"
+      }
+    },
+    {
+      "rank": 42,
+      "id": "asset.3d.character-deformation",
+      "title": "Character deformation and animation expansion",
+      "wave": 4,
+      "class": "IMPROVE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "EVIDENCE"],
+      "capabilities": ["asset.3d.blend-shape", "asset.3d.facial-pose", "asset.3d.retarget", "asset.3d.ik-fk", "asset.3d.root-motion"],
+      "depends_on": ["asset.3d.retopology-lod-compression", "asset.validator.gltf-render-fidelity"],
+      "acceptance": {
+        "claim_kind": "motion",
+        "risk": "high",
+        "pass_condition": "Blend shapes, retargeted clips, IK/FK and root motion deform the reviewed visible mesh without invalid weights, drift or budget violations.",
+        "primary_surface": "deformation math and timestamped rendered frames",
+        "counterevidence": "Only a skeleton proxy moves while the reviewed character mesh remains unproven.",
+        "secondary_surface": "native game runtime animation"
+      }
+    },
+    {
+      "rank": 43,
+      "id": "asset.3d.lookdev-render-aov",
+      "title": "Lighting, look-development, render and AOV hand",
+      "wave": 4,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.3d.light-rig", "asset.3d.exposure", "asset.3d.render", "asset.3d.aov", "asset.3d.composite"],
+      "depends_on": ["asset.material.materialx139-matrix", "asset.colour.ocio-aces2", "asset.render.cross-renderer-matrix"],
+      "acceptance": {
+        "claim_kind": "visual-appearance",
+        "risk": "high",
+        "pass_condition": "Declared lights, cameras, exposure and materials render real beauty and AOV images whose recomposition matches the beauty within threshold.",
+        "primary_surface": "renderer outputs, AOV inspection and recomposition diff",
+        "counterevidence": "An illustrative diagram or material swatch is presented as a rendered scene.",
+        "secondary_surface": "human look-development review"
+      }
+    },
+    {
+      "rank": 44,
+      "id": "asset.3d.simulation-effects",
+      "title": "Simulation, particles, cloth, hair and destruction hand",
+      "wave": 4,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.3d.simulate", "asset.3d.particles", "asset.3d.cloth", "asset.3d.hair", "asset.3d.destruction", "asset.3d.cache"],
+      "depends_on": ["asset.3d.lookdev-render-aov", "asset.performance.benchmark-receipts"],
+      "acceptance": {
+        "claim_kind": "motion",
+        "risk": "high",
+        "pass_condition": "Seeded simulation settings and inputs reproduce bounded caches and visibly changing frames while invalid physics or budget states fail closed.",
+        "primary_surface": "simulation cache digests and frame sequence",
+        "counterevidence": "Static geometry or random frame changes are called a reproducible simulation.",
+        "secondary_surface": "native solver comparison"
+      }
+    },
+    {
+      "rank": 45,
+      "id": "asset.world.terrain-prefab-streaming",
+      "title": "Terrain, tilemap, prefab and streamed-world hand",
+      "wave": 4,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "CONTRACT", "EVIDENCE"],
+      "capabilities": ["asset.world.terrain", "asset.world.tilemap", "asset.world.prefab", "asset.world.spawn-marker", "asset.world.stream-region"],
+      "depends_on": ["asset.adapter.godot-runtime", "asset.3d.retopology-lod-compression"],
+      "acceptance": {
+        "claim_kind": "interaction-journey",
+        "risk": "high",
+        "pass_condition": "Generated 2D or 3D regions stream in a native runtime with coherent placement, collision, navigation, spawn markers and measured budgets.",
+        "primary_surface": "native runtime traversal and streaming telemetry",
+        "counterevidence": "A static scene manifest is described as a working streamed world.",
+        "secondary_surface": "save, reload and deterministic regeneration"
+      }
+    },
+    {
+      "rank": 46,
+      "id": "asset.audio.waveform-synthesis-playback",
+      "title": "Audible waveform, synthesis and playback hand",
+      "wave": 4,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.audio.pcm", "asset.audio.synthesize", "asset.audio.sample", "asset.audio.encode", "asset.audio.decode-playback"],
+      "depends_on": ["asset.runtime.substrate-manager", "asset.performance.benchmark-receipts"],
+      "acceptance": {
+        "claim_kind": "motion",
+        "risk": "high",
+        "pass_condition": "Generated PCM and delivery audio decode through an independent implementation with matching duration, sample rate, channels, loudness and audible playback evidence.",
+        "primary_surface": "independent decoder measurements and playback capture",
+        "counterevidence": "MIDI or a visual waveform is presented as audible audio output.",
+        "secondary_surface": "human listening review"
+      }
+    },
+    {
+      "rank": 47,
+      "id": "asset.audio.edit-mix-master",
+      "title": "Audio editing, restoration, mixing and mastering hand",
+      "wave": 4,
+      "class": "NEW_HAND",
+      "state": "MISSING",
+      "gap_types": ["HAND", "EVIDENCE"],
+      "capabilities": ["asset.audio.trim-fade", "asset.audio.restore", "asset.audio.route-mix", "asset.audio.automate", "asset.audio.master", "asset.audio.loudness"],
+      "depends_on": ["asset.audio.waveform-synthesis-playback"],
+      "acceptance": {
+        "claim_kind": "quality",
+        "risk": "high",
+        "pass_condition": "Editable operations produce real stems and masters with verified timing, routing, loudness, true peak and no undeclared clipping or channel loss.",
+        "primary_surface": "decoded audio analysis and editable mix recipe",
+        "counterevidence": "Metadata changes without changing samples, or clipping is hidden by container success.",
+        "secondary_surface": "human listening and restoration review"
+      }
+    },
+    {
+      "rank": 48,
+      "id": "asset.audio.midi2-ump-hardware",
+      "title": "MIDI 2.0, UMP, SMF2, MPE and hardware-profile hand",
+      "wave": 4,
+      "class": "IMPROVE",
+      "state": "MISSING",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.audio.ump", "asset.audio.smf2", "asset.audio.mpe", "asset.audio.midi-ci", "asset.audio.hardware-profile"],
+      "depends_on": ["asset.audio.waveform-synthesis-playback", "asset.runtime.substrate-manager"],
+      "acceptance": {
+        "claim_kind": "transport",
+        "risk": "high",
+        "pass_condition": "UMP and clip data round-trip through an independent parser while MIDI-CI profiles negotiate exact device capabilities and preserve visible MIDI 1 fallback losses.",
+        "primary_surface": "protocol parser and simulated device exchange receipts",
+        "counterevidence": "MIDI 1 SMF events are relabelled MIDI 2.0 or hardware support is assumed.",
+        "secondary_surface": "real opt-in MIDI hardware test"
+      }
+    },
+    {
+      "rank": 49,
+      "id": "asset.video.ingest-precision-edit",
+      "title": "Video ingest, proxy, precision-edit and time-remap hand",
+      "wave": 4,
+      "class": "IMPROVE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.video.ingest", "asset.video.proxy", "asset.video.relink", "asset.video.trim", "asset.video.multicam", "asset.video.time-remap"],
+      "depends_on": ["asset.interchange.roundtrip-ledger", "asset.performance.benchmark-receipts"],
+      "acceptance": {
+        "claim_kind": "motion",
+        "risk": "high",
+        "pass_condition": "Source media, proxies and relinks retain timecode while ripple, roll, slip, multicam and variable-speed edits decode at expected frame timestamps.",
+        "primary_surface": "independent frame decode and timeline timestamp assertions",
+        "counterevidence": "A timeline recipe changes while decoded frames do not match the edit.",
+        "secondary_surface": "visual playback journey"
+      }
+    },
+    {
+      "rank": 50,
+      "id": "asset.video.accessible-finish",
+      "title": "Accessible video finishing and delivery hand",
+      "wave": 4,
+      "class": "IMPROVE",
+      "state": "PARTIAL",
+      "gap_types": ["HAND", "SUBSTRATE", "EVIDENCE"],
+      "capabilities": ["asset.video.audio-mux", "asset.video.caption", "asset.video.colour-finish", "asset.video.loudness", "asset.video.av1-opus", "asset.video.render-queue"],
+      "depends_on": ["asset.video.ingest-precision-edit", "asset.audio.edit-mix-master", "asset.colour.ocio-aces2"],
+      "acceptance": {
+        "claim_kind": "motion",
+        "risk": "high",
+        "pass_condition": "Delivered video independently decodes synchronized picture, audio and captions with declared colour, loudness, timing, codec and file-size budgets.",
+        "primary_surface": "independent demux, decode, caption and loudness reports",
+        "counterevidence": "Silent video, external captions or container labels are presented as a finished accessible delivery.",
+        "secondary_surface": "human playback and caption review"
+      }
+    }
+  ]
+}

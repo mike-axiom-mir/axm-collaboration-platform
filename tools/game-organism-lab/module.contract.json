@@ -1,0 +1,30 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "game-organism-lab",
+  "version": "v0.1",
+  "provides": ["game.organ.validate", "game.organism.compile", "game.organism.receipt"],
+  "consumes": ["axm.game-organ/v1", "axm.game-organism-blueprint/v1"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.game-organism-assembly-receipt/v1"],
+    "accepts": ["axm.game-organ/v1", "axm.game-organism-blueprint/v1"]
+  },
+  "boundaries": {
+    "writes": ["user-download:explicit-assembly-receipt"],
+    "refuses": [
+      "organ-execution",
+      "canonical-game-write",
+      "automatic-promotion",
+      "category-coercion",
+      "missing-organ-substitution",
+      "resource-budget-bypass",
+      "automated-fun-or-taste-claim"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

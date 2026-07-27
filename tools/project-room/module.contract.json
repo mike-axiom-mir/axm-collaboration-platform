@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "project-room",
-  "version": "v0.2",
+  "version": "v0.3",
   "provides": [
     "local-project-room",
     "five-stage-kanban",
@@ -14,13 +14,14 @@
     "forms-and-structured-input",
     "dailies-and-review-history",
     "named-version-checkpoints",
-    "portable-project-json"
+    "portable-project-json",
+    "explicit-public-guest-handoff"
   ],
   "consumes": ["axm.knowledge-project-handoff/v1"],
   "permissions": ["storage", "export"],
   "handoffs": {
     "emits": ["axm.project-room/v1"],
-    "accepts": ["axm.project-room/v1", "axm.knowledge-project-handoff/v1"]
+    "accepts": ["axm.project-room/v1", "axm.knowledge-project-handoff/v1", "axm.guest-session-export/v1"]
   },
   "boundaries": {
     "writes": ["browser-local:axm.project-room.v1", "user-download:explicit"],
@@ -31,6 +32,8 @@
       "hidden-owner-assignment",
       "sample-data-on-first-open",
       "silent-import-overwrite",
+      "automatic-guest-handoff-import",
+      "guest-import-execution",
       "silent-checkpoint-restore",
       "separate-project-truth-stores",
       "knowledge-canvas-research-duplication"

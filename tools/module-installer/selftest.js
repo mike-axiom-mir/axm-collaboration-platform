@@ -1,2 +1,45 @@
-'use strict';const assert=require('assert'),fs=require('fs'),path=require('path');const d=__dirname,m=JSON.parse(fs.readFileSync(path.join(d,'manifest.json'))),c=JSON.parse(fs.readFileSync(path.join(d,'module.contract.json'))),h=fs.readFileSync(path.join(d,'index.html'),'utf8'),a=fs.readFileSync(path.join(d,'app.js'),'utf8');assert.equal(m.id,'module-installer');assert(m.permissions.includes('module.install'));assert(c.boundaries.refuses.includes('unreviewed-install'));assert(c.boundaries.refuses.includes('silent-overwrite'));assert(h.includes('INSTALL REVIEWED MODULE')&&h.includes('ROLL BACK MODULE'));assert(a.includes('apply-approved-digest')&&a.includes('explicit-rollback'));console.log('PASS Module Installer · staged exact-digest review backup apply rollback');
+'use strict';
 
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const dir = __dirname;
+const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json')));
+const contract = JSON.parse(fs.readFileSync(path.join(dir, 'module.contract.json')));
+const html = fs.readFileSync(path.join(dir, 'index.html'), 'utf8');
+const app = fs.readFileSync(path.join(dir, 'app.js'), 'utf8');
+const css = fs.readFileSync(path.join(dir, 'module-installer.css'), 'utf8');
+
+assert.equal(manifest.schema, 'axm.tool-manifest/v1');
+assert.equal(manifest.kind, 'product');
+assert.equal(manifest.status, 'TEST');
+assert(manifest.permissions.includes('module.install'));
+assert(manifest.produces.includes('axm.module-install-governance-view/v1'));
+assert(manifest.accepts.includes('axm.workshop-package-return/v1'));
+assert(manifest.produces.includes('axm.module-post-install-verification/v1'));
+assert(contract.provides.includes('read-only-install-governance-lineage'));
+assert(contract.provides.includes('returned-build-on-zip-intake'));
+assert(contract.provides.includes('exact-export-base-binding'));
+assert(contract.provides.includes('single-generation-update-backup'));
+assert(contract.provides.includes('post-install-selftest-lineage'));
+assert(contract.provides.includes('rollback-current-digest-guard'));
+assert(contract.boundaries.refuses.includes('unreviewed-install'));
+assert(contract.boundaries.refuses.includes('review-approval-as-install-authority'));
+assert(contract.boundaries.refuses.includes('stale-build-on-base'));
+assert(contract.boundaries.refuses.includes('changed-context-return'));
+assert(contract.boundaries.refuses.includes('automatic-rollback'));
+assert(contract.boundaries.refuses.includes('automatic-install'));
+assert(contract.boundaries.refuses.includes('automatic-promotion'));
+assert(html.includes('Review approval') && html.includes('Evidence only'));
+assert(html.includes('INSTALL REVIEWED MODULE') && html.includes('ROLL BACK MODULE'));
+assert(html.includes('returnZip') && html.includes('stageReturn'));
+assert(html.includes('module=module-installer&amp;permission=module.install'));
+assert(app.includes('governance.installEligible'));
+assert(app.includes("confirmInstall.value === 'INSTALL REVIEWED MODULE'"));
+assert(app.includes('explicit-return-stage'));
+assert(app.includes('SELF-TEST') && app.includes('data-prepare-rollback'));
+assert(app.includes('apply-approved-digest') && app.includes('explicit-rollback'));
+assert(!/localStorage|sessionStorage/.test(app));
+assert(css.includes('.authority-strip') && css.includes('.lineage-step') && css.includes('.return-evidence'));
+
+console.log('PASS Module Installer - returned ZIP, exact-base lineage, review, permission, one backup, selftest, direct rollback');

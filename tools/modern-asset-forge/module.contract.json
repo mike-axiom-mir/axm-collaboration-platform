@@ -1,0 +1,71 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "modern-asset-forge",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "phase-0-ps2-forge-preservation-baseline",
+    "phase-0-machine-readable-asset-and-job-contracts",
+    "live-capability-gap-inventory",
+    "source-and-runtime-delivery-separation",
+    "bounded-blender-to-glb-native-stage",
+    "independent-glb-structure-and-metric-inspection",
+    "optional-khronos-gltf-validation-stage",
+    "optional-gltf-transform-or-gltfpack-meshopt-stage",
+    "bounded-etc1s-basislz-ktx2-encoding-and-decoder-validation",
+    "webgl2-glb-diagnostic-smoke-receipts"
+  ],
+  "consumes": [
+    "glTF.2.0",
+    "KTX.2.0",
+    "axm.asset-hand/v2",
+    "axm.ktx2-validation-report/v1",
+    "optional:blender",
+    "optional:khronos-gltf-validator",
+    "optional:gltf-transform",
+    "optional:gltfpack",
+    "human-visual-review"
+  ],
+  "permissions": ["local-files", "local-processes", "module-local-job-writes", "export"],
+  "lifecycle": {
+    "state_owner": "mixed",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  },
+  "handoffs": {
+    "emits": [
+      "axm.modern-asset-forge.asset-manifest/v1",
+      "axm.modern-asset-forge.build-receipt/v1",
+      "axm.modern-asset-forge.capability-inventory/v1",
+      "model/gltf-binary",
+      "image/ktx2"
+    ],
+    "accepts": [
+      "axm.modern-asset-forge.build-request/v1",
+      "application/x-blender",
+      "model/gltf-binary",
+      "image/png",
+      "human-visual-review"
+    ]
+  },
+  "boundaries": {
+    "automaticWrites": ["module-local:work/explicit-job-id/receipts/browser-smoke-token.json"],
+    "explicitWrites": ["configured-vault-root:relative-job-output", "user-download:manifest-and-receipts"],
+    "refuses": [
+      "editing-or-replacing-the-ps2-asset-forge",
+      "automatic-tool-installation",
+      "automatic-library-download",
+      "source-library-crawling-or-connector-intake-in-phase-0-or-phase-1",
+      "hardcoded-vault-drive-letter",
+      "absolute-path-retention-in-portable-manifests",
+      "shell-command-execution",
+      "canonical-delivery-claim-from-diagnostic-unoptimized-input",
+      "khronos-validation-claim-from-axm-structure-inspection",
+      "meshopt-claim-without-a-real-optimizer-and-runtime-decoder",
+      "ktx2-runtime-integration-claim-from-standalone-texture-encoding",
+      "visual-quality-approval-by-code",
+      "silent-requirement-weakening"
+    ]
+  }
+}
