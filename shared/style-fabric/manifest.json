@@ -1,0 +1,74 @@
+{
+  "id": "axm.style-fabric",
+  "name": "AXM Style Fabric",
+  "version": "0.5.0",
+  "status": "WORKING_TEST",
+  "canon": false,
+  "integrated": false,
+  "runtimeProof": "STANDALONE_ONLY",
+  "description": "A modular, engine-neutral system for creating, fusing, validating, previewing, layering, sharing, and applying presentation-only game and character skins.",
+  "signature": "Mike - Axiom/mir",
+  "entrypoints": {
+    "human": "studio/index.html",
+    "machine": "contracts/ai-style-intent.schema.json",
+    "preskins": "preskin-catalog.json",
+    "molds": "mold-kit-catalog.json",
+    "conformance": "src/core/conformance.mjs",
+    "testChamber": "studio/index.html",
+    "cli": "bin/axm-skin.mjs",
+    "library": "src/index.mjs"
+  },
+  "permissions": {
+    "reads": [
+      "user-selected skin packs",
+      "user-selected raster assets",
+      "game-declared presentation slot contracts"
+    ],
+    "writes": [
+      "user-requested downloads",
+      "local browser skin library"
+    ],
+    "network": false,
+    "gameplayAuthority": false,
+    "automaticPromotion": false
+  },
+  "connections": {
+    "current": [],
+    "futureOptional": [
+      "Creative Studio Asset Mode",
+      "Asset Vault",
+      "AXMAssets",
+      "AXMRegistry",
+      "Game Hub",
+      "hosted share provider"
+    ]
+  },
+  "truthBoundary": {
+    "canChange": [
+      "color",
+      "material appearance",
+      "typography",
+      "shape hints",
+      "visual effects",
+      "declarative patterns",
+      "geometry hints",
+      "raster asset references",
+      "character appearance",
+      "environment, structure, prop, vehicle, equipment, item, projectile, effect, and interface appearance",
+      "presentation audio references"
+    ],
+    "cannotChange": [
+      "gameplay state",
+      "damage",
+      "health",
+      "physics",
+      "collisions",
+      "score",
+      "randomness",
+      "input",
+      "networking",
+      "permissions",
+      "authoritative simulation"
+    ]
+  }
+}

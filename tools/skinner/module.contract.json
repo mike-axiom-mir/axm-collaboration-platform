@@ -1,0 +1,44 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "skinner",
+  "version": "v0.3",
+  "provides": [
+    "safety-gated-skin-editing",
+    "readability-checked-skin-profiles",
+    "local-vault-skin-assets",
+    "aetherglass-visual-composition-editing",
+    "reversible-aetherglass-preview",
+    "style-fabric-preskin-composition",
+    "style-fabric-pack-intake",
+    "style-fabric-to-skinner-safe-mapping",
+    "skin-pack-import-export"
+  ],
+  "consumes": [
+    "axm.skin/v1",
+    "axm.visual.aetherglass/v7.1.0",
+    "axm.style-fabric/v0.5.0",
+    "axm.skin-pack/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["skin.config.json", "skins.pack.json"],
+    "accepts": ["skin.config.json", "skins.pack.json", "*.axmskin.json"]
+  },
+  "boundaries": {
+    "writes": ["hub-store:skinner", "user-download:explicit"],
+    "refuses": [
+      "raw-css-from-skin",
+      "script-or-html-from-skin",
+      "remote-asset-reference-in-skin",
+      "undeclared-aetherglass-setting",
+      "unreadable-truth-bearing-colours",
+      "automatic-enable-for-legacy-skin",
+      "aetherglass-runtime-persistence-outside-skin-contract",
+      "style-fabric-gameplay-authority",
+      "style-fabric-embedded-asset-to-vault-write",
+      "unvalidated-style-fabric-pack",
+      "automatic-style-fabric-commit",
+      "automatic-navigation-or-content-rewrite"
+    ]
+  }
+}

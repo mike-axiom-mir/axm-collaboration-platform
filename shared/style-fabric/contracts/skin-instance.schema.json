@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/contracts/skin-instance.schema.json",
+  "title": "AXM Skin Instance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "version", "id", "packRefs", "overrides", "accessibility", "status"],
+  "properties": {
+    "type": { "const": "axm.skin-instance" },
+    "version": { "const": "1.0" },
+    "id": { "type": "string" },
+    "packRefs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "release", "integrity"],
+        "properties": {
+          "id": { "type": "string" },
+          "release": { "type": "string" },
+          "integrity": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "overrides": { "type": "object" },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reducedMotion": { "type": "boolean" },
+        "highContrast": { "type": "boolean" },
+        "effectScale": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "status": { "enum": ["LOCAL_DRAFT", "LOCAL_SAVED"] }
+  }
+}
