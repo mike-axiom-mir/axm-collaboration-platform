@@ -1,46 +1,86 @@
+import {
+  PRESENTATION_LAYER_SCOPES,
+  derivePresentationCapabilities,
+  targetMatchesPresentationScope
+} from "./capabilities.mjs";
 import { clone, deepMerge, hash32, slugify } from "./stable.mjs";
 
-export const SKIN_LAYER_SCOPES = Object.freeze([
-  "global",
-  "world",
-  "objects",
-  "gear",
-  "items",
-  "characters",
-  "interface",
-  "effects",
-  "ui",
-  "character.player",
-  "character.enemy",
-  "character.cast",
-  "fx"
-]);
-
-const SCOPE_PREFIXES = Object.freeze({
-  world: ["world."],
-  objects: ["structure.", "prop."],
-  gear: ["vehicle.", "equipment."],
-  items: ["item.", "projectile."],
-  characters: ["character."],
-  interface: ["ui."],
-  effects: ["fx."],
-  ui: ["ui."],
-  "character.cast": ["character."],
-  fx: ["fx."]
-});
-
-function targetMatches(scope, target) {
-  if (scope === "global") return true;
-  const prefixes = SCOPE_PREFIXES[scope] ?? [`${scope}.`];
-  return target === scope || prefixes.some((prefix) => target.startsWith(prefix));
-}
+export const SKIN_LAYER_SCOPES = PRESENTATION_LAYER_SCOPES;
 
 function layerId(layer, index) {
   return slugify(layer.id ?? layer.pack?.metadata?.name ?? `layer-${index + 1}`);
 }
 
-function materialRef(id, original) {
-  return `${id}.${original}`.slice(0, 127);
+function uniqueLayerIds(layers) {
+  const used = new Set();
+  return layers.map((layer, index) => {
+    const base = layerId(layer, index);
+    let candidate = base;
+    let ordinal = 1;
+    while (used.has(candidate)) {
+      ordinal += 1;
+      const suffix = `-${ordinal}`;
+      candidate = `${base.slice(0, 64 - suffix.length)}${suffix}`;
+    }
+    used.add(candidate);
+    return candidate;
+  });
+}
+
+function namespacedRef(id, original, registry, kind) {
+  if (typeof original !== "string") {
+    throw new Error(`${kind} references must use portable string IDs.`);
+  }
+  const origin = `${id}\u0000${original}`;
+  const full = `${id}.${original}`;
+  const digest = hash32(origin).toString(16).padStart(8, "0");
+  const suffix = `.${digest}`;
+  const reference =
+    full.length <= 127 ? full : `${full.slice(0, 127 - suffix.length)}${suffix}`;
+  const previous = registry.get(reference);
+  if (previous && previous !== origin) {
+    throw new Error(`Namespaced ${kind} reference collision: ${reference}`);
+  }
+  registry.set(reference, origin);
+  return reference;
+}
+
+function accessibilityRecord(value) {
+  if (value === undefined || value === null) return {};
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error("Stack accessibility declarations must be plain objects.");
+  }
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new Error("Stack accessibility declarations must be plain objects.");
+  }
+  return value;
+}
+
+function mergeAccessibilityConservatively(base, overlay) {
+  const baseRecord = accessibilityRecord(base);
+  const overlayRecord = accessibilityRecord(overlay);
+  const merged = deepMerge(baseRecord, overlayRecord);
+  const contrasts = [
+    baseRecord.minimumTextContrast,
+    overlayRecord.minimumTextContrast
+  ].filter(Number.isFinite);
+  if (contrasts.length) merged.minimumTextContrast = Math.max(...contrasts);
+  for (const property of ["preserveGameplayCues", "colorIsNotOnlySignal"]) {
+    if (Object.hasOwn(baseRecord, property) || Object.hasOwn(overlayRecord, property)) {
+      merged[property] =
+        baseRecord[property] !== false && overlayRecord[property] !== false;
+    }
+  }
+  if (
+    Object.hasOwn(baseRecord, "reducedMotionSafe") ||
+    Object.hasOwn(overlayRecord, "reducedMotionSafe")
+  ) {
+    merged.reducedMotionSafe =
+      baseRecord.reducedMotionSafe === true ||
+      overlayRecord.reducedMotionSafe === true;
+  }
+  return merged;
 }
 
 export function composeSkinStack(layers, options = {}) {
@@ -56,18 +96,23 @@ export function composeSkinStack(layers, options = {}) {
   }
 
   const first = enabled[0].pack;
+  const layerIds = uniqueLayerIds(enabled);
   const bindings = new Map();
   const materials = {};
   const assets = {};
   const characterBlueprints = {};
+  const materialOrigins = new Map();
+  const assetOrigins = new Map();
+  const blueprintOrigins = new Map();
   let tokens = clone(first.tokens ?? {});
-  let accessibility = clone(first.accessibility ?? {});
+  let accessibility = {};
   const sourceLayers = [];
+  const sourceAssetHashes = new Set();
 
   enabled.forEach((layer, index) => {
-    const id = layerId(layer, index);
+    const id = layerIds[index];
     const selected = (layer.pack.bindings ?? []).filter((binding) =>
-      targetMatches(layer.scope, binding.target)
+      targetMatchesPresentationScope(layer.scope, binding.target)
     );
     if (["global", "world"].includes(layer.scope)) {
       tokens = deepMerge(tokens, layer.pack.tokens ?? {});
@@ -84,27 +129,54 @@ export function composeSkinStack(layers, options = {}) {
     } else {
       tokens[layer.scope] = clone(layer.pack.tokens ?? {});
     }
-    accessibility = deepMerge(accessibility, layer.pack.accessibility ?? {});
+    accessibility = mergeAccessibilityConservatively(
+      accessibility,
+      layer.pack.accessibility ?? {}
+    );
+    for (const asset of Object.values(layer.pack.assets ?? {})) {
+      if (asset?.sha256) sourceAssetHashes.add(asset.sha256);
+    }
     for (const binding of selected) {
       const next = clone(binding);
-      if (binding.material && layer.pack.materials?.[binding.material]) {
-        next.material = materialRef(id, binding.material);
+      if (
+        binding.material &&
+        Object.hasOwn(layer.pack.materials ?? {}, binding.material)
+      ) {
+        next.material = namespacedRef(
+          id,
+          binding.material,
+          materialOrigins,
+          "material"
+        );
         materials[next.material] = clone(layer.pack.materials[binding.material]);
       }
-      if (binding.asset && layer.pack.assets?.[binding.asset]) {
-        next.asset = materialRef(id, binding.asset);
+      if (binding.asset && Object.hasOwn(layer.pack.assets ?? {}, binding.asset)) {
+        next.asset = namespacedRef(id, binding.asset, assetOrigins, "asset");
         assets[next.asset] = clone(layer.pack.assets[binding.asset]);
       }
-      if (binding.blueprint && layer.pack.characterBlueprints?.[binding.blueprint]) {
-        next.blueprint = materialRef(id, binding.blueprint);
+      if (
+        binding.blueprint &&
+        Object.hasOwn(layer.pack.characterBlueprints ?? {}, binding.blueprint)
+      ) {
+        next.blueprint = namespacedRef(
+          id,
+          binding.blueprint,
+          blueprintOrigins,
+          "blueprint"
+        );
         characterBlueprints[next.blueprint] = clone(
           layer.pack.characterBlueprints[binding.blueprint]
         );
       } else if (
         binding.target.startsWith("character.") &&
-        layer.pack.characterBlueprints?.default
+        Object.hasOwn(layer.pack.characterBlueprints ?? {}, "default")
       ) {
-        next.blueprint = materialRef(id, "default");
+        next.blueprint = namespacedRef(
+          id,
+          "default",
+          blueprintOrigins,
+          "blueprint"
+        );
         characterBlueprints[next.blueprint] = clone(
           layer.pack.characterBlueprints.default
         );
@@ -117,21 +189,41 @@ export function composeSkinStack(layers, options = {}) {
       scope: layer.scope,
       packId: layer.pack.id,
       release: layer.pack.release,
+      integrity: layer.pack.integrity?.contentSha256 ?? null,
       selectedBindings: selected.map((binding) => binding.target)
     });
   });
 
   const name = String(options.name ?? "AXM Layered Skin").slice(0, 80);
+  const seed = String(options.seed ?? "layer-stack");
   const idSuffix = hash32(
-    sourceLayers.map((layer) => `${layer.packId}:${layer.scope}`).join("|")
+    [
+      seed,
+      ...sourceLayers.map(
+        (layer) =>
+          `${layer.id}:${layer.packId}:${layer.release}:${layer.scope}:${layer.integrity ?? ""}`
+      )
+    ].join("|")
   )
     .toString(16)
     .padStart(8, "0");
+  const capabilities = derivePresentationCapabilities(bindings.values(), {
+    rasterAssets: Object.keys(assets).length > 0,
+    semanticMold: enabled.some(
+      (layer, index) =>
+        sourceLayers[index].selectedBindings.length > 0 &&
+        layer.pack.capabilities?.includes("semantic-mold.v1")
+    ),
+    skinStack: true,
+    treatmentStack: Object.values(materials).some(
+      (material) => material?.effectStack || material?.lightingRig
+    )
+  }).sort();
   return {
     type: "axm.skin-pack",
     version: "1.0",
     id: `user.${slugify(name)}.${idSuffix}`,
-    release: "0.5.0",
+    release: "0.6.0",
     status: "WORKING_TEST",
     metadata: {
       name,
@@ -144,12 +236,7 @@ export function composeSkinStack(layers, options = {}) {
     },
     extends: null,
     scopes: [...new Set(enabled.map((layer) => layer.scope))],
-    capabilities: [
-      ...new Set([
-        ...enabled.flatMap((layer) => layer.pack.capabilities ?? []),
-        "skin-stack.v1"
-      ])
-    ].sort(),
+    capabilities,
     parameters: {},
     tokens,
     materials,
@@ -160,9 +247,9 @@ export function composeSkinStack(layers, options = {}) {
     provenance: {
       origin: "deterministic-skin-stack",
       compiler: "axm.skin-stack.v1",
-      seed: String(options.seed ?? "layer-stack"),
+      seed,
       sourceLayers,
-      sourceAssetHashes: []
+      sourceAssetHashes: [...sourceAssetHashes].sort()
     },
     integrity: null
   };

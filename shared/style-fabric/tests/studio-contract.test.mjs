@@ -61,3 +61,25 @@ test("the Studio exposes the full-surface chamber and honest conformance evidenc
   assert.match(app, /listGameSurfaceSlots/);
   assert.match(app, /assessGameAdapterConformance/);
 });
+
+test("the Studio exposes explicit three-direction treatment review and accessible state", async () => {
+  const [html, app] = await Promise.all([
+    readFile(htmlUrl, "utf8"),
+    readFile(appUrl, "utf8")
+  ]);
+  for (const id of [
+    "treatment-mold",
+    "forge-treatments",
+    "treatment-directions",
+    "apply-treatment",
+    "treatment-report"
+  ]) {
+    assert.match(html, new RegExp(`id="${id}"`));
+  }
+  assert.match(html, /role="radiogroup"/);
+  assert.match(html, /aria-pressed="true"/);
+  assert.match(html, /role="tablist"/);
+  assert.match(app, /generateTreatmentDirections/);
+  assert.match(app, /applyTreatmentToPack/);
+  assert.match(app, /aria-checked/);
+});

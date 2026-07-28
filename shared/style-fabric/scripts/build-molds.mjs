@@ -73,7 +73,7 @@ async function main() {
     const contract = createGameContractFromMold({
       moldId,
       gameId: `axm.template.${moldId}`,
-      gameVersion: "0.5.0",
+      gameVersion: "0.6.0",
       rendererProfile: "engine-neutral"
     });
     await writeFile(
@@ -87,7 +87,7 @@ async function main() {
     `${stableStringify({
       type: "axm.mold-kit-catalog",
       version: "1.0",
-      release: "0.5.0",
+      release: "0.6.0",
       count: kits.length,
       generatedBy: "scripts/build-molds.mjs",
       kits

@@ -19,11 +19,12 @@ A skin binds its materials, tokens, and optional assets to those meanings. A gam
 flowchart TD
     A["Human or machine intent"] --> B["Deterministic recipe compiler"]
     B --> C["Portable skin pack"]
-    C --> D["Validator and policy gate"]
+    C --> D["Admission: shape, assets, integrity"]
     G["Game skin contract"] --> E["Slot resolver"]
     D --> E
-    E --> F["Game-owned adapter"]
-    F --> H["Preview or approved apply"]
+    E --> R["Resolved-presentation validation"]
+    R --> F["Game-owned adapter"]
+    F --> H["Exact prepared proposal or preview"]
     H --> I["Receipt and rollback token"]
 ```
 
@@ -35,6 +36,30 @@ flowchart TD
 4. **Proposal is not approval.** Machine users can compile and propose; apply requires an explicit approval packet.
 5. **Presentation is not authority.** The contract rejects authoritative gameplay fields.
 6. **Sharing is not trust.** Imported packs enter validation/quarantine before use.
+
+## Admission and safe-data boundary
+
+`admitSkinPack()` is the shared decision for untrusted portable data. It
+combines strict pack validation, embedded-raster verification, and declared
+integrity policy. Resolution consumes the admitted data and then validates the
+final resolved presentation again against the exact game contract and
+`ZERO_AUTHORITATIVE_WRITES`.
+
+Stable-data and instance operations inspect own data properties only.
+Inherited values, accessors, cycles, non-finite numbers, and dangerous
+`__proto__`, `prototype`, or `constructor` path segments are rejected before
+canonicalization, hashing, merging, flattening, lookup, or override.
+
+## Runtime transaction boundary
+
+`SkinRuntime.prepare()` captures a validated clone of the adapter contract and
+stores the exact prepared proposal privately. Preview and apply accept only
+that digest-bound proposal. Any forged field, mutation, adapter-contract
+change, replay, or concurrent reuse is rejected before the adapter is called.
+
+An approval packet still requires an explicit visible actor. Successful apply
+is single-use and produces a rollback receipt; rollback remains a separate
+approved operation.
 
 ## Test and conformance separation
 
@@ -63,6 +88,38 @@ Game fallback remains underneath all seven, and accessibility/local adjustments
 can remain above them. Later layers override only declared presentation values.
 Every override is listed in the resolution receipt. Source packs remain
 unchanged.
+
+Accessibility merges conservatively: the strongest minimum contrast wins and
+safety booleans can be enabled but not weakened. Composition lineage records
+source pack integrity and embedded-asset hashes when supplied.
+
+## Mold Foundry and exact generation
+
+Built-in molds and custom review molds use the same known semantic slot
+library. `forgeSkinMold()` accepts an explicit slot list. `growSkinMold()` adds
+or removes explicitly named slots or organs. Both validate before returning a
+draft-review receipt with zero automatic game writes.
+
+Recipe generation is exact to the chosen mold. A targeted mold no longer
+produces a hidden 33-surface pack: bindings, materials, blueprints, and
+capabilities that are not required by the selected semantic slots are omitted.
+
+## Treatment Forge
+
+A semantic game mold answers where presentation can bind. A treatment mold
+answers how selected surfaces are visually constructed. The contracts stay
+separate so a treatment cannot expand a game's adapter surface.
+
+For one treatment mold, seed, target set, and performance profile,
+`generateTreatmentDirections()` returns exactly three distinct deterministic,
+unselected drafts. A chosen draft can be composed into explicitly matching pack
+bindings with target-isolated materials.
+
+Each enhanced material retains flat legacy fields and may add a bounded
+`effectStack` plus a semantic `lightingRig` for `world.lighting`. Profiles cap
+layer count, effect cost, glow, bloom, haze, light intensity, and motion.
+Treatment composition is pack-data editing: it is not a runtime apply, save,
+publication, promotion, or CANON action.
 
 ## Preskin composition
 

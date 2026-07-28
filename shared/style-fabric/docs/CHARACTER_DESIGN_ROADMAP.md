@@ -1,6 +1,6 @@
 # Character Design Roadmap
 
-Style Fabric v0.5 keeps Character Forge as the character-focused organ inside
+Style Fabric v0.6 keeps Character Forge as the character-focused organ inside
 the wider Full Game Skin system. It supports five portable character regions,
 palette, material, eight silhouettes, seven head shapes, eight outfits, eight
 accessories, proportions, character pattern response, deterministic preskin

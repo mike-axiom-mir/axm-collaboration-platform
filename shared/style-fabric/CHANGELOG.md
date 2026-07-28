@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.6.0 — 2026-07-28
+
+Security, exact-scope generation, and bounded visual-treatment pass.
+
+- Added a unified pack-admission result that combines strict structure checks,
+  embedded-raster verification, and integrity policy before resolution and
+  portable-file acceptance.
+- Added final resolved-presentation validation against the exact game
+  contract, policy limits, protected cues, and zero-authoritative-writes
+  boundary.
+- Hardened stable-data and instance operations to own data properties. Cycles,
+  accessors, inherited values, dangerous prototype path segments, and
+  non-finite values are denied.
+- Bound runtime preview/apply to the exact single-use prepared proposal and
+  captured adapter contract; forged, changed, replayed, and concurrent reuse
+  are rejected before adapter execution.
+- Restricted deterministic recipe output to the selected mold's exact slots,
+  with unused materials, blueprints, and capabilities pruned.
+- Made accessibility stacking conservative and extended lineage with source
+  pack and asset integrity hashes.
+- Added Mold Foundry `validateSkinMold()`, `forgeSkinMold()`, and
+  `growSkinMold()` APIs with explicit draft-review receipts and zero automatic
+  game writes.
+- Added Treatment Forge with three built-in bounded treatment molds. Every
+  mold/seed/profile request returns exactly three distinct deterministic,
+  unselected drafts.
+- Added declarative effect stacks and semantic lighting rigs with legacy
+  material fallback, target isolation, performance/effect-cost caps,
+  reduced-motion handling, and zero automatic save/apply/promotion.
+- Added Studio Treatment Forge controls and accessible selection-state
+  semantics for mode, filters, surfaces, treatment directions, motion, and
+  dialog tabs.
+- Preserved portable v1 pack/game contracts, explicit approval and rollback,
+  WORKING / TEST status, no current AXM integration, and no gameplay authority.
+
 ## 0.5.0 — 2026-07-28
 
 First-adoption proof pass focused on making full-game skin coverage visible,

@@ -16,7 +16,7 @@ await mkdir(outputDirectory, { recursive: true });
 const catalog = {
   type: "axm.preskin-catalog",
   version: "1.0",
-  release: "0.5.0",
+  release: "0.6.0",
   status: "WORKING_TEST",
   count: PRESKINS.length,
   presets: []

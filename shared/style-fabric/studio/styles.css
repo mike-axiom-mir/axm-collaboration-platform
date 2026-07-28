@@ -472,6 +472,84 @@ details > :last-child {
     rgba(255, 255, 255, 0.015);
 }
 
+.treatment-lab {
+  border-color: rgba(255, 67, 200, 0.22);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(255, 67, 200, 0.08), transparent 42%),
+    rgba(255, 255, 255, 0.015);
+}
+
+.treatment-mold-field {
+  display: grid;
+  gap: 5px;
+  color: #9aa6c1;
+  font-size: 0.57rem;
+}
+
+.treatment-mold-field select {
+  padding-block: 8px;
+  font-size: 0.58rem;
+}
+
+.treatment-lab > .button {
+  margin-top: 9px;
+}
+
+.treatment-directions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.treatment-direction {
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: #b5bfd4;
+  background: rgba(255, 255, 255, 0.018);
+  text-align: left;
+}
+
+.treatment-direction[aria-checked="true"] {
+  border-color: rgba(255, 67, 200, 0.52);
+  color: #fff1fb;
+  background: rgba(255, 67, 200, 0.08);
+  box-shadow: inset 0 0 18px rgba(255, 67, 200, 0.045);
+}
+
+.treatment-direction strong,
+.treatment-direction small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.treatment-direction strong {
+  margin-top: 7px;
+  font-size: 0.57rem;
+}
+
+.treatment-direction small {
+  margin-top: 3px;
+  color: #9aa6c1;
+  font-size: 0.48rem;
+}
+
+.treatment-swatches {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  height: 17px;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.treatment-swatches i {
+  display: block;
+}
+
 .mold-grid,
 .stack-grid {
   display: grid;
@@ -523,7 +601,7 @@ details > :last-child {
 }
 
 .stack-lab small {
-  color: #667089;
+  color: #9aa6c1;
   font-size: 0.52rem;
 }
 
@@ -807,7 +885,7 @@ input[type="color"]::-webkit-color-swatch {
 .range-group h4,
 .subgroup-label {
   margin: 0 0 9px;
-  color: #626e89;
+  color: #9aa6c1;
   font-size: 0.51rem;
   font-weight: 850;
   letter-spacing: 0.12em;
@@ -1779,7 +1857,9 @@ input[type="range"] {
   box-shadow: 0 0 7px var(--preview-player-primary);
 }
 
-.hud-card button {
+.hud-card .ability-chip {
+  display: inline-flex;
+  align-items: center;
   min-height: 34px;
   padding-inline: 11px;
   border: 1px solid color-mix(in srgb, var(--preview-accent) 44%, transparent);
@@ -2774,7 +2854,7 @@ footer {
   display: flex;
   justify-content: space-between;
   padding: 26px 4px 34px;
-  color: #59627a;
+  color: #9aa6c1;
   font-size: 0.62rem;
 }
 
@@ -3081,8 +3161,12 @@ dialog pre {
     grid-template-columns: 37px 1fr;
   }
 
-  .hud-card button {
+  .hud-card .ability-chip {
     display: none;
+  }
+
+  .treatment-directions {
+    grid-template-columns: 1fr;
   }
 
   footer {

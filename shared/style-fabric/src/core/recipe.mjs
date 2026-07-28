@@ -1,4 +1,10 @@
 import { hslToHex, mixHex, normalizeHex, readableText } from "./color.mjs";
+import {
+  STYLE_INTENT_SCOPES,
+  derivePresentationCapabilities,
+  targetMatchesPresentationScope
+} from "./capabilities.mjs";
+import { getSkinMold } from "./molds.mjs";
 import { clamp, deepMerge, hash32, seededRandom, slugify } from "./stable.mjs";
 
 export const RECOGNIZED_STYLE_KEYWORDS = Object.freeze([
@@ -258,7 +264,16 @@ function finiteIntent(input) {
   const intent = structuredClone(input ?? {});
   const name = String(intent.name ?? "Untitled AXM Style").trim().slice(0, 80);
   const seed = String(intent.seed ?? slugify(name)).trim().slice(0, 120);
-  const scope = Array.isArray(intent.scope) && intent.scope.length ? intent.scope : ["global"];
+  const requestedScope =
+    Array.isArray(intent.scope) && intent.scope.length ? intent.scope : ["global"];
+  const scope = [];
+  for (const value of requestedScope) {
+    if (typeof value !== "string" || !STYLE_INTENT_SCOPES.includes(value.trim())) {
+      throw new Error(`Unknown style scope: ${String(value)}`);
+    }
+    const normalized = value.trim();
+    if (!scope.includes(normalized)) scope.push(normalized);
+  }
   const keywords = [...new Set((intent.keywords ?? []).map((value) => String(value).toLowerCase()))]
     .filter((value) => RECOGNIZED_STYLE_KEYWORDS.includes(value))
     .sort();
@@ -663,34 +678,46 @@ export function compileStyleIntent(input) {
     material: bindingMaterials[target] ?? target,
     optional: true
   }));
-  const scopePrefixes = {
-    world: ["world."],
-    objects: ["structure.", "prop."],
-    gear: ["vehicle.", "equipment."],
-    items: ["item.", "projectile."],
-    characters: ["character."],
-    "character.cast": ["character."],
-    interface: ["ui."],
-    ui: ["ui."],
-    effects: ["fx."],
-    fx: ["fx."]
-  };
-  const onlyScope = intent.scope.length === 1 ? intent.scope[0] : null;
-  const prefixes = scopePrefixes[onlyScope] ?? (onlyScope ? [`${onlyScope}.`] : []);
-  const scopedBindings =
-    !onlyScope || onlyScope === "global"
-      ? bindings
-      : bindings.filter(
-          (binding) =>
-            binding.target === onlyScope ||
-            prefixes.some((prefix) => binding.target.startsWith(prefix))
-        );
+  const generatorMold = intent.generator ? getSkinMold(intent.generator.moldId) : null;
+  if (intent.generator && !generatorMold) {
+    throw new Error(`Unknown skin mold: ${intent.generator.moldId}`);
+  }
+  if (generatorMold) {
+    const uncoveredSlots = generatorMold.slots.filter(
+      (target) =>
+        !intent.scope.some((scope) => targetMatchesPresentationScope(scope, target))
+    );
+    if (uncoveredSlots.length) {
+      throw new Error(
+        `Skin mold ${generatorMold.id} is outside the declared scope for: ${uncoveredSlots.join(", ")}`
+      );
+    }
+  }
+  const moldSlots = generatorMold ? new Set(generatorMold.slots) : null;
+  const requestedScopes = new Set(intent.scope);
+  const allScopes = requestedScopes.has("global") || requestedScopes.has("reusable");
+  const scopedBindings = bindings.filter((binding) => {
+    if (moldSlots) return moldSlots.has(binding.target);
+    if (allScopes) return true;
+    return [...requestedScopes].some((scope) =>
+      targetMatchesPresentationScope(scope, binding.target)
+    );
+  });
+  const usedMaterialIds = new Set(scopedBindings.map((binding) => binding.material));
+  const scopedMaterials = Object.fromEntries(
+    Object.entries(materials).filter(([materialId]) => usedMaterialIds.has(materialId))
+  );
+  const targetsInPack = new Set(scopedBindings.map((binding) => binding.target));
+  const hasPrefix = (prefix) => [...targetsInPack].some((target) => target.startsWith(prefix));
+  const capabilities = derivePresentationCapabilities(targetsInPack, {
+    semanticMold: Boolean(generatorMold)
+  });
 
   return {
     type: "axm.skin-pack",
     version: "1.0",
     id: `user.${slugify(intent.name)}.${idSuffix}`,
-    release: "0.5.0",
+    release: "0.6.0",
     status: "WORKING_TEST",
     metadata: {
       name: intent.name,
@@ -703,22 +730,7 @@ export function compileStyleIntent(input) {
     },
     extends: null,
     scopes: intent.scope,
-    capabilities: [
-      "palette.v1",
-      "theme-tokens.v1",
-      "material-params.v1",
-      "character-parts.v1",
-      "environment-surfaces.v1",
-      "game-surfaces.v1",
-      "lighting-profile.v1",
-      "vehicle-presentation.v1",
-      "equipment-presentation.v1",
-      "item-presentation.v1",
-      "postfx-profile.v1",
-      "ui-theme.v1",
-      "fx-preset.v1",
-      ...(intent.generator ? ["semantic-mold.v1"] : [])
-    ],
+    capabilities,
     parameters: {
       glow: { type: "number", min: 0, max: 1, default: material.glowIntensity },
       gloss: { type: "number", min: 0, max: 1, default: material.gloss },
@@ -745,19 +757,25 @@ export function compileStyleIntent(input) {
         tracking: intent.keywords.includes("pixel") ? 0.08 : 0.02
       }
     },
-    materials,
+    materials: scopedMaterials,
     bindings: scopedBindings,
     assets: {},
-    characterBlueprints: {
-      default: {
-        silhouette: intent.character.silhouette ?? (intent.keywords.includes("cartoon") ? "heroic-soft" : "balanced"),
-        headShape: intent.character.headShape ?? "round",
-        outfit: intent.character.outfit ?? (intent.keywords.includes("luxury") ? "future-tailored" : "modular"),
-        accessory: intent.character.accessory ?? "none",
-        proportion: clamp(intent.character.proportion ?? 0.5),
-        paletteRegions: ["base", "secondary", "trim", "outline", "emissive"]
-      }
-    },
+    characterBlueprints: hasPrefix("character.")
+      ? {
+          default: {
+            silhouette:
+              intent.character.silhouette ??
+              (intent.keywords.includes("cartoon") ? "heroic-soft" : "balanced"),
+            headShape: intent.character.headShape ?? "round",
+            outfit:
+              intent.character.outfit ??
+              (intent.keywords.includes("luxury") ? "future-tailored" : "modular"),
+            accessory: intent.character.accessory ?? "none",
+            proportion: clamp(intent.character.proportion ?? 0.5),
+            paletteRegions: ["base", "secondary", "trim", "outline", "emissive"]
+          }
+        }
+      : {},
     accessibility: {
       minimumTextContrast: intent.accessibility.minimumTextContrast,
       preserveGameplayCues: true,
@@ -766,7 +784,7 @@ export function compileStyleIntent(input) {
     },
     provenance: {
       origin: "deterministic-recipe",
-      compiler: "axm.style-recipe.v5",
+      compiler: "axm.style-recipe.v6",
       seed: intent.seed,
       preset: intent.preset,
       sourceIntent: intent,

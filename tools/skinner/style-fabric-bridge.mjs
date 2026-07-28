@@ -7,7 +7,7 @@ import {
   validateSkinPack
 } from "../../shared/style-fabric/src/index.mjs";
 
-export const STYLE_FABRIC_VERSION = "0.5.0";
+export const STYLE_FABRIC_VERSION = "0.6.0";
 
 const clone = (value) => structuredClone(value);
 const clamp = (value, low, high) => Math.min(high, Math.max(low, Number(value)));

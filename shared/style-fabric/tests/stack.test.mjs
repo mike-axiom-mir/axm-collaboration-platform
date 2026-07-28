@@ -95,6 +95,36 @@ test("disabled layers are inert", () => {
   assert.equal(output.bindings.some((entry) => entry.target === "fx.primary"), false);
 });
 
+test("stack accessibility preserves strict requests without hiding false guarantees", () => {
+  const first = pack("clarity-accessible-night");
+  first.accessibility.minimumTextContrast = 7;
+  first.accessibility.reducedMotionSafe = true;
+  const second = pack("arcade-neon-circuit");
+  second.accessibility.minimumTextContrast = 3;
+  second.accessibility.reducedMotionSafe = false;
+  second.accessibility.preserveGameplayCues = false;
+  second.accessibility.colorIsNotOnlySignal = false;
+
+  const output = composeSkinStack([
+    { id: "safe", scope: "world", pack: first },
+    { id: "later", scope: "effects", pack: second }
+  ]);
+
+  assert.equal(output.accessibility.minimumTextContrast, 7);
+  assert.equal(output.accessibility.reducedMotionSafe, true);
+  assert.equal(output.accessibility.preserveGameplayCues, false);
+  assert.equal(output.accessibility.colorIsNotOnlySignal, false);
+});
+
+test("stack lineage retains source integrity and asset hashes", () => {
+  const source = pack("axm-balanced");
+  source.integrity = { contentSha256: "a".repeat(64) };
+  source.assets["asset.audit"] = { sha256: "b".repeat(64) };
+  const output = composeSkinStack([{ id: "source", scope: "world", pack: source }]);
+  assert.equal(output.provenance.sourceLayers[0].integrity, "a".repeat(64));
+  assert.deepEqual(output.provenance.sourceAssetHashes, ["b".repeat(64)]);
+});
+
 test("empty, malformed, and unknown-scope stacks fail closed", () => {
   assert.throws(() => composeSkinStack([]), /at least one enabled layer/);
   assert.throws(
@@ -105,4 +135,97 @@ test("empty, malformed, and unknown-scope stacks fail closed", () => {
     () => composeSkinStack([{ scope: "gameplay", pack: pack("axm-balanced") }]),
     /unknown scope/
   );
+});
+
+test("stack capabilities are derived from final scoped targets", () => {
+  const output = composeSkinStack([
+    { id: "world", scope: "world", pack: pack("axm-balanced") }
+  ]);
+  assert(output.capabilities.includes("environment-surfaces.v1"));
+  assert(output.capabilities.includes("lighting-profile.v1"));
+  assert(output.capabilities.includes("skin-stack.v1"));
+  assert.equal(output.capabilities.includes("character-parts.v1"), false);
+  assert.equal(output.capabilities.includes("ui-theme.v1"), false);
+  assert.equal(output.capabilities.includes("vehicle-presentation.v1"), false);
+  assert.equal(output.capabilities.includes("equipment-presentation.v1"), false);
+  assert.equal(output.capabilities.includes("item-presentation.v1"), false);
+});
+
+test("duplicate layer labels receive distinct namespaces without cross-scope writes", () => {
+  function sharedMaterial(source, target, baseColor) {
+    const binding = source.bindings.find((entry) => entry.target === target);
+    source.materials.shared = {
+      ...source.materials[binding.material],
+      baseColor
+    };
+    binding.material = "shared";
+    assert.equal(validateSkinPack(source).ok, true);
+    return source;
+  }
+
+  const world = sharedMaterial(
+    pack("world-ember-foundry"),
+    "world.background",
+    "#ff0000"
+  );
+  const effects = sharedMaterial(
+    pack("arcade-neon-circuit"),
+    "fx.primary",
+    "#0000ff"
+  );
+  const output = composeSkinStack([
+    { id: "same", scope: "world", pack: world },
+    { id: "same", scope: "fx", pack: effects }
+  ]);
+  const worldBinding = output.bindings.find(
+    (entry) => entry.target === "world.background"
+  );
+  const effectBinding = output.bindings.find(
+    (entry) => entry.target === "fx.primary"
+  );
+
+  assert.notEqual(worldBinding.material, effectBinding.material);
+  assert.equal(output.materials[worldBinding.material].baseColor, "#ff0000");
+  assert.equal(output.materials[effectBinding.material].baseColor, "#0000ff");
+  assert.deepEqual(
+    output.provenance.sourceLayers.map((layer) => layer.id),
+    ["same", "same-2"]
+  );
+  assert.equal(validateSkinPack(output).ok, true);
+});
+
+test("maximum-length source IDs remain collision-safe after namespacing", () => {
+  const source = pack("axm-balanced");
+  const prefix = `m${"a".repeat(124)}`;
+  const firstId = `${prefix}01`;
+  const secondId = `${prefix}02`;
+  source.materials[firstId] = {
+    ...source.materials["world.base"],
+    baseColor: "#ff0000"
+  };
+  source.materials[secondId] = {
+    ...source.materials["world.terrain"],
+    baseColor: "#0000ff"
+  };
+  source.bindings.find(
+    (entry) => entry.target === "world.background"
+  ).material = firstId;
+  source.bindings.find(
+    (entry) => entry.target === "world.terrain"
+  ).material = secondId;
+  assert.equal(validateSkinPack(source).ok, true);
+
+  const output = composeSkinStack([{ id: "x", scope: "world", pack: source }]);
+  const background = output.bindings.find(
+    (entry) => entry.target === "world.background"
+  );
+  const terrain = output.bindings.find(
+    (entry) => entry.target === "world.terrain"
+  );
+  assert.notEqual(background.material, terrain.material);
+  assert(background.material.length <= 127);
+  assert(terrain.material.length <= 127);
+  assert.equal(output.materials[background.material].baseColor, "#ff0000");
+  assert.equal(output.materials[terrain.material].baseColor, "#0000ff");
+  assert.equal(validateSkinPack(output).ok, true);
 });

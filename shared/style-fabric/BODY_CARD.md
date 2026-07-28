@@ -6,17 +6,24 @@
 
 ## What it is
 
-A shared presentation layer that lets humans and machine users create one skin pack and apply it to any game that declares compatible semantic skin slots.
+A shared presentation layer that lets humans and machine users create one skin
+pack and apply it to any game that declares compatible semantic skin slots.
 
-The v0.5 creator includes 25 editable preskins, deterministic two-preskin
+The v0.6 creator includes 25 editable preskins, deterministic two-preskin
 fusion, palette harmonies, expanded materials, patterns, geometry, and
-character appearance choices. Thirty-three semantic surfaces, 16 molds, a
-deterministic mold maker, seven isolated game-skin organs, and four performance
-profiles prepare the same presentation contract for future games. A full
-33-surface Test Chamber, isolated surface editor, and adapter conformance lab
-make coverage and adoption evidence visible before any game integration. Character
-Forge is the character-focused organ inside the wider Style Fabric, not a
-second privileged skin path.
+character appearance choices. Thirty-three semantic surfaces, 16 built-in
+molds, Mold Foundry forge/grow APIs, seven isolated game-skin organs, and four
+performance profiles prepare the same presentation contract for future games.
+
+Treatment Forge adds three bounded treatment molds. Each visible
+mold/seed/profile request produces exactly three distinct deterministic review
+drafts. A chosen draft can add ordered effect layers and semantic lighting
+while retaining legacy material fields for simpler renderers.
+
+A full 33-surface Test Chamber, isolated surface editor, and adapter
+conformance lab make coverage and adoption evidence visible before any game
+integration. Character Forge remains the character-focused organ inside the
+wider Style Fabric, not a second privileged skin path.
 
 ## What it can see
 
@@ -24,11 +31,13 @@ second privileged skin path.
 - Raster images the user explicitly selects.
 - The presentation-slot contract supplied by a game.
 - Its own bundled preskin catalog.
+- Its own bundled semantic and treatment molds.
 - Its own local browser library.
 
 ## What it can change
 
 - The temporary preview.
+- An explicitly selected treatment draft in the current pack data.
 - Presentation values exposed by a consenting game adapter.
 - A local skin file or browser-library entry when the user chooses Save or Export.
 
@@ -37,6 +46,7 @@ second privileged skin path.
 - Gameplay truth, physics, damage, score, inputs, networking, permissions, or executable game code.
 - Existing AXM Foundation, Game Hub, games, Asset Vault, or Creative Studio files.
 - Canon or promotion status.
+- A built-in mold, a game contract, or any game without a separate explicit operation.
 
 ## What it sends
 
@@ -53,6 +63,8 @@ Fully offline after extraction. The package has no runtime dependencies and load
 ## Risks
 
 - A skin can still make a game unreadable, visually overwhelming, or inaccessible.
+- A deterministic treatment draft is editable visual data, not proof of
+  aesthetic quality or renderer fidelity.
 - Two individually readable preskins can produce a poor fusion; the resolved
   preview and game-owned cue protections remain required.
 - Huge images can consume memory.
@@ -61,6 +73,21 @@ Fully offline after extraction. The package has no runtime dependencies and load
 - Conformance proof checkboxes record declared observations; they do not
   automatically certify a renderer or replace game-specific tests.
 
+## Admission and runtime boundary
+
+Imported packs pass one admission gate that combines strict structure checks,
+embedded-raster verification, and integrity policy. Safe canonicalization and
+instance traversal accept only own data properties; accessors, cycles,
+inherited values, and prototype-pollution path segments are rejected.
+
+Runtime apply accepts only the exact single-use proposal prepared by that
+runtime for its captured adapter contract. Forged, changed, replayed, or
+concurrently reused proposals are rejected before the adapter is called.
+Approval still requires a visible actor, and presentation authority remains
+`ZERO_AUTHORITATIVE_WRITES`.
+
 ## Rollback / turn off
 
-Each runtime apply operation receives a rollback token. The CSS reference adapter restores the prior values. Games must preserve their own defaults and implement rollback before they can claim adapter conformance.
+Each successful runtime apply operation receives a rollback token. The CSS
+reference adapter restores the prior values. Games must preserve their own
+defaults and implement rollback before they can claim adapter conformance.

@@ -1,0 +1,111 @@
+{
+  "type": "axm.treatment-mold",
+  "version": "1.0",
+  "id": "accessible-night-edge",
+  "name": "Accessible Night Edge",
+  "description": "Crisp high-contrast night treatment that remains readable without bloom or motion.",
+  "status": "WORKING_TEST",
+  "targets": ["ui.panel", "ui.hud", "ui.menu", "ui.marker"],
+  "defaultProfile": "reduced-motion",
+  "palette": {
+    "background": "#050609",
+    "surface": "#141821",
+    "primary": "#65e8ff",
+    "secondary": "#a99aff",
+    "accent": "#ffd166",
+    "text": "#ffffff",
+    "mutedText": "#d2d8e2",
+    "shadow": "#000000",
+    "highlight": "#ffffff"
+  },
+  "legacy": {
+    "colors": {
+      "baseColor": "surface",
+      "secondaryColor": "text",
+      "accentColor": "accent",
+      "emissiveColor": "primary"
+    },
+    "metallic": 0,
+    "roughness": 0.72,
+    "gloss": 0.18,
+    "specular": 0.3,
+    "clearcoat": 0,
+    "sheen": 0.08,
+    "translucency": 0.04,
+    "iridescence": 0,
+    "emissiveStrength": 0.38,
+    "glowIntensity": 0.18,
+    "glowRadius": 6,
+    "opacity": 0.96,
+    "outlineWidth": 3.2,
+    "grain": 0,
+    "weathering": 0,
+    "patternScale": 1,
+    "pulseSpeed": 0,
+    "shimmerSpeed": 0,
+    "pattern": { "kind": "none", "strength": 0, "scale": 1 }
+  },
+  "effectStack": {
+    "version": "1.0",
+    "layers": [
+      {
+        "id": "night-fill",
+        "kind": "fill",
+        "blendMode": "normal",
+        "colorRole": "surface",
+        "mask": "inside",
+        "opacity": 0.96,
+        "intensity": 0.92
+      },
+      {
+        "id": "crisp-shadow",
+        "kind": "shadow",
+        "blendMode": "multiply",
+        "colorRole": "shadow",
+        "mask": "outside",
+        "opacity": 0.76,
+        "intensity": 0.54,
+        "radius": 3,
+        "spread": 1,
+        "softness": 0.18
+      },
+      {
+        "id": "focus-edge",
+        "kind": "rim-light",
+        "blendMode": "screen",
+        "colorRole": "accent",
+        "mask": "edge",
+        "opacity": 0.88,
+        "intensity": 0.44,
+        "radius": 3,
+        "softness": 0.12,
+        "motion": { "kind": "none", "speed": 0, "amount": 0 }
+      }
+    ]
+  },
+  "lightingRig": {
+    "version": "1.0",
+    "ambient": { "colorRole": "background", "intensity": 0.42, "softness": 1 },
+    "key": { "colorRole": "text", "intensity": 0.58, "directionDegrees": 315, "softness": 0.54 },
+    "fill": { "colorRole": "primary", "intensity": 0.16, "directionDegrees": 45, "softness": 0.72 },
+    "rim": { "colorRole": "accent", "intensity": 0.34, "directionDegrees": 160, "softness": 0.16 },
+    "shadows": { "strength": 0.74, "softness": 0.22 },
+    "bloom": { "intensity": 0, "threshold": 1, "radius": 0 },
+    "haze": { "colorRole": "background", "density": 0 },
+    "exposure": 1,
+    "contrast": 1.12
+  },
+  "constraints": {
+    "maxLayers": 4,
+    "maxEffectCost": 4,
+    "minimumTextContrast": 7,
+    "preserveGameplayCues": true,
+    "reducedMotionFallback": true
+  },
+  "provenance": {
+    "origin": "built-in-treatment-mold",
+    "creator": "Mike - Axiom/mir",
+    "license": "LicenseRef-AXM-Treatment-Test",
+    "remixAllowed": true
+  }
+}

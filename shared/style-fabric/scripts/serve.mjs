@@ -1,7 +1,7 @@
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { createServer } from "node:http";
-import { dirname, extname, join, normalize, relative, resolve } from "node:path";
+import { dirname, extname, isAbsolute, join, normalize, relative, resolve, sep } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 
@@ -28,13 +28,16 @@ const contentTypes = {
 };
 
 function safePath(requestUrl) {
-  const path = decodeURIComponent(new URL(requestUrl, `http://${host}:${port}`).pathname);
+  let path;
+  try {
+    path = decodeURIComponent(new URL(requestUrl, `http://${host}:${port}`).pathname);
+  } catch {
+    return null;
+  }
   const requested = path.endsWith("/") ? `${path}index.html` : path;
   const candidate = normalize(join(root, requested));
   const relation = relative(root, candidate);
-  if (relation.startsWith("..") || relation.includes(`..${process.platform === "win32" ? "\\" : "/"}`)) {
-    return null;
-  }
+  if (relation === ".." || relation.startsWith(`..${sep}`) || isAbsolute(relation)) return null;
   return candidate;
 }
 
@@ -45,7 +48,14 @@ const server = createServer(async (request, response) => {
     return;
   }
 
-  const requestPath = new URL(request.url, `http://${host}:${port}`).pathname;
+  let requestPath;
+  try {
+    requestPath = new URL(request.url, `http://${host}:${port}`).pathname;
+  } catch {
+    response.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+    response.end("Invalid URL");
+    return;
+  }
   if (requestPath === "/") {
     response.writeHead(302, { Location: "/studio/" });
     response.end();
@@ -80,8 +90,9 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(port, host, () => {
+  const activePort = server.address()?.port ?? port;
   console.log(`AXM Style Fabric WORKING / TEST`);
-  console.log(`Local creator: http://${host}:${port}/studio/`);
+  console.log(`Local creator: http://${host}:${activePort}/studio/`);
   console.log(`Network access: disabled by default`);
   console.log(`Stop: Ctrl+C`);
 });

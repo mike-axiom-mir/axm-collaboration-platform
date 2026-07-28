@@ -14,7 +14,8 @@ export const PRESENTATION_CAPABILITIES = Object.freeze([
   "fx-preset.v1",
   "raster-asset.v1",
   "semantic-mold.v1",
-  "skin-stack.v1"
+  "skin-stack.v1",
+  "treatment-stack.v1"
 ]);
 
 export const MATERIAL_LIMITS = Object.freeze({
@@ -42,12 +43,16 @@ export const LOCAL_CREATOR_POLICY = Object.freeze({
   id: "axm.style-policy.local-creator.v1",
   maxPackBytes: 50 * 1024 * 1024,
   maxAssets: 128,
+  maxMaterials: 256,
+  maxBindings: 512,
+  maxEffectLayers: 8,
   maxEmbeddedAssetBytes: 12 * 1024 * 1024,
   maxTotalEmbeddedBytes: 48 * 1024 * 1024,
   maxImageDimension: 8192,
   maxImagePixels: 33_554_432,
   allowedAssetMimes: ["image/png", "image/jpeg", "image/webp"],
   allowRemoteAssets: false,
+  allowUnsigned: true,
   requireLicenseDeclaration: false,
   requireIntegrity: false,
   allowUnknownTopLevelFields: false
@@ -58,10 +63,14 @@ export const HOSTED_POLICY_EXAMPLE = Object.freeze({
   id: "axm.style-policy.hosted-example.v1",
   maxPackBytes: 5 * 1024 * 1024,
   maxAssets: 32,
+  maxMaterials: 128,
+  maxBindings: 256,
+  maxEffectLayers: 8,
   maxEmbeddedAssetBytes: 2 * 1024 * 1024,
   maxTotalEmbeddedBytes: 4 * 1024 * 1024,
   maxImageDimension: 4096,
   maxImagePixels: 16_777_216,
+  allowUnsigned: false,
   requireLicenseDeclaration: true,
   requireIntegrity: true
 });

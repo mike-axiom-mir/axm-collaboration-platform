@@ -1,4 +1,13 @@
-import { clone, deepMerge, slugify } from "./stable.mjs";
+import {
+  STYLE_INTENT_SCOPES,
+  targetMatchesPresentationScope
+} from "./capabilities.mjs";
+import {
+  assertSafeObjectTree,
+  clone,
+  deepMerge,
+  slugify
+} from "./stable.mjs";
 
 export const UNIVERSAL_MATERIAL_PROPERTIES = Object.freeze([
   "baseColor",
@@ -600,6 +609,218 @@ export const SKIN_MOLDS = Object.freeze([
 ]);
 
 const MOLD_BY_ID = new Map(SKIN_MOLDS.map((mold) => [mold.id, mold]));
+const MOLD_ID_PATTERN = /^[a-z0-9][a-z0-9-]{2,63}$/;
+const KNOWN_MOLD_SCOPES = new Set(STYLE_INTENT_SCOPES);
+
+function isPlainRecord(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
+function validateDenseStringArray(value, field, errors) {
+  if (!Array.isArray(value) || value.length === 0) {
+    errors.push(`${field} must contain at least one value`);
+    return false;
+  }
+  let valid = true;
+  for (let index = 0; index < value.length; index += 1) {
+    if (!Object.hasOwn(value, index)) {
+      errors.push(`${field} must not contain sparse entries`);
+      valid = false;
+      continue;
+    }
+    if (typeof value[index] !== "string" || !value[index].trim()) {
+      errors.push(`${field} entries must be non-empty strings`);
+      valid = false;
+    }
+  }
+  return valid;
+}
+
+export function validateSkinMold(mold) {
+  const errors = [];
+  if (!isPlainRecord(mold)) {
+    return { ok: false, errors: ["mold must be a plain declarative object"] };
+  }
+  try {
+    assertSafeObjectTree(mold, "$mold");
+  } catch (error) {
+    return { ok: false, errors: [error.message] };
+  }
+  const allowed = new Set(["id", "name", "purpose", "slots", "recommendedScopes"]);
+  for (const key of Object.keys(mold)) {
+    if (!allowed.has(key)) errors.push(`unknown mold field: ${key}`);
+  }
+  if (
+    !Object.hasOwn(mold, "id") ||
+    typeof mold.id !== "string" ||
+    !MOLD_ID_PATTERN.test(mold.id)
+  ) {
+    errors.push("id is invalid");
+  }
+  if (
+    !Object.hasOwn(mold, "name") ||
+    typeof mold.name !== "string" ||
+    !mold.name.trim() ||
+    mold.name.length > 80
+  ) {
+    errors.push("name must contain 1 to 80 characters");
+  }
+  if (
+    !Object.hasOwn(mold, "purpose") ||
+    typeof mold.purpose !== "string" ||
+    !mold.purpose.trim() ||
+    mold.purpose.length > 240
+  ) {
+    errors.push("purpose must contain 1 to 240 characters");
+  }
+  if (!Object.hasOwn(mold, "slots") || !Array.isArray(mold.slots) || mold.slots.length === 0) {
+    errors.push("slots must contain at least one semantic surface");
+  } else {
+    const validEntries = validateDenseStringArray(mold.slots, "slots", errors);
+    if (validEntries) {
+      if (new Set(mold.slots).size !== mold.slots.length) errors.push("slots must be unique");
+      for (const slot of mold.slots) {
+        if (!Object.hasOwn(SLOT_LIBRARY, slot)) {
+          errors.push(`unknown semantic surface: ${slot}`);
+        }
+      }
+    }
+  }
+  if (
+    !Object.hasOwn(mold, "recommendedScopes") ||
+    !Array.isArray(mold.recommendedScopes) ||
+    mold.recommendedScopes.length === 0
+  ) {
+    errors.push("recommendedScopes must contain at least one scope");
+  } else {
+    const validEntries = validateDenseStringArray(
+      mold.recommendedScopes,
+      "recommendedScopes",
+      errors
+    );
+    if (validEntries) {
+      if (new Set(mold.recommendedScopes).size !== mold.recommendedScopes.length) {
+        errors.push("recommendedScopes must be unique");
+      }
+      for (const scope of mold.recommendedScopes) {
+        if (!KNOWN_MOLD_SCOPES.has(scope)) errors.push(`unknown recommended scope: ${scope}`);
+      }
+      if (
+        Array.isArray(mold.slots) &&
+        mold.slots.length &&
+        mold.slots.every((slot) => typeof slot === "string") &&
+        mold.recommendedScopes.every((scope) => KNOWN_MOLD_SCOPES.has(scope))
+      ) {
+        for (const scope of mold.recommendedScopes) {
+          if (!mold.slots.some((slot) => targetMatchesPresentationScope(scope, slot))) {
+            errors.push(`recommended scope does not cover a mold slot: ${scope}`);
+          }
+        }
+        for (const slot of mold.slots) {
+          if (
+            !mold.recommendedScopes.some((scope) =>
+              targetMatchesPresentationScope(scope, slot)
+            )
+          ) {
+            errors.push(`recommendedScopes do not cover semantic surface: ${slot}`);
+          }
+        }
+      }
+    }
+  }
+  return { ok: errors.length === 0, errors };
+}
+
+function scopesForSlots(slots) {
+  if (slots.length === Object.keys(SLOT_LIBRARY).length) return ["global"];
+  return GAME_SURFACE_CATEGORIES.filter((category) =>
+    category.slots.some((slot) => slots.includes(slot))
+  ).map((category) => category.id);
+}
+
+export function forgeSkinMold({
+  id,
+  name = "Untitled Skin Mold",
+  purpose = "Explicit local presentation mold.",
+  slots,
+  recommendedScopes = null
+}) {
+  const portableId = slugify(id ?? name).slice(0, 64);
+  const uniqueSlots = [...new Set((slots ?? []).map(String))];
+  const mold = {
+    id: portableId,
+    name: String(name).trim().slice(0, 80),
+    purpose: String(purpose).trim().slice(0, 240),
+    slots: uniqueSlots,
+    recommendedScopes: recommendedScopes
+      ? [...new Set(recommendedScopes.map(String))]
+      : scopesForSlots(uniqueSlots)
+  };
+  const validation = validateSkinMold(mold);
+  if (!validation.ok) {
+    throw new Error(`Invalid skin mold: ${validation.errors.join("; ")}`);
+  }
+  return {
+    mold,
+    receipt: {
+      type: "axm.skin-mold-forge-receipt",
+      version: "1.0",
+      mode: "EXPLICIT",
+      moldId: mold.id,
+      slots: [...mold.slots],
+      promotion: "DRAFT_REVIEW_REQUIRED",
+      automaticGameWrites: 0
+    }
+  };
+}
+
+export function growSkinMold(
+  base,
+  {
+    id,
+    name,
+    purpose,
+    addOrgans = [],
+    addSlots = [],
+    removeSlots = [],
+    recommendedScopes = null
+  } = {}
+) {
+  const sourceInput = typeof base === "string" ? getSkinMold(base) : base;
+  const sourceValidation = validateSkinMold(sourceInput);
+  if (!sourceValidation.ok) {
+    throw new Error(`Invalid parent skin mold: ${sourceValidation.errors.join("; ")}`);
+  }
+  const source = clone(sourceInput);
+  const additions = [
+    ...addSlots.map(String),
+    ...addOrgans.flatMap((organId) => {
+      const organ = GAME_SURFACE_CATEGORIES.find((category) => category.id === organId);
+      if (!organ) throw new Error(`Unknown skin organ: ${organId}`);
+      return organ.slots;
+    })
+  ];
+  const removed = new Set(removeSlots.map(String));
+  const slots = [...new Set([...source.slots, ...additions])].filter((slot) => !removed.has(slot));
+  const result = forgeSkinMold({
+    id: id ?? `${source.id}-grown`,
+    name: name ?? `${source.name} — Grown`,
+    purpose: purpose ?? `${source.purpose} Explicitly grown from ${source.id}.`,
+    slots,
+    recommendedScopes
+  });
+  result.receipt = {
+    ...result.receipt,
+    type: "axm.skin-mold-growth-receipt",
+    parentMoldId: source.id,
+    addedSlots: slots.filter((slot) => !source.slots.includes(slot)),
+    removedSlots: source.slots.filter((slot) => !slots.includes(slot)),
+    requestedOrgans: [...addOrgans]
+  };
+  return result;
+}
 
 export function listSkinMolds() {
   return clone(SKIN_MOLDS);
@@ -623,12 +844,20 @@ export function getSkinMold(id) {
 
 export function createGameContractFromMold({
   moldId = "universal-core",
+  mold: customMold = null,
   gameId,
   gameVersion = "0.0.0",
   rendererProfile = "engine-neutral",
   slotOverrides = {}
 }) {
-  const mold = MOLD_BY_ID.get(String(moldId));
+  let mold = null;
+  if (customMold) {
+    const validation = validateSkinMold(customMold);
+    if (!validation.ok) throw new Error(`Invalid skin mold: ${validation.errors.join("; ")}`);
+    mold = clone(customMold);
+  } else {
+    mold = MOLD_BY_ID.get(String(moldId));
+  }
   if (!mold) throw new Error(`Unknown skin mold: ${moldId}`);
   const portableGameId = slugify(gameId, "unnamed-game").replaceAll("-", ".");
   const slots = mold.slots.map((slotId) => {
@@ -650,7 +879,14 @@ export function createGameContractFromMold({
 }
 
 export function assessMoldCompatibility(pack, gameContract, moldId = "universal-core") {
-  const mold = MOLD_BY_ID.get(String(moldId));
+  let mold = null;
+  if (moldId && typeof moldId === "object") {
+    const validation = validateSkinMold(moldId);
+    if (!validation.ok) throw new Error(`Invalid skin mold: ${validation.errors.join("; ")}`);
+    mold = clone(moldId);
+  } else {
+    mold = MOLD_BY_ID.get(String(moldId));
+  }
   if (!mold) throw new Error(`Unknown skin mold: ${moldId}`);
   const bindings = new Map((pack?.bindings ?? []).map((binding) => [binding.target, binding]));
   const gameSlots = new Map((gameContract?.slots ?? []).map((slot) => [slot.id, slot]));

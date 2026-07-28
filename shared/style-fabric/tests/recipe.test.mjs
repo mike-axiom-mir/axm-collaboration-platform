@@ -54,6 +54,44 @@ test("reduced motion removes recipe motion", () => {
   assert.equal(pack.tokens.motion.shimmerSpeed, 0);
 });
 
+test("scope normalization is unique and unknown scopes fail closed", () => {
+  const pack = compileStyleIntent({
+    ...intent,
+    scope: ["world", "world", "interface"]
+  });
+  assert.deepEqual(pack.scopes, ["world", "interface"]);
+  assert.equal(validateSkinPack(pack).ok, true);
+  assert.throws(
+    () => compileStyleIntent({ ...intent, scope: ["gameplay"] }),
+    /Unknown style scope/
+  );
+});
+
+test("direct compiler mold metadata fails closed and cannot escape declared scope", () => {
+  assert.throws(
+    () =>
+      compileStyleIntent({
+        ...intent,
+        scope: ["effects"],
+        generator: { moldId: "does-not-exist" }
+      }),
+    /Unknown skin mold/
+  );
+  assert.throws(
+    () =>
+      compileStyleIntent({
+        ...intent,
+        scope: ["world"],
+        generator: { moldId: "effects-stage" }
+      }),
+    /outside the declared scope/
+  );
+});
+
+test("changed scoped compiler records the v6 compiler identity", () => {
+  assert.equal(compileStyleIntent(intent).provenance.compiler, "axm.style-recipe.v6");
+});
+
 test("SHA-256 implementation matches the standard abc vector", async () => {
   assert.equal(
     await sha256Hex("abc"),

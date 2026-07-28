@@ -1,0 +1,252 @@
+AXM CSS SKIN FABRIC v0.1 — IMPLEMENTATION HANDOFF
+Date: 2026-07-28
+Language: English
+
+MISSION
+Turn the existing AXM visual layer into a modular, reusable, themeable, testable CSS Skin Fabric without redesigning or rebuilding the current platform from scratch.
+
+ROOT RULES
+- Preserve current behavior and current visible output first.
+- No silent rewrite.
+- No destructive migration.
+- Create rollback/checkpoint before changes.
+- Native CSS is the source of truth.
+- Existing framework may be adapted, but must not become the design root.
+- Every new visual abstraction needs a contract, source lineage, tests, fallback, and docs.
+- Generator output is candidate-only until human review.
+- Accessibility and performance are part of visual quality, not later add-ons.
+
+FIRST REQUIRED ACTION: SOURCE AUDIT
+1. Find every CSS/SCSS/module/style entry point.
+2. Find inline styles and runtime style injection.
+3. Identify UI framework or component library.
+4. Count and map raw colors, spacing values, radii, shadows, z-index values, animation durations, and breakpoints.
+5. Find all !important declarations and selector-specificity hotspots.
+6. Capture baseline screenshots for all routes and major states.
+7. Record current browser targets and minimum supported devices.
+8. Produce AUDIT_REPORT.md before migration.
+
+TARGET FILE TREE
+axm-visual-system/
+  contracts/
+  tokens/
+  css/
+  themes/
+  recipes/
+  components/
+  gallery/
+  qa/
+  docs/
+
+CASCADE ORDER
+@layer reset, vendor, legacy, tokens, foundation, layout,
+       components, effects, states, utilities, overrides;
+
+MIGRATION RULE
+- Place current styles into the legacy layer or a legacy adapter without changing screenshots.
+- Ensure all new author CSS is in a named layer.
+- Put imported third-party styles in vendor.
+- Keep overrides small, documented, and test-covered.
+- Never add an untracked !important.
+
+TOKEN CATEGORIES
+- Primitive: raw palette, spacing, type scale, radius, blur, shadow, depth, time.
+- Semantic: canvas, raised surface, text, muted text, borders, accent, status.
+- Component: button, card, panel, dialog, input, tabs, toolbar, HUD.
+- Effect: glow, edge, blur, opacity, noise, reflection, scanline, mask.
+- Motion: duration, easing, distance, scale.
+- Modes: theme, density, motion, effects, contrast, performance.
+
+LAYOUT PRIMITIVES TO BUILD
+1. Stack
+2. Cluster
+3. Grid
+4. Sidebar
+5. Split
+6. Frame
+7. Center
+8. Cover
+9. Stage
+10. Reel
+
+CORE COMPONENTS TO EXTRACT
+1. Button
+2. Input/field
+3. Card
+4. Panel
+5. Dialog
+6. Tabs
+7. Toolbar
+8. Sidebar/navigation
+9. Badge/status
+10. Loading/empty/error state family
+
+FIRST EFFECT RECIPES
+1. Solid professional surface
+2. Soft glass panel
+3. Luminous edge/frame
+4. Luxury metal
+5. Hologram surface
+6. Paper/play surface
+7. Energy core
+8. Accessible high-contrast surface
+
+EACH EFFECT RECIPE MUST HAVE
+- ID and semantic version.
+- Purpose and approved contexts.
+- Public CSS variables with allowed ranges.
+- Fallback recipe.
+- Performance tier: low, medium, high.
+- Reduced-motion behavior.
+- Forced-colors behavior.
+- Browser support classification: core, enhancement, experimental.
+- Screenshot fixtures.
+- Change log and rollback pointer.
+
+THEMES TO START
+- Axiom
+- Mir
+- Unified AXM luxury
+- Public-safe neutral
+- Paper/play
+- High contrast
+
+QUALITY TOOLS
+- Stylelint with standard config and AXM rules.
+- Playwright screenshots for page and component visual comparisons.
+- Lighthouse for performance/accessibility support checks.
+- Browser performance traces and paint flashing for heavy effects.
+
+AXM-SPECIFIC LINT RULES
+- No ID selectors in component CSS.
+- Limit selector depth.
+- Ban transition: all.
+- Ban raw colors in component files.
+- Ban raw z-index outside depth tokens.
+- Ban unapproved !important.
+- Require approved layer context.
+- Require motion tokens for durations/easing.
+- Flag unsupported/experimental features unless wrapped in documented progressive enhancement.
+
+VISUAL TEST MATRIX
+Viewports/containers:
+- 320x568
+- 375x812
+- 768x1024
+- 1024x768
+- 1440x900
+- ultrawide
+
+States:
+- default
+- hover
+- focus-visible
+- active
+- selected
+- disabled
+- loading
+- empty
+- success
+- warning
+- error
+
+Modes:
+- each theme
+- compact and comfortable density
+- reduced motion
+- minimal effects
+- forced colors/high contrast
+- 200% zoom
+- long text and translated-text stress fixture
+
+PERFORMANCE RULES
+- Prefer transform and opacity for animation.
+- Measure any animated layout, shadow, filter, blur, mask, or clip-path.
+- Limit simultaneous backdrop filters.
+- Provide minimal, balanced, and cinematic effect modes.
+- Test on the lowest supported device profile.
+- Use aspect-ratio/dimensions to avoid layout shift.
+- Avoid permanent will-change.
+- Remove unused CSS.
+
+ACCESSIBILITY RULES
+- WCAG 2.2 AA target.
+- Normal text usually >= 4.5:1.
+- Large text and meaningful non-text UI indicators >= 3:1 where applicable.
+- Clearly visible focus.
+- Target size >= 24x24 CSS px or compliant spacing exception; prefer larger.
+- No hover-only operation or meaning.
+- Reduced-motion support.
+- Forced-colors support.
+- No state conveyed only by color.
+- Preserve content and function at zoom and altered text spacing.
+
+FEATURE POLICY — JULY 2026
+CORE/COMMON:
+- Flexbox, Grid, Subgrid
+- Custom properties
+- @layer
+- Container size queries
+- clamp(), aspect-ratio
+- :where(), :is(), :has()
+- color-mix()
+- masks, clip-path, filters and blend modes with measurement
+
+MODERN WITH FALLBACK:
+- @property
+- @scope
+- newer text-wrap behavior
+
+PROGRESSIVE ENHANCEMENT:
+- View Transitions
+- anchor positioning
+- scroll-driven animation
+- CSS custom functions
+
+DO NOT MAKE THE ROOT:
+- Native CSS mixins: not broadly/browser supported.
+- CSS Painting API: limited/experimental.
+
+GENERATOR STUB
+Build a candidate-only mold generator that:
+1. Reads approved token and recipe schemas.
+2. Generates only values inside declared ranges.
+3. Produces CSS + manifest + specimen HTML.
+4. Runs lint, screenshots, overflow, accessibility, compatibility, and performance checks.
+5. Rejects duplicate or near-duplicate candidates.
+6. Creates a review packet.
+7. Never writes directly into canonical recipes.
+8. Creates rollback data before promotion.
+9. Respects one-version-per-day promotion policy.
+
+ACCEPTANCE CRITERIA FOR v0.1
+- Existing baseline screenshots still match before intentional redesign.
+- Layer order is active and documented.
+- Current CSS is isolated as legacy.
+- Tokens exist in one machine-readable source and generated CSS.
+- Ten layout primitives work independently.
+- Ten core components show all states in a local specimen gallery.
+- Eight effect recipes have manifests and fallbacks.
+- At least three themes remap components without structural CSS copies.
+- Stylelint passes.
+- Playwright visual comparisons pass in Chromium, Firefox, and WebKit projects.
+- Reduced-motion and keyboard-focus fixtures pass.
+- Performance modes work.
+- Migration log, source map, rollback pointer, and honest limitations are included.
+
+FINAL DELIVERABLE
+Create one local-intake ZIP containing:
+- full source
+- README
+- audit report
+- architecture documentation
+- token sources and generated CSS
+- components and recipes
+- themes
+- specimen gallery
+- QA tests and baselines
+- migration log
+- rollback instructions
+- limitations and next safe growth step
+
+DO NOT CLAIM COMPLETE IF THE CURRENT REPOSITORY OR VISUAL BASELINES WERE NOT ACTUALLY INSPECTED AND TESTED.

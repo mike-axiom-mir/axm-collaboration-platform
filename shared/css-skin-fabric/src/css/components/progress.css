@@ -1,0 +1,34 @@
+.axm-progress {
+  display: grid;
+  gap: var(--axm-space-2);
+}
+
+.axm-progress__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--axm-space-3);
+  color: var(--axm-sem-text-muted);
+  font-size: var(--axm-font-size-sm);
+}
+
+.axm-progress__track {
+  min-height: var(--axm-meter-height);
+  overflow: hidden;
+  background: var(--axm-sem-surface-strong);
+  border: var(--axm-border-thin) solid var(--axm-sem-border);
+  border-radius: var(--axm-radius-pill);
+}
+
+.axm-progress__value {
+  inline-size: var(--axm-progress, 0%);
+  block-size: 100%;
+  min-block-size: var(--axm-meter-height);
+  background: linear-gradient(90deg, var(--axm-sem-accent-strong), var(--axm-sem-accent-alt));
+  border-radius: inherit;
+  box-shadow: 0 0 var(--axm-effect-button-glow) var(--axm-sem-selection);
+  transition: inline-size var(--axm-time-normal) var(--axm-ease-emphasized);
+}
+
+.axm-progress[data-status="danger"] .axm-progress__value { background: var(--axm-sem-danger); }
+.axm-progress[data-status="success"] .axm-progress__value { background: var(--axm-sem-success); }

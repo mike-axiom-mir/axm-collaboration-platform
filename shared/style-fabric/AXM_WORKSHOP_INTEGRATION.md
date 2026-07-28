@@ -1,9 +1,9 @@
 # AXM Workshop integration receipt
 
-- Upstream: AXM Style Fabric 0.5.0 WORKING / TEST
-- Source archive: `AXM_STYLE_FABRIC_v0_5_WORKING_2026-07-28.zip`
-- Source archive SHA-256: `5E3A27357A9C4E96CB7E54E30221A1F93FCEC90BC37A1B9DF28CA43E1F31D09E`
-- Vendored files covered by `FILE_MANIFEST.sha256`: 136
+- Upstream: AXM Style Fabric 0.6.0 WORKING / TEST
+- Source archive: `AXM_STYLE_FABRIC_v0_6_WORKING_2026-07-28.zip`
+- Source archive SHA-256: `C538A820C31BE6518F1B0B7EAC52C9949D67C1F96954F4915A2EA291FF703EFD`
+- Vendored files covered by `FILE_MANIFEST.sha256`: 151
 - Upstream bytes changed: none
 - Workshop route: `/tools/skinner/`
 - Full upstream Studio: `/shared/style-fabric/studio/`
@@ -15,8 +15,8 @@ normal Skinner readability gate before staging a change. Embedded Style Fabric
 assets are deliberately not copied into Skinner; the existing skin contract only
 accepts explicit local `vault:` references.
 
-The upstream `npm test` suite passes on Windows. The upstream `npm run verify`
-script has a Windows-only URL-path bug in version 0.5.0; it treats a file URL
-pathname as a native path and produces a duplicated drive prefix. The upstream
-files are kept byte-identical, so the Workshop self-test verifies the release
-manifest and adapter separately.
+The v0.6 runtime keeps the existing pack format and bridge entry points while
+adding strict pack admission, Mold Foundry, Treatment Forge, bounded enhanced
+materials, exact mold-scoped output and single-use runtime proposals. Both the
+upstream `npm test` and `npm run verify` suites pass on Windows. The upstream
+files remain byte-identical; the Workshop receipt and self-test are additive.

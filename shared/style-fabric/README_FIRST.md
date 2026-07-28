@@ -1,6 +1,6 @@
 # AXM Style Fabric
 
-**Version:** 0.5.0  
+**Version:** 0.6.0  
 **Status:** WORKING / TEST  
 **Canon:** No  
 **Current AXM game integrations:** None  
@@ -14,6 +14,7 @@ It gives humans and machine users one shared way to:
 
 - start from 25 editable built-in preskins in six families;
 - choose one of 16 universal semantic game molds;
+- forge or explicitly grow a review-only custom mold from known semantic surfaces;
 - grow a deterministic recipe from seed, mood, mold, and complexity;
 - mix separate world, structures/props, vehicles/gear, items/projectiles,
   character, interface, and effect preskins;
@@ -25,6 +26,8 @@ It gives humans and machine users one shared way to:
 - inspect all 33 portable game surfaces in one Test Chamber;
 - tune a single surface without changing the rest of the skin;
 - evaluate a future-game adapter with structural checks and explicit runtime evidence;
+- generate exactly three deterministic Treatment Forge directions, then explicitly choose one;
+- add bounded effect stacks and semantic lighting with legacy material fallbacks;
 - forge complementary, analogous, triadic, split-complementary, or monochrome palettes;
 - choose from 32 bounded style words and 19 declarative pattern languages;
 - adjust glow, radius, emissive, gloss, metallic, roughness, specular, clearcoat, sheen, glass, iridescence, grain, weathering, outlines, pulse, shimmer, pattern, geometry, and more;
@@ -36,6 +39,31 @@ It gives humans and machine users one shared way to:
 - let future games adopt the same small semantic adapter contract.
 
 It does **not** silently modify the current AXM Workshop, Foundation, Game Hub, or games.
+
+## What changed in 0.6
+
+- Pack admission now combines strict structure checks, embedded-raster
+  verification, and the declared integrity receipt before resolution, import,
+  save, or export paths accept a pack.
+- Canonicalization, path access, merge, flattening, and instance overrides use
+  own data properties only. Accessors, cycles, prototype-pollution segments,
+  and inherited data are rejected.
+- Runtime apply is bound to the exact proposal prepared by that runtime, the
+  captured adapter contract, and a single-use proposal state. A forged,
+  changed, replayed, or concurrently reused proposal cannot reach the adapter.
+- Recipe generation emits only the selected mold's semantic targets and
+  prunes unused materials and capabilities.
+- Mold Foundry adds explicit `forgeSkinMold()` and `growSkinMold()` APIs.
+  Results remain review drafts with zero automatic game writes.
+- Treatment Forge adds three bounded treatment molds. One mold/seed/profile
+  request produces exactly three distinct deterministic drafts for review:
+  Foundation, Prism Shift, and Accent Inversion.
+- Enhanced treatments retain flat legacy material fields while optionally
+  adding a bounded `effectStack` and semantic `lightingRig`. Performance,
+  reduced-motion, accessibility, and game-owned cue limits still apply.
+- Studio mode, family, organ, surface, treatment-direction, motion, and dialog
+  controls expose their selected state to assistive technology. These controls
+  were checked structurally; no live cloud-browser visual claim is made.
 
 ## Fast start on Windows
 
@@ -73,19 +101,21 @@ No internet connection is required. The reference server listens on the same com
 5. Optionally mix seven preskins across the complete game-skin organ set.
 6. Choose a performance profile for old hardware, balanced play, showcase, or reduced motion.
 7. Choose **Whole game**, **Character**, or **Reusable style**.
-8. Edit style words, palette, character parts, materials, pattern, geometry, and motion.
-9. Use the **Full Game Skin Test Chamber** to inspect all 33 surfaces, filter
+8. Optionally open **Treatment Forge**, generate three deterministic review
+   directions, select one, and apply it to the current pack data.
+9. Edit style words, palette, character parts, materials, pattern, geometry, and motion.
+10. Use the **Full Game Skin Test Chamber** to inspect all 33 surfaces, filter
    by organ, and optionally tune one surface in isolation.
-10. Watch the live specimen and check the compatibility receipt:
+11. Watch the live specimen and check the compatibility receipt:
    - Applied
    - Fallbacks
    - Protected
    - Unsupported
-11. If you are preparing a real adapter, record the four runtime observations
+12. If you are preparing a real adapter, record the four runtime observations
     in the Adapter Conformance Lab. These are evidence prompts, not automatic
     certification.
-12. Optionally add your own raster art.
-13. Export a portable `.axmskin.json` file or save it to My Local Skins.
+13. Optionally add your own raster art.
+14. Export a portable `.axmskin.json` file or save it to My Local Skins.
 
 The description box reports unknown words instead of pretending it understood them.
 
@@ -148,6 +178,8 @@ It can contain:
 - creator/license/remix declarations;
 - deterministic seed and source intent;
 - optional embedded raster assets;
+- optional bounded effect stacks and semantic lighting rigs with legacy
+  material fallbacks;
 - SHA-256 integrity receipt.
 
 The single-file format deliberately avoids unsafe archive extraction in this first version.
@@ -160,10 +192,26 @@ Character Regions, Effects, and Interface. Sixteen molds cover small targeted
 adoption through Full Game Skin. They produce ordinary v1 game contracts, so
 the existing resolver and future adapters stay compatible.
 
-`examples/mold-kits/` contains 20 deterministic portable starter skins and
-16 generated example game contracts. `mold-kit-catalog.json` indexes them.
-Molds never silently guess a game's internal names: nonstandard slots require
-an explicit recorded binding map.
+Generated mold kits and example contracts remain ordinary portable v1 data and
+are indexed by `mold-kit-catalog.json`. Generated packs contain only the exact
+surfaces declared by the selected mold. Molds never silently guess a game's
+internal names: nonstandard slots require an explicit recorded binding map.
+
+Mold Foundry can forge a new draft from an explicit slot list or grow an
+accepted mold with explicitly named slots or organs. It cannot inspect a game,
+overwrite a built-in mold, promote itself, or write to a game.
+
+## Treatment Forge
+
+Treatment Forge separates **where** a game accepts presentation from **how** a
+selected surface is visually constructed. Its three built-in molds compile to
+ordinary material fields plus optional ordered effects and semantic lighting.
+
+For each mold, seed, target set, and performance profile,
+`generateTreatmentDirections()` returns exactly three deterministic,
+unselected drafts. Nothing is saved, runtime-applied, promoted, or marked
+CANON until a separate explicit action. Simpler adapters can ignore enhanced
+fields and use the declared `legacy-material-fields` fallback.
 
 ## Test Chamber and first-adoption harness
 
@@ -179,6 +227,11 @@ valid contract remains `CONTRACT_READY_RUNTIME_PENDING` until a human or test
 harness records isolated preview, fallback, rollback, and resolution-receipt
 observations. No existing game is inspected or modified by this lab.
 
+Before a pack reaches resolution, the admission gate re-validates its complete
+shape, embedded raster bytes, and integrity state. Resolution then validates
+the final presentation envelope against the selected game contract and the
+zero-authoritative-writes boundary.
+
 ## Future AXM intake
 
 Recommended route:
@@ -193,6 +246,7 @@ Read these next:
 - `docs/AI_NATIVE.md`
 - `docs/PRESKINS_AND_FUSION.md`
 - `docs/MOLDS_LAYERS_AND_GROWTH.md`
+- `docs/TREATMENT_FORGE.md`
 - `docs/GAME_SKIN_SURFACES.md`
 - `docs/SECURITY_MODEL.md`
 - `docs/ADOPTION_LEVELS.md`
@@ -211,5 +265,16 @@ npm run example:compile
 npm run example:validate
 node bin/axm-skin.mjs --help
 ```
+
+The CLI also exposes explicit review workflows:
+
+```bash
+node bin/axm-skin.mjs mold-forge definition.json draft.skin-mold.json
+node bin/axm-skin.mjs treatment-directions neon-paper-selective my-seed directions.json --profile balanced
+node bin/axm-skin.mjs treatment-apply source.axmskin.json directions.json 1 treated.axmskin.json
+```
+
+Direction indexes are `0`, `1`, or `2`. The apply command writes a new
+integrity-stamped pack; it does not apply anything to a running game.
 
 The package has no third-party runtime dependencies.

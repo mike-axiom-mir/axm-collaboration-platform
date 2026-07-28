@@ -84,8 +84,8 @@ test("every built-in preskin compiles into a valid presentation-only pack", () =
     const pack = compileStyleIntent(applyPreskin(base, preset.id));
     const report = validateSkinPack(pack);
     assert.equal(report.ok, true, `${preset.id}: ${stableStringify(report.errors)}`);
-    assert.equal(pack.release, "0.5.0");
-    assert.equal(pack.provenance.compiler, "axm.style-recipe.v5");
+    assert.equal(pack.release, "0.6.0");
+    assert.equal(pack.provenance.compiler, "axm.style-recipe.v6");
   }
 });
 

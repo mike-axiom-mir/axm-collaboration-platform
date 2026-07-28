@@ -1,0 +1,98 @@
+[data-density="compact"] {
+  --axm-control-min: 2.25rem;
+  --axm-control-padding-inline: var(--axm-space-3);
+  --axm-panel-padding: var(--axm-space-4);
+  --axm-card-padding: var(--axm-space-4);
+}
+
+[data-density="comfortable"] {
+  --axm-control-min: 2.75rem;
+}
+
+[data-effects="minimal"] {
+  --axm-effect-opacity: 0;
+  --axm-effect-glow-strength: 0;
+  --axm-effect-blur: 0px;
+  --axm-effect-reflection: 0;
+  --axm-effect-noise: 0;
+  --axm-effect-edge: 0.15;
+  --axm-effect-scanline: 0;
+  --axm-effect-backdrop-saturation: 1;
+  --axm-effect-reflection-mix: 0%;
+  --axm-effect-edge-mix: 10%;
+  --axm-effect-button-glow: 0rem;
+  --axm-effect-edge-glow: 0rem;
+  --axm-effect-core-glow: 0rem;
+}
+
+[data-effects="balanced"] {
+  --axm-effect-opacity: 0.72;
+  --axm-effect-glow-strength: 0.58;
+  --axm-effect-blur: var(--axm-blur-md);
+  --axm-effect-reflection-mix: 12%;
+  --axm-effect-edge-mix: 18%;
+  --axm-effect-button-glow: 1.5rem;
+  --axm-effect-edge-glow: 2.4rem;
+  --axm-effect-core-glow: 3rem;
+}
+
+[data-effects="cinematic"] {
+  --axm-effect-opacity: 1;
+  --axm-effect-glow-strength: 1;
+  --axm-effect-blur: var(--axm-blur-lg);
+  --axm-effect-reflection: 0.24;
+  --axm-effect-backdrop-saturation: 1.4;
+  --axm-effect-reflection-mix: 18%;
+  --axm-effect-edge-mix: 26%;
+  --axm-effect-button-glow: 2.25rem;
+  --axm-effect-edge-glow: 3.8rem;
+  --axm-effect-core-glow: 5rem;
+}
+
+[data-motion="reduced"] {
+  --axm-time-instant: 1ms;
+  --axm-time-fast: 1ms;
+  --axm-time-normal: 1ms;
+  --axm-time-slow: 1ms;
+  --axm-time-atmosphere: 1ms;
+  --axm-motion-distance: 0rem;
+  --axm-motion-scale: 1;
+}
+
+[data-motion="reduced"] *,
+[data-motion="reduced"] *::before,
+[data-motion="reduced"] *::after {
+  animation-iteration-count: 1 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --axm-time-instant: 1ms;
+    --axm-time-fast: 1ms;
+    --axm-time-normal: 1ms;
+    --axm-time-slow: 1ms;
+    --axm-time-atmosphere: 1ms;
+    --axm-motion-distance: 0rem;
+    --axm-motion-scale: 1;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+
+[data-effects="minimal"] .axm-atmosphere::before { display: none; }
+[data-effects="minimal"] .axm-material--aetherglass { backdrop-filter: none; }
+[data-effects="minimal"] .axm-material--signal-weave { background: var(--axm-sem-surface); }
+
+@media (prefers-reduced-data: reduce) {
+  :root {
+    --axm-effect-opacity: 0.35;
+    --axm-effect-blur: 0px;
+    --axm-effect-weave-opacity: 0;
+  }
+}

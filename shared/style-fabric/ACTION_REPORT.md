@@ -4,13 +4,13 @@
 
 - **Name:** AXM Style Fabric
 - **Module ID:** `axm.style-fabric`
-- **Version:** `0.5.0`
+- **Version:** `0.6.0`
 - **Date:** 2026-07-28
 - **Status:** WORKING / TEST
 - **Canon:** No
 - **Integrated into AXM:** No
 - **GitHub modified:** No
-- **Network service added:** No
+- **External network service added:** No
 
 ## Direction preserved
 
@@ -20,8 +20,40 @@
 - Preserved Creative Studio → Asset Vault → Style Fabric as the later intake route.
 - Kept machine users visible and equal: structured intent and human controls compile into the same recipe.
 - Kept skins at zero authoritative gameplay writes.
-- Preserved the complete v0.1 through v0.4 working packages as predecessors;
-  this pass was built in a separate v0.5 working line.
+- Preserved the complete v0.1 through v0.5 working packages as predecessors;
+  this pass was built in a separate v0.6 working line.
+
+## Sixth steward pass
+
+- Added a single admission decision that combines strict pack validation,
+  embedded-raster verification, and integrity policy before downstream
+  resolution or portable-file acceptance.
+- Re-validated the final resolved presentation envelope against the exact game
+  contract, supported properties, policy budgets, protected cues, and
+  `ZERO_AUTHORITATIVE_WRITES`.
+- Hardened canonicalization, merge, flatten, path, and skin-instance traversal
+  to own data properties. Accessors, cycles, inherited values, and
+  `__proto__` / `prototype` / `constructor` path segments are denied.
+- Bound runtime preview/apply to the exact proposal prepared by the runtime,
+  its captured adapter contract, and a single-use state transition. Forged,
+  changed, replayed, or concurrently reused proposals are rejected before
+  adapter execution.
+- Restricted recipe output to the selected mold's exact semantic slots and
+  pruned unused materials and capabilities.
+- Added Mold Foundry APIs for explicitly forging or growing custom semantic
+  molds. Outputs remain `DRAFT_REVIEW_REQUIRED` with zero automatic game
+  writes.
+- Added Treatment Forge with three bounded treatment molds. Every
+  mold/seed/profile request produces exactly three distinct deterministic,
+  unselected review drafts.
+- Added optional declarative `effectStack` and `lightingRig` material fields
+  with flat legacy material fallbacks and bounded performance,
+  reduced-motion, accessibility, and effect-cost behavior.
+- Added Studio treatment controls and accessible selected-state semantics for
+  mode, family, organ, surface, treatment-direction, motion, and dialog
+  controls.
+- Preserved portable v1 pack and game-contract compatibility, explicit human
+  approval, WORKING / TEST status, and zero gameplay authority.
 
 ## Fifth steward pass
 
@@ -93,18 +125,23 @@
 - Palette, material, effect, accessibility, and character-appearance model.
 - Whole-game, character-only, and reusable-style modes.
 - Semantic slot resolver with explicit full/partial/incompatible result.
+- Unified pack admission and final resolved-presentation validation.
 - Layer receipts: applied, inherited, protected, unsupported, and unknown.
+- Exact mold-scoped recipe output with unused material/capability pruning.
+- Review-only custom mold forge/grow APIs and schema.
+- Three deterministic Treatment Forge review directions.
+- Bounded effect-stack and semantic-lighting contracts with legacy fallbacks.
 - Full 33-surface Test Chamber and isolated per-surface editor.
 - Read-only future-game adapter conformance report and Studio evidence lab.
 - Game-owned fallback behavior.
-- Explicit proposal → approval → apply → rollback runtime.
+- Exact prepared proposal → approval → single-use apply → rollback runtime.
 - CSS-variable reference adapter and future-game adapter templates.
 - Local futuristic creator with live specimen, original comparison, motion pause, and inspectable JSON.
 - Custom PNG/JPEG/WebP import and slot binding.
 - Portable `.axmskin.json` import/export.
 - Local IndexedDB skin library with content-hash identity.
 - Canonical SHA-256 with browser fallback for local HTTP/LAN.
-- Pack and asset integrity verification.
+- Pack and asset integrity verification through a shared admission decision.
 - Local and future-hosted policy profiles.
 - Share-provider contract without network implementation.
 - Beginner documentation, integration guide, AI-native guide, security model, adoption levels, character-design roadmap, and body card.
@@ -112,42 +149,47 @@
 ## Security controls implemented
 
 - Declarative presentation-only capability allowlist.
-- Gameplay/authority/code/script/network/permission/filesystem/prototype-pollution fields rejected.
+- Gameplay/authority/code/script/network/permission/filesystem fields rejected.
+- Dangerous path segments, inherited data, accessors, and cyclic canonical data
+  rejected before merge, lookup, hashing, or instance override.
 - Remote assets and raw SVG denied.
 - Raster MIME/data URI/magic-byte/hash/dimension/pixel/byte checks.
 - Finite bounded material values.
 - Pack size, asset count, per-asset, total embedded, dimension, and pixel limits.
 - Integrity mutation detection.
+- Signed-but-mutated packs rejected before resolution, save, or export.
+- Exact prepared-proposal digest, adapter-contract binding, and single-use
+  runtime state checked before adapter preview or apply.
+- Final resolved data revalidated against the exact game contract and policy.
 - Game-owned visibility/contrast protection.
 - No hidden public upload or telemetry.
 
-## Actually run
+## Release-candidate validation
 
-- Node unit tests: `60 PASS / 0 FAIL`.
-- Package verification script: `101 PASS / 0 FAIL`.
-- Example deterministic compile.
-- Example pack validation and integrity verification.
-- Local HTTP route smoke test.
-- Deterministic mold-maker repeatability.
-- Seven-organ composition and scope isolation through automated contract tests.
-- Structural adapter conformance and declared-runtime-evidence state
-  transitions through automated contract tests.
-- Static Test Chamber control/HTML contract verification.
-- Legacy performance cap across material and shared motion tokens.
-- HTTP smoke: redirect, Studio, module, and mold catalog routes returned the
-  expected responses with the security headers present.
-- The cloud browser declined access to the loopback preview. No v0.5 live
-  visual or interaction claim is made for the changed chamber layout.
+**Final result:** `PASS — 109/109 unit tests · 111/111 verifier checks`
+
+Deterministic builders, example compile/validation, 46-module syntax scan,
+loopback HTTP smoke (including malformed-path survival), archive checksum
+verification, and clean-extraction reruns also passed.
+
+The cloud browser declined access to the loopback preview. No v0.6 live visual
+or interaction claim is made. Studio structure, accessibility state wiring,
+module syntax, and local HTTP behavior are eligible for local automated
+verification; predecessor screenshots are not reused as proof.
 
 ## Package seal
 
-- 136 source files covered by `FILE_MANIFEST.sha256`.
-- Clean extraction verification: `136 / 136 PASS`.
-- ZIP structure test: PASS.
-- The final ZIP SHA-256 is delivered next to the archive because an archive
-  cannot contain its own final digest without changing that digest.
+**Manifest entries:** `151 / 151 PASS`  
+**Clean extraction:** `109 / 109 tests · 111 / 111 verifier checks`  
+**ZIP structure:** `PASS — one versioned root, no unsafe paths or links`
 
-## Visual repair record
+The final ZIP SHA-256 is reported alongside the archive because an archive
+cannot contain its own final digest without changing that digest.
+
+## Predecessor visual repair history
+
+The following v0.1–v0.3 observations are retained as lineage only. They are not
+presented as v0.6 visual verification.
 
 1. First private preview showed unstyled fallback HTML.
 2. Cause: root route served `studio/index.html` without redirecting relative asset paths.
@@ -182,6 +224,10 @@
 - Platform certification.
 - Automated target-renderer certification; every adopting game must produce
   its own runtime observations.
+- Automatic selection, save, runtime apply, publication, or promotion of a
+  Treatment Forge direction.
+- Proof that any particular renderer reproduces enhanced effects or semantic
+  lighting; the flat legacy fallback remains the portable floor.
 - Physical Android/mobile visual verification.
 
 ## Final truth label

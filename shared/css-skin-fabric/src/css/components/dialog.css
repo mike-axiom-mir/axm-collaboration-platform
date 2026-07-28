@@ -1,0 +1,25 @@
+.axm-dialog {
+  width: var(--axm-dialog-width);
+  max-height: calc(100vh - var(--axm-space-8));
+  padding: 0;
+  color: var(--axm-sem-text);
+  background: transparent;
+  border: 0;
+  overflow: visible;
+}
+
+.axm-dialog::backdrop {
+  background: color-mix(in oklab, var(--axm-sem-canvas) 72%, transparent);
+  backdrop-filter: blur(var(--axm-blur-sm));
+}
+
+.axm-dialog[open] {
+  animation: axm-dialog-in var(--axm-time-normal) var(--axm-ease-emphasized) both;
+}
+
+@keyframes axm-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--axm-motion-distance)) scale(var(--axm-motion-scale));
+  }
+}

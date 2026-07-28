@@ -1,3 +1,7 @@
+import { LOCAL_CREATOR_POLICY } from "../core/policy.mjs";
+import { stableStringify } from "../core/stable.mjs";
+import { admitSkinPack } from "../core/validator.mjs";
+
 const DATABASE = "axm-style-fabric";
 const STORE = "skins";
 const VERSION = 1;
@@ -23,34 +27,77 @@ function complete(transaction) {
   });
 }
 
+function requestResult(request) {
+  return new Promise((resolve, reject) => {
+    request.addEventListener("success", () => resolve(request.result), { once: true });
+    request.addEventListener("error", () => reject(request.error), { once: true });
+  });
+}
+
+function signedLibraryPolicy() {
+  return {
+    ...LOCAL_CREATOR_POLICY,
+    id: "axm.style-policy.local-library.v1",
+    requireIntegrity: true,
+    allowUnsigned: false
+  };
+}
+
+async function requireAdmission(pack, context) {
+  const admission = await admitSkinPack(pack, signedLibraryPolicy());
+  if (!admission.ok) {
+    const issue = admission.errors[0];
+    const error = new Error(
+      `${context} rejected: ${issue?.message ?? "pack admission failed"}`
+    );
+    error.code = issue?.code ?? "PACK_ADMISSION_FAILED";
+    error.admission = admission;
+    throw error;
+  }
+  return admission;
+}
+
 export class LocalSkinLibrary {
   async save(pack) {
-    if (!pack.integrity?.contentSha256) {
-      throw new Error("Library saves require a finalized integrity hash.");
-    }
+    await requireAdmission(pack, "Library save");
     const key = `${pack.id}@${pack.release}#${pack.integrity.contentSha256}`;
-    const database = await openDatabase();
-    const transaction = database.transaction(STORE, "readwrite");
-    transaction.objectStore(STORE).put({
+    let database = await openDatabase();
+    let transaction = database.transaction(STORE, "readonly");
+    const existing = await requestResult(transaction.objectStore(STORE).get(key));
+    await complete(transaction);
+    database.close();
+
+    if (existing) {
+      await requireAdmission(existing.pack, `Existing library entry ${key}`);
+      if (stableStringify(existing.pack) !== stableStringify(pack)) {
+        const error = new Error(`Immutable library key collision: ${key}`);
+        error.code = "IMMUTABLE_LIBRARY_COLLISION";
+        throw error;
+      }
+      return { ok: true, key, status: "ALREADY_PRESENT", savedAt: existing.savedAt };
+    }
+
+    database = await openDatabase();
+    transaction = database.transaction(STORE, "readwrite");
+    transaction.objectStore(STORE).add({
       key,
       pack: structuredClone(pack),
       savedAt: new Date().toISOString()
     });
     await complete(transaction);
     database.close();
-    return { ok: true, key };
+    return { ok: true, key, status: "SAVED" };
   }
 
   async list() {
     const database = await openDatabase();
     const transaction = database.transaction(STORE, "readonly");
-    const request = transaction.objectStore(STORE).getAll();
-    const entries = await new Promise((resolve, reject) => {
-      request.addEventListener("success", () => resolve(request.result), { once: true });
-      request.addEventListener("error", () => reject(request.error), { once: true });
-    });
+    const entries = await requestResult(transaction.objectStore(STORE).getAll());
     await complete(transaction);
     database.close();
+    for (const entry of entries) {
+      await requireAdmission(entry.pack, `Library entry ${entry.key}`);
+    }
     return entries.sort((a, b) => b.savedAt.localeCompare(a.savedAt));
   }
 

@@ -600,7 +600,7 @@ if (typeof window !== 'undefined') (function () {
       if (!silent) this.log('info', 'view mode → ' + this.mode);
     },
     toggleMode() { this.setMode(this.mode === 'simple' ? 'advanced' : 'simple'); },
-    setSidebarCollapsed(collapsed, silent) {
+    setSidebarCollapsed(collapsed, silent, persist = true) {
       this.sidebarCollapsed = !!collapsed;
       document.body.dataset.sidebarCollapsed = this.sidebarCollapsed ? 'true' : 'false';
       [$('sidebarToggle'), $('sidebarTopToggle')].filter(Boolean).forEach(b => {
@@ -608,7 +608,9 @@ if (typeof window !== 'undefined') (function () {
         b.setAttribute('aria-label', this.sidebarCollapsed ? 'Expand navigation' : 'Collapse navigation');
         b.title = this.sidebarCollapsed ? 'Expand navigation' : 'Collapse navigation';
       });
-      try { localStorage.setItem('axm.hub.sidebar-collapsed', this.sidebarCollapsed ? 'true' : 'false'); } catch (e) {}
+      if (persist) {
+        try { localStorage.setItem('axm.hub.sidebar-collapsed', this.sidebarCollapsed ? 'true' : 'false'); } catch (e) {}
+      }
       if (!silent) this.log('info', this.sidebarCollapsed ? 'navigation collapsed · workspace expanded' : 'navigation expanded');
     },
     toggleSidebar() { this.setSidebarCollapsed(!this.sidebarCollapsed); },
@@ -1699,8 +1701,14 @@ if (typeof window !== 'undefined') (function () {
       this.initNavigation();
       let savedMode = 'simple'; try { savedMode = localStorage.getItem('axm.hub.view-mode') || 'simple'; } catch (e) {}
       this.setMode(savedMode, true);
-      let savedSidebar = false; try { savedSidebar = localStorage.getItem('axm.hub.sidebar-collapsed') === 'true'; } catch (e) {}
-      this.setSidebarCollapsed(savedSidebar, true);
+      let savedSidebar = false;
+      try { savedSidebar = localStorage.getItem('axm.hub.sidebar-collapsed') === 'true'; } catch (e) {}
+      /* The desktop rail is useful context. On a phone it is an overlay, so
+         begin with the work surface visible and let the existing edge control
+         open navigation explicitly. This also repairs older saved "open"
+         state that could cover the entire narrow interface at boot. */
+      const narrowSidebar = !!(window.matchMedia && window.matchMedia('(max-width: 760px)').matches);
+      this.setSidebarCollapsed(narrowSidebar || savedSidebar, true, !narrowSidebar);
       /* ---- skin: freedom in safety ----
          A saved skin is re-checked EVERY boot, never trusted because it was
          accepted once. ?safe=1 ignores skins entirely, so a bad skin can

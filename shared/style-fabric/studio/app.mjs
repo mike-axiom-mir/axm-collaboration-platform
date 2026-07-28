@@ -6,6 +6,7 @@ import {
   RECOGNIZED_STYLE_KEYWORDS,
   applyPerformanceProfile,
   applyPreskin,
+  applyTreatmentToPack,
   assessGameAdapterConformance,
   assessMoldCompatibility,
   blendPreskins,
@@ -17,6 +18,7 @@ import {
   downloadSkinPack,
   finalizePackForExport,
   generateStyleIntent,
+  generateTreatmentDirections,
   gameSurfaceCoverage,
   listGameSurfaceCategories,
   listGameSurfaceSlots,
@@ -24,6 +26,7 @@ import {
   listPerformanceProfiles,
   listPreskins,
   listSkinMolds,
+  listTreatmentMolds,
   parseStylePhrase,
   rasterFileToAsset,
   readSkinPackFile,
@@ -101,6 +104,10 @@ const state = {
   surpriseIndex: 0,
   moldId: "arcade-arena",
   performanceProfile: "balanced",
+  treatmentMoldId: "neon-paper-selective",
+  treatmentDirections: [],
+  selectedTreatmentId: null,
+  treatmentReceipt: null,
   selectedSurfaceId: "world.sky",
   surfaceOrgan: "all",
   surfaceSearch: "",
@@ -148,6 +155,7 @@ function buildPreskinControls() {
     button.dataset.family = family;
     button.textContent = family.replace("AXM Identity", "AXM");
     button.classList.toggle("active", family === state.preskinFamily);
+    button.setAttribute("aria-pressed", String(family === state.preskinFamily));
     filters.append(button);
   }
 
@@ -195,6 +203,14 @@ function buildMoldControls() {
     option.selected = profile.id === state.performanceProfile;
     byId("performance-profile").append(option);
   }
+  for (const mold of listTreatmentMolds()) {
+    const option = document.createElement("option");
+    option.value = mold.id;
+    option.textContent = mold.name;
+    option.title = mold.description;
+    option.selected = mold.id === state.treatmentMoldId;
+    byId("treatment-mold").append(option);
+  }
   fillPreskinSelect("stack-world", "world-cosmic-deep");
   fillPreskinSelect("stack-objects", "world-ember-foundry");
   fillPreskinSelect("stack-gear", "arcade-chrome-royale");
@@ -226,6 +242,7 @@ function buildSurfaceControls() {
     button.textContent = category.name;
     button.style.setProperty("--organ-color", ORGAN_COLORS[category.id] ?? "#38e8ff");
     button.classList.toggle("active", category.id === state.surfaceOrgan);
+    button.setAttribute("aria-pressed", String(category.id === state.surfaceOrgan));
     filters.append(button);
   }
 
@@ -278,6 +295,56 @@ function renderPreskinGallery() {
       ? `${primaryName} × ${secondaryName}`
       : primaryName
     : "Custom recipe";
+}
+
+function renderTreatmentDirections() {
+  const container = byId("treatment-directions");
+  container.replaceChildren();
+  for (const direction of state.treatmentDirections) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "treatment-direction";
+    button.dataset.treatmentId = direction.id;
+    button.setAttribute("role", "radio");
+    button.setAttribute(
+      "aria-checked",
+      String(direction.id === state.selectedTreatmentId)
+    );
+
+    const swatches = document.createElement("span");
+    swatches.className = "treatment-swatches";
+    for (const color of [
+      direction.palette.primary,
+      direction.palette.secondary,
+      direction.palette.accent
+    ]) {
+      const swatch = document.createElement("i");
+      swatch.style.background = color;
+      swatches.append(swatch);
+    }
+
+    const name = document.createElement("strong");
+    name.textContent = direction.direction.label;
+    const meta = document.createElement("small");
+    const layerCount = Math.max(
+      0,
+      ...Object.values(direction.materials).map(
+        (material) => material.effectStack?.layers?.length ?? 0
+      )
+    );
+    meta.textContent = `${direction.profile} · up to ${layerCount} layers`;
+    button.append(swatches, name, meta);
+    container.append(button);
+  }
+  byId("apply-treatment").disabled = !state.selectedTreatmentId;
+}
+
+function clearTreatmentDirections(message) {
+  state.treatmentDirections = [];
+  state.selectedTreatmentId = null;
+  state.treatmentReceipt = null;
+  renderTreatmentDirections();
+  if (message) byId("treatment-report").textContent = message;
 }
 
 function buildControls() {
@@ -991,7 +1058,10 @@ function renderDialog() {
           automaticWrites: 0
         }
       : state.currentDialogTab === "receipt"
-      ? state.resolution?.receipt
+      ? {
+          resolution: state.resolution?.receipt ?? null,
+          treatment: state.treatmentReceipt
+        }
       : state.currentDialogTab === "conformance"
         ? state.conformanceReport
       : state.currentDialogTab === "intent"
@@ -1060,7 +1130,9 @@ async function refreshLibrary() {
 function openDialogTab(tabName) {
   state.currentDialogTab = tabName;
   document.querySelectorAll("[data-dialog-tab]").forEach((entry) => {
-    entry.classList.toggle("active", entry.dataset.dialogTab === tabName);
+    const selected = entry.dataset.dialogTab === tabName;
+    entry.classList.toggle("active", selected);
+    entry.setAttribute("aria-selected", String(selected));
   });
   renderDialog();
   byId("data-dialog").showModal();
@@ -1136,7 +1208,9 @@ function wireEvents() {
     if (!button) return;
     state.surfaceOrgan = button.dataset.organ;
     document.querySelectorAll(".organ-filter").forEach((entry) => {
-      entry.classList.toggle("active", entry === button);
+      const selected = entry === button;
+      entry.classList.toggle("active", selected);
+      entry.setAttribute("aria-pressed", String(selected));
     });
     renderSurfaceChamber();
   });
@@ -1200,7 +1274,9 @@ function wireEvents() {
     if (!button) return;
     state.preskinFamily = button.dataset.family;
     document.querySelectorAll(".preskin-filter").forEach((entry) => {
-      entry.classList.toggle("active", entry === button);
+      const selected = entry === button;
+      entry.classList.toggle("active", selected);
+      entry.setAttribute("aria-pressed", String(selected));
     });
     renderPreskinGallery();
   });
@@ -1248,21 +1324,103 @@ function wireEvents() {
     event.target.nextElementSibling.textContent = Number(event.target.value).toFixed(2);
   });
 
+  byId("treatment-mold").addEventListener("change", (event) => {
+    state.treatmentMoldId = event.target.value;
+    clearTreatmentDirections(
+      "Mold changed. Forge again to create three deterministic review drafts."
+    );
+  });
+
+  byId("forge-treatments").addEventListener("click", () => {
+    const mold = listTreatmentMolds().find(
+      (entry) => entry.id === state.treatmentMoldId
+    );
+    const boundTargets = new Set(
+      state.pack?.bindings?.map((binding) => binding.target) ?? []
+    );
+    const targets = mold?.targets.filter((target) => boundTargets.has(target)) ?? [];
+    if (!targets.length) {
+      clearTreatmentDirections(
+        "This treatment mold has no targets in the active game mold. Choose another treatment or game mold."
+      );
+      return;
+    }
+    try {
+      const generated = generateTreatmentDirections(state.treatmentMoldId, {
+        seed: byId("style-seed").value,
+        profile: state.performanceProfile,
+        targets
+      });
+      state.treatmentDirections = generated.directions;
+      state.selectedTreatmentId = null;
+      state.treatmentReceipt = generated.receipt;
+      renderTreatmentDirections();
+      byId("treatment-report").textContent =
+        `Forged exactly three distinct ${state.performanceProfile} drafts across ${targets.length} matching targets. Select one to apply; zero writes occurred.`;
+    } catch (error) {
+      clearTreatmentDirections(`Treatment forge blocked: ${error.message}`);
+    }
+  });
+
+  byId("treatment-directions").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-treatment-id]");
+    if (!button) return;
+    state.selectedTreatmentId = button.dataset.treatmentId;
+    renderTreatmentDirections();
+    const selected = state.treatmentDirections.find(
+      (direction) => direction.id === state.selectedTreatmentId
+    );
+    byId("treatment-report").textContent =
+      `${selected?.direction.label ?? "Direction"} selected for explicit application. Nothing has been saved or promoted.`;
+  });
+
+  byId("apply-treatment").addEventListener("click", async () => {
+    const selected = state.treatmentDirections.find(
+      (direction) => direction.id === state.selectedTreatmentId
+    );
+    if (!selected) return;
+    try {
+      const applied = applyTreatmentToPack(state.pack, selected);
+      if (!applied.receipt.applied.length) {
+        byId("treatment-report").textContent =
+          "No treatment was applied because the draft no longer matches an active binding.";
+        return;
+      }
+      acceptFreshPack(applied.pack, { clearOverrides: true });
+      state.treatmentReceipt = applied.receipt;
+      state.selectedTreatmentId = null;
+      state.imported = false;
+      renderTreatmentDirections();
+      await renderPack();
+      byId("treatment-report").textContent =
+        `Applied ${selected.direction.label} to ${applied.receipt.applied.length} presentation targets; ${applied.receipt.skipped.length} unmatched targets were skipped. Gameplay authority stayed untouched.`;
+      toast("Selected treatment applied with an inspectable, presentation-only receipt.");
+    } catch (error) {
+      byId("treatment-report").textContent = `Treatment apply blocked: ${error.message}`;
+    }
+  });
+
   byId("mold-select").addEventListener("change", async (event) => {
     state.moldId = event.target.value;
     state.contract = createGameContractFromMold({
       moldId: state.moldId,
       gameId: "axm.demo.style-fabric",
-      gameVersion: "0.5.0",
+      gameVersion: "0.6.0",
       rendererProfile: "browser-css-core"
     });
     resetAdapterEvidence();
+    clearTreatmentDirections(
+      "Game mold changed. Forge again so treatment targets match the new contract."
+    );
     await renderPack();
     toast("Mold changed. Adapter proof reset because this contract needs fresh observation.");
   });
 
   byId("performance-profile").addEventListener("change", (event) => {
     state.performanceProfile = event.target.value;
+    clearTreatmentDirections(
+      "Performance profile changed. Forge again to enforce the selected cost and motion caps."
+    );
   });
 
   byId("grow-from-seed").addEventListener("click", async () => {
@@ -1358,8 +1516,11 @@ function wireEvents() {
 
   document.querySelectorAll(".mode").forEach((button) => {
     button.addEventListener("click", async () => {
-      document.querySelectorAll(".mode").forEach((entry) => entry.classList.remove("active"));
-      button.classList.add("active");
+      document.querySelectorAll(".mode").forEach((entry) => {
+        const selected = entry === button;
+        entry.classList.toggle("active", selected);
+        entry.setAttribute("aria-pressed", String(selected));
+      });
       const scope = button.dataset.scope;
       state.scope =
         scope === "global"
@@ -1393,8 +1554,14 @@ function wireEvents() {
   });
 
   const original = byId("toggle-original");
-  const showOriginal = () => byId("specimen").classList.add("show-original");
-  const hideOriginal = () => byId("specimen").classList.remove("show-original");
+  const showOriginal = () => {
+    byId("specimen").classList.add("show-original");
+    original.setAttribute("aria-pressed", "true");
+  };
+  const hideOriginal = () => {
+    byId("specimen").classList.remove("show-original");
+    original.setAttribute("aria-pressed", "false");
+  };
   original.addEventListener("pointerdown", showOriginal);
   original.addEventListener("pointerup", hideOriginal);
   original.addEventListener("pointerleave", hideOriginal);
@@ -1406,6 +1573,7 @@ function wireEvents() {
   byId("toggle-motion").addEventListener("click", () => {
     state.motionPaused = !state.motionPaused;
     byId("toggle-motion").textContent = state.motionPaused ? "Resume motion" : "Pause motion";
+    byId("toggle-motion").setAttribute("aria-pressed", String(state.motionPaused));
     setStyleVariable("--motion-state", state.motionPaused ? "paused" : "running");
   });
 
@@ -1487,7 +1655,11 @@ function wireEvents() {
     button.addEventListener("click", () => {
       document
         .querySelectorAll("[data-dialog-tab]")
-        .forEach((entry) => entry.classList.toggle("active", entry === button));
+        .forEach((entry) => {
+          const selected = entry === button;
+          entry.classList.toggle("active", selected);
+          entry.setAttribute("aria-selected", String(selected));
+        });
       state.currentDialogTab = button.dataset.dialogTab;
       renderDialog();
     });
@@ -1507,7 +1679,7 @@ async function initialize() {
     state.contract = createGameContractFromMold({
       moldId: state.moldId,
       gameId: "axm.demo.style-fabric",
-      gameVersion: "0.5.0",
+      gameVersion: "0.6.0",
       rendererProfile: "browser-css-core"
     });
     const baseIntent = await intentResponse.json();

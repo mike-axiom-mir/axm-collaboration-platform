@@ -31,6 +31,8 @@ export {
   createGameContractFromMold,
   gameSurfaceCoverage,
   getSkinMold,
+  growSkinMold,
+  forgeSkinMold,
   listGameSurfaceCategories,
   listGameSurfaceSlots,
   listSkinMolds,
@@ -38,7 +40,8 @@ export {
   GAME_SURFACE_CATEGORIES,
   SLOT_LIBRARY,
   SKIN_MOLDS,
-  UNIVERSAL_MATERIAL_PROPERTIES
+  UNIVERSAL_MATERIAL_PROPERTIES,
+  validateSkinMold
 } from "./core/molds.mjs";
 export { generateStyleIntent, listGeneratorMoods } from "./core/generator.mjs";
 export {
@@ -50,6 +53,17 @@ export { composeSkinStack, SKIN_LAYER_SCOPES } from "./core/stack.mjs";
 export { gameBindingCoverage, resolveSkinForGame } from "./core/resolver.mjs";
 export { SkinRuntime } from "./core/runtime.mjs";
 export {
+  applyTreatmentToPack,
+  generateTreatmentDirections,
+  getTreatmentMold,
+  instantiateTreatmentMold,
+  listTreatmentMolds,
+  TREATMENT_MOLDS,
+  TREATMENT_PROFILES,
+  validateTreatmentMold
+} from "./core/treatments.mjs";
+export {
+  assertSafeObjectTree,
   canonicalBytes,
   clamp,
   clone,
@@ -64,9 +78,11 @@ export {
   stableStringify
 } from "./core/stable.mjs";
 export {
+  admitSkinPack,
   calculateSkinIntegrity,
   packWithoutIntegrity,
   validateGameSkinContract,
+  validateResolvedPresentation,
   validateSkinPack,
   verifyEmbeddedAssets,
   verifySkinIntegrity

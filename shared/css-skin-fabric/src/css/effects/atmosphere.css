@@ -1,0 +1,18 @@
+.axm-atmosphere {
+  position: relative;
+  isolation: isolate;
+}
+
+.axm-atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--axm-sem-border) var(--axm-border-thin), transparent var(--axm-border-thin)),
+    linear-gradient(90deg, var(--axm-sem-border) var(--axm-border-thin), transparent var(--axm-border-thin));
+  background-size: var(--axm-effect-grid-size) var(--axm-effect-grid-size);
+  mask-image: radial-gradient(circle at 50% 35%, black, transparent 72%);
+  opacity: calc(var(--axm-effect-weave-opacity) * var(--axm-effect-opacity));
+}

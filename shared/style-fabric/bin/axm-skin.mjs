@@ -5,14 +5,16 @@ import process from "node:process";
 import {
   HOSTED_POLICY_EXAMPLE,
   LOCAL_CREATOR_POLICY,
+  admitSkinPack,
+  applyTreatmentToPack,
   calculateSkinIntegrity,
   compileStyleIntent,
+  forgeSkinMold,
+  generateTreatmentDirections,
   resolveSkinForGame,
   stableStringify,
   validateGameSkinContract,
-  validateSkinPack,
-  verifyEmbeddedAssets,
-  verifySkinIntegrity
+  validateSkinPack
 } from "../src/index.mjs";
 
 function usage() {
@@ -24,6 +26,9 @@ Usage:
   axm-skin resolve <pack.axmskin.json> <game-contract.json> [output.json]
   axm-skin inspect <pack.axmskin.json>
   axm-skin hash <pack.axmskin.json>
+  axm-skin mold-forge <definition.json> <output.skin-mold.json>
+  axm-skin treatment-directions <mold-id> <seed> <output.json> [--profile balanced]
+  axm-skin treatment-apply <pack.axmskin.json> <directions.json> <index> <output.axmskin.json>
 
 All commands are local and presentation-only.`);
 }
@@ -51,6 +56,11 @@ function printReport(report) {
   );
 }
 
+function optionValue(args, name, fallback = null) {
+  const index = args.indexOf(name);
+  return index >= 0 ? (args[index + 1] ?? fallback) : fallback;
+}
+
 async function main() {
   const [command, ...args] = process.argv.slice(2);
   if (!command || ["help", "--help", "-h"].includes(command)) {
@@ -69,6 +79,16 @@ async function main() {
       return;
     }
     pack.integrity = await calculateSkinIntegrity(pack);
+    const admission = await admitSkinPack(pack, {
+      ...LOCAL_CREATOR_POLICY,
+      requireIntegrity: true,
+      allowUnsigned: false
+    });
+    if (!admission.ok) {
+      printReport(admission);
+      process.exitCode = 1;
+      return;
+    }
     await writeJson(args[1], pack);
     console.log(
       stableStringify(
@@ -91,18 +111,9 @@ async function main() {
     const policy = args.includes("--policy") && args[args.indexOf("--policy") + 1] === "hosted"
       ? HOSTED_POLICY_EXAMPLE
       : LOCAL_CREATOR_POLICY;
-    const report = validateSkinPack(pack, policy);
-    const assets = await verifyEmbeddedAssets(pack, policy);
-    const integrity = await verifySkinIntegrity(pack);
-    printReport({
-      ...report,
-      ok: report.ok && assets.ok,
-      errors: [...report.errors, ...assets.errors],
-      warnings: [...report.warnings, ...assets.warnings, { code: integrity.status, ...integrity }],
-      checks: [...report.checks, ...assets.checks],
-      metrics: { ...report.metrics, ...assets.metrics }
-    });
-    if (!report.ok || !assets.ok || (pack.integrity && !integrity.ok)) process.exitCode = 1;
+    const admission = await admitSkinPack(pack, policy);
+    printReport(admission);
+    if (!admission.ok) process.exitCode = 1;
     return;
   }
 
@@ -137,7 +148,7 @@ async function main() {
   if (command === "inspect") {
     if (!args[0]) throw new Error("inspect requires a skin pack path.");
     const pack = await readJson(args[0]);
-    const validation = validateSkinPack(pack);
+    const admission = await admitSkinPack(pack);
     console.log(
       stableStringify(
         {
@@ -150,21 +161,128 @@ async function main() {
           materialCount: Object.keys(pack.materials ?? {}).length,
           bindingCount: pack.bindings?.length ?? 0,
           assetCount: Object.keys(pack.assets ?? {}).length,
-          validation: validation.ok ? "STRUCTURE_VALIDATED" : "REJECTED",
-          errors: validation.errors
+          admission: admission.status,
+          integrity: admission.integrity.status,
+          errors: admission.errors
         },
         2
       )
     );
-    if (!validation.ok) process.exitCode = 1;
+    if (!admission.ok) process.exitCode = 1;
     return;
   }
 
   if (command === "hash") {
     if (!args[0]) throw new Error("hash requires a skin pack path.");
     const pack = await readJson(args[0]);
+    const admission = await admitSkinPack(pack);
+    if (!admission.ok) {
+      printReport(admission);
+      process.exitCode = 1;
+      return;
+    }
     const integrity = await calculateSkinIntegrity(pack);
     console.log(integrity.contentSha256);
+    return;
+  }
+
+  if (command === "mold-forge") {
+    if (args.length < 2) {
+      throw new Error("mold-forge requires a definition path and output path.");
+    }
+    const definition = await readJson(args[0]);
+    const forged = forgeSkinMold(definition);
+    await writeJson(args[1], forged.mold);
+    console.log(
+      stableStringify(
+        {
+          status: "DRAFT_REVIEW_REQUIRED",
+          output: args[1],
+          moldId: forged.mold.id,
+          slots: forged.mold.slots.length,
+          receipt: forged.receipt
+        },
+        2
+      )
+    );
+    return;
+  }
+
+  if (command === "treatment-directions") {
+    if (args.length < 3) {
+      throw new Error(
+        "treatment-directions requires a mold ID, seed, and output path."
+      );
+    }
+    const generated = generateTreatmentDirections(args[0], {
+      seed: args[1],
+      profile: optionValue(args, "--profile", "balanced")
+    });
+    await writeJson(args[2], generated);
+    console.log(
+      stableStringify(
+        {
+          status: "THREE_DRAFTS_FOR_REVIEW",
+          output: args[2],
+          moldId: generated.receipt.moldId,
+          count: generated.receipt.count,
+          automaticWrites: generated.receipt.automaticWrites
+        },
+        2
+      )
+    );
+    return;
+  }
+
+  if (command === "treatment-apply") {
+    if (args.length < 4) {
+      throw new Error(
+        "treatment-apply requires a pack, directions file, direction index, and output path."
+      );
+    }
+    const pack = await readJson(args[0]);
+    const inputAdmission = await admitSkinPack(pack);
+    if (!inputAdmission.ok) {
+      printReport(inputAdmission);
+      process.exitCode = 1;
+      return;
+    }
+    const generated = await readJson(args[1]);
+    const directionIndex = Number.parseInt(args[2], 10);
+    const treatment = generated?.directions?.[directionIndex];
+    if (!treatment || ![0, 1, 2].includes(directionIndex)) {
+      throw new Error("Direction index must be 0, 1, or 2.");
+    }
+    const applied = applyTreatmentToPack(pack, treatment);
+    if (!applied.receipt.applied.length) {
+      throw new Error("Selected treatment has no bindings in this pack.");
+    }
+    applied.pack.integrity = await calculateSkinIntegrity(applied.pack);
+    const outputAdmission = await admitSkinPack(applied.pack, {
+      ...LOCAL_CREATOR_POLICY,
+      requireIntegrity: true,
+      allowUnsigned: false
+    });
+    if (!outputAdmission.ok) {
+      printReport(outputAdmission);
+      process.exitCode = 1;
+      return;
+    }
+    await writeJson(args[3], applied.pack);
+    console.log(
+      stableStringify(
+        {
+          status: "TREATMENT_APPLIED",
+          output: args[3],
+          treatmentId: treatment.id,
+          appliedTargets: applied.receipt.applied.length,
+          skippedTargets: applied.receipt.skipped.length,
+          contentSha256: applied.pack.integrity.contentSha256,
+          receipt: applied.receipt
+        },
+        2
+      )
+    );
     return;
   }
 

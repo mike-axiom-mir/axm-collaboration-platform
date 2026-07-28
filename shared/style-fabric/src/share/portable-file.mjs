@@ -1,19 +1,38 @@
 import {
-  calculateSkinIntegrity,
-  validateSkinPack,
-  verifyEmbeddedAssets,
-  verifySkinIntegrity
+  admitSkinPack,
+  calculateSkinIntegrity
 } from "../core/validator.mjs";
+import { LOCAL_CREATOR_POLICY } from "../core/policy.mjs";
 import { sha256Hex, slugify, stableStringify } from "../core/stable.mjs";
 
-export async function finalizePackForExport(pack) {
+function admissionError(message, admission) {
+  const issue = admission?.errors?.[0];
+  const failure = new Error(issue ? `${message}: ${issue.message}` : message);
+  failure.code = issue?.code ?? "PACK_ADMISSION_FAILED";
+  failure.admission = admission;
+  return failure;
+}
+
+export async function finalizePackForExport(pack, policy = LOCAL_CREATOR_POLICY) {
+  const currentAdmission = await admitSkinPack(pack, policy);
+  if (!currentAdmission.ok) {
+    throw admissionError("Pack cannot be finalized", currentAdmission);
+  }
   const copy = structuredClone(pack);
   copy.integrity = await calculateSkinIntegrity(copy);
+  const signedAdmission = await admitSkinPack(copy, {
+    ...policy,
+    requireIntegrity: true,
+    allowUnsigned: false
+  });
+  if (!signedAdmission.ok) {
+    throw admissionError("Finalized pack failed signed admission", signedAdmission);
+  }
   return copy;
 }
 
-export async function serializeSkinPack(pack) {
-  const finalized = await finalizePackForExport(pack);
+export async function serializeSkinPack(pack, policy = LOCAL_CREATOR_POLICY) {
+  const finalized = await finalizePackForExport(pack, policy);
   return {
     pack: finalized,
     text: `${stableStringify(finalized, 2)}\n`,
@@ -21,8 +40,8 @@ export async function serializeSkinPack(pack) {
   };
 }
 
-export async function downloadSkinPack(pack) {
-  const exported = await serializeSkinPack(pack);
+export async function downloadSkinPack(pack, policy = LOCAL_CREATOR_POLICY) {
+  const exported = await serializeSkinPack(pack, policy);
   const url = URL.createObjectURL(
     new Blob([exported.text], { type: "application/vnd.axm.skin+json" })
   );
@@ -34,8 +53,30 @@ export async function downloadSkinPack(pack) {
   return exported;
 }
 
-export async function readSkinPackFile(file, policy) {
+export async function readSkinPackFile(file, policy = LOCAL_CREATOR_POLICY) {
+  if (Number.isFinite(file?.size) && file.size > policy.maxPackBytes) {
+    return {
+      ok: false,
+      status: "REJECTED",
+      errors: [{
+        code: "PACK_TOO_LARGE",
+        path: "$",
+        message: `Selected file exceeds ${policy.maxPackBytes} bytes.`
+      }]
+    };
+  }
   const text = await file.text();
+  if (new TextEncoder().encode(text).byteLength > policy.maxPackBytes) {
+    return {
+      ok: false,
+      status: "REJECTED",
+      errors: [{
+        code: "PACK_TOO_LARGE",
+        path: "$",
+        message: `Selected file exceeds ${policy.maxPackBytes} bytes.`
+      }]
+    };
+  }
   let pack;
   try {
     pack = JSON.parse(text);
@@ -46,25 +87,38 @@ export async function readSkinPackFile(file, policy) {
       errors: [{ code: "INVALID_JSON", path: "$", message: cause.message }]
     };
   }
-  const validation = validateSkinPack(pack, policy);
-  if (!validation.ok) return { ok: false, status: "REJECTED", validation, pack };
-  const assets = await verifyEmbeddedAssets(pack, policy);
-  if (!assets.ok) return { ok: false, status: "REJECTED", validation, assets, pack };
-  const integrity = await verifySkinIntegrity(pack);
+  const admission = await admitSkinPack(pack, policy);
+  const { structure: validation, assets, integrity } = admission;
   return {
-    ok: integrity.ok || integrity.status === "UNSIGNED",
-    status: integrity.ok ? "INTEGRITY_VERIFIED" : "STRUCTURE_VALIDATED_UNSIGNED",
+    ok: admission.ok,
+    status: admission.ok
+      ? integrity.ok
+        ? "INTEGRITY_VERIFIED"
+        : "STRUCTURE_VALIDATED_UNSIGNED"
+      : "REJECTED",
+    admission,
     validation,
     assets,
     integrity,
-    pack
+    pack,
+    errors: admission.errors
   };
 }
 
-export async function rasterFileToAsset(file, role = "texture") {
+export async function rasterFileToAsset(
+  file,
+  role = "texture",
+  policy = LOCAL_CREATOR_POLICY
+) {
   const allowed = ["image/png", "image/jpeg", "image/webp"];
   if (!allowed.includes(file.type)) throw new Error(`Unsupported image type: ${file.type || "unknown"}`);
+  if (Number.isFinite(file.size) && file.size > policy.maxEmbeddedAssetBytes) {
+    throw new Error(`Raster asset exceeds ${policy.maxEmbeddedAssetBytes} bytes.`);
+  }
   const buffer = await file.arrayBuffer();
+  if (buffer.byteLength > policy.maxEmbeddedAssetBytes) {
+    throw new Error(`Raster asset exceeds ${policy.maxEmbeddedAssetBytes} bytes.`);
+  }
   const hash = await sha256Hex(buffer);
   const data = await new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -79,7 +133,7 @@ export async function rasterFileToAsset(file, role = "texture") {
       role,
       source: { kind: "embedded-data", data },
       sha256: hash,
-      originalName: file.name.slice(0, 120),
+      originalName: String(file.name ?? "selected-raster").slice(0, 120),
       provenance: {
         origin: "user-selected-file",
         license: "LicenseRef-User-Declared",

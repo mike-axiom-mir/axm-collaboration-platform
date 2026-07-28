@@ -88,7 +88,8 @@
           "fx-preset.v1",
           "raster-asset.v1",
           "semantic-mold.v1",
-          "skin-stack.v1"
+          "skin-stack.v1",
+          "treatment-stack.v1"
         ]
       }
     },
@@ -120,6 +121,9 @@
     },
     "assets": {
       "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+      },
       "additionalProperties": {
         "$ref": "#/$defs/asset"
       }
@@ -172,6 +176,7 @@
   "$defs": {
     "material": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "baseColor": { "$ref": "#/$defs/color" },
         "secondaryColor": { "$ref": "#/$defs/color" },
@@ -195,8 +200,162 @@
         "patternScale": { "type": "number", "minimum": 0.1, "maximum": 16 },
         "pulseSpeed": { "type": "number", "minimum": 0, "maximum": 4 },
         "shimmerSpeed": { "type": "number", "minimum": 0, "maximum": 4 },
-        "pattern": { "type": "object" }
+        "pattern": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9.-]{0,63}$"
+            },
+            "strength": { "$ref": "#/$defs/unit" },
+            "scale": { "type": "number", "minimum": 0.1, "maximum": 16 }
+          }
+        },
+        "effectStack": { "$ref": "#/$defs/effectStack" },
+        "lightingRig": { "$ref": "#/$defs/lightingRig" }
       }
+    },
+    "effectStack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "layers", "fallback"],
+      "properties": {
+        "version": { "const": "1.0" },
+        "fallback": { "const": "legacy-material-fields" },
+        "layers": {
+          "type": "array",
+          "maxItems": 8,
+          "items": { "$ref": "#/$defs/effectLayer" }
+        }
+      }
+    },
+    "effectLayer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "blendMode", "colorRole"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+        },
+        "kind": {
+          "enum": [
+            "fill",
+            "texture",
+            "inner-glow",
+            "outer-glow",
+            "rim-light",
+            "shadow",
+            "highlight",
+            "bloom",
+            "haze",
+            "gradient"
+          ]
+        },
+        "blendMode": {
+          "enum": ["normal", "screen", "add", "multiply", "soft-light"]
+        },
+        "colorRole": { "$ref": "#/$defs/colorRole" },
+        "secondaryColorRole": { "$ref": "#/$defs/colorRole" },
+        "color": { "$ref": "#/$defs/color" },
+        "secondaryColor": { "$ref": "#/$defs/color" },
+        "mask": {
+          "enum": ["full", "inside", "outside", "edge", "top", "bottom", "radial"]
+        },
+        "opacity": { "$ref": "#/$defs/unit" },
+        "intensity": { "$ref": "#/$defs/unit" },
+        "radius": { "type": "number", "minimum": 0, "maximum": 64 },
+        "spread": { "type": "number", "minimum": 0, "maximum": 32 },
+        "threshold": { "$ref": "#/$defs/unit" },
+        "softness": { "$ref": "#/$defs/unit" },
+        "scale": { "type": "number", "minimum": 0.1, "maximum": 16 },
+        "pattern": {
+          "enum": ["none", "paper-fiber", "grain", "circuit", "holo-grid", "ink-hatch"]
+        },
+        "motion": { "$ref": "#/$defs/effectMotion" }
+      }
+    },
+    "effectMotion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "speed", "amount"],
+      "properties": {
+        "kind": { "enum": ["none", "pulse", "shimmer", "drift"] },
+        "speed": { "type": "number", "minimum": 0, "maximum": 4 },
+        "amount": { "$ref": "#/$defs/unit" }
+      }
+    },
+    "lightingRig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version"],
+      "properties": {
+        "version": { "const": "1.0" },
+        "ambient": { "$ref": "#/$defs/light" },
+        "key": { "$ref": "#/$defs/light" },
+        "fill": { "$ref": "#/$defs/light" },
+        "rim": { "$ref": "#/$defs/light" },
+        "shadows": { "$ref": "#/$defs/shadows" },
+        "bloom": { "$ref": "#/$defs/bloom" },
+        "haze": { "$ref": "#/$defs/haze" },
+        "exposure": { "type": "number", "minimum": 0.5, "maximum": 2 },
+        "contrast": { "type": "number", "minimum": 0.5, "maximum": 2 }
+      }
+    },
+    "light": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["colorRole", "intensity"],
+      "properties": {
+        "colorRole": { "$ref": "#/$defs/colorRole" },
+        "color": { "$ref": "#/$defs/color" },
+        "intensity": { "type": "number", "minimum": 0, "maximum": 2 },
+        "directionDegrees": { "type": "number", "minimum": 0, "maximum": 360 },
+        "softness": { "$ref": "#/$defs/unit" }
+      }
+    },
+    "shadows": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strength", "softness"],
+      "properties": {
+        "strength": { "$ref": "#/$defs/unit" },
+        "softness": { "$ref": "#/$defs/unit" }
+      }
+    },
+    "bloom": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intensity", "threshold", "radius"],
+      "properties": {
+        "intensity": { "$ref": "#/$defs/unit" },
+        "threshold": { "$ref": "#/$defs/unit" },
+        "radius": { "type": "number", "minimum": 0, "maximum": 64 }
+      }
+    },
+    "haze": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["colorRole", "density"],
+      "properties": {
+        "colorRole": { "$ref": "#/$defs/colorRole" },
+        "color": { "$ref": "#/$defs/color" },
+        "density": { "$ref": "#/$defs/unit" }
+      }
+    },
+    "colorRole": {
+      "enum": [
+        "background",
+        "surface",
+        "primary",
+        "secondary",
+        "accent",
+        "text",
+        "mutedText",
+        "shadow",
+        "highlight"
+      ]
     },
     "asset": {
       "type": "object",

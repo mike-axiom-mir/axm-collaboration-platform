@@ -4,6 +4,7 @@ import {
   applyPerformanceProfile,
   compileStyleIntent,
   generateStyleIntent,
+  getSkinMold,
   listGeneratorMoods,
   listPerformanceProfiles,
   stableStringify,
@@ -45,6 +46,48 @@ test("mold maker exposes bounded moods and compiles valid packs", () => {
     );
     assert.equal(validateSkinPack(pack).ok, true, mood);
   }
+});
+
+test("mold-grown packs contain exactly the mold surfaces and only referenced materials", () => {
+  for (const moldId of ["universal-core", "effects-stage", "arcade-arena", "full-presentation"]) {
+    const mold = getSkinMold(moldId);
+    const pack = compileStyleIntent(
+      generateStyleIntent({
+        seed: `scope-${moldId}`,
+        name: `Scoped ${moldId}`,
+        moldId,
+        mood: "balanced",
+        complexity: 0.5
+      })
+    );
+    assert.deepEqual(
+      pack.bindings.map((binding) => binding.target).sort(),
+      [...mold.slots].sort(),
+      moldId
+    );
+    assert.deepEqual(
+      Object.keys(pack.materials).sort(),
+      [...new Set(pack.bindings.map((binding) => binding.material))].sort(),
+      `${moldId} carries no unused material organs`
+    );
+  }
+});
+
+test("generated capabilities describe only content that is actually present", () => {
+  const effects = compileStyleIntent(
+    generateStyleIntent({
+      seed: "effects-capabilities",
+      name: "Effects Only",
+      moldId: "effects-stage",
+      mood: "wonder",
+      complexity: 0.7
+    })
+  );
+  assert(effects.capabilities.includes("fx-preset.v1"));
+  assert.equal(effects.capabilities.includes("character-parts.v1"), false);
+  assert.equal(effects.capabilities.includes("ui-theme.v1"), false);
+  assert.equal(effects.capabilities.includes("vehicle-presentation.v1"), false);
+  assert.deepEqual(effects.characterBlueprints, {});
 });
 
 test("different seeds create different deterministic recipes", () => {

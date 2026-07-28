@@ -6,6 +6,8 @@ const fs = require('fs');
 const path = require('path');
 
 const root = __dirname;
+const expectedVersion = '0.6.0';
+const expectedFiles = 151;
 let failures = 0;
 function test(condition, message) {
   if (condition) console.log('PASS ' + message);
@@ -24,13 +26,13 @@ for (const line of manifestLines) {
   const actual = fs.existsSync(file)
     ? crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')
     : 'missing';
-  test(actual === match[1].toLowerCase(), match[2] + ' matches the Style Fabric 0.5.0 release');
+  test(actual === match[1].toLowerCase(), match[2] + ' matches the Style Fabric ' + expectedVersion + ' release');
 }
 
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-test(checked === 136, 'release manifest covers 136 upstream files');
-test(manifest.id === 'axm.style-fabric' && manifest.version === '0.5.0', 'release identity is Style Fabric 0.5.0');
+test(checked === expectedFiles, 'release manifest covers ' + expectedFiles + ' upstream files');
+test(manifest.id === 'axm.style-fabric' && manifest.version === expectedVersion, 'release identity is Style Fabric ' + expectedVersion);
 test(manifest.permissions.network === false, 'release declares no network permission');
 test(Object.keys(pkg.dependencies || {}).length === 0, 'release has no third-party runtime dependencies');
 

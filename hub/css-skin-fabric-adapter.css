@@ -1,0 +1,249 @@
+/* AXM Hub -> CSS Skin Fabric 0.2 adapter.
+   The shared fabric owns semantic interface values. Existing Hub selectors
+   remain compatibility seams while modules migrate to native .axm-* molds. */
+
+:root {
+  --space: var(--axm-sem-canvas);
+  --ink: var(--axm-sem-canvas-elevated);
+  --panel: var(--axm-sem-surface);
+  --panel-2: var(--axm-sem-surface-raised);
+  --line: var(--axm-sem-border);
+  --edge: var(--axm-sem-border-strong);
+  --text: var(--axm-sem-text);
+  --muted: var(--axm-sem-text-muted);
+  --muted-2: color-mix(in oklab, var(--axm-sem-text-muted) 68%, var(--axm-sem-canvas));
+  --cy: var(--axm-sem-accent);
+  --cy-dim: color-mix(in oklab, var(--axm-sem-accent) 48%, transparent);
+  --blue: var(--axm-sem-info);
+  --gold: var(--axm-sem-warning);
+  --red: var(--axm-sem-danger);
+  --green: var(--axm-sem-success);
+  --purple: var(--axm-sem-accent-alt);
+  --radius: var(--axm-radius-md);
+  --radius-s: var(--axm-radius-sm);
+  --font: var(--axm-font-sans);
+  --mono: var(--axm-font-mono);
+}
+
+body.sentient-atrium {
+  background: var(--axm-sem-canvas);
+  color: var(--axm-sem-text);
+}
+
+.sentient-atrium .shell {
+  background:
+    radial-gradient(circle at 8% 0%, color-mix(in oklab, var(--axm-sem-accent) 10%, transparent), transparent 30rem),
+    linear-gradient(180deg, var(--axm-sem-canvas-elevated), var(--axm-sem-canvas));
+}
+
+.sentient-atrium .sentient-signal-field { opacity: .16; }
+
+.sentient-atrium .topbar {
+  border-color: var(--axm-sem-border);
+  background: color-mix(in oklab, var(--axm-sem-canvas-elevated) 92%, transparent);
+  backdrop-filter: blur(var(--axm-effect-blur));
+}
+
+.sentient-atrium .topbar::before { opacity: .22; }
+
+body.sentient-atrium:not([data-nav="right"]):not([data-nav="rail"]) .body {
+  grid-template-columns: 19rem minmax(0, 1fr);
+}
+
+.sentient-atrium .sidebar {
+  border-color: var(--axm-sem-border);
+  background: color-mix(in oklab, var(--axm-sem-canvas-elevated) 94%, transparent);
+  box-shadow: var(--axm-shadow-sm);
+}
+
+.sentient-atrium .sidebar > .mod,
+.sentient-atrium .sidebar > .command-center-nav,
+.sentient-atrium .sidebar > .mirror-command-nav,
+.sentient-atrium #modList .mod {
+  border-radius: var(--axm-control-radius);
+}
+
+.sentient-atrium .sidebar > .mod:hover,
+.sentient-atrium .sidebar > .command-center-nav:hover,
+.sentient-atrium .sidebar > .mirror-command-nav:hover,
+.sentient-atrium #modList .mod:hover {
+  border-color: var(--axm-sem-border-strong);
+  background: color-mix(in oklab, var(--axm-sem-accent) 8%, var(--axm-sem-surface));
+}
+
+.sentient-atrium .sidebar > .mod.active {
+  border-color: var(--axm-sem-border-strong);
+  background: color-mix(in oklab, var(--axm-sem-accent) 14%, var(--axm-sem-surface));
+  box-shadow: inset 3px 0 var(--axm-sem-accent);
+}
+
+body.sentient-atrium .home-hero {
+  min-height: auto !important;
+  border-color: var(--axm-sem-border);
+  background:
+    radial-gradient(circle at 88% 18%, color-mix(in oklab, var(--axm-sem-accent-alt) 12%, transparent), transparent 26rem),
+    linear-gradient(180deg, color-mix(in oklab, var(--axm-sem-canvas-elevated) 90%, transparent), var(--axm-sem-canvas));
+}
+
+.sentient-atrium .hero-layout {
+  min-height: auto;
+  padding-top: clamp(4rem, 10vh, 7rem);
+}
+
+.sentient-atrium .home-hero h1 {
+  color: var(--axm-sem-text);
+  letter-spacing: -.04em;
+  text-wrap: balance;
+}
+
+.sentient-atrium .home-hero h1 em { color: var(--axm-sem-accent); }
+.sentient-atrium .home-hero p { color: var(--axm-sem-text-muted); }
+
+.sentient-atrium .capability-search,
+.sentient-atrium .workflow-card,
+.sentient-atrium .module-card,
+.sentient-atrium .hero-system-grid div {
+  border-color: var(--axm-sem-border);
+  border-radius: var(--axm-control-radius);
+  background: color-mix(in oklab, var(--axm-sem-surface) 88%, transparent);
+  box-shadow: var(--axm-shadow-xs);
+}
+
+.sentient-atrium .capability-search:focus-within {
+  border-color: var(--axm-sem-focus);
+  box-shadow: 0 0 0 var(--axm-focus-width) color-mix(in oklab, var(--axm-sem-focus) 28%, transparent);
+}
+
+.sentient-atrium button:focus-visible,
+.sentient-atrium a:focus-visible,
+.sentient-atrium input:focus-visible,
+.sentient-atrium select:focus-visible {
+  outline: var(--axm-focus-width) solid var(--axm-sem-focus);
+  outline-offset: var(--axm-focus-offset);
+}
+
+@media (max-width: 760px) {
+  .sentient-atrium .shell { grid-template-rows: 4.25rem minmax(0, 1fr) 3rem; }
+
+  .sentient-atrium .topbar {
+    min-height: 4.25rem;
+    padding: var(--axm-space-2) var(--axm-space-4);
+  }
+
+  .sentient-atrium .topbar::before,
+  .sentient-atrium .sentient-signal-field,
+  .sentient-atrium .home-hero::after { display: none; }
+
+  .sentient-atrium .atrium-identity {
+    flex-basis: auto;
+    width: auto;
+    min-width: 0;
+    padding: 0;
+  }
+
+  .sentient-atrium .atrium-identity > span,
+  .sentient-atrium .atrium-identity > small { display: none; }
+
+  .sentient-atrium .body,
+  body.sentient-atrium:not([data-nav="right"]):not([data-nav="rail"]) .body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.sentient-atrium .sidebar {
+    width: min(20rem, calc(100vw - 3.5rem));
+    padding: 4.5rem var(--axm-space-4) var(--axm-space-5);
+    border-right: 1px solid var(--axm-sem-border) !important;
+    background: var(--axm-sem-canvas-elevated) !important;
+    box-shadow: var(--axm-shadow-lg) !important;
+  }
+
+  body.sentient-atrium[data-sidebar-collapsed="true"] .sidebar > .sidebar-toggle {
+    top: 4.75rem !important;
+    left: auto !important;
+    right: var(--axm-space-3) !important;
+    width: var(--axm-control-min);
+    height: var(--axm-control-min);
+    border-color: var(--axm-sem-border-strong);
+    border-radius: var(--axm-control-radius);
+    background: var(--axm-sem-surface-raised);
+  }
+
+  body.sentient-atrium .home-hero {
+    min-height: auto !important;
+    border-radius: 0;
+    background:
+      radial-gradient(circle at 92% 8%, color-mix(in oklab, var(--axm-sem-accent) 10%, transparent), transparent 18rem),
+      linear-gradient(180deg, var(--axm-sem-canvas-elevated), var(--axm-sem-canvas)) !important;
+  }
+
+  .sentient-atrium .atrium-vortex-field { display: none; }
+
+  .sentient-atrium .hero-layout {
+    display: block;
+    min-height: auto;
+    padding: var(--axm-space-16) var(--axm-space-4) var(--axm-space-6);
+  }
+
+  .sentient-atrium .home-hero h1 {
+    max-width: 12ch;
+    font-size: clamp(2.35rem, 11vw, 3.15rem);
+    line-height: 1.02;
+  }
+
+  .sentient-atrium .home-hero p {
+    margin-top: var(--axm-space-5);
+    font-size: var(--axm-font-size-md);
+    line-height: var(--axm-line-body);
+  }
+
+  .sentient-atrium .capability-guide {
+    width: auto;
+    padding: 0 var(--axm-space-4) var(--axm-space-8);
+  }
+
+  .sentient-atrium .capability-search {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) 48px !important;
+    width: 100%;
+    min-height: var(--axm-control-min);
+    height: auto;
+  }
+
+  .sentient-atrium .capability-search button {
+    grid-column: 3;
+    grid-row: 1;
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
+  }
+
+  html.axm-phone body.sentient-atrium .capability-prompts,
+  .sentient-atrium .capability-prompts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+    gap: var(--axm-space-2);
+    margin-top: var(--axm-space-5);
+  }
+
+  .sentient-atrium .capability-prompts button {
+    min-width: 0;
+    min-height: var(--axm-control-min);
+    white-space: normal;
+  }
+
+  .sentient-atrium .home-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--axm-space-4);
+    padding: var(--axm-space-4);
+  }
+
+  .sentient-atrium .statusbar {
+    min-height: 3rem;
+    padding-inline: var(--axm-space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sentient-atrium .sentient-signal-field { display: none; }
+}

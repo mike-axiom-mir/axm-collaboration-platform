@@ -37,9 +37,9 @@
           </p>
         </div>
         <div class="mode-picker" role="group" aria-label="Creation scope">
-          <button class="mode active" data-scope="global">Whole game</button>
-          <button class="mode" data-scope="character.player">Character</button>
-          <button class="mode" data-scope="reusable">Reusable style</button>
+          <button class="mode active" data-scope="global" aria-pressed="true">Whole game</button>
+          <button class="mode" data-scope="character.player" aria-pressed="false">Character</button>
+          <button class="mode" data-scope="reusable" aria-pressed="false">Reusable style</button>
         </div>
       </section>
 
@@ -130,6 +130,33 @@
               <button id="build-stack" class="button secondary wide">Compose seven-organ game skin</button>
               <p class="microcopy">Each source owns only its semantic organ, preventing character, world, gear, item, effect, and interface materials from leaking across boundaries.</p>
             </div>
+          </details>
+
+          <details class="treatment-lab" open>
+            <summary>
+              <span>Treatment Forge</span>
+              <small>three bounded directions</small>
+            </summary>
+            <label class="treatment-mold-field">
+              <span>Treatment mold</span>
+              <select id="treatment-mold"></select>
+            </label>
+            <button id="forge-treatments" class="button secondary wide">
+              Forge three directions
+            </button>
+            <div
+              id="treatment-directions"
+              class="treatment-directions"
+              role="radiogroup"
+              aria-label="Generated treatment directions"
+            ></div>
+            <button id="apply-treatment" class="button primary wide" disabled>
+              Apply selected treatment
+            </button>
+            <p id="treatment-report" class="microcopy">
+              Drafts are deterministic and preview-only until you explicitly apply one.
+              They cannot write gameplay, save data, scripts, or network authority.
+            </p>
           </details>
 
           <label class="field">
@@ -290,8 +317,8 @@
               <small>actual resolver output</small>
             </div>
             <div class="toolbar-actions">
-              <button id="toggle-original" class="button ghost">Hold for original</button>
-              <button id="toggle-motion" class="button ghost">Pause motion</button>
+              <button id="toggle-original" class="button ghost" aria-pressed="false">Hold for original</button>
+              <button id="toggle-motion" class="button ghost" aria-pressed="false">Pause motion</button>
             </div>
           </div>
 
@@ -350,7 +377,7 @@
                 <strong>AXM EXPLORER</strong>
                 <div class="health"><i></i></div>
               </div>
-              <button>ABILITY <b>Q</b></button>
+              <span class="ability-chip" aria-hidden="true">ABILITY <b>Q</b></span>
             </div>
 
             <div class="material-orbs" aria-label="Material response preview">
@@ -603,14 +630,14 @@
           </div>
           <button class="icon-button" aria-label="Close">×</button>
         </div>
-        <div class="dialog-tabs">
-          <button type="button" class="active" data-dialog-tab="pack">Skin pack</button>
-          <button type="button" data-dialog-tab="surface">Surface</button>
-          <button type="button" data-dialog-tab="receipt">Receipt</button>
-          <button type="button" data-dialog-tab="conformance">Conformance</button>
-          <button type="button" data-dialog-tab="intent">AI intent</button>
+        <div class="dialog-tabs" role="tablist" aria-label="Inspectable output">
+          <button type="button" class="active" data-dialog-tab="pack" role="tab" aria-selected="true">Skin pack</button>
+          <button type="button" data-dialog-tab="surface" role="tab" aria-selected="false">Surface</button>
+          <button type="button" data-dialog-tab="receipt" role="tab" aria-selected="false">Receipt</button>
+          <button type="button" data-dialog-tab="conformance" role="tab" aria-selected="false">Conformance</button>
+          <button type="button" data-dialog-tab="intent" role="tab" aria-selected="false">AI intent</button>
         </div>
-        <pre id="data-output"></pre>
+        <pre id="data-output" role="tabpanel"></pre>
       </form>
     </dialog>
 

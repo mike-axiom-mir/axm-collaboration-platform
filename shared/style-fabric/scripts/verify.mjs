@@ -1,11 +1,16 @@
 import { readdir, readFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 import {
   PRESKINS,
   SKIN_MOLDS,
+  TREATMENT_MOLDS,
+  LOCAL_CREATOR_POLICY,
+  admitSkinPack,
   applyPerformanceProfile,
   applyPreskin,
+  applyTreatmentToPack,
   assessGameAdapterConformance,
   assessMoldCompatibility,
   blendPreskins,
@@ -13,16 +18,19 @@ import {
   compileStyleIntent,
   composeSkinStack,
   createGameContractFromMold,
+  forgeSkinMold,
   generateStyleIntent,
+  generateTreatmentDirections,
   gameSurfaceCoverage,
   resolveSkinForGame,
   stableStringify,
   validateGameSkinContract,
+  validateSkinMold,
   validateSkinPack,
+  validateTreatmentMold,
   verifySkinIntegrity
 } from "../src/index.mjs";
 
-const root = new URL("../", import.meta.url);
 const failures = [];
 const checks = [];
 
@@ -47,7 +55,7 @@ async function json(path) {
 }
 
 async function main() {
-  const rootPath = new URL("../", import.meta.url).pathname;
+  const rootPath = fileURLToPath(new URL("../", import.meta.url));
   const files = await walk(rootPath);
   const jsonFiles = files.filter((file) => extname(file) === ".json");
   for (const file of jsonFiles) {
@@ -79,11 +87,57 @@ async function main() {
     `${SKIN_MOLDS.length} unique game molds`
   );
 
+  const forgedMold = forgeSkinMold({
+    id: "verify-paper-stage",
+    name: "Verify Paper Stage",
+    purpose: "Verifier-owned declarative presentation surface.",
+    slots: ["world.background", "world.lighting", "fx.ambient", "ui.panel"]
+  });
+  record(
+    validateSkinMold(forgedMold.mold).ok &&
+      forgedMold.receipt.promotion === "DRAFT_REVIEW_REQUIRED" &&
+      forgedMold.receipt.automaticGameWrites === 0,
+    "MOLD_FOUNDRY_EXPLICIT_REVIEW",
+    `${forgedMold.mold.slots.length} slots · ${forgedMold.receipt.automaticGameWrites} automatic writes`
+  );
+
+  record(
+    TREATMENT_MOLDS.length === 3 &&
+      TREATMENT_MOLDS.every((mold) => validateTreatmentMold(mold).ok),
+    "TREATMENT_MOLD_CATALOG",
+    `${TREATMENT_MOLDS.length} bounded treatment molds`
+  );
+
+  const treatmentDirections = generateTreatmentDirections(
+    "neon-paper-selective",
+    {
+      seed: "verify-three-treatment-directions",
+      profile: "balanced"
+    }
+  );
+  record(
+    treatmentDirections.directions.length === 3 &&
+      treatmentDirections.receipt.distinct === 3 &&
+      treatmentDirections.receipt.automaticWrites === 0,
+    "TREATMENT_DIRECTIONS_DETERMINISTIC",
+    `${treatmentDirections.receipt.distinct}/3 distinct · ${treatmentDirections.receipt.automaticWrites} automatic writes`
+  );
+
+  const treated = applyTreatmentToPack(first, treatmentDirections.directions[0]);
+  record(
+    treated.receipt.applied.length === 4 &&
+      treated.receipt.automaticWrites === 0 &&
+      treated.pack.capabilities.includes("treatment-stack.v1") &&
+      validateSkinPack(treated.pack).ok,
+    "TREATMENT_APPLICATION_ISOLATED",
+    `${treated.receipt.applied.length} applied · ${treated.receipt.skipped.length} skipped`
+  );
+
   const generatedContracts = SKIN_MOLDS.map((mold) =>
     createGameContractFromMold({
       moldId: mold.id,
       gameId: `verify.${mold.id}`,
-      gameVersion: "0.5.0"
+      gameVersion: "0.6.0"
     })
   );
   record(
@@ -176,7 +230,7 @@ async function main() {
   const moldContract = createGameContractFromMold({
     moldId: "arcade-arena",
     gameId: "verify.arena",
-    gameVersion: "0.5.0"
+    gameVersion: "0.6.0"
   });
   const moldReport = assessMoldCompatibility(first, moldContract, "arcade-arena");
   record(
@@ -190,7 +244,7 @@ async function main() {
     createGameContractFromMold({
       moldId: "full-presentation",
       gameId: "verify.full-surface",
-      gameVersion: "0.5.0"
+      gameVersion: "0.6.0"
     })
   );
   record(
@@ -205,7 +259,7 @@ async function main() {
   const conformanceContract = createGameContractFromMold({
     moldId: "full-presentation",
     gameId: "verify.conformance",
-    gameVersion: "0.5.0"
+    gameVersion: "0.6.0"
   });
   const pendingConformance = assessGameAdapterConformance({
     gameContract: conformanceContract
@@ -254,6 +308,17 @@ async function main() {
   first.integrity = await calculateSkinIntegrity(first);
   const integrity = await verifySkinIntegrity(first);
   record(integrity.ok, "INTEGRITY_ROUND_TRIP", integrity.status);
+  const admission = await admitSkinPack(first, {
+    ...LOCAL_CREATOR_POLICY,
+    id: "axm.verify.signed-admission",
+    allowUnsigned: false,
+    requireIntegrity: true
+  });
+  record(
+    admission.ok && admission.status === "ADMITTED_INTEGRITY_VERIFIED",
+    "UNIFIED_SIGNED_ADMISSION",
+    `${admission.status} · ${admission.assets.metrics.verifiedEmbeddedAssets} embedded assets`
+  );
 
   record(
     PRESKINS.length === 25 &&

@@ -1,4 +1,77 @@
 const encoder = new TextEncoder();
+const DANGEROUS_OBJECT_KEYS = new Set(["__proto__", "prototype", "constructor"]);
+
+function assertSafeObjectKey(key, path) {
+  if (DANGEROUS_OBJECT_KEYS.has(key)) {
+    throw new TypeError(`Unsafe object key "${key}" is not allowed at ${path}.`);
+  }
+}
+
+function ownDataValue(object, key, path) {
+  const descriptor = Object.getOwnPropertyDescriptor(object, key);
+  if (!descriptor || !("value" in descriptor)) {
+    throw new TypeError(`Accessor properties are not allowed in declarative data at ${path}.`);
+  }
+  return descriptor.value;
+}
+
+function defineOwn(object, key, value) {
+  Object.defineProperty(object, key, {
+    value,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  });
+}
+
+function isMergeableRecord(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
+export function assertSafeObjectTree(value, path = "$", active = new WeakSet()) {
+  if (!value || typeof value !== "object") return value;
+  if (active.has(value)) {
+    throw new TypeError(`Cyclic declarative data is not allowed at ${path}.`);
+  }
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      if (!Object.hasOwn(value, index)) {
+        throw new TypeError(`Sparse arrays are not allowed in declarative data at ${path}.`);
+      }
+    }
+    for (const key of Object.keys(value)) {
+      if (!/^(?:0|[1-9]\d*)$/.test(key) || Number(key) >= value.length) {
+        throw new TypeError(`Custom array properties are not allowed at ${path}.${key}.`);
+      }
+    }
+  } else {
+    const prototype = Object.getPrototypeOf(value);
+    if (prototype !== Object.prototype && prototype !== null) {
+      throw new TypeError(`Non-plain objects are not allowed in declarative data at ${path}.`);
+    }
+  }
+  active.add(value);
+  for (const key of Object.keys(value)) {
+    const keyPath = `${path}.${key}`;
+    assertSafeObjectKey(key, keyPath);
+    assertSafeObjectTree(ownDataValue(value, key, keyPath), keyPath, active);
+  }
+  active.delete(value);
+  return value;
+}
+
+export function normalizePathSegments(path) {
+  const segments = Array.isArray(path) ? path.map(String) : String(path).split(".");
+  if (!segments.length || segments.some((segment) => segment.length === 0)) {
+    throw new TypeError("Object paths require non-empty segments.");
+  }
+  segments.forEach((segment, index) => {
+    assertSafeObjectKey(segment, `path segment ${index + 1}`);
+  });
+  return segments;
+}
 
 function normalizeForCanonicalJson(value, seen = new WeakSet()) {
   if (value === null || typeof value === "string" || typeof value === "boolean") {
@@ -22,21 +95,30 @@ function normalizeForCanonicalJson(value, seen = new WeakSet()) {
   seen.add(value);
 
   if (Array.isArray(value)) {
+    for (const key of Object.keys(value)) {
+      const keyPath = `canonical JSON array key "${key}"`;
+      assertSafeObjectKey(key, keyPath);
+      ownDataValue(value, key, keyPath);
+    }
     const normalized = value.map((entry) => normalizeForCanonicalJson(entry, seen));
     seen.delete(value);
     return normalized;
   }
 
-  const normalized = {};
+  const normalized = Object.create(null);
   for (const key of Object.keys(value).sort()) {
-    if (value[key] === undefined) continue;
-    normalized[key] = normalizeForCanonicalJson(value[key], seen);
+    const keyPath = `canonical JSON key "${key}"`;
+    assertSafeObjectKey(key, keyPath);
+    const entry = ownDataValue(value, key, keyPath);
+    if (entry === undefined) continue;
+    defineOwn(normalized, key, normalizeForCanonicalJson(entry, seen));
   }
   seen.delete(value);
   return normalized;
 }
 
 export function stableStringify(value, space = 0) {
+  assertSafeObjectTree(value);
   return JSON.stringify(normalizeForCanonicalJson(value), null, space);
 }
 
@@ -141,6 +223,7 @@ function sha256Fallback(bytes) {
 }
 
 export function clone(value) {
+  assertSafeObjectTree(value);
   return structuredClone(value);
 }
 
@@ -181,48 +264,97 @@ export function seededRandom(seed) {
 }
 
 export function deepMerge(base, overlay) {
-  if (overlay === undefined) return clone(base);
-  if (base === null || overlay === null || Array.isArray(base) || Array.isArray(overlay)) {
-    return clone(overlay);
-  }
-  if (typeof base !== "object" || typeof overlay !== "object") return clone(overlay);
+  assertSafeObjectTree(base, "$base");
+  if (overlay !== undefined) assertSafeObjectTree(overlay, "$overlay");
 
-  const result = clone(base);
-  for (const [key, value] of Object.entries(overlay)) {
-    result[key] =
-      key in result && typeof result[key] === "object" && typeof value === "object"
-        ? deepMerge(result[key], value)
-        : clone(value);
+  function merge(currentBase, currentOverlay) {
+    if (currentOverlay === undefined) return clone(currentBase);
+    if (!isMergeableRecord(currentBase) || !isMergeableRecord(currentOverlay)) {
+      return clone(currentOverlay);
+    }
+
+    const result = clone(currentBase);
+    for (const key of Object.keys(currentOverlay)) {
+      const value = ownDataValue(currentOverlay, key, `$overlay.${key}`);
+      const existing = Object.hasOwn(result, key) ? result[key] : undefined;
+      defineOwn(
+        result,
+        key,
+        Object.hasOwn(result, key) &&
+          isMergeableRecord(existing) &&
+          isMergeableRecord(value)
+          ? merge(existing, value)
+          : clone(value)
+      );
+    }
+    return result;
   }
-  return result;
+
+  return merge(base, overlay);
 }
 
 export function setPath(target, dottedPath, value) {
-  const segments = String(dottedPath).split(".");
+  if (!target || typeof target !== "object") {
+    throw new TypeError("setPath target must be an object.");
+  }
+  assertSafeObjectTree(target, "$target");
+  assertSafeObjectTree(value, "$value");
+  const segments = normalizePathSegments(dottedPath);
   let cursor = target;
   for (let index = 0; index < segments.length - 1; index += 1) {
     const segment = segments[index];
-    if (!cursor[segment] || typeof cursor[segment] !== "object") cursor[segment] = {};
-    cursor = cursor[segment];
+    const existing = Object.hasOwn(cursor, segment)
+      ? ownDataValue(cursor, segment, `path ${segments.slice(0, index + 1).join(".")}`)
+      : null;
+    if (!existing || typeof existing !== "object" || Array.isArray(existing)) {
+      defineOwn(cursor, segment, {});
+    }
+    cursor = ownDataValue(cursor, segment, `path ${segments.slice(0, index + 1).join(".")}`);
   }
-  cursor[segments.at(-1)] = clone(value);
+  defineOwn(cursor, segments.at(-1), clone(value));
   return target;
 }
 
 export function getPath(target, dottedPath) {
-  return String(dottedPath)
-    .split(".")
-    .reduce((cursor, segment) => cursor?.[segment], target);
+  const segments = normalizePathSegments(dottedPath);
+  let cursor = target;
+  for (const segment of segments) {
+    if (
+      (!cursor || (typeof cursor !== "object" && typeof cursor !== "function")) ||
+      !Object.hasOwn(cursor, segment)
+    ) {
+      return undefined;
+    }
+    cursor = ownDataValue(cursor, segment, `path ${segment}`);
+  }
+  return cursor;
 }
 
 export function flattenObject(value, prefix = "", output = {}) {
-  for (const [key, entry] of Object.entries(value ?? {})) {
-    const path = prefix ? `${prefix}.${key}` : key;
-    if (entry && typeof entry === "object" && !Array.isArray(entry)) {
-      flattenObject(entry, path, output);
-    } else {
-      output[path] = entry;
-    }
+  if (!output || typeof output !== "object") {
+    throw new TypeError("flattenObject output must be an object.");
   }
+  assertSafeObjectTree(value, "$flatten");
+
+  const active = new WeakSet();
+  function visit(current, currentPrefix) {
+    if (!current || typeof current !== "object") return;
+    if (active.has(current)) {
+      throw new TypeError(`Cyclic declarative data is not allowed at ${currentPrefix || "$"}.`);
+    }
+    active.add(current);
+    for (const key of Object.keys(current)) {
+      const path = currentPrefix ? `${currentPrefix}.${key}` : key;
+      assertSafeObjectKey(key, path);
+      const entry = ownDataValue(current, key, path);
+      if (entry && typeof entry === "object" && !Array.isArray(entry)) {
+        visit(entry, path);
+      } else {
+        defineOwn(output, path, entry);
+      }
+    }
+    active.delete(current);
+  }
+  visit(value ?? {}, prefix);
   return output;
 }
