@@ -32,7 +32,7 @@ check('page has one primary heading', (html.match(/<h1\b/gi) || []).length === 1
 check('page declares the local-runtime boundary', /website is a doorway/i.test(html) && /Workshop lives with you/i.test(html));
 check('download routes use the experimental release asset', html.includes(packageFacts.archive.url) && config.includes(packageFacts.archive.url));
 check('download routes do not use a moving main archive', !/archive\/refs\/heads\/main\.zip/.test(html + config));
-check('release pointer binds tag and checksum asset', packageFacts.release_tag === 'v0.4.0-experimental' && /\.sha256$/.test(packageFacts.archive.sha256_url));
+check('release pointer binds tag and checksum asset', packageFacts.release_tag === 'v0.4.1-experimental' && /\.sha256$/.test(packageFacts.archive.sha256_url));
 check('release boundaries remain honest', packageFacts.status === 'EXPERIMENTAL' && packageFacts.evidence.warnings_remain_visible === true);
 check('site does not imply an ungranted license', !/\bFree software\b|\bUse it freely\b/.test(html));
 check('site does not hard-code a module count', !/\b\d+\s+(?:tool\s+)?modules\b/i.test(html));

@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.4.0-experimental"><img alt="Release v0.4.0 experimental" src="https://img.shields.io/badge/release-v0.4.0--experimental-8b5cf6"></a>
+  <a href="https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.4.1-experimental"><img alt="Release v0.4.1 experimental" src="https://img.shields.io/badge/release-v0.4.1--experimental-8b5cf6"></a>
   <a href="https://github.com/mike-axiom-mir/axm-collaboration-platform/actions/workflows/public-launch.yml"><img alt="Public launch checks" src="https://github.com/mike-axiom-mir/axm-collaboration-platform/actions/workflows/public-launch.yml/badge.svg?branch=main"></a>
   <img alt="Local first" src="https://img.shields.io/badge/local--first-yes-16a085">
   <img alt="Status experimental" src="https://img.shields.io/badge/status-experimental-f59e0b">
@@ -28,7 +28,7 @@
 
 | I want to… | Best route |
 |---|---|
-| Run AXM on Windows | [Download the Windows prerelease ZIP](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.4.0-experimental/AXM-Workshop-v0.4.0-experimental-Windows-source.zip) |
+| Run AXM on Windows | [Download the Windows prerelease ZIP](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.4.1-experimental/AXM-Workshop-v0.4.1-experimental-Windows-source.zip) |
 | Try a small browser workroom | [Open the public doorway](https://mike-axiom-mir.github.io/axm-collaboration-platform/) |
 | Understand what is inside | Read the [Discovery Root](AXM_DISCOVERY_ROOT.md) |
 | Inspect current limitations | Read [Public Status](STATUS.md) |

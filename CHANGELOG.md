@@ -3,7 +3,7 @@
 Notable public AXM Workshop changes are recorded here. Historical workbench
 reports remain available under [`docs/history/`](docs/history/).
 
-## v0.4.0-experimental — 2026-07-28
+## v0.4.1-experimental — 2026-07-28
 
 ### Visual fabric integration
 
@@ -19,6 +19,8 @@ reports remain available under [`docs/history/`](docs/history/).
 - Verified the CSS Skin Fabric 98-file intake manifest and required validators.
 - Passed the repository's required static, discovery, Hub, skin, and packaging gates.
 - Passed the GitHub clean-Windows launch gate on the merged integration commit.
+- Kept fake private-key self-test fixtures effective while making their source
+  unambiguous to the public-package secret scanner.
 
 ### Known boundaries
 
