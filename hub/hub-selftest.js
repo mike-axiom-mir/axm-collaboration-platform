@@ -46,6 +46,8 @@ screenContract.resolve({id:'verifier',tags:['verification']}).preset === 'instru
   ? ok('presentation: deterministic purpose presets expose screen freedom without behavior authority') : bad('presentation: screen contract resolution failed');
 /frameLoadSequence:\s*0/.test(hubJs) && /navigationToken !== this\.frameLoadSequence \|\| this\.active !== id/.test(hubJs)
   ? ok('navigation: stale module-load timers cannot replace the current screen') : bad('navigation: module-load race guard missing');
+Core.shouldRestoreBootDestination(4, 4) && !Core.shouldRestoreBootDestination(4, 5) && /kept the screen chosen during startup/.test(hubJs)
+  ? ok('navigation: a screen chosen during startup cannot be replaced by late boot restore') : bad('navigation: late boot restore can replace a human screen choice');
 /acceptPaintedFrame/.test(hubJs) && /actual[\s\S]*same-origin paint as a second honest ready signal/.test(hubJs)
   ? ok('navigation: visible iframe paint is accepted when a host drops its load event') : bad('navigation: iframe paint fallback missing');
 /body\[data-axm-presentation-mode="shared"\]/.test(presentationHostCss) && !/body\[data-axm-presentation-mode="module"\]/.test(presentationHostCss)
@@ -58,9 +60,16 @@ presentationRecipe.validate(presentationRecipe.normalize(presentationRecipe.DEFA
   ? ok('sidebar: layered UI-FX and visible 2030 Visual System route are wired') : bad('sidebar UI-FX or Visual System route missing');
 /hub\/professional-steward\.css/.test(hubHtml) && /Presentation only: no navigation, lifecycle, permission, or runtime changes\./.test(professionalCss) && /\.module-card:has\(\.module-card-life\.WORKING\)/.test(professionalCss) && /#presentationProfileQuick\s*\{[\s\S]*?display:\s*none/.test(professionalCss) && /MOBILE OVERLAY/.test(professionalCss)
   ? ok('visual stewardship: professional layer is wired and status styling stays presentation-only') : bad('visual stewardship: professional layer contract missing');
+/shared\/aetherglass\/src\/axm-aetherglass\.js/.test(hubHtml) && /shared\/aetherglass\/axm-skin-bridge\.js/.test(hubHtml) && /AXMSkinAetherglass\.apply\(sk/.test(hubJs) && /AXMSkinAetherglass\.destroy\(document\.body\)/.test(hubJs)
+  ? ok('visual stewardship: accepted skin data mounts and tears down Aetherglass through its owned bridge') : bad('visual stewardship: Aetherglass skin bridge wiring missing');
+Core.selectSkinState({skin:{name:'direct'},updatedAt:'2026-07-28T08:00:00Z'},{skinner:{skin:{name:'studio'},updatedAt:'2026-07-28T09:00:00Z'}}).skin.name === 'studio' &&
+  Core.selectSkinState({skin:{name:'direct'}},{skinner:{skin:{name:'studio'}}}).skin.name === 'direct' &&
+  Core.selectSkinState(null,{skinner:{skin:{name:'studio'}}}).skin.name === 'studio' &&
+  Core.selectSkinState({skin:{name:'direct'},updatedAt:'2026-07-28T08:00:00Z'},null,{skin:{name:'local'},updatedAt:'2026-07-28T10:00:00Z'}).skin.name === 'local'
+  ? ok('visual stewardship: Hub resolves direct, Studio, and standalone Skinner checkpoints without stale-route loss') : bad('visual stewardship: Skinner checkpoint resolution is wrong');
 /grid-template-columns:\s*repeat\(3,\s*64px\)/.test(professionalCss) && /\.active-lbl b\s*\{[\s\S]*?text-overflow:\s*ellipsis/.test(professionalCss) && /professional-3/.test(hubHtml)
   ? ok('visual stewardship: 1280px command bar uses a balanced presence instrument without clipping') : bad('visual stewardship: responsive command-bar polish missing');
-/<button class="mark profile-entry"[\s\S]*?<b>AXM<\/b><\/button>[\s\S]*?<div class="brand"><span>Hub<\/span>(?:<small>[^<]+<\/small>)?<\/div>/.test(hubHtml) && !/<div class="brand">\s*AXM\b/.test(hubHtml)
+/<button class="mark profile-entry"[\s\S]*?<b>AXM<\/b><\/button>/.test(hubHtml) && /<div class="brand"><span>Hub<\/span>(?:<small>[^<]+<\/small>)?<\/div>/.test(hubHtml) && (hubHtml.match(/<b>AXM<\/b>/g) || []).length === 1 && !/<div class="brand">\s*AXM\b/.test(hubHtml)
   ? ok('visual stewardship: header presents AXM once, with Hub as its destination label') : bad('visual stewardship: duplicated AXM header identity');
 /dataset\.navKind = 'module'/.test(hubJs) && /\.mod\[data-nav-kind="module"\]/.test(presentationCss) && /min-height:38px!important/.test(presentationCss) && /flex:0 0 28px!important/.test(presentationCss)
   ? ok('sidebar: generated modules use compact navigation-deck instruments') : bad('sidebar: compact generated-module contract missing');

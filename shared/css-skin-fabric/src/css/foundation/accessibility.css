@@ -1,0 +1,45 @@
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--axm-focus-width) solid var(--axm-sem-focus);
+  outline-offset: var(--axm-focus-offset);
+}
+
+.axm-skip-link {
+  position: fixed;
+  inset-block-start: var(--axm-space-2);
+  inset-inline-start: var(--axm-space-2);
+  z-index: var(--axm-depth-toast);
+  padding: var(--axm-space-3) var(--axm-space-4);
+  color: var(--axm-sem-on-accent);
+  background: var(--axm-sem-focus);
+  border-radius: var(--axm-radius-sm);
+  transform: translateY(-150%);
+}
+
+.axm-skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.axm-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (forced-colors: active) {
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .axm-material,
+  .axm-card,
+  .axm-panel {
+    border: var(--axm-border-strong) solid CanvasText;
+  }
+}

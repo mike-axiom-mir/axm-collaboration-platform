@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm://schemas/material-recipe.schema.json",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "status",
+    "class",
+    "purpose",
+    "tier",
+    "fallback",
+    "contexts",
+    "public_variables",
+    "reduced_motion",
+    "forced_colors",
+    "browser_support",
+    "rollback_pointer"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "version": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "WORKING",
+        "TEST-HOLD-REVIEW",
+        "CANON"
+      ]
+    },
+    "class": {
+      "type": "string",
+      "pattern": "^axm-material--[a-z0-9-]+$"
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 10
+    },
+    "tier": {
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "fallback": {
+      "type": "string"
+    },
+    "contexts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "public_variables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "allowed"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^--axm-"
+          },
+          "type": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "reduced_motion": {
+      "type": "string"
+    },
+    "forced_colors": {
+      "type": "string"
+    },
+    "browser_support": {
+      "enum": [
+        "core",
+        "enhancement",
+        "experimental"
+      ]
+    },
+    "rollback_pointer": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

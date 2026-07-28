@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/contracts/game-skin-contract.schema.json",
+  "title": "AXM Game Skin Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "version", "gameId", "gameVersion", "adapterApi", "slots"],
+  "properties": {
+    "type": { "const": "axm.game-skin-contract" },
+    "version": { "const": "1.0" },
+    "gameId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "gameVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[a-zA-Z0-9.-]+)?$"
+    },
+    "adapterApi": { "const": "axm.style-adapter.v1" },
+    "rendererProfile": { "type": "string" },
+    "slots": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "required",
+          "supportedProperties",
+          "protectedCues",
+          "constraints",
+          "fallback"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "kind": {
+            "enum": ["surface", "character-region", "ui", "fx", "audio"]
+          },
+          "required": { "type": "boolean" },
+          "supportedProperties": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "baseColor",
+                "secondaryColor",
+                "accentColor",
+                "emissiveColor",
+                "metallic",
+                "roughness",
+                "gloss",
+                "specular",
+                "clearcoat",
+                "sheen",
+                "translucency",
+                "iridescence",
+                "emissiveStrength",
+                "glowIntensity",
+                "glowRadius",
+                "opacity",
+                "outlineWidth",
+                "grain",
+                "weathering",
+                "patternScale",
+                "pulseSpeed",
+                "shimmerSpeed",
+                "pattern",
+                "effectStack",
+                "lightingRig"
+              ]
+            }
+          },
+          "protectedCues": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1, "maxLength": 100 }
+          },
+          "constraints": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "minimumOpacity": { "type": "number", "minimum": 0, "maximum": 1 },
+              "minimumContrast": { "type": "number", "minimum": 1, "maximum": 21 }
+            }
+          },
+          "fallback": { "type": "object", "minProperties": 1 },
+          "adapterHints": { "type": "object" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>AXM Style Fabric</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="ambient ambient-a" aria-hidden="true"></div>
+    <div class="ambient ambient-b" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div>
+          <p>AXM CREATIVE SYSTEMS</p>
+          <h1>Style Fabric</h1>
+        </div>
+      </div>
+      <div class="truth-badges" aria-label="Module status">
+        <span>WORKING / TEST</span>
+        <span>LOCAL-FIRST</span>
+        <span>PRESENTATION ONLY</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">ONE STYLE CONTRACT · EVERY READY GAME</p>
+          <h2>Make the world wear <em>your imagination.</em></h2>
+          <p>
+            Build a reusable style, a whole-game reskin, or one character look.
+            Human controls and machine intents use the same deterministic recipe.
+          </p>
+        </div>
+        <div class="mode-picker" role="group" aria-label="Creation scope">
+          <button class="mode active" data-scope="global" aria-pressed="true">Whole game</button>
+          <button class="mode" data-scope="character.player" aria-pressed="false">Character</button>
+          <button class="mode" data-scope="reusable" aria-pressed="false">Reusable style</button>
+        </div>
+      </section>
+
+      <div class="workspace">
+        <aside class="panel controls-panel" aria-label="Style controls">
+          <div class="panel-heading">
+            <span class="step">01</span>
+            <div>
+              <p>CREATE</p>
+              <h3>Style recipe</h3>
+            </div>
+          </div>
+
+          <details class="preskin-lab" open>
+            <summary>
+              <span>Preskin gallery</span>
+              <small>25 editable foundations</small>
+            </summary>
+            <div class="preskin-status">
+              <div>
+                <small>ACTIVE FOUNDATION</small>
+                <strong id="active-preskin-name">Balanced AXM</strong>
+              </div>
+              <button id="random-preskin" class="button ghost">Surprise me</button>
+            </div>
+            <div id="preskin-family-filters" class="preskin-filters" aria-label="Preskin families"></div>
+            <div id="preskin-gallery" class="preskin-gallery" aria-label="Built-in preskins"></div>
+            <div class="fusion-lab">
+              <label>
+                <span>Blend with</span>
+                <select id="fusion-preskin">
+                  <option value="">No second preskin</option>
+                </select>
+              </label>
+              <div class="range-row">
+                <label for="fusion-amount">Fusion</label>
+                <input id="fusion-amount" type="range" min="0" max="1" step="0.01" value="0.50" disabled>
+                <output for="fusion-amount">50%</output>
+              </div>
+              <p class="microcopy">A fusion is deterministic, inspectable, and remains fully editable.</p>
+            </div>
+          </details>
+
+          <details class="mold-lab" open>
+            <summary>
+              <span>Universal mold maker</span>
+              <small>game bridge + deterministic growth</small>
+            </summary>
+            <div class="mold-grid">
+              <label>
+                <span>Game mold</span>
+                <select id="mold-select"></select>
+              </label>
+              <label>
+                <span>Creative mood</span>
+                <select id="generator-mood"></select>
+              </label>
+              <label>
+                <span>Performance</span>
+                <select id="performance-profile"></select>
+              </label>
+            </div>
+            <div class="range-row">
+              <label for="generator-complexity">Complexity</label>
+              <input id="generator-complexity" type="range" min="0" max="1" step="0.01" value="0.55">
+              <output for="generator-complexity">0.55</output>
+            </div>
+            <div class="mold-actions">
+              <button id="grow-from-seed" class="button secondary">Grow from seed</button>
+              <button id="apply-performance" class="button ghost">Apply performance cap</button>
+            </div>
+            <p id="mold-report" class="microcopy">The mold declares presentation slots; each game keeps its own protected cues and fallbacks.</p>
+
+            <div class="stack-lab">
+              <div>
+                <strong>LAYER MIXER</strong>
+                <small>Different preskin per organ</small>
+              </div>
+              <div class="stack-grid">
+                <label><span>World</span><select id="stack-world"></select></label>
+                <label><span>Structures + props</span><select id="stack-objects"></select></label>
+                <label><span>Vehicles + gear</span><select id="stack-gear"></select></label>
+                <label><span>Items + projectiles</span><select id="stack-items"></select></label>
+                <label><span>Characters</span><select id="stack-character"></select></label>
+                <label><span>Interface</span><select id="stack-ui"></select></label>
+                <label><span>Effects</span><select id="stack-fx"></select></label>
+              </div>
+              <button id="build-stack" class="button secondary wide">Compose seven-organ game skin</button>
+              <p class="microcopy">Each source owns only its semantic organ, preventing character, world, gear, item, effect, and interface materials from leaking across boundaries.</p>
+            </div>
+          </details>
+
+          <details class="treatment-lab" open>
+            <summary>
+              <span>Treatment Forge</span>
+              <small>three bounded directions</small>
+            </summary>
+            <label class="treatment-mold-field">
+              <span>Treatment mold</span>
+              <select id="treatment-mold"></select>
+            </label>
+            <button id="forge-treatments" class="button secondary wide">
+              Forge three directions
+            </button>
+            <div
+              id="treatment-directions"
+              class="treatment-directions"
+              role="radiogroup"
+              aria-label="Generated treatment directions"
+            ></div>
+            <button id="apply-treatment" class="button primary wide" disabled>
+              Apply selected treatment
+            </button>
+            <p id="treatment-report" class="microcopy">
+              Drafts are deterministic and preview-only until you explicitly apply one.
+              They cannot write gameplay, save data, scripts, or network authority.
+            </p>
+          </details>
+
+          <label class="field">
+            <span>Style name</span>
+            <input id="style-name" maxlength="80" value="Neon Paper Luxe">
+          </label>
+
+          <label class="field">
+            <span>Deterministic seed</span>
+            <span class="inline-field">
+              <input id="style-seed" maxlength="120" value="axm-freedom-001">
+              <button id="new-seed" class="icon-button" title="Create and record a new seed" aria-label="Create a new seed">↻</button>
+            </span>
+          </label>
+
+          <details class="ai-native" open>
+            <summary>
+              <span>AI-native description</span>
+              <small>bounded + inspectable</small>
+            </summary>
+            <label class="field">
+              <span>Describe the style</span>
+              <textarea id="style-phrase" rows="3">dark luxurious neon paper, cool and high contrast</textarea>
+            </label>
+            <button id="interpret-phrase" class="button secondary wide">Interpret into controls</button>
+            <p id="phrase-report" class="microcopy">Recognized words become visible recipe switches. Unknown words are reported.</p>
+          </details>
+
+          <fieldset class="control-group">
+            <legend>Style language</legend>
+            <div id="keyword-chips" class="chips"></div>
+          </fieldset>
+
+          <fieldset class="control-group">
+            <legend>Palette forge</legend>
+            <div class="color-grid">
+              <label><span>Primary</span><input id="color-primary" type="color" value="#38e8ff"></label>
+              <label><span>Secondary</span><input id="color-secondary" type="color" value="#7c5cff"></label>
+              <label><span>Accent</span><input id="color-accent" type="color" value="#ff43c8"></label>
+            </div>
+            <div class="palette-harmony">
+              <label>
+                <span>Harmony</span>
+                <select id="palette-harmony">
+                  <option value="triadic" selected>Triadic</option>
+                  <option value="complementary">Complementary</option>
+                  <option value="analogous">Analogous</option>
+                  <option value="split-complementary">Split complementary</option>
+                  <option value="monochrome">Monochrome</option>
+                </select>
+              </label>
+              <button id="apply-harmony" class="button secondary">Forge from primary</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="control-group character-forge">
+            <legend>Character forge</legend>
+            <div class="select-grid">
+              <label>
+                <span>Silhouette</span>
+                <select id="character-silhouette">
+                  <option value="heroic-soft" selected>Heroic soft</option>
+                  <option value="balanced">Balanced</option>
+                  <option value="compact">Compact</option>
+                  <option value="angular">Angular</option>
+                  <option value="tall">Tall</option>
+                  <option value="broad">Broad</option>
+                  <option value="chibi">Chibi</option>
+                  <option value="floating">Floating</option>
+                </select>
+              </label>
+              <label>
+                <span>Head</span>
+                <select id="character-head">
+                  <option value="round" selected>Round</option>
+                  <option value="square">Square</option>
+                  <option value="helmet">Helmet</option>
+                  <option value="orb">Orb</option>
+                  <option value="faceted">Faceted</option>
+                  <option value="masked">Masked</option>
+                  <option value="creature">Creature</option>
+                </select>
+              </label>
+              <label>
+                <span>Outfit</span>
+                <select id="character-outfit">
+                  <option value="future-tailored" selected>Future tailored</option>
+                  <option value="modular">Modular</option>
+                  <option value="paper-armor">Paper armor</option>
+                  <option value="street-tech">Street tech</option>
+                  <option value="ceremonial">Ceremonial</option>
+                  <option value="explorer">Explorer</option>
+                  <option value="biomech">Biomech</option>
+                  <option value="artisan">Artisan</option>
+                </select>
+              </label>
+              <label>
+                <span>Accessory</span>
+                <select id="character-accessory">
+                  <option value="energy-sash" selected>Energy sash</option>
+                  <option value="none">None</option>
+                  <option value="visor">Visor</option>
+                  <option value="cape">Cape</option>
+                  <option value="orbiting-charm">Orbiting charm</option>
+                  <option value="crown">Crown</option>
+                  <option value="wings">Wings</option>
+                  <option value="tool-rig">Tool rig</option>
+                </select>
+              </label>
+            </div>
+            <div class="range-row character-proportion">
+              <label for="character-proportion">Proportion</label>
+              <input id="character-proportion" type="range" min="0" max="1" step="0.01" value="0.5">
+              <output for="character-proportion">0.50</output>
+            </div>
+          </fieldset>
+
+          <fieldset class="control-group">
+            <legend>Material lab</legend>
+            <div id="material-controls"></div>
+          </fieldset>
+
+          <fieldset class="control-group">
+            <legend>Pattern + form lab</legend>
+            <label class="field compact">
+              <span>Pattern language</span>
+              <select id="pattern-kind"></select>
+            </label>
+            <div id="pattern-controls"></div>
+            <div class="subgroup-label">GEOMETRY</div>
+            <div id="geometry-controls"></div>
+          </fieldset>
+
+          <fieldset class="control-group toggles">
+            <legend>Freedom with clarity</legend>
+            <label>
+              <input id="high-contrast" type="checkbox" checked>
+              <span><strong>Protect contrast</strong><small>Keep text and cues readable</small></span>
+            </label>
+            <label>
+              <input id="reduced-motion" type="checkbox">
+              <span><strong>Reduced motion</strong><small>Stop pulses and shimmer</small></span>
+            </label>
+            <label>
+              <input id="remix-allowed" type="checkbox">
+              <span><strong>Allow remixing</strong><small>Stored as a creator declaration</small></span>
+            </label>
+          </fieldset>
+
+          <button id="compile-style" class="button primary wide">Build deterministic draft</button>
+        </aside>
+
+        <section class="preview-column" aria-label="Live style specimen">
+          <div class="preview-toolbar">
+            <div>
+              <span class="live-dot"></span>
+              <strong>Live specimen scene</strong>
+              <small>actual resolver output</small>
+            </div>
+            <div class="toolbar-actions">
+              <button id="toggle-original" class="button ghost" aria-pressed="false">Hold for original</button>
+              <button id="toggle-motion" class="button ghost" aria-pressed="false">Pause motion</button>
+            </div>
+          </div>
+
+          <div id="specimen" class="specimen">
+            <div class="world-grid" aria-hidden="true"></div>
+            <div class="world-haze" aria-hidden="true"></div>
+            <div class="status-rail">
+              <span>ORBITAL SECTOR 07</span>
+              <span class="objective-mark"><i></i> OBJECTIVE STABLE</span>
+            </div>
+
+            <div class="specimen-title">
+              <p>STYLE SPECIMEN</p>
+              <h3 id="preview-name">Neon Paper Luxe</h3>
+              <span id="preview-seed">SEED · AXM-FREEDOM-001</span>
+            </div>
+
+            <div class="arena">
+              <div class="reactor" aria-label="Styled game objective">
+                <span class="reactor-ring ring-a"></span>
+                <span class="reactor-ring ring-b"></span>
+                <span class="reactor-core"></span>
+              </div>
+
+              <div class="actor player" aria-label="Player character preview">
+                <span class="actor-shadow"></span>
+                <span class="actor-accessory"></span>
+                <span class="actor-head"></span>
+                <span class="actor-body"></span>
+                <span class="actor-outfit"></span>
+                <span class="actor-trim"></span>
+                <span class="actor-leg leg-a"></span>
+                <span class="actor-leg leg-b"></span>
+                <span class="team-glyph">A</span>
+              </div>
+
+              <div class="actor enemy" aria-label="Enemy character preview">
+                <span class="actor-shadow"></span>
+                <span class="actor-head"></span>
+                <span class="actor-body"></span>
+                <span class="actor-trim"></span>
+                <span class="actor-leg leg-a"></span>
+                <span class="actor-leg leg-b"></span>
+                <span class="team-glyph">!</span>
+              </div>
+
+              <div class="reward" aria-label="Reward item preview">
+                <span></span>
+              </div>
+            </div>
+
+            <div class="hud-card">
+              <div class="portrait"><span></span></div>
+              <div>
+                <small>PLAYER ONE</small>
+                <strong>AXM EXPLORER</strong>
+                <div class="health"><i></i></div>
+              </div>
+              <span class="ability-chip" aria-hidden="true">ABILITY <b>Q</b></span>
+            </div>
+
+            <div class="material-orbs" aria-label="Material response preview">
+              <span class="orb matte" title="Surface"></span>
+              <span class="orb metal" title="Metal response"></span>
+              <span class="orb glow" title="Glow response"></span>
+            </div>
+
+            <div id="texture-preview" class="texture-preview" hidden>
+              <span>CUSTOM ASSET LAYER</span>
+            </div>
+          </div>
+
+          <div class="compatibility">
+            <div>
+              <p>ACTIVE GAME MOLD</p>
+              <strong id="compatibility-label">RESOLVING…</strong>
+            </div>
+            <dl id="receipt-summary">
+              <div><dt>Applied</dt><dd>—</dd></div>
+              <div><dt>Fallbacks</dt><dd>—</dd></div>
+              <div><dt>Protected</dt><dd>—</dd></div>
+              <div><dt>Unsupported</dt><dd>—</dd></div>
+            </dl>
+          </div>
+        </section>
+
+        <aside class="panel output-panel" aria-label="Validate and share">
+          <div class="panel-heading">
+            <span class="step">02</span>
+            <div>
+              <p>VALIDATE + SHARE</p>
+              <h3>Portable skin</h3>
+            </div>
+          </div>
+
+          <div class="truth-card">
+            <span id="validation-icon">✓</span>
+            <div>
+              <strong id="validation-title">Checking draft</strong>
+              <p id="validation-detail">No gameplay authority. No scripts. No network.</p>
+            </div>
+          </div>
+
+          <div class="pack-card">
+            <div>
+              <small>PACK ID</small>
+              <code id="pack-id">—</code>
+            </div>
+            <div>
+              <small>RECIPE</small>
+              <code id="recipe-info">axm.style-recipe.v1</code>
+            </div>
+            <div>
+              <small>CAPABILITIES</small>
+              <strong id="capability-count">0</strong>
+            </div>
+            <div>
+              <small>ASSETS</small>
+              <strong id="asset-count">0</strong>
+            </div>
+          </div>
+
+          <details class="asset-import" open>
+            <summary>
+              <span>Bring your own art</span>
+              <small>PNG · JPG · WEBP</small>
+            </summary>
+            <label class="drop-zone" for="asset-file">
+              <input id="asset-file" type="file" accept="image/png,image/jpeg,image/webp">
+              <span class="upload-icon">↥</span>
+              <strong>Choose a raster asset</strong>
+              <small>Embedded locally with a SHA-256 receipt</small>
+            </label>
+            <label class="field compact">
+              <span>Use it for</span>
+              <select id="asset-target"></select>
+            </label>
+            <p id="asset-report" class="microcopy">No file selected.</p>
+          </details>
+
+          <div class="share-actions">
+            <button id="export-pack" class="button primary wide">Export shareable skin</button>
+            <label class="button secondary wide file-button">
+              Import shared skin
+              <input id="import-pack" type="file" accept=".json,.axmskin,application/json">
+            </label>
+            <button id="save-library" class="button secondary wide">Save to My Skins</button>
+            <button id="view-data" class="button ghost wide">Inspect recipe + receipt</button>
+          </div>
+
+          <section class="local-library">
+            <div class="section-label">
+              <span>MY LOCAL SKINS</span>
+              <button id="refresh-library" class="text-button">Refresh</button>
+            </div>
+            <div id="library-list" class="library-list">
+              <p class="empty">Nothing saved yet. Your local library never uploads itself.</p>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="surface-chamber" aria-labelledby="surface-chamber-title">
+        <header class="chamber-heading">
+          <div>
+            <p class="eyebrow">FULL GAME SKIN TEST CHAMBER</p>
+            <h2 id="surface-chamber-title">Every visible surface, one honest map.</h2>
+            <p>
+              Inspect all 33 authored surfaces, tune one without disturbing the others,
+              and see exactly where the active game mold connects or keeps its fallback.
+            </p>
+          </div>
+          <dl class="chamber-summary" aria-label="Surface coverage summary">
+            <div><dt>Authored</dt><dd id="chamber-authored">—</dd></div>
+            <div><dt>Connected</dt><dd id="chamber-connected">—</dd></div>
+            <div><dt>Fallback</dt><dd id="chamber-fallback">—</dd></div>
+            <div><dt>Organs</dt><dd>7</dd></div>
+          </dl>
+        </header>
+
+        <div class="chamber-toolbar">
+          <div id="surface-organ-filters" class="organ-filters" role="group" aria-label="Surface organ filter"></div>
+          <label class="surface-search">
+            <span>Find surface</span>
+            <input id="surface-search" type="search" placeholder="vehicle, HUD, lighting…">
+          </label>
+        </div>
+
+        <div class="chamber-layout">
+          <section class="surface-browser" aria-label="Game skin surfaces">
+            <div class="surface-legend" aria-label="Surface states">
+              <span data-state="connected">Connected now</span>
+              <span data-state="pack-ready">Pack ready · game fallback</span>
+              <span data-state="missing">Not authored</span>
+            </div>
+            <div id="surface-grid" class="surface-grid"></div>
+            <p id="surface-empty" class="surface-empty" hidden>No surfaces match this filter.</p>
+          </section>
+
+          <aside class="surface-inspector" aria-label="Selected surface editor">
+            <div class="inspector-heading">
+              <div>
+                <small id="surface-category">WORLD &amp; ATMOSPHERE</small>
+                <h3 id="surface-name">World sky</h3>
+                <code id="surface-id">world.sky</code>
+              </div>
+              <span id="surface-status" class="surface-status">CONNECTED</span>
+            </div>
+            <p id="surface-explanation" class="inspector-copy">
+              This surface is authored by the pack and declared by the active game mold.
+            </p>
+
+            <div class="surface-palette">
+              <label><span>Base</span><input id="surface-base-color" type="color" value="#38e8ff"></label>
+              <label><span>Secondary</span><input id="surface-secondary-color" type="color" value="#7c5cff"></label>
+              <label><span>Accent</span><input id="surface-accent-color" type="color" value="#ff43c8"></label>
+            </div>
+
+            <div class="surface-sliders">
+              <div class="range-row">
+                <label for="surface-glow">Glow</label>
+                <input id="surface-glow" type="range" min="0" max="1" step="0.01" value="0.5">
+                <output for="surface-glow">0.50</output>
+              </div>
+              <div class="range-row">
+                <label for="surface-metallic">Metallic</label>
+                <input id="surface-metallic" type="range" min="0" max="1" step="0.01" value="0.2">
+                <output for="surface-metallic">0.20</output>
+              </div>
+              <div class="range-row">
+                <label for="surface-roughness">Roughness</label>
+                <input id="surface-roughness" type="range" min="0" max="1" step="0.01" value="0.5">
+                <output for="surface-roughness">0.50</output>
+              </div>
+              <div class="range-row">
+                <label for="surface-gloss">Gloss</label>
+                <input id="surface-gloss" type="range" min="0" max="1" step="0.01" value="0.5">
+                <output for="surface-gloss">0.50</output>
+              </div>
+              <div class="range-row">
+                <label for="surface-opacity">Opacity</label>
+                <input id="surface-opacity" type="range" min="0.1" max="1" step="0.01" value="1">
+                <output for="surface-opacity">1.00</output>
+              </div>
+            </div>
+
+            <dl class="surface-metadata">
+              <div><dt>Kind</dt><dd id="surface-kind">surface</dd></div>
+              <div><dt>Adoption</dt><dd id="surface-adoption">Level 0</dd></div>
+              <div><dt>Protected cues</dt><dd id="surface-cues">None</dd></div>
+              <div><dt>Properties</dt><dd id="surface-property-count">0</dd></div>
+            </dl>
+
+            <div class="inspector-actions">
+              <button id="reset-surface" class="button ghost">Reset this surface</button>
+              <button id="inspect-surface-data" class="button secondary">Inspect material data</button>
+            </div>
+            <p class="microcopy">
+              Surface edits stay inside the skin pack. Undeclared game surfaces remain saved
+              for future adapters but do not affect the active game.
+            </p>
+          </aside>
+        </div>
+
+        <section class="conformance-lab" aria-labelledby="conformance-title">
+          <div class="conformance-copy">
+            <p class="eyebrow">FIRST-ADOPTION HARNESS</p>
+            <h3 id="conformance-title">Game adapter conformance</h3>
+            <p>
+              Contract checks run automatically. Runtime proofs remain pending until an
+              adopter actually observes preview isolation, fallback, rollback, and receipts.
+            </p>
+          </div>
+          <div class="conformance-result">
+            <div>
+              <small>READINESS</small>
+              <strong id="conformance-readiness">CHECKING…</strong>
+            </div>
+            <span id="conformance-score">—</span>
+          </div>
+          <div id="conformance-checks" class="conformance-checks"></div>
+          <fieldset class="runtime-evidence">
+            <legend>Record observed local proof</legend>
+            <label><input id="proof-preview" type="checkbox"><span>Isolated preview observed</span></label>
+            <label><input id="proof-fallback" type="checkbox"><span>Game fallback observed</span></label>
+            <label><input id="proof-rollback" type="checkbox"><span>Exact rollback observed</span></label>
+            <label><input id="proof-receipt" type="checkbox"><span>Resolution receipt observed</span></label>
+            <p>
+              These declarations create evidence prompts, not automatic certification.
+              Promotion still requires real adapter test receipts.
+            </p>
+          </fieldset>
+          <button id="inspect-conformance" class="button secondary">Inspect conformance report</button>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      <p>Mike - Axiom/mir</p>
+      <p>Freedom to create · restraint around authority · sources stay visible</p>
+    </footer>
+
+    <dialog id="data-dialog">
+      <form method="dialog">
+        <div class="dialog-heading">
+          <div>
+            <p>INSPECTABLE OUTPUT</p>
+            <h3>Recipe + resolution receipt</h3>
+          </div>
+          <button class="icon-button" aria-label="Close">×</button>
+        </div>
+        <div class="dialog-tabs" role="tablist" aria-label="Inspectable output">
+          <button type="button" class="active" data-dialog-tab="pack" role="tab" aria-selected="true">Skin pack</button>
+          <button type="button" data-dialog-tab="surface" role="tab" aria-selected="false">Surface</button>
+          <button type="button" data-dialog-tab="receipt" role="tab" aria-selected="false">Receipt</button>
+          <button type="button" data-dialog-tab="conformance" role="tab" aria-selected="false">Conformance</button>
+          <button type="button" data-dialog-tab="intent" role="tab" aria-selected="false">AI intent</button>
+        </div>
+        <pre id="data-output" role="tabpanel"></pre>
+      </form>
+    </dialog>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./app.mjs"></script>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+@supports not (color: color-mix(in oklab, white, black)) {
+  :root {
+    --axm-sem-border: rgb(255 255 255 / 0.16);
+    --axm-sem-border-strong: rgb(119 239 255 / 0.48);
+    --axm-sem-selection: rgb(119 239 255 / 0.22);
+  }
+
+  [data-theme="public-safe"],
+  [data-theme="paper-play"] {
+    --axm-sem-border: rgb(0 0 0 / 0.18);
+  }
+}
+
+@supports not (backdrop-filter: blur(2px)) {
+  .axm-material--soft-glass,
+  .axm-material--aetherglass {
+    background: var(--axm-sem-surface-raised);
+  }
+}
+
+@supports not (overflow: clip) {
+  .axm-material,
+  .axm-stage {
+    overflow: hidden;
+  }
+}
+
+@supports not (container-type: inline-size) {
+  .axm-container,
+  .axm-workbench-preview {
+    container-type: normal;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .axm-material--soft-glass,
+  .axm-material--aetherglass,
+  .axm-material--hologram {
+    backdrop-filter: none;
+    background: var(--axm-sem-surface-raised);
+  }
+}

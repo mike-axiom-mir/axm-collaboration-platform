@@ -1,0 +1,135 @@
+.axm-shell {
+  width: min(100% - 2rem, var(--axm-content-lg));
+  margin-inline: auto;
+}
+
+.axm-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--axm-stack-space, var(--axm-space-4));
+}
+
+.axm-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--axm-cluster-space, var(--axm-space-3));
+}
+
+.axm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--axm-grid-min, 16rem)), 1fr));
+  gap: var(--axm-grid-space, var(--axm-space-4));
+}
+
+.axm-center {
+  display: grid;
+  place-items: center;
+}
+
+.axm-frame {
+  aspect-ratio: var(--axm-frame-ratio, 16 / 9);
+  overflow: hidden;
+}
+
+.axm-cover {
+  min-height: var(--axm-cover-min, 70vh);
+  display: grid;
+  align-content: center;
+}
+
+.axm-sidebar-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--axm-space-5);
+}
+
+.axm-sidebar-layout > :first-child {
+  flex: 1 1 var(--axm-sidebar-width);
+}
+
+.axm-sidebar-layout > :last-child {
+  flex: 999 1 0;
+  min-inline-size: min(100%, 32rem);
+}
+
+.axm-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: clamp(var(--axm-space-6), 4vw, var(--axm-space-16));
+}
+
+.axm-stage {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+}
+
+.axm-reel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(min(84vw, 22rem), 1fr);
+  gap: var(--axm-space-4);
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline mandatory;
+  padding-block-end: var(--axm-space-3);
+}
+
+.axm-reel > * {
+  scroll-snap-align: start;
+}
+
+@media (width < 48rem) {
+  .axm-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.axm-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--axm-space-4);
+}
+
+.axm-switcher > * {
+  flex-grow: 1;
+  flex-basis: calc((var(--axm-switcher-threshold, 48rem) - 100%) * 999);
+}
+
+.axm-dashboard {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--axm-space-4);
+}
+
+.axm-dashboard > * { grid-column: span var(--axm-span, 4); }
+
+.axm-dock {
+  position: sticky;
+  inset-block-end: var(--axm-space-3);
+  z-index: var(--axm-depth-nav);
+  width: fit-content;
+  max-width: calc(100% - var(--axm-space-4));
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--axm-space-2);
+  margin-inline: auto;
+  padding: var(--axm-space-2);
+  border: var(--axm-border-thin) solid var(--axm-sem-border);
+  border-radius: var(--axm-radius-pill);
+  background: var(--axm-sem-canvas-elevated);
+  box-shadow: var(--axm-shadow-md);
+}
+
+.axm-region {
+  container-type: inline-size;
+  min-width: 0;
+}
+
+@media (width < 52rem) {
+  .axm-dashboard > * { grid-column: 1 / -1; }
+}

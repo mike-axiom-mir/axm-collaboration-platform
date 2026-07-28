@@ -46,6 +46,52 @@
     density: ['cozy','compact']
   };
 
+  /* Aetherglass remains data, too: every value is allowlisted or bounded.
+     Disabled is the compatibility default, so an older saved skin never
+     gains a new visual layer merely because the workshop was upgraded. */
+  const VISUAL_OPTIONS = {
+    theme: ['aether','arcane','frost','solar','verdant','nebula','eclipse','royal','ember','pearl','phantom','auric','oceanic','rose-gold','ultraviolet'],
+    atmosphere: ['cosmos','cathedral','dream','eclipse','monolith','sanctuary','forge','living','prism','quiet','portal','throne','ocean','sanctum','horizon'],
+    material: ['clear','smoked','crystal','obsidian','pearl','holographic','liquid','diamond','velvet','mirror'],
+    depth: ['flat','soft','deep','cinematic'],
+    luminosity: ['dim','balanced','radiant'],
+    density: ['airy','comfortable','compact'],
+    shape: ['soft','sculpted','sharp'],
+    transparency: ['auto','full','reduced','off'],
+    contrast: ['auto','normal','high'],
+    quality: ['auto','high','balanced','low'],
+    motion: ['auto','full','reduced','off'],
+    lightPreset: ['off','quiet-aura','sovereign-aurora','prismatic-cathedral','neon-sanctum','event-horizon']
+  };
+  const VISUAL_RANGES = {
+    intensity: [0, 1.8],
+    atmosphereStrength: [0, 1.6],
+    glowStrength: [0, 2]
+  };
+  const VISUAL_BOOLEANS = ['enabled','pointerLighting','reactivePanels','parallax','trackScroll'];
+  const VISUAL_DEFAULTS = {
+    enabled: false,
+    theme: 'aether',
+    atmosphere: 'cosmos',
+    material: 'crystal',
+    depth: 'deep',
+    luminosity: 'balanced',
+    density: 'comfortable',
+    shape: 'sculpted',
+    transparency: 'auto',
+    contrast: 'auto',
+    quality: 'auto',
+    motion: 'auto',
+    intensity: 1,
+    atmosphereStrength: 1,
+    glowStrength: 1,
+    pointerLighting: true,
+    reactivePanels: true,
+    parallax: true,
+    trackScroll: true,
+    lightPreset: 'quiet-aura'
+  };
+
   /* ---- INVARIANTS: what a skin may never take away ----
      Each entry says WHY, so a refusal explains itself instead of
      just saying no. These mirror the guarantees the hub makes. */
@@ -115,7 +161,8 @@
       '--radius':'14','--radius-s':'9'
     },
     slots: { nav:'left', status:'bottom', density:'cozy' },
-    assets: {}
+    assets: {},
+    visuals: Object.assign({}, VISUAL_DEFAULTS)
   };
 
   /* ============================================================
@@ -212,6 +259,9 @@
     Object.keys(NUMBER_TOKENS).forEach(key => controls.push({ kind:'number', key }));
     FONT_TOKENS.forEach(key => controls.push({ kind:'font', key }));
     Object.keys(SLOTS).forEach(key => controls.push({ kind:'layout', key, options:SLOTS[key].slice() }));
+    Object.keys(VISUAL_OPTIONS).forEach(key => controls.push({ kind:'aetherglass-option', key:'visuals.' + key, options:VISUAL_OPTIONS[key].slice() }));
+    Object.keys(VISUAL_RANGES).forEach(key => controls.push({ kind:'aetherglass-range', key:'visuals.' + key, range:VISUAL_RANGES[key].slice() }));
+    VISUAL_BOOLEANS.forEach(key => controls.push({ kind:'aetherglass-toggle', key:'visuals.' + key }));
 
     const productionFiles = [];
     assetSpec().forEach(asset => {
@@ -271,6 +321,27 @@
       if (!(k in SLOTS)) errors.push('slot "' + k + '" does not exist');
       else if (SLOTS[k].indexOf(s[k]) < 0) errors.push('slot ' + k + ': "' + s[k] + '" is not a legal arrangement (' + SLOTS[k].join('|') + ')');
     });
+
+    const visual = skin.visuals || {};
+    if (!visual || typeof visual !== 'object' || Array.isArray(visual)) {
+      errors.push('visuals: must be an object of allowlisted Aetherglass settings');
+    } else {
+      Object.keys(visual).forEach(k => {
+        const value = visual[k];
+        if (k in VISUAL_OPTIONS) {
+          if (VISUAL_OPTIONS[k].indexOf(value) < 0)
+            errors.push('visuals.' + k + ': "' + value + '" is not allowed (' + VISUAL_OPTIONS[k].join('|') + ')');
+        } else if (k in VISUAL_RANGES) {
+          const n = Number(value), range = VISUAL_RANGES[k];
+          if (!isFinite(n)) errors.push('visuals.' + k + ': must be a number');
+          else if (n < range[0] || n > range[1]) errors.push('visuals.' + k + ': ' + n + ' outside allowed range ' + range[0] + '–' + range[1]);
+        } else if (VISUAL_BOOLEANS.indexOf(k) >= 0) {
+          if (typeof value !== 'boolean') errors.push('visuals.' + k + ': must be true or false');
+        } else {
+          errors.push('visuals.' + k + ': not part of the editable Aetherglass surface');
+        }
+      });
+    }
 
     /* local-first: assets come from the vault, never off the internet.
        And the slot must EXIST — an undeclared slot renders nowhere, so
@@ -334,6 +405,11 @@
       if (DEFAULT.slots[k] !== s[k]) changes.push({ kind:'slot', key:k, from: DEFAULT.slots[k], to: s[k] });
     });
     Object.keys((skin && skin.assets) || {}).forEach(k => changes.push({ kind:'asset', key:k, to: skin.assets[k] }));
+    const visual = (skin && skin.visuals) || {};
+    Object.keys(visual).forEach(k => {
+      if (String(VISUAL_DEFAULTS[k]) !== String(visual[k]))
+        changes.push({ kind:'aetherglass', key:k, from:VISUAL_DEFAULTS[k], to:visual[k] });
+    });
     return changes;
   }
 
@@ -386,14 +462,15 @@
     return {
       tokens: Object.assign({}, DEFAULT.tokens, (skin && skin.tokens) || {}),
       slots:  Object.assign({}, DEFAULT.slots,  (skin && skin.slots)  || {}),
-      assets: Object.assign({}, (skin && skin.assets) || {})
+      assets: Object.assign({}, (skin && skin.assets) || {}),
+      visuals: Object.assign({}, VISUAL_DEFAULTS, (skin && skin.visuals) || {})
     };
   }
 
   function newSkin(name, author) {
     return { schema: SCHEMA, id: 'skin_' + Math.random().toString(36).slice(2,8),
              name: name || 'Untitled skin', author: author || 'me',
-             tokens: {}, slots: {}, assets: {} };
+             tokens: {}, slots: {}, assets: {}, visuals: {} };
   }
 
   /* ---- fingerprint: two people can check they hold the same skin ----
@@ -402,11 +479,15 @@
      for a signature. */
   function fingerprint(skin) {
     const r = resolve(skin);
-    const stable = JSON.stringify([
+    const look = [
       Object.keys(r.tokens).sort().map(k => [k, String(r.tokens[k])]),
       Object.keys(r.slots).sort().map(k => [k, String(r.slots[k])]),
       Object.keys(r.assets).sort().map(k => [k, String(r.assets[k])])
-    ]);
+    ];
+    /* Preserve every pre-Aetherglass fingerprint byte-for-byte while the
+       layer is off. Enabled compositions add their resolved visual look. */
+    if (r.visuals.enabled) look.push(Object.keys(r.visuals).sort().map(k => [k, String(r.visuals[k])]));
+    const stable = JSON.stringify(look);
     let h = 5381;
     for (let i = 0; i < stable.length; i++) h = ((h << 5) + h + stable.charCodeAt(i)) >>> 0;
     let h2 = 52711;
@@ -451,6 +532,7 @@
 
   return { SCHEMA, PACK_SCHEMA, DEFAULT, COLOR_TOKENS, NUMBER_TOKENS, FONT_TOKENS, FONT_ALLOW,
            SLOTS, ASSET_SLOTS, assetSpec, productionSpec, REQUIRED_ELEMENTS, CONTRAST_PAIRS,
+           VISUAL_OPTIONS, VISUAL_RANGES, VISUAL_BOOLEANS, VISUAL_DEFAULTS,
            parseColor, contrast, validate, checkReadability, checkElements, checkAssets,
            diff, accept, resolve, newSkin, fingerprint, importRecord, newPack, acceptPack };
 });

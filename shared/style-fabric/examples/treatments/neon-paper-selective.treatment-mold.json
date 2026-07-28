@@ -1,0 +1,125 @@
+{
+  "type": "axm.treatment-mold",
+  "version": "1.0",
+  "id": "neon-paper-selective",
+  "name": "Neon Paper Selective",
+  "description": "Warm paper and ink remain tactile while only trim and interaction edges receive neon energy.",
+  "status": "WORKING_TEST",
+  "targets": ["world.surface", "character.player.detail", "ui.panel", "fx.primary"],
+  "defaultProfile": "balanced",
+  "palette": {
+    "background": "#111018",
+    "surface": "#e8d9bd",
+    "primary": "#24d9df",
+    "secondary": "#7658e8",
+    "accent": "#ff4f9a",
+    "text": "#15131b",
+    "mutedText": "#655d64",
+    "shadow": "#1c1720",
+    "highlight": "#fff3d8"
+  },
+  "legacy": {
+    "colors": {
+      "baseColor": "surface",
+      "secondaryColor": "primary",
+      "accentColor": "accent",
+      "emissiveColor": "primary"
+    },
+    "metallic": 0.02,
+    "roughness": 0.82,
+    "gloss": 0.16,
+    "specular": 0.22,
+    "clearcoat": 0.04,
+    "sheen": 0.18,
+    "translucency": 0,
+    "iridescence": 0,
+    "emissiveStrength": 0.82,
+    "glowIntensity": 0.42,
+    "glowRadius": 18,
+    "opacity": 1,
+    "outlineWidth": 4.2,
+    "grain": 0.68,
+    "weathering": 0.08,
+    "patternScale": 1.1,
+    "pulseSpeed": 0.26,
+    "shimmerSpeed": 0,
+    "pattern": { "kind": "paper-fiber", "strength": 0.72, "scale": 1.1 }
+  },
+  "effectStack": {
+    "version": "1.0",
+    "layers": [
+      {
+        "id": "paper-base",
+        "kind": "texture",
+        "blendMode": "normal",
+        "colorRole": "surface",
+        "mask": "inside",
+        "opacity": 0.88,
+        "intensity": 0.76,
+        "scale": 1.1,
+        "pattern": "paper-fiber"
+      },
+      {
+        "id": "ink-shadow",
+        "kind": "shadow",
+        "blendMode": "multiply",
+        "colorRole": "shadow",
+        "mask": "outside",
+        "opacity": 0.72,
+        "intensity": 0.56,
+        "radius": 4,
+        "spread": 2,
+        "softness": 0.28
+      },
+      {
+        "id": "cyan-trim",
+        "kind": "rim-light",
+        "blendMode": "screen",
+        "colorRole": "primary",
+        "mask": "edge",
+        "opacity": 0.74,
+        "intensity": 0.52,
+        "radius": 8,
+        "softness": 0.34,
+        "motion": { "kind": "pulse", "speed": 0.26, "amount": 0.08 }
+      },
+      {
+        "id": "pink-signal",
+        "kind": "outer-glow",
+        "blendMode": "screen",
+        "colorRole": "accent",
+        "mask": "edge",
+        "opacity": 0.34,
+        "intensity": 0.3,
+        "radius": 16,
+        "spread": 2,
+        "softness": 0.68
+      }
+    ]
+  },
+  "lightingRig": {
+    "version": "1.0",
+    "ambient": { "colorRole": "background", "intensity": 0.34, "softness": 1 },
+    "key": { "colorRole": "highlight", "intensity": 0.66, "directionDegrees": 330, "softness": 0.72 },
+    "fill": { "colorRole": "primary", "intensity": 0.22, "directionDegrees": 60, "softness": 0.84 },
+    "rim": { "colorRole": "accent", "intensity": 0.42, "directionDegrees": 160, "softness": 0.38 },
+    "shadows": { "strength": 0.7, "softness": 0.36 },
+    "bloom": { "intensity": 0.18, "threshold": 0.8, "radius": 18 },
+    "haze": { "colorRole": "primary", "density": 0.03 },
+    "exposure": 1,
+    "contrast": 1.06
+  },
+  "constraints": {
+    "maxLayers": 6,
+    "maxEffectCost": 8,
+    "minimumTextContrast": 4.5,
+    "preserveGameplayCues": true,
+    "reducedMotionFallback": true
+  },
+  "provenance": {
+    "origin": "built-in-treatment-mold",
+    "creator": "Mike - Axiom/mir",
+    "license": "LicenseRef-AXM-Treatment-Test",
+    "remixAllowed": true
+  }
+}

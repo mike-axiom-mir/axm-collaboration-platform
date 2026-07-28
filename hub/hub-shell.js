@@ -162,6 +162,13 @@
   /* pure log-entry factory (timestamp injected by caller for testability) */
   function logEntry(level, msg, ts) { return { t: ts, level: level, msg: msg }; }
 
+  /* Startup may still be loading shared lifecycle state when a human opens a
+     workspace. A late restore is allowed only when navigation has remained
+     untouched since boot began; an explicit screen choice always wins. */
+  function shouldRestoreBootDestination(bootSequence, currentSequence) {
+    return Number.isInteger(bootSequence) && Number.isInteger(currentSequence) && bootSequence === currentSequence;
+  }
+
   /* pure: given everything discovered + the user's added set, produce the
      catalog (each module flagged enabled) and the active/visible list.
      Stale enabled ids (folder removed) are dropped, not errored. */
@@ -404,10 +411,25 @@
     };
   }
 
-  return { NS, memoryBackend, localStorageBackend, makeStore, normalizeRegistry, logEntry, resolveModules, promoteIntegratedParents,
+  /* Skinner is normally hosted inside Studio, but its direct and standalone
+     routes are still valid. Resolve all persistence seams by their explicit
+     checkpoint time; a timestamp-free legacy direct state keeps priority over
+     another timestamp-free state. */
+  function selectSkinState(directState, studioState, localState) {
+    const embeddedState = studioState && studioState.skinner;
+    const candidates = [directState, embeddedState, localState].filter(Boolean);
+    if (!candidates.length) return null;
+    return candidates.reduce((selected, candidate) => {
+      const selectedTime = Date.parse(selected.updatedAt || '') || 0;
+      const candidateTime = Date.parse(candidate.updatedAt || '') || 0;
+      return candidateTime > selectedTime ? candidate : selected;
+    });
+  }
+
+  return { NS, memoryBackend, localStorageBackend, makeStore, normalizeRegistry, logEntry, shouldRestoreBootDestination, resolveModules, promoteIntegratedParents,
            DEFAULT_LAYERS, GOVERNED_FOUNDATION_WAVE1, GOVERNED_FOUNDATION_WAVE2, GOVERNED_FOUNDATION_ASSIGNMENTS, ROADMAP_PARENT_LAYERS,
            QUICK_LIFECYCLE_STATES, quickLifecycleTransition,
-           doorHash, layerOf, resolveLayers, checkDoor, workflowLayout, upgradeLegacyOpenLayout, upgradePublishLayer, upgradeFoundationRoadmap, upgradeRankedRoadmapPlacement, upgradeFoundationWave2, friendlyName, organizeCapabilityRoutes };
+           doorHash, layerOf, resolveLayers, checkDoor, workflowLayout, upgradeLegacyOpenLayout, upgradePublishLayer, upgradeFoundationRoadmap, upgradeRankedRoadmapPlacement, upgradeFoundationWave2, friendlyName, organizeCapabilityRoutes, selectSkinState };
 });
 
 /* ============================================================
@@ -578,7 +600,7 @@ if (typeof window !== 'undefined') (function () {
       if (!silent) this.log('info', 'view mode → ' + this.mode);
     },
     toggleMode() { this.setMode(this.mode === 'simple' ? 'advanced' : 'simple'); },
-    setSidebarCollapsed(collapsed, silent) {
+    setSidebarCollapsed(collapsed, silent, persist = true) {
       this.sidebarCollapsed = !!collapsed;
       document.body.dataset.sidebarCollapsed = this.sidebarCollapsed ? 'true' : 'false';
       [$('sidebarToggle'), $('sidebarTopToggle')].filter(Boolean).forEach(b => {
@@ -586,7 +608,9 @@ if (typeof window !== 'undefined') (function () {
         b.setAttribute('aria-label', this.sidebarCollapsed ? 'Expand navigation' : 'Collapse navigation');
         b.title = this.sidebarCollapsed ? 'Expand navigation' : 'Collapse navigation';
       });
-      try { localStorage.setItem('axm.hub.sidebar-collapsed', this.sidebarCollapsed ? 'true' : 'false'); } catch (e) {}
+      if (persist) {
+        try { localStorage.setItem('axm.hub.sidebar-collapsed', this.sidebarCollapsed ? 'true' : 'false'); } catch (e) {}
+      }
       if (!silent) this.log('info', this.sidebarCollapsed ? 'navigation collapsed · workspace expanded' : 'navigation expanded');
     },
     toggleSidebar() { this.setSidebarCollapsed(!this.sidebarCollapsed); },
@@ -1673,18 +1697,27 @@ if (typeof window !== 'undefined') (function () {
       if (r.applied.length) this.log('ok', r.applied.length + ' local skin asset(s) rendered');
     },
     boot() {
+      const bootNavigationSequence = this.frameLoadSequence;
       this.initNavigation();
       let savedMode = 'simple'; try { savedMode = localStorage.getItem('axm.hub.view-mode') || 'simple'; } catch (e) {}
       this.setMode(savedMode, true);
-      let savedSidebar = false; try { savedSidebar = localStorage.getItem('axm.hub.sidebar-collapsed') === 'true'; } catch (e) {}
-      this.setSidebarCollapsed(savedSidebar, true);
+      let savedSidebar = false;
+      try { savedSidebar = localStorage.getItem('axm.hub.sidebar-collapsed') === 'true'; } catch (e) {}
+      /* The desktop rail is useful context. On a phone it is an overlay, so
+         begin with the work surface visible and let the existing edge control
+         open navigation explicitly. This also repairs older saved "open"
+         state that could cover the entire narrow interface at boot. */
+      const narrowSidebar = !!(window.matchMedia && window.matchMedia('(max-width: 760px)').matches);
+      this.setSidebarCollapsed(narrowSidebar || savedSidebar, true, !narrowSidebar);
       /* ---- skin: freedom in safety ----
          A saved skin is re-checked EVERY boot, never trusted because it was
          accepted once. ?safe=1 ignores skins entirely, so a bad skin can
          never lock you out. Reset lives in the Skinner and in this URL. */
       try {
         const safe = /[?&]safe=1/.test(location.search);
-        const saved = store.getModuleState('skinner');
+        let localSaved = null;
+        try { localSaved = JSON.parse(localStorage.getItem('axm.skinner.state.v2') || 'null'); } catch (_) {}
+        const saved = Core.selectSkinState(store.getModuleState('skinner'), store.getModuleState('studio'), localSaved);
         const sk = saved && saved.skin;
         if (safe) { this.log('warn', 'safe mode — skins ignored, default shell'); }
         else if (sk && window.AXMSkin) {
@@ -1696,6 +1729,14 @@ if (typeof window !== 'undefined') (function () {
             const m = window.AXMSkin.resolve(sk);
             Object.keys(m.tokens).forEach(k => document.documentElement.style.setProperty(k, /^--radius/.test(k) ? m.tokens[k] + 'px' : m.tokens[k]));
             document.body.dataset.nav = m.slots.nav; document.body.dataset.density = m.slots.density;
+            /* Aetherglass is mounted only from the accepted, allowlisted skin
+               config. Its bridge owns every node/style and can tear down without
+               touching shell classes or later platform changes. */
+            if (window.AXMSkinAetherglass) {
+              const visual = window.AXMSkinAetherglass.apply(sk, { root:document.body, applyToDocument:true });
+              if (!visual.ok) this.log('warn', 'Aetherglass skin layer not applied — ' + visual.reason);
+              else if (visual.enabled) this.log('ok', 'Aetherglass v' + visual.version + ' mounted · ' + m.visuals.lightPreset);
+            }
             /* Asset refs were previously validated but never painted. Resolve
                them through the local vault index; missing files are logged and
                never block the readable token/layout skin. */
@@ -1704,6 +1745,7 @@ if (typeof window !== 'undefined') (function () {
             setTimeout(() => {
               const e = window.AXMSkin.checkElements(probe);
               if (!e.ok) {
+                if (window.AXMSkinAetherglass) window.AXMSkinAetherglass.destroy(document.body);
                 Object.keys(m.tokens).forEach(k => document.documentElement.style.removeProperty(k));
                 this.log('error', 'skin hid ' + e.failures.map(f => '#' + f.id).join(', ') + ' — reverted to default');
               } else this.log('ok', 'skin applied: ' + (sk.name || 'unnamed') + ' (' + window.AXMSkin.diff(sk).length + ' changes)');
@@ -1752,8 +1794,13 @@ if (typeof window !== 'undefined') (function () {
           .filter(g => !g.locked).some(g => g.modules.some(m => m.id === last));
         this.loadContinuity();
         this.loadHandoffBroker();
-        if (openable) { this.log('info', 'reopened at last module: ' + last); this.open(last); }
-        else { if (last) this.log('info', 'last module sits in a locked layer — starting at Home'); this.showHome(); }
+        if (Core.shouldRestoreBootDestination(bootNavigationSequence, this.frameLoadSequence)) {
+          if (openable) { this.log('info', 'reopened at last module: ' + last); this.open(last); }
+          else { if (last) this.log('info', 'last module sits in a locked layer — starting at Home'); this.showHome(); }
+        } else {
+          this.log('info', 'kept the screen chosen during startup');
+          this.refreshBackButton();
+        }
         this.log('ok', 'hub ready — ' + this.visible.length + ' dashboards visible · ' + Math.max(0, this.registry.length - this.visible.length) + ' hidden');
       });
     }

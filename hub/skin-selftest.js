@@ -210,7 +210,36 @@ const bad = m => { out.push('  FAIL  ' + m); fails++; };
   !S.acceptPack(S.newPack('Bad','x',[evil])).ok ? ok('pack: a pack with nothing usable fails') : bad('empty-after-gating pack passed');
 })();
 
-/* ---- 10. THE DOWNLOAD-FROM-THE-WEB PATH ---- */
+/* ---- 10. AETHERGLASS: bounded data, explicit enable, reversible default ---- */
+(function aetherglass() {
+  const legacy = S.newSkin('Legacy','me');
+  S.resolve(legacy).visuals.enabled === false
+    ? ok('aetherglass: legacy skins stay visually disabled by default') : bad('legacy skin silently enabled Aetherglass');
+  S.fingerprint(legacy) === 'cbb3ca7955ffe15b'
+    ? ok('aetherglass: disabled legacy skins keep their pre-integration fingerprint') : bad('legacy fingerprint changed');
+
+  const live = S.newSkin('Living glass','me');
+  live.visuals = { enabled:true, theme:'royal', atmosphere:'cathedral', lightPreset:'quiet-aura', intensity:1.2 };
+  const accepted = S.accept(live);
+  accepted.ok ? ok('aetherglass: an allowlisted visual composition passes the skin gate') : bad('valid Aetherglass config refused');
+  accepted.changes.filter(c => c.kind === 'aetherglass').length === 4
+    ? ok('aetherglass: every non-default visual setting appears in the generated diff') : bad('Aetherglass diff is incomplete');
+
+  const unknown = S.newSkin('Unknown','x'); unknown.visuals = { theme:'remote-code-nebula' };
+  !S.validate(unknown).ok ? ok('aetherglass: unknown enum values are refused') : bad('unknown Aetherglass enum accepted');
+  const huge = S.newSkin('Huge','x'); huge.visuals = { intensity:999 };
+  !S.validate(huge).ok ? ok('aetherglass: numeric gains are bounded') : bad('unbounded Aetherglass intensity accepted');
+  const fakeBool = S.newSkin('String boolean','x'); fakeBool.visuals = { enabled:'true' };
+  !S.validate(fakeBool).ok ? ok('aetherglass: toggles require real booleans') : bad('string Aetherglass boolean accepted');
+  const reach = S.newSkin('Visual reach','x'); reach.visuals = { script:'alert(1)' };
+  !S.validate(reach).ok ? ok('aetherglass: undeclared visual fields remain outside the editable surface') : bad('undeclared Aetherglass field accepted');
+
+  const changed = S.newSkin('Changed','me'); changed.visuals = { enabled:true };
+  S.fingerprint(changed) !== S.fingerprint(legacy)
+    ? ok('aetherglass: visual settings participate in the skin fingerprint') : bad('fingerprint ignores Aetherglass');
+})();
+
+/* ---- 11. THE DOWNLOAD-FROM-THE-WEB PATH ---- */
 (function downloadedSkins() {
   /* someone downloads a skin from a forum. It references an asset they
      do not have. It must still work — and must SAY what is missing. */
@@ -247,7 +276,7 @@ const bad = m => { out.push('  FAIL  ' + m); fails++; };
   (!r.ok && r.missing.length === 1 && r.missing[0].id === 'b') ? ok('web: checkAssets names exactly which asset is absent') : bad('checkAssets wrong');
 })();
 
-/* ---- 11. ASSET SLOTS: a designer must know what to make ---- */
+/* ---- 12. ASSET SLOTS: a designer must know what to make ---- */
 (function assetSlots() {
   Object.keys(S.ASSET_SLOTS).length >= 8 ? ok('assets: a slot registry exists (' + Object.keys(S.ASSET_SLOTS).length + ' slots)') : bad('no asset slot registry');
 
@@ -268,10 +297,10 @@ const bad = m => { out.push('  FAIL  ' + m); fails++; };
   spec.every(s => s.w && s.h && s.format && s.where && s.note) ? ok('assets: every slot declares size, format, location and a note') : bad('a slot is underspecified');
   spec.every(s => Array.isArray(s.deliverables) && s.deliverables.length) ? ok('assets: every slot declares concrete production files') : bad('an asset slot has no production deliverables');
   const production = S.productionSpec();
-  production.counts.controls === 23 ? ok('production sheet: 23 colour, type, and layout controls') : bad('production control count drifted: ' + production.counts.controls);
+  production.counts.controls === 43 ? ok('production sheet: 43 skin and Aetherglass controls') : bad('production control count drifted: ' + production.counts.controls);
   production.counts.productionFiles === 20 ? ok('production sheet: 20 concrete image files') : bad('production file count drifted: ' + production.counts.productionFiles);
   production.counts.safetyChecks === 14 ? ok('production sheet: 14 readability and honesty checks') : bad('production safety count drifted: ' + production.counts.safetyChecks);
-  production.counts.total === 57 ? ok('production sheet: complete near-60 sheet has 57 generated targets') : bad('complete production sheet count drifted: ' + production.counts.total);
+  production.counts.total === 77 ? ok('production sheet: complete sheet has 77 generated targets') : bad('complete production sheet count drifted: ' + production.counts.total);
   spec.every(s => s.required === false) ? ok('assets: no slot is required — a missing asset can never break a hub') : bad('a slot is required');
 
   /* sizes must be real numbers a designer can act on */
