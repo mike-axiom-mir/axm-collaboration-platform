@@ -20,6 +20,7 @@ const presentationPolicy = require(path.join(__dirname, '..', 'shared', 'present
 const presentationRecipe = require(path.join(__dirname, '..', 'shared', 'presentation-spine', 'presentation-recipe.js'));
 const screenContract = require(path.join(__dirname, '..', 'shared', 'presentation-spine', 'screen-contract.js'));
 const hubJs = fs.readFileSync(path.join(__dirname, 'hub-shell.js'), 'utf8');
+const radioJs = fs.readFileSync(path.join(__dirname, 'radio.js'), 'utf8');
 const presenceJs = fs.readFileSync(path.join(__dirname, 'ai-presence.js'), 'utf8');
 const navJs = fs.readFileSync(path.join(__dirname, 'workshop-navigation.js'), 'utf8');
 const productionSessionJs = fs.readFileSync(path.join(__dirname, 'production-session.js'), 'utf8');
@@ -33,6 +34,14 @@ function bad(m){ out.push('  FAIL  ' + m); fails++; }
 function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
 
 /id="sidebarToggle"[^>]+aria-controls="hubSidebar"/.test(hubHtml) ? ok('sidebar: visible collapse/reopen handle exists') : bad('sidebar toggle missing');
+/value="defcon"/.test(hubHtml) && /value="dubstep"/.test(hubHtml) && /value="metal"/.test(hubHtml) && /value="soul"/.test(hubHtml) && /value="bootliquor"/.test(hubHtml) && /value="secretagent"/.test(hubHtml)
+  ? ok('radio: picker spans genuinely different high-energy and genre choices') : bad('radio: diverse station choices missing');
+((hubHtml.match(/<option value="(?:defcon|dubstep|thetrip|metal|poptron|indiepop|soul|bootliquor|secretagent)">/g) || []).length === 9) && !/groovesalad/.test(hubHtml)
+  ? ok('radio: nine distinct choices replace the sleepy duplicate set') : bad('radio: station picker count or retired sleepy choice is wrong');
+/station: 'defcon'/.test(radioJs) && /defcon-128-mp3/.test(radioJs) && /dubstep-128-mp3/.test(radioJs) && /metal-128-mp3/.test(radioJs) && /7soul-128-mp3/.test(radioJs) && /secretagent-128-mp3/.test(radioJs)
+  ? ok('radio: diverse picker choices have matching primary and fallback stream definitions') : bad('radio: station source map is incomplete');
+/growth-worker-runner/.test(serverJs) && /GROWTH_SCAN_RUNNER\.scanBodies\(\)/.test(serverJs) && /measurementReuse: GROWTH_SCAN_STATUS/.test(serverJs)
+  ? ok('growth: exact cached measurements run off the request thread and remain source-content-free') : bad('growth: isolated incremental measurement reuse is not wired');
 /presentation-policy\.js/.test(hubHtml) && /presentation-recipe\.js/.test(hubHtml) && /id="presentationModeQuick"/.test(hubHtml) && /applyPresentationToFrame/.test(hubJs)
   ? ok('presentation: Hub owns a visible shared/module control plane') : bad('presentation: control plane wiring missing');
 /setSharedPresentationLayer/.test(hubJs) && /downloadPresentationRecipe/.test(hubJs) && /hub:presentation:recipe/.test(hubJs) && /Portable skin recipe/.test(hubJs)
@@ -46,6 +55,8 @@ screenContract.resolve({id:'verifier',tags:['verification']}).preset === 'instru
   ? ok('presentation: deterministic purpose presets expose screen freedom without behavior authority') : bad('presentation: screen contract resolution failed');
 /frameLoadSequence:\s*0/.test(hubJs) && /navigationToken !== this\.frameLoadSequence \|\| this\.active !== id/.test(hubJs)
   ? ok('navigation: stale module-load timers cannot replace the current screen') : bad('navigation: module-load race guard missing');
+Core.shouldRestoreBootDestination(4, 4) && !Core.shouldRestoreBootDestination(4, 5) && /kept the screen chosen during startup/.test(hubJs)
+  ? ok('navigation: a screen chosen during startup cannot be replaced by late boot restore') : bad('navigation: late boot restore can replace a human screen choice');
 /acceptPaintedFrame/.test(hubJs) && /actual[\s\S]*same-origin paint as a second honest ready signal/.test(hubJs)
   ? ok('navigation: visible iframe paint is accepted when a host drops its load event') : bad('navigation: iframe paint fallback missing');
 /body\[data-axm-presentation-mode="shared"\]/.test(presentationHostCss) && !/body\[data-axm-presentation-mode="module"\]/.test(presentationHostCss)
@@ -58,6 +69,17 @@ presentationRecipe.validate(presentationRecipe.normalize(presentationRecipe.DEFA
   ? ok('sidebar: layered UI-FX and visible 2030 Visual System route are wired') : bad('sidebar UI-FX or Visual System route missing');
 /hub\/professional-steward\.css/.test(hubHtml) && /Presentation only: no navigation, lifecycle, permission, or runtime changes\./.test(professionalCss) && /\.module-card:has\(\.module-card-life\.WORKING\)/.test(professionalCss) && /#presentationProfileQuick\s*\{[\s\S]*?display:\s*none/.test(professionalCss) && /MOBILE OVERLAY/.test(professionalCss)
   ? ok('visual stewardship: professional layer is wired and status styling stays presentation-only') : bad('visual stewardship: professional layer contract missing');
+/shared\/aetherglass\/src\/axm-aetherglass\.js/.test(hubHtml) && /shared\/aetherglass\/axm-skin-bridge\.js/.test(hubHtml) && /AXMSkinAetherglass\.apply\(sk/.test(hubJs) && /AXMSkinAetherglass\.destroy\(document\.body\)/.test(hubJs)
+  ? ok('visual stewardship: accepted skin data mounts and tears down Aetherglass through its owned bridge') : bad('visual stewardship: Aetherglass skin bridge wiring missing');
+Core.selectSkinState({skin:{name:'direct'},updatedAt:'2026-07-28T08:00:00Z'},{skinner:{skin:{name:'studio'},updatedAt:'2026-07-28T09:00:00Z'}}).skin.name === 'studio' &&
+  Core.selectSkinState({skin:{name:'direct'}},{skinner:{skin:{name:'studio'}}}).skin.name === 'direct' &&
+  Core.selectSkinState(null,{skinner:{skin:{name:'studio'}}}).skin.name === 'studio' &&
+  Core.selectSkinState({skin:{name:'direct'},updatedAt:'2026-07-28T08:00:00Z'},null,{skin:{name:'local'},updatedAt:'2026-07-28T10:00:00Z'}).skin.name === 'local'
+  ? ok('visual stewardship: Hub resolves direct, Studio, and standalone Skinner checkpoints without stale-route loss') : bad('visual stewardship: Skinner checkpoint resolution is wrong');
+/grid-template-columns:\s*repeat\(3,\s*64px\)/.test(professionalCss) && /\.active-lbl b\s*\{[\s\S]*?text-overflow:\s*ellipsis/.test(professionalCss) && /professional-3/.test(hubHtml)
+  ? ok('visual stewardship: 1280px command bar uses a balanced presence instrument without clipping') : bad('visual stewardship: responsive command-bar polish missing');
+/<button class="mark profile-entry"[\s\S]*?<b>AXM<\/b><\/button>/.test(hubHtml) && /<div class="brand"><span>Hub<\/span>(?:<small>[^<]+<\/small>)?<\/div>/.test(hubHtml) && (hubHtml.match(/<b>AXM<\/b>/g) || []).length === 1 && !/<div class="brand">\s*AXM\b/.test(hubHtml)
+  ? ok('visual stewardship: header presents AXM once, with Hub as its destination label') : bad('visual stewardship: duplicated AXM header identity');
 /dataset\.navKind = 'module'/.test(hubJs) && /\.mod\[data-nav-kind="module"\]/.test(presentationCss) && /min-height:38px!important/.test(presentationCss) && /flex:0 0 28px!important/.test(presentationCss)
   ? ok('sidebar: generated modules use compact navigation-deck instruments') : bad('sidebar: compact generated-module contract missing');
 /\.sidebar \.mod:not\(\[data-nav-kind="module"\]\)/.test(presentationCss) && /\.sidebar>\.sidebar-toggle/.test(presentationCss) && /<div id="modList"><\/div>\s*<button class="sidebar-toggle"/.test(hubHtml)

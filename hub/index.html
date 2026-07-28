@@ -17,7 +17,9 @@
 <link rel="stylesheet" href="/hub/shapeable-presentation.css?v=20260725-compact-all-2">
 <link rel="stylesheet" href="/shared/presentation-spine/presentation-spine.css?v=20260724-spine-1">
 <link rel="stylesheet" href="/shared/elements/axm-ui-fx.css?v=20260724-hub-nav-1">
-<link rel="stylesheet" href="/hub/professional-steward.css?v=20260727-professional-2">
+<link rel="stylesheet" href="/hub/professional-steward.css?v=20260727-professional-3">
+<link rel="stylesheet" href="/hub/sentient-atrium.css?v=20260727-atrium-4">
+<link rel="stylesheet" href="/hub/atrium-vortex.css?v=20260727-vortex-1">
 <script src="/shared/services/axm-foundation-services.js"></script>
 <script src="/shared/capabilities/workshop-capability-index.js"></script>
 <script src="/shared/continuity/workshop-continuity.js"></script>
@@ -26,21 +28,25 @@
 <script src="/hub/module-contract.js"></script>
 <script src="/hub/skin-core.js"></script>
 <script src="/hub/skin-renderer.js"></script>
+<script src="/shared/aetherglass/src/axm-aetherglass.js"></script>
+<script src="/shared/aetherglass/src/axm-luminous-layer-forge.js"></script>
+<script src="/shared/aetherglass/axm-skin-bridge.js"></script>
 <script src="/hub/workshop-navigation.js?v=20260717-2"></script>
 <script src="/shared/presentation-spine/screen-contract.js?v=20260725-screen-contract-3"></script>
 <script src="/shared/presentation-spine/presentation-policy.js?v=20260725-policy-1"></script>
   <script src="/shared/presentation-spine/presentation-recipe.js?v=20260725-recipe-1"></script>
-  <script src="/hub/hub-shell.js?v=20260725-screen-contract-1"></script>
+  <script src="/hub/hub-shell.js?v=20260727-startup-race-1"></script>
 <script src="/hub/mobile-device.js"></script>
 </head>
-<body class="axm-spine" data-axm-profile="dashboard" data-axm-surface="hub">
+<body class="axm-spine sentient-atrium" data-axm-profile="dashboard" data-axm-surface="hub" data-axm-visual-generation="2050">
 <div class="shell">
+  <canvas class="sentient-signal-field" id="sentientSignalField" aria-hidden="true"></canvas>
 
   <!-- ===== TOP BAR (outer stable) ===== -->
   <header class="topbar">
     <button class="workshop-back" id="workshopBack" type="button" aria-label="Go to previous AXM screen" title="Previous AXM screen · saved work is unchanged" disabled><span aria-hidden="true">‹</span></button>
-    <button class="mark profile-entry" id="profileMark" type="button" aria-label="Open shared profile and achievements" aria-haspopup="dialog" aria-controls="profileScreen" title="Open shared profile"><b>AXM</b></button>
-    <div class="brand">AXM <span>Hub</span></div>
+    <div class="brand"><span>Hub</span><small>Sentient Atrium</small></div>
+    <div class="atrium-identity" aria-label="Sentient Systems Atrium"><strong>Sentient Systems</strong><button class="mark profile-entry" id="profileMark" type="button" aria-label="Open shared profile and achievements" aria-haspopup="dialog" aria-controls="profileScreen" title="Open shared profile"><b>AXM</b></button><span>Atrium</span><small>AXM local system</small></div>
     <div class="active-lbl"><span>Inside</span><b id="activeName">Home</b></div>
     <div class="presentation-quick" id="presentationQuick" hidden>
       <span>SCREEN</span>
@@ -80,17 +86,18 @@
         <button class="tb-btn" id="btnSettings"><span class="axm-ui-icon settings" aria-hidden="true"></span><span>Settings</span></button>
       </div>
     </details>
+    <time class="sentient-ribbon-time" id="sentientRibbonTime" aria-label="Local time"></time>
   </header>
 
   <!-- ===== BODY: sidebar + viewport ===== -->
   <div class="body">
     <nav class="sidebar" id="hubSidebar">
       <div class="sidebar-deck-head"><span>AXM&nbsp; / &nbsp;NAVIGATION DECK</span><button class="sidebar-head-toggle" id="sidebarTopToggle" type="button" aria-controls="hubSidebar" aria-expanded="true" aria-label="Collapse navigation" title="Collapse navigation"><span aria-hidden="true">‹</span></button></div>
-      <button class="mod active fx-lift" id="homeBtn"><span class="ic fx-tile fx-glow"><span class="axm-ui-icon home" aria-hidden="true"></span></span><span class="nm">Home</span></button>
-      <button class="mod command-center-nav fx-lift" id="commandCenterNav" data-id="workshop-command-center" type="button" title="Open the one-page Workshop Command Center"><span class="ic fx-tile fx-glow" aria-hidden="true">⌁</span><span class="nm"><b>Command Center</b><small>Tell AXM what to do</small></span><span class="nav-arrow" aria-hidden="true">›</span></button>
-      <a class="mod mirror-command-nav fx-lift" id="mirrorCommandNav" href="http://127.0.0.1:8822/" target="_blank" rel="noopener" title="Open the local Mirror Command Deck"><span class="ic fx-tile fx-glow" aria-hidden="true">◇</span><span class="nm"><b>Mirror Command Deck</b><small>Circle · training · access readiness</small></span><span class="nav-arrow" aria-hidden="true">↗</span></a>
-      <button class="mod fx-lift" id="growthNavBtn" type="button" title="Open the Workshop Growth infographic"><span class="ic fx-tile fx-glow" aria-hidden="true">&#10022;</span><span class="nm">Workshop Growth</span></button>
-      <button class="mod visual-system-nav fx-lift" id="presentationSpineNav" data-id="presentation-spine" type="button" title="Open the shared 2030 visual system and migration map"><span class="ic fx-tile fx-glow" aria-hidden="true">&#9672;</span><span class="nm"><b>Visual System</b><small>2030 Visual System · 4 profiles</small></span><span class="nav-arrow" aria-hidden="true">›</span></button>
+      <button class="mod active fx-lift" id="homeBtn"><span class="ic fx-tile fx-glow"><span class="axm-ui-icon home" aria-hidden="true"></span></span><span class="nm"><b>Home</b><small>Start here</small></span></button>
+      <button class="mod command-center-nav fx-lift" id="commandCenterNav" data-id="workshop-command-center" type="button" title="Open the one-page Workshop Command Center"><span class="ic fx-tile fx-glow" aria-hidden="true"><span class="axm-ui-icon ai-team"></span></span><span class="nm"><b>Command Center</b><small>Tell AXM what to do</small></span><span class="nav-arrow" aria-hidden="true">›</span></button>
+      <a class="mod mirror-command-nav fx-lift" id="mirrorCommandNav" href="http://127.0.0.1:8822/" target="_blank" rel="noopener" title="Open the local Mirror Command Deck"><span class="ic fx-tile fx-glow" aria-hidden="true"><span class="axm-ui-icon eyes"></span></span><span class="nm"><b>Mirror Command Deck</b><small>Circle · training · access readiness</small></span><span class="nav-arrow" aria-hidden="true">↗</span></a>
+      <button class="mod fx-lift" id="growthNavBtn" type="button" title="Open the Workshop Growth infographic"><span class="ic fx-tile fx-glow" aria-hidden="true"><span class="axm-ui-icon build"></span></span><span class="nm"><b>Workshop Growth</b><small>Development &amp; scale</small></span></button>
+      <button class="mod visual-system-nav fx-lift" id="presentationSpineNav" data-id="presentation-spine" type="button" title="Open the shared 2030 visual system and migration map"><span class="ic fx-tile fx-glow" aria-hidden="true"><span class="axm-ui-icon modules"></span></span><span class="nm"><b>Visual System</b><small>2030 Visual System · 4 profiles</small></span><span class="nav-arrow" aria-hidden="true">›</span></button>
       <div class="side-cap sidebar-section-title">Workspaces</div>
       <div id="modList"></div>
       <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-controls="hubSidebar" aria-expanded="true" aria-label="Collapse navigation" title="Collapse navigation"><span aria-hidden="true">‹</span></button>
@@ -106,7 +113,7 @@
           <div class="hero-layout">
             <div class="hero-copy">
               <div class="hero-kicker"><span></span> AXM WORKSHOP · LIVE LOCAL SYSTEM</div>
-              <h1 id="homeTitle">What would you like to make today?</h1>
+              <h1 id="homeTitle">What would you like to <em>make</em> today?</h1>
               <p id="homeIntro">Tell AXM what you want to do, or choose a workspace below. You can reach the full toolset whenever you need it.</p>
             </div>
             <aside class="hero-system-deck" id="heroSystemDeck" aria-label="Live Workshop summary">
@@ -148,7 +155,9 @@
 
   <!-- ===== BOTTOM ACTION / STATUS LOG (outer stable) ===== -->
   <footer class="statusbar">
+    <span class="sb-item atrium-private"><span class="axm-ui-icon check" aria-hidden="true"></span> Private on this computer</span>
     <span class="sb-item"><span aria-hidden="true">✓</span> <b>Autosave</b> on</span>
+    <span class="sb-item atrium-approval"><span class="axm-ui-icon check" aria-hidden="true"></span> You approve changes</span>
     <span class="log-tail" id="logTail">hub starting…</span>
     <span class="sb-item">System <b>Hub v1.0</b></span>
     <button class="sb-btn" id="btnExport2" onclick="AXMHubShell.openExport()">Open Logs</button>
@@ -279,7 +288,7 @@
   <button class="close" data-close="radioScreen">✕</button>
   <div class="radio-head"><div class="radio-mark">♫</div><div><h2>Hub Radio</h2><p>A little commercial-free workshop atmosphere.</p></div></div>
   <div class="radio-player" id="hubRadioPlayer">
-    <div class="radio-main"><button class="radio-play" id="hubRadioPlay" aria-label="Play radio">▶</button><select class="radio-station" id="hubRadioStation" aria-label="Radio station"><option value="poptron">PopTron · electropop</option><option value="indiepop">Indie Pop Rocks! · alternative</option><option value="groovesalad">Groove Salad · chill</option><option value="thetrip">The Trip · trance</option></select></div>
+    <div class="radio-main"><button class="radio-play" id="hubRadioPlay" aria-label="Play radio">▶</button><select class="radio-station" id="hubRadioStation" aria-label="Radio station"><option value="defcon">BUILD MODE · hacker electronic</option><option value="dubstep">BASS DRIVE · dubstep &amp; deep bass</option><option value="thetrip">NIGHT DRIVE · progressive trance</option><option value="metal">METAL FORGE · metal &amp; industrial</option><option value="poptron">POP SPARK · electropop</option><option value="indiepop">INDIE GARAGE · alternative</option><option value="soul">SOUL CIRCUIT · vintage soul</option><option value="bootliquor">WILD CARD · Americana roots</option><option value="secretagent">SECRET AGENT · cinematic groove</option></select></div>
     <div class="radio-meta"><div class="radio-bars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div><span class="radio-status" id="hubRadioStatus">READY</span><span>128K MP3</span></div>
     <div class="radio-volume"><span>VOLUME</span><input id="hubRadioVolume" type="range" min="0" max="1" step="0.01" value="0.35" aria-label="Radio volume"><span id="hubRadioVolumeText">35%</span></div>
     <div class="radio-local">Local Mix appears automatically when owned or licensed tracks are added to <code>assets/audio/radio</code>.</div>
@@ -312,5 +321,7 @@
 <script src="/hub/radio.js?v=20260717-2"></script>
 <script src="/hub/spotify.js"></script>
 <script src="/hub/production-session.js?v=20260718-1"></script>
+<script src="/hub/sentient-atrium.js?v=20260727-atrium-1"></script>
+<script src="/hub/atrium-vortex.js?v=20260727-vortex-1"></script>
 <script>AXMHubShell.boot();</script>
 </body></html>
