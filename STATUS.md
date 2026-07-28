@@ -3,7 +3,7 @@
 AXM Workshop is an **experimental public test**. Public-safe, runnable,
 understandable, licensed, and production-ready are independent gates.
 
-Current release: [v0.4.0-experimental](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.4.0-experimental)
+Current release: [v0.4.1-experimental](https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.4.1-experimental)
 
 | Gate | Current state | Evidence or limitation |
 |---|---|---|
