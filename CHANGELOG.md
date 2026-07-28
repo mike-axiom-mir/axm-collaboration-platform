@@ -3,6 +3,33 @@
 Notable public AXM Workshop changes are recorded here. Historical workbench
 reports remain available under [`docs/history/`](docs/history/).
 
+## v0.4.0-experimental — 2026-07-28
+
+### Visual fabric integration
+
+- Integrated Style Fabric 0.6.0 as the governed game-skin foundation.
+- Integrated CSS Skin Fabric 0.2.0 as the shared interface foundation.
+- Added the Aetherglass 7.1.0 compatibility bridge and bounded Hub adapters.
+- Reworked the Hub and Skinner visual paths without changing module authority.
+- Repaired narrow-screen navigation and added focus and reduced-motion treatment.
+
+### Verification
+
+- Verified the Style Fabric 151-file release manifest and 109/109 unit checks.
+- Verified the CSS Skin Fabric 98-file intake manifest and required validators.
+- Passed the repository's required static, discovery, Hub, skin, and packaging gates.
+- Passed the GitHub clean-Windows launch gate on the merged integration commit.
+
+### Known boundaries
+
+- Experimental, not production-certified.
+- First Windows bootstrap needs internet when compatible Node.js is absent.
+- Deep optional CSS parsing depends on `tinycss2`; required CSS validation remains
+  independent and passed.
+- The broader Workshop suite still exposes a pre-existing Heartbeat observatory
+  fixture mismatch (`HELD` versus `READY`).
+- No broad open-source license has been granted yet.
+
 ## v0.3.0-experimental — 2026-07-27
 
 ### Public front door

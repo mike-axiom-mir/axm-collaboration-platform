@@ -5,7 +5,7 @@
     sessionMinutes: 30,
     exportGraceMinutes: 5,
     repositoryUrl: 'https://github.com/mike-axiom-mir/axm-collaboration-platform',
-    downloadUrl: 'https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.3.0-experimental/AXM-Workshop-v0.3.0-experimental-Windows-source.zip',
+    downloadUrl: 'https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.4.0-experimental/AXM-Workshop-v0.4.0-experimental-Windows-source.zip',
     issuesUrl: 'https://github.com/mike-axiom-mir/axm-collaboration-platform/issues/new/choose',
     communityUrl: 'https://discord.gg/sGHMxFkKhs',
     supportUrl: '',
