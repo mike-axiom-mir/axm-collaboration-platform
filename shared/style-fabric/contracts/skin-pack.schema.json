@@ -1,0 +1,395 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/contracts/skin-pack.schema.json",
+  "title": "AXM Skin Pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "type",
+    "version",
+    "id",
+    "release",
+    "status",
+    "metadata",
+    "scopes",
+    "capabilities",
+    "tokens",
+    "materials",
+    "bindings",
+    "assets",
+    "provenance"
+  ],
+  "properties": {
+    "type": { "const": "axm.skin-pack" },
+    "version": { "const": "1.0" },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "release": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[a-zA-Z0-9.-]+)?$"
+    },
+    "status": {
+      "enum": ["DRAFT", "WORKING_TEST", "TEST_HOLD_REVIEW"]
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "creator", "license", "remixAllowed"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "description": { "type": "string", "maxLength": 500 },
+        "creator": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "license": { "type": "string", "maxLength": 80 },
+        "remixAllowed": { "type": "boolean" },
+        "aiAssistance": { "type": "string", "maxLength": 120 },
+        "createdAt": { "type": ["string", "null"] }
+      }
+    },
+    "extends": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "release", "integrity"],
+          "properties": {
+            "id": { "type": "string" },
+            "release": { "type": "string" },
+            "integrity": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "scopes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "maxLength": 100 }
+    },
+    "capabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "palette.v1",
+          "theme-tokens.v1",
+          "material-params.v1",
+          "character-parts.v1",
+          "environment-surfaces.v1",
+          "game-surfaces.v1",
+          "lighting-profile.v1",
+          "vehicle-presentation.v1",
+          "equipment-presentation.v1",
+          "item-presentation.v1",
+          "postfx-profile.v1",
+          "ui-theme.v1",
+          "fx-preset.v1",
+          "raster-asset.v1",
+          "semantic-mold.v1",
+          "skin-stack.v1",
+          "treatment-stack.v1"
+        ]
+      }
+    },
+    "parameters": { "type": "object" },
+    "tokens": { "type": "object" },
+    "materials": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/material"
+      }
+    },
+    "bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["target", "material"],
+        "properties": {
+          "target": { "type": "string" },
+          "material": { "type": "string" },
+          "asset": { "type": "string" },
+          "blueprint": { "type": "string" },
+          "optional": { "type": "boolean" }
+        }
+      }
+    },
+    "assets": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/asset"
+      }
+    },
+    "characterBlueprints": { "type": "object" },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "minimumTextContrast": { "type": "number", "minimum": 1, "maximum": 21 },
+        "preserveGameplayCues": { "type": "boolean" },
+        "reducedMotionSafe": { "type": "boolean" },
+        "colorIsNotOnlySignal": { "type": "boolean" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["origin"],
+      "properties": {
+        "origin": { "type": "string" },
+        "compiler": { "type": "string" },
+        "seed": { "type": "string" },
+        "preset": { "type": ["object", "null"] },
+        "sourceIntent": { "type": "object" },
+        "sourceAssetHashes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "integrity": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["algorithm", "canonicalization", "contentSha256"],
+          "properties": {
+            "algorithm": { "const": "sha256" },
+            "canonicalization": { "const": "axm-stable-json-v1" },
+            "contentSha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "material": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "baseColor": { "$ref": "#/$defs/color" },
+        "secondaryColor": { "$ref": "#/$defs/color" },
+        "accentColor": { "$ref": "#/$defs/color" },
+        "emissiveColor": { "$ref": "#/$defs/color" },
+        "metallic": { "$ref": "#/$defs/unit" },
+        "roughness": { "$ref": "#/$defs/unit" },
+        "gloss": { "$ref": "#/$defs/unit" },
+        "specular": { "$ref": "#/$defs/unit" },
+        "clearcoat": { "$ref": "#/$defs/unit" },
+        "sheen": { "$ref": "#/$defs/unit" },
+        "translucency": { "$ref": "#/$defs/unit" },
+        "iridescence": { "$ref": "#/$defs/unit" },
+        "emissiveStrength": { "type": "number", "minimum": 0, "maximum": 2 },
+        "glowIntensity": { "$ref": "#/$defs/unit" },
+        "glowRadius": { "type": "number", "minimum": 0, "maximum": 64 },
+        "opacity": { "type": "number", "minimum": 0.1, "maximum": 1 },
+        "outlineWidth": { "type": "number", "minimum": 0, "maximum": 12 },
+        "grain": { "$ref": "#/$defs/unit" },
+        "weathering": { "$ref": "#/$defs/unit" },
+        "patternScale": { "type": "number", "minimum": 0.1, "maximum": 16 },
+        "pulseSpeed": { "type": "number", "minimum": 0, "maximum": 4 },
+        "shimmerSpeed": { "type": "number", "minimum": 0, "maximum": 4 },
+        "pattern": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9.-]{0,63}$"
+            },
+            "strength": { "$ref": "#/$defs/unit" },
+            "scale": { "type": "number", "minimum": 0.1, "maximum": 16 }
+          }
+        },
+        "effectStack": { "$ref": "#/$defs/effectStack" },
+        "lightingRig": { "$ref": "#/$defs/lightingRig" }
+      }
+    },
+    "effectStack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "layers", "fallback"],
+      "properties": {
+        "version": { "const": "1.0" },
+        "fallback": { "const": "legacy-material-fields" },
+        "layers": {
+          "type": "array",
+          "maxItems": 8,
+          "items": { "$ref": "#/$defs/effectLayer" }
+        }
+      }
+    },
+    "effectLayer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "blendMode", "colorRole"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+        },
+        "kind": {
+          "enum": [
+            "fill",
+            "texture",
+            "inner-glow",
+            "outer-glow",
+            "rim-light",
+            "shadow",
+            "highlight",
+            "bloom",
+            "haze",
+            "gradient"
+          ]
+        },
+        "blendMode": {
+          "enum": ["normal", "screen", "add", "multiply", "soft-light"]
+        },
+        "colorRole": { "$ref": "#/$defs/colorRole" },
+        "secondaryColorRole": { "$ref": "#/$defs/colorRole" },
+        "color": { "$ref": "#/$defs/color" },
+        "secondaryColor": { "$ref": "#/$defs/color" },
+        "mask": {
+          "enum": ["full", "inside", "outside", "edge", "top", "bottom", "radial"]
+        },
+        "opacity": { "$ref": "#/$defs/unit" },
+        "intensity": { "$ref": "#/$defs/unit" },
+        "radius": { "type": "number", "minimum": 0, "maximum": 64 },
+        "spread": { "type": "number", "minimum": 0, "maximum": 32 },
+        "threshold": { "$ref": "#/$defs/unit" },
+        "softness": { "$ref": "#/$defs/unit" },
+        "scale": { "type": "number", "minimum": 0.1, "maximum": 16 },
+        "pattern": {
+          "enum": ["none", "paper-fiber", "grain", "circuit", "holo-grid", "ink-hatch"]
+        },
+        "motion": { "$ref": "#/$defs/effectMotion" }
+      }
+    },
+    "effectMotion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "speed", "amount"],
+      "properties": {
+        "kind": { "enum": ["none", "pulse", "shimmer", "drift"] },
+        "speed": { "type": "number", "minimum": 0, "maximum": 4 },
+        "amount": { "$ref": "#/$defs/unit" }
+      }
+    },
+    "lightingRig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version"],
+      "properties": {
+        "version": { "const": "1.0" },
+        "ambient": { "$ref": "#/$defs/light" },
+        "key": { "$ref": "#/$defs/light" },
+        "fill": { "$ref": "#/$defs/light" },
+        "rim": { "$ref": "#/$defs/light" },
+        "shadows": { "$ref": "#/$defs/shadows" },
+        "bloom": { "$ref": "#/$defs/bloom" },
+        "haze": { "$ref": "#/$defs/haze" },
+        "exposure": { "type": "number", "minimum": 0.5, "maximum": 2 },
+        "contrast": { "type": "number", "minimum": 0.5, "maximum": 2 }
+      }
+    },
+    "light": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["colorRole", "intensity"],
+      "properties": {
+        "colorRole": { "$ref": "#/$defs/colorRole" },
+        "color": { "$ref": "#/$defs/color" },
+        "intensity": { "type": "number", "minimum": 0, "maximum": 2 },
+        "directionDegrees": { "type": "number", "minimum": 0, "maximum": 360 },
+        "softness": { "$ref": "#/$defs/unit" }
+      }
+    },
+    "shadows": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strength", "softness"],
+      "properties": {
+        "strength": { "$ref": "#/$defs/unit" },
+        "softness": { "$ref": "#/$defs/unit" }
+      }
+    },
+    "bloom": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intensity", "threshold", "radius"],
+      "properties": {
+        "intensity": { "$ref": "#/$defs/unit" },
+        "threshold": { "$ref": "#/$defs/unit" },
+        "radius": { "type": "number", "minimum": 0, "maximum": 64 }
+      }
+    },
+    "haze": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["colorRole", "density"],
+      "properties": {
+        "colorRole": { "$ref": "#/$defs/colorRole" },
+        "color": { "$ref": "#/$defs/color" },
+        "density": { "$ref": "#/$defs/unit" }
+      }
+    },
+    "colorRole": {
+      "enum": [
+        "background",
+        "surface",
+        "primary",
+        "secondary",
+        "accent",
+        "text",
+        "mutedText",
+        "shadow",
+        "highlight"
+      ]
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mime", "role", "source", "sha256", "provenance"],
+      "properties": {
+        "mime": { "enum": ["image/png", "image/jpeg", "image/webp"] },
+        "role": { "enum": ["texture", "sprite", "decal", "portrait", "ui"] },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {
+            "kind": { "enum": ["embedded-data", "content-hash"] },
+            "data": { "type": "string" },
+            "hash": { "type": "string" }
+          }
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "originalName": { "type": "string", "maxLength": 120 },
+        "provenance": { "type": "object" }
+      }
+    },
+    "unit": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    }
+  }
+}

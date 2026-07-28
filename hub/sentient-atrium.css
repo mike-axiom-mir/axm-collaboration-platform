@@ -1093,3 +1093,1230 @@ body.sentient-atrium .home-hero {
   .sentient-atrium .module-card:hover,
   .sentient-atrium .command-center-home-card:hover { transform: none; }
 }
+
+/* Reference-fidelity pass --------------------------------------------------
+   The selected Atrium composition is a single inhabitable home surface, not
+   a short hero card. This final layer leaves behavior and module ownership
+   untouched while giving the reviewed artwork the viewport it needs. */
+
+.sentient-atrium .shell { grid-template-rows: 76px minmax(0, 1fr) 50px; }
+
+.sentient-atrium .topbar {
+  min-height: 76px;
+  padding: 8px clamp(18px, 2.2vw, 34px);
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(2, 8, 16, .96), rgba(2, 8, 16, .78));
+}
+
+.sentient-atrium .topbar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -12px;
+  height: 30px;
+  pointer-events: none;
+  background: url('/hub/assets/sentient-atrium-core.webp') 69% 4% / 1280px auto no-repeat;
+  opacity: .24;
+  mix-blend-mode: screen;
+  mask-image: linear-gradient(180deg, #000 0 26%, transparent 92%);
+}
+
+.sentient-atrium .workshop-back:disabled { display: none; }
+
+.sentient-atrium .mark {
+  order: 1;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border: 0;
+  border-radius: 50%;
+  background: url('/assets/ui-kit/icons/ai-team.svg') center / 21px 21px no-repeat;
+  box-shadow: 0 0 22px rgba(101, 240, 194, .18);
+}
+
+.sentient-atrium .mark b {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+}
+
+.sentient-atrium .brand {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+}
+
+.sentient-atrium .atrium-identity {
+  order: 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 30px auto;
+  grid-template-rows: auto auto;
+  align-items: end;
+  gap: 3px 9px;
+  min-width: clamp(236px, 19vw, 300px);
+  padding-right: 18px;
+  color: #f0f5f4;
+  text-transform: uppercase;
+}
+
+.sentient-atrium .atrium-identity strong { grid-column: 1; }
+.sentient-atrium .atrium-identity .mark {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+  order: 0;
+}
+.sentient-atrium .atrium-identity > span { grid-column: 3; }
+
+.sentient-atrium .atrium-identity strong,
+.sentient-atrium .atrium-identity > span {
+  font: 500 clamp(12px, .95vw, 15px)/1.05 var(--atrium-mono);
+  letter-spacing: .14em;
+  white-space: nowrap;
+}
+
+.sentient-atrium .atrium-identity > span { color: #dbe8e9; }
+.sentient-atrium .atrium-identity small {
+  grid-column: 1 / -1;
+  color: #6c8496;
+  font: 700 8px/1 var(--atrium-mono);
+  letter-spacing: .12em;
+}
+
+.sentient-atrium .active-lbl,
+.sentient-atrium .view-mode-quick,
+.sentient-atrium .production-session-toggle,
+.sentient-atrium .status-dot,
+.sentient-atrium .foundation-summary,
+.sentient-atrium .profile-summary { min-width: 0; }
+
+.sentient-atrium .active-lbl { display: none; }
+.sentient-atrium .view-mode-quick { order: 2; }
+.sentient-atrium .production-session-toggle { order: 3; }
+.sentient-atrium .topbar .grow { order: 4; max-width: none; }
+.sentient-atrium .status-dot { order: 5; }
+.sentient-atrium .foundation-summary { order: 6; }
+.sentient-atrium .profile-summary { order: 7; }
+.sentient-atrium .ai-presence { order: 8; }
+.sentient-atrium .ai-master { order: 9; }
+.sentient-atrium .radio-cluster { order: 10; }
+.sentient-atrium .hub-tools { order: 11; }
+.sentient-atrium .sentient-ribbon-time { order: 12; }
+
+.sentient-atrium .body,
+.sentient-atrium body[data-nav="right"] .body {
+  grid-template-columns: clamp(270px, 22vw, 342px) minmax(0, 1fr);
+}
+
+.sentient-atrium .sidebar {
+  padding: 88px 18px 26px clamp(26px, 3vw, 48px);
+  gap: 6px;
+  border-right: 0;
+  background:
+    radial-gradient(180px 410px at 22% 18%, rgba(64, 214, 211, .115), transparent 72%),
+    radial-gradient(180px 520px at 25% 72%, rgba(112, 91, 203, .09), transparent 74%),
+    linear-gradient(90deg, rgba(2, 9, 17, .97), rgba(3, 12, 22, .78) 74%, rgba(2, 8, 16, .25));
+  box-shadow: none;
+}
+
+.sentient-atrium .sidebar::before {
+  left: clamp(50px, 4.5vw, 70px);
+  top: 73px;
+  bottom: 18px;
+  width: 2px;
+  background: linear-gradient(180deg,
+    rgba(101, 240, 194, .18),
+    rgba(98, 232, 239, .72) 17%,
+    rgba(101, 240, 194, .18) 43%,
+    rgba(165, 140, 255, .56) 71%,
+    rgba(98, 232, 239, .08));
+  box-shadow: 0 0 18px rgba(98, 232, 239, .42), 0 0 42px rgba(98, 232, 239, .15);
+}
+
+.sentient-atrium .sidebar-deck-head {
+  position: absolute;
+  top: 28px;
+  left: clamp(88px, 7vw, 110px);
+  right: 14px;
+  min-height: 28px;
+  padding: 0;
+}
+
+.sentient-atrium .sidebar-deck-head > span {
+  color: #76b7b6;
+  font-size: 9px;
+  letter-spacing: .15em;
+}
+
+.sentient-atrium .sidebar-head-toggle { display: none; }
+
+.sentient-atrium .mod,
+.sentient-atrium .command-center-nav,
+.sentient-atrium .mirror-command-nav {
+  min-height: 64px !important;
+  gap: 18px;
+  padding: 9px 12px 9px 4px;
+  border-radius: 999px;
+}
+
+.sentient-atrium .mod.active {
+  min-height: 72px !important;
+  border-color: transparent;
+  background: linear-gradient(90deg, rgba(101, 240, 194, .105), rgba(39, 109, 128, .045) 66%, transparent) !important;
+  box-shadow: inset 0 0 28px rgba(98, 232, 239, .035), 0 0 35px rgba(98, 232, 239, .04) !important;
+}
+
+.sentient-atrium .mod.active::before { display: none; }
+
+.sentient-atrium .mod .ic,
+.sentient-atrium .command-center-nav .ic,
+.sentient-atrium .mirror-command-nav .ic {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  flex-basis: 46px;
+  border-color: rgba(111, 188, 201, .4) !important;
+  background: radial-gradient(circle, rgba(18, 71, 83, .7), rgba(3, 14, 24, .95) 68%) !important;
+  box-shadow: 0 0 0 7px rgba(98, 232, 239, .025), 0 0 25px rgba(98, 232, 239, .14) !important;
+}
+
+.sentient-atrium .mod .ic::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border: 1px solid rgba(98, 232, 239, .1);
+  border-radius: 50%;
+}
+
+.sentient-atrium .mod.active .ic {
+  border-color: rgba(101, 240, 194, .92) !important;
+  box-shadow: 0 0 0 8px rgba(101, 240, 194, .045), 0 0 30px rgba(101, 240, 194, .3) !important;
+}
+
+.sentient-atrium .mod .nm b,
+.sentient-atrium .command-center-nav .nm b,
+.sentient-atrium .mirror-command-nav .nm b {
+  color: #c8d8df;
+  font-size: 14px;
+  font-weight: 520;
+}
+
+.sentient-atrium .mod.active .nm b { color: #f0fbfb; font-size: 16px; }
+
+.sentient-atrium .mod .nm,
+.sentient-atrium .command-center-nav .nm,
+.sentient-atrium .mirror-command-nav .nm {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  line-height: 1.08;
+}
+
+.sentient-atrium .mod .nm b,
+.sentient-atrium .mod .nm small { display: block; }
+
+.sentient-atrium .mod .nm small,
+.sentient-atrium .command-center-nav .nm small,
+.sentient-atrium .mirror-command-nav .nm small {
+  margin-top: 4px;
+  color: #7c8fa1;
+  font-size: 10px;
+}
+
+.sentient-atrium .mod.active .nm small { color: var(--atrium-mint); }
+
+.sentient-atrium .side-cap,
+.sentient-atrium .sidebar-section-title {
+  margin: 18px 0 8px 22px;
+  padding-left: 0;
+  color: #7894a5;
+  font-size: 9px;
+}
+
+.sentient-atrium .sidebar > .sidebar-toggle {
+  left: clamp(248px, calc(22vw - 22px), 320px);
+  top: 18px;
+}
+
+body.sentient-atrium[data-sidebar-collapsed="true"] .sidebar > .sidebar-toggle {
+  z-index: 30;
+  top: 88px !important;
+}
+
+/* Isolation keeps the artwork inside the rail; lift that rail when collapsed
+   so its fixed reopen handle still sits above the workspace. */
+body.sentient-atrium[data-sidebar-collapsed="true"] .sidebar { z-index: 40; }
+
+body.sentient-atrium .home-hero {
+  min-height: calc(100dvh - 126px);
+  background-image:
+    linear-gradient(90deg,
+      rgba(2, 7, 17, .98) 0%,
+      rgba(2, 7, 17, .88) 25%,
+      rgba(2, 7, 17, .5) 46%,
+      rgba(2, 7, 17, .08) 67%,
+      rgba(2, 7, 17, .05) 100%),
+    linear-gradient(180deg, rgba(2, 7, 17, .03), rgba(2, 7, 17, .08) 78%, rgba(2, 7, 17, .42)),
+    url('/hub/assets/sentient-atrium-core.webp') !important;
+  background-size: 100% 100%, 100% 100%, auto 102% !important;
+  background-position: center, center, right center !important;
+}
+
+.sentient-atrium .home-hero::before {
+  content: "AXM WORKSHOP  ·  LIVE LOCAL SYSTEM";
+  left: clamp(40px, 4.6vw, 74px);
+  top: clamp(76px, 11vh, 108px);
+  color: #79bdb9;
+  font-size: 10px;
+}
+
+.sentient-atrium .home-hero::after {
+  background:
+    radial-gradient(530px 420px at 74% 42%, rgba(98, 232, 239, .045), transparent 74%),
+    linear-gradient(180deg, transparent 74%, rgba(2, 7, 17, .28));
+}
+
+.sentient-atrium .hero-layout {
+  min-height: clamp(350px, 55vh, 520px);
+  grid-template-columns: minmax(0, 1fr) clamp(205px, 17vw, 252px);
+  gap: clamp(22px, 3vw, 46px);
+  align-items: center;
+  padding: clamp(118px, 18vh, 176px) clamp(34px, 4.6vw, 74px) 20px;
+}
+
+.sentient-atrium .hero-copy { max-width: 610px; }
+.sentient-atrium .hero-kicker { display: none; }
+
+.sentient-atrium .home-hero h1 {
+  max-width: 15ch;
+  font-size: clamp(48px, 4.55vw, 70px);
+  line-height: 1.04;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+
+.sentient-atrium .home-hero p {
+  max-width: 58ch;
+  margin-top: 22px;
+  color: #a2afbb;
+  font-size: clamp(13px, 1.05vw, 16px);
+  line-height: 1.55;
+}
+
+.sentient-atrium .hero-system-deck {
+  min-height: clamp(320px, 46vh, 440px);
+}
+
+.sentient-atrium .hero-system-head {
+  inset: 0 0 auto auto;
+  width: 100%;
+  padding: 0 0 16px 16px;
+}
+
+.sentient-atrium .hero-system-head b { max-width: none; }
+.sentient-atrium .hero-orbit { display: none; }
+
+.sentient-atrium .hero-system-grid {
+  inset: 52px 0 auto auto;
+  gap: 14px;
+  width: 100%;
+}
+
+.sentient-atrium .hero-system-grid div {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 18px;
+  align-items: center;
+  min-height: clamp(78px, 10.5vh, 105px);
+  padding: 14px 18px;
+  border: 1px solid rgba(92, 156, 184, .18);
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(4, 15, 27, .62), rgba(3, 10, 19, .32));
+  box-shadow: inset 0 1px rgba(255,255,255,.025), 0 18px 45px rgba(0,0,0,.13);
+}
+
+.sentient-atrium .hero-system-grid div::before {
+  position: static;
+  grid-row: 1 / 3;
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(108, 183, 255, .65);
+  background: rgba(5, 16, 30, .75) url('/assets/ui-kit/icons/modules.svg') center / 24px 24px no-repeat;
+  box-shadow: 0 0 22px rgba(92, 156, 255, .17), inset 0 0 18px rgba(72, 125, 218, .08);
+}
+
+.sentient-atrium .hero-system-grid div:nth-child(2)::before {
+  border-color: rgba(165, 140, 255, .65);
+  background-image: url('/assets/ui-kit/icons/build.svg');
+  box-shadow: 0 0 22px rgba(165, 140, 255, .16), inset 0 0 18px rgba(165, 140, 255, .08);
+}
+
+.sentient-atrium .hero-system-grid div:nth-child(3)::before {
+  border-color: rgba(98, 232, 239, .68);
+  background-image: url('/assets/ui-kit/icons/create.svg');
+  box-shadow: 0 0 22px rgba(98, 232, 239, .16), inset 0 0 18px rgba(98, 232, 239, .08);
+}
+
+.sentient-atrium .hero-system-grid span { align-self: end; }
+.sentient-atrium .hero-system-grid strong {
+  align-self: start;
+  min-width: 0;
+  margin-top: 6px;
+  font-size: clamp(18px, 1.8vw, 27px);
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+body.sentient-atrium:has(#homeScreen:not([style*="display: none"])) .workshop-back { display: none; }
+
+.sentient-atrium .capability-guide {
+  width: min(760px, calc(100% - clamp(300px, 25vw, 390px)));
+  max-width: none;
+  gap: 13px;
+  padding: 0 0 64px clamp(34px, 4.6vw, 74px);
+}
+
+.sentient-atrium .capability-search {
+  min-height: 64px;
+  height: 64px;
+  border-color: rgba(114, 188, 205, .46);
+  background: rgba(2, 10, 18, .56);
+  box-shadow: inset 0 1px rgba(255,255,255,.035), 0 0 42px rgba(98, 232, 239, .08);
+}
+
+.sentient-atrium .capability-search button {
+  min-width: 58px;
+  width: 58px;
+  height: 52px;
+  padding: 0;
+  font-size: 0;
+  background: #69e4d0 url('/assets/ui-kit/icons/back.svg') center / 22px 22px no-repeat;
+  transform: rotate(180deg);
+}
+
+.sentient-atrium .capability-prompts {
+  gap: 8px;
+  border: 0;
+}
+
+.sentient-atrium .capability-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid rgba(104, 153, 177, .22) !important;
+  border-radius: 8px !important;
+  background: rgba(4, 15, 27, .48);
+}
+
+.sentient-atrium .capability-prompt::before {
+  content: "";
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  background: url('/assets/ui-kit/icons/create.svg') center / contain no-repeat;
+  opacity: .88;
+}
+
+.sentient-atrium .capability-prompt:nth-child(2)::before { background-image: url('/assets/ui-kit/icons/radio.svg'); }
+.sentient-atrium .capability-prompt:nth-child(3)::before { background-image: url('/assets/ui-kit/icons/play.svg'); }
+.sentient-atrium .capability-prompt:nth-child(4)::before { background-image: url('/assets/ui-kit/icons/build.svg'); }
+.sentient-atrium .capability-prompt:nth-child(5)::before { background-image: url('/assets/ui-kit/icons/eyes.svg'); }
+.sentient-atrium .capability-prompt:nth-child(6)::before { background-image: url('/assets/ui-kit/icons/modules.svg'); }
+
+.sentient-atrium .capability-guide-note { display: none; }
+
+.sentient-atrium .hero-meta {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 15px clamp(34px, 4.6vw, 74px);
+  background: linear-gradient(90deg, rgba(2,8,16,.62), rgba(2,8,16,.18));
+}
+
+.sentient-atrium .statusbar {
+  min-height: 50px;
+  gap: clamp(14px, 2.6vw, 38px);
+  padding: 8px clamp(20px, 2.8vw, 44px);
+}
+
+.sentient-atrium .statusbar .axm-ui-icon.check {
+  width: 15px;
+  height: 15px;
+  color: var(--atrium-mint);
+}
+
+.sentient-atrium .statusbar .log-tail { opacity: .6; }
+
+@media (max-width: 1460px) {
+  .sentient-atrium .atrium-identity { min-width: 218px; }
+  .sentient-atrium .view-mode-quick,
+  .sentient-atrium .production-session-toggle { display: none; }
+  .sentient-atrium .ai-presence { grid-template-columns: repeat(3, 50px); grid-template-rows: repeat(2, 21px); }
+  .sentient-atrium .hero-layout { padding-top: clamp(104px, 16vh, 146px); }
+  .sentient-atrium .capability-guide { width: min(700px, calc(100% - 290px)); }
+}
+
+@media (max-width: 1120px) {
+  .sentient-atrium .shell { grid-template-rows: 66px minmax(0,1fr) 44px; }
+  .sentient-atrium .topbar { min-height: 66px; }
+  .sentient-atrium .atrium-identity { min-width: 188px; }
+  .sentient-atrium .atrium-identity strong,
+  .sentient-atrium .atrium-identity > span { font-size: 11px; }
+  .sentient-atrium .status-dot,
+  .sentient-atrium .foundation-summary,
+  .sentient-atrium .profile-summary { display: none; }
+  .sentient-atrium .body { grid-template-columns: 236px minmax(0,1fr); }
+  .sentient-atrium .sidebar { padding-left: 20px; }
+  .sentient-atrium .sidebar::before { left: 43px; }
+  .sentient-atrium .sidebar-deck-head { left: 78px; }
+  .sentient-atrium .mod,
+  .sentient-atrium .command-center-nav,
+  .sentient-atrium .mirror-command-nav { gap: 12px; }
+  .sentient-atrium .mod .ic,
+  .sentient-atrium .command-center-nav .ic,
+  .sentient-atrium .mirror-command-nav .ic { width: 38px; height: 38px; flex-basis: 38px; }
+  body.sentient-atrium .home-hero { min-height: calc(100dvh - 110px); }
+  .sentient-atrium .hero-layout { grid-template-columns: minmax(0,1fr) 205px; padding-inline: 30px; }
+  .sentient-atrium .home-hero::before { left: 30px; }
+  .sentient-atrium .capability-guide { width: calc(100% - 235px); padding-left: 30px; }
+  .sentient-atrium .hero-meta { padding-inline: 30px; }
+  .sentient-atrium .hero-system-grid div { grid-template-columns: 46px minmax(0,1fr); column-gap: 12px; padding-inline: 12px; }
+  .sentient-atrium .hero-system-grid div::before { width: 44px; height: 44px; }
+  .sentient-atrium .atrium-private,
+  .sentient-atrium .atrium-approval { display: none; }
+  body.sentient-atrium[data-sidebar-collapsed="true"] .sidebar > .sidebar-toggle { top: 76px !important; }
+}
+
+@media (max-width: 760px) {
+  .sentient-atrium .shell { grid-template-rows: 58px minmax(0,1fr) 42px; }
+  .sentient-atrium .topbar { min-height: 58px; padding-inline: 10px; }
+  .sentient-atrium .atrium-identity { min-width: 150px; }
+  .sentient-atrium .atrium-identity strong { font-size: 10px; }
+  .sentient-atrium .atrium-identity > span,
+  .sentient-atrium .atrium-identity small { display: none; }
+  .sentient-atrium .mark { width: 28px; height: 28px; flex-basis: 28px; }
+  .sentient-atrium .ai-presence,
+  .sentient-atrium .ai-master { display: none; }
+  .sentient-atrium .sidebar { padding: 64px 16px 20px 20px; }
+  .sentient-atrium .sidebar-deck-head { top: 18px; left: 78px; }
+  .sentient-atrium .sidebar::before { left: 42px; top: 55px; }
+  .sentient-atrium .sidebar > .sidebar-toggle { left: auto; right: 8px; }
+  body.sentient-atrium .home-hero { min-height: auto; }
+  .sentient-atrium .home-hero::before { left: 18px; top: 26px; }
+  .sentient-atrium .hero-layout { padding: 70px 18px 20px; }
+  .sentient-atrium .home-hero h1 { font-size: clamp(38px, 12vw, 52px); }
+  .sentient-atrium .capability-guide { width: auto; padding: 0 18px 72px; }
+  .sentient-atrium .capability-search button { width: 48px; min-width: 48px; }
+  .sentient-atrium .hero-meta { padding-inline: 18px; }
+  body.sentient-atrium[data-sidebar-collapsed="true"] .sidebar > .sidebar-toggle { top: 66px !important; }
+}
+
+/* Sentient navigation spine fidelity pass ---------------------------------
+   The reviewed navigation is a luminous route, not a stack of dashboard
+   cards. The generated spine is decorative only; all existing controls,
+   labels, lifecycle state, and navigation behavior remain unchanged. */
+
+.sentient-atrium .sidebar {
+  isolation: isolate;
+  overflow-x: hidden;
+  padding-left: clamp(42px, 3.8vw, 58px);
+  background: linear-gradient(90deg, rgba(2, 8, 16, .98), rgba(3, 11, 21, .9) 76%, rgba(2, 8, 16, .72));
+}
+
+.sentient-atrium .sidebar::before { display: none; }
+
+.sentient-atrium .sidebar::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background: url('/hub/assets/sentient-navigation-spine.png') -27px 27px / auto 100% no-repeat;
+  opacity: .86;
+  mix-blend-mode: screen;
+  mask-image: linear-gradient(180deg, #000 0 76%, rgba(0,0,0,.55) 90%, transparent 100%);
+}
+
+.sentient-atrium .sidebar > * { position: relative; z-index: 1; }
+
+.sentient-atrium .sidebar-deck-head {
+  left: clamp(86px, 7vw, 106px);
+  text-shadow: 0 0 14px rgba(98, 232, 239, .25);
+}
+
+/* Five shell-owned routes ride the large orbital nodes. */
+.sentient-atrium .sidebar > .mod,
+.sentient-atrium .sidebar > .command-center-nav,
+.sentient-atrium .sidebar > .mirror-command-nav {
+  width: calc(100% + 24px);
+  max-width: none;
+  min-height: 68px !important;
+  gap: 55px !important;
+  padding: 7px 10px 7px 3px;
+  border: 1px solid transparent !important;
+  border-radius: 999px;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
+}
+
+.sentient-atrium .sidebar > .mod:hover,
+.sentient-atrium .sidebar > .command-center-nav:hover,
+.sentient-atrium .sidebar > .mirror-command-nav:hover {
+  border-color: rgba(98, 232, 239, .08) !important;
+  background: linear-gradient(90deg, rgba(98, 232, 239, .055), rgba(98, 232, 239, .012) 67%, transparent) !important;
+}
+
+.sentient-atrium .sidebar > .mod.active {
+  min-height: 76px !important;
+  border-color: transparent !important;
+  background: linear-gradient(90deg, rgba(101, 240, 194, .12), rgba(35, 102, 120, .045) 70%, transparent) !important;
+  box-shadow: inset 0 0 30px rgba(98, 232, 239, .032) !important;
+}
+
+.sentient-atrium .sidebar > .mod .ic,
+.sentient-atrium .sidebar > .command-center-nav .ic,
+.sentient-atrium .sidebar > .mirror-command-nav .ic {
+  width: 46px !important;
+  height: 46px !important;
+  flex-basis: 46px !important;
+  border-radius: 50% !important;
+  border-color: rgba(111, 188, 201, .34) !important;
+  background: radial-gradient(circle, rgba(17, 69, 82, .58), rgba(3, 14, 24, .92) 70%) !important;
+  box-shadow: 0 0 0 6px rgba(98, 232, 239, .018), 0 0 20px rgba(98, 232, 239, .13) !important;
+}
+
+.sentient-atrium .sidebar > .mod .ic::after {
+  inset: -7px;
+  border-color: rgba(98, 232, 239, .085);
+}
+
+.sentient-atrium .sidebar > .mod.active .ic {
+  border-color: rgba(101, 240, 194, .84) !important;
+  box-shadow: 0 0 0 7px rgba(101, 240, 194, .035), 0 0 27px rgba(101, 240, 194, .27) !important;
+}
+
+.sentient-atrium .sidebar > .mod .nav-arrow {
+  position: absolute;
+  left: 84px;
+  font-size: 14px !important;
+}
+
+.sentient-atrium .sidebar > .mod .nm b,
+.sentient-atrium .sidebar > .command-center-nav .nm b,
+.sentient-atrium .sidebar > .mirror-command-nav .nm b {
+  font-size: 15px !important;
+  font-weight: 520;
+}
+
+.sentient-atrium .sidebar > .mod.active .nm b { font-size: 17px !important; }
+.sentient-atrium .sidebar > .mirror-command-nav .nm b { font-size: 13.5px !important; }
+
+.sentient-atrium .sidebar > .mod .nm small,
+.sentient-atrium .sidebar > .command-center-nav .nm small,
+.sentient-atrium .sidebar > .mirror-command-nav .nm small {
+  margin-top: 2px;
+  font-size: 10px !important;
+}
+
+.sentient-atrium .sidebar > .mirror-command-nav .nm small { font-size: 8.5px !important; }
+
+.sentient-atrium .sidebar > .sidebar-section-title {
+  margin: 34px 0 6px 14px !important;
+}
+
+/* The fixed Workspaces heading already names the first generated group. */
+.sentient-atrium .sidebar > .sidebar-section-title + #modList > .side-cap:first-child {
+  display: none;
+}
+
+/* Registry workspaces stay dense and scannable below the five primary nodes. */
+.sentient-atrium #modList {
+  display: grid;
+  gap: 1px;
+}
+
+.sentient-atrium #modList .side-cap {
+  margin: 11px 0 5px 14px;
+}
+
+.sentient-atrium #modList .mod {
+  min-height: 46px !important;
+  gap: 10px;
+  padding: 4px 7px 4px 1px;
+  border: 1px solid transparent !important;
+  border-radius: 11px;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.sentient-atrium #modList .mod:hover,
+.sentient-atrium #modList .mod.active {
+  min-height: 46px !important;
+  border-color: rgba(98, 232, 239, .07) !important;
+  background: linear-gradient(90deg, rgba(98, 232, 239, .05), transparent 82%) !important;
+}
+
+.sentient-atrium #modList .mod .ic {
+  width: 36px !important;
+  height: 36px !important;
+  flex-basis: 36px !important;
+  border-radius: 50% !important;
+  border-color: rgba(111, 188, 201, .22) !important;
+  background: rgba(3, 14, 24, .78) !important;
+  box-shadow: 0 0 14px rgba(98, 232, 239, .06) !important;
+}
+
+.sentient-atrium #modList .mod .ic::after { display: none; }
+
+.sentient-atrium #modList .mod .nm { gap: 1px; }
+.sentient-atrium #modList .mod .nm b { font-size: 14px !important; font-weight: 560; }
+.sentient-atrium #modList .mod .nm small { margin-top: 1px; font-size: 8.5px !important; }
+
+@media (max-height: 850px), (max-width: 1120px) {
+  .sentient-atrium .sidebar {
+    padding: 62px 13px 18px 36px;
+  }
+
+  .sentient-atrium .sidebar::after {
+    background-position: -17px 20px;
+  }
+
+  .sentient-atrium .sidebar-deck-head {
+    top: 16px;
+    left: 76px;
+  }
+
+  .sentient-atrium .sidebar > .mod,
+  .sentient-atrium .sidebar > .command-center-nav,
+  .sentient-atrium .sidebar > .mirror-command-nav {
+    min-height: 46px !important;
+    gap: 34px !important;
+    padding-block: 4px;
+  }
+
+  .sentient-atrium .sidebar > .mod.active { min-height: 50px !important; }
+
+  .sentient-atrium .sidebar > .mod .ic,
+  .sentient-atrium .sidebar > .command-center-nav .ic,
+  .sentient-atrium .sidebar > .mirror-command-nav .ic {
+    width: 32px !important;
+    height: 32px !important;
+    flex-basis: 32px !important;
+  }
+
+  .sentient-atrium .sidebar > .mod .ic::after { inset: -5px; }
+  .sentient-atrium .sidebar > .mod .nm b,
+  .sentient-atrium .sidebar > .command-center-nav .nm b,
+  .sentient-atrium .sidebar > .mirror-command-nav .nm b { font-size: 12px !important; }
+  .sentient-atrium .sidebar > .mod.active .nm b { font-size: 13px !important; }
+  .sentient-atrium .sidebar > .mod .nm small,
+  .sentient-atrium .sidebar > .command-center-nav .nm small,
+  .sentient-atrium .sidebar > .mirror-command-nav .nm small { font-size: 8px !important; }
+  .sentient-atrium .sidebar > .sidebar-section-title { margin-top: 9px; }
+  .sentient-atrium #modList .mod { min-height: 37px !important; }
+  .sentient-atrium #modList .mod:hover,
+  .sentient-atrium #modList .mod.active { min-height: 37px !important; }
+  .sentient-atrium #modList .mod .ic { width: 32px !important; height: 32px !important; flex-basis: 32px !important; }
+}
+
+@media (max-height: 720px) {
+  .sentient-atrium #modList .mod .nm small { display: none; }
+  .sentient-atrium #modList .mod,
+  .sentient-atrium #modList .mod:hover,
+  .sentient-atrium #modList .mod.active { min-height: 34px !important; }
+  .sentient-atrium #modList .mod .ic { width: 27px !important; height: 27px !important; flex-basis: 27px !important; }
+}
+
+/* Full Atrium composition fidelity pass -----------------------------------
+   The Home screen now shares one visual field from the living status ribbon
+   through the creation floor. Existing controls, state sources, navigation,
+   and authority remain unchanged; this layer only composes their presentation. */
+
+.sentient-atrium .topbar {
+  min-height: 76px;
+  padding: 6px 28px 9px 34px;
+  gap: 0;
+  overflow: visible;
+  background: rgba(2, 8, 16, .9);
+  box-shadow: none;
+}
+
+.sentient-atrium .topbar::before {
+  inset: 22px 0 -8px;
+  height: auto;
+  background: url('/hub/assets/sentient-signal-ribbon.png') center 50% / 100% auto no-repeat;
+  opacity: .58;
+  mix-blend-mode: screen;
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.52), #000 28% 88%, rgba(0,0,0,.76));
+}
+
+.sentient-atrium .topbar::after {
+  bottom: -1px;
+  height: 1px;
+  opacity: .44;
+  background: linear-gradient(90deg, transparent 0 4%, rgba(98,232,239,.5) 20%, rgba(101,240,194,.68) 55%, rgba(165,140,255,.48) 84%, transparent 98%);
+}
+
+.sentient-atrium .atrium-identity {
+  order: 0;
+  flex: 0 0 clamp(320px, 23.5vw, 350px);
+  min-width: 0;
+  padding-right: 20px;
+}
+
+.sentient-atrium .view-mode-quick,
+.sentient-atrium .production-session-toggle,
+.sentient-atrium .foundation-summary,
+.sentient-atrium .profile-summary { display: none !important; }
+
+.sentient-atrium .topbar .grow {
+  order: 8;
+  flex: 1 1 20px;
+  min-width: 8px;
+  max-width: 52px;
+}
+
+/* Flatten the status group into the ribbon so every genuine presence gets
+   the spacious, one-node-per-lane treatment shown in the selected design. */
+.sentient-atrium .ai-presence {
+  order: 3;
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: 1fr;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.sentient-atrium .presence-members {
+  grid-column: 2 / 7;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  min-width: 0;
+}
+
+.sentient-atrium .ai-node {
+  position: relative;
+  order: 5;
+  flex: 1 1 0;
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  place-content: center;
+  min-width: 0;
+  padding: 7px 12px 5px 24px;
+  border-left: 1px solid rgba(116, 156, 185, .18);
+  color: #8ca1ae;
+  line-height: 1.05;
+}
+
+.sentient-atrium .ai-node::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  bottom: 10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 12px currentColor;
+}
+
+.sentient-atrium .ai-node i { display: none; }
+.sentient-atrium .ai-node b {
+  color: #dce8eb;
+  font: 500 10px/1 var(--atrium-display);
+  letter-spacing: .01em;
+}
+
+.sentient-atrium .ai-node small {
+  display: block;
+  margin-top: 5px;
+  color: currentColor;
+  font: 760 9px/1 var(--atrium-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.sentient-atrium .ai-node.connected { color: var(--atrium-mint); }
+.sentient-atrium .ai-node.disconnected { color: var(--atrium-coral); }
+.sentient-atrium .ai-node.checking { color: #ffd075; }
+.sentient-atrium #presenceBridge { order: 3; }
+.sentient-atrium .presence-members .ai-node { order: 5; }
+
+.sentient-atrium .status-dot {
+  position: relative;
+  order: 4;
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  min-width: 54px;
+  padding: 0;
+  border-left: 1px solid rgba(116, 156, 185, .18);
+  font-size: 0;
+}
+
+.sentient-atrium .status-dot::before {
+  width: 25px;
+  height: 25px;
+  border: 0;
+  border-radius: 0;
+  background: url('/assets/ui-kit/icons/radio.svg') center / 25px 25px no-repeat;
+  box-shadow: 0 0 18px rgba(101,240,194,.22);
+  opacity: .9;
+}
+
+.sentient-atrium .ai-master { order: 9; }
+.sentient-atrium .radio-cluster { order: 10; }
+.sentient-atrium .hub-tools { order: 11; }
+.sentient-atrium .sentient-ribbon-time { order: 12; }
+
+.sentient-atrium .ai-master,
+.sentient-atrium .radio-cluster #btnRadio,
+.sentient-atrium .hub-tools > summary,
+.sentient-atrium .sentient-ribbon-time {
+  border-left-color: rgba(116, 156, 185, .18);
+  background: rgba(2, 8, 16, .12);
+  backdrop-filter: blur(2px);
+}
+
+.sentient-atrium .body,
+.sentient-atrium body[data-nav="right"] .body {
+  grid-template-columns: clamp(286px, 23.4vw, 348px) minmax(0, 1fr);
+}
+
+body.sentient-atrium .home-hero {
+  min-height: 930px;
+  background-image:
+    linear-gradient(90deg,
+      rgba(2, 7, 17, .98) 0%,
+      rgba(2, 7, 17, .86) 21%,
+      rgba(2, 7, 17, .44) 41%,
+      rgba(2, 7, 17, .06) 63%,
+      rgba(2, 7, 17, .05) 100%),
+    linear-gradient(180deg, rgba(2,7,17,.02), rgba(2,7,17,.04) 72%, rgba(2,7,17,.2)),
+    url('/hub/assets/sentient-atrium-core.webp') !important;
+  background-size: 100% 100%, 100% 100%, auto 128% !important;
+  background-position: center, center, calc(100% - 85px) top !important;
+}
+
+.sentient-atrium .home-hero::before { display: none; }
+
+.sentient-atrium .home-hero::after {
+  background:
+    radial-gradient(540px 420px at 60% 34%, rgba(98,232,239,.038), transparent 76%),
+    linear-gradient(180deg, transparent 74%, rgba(2,7,17,.16));
+}
+
+.sentient-atrium .hero-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 415px;
+  gap: 0;
+  align-items: start;
+  padding: 185px clamp(42px, 3.35vw, 50px) 16px;
+  box-sizing: border-box;
+}
+
+.sentient-atrium .hero-copy {
+  align-self: start;
+  max-width: 560px;
+}
+
+.sentient-atrium .home-hero h1 {
+  max-width: 10.8em;
+  font-size: clamp(50px, 3.55vw, 53px);
+  line-height: 1.04;
+  letter-spacing: -.046em;
+}
+
+.sentient-atrium .home-hero p {
+  max-width: 54ch;
+  margin-top: 34px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.sentient-atrium .hero-system-deck {
+  position: absolute;
+  z-index: 5;
+  top: 130px;
+  right: 34px;
+  width: 235px;
+  min-height: 430px;
+}
+
+.sentient-atrium .hero-system-head {
+  inset: 0 0 auto 0;
+  width: 100%;
+  padding: 0 0 15px 12px;
+}
+
+.sentient-atrium .hero-system-grid {
+  inset: 76px 0 auto 0;
+  gap: 14px;
+  width: 100%;
+}
+
+.sentient-atrium .hero-system-grid div {
+  min-height: 110px;
+  padding: 16px 17px;
+  border-color: rgba(95, 151, 181, .2);
+  border-radius: 15px;
+  background: linear-gradient(145deg, rgba(4,15,27,.68), rgba(3,10,19,.38));
+}
+
+.sentient-atrium .capability-guide {
+  width: min(862px, calc(100% - 260px));
+  max-width: none;
+  gap: 13px;
+  padding: 0 0 56px clamp(38px, 2.85vw, 42px);
+}
+
+.sentient-atrium .capability-search {
+  width: min(575px, 100%);
+  min-height: 72px;
+  height: 72px;
+  border-color: rgba(119, 185, 204, .47);
+  background: rgba(2, 10, 18, .56);
+}
+
+.sentient-atrium .capability-search button {
+  width: 56px;
+  min-width: 56px;
+  height: 56px;
+}
+
+.sentient-atrium .capability-prompts {
+  position: relative;
+  margin-top: 52px;
+  gap: 8px;
+}
+
+.sentient-atrium .capability-prompts::before {
+  content: "QUICK CREATION LANES";
+  position: absolute;
+  left: 10px;
+  top: -29px;
+  color: #8293a4;
+  font: 720 9px/1 var(--atrium-mono);
+  letter-spacing: .17em;
+}
+
+.sentient-atrium .capability-prompt {
+  min-height: 44px;
+  border-radius: 7px !important;
+  background: rgba(4, 15, 27, .4);
+}
+
+/* The shell footer already carries these three truthful guarantees. Keeping
+   the duplicate hero copy hidden restores the reference's single bottom rail. */
+.sentient-atrium .hero-meta { display: none; }
+
+.sentient-atrium .statusbar {
+  border-top: 1px solid rgba(98,232,239,.12);
+  background: rgba(2,8,16,.91);
+  box-shadow: 0 -18px 44px rgba(0,0,0,.15);
+}
+
+@media (max-width: 1360px) {
+  .sentient-atrium .atrium-identity { flex-basis: 286px; }
+  .sentient-atrium .ai-node { padding-inline: 20px 9px; }
+  .sentient-atrium .ai-node::after { left: 10px; }
+  .sentient-atrium .ai-master.ai-eyes { display: none; }
+}
+
+@media (max-height: 850px) and (min-width: 761px) {
+  .sentient-atrium .shell { grid-template-rows: 70px minmax(0,1fr) 46px; }
+  .sentient-atrium .topbar { min-height: 70px; }
+  body.sentient-atrium .home-hero { min-height: 930px; }
+  .sentient-atrium .hero-layout { min-height: 330px; padding-top: 116px; }
+  .sentient-atrium .home-hero h1 { font-size: clamp(44px, 3.65vw, 54px); }
+  .sentient-atrium .home-hero p { margin-top: 18px; font-size: 13px; }
+  .sentient-atrium .hero-system-deck { top: 88px; min-height: 330px; }
+  .sentient-atrium .hero-system-grid { top: 54px; gap: 10px; }
+  .sentient-atrium .hero-system-grid div { min-height: 82px; padding-block: 10px; }
+  .sentient-atrium .capability-guide { padding-bottom: 40px; }
+  .sentient-atrium .capability-search { min-height: 58px; height: 58px; }
+  .sentient-atrium .capability-search button { width: 48px; min-width: 48px; height: 48px; }
+  .sentient-atrium .capability-prompts { margin-top: 28px; }
+}
+
+@media (max-width: 1120px) {
+  .sentient-atrium .presence-members .ai-node:nth-child(n+4) { display: none; }
+  .sentient-atrium .hero-system-deck { right: 20px; }
+  .sentient-atrium .capability-guide { width: calc(100% - 240px); }
+}
+
+@media (max-width: 760px) {
+  .sentient-atrium .topbar::before { opacity: .5; }
+  .sentient-atrium .ai-presence,
+  .sentient-atrium .presence-members { display: none; }
+  .sentient-atrium .status-dot { display: none; }
+  .sentient-atrium .atrium-identity { flex-basis: 190px; }
+  .sentient-atrium .hero-layout { min-height: 0; padding: 72px 18px 24px; }
+  body.sentient-atrium .home-hero { min-height: auto; }
+  body.sentient-atrium .home-hero {
+    background-size: cover, cover, auto 560px !important;
+    background-position: center, center, 72% top !important;
+  }
+  .sentient-atrium .hero-system-deck { display: none; }
+  .sentient-atrium .capability-guide { width: auto; padding: 0 18px 68px; }
+  .sentient-atrium .capability-search { width: 100%; min-height: 56px; height: 56px; }
+  .sentient-atrium .capability-prompts { margin-top: 28px; }
+  .sentient-atrium .capability-prompts::before { left: 0; }
+}
+
+/* Selected-concept flow correction ---------------------------------------
+   Shapeable presentation intentionally owns most skin sizing with an
+   !important reset. The Atrium is the exception: its opening composition is
+   one complete viewport from the living ribbon to the bottom assurance rail.
+   Keep the workbench available immediately below it without letting that
+   second surface cut through the first-screen energy spine. */
+@media (min-width: 761px) and (min-height: 851px) {
+  .sentient-atrium .shell {
+    grid-template-rows: 76px minmax(0, 1fr) 61px;
+  }
+
+  body.sentient-atrium .home-hero {
+    min-height: calc(100dvh - 137px) !important;
+    background-size: 100% 100%, 100% 100%, auto 102% !important;
+    background-position: center, center, calc(100% - 30px) top !important;
+  }
+
+  .sentient-atrium .sidebar-deck-head {
+    top: 17px;
+  }
+
+  .sentient-atrium .hero-layout {
+    padding-top: 177px;
+  }
+
+  .sentient-atrium .home-hero h1 {
+    line-height: 1.13;
+  }
+
+  .sentient-atrium .home-hero p {
+    max-width: 54ch;
+    font-size: 15px;
+  }
+
+  .sentient-atrium .capability-guide {
+    width: min(854px, calc(100% - 260px));
+    padding-left: 38px;
+  }
+
+  .sentient-atrium .capability-prompts {
+    grid-template-columns: 1fr 1fr 1.04fr 1.04fr 1.06fr 1.25fr;
+  }
+
+  .sentient-atrium .capability-search input {
+    font-size: 15px;
+  }
+
+  .sentient-atrium .capability-prompt {
+    font-size: 11px;
+  }
+
+  .sentient-atrium .hero-system-deck {
+    right: 22px;
+    width: 232px;
+  }
+
+  .sentient-atrium .statusbar {
+    min-height: 61px;
+  }
+}
+
+@media (min-width: 761px) and (max-height: 850px) {
+  body.sentient-atrium .home-hero {
+    min-height: calc(100dvh - 116px) !important;
+  }
+
+  .sentient-atrium .statusbar {
+    min-height: 46px;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1120px) {
+  .sentient-atrium .body,
+  .sentient-atrium body[data-nav="right"] .body {
+    grid-template-columns: 236px minmax(0, 1fr);
+  }
+
+  .sentient-atrium .hero-system-deck {
+    width: 205px;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1050px) {
+  .sentient-atrium .capability-prompts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sentient-atrium .capability-prompt {
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 900px) {
+  .sentient-atrium .hero-system-deck {
+    display: none;
+  }
+
+  .sentient-atrium .capability-guide {
+    width: auto;
+    padding-right: 30px;
+  }
+}
+
+@media (max-width: 760px) {
+  .sentient-atrium .shell {
+    grid-template-rows: 58px minmax(0, 1fr) 42px;
+  }
+
+  .sentient-atrium .body,
+  .sentient-atrium body[data-nav="right"] .body,
+  .sentient-atrium body[data-nav="rail"] .body,
+  .sentient-atrium body[data-sidebar-collapsed="true"] .body,
+  .sentient-atrium body[data-nav="right"][data-sidebar-collapsed="true"] .body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .sentient-atrium .viewport {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .sentient-atrium .sidebar {
+    position: absolute;
+    z-index: 40;
+    inset: 0 auto 0 0;
+    height: 100%;
+  }
+
+  .sentient-atrium .statusbar {
+    min-height: 42px;
+  }
+}

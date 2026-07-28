@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/contracts/ai-style-intent.schema.json",
+  "title": "AXM Deterministic Style Intent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "version", "name", "seed", "scope", "keywords", "intensity"],
+  "properties": {
+    "type": { "const": "axm.style-intent" },
+    "version": { "const": "1.0" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "seed": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "scope": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "keywords": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "dark",
+          "light",
+          "neon",
+          "paper",
+          "luxury",
+          "metallic",
+          "matte",
+          "glass",
+          "holographic",
+          "pixel",
+          "cartoon",
+          "nature",
+          "cosmic",
+          "warm",
+          "cool",
+          "minimal",
+          "weathered",
+          "high-contrast",
+          "ink",
+          "clay",
+          "watercolor",
+          "retro",
+          "candy",
+          "noir",
+          "ocean",
+          "desert",
+          "forest",
+          "royal",
+          "industrial",
+          "soft",
+          "ice",
+          "lava"
+        ]
+      }
+    },
+    "intensity": { "type": "number", "minimum": 0, "maximum": 1 },
+    "palette": { "type": "object" },
+    "material": { "type": "object" },
+    "pattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "none",
+            "circuit",
+            "paper-fiber",
+            "holo-grid",
+            "pixel-grid",
+            "organic-cells",
+            "star-noise",
+            "scratches",
+            "ink-hatch",
+            "clay-speckle",
+            "watercolor-bloom",
+            "retro-stripe",
+            "candy-dots",
+            "waves",
+            "sandgrain",
+            "frost",
+            "embers",
+            "royal-lines",
+            "prism-weave"
+          ]
+        },
+        "strength": { "type": "number", "minimum": 0, "maximum": 1 },
+        "scale": { "type": "number", "minimum": 0.1, "maximum": 16 }
+      }
+    },
+    "geometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cornerRoundness": { "type": "number", "minimum": 0, "maximum": 1 },
+        "silhouetteExaggeration": { "type": "number", "minimum": 0, "maximum": 1 },
+        "detailDensity": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "character": { "type": "object" },
+    "accessibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "highContrast": { "type": "boolean" },
+        "reducedMotion": { "type": "boolean" },
+        "minimumTextContrast": { "type": "number", "minimum": 1, "maximum": 21 }
+      }
+    },
+    "sharing": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "license": { "type": "string" },
+        "remixAllowed": { "type": "boolean" },
+        "attribution": { "type": "string" }
+      }
+    },
+    "preset": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "catalog": { "type": "string", "maxLength": 80 },
+        "primary": { "type": "string", "maxLength": 80 },
+        "secondary": { "type": ["string", "null"], "maxLength": 80 },
+        "blend": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "generator": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["type", "version", "moldId", "mood", "complexity", "harmony"],
+      "properties": {
+        "type": { "const": "axm.mold-maker" },
+        "version": { "const": "1.0" },
+        "moldId": {
+          "enum": [
+            "universal-core",
+            "world-atmosphere",
+            "playable-character",
+            "character-cast",
+            "arcade-arena",
+            "ui-shell",
+            "effects-stage",
+            "environment-kit",
+            "structures-props",
+            "vehicle-action",
+            "loot-combat",
+            "rpg-adventure",
+            "strategy-sim",
+            "party-game",
+            "platformer-action",
+            "full-presentation"
+          ]
+        },
+        "mood": {
+          "enum": ["balanced", "wonder", "playful", "grounded", "dramatic", "luxurious"]
+        },
+        "complexity": { "type": "number", "minimum": 0, "maximum": 1 },
+        "harmony": {
+          "enum": [
+            "complementary",
+            "analogous",
+            "triadic",
+            "split-complementary",
+            "monochrome"
+          ]
+        }
+      }
+    }
+  }
+}

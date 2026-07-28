@@ -1,0 +1,22 @@
+.axm-skeleton {
+  position: relative;
+  overflow: hidden;
+  min-height: 1rem;
+  background: var(--axm-sem-surface-strong);
+  border-radius: var(--axm-radius-sm);
+}
+
+.axm-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, var(--axm-sem-selection) 50%, transparent 80%);
+  transform: translateX(-100%);
+  animation: axm-skeleton-sweep calc(var(--axm-time-atmosphere) * 0.24) linear infinite;
+}
+
+.axm-skeleton--text { max-width: 32rem; }
+.axm-skeleton--title { max-width: 18rem; min-height: 2rem; }
+.axm-skeleton--avatar { inline-size: 3rem; block-size: 3rem; border-radius: 50%; }
+
+@keyframes axm-skeleton-sweep { to { transform: translateX(100%); } }

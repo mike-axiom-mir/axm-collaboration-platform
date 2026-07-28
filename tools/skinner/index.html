@@ -3,6 +3,8 @@
 <html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AXM Hub — Skinner</title>
+<link id="axm-aetherglass-core-css" rel="stylesheet" href="/shared/aetherglass/src/axm-aetherglass.css">
+<link id="axm-aetherglass-forge-css" rel="stylesheet" href="/shared/aetherglass/src/axm-luminous-layer-forge.css">
 <style>
 :root{--space:#080b14;--panel:#0d1320;--edge:#1d2942;--cy:#38d6ec;--green:#63d68a;--red:#e86a5f;--gold:#e8b54a;--muted:#828d9e;--text:#dce2ea}
 html,body{margin:0;height:100%;background:var(--space);color:var(--text);font-family:system-ui,sans-serif}
@@ -43,30 +45,176 @@ select,input[type=text]{background:#06080f;border:1px solid var(--edge);color:va
 .sheet-stat{border:1px solid var(--edge);border-radius:10px;padding:10px;background:#06080f}
 .sheet-stat b{display:block;color:var(--cy);font-size:20px;line-height:1}
 .sheet-stat span{display:block;color:var(--muted);font-size:10px;margin-top:6px;text-transform:uppercase;letter-spacing:.8px}
+.visual-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px}
+.visual-head .cap{margin-bottom:5px}.visual-head p{margin:0}
+.visual-status{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;border:1px solid var(--edge);border-radius:999px;padding:5px 9px;color:var(--muted);font:700 10px ui-monospace,monospace}
+.visual-status::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.visual-status.on{color:var(--green);border-color:color-mix(in srgb,var(--green) 42%,var(--edge))}.visual-status.on::before{background:var(--green);box-shadow:0 0 9px var(--green)}
+.visual-status.bad{color:var(--red);border-color:color-mix(in srgb,var(--red) 42%,var(--edge))}.visual-status.bad::before{background:var(--red)}
+.visual-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.visual-field{display:grid;gap:5px;min-width:0;color:var(--muted);font:700 9px/1.2 ui-monospace,monospace;letter-spacing:.55px;text-transform:uppercase}
+.visual-field select{width:100%;min-width:0;text-transform:none}
+.visual-range{display:grid;grid-template-columns:minmax(0,1fr) 36px;align-items:center;gap:7px}
+.visual-range input{width:100%;min-width:0}.visual-range output{color:var(--cy);text-align:right;font-size:10px}
+.visual-toggles{display:flex;flex-wrap:wrap;gap:8px;margin:11px 0 0}
+.visual-toggle{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--edge);border-radius:9px;padding:7px 9px;color:var(--text);font-size:11px}
+.visual-toggle.primary{border-color:var(--cy-dim);color:var(--cy);font-weight:700}
+.fabric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.fabric-field{display:grid;gap:5px;min-width:0;color:var(--muted);font:700 9px/1.2 ui-monospace,monospace;letter-spacing:.55px;text-transform:uppercase}
+.fabric-field select{width:100%;min-width:0;text-transform:none}
+.fabric-range{display:grid;grid-template-columns:minmax(0,1fr) 42px;align-items:center;gap:7px}
+.fabric-range input{width:100%;min-width:0}.fabric-range output{color:var(--cy);text-align:right;font-size:10px}
+.fabric-preview{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:11px 0;padding:9px;border:1px solid var(--edge);border-radius:10px;background:#06080f}
+.fabric-swatches{display:flex;gap:5px}.fabric-swatch{display:block;width:24px;height:24px;border:1px solid rgba(255,255,255,.18);border-radius:7px;box-shadow:0 3px 12px rgba(0,0,0,.25)}
+.fabric-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.fabric-actions a.btn{text-decoration:none;display:inline-block}
+body.axm-visual-root .wrap{position:relative;z-index:1}
+body.axm-visual-root .card,body.axm-visual-root .preview{background:color-mix(in srgb,var(--panel) 88%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
 @media(max-width:620px){.sheet-summary{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.visual-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:460px){.visual-grid,.fabric-grid{grid-template-columns:1fr}.visual-head{display:grid}.fabric-preview{align-items:flex-start;flex-direction:column}}
 body.studio-embedded .wrap{max-width:none;padding:18px 22px}
 body.studio-embedded .wrap>h1,body.studio-embedded .wrap>.sub{display:none}
+
+/* ============================================================
+   SKIN STUDIO 2026 — presentation-only workbench shell
+   Existing IDs and data contracts stay untouched. This layer changes
+   hierarchy, rhythm, and visual quality; the gate still owns truth.
+   ============================================================ */
+*{box-sizing:border-box}
+body{min-height:100%;background:
+  radial-gradient(circle at 12% -8%,rgba(56,214,236,.14),transparent 34%),
+  radial-gradient(circle at 92% 8%,rgba(177,140,255,.11),transparent 31%),
+  linear-gradient(180deg,#060912 0%,#080b14 46%,#05070d 100%);font-family:Inter,"Segoe UI",system-ui,sans-serif;letter-spacing:-.01em}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(to bottom,black,transparent 75%)}
+.wrap{position:relative;z-index:1;width:min(100%,1320px);max-width:none;margin:0 auto;padding:30px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);grid-auto-flow:row dense;gap:16px;align-items:start}
+.wrap>*{grid-column:1/-1;min-width:0}.wrap>h1,.wrap>.sub{display:none}
+.studio-header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px 24px;border:1px solid rgba(143,172,221,.18);border-radius:22px;background:linear-gradient(135deg,rgba(17,25,42,.94),rgba(10,15,27,.82));box-shadow:0 26px 80px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.05);overflow:hidden;position:relative}
+.studio-header::after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-92px;top:-150px;background:radial-gradient(circle,rgba(56,214,236,.15),transparent 65%);pointer-events:none}
+.studio-brand{display:flex;align-items:center;gap:15px;min-width:0}.studio-brand h1{margin:1px 0 3px;font-size:clamp(24px,3vw,36px);font-weight:720;letter-spacing:-1.25px}.studio-eyebrow{margin:0;color:var(--cy);font:750 9px/1.2 ui-monospace,monospace;letter-spacing:1.7px}.studio-sub{margin:0;color:var(--muted);font-size:13px;letter-spacing:0}
+.studio-mark{position:relative;display:block;flex:0 0 46px;width:46px;height:46px;border:1px solid rgba(56,214,236,.35);border-radius:15px;background:linear-gradient(145deg,rgba(56,214,236,.17),rgba(177,140,255,.08));box-shadow:inset 0 1px rgba(255,255,255,.08),0 0 28px rgba(56,214,236,.08)}
+.studio-mark i{position:absolute;display:block;width:16px;height:3px;border-radius:99px;background:var(--cy);box-shadow:0 0 12px rgba(56,214,236,.65)}.studio-mark i:nth-child(1){left:10px;top:13px;transform:rotate(30deg)}.studio-mark i:nth-child(2){right:9px;top:13px;transform:rotate(-30deg);background:var(--purple)}.studio-mark i:nth-child(3){left:14px;bottom:12px;width:18px}
+.studio-badges{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;position:relative;z-index:1}.studio-badges span{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid rgba(143,172,221,.16);border-radius:999px;background:rgba(5,9,17,.52);color:#9aa8bc;font:700 9px ui-monospace,monospace;letter-spacing:.55px;text-transform:uppercase}.studio-badges span:first-child{color:var(--green);border-color:rgba(99,214,138,.24)}.studio-badges i{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 9px var(--green)}
+.verdict{margin:0;padding:11px 14px;border-radius:13px;box-shadow:inset 0 1px rgba(255,255,255,.04);backdrop-filter:blur(16px)}.verdict.ok{border-color:rgba(99,214,138,.28);background:linear-gradient(90deg,rgba(99,214,138,.1),rgba(99,214,138,.035))}.verdict.no{border-color:rgba(232,106,95,.35);background:linear-gradient(90deg,rgba(232,106,95,.12),rgba(232,106,95,.035))}
+.preview{margin:0;min-height:340px;border-radius:22px!important;box-shadow:0 30px 90px rgba(0,0,0,.4),inset 0 1px rgba(255,255,255,.04);position:relative;isolation:isolate}.preview::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.035),transparent 30%,transparent 70%,rgba(56,214,236,.025))}
+.canvas-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 13px;border-bottom:1px solid rgba(143,172,221,.16);background:rgba(3,7,13,.66);color:#78869a;font:650 9px ui-monospace,monospace;letter-spacing:.55px;text-transform:uppercase}.canvas-bar>div{display:flex;align-items:center;gap:7px;color:#a9b6c8}.canvas-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+.pv-top{min-height:52px;justify-content:space-between!important}.pv-body{min-height:228px!important}.pv-nav{width:148px!important;flex:0 0 148px;padding:18px!important;font:700 10px/2 ui-monospace,monospace!important;text-transform:uppercase;letter-spacing:.8px}.pv-nav.rail{width:58px!important;flex-basis:58px}.pv-main{padding:24px!important;display:flex;flex-direction:column;justify-content:center;min-width:0}.pv-kicker{margin:0 0 7px;color:var(--cy);font:750 9px ui-monospace,monospace;letter-spacing:1.25px}.pv-title{display:block;max-width:580px;font-size:clamp(20px,3vw,34px);line-height:1.08;letter-spacing:-1px}.pv-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,112px));gap:8px;margin:18px 0 4px}.pv-metrics span{display:grid;gap:3px;padding:10px 11px;border:1px solid rgba(143,172,221,.16);border-radius:10px;background:rgba(5,9,17,.42);color:var(--muted);font:650 9px ui-monospace,monospace;text-transform:uppercase;letter-spacing:.55px}.pv-metrics b{color:var(--text);font-size:15px;letter-spacing:-.4px}.pv-warn{backdrop-filter:blur(8px);box-shadow:inset 0 1px rgba(255,255,255,.04)}.pv-status{min-height:34px;display:flex;align-items:center;letter-spacing:.2px}
+.card{margin:0;padding:20px;border-color:rgba(143,172,221,.17);border-radius:18px;background:linear-gradient(160deg,rgba(16,24,40,.88),rgba(8,13,24,.84));box-shadow:0 18px 52px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.04);backdrop-filter:blur(18px);position:relative;overflow:hidden}.card::before{content:"";position:absolute;inset:0 auto auto 0;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(56,214,236,.25),transparent);opacity:.65}.cap{color:#8796aa;font-weight:750;letter-spacing:1.35px}.muted{line-height:1.45}
+#aetherglassControls{grid-column:1}#styleFabricControls{grid-column:2}.wrap>.card:has(#swatchWrap){grid-column:1}.wrap>.card:has(#rad){grid-column:2}.wrap>.card:has(#ratioList){grid-column:1}.wrap>.card:has(#changes){grid-column:2}.wrap>.card:has(#library){grid-column:1}.wrap>.card:has(#pasteBox){grid-column:2}.wrap>.card:has(#sheetSummary){grid-column:1/-1}.wrap>.card:has(#applyBtn){grid-column:1/-1}
+.visual-head{padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid rgba(143,172,221,.12)}.visual-head .cap{color:#a8b5c7}.visual-status{border-color:rgba(143,172,221,.18);background:rgba(4,8,15,.44);padding:6px 9px}.visual-grid{gap:10px}.visual-field,.fabric-field{font-size:8px;letter-spacing:.85px;color:#77869a}.visual-field select,.fabric-field select,select,input[type=text]{min-height:39px;border-color:rgba(143,172,221,.16);border-radius:10px;background:rgba(3,7,13,.62);transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}.visual-field select:hover,.fabric-field select:hover,select:hover,input[type=text]:hover{border-color:rgba(56,214,236,.34)}select:focus-visible,input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid rgba(56,214,236,.72);outline-offset:2px}.visual-toggle{border-color:rgba(143,172,221,.14);border-radius:999px;background:rgba(3,7,13,.38);padding:7px 10px}.visual-toggle.primary{border-color:rgba(56,214,236,.28);background:rgba(56,214,236,.08)}
+.fabric-preview{padding:12px;border-color:rgba(143,172,221,.14);border-radius:13px;background:linear-gradient(130deg,rgba(4,8,15,.8),rgba(10,16,29,.66))}.fabric-preview b{font-size:15px}.fabric-swatch{width:27px;height:27px;border-radius:9px}.fabric-actions{gap:7px}
+.btn{min-height:38px;padding:9px 14px;border-color:rgba(56,214,236,.38);border-radius:10px;background:linear-gradient(135deg,rgba(56,214,236,.16),rgba(47,109,255,.08));box-shadow:inset 0 1px rgba(255,255,255,.05);font-weight:650;transition:transform .16s ease,border-color .16s ease,background .16s ease}.btn:hover{transform:translateY(-1px);border-color:rgba(56,214,236,.65);background:linear-gradient(135deg,rgba(56,214,236,.23),rgba(47,109,255,.13))}.btn.ghost{border-color:rgba(143,172,221,.17);background:rgba(4,8,15,.32)}.btn.danger{border-color:rgba(232,106,95,.34);background:rgba(232,106,95,.075)}
+.grid{grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:9px}.sw{min-height:48px;padding:8px 9px;border-color:rgba(143,172,221,.14);border-radius:11px;background:rgba(3,7,13,.56);transition:transform .15s ease,border-color .15s ease}.sw:hover{transform:translateY(-1px);border-color:rgba(56,214,236,.32)}.sw input[type=color]{width:34px;height:30px;border-radius:7px}.sw .lbl{font-size:10px;letter-spacing:.15px}.row{gap:10px}.row label.muted{display:grid;gap:5px;color:#8492a6;font:650 9px ui-monospace,monospace;letter-spacing:.55px;text-transform:uppercase}.row label.muted select{min-width:112px;text-transform:none;font-family:Inter,"Segoe UI",system-ui,sans-serif;letter-spacing:0}.ratio{padding:9px 0;border-color:rgba(143,172,221,.11)}.chg{padding:8px 0;border-color:rgba(143,172,221,.11);line-height:1.4}
+.sheet-summary{gap:10px}.sheet-stat{padding:13px;border-color:rgba(143,172,221,.14);border-radius:13px;background:rgba(3,7,13,.52)}.sheet-stat b{font-size:24px}.sheet-stat span{letter-spacing:1px}
+.wrap>.card:has(#applyBtn){position:sticky;bottom:10px;z-index:12;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 15px;border-color:rgba(56,214,236,.28);background:rgba(8,14,25,.88);box-shadow:0 20px 70px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.06);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)}.wrap>.card:has(#applyBtn)>.row{flex:0 0 auto}.wrap>.card:has(#applyBtn)>.muted{margin:0!important;max-width:410px}.wrap>.card:has(#applyBtn)>.muted:last-child{display:none}#applyBtn{background:linear-gradient(135deg,rgba(56,214,236,.28),rgba(47,109,255,.22));color:#bdf7ff;box-shadow:0 0 24px rgba(56,214,236,.1),inset 0 1px rgba(255,255,255,.08)}
+body.axm-visual-root .card,body.axm-visual-root .preview{background-color:rgba(8,14,25,.82)}
+body.studio-embedded .wrap{width:100%;padding:18px 22px}body.studio-embedded .skin-intro{display:none}
+@media(max-width:980px){.wrap{grid-template-columns:1fr;padding:20px}.wrap>*,#aetherglassControls,#styleFabricControls,.wrap>.card:has(#swatchWrap),.wrap>.card:has(#rad),.wrap>.card:has(#ratioList),.wrap>.card:has(#changes),.wrap>.card:has(#library),.wrap>.card:has(#pasteBox){grid-column:1}.studio-header{align-items:flex-start}.studio-badges{max-width:260px}.preview{min-height:320px}.visual-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.wrap>.card:has(#applyBtn){position:static}}
+@media(max-width:680px){.wrap{padding:12px;gap:11px}.studio-header{display:grid;padding:17px;border-radius:17px}.studio-brand{align-items:flex-start}.studio-mark{width:40px;height:40px;flex-basis:40px;border-radius:13px}.studio-badges{justify-content:flex-start;max-width:none}.studio-badges span{font-size:8px;padding:6px 8px}.studio-brand h1{font-size:25px}.studio-sub{font-size:12px}.card{padding:15px;border-radius:15px}.preview{min-height:0;border-radius:17px!important}.canvas-bar{align-items:flex-start;flex-direction:column;gap:3px}.canvas-bar>span{font-size:8px}.pv-top{min-height:46px}.pv-body{min-height:245px!important}.pv-nav{width:92px!important;flex-basis:92px;padding:13px 10px!important}.pv-main{padding:16px!important}.pv-title{font-size:22px}.pv-metrics{grid-template-columns:repeat(3,1fr);gap:5px;margin-top:13px}.pv-metrics span{padding:8px 7px;font-size:7px}.pv-metrics b{font-size:12px}.visual-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fabric-grid{grid-template-columns:1fr 1fr}.fabric-preview{align-items:flex-start;flex-direction:column}.sheet-summary{grid-template-columns:repeat(2,1fr)}.wrap>.card:has(#applyBtn){bottom:6px;display:grid;padding:11px}.wrap>.card:has(#applyBtn)>.muted{font-size:10px}.wrap>.card:has(#applyBtn) .btn{flex:1}.wrap>.card:has(#applyBtn)>.row{width:100%;flex-wrap:nowrap}.wrap>.card:has(#applyBtn)>.row .btn{padding:8px 7px;font-size:11px}}
+@media(max-width:430px){.visual-grid,.fabric-grid{grid-template-columns:1fr}.pv-nav{display:none}.pv-metrics{grid-template-columns:1fr 1fr}.pv-metrics span:last-child{display:none}.studio-badges span:nth-child(3){display:none}.wrap>.card:has(#applyBtn)>.row{flex-wrap:wrap}}
 </style>
 </head>
 <body>
 <script>if(new URLSearchParams(location.search).get('studio')==='1')document.body.classList.add('studio-embedded');</script>
 <div class="wrap">
+  <header class="studio-header skin-intro">
+    <div class="studio-brand">
+      <span class="studio-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <div>
+        <p class="studio-eyebrow">AXM DESIGN SYSTEM · LOCAL-FIRST</p>
+        <h1>Skin Studio</h1>
+        <p class="studio-sub">Shape the Workshop visually. Every edit stays reversible, readable, and explicit.</p>
+      </div>
+    </div>
+    <div class="studio-badges" aria-label="Editor guarantees">
+      <span><i></i> Live preview</span>
+      <span>Safety gated</span>
+      <span>Data only</span>
+    </div>
+  </header>
   <h1>Skinner</h1>
   <p class="sub">Freedom in safety. Change what you like — the system just won't let a skin hide the truth.</p>
 
   <div id="verdict" class="verdict ok">Checking…</div>
 
   <div class="preview" id="preview">
+    <div class="canvas-bar">
+      <div><span class="canvas-dot"></span><b>LIVE SKIN CANVAS</b></div>
+      <span>Changes stay local until Apply to hub</span>
+    </div>
     <div class="pv-top" id="pvTop"><b id="pvBrand">AXM Hub</b><span class="muted" id="pvActive">Active: Home</span></div>
     <div class="pv-body" id="pvBody">
       <div class="pv-nav" id="pvNav">modules<br>⬦ 2 hidden</div>
       <div class="pv-main" id="pvMain">
-        Module viewport
+        <p class="pv-kicker">WORKSPACE PREVIEW</p>
+        <strong class="pv-title">A system that wears your visual language.</strong>
+        <div class="pv-metrics" aria-hidden="true"><span><b>12</b> modules</span><span><b>4</b> layers</span><span><b>LIVE</b> gate</span></div>
         <div class="pv-warn" id="pvWarn">⚠ A door sign is not a lock.</div>
         <div class="pv-warn" id="pvErr">✕ permission denied</div>
       </div>
     </div>
     <div class="pv-status" id="pvStatus">action log · hub ready</div>
+  </div>
+
+  <div class="card" id="aetherglassControls">
+    <div class="visual-head">
+      <div>
+        <p class="cap">Aetherglass visual engine · v7.1.0</p>
+        <p class="muted">A reversible atmosphere layer. The skin gate allowlists every setting; your skin colours drive its four accent channels.</p>
+      </div>
+      <span class="visual-status" id="visualStatus">checking</span>
+    </div>
+    <div class="visual-toggles" style="margin:0 0 11px">
+      <label class="visual-toggle primary"><input type="checkbox" data-visual-boolean="enabled"> Enable Aetherglass</label>
+    </div>
+    <div class="visual-grid">
+      <label class="visual-field">Theme<select data-visual-option="theme"></select></label>
+      <label class="visual-field">Atmosphere<select data-visual-option="atmosphere"></select></label>
+      <label class="visual-field">Material<select data-visual-option="material"></select></label>
+      <label class="visual-field">Depth<select data-visual-option="depth"></select></label>
+      <label class="visual-field">Luminosity<select data-visual-option="luminosity"></select></label>
+      <label class="visual-field">Spacing<select data-visual-option="density"></select></label>
+      <label class="visual-field">Shape<select data-visual-option="shape"></select></label>
+      <label class="visual-field">Transparency<select data-visual-option="transparency"></select></label>
+      <label class="visual-field">Contrast<select data-visual-option="contrast"></select></label>
+      <label class="visual-field">Quality<select data-visual-option="quality"></select></label>
+      <label class="visual-field">Motion<select data-visual-option="motion"></select></label>
+      <label class="visual-field">Light planes<select data-visual-option="lightPreset"></select></label>
+      <label class="visual-field">Intensity<span class="visual-range"><input type="range" min="0" max="1.8" step="0.05" data-visual-range="intensity"><output data-visual-output="intensity"></output></span></label>
+      <label class="visual-field">Atmosphere gain<span class="visual-range"><input type="range" min="0" max="1.6" step="0.05" data-visual-range="atmosphereStrength"><output data-visual-output="atmosphereStrength"></output></span></label>
+      <label class="visual-field">Glow gain<span class="visual-range"><input type="range" min="0" max="2" step="0.05" data-visual-range="glowStrength"><output data-visual-output="glowStrength"></output></span></label>
+    </div>
+    <div class="visual-toggles">
+      <label class="visual-toggle"><input type="checkbox" data-visual-boolean="pointerLighting"> Pointer light</label>
+      <label class="visual-toggle"><input type="checkbox" data-visual-boolean="reactivePanels"> Reactive panels</label>
+      <label class="visual-toggle"><input type="checkbox" data-visual-boolean="parallax"> Parallax</label>
+      <label class="visual-toggle"><input type="checkbox" data-visual-boolean="trackScroll"> Scroll depth</label>
+    </div>
+  </div>
+
+  <div class="card" id="styleFabricControls">
+    <div class="visual-head">
+      <div>
+        <p class="cap">Style Fabric · v0.6.0 WORKING / TEST</p>
+        <p class="muted">Choose or fuse a portable preskin here, or import a pack from the full composer. Only validated presentation data is mapped into Skinner; gameplay fields and embedded assets never cross this bridge.</p>
+      </div>
+      <span class="visual-status" id="fabricStatus">loading</span>
+    </div>
+    <div class="fabric-grid">
+      <label class="fabric-field">Foundation<select id="fabricPrimary"></select></label>
+      <label class="fabric-field">Blend with<select id="fabricSecondary"><option value="">No second preskin</option></select></label>
+      <label class="fabric-field">Fusion<span class="fabric-range"><input id="fabricAmount" type="range" min="0" max="1" step="0.01" value="0.50" disabled><output id="fabricAmountOut">50%</output></span></label>
+    </div>
+    <div class="fabric-preview">
+      <div><b id="fabricName">Preparing Style Fabric…</b><div class="muted">Palette + geometry + bounded Aetherglass hints</div></div>
+      <div class="fabric-swatches" id="fabricSwatches" aria-label="Style Fabric palette preview"></div>
+    </div>
+    <div class="fabric-actions">
+      <button class="btn" id="fabricApply">Use in Skinner</button>
+      <button class="btn ghost" id="fabricImport">Import .axmskin.json…</button>
+      <input type="file" id="fabricPackFile" accept=".json,.axmskin.json,application/json,application/vnd.axm.skin+json" style="display:none">
+      <a class="btn ghost" href="/shared/style-fabric/studio/" target="_blank" rel="noopener">Open full composer ↗</a>
+    </div>
+    <p class="muted" id="fabricReceipt" style="margin:9px 0 0">Loading the verified local Style Fabric runtime…</p>
   </div>
 
   <div class="card">
@@ -113,7 +261,7 @@ body.studio-embedded .wrap>h1,body.studio-embedded .wrap>.sub{display:none}
     <p class="muted" style="margin:0 0 9px">Sizes come from the shell's own CSS. Every slot is optional — a skin with no assets is a complete skin. Assets live in the Asset Vault and are referenced as <span class="mono">vault:id</span>. A skin may not point at a URL.</p>
     <div id="assetSpec"></div>
     <div class="row" style="margin-top:9px">
-      <button class="btn ghost" id="specCopy">Copy complete 57-point sheet</button>
+      <button class="btn ghost" id="specCopy">Copy complete production sheet</button>
     </div>
   </div>
 
@@ -141,17 +289,44 @@ body.studio-embedded .wrap>h1,body.studio-embedded .wrap>.sub{display:none}
 </div>
 
 <script src="/hub/skin-core.js"></script>
+<script src="/shared/aetherglass/src/axm-aetherglass.js"></script>
+<script src="/shared/aetherglass/src/axm-luminous-layer-forge.js"></script>
+<script src="/shared/aetherglass/axm-skin-bridge.js"></script>
 <script src="/hub/axm-hub-module.js"></script>
 <script>
 var $ = function(id){ return document.getElementById(id); };
 var S = window.AXMSkin;
 var skin = S.newSkin('My skin', 'me');
+skin.visuals = { enabled:true, lightPreset:'quiet-aura' };
 var library = [];   /* [{skin, provenance}] */
+var styleFabricReceipt = null;
+var LOCAL_CHECKPOINT = 'axm.skinner.state.v2';
 
 function merged(){ return S.resolve(skin); }
 
 /* ---------- library ---------- */
-function persist(){ AXMHub.save({ skin: skin, library: library }); }
+function localCheckpoint(){
+  try { return JSON.parse(localStorage.getItem(LOCAL_CHECKPOINT) || 'null'); }
+  catch (error) { return null; }
+}
+function checkpoint(skinValue){
+  return { skin:skinValue, library:library, styleFabric:styleFabricReceipt, updatedAt:new Date().toISOString() };
+}
+function persistCheckpoint(saved){
+  try { localStorage.setItem(LOCAL_CHECKPOINT, JSON.stringify(saved)); } catch (error) {}
+  AXMHub.save(saved);
+}
+function persist(){ persistCheckpoint(checkpoint(skin)); }
+function restoreCheckpoint(initState){
+  var localState = localCheckpoint();
+  var initTime = Date.parse(initState && initState.updatedAt || '') || 0;
+  var localTime = Date.parse(localState && localState.updatedAt || '') || 0;
+  var saved = localTime > initTime ? localState : (initState || localState);
+  if (!saved) return;
+  if (Object.prototype.hasOwnProperty.call(saved, 'skin')) skin = saved.skin || S.newSkin('My skin', 'me');
+  if (Array.isArray(saved.library)) library = saved.library;
+  styleFabricReceipt = saved.styleFabric || null;
+}
 function renderLibrary(){
   var box = $('library'); box.innerHTML = '';
   if (!library.length) { box.innerHTML = '<span class="muted">no saved skins yet</span>'; return; }
@@ -166,7 +341,7 @@ function renderLibrary(){
     name.querySelector('.muted').textContent = ' ' + fp
       + (p.origin && p.origin !== 'authored' ? '  · from ' + p.origin + ', author claimed: ' + (p.author_claimed || 'none') : '');
     d.appendChild(name);
-    [['Use', function(){ skin = JSON.parse(JSON.stringify(s)); buildSwatches(); buildSelects(); refresh(); persist(); AXMHub.log('switched to skin ' + s.name); }],
+    [['Use', function(){ skin = JSON.parse(JSON.stringify(s)); styleFabricReceipt = p.styleFabric || null; buildSwatches(); buildSelects(); buildVisualControls(); refresh(); persist(); AXMHub.log('switched to skin ' + s.name); }],
      ['Copy', function(){ var c = JSON.parse(JSON.stringify(s)); c.name = s.name + ' copy'; c.id = 'skin_' + Math.random().toString(36).slice(2,8);
         library.push({ skin:c, provenance:{ origin:'authored', imported_at:new Date().toISOString() } }); renderLibrary(); persist(); }],
      ['Del', function(){ if (!confirm('Delete "' + s.name + '" from your library?')) return; library.splice(i,1); renderLibrary(); persist(); AXMHub.log('deleted skin ' + s.name); }]
@@ -182,7 +357,8 @@ $('saveBtn').onclick = function(){
   if (!a.ok) { alert('This skin cannot be saved — it fails the gate:\n\n' + a.errors.join('\n')); return; }
   var n = $('saveName').value.trim() || skin.name || 'Untitled';
   var copy = JSON.parse(JSON.stringify(skin)); copy.name = n;
-  library.push({ skin: copy, provenance: { origin:'authored', imported_at: new Date().toISOString(), fingerprint: S.fingerprint(copy) } });
+  var sourceReceipt = styleFabricReceipt && styleFabricReceipt.skinFingerprint === S.fingerprint(skin) ? JSON.parse(JSON.stringify(styleFabricReceipt)) : null;
+  library.push({ skin: copy, provenance: { origin:sourceReceipt ? 'style-fabric' : 'authored', imported_at: new Date().toISOString(), fingerprint: S.fingerprint(copy), styleFabric:sourceReceipt } });
   $('saveName').value = '';
   AXMHub.log('saved skin profile "' + n + '" (' + S.fingerprint(copy) + ')');
   renderLibrary(); persist();
@@ -227,6 +403,56 @@ function buildSelects(){
   f.onchange = function(){ skin.tokens['--font'] = f.value + ', sans-serif'; refresh(); };
   $('rad').value = Number(merged().tokens['--radius']);
   $('rad').oninput = function(){ skin.tokens['--radius'] = String($('rad').value); refresh(); };
+}
+
+/* ---------- Aetherglass controls (allowlisted skin data, never CSS) ---------- */
+function writeVisual(key, value){
+  if (!skin.visuals || typeof skin.visuals !== 'object') skin.visuals = {};
+  skin.visuals[key] = value;
+  refresh();
+}
+function buildVisualControls(){
+  var visual = merged().visuals;
+  document.querySelectorAll('[data-visual-option]').forEach(function(el){
+    var key = el.dataset.visualOption;
+    el.innerHTML = '';
+    S.VISUAL_OPTIONS[key].forEach(function(value){
+      var option = document.createElement('option');
+      option.value = value; option.textContent = value.replace(/-/g,' '); el.appendChild(option);
+    });
+    el.value = visual[key];
+    el.onchange = function(){ writeVisual(key, el.value); };
+  });
+  document.querySelectorAll('[data-visual-range]').forEach(function(el){
+    var key = el.dataset.visualRange;
+    el.value = visual[key];
+    var output = document.querySelector('[data-visual-output="' + key + '"]');
+    if (output) output.value = Number(visual[key]).toFixed(2);
+    el.oninput = function(){
+      var value = Number(el.value);
+      if (output) output.value = value.toFixed(2);
+      writeVisual(key, value);
+    };
+  });
+  document.querySelectorAll('[data-visual-boolean]').forEach(function(el){
+    var key = el.dataset.visualBoolean;
+    el.checked = Boolean(visual[key]);
+    el.onchange = function(){ writeVisual(key, el.checked); };
+  });
+}
+function paintAetherglass(){
+  var status = $('visualStatus');
+  var result = window.AXMSkinAetherglass.apply(skin, { root:document.body, applyToDocument:true });
+  if (!result.ok) {
+    status.className = 'visual-status bad';
+    status.textContent = 'refused';
+  } else if (!result.enabled) {
+    status.className = 'visual-status';
+    status.textContent = 'off';
+  } else {
+    status.className = 'visual-status on';
+    status.textContent = 'live · ' + merged().visuals.lightPreset.replace(/-/g,' ');
+  }
 }
 
 /* ---------- live preview (a mannequin, not the live shell) ---------- */
@@ -295,7 +521,26 @@ function paintVerdict(){
   return a;
 }
 
-function refresh(){ paintPreview(); paintRatios(); paintChanges(); paintVerdict(); }
+function refresh(){ paintPreview(); paintRatios(); paintChanges(); paintVerdict(); paintAetherglass(); }
+
+/* ---------- Style Fabric staging bridge ----------
+   The ES-module adapter validates the portable pack first, then hands this
+   classic route a complete axm.skin/v1 candidate. This hook runs the normal
+   Skinner gate again and stages the result; only Apply to hub persists it. */
+window.AXMSkinnerStyleFabric = {
+  currentSkin: function(){ return JSON.parse(JSON.stringify(skin)); },
+  applyMapped: function(mapped){
+    if (!mapped || !mapped.skin || !mapped.receipt) return { ok:false, stage:'bridge', errors:['Style Fabric did not provide a complete mapped skin.'] };
+    var gate = S.accept(mapped.skin, function(){ return { present:true, visible:true, w:100, h:20 }; });
+    if (!gate.ok) return gate;
+    skin = mapped.skin;
+    styleFabricReceipt = JSON.parse(JSON.stringify(mapped.receipt));
+    styleFabricReceipt.skinFingerprint = S.fingerprint(skin);
+    buildSwatches(); buildSelects(); buildVisualControls(); refresh();
+    AXMHub.log('Style Fabric staged: ' + styleFabricReceipt.packName + ' (' + styleFabricReceipt.mappedTokens.length + ' mapped controls, zero authority writes)');
+    return { ok:true, fingerprint:styleFabricReceipt.skinFingerprint, changes:gate.changes.length };
+  }
+};
 
 /* ---------- actions ---------- */
 $('applyBtn').onclick = function(){
@@ -303,7 +548,7 @@ $('applyBtn').onclick = function(){
   if (!a.ok) return;
   persist();
   AXMHub.log('skin applied: ' + skin.name + ' (' + a.changes.length + ' changes) — ' + a.changes.map(function(c){ return c.key; }).join(', '));
-  alert('Skin saved to the hub.\n\nThe shell reads it on next load. Every change was reported to the action log — nothing was applied silently.');
+  alert('Skin saved to the hub.\n\nThe shell reads its tokens, layout, assets, and approved Aetherglass settings on next load. Every change was reported to the action log — nothing was applied silently.');
 };
 $('exportBtn').onclick = function(){
   var b = new Blob([JSON.stringify(skin, null, 2)], { type:'application/json' });
@@ -389,12 +634,13 @@ function ingest(text, origin){
     return;
   }
   skin = incoming;
+  styleFabricReceipt = null;
   var prov = S.importRecord(skin, origin, 'me');
   library.push({ skin: JSON.parse(JSON.stringify(skin)), provenance: prov });
   AXMHub.log('skin imported from ' + origin + ': ' + (skin.name||'unnamed') + ' · ' + prov.fingerprint
     + ' · author claimed: ' + (prov.author_claimed||'none')
     + (a.missingAssets.length ? ' · ' + a.missingAssets.length + ' asset(s) missing' : ''));
-  buildSwatches(); buildSelects(); renderLibrary(); refresh(); persist();
+  buildSwatches(); buildSelects(); buildVisualControls(); renderLibrary(); refresh(); persist();
 
   var msg = 'Accepted. ' + a.changes.length + ' change(s) from default.\nFingerprint: ' + prov.fingerprint
     + '\n\nAuthor "' + (prov.author_claimed || 'unnamed') + '" is a CLAIM in the file — nothing here verifies it.';
@@ -420,19 +666,20 @@ $('fileIn').onchange = function(e){
 $('resetBtn').onclick = function(){
   if (!confirm('Reset to the default AXM skin?')) return;
   skin = S.newSkin('My skin', 'me');
-  AXMHub.save({ skin: null, library: library });
+  styleFabricReceipt = null;
+  persistCheckpoint(checkpoint(null));
   AXMHub.log('skin reset to default (library kept)');
-  buildSwatches(); buildSelects(); renderLibrary(); refresh();
+  buildSwatches(); buildSelects(); buildVisualControls(); renderLibrary(); refresh();
 };
 
 AXMHub.onInit(function(init){
-  if (init && init.moduleState && init.moduleState.skin) skin = init.moduleState.skin;
-  if (init && init.moduleState && init.moduleState.library) library = init.moduleState.library;
+  restoreCheckpoint(init && init.moduleState);
   AXMHub.log('Skinner ready — ' + library.length + ' saved skin(s)');
-  buildSwatches(); buildSelects(); renderLibrary(); renderSpec(); refresh();
+  buildSwatches(); buildSelects(); buildVisualControls(); renderLibrary(); renderSpec(); refresh();
 });
 AXMHub.onShutdown(function(){ persist(); });
-AXMHub.ready({ id:'skinner', name:'Skinner', version:'v0.1', hubApiVersion:'1.0', permissions:[], savesState:true, handlesShutdown:true });
-if (!AXMHub.inHub) { buildSwatches(); buildSelects(); renderLibrary(); renderSpec(); refresh(); }
+AXMHub.ready({ id:'skinner', name:'Skinner', version:'v0.3', hubApiVersion:'1.0', permissions:[], savesState:true, handlesShutdown:true });
+if (!AXMHub.inHub) { restoreCheckpoint(null); buildSwatches(); buildSelects(); buildVisualControls(); renderLibrary(); renderSpec(); refresh(); }
 </script>
+<script type="module" src="./style-fabric-bridge.mjs"></script>
 </body></html>

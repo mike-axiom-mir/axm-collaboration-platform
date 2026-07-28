@@ -1,0 +1,408 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/contracts/treatment-mold.schema.json",
+  "title": "AXM Declarative Treatment Mold",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "type",
+    "version",
+    "id",
+    "name",
+    "description",
+    "status",
+    "targets",
+    "defaultProfile",
+    "palette",
+    "legacy",
+    "effectStack",
+    "constraints",
+    "provenance"
+  ],
+  "properties": {
+    "type": { "const": "axm.treatment-mold" },
+    "version": { "const": "1.0" },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+    },
+    "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "description": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "status": {
+      "enum": ["DRAFT", "WORKING_TEST", "TEST_HOLD_REVIEW"]
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 33,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+      }
+    },
+    "defaultProfile": {
+      "enum": ["legacy", "balanced", "showcase", "reduced-motion"]
+    },
+    "palette": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "background",
+        "surface",
+        "primary",
+        "secondary",
+        "accent",
+        "text",
+        "mutedText",
+        "shadow",
+        "highlight"
+      ],
+      "properties": {
+        "background": { "$ref": "#/$defs/color" },
+        "surface": { "$ref": "#/$defs/color" },
+        "primary": { "$ref": "#/$defs/color" },
+        "secondary": { "$ref": "#/$defs/color" },
+        "accent": { "$ref": "#/$defs/color" },
+        "text": { "$ref": "#/$defs/color" },
+        "mutedText": { "$ref": "#/$defs/color" },
+        "shadow": { "$ref": "#/$defs/color" },
+        "highlight": { "$ref": "#/$defs/color" }
+      }
+    },
+    "legacy": { "$ref": "#/$defs/legacy" },
+    "effectStack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "layers"],
+      "properties": {
+        "version": { "const": "1.0" },
+        "layers": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": { "$ref": "#/$defs/layer" }
+        }
+      }
+    },
+    "lightingRig": { "$ref": "#/$defs/lightingRig" },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxLayers",
+        "maxEffectCost",
+        "minimumTextContrast",
+        "preserveGameplayCues",
+        "reducedMotionFallback"
+      ],
+      "properties": {
+        "maxLayers": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "maxEffectCost": { "type": "number", "minimum": 0, "maximum": 20 },
+        "minimumTextContrast": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 21
+        },
+        "preserveGameplayCues": { "type": "boolean" },
+        "reducedMotionFallback": { "type": "boolean" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin", "creator", "license", "remixAllowed"],
+      "properties": {
+        "origin": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "creator": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "license": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "remixAllowed": { "type": "boolean" }
+      }
+    }
+  },
+  "$defs": {
+    "color": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "colorRole": {
+      "enum": [
+        "background",
+        "surface",
+        "primary",
+        "secondary",
+        "accent",
+        "text",
+        "mutedText",
+        "shadow",
+        "highlight"
+      ]
+    },
+    "unit": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "legacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "colors",
+        "metallic",
+        "roughness",
+        "gloss",
+        "specular",
+        "clearcoat",
+        "sheen",
+        "translucency",
+        "iridescence",
+        "emissiveStrength",
+        "glowIntensity",
+        "glowRadius",
+        "opacity",
+        "outlineWidth",
+        "grain",
+        "weathering",
+        "patternScale",
+        "pulseSpeed",
+        "shimmerSpeed",
+        "pattern"
+      ],
+      "properties": {
+        "colors": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "baseColor",
+            "secondaryColor",
+            "accentColor",
+            "emissiveColor"
+          ],
+          "properties": {
+            "baseColor": { "$ref": "#/$defs/colorRole" },
+            "secondaryColor": { "$ref": "#/$defs/colorRole" },
+            "accentColor": { "$ref": "#/$defs/colorRole" },
+            "emissiveColor": { "$ref": "#/$defs/colorRole" }
+          }
+        },
+        "metallic": { "$ref": "#/$defs/unit" },
+        "roughness": { "$ref": "#/$defs/unit" },
+        "gloss": { "$ref": "#/$defs/unit" },
+        "specular": { "$ref": "#/$defs/unit" },
+        "clearcoat": { "$ref": "#/$defs/unit" },
+        "sheen": { "$ref": "#/$defs/unit" },
+        "translucency": { "$ref": "#/$defs/unit" },
+        "iridescence": { "$ref": "#/$defs/unit" },
+        "emissiveStrength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "glowIntensity": { "$ref": "#/$defs/unit" },
+        "glowRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 64
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 1
+        },
+        "outlineWidth": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 12
+        },
+        "grain": { "$ref": "#/$defs/unit" },
+        "weathering": { "$ref": "#/$defs/unit" },
+        "patternScale": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 16
+        },
+        "pulseSpeed": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "shimmerSpeed": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "pattern": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "strength", "scale"],
+          "properties": {
+            "kind": { "type": "string", "minLength": 1, "maxLength": 48 },
+            "strength": { "$ref": "#/$defs/unit" },
+            "scale": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 16
+            }
+          }
+        }
+      }
+    },
+    "motion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "speed", "amount"],
+      "properties": {
+        "kind": { "enum": ["none", "pulse", "shimmer", "drift"] },
+        "speed": { "type": "number", "minimum": 0, "maximum": 4 },
+        "amount": { "$ref": "#/$defs/unit" }
+      }
+    },
+    "layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "blendMode", "colorRole"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"
+        },
+        "kind": {
+          "enum": [
+            "fill",
+            "texture",
+            "inner-glow",
+            "outer-glow",
+            "rim-light",
+            "shadow",
+            "highlight",
+            "bloom",
+            "haze",
+            "gradient"
+          ]
+        },
+        "blendMode": {
+          "enum": ["normal", "screen", "add", "multiply", "soft-light"]
+        },
+        "colorRole": { "$ref": "#/$defs/colorRole" },
+        "secondaryColorRole": { "$ref": "#/$defs/colorRole" },
+        "mask": {
+          "enum": ["full", "inside", "outside", "edge", "top", "bottom", "radial"]
+        },
+        "opacity": { "$ref": "#/$defs/unit" },
+        "intensity": { "$ref": "#/$defs/unit" },
+        "threshold": { "$ref": "#/$defs/unit" },
+        "softness": { "$ref": "#/$defs/unit" },
+        "radius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 64
+        },
+        "spread": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 32
+        },
+        "scale": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 16
+        },
+        "pattern": {
+          "enum": [
+            "none",
+            "paper-fiber",
+            "grain",
+            "circuit",
+            "holo-grid",
+            "ink-hatch"
+          ]
+        },
+        "motion": { "$ref": "#/$defs/motion" }
+      }
+    },
+    "light": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["colorRole", "intensity"],
+      "properties": {
+        "colorRole": { "$ref": "#/$defs/colorRole" },
+        "intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "directionDegrees": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 360
+        },
+        "softness": { "$ref": "#/$defs/unit" }
+      }
+    },
+    "lightingRig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "ambient",
+        "key",
+        "fill",
+        "rim",
+        "shadows",
+        "bloom",
+        "haze",
+        "exposure",
+        "contrast"
+      ],
+      "properties": {
+        "version": { "const": "1.0" },
+        "ambient": { "$ref": "#/$defs/light" },
+        "key": { "$ref": "#/$defs/light" },
+        "fill": { "$ref": "#/$defs/light" },
+        "rim": { "$ref": "#/$defs/light" },
+        "shadows": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["strength", "softness"],
+          "properties": {
+            "strength": { "$ref": "#/$defs/unit" },
+            "softness": { "$ref": "#/$defs/unit" }
+          }
+        },
+        "bloom": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["intensity", "threshold", "radius"],
+          "properties": {
+            "intensity": { "$ref": "#/$defs/unit" },
+            "threshold": { "$ref": "#/$defs/unit" },
+            "radius": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 64
+            }
+          }
+        },
+        "haze": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["colorRole", "density"],
+          "properties": {
+            "colorRole": { "$ref": "#/$defs/colorRole" },
+            "density": { "$ref": "#/$defs/unit" }
+          }
+        },
+        "exposure": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 2
+        },
+        "contrast": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 2
+        }
+      }
+    }
+  }
+}

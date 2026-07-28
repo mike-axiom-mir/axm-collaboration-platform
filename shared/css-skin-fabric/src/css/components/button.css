@@ -1,0 +1,65 @@
+.axm-button {
+  min-height: var(--axm-control-min);
+  min-width: var(--axm-control-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--axm-control-gap);
+  padding-inline: var(--axm-control-padding-inline);
+  border: var(--axm-control-border) solid var(--axm-sem-border);
+  border-radius: var(--axm-control-radius);
+  color: var(--axm-sem-text);
+  background: var(--axm-sem-surface-raised);
+  box-shadow: var(--axm-shadow-xs);
+  cursor: pointer;
+  font-weight: 720;
+  text-decoration: none;
+  transition:
+    transform var(--axm-time-fast) var(--axm-ease-standard),
+    border-color var(--axm-time-fast) var(--axm-ease-standard),
+    background-color var(--axm-time-fast) var(--axm-ease-standard),
+    box-shadow var(--axm-time-fast) var(--axm-ease-standard);
+}
+
+.axm-button:hover {
+  border-color: var(--axm-sem-border-strong);
+  transform: translateY(calc(var(--axm-motion-distance) * -0.35));
+}
+
+.axm-button:active {
+  transform: scale(var(--axm-motion-scale));
+}
+
+.axm-button[aria-pressed="true"],
+.axm-button[data-selected="true"] {
+  color: var(--axm-sem-on-accent);
+  background: var(--axm-sem-accent);
+  border-color: var(--axm-sem-accent);
+}
+
+.axm-button:disabled,
+.axm-button[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.axm-button--primary {
+  color: var(--axm-sem-on-accent);
+  background: linear-gradient(135deg, var(--axm-sem-accent), var(--axm-sem-accent-alt));
+  border-color: color-mix(in oklab, var(--axm-sem-accent) 75%, white);
+  box-shadow:
+    var(--axm-shadow-sm),
+    0 0 var(--axm-effect-button-glow) color-mix(in oklab, var(--axm-sem-accent) 42%, transparent);
+}
+
+.axm-button--quiet {
+  background: transparent;
+  box-shadow: none;
+}
+
+.axm-button--danger {
+  color: var(--axm-sem-on-accent);
+  background: var(--axm-sem-danger);
+  border-color: var(--axm-sem-danger);
+}

@@ -1,0 +1,145 @@
+{
+  "type": "axm.treatment-mold",
+  "version": "1.0",
+  "id": "aetherglass-cinematic",
+  "name": "Aetherglass Cinematic",
+  "description": "Deep glass, selective cyan and violet edge light, soft bloom, and a restrained cinematic lighting rig.",
+  "status": "WORKING_TEST",
+  "targets": ["world.lighting", "world.postfx", "ui.panel", "fx.ambient"],
+  "defaultProfile": "showcase",
+  "palette": {
+    "background": "#050812",
+    "surface": "#10192a",
+    "primary": "#38e8ff",
+    "secondary": "#7c5cff",
+    "accent": "#ff43c8",
+    "text": "#f6fbff",
+    "mutedText": "#aebbd2",
+    "shadow": "#02040a",
+    "highlight": "#dffcff"
+  },
+  "legacy": {
+    "colors": {
+      "baseColor": "surface",
+      "secondaryColor": "primary",
+      "accentColor": "accent",
+      "emissiveColor": "secondary"
+    },
+    "metallic": 0.28,
+    "roughness": 0.18,
+    "gloss": 0.86,
+    "specular": 0.78,
+    "clearcoat": 0.74,
+    "sheen": 0.34,
+    "translucency": 0.62,
+    "iridescence": 0.24,
+    "emissiveStrength": 1.28,
+    "glowIntensity": 0.72,
+    "glowRadius": 34,
+    "opacity": 0.78,
+    "outlineWidth": 1.4,
+    "grain": 0.04,
+    "weathering": 0,
+    "patternScale": 1,
+    "pulseSpeed": 0,
+    "shimmerSpeed": 0.44,
+    "pattern": { "kind": "holo-grid", "strength": 0.18, "scale": 1.4 }
+  },
+  "effectStack": {
+    "version": "1.0",
+    "layers": [
+      {
+        "id": "glass-fill",
+        "kind": "fill",
+        "blendMode": "normal",
+        "colorRole": "surface",
+        "mask": "inside",
+        "opacity": 0.78,
+        "intensity": 0.72
+      },
+      {
+        "id": "inner-highlight",
+        "kind": "inner-glow",
+        "blendMode": "screen",
+        "colorRole": "highlight",
+        "mask": "inside",
+        "opacity": 0.34,
+        "intensity": 0.38,
+        "radius": 9,
+        "softness": 0.76
+      },
+      {
+        "id": "cyan-rim",
+        "kind": "rim-light",
+        "blendMode": "screen",
+        "colorRole": "primary",
+        "mask": "edge",
+        "opacity": 0.82,
+        "intensity": 0.72,
+        "radius": 12,
+        "softness": 0.52,
+        "motion": { "kind": "shimmer", "speed": 0.44, "amount": 0.16 }
+      },
+      {
+        "id": "violet-aura",
+        "kind": "outer-glow",
+        "blendMode": "screen",
+        "colorRole": "secondary",
+        "mask": "outside",
+        "opacity": 0.46,
+        "intensity": 0.48,
+        "radius": 24,
+        "spread": 5,
+        "softness": 0.82
+      },
+      {
+        "id": "accent-bloom",
+        "kind": "bloom",
+        "blendMode": "add",
+        "colorRole": "accent",
+        "mask": "edge",
+        "opacity": 0.3,
+        "intensity": 0.28,
+        "radius": 32,
+        "threshold": 0.72,
+        "softness": 0.9
+      },
+      {
+        "id": "depth-haze",
+        "kind": "haze",
+        "blendMode": "screen",
+        "colorRole": "primary",
+        "mask": "radial",
+        "opacity": 0.14,
+        "intensity": 0.12,
+        "radius": 44,
+        "softness": 0.96
+      }
+    ]
+  },
+  "lightingRig": {
+    "version": "1.0",
+    "ambient": { "colorRole": "background", "intensity": 0.28, "softness": 1 },
+    "key": { "colorRole": "primary", "intensity": 0.84, "directionDegrees": 315, "softness": 0.55 },
+    "fill": { "colorRole": "secondary", "intensity": 0.34, "directionDegrees": 45, "softness": 0.82 },
+    "rim": { "colorRole": "accent", "intensity": 0.68, "directionDegrees": 150, "softness": 0.48 },
+    "shadows": { "strength": 0.62, "softness": 0.7 },
+    "bloom": { "intensity": 0.28, "threshold": 0.72, "radius": 32 },
+    "haze": { "colorRole": "primary", "density": 0.12 },
+    "exposure": 1.04,
+    "contrast": 1.08
+  },
+  "constraints": {
+    "maxLayers": 8,
+    "maxEffectCost": 14,
+    "minimumTextContrast": 4.5,
+    "preserveGameplayCues": true,
+    "reducedMotionFallback": true
+  },
+  "provenance": {
+    "origin": "built-in-treatment-mold",
+    "creator": "Mike - Axiom/mir",
+    "license": "LicenseRef-AXM-Treatment-Test",
+    "remixAllowed": true
+  }
+}
