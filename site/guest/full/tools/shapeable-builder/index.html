@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#08121d">
+  <meta name="description" content="AXM Shapeable Builder — a local-first three-layer builder with a shared human and young AI workbench.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'none'; frame-src 'self' blob: data:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <title>AXM Shapeable Builder β</title>
+  <script src="../../../demo-gate.js"></script>
+  <link rel="icon" href="assets/axm-builder-mark.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css?v=0.13.1">
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to workspace</a>
+
+  <div class="app-shell" id="appShell">
+    <header class="topbar">
+      <div class="brand" aria-label="AXM Shapeable Builder">
+        <img class="brand-mark" src="assets/axm-builder-mark.svg" alt="">
+        <div class="brand-copy">
+          <span class="brand-name">Shapeable</span>
+          <span class="brand-subtitle">AXM BUILDER <b>BETA</b></span>
+        </div>
+      </div>
+
+      <div class="project-title-wrap">
+        <span class="truth-dot" id="truthDot" aria-hidden="true"></span>
+        <label class="sr-only" for="projectNameTop">Project name</label>
+        <input id="projectNameTop" class="project-title-input" value="Untitled project" autocomplete="off">
+        <span class="save-state" id="saveState" role="status">Local source truth</span>
+      </div>
+
+      <div class="top-actions">
+        <div class="history-actions" aria-label="History controls">
+          <button class="icon-button" id="undoButton" type="button" title="Undo (Ctrl+Z)" aria-label="Undo" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5M5 12h9a5 5 0 1 1 0 10h-2"/></svg>
+          </button>
+          <button class="icon-button" id="redoButton" type="button" title="Redo (Ctrl+Shift+Z)" aria-label="Redo" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 7 5 5-5 5m4-5h-9a5 5 0 1 0 0 10h2"/></svg>
+          </button>
+        </div>
+        <button class="button ghost compact" id="testButton" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3-1 8-4 4h16l-4-4-1-8M8 19h8"/></svg>
+          Test
+        </button>
+        <button class="button ghost compact" id="previewButton" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6Z"/><circle cx="12" cy="12" r="2.5"/></svg>
+          Preview
+        </button>
+        <button class="button primary compact" id="buildButton" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg>
+          Build &amp; export
+        </button>
+        <button class="icon-button mobile-only" id="mobileCanvasButton" type="button" aria-label="Show canvas" title="Show canvas">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM4 9h16M9 4v16"/></svg>
+        </button>
+        <button class="icon-button mobile-only" id="mobileMenuButton" type="button" aria-label="Open block palette">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <aside class="layer-rail" aria-label="Builder layers">
+      <button class="rail-action" id="templateButton" type="button" title="Starter templates">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z"/></svg>
+        <span>Start</span>
+      </button>
+      <button class="rail-action" id="projectVaultButton" type="button" title="Local project vault">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v12H3z"/><path d="M7 13h10M7 16h7"/></svg>
+        <span>Vault</span>
+      </button>
+      <div class="rail-divider"></div>
+      <button class="layer-button active" type="button" data-layer="logic" aria-pressed="true">
+        <span class="layer-index">01</span>
+        <span class="layer-icon logic-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h5v5H5zM14 14h5v5h-5zM14 5h5M7.5 10v4a2 2 0 0 0 2 2H14"/><circle cx="17" cy="5" r="2"/></svg></span>
+        <span class="layer-label">Logic</span>
+        <span class="layer-count" id="logicCount">0</span>
+      </button>
+      <button class="layer-button" type="button" data-layer="capabilities" aria-pressed="false">
+        <span class="layer-index">02</span>
+        <span class="layer-icon capability-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 3 2 3.5-.5.5 3.5 2 3-2 3-.5 3.5-3.5-.5-3 2-3-2-3.5.5-.5-3.5-2-3 2-3 .5-3.5L9 5z"/><circle cx="12" cy="11" r="3"/></svg></span>
+        <span class="layer-label">Capabilities</span>
+        <span class="layer-count" id="capabilitiesCount">0</span>
+      </button>
+      <button class="layer-button" type="button" data-layer="visual" aria-pressed="false">
+        <span class="layer-index">03</span>
+        <span class="layer-icon visual-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12H4zM8 21h8M12 17v4"/><path d="m7 14 3-3 2 2 2.5-3L18 14"/></svg></span>
+        <span class="layer-label">Visual</span>
+        <span class="layer-count" id="visualCount">0</span>
+      </button>
+
+      <div class="rail-spacer"></div>
+      <button class="rail-action compact-rail-action" id="goalBuilderButton" type="button" title="Guided goal builder">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M22 12h-3"/></svg>
+        <span>Goal</span>
+      </button>
+      <button class="rail-action compact-rail-action" id="spineMapButton" type="button" title="Whole-project map">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 5-3 8 3 5-3v15l-5 3-8-3-5 3zM8 3v15M16 6v15"/></svg>
+        <span>Map</span>
+      </button>
+      <button class="rail-action compact-rail-action" id="packManagerButton" type="button" title="Community block packs">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 7 8-4 8 4v10l-8 4-8-4z"/><path d="m4 7 8 4 8-4M12 11v10"/></svg>
+        <span>Packs</span>
+      </button>
+      <button class="rail-action compact-rail-action ai-seat-action" id="aiWorkbenchButton" type="button" title="Young AI workbench">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="13" rx="3"/><path d="M9 11h.01M15 11h.01M9 15h6M12 3v3M7 3h10"/></svg>
+        <span>AI seat</span>
+      </button>
+      <button class="rail-action" id="helpButton" type="button" title="Quick guide">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.3 2.3 0 1 1 3 2.2c-.8.3-.8 1-.8 1.8M12 17h.01"/></svg>
+        <span>Guide</span>
+      </button>
+    </aside>
+
+    <aside class="palette-panel" id="palettePanel" aria-label="Block palette">
+      <div class="panel-heading">
+        <div>
+          <span class="eyebrow">BLOCK LIBRARY</span>
+          <h2 id="paletteTitle">Logic blocks</h2>
+        </div>
+        <button class="icon-button mobile-only" id="closePaletteButton" type="button" aria-label="Close palette">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <label class="search-field">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
+        <span class="sr-only">Search blocks</span>
+        <input id="blockSearch" type="search" placeholder="Search blocks…" autocomplete="off">
+        <kbd>/</kbd>
+      </label>
+      <div class="palette-tip">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3 11.2V17h6v-2.8A6 6 0 0 0 12 3ZM9 21h6"/></svg>
+        Drag to place. Touch and drag works too; <b>+</b> adds to the center.
+      </div>
+      <div class="block-list" id="blockList"></div>
+      <button class="custom-block-button" id="customBlockButton" type="button">
+        <span class="custom-plus">+</span>
+        <span><b>Custom block</b><small>Keep an escape hatch to readable code</small></span>
+      </button>
+    </aside>
+
+    <main class="workspace" id="workspace">
+      <section class="workspace-toolbar" aria-label="Canvas controls">
+        <div class="layer-context">
+          <span class="context-pulse logic-bg" id="contextPulse"><span>01</span></span>
+          <div>
+            <div class="context-title-row">
+              <h1 id="contextTitle">Logic canvas</h1>
+              <span class="beta-chip">HUMAN + AI SHARED SPINE</span>
+            </div>
+            <p id="contextDescription">Define events, decisions, state and actions.</p>
+          </div>
+        </div>
+        <div class="canvas-tools">
+          <button class="tool-button" id="fitButton" type="button" title="Fit content">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4"/></svg>
+          </button>
+          <div class="zoom-control">
+            <button id="zoomOutButton" type="button" aria-label="Zoom out">−</button>
+            <output id="zoomOutput">100%</output>
+            <button id="zoomInButton" type="button" aria-label="Zoom in">+</button>
+          </div>
+          <button class="tool-button" id="autoArrangeButton" type="button" title="Auto-arrange this layer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v5H4zM14 15h6v5h-6zM14 4h6v5h-6zM4 15h6v5H4zM10 6.5h4M7 9v6M17 9v6M10 17.5h4"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <div class="canvas-viewport" id="canvasViewport" tabindex="0" aria-label="Project canvas. Drag blocks here, then drag their headers to move them. Hold Shift for free placement.">
+        <div class="canvas-scale-wrap" id="canvasScaleWrap">
+          <div class="canvas-surface logic-surface" id="canvasSurface">
+            <svg class="edge-layer" id="edgeLayer" aria-hidden="true"></svg>
+            <div class="node-layer" id="nodeLayer"></div>
+            <div class="alignment-guide vertical hidden" id="alignmentGuideX" aria-hidden="true"></div>
+            <div class="alignment-guide horizontal hidden" id="alignmentGuideY" aria-hidden="true"></div>
+            <div class="canvas-drop-preview hidden" id="canvasDropPreview" aria-hidden="true">
+              <span class="drop-preview-symbol" id="dropPreviewSymbol"></span>
+              <span class="drop-preview-copy"><b id="dropPreviewTitle">New block</b><small id="dropPreviewMeta">Release to place</small></span>
+            </div>
+            <div class="empty-canvas" id="emptyCanvas">
+              <div class="empty-orbit">
+                <span></span><span></span><span></span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h5v5H5zM14 14h5v5h-5zM14 5h5M7.5 10v4a2 2 0 0 0 2 2H14"/><circle cx="17" cy="5" r="2"/></svg>
+              </div>
+              <h2>Shape the first route</h2>
+              <p>Drag a block here or start from a rooted template.</p>
+              <button class="button ghost" id="emptyTemplateButton" type="button">Choose a template</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="statusbar">
+        <div class="status-group">
+          <span class="status-item"><span class="status-led local"></span>LOCAL</span>
+          <span class="status-item" id="nodeStatus">0 blocks</span>
+          <span class="status-item" id="bindingStatus">0 cross-layer bindings</span>
+        </div>
+        <button class="readiness" id="readinessButton" type="button" title="Open diagnostics">
+          <span>Build readiness</span>
+          <span class="readiness-track"><span id="readinessFill"></span></span>
+          <b id="readinessScore">0%</b>
+        </button>
+        <div class="status-group right">
+          <span id="coordinateStatus">Canvas 1600 × 1000 · snap 12</span>
+          <span>v0.13 β</span>
+        </div>
+      </footer>
+    </main>
+
+    <aside class="inspector-panel" id="inspectorPanel" aria-label="Project inspector">
+      <div class="inspector-tabs" role="tablist" aria-label="Inspector views">
+        <button class="inspector-tab active" type="button" role="tab" data-inspector-tab="inspect" aria-selected="true">Inspect</button>
+        <button class="inspector-tab" type="button" role="tab" data-inspector-tab="spine" aria-selected="false">Spine</button>
+        <button class="inspector-tab" type="button" role="tab" data-inspector-tab="ledger" aria-selected="false">Ledger</button>
+      </div>
+      <div class="inspector-content" id="inspectorContent"></div>
+    </aside>
+  </div>
+
+  <div class="connection-toast hidden" id="connectionToast" role="status">
+    <span class="connection-dot"></span>
+    <span id="connectionToastText">Choose an input port</span>
+    <button id="cancelConnectionButton" type="button">Cancel</button>
+  </div>
+
+  <section class="diagnostics-drawer" id="diagnosticsDrawer" aria-label="Diagnostics" aria-hidden="true">
+    <div class="drawer-handle"></div>
+    <div class="drawer-header">
+      <div>
+        <span class="eyebrow">PROOF BEFORE BUILD</span>
+        <h2>Project diagnostics</h2>
+      </div>
+      <div class="drawer-score" id="drawerScore">0%</div>
+      <button class="icon-button" id="closeDiagnosticsButton" type="button" aria-label="Close diagnostics">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="diagnostic-summary" id="diagnosticSummary"></div>
+    <div class="diagnostic-list" id="diagnosticList"></div>
+  </section>
+
+  <dialog class="modal template-modal" id="templateDialog">
+    <form method="dialog" class="modal-shell">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow">ROOTED STARTING POINTS</span>
+          <h2>Choose a shape, keep your agency</h2>
+          <p>Templates establish a route. Every block remains inspectable and editable.</p>
+        </div>
+        <button class="icon-button modal-close" value="cancel" aria-label="Close templates">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="template-grid" id="templateGrid"></div>
+      <div class="modal-footer-note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 7.5 8 9 4.8-1.5 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+        Loading a template never publishes, uploads or grants project permissions.
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal vault-modal" id="projectVaultDialog">
+    <form method="dialog" class="modal-shell">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow">LOCAL PROJECT VAULT</span>
+          <h2>Projects, checkpoints and recoverable trash</h2>
+          <p>Switch between projects without overwriting the active source. Checkpoint restores always create a new copy.</p>
+        </div>
+        <button class="icon-button modal-close" value="cancel" aria-label="Close project vault">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="vault-toolbar">
+        <label class="field checkpoint-name"><span>Checkpoint name</span><input id="checkpointNameInput" maxlength="80" placeholder="Before the next experiment"></label>
+        <button class="button ghost" id="createCheckpointButton" type="button">Save named checkpoint</button>
+        <button class="button primary" id="vaultNewProjectButton" type="button">New guided project</button>
+      </div>
+      <div class="vault-sections" id="projectVaultContent"></div>
+      <div class="modal-footer-note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 7.5 8 9 4.8-1.5 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+        The vault stays on this device. Trash is recoverable until you explicitly empty it.
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal goal-modal" id="goalBuilderDialog">
+    <form method="dialog" class="modal-shell compact-shell">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow">GUIDED GOAL BUILDER</span>
+          <h2>Start with the change you want</h2>
+          <p>Describe the outcome and its proof. The builder will root a project without approving any capability for you.</p>
+        </div>
+        <button class="icon-button modal-close" value="cancel" aria-label="Close goal builder">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="goal-form-grid">
+        <label class="field"><span>Project name</span><input id="goalProjectName" maxlength="160" placeholder="My useful project"></label>
+        <label class="field"><span>Starting shape</span><select id="goalTemplateSelect"></select></label>
+        <label class="field goal-wide"><span>What should this change for a person?</span><textarea id="goalStatement" maxlength="2000" placeholder="A person can…"></textarea></label>
+        <label class="field goal-wide"><span>What observable result proves it works?</span><textarea id="goalSuccessMeasure" maxlength="2000" placeholder="Success is visible when…"></textarea></label>
+        <label class="field"><span>Build target</span><select id="goalTargetSelect"></select></label>
+        <label class="field"><span>Accent</span><input id="goalAccent" type="color" value="#44d7ca"></label>
+      </div>
+      <fieldset class="capability-picker">
+        <legend>Optional capabilities to attach</legend>
+        <p>Permission-seeking blocks remain pending until you review them in the Inspector.</p>
+        <div id="goalCapabilityChoices"></div>
+      </fieldset>
+      <div class="goal-actions">
+        <button class="button ghost" id="applyGoalButton" type="button">Update current project</button>
+        <button class="button primary" id="createGoalProjectButton" type="button">Create as new project</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal map-modal" id="spineMapDialog">
+    <form method="dialog" class="modal-shell map-shell">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow">SYNCHRONIZED PROJECT MAP</span>
+          <h2>Three layers, one source truth</h2>
+          <p>Follow cross-layer bindings across the whole project. Select any block to return to its canvas.</p>
+        </div>
+        <button class="icon-button modal-close" value="cancel" aria-label="Close project map">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="spine-map-goal" id="spineMapGoal"></div>
+      <div class="spine-map-board" id="spineMapBoard">
+        <svg id="spineMapEdges" aria-hidden="true"></svg>
+        <div class="spine-map-grid" id="spineMapGrid"></div>
+      </div>
+      <div class="spine-map-legend"><span class="logic">01 Logic</span><span class="capabilities">02 Capabilities</span><span class="visual">03 Visual</span><span>Lines are explicit cross-layer bindings</span></div>
+    </form>
+  </dialog>
+
+  <dialog class="modal pack-modal" id="packManagerDialog">
+    <form method="dialog" class="modal-shell compact-shell">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow">COMMUNITY BLOCK PACKS</span>
+          <h2>Extend the palette without hidden authority</h2>
+          <p>Packs must declare source, version, tests, license, targets and permissions. Imports cannot run code or approve access.</p>
+        </div>
+        <button class="icon-button modal-close" value="cancel" aria-label="Close pack manager">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="pack-actions">
+        <label class="button primary compact">Import pack JSON<input id="importPackInput" type="file" accept="application/json,.json"></label>
+        <button class="button ghost compact" id="exportPackTemplateButton" type="button">Export example pack</button>
+      </div>
+      <div class="pack-list" id="packList"></div>
+      <div class="modal-footer-note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 7.5 8 9 4.8-1.5 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+        Removing a pack never deletes project blocks. They remain preserved as unknown source until the pack returns.
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal ai-workbench-modal" id="aiWorkbenchDialog" aria-labelledby="aiWorkbenchTitle">
+    <form method="dialog" class="modal-shell ai-workbench-shell">
+      <div class="modal-header ai-workbench-header">
+        <div>
+          <span class="eyebrow">YOUNG AI WORKBENCH · HUMAN LED</span>
+          <h2 id="aiWorkbenchTitle">One builder, two readable seats</h2>
+          <p>A young AI can inspect the same project spine, draft bounded actions and learn from visible evidence. It cannot apply changes, grant permissions, alter canon or execute anything without your decision.</p>
+        </div>
+        <div class="ai-header-actions">
+          <button class="icon-button" id="aiRefreshWorkspaceButton" type="button" aria-label="Refresh young AI workspace" title="Refresh workspace">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2 5.3M20 4v7h-7"/></svg>
+          </button>
+          <button class="icon-button modal-close" value="cancel" aria-label="Close young AI workbench">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="ai-boundary-banner" role="note">
+        <span class="ai-boundary-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.2 7.5 8 9 4.8-1.5 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <div><b>PROPOSE ONLY</b><span>Observation is local. Every proposal is dry-run on a clone. Apply, permissions, deletion, canon and external execution remain human-controlled.</span></div>
+        <code id="aiSourceStamp">source not loaded</code>
+      </div>
+
+      <div class="ai-workbench-grid">
+        <section class="ai-workbench-pane ai-observe-pane" aria-labelledby="aiObserveTitle">
+          <div class="ai-pane-heading">
+            <div><span class="ai-step-number">01</span><div><h3 id="aiObserveTitle">Observe the shared source</h3><p>Human-readable summary plus a complete machine-readable workspace packet.</p></div></div>
+          </div>
+          <div class="ai-workspace-actions">
+            <button class="button primary compact" id="aiExportWorkspaceButton" type="button">Export workspace packet</button>
+            <button class="button ghost compact" id="aiCopyObservationButton" type="button">Copy observation</button>
+            <button class="button ghost compact" id="aiExportProposalTemplateButton" type="button">Proposal template</button>
+          </div>
+          <div class="ai-workspace-summary" id="aiWorkspaceSummary"></div>
+          <details class="ai-machine-details">
+            <summary>Machine-readable observation <span>.axm-agent-workspace.json</span></summary>
+            <pre id="aiObservationPreview"></pre>
+          </details>
+          <div class="ai-protocol-strip">
+            <article><span>02</span><div><b>Understand</b><small>Goal, IDs, routes, permissions and diagnostics</small></div></article>
+            <article><span>03</span><div><b>Propose</b><small>Only declared actions with reasons and tests</small></div></article>
+            <article><span>04</span><div><b>Human decides</b><small>Review, revise, reject or apply</small></div></article>
+            <article><span>05</span><div><b>Test and learn</b><small>Actual evidence, not predicted success</small></div></article>
+          </div>
+        </section>
+
+        <section class="ai-workbench-pane ai-proposal-pane" aria-labelledby="aiProposalTitle">
+          <div class="ai-pane-heading">
+            <div><span class="ai-step-number">02</span><div><h3 id="aiProposalTitle">Review a proposal packet</h3><p>Paste or import JSON. Validation never applies it.</p></div></div>
+          </div>
+          <label class="field ai-proposal-field"><span>AXM agent proposal JSON</span><textarea id="aiProposalText" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Paste an axm.agent.proposal packet here"></textarea></label>
+          <div class="ai-proposal-actions">
+            <label class="button ghost compact">Import proposal JSON<input id="aiProposalFileInput" type="file" accept="application/json,.json"></label>
+            <button class="button primary compact" id="aiValidateProposalButton" type="button">Validate and dry-run</button>
+            <button class="button ghost compact" id="aiClearProposalButton" type="button">Clear</button>
+          </div>
+          <div class="ai-proposal-review" id="aiProposalReview">
+            <div class="ai-review-empty"><span>?</span><div><b>No proposal reviewed yet</b><p>Export the workspace packet, let the AI draft a bounded proposal, then bring it back here.</p></div></div>
+          </div>
+          <div class="ai-review-checklist" id="aiReviewChecklist" aria-label="Human apply checklist">
+            <label><input id="aiCheckActions" type="checkbox"><span>I reviewed every action, identifier and stated reason.</span></label>
+            <label><input id="aiCheckAuthority" type="checkbox"><span>I confirmed permissions, deletion, canon and external execution did not change.</span></label>
+            <label><input id="aiCheckApply" type="checkbox"><span>I choose to apply this candidate as one undoable source change.</span></label>
+          </div>
+          <button class="button ai-apply-button" id="aiApplyProposalButton" type="button" disabled>Apply reviewed proposal</button>
+          <p class="ai-apply-note">Applying does not prove the change works. Run diagnostics and the changed path, then record the observed result.</p>
+        </section>
+      </div>
+
+      <div class="modal-footer-note ai-footer-note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM8 9h8M8 13h5"/><path d="m15 16 2 2 3-4"/></svg>
+        The existing Undo control is the immediate rollback for an applied proposal. The review receipt travels with exported project source.
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal preview-modal" id="previewDialog">
+    <form method="dialog" class="preview-shell">
+      <div class="preview-header">
+        <div class="preview-device-dots"><span></span><span></span><span></span></div>
+        <div class="preview-address"><span class="status-led local"></span><span id="previewAddress">local-preview://project</span></div>
+        <div class="preview-actions">
+          <button class="device-button active" type="button" data-preview-size="desktop" title="Desktop preview" aria-label="Desktop preview">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v13H3zM8 21h8M12 17v4"/></svg>
+          </button>
+          <button class="device-button" type="button" data-preview-size="mobile" title="Mobile preview" aria-label="Mobile preview">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+          </button>
+          <button class="icon-button" id="refreshPreviewButton" type="button" aria-label="Refresh preview">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2 5.3M20 4v7h-7"/></svg>
+          </button>
+          <button class="icon-button modal-close" value="cancel" aria-label="Close preview">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="preview-stage" id="previewStage">
+        <iframe id="previewFrame" title="Generated project preview" sandbox="allow-scripts"></iframe>
+      </div>
+      <div class="preview-footer">
+        <span><span class="truth-dot"></span> Generated from the current shared project spine</span>
+        <button class="button primary compact" id="previewExportButton" type="button">Export this build</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal export-modal" id="exportDialog">
+    <form method="dialog" class="modal-shell compact-shell">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow">PORTABLE BY DESIGN</span>
+          <h2>Build and export</h2>
+          <p id="exportStatusText">Choose what leaves the builder.</p>
+        </div>
+        <button class="icon-button modal-close" value="cancel" aria-label="Close export options">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="export-readiness" id="exportReadiness"></div>
+      <div class="export-options">
+        <button class="export-card" id="exportProjectButton" type="button">
+          <span class="export-icon source"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4 4v14H7zM14 3v5h5M10 13h5M10 17h5"/></svg></span>
+          <span><b>AXM project source</b><small>Human-readable JSON with all three layers, bindings and history.</small></span>
+          <span class="file-type">.JSON</span>
+        </button>
+        <button class="export-card" id="exportHtmlButton" type="button">
+          <span class="export-icon build"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 4-5 8 5 8M16 4l5 8-5 8M14 3l-4 18"/></svg></span>
+          <span><b>Standalone working build</b><small>One portable HTML file with no external dependencies.</small></span>
+          <span class="file-type">.HTML</span>
+        </button>
+        <button class="export-card" id="exportAiIntentButton" type="button">
+          <span class="export-icon ai"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="13" rx="3"/><path d="M9 11h.01M15 11h.01M9 15h6M12 3v3"/></svg></span>
+          <span><b>AI intent packet</b><small>A propose-only request with goal, context, permissions and human apply boundary.</small></span>
+          <span class="file-type">.JSON</span>
+        </button>
+        <button class="export-card" id="exportAgentWorkspaceButton" type="button">
+          <span class="export-icon workspace"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18M7 6h.01M10 6h.01M7 12h4M7 16h8M16 11l2 2 3-4"/></svg></span>
+          <span><b>Young AI workspace</b><small>Complete local observation, block catalog, action protocol and proposal template. Nothing is sent or applied.</small></span>
+          <span class="file-type">.JSON</span>
+        </button>
+        <button class="export-card" id="exportEngineHandoffButton" type="button">
+          <span class="export-icon engine"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 7 8-4 8 4v10l-8 4-8-4z"/><path d="m4 7 8 4 8-4M12 11v10"/></svg></span>
+          <span><b>External engine handoff</b><small>Typed world, physics and logic contract. It does not generate or execute an engine project.</small></span>
+          <span class="file-type">.JSON</span>
+        </button>
+        <button class="export-card" id="copySpineButton" type="button">
+          <span class="export-icon copy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="12" rx="1"/><path d="M16 8V4H5v12h3"/></svg></span>
+          <span><b>Copy project spine</b><small>Copy the canonical contract to your clipboard.</small></span>
+          <span class="file-type">COPY</span>
+        </button>
+      </div>
+      <label class="import-row">
+        <span><b>Continue an existing project</b><small>Import validates first and never silently overwrites.</small></span>
+        <input id="importProjectInput" type="file" accept="application/json,.json">
+        <span class="button ghost compact">Choose JSON</span>
+      </label>
+    </form>
+  </dialog>
+
+  <dialog class="modal guide-modal" id="guideDialog">
+    <form method="dialog" class="modal-shell compact-shell">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow">QUICK GUIDE</span>
+          <h2>Three layers, two readable seats, understandable blocks</h2>
+          <p>No coding knowledge is required to start. Each placed block can be shaped gently, one visible choice at a time.</p>
+        </div>
+        <button class="icon-button modal-close" value="cancel" aria-label="Close guide">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="guide-steps">
+        <article><span class="guide-number logic">01</span><div><h3>Shape the logic</h3><p>Add events, decisions, state and actions. Join ports to establish a readable route.</p></div></article>
+        <article><span class="guide-number capabilities">02</span><div><h3>Attach capabilities</h3><p>Add storage, AI, controls or multiplayer. Review every requested permission yourself.</p></div></article>
+        <article><span class="guide-number visual">03</span><div><h3>Design the experience</h3><p>Arrange screens, game scenes, content and controls. Bind them to the other layers.</p></div></article>
+        <article><span class="guide-number block">04</span><div><h3>Place and move clearly</h3><p>Drag a library block onto the canvas and follow the landing preview. Drag a placed block by its header; it snaps gently to the grid and nearby blocks. Hold <b>Shift</b> for free placement.</p></div></article>
+        <article><span class="guide-number block">05</span><div><h3>Shape one placed block</h3><p>Select a block, open <b>Per-block influence</b>, then choose a moment, a response and a visible detail. Preview the reaction safely before testing the whole experience.</p></div></article>
+        <article><span class="guide-number ai">AI</span><div><h3>Give a young AI a safe seat</h3><p>Export the same project source as a structured workspace, review its proposed actions, then choose whether anything is applied.</p></div></article>
+      </div>
+      <div class="guide-callout"><b>Drag and drop:</b> the landing card shows exactly where a new block will appear. Alignment lines reveal when blocks line up. The canvas scrolls near its edges, touch and pen dragging are supported, and every completed move remains one Undo/Redo step.</div>
+      <div class="guide-callout"><b>Per-block influence:</b> changes belong to the selected copy, not every block of that type. Guided reactions can be previewed. Visual slots can hold local references now and asset-generator results later. Advanced code remains a visible, disabled draft in this beta.</div>
+      <div class="guide-callout"><b>Connecting blocks:</b> select the output dot on one block and then the input dot on another. Cross-layer relationships are created in the Inspector. The AI seat never bypasses these visible source contracts.</div>
+    </form>
+  </dialog>
+
+  <dialog class="confirm-overlay hidden" id="confirmOverlay" aria-labelledby="confirmTitle">
+    <div class="confirm-card">
+      <span class="confirm-symbol">!</span>
+      <h2 id="confirmTitle">Replace the current canvas?</h2>
+      <p id="confirmMessage">Your current project will remain in local history until the new template is confirmed.</p>
+      <div class="confirm-actions">
+        <button class="button ghost" id="confirmCancelButton" type="button">Keep current project</button>
+        <button class="button danger" id="confirmAcceptButton" type="button">Load template</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="model.js?v=0.13.1" defer></script>
+  <script src="app.js?v=0.13.1" defer></script>
+</body>
+</html>
