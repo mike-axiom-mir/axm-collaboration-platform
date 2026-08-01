@@ -36,7 +36,7 @@
   }
   function clone(value) { return JSON.parse(JSON.stringify(value)); }
   function emptyProject() {
-    return { title: 'Untitled project', lead: '', purpose: '', northStar: '', scratchpad: '', cards: [] };
+    return { title: 'Untitled project', lead: '', purpose: '', northStar: '', scratchpad: '', cards: [], makers: null };
   }
   function freshState() {
     var at = now();
@@ -94,7 +94,8 @@
       purpose: text(project.purpose, 4000),
       northStar: text(project.northStar, 300),
       scratchpad: text(project.scratchpad, 30000),
-      cards: (Array.isArray(project.cards) ? project.cards : []).map(normalizeCard).filter(function (card) { return card.title; }).slice(0, 250)
+      cards: (Array.isArray(project.cards) ? project.cards : []).map(normalizeCard).filter(function (card) { return card.title; }).slice(0, 250),
+      makers: project.makers && typeof project.makers === 'object' ? clone(project.makers) : null
     };
     if (output.status === 'active' && output.remainingMs <= 0) output.status = 'grace';
     if (output.status === 'grace' && output.graceRemainingMs <= 0) output.status = 'ended';
@@ -136,7 +137,9 @@
   function isEditable() { return state.status === 'active'; }
   function hasUnsavedExport() { return state.changeRevision > state.exportRevision; }
   function hasProjectContent() {
-    return state.project.title !== 'Untitled project' || state.project.lead || state.project.purpose || state.project.northStar || state.project.scratchpad || state.project.cards.length;
+    var makers = state.project.makers || {};
+    var makerContent = Boolean((makers.artifacts && makers.artifacts.length) || (makers.studio && makers.studio.commands && makers.studio.commands.length));
+    return state.project.title !== 'Untitled project' || state.project.lead || state.project.purpose || state.project.northStar || state.project.scratchpad || state.project.cards.length || makerContent;
   }
 
   function syncInputsFromProject() {
@@ -145,6 +148,10 @@
     $('projectPurpose').value = state.project.purpose;
     $('northStar').value = state.project.northStar;
     $('scratchpad').value = state.project.scratchpad;
+    if (window.AXMGuestMakers) {
+      window.AXMGuestMakers.loadState(state.project.makers);
+      state.project.makers = window.AXMGuestMakers.getState();
+    }
   }
   function syncProjectFromInputs() {
     state.project.title = text($('projectTitle').value, 120) || 'Untitled project';
@@ -210,6 +217,7 @@
       $(name).disabled = locked;
     });
     document.querySelectorAll('#projectForm button, .card-actions button').forEach(function (button) { button.disabled = locked; });
+    if (window.AXMGuestMakers) window.AXMGuestMakers.setEditable(!locked);
     $('exportButton').disabled = state.status === 'ready' || state.status === 'ended';
     $('mainExport').disabled = state.status === 'ended';
     updateSaveStatus();
@@ -314,8 +322,8 @@
     lastTick = performance.now();
     persist();
     showCurrentView();
-    $('projectTitle').focus();
-    toast('Session started. Export whenever you want—there is no reason to wait for the timer.');
+    $('makerTabStudio').focus();
+    toast('Session started. Make and export whenever you want—there is no reason to wait for the timer.');
   }
   function starterProject() {
     var at = now();
@@ -325,6 +333,7 @@
       purpose: 'Turn one loose idea into a project another person can understand and continue.',
       northStar: 'The exported file explains what matters, what is next and what was actually checked.',
       scratchpad: 'Questions:\n- Who is this for?\n- What is the smallest honest proof?\n- What must stay local?\n\nRemember: export before leaving.',
+      makers: null,
       cards: [
         normalizeCard({ id: id('card'), title: 'Name the person this helps', details: 'Write one concrete person or group, not everyone.', stage: 'ideas', owner: 'human', createdAt: at }),
         normalizeCard({ id: id('card'), title: 'Build the smallest useful proof', details: 'Keep the first version bounded enough to inspect.', stage: 'building', owner: 'shared', ownerName: 'Human + machine', createdAt: at }),
@@ -390,6 +399,11 @@
   function projectRoomRecord() {
     syncProjectFromInputs();
     var at = now();
+    var makerState = state.project.makers || (window.AXMGuestMakers && window.AXMGuestMakers.getState());
+    var makerArtifacts = makerState && Array.isArray(makerState.artifacts) ? makerState.artifacts : [];
+    var documents = [];
+    if (state.project.scratchpad) documents.push({ id: id('doc'), title: 'Guest session scratchpad', kind: 'note', body: state.project.scratchpad, createdAt: at, updatedAt: at });
+    if (makerState) documents.push({ id: id('doc'), title: 'Guest maker deck source', kind: 'maker-source', body: JSON.stringify(makerState, null, 2), createdAt: at, updatedAt: at });
     var room = {
       format: PROJECT_FORMAT,
       version: 2,
@@ -419,9 +433,11 @@
         };
       }),
       goals: [], milestones: [], decisions: [],
-      documents: state.project.scratchpad ? [{ id: id('doc'), title: 'Guest session scratchpad', kind: 'note', body: state.project.scratchpad, createdAt: at, updatedAt: at }] : [],
+      documents: documents,
       messages: [], events: [], forms: [], reviews: [],
-      activity: [{ id: id('activity'), title: 'Exported from the AXM public guest workroom.', kind: 'guest-export', actor: state.project.lead || 'guest', createdAt: at }],
+      activity: [{ id: id('activity'), title: 'Exported from the AXM public maker room.', kind: 'guest-export', actor: state.project.lead || 'guest', createdAt: at }].concat(makerArtifacts.map(function (artifact) {
+        return { id: id('activity'), title: 'Attached ' + text(artifact.title, 120), kind: 'maker-artifact-' + text(artifact.type, 30), actor: state.project.lead || 'guest', createdAt: text(artifact.createdAt, 40) || at };
+      })),
       versions: [],
       updatedAt: at
     };
@@ -433,7 +449,7 @@
       version: 1,
       exportedAt: now(),
       source: {
-        name: 'AXM Workshop public guest workroom',
+        name: 'AXM Workshop public maker room',
         sessionId: state.id,
         sessionLengthActiveMinutes: SESSION_MINUTES,
         storage: 'browser-sessionStorage',
@@ -441,7 +457,12 @@
         automaticExecution: false
       },
       projectRoom: projectRoomRecord(),
-      guest: { purpose: state.project.purpose, northStar: state.project.northStar, timerStatusAtExport: state.status }
+      guest: {
+        purpose: state.project.purpose,
+        northStar: state.project.northStar,
+        timerStatusAtExport: state.status,
+        makers: state.project.makers || (window.AXMGuestMakers && window.AXMGuestMakers.getState()) || null
+      }
     };
   }
   function safeFilename(value) {
@@ -476,12 +497,18 @@
     if (!room || room.format !== PROJECT_FORMAT) throw new Error('This file does not contain an AXM Project Room record.');
     var documents = Array.isArray(room.documents) ? room.documents : [];
     var scratch = documents.find(function (document) { return /guest session scratchpad/i.test(document.title || ''); });
+    var makerDocument = documents.find(function (document) { return /guest maker deck source/i.test(document.title || ''); });
+    var makers = guest && guest.makers && typeof guest.makers === 'object' ? clone(guest.makers) : null;
+    if (!makers && makerDocument && makerDocument.body) {
+      try { makers = JSON.parse(String(makerDocument.body)); } catch (error) { makers = null; }
+    }
     return {
       title: text(room.project && room.project.title, 120) || 'Imported project',
       lead: text(room.project && room.project.lead, 100),
       purpose: text(guest && guest.purpose, 4000) || text(room.project && room.project.summary, 4000).split('\n\nNorth-star outcome:')[0],
       northStar: text(guest && guest.northStar, 300),
       scratchpad: text(scratch && scratch.body, 30000),
+      makers: makers,
       cards: (Array.isArray(room.cards) ? room.cards : []).map(function (card) {
         var stage = card.stage === 'done' ? 'done' : card.stage === 'ideas' ? 'ideas' : 'building';
         return normalizeCard({
@@ -541,6 +568,7 @@
   function endAndClear() {
     state.status = 'ended';
     state.project = emptyProject();
+    if (window.AXMGuestMakers) window.AXMGuestMakers.reset();
     state.remainingMs = 0;
     state.graceRemainingMs = 0;
     clearStoredSession();
@@ -586,6 +614,7 @@
     if (hasProjectContent() && !window.confirm('Discard this guest session?\n\nIts tab memory will be erased. Export first if you need the project.')) return;
     clearStoredSession();
     state = freshState();
+    if (window.AXMGuestMakers) window.AXMGuestMakers.reset();
     lastTick = performance.now();
     showCurrentView();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -625,6 +654,11 @@
   });
   $('shareButton').addEventListener('click', shareDoorway);
   $('localHandoff').addEventListener('click', openLocalHandoff);
+  document.addEventListener('axm:makers-change', function (event) {
+    if (!isEditable() || !event.detail || !event.detail.state) return;
+    state.project.makers = clone(event.detail.state);
+    markChanged(text(event.detail.message, 240));
+  });
   document.addEventListener('visibilitychange', function () { lastTick = performance.now(); updateTimer(); });
   window.addEventListener('beforeunload', function (event) {
     if ((state.status === 'active' || state.status === 'grace') && hasUnsavedExport()) {

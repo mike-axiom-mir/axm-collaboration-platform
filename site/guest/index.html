@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A 30-active-minute AXM guest workroom with session-only memory and portable export.">
+  <meta name="description" content="Draw, shape sound, build a small game or export a hostable one-page website in a 30-active-minute AXM guest session.">
   <meta name="theme-color" content="#080d1b">
   <meta name="color-scheme" content="dark">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-src 'self' blob: data:">
   <link rel="icon" href="../assets/axm-mark.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
-  <title>AXM Guest Workroom · Session only</title>
+  <title>AXM Public Maker Room · Session only</title>
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to workspace</a>
   <header class="guest-header">
     <a class="guest-brand" href="../" aria-label="Back to AXM Workshop front door">
       <img src="../assets/axm-mark.svg" alt="" width="42" height="42">
-      <span><b>AXM</b><small>GUEST WORKROOM</small></span>
+      <span><b>AXM</b><small>PUBLIC MAKER ROOM</small></span>
     </a>
     <div class="session-meter" aria-label="Guest session timer">
       <span class="meter-status" data-meter-status><i aria-hidden="true"></i> WAITING</span>
@@ -36,7 +36,7 @@
       <div class="welcome-copy">
         <p class="eyebrow"><span aria-hidden="true">✦</span> A REAL SLICE OF THE WORKSHOP</p>
         <h1 id="welcomeTitle">Thirty active minutes.<br><em>Your work leaves with you.</em></h1>
-        <p>Shape an idea into a portable project: write the purpose, make work cards, keep human and AI ownership visible, and attach evidence before calling something checked.</p>
+        <p>Make something real in the browser: draw an image, shape a sound, build a small playable game or export a hostable one-page website. Keep the artifacts and the project record.</p>
         <div class="welcome-actions">
           <button class="button button-primary button-large" id="startSession" type="button">Enter the workroom <span aria-hidden="true">→</span></button>
           <button class="button button-quiet button-large" id="loadExample" type="button">Load a starter example</button>
@@ -48,7 +48,7 @@
           <li><span aria-hidden="true">◎</span><p><b>No account and no network API</b><small>This page does not send your project to an AXM server.</small></p></li>
           <li><span aria-hidden="true">◷</span><p><b><span data-session-minutes>30</span> active minutes</b><small>The timer pauses while this tab is hidden.</small></p></li>
           <li><span aria-hidden="true">⌁</span><p><b>Session memory only</b><small>Close the tab and the browser discards this workroom.</small></p></li>
-          <li><span aria-hidden="true">⇩</span><p><b>Export at any moment</b><small>Download a readable <code>.axm.json</code> file before leaving.</small></p></li>
+          <li><span aria-hidden="true">⇩</span><p><b>Real portable outputs</b><small>Download PNG, WAV, playable HTML, website HTML and a readable <code>.axm.json</code> record.</small></p></li>
         </ul>
         <p class="contract-note">The complete Workshop is larger and runs locally. This guest room is a bounded public doorway—not a hidden cloud copy.</p>
       </div>
@@ -60,6 +60,123 @@
     </section>
 
     <div id="workroom" class="workroom" hidden>
+      <section class="maker-deck panel" aria-labelledby="makerDeckTitle">
+        <header class="maker-deck-head">
+          <div>
+            <p class="eyebrow">MAKE SOMETHING NOW</p>
+            <h2 id="makerDeckTitle">Four real AXM workspaces. Thirty active minutes.</h2>
+            <p>The public room runs the actual browser-capable creation engines. Compact quick makers remain underneath for cross-tool artifacts, but they are no longer the main demonstration.</p>
+          </div>
+          <div class="maker-proof"><span>LOCAL</span><span>NO API</span><span>REAL FILES</span></div>
+        </header>
+
+        <div class="maker-tabs" role="tablist" aria-label="Public maker tools">
+          <button id="makerTabStudio" class="maker-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="makerStudio" data-maker-tab="studio"><span aria-hidden="true">01</span><b>Full Studio</b><small>Layers · vectors · animation</small></button>
+          <button id="makerTabSfx" class="maker-tab" type="button" role="tab" aria-selected="false" aria-controls="makerSfx" data-maker-tab="sfx"><span aria-hidden="true">02</span><b>Audio Studio</b><small>Timeline · synth · Sound Lab</small></button>
+          <button id="makerTabGame" class="maker-tab" type="button" role="tab" aria-selected="false" aria-controls="makerGame" data-maker-tab="game"><span aria-hidden="true">03</span><b>Game Forge</b><small>Atlas · systems · playable map</small></button>
+          <button id="makerTabSite" class="maker-tab" type="button" role="tab" aria-selected="false" aria-controls="makerSite" data-maker-tab="site"><span aria-hidden="true">04</span><b>Shapeable Builder</b><small>Website · dashboard · game</small></button>
+        </div>
+
+        <section class="maker-panel is-active" id="makerStudio" role="tabpanel" aria-labelledby="makerTabStudio" data-maker-panel="studio">
+          <div class="maker-panel-head"><div><p class="eyebrow">AXM STUDIO V2.7 · TIMED PUBLIC ROUTE</p><h3>Use the layered production canvas—not a five-button imitation.</h3><p>Paint, shapes, tone and detail tools; layers, import, undo/redo, filters, editable vectors, pixel animation and PNG/SVG/project export run locally in this tab.</p></div><span id="studioStatus" class="maker-status" role="status">Full Studio waits for session entry</span></div>
+          <div class="full-tool-proof"><span>17 CANVAS TOOLS</span><span>LAYER STACK</span><span>VECTOR + PIXEL</span><span>IMPORT + EXPORT</span></div>
+          <div class="full-tool-frame-wrap" data-demo-shell="studio"><div class="full-tool-lock">Enter the timed session to unlock the full Studio.</div><iframe id="studioFullFrame" data-demo-tool="studio" data-demo-src="full/tools/studio/engine.html?embedded=1&public-demo=1" title="Full AXM layered Studio" loading="lazy"></iframe></div>
+          <details class="quick-maker"><summary>Quick cross-tool sketcher <small>Attach compact art directly to this guest project</small></summary>
+          <div class="studio-layout">
+            <aside class="maker-controls studio-controls" aria-label="Visual Studio controls">
+              <fieldset><legend>Tool</legend><div class="tool-grid">
+                <button class="tool-button is-active" type="button" data-studio-tool="brush" data-maker-edit>Brush</button>
+                <button class="tool-button" type="button" data-studio-tool="line" data-maker-edit>Line</button>
+                <button class="tool-button" type="button" data-studio-tool="rectangle" data-maker-edit>Box</button>
+                <button class="tool-button" type="button" data-studio-tool="circle" data-maker-edit>Circle</button>
+                <button class="tool-button" type="button" data-studio-tool="eraser" data-maker-edit>Eraser</button>
+              </div></fieldset>
+              <label>Stroke colour<input id="studioColor" type="color" value="#6fe4ef" data-maker-edit></label>
+              <label>Canvas colour<input id="studioBackground" type="color" value="#07111f" data-maker-edit></label>
+              <label>Size <output id="studioSizeOutput" for="studioSize">10 px</output><input id="studioSize" type="range" min="1" max="80" value="10" data-maker-edit></label>
+              <div class="maker-button-row"><button class="button button-quiet" id="studioUndo" type="button" data-maker-edit>Undo</button><button class="button button-quiet" id="studioClear" type="button" data-maker-edit>Clear</button></div>
+            </aside>
+            <div class="canvas-wrap"><canvas id="studioCanvas" width="960" height="540" aria-label="Editable Visual Studio canvas"></canvas><p>Mouse, pen or touch. Your editable command source stays in this tab.</p></div>
+            <aside class="maker-output-card"><span>OUTPUT</span><h4>Portable artwork</h4><p>Download the full PNG, then attach a compact preview so the game and website builders can reuse it.</p><button class="button button-primary button-wide" id="studioDownload" type="button">Download PNG</button><button class="button button-soft button-wide" id="studioAttach" type="button" data-maker-edit>Attach to project</button></aside>
+          </div>
+          </details>
+        </section>
+
+        <section class="maker-panel" id="makerSfx" role="tabpanel" aria-labelledby="makerTabSfx" data-maker-panel="sfx" hidden>
+          <div class="maker-panel-head"><div><p class="eyebrow">AXM AUDIO STUDIO V1.1 · TIMED PUBLIC ROUTE</p><h3>Arrange, synthesize, record, restore and spatialize sound.</h3><p>The full local-first timeline, mixer, Sound Lab, synth patches, MIDI, voice recording, restoration and WAV rendering are available; nothing auto-publishes.</p></div><span id="sfxStatus" class="maker-status" role="status">Full Audio Studio waits for session entry</span></div>
+          <div class="full-tool-proof"><span>MULTITRACK</span><span>SOUND LAB</span><span>SYNTH + MIDI</span><span>LOCAL WAV RENDER</span></div>
+          <div class="full-tool-frame-wrap" data-demo-shell="sfx"><div class="full-tool-lock">Enter the timed session to unlock Audio Studio.</div><iframe id="sfxFullFrame" data-demo-tool="sfx" data-demo-src="full/tools/audio-studio/index.html?public-demo=1" title="Full AXM Audio Studio" loading="lazy"></iframe></div>
+          <details class="quick-maker"><summary>Quick SFX recipe <small>Attach one deterministic effect directly to this guest project</small></summary>
+          <div class="sfx-layout">
+            <div class="maker-controls sfx-controls">
+              <label>Starting point<select id="sfxPreset" data-maker-edit><option value="coin">Coin</option><option value="jump">Jump</option><option value="laser">Laser</option><option value="impact">Impact</option><option value="power">Power up</option><option value="custom">Custom</option></select></label>
+              <label>Wave<select id="sfxWave" data-maker-edit><option value="sine">Sine</option><option value="square">Square</option><option value="triangle">Triangle</option><option value="sawtooth">Saw</option><option value="noise">Noise</option></select></label>
+              <label>Pitch <output id="sfxPitchOutput" for="sfxPitch">760 Hz</output><input id="sfxPitch" type="range" min="45" max="1800" value="760" data-maker-edit></label>
+              <label>Sweep <output id="sfxSweepOutput" for="sfxSweep">+520 Hz</output><input id="sfxSweep" type="range" min="-1600" max="1600" step="10" value="520" data-maker-edit></label>
+              <label>Length <output id="sfxDurationOutput" for="sfxDuration">0.24 s</output><input id="sfxDuration" type="range" min="0.08" max="1.6" step="0.01" value="0.24" data-maker-edit></label>
+              <label>Volume <output id="sfxVolumeOutput" for="sfxVolume">55%</output><input id="sfxVolume" type="range" min="0.05" max="0.9" step="0.01" value="0.55" data-maker-edit></label>
+            </div>
+            <div class="waveform-stage"><canvas id="sfxCanvas" width="760" height="300" aria-label="Generated sound waveform"></canvas><div class="waveform-actions"><button class="button button-primary" id="sfxPlay" type="button">Play sound</button><button class="button button-quiet" id="sfxDownload" type="button">Download WAV</button><button class="button button-soft" id="sfxAttach" type="button" data-maker-edit>Attach recipe</button></div></div>
+          </div>
+          </details>
+        </section>
+
+        <section class="maker-panel" id="makerGame" role="tabpanel" aria-labelledby="makerTabGame" data-maker-panel="game" hidden>
+          <div class="maker-panel-head"><div><p class="eyebrow">AXM GAME FORGE V1.3 · TIMED PUBLIC ROUTE</p><h3>Design a game project through production systems, not four sliders.</h3><p>Use the 500-pattern Production Atlas, project spine, world map, shared 2D physics, systems, events, behavior, HUD route, tests and instant playable preview.</p></div><span id="gameStatus" class="maker-status" role="status">Full Game Forge waits for session entry</span></div>
+          <div class="full-tool-proof"><span>500-PATTERN ATLAS</span><span>MAP + PHYSICS</span><span>SYSTEMS + EVENTS</span><span>PLAYABLE PREVIEW</span></div>
+          <div class="full-tool-frame-wrap extra-tall" data-demo-shell="game"><div class="full-tool-lock">Enter the timed session to unlock Game Forge.</div><iframe id="gameFullFrame" data-demo-tool="game" data-demo-src="full/tools/game-forge/index.html?public-demo=1" title="Full AXM Game Forge" loading="lazy"></iframe></div>
+          <details class="quick-maker"><summary>Quick standalone mini-game <small>Make one portable HTML game directly inside this guest project</small></summary>
+          <div class="game-builder-layout">
+            <div class="maker-controls game-controls">
+              <label>Game title<input id="gameTitle" maxlength="80" value="Signal Catch" data-maker-edit></label>
+              <div class="control-pair"><label>Accent<input id="gameAccent" type="color" value="#6fe4ef" data-maker-edit></label><label>World<input id="gameBackground" type="color" value="#081526" data-maker-edit></label></div>
+              <label>Movement speed <output id="gameSpeedOutput" for="gameSpeed">1.0x</output><input id="gameSpeed" type="range" min="0.6" max="2" step="0.1" value="1" data-maker-edit></label>
+              <label>Signals to collect <output id="gameGoalOutput" for="gameGoal">7</output><input id="gameGoal" type="range" min="3" max="20" step="1" value="7" data-maker-edit></label>
+              <label class="check-control"><input id="gameUseArtwork" type="checkbox" checked data-maker-edit><span>Use latest Studio artwork</span></label>
+              <label class="check-control"><input id="gameUseSfx" type="checkbox" checked data-maker-edit><span>Use the current SFX recipe</span></label>
+              <button class="button button-primary button-wide" id="gamePlay" type="button">Play preview</button>
+              <button class="button button-quiet button-wide" id="gameDownload" type="button">Download game HTML</button>
+              <button class="button button-soft button-wide" id="gameAttach" type="button" data-maker-edit>Attach game shape</button>
+            </div>
+            <div class="game-preview"><canvas id="gameCanvas" width="960" height="560" aria-label="Playable mini-game preview"></canvas><div class="game-preview-overlay" id="gameOverlay"><span>ARROW KEYS / WASD / TOUCH</span><b id="gamePreviewTitle">Signal Catch</b><small id="gamePreviewScore">0 / 7</small></div><div class="preview-touch" aria-label="Touch movement controls"><button type="button" data-game-key="up" aria-label="Move up">↑</button><button type="button" data-game-key="left" aria-label="Move left">←</button><button type="button" data-game-key="down" aria-label="Move down">↓</button><button type="button" data-game-key="right" aria-label="Move right">→</button></div></div>
+          </div>
+          </details>
+        </section>
+
+        <section class="maker-panel" id="makerSite" role="tabpanel" aria-labelledby="makerTabSite" data-maker-panel="site" hidden>
+          <div class="maker-panel-head"><div><p class="eyebrow">AXM SHAPEABLE BUILDER V0.13.1 · TIMED PUBLIC ROUTE</p><h3>Build a website, dashboard or playable game from typed blocks.</h3><p>Use three readable layers, templates, logic and capability blocks, preview, diagnostics, human apply gates and one-file standalone HTML export.</p></div><span id="siteStatus" class="maker-status" role="status">Full Shapeable Builder waits for session entry</span></div>
+          <div class="full-tool-proof"><span>3-LAYER CANVAS</span><span>TYPED BLOCKS</span><span>LIVE DIAGNOSTICS</span><span>ONE-FILE BUILD</span></div>
+          <div class="full-tool-frame-wrap extra-tall" data-demo-shell="site"><div class="full-tool-lock">Enter the timed session to unlock Shapeable Builder.</div><iframe id="siteFullFrame" data-demo-tool="site" data-demo-src="full/tools/shapeable-builder/index.html?public-demo=1" title="Full AXM Shapeable Builder" loading="lazy"></iframe></div>
+          <details class="quick-maker"><summary>Quick one-page builder <small>Create and attach a simple hostable page directly to this guest project</small></summary>
+          <div class="site-builder-layout">
+            <div class="maker-controls site-controls">
+              <label>Brand / project<input id="siteBrand" maxlength="60" value="Small Signal" data-maker-edit></label>
+              <label>Eyebrow<input id="siteEyebrow" maxlength="100" value="BUILT IN THIRTY ACTIVE MINUTES" data-maker-edit></label>
+              <label>Main headline<textarea id="siteHeadline" maxlength="160" data-maker-edit>A clear idea, made visible.</textarea></label>
+              <label>Introduction<textarea id="siteBody" maxlength="600" data-maker-edit>A focused one-page home for a project, service, event or idea. Edit the words, choose the atmosphere and take the complete HTML file with you.</textarea></label>
+              <label>Button text<input id="siteCta" maxlength="50" value="See what matters" data-maker-edit></label>
+              <div class="control-pair"><label>Accent<input id="siteAccent" type="color" value="#6fe4ef" data-maker-edit></label><label>Background<input id="siteBackground" type="color" value="#07111f" data-maker-edit></label></div>
+              <label>Shape<select id="siteTheme" data-maker-edit><option value="orbit">Orbit</option><option value="grid">Grid</option><option value="warm">Warm</option></select></label>
+              <label class="check-control"><input id="siteUseArtwork" type="checkbox" checked data-maker-edit><span>Use latest Studio artwork as hero</span></label>
+              <details class="feature-editor"><summary>Shape the three feature cards</summary><div id="siteFeatureInputs"></div></details>
+              <button class="button button-primary button-wide" id="siteDownload" type="button">Download website HTML</button>
+              <button class="button button-soft button-wide" id="siteAttach" type="button" data-maker-edit>Attach website shape</button>
+            </div>
+            <div class="site-preview" id="sitePreview" aria-label="One-page website preview">
+              <header><b id="sitePreviewBrand">Small Signal</b><span>ONE PORTABLE FILE</span></header>
+              <section class="site-preview-hero"><div><span id="sitePreviewEyebrow">BUILT IN THIRTY ACTIVE MINUTES</span><h4 id="sitePreviewHeadline">A clear idea, made visible.</h4><p id="sitePreviewBody"></p><button id="sitePreviewCta" type="button">See what matters</button></div><div id="sitePreviewArtwork" class="site-preview-art" aria-label="Studio artwork preview"><b>AXM</b></div></section>
+              <section class="site-preview-features" id="sitePreviewFeatures"></section>
+            </div>
+          </div>
+          </details>
+        </section>
+
+        <section class="artifact-shelf" aria-labelledby="artifactShelfTitle">
+          <div><p class="eyebrow">SHARED ARTIFACT SHELF</p><h3 id="artifactShelfTitle">What this session has produced</h3><p>Attachments travel inside the AXM project record. Full PNG, WAV and HTML files remain separate downloads you control.</p></div>
+          <div class="artifact-list" id="artifactList"><p class="artifact-empty">Nothing attached yet. Make something, then keep its compact source or preview here.</p></div>
+        </section>
+      </section>
+
       <section class="project-bar panel">
         <div class="project-heading">
           <p class="eyebrow">PROJECT SIGNAL</p>
@@ -147,6 +264,8 @@
   <footer class="guest-footer"><a href="../">← AXM front door</a><span>Session memory · portable export · no account</span><b>Mike — Axiom/Mir</b></footer>
 
   <script src="../config.js"></script>
+  <script src="makers-core.js"></script>
+  <script src="makers.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
