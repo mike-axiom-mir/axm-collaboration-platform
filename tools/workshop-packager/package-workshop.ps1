@@ -175,6 +175,17 @@ try {
       Assert-Under $directory.FullName $CopyPath
       Remove-TreeSafely $directory.FullName $CopyPath
     }
+    # One reviewed intake is a declared runtime dependency of AI Team Steward.
+    # Copy only that exact lane after broad intake removal; every sibling stays local.
+    $reviewedPublicIntakes = @('intakes/ai-team-collaboration-runs-01-101-v1')
+    foreach ($reviewedRoot in $reviewedPublicIntakes) {
+      $sourceRoot = Join-Path $Root ($reviewedRoot.Replace('/','\'))
+      if (-not (Test-Path -LiteralPath $sourceRoot -PathType Container)) { throw "Reviewed public intake is missing: $reviewedRoot" }
+      Get-ChildItem -LiteralPath $sourceRoot -Recurse -File -Force | ForEach-Object {
+        $relative = $_.FullName.Substring($Root.Length + 1).Replace('\','/')
+        Copy-PackageFile $relative
+      }
+    }
     $sensitiveFiles = Get-ChildItem -LiteralPath $CopyPath -Recurse -File -Force | Where-Object {
       $_.Name -ieq 'bridge-token.txt' -or $_.Name -ieq 'bridge_token.txt' -or
       $_.Name -ieq '.env' -or $_.Name -like '.env.*' -or

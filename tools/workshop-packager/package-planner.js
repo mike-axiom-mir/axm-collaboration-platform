@@ -27,6 +27,9 @@ const SENSITIVE_EXTENSIONS = new Set(['.pem', '.pfx', '.key', '.log']);
 const PUBLIC_OMISSIONS = new Set([
   'tools/game-hub/game-library/008-district-party/assets/source/user_generated/interactable_alpha_pack_2026-07-19/AXM_DISTRICT_PARTY_INTERACTABLE_ALPHA_PACK_2026-07-19.zip'
 ]);
+const REVIEWED_PUBLIC_INTAKES = new Set([
+  'intakes/ai-team-collaboration-runs-01-101-v1'
+]);
 
 function slash(value) {
   return String(value || '').replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/+$/, '') || '.';
@@ -64,7 +67,10 @@ function isPublicExcluded(relative, isDirectory) {
   if (PUBLIC_OMISSIONS.has(rel)) return true;
   const originalSegments = rel.split('/');
   const segments = originalSegments.map(part => part.toLowerCase());
-  if (PRIVATE_TOP_LEVEL.has(segments[0])) return true;
+  const reviewedIntake = [...REVIEWED_PUBLIC_INTAKES].some(prefix => rel === prefix || rel.startsWith(prefix + '/'));
+  const reviewedIntakeAncestor = isDirectory && [...REVIEWED_PUBLIC_INTAKES].some(prefix => prefix.startsWith(rel + '/'));
+  if (segments[0] === 'intakes' && !reviewedIntake && !reviewedIntakeAncestor) return true;
+  if (PRIVATE_TOP_LEVEL.has(segments[0]) && !reviewedIntake && !reviewedIntakeAncestor) return true;
   if (PRIVATE_TOP_LEVEL_PATTERNS.some(pattern => pattern.test(originalSegments[0]))) return true;
   if (segments.slice(1, isDirectory ? undefined : -1).some(part => PRIVATE_NESTED.has(part))) return true;
   const name = segments[segments.length - 1];

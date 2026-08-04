@@ -56,6 +56,8 @@ try {
   fs.mkdirSync(path.join(plannerRoot, 'tools', 'demo', 'runtime'), { recursive: true });
   fs.mkdirSync(path.join(plannerRoot, 'tools', 'demo', 'rollback'), { recursive: true });
   fs.mkdirSync(path.join(plannerRoot, 'state'), { recursive: true });
+  fs.mkdirSync(path.join(plannerRoot, 'intakes', 'ai-team-collaboration-runs-01-101-v1'), { recursive: true });
+  fs.mkdirSync(path.join(plannerRoot, 'intakes', 'unreviewed-candidate'), { recursive: true });
   fs.mkdirSync(path.join(plannerRoot, 'distributions', 'demo', 'build'), { recursive: true });
   fs.mkdirSync(path.join(plannerRoot, 'AXM_EXAMPLE_v0_1_WORKING'), { recursive: true });
   fs.mkdirSync(path.join(plannerRoot, '_archive_review_example'), { recursive: true });
@@ -65,6 +67,8 @@ try {
   fs.writeFileSync(path.join(plannerRoot, 'tools', 'demo', 'runtime', 'game.js'), 'game\n');
   fs.writeFileSync(path.join(plannerRoot, 'tools', 'demo', 'rollback', 'old.zip'), 'archive\n');
   fs.writeFileSync(path.join(plannerRoot, 'state', 'private.json'), '{}\n');
+  fs.writeFileSync(path.join(plannerRoot, 'intakes', 'ai-team-collaboration-runs-01-101-v1', 'reviewed.json'), '{}\n');
+  fs.writeFileSync(path.join(plannerRoot, 'intakes', 'unreviewed-candidate', 'private.json'), '{}\n');
   fs.writeFileSync(path.join(plannerRoot, 'distributions', 'demo', 'build', 'demo.zip'), 'derived\n');
   fs.writeFileSync(path.join(plannerRoot, 'AXM_EXAMPLE_v0_1_WORKING', 'candidate.js'), 'candidate\n');
   fs.writeFileSync(path.join(plannerRoot, '_archive_review_example', 'review.txt'), 'review\n');
@@ -79,6 +83,8 @@ try {
   check(!publicPlanned.files.has('distributions/demo/build/demo.zip'), 'public planner excludes generated distributions');
   check(!publicPlanned.files.has('AXM_EXAMPLE_v0_1_WORKING/candidate.js'), 'public planner excludes root working handoffs');
   check(!publicPlanned.files.has('_archive_review_example/review.txt'), 'public planner excludes archive-review workspaces');
+  check(publicPlanned.files.has('intakes/ai-team-collaboration-runs-01-101-v1/reviewed.json'), 'public planner includes the exact reviewed AI Team Steward intake dependency');
+  check(!publicPlanned.files.has('intakes/unreviewed-candidate/private.json'), 'public planner keeps every unreviewed intake private');
   check(Planner.gitBlobSha(path.join(plannerRoot, 'tools', 'demo', 'index.js')) === 'ce013625030ba8dba906f756967f9e9ca394464a', 'GitHub delta uses canonical Git blob hashing');
   const syntheticDelta = Planner.diffAgainstTree(planned.files, [
     { type: 'blob', path: 'tools/demo/index.js', sha: 'ce013625030ba8dba906f756967f9e9ca394464a' },

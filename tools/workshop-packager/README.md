@@ -22,6 +22,12 @@ state.
 Local relay credentials such as `bridge-token.txt` and `bridge_token.txt` are
 always excluded even when they sit beside a packageable nested runtime.
 
+The only reviewed intake included in a public snapshot is
+`intakes/ai-team-collaboration-runs-01-101-v1`, because its 100-seed harness is
+a declared runtime and verification dependency of AI Team Steward. The match is
+exact: sibling intakes remain local, and normal secret/private-folder rules
+still apply inside the reviewed lane.
+
 Generated distributions, root working/intake packs, archive-review folders,
 nested rollback archives, coverage output and language caches are also kept out
 of public source snapshots. They remain available locally; exclusion is a
