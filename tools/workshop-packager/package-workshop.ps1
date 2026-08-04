@@ -175,9 +175,12 @@ try {
       Assert-Under $directory.FullName $CopyPath
       Remove-TreeSafely $directory.FullName $CopyPath
     }
-    # One reviewed intake is a declared runtime dependency of AI Team Steward.
-    # Copy only that exact lane after broad intake removal; every sibling stays local.
-    $reviewedPublicIntakes = @('intakes/ai-team-collaboration-runs-01-101-v1')
+    # Reviewed intake lanes are exact runtime dependencies of public modules.
+    # Copy only those exact lanes after broad intake removal; every sibling stays local.
+    $reviewedPublicIntakes = @(
+      'intakes/ai-team-collaboration-runs-01-101-v1',
+      'intakes/universal-object-fabric-v0.7.0-2026-07-28'
+    )
     foreach ($reviewedRoot in $reviewedPublicIntakes) {
       $sourceRoot = Join-Path $Root ($reviewedRoot.Replace('/','\'))
       if (-not (Test-Path -LiteralPath $sourceRoot -PathType Container)) { throw "Reviewed public intake is missing: $reviewedRoot" }
@@ -200,7 +203,8 @@ try {
     }
 
     $publicOmissions = @(
-      'tools/game-hub/game-library/008-district-party/assets/source/user_generated/interactable_alpha_pack_2026-07-19/AXM_DISTRICT_PARTY_INTERACTABLE_ALPHA_PACK_2026-07-19.zip'
+      'tools/game-hub/game-library/008-district-party/assets/source/user_generated/interactable_alpha_pack_2026-07-19/AXM_DISTRICT_PARTY_INTERACTABLE_ALPHA_PACK_2026-07-19.zip',
+      'intakes/universal-object-fabric-v0.7.0-2026-07-28/source/AXM_UNIVERSAL_OBJECT_FABRIC_COMPLETE_INTAKE_v0_7_0_2026-07-28.zip'
     )
     foreach ($relative in $publicOmissions) {
       $candidate = Join-Path $CopyPath ($relative.Replace('/','\'))

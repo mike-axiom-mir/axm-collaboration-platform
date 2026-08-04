@@ -1,0 +1,69 @@
+#usda 1.0
+(
+    defaultPrim = "AXM_ENERGY_CORE_001"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "AXM_ENERGY_CORE_001"
+{
+    custom string axmAssetId = "AXM-ENERGY-CORE-001"
+    custom string axmAssetVersion = "0.4.0"
+    custom string axmUniversalContract = "0.5.0"
+    custom string axmSourceGlb = "AXM-ENERGY-CORE-001.glb"
+
+    def Xform "AssemblyGroups"
+    {
+        def Xform "root"
+        {
+            custom string axmMembersJson = "[\"base\", \"pillar__r00\", \"pillar__r01\", \"pillar__r02\", \"pillar__r03\", \"base_gear\", \"cap\"]"
+            custom double3 axmPivotM = (0.0, 0.0, 0.0)
+        }
+        def Xform "lower_ring"
+        {
+            custom string axmMembersJson = "[\"lower_ring\"]"
+            custom double3 axmPivotM = (0.0, 0.44, 0.0)
+        }
+        def Xform "upper_ring"
+        {
+            custom string axmMembersJson = "[\"upper_ring\"]"
+            custom double3 axmPivotM = (0.0, 1.32, 0.0)
+        }
+        def Xform "energy_core"
+        {
+            custom string axmMembersJson = "[\"core\"]"
+            custom double3 axmPivotM = (0.0, 0.88, 0.0)
+        }
+    }
+
+    def Xform "Joints"
+    {
+        def Xform "lower_spin"
+        {
+            custom string axmJointType = "continuous"
+            custom string axmParentGroup = "root"
+            custom string axmChildGroup = "lower_ring"
+            custom double3 axmAxis = (0.0, 1.0, 0.0)
+            custom double3 axmPivotM = (0.0, 0.44, 0.0)
+        }
+        def Xform "upper_spin"
+        {
+            custom string axmJointType = "continuous"
+            custom string axmParentGroup = "root"
+            custom string axmChildGroup = "upper_ring"
+            custom double3 axmAxis = (0.0, 1.0, 0.0)
+            custom double3 axmPivotM = (0.0, 1.32, 0.0)
+        }
+        def Xform "core_spin"
+        {
+            custom string axmJointType = "continuous"
+            custom string axmParentGroup = "root"
+            custom string axmChildGroup = "energy_core"
+            custom double3 axmAxis = (0.0, 1.0, 0.0)
+            custom double3 axmPivotM = (0.0, 0.88, 0.0)
+        }
+    }
+}
+
+# Preview interchange only. Geometry remains in the referenced GLB;
+# physics schemas are intentionally not claimed without usdchecker validation.

@@ -1,0 +1,95 @@
+{
+  "schema_version": "0.5",
+  "asset_id": "AXM-MACHINE-TREE-001",
+  "asset_version": "0.4.0",
+  "root_group": "root",
+  "groups": [
+    {
+      "id": "root",
+      "kind": "rigid",
+      "parent": null,
+      "member_patterns": [
+        "root",
+        "trunk",
+        "branch__*",
+        "crown"
+      ],
+      "members": [
+        "root",
+        "trunk",
+        "branch__r00",
+        "branch__r01",
+        "branch__r02",
+        "branch__r03",
+        "branch__r04",
+        "branch__r05",
+        "crown__r00",
+        "crown__r01",
+        "crown__r02",
+        "crown__r03",
+        "crown__r04",
+        "crown__r05"
+      ],
+      "pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "notes": ""
+    },
+    {
+      "id": "heart",
+      "kind": "rigid",
+      "parent": null,
+      "member_patterns": [
+        "heart"
+      ],
+      "members": [
+        "heart"
+      ],
+      "pivot_m": [
+        0,
+        1.82,
+        0
+      ],
+      "notes": ""
+    }
+  ],
+  "joints": [
+    {
+      "id": "heart_spin",
+      "type": "continuous",
+      "parent_group": "root",
+      "child_group": "heart",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pivot_m": [
+        0,
+        1.82,
+        0
+      ],
+      "limits": {},
+      "default": 0,
+      "drive": {
+        "mode": "velocity",
+        "speed_deg_s": 14
+      },
+      "clearance_mm": null,
+      "human_confirmation_required": false,
+      "notes": ""
+    }
+  ],
+  "unassigned_nodes": [],
+  "moving_groups": [
+    "heart"
+  ],
+  "validation": {
+    "status": "PASS",
+    "failures": [],
+    "warnings": []
+  },
+  "runtime_rule": "GLB node geometry stays source-preserved. Engines create groups at the declared pivots and re-parent only the named nodes at load time."
+}

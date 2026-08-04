@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/csg-experiment-v0.5.schema.json",
+  "title": "AXM CSG Experiment v0.5",
+  "type": "object",
+  "$defs": {
+    "operation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "ref"
+          ],
+          "properties": {
+            "ref": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "op",
+            "children"
+          ],
+          "properties": {
+            "op": {
+              "enum": [
+                "union",
+                "difference",
+                "intersection"
+              ]
+            },
+            "children": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/operation"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "vec3": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    }
+  },
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "version",
+    "name",
+    "units",
+    "voxel_pitch_mm",
+    "max_voxels",
+    "primitives",
+    "operation",
+    "truth_gate",
+    "game_lod_factors",
+    "max_game_faces"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.5"
+    },
+    "experiment_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9][A-Z0-9-]{1,95}$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][A-Za-z0-9.-]+)?$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "units": {
+      "const": "mm"
+    },
+    "voxel_pitch_mm": {
+      "type": "number",
+      "minimum": 0.5,
+      "maximum": 100
+    },
+    "max_voxels": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 16000000
+    },
+    "max_game_faces": {
+      "type": "integer",
+      "minimum": 100
+    },
+    "game_lod_factors": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "integer",
+        "minimum": 2,
+        "maximum": 16
+      }
+    },
+    "primitives": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "primitive",
+          "dimensions",
+          "position_mm"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "primitive": {
+            "enum": [
+              "box",
+              "cylinder",
+              "sphere"
+            ]
+          },
+          "dimensions": {
+            "type": "object"
+          },
+          "position_mm": {
+            "$ref": "#/$defs/vec3"
+          },
+          "rotation_deg": {
+            "$ref": "#/$defs/vec3"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "operation": {
+      "$ref": "#/$defs/operation"
+    },
+    "truth_gate": {
+      "type": "object",
+      "required": [
+        "game_preview_allowed",
+        "manufacturing_allowed",
+        "promotion_requirement"
+      ],
+      "properties": {
+        "game_preview_allowed": {
+          "type": "boolean"
+        },
+        "manufacturing_allowed": {
+          "const": false
+        },
+        "promotion_requirement": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

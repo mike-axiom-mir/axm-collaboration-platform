@@ -25,10 +25,12 @@ const PRIVATE_TOP_LEVEL_PATTERNS = [
 ];
 const SENSITIVE_EXTENSIONS = new Set(['.pem', '.pfx', '.key', '.log']);
 const PUBLIC_OMISSIONS = new Set([
-  'tools/game-hub/game-library/008-district-party/assets/source/user_generated/interactable_alpha_pack_2026-07-19/AXM_DISTRICT_PARTY_INTERACTABLE_ALPHA_PACK_2026-07-19.zip'
+  'tools/game-hub/game-library/008-district-party/assets/source/user_generated/interactable_alpha_pack_2026-07-19/AXM_DISTRICT_PARTY_INTERACTABLE_ALPHA_PACK_2026-07-19.zip',
+  'intakes/universal-object-fabric-v0.7.0-2026-07-28/source/AXM_UNIVERSAL_OBJECT_FABRIC_COMPLETE_INTAKE_v0_7_0_2026-07-28.zip'
 ]);
 const REVIEWED_PUBLIC_INTAKES = new Set([
-  'intakes/ai-team-collaboration-runs-01-101-v1'
+  'intakes/ai-team-collaboration-runs-01-101-v1',
+  'intakes/universal-object-fabric-v0.7.0-2026-07-28'
 ]);
 
 function slash(value) {

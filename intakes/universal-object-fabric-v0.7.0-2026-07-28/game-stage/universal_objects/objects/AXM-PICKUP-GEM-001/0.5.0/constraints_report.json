@@ -1,0 +1,188 @@
+{
+  "schema_version": "0.5",
+  "asset_id": "AXM-PICKUP-GEM-001",
+  "asset_version": "0.4.0",
+  "status": "PASS",
+  "failures": [],
+  "warnings": [],
+  "geometry": {
+    "status": "PASS",
+    "nodes": [
+      {
+        "node": "base",
+        "vertices": 66,
+        "faces": 128,
+        "watertight": true,
+        "is_volume": true,
+        "finite": true,
+        "volume_m3": 0.01320995583532599
+      },
+      {
+        "node": "gem",
+        "vertices": 10,
+        "faces": 16,
+        "watertight": true,
+        "is_volume": true,
+        "finite": true,
+        "volume_m3": 0.017698410124176858
+      },
+      {
+        "node": "lower_orbit",
+        "vertices": 320,
+        "faces": 640,
+        "watertight": true,
+        "is_volume": true,
+        "finite": true,
+        "volume_m3": 0.0027477060539993384
+      },
+      {
+        "node": "upper_orbit",
+        "vertices": 320,
+        "faces": 640,
+        "watertight": true,
+        "is_volume": true,
+        "finite": true,
+        "volume_m3": 0.0013672478502429058
+      }
+    ]
+  },
+  "assembly": {
+    "status": "PASS",
+    "failures": [],
+    "warnings": []
+  },
+  "connectivity": {
+    "method": "axis-aligned bounding-box touch graph at 2 mm game-scale tolerance",
+    "cluster_count": 1,
+    "clusters": [
+      [
+        "base",
+        "gem",
+        "lower_orbit",
+        "upper_orbit"
+      ]
+    ],
+    "allowed_detached_nodes": [
+      "gem",
+      "lower_orbit",
+      "upper_orbit"
+    ],
+    "unexpected_singletons": [],
+    "status": "PASS",
+    "scope_limit": "AABB contact is a cheap diagnostic, not a Boolean connectivity proof."
+  },
+  "stability": {
+    "status": "PASS",
+    "method": "center-of-mass projection inside support-node AABB",
+    "body_type": "kinematic",
+    "support_nodes": [
+      "base"
+    ],
+    "support_aabb_xz_m": [
+      [
+        -0.23000000417232513,
+        -0.23000000417232513
+      ],
+      [
+        0.23000000417232513,
+        0.23000000417232513
+      ]
+    ],
+    "center_of_mass_projection_xz_m": [
+      0.0,
+      0.0
+    ],
+    "minimum_edge_margin_m": 0.23,
+    "inside_support_aabb": true,
+    "scope_limit": "Positive AABB margin is only a first-pass stability hint; dynamic motion and irregular support polygons are not simulated."
+  },
+  "manufacturing_intent": {
+    "status": "PASS",
+    "process_assumption": "FDM miniature/prototype",
+    "output_scale": 0.15,
+    "minimum_wall_intent_mm": 1.2,
+    "minimum_feature_intent_mm": 0.8,
+    "clearance_intent_mm": 0.25,
+    "components": [
+      {
+        "node": "base",
+        "component_id": "base",
+        "primitive": "cylinder",
+        "scaled_extents_mm": [
+          69.000001,
+          12.0,
+          69.000001
+        ],
+        "minimum_scaled_extent_mm": 12.0,
+        "feature_intent_mm": 0.8,
+        "feature_status": "PASS",
+        "wall_check": {
+          "status": "NOT_EVALUATED",
+          "reason": "Solid primitive does not expose a shell wall thickness."
+        }
+      },
+      {
+        "node": "gem",
+        "component_id": "gem",
+        "primitive": "gem",
+        "scaled_extents_mm": [
+          56.999999,
+          77.999998,
+          56.999999
+        ],
+        "minimum_scaled_extent_mm": 56.999999,
+        "feature_intent_mm": 0.8,
+        "feature_status": "PASS",
+        "wall_check": {
+          "status": "NOT_EVALUATED",
+          "reason": "Solid primitive does not expose a shell wall thickness."
+        }
+      },
+      {
+        "node": "lower_orbit",
+        "component_id": "lower_orbit",
+        "primitive": "torus",
+        "scaled_extents_mm": [
+          85.200003,
+          23.377667,
+          83.338174
+        ],
+        "minimum_scaled_extent_mm": 23.377667,
+        "feature_intent_mm": 0.8,
+        "feature_status": "PASS",
+        "wall_check": {
+          "status": "NOT_EVALUATED",
+          "reason": "Solid primitive does not expose a shell wall thickness."
+        }
+      },
+      {
+        "node": "upper_orbit",
+        "component_id": "upper_orbit",
+        "primitive": "torus",
+        "scaled_extents_mm": [
+          73.229179,
+          26.722173,
+          71.618629
+        ],
+        "minimum_scaled_extent_mm": 26.722173,
+        "feature_intent_mm": 0.8,
+        "feature_status": "PASS",
+        "wall_check": {
+          "status": "NOT_EVALUATED",
+          "reason": "Solid primitive does not expose a shell wall thickness."
+        }
+      }
+    ],
+    "joint_clearances": [],
+    "warnings": [],
+    "human_review_required": true,
+    "scope_limit": "This catches obvious dimensional intent problems only. It does not calculate stress, anisotropy, support, shrinkage, heat, fatigue, or certified tolerances."
+  },
+  "game_performance": {
+    "status": "PASS",
+    "source": "existing v0.4 performance_report.json",
+    "lod0_faces": 1424,
+    "bundle_bytes": 44672
+  },
+  "honesty_gate": "PASS/WARN here is diagnostic evidence, never structural engineering, print certification, or automatic production approval."
+}

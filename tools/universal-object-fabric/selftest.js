@@ -26,7 +26,13 @@ assert.equal(receipt.assetCount, 10);
 assert.equal(receipt.checksumCount, 668);
 assert.deepEqual(receipt.manufacturingFiles, []);
 assert.equal(receipt.errors.length, 0);
-assert.deepEqual(receipt.warnings, ['AXM-ENERGY-CORE-001: declared object WARN preserved']);
+assert.ok(receipt.warnings.includes('AXM-ENERGY-CORE-001: declared object WARN preserved'));
+if (fs.existsSync(path.join(Service.INTAKE_ROOT, 'source', 'AXM_UNIVERSAL_OBJECT_FABRIC_COMPLETE_INTAKE_v0_7_0_2026-07-28.zip'))) {
+  assert.equal(receipt.sourceSha256, Service.EXPECTED_SOURCE_SHA256);
+} else {
+  assert.equal(receipt.sourceSha256, null);
+  assert.ok(receipt.warnings.includes('accepted source archive omitted from public-safe snapshot; signed digest receipt preserved'));
+}
 
 const appSource = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
 new Function(appSource);

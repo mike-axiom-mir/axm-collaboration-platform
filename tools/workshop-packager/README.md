@@ -22,11 +22,13 @@ state.
 Local relay credentials such as `bridge-token.txt` and `bridge_token.txt` are
 always excluded even when they sit beside a packageable nested runtime.
 
-The only reviewed intake included in a public snapshot is
-`intakes/ai-team-collaboration-runs-01-101-v1`, because its 100-seed harness is
-a declared runtime and verification dependency of AI Team Steward. The match is
-exact: sibling intakes remain local, and normal secret/private-folder rules
-still apply inside the reviewed lane.
+Only exact reviewed intake dependencies are included in a public snapshot:
+`intakes/ai-team-collaboration-runs-01-101-v1` supplies AI Team Steward's
+100-seed harness, while `intakes/universal-object-fabric-v0.7.0-2026-07-28`
+supplies the hash-bound game stage used by Universal Object Fabric. The latter's
+redundant 29 MB source ZIP is omitted while its acceptance receipt and staged
+files remain. Sibling intakes stay local, and normal secret/private-folder rules
+still apply inside both reviewed lanes.
 
 Generated distributions, root working/intake packs, archive-review folders,
 nested rollback archives, coverage output and language caches are also kept out

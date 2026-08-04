@@ -11,24 +11,24 @@ const MODULE_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const EXCLUDED_EXECUTION_FILES = new Set(['candidate.receipt.json', 'module-bundle.json']);
 
 const REVIEWED_MODULES = Object.freeze([
-  { id: 'archive-intake-cartographer', label: 'Archive Intake Cartographer', digest: '5a84e0836675c15ed897df01481607c7c3b4ecb323322c12a5f9e433bbf010c4' },
-  { id: 'authority-surface-observatory', label: 'Authority Surface Observatory', digest: '7b9953519189267f7b01fa00a2cbb57f195e81204058df66b26a4480f46dad59' },
-  { id: 'browser-global-surface-observatory', label: 'Browser Global Surface Observatory', digest: 'a1862cfac78da5857a12356ec2df0685911384109114b0fcde80148e0946af8d' },
-  { id: 'dependency-declaration-observatory', label: 'Dependency Declaration Observatory', digest: '92f3298719b96384b6c5a1205b4434234a380e589e948ca13a43e578498fbc0e' },
-  { id: 'detached-candidate-nursery', label: 'Detached Candidate Nursery', digest: '4a9942fc27190369a56059ef35659923e13524e729ebfc2e1b9e1e2141b35cda' },
-  { id: 'dual-door-observatory', label: 'Dual Door Observatory', digest: 'f34d8d774e648629dcb7ce7e0eb758d5df5519abb58dbfdf6e0f077fdb1b389c' },
-  { id: 'entry-resource-closure-observatory', label: 'Entry Resource Closure Observatory', digest: '23f6c1587a5b60224b8b49464d4f6a97f966024fb816cfcfc12df98c204f63cd' },
-  { id: 'handoff-wiring-observatory', label: 'Handoff Wiring Observatory', digest: 'd2aa57ad4bde3215a37fc51b4a6e0e431649949a215934b2161dad73303d86f0' },
-  { id: 'host-assumption-observatory', label: 'Host Assumption Observatory', digest: '36c7a0ac1a79d4084779a25fa272382c2c539ef4fa627babc25a3a7dc89e715b' },
-  { id: 'human-control-binding-observatory', label: 'Human Control Binding Observatory', digest: 'c5a54b0791969db04b16d95e77782fc1e655fba970829b7257edfb55ca456ca2' },
-  { id: 'module-footprint-observatory', label: 'Module Footprint Observatory', digest: '10187359ce1992c84df2592e8dda602a9cfecf843beb9c95c3010e766ad6f036' },
-  { id: 'module-lineage-comparator', label: 'Module Lineage Comparator', digest: '63eaa519e7d0b6696d6accfa6f31352a95e41054b2cec4a68162849cba795d20' },
-  { id: 'protocol-version-observatory', label: 'Protocol Version Observatory', digest: '961e653ea5bd77e4126a425569d8679cc96126be946a3ab7d54d1e6797489878' },
-  { id: 'runtime-channel-observatory', label: 'Runtime Channel Observatory', digest: '46c0a29b35f19480dd93c3ab2bc5f1ca77978a0667364cadfea2ccccd2b470ee' },
-  { id: 'schema-identity-observatory', label: 'Schema Identity Observatory', digest: '2734c34d2c9f7f6194a3de981d58dc41a5438c9fe3f60b1ecb9350b23c076112' },
-  { id: 'storage-namespace-observatory', label: 'Storage Namespace Observatory', digest: 'ccac6011558530571a2d7b2e4ff72bb4fb41aa7b82424fa5ac3972cae2ffb0e7' },
-  { id: 'verification-entry-observatory', label: 'Verification Entry Observatory', digest: '9c1980fec73132bedcea419efd92495d99718348051b454fc906bf82906ec689' },
-  { id: 'workshop-census-observatory', label: 'Workshop Census Observatory', digest: 'c85850832ac29a041f48a60f27e873e33acd7b8a92f5ffb0016b9be80a133daa' }
+  { id: 'archive-intake-cartographer', label: 'Archive Intake Cartographer', digest: 'ed57ea25bc0e161714d686a28211652a12e64c16cfc321a8a35d979f8729dd40' },
+  { id: 'authority-surface-observatory', label: 'Authority Surface Observatory', digest: 'be1f549ce5d6eb47b4d93f7e85d5b6a9928ce047a6653498ebfb0242f057e925' },
+  { id: 'browser-global-surface-observatory', label: 'Browser Global Surface Observatory', digest: '278ae7ce7a4df2262d1b862611b57eb5d46d36cad1f7bad17ce6188ed36670bb' },
+  { id: 'dependency-declaration-observatory', label: 'Dependency Declaration Observatory', digest: 'fb409aac40c6596c39e9907f6a95f7631e738a24d1f0d7243a314c8d59a22344' },
+  { id: 'detached-candidate-nursery', label: 'Detached Candidate Nursery', digest: '3d4f490a68440da3c509f979282a06291663101f5617fd3892ddfa48ebb779dd' },
+  { id: 'dual-door-observatory', label: 'Dual Door Observatory', digest: '2ae7ccd6862fdb69f3622f5a8afe9d923400adab5c118e8f8f39a8cdbfbef061' },
+  { id: 'entry-resource-closure-observatory', label: 'Entry Resource Closure Observatory', digest: 'edcce2b33c31af47dc09708196f1dbbb84e41dbfd25b839634f7b991b56375f3' },
+  { id: 'handoff-wiring-observatory', label: 'Handoff Wiring Observatory', digest: 'e517f116400f6bf2a67d973f59a3f356a49dd205233ed96a20aa3c87d91f3df3' },
+  { id: 'host-assumption-observatory', label: 'Host Assumption Observatory', digest: 'a947072395e811b9bdc4729a99773f5a27dcc99aa8ec7d96ce671a0ab39ecca0' },
+  { id: 'human-control-binding-observatory', label: 'Human Control Binding Observatory', digest: 'bc152e6673aa41347b2d8f771401a0edb4421bae182e5dd2cac8ece1f0e908a1' },
+  { id: 'module-footprint-observatory', label: 'Module Footprint Observatory', digest: '45c17b4df5087bed5013e56cbd2770432fdd682e826c962c53e4f6befae46911' },
+  { id: 'module-lineage-comparator', label: 'Module Lineage Comparator', digest: 'c648e219ff3f056e0844e9d0f84e80995a285041a739b21632cf1b507a032d69' },
+  { id: 'protocol-version-observatory', label: 'Protocol Version Observatory', digest: '3c611b0dd33e9973857f63e63f65f046ad7c1a98a1341bd8319c5c19b29e2ff1' },
+  { id: 'runtime-channel-observatory', label: 'Runtime Channel Observatory', digest: '1391c76c672e1a178e03fe9daf289bf65b10afc3dd69876439de3afeb54da3b2' },
+  { id: 'schema-identity-observatory', label: 'Schema Identity Observatory', digest: '826dfc9d597025b46d1deb2d20905817aea4281c73cfb34da07f0d9c2f617b61' },
+  { id: 'storage-namespace-observatory', label: 'Storage Namespace Observatory', digest: 'df309fbfbc324a042e52e82f3e2c2dcaeda67652ddbfcc9ba1020d84ad84311a' },
+  { id: 'verification-entry-observatory', label: 'Verification Entry Observatory', digest: 'fca688ee5ce5cbb519e4103b9f964bc97e305625e106184e38b85329a02fe3c2' },
+  { id: 'workshop-census-observatory', label: 'Workshop Census Observatory', digest: '81a9de35654c1825f51c1c9688eb0da3bcfb9a1e24c00f11daa9937dafff7009' }
 ]);
 
 function clone(value) { return JSON.parse(JSON.stringify(value)); }

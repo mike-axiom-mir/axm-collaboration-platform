@@ -151,7 +151,8 @@ function verifyStage() {
   const sourceArchive = path.join(SOURCE_ROOT, SOURCE_ARCHIVE);
   const acceptance = readJson(path.join(SOURCE_ROOT, 'AXM_UNIVERSAL_OBJECT_FABRIC_COMPLETE_INTAKE_v0_7_0_2026-07-28_FINAL_ACCEPTANCE.json'));
   const sourceSha256 = fs.existsSync(sourceArchive) ? sha256File(sourceArchive) : null;
-  if (sourceSha256 !== EXPECTED_SOURCE_SHA256) errors.push('accepted source archive SHA-256 mismatch');
+  if (sourceSha256 && sourceSha256 !== EXPECTED_SOURCE_SHA256) errors.push('accepted source archive SHA-256 mismatch');
+  if (!sourceSha256) warnings.push('accepted source archive omitted from public-safe snapshot; signed digest receipt preserved');
   if (acceptance.zip_sha256 !== EXPECTED_SOURCE_SHA256 || acceptance.zip_file_members !== 3344) errors.push('source acceptance receipt drift');
 
   return {

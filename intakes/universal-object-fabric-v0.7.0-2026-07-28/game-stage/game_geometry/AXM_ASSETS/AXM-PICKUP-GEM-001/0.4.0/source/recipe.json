@@ -1,0 +1,367 @@
+{
+  "schema_version": "0.2",
+  "asset_id": "AXM-PICKUP-GEM-001",
+  "name": "AXM Energy Pickup Gem",
+  "version": "0.4.0",
+  "parent_version": "0.3.0",
+  "units": "mm",
+  "family": "pickup-prop",
+  "tags": [
+    "axm",
+    "parametric",
+    "game-ready",
+    "print-archive",
+    "pickup",
+    "gem",
+    "currency"
+  ],
+  "project_tags": [
+    "UNIVERSAL",
+    "AXM-8-GAMES-SHARED"
+  ],
+  "intent": {
+    "purpose": "Reusable machine-native game asset with a preserved manufacturing route."
+  },
+  "coordinate_system": {
+    "source": {
+      "up": "+Z",
+      "forward": "-Y",
+      "linear_unit": "millimeter"
+    },
+    "game": {
+      "up": "+Y",
+      "forward": "+Z",
+      "linear_unit": "meter",
+      "source_to_game_scale": 0.001
+    }
+  },
+  "quality_profiles": {
+    "game": {
+      "target_platform": "web/desktop/local",
+      "triangle_budget_lod0": 12000,
+      "lod_triangle_budgets": [
+        12000,
+        7800,
+        4800
+      ],
+      "material_role_budget": 6,
+      "lod0_glb_bytes_budget": 250000,
+      "game_glb_bytes_budget": 750000,
+      "lod_levels": 3,
+      "collision_policy": "component-primitives",
+      "preview_policy": "standard"
+    },
+    "print": {
+      "process_assumption": "FDM miniature/prototype",
+      "minimum_wall_intent_mm": 1.2,
+      "minimum_feature_intent_mm": 0.8,
+      "clearance_intent_mm": 0.25,
+      "requires_human_review": true,
+      "output_scale": 0.15
+    }
+  },
+  "materials": {
+    "frame": {
+      "rgba": [
+        45,
+        58,
+        76,
+        255
+      ],
+      "metallic": 0.75,
+      "roughness": 0.34,
+      "emissive_rgb": [
+        0,
+        0,
+        0
+      ],
+      "double_sided": false,
+      "game_hint": "dark technical metal",
+      "print_hint": "structural shell"
+    },
+    "base": {
+      "rgba": [
+        24,
+        29,
+        39,
+        255
+      ],
+      "metallic": 0.55,
+      "roughness": 0.56,
+      "emissive_rgb": [
+        0,
+        0,
+        0
+      ],
+      "double_sided": false,
+      "game_hint": "heavy dark base",
+      "print_hint": "stable base material"
+    },
+    "accent": {
+      "rgba": [
+        35,
+        205,
+        235,
+        255
+      ],
+      "metallic": 0.25,
+      "roughness": 0.28,
+      "emissive_rgb": [
+        0.05,
+        0.45,
+        0.6
+      ],
+      "double_sided": false,
+      "game_hint": "cyan powered accent",
+      "print_hint": "second colour insert"
+    },
+    "energy": {
+      "rgba": [
+        169,
+        82,
+        255,
+        235
+      ],
+      "metallic": 0.05,
+      "roughness": 0.2,
+      "emissive_rgb": [
+        0.5,
+        0.08,
+        1.0
+      ],
+      "double_sided": false,
+      "game_hint": "violet emissive energy",
+      "print_hint": "translucent insert"
+    },
+    "warning": {
+      "rgba": [
+        255,
+        172,
+        37,
+        255
+      ],
+      "metallic": 0.1,
+      "roughness": 0.35,
+      "emissive_rgb": [
+        0.8,
+        0.25,
+        0.02
+      ],
+      "double_sided": false,
+      "game_hint": "warning light",
+      "print_hint": "bright insert"
+    },
+    "organic": {
+      "rgba": [
+        72,
+        163,
+        112,
+        255
+      ],
+      "metallic": 0.05,
+      "roughness": 0.8,
+      "emissive_rgb": [
+        0.0,
+        0.08,
+        0.02
+      ],
+      "double_sided": false,
+      "game_hint": "machine-organic surface",
+      "print_hint": "decorative body"
+    }
+  },
+  "sockets": [
+    {
+      "id": "pickup_origin",
+      "position": [
+        0,
+        0,
+        320
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "purpose": "pickup and effect origin"
+    }
+  ],
+  "components": [
+    {
+      "id": "gem",
+      "primitive": "gem",
+      "dimensions": {
+        "radius": 190,
+        "height": 520,
+        "sides": 8
+      },
+      "position": [
+        0,
+        0,
+        320
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "material_role": "energy",
+      "outputs": [
+        "game",
+        "print"
+      ],
+      "print_group": "gem",
+      "game": {
+        "collision": false,
+        "collision_shape": "auto"
+      },
+      "manufacturing": {
+        "quantity_override": null
+      },
+      "notes": ""
+    },
+    {
+      "id": "lower_orbit",
+      "primitive": "torus",
+      "dimensions": {
+        "major_radius": 260,
+        "minor_radius": 24,
+        "major_sections": 32,
+        "minor_sections": 10
+      },
+      "position": [
+        0,
+        0,
+        230
+      ],
+      "rotation": [
+        12,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "material_role": "accent",
+      "outputs": [
+        "game",
+        "print"
+      ],
+      "print_group": "lower_orbit",
+      "game": {
+        "collision": false,
+        "collision_shape": "auto"
+      },
+      "manufacturing": {
+        "quantity_override": null
+      },
+      "notes": ""
+    },
+    {
+      "id": "upper_orbit",
+      "primitive": "torus",
+      "dimensions": {
+        "major_radius": 230,
+        "minor_radius": 18,
+        "major_sections": 32,
+        "minor_sections": 10
+      },
+      "position": [
+        0,
+        0,
+        420
+      ],
+      "rotation": [
+        -18,
+        0,
+        30
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "material_role": "warning",
+      "outputs": [
+        "game",
+        "print"
+      ],
+      "print_group": "upper_orbit",
+      "game": {
+        "collision": false,
+        "collision_shape": "auto"
+      },
+      "manufacturing": {
+        "quantity_override": null
+      },
+      "notes": ""
+    },
+    {
+      "id": "base",
+      "primitive": "cylinder",
+      "dimensions": {
+        "radius": 230,
+        "height": 80,
+        "sections": 32
+      },
+      "position": [
+        0,
+        0,
+        40
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "material_role": "base",
+      "outputs": [
+        "game",
+        "print"
+      ],
+      "print_group": "base",
+      "game": {
+        "collision": true,
+        "collision_shape": "auto"
+      },
+      "manufacturing": {
+        "quantity_override": null
+      },
+      "notes": ""
+    }
+  ],
+  "assembly": {
+    "strategy": "modular named components",
+    "game_note": "Named nodes, LODs, collisions and sockets are generated.",
+    "print_note": "Local grounded parts are deduplicated; 3MF stores assembly placement."
+  },
+  "provenance": {
+    "created_by": "Mike + Axiom/Mir",
+    "method": "Original structured parametric recipe",
+    "source_assets": [],
+    "created_utc": "2026-07-28T00:00:00Z",
+    "steward_upgrade_0_3": "Primitive-aware collisions, stronger validation, transparent authoring compilation, archive intake, and ten-game starter deployment.",
+    "authoring_compiler": "AXM safe parameter/pattern compiler v0.2",
+    "authoring_parameter_names": [],
+    "compiled_component_templates": 4,
+    "expanded_component_count": 4
+  },
+  "license": {
+    "spdx": "LicenseRef-AXM-Private-Working",
+    "owner": "Mike / AXM",
+    "redistribution": "private working source; permission required",
+    "attribution": "Mike — Axiom/Mir"
+  }
+}
