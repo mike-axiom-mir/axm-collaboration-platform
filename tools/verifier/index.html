@@ -26,7 +26,7 @@ button{padding:8px 13px;border:1px solid #26869a;border-radius:9px;background:rg
 
   <section class="hero">
     <div><div id="spineVerdict" class="verdict HELD">NOT SCANNED</div><div id="spineMeta" class="meta">Run <b>node hub/verify-plus.js</b> to create the normalized receipt.</div></div>
-    <div class="field"><label>Target profile</label><select id="targetProfile"></select></div>
+    <div class="field"><label for="targetProfile">Target profile</label><select id="targetProfile"></select></div>
   </section>
 
   <h2>Category judges</h2>
@@ -41,21 +41,21 @@ button{padding:8px 13px;border:1px solid #26869a;border-radius:9px;background:rg
 
   <h2 id="lessonEditorTitle">Add a failure candidate</h2>
   <div class="form" id="failureForm">
-    <div class="field"><label>Category</label><select id="fmCategory"></select></div>
-    <div class="field"><label>Target profile</label><select id="fmProfile"></select></div>
-    <div class="field"><label>Risk</label><select id="fmRisk"><option>low</option><option selected>medium</option><option>high</option></select></div>
-    <div class="field"><label>Lifecycle</label><select id="fmLifecycle" disabled><option>candidate</option><option>active</option><option>monitor</option><option>manual-review</option><option>retired</option></select></div>
-    <div class="field wide"><label>Title</label><input id="fmTitle" placeholder="What failed or was overlooked?"></div>
-    <div class="field wide"><label>Atomic claim ID</label><input id="fmClaim" placeholder="game.phone-controller.reconnects"></div>
-    <div class="field full"><label>Compact source observation (max 500)</label><textarea id="fmSource" placeholder="What was observed? Keep the lesson, not the whole raw log."></textarea></div>
-    <div class="field"><label>Evidence kind</label><select id="fmEvidence"><option>deterministic-behavior</option><option>static-structure</option><option>interaction-journey</option><option>visual-observation</option><option>state-continuity</option><option>human-judgement</option></select></div>
-    <div class="field wide"><label>Pass condition</label><input id="fmPass" placeholder="Exact observable condition that proves the failure is repaired"></div>
-    <div class="field"><label>Primary evidence surface</label><input id="fmSurface" placeholder="test, receipt, live screen, human gate"></div>
-    <div class="field"><label>Executable check kind</label><select id="fmCheckKind"><option value="">none / human review</option><option value="file-exists">File exists</option><option value="file-contains">File contains text</option><option value="json-has-field">JSON has field</option><option value="manifest-present">Module has manifest</option></select></div>
-    <div class="field"><label>Check path / folder</label><input id="fmCheckPath" placeholder="relative workspace path"></div>
-    <div class="field wide"><label>Check text / field</label><input id="fmCheckValue" placeholder="needle or dotted JSON field"></div>
-    <div class="field"><label>Revision by</label><input id="fmBy" value="Mike + machine seat"></div>
-    <div class="field wide"><label>Revision reason (required when editing)</label><input id="fmReason" placeholder="Why the rule or lifecycle changes"></div>
+    <div class="field"><label for="fmCategory">Category</label><select id="fmCategory"></select></div>
+    <div class="field"><label for="fmProfile">Target profile</label><select id="fmProfile"></select></div>
+    <div class="field"><label for="fmRisk">Risk</label><select id="fmRisk"><option>low</option><option selected>medium</option><option>high</option></select></div>
+    <div class="field"><label for="fmLifecycle">Lifecycle</label><select id="fmLifecycle" disabled><option>candidate</option><option>active</option><option>monitor</option><option>manual-review</option><option>retired</option></select></div>
+    <div class="field wide"><label for="fmTitle">Title</label><input id="fmTitle" placeholder="What failed or was overlooked?"></div>
+    <div class="field wide"><label for="fmClaim">Atomic claim ID</label><input id="fmClaim" placeholder="game.phone-controller.reconnects"></div>
+    <div class="field full"><label for="fmSource">Compact source observation (max 500)</label><textarea id="fmSource" placeholder="What was observed? Keep the lesson, not the whole raw log."></textarea></div>
+    <div class="field"><label for="fmEvidence">Evidence kind</label><select id="fmEvidence"><option>deterministic-behavior</option><option>static-structure</option><option>interaction-journey</option><option>visual-observation</option><option>state-continuity</option><option>human-judgement</option></select></div>
+    <div class="field wide"><label for="fmPass">Pass condition</label><input id="fmPass" placeholder="Exact observable condition that proves the failure is repaired"></div>
+    <div class="field"><label for="fmSurface">Primary evidence surface</label><input id="fmSurface" placeholder="test, receipt, live screen, human gate"></div>
+    <div class="field"><label for="fmCheckKind">Executable check kind</label><select id="fmCheckKind"><option value="">none / human review</option><option value="file-exists">File exists</option><option value="file-contains">File contains text</option><option value="json-has-field">JSON has field</option><option value="manifest-present">Module has manifest</option></select></div>
+    <div class="field"><label for="fmCheckPath">Check path / folder</label><input id="fmCheckPath" placeholder="relative workspace path"></div>
+    <div class="field wide"><label for="fmCheckValue">Check text / field</label><input id="fmCheckValue" placeholder="needle or dotted JSON field"></div>
+    <div class="field"><label for="fmBy">Revision by</label><input id="fmBy" value="Mike + machine seat"></div>
+    <div class="field wide"><label for="fmReason">Revision reason (required when editing)</label><input id="fmReason" placeholder="Why the rule or lifecycle changes"></div>
     <div class="field"><label>Revision history</label><div id="fmRevisions" class="meta">new candidate</div></div>
     <div class="field full"><div class="bar"><button id="fmAdd">Add candidate</button><button id="fmSave" class="hidden">Save revision</button><button id="fmActivate" class="warn hidden">Promote active</button><button id="fmMonitor" class="ghost hidden">Move to monitor</button><button id="fmHuman" class="ghost hidden">Require human review</button><button id="fmRetire" class="danger hidden">Retire lesson</button><button id="fmClear" class="ghost">Clear editor</button></div></div>
   </div>
@@ -66,10 +66,10 @@ button{padding:8px 13px;border:1px solid #26869a;border-radius:9px;background:rg
       <p class="sub">Core checks stay locked. Retirement never deletes the line: its reason remains visible and is logged.</p>
       <div id="coreList"></div><div id="coreReport"></div>
       <div class="form" style="grid-template-columns:1fr 1fr">
-        <div class="field full"><label>Distinct phrase from core line</label><input id="retMatch"></div>
-        <div class="field full"><label>Reason</label><input id="retReason"></div>
-        <div class="field"><label>By</label><input id="retBy" value="Mike"></div>
-        <div class="field"><label>Review date</label><input id="retReview"></div>
+        <div class="field full"><label for="retMatch">Distinct phrase from core line</label><input id="retMatch"></div>
+        <div class="field full"><label for="retReason">Reason</label><input id="retReason"></div>
+        <div class="field"><label for="retBy">By</label><input id="retBy" value="Mike"></div>
+        <div class="field"><label for="retReview">Review date</label><input id="retReview"></div>
         <div class="field full"><button id="retBtn">Retire core check</button></div>
       </div><div id="retList"></div>
     </section>
@@ -78,19 +78,20 @@ button{padding:8px 13px;border:1px solid #26869a;border-radius:9px;background:rg
       <h2 style="margin-top:0">Editable checks</h2>
       <p class="sub">Small deterministic checks owned by the steward. Give each one a category, risk and required/optional meaning.</p>
       <div class="form" style="grid-template-columns:1fr 1fr">
-        <div class="field"><label>Kind</label><select id="kind"></select></div>
-        <div class="field"><label>Category</label><select id="checkCategory"></select></div>
-        <div class="field full"><label>Path / folder</label><input id="p1"></div>
-        <div class="field full"><label>Text / field</label><input id="p2"></div>
-        <div class="field"><label>Risk</label><select id="checkRisk"><option>low</option><option selected>medium</option><option>high</option></select></div>
-        <div class="field"><label>Gate meaning</label><select id="checkRequired"><option value="true">required</option><option value="false">optional</option></select></div>
-        <div class="field full"><label>Label</label><input id="lblIn"></div>
+        <div class="field"><label for="kind">Kind</label><select id="kind"></select></div>
+        <div class="field"><label for="checkCategory">Category</label><select id="checkCategory"></select></div>
+        <div class="field full"><label for="p1">Path / folder</label><input id="p1"></div>
+        <div class="field full"><label for="p2">Text / field</label><input id="p2"></div>
+        <div class="field"><label for="checkRisk">Risk</label><select id="checkRisk"><option>low</option><option selected>medium</option><option>high</option></select></div>
+        <div class="field"><label for="checkRequired">Gate meaning</label><select id="checkRequired"><option value="true">required</option><option value="false">optional</option></select></div>
+        <div class="field full"><label for="lblIn">Label</label><input id="lblIn"></div>
         <div class="field full"><button id="addBtn">Add check</button></div>
       </div><div id="userList"></div>
     </section>
   </div>
 
   <h2>Lifecycle seam inventory</h2><div id="seamGaps"></div>
+  <p class="meta">Edits are session-only until you explicitly download a candidate. Downloading does not replace the root config or run verification; review the file, replace it manually, then run <b>node hub/verify-plus.js</b>.</p>
   <div class="bar"><button id="dlBtn">Download verify.config.json</button><button class="ghost" id="reloadBtn">Reload current config</button></div>
   <div class="note" id="note">loading current config...</div>
 </div>
@@ -136,8 +137,8 @@ $('targetProfile').onchange=function(){ensureSpine().targetProfile=this.value;$(
 $('addBtn').onclick=function(){var kind=$('kind').value,p1=$('p1').value.trim(),p2=$('p2').value.trim();if(!p1){$('note').textContent='path/folder is required';return;}var c={id:'u'+nextId++,kind:kind,label:$('lblIn').value.trim(),category:$('checkCategory').value,risk:$('checkRisk').value,required:$('checkRequired').value==='true'};if(kind==='manifest-present')c.folder=p1;else c.path=p1;if(kind==='file-contains')c.needle=p2;if(kind==='json-has-field')c.field=p2;config.userChecks.push(c);renderUser();};
 $('retBtn').onclick=function(){var match=$('retMatch').value.trim(),reason=$('retReason').value.trim();if(!match||!reason){$('note').textContent='a match and reason are required';return;}if(!confirm('Retire this core check while preserving its visible reason?'))return;config.retirements=config.retirements||[];config.retirements.push({match:match,reason:reason,by:$('retBy').value.trim()||'steward',at:new Date().toISOString().slice(0,10),review:$('retReview').value.trim()});renderRetirements();};
 $('fmAdd').onclick=addCandidate;$('fmSave').onclick=function(){reviseLesson();};$('fmActivate').onclick=function(){reviseLesson('active');};$('fmMonitor').onclick=function(){reviseLesson('monitor');};$('fmHuman').onclick=function(){reviseLesson('manual-review');};$('fmRetire').onclick=function(){reviseLesson('retired');};$('fmClear').onclick=clearEditor;
-$('dlBtn').onclick=function(){ensureSpine();var clean={_note:config._note||'Editable checks, reasoned core retirements and Verification Spine failure memory.',userChecks:config.userChecks,retirements:config.retirements||[],acknowledgedWarnings:config.acknowledgedWarnings||[],verificationSpine:config.verificationSpine};var blob=new Blob([JSON.stringify(clean,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='verify.config.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);AXMHub.save({userChecks:config.userChecks,retirements:config.retirements,failureMemory:ensureSpine().failureMemory});$('note').textContent='downloaded - replace root verify.config.json and run node hub/verify-plus.js';};
+$('dlBtn').onclick=function(){ensureSpine();var clean={_note:config._note||'Editable checks, reasoned core retirements and Verification Spine failure memory.',userChecks:config.userChecks,retirements:config.retirements||[],acknowledgedWarnings:config.acknowledgedWarnings||[],verificationSpine:config.verificationSpine};var blob=new Blob([JSON.stringify(clean,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='verify.config.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);$('note').textContent='downloaded - replace root verify.config.json and run node hub/verify-plus.js';};
 $('reloadBtn').onclick=loadConfig;
 renderCore();fillKinds();loadConfig();loadReport();loadSeamGaps();loadSpineReport();
-AXMHub.onInit(function(){AXMHub.log('Verification Spine ready');});AXMHub.ready({id:'verifier',name:'Verifier',version:'v2.0',hubApiVersion:'1.0',permissions:[],savesState:true,handlesShutdown:false});
+AXMHub.onInit(function(){AXMHub.log('Verification Spine ready');});AXMHub.ready({id:'verifier',name:'Verifier',version:'v2.0',hubApiVersion:'1.0',permissions:[],savesState:false,handlesShutdown:false});
 </script></body></html>

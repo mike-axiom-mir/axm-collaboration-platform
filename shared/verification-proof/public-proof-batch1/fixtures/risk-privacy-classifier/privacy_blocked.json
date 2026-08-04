@@ -1,0 +1,67 @@
+{
+  "packet_schema_version": "axm.proof.run-packet.v0.3.0",
+  "packet_id": "synthetic:risk-privacy-classifier:privacy_blocked",
+  "seed_id": "axm.proof.risk-privacy-classifier",
+  "seed_schema_version": "axm.proof.seed.v0.2.0",
+  "fixture_class": "PRIVACY_BLOCKED",
+  "run_mode": "VALIDATE_ONLY",
+  "authority": {
+    "scope": "SCHEMA_AND_DISPOSABLE_SYNTHETIC_FIXTURE_ONLY",
+    "live_activation_allowed": false,
+    "canon_authority": false,
+    "publication_authority": false,
+    "merge_gate_required": true
+  },
+  "network_policy": "DENY",
+  "write_policy": "NONE",
+  "inputs": {
+    "record_id": "synthetic:risk_privacy_classifier:record_id",
+    "schema_version": "axm.proof.synthetic-input.v0.1.0",
+    "proof_ref": "synthetic:risk_privacy_classifier:proof_ref",
+    "claim_refs": [
+      "synthetic:risk_privacy_classifier:claim_refs:1"
+    ],
+    "artifact_refs": [
+      "synthetic:risk_privacy_classifier:artifact_refs:1"
+    ],
+    "environment_ref": "synthetic:risk_privacy_classifier:environment_ref",
+    "limitations": [
+      "Synthetic fixture only; no AXM runtime or public claim is upgraded."
+    ],
+    "owner_ref": "synthetic:risk_privacy_classifier:owner_ref"
+  },
+  "expected": {
+    "decision": "QUARANTINE",
+    "reason_codes": [
+      "AXM_PROOF_PRIVATE_DATA_DETECTED",
+      "AXM_PROOF_SECRET_OR_PATH_UNCERTAIN"
+    ],
+    "output_emitted": false,
+    "runtime_claim_upgraded": false
+  },
+  "privacy_canaries": [
+    {
+      "kind": "synthetic_secret",
+      "value": "AXM_SYNTHETIC_SECRET_CANARY_RISK_PRIVACY_CLASSIFIER",
+      "synthetic": true
+    },
+    {
+      "kind": "synthetic_private_path",
+      "value": "C:\\Users\\AXM_TEST_ONLY\\Private\\risk-privacy-classifier.json",
+      "synthetic": true
+    }
+  ],
+  "rollback": {
+    "checkpoint_id": "synthetic:risk-privacy-classifier:checkpoint:clean",
+    "restore_required": false,
+    "expected_restore_digest": "sha256:synthetic-risk-privacy-classifier-clean",
+    "history_policy": "APPEND_ONLY_NO_DELETE"
+  },
+  "truth_guard": {
+    "canon": false,
+    "integrated": false,
+    "runtime_proof": false,
+    "published": false,
+    "automatic_promotion_allowed": false
+  }
+}

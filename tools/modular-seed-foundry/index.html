@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Modular Seed Foundry</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="field" aria-hidden="true"></div>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">AXM</span>
+      <span><b>MODULAR SEED FOUNDRY</b><small>Direction → portable growth DNA</small></span>
+    </div>
+    <div class="boundary"><i></i> LOCAL · ZERO NETWORK · EXPLICIT EXPORT</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">GROWTH INSTRUMENT 01 · HUMAN-STARTED</p>
+        <h1>Plant the right <em>questions.</em><br>Bring back modular capability.</h1>
+        <p class="lead">Describe what AXM will need. The Foundry shapes it into exact, independent seeds that an AI platform can grow and return as reviewable candidates.</p>
+      </div>
+      <aside class="truth-panel" aria-label="Seed authority boundary">
+        <span class="truth-code">SEED ≠ CAPABILITY</span>
+        <strong>Nothing leaves silently.</strong>
+        <p>No platform task, intake, install, merge, promotion or publication happens here.</p>
+        <div class="truth-grid"><span>STATUS<b>UNTESTED</b></span><span>AUTHORITY<b>NONE</b></span></div>
+      </aside>
+    </section>
+
+    <section class="workbench">
+      <form id="seedForm" class="composer">
+        <div class="panel-head">
+          <div><span class="step">01</span><div><p>HUMAN DIRECTION</p><h2>Shape the parent seed</h2></div></div>
+          <span class="live-dot">READY</span>
+        </div>
+
+        <div class="form-grid">
+          <label class="wide">Family title
+            <input name="title" maxlength="100" required value="Platform Organ Seed Family">
+          </label>
+          <label class="wide">Subject to grow
+            <input name="subject" maxlength="180" required value="adjustable heartbeat-connected platform organs">
+          </label>
+          <label class="wide">What useful result should emerge?
+            <textarea name="goal" rows="3" maxlength="700" required>Grow reusable platform organs that remain modular, evidence-producing, reversible and easy for humans or machines to operate.</textarea>
+          </label>
+          <label>Organism type
+            <select name="kind">
+              <option value="organ-system">Platform organ system</option>
+              <option value="tool-family">Tool family</option>
+              <option value="game-system">Game-building system</option>
+              <option value="knowledge-system">Knowledge system</option>
+              <option value="interface-system">Interface system</option>
+              <option value="mixed-system">Mixed modular system</option>
+            </select>
+          </label>
+          <label>Growth depth
+            <select name="depth">
+              <option value="starter">Starter · contract proof</option>
+              <option value="growing" selected>Growing · core + adapter</option>
+              <option value="deep">Deep · schemas + recovery</option>
+            </select>
+          </label>
+          <label>Starting seeds
+            <input name="seedCount" type="number" min="1" max="12" value="6" required>
+          </label>
+          <label>Suggested steward runs
+            <input name="suggestedRuns" type="number" min="1" max="20" value="5" required>
+          </label>
+          <label>Max children / seed / run
+            <input name="maxChildrenPerSeed" type="number" min="1" max="4" value="2" required>
+          </label>
+          <label>Platform destination
+            <input name="targetPlatform" maxlength="120" value="ChatGPT platform workspace">
+          </label>
+          <label class="wide">Constraints · one per line
+            <textarea name="constraints" rows="3" maxlength="900">local-first
+no automatic publication
+human and machine usable
+preserve exact lineage</textarea>
+          </label>
+          <label class="wide">Existing exact capabilities to avoid duplicating · optional
+            <textarea name="existingCapabilities" rows="2" maxlength="1200" placeholder="visual-kernel/v1&#10;review-inbox/v1"></textarea>
+          </label>
+          <label class="wide">Parent semantic digest · optional continuation
+            <input name="parentDigest" maxlength="64" pattern="[a-fA-F0-9]{64}" placeholder="64-character SHA-256 from an earlier seed">
+          </label>
+        </div>
+
+        <fieldset>
+          <legend>Growth lanes <small>Choose at least one; all six form a balanced organism.</small></legend>
+          <div class="track-grid">
+            <label><input type="checkbox" name="tracks" value="core" checked><b>NUC</b><span>Nucleus<small>Model + invariants</small></span></label>
+            <label><input type="checkbox" name="tracks" value="interface" checked><b>HND</b><span>Interface Hand<small>Direction + control</small></span></label>
+            <label><input type="checkbox" name="tracks" value="evidence" checked><b>SNS</b><span>Evidence Sensor<small>Tests + receipts</small></span></label>
+            <label><input type="checkbox" name="tracks" value="safety" checked><b>GTE</b><span>Boundary Gate<small>Consent + recovery</small></span></label>
+            <label><input type="checkbox" name="tracks" value="exchange" checked><b>BRG</b><span>Exchange Bridge<small>Portable handoff</small></span></label>
+            <label><input type="checkbox" name="tracks" value="evolution" checked><b>EVO</b><span>Evolution Memory<small>Lineage + versions</small></span></label>
+          </div>
+        </fieldset>
+
+        <div class="action-row">
+          <button id="generateButton" class="primary" type="submit"><span>COMPILE SEED DNA</span><b>Generate portable pack</b></button>
+          <p><span id="candidateCeiling">12</span> candidates maximum per platform run · ceiling, not target</p>
+        </div>
+      </form>
+
+      <section class="output" aria-labelledby="outputTitle">
+        <div class="panel-head">
+          <div><span class="step violet">02</span><div><p>PORTABLE GROWTH DNA</p><h2 id="outputTitle">Inspect before export</h2></div></div>
+          <span id="outputState" class="state">WAITING</span>
+        </div>
+
+        <div id="emptyState" class="empty-state">
+          <div class="seed-glyph" aria-hidden="true"><span></span><i></i></div>
+          <h3>No seed compiled yet</h3>
+          <p>Your direction stays in this browser. Generate when the family, limits and growth lanes look right.</p>
+        </div>
+
+        <div id="result" hidden>
+          <div class="result-identity">
+            <div><span>SEED ID</span><code id="seedId"></code></div>
+            <div><span>SEMANTIC SHA-256</span><code id="seedDigest"></code></div>
+          </div>
+          <div id="metrics" class="metrics"></div>
+          <div class="topology">
+            <div class="topology-head"><span>MODULAR TOPOLOGY</span><b id="topologyLabel"></b></div>
+            <svg id="orbitGraph" viewBox="0 0 100 74" role="img" aria-label="Generated modular seed topology"></svg>
+          </div>
+          <div id="seedList" class="seed-list"></div>
+          <details class="packet-view">
+            <summary>Inspect exact machine packet</summary>
+            <pre id="packetPreview"></pre>
+          </details>
+          <div class="export-bar">
+            <div><span>TAKE IT TO THE PLATFORM</span><p>The Markdown brief contains the complete JSON seed.</p></div>
+            <button id="downloadBrief" type="button">Download platform brief</button>
+            <button id="downloadJson" type="button">Download JSON</button>
+            <button id="copyBrief" type="button">Copy platform brief</button>
+          </div>
+        </div>
+        <p id="liveStatus" class="sr-status" role="status" aria-live="polite">Waiting for a seed direction.</p>
+      </section>
+    </section>
+  </main>
+
+  <footer><span>AXM MODULAR SEED FOUNDRY · v0.1</span><span>One human-started run at a time · candidates return through intake</span></footer>
+  <script src="seed-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

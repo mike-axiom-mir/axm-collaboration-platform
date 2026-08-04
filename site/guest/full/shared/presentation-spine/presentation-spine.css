@@ -1,0 +1,112 @@
+/* AXM Presentation Spine v0.1
+   A shared presentation vocabulary. Profiles change emphasis, never authority. */
+:root{
+  --spine-night:#030711;
+  --spine-void:#060c16;
+  --spine-panel:rgba(8,17,29,.86);
+  --spine-panel-strong:rgba(8,18,31,.96);
+  --spine-line:rgba(117,218,238,.18);
+  --spine-line-hot:rgba(117,236,255,.48);
+  --spine-text:#f0f8ff;
+  --spine-muted:#92a8bc;
+  --spine-dim:#5e7589;
+  --spine-accent:#63ebf7;
+  --spine-accent-rgb:99,235,247;
+  --spine-secondary:#907bff;
+  --spine-secondary-rgb:144,123,255;
+  --spine-signal:#f1be67;
+  --spine-ok:#59e0a0;
+  --spine-danger:#ff6e82;
+  --spine-radius:14px;
+  --spine-shadow:0 24px 80px rgba(0,0,0,.38);
+  --spine-font:Inter,"Segoe UI Variable","Segoe UI",system-ui,sans-serif;
+  --spine-mono:"Cascadia Code","SFMono-Regular",Consolas,monospace;
+}
+
+.axm-spine[data-axm-profile="cockpit"]{--spine-accent:#67efff;--spine-accent-rgb:103,239,255;--spine-secondary:#9b7cff;--spine-secondary-rgb:155,124,255;--spine-signal:#f4bd63;--spine-radius:10px}
+.axm-spine[data-axm-profile="studio"]{--spine-accent:#f275d9;--spine-accent-rgb:242,117,217;--spine-secondary:#55e8ff;--spine-secondary-rgb:85,232,255;--spine-signal:#8f7cff;--spine-radius:12px}
+.axm-spine[data-axm-profile="dashboard"]{--spine-accent:#56e7d6;--spine-accent-rgb:86,231,214;--spine-secondary:#6d8cff;--spine-secondary-rgb:109,140,255;--spine-signal:#f1c267;--spine-radius:15px}
+.axm-spine[data-axm-profile="lab"]{--spine-accent:#75efaa;--spine-accent-rgb:117,239,170;--spine-secondary:#55cfff;--spine-secondary-rgb:85,207,255;--spine-signal:#d3a7ff;--spine-radius:11px}
+
+.axm-spine{
+  color-scheme:dark;
+  isolation:isolate;
+  color:var(--spine-text);
+  font-family:var(--spine-font);
+  background:
+    radial-gradient(1000px 620px at 86% -12%,rgba(var(--spine-secondary-rgb),.17),transparent 66%),
+    radial-gradient(920px 640px at -14% 24%,rgba(var(--spine-accent-rgb),.13),transparent 64%),
+    linear-gradient(145deg,var(--spine-night),var(--spine-void) 52%,#040812);
+}
+.axm-spine::before,.axm-spine::after{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none}
+.axm-spine::before{
+  opacity:.34;
+  background-image:linear-gradient(rgba(var(--spine-accent-rgb),.04) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--spine-accent-rgb),.04) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:linear-gradient(to bottom,#000 0,rgba(0,0,0,.45) 62%,transparent 96%);
+}
+.axm-spine::after{
+  z-index:-1;
+  background:linear-gradient(115deg,transparent 0 47%,rgba(var(--spine-secondary-rgb),.045) 48%,transparent 49% 100%);
+  background-size:240px 240px;
+}
+
+.axm-spine :where(button,input,select,textarea){font:inherit}
+.axm-spine :where(button,a,input,select,textarea,summary):focus-visible{outline:2px solid var(--spine-accent)!important;outline-offset:3px}
+.axm-spine :where(button,select,input,textarea){transition:border-color .18s ease,box-shadow .18s ease,background-color .18s ease,transform .18s ease}
+.axm-spine :where(button:not(:disabled),[role="button"]):hover{transform:translateY(-1px)}
+.axm-spine :where(button:not(:disabled),[role="button"]):active{transform:translateY(0)}
+.axm-spine ::selection{background:rgba(var(--spine-accent-rgb),.28);color:#fff}
+.axm-spine ::-webkit-scrollbar{width:10px;height:10px}
+.axm-spine ::-webkit-scrollbar-track{background:rgba(2,7,13,.7)}
+.axm-spine ::-webkit-scrollbar-thumb{border:3px solid rgba(2,7,13,.7);border-radius:999px;background:linear-gradient(var(--spine-accent),var(--spine-secondary))}
+
+/* Shared shell vocabulary: existing surfaces opt in through body class only. */
+.axm-spine :where(.topbar,.studio-topbar,.hero){backdrop-filter:blur(18px) saturate(1.15)}
+.axm-spine :where(.panel,.workflow-card,.game-card,.world-card,.drawer-panel,.axm-route-tile){
+  border-color:var(--spine-line);
+  box-shadow:0 18px 52px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.025);
+}
+.axm-spine :where(.panel,.workflow-card,.game-card,.world-card){position:relative}
+.axm-spine :where(.panel,.workflow-card,.game-card,.world-card)::before{
+  content:"";position:absolute;inset:0 auto auto 0;width:88px;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,var(--spine-accent),transparent);box-shadow:0 0 14px rgba(var(--spine-accent-rgb),.38)
+}
+.axm-spine :where(.eyebrow,.section-signal,.hub-link,.world-kicker){color:var(--spine-accent)}
+.axm-spine :where(.runtime,.room-code,.match){color:var(--spine-signal)}
+.axm-spine :where(.primary,.button.primary){border-color:rgba(var(--spine-accent-rgb),.58);background:linear-gradient(120deg,rgba(var(--spine-accent-rgb),.23),rgba(var(--spine-secondary-rgb),.31));color:#fff;box-shadow:0 0 28px rgba(var(--spine-accent-rgb),.12)}
+
+/* Cockpit: tighter geometry, luminous route banks, high information density. */
+.axm-spine[data-axm-profile="cockpit"] :where(.axm-route-tile,.panel,.game-card){border-radius:var(--spine-radius)}
+.axm-spine[data-axm-profile="cockpit"] :where(.axm-route-tile,.game-card):hover{border-color:var(--spine-line-hot);box-shadow:0 14px 38px rgba(0,0,0,.3),0 0 24px rgba(var(--spine-accent-rgb),.09)}
+.axm-spine[data-axm-profile="cockpit"] :where(.topbar,.studio-topbar){border-bottom-color:rgba(var(--spine-accent-rgb),.22)}
+
+/* Studio: keep canvas neutral; make controls and active rails legible. */
+.axm-spine[data-axm-profile="studio"] :where(.workspace-stage,.mode-frame){background:#05070d}
+.axm-spine[data-axm-profile="studio"] :where(.mode-button.active,.button.primary){border-color:rgba(var(--spine-accent-rgb),.54);box-shadow:inset 3px 0 var(--spine-accent),0 0 24px rgba(var(--spine-accent-rgb),.08)}
+.axm-spine[data-axm-profile="studio"] :where(.mode-icon,.brand-mark){border-color:rgba(var(--spine-accent-rgb),.42);color:var(--spine-accent)}
+
+/* Dashboard: more breathing room and strong overview cards. */
+.axm-spine[data-axm-profile="dashboard"] :where(.workflow-card,.panel,.game-card,.world-card){border-radius:var(--spine-radius)}
+.axm-spine[data-axm-profile="dashboard"] :where(.workflow-card,.game-card,.world-card):hover{border-color:rgba(var(--spine-accent-rgb),.48);box-shadow:0 22px 62px rgba(0,0,0,.31),0 0 28px rgba(var(--spine-accent-rgb),.07)}
+
+/* Lab: evidence rails and analytical surfaces stay precise. */
+.axm-spine[data-axm-profile="lab"] :where(.panel,.evidence-card,.report-card){border-radius:var(--spine-radius);background:linear-gradient(145deg,rgba(8,21,27,.95),rgba(5,12,21,.96))}
+.axm-spine[data-axm-profile="lab"] :where(code,pre,.metric,.receipt){font-family:var(--spine-mono)}
+
+/* New primitives for any surface that wants the full vocabulary. */
+.spine-surface{position:relative;border:1px solid var(--spine-line);border-radius:var(--spine-radius);background:linear-gradient(145deg,rgba(12,25,41,.91),rgba(5,12,22,.96));box-shadow:var(--spine-shadow);overflow:hidden}
+.spine-surface::before{content:"";position:absolute;inset:0 auto auto 0;width:34%;height:1px;background:linear-gradient(90deg,var(--spine-accent),transparent);box-shadow:0 0 18px rgba(var(--spine-accent-rgb),.4)}
+.spine-kicker{color:var(--spine-accent);font:800 10px/1 var(--spine-mono);letter-spacing:.16em;text-transform:uppercase}
+.spine-chip{display:inline-flex;align-items:center;gap:7px;padding:6px 9px;border:1px solid var(--spine-line);border-radius:999px;background:rgba(4,11,19,.64);color:var(--spine-muted);font:750 9px/1 var(--spine-mono);letter-spacing:.08em;text-transform:uppercase}
+.spine-chip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--spine-accent);box-shadow:0 0 10px var(--spine-accent)}
+.spine-data{display:grid;gap:4px;padding:14px;border-left:1px solid rgba(var(--spine-accent-rgb),.34);background:linear-gradient(90deg,rgba(var(--spine-accent-rgb),.07),transparent)}
+.spine-data span{color:var(--spine-dim);font:800 8px/1 var(--spine-mono);letter-spacing:.13em;text-transform:uppercase}.spine-data b{font-size:24px}.spine-data small{color:var(--spine-muted)}
+.spine-beacon{width:54px;height:54px;border:1px solid rgba(var(--spine-accent-rgb),.52);border-radius:50%;background:radial-gradient(circle at 38% 34%,rgba(255,255,255,.3),rgba(var(--spine-accent-rgb),.16) 23%,rgba(var(--spine-secondary-rgb),.08) 51%,rgba(1,5,10,.92) 74%);box-shadow:inset -12px -12px 25px rgba(0,0,0,.65),0 0 24px rgba(var(--spine-accent-rgb),.2)}
+
+@media(max-width:720px){
+  .axm-spine::before{background-size:32px 32px}.axm-spine :where(button:not(:disabled),[role="button"]):hover{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .axm-spine *,.axm-spine *::before,.axm-spine *::after{scroll-behavior:auto!important;transition-duration:.001ms!important;animation-duration:.001ms!important;animation-iteration-count:1!important}
+}

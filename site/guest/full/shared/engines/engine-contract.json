@@ -1,0 +1,24 @@
+{
+  "schema": "axm.shared-engine-contract/v1",
+  "version": "1.1.0",
+  "visibility": "background-library-not-sidebar-module",
+  "engines": [
+    {"id":"project","api":"Project","owns":["project-envelope","versions","checkpoints","restore","provenance"],"doesNotOwn":["workspace-specific-document-schema"]},
+    {"id":"asset","api":"Asset","owns":["metadata","search","dependencies","licensing","thumbnail-reference"],"doesNotOwn":["creative-editing","automatic-rights-clearance"]},
+    {"id":"scene","api":"Scene","owns":["2d-3d-hierarchy","selection","transform","visibility","locking"],"doesNotOwn":["rendering"]},
+    {"id":"timeline","api":"Timeline","owns":["tracks","clips","keyframes","markers","history"],"doesNotOwn":["media-codecs"]},
+    {"id":"node-graph","api":"NodeGraph","owns":["nodes","ports","edges","validation","acyclic-plan"],"doesNotOwn":["domain-node-execution"]},
+    {"id":"renderer-physics","apis":["Renderer","Physics"],"owns":["adapter-registration","capability-resolution","capability-forwarding","evidence-bearing-receipts"],"doesNotOwn":["fake-fallback-renderers","undeclared-physics"]},
+    {"id":"collaboration","api":"Collaboration","owns":["presence","comments","questions","approvals","notices","handoffs"],"doesNotOwn":["silent-approval","identity-merging"]},
+    {"id":"evidence-version","api":"Evidence","owns":["sourced-records","comparisons","corrections","lineage"],"doesNotOwn":["automatic-truth-promotion"]},
+    {"id":"exporter","api":"Exporter","owns":["format-adapters","export-plans","output-evidence-receipts"],"doesNotOwn":["pretend-format-conversion","automatic-publication"]},
+    {"id":"ai-action","api":"AIAction","owns":["identical-action-shape","proposal","decision","execution-receipt"],"doesNotOwn":["special-machine-permissions","automatic-execution"]}
+  ],
+  "principles": [
+    "Workspaces own domain documents; shared engines own reusable mechanics.",
+    "Human and machine actors use the same action and collaboration shapes.",
+    "Adapters may report unavailable; they may never invent a result.",
+    "Every destructive restore, approval and export remains explicit and attributable.",
+    "Migration is incremental; existing workspace data remains readable during adoption."
+  ]
+}

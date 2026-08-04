@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.atomic-snapshotter",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.atomic-snapshot/v1"
+  ],
+  "consumes": [
+    "serializable-state",
+    "snapshot-root"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_3_HUMAN_GATED_PRIMITIVE",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/recovery-center",
+      "shared/module-evolution-ledger"
+    ],
+    "reason": "Provides content-addressed atomic snapshot writing beneath Recovery Center without taking restore authority."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [
+      "caller-provided:snapshot-root/*.json"
+    ],
+    "refuses": [
+      "automatic-restore",
+      "automatic-rollback",
+      "silent-data-loss",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

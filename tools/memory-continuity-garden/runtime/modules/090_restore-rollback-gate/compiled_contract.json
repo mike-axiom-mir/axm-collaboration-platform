@@ -1,0 +1,190 @@
+{
+  "allowed_hold_codes": [
+    "HOLD_APPEND_ONLY_VIOLATION",
+    "HOLD_AUTHORITY_OR_CONSENT",
+    "HOLD_CANCELLED",
+    "HOLD_CANON_OR_OWNER_AUTHORITY",
+    "HOLD_CONTRACT_SEAL_MISMATCH",
+    "HOLD_DEGRADED_MODE_NOT_ALLOWED",
+    "HOLD_DEPENDENCY_UNAVAILABLE",
+    "HOLD_EXPECTED_REVISION",
+    "HOLD_HUMAN_CONFIRMATION_REQUIRED",
+    "HOLD_IDENTITY_OR_AUTHORITY_FUSION",
+    "HOLD_IMPORT_QUARANTINE",
+    "HOLD_INPUT_DIGEST_MISMATCH",
+    "HOLD_INPUT_LIMIT",
+    "HOLD_INVALID_STATE_TRANSITION",
+    "HOLD_JOURNAL_CORRUPTION",
+    "HOLD_LOG_PRIVACY_VIOLATION",
+    "HOLD_LOW_DISK_OR_UNSAFE_WRITE",
+    "HOLD_NON_CANONICAL_VALUE",
+    "HOLD_OPERATION_ID_COLLISION",
+    "HOLD_OUTPUT_ROOT",
+    "HOLD_PERMISSION_ESCALATION",
+    "HOLD_PRIVACY_OR_ERASURE_TRUTH",
+    "HOLD_RECOVERY_OR_REPAIR_PROOF",
+    "HOLD_RETRIEVAL_PRIVACY_SCOPE",
+    "HOLD_ROOT_OR_SOURCE_OMISSION",
+    "HOLD_RUNTIME_CYCLE",
+    "HOLD_SCHEMA_OR_COMPATIBILITY",
+    "HOLD_SCOPE_OR_PURPOSE",
+    "HOLD_SEMANTIC_CONFLICT",
+    "HOLD_SOURCE_MISMATCH",
+    "HOLD_STALE_STATE",
+    "HOLD_TIME_BASIS_UNCERTAIN",
+    "HOLD_TRANSACTION_INCOMPLETE",
+    "HOLD_TRUST_OR_AUTHORITY_TRANSFER",
+    "HOLD_UNKNOWN_TOP_LEVEL_FIELD"
+  ],
+  "authority": "T3_EXPLICIT_HUMAN_GATE",
+  "boot_prerequisites": [
+    "axm.memory.current-state-baseline",
+    "axm.memory.hash-chained-event-ledger",
+    "axm.memory.integrity-scanner",
+    "axm.memory.provenance-envelope",
+    "axm.memory.repair-preview"
+  ],
+  "compiler_claim_boundary": "Normalized executable interface only; not semantic implementation or owner acceptance.",
+  "contract_references": [
+    "axm.memory.current-state-baseline",
+    "axm.memory.hash-chained-event-ledger",
+    "axm.memory.integrity-scanner",
+    "axm.memory.provenance-envelope",
+    "axm.memory.repair-preview",
+    "axm.memory.restore-rollback-gate"
+  ],
+  "exact_owned_root": "local://axm-memory/axm.memory.restore-rollback-gate/",
+  "hold_contract": "axm.memory.typed-hold/v2",
+  "identity": {
+    "category": "9. Integrity, drift, corruption, migration, recovery, and repair",
+    "name": "Memory Restore and Rollback Gate",
+    "number": 90,
+    "stable_id": "axm.memory.restore-rollback-gate"
+  },
+  "lifecycle_states": [
+    "DRAFT",
+    "PREVIEWED",
+    "CONFIRMED",
+    "APPLYING",
+    "VERIFIED",
+    "RECOVERY_HOLD",
+    "FAILED"
+  ],
+  "lifecycle_transitions": [
+    [
+      "APPLYING",
+      "FAILED"
+    ],
+    [
+      "APPLYING",
+      "RECOVERY_HOLD"
+    ],
+    [
+      "APPLYING",
+      "VERIFIED"
+    ],
+    [
+      "CONFIRMED",
+      "APPLYING"
+    ],
+    [
+      "CONFIRMED",
+      "FAILED"
+    ],
+    [
+      "CONFIRMED",
+      "RECOVERY_HOLD"
+    ],
+    [
+      "DRAFT",
+      "FAILED"
+    ],
+    [
+      "DRAFT",
+      "PREVIEWED"
+    ],
+    [
+      "DRAFT",
+      "RECOVERY_HOLD"
+    ],
+    [
+      "PREVIEWED",
+      "CONFIRMED"
+    ],
+    [
+      "PREVIEWED",
+      "FAILED"
+    ],
+    [
+      "PREVIEWED",
+      "RECOVERY_HOLD"
+    ],
+    [
+      "RECOVERY_HOLD",
+      "FAILED"
+    ]
+  ],
+  "operation_kind": "HUMAN_GATED_APPLY",
+  "permissions": [
+    "recovery.apply"
+  ],
+  "privacy_forbidden_receipt_keys": [
+    "payload",
+    "source_refs",
+    "authority_ref",
+    "confirmation_ref",
+    "safety_copy_ref",
+    "deleted_content",
+    "raw_private"
+  ],
+  "purpose": "Require fresh preview, exact current-state match, permission, safety copy, human confirmation, and post-restore verification.",
+  "request_schema": "axm.memory.reference-request/v2",
+  "required_request_fields": [
+    "schema",
+    "seed_id",
+    "operation_id",
+    "purpose",
+    "source_refs",
+    "source_digests",
+    "authority_ref",
+    "consent_state",
+    "input_digest",
+    "target_root",
+    "request_timestamp",
+    "dependency_snapshot",
+    "expected_revision",
+    "current_revision",
+    "input_size_bytes",
+    "available_disk_bytes",
+    "cancelled",
+    "runtime_cycle_detected",
+    "import_trust_claim",
+    "payload",
+    "category_guard",
+    "requested_permissions",
+    "actor_role",
+    "request_state",
+    "requested_transition",
+    "allow_degraded",
+    "extensions",
+    "trace_id",
+    "receipt_visibility",
+    "preview_digest",
+    "confirmation_ref",
+    "confirmation_scope",
+    "confirmation_expires",
+    "safety_copy_ref",
+    "human_confirmed",
+    "transaction_id"
+  ],
+  "result_contract": "axm.memory.restore-rollback-gate.receipt/v1",
+  "risk": "HIGH",
+  "runtime_collaborators": [],
+  "schema": "axm.memory.run100-compiled-contract/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "f068d052caa156d6dee81d0b25cb953384384d03b3518bdc44913ccb3ac38678"
+  },
+  "source_contract_sha256": "c7dbb089b978c21b14df3ed15ee8f4b1a030046ad8071cbd244a41df04d8f5b7",
+  "source_run90_protocol_sha256": "c8320f8e0ecd8db25eeea8024805fdb7e3ac8314b495c649b6ae2b2aaa6b3e56"
+}

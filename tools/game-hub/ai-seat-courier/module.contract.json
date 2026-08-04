@@ -1,0 +1,12 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "ai-seat-courier",
+  "status": "accept for test",
+  "entryPoints": ["courier-daemon.js", "START_AI_SEAT_COURIER.cmd", "STOP_AI_SEAT_COURIER.cmd"],
+  "reads": ["tools/game-hub/game-library/*/game.manifest.json", "state/ai-seat-courier/inbox/*.json"],
+  "writes": ["state/ai-seat-courier/status.json", "state/ai-seat-courier/outbox/*.json", "state/ai-seat-courier/captures/*.png"],
+  "processes": ["registered game Node server", "headless Microsoft Edge"],
+  "network": ["active registered game's own 127.0.0.1 origin", "Edge DevTools on a random 127.0.0.1 port"],
+  "forbidden": ["public listeners", "remote URLs", "arbitrary shell commands", "arbitrary filesystem paths", "background recording", "credential discovery"],
+  "verification": ["selftest.js", "live-selftest.js"]
+}

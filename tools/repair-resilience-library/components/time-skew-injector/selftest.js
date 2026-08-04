@@ -1,0 +1,1 @@
+"use strict";const assert=require("assert");const {createVirtualClock,evaluateExpiry}=require("./index");const c=createVirtualClock({baseMs:1000,offsetMs:5000,rate:0});assert.equal(c.now(),6000);assert.equal(c.hostClockChanged,false);assert.equal(evaluateExpiry({clock:c,expiresAtMs:5000}).expired,true);console.log("PASS time-skew-injector");

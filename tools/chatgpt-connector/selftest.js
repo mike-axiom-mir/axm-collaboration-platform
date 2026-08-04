@@ -3,6 +3,14 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const Core = require('./connector-core.js');
+const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
+const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
+
+assert.equal(manifest.schema, 'axm.tool-manifest/v1');
+assert.equal(manifest.kind, 'adapter');
+assert.deepEqual(manifest.permissions, contract.permissions);
+assert(contract.boundaries.writes.includes('browser-local:chatgpt-connector-draft'));
+assert.deepEqual(contract.lifecycle, { state_owner: 'mixed', reload: 'resume', disconnect: 'graceful-degrade', cleanup: 'explicit' });
 
 const prompt = Core.buildPrompt({
   name: 'Blue ship skin',

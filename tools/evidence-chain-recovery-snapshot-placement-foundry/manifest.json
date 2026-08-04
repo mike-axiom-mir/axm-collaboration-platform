@@ -1,0 +1,40 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "evidence-chain-recovery-snapshot-placement-foundry",
+  "name": "AXM Evidence Chain Recovery Snapshot Placement Foundry",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "CREATE",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": ["evidence", "recovery", "snapshot", "placement", "package-manifest", "filesystem", "atomic-rename", "local-first"],
+  "uses": ["evidence-chain-recovery-snapshot-staging-foundry", "evidence-chain-inspector", "Workshop-Packager-output-layout", "Recovery-Center-discovery-contract", "node-filesystem", "browser-file-picker"],
+  "permissions": ["files", "export", "gate"],
+  "actions": [
+    "validate an exact retained staging receipt, package manifest, and candidate byte ledger",
+    "bind one explicit canonical exports/workshop-packages destination by SHA-256 without exposing the path in receipts",
+    "copy only the manifest and reviewed candidate through a private scratch folder and atomic rename",
+    "verify the receiver-visible package after rename and retain the original staging root",
+    "write a digest-only placement receipt back to the staging root and clean exact owned output after failure"
+  ],
+  "accepts": [
+    "axm.evidence-chain-recovery-snapshot-staging-receipt/v1",
+    "axm.workshop-package/v1",
+    "application/x-ndjson"
+  ],
+  "produces": [
+    "axm.evidence-chain-recovery-snapshot-placement-request/v1",
+    "axm.evidence-chain-recovery-snapshot-placement-receipt/v1",
+    "capability.place.evidence-chain-recovery-snapshot/v1"
+  ],
+  "readiness": ["nodejs", "verified-retained-staging-root", "existing-canonical-exports/workshop-packages", "explicit-placement-confirmation"],
+  "verifiedAt": null,
+  "summary": "Places one verified evidence-chain recovery package into the exact local folder shape Recovery Center can discover, without previewing or applying it.",
+  "notes": "Placement-only. The Foundry never calls Recovery Center, creates a restore preview, checks or grants recovery.apply, writes the live recovery target, applies or rolls back data, deletes the retained staging source, installs, promotes, or changes CANON."
+}

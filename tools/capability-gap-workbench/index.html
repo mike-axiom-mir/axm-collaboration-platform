@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Capability Gap Workbench</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AXM Workshop module · TEST</p>
+        <h1>Capability Gap Workbench</h1>
+        <p class="lede">Compare what an outcome requires with what the Workshop actually declares. Keep missing hands, authority, substrate, contracts, skills and evidence visible.</p>
+      </div>
+      <aside class="boundary-card" aria-label="Workbench boundary">
+        <strong>Comparator, not promoter</strong>
+        <p>No dependencies are installed, no permissions are granted, and declarations are never treated as runtime proof.</p>
+      </aside>
+    </header>
+
+    <section class="workspace" aria-label="Capability comparison inputs">
+      <div class="input-card">
+        <label for="requirementsInput">Requirements JSON
+          <span>Array, or an object containing a <code>requirements</code> array.</span>
+        </label>
+        <textarea id="requirementsInput" spellcheck="false" aria-describedby="requirementsHelp"></textarea>
+        <p id="requirementsHelp" class="empty-state">Each requirement needs an id and a bounded capabilities list. Set required to false for an optional route.</p>
+      </div>
+      <div class="input-card">
+        <label for="inventoryInput">Capability inventory JSON
+          <span>Array, or an object containing a <code>capabilities</code> array.</span>
+        </label>
+        <textarea id="inventoryInput" spellcheck="false" aria-describedby="inventoryHelp"></textarea>
+        <p id="inventoryHelp" class="empty-state">Statuses: available, degraded, unavailable, or unknown. Identifiers must match exactly.</p>
+      </div>
+    </section>
+
+    <div class="actions" aria-label="Workbench actions">
+      <button class="primary" id="analyzeButton" type="button">Analyze capability route</button>
+      <button class="secondary" id="exampleButton" type="button">Load example</button>
+      <button id="downloadButton" type="button" disabled>Download JSON report</button>
+      <button id="clearButton" type="button">Clear inputs</button>
+    </div>
+    <p class="status-line" id="status" role="status" aria-live="polite">Loading the local example…</p>
+
+    <section class="summary" id="summary" aria-label="Capability gap summary"></section>
+
+    <section class="results-grid" aria-label="Capability gap results">
+      <div class="results-panel">
+        <header class="panel-heading">
+          <h2>Requirement routes</h2>
+          <span>READY · DEGRADED · UNKNOWN · BLOCKED</span>
+        </header>
+        <div class="result-list" id="requirementResults"></div>
+      </div>
+      <div class="contract-panel">
+        <header class="panel-heading">
+          <h2>Missing contracts</h2>
+          <span>Specifications, not fake implementations</span>
+        </header>
+        <div class="result-list" id="contractResults"></div>
+        <p class="truth-note" id="truthNote">No comparison has been run.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="../../shared/ai-native-hands/capability-gap-hand.js"></script>
+  <script src="workbench-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/visual-recipe.schema.json",
+  "title": "AXM Visual Recipe",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "name",
+    "version",
+    "sceneId",
+    "globals",
+    "layers",
+    "provenance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.visual-recipe/1"
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "sceneId": {
+      "type": "string"
+    },
+    "globals": {
+      "type": "object",
+      "required": [
+        "mood",
+        "quality",
+        "intensity",
+        "depth",
+        "motion"
+      ],
+      "properties": {
+        "mood": {
+          "type": "string"
+        },
+        "quality": {
+          "enum": [
+            "auto",
+            "low",
+            "medium",
+            "high",
+            "cinematic"
+          ]
+        },
+        "resolvedQuality": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "cinematic"
+          ]
+        },
+        "intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "depth": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "motion": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+    "reducedMotion": {
+      "type": "boolean"
+    },
+    "photosensitiveSafe": {
+      "type": "boolean"
+    },
+    "performanceBias": {
+      "enum": [
+        "battery",
+        "balanced",
+        "quality"
+      ]
+    },
+        "highContrast": {
+          "type": "boolean"
+        },
+        "largeText": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "layers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "instanceId",
+          "moduleId",
+          "enabled",
+          "params"
+        ],
+        "properties": {
+          "instanceId": {
+            "type": "string"
+          },
+          "moduleId": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "params": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "provenance": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

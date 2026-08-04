@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/csg-runtime-manifest-v0.5.schema.json",
+  "title": "AXM CSG Runtime Manifest v0.5",
+  "type": "object",
+  "required": ["schema_version", "experiment_id", "version", "coordinate_contract", "models", "bounds_m", "performance", "geometry_truth", "manufacturing_status"],
+  "properties": {
+    "schema_version": {"const": "0.5"},
+    "experiment_id": {"type": "string"},
+    "version": {"type": "string"},
+    "coordinate_contract": {"type": "object", "required": ["linear_unit", "up", "forward", "import_scale"]},
+    "models": {"type": "object", "required": ["lods"], "properties": {"lods": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["lod", "file", "faces", "vertices", "bytes"]}}}},
+    "performance": {"type": "object", "required": ["status"], "properties": {"status": {"enum": ["PASS", "WARN", "FAIL"]}}},
+    "geometry_truth": {"type": "object", "required": ["backend", "approximation"]},
+    "manufacturing_status": {"type": "string", "pattern": "^HOLD"}
+  },
+  "additionalProperties": true
+}

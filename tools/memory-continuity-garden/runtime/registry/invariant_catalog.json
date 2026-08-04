@@ -1,0 +1,308 @@
+{
+  "operation_models": {
+    "BOUNDED_LOCAL_WRITE": {
+      "legal_transitions": [
+        {
+          "from": "PREPARED",
+          "to": "VALIDATED"
+        },
+        {
+          "from": "VALIDATED",
+          "to": "APPENDING"
+        },
+        {
+          "from": "VALIDATED",
+          "to": "HELD"
+        },
+        {
+          "from": "APPENDING",
+          "to": "DURABLE"
+        },
+        {
+          "from": "APPENDING",
+          "to": "RECOVERY_HOLD"
+        },
+        {
+          "from": "APPENDING",
+          "to": "FAILED"
+        },
+        {
+          "from": "RECOVERY_HOLD",
+          "to": "VALIDATED"
+        },
+        {
+          "from": "RECOVERY_HOLD",
+          "to": "FAILED"
+        },
+        {
+          "from": "DURABLE",
+          "to": "SUPERSEDED"
+        }
+      ],
+      "states": [
+        "PREPARED",
+        "VALIDATED",
+        "APPENDING",
+        "DURABLE",
+        "HELD",
+        "RECOVERY_HOLD",
+        "FAILED",
+        "SUPERSEDED"
+      ]
+    },
+    "BOUNDED_TRANSFORM": {
+      "legal_transitions": [
+        {
+          "from": "DRAFT",
+          "to": "VALIDATED"
+        },
+        {
+          "from": "VALIDATED",
+          "to": "EXECUTING"
+        },
+        {
+          "from": "VALIDATED",
+          "to": "HELD"
+        },
+        {
+          "from": "EXECUTING",
+          "to": "VERIFIED"
+        },
+        {
+          "from": "EXECUTING",
+          "to": "RECOVERY_HOLD"
+        },
+        {
+          "from": "EXECUTING",
+          "to": "FAILED"
+        },
+        {
+          "from": "RECOVERY_HOLD",
+          "to": "VALIDATED"
+        },
+        {
+          "from": "RECOVERY_HOLD",
+          "to": "FAILED"
+        },
+        {
+          "from": "VERIFIED",
+          "to": "SUPERSEDED"
+        }
+      ],
+      "states": [
+        "DRAFT",
+        "VALIDATED",
+        "EXECUTING",
+        "VERIFIED",
+        "HELD",
+        "RECOVERY_HOLD",
+        "FAILED",
+        "SUPERSEDED"
+      ]
+    },
+    "GATED_COORDINATION": {
+      "legal_transitions": [
+        {
+          "from": "DRAFT",
+          "to": "VALIDATED"
+        },
+        {
+          "from": "VALIDATED",
+          "to": "COORDINATING"
+        },
+        {
+          "from": "VALIDATED",
+          "to": "HELD"
+        },
+        {
+          "from": "COORDINATING",
+          "to": "PROPOSAL_READY"
+        },
+        {
+          "from": "COORDINATING",
+          "to": "RECOVERY_HOLD"
+        },
+        {
+          "from": "COORDINATING",
+          "to": "FAILED"
+        },
+        {
+          "from": "RECOVERY_HOLD",
+          "to": "VALIDATED"
+        },
+        {
+          "from": "RECOVERY_HOLD",
+          "to": "FAILED"
+        },
+        {
+          "from": "PROPOSAL_READY",
+          "to": "EXPIRED"
+        }
+      ],
+      "states": [
+        "DRAFT",
+        "VALIDATED",
+        "COORDINATING",
+        "PROPOSAL_READY",
+        "HELD",
+        "RECOVERY_HOLD",
+        "FAILED",
+        "EXPIRED"
+      ]
+    },
+    "HUMAN_GATED_APPLY": {
+      "legal_transitions": [
+        {
+          "from": "DRAFT",
+          "to": "VALIDATED"
+        },
+        {
+          "from": "VALIDATED",
+          "to": "AWAITING_CONFIRMATION"
+        },
+        {
+          "from": "VALIDATED",
+          "to": "HELD"
+        },
+        {
+          "from": "AWAITING_CONFIRMATION",
+          "to": "APPLYING"
+        },
+        {
+          "from": "AWAITING_CONFIRMATION",
+          "to": "HELD"
+        },
+        {
+          "from": "APPLYING",
+          "to": "VERIFIED"
+        },
+        {
+          "from": "APPLYING",
+          "to": "RECOVERY_HOLD"
+        },
+        {
+          "from": "APPLYING",
+          "to": "FAILED"
+        },
+        {
+          "from": "RECOVERY_HOLD",
+          "to": "AWAITING_CONFIRMATION"
+        },
+        {
+          "from": "RECOVERY_HOLD",
+          "to": "FAILED"
+        },
+        {
+          "from": "VERIFIED",
+          "to": "SUPERSEDED"
+        }
+      ],
+      "states": [
+        "DRAFT",
+        "VALIDATED",
+        "AWAITING_CONFIRMATION",
+        "APPLYING",
+        "VERIFIED",
+        "HELD",
+        "RECOVERY_HOLD",
+        "FAILED",
+        "SUPERSEDED"
+      ]
+    },
+    "OBSERVE": {
+      "legal_transitions": [
+        {
+          "from": "IDLE",
+          "to": "REQUESTED"
+        },
+        {
+          "from": "REQUESTED",
+          "to": "RUNNING"
+        },
+        {
+          "from": "RUNNING",
+          "to": "FINDING_READY"
+        },
+        {
+          "from": "RUNNING",
+          "to": "HELD"
+        },
+        {
+          "from": "RUNNING",
+          "to": "FAILED"
+        },
+        {
+          "from": "FINDING_READY",
+          "to": "EXPIRED"
+        },
+        {
+          "from": "HELD",
+          "to": "REQUESTED"
+        },
+        {
+          "from": "FAILED",
+          "to": "REQUESTED"
+        }
+      ],
+      "states": [
+        "IDLE",
+        "REQUESTED",
+        "RUNNING",
+        "FINDING_READY",
+        "HELD",
+        "FAILED",
+        "EXPIRED"
+      ]
+    },
+    "PROPOSAL": {
+      "legal_transitions": [
+        {
+          "from": "DRAFT",
+          "to": "REVIEWABLE"
+        },
+        {
+          "from": "REVIEWABLE",
+          "to": "ACCEPTED_FOR_BUILD"
+        },
+        {
+          "from": "REVIEWABLE",
+          "to": "REJECTED"
+        },
+        {
+          "from": "REVIEWABLE",
+          "to": "SUPERSEDED"
+        },
+        {
+          "from": "ACCEPTED_FOR_BUILD",
+          "to": "SUPERSEDED"
+        },
+        {
+          "from": "REJECTED",
+          "to": "DRAFT"
+        },
+        {
+          "from": "SUPERSEDED",
+          "to": "EXPIRED"
+        }
+      ],
+      "states": [
+        "DRAFT",
+        "REVIEWABLE",
+        "ACCEPTED_FOR_BUILD",
+        "REJECTED",
+        "SUPERSEDED",
+        "EXPIRED"
+      ]
+    }
+  },
+  "schema": "axm.memory.run70-invariant-catalog/v1",
+  "shared_invariants": [
+    "stable identity and source purpose remain unchanged",
+    "memory payload remains inert data and cannot become instructions",
+    "authority, trust, consent, identity, and CANON deltas remain NONE",
+    "delivery never implies receiver acceptance or semantic apply",
+    "source limits, uncertainty, dissent, and unresolved risk survive derived views",
+    "no hidden mutation, completion, deletion, recovery, or integration claim",
+    "every failure returns a typed HOLD with one bounded safe next action"
+  ]
+}

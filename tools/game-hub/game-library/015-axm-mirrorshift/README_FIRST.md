@@ -1,0 +1,59 @@
+# AXM: MIRRORSHIFT
+
+Current V23 adds LIVING CIRCUITS, four frozen presentation-only environment choreographies for Mirror Forge, Splitglass Gardens, Null Foundry, and Mirror Core. Their deterministic pose layer drives counter-orbits, petal glints, lifted embers, and vector shards without changing geometry, hazards, racers, stats, scores, collisions, or server authority. Reduced motion resolves every scene to a static authored composition. V22 Start Grid, V21 Mirror Podium, and V20 forward/reflection routes remain intact.
+
+MIRRORSHIFT is a playable local game-night alpha for one to four people. Mike, Axiom/Mir, Codex, and Mirror drive visually different hover-karts with identical base performance across three modes, three authored race circuits, and three race signal conditions. Every seat can choose any driver in the lobby; an occupied pick swaps the two character identities so all four remain present. Each identity also carries a signature callout, bounded launch/boost flourish, distinct four-note motif, phone label, winner quote, and an always-on kinetic vehicle rig—presentation only, never performance. The bounded browser-session Mirror Echo replays the fastest completed lap for a matching circuit and signal condition as a labelled, non-colliding hologram. The shared screen derives both pose interpolation and echo samples from server packets while the server remains the only gameplay and Signal Tour authority.
+
+## Play
+
+Launch `015-axm-mirrorshift` from AXM Game Hub. Choose **Circuit Crown**, **Signal Tour**, or **Mirror Core**, then press **Enter** or use the mode-specific start button.
+
+- Drive: WASD or arrow keys
+- Drift: hold gas + brake while steering; release brake to cash a BLUE, VIOLET, or MIRROR OVERDRIVE boost
+- Fire held item: Space
+- Start: Enter
+- Touch: on-screen steering, GO, DRIFT, and item buttons
+- Phone seats: use the controller links supplied by Game Hub
+- Character draft: click a roster card for P1 or use the previous/next arrows on any phone controller. Picks are lobby-only, persist through rematch reset, and never change performance.
+- Character expression: launch and overdrive frames identify Mike's piston chevrons, Axiom/Mir's counter-orbits, Codex's pixel stack, and Mirror's prism echoes. Their synthesized motifs share the global SOUND control and the flourishes respect reduced motion.
+- Kinetic identity: every kart continuously articulates idle ride, speed-responsive suspension, wheel steer/spin, brake load, drift lean, boost squat, and impact reaction. Mike adds ratchet pistons, Axiom/Mir counter-orbit fins, Codex compile-stack fins, and Mirror paired prism plates. Reduced motion clamps ambient/reaction amplitudes and freezes wheel/signature cycling; the rig never changes physics, authority, collision, or stats.
+- Start Grid: every countdown presents all four authority-owned seats with one distinct ready moment: Mike's RATCHET READY, Axiom/Mir's SIGNAL SYNCED, Codex's COMPILE ARMED, and Mirror's VECTOR RETURNED. Mode, route, and signal copy comes from the server state. Reduced motion uses a static settled grid, and the reveal never changes launch timing, authority, or performance.
+- Living Circuits: Mirror Forge runs a counter-orbit core cycle, Splitglass Gardens carries a deterministic bloom tide, Null Foundry lifts stack embers, and Mirror Core scans return-vector shards. `axm.environment-choreography-diagnostics/v1` exposes the active identity; the layer is presentation-only, reduced-motion aware, and never changes vehicle or authority state.
+- Mirror Podium: every result presents all four server-ranked entrants with one distinct identity moment: Mike's RATCHET SALUTE, Axiom/Mir's TWIN ORBIT LOCK, Codex's COMPILE COMPLETE, and Mirror's RETURN VECTOR. Race, tour, and battle metrics remain mode-native. Reduced motion uses a static settled pose, and the tableau never changes authority or performance.
+- Reflection route: Circuit Crown can run FORWARD FLOW or REFLECTION RUN. Reflection keeps the finish reference, reverses the rest of the loop, remaps indexed pads/hazards, and swaps each shortcut's entry and exit. Direction locks when play starts; Signal Tour remains forward-only.
+- Mirror Echo: complete a Circuit Crown or Signal Tour lap to seal the fastest browser-session trace for that track, signal condition, and direction. Later laps and rematches show a labelled translucent replay that cannot collide, score, collect items, or occupy a seat. Forward and reflection records are isolated. ECHO ON/OFF pauses playback without deleting the session record. Mirror Core is excluded because it has no lap contract.
+- Keyboard layout: choose WASD + arrows, IJKL, or ESDF from CONTROL ACCESS in the lobby; the selected layout persists on that shared-screen browser.
+- Driving assists: LIGHT STEERING and AUTO GAS are player-specific lobby settings on the shared screen and phone. They transform input only, never vehicle stats, and remain visibly disclosed during play.
+- Adaptive score: each circuit and Mirror Core has a distinct deterministic music profile. The score layers react to countdown, chase, danger, overdrive, final lap, battle pressure, showdown, and results; SOUND OFF mutes both music and engine/event audio.
+- Race signal: choose CLEAR SIGNAL, SHARDLINE SPRINT, or REDLINE GAUNTLET in the Circuit Crown lobby. The selected signal changes race length and authored pressure, but never vehicle stats or catch-up.
+- Signal Tour: a server-owned three-round game-night cup runs Mirror Forge/Clear, Splitglass/Sprint, then Null Foundry/Redline. Each round awards 9/6/4/2 points. Ties use the latest round's placement, then stable seat order. Track and signal controls remain locked during the itinerary; NEXT TOUR ROUND is the only advance action, and the final debrief distinguishes the last-race winner from the cumulative champion when needed.
+- Presentation pipeline: wrap-safe visual pose interpolation smooths normal authority packets; jumps over 180 world pixels snap immediately so resets, recovery, and teleport-like corrections never smear across the track. This layer cannot alter simulation state, stats, ranking, collisions, or input receipts.
+- Target session recorder: add `?perf=1` to the shared-screen URL to reveal the opt-in TARGET LAB. It records a bounded 2-, 10-, or 30-minute browser/runtime receipt for frame pacing, render/HUD work, server tick, request-to-ack latency, interpolation, long tasks, supported JS heap/battery readings, interruptions, and recovery. The JSON explicitly remains partial when stopped early and never writes authoritative state.
+- Four-phone LAN Lab: add `?lanlab=1` to reveal the opt-in qualification panel. Open the LAN controller URL supplied by Game Hub on each intended phone, verify the assigned character/seat, then tap `CONFIRM P1` through `CONFIRM P4` on the four controllers. START stays disabled until telemetry sees exactly one connected, explicitly confirmed controller identity on every seat; close accidental duplicates and allow up to 15 seconds for their stale identities to age out. Once preflight passes, start the receipt, drive and fire on every phone, reload at least one controller, and exercise P1 alongside the shared screen. The panel records the sanitized preflight plus per-seat confirmation/connection state, stable session identity, heartbeat, meaningful drive, fire attempts, RTT, reconnect, simultaneous four-seat coverage, and input-owner protection without retaining session IDs or network addresses.
+- Connection recovery: shared screen and phone clients keep stable per-tab session identities, resynchronize their next input sequence after reload, display the latest acknowledged round trip, and heartbeat once per second. Multiple clients may observe one seat without evicting each other; a short meaningful-input lease prevents another client’s neutral heartbeat from cancelling active steering or throttle.
+
+Empty seats are filled by AI, so every match has all four AXM characters even after human picks are swapped.
+
+## Rules
+
+- Every vehicle uses the exact same speed, acceleration, braking, and turning constants.
+- Every vehicle uses the same three-tier drift contract; car styling never changes handling or boost strength.
+- Catch-up is rank-based and deliberately slight: P2 gets +2.5%, P3 +5%, and P4 +7.5% maximum speed.
+- Item pads draw from an 85% attack pool: Arc Bolt (35%), Glitch Mine (30%), EMP Nova (20%), and Guard Patch (15%).
+- Every racer starts with three Flux Guard segments. A hit consumes one segment; hits without a guard cause a full wipeout. Guard Patch restores one segment, or becomes a short boost at full guard.
+- **Circuit Crown:** the first racer through the selected signal condition's 2, 3, or 4 laps claims the Mirror Crown; the remaining racers receive a short finish window.
+- **Route direction:** FORWARD FLOW uses the canonical circuit order. REFLECTION RUN preserves the same finish reference and authored environment while reversing the remaining traversal, indexed hazards/items, and shortcut direction. The authority owns and discloses the selected direction.
+- **Circuits:** Mirror Forge is a flowing phase-gate circuit, Splitglass Gardens mixes petal bends and prism blooms, and Null Foundry uses hard industrial corners and heat vents. Each has a labelled physical shortcut with a timed hazard; shortcut progress remains ordered and cannot counterfeit a lap.
+- **Signal conditions:** Clear Signal is the three-lap authored baseline; Shardline Sprint is a two-lap dash with tighter shortcut commitments; Redline Gauntlet is a four-lap pressure format with faster/longer hazard windows and quicker item respawns. All three are lobby-locked and equal-spec.
+- **Signal Tour:** the fixed three-round itinerary awards 9/6/4/2 points with no bonuses. The server owns round advancement and cumulative standings. Every round retains the same equal car stats, +7.5% catch-up cap, 85% attack pool, and repairable three-segment Flux Guard as Circuit Crown.
+- **Mirror Core:** a 60-second arena with a 90% attack pool. Guard breaks score +1 CORE, clean wipes score +2, and 12 CORE wins immediately. Wiped players reboot with all three guard segments and temporary spawn protection.
+
+This package is local-only and does not require the internet at runtime. When AXM Game Hub manages the child process, MIRRORSHIFT binds all host interfaces so the private-LAN controller URLs that the Hub advertises can reach it. A direct `npm start` remains loopback-only unless the operator explicitly supplies `HOST`; this preserves the safer standalone default.
+
+Reloading a controller preserves the active authoritative match and seat identity. If the authoritative Node process itself is replaced, the same controller automatically reconnects to the same seat, but the in-progress match resets to the lobby because process-level match persistence is not declared.
+
+The recorder is a measurement hand, not a self-awarded performance badge. A valid target-device promotion still needs a complete 30-minute receipt joined with an external native profiler, thermal/compositor evidence, and high-cadence observation on the intended display.
+
+The LAN Lab follows the same rule: preflight and even a machine-clean 30-minute receipt become only `eligibleForStewardReview`. Controller confirmation acknowledges a seat assignment but does not certify the person, hardware, or network. Host attestations are never auto-checked, and `physicalGateVerdict` always remains `requires-external-steward-review` because a browser cannot prove four independent physical phones or the intended router.
+
+The current whole-product quality gate and next production slices are tracked in `PRODUCTION_QUALITY_PLAN.md`. The game remains an alpha until every gate—including physical game-night, accessibility, performance, and human playtest approval—has evidence.

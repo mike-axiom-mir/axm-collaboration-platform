@@ -8,6 +8,7 @@
   var reviews = [];
   var repairRequest = null;
   var noticeTimer = null;
+  var lastBatchTechnicalSummary = '';
   var $ = function (id) { return document.getElementById(id); };
 
   function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (character) { return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[character]; }); }
@@ -202,6 +203,63 @@
   }
 
   function directionForReview(item) { return directions.find(function (direction) { return direction.request.requestId === (item.action && item.action.directionId); }); }
+  function codeDraftExplanation(item) {
+    return AXMCodeDraftDecisionGuide.explanation(item);
+  }
+  function technicalCodeDraftReview(item) {
+    return AXMCodeDraftDecisionGuide.technicalReview(item);
+  }
+  function renderCodeDraftReviews() {
+    var closed = ['SUPERSEDED','REJECTED','REPAIR','CANCELLED','EXPIRED'];
+    var drafts = reviews.filter(function (item) { return item.kind === 'code-improvement-draft' && closed.indexOf(item.state) < 0; });
+    var retired = reviews.filter(function (item) { return item.kind === 'code-improvement-draft' && item.state === 'SUPERSEDED' && item.technicalRefusal && item.technicalRefusal.schema === 'axm.code-draft-technical-refusal/v1'; });
+    var unchecked = drafts.filter(function (item) { return !technicalCodeDraftReview(item); });
+    var ready = drafts.filter(function (item) { var technical = technicalCodeDraftReview(item); return technical && technical.verdict === 'APPROVE'; });
+    var repair = drafts.filter(function (item) { var technical = technicalCodeDraftReview(item); return technical && technical.verdict === 'HOLD'; });
+    drafts.sort(function (left, right) {
+      function rank(item) { var technical = technicalCodeDraftReview(item); return technical && technical.verdict === 'APPROVE' ? 0 : !technical ? 1 : 2; }
+      return rank(left) - rank(right) || String(left.createdAt || '').localeCompare(String(right.createdAt || ''));
+    });
+    $('codeDraftReviewCount').textContent = drafts.length + ' ACTIVE';
+    $('codeDraftReadyCount').textContent = ready.length + ' READY FOR MIKE';
+    $('codeDraftRepairCount').textContent = repair.length + ' NEED REPAIR';
+    $('codeDraftRetiredCount').textContent = retired.length + ' ARCHIVED';
+    var batchButton = $('checkAllCodeDrafts');
+    batchButton.disabled = unchecked.length === 0;
+    batchButton.textContent = unchecked.length ? ('CHECK NEXT ' + Math.min(unchecked.length, 25) + ' SAFELY') : 'ALL TECHNICAL CHECKS DONE';
+    $('batchTechnicalStatus').textContent = lastBatchTechnicalSummary || (unchecked.length ? (unchecked.length + ' exact candidate' + (unchecked.length === 1 ? '' : 's') + ' still need a technical reason before Mike can choose.') : ('Every active exact candidate has a technical reason. ' + retired.length + ' stale or invalid exact cop' + (retired.length === 1 ? 'y is' : 'ies are') + ' archived with evidence.'));
+    function renderDraftCard(item) {
+      var moduleId = item.action && item.action.moduleId || item.title;
+      var actor = $('actorName').value.trim() || 'Local steward';
+      var own = (item.votes || []).find(function (vote) { return String(vote.actor).toLowerCase() === actor.toLowerCase(); });
+      var guide = AXMCodeDraftDecisionGuide.guide(item), explanation = guide.explanation, technical = guide.technicalReview, technicalChecked = !!technical;
+      var canHumanChoose = guide.humanDecision, needsRepair = guide.phase === 'REPAIR';
+      var decisionSummary = '<section class="human-decision-summary ' + esc(guide.tone) + '"><span>' + esc(guide.badge) + '</span><h4>' + esc(guide.headline) + '</h4><p>' + esc(guide.why) + '</p><b>' + esc(guide.recommendation) + '</b><small>' + esc(guide.decisionPrompt) + '</small></section>';
+      var technicalStatus = technicalChecked
+        ? '<details class="technical-review ' + (technical.verdict === 'APPROVE' ? 'ready' : 'held') + '"><summary>TECHNICAL EVIDENCE: ' + esc(technical.verdict === 'APPROVE' ? 'CHECK PASSED' : 'BLOCKER FOUND') + '</summary><span>' + esc(technical.note) + '</span><small>' + (technical.verdict === 'HOLD' ? 'A KEEP decision cannot override this HOLD. A changed candidate is required.' : 'This is one review seat only. Nothing was applied.') + '</small></details>'
+        : '<div class="technical-review waiting"><b>TECHNICAL CHECK NEEDED FIRST</b><span>Mike is not being asked to judge code. AXM can verify the exact receipt, candidate hash, unchanged source and remaining contract errors without changing the patch.</span><button type="button" data-code-draft-check>RUN SAFE TECHNICAL CHECK</button><small>Reads the candidate and records one machine APPROVE or HOLD. Never installs, applies, merges or publishes.</small></div>';
+      var understanding = canHumanChoose
+        ? '<label class="draft-understanding"><input type="checkbox" data-code-draft-understood><span>I read the plain explanation and the technical steward\'s reason for this exact copy.</span></label>'
+        : '<div class="draft-understanding locked"><span>' + (needsRepair ? 'No decision is needed from Mike. This exact copy must be repaired or replaced first.' : 'Mike\'s choice unlocks only after the technical steward approves this exact copy.') + '</span></div>';
+      var decisionControls = canHumanChoose
+        ? '<div class="draft-vote-box"><input data-code-draft-note maxlength="1000" placeholder="Optional: add your own reason"><button class="up" data-code-draft-vote="APPROVE" disabled>YES - KEEP FOR LATER</button><button class="down" data-code-draft-vote="REJECT" disabled>NO - DISCARD THIS COPY</button><small>' + (own ? ('Your ' + esc(own.verdict) + ' review is recorded') : 'Read the open explanation, tick the box, then choose') + '</small></div>'
+        : '<div class="draft-repair-box"><b>' + (needsRepair ? 'NEEDS REPAIR · NOT YOUR VOTE' : 'WAITING FOR TECHNICAL CHECK') + '</b><span>' + (needsRepair ? 'The machine found a concrete blocker. Heartbeat or a steward must return a changed candidate before your decision can help.' : 'Nothing is being asked of Mike until the exact copy is checked.') + '</span></div>';
+      return '<article class="code-draft-review ' + (canHumanChoose ? 'ready-for-mike' : needsRepair ? 'needs-repair' : 'needs-check') + '" data-code-draft-id="' + esc(item.id) + '" data-code-draft-digest="' + esc(item.artifactDigest) + '">' +
+        '<header class="draft-card-head"><div><span class="eyebrow">' + esc(friendlyStatus(item.state)) + ' · ' + (item.votes || []).length + '/' + item.requiredSeats + ' REVIEWS</span><h3>' + esc(moduleId) + '</h3></div><code title="Exact candidate digest">' + esc(item.artifactDigest.slice(0,16)) + '…</code></header>' +
+        '<p class="draft-boundary">Your choice never installs this. Two approvals only mark this exact candidate reviewed.</p>' + decisionSummary + technicalStatus +
+        '<details class="draft-explanation"' + (guide.openExplanation ? ' open' : '') + '><summary>' + (canHumanChoose ? 'WHY AXM RECOMMENDS THIS' : needsRepair ? 'WHY THIS COPY IS PARKED' : 'ABOUT THIS PROPOSED CHANGE') + '</summary><div class="explanation-grid">' +
+          '<section><b>WHAT WOULD CHANGE</b><p>' + esc(explanation.change) + '</p></section>' +
+          '<section><b>WHY IT MAY HELP</b><p>' + esc(explanation.benefit) + '</p></section>' +
+          '<section class="risk"><b>WHAT COULD GO WRONG</b><p>' + esc(explanation.risk) + '</p></section>' +
+          '<section><b>WHAT WAS ACTUALLY PROVEN</b><p>' + esc(explanation.proof) + '</p></section>' +
+        '</div><div class="draft-recommendation"><b>YOUR ACTUAL DECISION</b><span>' + esc(guide.decisionPrompt) + '</span></div>' + understanding + '</details>' + decisionControls +
+        '<footer>Review before ' + esc(item.expiresAt ? new Date(item.expiresAt).toLocaleString() : 'the seven-day retention boundary') + ' · evidence remains after expiry</footer></article>';
+    }
+    var readyHtml = ready.map(renderDraftCard).join('');
+    var uncheckedHtml = unchecked.map(renderDraftCard).join('');
+    var repairHtml = repair.map(renderDraftCard).join('');
+    $('codeDraftReviews').innerHTML = readyHtml + uncheckedHtml + (repair.length ? '<details class="parked-draft-group"><summary><span>' + repair.length + ' PARKED FOR REPAIR</span><b>No decision needed from Mike</b><small>Open only if you want the technical history.</small></summary><div class="parked-draft-list">' + repairHtml + '</div></details>' : '') || '<p class="empty">No heartbeat code drafts are waiting. Queued evidence does not require you to be online when it is created.</p>';
+  }
   function renderDecisionPool() {
     var pool = reviews.filter(function (item) {
       if (item.kind !== 'workshop-direction' || item.state === 'SUPERSEDED') return false;
@@ -222,12 +280,16 @@
   async function refreshReviews() {
     var payload = operationResult(await api('/api/reviews'));
     reviews = payload.items || [];
+    renderCodeDraftReviews();
     renderDecisionPool();
     return payload;
   }
   async function refreshAll() {
     $('refreshAll').disabled = true; $('topState').textContent = 'SCANNING LOCAL SYSTEM';
-    var results = await Promise.allSettled([api('/api/body-pulse'), api('/api/workshop/technical-glasses'), api('/api/cognitive-resource-meter'), api('/api/workshop-growth'), api('/api/cognitive-resource-meter/command-center-controls'), api('/api/workshop-needs'), refreshPlans(), refreshReviews()]);
+    // The local server is intentionally single-process. Load human decisions before
+    // heavyweight Workshop scans so a truthful queue never waits behind inventory work.
+    var priorityResults = await Promise.allSettled([refreshReviews()]);
+    var results = await Promise.allSettled([api('/api/body-pulse'), api('/api/workshop/technical-glasses'), api('/api/cognitive-resource-meter'), api('/api/workshop-growth'), api('/api/cognitive-resource-meter/command-center-controls'), api('/api/workshop-needs'), refreshPlans()]);
     var body = results[0].status === 'fulfilled' ? results[0].value.status : null;
     var glasses = results[1].status === 'fulfilled' ? results[1].value : null;
     var cognitive = results[2].status === 'fulfilled' ? operationResult(results[2].value) : null;
@@ -235,9 +297,9 @@
     var controls = results[4].status === 'fulfilled' ? operationResult(results[4].value) : null;
     var needs = results[5].status === 'fulfilled' ? operationResult(results[5].value) : null;
     var directionStatus = results[6].status === 'fulfilled' ? results[6].value : null;
-    renderSystem(body, glasses, cognitive, needs); renderDeck(growth, body); renderOutput(growth, directionStatus); renderControls(controls);
+    renderSystem(body, glasses, cognitive, needs); renderDeck(growth, body); renderOutput(growth, directionStatus); renderControls(controls); renderDecisionPool();
     $('refreshAll').disabled = false;
-    var failures = results.filter(function (result) { return result.status === 'rejected'; });
+    var failures = priorityResults.concat(results).filter(function (result) { return result.status === 'rejected'; });
     if (failures.length) notice(failures.length + ' local status source(s) could not be read. Unknown is shown instead.', true);
   }
 
@@ -319,6 +381,55 @@
       }
       await refreshPlans(); await refreshReviews();
     } catch (error) { notice(error.message, true); }
+  };
+  $('codeDraftReviews').onclick = async function (event) {
+    var checkButton = event.target.closest('[data-code-draft-check]');
+    if (checkButton) {
+      var checkCard = checkButton.closest('[data-code-draft-id]');
+      try {
+        checkButton.disabled = true; checkButton.textContent = 'CHECKING EXACT COPY…';
+        var checked = operationResult(await post('/api/reviews/technical-check', { id:checkCard.dataset.codeDraftId, artifactDigest:checkCard.dataset.codeDraftDigest, confirmation:'RUN READ-ONLY TECHNICAL CHECK' }, 'x-axm-review', 'deterministic-technical-check'));
+        await refreshReviews();
+        notice('Technical check recorded ' + checked.assessment.verdict + ' for the exact candidate. No patch was applied.');
+      } catch (error) { notice(error.message, true); }
+      return;
+    }
+    var button = event.target.closest('[data-code-draft-vote]'); if (!button) return;
+    var card = button.closest('[data-code-draft-id]'), actor = $('actorName').value.trim() || 'Local steward';
+    var item = reviews.find(function (entry) { return entry.id === card.dataset.codeDraftId; });
+    var understood = card.querySelector('[data-code-draft-understood]');
+    var technical = item && technicalCodeDraftReview(item);
+    if (!technical) return notice('Mike\'s choice stays locked until a machine steward checks and explains this exact candidate.', true);
+    if (technical.verdict !== 'APPROVE') return notice('This exact copy needs repair. There is no useful vote for Mike to cast yet.', true);
+    if (!understood || !understood.checked) return notice('Open the plain explanation and tick that you read it before choosing.', true);
+    var note = card.querySelector('[data-code-draft-note]').value.trim() || (actor + ' reviewed the plain explanation and technical steward reason, then chose ' + button.dataset.codeDraftVote.toLowerCase() + '.');
+    try {
+      button.disabled = true;
+      await post('/api/reviews/vote', { id:card.dataset.codeDraftId, artifactDigest:card.dataset.codeDraftDigest, actor:actor, actorKind:'human', verdict:button.dataset.codeDraftVote, note:note, informedExplanation:true, confirmation:'REVIEW EXACT DIGEST' }, 'x-axm-review', 'exact-digest-vote');
+      await refreshReviews();
+      notice(actor + ' recorded an informed exact-copy ' + button.dataset.codeDraftVote + ' review. No patch was applied.');
+    } catch (error) { notice(error.message, true); } finally { button.disabled = false; }
+  };
+  $('checkAllCodeDrafts').onclick = async function () {
+    var button = $('checkAllCodeDrafts');
+    try {
+      button.disabled = true; button.textContent = 'CHECKING BOUNDED QUEUE…';
+      var batch = operationResult(await post('/api/reviews/technical-check-pending', { confirmation:'RUN BOUNDED READ-ONLY TECHNICAL CHECKS' }, 'x-axm-review', 'deterministic-technical-check-batch'));
+      lastBatchTechnicalSummary = batch.checked + ' checked · ' + batch.approved + ' safe to consider · ' + batch.held + ' held for repair · ' + batch.retired + ' stale/invalid copies archived · ' + batch.refused + ' transient refusals · ' + batch.remainingUnchecked + ' still unchecked. No patch was applied.';
+      await refreshReviews();
+      notice(lastBatchTechnicalSummary, batch.refused > 0);
+    } catch (error) {
+      lastBatchTechnicalSummary = 'Batch stopped safely: ' + error.message;
+      $('batchTechnicalStatus').textContent = lastBatchTechnicalSummary;
+      notice(lastBatchTechnicalSummary, true);
+    } finally {
+      renderCodeDraftReviews();
+    }
+  };
+  $('codeDraftReviews').onchange = function (event) {
+    var checkbox = event.target.closest('[data-code-draft-understood]'); if (!checkbox) return;
+    var card = checkbox.closest('[data-code-draft-id]');
+    card.querySelectorAll('[data-code-draft-vote]').forEach(function (button) { button.disabled = !checkbox.checked; });
   };
   $('controlCatalog').onclick = async function (event) {
     var button = event.target.closest('[data-safe-get]'); if (!button) return;

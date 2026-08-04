@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "REPLICA_AUTHORITY_INHERITANCE",
+      "expected": "HOLD_TRUST_OR_AUTHORITY_TRANSFER",
+      "stimulus": "replica handoff inherits human authority"
+    }
+  ],
+  "category": 8,
+  "category_name": "8. Cross-session, cross-device, human-AI, and replica continuity",
+  "full_semantic_implementation": false,
+  "number": 72,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Create and verify a portable re-entry packet for a new conversation while separating supplied history from model memory claims.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "62413bd88f399ac4f87e8c002b473aa4a224ace9ddaa0ad0041a785436955b3b"
+  },
+  "source_contract_sha256": "f25111ee019efc5268f569c2f43cf70b461ebfe86c7b4d0ac857fd232ded9b38",
+  "stable_id": "axm.memory.cross-chat-continuity-adapter"
+}

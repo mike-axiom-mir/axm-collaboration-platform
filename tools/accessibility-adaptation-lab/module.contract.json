@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "accessibility-adaptation-lab",
+  "version": "v0.1",
+  "provides": [
+    "accessibility.packet-catalog",
+    "accessibility.goal-routing",
+    "accessibility.local-preview-profile",
+    "accessibility.noncanonical-plan"
+  ],
+  "consumes": [
+    "filesystem:intakes/accessibility-adaptive-interfaces-100-v1",
+    "browser:local-storage",
+    "axm.accessibility-adaptation-request/v1"
+  ],
+  "permissions": ["storage"],
+  "handoffs": {
+    "emits": ["axm.accessibility-adaptation-catalog/v1", "axm.accessibility-adaptation-plan/v1"],
+    "accepts": ["axm.accessibility-adaptation-request/v1", "application/json"]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": ["browser-local-storage:explicit-preview-profile"],
+    "refuses": [
+      "diagnosis",
+      "inferred-disability-profile",
+      "silent-profile-change",
+      "global-platform-mutation",
+      "automatic-activation",
+      "production-readiness-claim",
+      "assistive-technology-compatibility-claim",
+      "real-accessibility-effect-claim",
+      "conformance-claim",
+      "canon-change"
+    ]
+  }
+}

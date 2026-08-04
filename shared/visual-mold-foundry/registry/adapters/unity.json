@@ -1,0 +1,36 @@
+{
+  "target": "Unity",
+  "status": "LOCAL VALIDATION REQUIRED",
+  "maps": {
+    "edge_glow": {
+      "css": "box-shadow / filter drop-shadow",
+      "svg": "filter feGaussianBlur + merge",
+      "target": "Shader Graph emission plus URP/HDRP bloom"
+    },
+    "inner_glow": {
+      "css": "inset box-shadow",
+      "svg": "inner glow filter chain",
+      "target": "Shader Graph fresnel/interior emission approximation"
+    },
+    "roughness": {
+      "css": "noise/gradient approximation",
+      "svg": "feTurbulence blend",
+      "target": "Lit shader smoothness inverse mapping"
+    },
+    "energy_movement": {
+      "css": "background-position animation",
+      "svg": "stroke-dashoffset animation",
+      "target": "Time-driven Shader Graph UV offset"
+    },
+    "reduced_motion": {
+      "css": "prefers-reduced-motion / still frame",
+      "svg": "animation disabled",
+      "target": "static material/animation state"
+    }
+  },
+  "schema": "axm.adapter-map/0.1",
+  "version": "0.1.0",
+  "source_semantics": "AXM Visual Mold 0.1",
+  "visual_parity_claim": false,
+  "validated_locally": false
+}

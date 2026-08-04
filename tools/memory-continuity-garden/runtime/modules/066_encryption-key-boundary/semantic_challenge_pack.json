@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "FALSE_ERASURE",
+      "expected": "HOLD_PRIVACY_OR_ERASURE_TRUTH",
+      "stimulus": "deletion receipt claims impossible universal erasure"
+    }
+  ],
+  "category": 7,
+  "category_name": "7. Privacy, consent, retention, redaction, deletion, and export",
+  "full_semantic_implementation": false,
+  "number": 66,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Keep encrypted payloads, key identifiers, rotation, recovery, access roles, and secret-free metadata as separate governed surfaces.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "dd9d988ce77bb8bfaa9e6918d7a296a9229864ce3d2e338e3cdb0b0e00e5e75a"
+  },
+  "source_contract_sha256": "53816adf43cf1af09722b20c48ce252adfdfd492c60b78391713894c305cb8b4",
+  "stable_id": "axm.memory.encryption-key-boundary"
+}

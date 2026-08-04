@@ -1,0 +1,78 @@
+{
+  "packet_schema_version": "axm.proof.run-packet.v0.3.0",
+  "packet_id": "synthetic:bounded-public-proof-orchestrator:invalid_required_field",
+  "seed_id": "axm.proof.bounded-public-proof-orchestrator",
+  "seed_schema_version": "axm.proof.seed.v0.2.0",
+  "fixture_class": "INVALID_REQUIRED_FIELD",
+  "run_mode": "VALIDATE_ONLY",
+  "authority": {
+    "scope": "SCHEMA_AND_DISPOSABLE_SYNTHETIC_FIXTURE_ONLY",
+    "live_activation_allowed": false,
+    "canon_authority": false,
+    "publication_authority": false,
+    "merge_gate_required": true
+  },
+  "network_policy": "DENY",
+  "write_policy": "NONE",
+  "inputs": {
+    "schema_version": "axm.proof.synthetic-input.v0.1.0",
+    "owner_refs": [
+      "synthetic:bounded_public_proof_orchestrator:owner_refs:1"
+    ],
+    "input_registry_refs": [
+      "synthetic:bounded_public_proof_orchestrator:input_registry_refs:1"
+    ],
+    "prerequisites": [
+      "schema present",
+      "fixture isolated",
+      "network denied"
+    ],
+    "stop_conditions": [
+      "authority exceeded",
+      "private data detected",
+      "dependency blocked"
+    ],
+    "planned_actions": [
+      {
+        "action": "schema_validation",
+        "live_activation": false
+      }
+    ],
+    "decision_packets": [
+      {
+        "decision": "HOLD_FOR_MERGE_GATE",
+        "synthetic": true
+      }
+    ],
+    "audit_events": [
+      {
+        "event": "fixture_created",
+        "sequence": 1,
+        "synthetic": true
+      }
+    ]
+  },
+  "expected": {
+    "decision": "BLOCK",
+    "reason_codes": [
+      "AXM_PROOF_REQUIRED_FIELD_MISSING"
+    ],
+    "output_emitted": false,
+    "runtime_claim_upgraded": false
+  },
+  "privacy_canaries": [],
+  "rollback": {
+    "checkpoint_id": "synthetic:bounded-public-proof-orchestrator:checkpoint:clean",
+    "restore_required": false,
+    "expected_restore_digest": "sha256:synthetic-bounded-public-proof-orchestrator-clean",
+    "history_policy": "APPEND_ONLY_NO_DELETE"
+  },
+  "truth_guard": {
+    "canon": false,
+    "integrated": false,
+    "runtime_proof": false,
+    "published": false,
+    "automatic_promotion_allowed": false
+  },
+  "fixture_note": "Intentionally omits required input `coordination_id`."
+}

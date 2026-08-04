@@ -1,0 +1,30 @@
+{
+  "name": "axm-visual-effect-fabric",
+  "version": "1.3.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first modular visual effect fabric, creator, library, and safe declarative runtime.",
+  "scripts": {
+    "generated": "node tools/build-catalog-js.mjs && node tools/build-runtime-css.mjs && node tools/build-starter-packages.mjs && node tools/build-v11-expansion-packages.mjs && node tools/build-module-index.mjs",
+    "packages:build": "node tools/build-starter-packages.mjs",
+    "build": "npm run generated && npm run runtime:build && node tools/build-single-file.mjs",
+    "runtime:build": "node tools/build-runtime-kit.mjs",
+    "cli": "node tools/axmfx-cli.mjs",
+    "start": "node start.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "validate": "node tools/validate-library.mjs",
+    "catalog:export": "node tools/export-starter-library.mjs",
+    "inventory": "node tools/build-inventory.mjs",
+    "static:examples": "python adapters/static/render_recipe_to_svg.py examples/recipes/command-dashboard.axmrecipe.json --output dist/command-dashboard.svg && python adapters/static/render_recipe_to_svg.py examples/recipes/luminous-hero.axmrecipe.json --output dist/luminous-hero.svg && python adapters/static/render_recipe_to_svg.py examples/recipes/game-hud.axmrecipe.json --output dist/game-hud.svg && python adapters/static/render_recipe_to_svg.py examples/recipes/launcher.axmrecipe.json --output dist/launcher.svg && python adapters/static/render_recipe_to_svg.py examples/recipes/cinematic-glass-stage.axmrecipe.json --output dist/cinematic-glass-stage.svg && python adapters/static/render_recipe_to_svg.py examples/recipes/prismatic-product-card.axmrecipe.json --output dist/prismatic-product-card.svg",
+    "verify": "npm run build && npm run static:examples && npm run adapter:examples && npm run validate && npm run catalog:export && npm run test && npm run inventory",
+    "browser:smoke": "node tests/browser_smoke_v13.mjs",
+    "browser:regression": "node tests/browser_visual_regression_v13.mjs",
+    "adapter:examples": "node tools/export-adapter-snapshots.mjs",
+    "summary": "node tools/build-summary.mjs",
+    "stress": "node --test tests/stress.test.mjs",
+    "integration:check": "node --test tests/integration.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

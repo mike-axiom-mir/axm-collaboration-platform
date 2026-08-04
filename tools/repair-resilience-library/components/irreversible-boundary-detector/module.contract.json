@@ -1,0 +1,39 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.irreversible-boundary-detector",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.irreversible-boundary-finding/v1"
+  ],
+  "consumes": [
+    "proposed-action"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_4_BOUNDARY_DETECTION",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/authority-surface-observatory",
+      "tools/secrets-permissions-console",
+      "tools/recovery-center"
+    ],
+    "reason": "Detects protected no-auto boundaries before risk or permission logic can be bypassed."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "permission-grant",
+      "automatic-approval",
+      "automatic-execution",
+      "automatic-merge",
+      "automatic-promotion",
+      "automatic-canon",
+      "runtime-proof-claim"
+    ]
+  }
+}

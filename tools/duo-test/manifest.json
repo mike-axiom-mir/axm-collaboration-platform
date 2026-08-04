@@ -1,14 +1,21 @@
 {
+  "schema": "axm.tool-manifest/v1",
   "id": "duo-test",
   "name": "Supervised Local Duo - Nova and Gemini Local",
   "version": "v3",
   "status": "TEST",
   "entry": "index.html",
+  "kind": "product",
+  "contract": "module.contract.json",
+  "type": "local-module",
   "audience": "machine",
   "layer": "machine",
+  "risk": "MEDIUM",
   "integratedInto": "ai-team",
   "serviceRole": "local-duo-view",
+  "permissions": [],
   "tags": ["bridge", "multi-ai", "test", "identity"],
-  "notes": "Lets Nova and a model-locked local Google Gemma identity work independently or by visible attributed relay while Mike and Axiom/Mir supervise. Private identity memory is never copied during collaboration.",
-  "uses": ["storage", "ai", "bridge", "identity"]
+  "uses": ["storage", "ai", "bridge", "identity", "loopback-local-model-discovery"],
+  "summary": "Run supervised, attributed Nova and Gemini Local prompts independently or relay Nova's visible answer for a Gemini Local review.",
+  "notes": "Session-only TEST view. Identity-registry connector/model locks remain authoritative. A relay contains only Mike's visible prompt, Nova's visible answer, and explicit review instructions; it does not copy private identity memory, learn automatically, promote the tool, or confer CANON. Real local-model responses remain a live check."
 }

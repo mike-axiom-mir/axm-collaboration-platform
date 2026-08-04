@@ -1,0 +1,44 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.state-integrity-checker",
+  "name": "State Integrity Checker",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "RECOVERY",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "MEDIUM",
+  "tags": [
+    "repair-seed",
+    "state-data-workflow-recovery",
+    "local-first",
+    "dependency-free",
+    "reversible"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Verify schemas, hashes, referential integrity, invariants, and cross-file relationships."
+  ],
+  "accepts": [
+    "state",
+    "hash-expectations",
+    "reference-rules",
+    "invariants"
+  ],
+  "produces": [
+    "axm.state-integrity-report/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Verify schemas, hashes, referential integrity, invariants, and cross-file relationships.",
+  "notes": "Explicit local primitive only. Active AXM Recovery Center, Installer, Evidence Retention, and permission gates remain authoritative."
+}

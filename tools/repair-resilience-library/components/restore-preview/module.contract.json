@@ -1,0 +1,40 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.restore-preview",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.restore-preview/v1"
+  ],
+  "consumes": [
+    "snapshot-map",
+    "current-map",
+    "expected-current-map"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_PREVIEW_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "EXTEND_EXISTING",
+    "targets": [
+      "tools/recovery-center"
+    ],
+    "reason": "Adds a pure map-level preview; Recovery Center remains the only active restore surface."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-restore",
+      "automatic-rollback",
+      "silent-data-loss",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

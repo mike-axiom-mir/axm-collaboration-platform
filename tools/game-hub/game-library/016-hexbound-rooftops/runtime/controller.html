@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#090b1a">
+  <title>HEXBOUND · Quartermaster Deck</title>
+  <link rel="stylesheet" href="controller.css">
+</head>
+<body>
+  <main class="controller-shell">
+    <header class="masthead">
+      <div><b>HEXBOUND</b><span>SECOND HUMAN SEAT</span></div>
+      <a href="./" target="_blank" rel="noopener">BATTLEFIELD ↗</a>
+    </header>
+
+    <section class="identity">
+      <div class="sigil">☠</div>
+      <div>
+        <p>ASYMMETRIC CO-OP · SEAT 2</p>
+        <h1>Quartermaster Deck</h1>
+        <span id="connection"><i></i><b>CONNECTING</b></span>
+      </div>
+    </section>
+
+    <section class="host-strip">
+      <div><small>WAR</small><b id="host-phase">WAITING FOR COMMANDER</b></div>
+      <div><small>PLAN</small><b id="host-stance">—</b></div>
+      <div><small>FIGHTERS</small><b id="host-pop">— / —</b></div>
+      <div><small>TIME</small><b id="host-time">00:00</b></div>
+    </section>
+
+    <section class="resources" aria-label="Shared resources">
+      <div class="glow"><i>●</i><span><small>GLOW</small><b id="q-glow">—</b></span></div>
+      <div class="scrap"><i>◆</i><span><small>SCRAP</small><b id="q-scrap">—</b></span></div>
+      <div class="essence"><i>✦</i><span><small>ESSENCE</small><b id="q-essence">—</b></span></div>
+    </section>
+
+    <section id="host-mechanic" class="host-mechanic" aria-label="Shared map anomaly">
+      <span id="host-mechanic-icon">MAP</span>
+      <div><small>MAP ANOMALY</small><b id="host-mechanic-title">WAITING FOR BATTLEFIELD</b><p id="host-mechanic-effect">The Quartermaster will receive the same macro countdown as the Commander.</p></div>
+      <strong id="host-mechanic-phase">—</strong>
+    </section>
+
+    <section id="host-rival" class="host-mechanic host-rival" aria-label="Shared rival strategy">
+      <span id="host-rival-icon">?</span>
+      <div><small id="host-rival-kicker">RIVAL SCHEME</small><b id="host-rival-title">READING THE RIVAL WAR ROOM</b><p id="host-rival-effect">The Quartermaster will receive the same strategic warning as the Commander.</p></div>
+      <strong id="host-rival-phase">—</strong>
+    </section>
+
+    <section class="order-section tactical-section">
+      <header><span>01</span><div><b>LIVING WAR TABLE</b><small id="tactical-intel">WAITING FOR COMMANDER INTELLIGENCE</small></div></header>
+      <div class="tactical-modes" role="group" aria-label="War table order">
+        <button class="active" data-tactical-mode="rally"><i>⚑</i><span><b>Rally Beacon</b><small>Move the whole host army</small></span></button>
+        <button data-tactical-mode="pirates"><i>☠</i><span><b>Rooftop Pirates</b><small>Spend Essence on this roof</small></span></button>
+        <button data-tactical-mode="wonderwork"><i>⌂</i><span><b>Commission Wonderwork</b><small>Claim an open explored roof</small></span></button>
+      </div>
+      <div id="tactical-map" class="tactical-map" aria-label="Fog-respecting tactical map">
+        <svg id="tactical-links" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <div id="tactical-nodes"></div>
+        <div id="tactical-forces"></div>
+        <p id="tactical-empty">The atlas wakes when a strong co-op battle begins.</p>
+      </div>
+      <div class="tactical-legend"><span class="player">YOUR DISTRICT</span><span class="ally">ALLY</span><span class="enemy">RIVAL IN SIGHT</span><span class="route">ACTIVE ROUTE</span><span class="unknown">FOG</span></div>
+    </section>
+
+    <section class="order-section">
+      <header><span>02</span><div><b>DEPLOY SQUADS</b><small>Spend the Commander’s shared economy</small></div></header>
+      <div class="order-grid two">
+        <button data-type="train" data-value="mobs"><i>⚔</i><span><b>Mischief Mob</b><small>Line formation</small></span><kbd>70·18</kbd></button>
+        <button data-type="train" data-value="hexbows"><i>➶</i><span><b>Hexbow Choir</b><small>Ranged formation</small></span><kbd>62·42</kbd></button>
+        <button data-type="train" data-value="brooms"><i>⌁</i><span><b>Broom Patrol</b><small>Auto-scout formation</small></span><kbd>54·38</kbd></button>
+        <button data-type="train" data-value="lanterns"><i>♜</i><span><b>Lantern Guard</b><small>Heavy formation</small></span><kbd>110·88</kbd></button>
+        <button id="signature-order" class="signature-order" data-type="train" data-value="signature"><i id="signature-icon">★</i><span><b id="signature-name">Faction Signature</b><small id="signature-role">Waiting for Commander faction</small></span><kbd id="signature-cost">—</kbd></button>
+      </div>
+    </section>
+
+    <section class="order-section">
+      <header><span>03</span><div><b>CHARTER FUTURE ROOFS</b><small>ACTIVE · <strong id="active-charter-plan">WAITING FOR COMMANDER</strong></small></div></header>
+      <div class="order-grid two charter-grid">
+        <button data-type="charter" data-value="pumpkin-market"><i>◒</i><span><b>Pumpkin Night Market</b><small>Glow economy</small></span></button>
+        <button data-type="charter" data-value="junk-jamboree"><i>⚙</i><span><b>Junk Jamboree</b><small>Scrap economy</small></span></button>
+        <button data-type="charter" data-value="impossible-housing"><i>⌂</i><span><b>Impossible Housing</b><small>Crowd cap + vision</small></span></button>
+        <button data-type="charter" data-value="volunteer-seance"><i>☁</i><span><b>Volunteer Séance</b><small>Automatic free squads</small></span></button>
+      </div>
+    </section>
+
+    <section class="order-section">
+      <header><span>04</span><div><b>RATIFY THE GRAND DOCTRINE</b><small>PERMANENT · <strong id="active-doctrine-plan">NOT YET CHOSEN</strong></small></div></header>
+      <div id="doctrine-grid" class="order-grid two doctrine-grid"><p>Waiting for the Commander faction’s council papers.</p></div>
+    </section>
+
+    <section class="order-section">
+      <header><span>05</span><div><b>SHAPE THE WAR</b><small>One press redirects the whole host army</small></div></header>
+      <div class="order-grid three">
+        <button data-type="macro" data-value="guard"><i>♜</i><span><b>Guard</b><small>Regroup at Clock</small></span></button>
+        <button data-type="macro" data-value="raid"><i>⚡</i><span><b>Raid</b><small>Hit nearest district</small></span></button>
+        <button data-type="macro" data-value="march"><i>⚑</i><span><b>Grand March</b><small>Everything forward</small></span></button>
+      </div>
+      <button class="wide-order" data-type="scout" data-value="toggle"><i>◉</i><span><b>Toggle Auto-Scout</b><small id="scout-state">Commander currently decides</small></span></button>
+    </section>
+
+    <section class="order-section support">
+      <header><span>06</span><div><b>SPEND THE FALLEN</b><small>Quartermaster-controlled Essence support</small></div></header>
+      <div class="order-grid three">
+        <button data-type="support" data-value="pirates"><i>☠</i><span><b>Frontline Pirates</b><small>Deploy at leading squad</small></span><kbd>✦60</kbd></button>
+        <button data-type="support" data-value="reinforce"><i>✚</i><span><b>Second Wind</b><small>Repair four squads</small></span><kbd>✦34</kbd></button>
+        <button data-type="support" data-value="parade"><i>♬</i><span><b>Phantom Parade</b><small>Six crews advance</small></span><kbd>✦125</kbd></button>
+      </div>
+    </section>
+
+    <section class="activity">
+      <header><b>COMMAND RECEIPTS</b><button id="reconnect">RECONNECT</button></header>
+      <div id="activity-list"><p>Waiting for the server relay…</p></div>
+    </section>
+
+    <footer>Local command relay · Commander browser owns simulation · Every order is acknowledged</footer>
+  </main>
+  <script src="controller.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "bulk-intake-conveyor",
+  "version": "v0.1",
+  "provides": [
+    "bulk-intake.bounded-map",
+    "bulk-intake.exact-duplicate-park",
+    "bulk-intake.structural-candidate-inventory",
+    "bulk-intake.active-name-collision-route",
+    "bulk-intake.resumable-decision-signature",
+    "bulk-intake.bounded-review-batches",
+    "bulk-intake.digest-bound-receipt-set"
+  ],
+  "consumes": [
+    "filesystem:explicit-archive-supply-root",
+    "filesystem:workshop-root",
+    "axm.archive-intake-map/v1",
+    "axm.bulk-intake-conveyor-receipt/v1"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.bulk-intake-conveyor-receipt/v1",
+      "axm.bulk-intake-archive-work-item/v1",
+      "axm.bulk-intake-candidate-work-item/v1",
+      "axm.bulk-intake-worklist/v1"
+    ],
+    "accepts": [
+      "filesystem/archive-supply-root",
+      "filesystem/workshop-root",
+      "axm.bulk-intake-conveyor-receipt/v1"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "resume",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "explicit-user-selected-output:master-receipt-json",
+      "explicit-user-selected-output:digest-named-receipt-set"
+    ],
+    "refuses": [
+      "implicit-download-folder-selection",
+      "filesystem-watching",
+      "symbolic-link-following",
+      "archive-extraction",
+      "archived-file-content-reading",
+      "archived-code-execution",
+      "structural-name-as-declared-identity",
+      "name-collision-as-semantic-equivalence",
+      "newest-version-authority-inference",
+      "automatic-delete",
+      "automatic-review-vote",
+      "automatic-merge",
+      "installer-staging",
+      "module-installation",
+      "permission-change",
+      "rollback-change",
+      "promotion",
+      "git-push",
+      "canon-change",
+      "network-intake",
+      "runtime-readiness-claim",
+      "visual-approval-claim"
+    ]
+  }
+}

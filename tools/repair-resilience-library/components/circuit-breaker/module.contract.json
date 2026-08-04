@@ -1,0 +1,39 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.circuit-breaker",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.circuit-breaker.state/v1"
+  ],
+  "consumes": [
+    "dependency-call-outcomes"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_1_CAPABLE_WHEN_PREDECLARED",
+    "automaticMutation": false,
+    "integrationRequiredForAutomation": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/body-pulse",
+      "tools/diagnostics-operations-center"
+    ],
+    "reason": "Provides a bounded state machine; callers must explicitly route calls through it."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "unbounded-retry",
+      "unbounded-restart",
+      "hidden-degradation",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

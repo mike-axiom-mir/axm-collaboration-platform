@@ -1,0 +1,86 @@
+{
+  "schema_version": "0.5",
+  "asset_id": "AXM-DOORWAY-001",
+  "asset_version": "0.4.0",
+  "coordinate_contract": {
+    "linear_unit": "meter",
+    "angle_unit": "radian",
+    "up": "+Y",
+    "forward": "+Z"
+  },
+  "root_link": "root",
+  "links": [
+    {
+      "link_id": "root",
+      "member_nodes": [
+        "foot__l00",
+        "foot__l01",
+        "column__l00",
+        "column__l01",
+        "top_beam",
+        "energy_strip__l00",
+        "energy_strip__l01",
+        "header_core"
+      ],
+      "pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "game_effective_mass_share_kg": 475.940162,
+      "visual_source": "AXM-DOORWAY-001.glb",
+      "collision_source": "collision/AXM-DOORWAY-001_COLLISION.glb"
+    },
+    {
+      "link_id": "door_panel",
+      "member_nodes": [
+        "door"
+      ],
+      "pivot_m": [
+        0,
+        1.12,
+        -0.08
+      ],
+      "game_effective_mass_share_kg": 144.059838,
+      "visual_source": "AXM-DOORWAY-001.glb",
+      "collision_source": "collision/AXM-DOORWAY-001_COLLISION.glb"
+    }
+  ],
+  "joints": [
+    {
+      "joint_id": "door_lift",
+      "type": "prismatic",
+      "parent_link": "root",
+      "child_link": "door_panel",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pivot_m": [
+        0,
+        1.12,
+        -0.08
+      ],
+      "limits_si": {
+        "lower": 0.0,
+        "upper": 2.15,
+        "unit": "meter"
+      },
+      "drive_intent": {
+        "mode": "position",
+        "speed": 1.6
+      },
+      "actuator": null,
+      "controller": null
+    }
+  ],
+  "authority": {
+    "automatic_physical_control": false,
+    "actuator_mapping": "UNASSIGNED",
+    "controller_mapping": "UNASSIGNED",
+    "emergency_stop": "NOT_IMPLEMENTED",
+    "human_engineering_review_required": true
+  },
+  "scope_limit": "Kinematic translation proof only. It is not a robot design, controller, safety case, dynamic model, wiring plan, or authorization to move physical hardware."
+}

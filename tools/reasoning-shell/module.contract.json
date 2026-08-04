@@ -1,0 +1,80 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "reasoning-shell",
+  "version": "v0.2-branch",
+  "provides": [
+    "profile-guided-single-step-prompting",
+    "profile-free-shell-off-baseline-prompting",
+    "manual-mode-without-ai-connector",
+    "gate-enforced-session-and-action-boundary",
+    "human-checkpoint-recording",
+    "non-empty-rejection-reason-enforcement",
+    "repair-context-next-step-routing",
+    "proposal-only-after-action-tweak",
+    "explicit-session-persistence-and-export",
+    "condition-paired-local-count-comparison"
+  ],
+  "consumes": [
+    "foundation:runtime",
+    "foundation:storage",
+    "foundation:gate",
+    "optional:foundation-ai-connector",
+    "same-origin:profiles.json",
+    "browser:explicit-json-file-selection",
+    "browser:blob-download"
+  ],
+  "permissions": [
+    "storage",
+    "ai",
+    "gate",
+    "files",
+    "export"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.reasoning-shell-session/v1",
+      "axm.reasoning-shell-after-action/v1",
+      "axm.reasoning-shell-tweak-proposal/v1",
+      "text:recorded-condition-comparison"
+    ],
+    "accepts": [
+      "human:explicit-task-condition-and-checkpoint",
+      "optional:axm-ask-response",
+      "local-file:reasoning-shell-session-json"
+    ]
+  },
+  "boundaries": {
+    "automaticWrites": [
+      "browser-local:foundation-gate-decision-log-on-submission"
+    ],
+    "explicitWrites": [
+      "browser-local:foundation-store:shell-session-*",
+      "user-download:reasoning-shell-session-json"
+    ],
+    "refuses": [
+      "gate-denial-bypass",
+      "blank-rejection-reason",
+      "automatic-step-loop",
+      "automatic-session-start",
+      "automatic-profile-mutation",
+      "automatic-tweak-application",
+      "automatic-session-export",
+      "automatic-model-quality-verdict",
+      "count-comparison-as-learning-improvement-proof",
+      "human-checkpoint-as-objective-truth",
+      "placeholder-profile-as-tuned-profile",
+      "real-model-tested-claim",
+      "unselected-local-file-read",
+      "external-network-fetch-outside-selected-ai-connector",
+      "direct-workshop-source-write",
+      "automatic-status-promotion",
+      "canon-authority"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
+}

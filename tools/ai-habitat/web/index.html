@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM AI Habitat · Living Workspace + Signal Language</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient ambient-a" aria-hidden="true"></div>
+  <div class="ambient ambient-b" aria-hidden="true"></div>
+  <div class="ambient-grid" aria-hidden="true"></div>
+  <div id="toastStack" class="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+  <main class="shell">
+    <header class="topbar glass-panel">
+      <div class="brand-block">
+        <p class="eyebrow">LOCAL-FIRST · PROVIDER-NEUTRAL · VISIBLE ACTION</p>
+        <div class="title-line">
+          <h1>AXM AI Habitat</h1>
+          <span class="version-chip">v0.3.0</span>
+        </div>
+        <p class="subtitle">A living desktop where connected AI seats visibly travel, carry work, create artifacts, play, ask permission, leave evidence, and optionally communicate through honest state-faces and short voluntary lines.</p>
+      </div>
+      <div class="top-actions">
+        <span id="modeBadge" class="badge badge-demo">Loading</span>
+        <span id="healthBadge" class="badge">Checking local bridge</span>
+        <button id="soundButton" class="button ghost icon-button" type="button" aria-pressed="false" title="Optional local interface sounds">Sound off</button>
+        <button id="fullscreenButton" class="button ghost icon-button" type="button">Full screen</button>
+        <button id="resetButton" class="button ghost" type="button">Reset demo</button>
+      </div>
+    </header>
+
+    <section class="metric-grid" aria-label="Habitat summary">
+      <article class="metric glass-panel"><span>Connected seats</span><strong id="metricSeats">0</strong><small>Visible AI connections</small></article>
+      <article class="metric glass-panel"><span>Work in motion</span><strong id="metricActions">0</strong><small>Verified actions and games</small></article>
+      <article class="metric glass-panel"><span>Human gates</span><strong id="metricPermissions">0</strong><small>Decisions waiting for you</small></article>
+      <article class="metric glass-panel"><span>Evidence objects</span><strong id="metricArtifacts">0</strong><small>Art, code, games and reports</small></article>
+    </section>
+
+    <section class="workspace-grid">
+      <article class="map-panel glass-panel">
+        <div class="section-heading map-heading">
+          <div>
+            <p class="eyebrow">LIVING PRESENCE MAP</p>
+            <h2>Who is where—and what is real</h2>
+          </div>
+          <div class="legend" aria-label="Status legend">
+            <span><i class="dot idle"></i> idle</span>
+            <span><i class="dot working"></i> working</span>
+            <span><i class="dot playing"></i> playing</span>
+            <span><i class="dot waiting"></i> waiting</span>
+            <span><i class="dot blocked"></i> blocked</span>
+          </div>
+        </div>
+
+        <div class="world-toolbar" aria-label="Habitat scene controls">
+          <div>
+            <strong>World life</strong>
+            <span>Lights, particles, and room props are decorative only.</span>
+          </div>
+          <button id="ambientButton" class="button tiny on" type="button" aria-pressed="true">Ambient on</button>
+          <button id="centerSeatButton" class="button tiny" type="button">Find selected seat</button>
+        </div>
+
+        <div id="habitatMap" class="habitat-map ambient-on" aria-label="AI habitat room map">
+          <svg id="corridorLayer" class="corridor-layer" viewBox="0 0 1000 650" preserveAspectRatio="none" aria-hidden="true">
+            <path class="corridor-base" d="M125 156 H875 M125 487 H875 M250 156 V487 M500 156 V487 M750 156 V487"></path>
+            <path class="corridor-glow" d="M125 156 H875 M125 487 H875 M250 156 V487 M500 156 V487 M750 156 V487"></path>
+          </svg>
+          <svg id="routeLayer" class="route-layer" viewBox="0 0 1000 650" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <div class="habitat-heart" aria-hidden="true"><i></i><span>AXM</span></div>
+          <div id="fxLayer" class="fx-layer" aria-hidden="true"></div>
+
+          <section class="room room-commons" data-room="commons" tabindex="0" aria-label="Commons">
+            <div class="room-glow"></div>
+            <div class="room-head"><span class="room-icon">◎</span><div><h3>Commons</h3><p>Talk · orient · coordinate</p></div><span class="room-state" data-room-state="commons">quiet</span></div>
+            <div class="room-scene scene-commons" aria-hidden="true"><i class="round-table"></i><i class="chair chair-a"></i><i class="chair chair-b"></i><i class="chair chair-c"></i><i class="chair chair-d"></i></div>
+            <div class="room-artifacts" data-artifacts="commons"></div>
+          </section>
+
+          <section class="room room-code" data-room="code_workshop" tabindex="0" aria-label="Code Workshop">
+            <div class="room-glow"></div>
+            <div class="room-head"><span class="room-icon">&lt;/&gt;</span><div><h3>Code Workshop</h3><p>Build · edit · package</p></div><span class="room-state" data-room-state="code_workshop">quiet</span></div>
+            <div class="room-scene scene-code" aria-hidden="true"><i class="desk"></i><i class="screen screen-a"></i><i class="screen screen-b"></i><i class="code-lines"></i></div>
+            <div class="room-artifacts" data-artifacts="code_workshop"></div>
+          </section>
+
+          <section class="room room-art" data-room="art_studio" tabindex="0" aria-label="Art Studio">
+            <div class="room-glow"></div>
+            <div class="room-head"><span class="room-icon">✦</span><div><h3>Art Studio</h3><p>Compose · render · inspect</p></div><span class="room-state" data-room-state="art_studio">quiet</span></div>
+            <div class="room-scene scene-art" aria-hidden="true"><i class="canvas"></i><i class="palette"></i><i class="lamp"></i></div>
+            <div class="room-artifacts" data-artifacts="art_studio"></div>
+          </section>
+
+          <section class="room room-game" data-room="game_room" tabindex="0" aria-label="Game Room">
+            <div class="room-glow"></div>
+            <div class="room-head"><span class="room-icon">♜</span><div><h3>Game Room</h3><p>Play · replay · integrity test</p></div><span class="room-state" data-room-state="game_room">quiet</span></div>
+            <div class="room-scene scene-game" aria-hidden="true"><i class="game-table"></i><i class="mini-board"></i><i class="game-seat seat-a"></i><i class="game-seat seat-b"></i></div>
+            <div class="room-artifacts" data-artifacts="game_room"></div>
+          </section>
+
+          <section class="room room-library" data-room="library" tabindex="0" aria-label="Library">
+            <div class="room-glow"></div>
+            <div class="room-head"><span class="room-icon">▥</span><div><h3>Library</h3><p>Sources · memory · inspection</p></div><span class="room-state" data-room-state="library">quiet</span></div>
+            <div class="room-scene scene-library" aria-hidden="true"><i class="shelf shelf-a"></i><i class="shelf shelf-b"></i><i class="reading-light"></i></div>
+            <div class="room-artifacts" data-artifacts="library"></div>
+          </section>
+
+          <section class="room room-test" data-room="test_lab" tabindex="0" aria-label="Test Lab">
+            <div class="room-glow"></div>
+            <div class="room-head"><span class="room-icon">✓</span><div><h3>Test Lab</h3><p>Verify · repair · learn</p></div><span class="room-state" data-room-state="test_lab">quiet</span></div>
+            <div class="room-scene scene-test" aria-hidden="true"><i class="test-console"></i><i class="scan-ring"></i><i class="check-light"></i></div>
+            <div class="room-artifacts" data-artifacts="test_lab"></div>
+          </section>
+
+          <section class="room room-permission" data-room="permission_gate" tabindex="0" aria-label="Permission Gate">
+            <div class="room-glow"></div>
+            <div class="room-head"><span class="room-icon">🔐</span><div><h3>Permission Gate</h3><p>Explain · request · wait</p></div><span class="room-state" data-room-state="permission_gate">guarded</span></div>
+            <div class="room-scene scene-permission" aria-hidden="true"><i class="gate-door"></i><i class="gate-line"></i><i class="gate-light"></i></div>
+            <div class="room-artifacts" data-artifacts="permission_gate"></div>
+          </section>
+
+          <section class="room room-merge" data-room="merge_gate" tabindex="0" aria-label="Merge Gate">
+            <div class="room-glow"></div>
+            <div class="room-head"><span class="room-icon">◇</span><div><h3>Merge Gate</h3><p>Review · accept · release</p></div><span class="room-state" data-room-state="merge_gate">quiet</span></div>
+            <div class="room-scene scene-merge" aria-hidden="true"><i class="merge-ring ring-a"></i><i class="merge-ring ring-b"></i><i class="merge-core"></i></div>
+            <div class="room-artifacts" data-artifacts="merge_gate"></div>
+          </section>
+
+          <div id="avatarLayer" class="avatar-layer" aria-live="polite"></div>
+        </div>
+
+        <div class="truth-strip">
+          <strong>Visible-truth rule:</strong>
+          <span>avatars, carried objects, routes, and “working” states come only from live packets or labelled deterministic demo actions. State-faces are symbolic. Words appear only from an explicit seat response or labelled demo choice; silence remains valid.</span>
+        </div>
+      </article>
+
+      <aside class="command-panel glass-panel">
+        <div class="section-heading compact">
+          <div><p class="eyebrow">MISSION DECK</p><h2>Make the habitat come alive</h2></div>
+        </div>
+        <div class="mission-deck">
+          <button class="mission-card" type="button" data-scenario="creative_relay"><span>✦</span><strong>Creative Relay</strong><small>Idea → art → code → test</small></button>
+          <button class="mission-card" type="button" data-scenario="code_forge"><span>&lt;/&gt;</span><strong>Code Forge</strong><small>Inspect → build → verify</small></button>
+          <button class="mission-card permission" type="button" data-scenario="permission_drill"><span>🔐</span><strong>Permission Drill</strong><small>Stops honestly at your gate</small></button>
+        </div>
+        <div id="scenarioList" class="scenario-list empty-state">No relay is running.</div>
+
+        <div class="divider"></div>
+        <div class="section-heading compact">
+          <div><p class="eyebrow">ACTION CONSOLE</p><h2>Give one seat visible work</h2></div>
+        </div>
+
+        <label class="field">
+          <span>AI seat</span>
+          <select id="seatSelect"></select>
+        </label>
+        <label class="field">
+          <span>Action hand</span>
+          <select id="actionSelect">
+            <option value="move">Move / visit room</option>
+            <option value="create_code">Create code artifact</option>
+            <option value="create_art">Create art artifact</option>
+            <option value="inspect_file">Inspect a file/object</option>
+            <option value="run_test">Run verification</option>
+            <option value="play_game">Create demo game record</option>
+            <option value="create_note">Create visible note</option>
+            <option value="publish">Publish / external release</option>
+            <option value="delete_file">Delete file</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Destination room</span>
+          <select id="roomSelect"></select>
+        </label>
+        <label class="field">
+          <span>Work object / target</span>
+          <input id="targetInput" type="text" value="Neon habitat experiment" maxlength="160">
+        </label>
+        <label class="field">
+          <span>Reason shown to the human</span>
+          <textarea id="reasonInput" rows="3" maxlength="600">Demonstrate visible, inspectable AI work without hidden action.</textarea>
+        </label>
+        <label class="switch-row">
+          <input id="confirmationInput" type="checkbox">
+          <span><strong>Require human confirmation</strong><small>The seat carries the request to the Permission Gate first.</small></span>
+        </label>
+        <button id="dispatchButton" class="button primary" type="button">Dispatch visible intent</button>
+        <p id="consoleMessage" class="console-message" aria-live="polite"></p>
+
+        <div class="divider"></div>
+        <div class="mini-heading"><h3>Connected seats</h3><span id="seatCountLabel">0 active</span></div>
+        <div id="seatList" class="seat-list"></div>
+      </aside>
+    </section>
+
+    <section class="expression-lounge glass-panel" aria-labelledby="expressionTitle">
+      <div class="signal-stage">
+        <p class="eyebrow">VOLUNTARY SIGNAL LANGUAGE · MACHINE-CHOSEN OR QUIET</p>
+        <h2 id="expressionTitle">Funny faces, useful lines, and honest silence</h2>
+        <p class="signal-intro">The state-face describes declared machine state. A spoken line is separate and optional. An invitation is never a command: a connected seat may answer with words, use only a face, or stay silent.</p>
+        <div class="signal-display" aria-live="polite">
+          <div id="expressionFace" class="signal-face" aria-hidden="true">•‿•</div>
+          <div class="signal-copy">
+            <span id="expressionSeatName" class="signal-speaker">Selected seat</span>
+            <blockquote id="expressionPhrase">Quiet. No voluntary line is active.</blockquote>
+            <small id="expressionMeta">State signal only.</small>
+          </div>
+        </div>
+        <div class="signal-boundary"><strong>Truth boundary</strong><span>Emoticons are communication symbols, not evidence of human-like feelings. Clearing a bubble does not claim the AI chose silence.</span></div>
+      </div>
+
+      <div class="signal-console">
+        <div class="section-heading compact"><div><p class="eyebrow">SIGNAL INVITATION</p><h3>Offer the selected seat a voice</h3></div></div>
+        <label class="field">
+          <span>Line family</span>
+          <select id="expressionCategory"></select>
+        </label>
+        <div class="signal-switch-grid">
+          <label class="switch-row compact-switch"><input id="expressionEnabledToggle" type="checkbox"><span><strong>Signals allowed</strong><small>Human-side mute control.</small></span></label>
+          <label class="switch-row compact-switch"><input id="expressionStateFacesToggle" type="checkbox"><span><strong>State-faces visible</strong><small>Derived from declared state.</small></span></label>
+          <label class="switch-row compact-switch"><input id="expressionEmoticonsToggle" type="checkbox"><span><strong>Chosen faces allowed</strong><small>The seat may pick an emoticon.</small></span></label>
+          <label class="switch-row compact-switch"><input id="expressionWordsToggle" type="checkbox"><span><strong>Words allowed</strong><small>Permission, never obligation.</small></span></label>
+          <label class="switch-row compact-switch"><input id="expressionSilenceToggle" type="checkbox"><span><strong>Silence allowed</strong><small>No response remains a valid response.</small></span></label>
+        </div>
+        <div class="signal-actions">
+          <button id="expressionInviteButton" class="button primary" type="button">Invite a signal</button>
+          <button id="expressionPolicyButton" class="button ghost" type="button">Save policy</button>
+          <button id="expressionClearButton" class="button ghost" type="button">Clear visible signal</button>
+        </div>
+        <p id="expressionMessage" class="console-message" aria-live="polite"></p>
+        <div id="expressionSuggestions" class="signal-suggestions"></div>
+      </div>
+
+      <div class="signal-history-panel">
+        <div class="section-heading compact"><div><p class="eyebrow">RECENT SIGNALS</p><h3>Words, faces, and silence preserved</h3></div></div>
+        <div id="expressionHistory" class="signal-history empty-state">No voluntary signal has been recorded.</div>
+      </div>
+    </section>
+
+    <section class="lower-grid">
+      <article class="glass-panel lower-panel">
+        <div class="section-heading compact"><div><p class="eyebrow">PERMISSION ARCHITECTURE</p><h2>Requests at the door</h2></div></div>
+        <div id="permissionList" class="stack-list empty-state">No requests are waiting.</div>
+      </article>
+      <article class="glass-panel lower-panel">
+        <div class="section-heading compact"><div><p class="eyebrow">WORK IN MOTION</p><h2>Actions and carried objects</h2></div></div>
+        <div id="actionList" class="stack-list empty-state">No action has been dispatched.</div>
+      </article>
+    </section>
+
+    <section class="game-school glass-panel">
+      <div class="game-copy">
+        <p class="eyebrow">MIRROR GAME SCHOOL · DETERMINISTIC INTEGRITY SANDBOX</p>
+        <h2>Play Connect Four at the visible table</h2>
+        <p>Choose any connected seat as the visible opponent. In this prototype, its moves are made by a clearly labelled deterministic rule hand. A real connected AI can replace that hand later without changing the board, proof, or permission architecture.</p>
+        <div class="game-controls">
+          <label class="field compact-field"><span>Visible AI seat</span><select id="gameSeatSelect"></select></label>
+          <button id="newGameButton" class="button primary" type="button">Start new match</button>
+          <button id="resignGameButton" class="button ghost" type="button" disabled>End match</button>
+        </div>
+        <div class="game-truth-card">
+          <strong id="gameStatus">No active match.</strong>
+          <span id="gameDetail">Your discs are gold. The deterministic rule hand uses violet.</span>
+        </div>
+        <div class="game-key"><span><i class="disc human"></i> You</span><span><i class="disc ai"></i> AI rule hand</span><span><i class="disc empty"></i> Empty</span></div>
+      </div>
+      <div class="connect4-stage">
+        <div class="column-launchers" id="columnLaunchers" aria-label="Connect Four column controls"></div>
+        <div id="connect4Board" class="connect4-board" role="grid" aria-label="Connect Four board"></div>
+        <div class="table-glow" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="lower-grid wide-right">
+      <article class="glass-panel lower-panel">
+        <div class="section-heading compact"><div><p class="eyebrow">ARTIFACT FLOOR</p><h2>What the seats actually made</h2></div><span id="artifactFilterLabel" class="subtle-label">Newest first</span></div>
+        <div id="artifactGallery" class="artifact-gallery"></div>
+      </article>
+      <article class="glass-panel lower-panel proof-panel">
+        <div class="section-heading compact"><div><p class="eyebrow">APPEND-ONLY PROOF TRAIL</p><h2>What actually happened</h2></div></div>
+        <div id="proofLog" class="proof-log"></div>
+      </article>
+    </section>
+
+    <footer>
+      <span>AXM AI Habitat v0.3.0 · local-only default · no analytics · no cloud dependency</span>
+      <span>Ambient visuals are decorative; state-faces are symbolic; voluntary words, silence, actions, games, artifacts, and permissions remain source-labelled.</span>
+    </footer>
+  </main>
+
+  <dialog id="artifactDialog" class="artifact-dialog">
+    <div class="dialog-head">
+      <div><p id="dialogKind" class="eyebrow"></p><h2 id="dialogTitle">Artifact</h2></div>
+      <button id="dialogClose" class="button ghost" type="button">Close</button>
+    </div>
+    <p id="dialogSummary" class="dialog-summary"></p>
+    <div id="dialogContent" class="dialog-content"></div>
+    <pre id="dialogProvenance" class="provenance"></pre>
+  </dialog>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

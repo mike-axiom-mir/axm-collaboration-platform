@@ -1,0 +1,61 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "agent-command-center",
+  "version": "v0.4",
+  "provides": [
+    "supervised-identity-registry",
+    "connector-and-model-bound-identity-routing",
+    "identity-separated-private-wisdom",
+    "explicit-shared-wisdom",
+    "optional-default-identity-selection",
+    "local-connector-readiness-view",
+    "consent-aware-identity-task-routing"
+  ],
+  "consumes": [
+    "service:local-model-bridge",
+    "service:mirror-native-status",
+    "identity:nova",
+    "identity:axiom-mir",
+    "identity:gemini-local",
+    "identity:mirror",
+    "workshop:storage-wisdom-identity-gate-foundation"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "plain-text:identity-grounded-context",
+      "browser-local:evidence-backed-identity-wisdom-entry"
+    ],
+    "accepts": [
+      "hub:init",
+      "plain-text:attributed-task",
+      "browser-local:legacy-identity-wisdom"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "browser-local:axm-identity-registry",
+      "browser-local:legacy-identity-migration-marker"
+    ],
+    "refuses": [
+      "hidden-identity-switch",
+      "cross-identity-private-memory-merge",
+      "shared-wisdom-without-explicit-choice",
+      "automatic-wisdom-promotion",
+      "connector-or-model-lock-bypass",
+      "cloud-or-local-connector-fallback",
+      "mirror-ask-through-generic-connector",
+      "hidden-connector-token-access",
+      "automatic-agent-run",
+      "permission-expansion",
+      "promotion-authority",
+      "canon-authority"
+    ]
+  }
+}

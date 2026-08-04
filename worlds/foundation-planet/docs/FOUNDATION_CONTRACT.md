@@ -68,7 +68,7 @@ This implements stateful routing across the loaded canonical reach graph, not a 
 
 `axm.foundation-planet.earth-system-column/v1` is a sparse canonical 0.25-degree surface-column model. Every cell carries a boundary layer and an `axm.foundation-planet.free-troposphere/v2` compatibility reservoir, each with temperature, water vapor, bounded cloud liquid, bounded cloud ice and an independent eastward/northward wind vector, plus a runoff-routing queue. Boundary-layer and free-troposphere pressure thickness sum to surface pressure. New columns begin at a 25%/75% partition; horizontal transport may evolve the boundary fraction within 8% to 50%, and local pressure forcing preserves the transported fraction. Representative layer heights are terrain plus 0.5 km and terrain plus 4.5 km. Layer dry-air mass and sensible-heat capacity scale with actual pressure thickness. A visited land cell also carries ponded water, aged snow-water equivalent, root-zone water, deep-soil water, groundwater storage, soil freeze and surface heat. A visited ocean cell carries mixed-layer depth, temperature, freshwater anomaly, salinity, thermodynamic sea-ice water equivalent/fraction/thickness, and a distinct aged snow-on-sea-ice reservoir. Bedrock and soil depth select bounded porosity, field capacity, wilting point, conductivity, aquifer depth and specific yield.
 
-Each column also owns `axm.foundation-planet.atmosphere-biogeochemistry-state/v3`: persistent local carbon-dioxide carbon, oxygen and nitrogen-gas reservoirs in eight ordered `axm.foundation-planet.atmosphere-biogeochemistry-layer/v1` records aligned with the native pressure column. The whole-column fields are exact sums and compatibility projections, not a second reservoir. Land and ocean ecology still expose their established exchangeable-atmosphere fields for compatibility, but those fields are synchronized mirrors rather than independent reservoirs. `axm.foundation-planet.atmosphere-biosphere-gas-flux-receipt/v1` closes each local land-atmosphere or ocean-atmosphere C/O2 exchange at native surface layer 0, and estuary denitrification credits that same surface layer through the typed boundary-input receipt described above. `axm.foundation-planet.atmosphere-biogeochemistry-vertical-transport-receipt/v1` consumes all seven native adjacent dry-air exchange receipts, applies ordered conservative lower/upper composition exchange, and closes C/O2/N2 without claiming molecular diffusion or three-dimensional plumes. Loaded horizontal transport is described with the Earth transport graph below. These gases are not globally mixed, so their CO2 ppm, oxygen and nitrogen fractions remain local bounded proxies rather than a global atmospheric-composition or chemistry claim.
+Each column also owns `axm.foundation-planet.atmosphere-biogeochemistry-state/v3`: persistent local carbon-dioxide carbon, oxygen and nitrogen-gas reservoirs in eight ordered `axm.foundation-planet.atmosphere-biogeochemistry-layer/v1` records aligned with the native pressure column. The whole-column fields are exact sums and compatibility projections, not a second reservoir. Land and ocean ecology still expose their established exchangeable-atmosphere fields for compatibility, but those fields are synchronized mirrors rather than independent reservoirs. `axm.foundation-planet.atmosphere-biosphere-gas-flux-receipt/v1` closes each local land-atmosphere or ocean-atmosphere C/O2 exchange at native surface layer 0; estuary and floodplain denitrification credit nitrogen to that same surface layer through typed boundary-input receipts. `axm.foundation-planet.atmosphere-biogeochemistry-vertical-transport-receipt/v1` consumes all seven native adjacent dry-air exchange receipts, applies ordered conservative lower/upper composition exchange, and closes C/O2/N2 without claiming molecular diffusion or three-dimensional plumes. Loaded horizontal transport is described with the Earth transport graph below. These gases are not globally mixed, so their CO2 ppm, oxygen and nitrogen fractions remain local bounded proxies rather than a global atmospheric-composition or chemistry claim.
 
 `axm.foundation-planet.atmosphere-pressure-column/v2` is the persisted native vertical state inside
 that Earth-system column. It contains eight bottom-to-top
@@ -594,6 +594,295 @@ does not claim bidirectional Henry-law equilibrium, carbonate speciation,
 resolved boundary-layer turbulence, wind or wave transfer, barometric and
 salinity corrections, global mixing, continuous unloaded exchange or
 scientific calibration.
+
+## Rung 46 bidirectional floodplain carbon-gradient addendum
+
+`axm.foundation-planet.basin-routing-engine/v16` migrates the gas-exchange
+process to `axm.foundation-planet.floodplain-gas-exchange-state/v2`. The state
+still owns process memory only. Floodplain chemistry remains the local DIC and
+dissolved-O2 owner, and the native eight-layer atmosphere remains the CO2
+carbon and atmospheric-O2 owner.
+
+The carbon plan compares two bounded quantities:
+
+1. an exchangeable fraction of floodplain-owned DIC; and
+2. an aqueous CO2-carbon equilibrium target derived from local water mass,
+   temperature and the native atmosphere surface layer's CO2 ppm proxy.
+
+The declared reference is 0.167 mg C/L at 420 ppm and 25 C. The temperature
+factor is `exp(-0.025 * (temperatureC - 25))`; local CO2 scales the target
+linearly relative to 420 ppm. This is an explicit deterministic proxy, not a
+claim that total DIC is dissolved molecular CO2 or that pH, alkalinity and
+carbonate speciation have been solved.
+
+A positive signed gradient proposes `carbonToAtmosphereKgC`; a negative
+gradient proposes `carbonToFloodplainKgC`. Both cannot be positive in one
+transition. Evasion is bounded by actual floodplain DIC. Invasion is bounded by
+actual native atmosphere layer-0 CO2 carbon. Oxygen-deficit reaeration remains
+bounded separately by local dissolved-O2 saturation deficit and actual layer-0
+atmospheric oxygen.
+
+Commit requires one exchange ID across these v2 receipts:
+
+1. `axm.foundation-planet.floodplain-gas-exchange-receipt/v2` records the
+   exclusive DIC debit or credit plus any dissolved-O2 credit;
+2. `axm.foundation-planet.atmosphere-floodplain-gas-exchange-receipt/v2`
+   records the opposite CO2-carbon side and the atmospheric-O2 debit in native
+   layer 0;
+3. `axm.foundation-planet.floodplain-gas-exchange-process-receipt/v2` binds
+   both owner digests, direction, quantities, reach and atmosphere cell.
+
+The atmosphere hand refuses either CO2-carbon or oxygen overdraw before
+mutation. Basin v16 checks the signed owner-to-owner carbon residual, oxygen
+residual, native-layer lineage, exclusive direction and process/owner digest
+binding. The prior owner-level 0.001 kg absolute floating-point bound remains
+explicit for subtracting small fluxes from planet-cell reservoirs.
+
+A v15 snapshot preserves v1 observed days, unavailable days, cumulative
+evasion and cumulative reaeration. It initializes cumulative carbon invasion
+to zero and sets a migration checkpoint. The first v16 observation performs no
+transfer, clears the checkpoint and invents no reverse history. Previous basin
+receipts are not accepted as v16 bidirectional evidence. API v42 and the
+renderer-independent experience projection expose the compact v2 state without
+write authority.
+
+This addendum supersedes R45 only for carbon directionality. It remains a
+bounded concentration-gradient parameterization, not a complete Henry-law,
+carbonate-speciation, air-water turbulence, wind/wave, bubble, barometric,
+salinity or scientific gas-flux model.
+
+## Rung 47 floodplain denitrification addendum
+
+`axm.foundation-planet.basin-routing-engine/v17` adds persistent
+`axm.foundation-planet.floodplain-denitrification-state/v1` process memory to
+each reach. Floodplain chemistry remains the DOC, DIC and DIN material owner;
+the native eight-layer atmosphere remains the nitrogen-gas owner. The process
+state owns observation counts, bounded activity diagnostics, cumulative
+reaction quantities and evidence digests only.
+
+The plan runs after local aerobic respiration and before physical air-water gas
+exchange. It reads actual floodplain water and chemistry, computes dissolved
+oxygen in mg/L, and opens an anoxia gate only below the bounded configurable
+threshold (2 mg/L by default). Potential daily DOC consumption is further
+bounded by wetness, living abundance, actual DOC and a configurable reactive
+nitrate-equivalent fraction of actual DIN (0.5 by default). Calling that
+fraction nitrate-equivalent is a truth boundary: DIN is not relabelled as
+fully nitrate and nitrate/ammonium speciation is not present.
+
+The declared bounded stoichiometry is one kg DOC-C to one kg DIC-C and 14/15
+kg DIN-N to 14/15 kg N2-N. A material-moving transition requires one transfer
+ID across:
+
+1. `axm.foundation-planet.floodplain-denitrification-reaction-receipt/v1`,
+   which debits floodplain DOC and DIN, credits floodplain DIC and closes the
+   local carbon and nitrogen boundary;
+2. `axm.foundation-planet.atmosphere-gas-boundary-input-receipt/v1`, which
+   identifies `floodplain-denitrification`, binds the reaction digest and
+   credits nitrogen only to native atmosphere layer 0; and
+3. `axm.foundation-planet.floodplain-denitrification-receipt/v1`, which binds
+   the reach, atmosphere cell, transfer ID, quantities and both owner digests.
+
+The system audit checks both owner schemas, exact lineage and quantities,
+surface-layer placement, carbon closure, nitrogen reaction closure,
+floodplain-to-atmosphere transfer closure and both owner residuals. An unloaded
+atmosphere produces a typed zero-transfer process observation and no owner
+receipts. Life off freezes all reaction pools. A v16 snapshot initializes
+empty process memory with a migration checkpoint; its first v17 observation
+moves no material and invents no history. Previous v16 receipts remain legacy
+evidence and are not relabelled as v17 denitrification evidence. API v43 and
+the renderer-independent experience projection expose this state read-only.
+
+This is not a mechanistic microbial or redox model. It does not resolve
+nitrate/ammonium, nitrite, nitrous oxide, pH, alkalinity, porewater transport,
+temperature kinetics or scientifically calibrated denitrification rates.
+
+## Rung 48 temperature-responsive denitrification addendum
+
+`axm.foundation-planet.basin-routing-engine/v18` and
+`axm.foundation-planet.floodplain-denitrification-state/v2` add a bounded
+temperature response to the R47 process without changing material ownership.
+For each loaded reach, the plan uses the owning Earth-system column's surface
+temperature as an explicit floodplain-water-temperature proxy. It multiplies
+the existing wetness, anoxia and living activity factors by
+`Q10^((temperatureC - referenceTemperatureC) / 10)`. Defaults are Q10 2 and
+reference 20 °C; accepted Q10 is bounded to 0.5–4 and the resulting response
+factor is bounded to 0.05–4.
+
+The v2 process state adds temperature-constrained duration and the latest proxy
+temperature, reference, Q10, unclamped factor, bounded factor and constraint
+flag. `axm.foundation-planet.floodplain-denitrification-receipt/v2` binds those
+diagnostics to the unchanged v1 floodplain reaction receipt and v1 atmosphere
+boundary receipt. Therefore all R47 transfer IDs, paired owner debits/credits,
+stoichiometry and conservation checks remain authoritative. The audit also
+requires finite bounded temperature diagnostics and the declared proxy truth
+boundary.
+
+A v17 basin snapshot preserves every prior denitrification observation counter
+and cumulative reaction total, initializes temperature-constrained history to
+zero, drops legacy receipts and requires one v18 zero-transfer checkpoint. The
+checkpoint cannot invent historical reaction or temperature evidence. API v44
+and experience capsules project the new diagnostics read-only.
+
+The surface value is a forcing proxy, not persistent floodplain water
+temperature. This rung does not resolve thermal inertia, freeze/thaw,
+Arrhenius kinetics, microbial populations, nitrate/ammonium speciation or
+scientifically calibrated rates.
+
+## Rung 49 nitrate and ammonium ownership addendum
+
+`axm.foundation-planet.river-chemistry-state/v3` replaces aggregate DIN-only
+ownership with persistent `dissolvedNitrateNitrogenKgN` and
+`dissolvedAmmoniumNitrogenKgN` reservoirs. The retained
+`dissolvedInorganicNitrogenKgN` field is an exact compatibility sum and must
+equal nitrate plus ammonium after every normalization, debit, credit and
+transport. `axm.foundation-planet.floodplain-state/v2` owns the same pair.
+
+A generic land-runoff nitrogen input is partitioned by
+`nitrateFraction` at the river receiver; the default is 0.5. The v3 river
+input receipt records both credited species, the fraction, exact transfer
+identity and a `measuredInputSpeciationClaimed: false` boundary. The sender's
+total-N debit is unchanged. River-to-river, river-to-estuary, overbank and
+return-flow transfers carry nitrate and ammonium with the exact transported
+water fraction. Basin v19 reports independent nitrate, ammonium and aggregate
+compatibility residuals, each under the existing one-kilogram numerical
+tolerance.
+
+`axm.foundation-planet.floodplain-detrital-return-credit/v2` credits returned
+plant nitrogen to ammonium and proves nitrate is unchanged. Denitrification
+then reads actual owned nitrate. The v2 local reaction receipt debits nitrate,
+leaves ammonium invariant, closes DOC-to-DIC carbon and nitrate-to-N2-N
+stoichiometry, and preserves the exact native-atmosphere receiver lineage.
+`axm.foundation-planet.floodplain-denitrification-state/v3` and its v3 process
+receipt retain the R48 temperature response while removing the former
+reactive-nitrate-equivalent fraction. Ammonium is never eligible for this
+reaction.
+
+Restoring `axm.foundation-planet.basin-routing-engine/v18` into v19 preserves
+total channel and floodplain DIN, cumulative denitrification reaction history
+and temperature history. Legacy aggregate DIN is initialized 50/50 into the
+new pools as a declared model initialization, not reconstructed evidence.
+Legacy receipts are dropped, all new owner states carry migration checkpoints,
+and the first v19 process observation must move zero material and invent no
+history. API v45 and the experience capsule expose compact river and
+floodplain species projections without mutation authority.
+
+Nitrite, nitrification, pH and alkalinity remain unresolved. A future
+nitrification rung must add an explicit ammonium debit, nitrate credit and
+oxygen/alkalinity ledger; the [EPA Nutrient Control Design Manual](https://www.epa.gov/sites/production/files/2019-08/documents/nutrient_control_design_manual.pdf)
+documents the oxygen and alkalinity demands that make a silent conversion
+scientifically dishonest.
+
+## Rung 50 oxygen-ledgered floodplain nitrification addendum
+
+`axm.foundation-planet.floodplain-state/v3` adds the local
+`axm.foundation-planet.floodplain-nitrification-reaction-receipt/v1` owner
+boundary. The reaction debits persistent dissolved ammonium-N, credits
+persistent dissolved nitrate-N by the same amount, and debits persistent
+dissolved oxygen at 4.57 kg O2 per kg N. Its receipt proves exact transfer
+identity and independently closes ammonium debit, nitrate credit, aggregate
+DIN, dissolved-oxygen debit and oxygen stoichiometry. No atmospheric boundary
+receipt exists because all three material pools belong to the same floodplain
+chemistry owner.
+
+`axm.foundation-planet.floodplain-nitrification-state/v1` is persistent
+process memory, and `axm.foundation-planet.floodplain-nitrification-receipt/v1`
+binds its transition to the current local reaction receipt and digest. The
+bounded first-order plan reads actual owned ammonium and dissolved oxygen,
+requires aerobic availability, uses wetness and Life controls, and applies the
+loaded Earth-system surface temperature as an explicit water-temperature proxy
+with default Q10 2 and reference 20 C. Gas exchange runs first, so current-step
+reaeration is material available to the reaction. Only oxygen above the
+configured minimum concentration is reactive, so a bounded step retains that
+aerobic reserve. Life-off permits no reaction or cumulative-process change.
+
+Nitrification also creates an explicit 7.14 kg CaCO3-equivalent alkalinity
+demand diagnostic per kg N. The 4.57 oxygen factor and 7.14 alkalinity factor
+follow the [EPA Nutrient Control Design Manual](https://www.epa.gov/sites/default/files/2019-08/documents/nutrient_control_design_manual.pdf).
+The diagnostic is not a debit: Caelus does not yet own floodplain alkalinity,
+river alkalinity or pH state. This rung therefore makes no material-alkalinity,
+pH-feedback, nitrite-intermediate, microbial-population, persistent
+water-temperature or calibrated-rate claim. Its ammonium-to-nitrate reaction
+is a declared one-step approximation.
+
+`axm.foundation-planet.basin-routing-engine/v20` and step v20 include the
+reaction in species-specific nitrogen and dissolved-oxygen conservation
+ledgers, retain unloaded nitrification memory, and expose typed reaction and
+process receipt arrays to the read-only system audit. Restoring v19 preserves
+all existing owner and process state, initializes only the absent v1
+nitrification organ to zero, drops legacy receipts, and requires one typed
+zero-reaction checkpoint without invented history. API v46 and the experience
+capsule project the compact result without mutation authority.
+
+## Rung 51 end-to-end alkalinity addendum
+
+This addendum supersedes R50 only for material alkalinity. R50's cumulative
+alkalinity-demand value remains preserved as explicitly legacy diagnostic
+history and is not migrated into the v2 material-debit total.
+
+R51 adds a persistent acid-neutralizing-capacity ledger represented only as
+kilograms of CaCO3 equivalent. The material owners are
+`axm.foundation-planet.soil-biogeochemistry-state/v2`,
+`axm.foundation-planet.runoff-biogeochemistry-queue/v2`,
+`axm.foundation-planet.river-chemistry-state/v4`,
+`axm.foundation-planet.floodplain-state/v4`,
+and the mixed layer in
+`axm.foundation-planet.ocean-ecology-state/v3`. Process organs observe and bind
+these owners; they do not silently become material owners.
+`axm.foundation-planet.estuary-state/v2` retains sediment and cumulative
+reaction history, while alkalinity itself crosses the estuary as an exact
+transformation flux rather than a persistent estuary-water pool.
+
+New canonical soil state receives a deterministic bedrock-responsive initial
+condition. Carbonate/limestone substrates begin with more capacity than
+granite/gneiss substrates under otherwise comparable forcing, consistent with
+the qualitative [USGS alkalinity overview](https://www.usgs.gov/water-science-school/science/alkalinity-and-water).
+New canonical ocean state uses a declared open-ocean 2,300 micromole/kg total
+alkalinity reference at salinity 35 from NOAA's
+[CO2 system calculation guidance](https://www.ncei.noaa.gov/access/ocean-carbon-acidification-data-system/oceans/co2rprt.html).
+Neither value is a measured local observation. Restoring prior soil, runoff,
+river, floodplain or ocean schemas preserves all prior C/N/P/O2, species and
+process history, initializes material alkalinity to zero and records a
+migration checkpoint. Prior estuary state preserves sediment and reaction
+history while initializing cumulative generated alkalinity to zero. No
+historical material alkalinity is reconstructed.
+
+Every material route carries alkalinity beside the existing dissolved tracers:
+
+1. v2 soil mobilization and runoff-transfer receipts debit the finite soil or
+   runoff owner and credit the exact receiving queue, land cell or loaded ocean;
+2. river input v4, floodplain exchange v3 and basin inlet/reach/mouth v7 receipts
+   bind sender and receiver quantities under one transfer ID;
+3. estuary flux v2 passes river alkalinity to the coast while separately
+   recording reaction generation; and
+4. ocean flux v3 plus river/runoff input v2 receipts and Earth transport v11
+   conserve mixed-layer alkalinity across loaded neighbors.
+
+Nitrification in `axm.foundation-planet.floodplain-nitrification-state/v2`
+debits 7.14 kg CaCO3 equivalent per kg ammonium-N converted, in addition to the
+existing 4.57 kg O2 debit. Available owned alkalinity is a hard material cap;
+the plan cannot overdraw it. Floodplain denitrification state/receipt v4 and
+local reaction receipt v3 credit 3.57 kg CaCO3 equivalent per kg nitrate-N
+converted to N2-N. Estuary denitrification applies the same generation factor.
+The nitrification factors follow the
+[EPA Nutrient Control Design Manual](https://www.epa.gov/sites/default/files/2019-08/documents/nutrient_control_design_manual.pdf);
+the denitrification factor follows EPA's
+[Municipal Nutrient Removal Technologies report](https://www.epa.gov/sites/default/files/2019-08/documents/municipal_nutrient_removal_technologies_vol_i.pdf).
+
+`axm.foundation-planet.basin-routing-engine/v21` and step v21 include specific
+runoff, river, estuary and ocean alkalinity residuals plus a coupled residual
+that accounts for nitrification consumption and floodplain/estuary
+denitrification generation. The read-only system audit adds a dedicated
+`end-to-end-alkalinity-ledger` check for schemas, route lineage, reaction
+stoichiometry, owner debits/credits and all residuals. Experience capsules and
+API v47 expose only read-only projections.
+
+The [USGS field-method definition](https://www.usgs.gov/publications/chapter-a6-section-66-alkalinity-and-acid-neutralizing-capacity)
+supports interpreting the pool as capacity to neutralize strong acid. It does
+not support relabelling that capacity as pH. R51 does not resolve carbonate,
+bicarbonate, borate or other species; solve the carbonate system; couple DIC to
+equilibrium; calculate pH; exchange alkalinity with the deep ocean; claim
+measured concentrations; or claim calibrated watershed, estuary or ocean
+chemistry.
 
 ## Runtime integrity and handoff
 

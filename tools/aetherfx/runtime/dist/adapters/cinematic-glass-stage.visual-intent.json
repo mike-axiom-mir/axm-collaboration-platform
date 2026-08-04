@@ -1,0 +1,382 @@
+{
+  "schema": "axm.resolved-visual-intent/1",
+  "contractVersion": "1.0.0",
+  "generatedBy": "AXM AetherFX Visual Effect Fabric v1.3.0",
+  "generatedAt": "2026-07-28T00:00:00.000Z",
+  "target": {
+    "id": "generic-game-contract",
+    "name": "Generic game renderer contract",
+    "boundary": "Portable intent only; no native engine parity is claimed."
+  },
+  "scene": {
+    "id": "scene.hero",
+    "name": "Luminous Website Hero",
+    "renderer": "hero"
+  },
+  "quality": "high",
+  "globals": {
+    "mood": "aurora",
+    "intensity": 0.76,
+    "depth": 0.72,
+    "motion": 0.48,
+    "quality": "high",
+    "resolvedQuality": "high",
+    "performanceBias": "balanced",
+    "reducedMotion": false,
+    "photosensitiveSafe": false,
+    "highContrast": false,
+    "largeText": false
+  },
+  "accessibility": {
+    "reducedMotion": false,
+    "photosensitiveSafe": false,
+    "highContrast": false,
+    "largeText": false
+  },
+  "operations": [
+    {
+      "order": 0,
+      "instanceId": "layer-cinematic-stage",
+      "moduleId": "material.liquid-glass",
+      "version": "1.1.0",
+      "kind": "organ",
+      "category": "Materials",
+      "role": "Materials",
+      "targetRole": null,
+      "renderer": {
+        "type": "class",
+        "scope": "surface",
+        "className": "fx-material-liquid-glass"
+      },
+      "parameters": {
+        "opacity": 0.7,
+        "blur": 22,
+        "distortion": 0.28,
+        "edge": 0.46
+      },
+      "source": "composite:mold.cinematic-glass-stage",
+      "fallbackOf": null,
+      "quality": {
+        "low": {
+          "enabled": true,
+          "parameterOverrides": {
+            "blur": 8,
+            "distortion": 0
+          }
+        },
+        "medium": {
+          "enabled": true,
+          "parameterOverrides": {
+            "blur": 16
+          }
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true,
+          "parameterOverrides": {
+            "distortion": 0.46
+          }
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "support": {
+        "target": "generic-game-contract",
+        "status": "contract",
+        "note": "Portable intent only; no native engine parity is claimed."
+      }
+    },
+    {
+      "order": 1,
+      "instanceId": "layer-cinematic-stage",
+      "moduleId": "light.aurora-wash",
+      "version": "1.1.0",
+      "kind": "effect",
+      "category": "Light",
+      "role": "Light",
+      "targetRole": null,
+      "renderer": {
+        "type": "overlay",
+        "scope": "ambient",
+        "className": "fx-overlay-aurora"
+      },
+      "parameters": {
+        "intensity": 0.24,
+        "scale": 118,
+        "speed": 22,
+        "softness": 38
+      },
+      "source": "composite:mold.cinematic-glass-stage",
+      "fallbackOf": null,
+      "quality": {
+        "low": {
+          "enabled": false,
+          "fallbackModuleId": "light.ambient-backwash"
+        },
+        "medium": {
+          "enabled": true,
+          "parameterOverrides": {
+            "intensity": 0.16
+          }
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true,
+          "parameterOverrides": {
+            "intensity": 0.42
+          }
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": false,
+        "highContrastSafe": true,
+        "notes": "Reduced-motion mode freezes the aurora wash.",
+        "photosensitiveSafe": false
+      },
+      "support": {
+        "target": "generic-game-contract",
+        "status": "contract",
+        "note": "Portable intent only; no native engine parity is claimed."
+      }
+    },
+    {
+      "order": 2,
+      "instanceId": "layer-cinematic-stage",
+      "moduleId": "atmosphere.depth-fog",
+      "version": "1.1.0",
+      "kind": "effect",
+      "category": "Atmosphere",
+      "role": "Atmosphere",
+      "targetRole": null,
+      "renderer": {
+        "type": "overlay",
+        "scope": "atmosphere",
+        "className": "fx-overlay-depth-fog"
+      },
+      "parameters": {
+        "density": 0.28,
+        "height": 58,
+        "softness": 42,
+        "color": "#6576ff"
+      },
+      "source": "composite:mold.cinematic-glass-stage",
+      "fallbackOf": null,
+      "quality": {
+        "low": {
+          "enabled": true,
+          "parameterOverrides": {
+            "density": 0.14,
+            "softness": 18
+          }
+        },
+        "medium": {
+          "enabled": true,
+          "parameterOverrides": {
+            "density": 0.22
+          }
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true,
+          "parameterOverrides": {
+            "density": 0.42
+          }
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "support": {
+        "target": "generic-game-contract",
+        "status": "contract",
+        "note": "Portable intent only; no native engine parity is claimed."
+      }
+    },
+    {
+      "order": 3,
+      "instanceId": "layer-cinematic-stage",
+      "moduleId": "atmosphere.dust-motes",
+      "version": "1.1.0",
+      "kind": "effect",
+      "category": "Atmosphere",
+      "role": "Atmosphere",
+      "targetRole": null,
+      "renderer": {
+        "type": "overlay",
+        "scope": "atmosphere",
+        "className": "fx-overlay-dust",
+        "generatedCount": 34,
+        "particleMode": "dust"
+      },
+      "parameters": {
+        "density": 0.28,
+        "intensity": 0.22,
+        "size": 1.3,
+        "speed": 20
+      },
+      "source": "composite:mold.cinematic-glass-stage",
+      "fallbackOf": null,
+      "quality": {
+        "low": {
+          "enabled": false,
+          "fallbackModuleId": "atmosphere.ambient-field"
+        },
+        "medium": {
+          "enabled": true,
+          "parameterOverrides": {
+            "density": 0.18
+          }
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true,
+          "parameterOverrides": {
+            "density": 0.6
+          }
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": false,
+        "highContrastSafe": true,
+        "notes": "Reduced-motion mode freezes the motes.",
+        "photosensitiveSafe": false
+      },
+      "support": {
+        "target": "generic-game-contract",
+        "status": "contract",
+        "note": "Portable intent only; no native engine parity is claimed."
+      }
+    },
+    {
+      "order": 4,
+      "instanceId": "layer-cinematic-stage",
+      "moduleId": "focus.guidance-trail",
+      "version": "1.1.0",
+      "kind": "effect",
+      "category": "Focus + Depth",
+      "role": "Focus + Depth",
+      "targetRole": null,
+      "renderer": {
+        "type": "overlay",
+        "scope": "light",
+        "className": "fx-overlay-guidance"
+      },
+      "parameters": {
+        "intensity": 0.26,
+        "width": 42,
+        "angle": -16,
+        "position": 66
+      },
+      "source": "composite:mold.cinematic-glass-stage",
+      "fallbackOf": null,
+      "quality": {
+        "low": {
+          "enabled": false,
+          "fallbackModuleId": "focus.halo"
+        },
+        "medium": {
+          "enabled": true,
+          "parameterOverrides": {
+            "intensity": 0.18
+          }
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true,
+          "parameterOverrides": {
+            "intensity": 0.42
+          }
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "support": {
+        "target": "generic-game-contract",
+        "status": "contract",
+        "note": "Portable intent only; no native engine parity is claimed."
+      }
+    },
+    {
+      "order": 5,
+      "instanceId": "layer-cinematic-stage",
+      "moduleId": "depth.layered-shadow",
+      "version": "1.1.0",
+      "kind": "effect",
+      "category": "Focus + Depth",
+      "role": "Focus + Depth",
+      "targetRole": null,
+      "renderer": {
+        "type": "class",
+        "scope": "surface",
+        "className": "fx-depth-shadow"
+      },
+      "parameters": {
+        "distance": 20,
+        "softness": 42,
+        "opacity": 0.46
+      },
+      "source": "composite:mold.cinematic-glass-stage",
+      "fallbackOf": null,
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "support": {
+        "target": "generic-game-contract",
+        "status": "contract",
+        "note": "Portable intent only; no native engine parity is claimed."
+      }
+    }
+  ],
+  "supportSummary": {
+    "total": 6,
+    "implemented": 0,
+    "approximated": 0,
+    "contract": 6,
+    "unsupported": 0
+  },
+  "provenance": {
+    "creator": "Mike — Axiom/Mir",
+    "created": "2026-07-28T00:00:00.000Z",
+    "source": "AXM AetherFX v1.1 expansion example",
+    "license": "UNSET — choose before public sharing",
+    "lastModified": "2026-07-28T20:00:56.602Z"
+  }
+}

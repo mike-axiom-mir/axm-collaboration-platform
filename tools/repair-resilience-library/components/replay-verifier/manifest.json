@@ -1,0 +1,44 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.replay-verifier",
+  "name": "Replay Verifier",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "VERIFICATION",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": [
+    "repair-seed",
+    "verification-regression-proof",
+    "local-first",
+    "dependency-free",
+    "evidence-only"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Replay recorded operations against repaired state and compare outcomes, side effects, and timing bounds."
+  ],
+  "accepts": [
+    "initial-state",
+    "recorded-operations",
+    "replay-adapter",
+    "expected-outcome"
+  ],
+  "produces": [
+    "axm.replay-verification.report/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Replay recorded operations against repaired state and compare outcomes, side effects, and timing bounds.",
+  "notes": "Evidence or test-plan primitive only. A passing authored self-test does not grant repair, promotion, release, or CANON authority."
+}

@@ -8,15 +8,29 @@ const path = require('path');
 
 const PRIVATE_TOP_LEVEL = new Set([
   'exports', 'backups', 'logs', 'saves', 'state', '.claude', '.codex', '.grok',
-  '.git', 'node_modules', 'runtime', 'sessions', 'cache', 'tmp', 'projects', 'intakes'
+  '.git', 'node_modules', 'runtime', 'sessions', 'cache', 'tmp', 'projects', 'intakes',
+  'distributions'
 ]);
 const PRIVATE_NESTED = new Set([
   'exports', 'backups', 'logs', 'saves', 'state', '.claude', '.codex', '.grok',
-  '.git', 'node_modules', 'sessions', 'cache', 'tmp', 'projects', 'intakes'
+  '.git', 'node_modules', 'sessions', 'cache', 'tmp', 'projects', 'intakes',
+  'rollback', '__pycache__', '.pytest_cache', 'coverage'
 ]);
+const PRIVATE_TOP_LEVEL_PATTERNS = [
+  /^_archive_review_/i,
+  /^AXM_.*_WORKING(?:_|$)/i,
+  /^AXM_.*_PACK_/i,
+  /^AXM_AETHERGLASS_VISUAL_ENGINE_/i,
+  /^AXM_VISUAL_HANDSHAKE_/i
+];
 const SENSITIVE_EXTENSIONS = new Set(['.pem', '.pfx', '.key', '.log']);
 const PUBLIC_OMISSIONS = new Set([
-  'tools/game-hub/game-library/008-district-party/assets/source/user_generated/interactable_alpha_pack_2026-07-19/AXM_DISTRICT_PARTY_INTERACTABLE_ALPHA_PACK_2026-07-19.zip'
+  'tools/game-hub/game-library/008-district-party/assets/source/user_generated/interactable_alpha_pack_2026-07-19/AXM_DISTRICT_PARTY_INTERACTABLE_ALPHA_PACK_2026-07-19.zip',
+  'intakes/universal-object-fabric-v0.7.0-2026-07-28/source/AXM_UNIVERSAL_OBJECT_FABRIC_COMPLETE_INTAKE_v0_7_0_2026-07-28.zip'
+]);
+const REVIEWED_PUBLIC_INTAKES = new Set([
+  'intakes/ai-team-collaboration-runs-01-101-v1',
+  'intakes/universal-object-fabric-v0.7.0-2026-07-28'
 ]);
 
 function slash(value) {
@@ -53,12 +67,18 @@ function isPublicExcluded(relative, isDirectory) {
   const rel = slash(relative);
   if (rel === '.') return false;
   if (PUBLIC_OMISSIONS.has(rel)) return true;
-  const segments = rel.toLowerCase().split('/');
-  if (PRIVATE_TOP_LEVEL.has(segments[0])) return true;
+  const originalSegments = rel.split('/');
+  const segments = originalSegments.map(part => part.toLowerCase());
+  const reviewedIntake = [...REVIEWED_PUBLIC_INTAKES].some(prefix => rel === prefix || rel.startsWith(prefix + '/'));
+  const reviewedIntakeAncestor = isDirectory && [...REVIEWED_PUBLIC_INTAKES].some(prefix => prefix.startsWith(rel + '/'));
+  if (segments[0] === 'intakes' && !reviewedIntake && !reviewedIntakeAncestor) return true;
+  if (PRIVATE_TOP_LEVEL.has(segments[0]) && !reviewedIntake && !reviewedIntakeAncestor) return true;
+  if (PRIVATE_TOP_LEVEL_PATTERNS.some(pattern => pattern.test(originalSegments[0]))) return true;
   if (segments.slice(1, isDirectory ? undefined : -1).some(part => PRIVATE_NESTED.has(part))) return true;
   const name = segments[segments.length - 1];
   if (name === 'axm_start_report.txt') return true;
-  if (name === 'bridge-token.txt' || name === '.env' || name.startsWith('.env.')) return true;
+  if (name.endsWith('.bak') || name.includes('.bak-')) return true;
+  if (name === 'bridge-token.txt' || name === 'bridge_token.txt' || name === '.env' || name.startsWith('.env.')) return true;
   if (name === 'private-preview.js' || name.startsWith('private_')) return true;
   if (!isDirectory && SENSITIVE_EXTENSIONS.has(path.extname(name).toLowerCase())) return true;
   return false;

@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/preset.schema.json",
+  "title": "AXM Text Preset",
+  "type": "object",
+  "required": [
+    "id",
+    "label",
+    "category",
+    "text",
+    "recipe",
+    "role",
+    "surface",
+    "scale",
+    "glow",
+    "plate",
+    "sheen",
+    "glitch"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "label": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "recipe": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "surface": {
+      "enum": [
+        "solid",
+        "dynamic",
+        "image",
+        "video"
+      ]
+    },
+    "platform": {
+      "type": "string"
+    },
+    "importance": {
+      "enum": [
+        "low",
+        "normal",
+        "high",
+        "critical"
+      ]
+    },
+    "scale": {
+      "type": "number",
+      "minimum": 0.5,
+      "maximum": 2.5
+    },
+    "glow": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 2.5
+    },
+    "plate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1.5
+    },
+    "sheen": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 2
+    },
+    "glitch": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1.5
+    },
+    "uppercase": {
+      "type": "boolean"
+    },
+    "featured": {
+      "type": "boolean"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "quality_tier": {
+      "enum": [
+        "auto",
+        "low",
+        "balanced",
+        "high",
+        "cinematic"
+      ]
+    },
+    "custom": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true
+}

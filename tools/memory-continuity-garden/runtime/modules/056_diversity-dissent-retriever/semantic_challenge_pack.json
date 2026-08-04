@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "REPETITION_AS_AUTHORITY",
+      "expected": "HOLD_RETRIEVAL_PRIVACY_SCOPE",
+      "stimulus": "repeated low-authority text outranks direct evidence"
+    }
+  ],
+  "category": 6,
+  "category_name": "6. Retrieval, indexing, relevance, freshness, and forgetting",
+  "full_semantic_implementation": false,
+  "number": 56,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Include materially different evidence and interpretations rather than returning only the dominant repeated phrasing.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "7cdb028053c76ca7da89f3e7a66ead6943462881d8e1907f2c257049d0cd2382"
+  },
+  "source_contract_sha256": "a9436e1df9456b2504bdb45fd77f8a5037cef7323c1184086c60c4eee0c1f16c",
+  "stable_id": "axm.memory.diversity-dissent-retriever"
+}

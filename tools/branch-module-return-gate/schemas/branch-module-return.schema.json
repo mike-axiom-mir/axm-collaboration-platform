@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.branch-module-return/v1",
+  "title": "AXM branch module return contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "module", "source", "selection", "portability", "verification"],
+  "properties": {
+    "schema": {"const": "axm.branch-module-return/v1"},
+    "module": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "title", "summary"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,79}$"},
+        "version": {"type": "string", "minLength": 1, "maxLength": 80},
+        "title": {"type": "string", "minLength": 1, "maxLength": 180},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 2000}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project", "branch"],
+      "properties": {
+        "project": {"type": "string", "minLength": 1, "maxLength": 160},
+        "repository": {"type": ["string", "null"], "maxLength": 500},
+        "branch": {"type": "string", "minLength": 1, "maxLength": 200},
+        "commit": {"type": ["string", "null"], "maxLength": 160}
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["files"],
+      "properties": {
+        "files": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 300,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 260}
+        }
+      }
+    },
+    "portability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "branchRuntimeRequired", "networkRequired", "packageManagerRequired", "hostCommandsRequired", "externalPackages", "remoteServices", "nativeComponents", "hostCommands", "absolutePaths", "workshopCapabilities", "permissions"],
+      "properties": {
+        "target": {"const": "axm-workshop-dependency-free"},
+        "branchRuntimeRequired": {"const": false},
+        "networkRequired": {"const": false},
+        "packageManagerRequired": {"const": false},
+        "hostCommandsRequired": {"const": false},
+        "externalPackages": {"type": "array", "maxItems": 0},
+        "remoteServices": {"type": "array", "maxItems": 0},
+        "nativeComponents": {"type": "array", "maxItems": 0},
+        "hostCommands": {"type": "array", "maxItems": 0},
+        "absolutePaths": {"type": "array", "maxItems": 0},
+        "workshopCapabilities": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 180}},
+        "permissions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 180}}
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selftest"],
+      "properties": {
+        "selftest": {"type": "string", "minLength": 1, "maxLength": 260}
+      }
+    },
+    "requiredSeats": {"enum": ["dual"]}
+  }
+}
+

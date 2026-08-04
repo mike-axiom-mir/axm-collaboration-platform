@@ -1,0 +1,43 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.watchdog-restart-guard",
+  "name": "Watchdog Restart Guard",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "RUNTIME",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": [
+    "repair-seed",
+    "runtime-resilience",
+    "local-first",
+    "dependency-free",
+    "bounded"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Restart stalled components only after loop detection, restart limits, state checks, and escalation thresholds."
+  ],
+  "accepts": [
+    "heartbeat-status",
+    "restart-history",
+    "state-checks"
+  ],
+  "produces": [
+    "axm.watchdog-restart-decision/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Restart stalled components only after loop detection, restart limits, state checks, and escalation thresholds.",
+  "notes": "Standalone bounded runtime primitive. Invocation is explicit; active AXM authority, integration, and safe operating limits remain unproven."
+}

@@ -11,6 +11,10 @@ const contract = JSON.parse(fs.readFileSync(path.join(root, 'module.contract.jso
 
 assert.equal(manifest.id, 'judgement-chamber');
 assert.equal(contract.id, manifest.id);
+assert.equal(manifest.schema, 'axm.tool-manifest/v1');
+assert.equal(manifest.kind, 'product');
+assert.deepEqual(manifest.permissions, contract.permissions);
+assert.deepEqual(contract.lifecycle, { state_owner: 'service', reload: 'resume', disconnect: 'graceful-degrade', cleanup: 'explicit' });
 assert.equal(Core.DIMENSIONS.length, 4);
 assert.equal(Core.completeness(Core.emptyDimensions()).ready, false);
 const dimensions = Core.emptyDimensions();

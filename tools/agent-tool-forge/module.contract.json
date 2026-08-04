@@ -1,0 +1,56 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "agent-tool-forge",
+  "version": "v0.2",
+  "provides": [
+    "deterministic-module-draft-foundry",
+    "shared-human-machine-forge-core",
+    "bounded-draft-validation",
+    "exact-draft-and-package-fingerprints",
+    "experimental-module-blueprint-rendering",
+    "review-json-and-zip-export"
+  ],
+  "consumes": [
+    "workshop:storage-gate-foundation",
+    "browser:local-file-download",
+    "hub:module-lifecycle"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.forge-draft/v1",
+      "axm.forge-package/v1",
+      "application/zip"
+    ],
+    "accepts": [
+      "hub:init",
+      "plain-text:bounded-tool-need",
+      "browser-local:saved-forge-draft"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "browser-local:agent-tool-forge-draft",
+      "user-selected-download:experimental-forge-package"
+    ],
+    "refuses": [
+      "automatic-install",
+      "source-overwrite",
+      "source-delete",
+      "generated-code-execution",
+      "automatic-apply",
+      "automatic-promotion",
+      "canon-authority",
+      "permission-grant",
+      "undeclared-network-activation",
+      "undeclared-file-authority",
+      "package-fingerprint-reuse-after-edit"
+    ]
+  }
+}

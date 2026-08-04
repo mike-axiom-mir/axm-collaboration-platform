@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Hand Specification Foundry</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AXM Workshop hand · TEST</p>
+        <h1>Hand Specification Foundry</h1>
+        <p class="lede">Turn one named capability gap into a buildable, implementation-neutral contract without pretending the missing hand already exists.</p>
+      </div>
+      <aside class="truth-card" aria-label="Foundry truth boundary">
+        <strong>DRAFT is not installation</strong>
+        <p>The Foundry specifies purpose, interfaces, effects, consent, budgets, recovery, compatibility, verification and a human promotion gate. It grants no authority.</p>
+      </aside>
+    </header>
+
+    <section class="intake" aria-labelledby="intakeHeading">
+      <div class="panel-heading">
+        <h2 id="intakeHeading">1 · Load a gap report</h2>
+        <span>Consumes axm.capability-gap-report/v1</span>
+      </div>
+      <div class="intake-grid">
+        <label for="gapReportInput">Gap report JSON
+          <span>Paste a report emitted by Capability Gap Workbench.</span>
+          <textarea id="gapReportInput" spellcheck="false"></textarea>
+        </label>
+        <label for="candidateSelect">Missing capability candidate
+          <span>Select one proposed contract from the report.</span>
+          <select id="candidateSelect" disabled></select>
+        </label>
+      </div>
+      <div class="actions" aria-label="Gap report actions">
+        <button id="loadReportButton" type="button">Read gap report</button>
+        <button class="secondary" id="exampleButton" type="button">Load complete example</button>
+      </div>
+    </section>
+
+    <section class="form-panel" aria-labelledby="specHeading">
+      <div class="panel-heading">
+        <h2 id="specHeading">2 · Specify the missing hand</h2>
+        <span>Every boundary is required</span>
+      </div>
+      <div class="form-grid">
+        <label for="capabilityId">Capability ID
+          <input id="capabilityId" autocomplete="off">
+        </label>
+        <label for="gapType">Gap type
+          <select id="gapType">
+            <option>HAND</option><option>SKILL</option><option>AUTHORITY</option><option>SUBSTRATE</option><option>EVIDENCE</option><option>CONTRACT</option><option>UNKNOWN</option>
+          </select>
+        </label>
+        <label class="span-2" for="sourceRequirementIds">Source requirement IDs
+          <span>One per line. These preserve why the hand was requested.</span>
+          <textarea id="sourceRequirementIds"></textarea>
+        </label>
+        <label class="span-2" for="purpose">Purpose
+          <textarea id="purpose"></textarea>
+        </label>
+        <label for="inputsAndSchemas">Inputs and schemas
+          <span>One explicit input or schema per line.</span>
+          <textarea id="inputsAndSchemas"></textarea>
+        </label>
+        <label for="outputsAndSchemas">Outputs and schemas
+          <span>One explicit output or schema per line.</span>
+          <textarea id="outputsAndSchemas"></textarea>
+        </label>
+        <label for="sideEffects">Side effects
+          <span>One per line. Write “none” only when that is truthful.</span>
+          <textarea id="sideEffects"></textarea>
+        </label>
+        <label for="permissionsAndConsent">Permissions and consent
+          <span>One permission, refusal or consent boundary per line.</span>
+          <textarea id="permissionsAndConsent"></textarea>
+        </label>
+        <label class="span-2" for="resourceBudget">Resource budget
+          <textarea id="resourceBudget"></textarea>
+        </label>
+        <label class="span-2" for="failureAndRecovery">Failure and recovery behavior
+          <textarea id="failureAndRecovery"></textarea>
+        </label>
+        <label class="span-2" for="compatibilityVersionContract">Compatibility and version contract
+          <textarea id="compatibilityVersionContract"></textarea>
+        </label>
+        <label class="span-2" for="verificationContract">Verification contract
+          <textarea id="verificationContract"></textarea>
+        </label>
+        <label class="span-2" for="promotionGate">Promotion gate
+          <textarea id="promotionGate"></textarea>
+        </label>
+      </div>
+      <div class="actions" aria-label="Specification actions">
+        <button class="primary" id="buildButton" type="button">Build DRAFT specification</button>
+        <button id="downloadButton" type="button" disabled>Download JSON specification</button>
+        <button id="clearButton" type="button">Clear Foundry</button>
+      </div>
+      <p class="status-line" id="status" role="status" aria-live="polite">Loading the complete local example…</p>
+    </section>
+
+    <section class="result-grid" aria-label="Specification result">
+      <div class="result-panel">
+        <div class="panel-heading"><h2>Validation</h2><span>No fake done</span></div>
+        <ul class="validation-list" id="validationList"></ul>
+      </div>
+      <div class="result-panel">
+        <div class="panel-heading"><h2>Portable draft</h2><span>axm.missing-hand-specification/v1</span></div>
+        <pre id="specPreview">No specification has been built.</pre>
+      </div>
+    </section>
+  </main>
+
+  <script src="hand-specification-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

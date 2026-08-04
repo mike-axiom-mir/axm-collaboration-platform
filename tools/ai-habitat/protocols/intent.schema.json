@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AXM Habitat Intent Packet v0.3",
+  "type": "object",
+  "required": [
+    "seat",
+    "action",
+    "destination",
+    "target",
+    "reason"
+  ],
+  "properties": {
+    "seat": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "action": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "destination": {
+      "enum": [
+        "commons",
+        "code_workshop",
+        "art_studio",
+        "game_room",
+        "library",
+        "test_lab",
+        "permission_gate",
+        "merge_gate"
+      ]
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 600
+    },
+    "requested_tools": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {
+        "type": "string",
+        "maxLength": 80
+      }
+    },
+    "sensitivity": {
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "requires_confirmation": {
+      "type": "boolean"
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "executor": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "scenario_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "demo_autocomplete": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true
+}

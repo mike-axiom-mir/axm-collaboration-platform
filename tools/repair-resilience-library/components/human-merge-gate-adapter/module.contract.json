@@ -1,0 +1,43 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.human-merge-gate-adapter",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.human-merge-gate-packet/v1"
+  ],
+  "consumes": [
+    "pre-state",
+    "repair-candidate",
+    "risk",
+    "rollback",
+    "verification"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_3_HUMAN_GATE_ADAPTER",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/repairbuddy",
+      "tools/review-inbox",
+      "shared/direction"
+    ],
+    "reason": "Presents an exact decision packet and validates a typed human confirmation without performing the merge."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "permission-grant",
+      "automatic-approval",
+      "automatic-execution",
+      "automatic-merge",
+      "automatic-promotion",
+      "automatic-canon",
+      "runtime-proof-claim"
+    ]
+  }
+}

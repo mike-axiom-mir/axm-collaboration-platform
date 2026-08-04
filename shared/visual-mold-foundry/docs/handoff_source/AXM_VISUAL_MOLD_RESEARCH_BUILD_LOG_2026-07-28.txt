@@ -1,0 +1,1858 @@
+AXM VISUAL MOLD RESEARCH + BUILD CONTINUITY LOG
+================================================
+
+Date: 2026-07-28
+Project: AXM / Axiom–Mir
+Prepared for: Mike
+Status: WORKING DIRECTION / BUILD HANDOFF
+Primary next target: AXM_VISUAL_MOLD_FOUNDRY_v0.1
+
+CONTINUITY AND SOURCE NOTE
+--------------------------
+This file is a faithful consolidated continuity log of the visual-template,
+visual-mold, organ-library, skin-system, and Mold Foundry direction developed
+in the preceding conversation.
+
+It is not presented as a word-for-word transcript. It preserves the active
+architecture, research conclusions, proposed systems, buildable items,
+boundaries, and recommended implementation order without intentionally
+removing any core direction.
+
+Nothing in this file means the software has already been built. The research,
+architecture, and build map are complete enough to begin implementation.
+Actual code, local testing, export validation, and engine-specific testing
+remain build work.
+
+AXM ROOTS TO PRESERVE
+---------------------
+- Truth before story.
+- No fake certainty.
+- No fake done.
+- No silent rewrite.
+- Preserve active direction instead of rebuilding from scratch.
+- Human agency and explicit approval.
+- Local/offline-first operation.
+- Privacy and no hidden telemetry.
+- Source and provenance integrity.
+- Modular growth with lineage and rollback.
+- More power requires stronger restraint.
+- Foundry proposals do not become canon automatically.
+- Status labels must remain honest:
+  BUILT
+  STRUCTURALLY TESTED
+  LOCALLY TESTED
+  LOCAL VALIDATION REQUIRED
+  EXPERIMENTAL
+  APPROVED
+  DEPRECATED
+
+WHY THIS BRANCH EXISTS
+----------------------
+AXM's code, systems thinking, collaboration architecture, and modular growth
+have advanced faster than its visual layer.
+
+The missing layer was described as:
+- reusable creative molds;
+- skins and materials;
+- organs that can create or modify visual structure;
+- systems that generate more molds;
+- a way to preserve the intelligence behind successful visuals rather than
+  repeatedly asking an AI or human to rediscover it.
+
+The goal is not merely to collect many templates. The goal is to build a
+visual capability layer between intent and rendered output.
+
+CORE CONCLUSION
+---------------
+AXM does need a substantial mold library, but it should not become a huge flat
+folder containing thousands of almost identical files.
+
+AXM needs two connected systems:
+
+1. A strong starter library of reusable tokens, organs, molds, themes, presets,
+   validators, and adapters.
+2. A Mold Foundry that can extract, derive, test, preview, organize, and grow
+   more molds without silently rewriting their parents.
+
+The correct working definition is:
+
+VISUAL MOLD =
+protected structure
++ typed controls
++ content slots
++ variant axes
++ reusable organs
++ state logic
++ validation
++ provenance
++ lineage
++ export adapters
+
+The important design shift is:
+
+Do not store only the finished result.
+Store the visual reasoning that can safely regenerate related results.
+
+FOUR BASIC BUILDING BLOCKS
+--------------------------
+TOKEN
+A reusable visual decision:
+- color;
+- spacing;
+- corner shape;
+- typography size;
+- glow strength;
+- motion speed;
+- lighting intensity;
+- accessibility value;
+- material property.
+
+ORGAN
+A reusable capability:
+- responsive layout;
+- title fitting;
+- cinematic lighting;
+- alpha cleanup;
+- material generation;
+- proof-sheet generation;
+- contrast validation;
+- state transitions.
+
+MOLD
+A controlled recipe that combines organs:
+- marketing poster;
+- software panel;
+- game pickup;
+- material;
+- building;
+- scene;
+- animation;
+- AI visual-generation workflow.
+
+FOUNDRY
+Software that:
+- accepts successful visual work;
+- separates invariants from changeable parts;
+- suggests controls and reusable organs;
+- creates candidate molds;
+- tests variations;
+- preserves lineage;
+- generates proof;
+- submits candidates for human approval.
+
+VISUAL TEMPLATE CAPABILITY LEVELS
+---------------------------------
+LEVEL 0 — Snapshot
+One finished result.
+
+LEVEL 1 — Editable layout
+Replaceable text and images.
+
+LEVEL 2 — Parameterized component
+Typed controls and safe ranges.
+
+LEVEL 3 — Variant family
+Themes, formats, states, and inherited alternatives.
+
+LEVEL 4 — Procedural mold
+A graph generates geometry, materials, lighting, effects, or layout.
+
+LEVEL 5 — Behavioral mold
+States and external data drive the visuals.
+
+LEVEL 6 — Composable ecosystem
+Molds contain and reference other molds.
+
+LEVEL 7 — Meta-mold / Foundry
+A governed system proposes and validates new molds.
+
+Most ordinary template libraries stop around Levels 1–3.
+AXM should support Levels 2–7 while keeping simple use easy.
+
+RESEARCH CONVERGENCE
+--------------------
+The strongest existing systems use different names, but converge on the same
+architecture.
+
+1. PROTECTED CORE + EXPOSED CONTROLS
+------------------------------------
+Figma components distinguish internal structure from intended change points.
+Useful controls include:
+- text;
+- booleans;
+- instance swaps;
+- slots;
+- variants;
+- exposed nested properties.
+
+Canva brand templates similarly allow identity-critical elements to remain
+locked while editable fields stay available. Data Autofill and Bulk Create
+turn one template into many consistent outputs.
+
+Adobe Motion Graphics Templates package animation, media, and dependencies
+while exposing selected text, color, media, layout, and data controls.
+
+AXM SHOULD USE THREE FREEDOM LEVELS:
+
+PROTECTED
+Cannot change without creating a derived mold.
+Examples:
+- brand safe area;
+- semantic reading order;
+- mandatory accessibility structure;
+- provenance fields.
+
+CONSTRAINED
+Can change inside declared boundaries.
+Examples:
+- glow intensity 0.0–0.65;
+- title up to 70 characters;
+- blur within a performance budget.
+
+FREE
+Replaceable content or creative extension.
+Examples:
+- image slot;
+- optional decoration;
+- custom scene object.
+
+This prevents both:
+- templates so rigid that they kill creativity;
+- unrestricted files that break easily.
+
+2. TOKENS, NOT SCATTERED VALUES
+-------------------------------
+Design-token systems store decisions such as:
+- color;
+- typography;
+- spacing;
+- dimensions;
+- timing;
+- easing;
+- gradients;
+- borders;
+- shadows;
+- material and motion values.
+
+Godot themes show the same principle through cascading runtime UI values.
+
+Instead of hard-coding every button:
+
+background = #111827
+glow = 22px
+corner radius = 16px
+
+Use semantic bindings:
+
+button.background = surface.deep
+button.glow = energy.medium
+button.radius = shape.soft
+
+Then themes such as:
+- Aetherglass;
+- Paper Neon;
+- Rooted Machine;
+- Public Calm;
+can redefine the decisions centrally.
+
+3. COMPLEX GRAPH, SIMPLE USE INTERFACE
+--------------------------------------
+Houdini Digital Assets package a node graph, files, parameters, and a custom
+public interface into a reusable asset.
+
+Blender node groups make shader, geometry, and compositor graphs reusable and
+composable.
+
+ComfyUI reusable subgraphs and App mode can hide a complex workflow behind a
+small set of inputs and outputs.
+
+AXM SHOULD RETAIN TWO INTERFACES:
+
+WORKSHOP INTERFACE
+The full graph, dependencies, validators, and advanced controls for builders
+and AI collaborators.
+
+USE INTERFACE
+A small understandable control panel for ordinary users.
+
+A sophisticated lighting or image-generation mold should be usable through a
+few meaningful controls without requiring knowledge of shaders, samplers,
+node graphs, or render pipelines.
+
+4. VARIANT INHERITANCE, NOT COPY EXPLOSION
+------------------------------------------
+OpenUSD VariantSets preserve non-destructive alternatives such as:
+- material;
+- model;
+- detail level;
+- configuration.
+
+Unity Prefab Variants and Material Variants inherit from a parent and store
+only overrides.
+
+Unreal Material Instances use parameterized parent materials and change
+selected values without duplicating the full graph.
+
+AXM SHOULD DECLARE INDEPENDENT VARIANT AXES:
+
+theme:
+- light
+- dark
+- aetherglass
+- paper-neon
+- rooted-machine
+
+format:
+- square
+- portrait
+- landscape
+- phone
+- ultrawide
+
+motion:
+- still
+- calm
+- ambient
+- cinematic
+
+performance:
+- low
+- standard
+- ultra
+
+state:
+- idle
+- hover
+- active
+- loading
+- success
+- warning
+- disabled
+
+Do not store every combination as an unrelated file.
+
+5. PROCEDURAL SKINS AND MATERIALS
+---------------------------------
+Adobe Substance materials are parametric rather than fixed images. Authors
+expose selected controls and preserve useful combinations as presets.
+
+This directly matches the missing AXM skin layer.
+
+AN AXM LIVING SKIN MOLD MAY EXPOSE:
+- surface family;
+- base material;
+- age;
+- damage;
+- roughness;
+- wetness;
+- translucency;
+- reflection;
+- energy flow;
+- inner glow;
+- edge illumination;
+- internal particles;
+- symbol density;
+- environment response;
+- performance tier.
+
+The same semantic skin can have different implementations in:
+- CSS;
+- SVG;
+- Canvas;
+- Blender;
+- MaterialX;
+- Godot;
+- Unity;
+- Unreal.
+
+6. STATES, DATA, AND MOTION
+---------------------------
+Rive components and state machines demonstrate reusable units containing:
+- named states;
+- transitions;
+- typed inputs;
+- layers;
+- data binding.
+
+A reusable animated component is not just a two-second timeline. It may contain:
+- idle;
+- focus;
+- hover;
+- pressed;
+- loading;
+- success;
+- warning;
+- disabled.
+
+The visual system should respond to meaningful data:
+- progress;
+- danger;
+- energy;
+- health;
+- confidence;
+- connection status;
+- user permission;
+- test status.
+
+Motion molds need a nervous system:
+- states;
+- typed inputs;
+- transition rules;
+- timing tokens;
+- reduced-motion behavior;
+- semantic meaning;
+- optional audio or haptic hooks.
+
+7. PORTABLE SCENE AND MATERIAL ADAPTERS
+---------------------------------------
+MaterialX provides platform-independent material and look descriptions across
+supporting tools.
+
+OpenUSD supports composed scenes, layering, references, and non-destructive
+variants.
+
+glTF supports runtime delivery and material extensions.
+
+Unreal's procedural content systems demonstrate graph-based creation from
+asset utilities to buildings, biomes, and worlds.
+
+No one format covers:
+- UI;
+- marketing graphics;
+- game assets;
+- materials;
+- VFX;
+- AI workflows;
+- scenes;
+- worlds;
+- responsive layouts.
+
+AXM therefore needs one semantic contract with multiple adapters rather than
+forcing every visual medium into one proprietary file.
+
+PROPOSED AXM VISUAL MOLD ANATOMY
+--------------------------------
+DNA / MANIFEST
+- identity;
+- version;
+- lineage;
+- author;
+- rights;
+- provenance;
+- dependencies;
+- supported outputs;
+- approval state.
+
+SKELETON
+- component hierarchy;
+- scene graph;
+- layout rules;
+- anchors;
+- responsive behavior;
+- safe areas.
+
+SKIN
+- tokens;
+- materials;
+- typography;
+- surfaces;
+- color;
+- borders;
+- lighting language.
+
+ORGANS
+- layout;
+- geometry;
+- texture;
+- material;
+- lighting;
+- camera;
+- particles;
+- animation;
+- content generation;
+- export;
+- validation.
+
+NERVOUS SYSTEM
+- inputs;
+- bindings;
+- events;
+- states;
+- transitions;
+- dependencies between controls.
+
+MUSCLES
+- animation;
+- deformation;
+- interaction;
+- simulation;
+- responsive movement.
+
+MEMORY
+- presets;
+- previous valid states;
+- seeds;
+- approved variations;
+- inherited overrides.
+
+IMMUNE SYSTEM
+- schema validation;
+- accessibility;
+- rights;
+- dependencies;
+- performance budgets;
+- contrast;
+- transparency;
+- text overflow;
+- rollback checks.
+
+EYES
+- thumbnails;
+- proof sheets;
+- responsive previews;
+- animation previews;
+- debug views;
+- before/after comparisons.
+
+HANDS
+- export adapters;
+- runtime adapters;
+- engine bridges.
+
+FOUNDRY
+- extracts candidate molds;
+- proposes controls;
+- derives children;
+- validates;
+- preserves lineage;
+- never silently promotes itself to canon.
+
+MINIMUM MOLD CONTRACT
+---------------------
+A readable mold manifest should include at least:
+
+{
+  "schema": "axm.visual-mold/0.1",
+  "id": "axm.marketing.cinematic-service-card",
+  "name": "AXM Cinematic Service Card",
+  "version": "0.1.0",
+
+  "lineage": {
+    "parent": null,
+    "derived_from": [],
+    "change_policy": "explicit-approval"
+  },
+
+  "core": {
+    "protected": [
+      "layout.reading_order",
+      "brand.safe_area",
+      "accessibility.semantic_structure"
+    ]
+  },
+
+  "inputs": {
+    "title": {
+      "type": "text",
+      "maximum_characters": 70
+    },
+    "message": {
+      "type": "text",
+      "maximum_characters": 320
+    },
+    "theme": {
+      "type": "enum",
+      "values": [
+        "aetherglass-dark",
+        "aetherglass-light",
+        "public-calm"
+      ],
+      "default": "aetherglass-dark"
+    },
+    "media": {
+      "type": "slot",
+      "accepts": ["image", "video", "generated-scene"],
+      "minimum": 1,
+      "maximum": 1
+    },
+    "cinematic_energy": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.45
+    },
+    "glow_density": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 0.8,
+      "default": 0.25
+    }
+  },
+
+  "variants": {
+    "format": ["square", "portrait", "landscape", "phone"],
+    "motion": ["still", "ambient", "cinematic"],
+    "performance": ["low", "standard", "ultra"]
+  },
+
+  "organs": [
+    "axm.layout.responsive-focus",
+    "axm.surface.aetherglass",
+    "axm.light.cinematic-depth",
+    "axm.motion.ambient-energy"
+  ],
+
+  "checks": [
+    "text-overflow",
+    "minimum-contrast",
+    "safe-area",
+    "missing-font",
+    "missing-dependency",
+    "rights-and-provenance",
+    "performance-budget",
+    "reduced-motion"
+  ],
+
+  "outputs": [
+    "png",
+    "svg",
+    "html",
+    "video",
+    "rive"
+  ]
+}
+
+In plain language:
+- Core defines what may not silently change.
+- Inputs are understandable controls.
+- Variants describe independent choices.
+- Organs perform complex work.
+- Checks stop broken or unsafe results.
+- Outputs identify compatible adapters.
+
+Large graphs, textures, models, and source files should be referenced as
+dependencies instead of embedded into one unreadable manifest.
+
+WHAT CAN BE BUILT FOR AXM
+=========================
+
+1. AXM VISUAL MOLD STUDIO
+-------------------------
+A local/offline browser application where a human or AI can:
+- browse molds visually;
+- choose a mold;
+- change exposed controls;
+- switch themes;
+- switch aspect ratios;
+- insert text and images;
+- preview low, standard, and ultra quality;
+- save presets;
+- derive a child mold without damaging the parent;
+- export results;
+- generate proof sheets;
+- inspect organs and source assets;
+- inspect lineage and rollback state.
+
+Suggested areas:
+- Mold Atlas;
+- Mold Editor;
+- Organ Browser;
+- Skin Laboratory;
+- Light Laboratory;
+- Effect Composer;
+- Variant Builder;
+- Preview Lab;
+- Proof and Validation;
+- Foundry Intake;
+- Export Center;
+- Lineage and Rollback.
+
+Core operation should not require:
+- cloud;
+- accounts;
+- telemetry;
+- subscriptions;
+- external APIs.
+
+2. AXM MOLD REGISTRY
+--------------------
+Tracks:
+- mold ID;
+- name;
+- version;
+- parent;
+- derived children;
+- compatible organs;
+- formats;
+- dependencies;
+- visual theme;
+- performance cost;
+- rights and provenance;
+- approval state;
+- tests;
+- previews;
+- rollback snapshots;
+- public/private status.
+
+Search concepts:
+- cinematic;
+- top-down;
+- paper;
+- transparent;
+- luxurious;
+- low-performance;
+- marketing;
+- game pickup;
+- dark interface;
+- animated;
+- public-safe;
+- Tilburg;
+- Aetherglass.
+
+3. LAYOUT ORGANS
+----------------
+Buildable organs:
+- responsive grids;
+- portrait/landscape/square/phone/ultrawide adaptation;
+- automatic title fitting;
+- readable wrapping;
+- minimum/maximum content handling;
+- safe areas;
+- focal-point placement;
+- image/text balance;
+- cinematic depth composition;
+- reading-order control;
+- card stacking;
+- split-screen layouts;
+- radial layouts;
+- timelines;
+- comparisons;
+- infographic flows;
+- poster composition;
+- slide composition;
+- HUD composition;
+- adaptive borders that do not dominate the content.
+
+4. TYPOGRAPHY ORGANS
+--------------------
+- automatic title scaling;
+- title-length classification;
+- subtitle hierarchy;
+- contrast repair;
+- outline and shadow control;
+- text-on-glass readability;
+- multilingual fitting;
+- number and price formatting;
+- cinematic title treatment;
+- holographic text treatment;
+- paper-cut text;
+- technical labels;
+- accessible line spacing;
+- safe-zone validation;
+- fallback fonts;
+- curved/path headings;
+- warning against over-decoration;
+- automatic reduction of effects behind text.
+
+5. SKIN AND MATERIAL ORGANS
+---------------------------
+Possible semantic material families:
+- Aetherglass;
+- frosted glass;
+- smoked glass;
+- liquid glass;
+- crystal;
+- polished metal;
+- brushed metal;
+- damaged machine metal;
+- glowing circuitry;
+- paper;
+- cardboard;
+- folded paper;
+- cloth;
+- rubber;
+- ceramic;
+- stone;
+- wet stone;
+- wood;
+- plant tissue;
+- bioluminescent tissue;
+- translucent energy;
+- holographic surfaces;
+- worn surfaces;
+- dirt;
+- scratches;
+- cracks;
+- frost;
+- water;
+- heat;
+- corrosion;
+- magical or machine energy flow.
+
+Human-facing controls:
+- age;
+- damage;
+- wetness;
+- roughness;
+- transparency;
+- inner glow;
+- edge glow;
+- energy movement;
+- surface depth;
+- reflection;
+- pattern density;
+- performance level.
+
+6. LIGHTING ORGANS
+------------------
+- cinematic key light;
+- rim light;
+- soft fill;
+- underlighting;
+- object separation;
+- internal illumination;
+- neon edge lighting;
+- glowing floor reflection;
+- environmental bounce;
+- volumetric beams;
+- light shafts;
+- portal lighting;
+- machine-core lighting;
+- emergency lighting;
+- nightclub lighting;
+- moonlight;
+- sunrise/sunset;
+- mystical forest light;
+- UI-responsive light;
+- focus-following light;
+- low-cost simulated light;
+- multi-layer cinematic light;
+- automatic light reduction near text.
+
+Meaningful controls:
+- mood: calm to threatening;
+- depth: flat to cinematic;
+- energy: dormant to overloaded;
+- temperature: cold to warm;
+- contrast: soft to dramatic;
+- performance: low to ultra.
+
+7. GLOW AND EFFECT ORGANS
+-------------------------
+- edge glow;
+- inner glow;
+- reflected glow;
+- atmospheric bloom;
+- pulsing glow;
+- directional glow;
+- energy veins;
+- traveling light;
+- chromatic edge separation;
+- scan lines;
+- holographic noise;
+- glass distortion;
+- heat distortion;
+- depth fog;
+- smoke;
+- mist;
+- sparks;
+- dust;
+- rain;
+- snow;
+- falling paper;
+- energy particles;
+- trails;
+- impact bursts;
+- shields;
+- portals;
+- damage flashes;
+- electric arcs;
+- glitch;
+- loading energy;
+- success and celebration effects.
+
+Every costly effect should have a low-power fallback.
+
+8. MOTION AND STATE ORGANS
+--------------------------
+- idle;
+- hover;
+- pressed;
+- selected;
+- loading;
+- success;
+- warning;
+- failure;
+- disabled;
+- damaged;
+- powered down;
+- charging;
+- overloaded;
+- appearing;
+- disappearing;
+- opening;
+- closing;
+- transforming;
+- breathing;
+- floating;
+- pulsing;
+- shaking;
+- recoil;
+- impact;
+- parallax;
+- environmental movement;
+- reduced-motion alternatives.
+
+Motion should be meaningful, not decorative noise.
+
+9. IMAGE AND ASSET REPAIR ORGANS
+--------------------------------
+- transparency verification;
+- alpha cleanup;
+- halo removal;
+- crop correction;
+- padding correction;
+- centering;
+- scale normalization;
+- palette extraction;
+- palette remapping;
+- outline generation;
+- ground shadows;
+- contact shadows;
+- transparent proofing;
+- size variants;
+- sprite sheets;
+- tile sheets;
+- seamless-tile checks;
+- top-down angle checks;
+- side-view checks;
+- camera consistency;
+- silhouette comparison;
+- family consistency;
+- duplicate detection;
+- compression;
+- thumbnails;
+- low-resolution fallback;
+- missing-area detection;
+- border checks.
+
+10. GAME-ASSET ORGANS AND MOLDS
+-------------------------------
+- characters;
+- enemies;
+- NPCs;
+- machines;
+- buildings;
+- houses;
+- shops;
+- plants;
+- trees;
+- roads;
+- terrain;
+- tiles;
+- vehicles;
+- pickups;
+- money;
+- jewels;
+- energy objects;
+- turrets;
+- projectiles;
+- portals;
+- objectives;
+- signs;
+- furniture;
+- barriers;
+- statistics;
+- inventories;
+- dialogue;
+- health/energy meters;
+- minimaps;
+- level-complete screens.
+
+Each family should preserve:
+- camera angle;
+- scale;
+- visual language;
+- ground contact;
+- outline thickness;
+- lighting direction;
+- material family;
+- animation anchors;
+- collision footprint;
+- damage states;
+- faction identity.
+
+11. WORLD AND SCENE ORGANS
+--------------------------
+- terrain placement;
+- road generation;
+- blocks and districts;
+- building distribution;
+- vegetation scattering;
+- prop placement;
+- crowd placement;
+- lighting rigs;
+- fog and atmosphere;
+- camera placement;
+- foreground/middle/background depth;
+- gameplay zones;
+- safe spawn areas;
+- points of interest;
+- performance reduction;
+- day/night;
+- weather;
+- damaged/restored variants.
+
+Candidate scene molds:
+- AXM machine forest;
+- Aetherglass control room;
+- futuristic Tilburg street;
+- Paper Neon battlefield;
+- mysterious central energy source;
+- nightclub/DJ environment;
+- small living city block;
+- portal laboratory;
+- public-safe AXM workshop;
+- cinematic product stage.
+
+12. MARKETING MOLD PACK
+-----------------------
+- service advertisement;
+- project intake poster;
+- price card;
+- cinematic announcement;
+- visual milestone log;
+- project launch image;
+- capability overview;
+- before/after comparison;
+- testimonial;
+- workshop update;
+- social post;
+- social story;
+- website hero;
+- product feature image;
+- event poster;
+- game-night poster;
+- infographic;
+- transparent logo stage;
+- QR information panel;
+- public-safe technical explanation.
+
+Each should support:
+- portrait;
+- square;
+- landscape;
+- phone.
+
+13. WEBSITE AND SOFTWARE UI MOLD PACK
+-------------------------------------
+- navigation;
+- sidebar;
+- command panel;
+- dashboard;
+- project card;
+- module card;
+- AI-seat card;
+- file browser;
+- asset browser;
+- search results;
+- settings;
+- warning dialog;
+- consent dialog;
+- permission gate;
+- activity log;
+- test report;
+- comparison viewer;
+- progress;
+- device status;
+- collaboration status;
+- error/recovery;
+- welcome;
+- launcher;
+- control room;
+- public/private indicator.
+
+14. GAME-INTERFACE MOLD PACK
+----------------------------
+- player status;
+- two-player status;
+- inventory;
+- item card;
+- character card;
+- tool/weapon card;
+- mission;
+- objective tracker;
+- timer;
+- score;
+- statistics;
+- upgrade selection;
+- shop;
+- pause;
+- local-coop join;
+- phone controller;
+- win;
+- loss;
+- map;
+- boss health;
+- central-objective status;
+- party indicator;
+- damage notification;
+- loot popup;
+- tutorial hint.
+
+15. VISUAL-LOG MOLD PACK
+------------------------
+- milestone logs;
+- daily build logs;
+- capability-growth logs;
+- collaboration logs;
+- test achievements;
+- code-volume milestones;
+- module-growth maps;
+- before/after evolution;
+- human + AI contribution records;
+- public-safe summaries;
+- private technical summaries;
+- Mike — Axiom/Mir identity pages;
+- timeline posters;
+- proof sheets;
+- project family trees.
+
+Data can come from JSON or CSV to avoid rebuilding each visual manually.
+
+16. MATERIAL AND SKIN PRESET PACKS
+----------------------------------
+AETHERGLASS:
+- Deep Aetherglass;
+- Clear Aetherglass;
+- Soft Public Aetherglass;
+- Cinematic Aetherglass;
+- Emergency Aetherglass;
+- Living Aetherglass;
+- Damaged Aetherglass;
+- Low-Power Aetherglass.
+
+PAPER NEON:
+- Clean Paper;
+- Folded Paper;
+- Torn Paper;
+- Neon Edge Paper;
+- Machine Paper;
+- Comic Paper;
+- Cardboard World;
+- Luxury Paper.
+
+ROOTED MACHINE:
+- Quiet Machine;
+- Ancient Machine;
+- Living Machine;
+- Industrial Machine;
+- Organic Circuitry;
+- Damaged Core;
+- Restored Core;
+- Public Workshop.
+
+ENERGY:
+- calm blue-white;
+- warm amber;
+- multispectral;
+- crystal;
+- plant;
+- electrical;
+- portal;
+- overloaded.
+
+These must control more than color:
+- texture;
+- lighting;
+- movement;
+- depth;
+- wear;
+- performance.
+
+17. AI VISUAL WORKFLOW MOLDS
+----------------------------
+Buildable workflow molds:
+- transparent game assets;
+- top-down characters;
+- top-down vehicles;
+- coherent building sets;
+- coherent plant sets;
+- item collections;
+- enemy families;
+- material exploration;
+- character turnarounds;
+- expression sheets;
+- costume variants;
+- environment concepts;
+- marketing images;
+- cinematic title cards;
+- background removal;
+- repair;
+- upscale;
+- detail restoration;
+- style matching;
+- reference consistency;
+- palette lock;
+- variation batches;
+- selected-result refinement.
+
+A workflow mold should preserve:
+- prompt structure;
+- reference handling;
+- negative constraints;
+- camera requirements;
+- background requirements;
+- seed;
+- model;
+- sampler or generation method;
+- stages;
+- selection rules;
+- repair stages;
+- validation;
+- provenance.
+
+18. VISUAL PROMPT COMPILER
+--------------------------
+Suggested organs:
+- subject;
+- camera;
+- composition;
+- material;
+- lighting;
+- style;
+- background;
+- consistency;
+- negative constraints;
+- output contract.
+
+Example human request:
+- asset: machine plant;
+- camera: strict top-down;
+- style: Paper Neon;
+- material: folded paper + circuitry;
+- lighting: internal energy;
+- background: transparent;
+- scale: 128 x 128 tile.
+
+The compiler creates a complete generation packet and validation contract.
+
+19. AXM MOLD FOUNDRY
+--------------------
+Suggested intake flow:
+
+1. Add finished visual and source files.
+2. Mark what must remain protected.
+3. Mark what should be replaceable.
+4. Detect repeated colors, spacing, materials, and effects.
+5. Suggest reusable organs.
+6. Suggest useful controls.
+7. Generate controlled variants.
+8. Test where the design breaks.
+9. Create a manifest.
+10. Generate proof sheets.
+11. Save as candidate.
+12. Human approves, rejects, or requests repair.
+
+The Foundry must never silently promote its own candidate.
+
+20. DERIVATIVE GENERATOR
+------------------------
+Example:
+
+Marketing Card
+├── Public Service Card
+├── Game Launch Card
+├── Visual Milestone Card
+└── Event Promotion Card
+
+Children store differences rather than full unrelated copies.
+
+21. PRESET GARDEN
+-----------------
+Stores successful combinations such as:
+- Aetherglass + cinematic rim + low fog + calm movement;
+- Paper Neon + comic outline + warm energy;
+- Rooted Machine + wet metal + emergency light.
+
+Preset states:
+- private;
+- public-safe;
+- experimental;
+- approved;
+- deprecated;
+- engine-specific;
+- low-power;
+- cinematic.
+
+22. VISUAL IMMUNE SYSTEM
+------------------------
+Automated checks:
+- missing files;
+- wrong dimensions;
+- invalid JSON;
+- broken dependencies;
+- text overflow;
+- unreadable contrast;
+- unsafe areas;
+- glow hiding information;
+- incorrect alpha;
+- unwanted background pixels;
+- oversized exports;
+- missing previews;
+- unsupported fonts;
+- missing provenance;
+- incompatible organ versions;
+- missing reduced-motion mode;
+- performance violations;
+- missing rollback;
+- unapproved protected-core change.
+
+Visual judgment can be approximate. Report confidence and evidence instead of
+pretending perfect certainty.
+
+23. PROOF-SHEET GENERATOR
+-------------------------
+Every mold should render:
+- default;
+- long title;
+- short title;
+- missing image;
+- portrait;
+- square;
+- landscape;
+- phone;
+- light theme;
+- dark theme;
+- low performance;
+- ultra;
+- warning;
+- reduced motion;
+- passed checks;
+- failed checks;
+- version;
+- lineage.
+
+Animated molds should include:
+- short preview;
+- state contact sheet;
+- transition list.
+
+24. VISUAL REGRESSION AND COMPARISON
+------------------------------------
+Render old and new side by side.
+
+Report:
+- expected differences;
+- unexpected differences;
+- dimensions;
+- wrapping;
+- contrast;
+- alpha bounds;
+- performance estimate;
+- changed dependencies.
+
+Keep the previous version for rollback.
+
+25. DIRECTLY BUILDABLE OUTPUTS
+------------------------------
+A local first version can realistically support:
+- HTML;
+- CSS;
+- SVG;
+- JSON;
+- PNG through browser Canvas or a local renderer;
+- WebP where supported;
+- sprite sheets;
+- proof sheets;
+- local galleries;
+- token packages;
+- reusable asset packages;
+- static web components;
+- simple Canvas animation.
+
+26. ADAPTER SCAFFOLDS
+---------------------
+Structured starter adapters can be written for:
+- Blender;
+- Godot;
+- ComfyUI;
+- Unity;
+- Unreal;
+- MaterialX;
+- Rive-style states;
+- Figma token exchange;
+- Canva data tables;
+- Adobe motion-template planning.
+
+HONESTY BOUNDARY:
+Scripts, manifests, and structural tests can be built here.
+Actual engine behavior must be tested in Mike's installed environment before
+being marked locally validated.
+
+Use status:
+- BUILT;
+- STRUCTURALLY TESTED;
+- LOCAL VALIDATION REQUIRED.
+
+PROPOSED LOCAL DIRECTORY ARCHITECTURE
+====================================
+AXM_VISUAL_MOLDS/
+│
+├── app/
+│   ├── index.html
+│   ├── css/
+│   ├── js/
+│   └── assets/
+│
+├── registry/
+│   ├── molds/
+│   ├── organs/
+│   ├── tokens/
+│   ├── presets/
+│   └── adapters/
+│
+├── runtimes/
+│   ├── html_svg/
+│   ├── canvas/
+│   ├── image_workflow/
+│   ├── blender/
+│   ├── godot/
+│   ├── unity/
+│   └── unreal/
+│
+├── validation/
+│   ├── structural/
+│   ├── visual/
+│   ├── accessibility/
+│   ├── performance/
+│   ├── provenance/
+│   └── dependency/
+│
+├── previews/
+│
+├── foundry/
+│   ├── intake/
+│   ├── decomposition/
+│   ├── candidate_molds/
+│   └── approved/
+│
+├── lineage/
+│   ├── change_logs/
+│   ├── parent_maps/
+│   └── rollback_snapshots/
+│
+├── tests/
+│
+├── tools/
+│
+├── docs/
+│
+└── exports/
+
+FIRST THREE REFERENCE MOLDS
+===========================
+
+REFERENCE MOLD 1 — UNIVERSAL VISUAL CARD
+----------------------------------------
+Proves:
+- responsive layout;
+- title fitting;
+- image slots;
+- themes;
+- tokens;
+- accessibility;
+- still and light motion;
+- PNG, SVG, JSON, and HTML export;
+- proof generation.
+
+Useful variants:
+- marketing;
+- project card;
+- milestone log;
+- product feature;
+- event card;
+- public-safe explanation.
+
+REFERENCE MOLD 2 — LIVING SKIN LABORATORY
+-----------------------------------------
+Proves:
+- semantic materials;
+- procedural controls;
+- presets;
+- inheritance;
+- glow;
+- inner light;
+- age;
+- damage;
+- wetness;
+- performance tiers;
+- CSS/SVG/Canvas implementation;
+- Blender/MaterialX adapter scaffolds.
+
+REFERENCE MOLD 3 — ATMOSPHERIC PORTAL SCENE
+-------------------------------------------
+Proves:
+- multiple organs composed together;
+- scene graph;
+- camera;
+- lighting rig;
+- fog;
+- particles;
+- scene states;
+- low/standard/ultra;
+- still and animated previews;
+- reusable object and material molds.
+
+RECOMMENDED FIRST MAJOR PACKAGE
+===============================
+Name:
+AXM_VISUAL_MOLD_FOUNDRY_v0.1
+
+Meaningful v0.1 target:
+- 1 local Mold Studio;
+- 1 documented mold specification;
+- 1 registry and lineage system;
+- 100–200 initial visual tokens;
+- 8–12 layout organs;
+- 5–8 typography organs;
+- 8–12 skin/material organs;
+- 6–10 lighting organs;
+- 8–12 effect organs;
+- 10–15 validators;
+- 8–12 marketing molds;
+- 8–12 UI molds;
+- 8–12 game molds;
+- 3–5 reference scene molds;
+- 4–6 themes;
+- 1 proof generator;
+- 1 batch renderer;
+- HTML/SVG/PNG/JSON export;
+- Blender/Godot/ComfyUI adapter scaffolds;
+- beginner guide;
+- builder guide;
+- tests;
+- rollback;
+- hashes;
+- clear status report.
+
+This is a direction and capacity map, not a requirement to fake breadth in one
+pass. A smaller genuinely working foundation is better than a large collection
+of placeholders.
+
+WHY TEN THOUSAND MOLDS ARE NOT REQUIRED IMMEDIATELY
+===================================================
+A modular system multiplies.
+
+Example:
+12 layouts
+x 8 skins
+x 6 lighting presets
+x 6 effect stacks
+x 5 formats
+= 17,280 controlled combinations
+
+Not every combination will be aesthetically valid, which is why:
+- approved presets;
+- validators;
+- proof sheets;
+- human review;
+remain necessary.
+
+A strong set of reusable organs can be more valuable than thousands of static
+templates.
+
+SAFE GROWTH LOOP
+================
+Need appears
+→ use existing mold
+→ adjust exposed controls
+→ identify missing capability
+→ create or improve one organ
+→ validate
+→ save successful preset
+→ derive a new mold only when structurally different
+→ preserve parent and lineage
+→ request explicit approval before canon.
+
+FAILURE MODES AND REPAIRS
+=========================
+
+VARIANT EXPLOSION
+Problem:
+Every combination becomes a separate file.
+
+Repair:
+- independent variant axes;
+- inheritance;
+- generated previews;
+- sparse overrides.
+
+DEPENDENCY DECAY
+Problem:
+Fonts, plugins, models, nodes, shaders, or textures disappear.
+
+Repair:
+- dependency manifest;
+- hashes;
+- compatible substitutes;
+- bundled public-safe fallback;
+- degraded mode.
+
+OVER-LOCKING
+Problem:
+The mold becomes a rigid form.
+
+Repair:
+- permanent locks only for identity, integrity, safety, consent, provenance,
+  and accessibility;
+- constrained ranges elsewhere.
+
+CROSS-ENGINE FALSE EQUIVALENCE
+Problem:
+CSS glow, Blender shader, Godot shader, and Unreal material do not render
+identically.
+
+Repair:
+Use semantic concepts such as:
+energy.edge_glow.medium
+
+Each adapter produces its closest validated implementation.
+Never promise pixel-identical cross-engine output.
+
+AI NONDETERMINISM
+Problem:
+Work cannot be reproduced because model, seed, sampler, references, or repair
+steps are missing.
+
+Repair:
+Record the full generation packet.
+Label results:
+- reproducible;
+- approximately reproducible;
+- exploratory.
+
+BEAUTIFUL BUT UNUSABLE EFFECTS
+Problem:
+Blur, glow, particles, glass, or lighting hurt readability or weak devices.
+
+Repair:
+- low/standard/ultra implementation;
+- reduced motion;
+- text protection;
+- performance budgets;
+- fallback visuals.
+
+RIGHTS AND SOURCE LOSS
+Problem:
+Restricted fonts, logos, stock, likenesses, or generated assets spread without
+clear permission.
+
+Repair:
+Store:
+- source;
+- author;
+- license;
+- consent;
+- transformation history;
+- redistribution state;
+- public/private scope.
+
+RECOMMENDED IMPLEMENTATION ORDER
+================================
+
+PHASE 1 — FOUNDATION
+- manifest schema;
+- token registry;
+- organ registry;
+- mold registry;
+- dependency system;
+- versioning;
+- lineage;
+- rollback;
+- validator framework.
+
+PHASE 2 — VISIBLE PROOF
+Build:
+1. Universal Visual Card;
+2. Living Skin Laboratory;
+3. Atmospheric Portal Scene.
+
+PHASE 3 — FACTORY
+- Mold Atlas;
+- editor;
+- Preset Garden;
+- proof sheets;
+- derivative workflow;
+- Foundry intake;
+- export center.
+
+PHASE 4 — LIBRARY EXPANSION
+- marketing;
+- software UI;
+- game assets;
+- game UI;
+- visual logs;
+- materials;
+- lighting;
+- effects;
+- scene families.
+
+PHASE 5 — ENGINE BRIDGES
+One at a time:
+- Blender;
+- Godot;
+- ComfyUI;
+- Unity;
+- Unreal;
+- MaterialX.
+
+Each bridge gets an honest local-validation status.
+
+MINIMUM QUALITY AND SAFETY REQUIREMENTS
+=======================================
+- Local/offline core.
+- No telemetry.
+- No account requirement.
+- No silent network calls.
+- No hidden model dependency.
+- Clear import/export boundaries.
+- Safe path handling.
+- Validate imported JSON.
+- Reject path traversal.
+- Do not execute imported scripts.
+- Sanitize user-facing HTML/text.
+- Keyboard navigation.
+- Visible focus.
+- Contrast checks.
+- Reduced-motion option.
+- Low-power mode.
+- Human-readable data files.
+- No silent parent mutation.
+- Rollback before destructive changes.
+- Hashes for packaged files.
+- Test report.
+- Known limitations.
+- Status labels that match evidence.
+- No placeholder button presented as working.
+- No fake completeness.
+
+PRIMARY RESEARCH REFERENCES RECORDED FROM THE PRIOR PASS
+========================================================
+These are the official sources used to ground the architecture in the prior
+research pass. They are retained here for continuity and future verification.
+
+Figma — Component property fundamentals:
+https://help.figma.com/hc/en-us/articles/39636407507735-Components-collection-Component-property-fundamentals
+
+Canva — Brand template locks:
+https://www.canva.com/help/brand-template-locks/
+
+Adobe After Effects — Motion Graphics Templates:
+https://helpx.adobe.com/nl/after-effects/using/creating-motion-graphics-templates.html
+
+Design Tokens Community Group — Format Module:
+https://www.designtokens.org/tr/drafts/format/
+
+Godot — GUI skinning and themes:
+https://docs.godotengine.org/en/stable/tutorials/ui/gui_skinning.html
+
+SideFX Houdini — Digital Assets:
+https://www.sidefx.com/docs/houdini/assets/intro.html
+
+Blender — Node Groups:
+https://docs.blender.org/manual/en/latest/interface/controls/nodes/groups.html
+
+ComfyUI — Subgraphs:
+https://docs.comfy.org/interface/features/subgraph
+
+OpenUSD — Introduction and composition:
+https://openusd.org/release/intro.html
+
+Unity — Prefab Variants:
+https://docs.unity3d.com/6000.5/Documentation/Manual/PrefabVariants.html
+
+Unreal Engine — Instanced Materials:
+https://dev.epicgames.com/documentation/unreal-engine/instanced-materials-in-unreal-engine
+
+Adobe Substance — Substance Materials:
+https://helpx.adobe.com/substance-3d-community-assets/desktop/the-different-asset-types-on-substance-3d-community-assets/substance-materials.html
+
+Rive — Components:
+https://rive.app/docs/editor/fundamentals/components
+
+MaterialX:
+https://materialx.org/
+
+Unreal Engine — Procedural Content Generation overview:
+https://dev.epicgames.com/documentation/unreal-engine/procedural-content-generation-overview
+
+RESEARCH VERDICT
+================
+The molds gap is real, but it is bigger than a missing template folder.
+
+The missing architecture is a visual capability layer:
+
+Intent
+  ↓
+Visual Mold
+  ↓
+Reusable organs
+  ↓
+Engine-specific adapter
+  ↓
+Rendered asset, interface, material, animation, or world
+  ↓
+Validation and proof
+  ↓
+Preset, derived mold, or approved Foundry intake
+
+This connects:
+- Asset Fabric as workshop and renderer;
+- Style Fabric as token and visual-language source;
+- Aetherglass as a family of material, lighting, motion, and composition
+  presets;
+- workflow organs as generation and repair hands;
+- verification as the immune system;
+- the modular library as storage for molds, organs, adapters, presets, and
+  lineage;
+- the Foundry as a governed growth system.
+
+NEXT BUILD TARGET
+=================
+Build:
+AXM_VISUAL_MOLD_FOUNDRY_v0.1
+
+Priority:
+A genuinely working local foundation plus the three reference molds.
+
+Do not prioritize an inflated item count over:
+- working controls;
+- real export;
+- proof;
+- validation;
+- lineage;
+- rollback;
+- understandable use.
+
+ACTION REPORT AT HANDOFF
+========================
+Completed in this continuity package:
+- research direction preserved;
+- architecture consolidated;
+- buildable systems catalogued;
+- implementation order defined;
+- risks and boundaries recorded;
+- next-chat build prompt prepared separately.
+
+Not yet completed:
+- application code;
+- functional reference molds;
+- actual rendering;
+- actual export validation;
+- local engine testing;
+- final ZIP implementation.
+
+The new chat should build, test, package, and report honestly.
+
+END OF CONTINUITY LOG

@@ -1,0 +1,44 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.patch-overfitting-detector",
+  "name": "Patch Overfitting Detector",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "CODE_REPAIR",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": [
+    "repair-seed",
+    "code-configuration-package-repair",
+    "local-first",
+    "dependency-free",
+    "shadow-only"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Reject patches that merely satisfy narrow tests while violating broader behavior, hidden cases, or intended semantics."
+  ],
+  "accepts": [
+    "training-results",
+    "holdout-results",
+    "property-results",
+    "differential-results"
+  ],
+  "produces": [
+    "axm.patch-overfitting-assessment/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Reject patches that merely satisfy narrow tests while violating broader behavior, hidden cases, or intended semantics.",
+  "notes": "Candidate and evidence primitive only. No automatic source, package, dependency, configuration, install, release, promotion, or CANON authority."
+}

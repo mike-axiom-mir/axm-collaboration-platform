@@ -32,4 +32,6 @@ ok(V.validateGameNightSeams(base, { gameDir }).warnings.some(x => x.includes('ph
 ok(V.validateGameNightSeams(base, { gameDir }).warnings.some(x => x.includes('external collaborator')), 'legacy adapter state seam remains visibly pending');
 bad = JSON.parse(JSON.stringify(base)); bad.verification.game_night.adapter_state_interface = 'verified';
 ok(V.validateGameNightSeams(bad, { gameDir }).errors.some(x => x.includes('intent_protocol')), 'verified external collaborator cannot omit its semantic input contract');
+const libraryDir = path.join(__dirname, 'game-library');
+ok(!V.validateRecoveryRegressions(libraryDir).some(x => x.includes('Casino title/setup route')), 'Casino setup exposes both manifest-declared modes and its start action');
 console.log('PASS game package verifier: ' + pass + ' assertions');

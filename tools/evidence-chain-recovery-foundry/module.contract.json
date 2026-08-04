@@ -1,0 +1,54 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "evidence-chain-recovery-foundry",
+  "version": "v0.1",
+  "provides": [
+    "capability.prepare.evidence-chain-recovery-candidate/v1",
+    "evidence-chain-source-receipt-binding",
+    "evidence-chain-correctable-finding-gate",
+    "evidence-chain-non-hash-preserving-rechain",
+    "evidence-chain-candidate-independent-reinspection"
+  ],
+  "consumes": [
+    "application/x-ndjson",
+    "axm.evidence-chain-inspection/v1",
+    "capability.inspect.evidence-chain/v1",
+    "human:authenticity-unknown-acknowledgement"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["application/x-ndjson", "axm.evidence-chain-recovery-candidate/v1"],
+    "accepts": ["application/x-ndjson", "axm.evidence-chain-inspection/v1"]
+  },
+  "boundaries": {
+    "reads": ["browser:user-selected-segment", "browser:user-selected-inspection-receipt"],
+    "writes": ["browser:explicit-candidate-download", "browser:explicit-receipt-download"],
+    "refuses": [
+      "implicit-live-segment-discovery",
+      "receipt-source-digest-mismatch",
+      "candidate-without-authenticity-unknown-acknowledgement",
+      "malformed-json-rechain",
+      "missing-field-rechain",
+      "schema-mismatch-rechain",
+      "metadata-warning-rechain",
+      "payload-or-source-in-receipt",
+      "original-segment-mutation",
+      "live-state-overwrite",
+      "automatic-candidate-apply",
+      "automatic-session-recovery",
+      "automatic-server-start",
+      "content-authenticity-claim",
+      "history-restoration-claim",
+      "automatic-promotion",
+      "automatic-canon",
+      "network-access",
+      "persistent-storage"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

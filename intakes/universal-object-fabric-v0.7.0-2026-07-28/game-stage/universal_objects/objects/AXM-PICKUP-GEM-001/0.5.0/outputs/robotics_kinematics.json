@@ -1,0 +1,149 @@
+{
+  "schema_version": "0.5",
+  "asset_id": "AXM-PICKUP-GEM-001",
+  "asset_version": "0.4.0",
+  "coordinate_contract": {
+    "linear_unit": "meter",
+    "angle_unit": "radian",
+    "up": "+Y",
+    "forward": "+Z"
+  },
+  "root_link": "root",
+  "links": [
+    {
+      "link_id": "root",
+      "member_nodes": [
+        "base"
+      ],
+      "pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "game_effective_mass_share_kg": 0.226306,
+      "visual_source": "AXM-PICKUP-GEM-001.glb",
+      "collision_source": "collision/AXM-PICKUP-GEM-001_COLLISION.glb"
+    },
+    {
+      "link_id": "gem",
+      "member_nodes": [
+        "gem"
+      ],
+      "pivot_m": [
+        0,
+        0.32,
+        0
+      ],
+      "game_effective_mass_share_kg": 0.303199,
+      "visual_source": "AXM-PICKUP-GEM-001.glb",
+      "collision_source": "collision/AXM-PICKUP-GEM-001_COLLISION.glb"
+    },
+    {
+      "link_id": "lower_orbit",
+      "member_nodes": [
+        "lower_orbit"
+      ],
+      "pivot_m": [
+        0,
+        0.23,
+        0
+      ],
+      "game_effective_mass_share_kg": 0.047072,
+      "visual_source": "AXM-PICKUP-GEM-001.glb",
+      "collision_source": "collision/AXM-PICKUP-GEM-001_COLLISION.glb"
+    },
+    {
+      "link_id": "upper_orbit",
+      "member_nodes": [
+        "upper_orbit"
+      ],
+      "pivot_m": [
+        0,
+        0.42,
+        0
+      ],
+      "game_effective_mass_share_kg": 0.023423,
+      "visual_source": "AXM-PICKUP-GEM-001.glb",
+      "collision_source": "collision/AXM-PICKUP-GEM-001_COLLISION.glb"
+    }
+  ],
+  "joints": [
+    {
+      "joint_id": "gem_spin",
+      "type": "continuous",
+      "parent_link": "root",
+      "child_link": "gem",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pivot_m": [
+        0,
+        0.32,
+        0
+      ],
+      "limits_si": null,
+      "drive_intent": {
+        "mode": "velocity",
+        "speed_deg_s": 55
+      },
+      "actuator": null,
+      "controller": null
+    },
+    {
+      "joint_id": "lower_orbit_spin",
+      "type": "continuous",
+      "parent_link": "root",
+      "child_link": "lower_orbit",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pivot_m": [
+        0,
+        0.23,
+        0
+      ],
+      "limits_si": null,
+      "drive_intent": {
+        "mode": "velocity",
+        "speed_deg_s": 80
+      },
+      "actuator": null,
+      "controller": null
+    },
+    {
+      "joint_id": "upper_orbit_spin",
+      "type": "continuous",
+      "parent_link": "root",
+      "child_link": "upper_orbit",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pivot_m": [
+        0,
+        0.42,
+        0
+      ],
+      "limits_si": null,
+      "drive_intent": {
+        "mode": "velocity",
+        "speed_deg_s": -95
+      },
+      "actuator": null,
+      "controller": null
+    }
+  ],
+  "authority": {
+    "automatic_physical_control": false,
+    "actuator_mapping": "UNASSIGNED",
+    "controller_mapping": "UNASSIGNED",
+    "emergency_stop": "NOT_IMPLEMENTED",
+    "human_engineering_review_required": true
+  },
+  "scope_limit": "Kinematic translation proof only. It is not a robot design, controller, safety case, dynamic model, wiring plan, or authorization to move physical hardware."
+}

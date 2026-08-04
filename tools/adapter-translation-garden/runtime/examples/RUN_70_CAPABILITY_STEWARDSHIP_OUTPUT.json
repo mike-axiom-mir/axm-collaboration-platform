@@ -1,0 +1,191 @@
+{
+  "schema": "axm.translation.run70-example/v1",
+  "effectiveness": {
+    "schema": "axm.translation.steward-effectiveness-comparison/v1",
+    "before": {
+      "tests": 631,
+      "capability_systems": 0,
+      "proof_gates": 0,
+      "authority_violations": 0,
+      "complexity_units": 0,
+      "shadow_locks": 10
+    },
+    "after": {
+      "tests": 650,
+      "capability_systems": 5,
+      "proof_gates": 5,
+      "authority_violations": 0,
+      "complexity_units": 12,
+      "shadow_locks": 10
+    },
+    "delta": {
+      "tests": 19.0,
+      "capability_systems": 5.0,
+      "proof_gates": 5.0,
+      "authority_violations": 0.0,
+      "complexity_units": 12.0,
+      "shadow_locks": 0.0
+    },
+    "effective_gain": 0.84230769,
+    "authority_stable": true,
+    "structural_measure_not_runtime_benchmark": true
+  },
+  "composition": {
+    "schema": "axm.translation.capability-composition-plan/v1",
+    "request": {
+      "required_capabilities": [
+        "mapping"
+      ],
+      "forbidden_authorities": [
+        "shadow_only"
+      ],
+      "max_loss_score": 0.5
+    },
+    "required_capabilities": [
+      "mapping"
+    ],
+    "selected_modules": [
+      "fingerprint",
+      "mapper"
+    ],
+    "ordered_modules": [
+      "fingerprint",
+      "mapper"
+    ],
+    "edges": [
+      [
+        "fingerprint",
+        "mapper"
+      ]
+    ],
+    "alternatives": {
+      "mapping": [
+        "mapper"
+      ]
+    },
+    "missing_capabilities": [],
+    "dependency_issues": [],
+    "cycle_nodes": [],
+    "rejected": [],
+    "holds": [],
+    "automatic_execution": false,
+    "plan_sha256": "94580d9f25d926bca1e1ca3806c540aa09807a797dfe41641db36b671f0172ca",
+    "decision": "REVIEWABLE_PLAN"
+  },
+  "simulation": {
+    "schema": "axm.translation.declarative-simulation/v1",
+    "input_sha256": "f133e8b6bd646e959dd7b39373aab6b5e191e8cbae1def983df782cf26f238a6",
+    "steps_sha256": "a9a522b5c7410a80901fc33cea2c0ed5d184a9e1bb5127c50e5a2b81bf26aeec",
+    "output_state": {
+      "source": {
+        "name": "AXM"
+      },
+      "target": {
+        "name": "AXM"
+      }
+    },
+    "output_sha256": "479fefa02267a7f2fb3707c6e5250bf4d09e7f2d7ee8a4c5f15f6706e2178dda",
+    "trace": [
+      {
+        "index": 0,
+        "id": "copy",
+        "op": "copy",
+        "status": "PASS"
+      },
+      {
+        "index": 1,
+        "id": "assert",
+        "op": "assert_equal",
+        "status": "PASS"
+      }
+    ],
+    "losses": [],
+    "holds": [],
+    "limits": {
+      "max_steps": 100,
+      "max_state_nodes": 10000
+    },
+    "executed_modules": false,
+    "external_effects": false,
+    "simulation_sha256": "63ba6384270cffb8685c549b0d053bce230c883befd4dfcc2025f3c26d4dc2e9",
+    "decision": "REVIEWABLE_SIMULATION"
+  },
+  "containment_analysis": {
+    "schema": "axm.translation.failure-blast-radius/v1",
+    "failed": [],
+    "impacted": [],
+    "unaffected": [
+      "fingerprint",
+      "mapper"
+    ],
+    "resource_impacts": [],
+    "blast_radius_ratio": 0.0,
+    "executed_actions": false
+  },
+  "invariant_checkpoint": {
+    "schema": "axm.translation.invariant-checkpoint/v1",
+    "evidence_sha256": "85217a9a088e3328a2ea40360874f824adc73251e10fa7a9beb05c9ed47fc56b",
+    "invariant_specs_sha256": "9c94c90f1dd195f733b6451c2d4251b899d721651ea704be7afce5fe3a40ac35",
+    "evaluation": {
+      "schema": "axm.translation.invariant-evaluation/v1",
+      "results": [
+        {
+          "id": "network",
+          "path": [
+            "network_access"
+          ],
+          "operator": "is_false",
+          "expected": null,
+          "actual": false,
+          "passed": true,
+          "severity": "blocking"
+        },
+        {
+          "id": "writes",
+          "path": [
+            "native_writes"
+          ],
+          "operator": "is_false",
+          "expected": null,
+          "actual": false,
+          "passed": true,
+          "severity": "blocking"
+        },
+        {
+          "id": "shadows",
+          "path": [
+            "shadow_locks"
+          ],
+          "operator": "equals",
+          "expected": 10,
+          "actual": 10,
+          "passed": true,
+          "severity": "blocking"
+        }
+      ],
+      "blocking_failures": [],
+      "advisory_failures": [],
+      "verdict": "PASS"
+    },
+    "automatic_promotion": false,
+    "automatic_execution": false,
+    "checkpoint_sha256": "3bbd5d9535d26fea58837ce49df4496d4f4c45d174792a76d5c5176832efc19e",
+    "decision": "REVIEWABLE"
+  },
+  "capability_checkpoint": {
+    "schema": "axm.translation.capability-checkpoint/v1",
+    "effectiveness_sha256": "9e4ca411c43fcf664e21c81d164c080dd927d63db4977b5977c166d2f92c6240",
+    "composition_sha256": "00e2e6f2e970a0d90b681380379f4548787a6beb50d95d1a41edcd36fbd668d0",
+    "simulation_sha256": "7a092ecd1a00a51037bdeb88e5dcc37539941db5fa8f482f7d3fb9aa6af52496",
+    "containment_sha256": "946412eb03ffea8eb724fdcdc2cda70e6e01026304f9aadf41fbbbca5e3f2db7",
+    "invariants_sha256": "81b70864ba746a8a7d766c54f38c23add13b7e497f20052c1f04110bf3b7d596",
+    "holds": [
+      "containment"
+    ],
+    "automatic_execution": false,
+    "automatic_merge": false,
+    "automatic_promotion": false,
+    "checkpoint_sha256": "07293698de1d127178aee7d15837340041a8a0de28dc2cc5ccd06eedcc6c5140",
+    "decision": "HOLD"
+  }
+}

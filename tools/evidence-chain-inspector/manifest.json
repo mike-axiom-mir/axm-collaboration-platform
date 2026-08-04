@@ -1,0 +1,38 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "evidence-chain-inspector",
+  "name": "AXM Evidence Chain Inspector",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "VERIFY",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": ["evidence", "hash-chain", "integrity", "diagnostics", "privacy", "local-first"],
+  "uses": ["service:evidence-retention-contract", "browser-file-picker", "node-standard-library", "explicit-download", "stdout"],
+  "permissions": [],
+  "actions": [
+    "inspect a pasted or explicitly selected evidence JSONL segment",
+    "verify canonical SHA-256 event hashes and previous-hash links",
+    "report line-level integrity anomalies without emitting payloads",
+    "export an explicit inspection receipt"
+  ],
+  "accepts": ["application/x-ndjson", "text/plain", "axm.evidence-retention/v1"],
+  "produces": ["axm.evidence-chain-inspection/v1"],
+  "readiness": ["sha256-runtime"],
+  "verifiedAt": null,
+  "summary": "Diagnoses evidence-retention JSONL chain failures with line-level, digest-only receipts without repairing or disclosing the evidence.",
+  "notes": "Read-only inspection only. The tool does not start the Workshop, rewrite or delete segments, recover sessions, expose payloads, grant authority, promote findings or change CANON.",
+  "machine": {
+    "apiVersion": "1.0",
+    "entry": "cli.js",
+    "status": "TEST",
+    "effect": "explicit-input-read-only",
+    "actions": ["inspect.stdin", "inspect.file"]
+  }
+}

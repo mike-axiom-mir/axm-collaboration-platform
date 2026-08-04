@@ -1,0 +1,42 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.backoff-jitter-scheduler",
+  "name": "Backoff Jitter Scheduler",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "RUNTIME",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "repair-seed",
+    "runtime-resilience",
+    "local-first",
+    "dependency-free",
+    "bounded"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Spread bounded retries and periodic recovery work to avoid synchronized overload."
+  ],
+  "accepts": [
+    "retry-policy",
+    "lineage-seed"
+  ],
+  "produces": [
+    "axm.backoff-schedule/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Spread bounded retries and periodic recovery work to avoid synchronized overload.",
+  "notes": "Standalone bounded runtime primitive. Invocation is explicit; active AXM authority, integration, and safe operating limits remain unproven."
+}

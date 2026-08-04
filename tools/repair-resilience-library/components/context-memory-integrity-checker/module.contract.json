@@ -1,0 +1,45 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.context-memory-integrity-checker",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.context-memory-integrity.report/v1"
+  ],
+  "consumes": [
+    "context-records",
+    "required-context-contract",
+    "scope-policy"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_2_SHADOW_RESTORATION",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/ai-team",
+      "shared/continuity",
+      "shared/technical-glasses"
+    ],
+    "reason": "Produces findings and a bounded restoration proposal without writing memory or crossing scopes."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-pattern-reuse",
+      "automatic-memory-write",
+      "provider-execution",
+      "active-repair-orchestration",
+      "permission-grant",
+      "automatic-promotion",
+      "automatic-release",
+      "automatic-canon",
+      "diagnosis-from-similarity-alone",
+      "root-cause-invention"
+    ]
+  }
+}

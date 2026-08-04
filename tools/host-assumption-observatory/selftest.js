@@ -14,6 +14,10 @@ function check(label, action) {
   process.stdout.write('PASS ' + label + '\n');
 }
 
+const publishedManifest = require('./manifest.json');
+check('published manifest declares the modern schema', () => assert.equal(publishedManifest.schema, 'axm.tool-manifest/v1'));
+check('published manifest classifies the observatory as a product', () => assert.equal(publishedManifest.kind, 'product'));
+
 function writeJson(file, value, bom = false) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, (bom ? '\uFEFF' : '') + JSON.stringify(value, null, 2) + '\n');

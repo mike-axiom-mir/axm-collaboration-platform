@@ -1,23 +1,44 @@
-# Module Footprint Observatory focused test report
+# Module Footprint & Storage Pressure Observatory test report
 
-Status: `PASS` for the focused fixture and live Workshop checks. Candidate
-status remains detached `EXPERIMENTAL`.
+Status: `PASS` for 35 focused fixture and live Workshop checks. Integrated
+module remains `TEST`; no cleanup authority was added.
 
-- 24 focused checks passed.
-- The fixture proves exact file and byte totals, largest-file evidence,
-  lowercase extension grouping with exact path preservation, extensionless
-  files, UTF-8 BOM manifest identity, named directory exclusions, symlink
-  refusal, no source writes, metadata-only fingerprint stability, TTL states,
-  no absolute-root leak, and explicit non-authority.
-- Live scan measured `2026-07-27T02:16:29.778Z` with footprint fingerprint
-  `47ed28963458a63b84b645fed416161b4ebcfde68403f5c54e94a2ed58491788`.
-- The exact bounded scope contains 81 top-level modules, 2,571 active regular
-  files, and 138,675,769 bytes after three named directory exclusions.
-- Zero symlinks were observed inside the selected live module roots, zero
-  manifests were invalid, and zero read issues occurred.
-- This count does not represent the whole Workshop and is not interchangeable
-  with the broader active-source snapshot.
-- Browser visual judgment is `NOT_RUN`.
-- No content identity, duplicate, quality, complexity, performance, readiness,
-  budget, deletion, packaging, staging, installation, permission, rollback,
-  promotion, GitHub, network, or CANON claim was made.
+## Focused proof
+
+- The original module-footprint map remains compatible and metadata-only.
+- Two explicit roots are counted without exposing their absolute paths.
+- Symlinks are listed and never followed.
+- Eight operational retention classes are deterministic and
+  `UNCLASSIFIED` remains protected by default.
+- Same-size candidates require equal SHA-256 before becoming an exact
+  duplicate group.
+- Cluster-rounded allocated bytes are labeled an estimate, not exact sparse
+  or compressed allocation.
+- Separately timed snapshots produce a growth delta; a first run remains
+  `BASELINE_ONLY`.
+- Fixture receipts before and after the scan match; the core contains no
+  delete, truncate, rename, or link operation.
+
+## Live D baseline
+
+Measured 2026-07-31 over the active Workshop and branched Mirror roots:
+
+- 138,499 files, 13,999 directories;
+- 13,750,743,404 logical bytes;
+- 14,109,597,696 cluster-rounded estimated allocated bytes;
+- 358,854,292 bytes of estimated allocation overhead;
+- 5,234 files in the selected session, telemetry, and temporary scope;
+- 4,140 same-size candidates hashed, totaling 100,205,810 bytes;
+- 266 exact duplicate groups and 502 redundant logical paths;
+- 10,281,414 proven redundant physical bytes in the selected scope;
+- zero read issues, zero skipped-by-limit files, and complete selected-scope
+  hash coverage;
+- whole-root duplicate coverage remains explicitly false.
+
+The unbounded all-class pass exceeded the one-hour interactive safety window
+and produced no report. Its orphaned process was identified and stopped. That
+result is recorded as an operating constraint, not disguised as proof.
+
+The baseline selected no keep/delete path and performed no deletion,
+hardlinking, compression, packaging, permission change, promotion, or CANON
+change.

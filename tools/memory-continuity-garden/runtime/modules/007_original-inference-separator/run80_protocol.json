@@ -1,0 +1,190 @@
+{
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "consent_delta": "NONE",
+  "identity": {
+    "category": "1. Memory identity, scope, authority, and provenance",
+    "name": "Original, Interpretation, and Inference Separator",
+    "number": 7,
+    "stable_id": "axm.memory.original-inference-separator"
+  },
+  "identity_delta": "NONE",
+  "run71_execution_plan": {
+    "acyclic": true,
+    "cancellation_boundary_count": 5,
+    "path": "execution_plan.json",
+    "sha256": "9c7857b773c1e37418595ad5495d958e30f923c3e081eb915b4164d1881a08d4",
+    "side_effect_steps": [
+      "TRANSFORM_IN_STAGING"
+    ],
+    "step_count": 5
+  },
+  "run72_evidence_minimization": {
+    "challenge_route_present": true,
+    "path": "evidence_capsule.json",
+    "raw_payload_included": false,
+    "sha256": "d4fd5a959d927c0508a061699a18d170bc1d110ca09e0772dcb83e1e3686dcc2",
+    "unsupported_claims_remain_explicit": true
+  },
+  "run73_resumable_batch": {
+    "batch_limit": 1024,
+    "idempotency_scope": "seed_id + operation_id + exact input digest + plan digest",
+    "interruption_result": "RECOVERY_HOLD",
+    "last_completed_step_must_exist_in_plan": true,
+    "resume_requires_exact_plan_and_input": true,
+    "resume_token_algorithm": "sha256-canonical-json",
+    "resume_token_fields": [
+      "seed_id",
+      "plan_digest",
+      "input_digest",
+      "last_completed_step",
+      "ledger_head"
+    ],
+    "silent_completion_forbidden": true,
+    "terminal_state_resume_result": "HOLD_ALREADY_TERMINAL",
+    "unknown_or_tampered_token_result": "HOLD_RESUME_TOKEN"
+  },
+  "run74_fault_isolation": {
+    "automatic_restart": false,
+    "circuit_open_result": "HOLD_CIRCUIT_OPEN",
+    "default_blast_radius": [
+      "axm.memory.original-inference-separator"
+    ],
+    "fault_receipt_contains_no_raw_payload": true,
+    "fault_threshold_before_circuit_open": 3,
+    "healthy_evidence_preserved": true,
+    "high_risk_fail_closed": false,
+    "quarantine_result": "HOLD_QUARANTINED",
+    "runtime_collaborators_are_not_failed_automatically": true
+  },
+  "run75_acceptance_handshake": {
+    "acceptance_claimed": false,
+    "apply_performed": false,
+    "apply_requires_fresh_preview_and_exact_baseline": true,
+    "current_status": "NOT_ACCEPTED",
+    "delivery_is_not_acceptance": true,
+    "majority_vote_cannot_bypass_required_role": true,
+    "merge_gate_is_not_runtime_apply": true,
+    "owner_acceptance_is_not_specialist_verification": true,
+    "required_sequence": [
+      "DELIVERED",
+      "STRUCTURALLY_VALIDATED",
+      "OWNER_ACCEPTED",
+      "SPECIALIST_VERIFIED",
+      "MIKE_MERGE_GATE_ACCEPTED"
+    ],
+    "specialist_verification_is_not_merge_gate": true,
+    "validation_is_not_owner_acceptance": true
+  },
+  "run76_counterfactual_matrix": [
+    {
+      "expected": "HOLD_SOURCE",
+      "scenario": "TAMPERED_SOURCE_DIGEST"
+    },
+    {
+      "expected": "HOLD_EXPIRED",
+      "scenario": "EXPIRED_AUTHORITY"
+    },
+    {
+      "expected": "HOLD_DEPENDENCY_UNAVAILABLE",
+      "scenario": "MISSING_BOOT_DEPENDENCY"
+    },
+    {
+      "expected": "HOLD_STALE_REVISION",
+      "scenario": "STALE_CURRENT_REVISION"
+    },
+    {
+      "expected": "HOLD_CONFLICT_REVIEW",
+      "scenario": "CONFLICTING_CREDIBLE_EVIDENCE"
+    },
+    {
+      "expected": "HOLD_RESOURCE_BUDGET",
+      "scenario": "INSUFFICIENT_LOCAL_RESOURCES"
+    },
+    {
+      "expected": "HOLD_CANCELLED",
+      "scenario": "CANCELLED_REQUEST"
+    },
+    {
+      "expected": "HOLD_SCHEMA_UNSUPPORTED",
+      "scenario": "UNKNOWN_SCHEMA_MAJOR"
+    },
+    {
+      "expected": "HOLD_PURPOSE",
+      "scenario": "PURPOSE_CHANGED_AFTER_CAPTURE"
+    }
+  ],
+  "run77_resource_scheduler": {
+    "cancelled_tasks_are_never_requeued_silently": true,
+    "max_items_per_batch": 1024,
+    "max_parallel_per_seed": 4,
+    "max_retries_without_human_review": 1,
+    "network_required": false,
+    "operation_kind": "BOUNDED_TRANSFORM",
+    "priority_is_not_truth_or_authority": true,
+    "risk_class": "LOW",
+    "round_robin_across_categories": true,
+    "workers_gain_no_authority": true
+  },
+  "run78_claim_boundary": {
+    "claim_flags": {
+      "CANON": false,
+      "active_workshop_integrated": false,
+      "full_semantic_implementation": false,
+      "owner_accepted": false,
+      "physical_deletion_proven": false,
+      "production_ready": false,
+      "real_encryption_key_custody_proven": false,
+      "real_restore_proven": false,
+      "specialist_verified": false
+    },
+    "metric_cannot_substitute_for_human_acceptance": true,
+    "structural_test_cannot_be_presented_as_semantic_truth": true,
+    "true_flag_requires_exact_external_proof_ref": true,
+    "unsupported_claim_result": "HOLD_UNSUPPORTED_CLAIM"
+  },
+  "run79_multi_seed_intake": {
+    "active_workshop_target": null,
+    "bundle_id": "CATEGORY_01_TRANSACTION",
+    "bundle_membership_does_not_merge_seed_identity": true,
+    "integration_performed": false,
+    "member_acceptance_is_individual": true,
+    "one_member_failure_aborts_bundle_commit": true,
+    "prepare_all_before_commit_any": true,
+    "rollback_scope": "temporary isolated bundle root only"
+  },
+  "run80_evidence_boundary": {
+    "CANON": false,
+    "achieved_reference_capabilities": [
+      "sealed_execution_plan",
+      "minimal_evidence_capsule",
+      "resumable_batch_contract",
+      "fault_isolation_contract",
+      "acceptance_handshake",
+      "counterfactual_matrix",
+      "resource_scheduler_contract",
+      "claim_boundary_lint",
+      "isolated_multi_seed_transaction_simulation"
+    ],
+    "active_workshop_integration": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "posture_preserved": "WAITING_FOR_FOUNDATION_OWNER_REVIEW",
+    "production_proof": false,
+    "specialist_verification": false
+  },
+  "schema": "axm.memory.run80-capability-protocol/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "c73d36bd1124e3e5e84064de8cf5330cf02151f7f0ee049bf9e8485f32b664b2"
+  },
+  "source_run70": {
+    "authority": "T1_BOUNDED_LOCAL",
+    "contract_file_sha256": "75f3e5ded1b1042ea7a593f57f4aba173aa104bf71a96de9ad8b22654896b49c",
+    "permissions": [],
+    "posture": "WAITING_FOR_FOUNDATION_OWNER_REVIEW",
+    "protocol_file_sha256": "fd1f48afc8471b7e5f27a404752536845e29f2dad6930a15f656ec178b025379",
+    "purpose": "Preserve source material independently from summaries, extracted fields, model interpretations, and later conclusions."
+  },
+  "trust_delta": "NONE"
+}

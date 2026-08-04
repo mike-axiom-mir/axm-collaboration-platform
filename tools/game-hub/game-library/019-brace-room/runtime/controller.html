@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Brace Room — Controller</title>
+<style>
+  :root { color-scheme: dark; }
+  * {
+    box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none;
+    -webkit-touch-callout: none; touch-action: none;
+  }
+  html, body {
+    margin: 0; height: 100%; background: #05080d; color: #eaf2ff;
+    font-family: system-ui, sans-serif; overflow: hidden;
+    display: flex; flex-direction: column;
+    overscroll-behavior: none; touch-action: none;
+  }
+  #status { text-align: center; padding: 8px; font-size: 0.85rem; color: #93a4c2; }
+  #status.warn { color: #f5c542; }
+  #layout { flex: 1; display: flex; align-items: stretch; justify-content: space-between; padding: 16px; gap: 16px; }
+  #dpad { display: grid; grid-template-columns: repeat(3, 64px); grid-template-rows: repeat(3, 64px); gap: 6px; align-self: center; }
+  .dbtn { background: #131c2c; border: 1px solid #2c3c56; border-radius: 12px; }
+  .dbtn:active, .dbtn.pressed { background: #4f8bff; border-color: #4f8bff; }
+  #up { grid-column: 2; grid-row: 1; }
+  #left { grid-column: 1; grid-row: 2; }
+  #right { grid-column: 3; grid-row: 2; }
+  #down { grid-column: 2; grid-row: 3; }
+  #action {
+    align-self: center;
+    width: 140px; height: 140px; border-radius: 50%;
+    background: #1c2738; border: 3px solid #7cff6b; color: #7cff6b;
+    font-size: 1.1rem; font-weight: 800;
+  }
+  #action:active, #action.pressed { background: #7cff6b; color: #051019; }
+</style>
+</head>
+<body>
+  <div id="status">Connecting…</div>
+  <div id="layout">
+    <div id="dpad">
+      <button class="dbtn" id="up">&#9650;</button>
+      <button class="dbtn" id="left">&#9664;</button>
+      <button class="dbtn" id="right">&#9654;</button>
+      <button class="dbtn" id="down">&#9660;</button>
+    </div>
+    <button id="action">ACTION</button>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+  var params = new URLSearchParams(location.search);
+  var player = params.get('player') || 'p1';
+  var statusEl = document.getElementById('status');
+  statusEl.textContent = 'Controlling seat ' + player.toUpperCase() + ' — keep this tab open.';
+
+  // Belt-and-suspenders against page scroll/pinch-zoom on real phones: CSS
+  // touch-action: none plus e.preventDefault() on pointerdown covers modern
+  // browsers, but a stray touchmove reaching the page on an older/quirkier
+  // mobile Safari could still trigger a rubber-band scroll mid-hold, which
+  // would silently drop that seat's input for a frame during exactly the
+  // kind of fault (hold, mash) where a dropped frame matters most. This is
+  // untested on a real device (physical_phone_qa is still pending in the
+  // manifest) but costs nothing to have in place ahead of that test.
+  document.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
+
+  // Screen-sleep during a held fault is a real failure mode for a
+  // phone-as-controller: the OS dims/locks the screen mid-session, the tab
+  // keeps running but the player can no longer touch anything until they
+  // wake the phone and tap back in, likely losing the fault they were
+  // holding. The Wake Lock API isn't supported everywhere (notably older
+  // iOS Safari), so this is a progressive enhancement, not a guarantee —
+  // wrapped so its absence or failure never breaks input.
+  var wakeLock = null;
+  function requestWakeLock() {
+    if (!('wakeLock' in navigator)) return;
+    navigator.wakeLock.request('screen').then(function (lock) {
+      wakeLock = lock;
+    }).catch(function () { /* denied or unsupported — silently continue without it */ });
+  }
+  requestWakeLock();
+  document.addEventListener('visibilitychange', function () {
+    // A wake lock is released automatically when the tab backgrounds; it
+    // has to be re-requested once the player returns to this tab.
+    if (document.visibilityState === 'visible') requestWakeLock();
+  });
+
+  function vibrate(ms) {
+    if (navigator.vibrate) { try { navigator.vibrate(ms); } catch (e) { /* unsupported, ignore */ } }
+  }
+
+  var held = { up: false, down: false, left: false, right: false, action: false };
+  var actionWasHeld = false;
+
+  function bindHold(id, key, hapticMs) {
+    var el = document.getElementById(id);
+    function setHeld(v) {
+      held[key] = v;
+      el.classList.toggle('pressed', v);
+      if (v && hapticMs) vibrate(hapticMs);
+    }
+    el.addEventListener('pointerdown', function (e) { e.preventDefault(); el.setPointerCapture(e.pointerId); setHeld(true); });
+    el.addEventListener('pointerup', function (e) { e.preventDefault(); setHeld(false); });
+    el.addEventListener('pointercancel', function () { setHeld(false); });
+    el.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  }
+  bindHold('up', 'up');
+  bindHold('down', 'down');
+  bindHold('left', 'left');
+  bindHold('right', 'right');
+  // A short tap buzz on the action button only — it's the button that
+  // actually resolves faults, so it's the one press worth confirming by
+  // feel, not just by sight, especially for a mash verb where a player's
+  // thumb may be moving too fast to watch the screen closely.
+  bindHold('action', 'action', 15);
+
+  function send() {
+    var actionEdge = held.action && !actionWasHeld;
+    actionWasHeld = held.action;
+    var body = {
+      player: player,
+      moveX: (held.right ? 1 : 0) - (held.left ? 1 : 0),
+      moveY: (held.down ? 1 : 0) - (held.up ? 1 : 0),
+      action: held.action,
+      actionEdge: actionEdge
+    };
+    fetch('/api/input', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body)
+    }).then(function () {
+      statusEl.className = '';
+      statusEl.textContent = 'Controlling seat ' + player.toUpperCase() + ' — keep this tab open.';
+    }).catch(function () {
+      statusEl.className = 'warn';
+      statusEl.textContent = 'Lost the connection to Brace Room — check the wifi.';
+    });
+  }
+
+  // 20Hz is plenty for a d-pad + one button; keeps battery/network light.
+  setInterval(send, 50);
+  send();
+})();
+</script>
+</body>
+</html>

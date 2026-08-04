@@ -1,0 +1,261 @@
+{
+  "schema": "axm.visual-module-package/1",
+  "packageId": "package.focus.halo",
+  "name": "Focus Halo",
+  "version": "1.1.0",
+  "entryModuleId": "focus.halo",
+  "created": "2026-07-28",
+  "modules": [
+    {
+      "id": "primitive.glow",
+      "name": "Glow",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Creates emissive-looking light spill.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "sun"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.mask",
+      "name": "Mask",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Restricts an effect to a selected region.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "mask"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.opacity",
+      "name": "Opacity",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Controls visibility and layer mixing.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "opacity"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "focus.halo",
+      "name": "Focus Halo",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "effect",
+      "category": "Focus + Depth",
+      "status": "WORKING",
+      "description": "A halo ring around active controls and current points of attention.",
+      "tags": [
+        "focus",
+        "halo",
+        "accessibility"
+      ],
+      "dependencies": [
+        "primitive.glow",
+        "primitive.mask",
+        "primitive.opacity"
+      ],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "target"
+      },
+      "parameters": [
+        {
+          "id": "intensity",
+          "label": "Intensity",
+          "type": "number",
+          "default": 0.58,
+          "description": "",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "cssVar": "--fx-focus-intensity"
+        },
+        {
+          "id": "spread",
+          "label": "Spread",
+          "type": "number",
+          "default": 10,
+          "description": "",
+          "min": 0,
+          "max": 30,
+          "step": 1,
+          "unit": "px",
+          "cssVar": "--fx-focus-spread"
+        },
+        {
+          "id": "softness",
+          "label": "Softness",
+          "type": "number",
+          "default": 0.62,
+          "description": "",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "cssVar": "--fx-focus-softness"
+        }
+      ],
+      "renderer": {
+        "type": "class",
+        "scope": "active",
+        "className": "fx-focus-halo"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    }
+  ],
+  "notes": "Starter package. Set a public-sharing license before redistribution.",
+  "integrity": {
+    "algorithm": "sha256",
+    "value": "f590d450764985385f6d6c4a0c58240ddff254cf7094a42f9dafbfe8eb1595aa"
+  }
+}

@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>AXM Module Footprint Observatory</title>
+  <title>AXM Footprint & Storage Pressure Observatory</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="masthead">
     <div>
       <p class="eyebrow">DETACHED · EXPERIMENTAL · READ ONLY</p>
-      <h1>Module Footprint Observatory</h1>
-      <p class="intro">See how many active regular files and bytes live inside each top-level module without turning size into a quality score.</p>
+      <h1>Footprint & Storage Pressure Observatory</h1>
+      <p class="intro">See active module size, whole-root growth, exact duplicate bytes, retention classes, and directory pressure without granting cleanup authority.</p>
     </div>
     <div class="truth-badge"><strong>SIZE IS EVIDENCE</strong><span>Not quality, readiness, performance, or deletion advice</span></div>
   </header>
@@ -26,9 +26,27 @@
       <div class="section-head"><div><p class="eyebrow">MODULES</p><h2>Largest observed active footprints first</h2></div><span class="hint">No budget or ranking decision</span></div>
       <div id="module-list" class="rows"></div>
     </section>
+    <section class="panel pressure-panel">
+      <div class="section-head"><div><p class="eyebrow">WHOLE ROOTS</p><h2>Workshop + Mirror storage pressure</h2></div><span id="pressure-state" class="hint">No pressure snapshot loaded</span></div>
+      <div id="pressure-summary-grid" class="summary-grid"></div>
+      <p class="hint">Allocated bytes are cluster-rounded estimates. Duplicate hashes prove equal content at observation time, not permission to remove a path.</p>
+    </section>
+    <section class="panel">
+      <div class="section-head"><div><p class="eyebrow">RETENTION ROUTING</p><h2>Useful truth versus likely repetition</h2></div><span class="hint">Unclassified stays protected</span></div>
+      <div id="class-list" class="rows"></div>
+    </section>
+    <section class="panel">
+      <div class="section-head"><div><p class="eyebrow">EXACT BYTES</p><h2>Largest duplicate groups for review</h2></div><span class="hint">No keep/delete target selected</span></div>
+      <div id="duplicate-list" class="rows"></div>
+    </section>
+    <section class="panel">
+      <div class="section-head"><div><p class="eyebrow">FILE-COUNT PRESSURE</p><h2>Highest immediate directory fan-out</h2></div><span class="hint">Backup and sync cost signal</span></div>
+      <div id="fanout-list" class="rows"></div>
+    </section>
   </main>
   <footer><strong>AXM modular candidate</strong><span>Packaging, assets, readiness, and deletion owners remain separate</span></footer>
   <script src="current-footprint-map.js"></script>
+  <script src="current-storage-pressure-map.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

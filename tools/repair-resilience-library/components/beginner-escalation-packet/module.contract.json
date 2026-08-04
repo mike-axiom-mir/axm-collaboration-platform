@@ -1,0 +1,45 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.beginner-escalation-packet",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.beginner-escalation.packet/v1"
+  ],
+  "consumes": [
+    "incident-state",
+    "evidence-links",
+    "safe-next-action"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_EXPLAIN_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/repairbuddy",
+      "tools/diagnostics-operations-center",
+      "tools/review-inbox"
+    ],
+    "reason": "Adds a beginner-facing view and expert handoff without changing the underlying evidence or claiming a cause."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-pattern-reuse",
+      "automatic-memory-write",
+      "provider-execution",
+      "active-repair-orchestration",
+      "permission-grant",
+      "automatic-promotion",
+      "automatic-release",
+      "automatic-canon",
+      "diagnosis-from-similarity-alone",
+      "root-cause-invention"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.crash-only-wrapper",
+  "name": "Crash Only Wrapper",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "RUNTIME",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "MEDIUM",
+  "tags": [
+    "repair-seed",
+    "runtime-resilience",
+    "local-first",
+    "dependency-free",
+    "bounded"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Give a component one tested stop path and one tested recovery path so partial shutdown states cannot accumulate."
+  ],
+  "accepts": [
+    "component-start-stop-contract"
+  ],
+  "produces": [
+    "axm.crash-only.lifecycle/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Give a component one tested stop path and one tested recovery path so partial shutdown states cannot accumulate.",
+  "notes": "Standalone bounded runtime primitive. Invocation is explicit; active AXM authority, integration, and safe operating limits remain unproven."
+}

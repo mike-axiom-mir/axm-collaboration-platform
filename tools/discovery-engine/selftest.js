@@ -7,6 +7,12 @@ let fails = 0, serial = 0;
 function ok(name, pass) { console.log((pass ? 'PASS  ' : 'FAIL  ') + name); if (!pass) fails++; }
 function meta(prefix, extra) { serial++; return Object.assign({ now: new Date(Date.parse('2026-07-11T00:00:00.000Z') + serial * 1000).toISOString(), actorId: 'test-user', actorKind: 'HUMAN', recordId: prefix + '-' + serial }, extra || {}); }
 function apply(r) { if (!r.ok) { const e = r.errors[0] || {}; throw new Error((e.code || 'transition failed') + (e.message ? ': ' + e.message : '')); } return r.state; }
+const manifest = require('./manifest.json');
+const contract = require('./module.contract.json');
+
+ok('manifest uses the current product schema', manifest.schema === 'axm.tool-manifest/v1' && manifest.kind === 'product');
+ok('manifest and contract permissions agree', JSON.stringify(manifest.permissions) === JSON.stringify(contract.permissions));
+ok('contract declares browser-owned resumable lifecycle', JSON.stringify(contract.lifecycle) === JSON.stringify({ state_owner: 'browser', reload: 'resume', disconnect: 'graceful-degrade', cleanup: 'explicit' }));
 
 const seedMeta = { id: 'session-1', now: '2026-07-11T00:00:00.000Z', actorId: 'test-user', actorKind: 'HUMAN' };
 const seed = { id: 'session-1', title: 'Any subject', subject: 'local freedom', question: 'What seam is overlooked?', evidenceProfile: 'MIXED', discoveryMode: 'MANUAL' };

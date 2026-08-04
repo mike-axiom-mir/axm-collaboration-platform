@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.screen-contract/v1",
+  "title": "AXM bounded screen contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "moduleId", "preset", "body", "behavior", "presentation", "screen", "resourcePolicy", "boundaries"],
+  "properties": {
+    "schema": { "const": "axm.screen-contract/v1" },
+    "moduleId": { "type": ["string", "null"] },
+    "preset": { "enum": ["fixed", "instrument", "balanced", "operational", "creative", "expressive"] },
+    "body": { "$ref": "#/$defs/layer" },
+    "behavior": { "$ref": "#/$defs/layer" },
+    "presentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "editable", "modeEditable", "editableLayers", "authority"],
+      "properties": {
+        "source": { "const": "presentation-policy" },
+        "editable": { "type": "boolean" },
+        "modeEditable": { "type": "boolean" },
+        "editableLayers": { "type": "array", "uniqueItems": true, "items": { "enum": ["surface", "depth", "motion", "density", "signal"] } },
+        "authority": { "const": "presentation-only" }
+      }
+    },
+    "screen": { "$ref": "#/$defs/layer" },
+    "resourcePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["separation", "hostChoosesBudget", "presentationFallbacks", "capabilityExceptionsRequireEvidence"],
+      "properties": {
+        "separation": { "const": "capability-first" },
+        "hostChoosesBudget": { "const": true },
+        "presentationFallbacks": { "type": "array", "items": { "enum": ["reduce-motion", "reduce-depth", "reduce-effects", "lower-asset-resolution"] } },
+        "capabilityExceptionsRequireEvidence": { "const": true }
+      }
+    },
+    "boundaries": { "type": "array", "items": { "enum": ["no-behavior-edit", "no-permission-edit", "no-runtime-authority", "no-hardware-claim", "no-silent-capability-downgrade"] } }
+  },
+  "$defs": {
+    "layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "editable", "authority"],
+      "properties": { "source": { "type": "string" }, "editable": { "type": "boolean" }, "authority": { "type": "string" } }
+    }
+  }
+}

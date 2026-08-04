@@ -1,9 +1,12 @@
 {
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
   "id": "prompt-vault",
   "name": "AXM Prompt Vault",
   "version": "v0_2",
   "status": "TEST",
   "entry": "index.html",
+  "contract": "module.contract.json",
   "audience": "machine",
   "layer": "machine",
   "integratedInto": "ai-team",
@@ -13,11 +16,12 @@
   "tags": ["prompts", "templates", "model-agnostic", "providers", "research", "routing", "handoff"],
   "notes": "Stores prompt cards, model-role tags, provider notes, reusable templates, research notes, and handoff packets through the shared AXM spine. ChatGPT, Claude, Grok, local models, future models, and human helpers are examples/routes, not the whole structure. TEST only.",
   "uses": ["storage", "gate", "optional-ai", "settings", "registry", "server-export"],
+  "permissions": ["storage", "gate", "optional-ai", "settings", "registry", "server-export"],
   "supports": ["prompt-cards", "model-role-tags", "provider-notes", "template-types", "research-notes", "handoff-packets", "backup-json", "registry-connection"],
   "no_fake_done": [
     "Prompt quality is not proven by storing it.",
     "Role/provider recommendations are starting routing tags, not final truth.",
     "AI Team comparison preserves raw outputs and human review; it does not automatically prove a prompt or choose a winner.",
-    "Registry link is page-runtime local in v0.1, not persistent server-wide yet."
+    "Registry link is page-runtime local in this TEST build, not persistent server-wide."
   ]
 }

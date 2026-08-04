@@ -1,0 +1,25 @@
+{
+  "id": "axm.text.organ.bundle_integrity_rollback",
+  "version": "0.7.0",
+  "label": "Bundle Integrity & Rollback Organ",
+  "purpose": "Makes compiled text bundles verifiable, reconstructable, and disposable without mutating canonical source.",
+  "inputs": [
+    "target_id",
+    "target_kind",
+    "resolved_plan",
+    "source_snapshot",
+    "compiled_files"
+  ],
+  "outputs": [
+    "bundle_manifest",
+    "lock_file",
+    "sha256_hashes",
+    "rollback_instructions",
+    "verification_result"
+  ],
+  "rules": [
+    "Every generated bundle must carry source snapshots.",
+    "Hash verification must detect missing, modified, and untracked files.",
+    "Generated output may be deleted and regenerated without changing canonical source."
+  ]
+}

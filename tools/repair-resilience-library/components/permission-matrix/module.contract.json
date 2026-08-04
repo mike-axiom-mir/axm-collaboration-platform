@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.permission-matrix",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.permission-resolution/v1"
+  ],
+  "consumes": [
+    "actor",
+    "action",
+    "resource",
+    "policy-rules"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_RESOLUTION_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/secrets-permissions-console",
+      "tools/authority-surface-observatory"
+    ],
+    "reason": "Resolves explicit rules with deny precedence and default deny; it never creates grants."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "permission-grant",
+      "automatic-approval",
+      "automatic-execution",
+      "automatic-merge",
+      "automatic-promotion",
+      "automatic-canon",
+      "runtime-proof-claim"
+    ]
+  }
+}

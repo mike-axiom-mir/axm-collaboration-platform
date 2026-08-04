@@ -15,6 +15,9 @@ function test(condition, message) {
 
 test(manifest.id === 'skinner' && manifest.version === 'v0.3', 'Skinner manifest exposes the upgraded compatibility route');
 test(contract.schema === 'axm.module-contract/v1' && contract.id === 'skinner', 'Skinner declares a module contract');
+test(manifest.schema === 'axm.tool-manifest/v1' && manifest.kind === 'product', 'Skinner uses the current product manifest schema');
+test(JSON.stringify(manifest.permissions) === JSON.stringify(contract.permissions), 'Skinner manifest and contract permissions agree');
+test(JSON.stringify(contract.lifecycle) === JSON.stringify({ state_owner: 'browser', reload: 'resume', disconnect: 'not-applicable', cleanup: 'explicit' }), 'Skinner declares its browser-owned lifecycle');
 test(contract.provides.includes('aetherglass-visual-composition-editing'), 'module contract declares Aetherglass editing');
 test(/shared\/aetherglass\/src\/axm-aetherglass\.js/.test(html), 'route loads the verified Aetherglass core');
 test(/shared\/aetherglass\/src\/axm-luminous-layer-forge\.js/.test(html), 'route loads Luminous Layer Forge');

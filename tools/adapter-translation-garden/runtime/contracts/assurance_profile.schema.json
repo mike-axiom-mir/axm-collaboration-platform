@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm://contracts/assurance-profile/v1",
+  "title": "AXM Detached Assurance Profile",
+  "type": "object",
+  "required": [
+    "module_number",
+    "module_id",
+    "status",
+    "authority_mode",
+    "advisory_only",
+    "input",
+    "output",
+    "runtime",
+    "shadow_lock"
+  ],
+  "properties": {
+    "module_number": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "module_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "LOCAL_PROTOTYPE",
+        "SHADOW_ONLY",
+        "WORKING_CANDIDATE"
+      ]
+    },
+    "authority_mode": {
+      "enum": [
+        "none",
+        "inspect_only",
+        "decision_only",
+        "shadow_only",
+        "read_only_binary_inspector"
+      ]
+    },
+    "advisory_only": {
+      "const": true
+    },
+    "shadow_lock": {
+      "type": "boolean"
+    },
+    "input": {
+      "type": "object"
+    },
+    "output": {
+      "type": "object"
+    },
+    "runtime": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

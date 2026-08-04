@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM AI Habitat — Workshop Intake</title>
+  <style>
+    :root{color-scheme:dark;--ink:#f4f7ff;--muted:#9aa9c3;--line:rgba(167,207,255,.16);--glass:rgba(12,18,35,.78);--cyan:#58eadf;--violet:#9b83ff;--amber:#f1bd71}*{box-sizing:border-box}body{margin:0;min-height:100vh;font:15px/1.55 Inter,ui-sans-serif,system-ui,sans-serif;color:var(--ink);background:radial-gradient(circle at 18% 12%,rgba(88,234,223,.14),transparent 28rem),radial-gradient(circle at 82% 72%,rgba(155,131,255,.15),transparent 32rem),#060915}main{width:min(980px,calc(100% - 32px));margin:0 auto;padding:40px 0 70px}.top{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:24px}.back{color:var(--cyan);text-decoration:none}.badge{border:1px solid var(--line);border-radius:999px;padding:7px 11px;color:var(--muted);background:rgba(255,255,255,.035)}.hero,.panel{border:1px solid var(--line);background:var(--glass);box-shadow:0 22px 80px rgba(0,0,0,.3);backdrop-filter:blur(18px)}.hero{padding:42px;border-radius:28px}.eyebrow{color:var(--cyan);font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}h1{font-size:clamp(38px,7vw,72px);line-height:.95;margin:15px 0 20px;letter-spacing:-.055em}h1 span{background:linear-gradient(90deg,var(--cyan),#9ecaff,var(--violet));-webkit-background-clip:text;color:transparent}.lead{font-size:18px;color:#c8d2e5;max-width:720px}.status{display:flex;align-items:center;gap:12px;margin:28px 0 22px;padding:15px 17px;border-radius:16px;border:1px solid var(--line);background:rgba(4,8,18,.55)}.dot{width:11px;height:11px;border-radius:50%;background:var(--amber);box-shadow:0 0 18px currentColor}.status.online .dot{background:var(--cyan)}.status strong{display:block}.status small{color:var(--muted)}.actions{display:flex;flex-wrap:wrap;gap:12px}.button{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font:inherit;font-weight:750;text-decoration:none;cursor:pointer}.button.primary{border:0;background:linear-gradient(110deg,var(--violet),var(--cyan));color:#07101a}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}.panel{padding:24px;border-radius:20px}.panel h2{font-size:18px;margin:0 0 8px}.panel p{margin:0;color:var(--muted)}code{display:block;margin-top:12px;padding:12px;border-radius:10px;background:#040713;color:#bdeeea;overflow-wrap:anywhere}.truth{margin-top:18px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted)}@media(max-width:760px){.grid{grid-template-columns:1fr}.hero{padding:28px}.top{align-items:flex-start;flex-direction:column}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="top"><a class="back" href="../../hub/index.html">← AXM Hub</a><span class="badge">TEST · local sidecar · explicit start</span></div>
+  <section class="hero">
+    <div class="eyebrow">AI Team / visible collaboration</div>
+    <h1>AXM AI <span>Habitat</span></h1>
+    <p class="lead">A local spatial desktop for visible AI seats, voluntary signals, permission gates, artifacts, games, and an append-only proof trail.</p>
+    <div class="status" id="status"><span class="dot"></span><div><strong id="statusTitle">Checking the local Habitat…</strong><small id="statusDetail">Probing http://127.0.0.1:8765 without sending credentials.</small></div></div>
+    <div class="actions">
+      <a class="button primary" id="open" href="http://127.0.0.1:8765" target="_blank" rel="noopener">Open live Habitat</a>
+      <button class="button" id="recheck" type="button">Recheck sidecar</button>
+    </div>
+    <p class="truth">Presence is observation, not authority. State-faces are interface signals, not claims of feeling. The bridge never grants actions or model access.</p>
+  </section>
+  <div class="grid">
+    <section class="panel"><h2>Start once</h2><p>Double-click this file in the module folder. It finds normal Python or Codex’s bundled Python.</p><code>tools\ai-habitat\START_AI_HABITAT.cmd</code></section>
+    <section class="panel"><h2>Wired both ways</h2><p>AXM AI/machine heartbeats become visible seats. The running Habitat announces itself back to Workshop presence.</p><code>Workshop 8788–8808 ↔ Habitat 8765</code></section>
+    <section class="panel"><h2>Local boundary</h2><p>Both servers stay on loopback. Habitat state, events, bridge key, and generated demo artifacts stay inside this module.</p><code>network: loopback-only</code></section>
+  </div>
+</main>
+<script>
+  const status=document.getElementById('status'),title=document.getElementById('statusTitle'),detail=document.getElementById('statusDetail'),open=document.getElementById('open');
+  async function probe(){
+    status.classList.remove('online');title.textContent='Checking the local Habitat…';detail.textContent='Probing http://127.0.0.1:8765 without sending credentials.';
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),1800);
+    try{await fetch('http://127.0.0.1:8765/api/health',{mode:'no-cors',cache:'no-store',signal:controller.signal});status.classList.add('online');title.textContent='Habitat sidecar is online';detail.textContent='Open it in a separate local tab. Workshop presence sync runs automatically.';open.removeAttribute('aria-disabled');}
+    catch(error){title.textContent='Habitat sidecar is stopped';detail.textContent='Double-click START_AI_HABITAT.cmd, then recheck.';open.setAttribute('aria-disabled','true');}
+    finally{clearTimeout(timer);}
+  }
+  document.getElementById('recheck').addEventListener('click',probe);probe();
+</script>
+</body>
+</html>

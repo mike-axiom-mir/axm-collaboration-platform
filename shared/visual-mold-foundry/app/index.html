@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="AXM Visual Mold Foundry — local-first visual mold studio">
+  <title>AXM Visual Mold Foundry v0.9.1</title>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to workspace</a>
+  <div class="ambient ambient-a" aria-hidden="true"></div>
+  <div class="ambient ambient-b" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand-block">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div>
+        <p class="eyebrow">AXM / Axiom–Mir</p>
+        <h1>Visual Mold Foundry <small>v0.9.1</small></h1>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="quiet-button" id="motionToggle" type="button" aria-pressed="false">Motion: system</button>
+      <button class="quiet-button" id="powerToggle" type="button" aria-pressed="false">Power: standard</button>
+      <button class="quiet-button" id="themeToggle" type="button" aria-pressed="false">Interface: dark</button>
+    </div>
+  </header>
+
+  <div class="shell">
+    <nav class="sidebar" aria-label="Foundry areas">
+      <button class="nav-item active" data-view="overview" aria-current="page"><span>01</span>Overview</button>
+      <button class="nav-item" data-view="atlas"><span>02</span>Mold Atlas</button>
+      <button class="nav-item" data-view="editor"><span>03</span>Mold Editor</button>
+      <button class="nav-item" data-view="organs"><span>04</span>Organ Browser</button>
+      <button class="nav-item" data-view="tokens"><span>05</span>Token Browser</button>
+      <button class="nav-item" data-view="themes"><span>06</span>Theme Foundry</button>
+      <button class="nav-item" data-view="skin"><span>07</span>Skin Laboratory</button>
+      <button class="nav-item" data-view="light"><span>08</span>Light Laboratory</button>
+      <button class="nav-item" data-view="effects"><span>09</span>Effect Composer</button>
+      <button class="nav-item" data-view="variants"><span>10</span>Variant Builder</button>
+      <button class="nav-item" data-view="preview"><span>11</span>Preview Lab</button>
+      <button class="nav-item" data-view="proof"><span>12</span>Proof + Validation</button>
+      <button class="nav-item" data-view="presets"><span>13</span>Preset Garden</button>
+      <button class="nav-item" data-view="foundry"><span>14</span>Foundry Intake</button>
+      <button class="nav-item" data-view="extensions"><span>15</span>Extension Registry</button>
+      <button class="nav-item" data-view="projects"><span>16</span>Project Composer</button>
+      <button class="nav-item" data-view="batches"><span>17</span>Data Batch Builder</button>
+      <button class="nav-item" data-view="export"><span>18</span>Export Center</button>
+      <button class="nav-item" data-view="lineage"><span>19</span>Lineage + Rollback</button>
+      <button class="nav-item" data-view="recovery"><span>20</span>Recovery + Intake</button>
+      <button class="nav-item" data-view="status"><span>21</span>System Status</button>
+      <div class="local-badge"><b>LOCAL CORE</b><span>No account · no telemetry · no remote assets</span></div>
+    </nav>
+
+    <main id="workspace" class="workspace" tabindex="-1">
+      <section class="view active" data-view-panel="overview">
+        <div class="hero panel">
+          <div>
+            <p class="eyebrow">Protected structure · typed controls · proof</p>
+            <h2>Visual intelligence you can reuse, inspect, derive, and roll back.</h2>
+            <p class="lead">Thirty-two working molds now cover marketing, software UI, game UI, living materials, and atmospheric scenes. They share governed themes, proof, rollback, portable family packages, a declarative Theme Foundry, a quarantined local extension registry, project composition, data-driven batch creation, transactional imports, staged capsule restoration, compact rescue points, and an explicit intake-readiness gate—without silently mutating their parents.</p>
+            <div class="button-row">
+              <button class="primary-button" type="button" data-go="editor">Open Mold Editor</button>
+              <button class="secondary-button" type="button" data-go="proof">Generate Proof</button>
+              <button class="quiet-button" type="button" data-go="projects">Compose Project</button>
+            </div>
+          </div>
+          <div class="hero-orbit" aria-label="Visual mold anatomy">
+            <div class="orbit-core">MOLD</div>
+            <span style="--i:0">Tokens</span><span style="--i:1">Organs</span><span style="--i:2">Variants</span>
+            <span style="--i:3">Proof</span><span style="--i:4">Lineage</span><span style="--i:5">Export</span>
+          </div>
+        </div>
+        <article class="panel onboarding-panel" id="firstRunPanel" hidden>
+          <div class="panel-head"><div><p class="eyebrow">First local run</p><h3>Five safe steps before deeper building</h3></div><span class="status-pill experimental">GUIDED</span></div>
+          <div id="onboardingChecklist" class="readiness-grid"></div>
+          <div class="button-row wrap">
+            <button class="primary-button" type="button" data-go="editor">1. Open a mold</button>
+            <button class="secondary-button" type="button" data-go="proof">2. Generate proof</button>
+            <button class="secondary-button" id="onboardingCapsuleButton" type="button">3. Export safety capsule</button>
+            <button class="secondary-button" id="onboardingReadinessButton" type="button">4. Run intake gate</button>
+            <button class="quiet-button" id="onboardingCompleteButton" type="button">Hide guide for now</button>
+          </div>
+          <p class="muted">The guide changes no molds and creates no approval. It only helps establish a recoverable local starting point.</p>
+        </article>
+        <div class="metric-grid" id="overviewMetrics"></div>
+        <div class="two-column">
+          <article class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Working foundation</p><h3>What is actually live</h3></div><span class="status-pill built">BUILT</span></div>
+            <div class="capability-list">
+              <div><b>8 marketing and explanation molds</b><span>Launch, proof, event, collaboration, milestone, public-safe, service, and universal families.</span></div>
+              <div><b>8 software UI + 8 game UI molds</b><span>Dashboards, settings, onboarding, alerts, HUDs, missions, loot, quests, characters, and world events.</span></div>
+              <div><b>4 living materials + 4 atmospheric scenes</b><span>Procedural skins and scenes with semantic controls, performance tiers, and reduced-motion fallbacks.</span></div>
+            </div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Governed growth</p><h3>Foundry rule</h3></div><span class="status-pill experimental">EXPERIMENTAL</span></div>
+            <div class="flow-line"><span>Intent</span><i></i><span>Candidate</span><i></i><span>Approve</span><i></i><span>Quarantine</span><i></i><span>Release gate</span><i></i><span>Activate</span></div>
+            <p class="muted">Candidates and themes never approve or activate automatically. Protected molds and themes stay unchanged; local growth lives in separate reversible registries with quarantine, proof, and explicit release actions.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" data-view-panel="atlas">
+        <div class="section-title"><div><p class="eyebrow">Mold Atlas</p><h2>Browse controlled visual families</h2></div><span id="atlasCount" class="count-label"></span></div>
+        <div class="toolbar panel compact">
+          <label>Search<input id="atlasSearch" type="search" placeholder="cinematic, material, public-safe…"></label>
+          <label>Category<select id="atlasCategory"><option value="all">All categories</option></select></label>
+          <label>Status<select id="atlasStatus"><option value="all">All states</option><option>EXPERIMENTAL</option><option>APPROVED</option><option>DEPRECATED</option></select></label>
+          <label>Theme<select id="atlasTheme"><option value="all">All themes</option></select></label>
+        </div>
+        <div id="moldGrid" class="mold-grid"></div>
+      </section>
+
+      <section class="view" data-view-panel="editor">
+        <div class="section-title"><div><p class="eyebrow">Mold Editor</p><h2 id="editorTitle">Universal Visual Card</h2></div><span id="editorStatus" class="status-pill experimental">EXPERIMENTAL</span></div>
+        <div class="editor-grid">
+          <aside class="panel controls-panel">
+            <label>Mold<select id="moldSelect"></select></label>
+            <div id="dynamicControls" class="control-stack"></div>
+            <div class="button-row wrap">
+              <button class="primary-button" id="renderButton" type="button">Render</button>
+              <button class="secondary-button" id="savePresetButton" type="button">Save preset</button>
+              <button class="quiet-button" id="editorAddToProjectButton" type="button">Add to project</button>
+              <button class="quiet-button" id="deriveButton" type="button">Derive child</button>
+            </div>
+          </aside>
+          <div class="panel preview-panel">
+            <div class="preview-toolbar"><span id="previewDescriptor">aetherglass · landscape · standard</span><button class="quiet-button" id="fullscreenPreview" type="button" aria-controls="mainPreview" aria-expanded="false">Focus preview</button></div>
+            <div id="mainPreview" class="preview-stage" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view-panel="organs">
+        <div class="section-title"><div><p class="eyebrow">Organ Browser</p><h2>Reusable visual capabilities</h2></div><span id="organCount" class="count-label"></span></div>
+        <div class="toolbar panel compact"><label>Search<input id="organSearch" type="search" placeholder="title fit, fog, rollback…"></label><label>Category<select id="organCategory"><option value="all">All categories</option></select></label></div>
+        <div id="organGrid" class="registry-grid"></div>
+      </section>
+
+      <section class="view" data-view-panel="tokens">
+        <div class="section-title"><div><p class="eyebrow">Token Browser</p><h2>Semantic decisions, not scattered values</h2></div><span id="tokenCount" class="count-label"></span></div>
+        <div class="toolbar panel compact"><label>Search<input id="tokenSearch" type="search" placeholder="surface, glow, motion…"></label><label>Category<select id="tokenCategory"><option value="all">All categories</option></select></label></div>
+        <div id="tokenGrid" class="token-grid"></div>
+      </section>
+
+      <section class="view" data-view-panel="themes">
+        <div class="section-title"><div><p class="eyebrow">Theme Foundry</p><h2>Derive semantic visual languages without executable code</h2></div><div class="button-row"><button class="quiet-button" id="themeImportButton" type="button">Import theme package</button><input id="themeFileInput" type="file" accept="application/json,.json" hidden></div></div>
+        <div id="localThemeMetrics" class="metric-grid small"></div>
+        <div class="two-column theme-foundry-grid">
+          <div class="panel controls-panel">
+            <label>Protected or active base theme<select id="themeBase"></select></label>
+            <label>Theme name<input id="themeName" type="text" value="Aetherglass Child"></label>
+            <label>Material language<input id="themeMaterial" type="text" value="deep translucent machine glass"></label>
+            <div class="two-column compact-pair">
+              <label>Public scope<select id="themePublicScope"><option value="private">private</option><option value="public-safe">public-safe</option></select></label>
+              <label>Compatible renderers<input id="themeRenderers" type="text" value="card,living-skin,portal-scene"></label>
+            </div>
+            <div class="theme-color-grid">
+              <label>Surface<input id="themeSurface" type="color" value="#07101a"></label>
+              <label>Surface 2<input id="themeSurface2" type="color" value="#10243a"></label>
+              <label>Text<input id="themeText" type="color" value="#f5fbff"></label>
+              <label>Muted<input id="themeMuted" type="color" value="#a9bfd0"></label>
+              <label>Accent<input id="themeAccent" type="color" value="#64f3ff"></label>
+              <label>Accent 2<input id="themeAccent2" type="color" value="#9a7dff"></label>
+              <label>Warning<input id="themeWarning" type="color" value="#ffb45e"></label>
+              <label>Success<input id="themeSuccess" type="color" value="#6dffba"></label>
+            </div>
+            <label>Panel color (hex / rgb / rgba)<input id="themePanel" type="text" value="rgba(17,36,55,0.78)"></label>
+            <label>Line color<input id="themeLine" type="text" value="rgba(112,238,255,0.34)"></label>
+            <label>Shadow color<input id="themeShadow" type="text" value="rgba(0,0,0,0.58)"></label>
+            <label>Glow RGB<input id="themeGlowRGB" type="text" value="100,243,255"></label>
+            <div class="theme-number-grid">
+              <label>Glass<input id="themeGlass" type="number" min="0" max="1" step="0.01" value="0.82"></label>
+              <label>Paper noise<input id="themeNoise" type="number" min="0" max="1" step="0.01" value="0.04"></label>
+              <label>Contrast target<input id="themeContrast" type="number" min="4.5" max="21" step="0.1" value="7"></label>
+            </div>
+            <label>Motion character<input id="themeMotion" type="text" value="slow orbital energy"></label>
+            <label>Low-power fallback<input id="themeFallback" type="text" value="layered solid gradients"></label>
+            <div class="button-row wrap">
+              <button class="secondary-button" id="themeBuildDraft" type="button">1. Build draft</button>
+              <button class="secondary-button" id="themeValidateDraft" type="button">2. Validate</button>
+              <button class="danger-button" id="themeSaveDraft" type="button">3. Save to quarantine</button>
+            </div>
+          </div>
+          <div class="panel preview-panel">
+            <div id="themePreview" class="theme-preview-stage"></div>
+            <label>Inspectable draft manifest<textarea id="themeManifest" rows="14" spellcheck="false"></textarea></label>
+            <div id="themeValidationReport" class="validation-list compact-list"></div>
+          </div>
+        </div>
+        <div class="section-title subsection-title"><div><p class="eyebrow">Local Theme Registry</p><h2>Approve and activate separately</h2></div><span class="status-pill experimental">DECLARATIVE ONLY</span></div>
+        <div id="localThemeGrid" class="mold-grid"></div>
+      </section>
+
+      <section class="view" data-view-panel="skin">
+        <div class="section-title"><div><p class="eyebrow">Living Skin Laboratory</p><h2>Material meaning with understandable controls</h2></div><span class="status-pill built">BUILT</span></div>
+        <div class="editor-grid"><aside class="panel controls-panel" id="skinControls"></aside><div class="panel preview-panel"><canvas id="skinCanvas" width="900" height="620" aria-label="Procedural skin preview"></canvas><div id="skinReadout" class="readout"></div></div></div>
+      </section>
+
+      <section class="view" data-view-panel="light">
+        <div class="section-title"><div><p class="eyebrow">Light Laboratory</p><h2>Shape focus, depth, and meaning</h2></div><span class="status-pill built">BUILT</span></div>
+        <div class="editor-grid"><aside class="panel controls-panel" id="lightControls"></aside><div class="panel preview-panel"><canvas id="lightCanvas" width="900" height="620" aria-label="Lighting preview"></canvas><div class="readout">Lighting is implemented as reusable scene parameters. Low power replaces expensive fog and particles with layered gradients.</div></div></div>
+      </section>
+
+      <section class="view" data-view-panel="effects">
+        <div class="section-title"><div><p class="eyebrow">Effect Composer</p><h2>Effects that support the content</h2></div><span id="effectBudget" class="count-label"></span></div>
+        <div class="editor-grid"><aside class="panel controls-panel" id="effectControls"></aside><div class="panel preview-panel"><canvas id="effectCanvas" width="900" height="620" aria-label="Effect stack preview"></canvas><div id="effectReadout" class="readout"></div></div></div>
+      </section>
+
+      <section class="view" data-view-panel="variants">
+        <div class="section-title"><div><p class="eyebrow">Variant Builder</p><h2>Independent axes, sparse combinations</h2></div><span class="status-pill built">BUILT</span></div>
+        <div class="two-column"><div class="panel" id="variantControls"></div><div class="panel"><h3>Combination packet</h3><pre id="variantPacket" class="code-block"></pre><button class="secondary-button" id="applyVariantButton" type="button">Apply to editor</button></div></div>
+      </section>
+
+      <section class="view" data-view-panel="preview">
+        <div class="section-title"><div><p class="eyebrow">Preview Lab</p><h2>Compare formats, tiers, and rollback states</h2></div><button class="primary-button" id="refreshPreviewLab" type="button">Refresh grid</button></div>
+        <div class="panel comparison-toolbar"><label>Compare current state with snapshot<select id="snapshotCompareSelect"><option value="">Choose a snapshot</option></select></label><button class="secondary-button" id="compareSnapshotButton" type="button">Compare states</button><div id="comparisonSummary" class="muted">Create a snapshot to enable visual and structural comparison.</div></div>
+        <div id="comparisonGrid" class="comparison-grid"></div>
+        <div id="previewLabGrid" class="proof-grid"></div>
+      </section>
+
+      <section class="view" data-view-panel="proof">
+        <div class="section-title"><div><p class="eyebrow">Proof + Validation</p><h2>Break the mold before release</h2></div><div class="button-row"><button class="secondary-button" id="runValidation" type="button">Run checks</button><button class="primary-button" id="generateProof" type="button">Generate proof</button></div></div>
+        <div id="validationSummary" class="metric-grid small"></div>
+        <div id="validationResults" class="validation-list"></div>
+        <div id="proofGrid" class="proof-grid"></div>
+      </section>
+
+      <section class="view" data-view-panel="presets">
+        <div class="section-title"><div><p class="eyebrow">Preset Garden</p><h2>Keep successful combinations without flattening lineage</h2></div><div class="button-row"><button class="secondary-button" id="importPresetButton" type="button">Import JSON</button><input id="presetFileInput" type="file" accept="application/json,.json" hidden><button class="primary-button" id="newPresetButton" type="button">Save current</button></div></div>
+        <div id="presetGrid" class="mold-grid"></div>
+      </section>
+
+      <section class="view" data-view-panel="foundry">
+        <div class="section-title"><div><p class="eyebrow">Foundry Intake</p><h2>Guided candidate creation, not fake automation</h2></div><span class="status-pill experimental">EXPERIMENTAL</span></div>
+        <div class="foundry-steps" id="foundrySteps"></div>
+        <div class="two-column">
+          <div class="panel">
+            <label>Candidate name<input id="candidateName" type="text" value="Derived Visual Mold"></label>
+            <label>Parent<select id="candidateParent"></select></label>
+            <label>Purpose<input id="candidatePurpose" type="text" value="Clarify a reusable visual direction"></label>
+            <label>Change summary<textarea id="candidateChangeSummary" rows="3">Refocus the parent mold with sparse overrides while preserving protected structure.</textarea></label>
+            <label>Tags<input id="candidateTags" type="text" value="derived,local,visual"></label>
+            <label>Public scope<select id="candidatePublicScope"><option value="private" selected>private</option><option value="public-safe">public-safe</option></select></label>
+            <label>Protected fields<textarea id="protectedFields" rows="4">layout.reading_order
+provenance</textarea></label>
+            <label>Constrained fields<textarea id="constrainedFields" rows="4">inputs.energy: 0..1
+inputs.glow: 0..0.8</textarea></label>
+            <label>Free fields<textarea id="freeFields" rows="4">inputs.title
+inputs.message
+inputs.media</textarea></label>
+            <label>Candidate manifest<textarea id="candidateManifest" rows="12"></textarea></label>
+          </div>
+          <div class="panel">
+            <h3>Candidate gate</h3>
+            <p class="muted">The Foundry can validate, prove, and save a candidate. Approval, promotion into the local registry, and activation of imported packages remain separate explicit actions.</p>
+            <div class="button-stack">
+              <button class="secondary-button" id="buildCandidate" type="button">1. Build candidate</button>
+              <button class="secondary-button" id="validateCandidate" type="button">2. Validate candidate</button>
+              <button class="secondary-button" id="saveCandidate" type="button">3. Save as EXPERIMENTAL</button>
+              <button class="danger-button" id="approveCandidate" type="button">4. Approve manually</button>
+              <button class="primary-button" id="promoteCandidate" type="button">5. Promote to extension quarantine</button>
+            </div>
+            <div id="candidateReport" class="validation-list compact-list"></div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="view" data-view-panel="extensions">
+        <div class="section-title"><div><p class="eyebrow">Local Extension Registry</p><h2>Use approved growth without rewriting the protected core</h2></div><div class="button-row"><button class="primary-button" id="importExtensionButton" type="button">Import extension package</button><input id="extensionFileInput" type="file" accept="application/json,.json" hidden></div></div>
+        <div id="extensionMetrics" class="metric-grid small"></div>
+        <div class="panel"><div class="panel-head"><div><h3>Extension boundary</h3><p class="muted">Promoted candidates and imported packages enter QUARANTINED state. Approval, release-gate proof, warning acknowledgement, and activation are separate explicit actions; nothing joins the Atlas automatically.</p></div><span class="status-pill built">SEPARATE REGISTRY</span></div></div>
+        <div id="extensionGrid" class="mold-grid"></div>
+      </section>
+
+
+      <section class="view" data-view-panel="projects">
+        <div class="section-title"><div><p class="eyebrow">Project Composer</p><h2>Assemble many governed visuals into one reusable project</h2></div><div class="button-row"><button class="quiet-button" id="projectImportButton" type="button">Import project package</button><input id="projectFileInput" type="file" accept="application/json,.json" hidden></div></div>
+        <div id="projectMetrics" class="metric-grid small"></div>
+        <div class="two-column assembly-top">
+          <div class="panel controls-panel">
+            <label>Stored project<select id="projectSelect"><option value="">New project</option></select></label>
+            <label>Project name<input id="projectName" type="text" value="Untitled Visual Project"></label>
+            <label>Description<textarea id="projectDescription" rows="4" placeholder="What this visual set is for"></textarea></label>
+            <label>Composition layout<select id="projectLayout"><option value="gallery">Gallery</option><option value="story">Story flow</option><option value="deck">Presentation deck</option></select></label>
+            <label>Shared theme override<select id="projectTheme"><option value="">Keep each item theme</option></select></label>
+            <div class="button-row wrap">
+              <button class="primary-button" id="projectNewButton" type="button">New</button>
+              <button class="secondary-button" id="projectSaveButton" type="button">Save</button>
+              <button class="secondary-button" id="projectAddCurrentButton" type="button">Add current mold</button>
+              <button class="quiet-button" id="projectApproveButton" type="button">Approve</button>
+              <button class="quiet-button" id="projectArchiveButton" type="button">Archive</button>
+            </div>
+            <div class="button-row wrap">
+              <button class="quiet-button" id="projectExportButton" type="button">Export package</button>
+              <button class="quiet-button" id="projectExportHTMLButton" type="button">Export HTML</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Project gate</p><h3 id="projectStateTitle">DRAFT</h3></div><span id="projectStatePill" class="status-pill experimental">DRAFT</span></div>
+            <div id="projectValidation" class="validation-list compact-list"></div>
+            <h3>Revision history</h3>
+            <div id="projectRevisions" class="snapshot-list"></div>
+          </div>
+        </div>
+        <div class="section-title compact-title"><div><p class="eyebrow">Ordered visual instances</p><h3>Project board</h3></div><span id="projectItemCount" class="count-label"></span></div>
+        <div id="projectItems" class="assembly-grid"></div>
+      </section>
+
+      <section class="view" data-view-panel="batches">
+        <div class="section-title"><div><p class="eyebrow">Data Batch Builder</p><h2>Turn CSV or JSON rows into governed visual instances</h2></div><div class="button-row"><button class="quiet-button" id="batchSourceFileButton" type="button">Load CSV/JSON data</button><input id="batchSourceFileInput" type="file" accept=".csv,.tsv,.json,text/csv,text/tab-separated-values,application/json,text/plain" hidden><button class="quiet-button" id="batchImportButton" type="button">Import batch package</button><input id="batchFileInput" type="file" accept="application/json,.json" hidden></div></div>
+        <div id="batchMetrics" class="metric-grid small"></div>
+        <div class="two-column assembly-top">
+          <div class="panel controls-panel">
+            <label>Stored batch<select id="batchSelect"><option value="">New batch</option></select></label>
+            <label>Batch name<input id="batchName" type="text" value="Untitled Data Batch"></label>
+            <label>Visual mold<select id="batchMold"></select></label>
+            <label>CSV or JSON rows<textarea id="batchSource" rows="12">title,message,badge,metric,cta
+Local-first visuals,Build once and reuse safely,AXM,32 molds,Open
+Project composition,Combine many governed visuals,v0.9.1,1 project,Compose
+Data batch creation,Map rows into reusable molds,LOCAL,100 rows,Generate</textarea></label>
+            <div class="button-row wrap">
+              <button class="primary-button" id="batchParseButton" type="button">Parse + map</button>
+              <button class="secondary-button" id="batchSaveButton" type="button">Save</button>
+              <button class="quiet-button" id="batchApproveButton" type="button">Approve</button>
+              <button class="quiet-button" id="batchArchiveButton" type="button">Archive</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Column mapping</p><h3>Semantic inputs and variants</h3></div><span id="batchStatePill" class="status-pill experimental">DRAFT</span></div>
+            <div id="batchMapping" class="mapping-grid"></div>
+            <div class="button-row wrap">
+              <button class="secondary-button" id="batchPreviewButton" type="button">Preview rows</button>
+              <button class="secondary-button" id="batchToProjectButton" type="button">Create project</button>
+              <button class="quiet-button" id="batchExportButton" type="button">Export package</button>
+              <button class="quiet-button" id="batchExportHTMLButton" type="button">Export HTML</button>
+            </div>
+            <div id="batchValidation" class="validation-list compact-list"></div>
+          </div>
+        </div>
+        <div class="section-title compact-title"><div><p class="eyebrow">Materialized preview</p><h3>First governed rows</h3></div><span id="batchPreviewCount" class="count-label"></span></div>
+        <div id="batchPreviewGrid" class="assembly-grid"></div>
+      </section>
+
+      <section class="view" data-view-panel="export">
+        <div class="section-title"><div><p class="eyebrow">Export Center</p><h2>Only working exports are shown</h2></div><span id="exportMoldName" class="count-label"></span></div>
+        <div id="exportGrid" class="export-grid"></div>
+        <div class="panel"><h3>Export boundary</h3><p class="muted">Browser downloads are generated locally. Workspace and family imports merge into new local IDs and never silently overwrite existing records. Imported extensions and local themes enter quarantine. Imported JSON is parsed as data, never executed. Blender, Godot, ComfyUI, Unity, Unreal, and MaterialX remain mapping scaffolds marked LOCAL VALIDATION REQUIRED.</p></div>
+      </section>
+
+      <section class="view" data-view-panel="lineage">
+        <div class="section-title"><div><p class="eyebrow">Lineage + Rollback</p><h2>Parents remain intact</h2></div><div class="button-row"><button class="quiet-button" id="exportWorkspaceButton" type="button">Export workspace</button><button class="quiet-button" id="importWorkspaceButton" type="button">Import workspace</button><input id="workspaceFileInput" type="file" accept="application/json,.json" hidden><button class="secondary-button" id="createSnapshot" type="button">Create snapshot</button></div></div>
+        <div class="two-column"><div class="panel"><h3>Family map</h3><div id="lineageMap" class="lineage-map"></div></div><div class="panel"><div class="panel-head"><h3>Rollback snapshots</h3><div class="button-row"><button class="quiet-button" id="importFamilyButton" type="button">Import family package</button><input id="familyFileInput" type="file" accept="application/json,.json" hidden></div></div><div id="snapshotList" class="snapshot-list"></div></div></div>
+      </section>
+
+      <section class="view" data-view-panel="recovery">
+        <div class="section-title"><div><p class="eyebrow">Recovery + Intake</p><h2>Preserve, stage, restore, and decide readiness deliberately</h2></div><div class="button-row"><button class="secondary-button" id="recoveryAuditButton" type="button">Run audit</button><button class="primary-button" id="recoveryCapsuleButton" type="button">Export safety capsule</button><button class="secondary-button" id="rescuePointButton" type="button">Create rescue point</button><button class="quiet-button" id="reopenGuideButton" type="button">Reopen guide</button></div></div>
+        <div id="recoveryMetrics" class="metric-grid small"></div>
+
+        <div class="two-column">
+          <div class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Managed browser storage</p><h3>Area-by-area audit</h3></div><span id="recoveryAuditState" class="status-pill tested">NOT RUN</span></div>
+            <p class="muted">Malformed data is preserved for review. Reset remains explicit and downloads the raw value first.</p>
+            <div id="recoveryStorageList" class="snapshot-list"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Package Inspector</p><h3>Inspect before mutation</h3></div><span id="packageInspectorState" class="status-pill tested">EMPTY</span></div>
+            <div class="button-row wrap"><button class="secondary-button" id="packageInspectButton" type="button">Load package</button><input id="packageInspectFile" type="file" accept="application/json,.json,.axmtheme,.axmproject,.axmbatch,.axmrescue" hidden><button class="primary-button" id="packageImportButton" type="button" disabled>Import inspected package</button><button class="quiet-button" id="packageClearButton" type="button">Clear</button></div>
+            <div id="packageInspectorReport" class="validation-list compact-list"><p class="muted">No package loaded. Inspection verifies schema, integrity, import route, and executable-looking content before an import transaction begins.</p></div>
+          </div>
+        </div>
+
+        <div class="two-column">
+          <div class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Safety Capsule Restore</p><h3>Stage and compare before restoring</h3></div><span id="capsuleStageState" class="status-pill tested">EMPTY</span></div>
+            <div class="button-row wrap"><button class="secondary-button" id="capsuleStageButton" type="button">Load safety capsule</button><input id="capsuleStageFile" type="file" accept="application/json,.json" hidden><button class="secondary-button" id="capsuleMergeButton" type="button" disabled>Merge workspace</button><button class="danger-button" id="capsuleReplaceButton" type="button" disabled>Replace restorable areas</button><button class="quiet-button" id="capsuleClearButton" type="button">Clear stage</button></div>
+            <p class="muted">Loading changes nothing. Restore requires the exact word <code>RESTORE</code> and first creates a compact rescue point from the current state.</p>
+            <div id="capsuleStageReport" class="validation-list compact-list"><p class="muted">No safety capsule staged.</p></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Local Rescue Ring</p><h3>Five compact pre-change checkpoints</h3></div><span class="count-label">MAX 5</span></div>
+            <p class="muted">Rescue points preserve restorable storage and active state without recursively embedding recovery ledgers.</p>
+            <div id="rescuePointList" class="snapshot-list"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><div><p class="eyebrow">Intake Readiness Gate</p><h3>One evidence-based release decision</h3></div><span id="readinessState" class="status-pill tested">NOT RUN</span></div>
+          <div class="button-row wrap"><button class="primary-button" id="readinessRunButton" type="button">Run intake gate</button><button class="secondary-button" id="readinessExportButton" type="button">Export report</button><button class="secondary-button" id="handoffExportButton" type="button">Export local-intake handoff</button><button class="quiet-button" id="browserValidatedButton" type="button">Record browser visual check</button></div>
+          <div id="readinessMetrics" class="metric-grid small"></div>
+          <div id="readinessReport" class="validation-list compact-list"><p class="muted">The gate checks core integrity, recovery state, health, active extension evidence, active themes, projects, batches, backup freshness, runtime mode, browser validation, and adapter limits.</p></div>
+        </div>
+
+        <div class="two-column">
+          <div class="panel"><div class="panel-head"><h3>Recovery issues</h3><span id="recoveryIssueCount" class="count-label"></span></div><div id="recoveryIssueList" class="snapshot-list"></div></div>
+          <div class="panel"><div class="panel-head"><h3>Storage transactions</h3><span class="count-label">COMMIT / ROLLBACK / RESTORE</span></div><div id="transactionList" class="snapshot-list"></div></div>
+        </div>
+        <div class="panel"><h3>Explicit repair boundary</h3><p class="muted">No restore, reset, approval, activation, or canon promotion is automatic. <code>RESET</code>, <code>RESTORE</code>, and <code>DELETE</code> confirmations remain separate actions.</p></div>
+      </section>
+
+      <section class="view" data-view-panel="status">
+        <div class="section-title"><div><p class="eyebrow">System Status</p><h2>Evidence-based build state</h2></div><span class="status-pill tested">STRUCTURALLY TESTED</span></div>
+        <div id="statusMetrics" class="metric-grid"></div>
+        <div class="two-column"><div class="panel"><h3>Local runtime</h3><div id="runtimeStatus" class="capability-list"></div></div><div class="panel"><h3>Adapter status</h3><div id="adapterStatus" class="capability-list"></div></div></div>
+        <div class="panel"><h3>Session log</h3><div id="sessionLog" class="log-list"></div></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <dialog id="jsonDialog" aria-labelledby="dialogTitle"><form method="dialog"><div class="panel-head"><h2 id="dialogTitle">JSON</h2><button class="quiet-button" value="cancel">Close</button></div><pre id="dialogContent" class="code-block dialog-code" tabindex="0" aria-label="JSON details"></pre></form></dialog>
+
+  <dialog id="actionDialog" aria-labelledby="actionDialogTitle" aria-describedby="actionDialogMessage">
+    <form id="actionDialogForm">
+      <div class="panel-head">
+        <div><p class="eyebrow" id="actionDialogEyebrow">Explicit action</p><h2 id="actionDialogTitle">Confirm action</h2></div>
+        <button class="quiet-button" id="actionDialogClose" type="button">Close</button>
+      </div>
+      <p id="actionDialogMessage" class="muted"></p>
+      <label id="actionDialogField">
+        <span id="actionDialogLabel">Value</span>
+        <input id="actionDialogInput" type="text" autocomplete="off" aria-describedby="actionDialogHint">
+        <select id="actionDialogSelect" aria-describedby="actionDialogHint" hidden></select>
+      </label>
+      <p id="actionDialogHint" class="dialog-hint muted" aria-live="polite" aria-atomic="true"></p>
+      <div class="button-row dialog-actions">
+        <button class="quiet-button" id="actionDialogCancel" type="button">Cancel</button>
+        <button class="primary-button" id="actionDialogConfirm" type="submit">Continue</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="js/registry.bundle.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/renderers.js"></script>
+  <script src="js/validators.js"></script>
+  <script src="js/exporters.js"></script>
+  <script src="js/assembly.js"></script>
+  <script src="js/recovery.js"></script>
+  <script src="js/dialogs.js"></script>
+  <script src="js/recovery-ui.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/assembly-ui.js"></script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+{
+  "schema": "axm.visual-module-package/1",
+  "packageId": "package.motion.idle-pulse",
+  "name": "Idle Pulse",
+  "version": "1.1.0",
+  "entryModuleId": "motion.idle-pulse",
+  "created": "2026-07-28",
+  "modules": [
+    {
+      "id": "primitive.transform",
+      "name": "Transform",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Moves, scales, tilts, and rotates a layer.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "move"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.opacity",
+      "name": "Opacity",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Controls visibility and layer mixing.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "opacity"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.motion-curve",
+      "name": "Motion Curve",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Defines easing and temporal behavior.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "wave"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "motion.idle-pulse",
+      "name": "Idle Pulse",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "effect",
+      "category": "Motion",
+      "status": "WORKING",
+      "description": "Low-amplitude breathing motion for powered or waiting elements.",
+      "tags": [
+        "motion",
+        "idle",
+        "pulse"
+      ],
+      "dependencies": [
+        "primitive.transform",
+        "primitive.opacity",
+        "primitive.motion-curve"
+      ],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "pulse"
+      },
+      "parameters": [
+        {
+          "id": "speed",
+          "label": "Speed",
+          "type": "number",
+          "default": 4.8,
+          "description": "",
+          "min": 1.5,
+          "max": 14,
+          "step": 0.1,
+          "unit": "s",
+          "cssVar": "--fx-pulse-speed"
+        },
+        {
+          "id": "scale",
+          "label": "Scale",
+          "type": "number",
+          "default": 1.014,
+          "description": "",
+          "min": 1,
+          "max": 1.06,
+          "step": 0.001,
+          "cssVar": "--fx-pulse-scale"
+        },
+        {
+          "id": "intensity",
+          "label": "Intensity",
+          "type": "number",
+          "default": 0.34,
+          "description": "",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "cssVar": "--fx-pulse-intensity"
+        }
+      ],
+      "renderer": {
+        "type": "class",
+        "scope": "active",
+        "className": "fx-idle-pulse"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    }
+  ],
+  "notes": "Starter package. Set a public-sharing license before redistribution.",
+  "integrity": {
+    "algorithm": "sha256",
+    "value": "2f7cc5e52c6e0d8f8cbad2cade790135ac1c92b2f371553cfa01024dd9110fa4"
+  }
+}

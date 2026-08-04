@@ -4,10 +4,11 @@
   "version": "v0.1",
   "provides": ["local-ai-task-queue", "time-wake-dispatch", "budgeted-ai-conversation"],
   "consumes": ["identity:nova", "identity:gemini-local", "bridge:local"],
-  "permissions": ["storage", "ai", "bridge", "identity", "gate"],
-  "handoffs": {"emits": ["axm.ai-task-review/v1"], "accepts": []},
+  "permissions": [],
+  "handoffs": {"emits": ["axm.ai-task-review/v1"], "accepts": ["browser-local:collaboration-notice", "plain-text:visible-task", "hub:init"]},
+  "lifecycle": {"state_owner": "browser", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"},
   "boundaries": {
     "writes": ["browser-local:ai-task-talk"],
-    "refuses": ["automatic-done", "automatic-wisdom-promotion", "cloud-fallback", "hidden-prompt", "unbounded-loop", "silent-restart"]
+    "refuses": ["automatic-done-without-declared-finish-rule", "automatic-wisdom-promotion", "cloud-fallback", "hidden-prompt", "unbounded-loop", "silent-restart", "invented-idle-work", "concurrent-model-call", "identity-route-bypass"]
   }
 }

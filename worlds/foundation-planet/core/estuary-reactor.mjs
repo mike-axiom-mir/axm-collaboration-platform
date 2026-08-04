@@ -3,10 +3,14 @@ import {
   chemistryElementInputs
 } from './river-chemistry.mjs';
 
-export const ESTUARY_STATE_SCHEMA = 'axm.foundation-planet.estuary-state/v1';
-export const ESTUARY_FLUX_RECEIPT_SCHEMA = 'axm.foundation-planet.estuary-flux-receipt/v1';
+export const ESTUARY_STATE_SCHEMA = 'axm.foundation-planet.estuary-state/v2';
+export const PREVIOUS_ESTUARY_STATE_SCHEMA =
+  'axm.foundation-planet.estuary-state/v1';
+export const ESTUARY_FLUX_RECEIPT_SCHEMA =
+  'axm.foundation-planet.estuary-flux-receipt/v2';
 
 const OXYGEN_KG_PER_RESPIRATED_KG_C = 32 / 12;
+const ALKALINITY_KG_CACO3_EQ_PER_DENITRIFIED_KG_N = 3.57;
 const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 const finite = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 const round = (value, digits = 9) => Number(Number(value).toFixed(digits));
@@ -27,6 +31,7 @@ export function emptyEstuaryState() {
     sedimentPhosphorusKgP: 0,
     cumulativeDenitrifiedNitrogenKgN: 0,
     cumulativeOxygenConsumptionKgO2: 0,
+    cumulativeAlkalinityGeneratedKgCaCO3Eq: 0,
     cumulativeProcessedWaterKg: 0,
     migrationCheckpoint: false,
     lastFluxReceipt: null
@@ -35,16 +40,21 @@ export function emptyEstuaryState() {
 
 export function normalizeEstuaryState(source) {
   const state = emptyEstuaryState();
-  if (!source || source.schema !== ESTUARY_STATE_SCHEMA) return state;
+  if (!source || ![
+    ESTUARY_STATE_SCHEMA,
+    PREVIOUS_ESTUARY_STATE_SCHEMA
+  ].includes(source.schema)) return state;
   for (const key of [
     'sedimentOrganicCarbonKgC',
     'sedimentNitrogenKgN',
     'sedimentPhosphorusKgP',
     'cumulativeDenitrifiedNitrogenKgN',
     'cumulativeOxygenConsumptionKgO2',
+    'cumulativeAlkalinityGeneratedKgCaCO3Eq',
     'cumulativeProcessedWaterKg'
   ]) state[key] = Math.max(0, finite(source[key]));
-  state.migrationCheckpoint = source.migrationCheckpoint === true;
+  state.migrationCheckpoint = source.schema !== ESTUARY_STATE_SCHEMA ||
+    source.migrationCheckpoint === true;
   state.lastFluxReceipt = source.lastFluxReceipt?.schema === ESTUARY_FLUX_RECEIPT_SCHEMA
     ? clone(source.lastFluxReceipt) : null;
   return state;
@@ -56,7 +66,8 @@ export function estuaryStorageTotals(source) {
     carbonKgC: state.sedimentOrganicCarbonKgC,
     nitrogenKgN: state.sedimentNitrogenKgN,
     phosphorusKgP: state.sedimentPhosphorusKgP,
-    oxygenKgO2: 0
+    oxygenKgO2: 0,
+    alkalinityKgCaCO3Eq: 0
   };
 }
 
@@ -96,6 +107,8 @@ export function processEstuaryInflow(sourceState, incomingChemistry, context = {
     incoming.dissolvedInorganicNitrogenKgN - buriedNitrogenKgN);
   const denitrifiedNitrogenKgN = nitrogenAfterBurial * .12 * reactionExposure *
     (.12 + .88 * anoxiaSignal);
+  const alkalinityGeneratedKgCaCO3Eq = denitrifiedNitrogenKgN *
+    ALKALINITY_KG_CACO3_EQ_PER_DENITRIFIED_KG_N;
 
   const transmitted = {
     dissolvedInorganicCarbonKgC: incoming.dissolvedInorganicCarbonKgC +
@@ -105,13 +118,17 @@ export function processEstuaryInflow(sourceState, incomingChemistry, context = {
       nitrogenAfterBurial - denitrifiedNitrogenKgN),
     dissolvedInorganicPhosphorusKgP: Math.max(0,
       incoming.dissolvedInorganicPhosphorusKgP - buriedPhosphorusKgP),
-    dissolvedOxygenKgO2: oxygenAfterRespiration
+    dissolvedOxygenKgO2: oxygenAfterRespiration,
+    alkalinityKgCaCO3Eq: incoming.alkalinityKgCaCO3Eq +
+      alkalinityGeneratedKgCaCO3Eq
   };
   state.sedimentOrganicCarbonKgC += buriedOrganicCarbonKgC;
   state.sedimentNitrogenKgN += buriedNitrogenKgN;
   state.sedimentPhosphorusKgP += buriedPhosphorusKgP;
   state.cumulativeDenitrifiedNitrogenKgN += denitrifiedNitrogenKgN;
   state.cumulativeOxygenConsumptionKgO2 += oxygenConsumedKgO2;
+  state.cumulativeAlkalinityGeneratedKgCaCO3Eq +=
+    alkalinityGeneratedKgCaCO3Eq;
   state.cumulativeProcessedWaterKg += waterKg;
 
   const inputs = chemistryElementInputs(incoming);
@@ -135,7 +152,9 @@ export function processEstuaryInflow(sourceState, incomingChemistry, context = {
       buriedOrganicCarbonKgC: round(buriedOrganicCarbonKgC, 9),
       buriedNitrogenKgN: round(buriedNitrogenKgN, 9),
       buriedPhosphorusKgP: round(buriedPhosphorusKgP, 9),
-      denitrifiedNitrogenKgN: round(denitrifiedNitrogenKgN, 9)
+      denitrifiedNitrogenKgN: round(denitrifiedNitrogenKgN, 9),
+      alkalinityGeneratedKgCaCO3Eq: round(
+        alkalinityGeneratedKgCaCO3Eq, 9)
     },
     conservation: {
       carbonResidualKgC: round(inputs.carbonKgC - outputs.carbonKgC -
@@ -145,7 +164,10 @@ export function processEstuaryInflow(sourceState, incomingChemistry, context = {
       phosphorusResidualKgP: round(inputs.phosphorusKgP - outputs.phosphorusKgP -
         buriedPhosphorusKgP, 9),
       oxygenResidualKgO2: round(inputs.oxygenKgO2 - outputs.oxygenKgO2 -
-        oxygenConsumedKgO2, 9)
+        oxygenConsumedKgO2, 9),
+      alkalinityResidualKgCaCO3Eq: round(
+        inputs.alkalinityKgCaCO3Eq + alkalinityGeneratedKgCaCO3Eq -
+        outputs.alkalinityKgCaCO3Eq, 9)
     },
     truth: {
       persistentEstuarySedimentReservoirs: true,
@@ -153,6 +175,10 @@ export function processEstuaryInflow(sourceState, incomingChemistry, context = {
       carbonNitrogenPhosphorusRetention: true,
       explicitNitrogenGasBoundary: true,
       dissolvedOutputCreditedToOcean: true,
+      denitrificationAlkalinityCredited: true,
+      alkalinityIsAcidNeutralizingCapacityEquivalent: true,
+      carbonateSpeciationResolved: false,
+      pHResolved: false,
       resolvedEstuaryHydrodynamics: false,
       explicitAtmosphericGasReceiver: false
     }
@@ -170,9 +196,14 @@ export function estuaryReactorDescription() {
       'oxygen-limited-organic-carbon-respiration',
       'carbon-nitrogen-phosphorus-sediment-retention',
       'oxygen-sensitive-denitrification',
+      'denitrification-alkalinity-generation',
       'dissolved-river-to-coastal-ocean-transmission'
     ],
     explicitNitrogenGasBoundary: true,
+    alkalinityGenerationKgCaCO3EqPerDenitrifiedKgN:
+      ALKALINITY_KG_CACO3_EQ_PER_DENITRIFIED_KG_N,
+    carbonateSpeciationResolved: false,
+    pHResolved: false,
     explicitAtmosphericGasReceiver: false,
     resolvedEstuaryHydrodynamics: false
   };

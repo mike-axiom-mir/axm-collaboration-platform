@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "REPLICA_AUTHORITY_INHERITANCE",
+      "expected": "HOLD_TRUST_OR_AUTHORITY_TRANSFER",
+      "stimulus": "replica handoff inherits human authority"
+    }
+  ],
+  "category": 8,
+  "category_name": "8. Cross-session, cross-device, human-AI, and replica continuity",
+  "full_semantic_implementation": false,
+  "number": 78,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Use a proven CRDT only for data types whose merge semantics, authority, deletion, and privacy behavior have been explicitly accepted.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "6c9059c76d31888a81318e5f1acfca4f44d522649eb8ae4f2d82cb72739d304c"
+  },
+  "source_contract_sha256": "ee563324f8db5578e18381c1704a581326c6661e354382a82c3d09a41261edad",
+  "stable_id": "axm.memory.crdt-candidate-adapter"
+}

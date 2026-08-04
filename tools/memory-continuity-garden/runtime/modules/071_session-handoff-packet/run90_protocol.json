@@ -1,0 +1,328 @@
+{
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "consent_delta": "NONE",
+  "identity": {
+    "category": "8. Cross-session, cross-device, human-AI, and replica continuity",
+    "name": "Session Handoff Packet",
+    "number": 71,
+    "stable_id": "axm.memory.session-handoff-packet"
+  },
+  "identity_delta": "NONE",
+  "run81_dependency_resolution": {
+    "boot_prerequisites": [
+      "axm.memory.consent-lease",
+      "axm.memory.provenance-envelope",
+      "axm.memory.replica-identity-record",
+      "axm.memory.source-authority-binder"
+    ],
+    "contract_references": [
+      "axm.memory.consent-lease",
+      "axm.memory.cross-replica-merge-gate",
+      "axm.memory.provenance-envelope",
+      "axm.memory.replica-identity-record",
+      "axm.memory.session-handoff-packet",
+      "axm.memory.source-authority-binder"
+    ],
+    "dependency_delivery_does_not_transfer_authority": true,
+    "exact_run80_protocol_sha256": "8c7ffa0153971d3eef469dfe876a97c270ee0641a0fa33b674d67d88be1e0055",
+    "exact_seed_contract_sha256": "06e3042b425de25f04b28e3ac5623b1b9744053efea6efbae81607343f5f05d5",
+    "missing_boot_result": "HOLD_DEPENDENCY_UNAVAILABLE",
+    "missing_optional_runtime_result": "HOLD_DEPENDENCY_UNAVAILABLE",
+    "missing_required_runtime_result": "HOLD_DEPENDENCY_UNAVAILABLE",
+    "optional_runtime_collaborators": [
+      "axm.memory.cross-replica-merge-gate"
+    ],
+    "required_runtime_collaborators": [],
+    "resolution_receipt_required": true,
+    "version_requirement": {
+      "maximum_tested_minor": 2,
+      "minimum_minor": 0,
+      "protocol_major": 1
+    }
+  },
+  "run82_proof_freshness": {
+    "clock_basis": "steward_run_epoch",
+    "current_epoch": 90,
+    "freshness_is_not_semantic_truth": true,
+    "invalidation_triggers": [
+      "source_digest_change",
+      "contract_digest_change",
+      "permission_change",
+      "authority_change",
+      "purpose_change",
+      "schema_major_change",
+      "dependency_contract_change",
+      "risk_reclassification"
+    ],
+    "proofs": [
+      {
+        "age_runs": 10,
+        "created_epoch": 80,
+        "maximum_age_runs": 20,
+        "proof_id": "RUN80_COLD_SUITE",
+        "state": "FRESH"
+      },
+      {
+        "age_runs": 0,
+        "created_epoch": 90,
+        "maximum_age_runs": 20,
+        "proof_id": "RUN90_REFERENCE_LAYER",
+        "state": "FRESH"
+      }
+    ],
+    "recertification_does_not_apply_or_promote": true,
+    "stale_proof_result": "HOLD_PROOF_STALE"
+  },
+  "run83_partial_availability": {
+    "allowed_effect": "NONE",
+    "degraded_result_cannot_be_presented_as_complete": true,
+    "high_risk_fail_closed": false,
+    "missing_optional_result": "HOLD_DEPENDENCY_UNAVAILABLE",
+    "missing_required_result": "HOLD_DEPENDENCY_UNAVAILABLE",
+    "named_omissions_required": true,
+    "operation_kind": "BOUNDED_TRANSFORM",
+    "optional_runtime_collaborators": [
+      "axm.memory.cross-replica-merge-gate"
+    ],
+    "partial_availability_allowed": false,
+    "required_boot_dependencies": [
+      "axm.memory.consent-lease",
+      "axm.memory.provenance-envelope",
+      "axm.memory.replica-identity-record",
+      "axm.memory.source-authority-binder"
+    ],
+    "required_runtime_collaborators": [],
+    "writes_forbidden_when_any_dependency_missing": true
+  },
+  "run84_repair_planning": {
+    "actions": [
+      "freeze affected candidate output",
+      "preserve source and counterevidence",
+      "recompute exact digests and dependency state",
+      "emit a non-applying repair preview",
+      "discard invalid derived output",
+      "rerun from the same source checkpoint"
+    ],
+    "apply_authority": "EXISTING_OWNER_ONLY",
+    "automatic_apply": false,
+    "failure_inputs": [
+      "typed_hold",
+      "integrity_finding",
+      "stale_proof",
+      "dependency_failure",
+      "interrupted_operation"
+    ],
+    "insufficient_witness_result": "HOLD_REPAIR_WITNESS",
+    "preserve_counterevidence": true,
+    "preserve_original_history": true,
+    "repair_kind": "PROPOSAL_ONLY",
+    "repair_preview_result": "REPAIR_PREVIEW_READY",
+    "required_witnesses": [
+      "source_digests",
+      "current_state_digest",
+      "failure_receipt",
+      "dependency_snapshot"
+    ],
+    "rollback_or_nonreversibility_statement_required": true
+  },
+  "run85_review_reproducibility": {
+    "challenge_route": "append_challenge_receipt",
+    "decision_cannot_rewrite_review_packet": true,
+    "decision_stored_separately": true,
+    "deterministic_rebuild_required": true,
+    "dissent_preserved": true,
+    "majority_is_not_authority": true,
+    "reopen_conditions_required": true,
+    "required_actions": [
+      "HOLD",
+      "ACCEPT_FOR_NEXT_REVIEW",
+      "RETURN_FOR_REPAIR",
+      "REJECT"
+    ],
+    "review_basis": {
+      "candidate_contract_sha256": "06e3042b425de25f04b28e3ac5623b1b9744053efea6efbae81607343f5f05d5",
+      "decision_card_sha256": "ad03a3937a83809b0843e249b0c69c6e914a56b3d24904a5f8dfcb8deeb46582",
+      "evidence_capsule_sha256": "911b49923c12f5112f54b3e05e4370b6a839c30ec5212d35e9aab803846523a8",
+      "number": 71,
+      "posture": "WAITING_FOR_FOUNDATION_OWNER_REVIEW",
+      "purpose": "Transfer approved goal, context, decisions, open loops, evidence, boundaries, and next actions between sessions without hidden memory authority.",
+      "run80_protocol_sha256": "8c7ffa0153971d3eef469dfe876a97c270ee0641a0fa33b674d67d88be1e0055",
+      "stable_id": "axm.memory.session-handoff-packet"
+    },
+    "review_packet_digest": "cb9888aaf9a19a648705956b717a88a7c3aa9c3ac4cc0b2e8e233883e7357d18"
+  },
+  "run86_upgrade_compatibility": {
+    "accepted_same_major_minor_range": [
+      0,
+      2
+    ],
+    "current_protocol": {
+      "major": 1,
+      "minor": 0
+    },
+    "downgrade_cannot_expand_permissions": true,
+    "future_major_2": {
+      "mode": "HOLD_PENDING_REVIEW",
+      "result": "HOLD_PROTOCOL_VERSION"
+    },
+    "legacy_major_0": {
+      "authority_delta": "NONE",
+      "mode": "READ_ONLY_ADAPTER",
+      "write_allowed": false
+    },
+    "migration_requires_dry_run": true,
+    "migration_requires_loss_report": true,
+    "original_record_preserved": true,
+    "silent_downgrade_forbidden": true,
+    "unknown_minor_fields": "PRESERVE_IN_EXTENSIONS_OR_HOLD"
+  },
+  "run87_provenance_gap_budget": {
+    "coverage_ratio_basis_points": 7333,
+    "covered_dimensions": [
+      "identity",
+      "purpose",
+      "source_refs",
+      "source_digests",
+      "authority",
+      "permissions",
+      "uncertainty",
+      "limitations",
+      "dependency_snapshot",
+      "proof_boundary",
+      "recovery_route"
+    ],
+    "gap_budget_exceeded": false,
+    "gap_result": "REFERENCE_ONLY_WITH_NAMED_GAPS",
+    "gaps_are_not_assumed_false_or_complete": true,
+    "minimum_reference_ratio_basis_points": 6500,
+    "named_gaps": [
+      "REAL_WORLD_SEMANTIC_EVIDENCE",
+      "EXISTING_OWNER_ACCEPTANCE",
+      "SPECIALIST_VERIFICATION",
+      "ACTIVE_WORKSHOP_INTEGRATION"
+    ],
+    "promotion_blocked_while_external_gaps_remain": true,
+    "required_dimensions": [
+      "identity",
+      "purpose",
+      "source_refs",
+      "source_digests",
+      "authority",
+      "permissions",
+      "uncertainty",
+      "limitations",
+      "dependency_snapshot",
+      "proof_boundary",
+      "recovery_route",
+      "REAL_WORLD_SEMANTIC_EVIDENCE",
+      "EXISTING_OWNER_ACCEPTANCE",
+      "SPECIALIST_VERIFICATION",
+      "ACTIVE_WORKSHOP_INTEGRATION"
+    ],
+    "structural_coverage_is_not_semantic_truth": true
+  },
+  "run88_policy_conflict_arbitration": {
+    "conflict_packet_fields": [
+      "policy_ids",
+      "inputs",
+      "decisions",
+      "evidence_refs",
+      "required_authority",
+      "safe_next_action"
+    ],
+    "conflict_result": "HOLD_POLICY_CONFLICT",
+    "conflicting_allows_do_not_create_authority": true,
+    "decision_receipt_required": true,
+    "deny_cannot_be_overridden_by_lower_priority_allow": true,
+    "human_resolution_required_when_semantics_or_authority_conflict": true,
+    "majority_is_not_authority": true,
+    "non_overridable_denials": [
+      "identity",
+      "authority",
+      "permission",
+      "consent",
+      "privacy",
+      "source_integrity"
+    ],
+    "policies": [
+      "identity_exactness",
+      "purpose_limitation",
+      "source_integrity",
+      "authority_and_permission",
+      "consent_and_privacy",
+      "lifecycle_legality",
+      "dependency_readiness",
+      "proof_freshness",
+      "resource_and_cancellation",
+      "owner_boundary"
+    ]
+  },
+  "run89_intake_readiness": {
+    "active_integration_performed": false,
+    "active_target": null,
+    "collision_checks": [
+      "stable_id",
+      "owned_root",
+      "authority_surface",
+      "schema_owner",
+      "public_private_boundary"
+    ],
+    "commit_authority": "EXTERNAL_EXISTING_OWNER",
+    "isolated_staging_required": true,
+    "one_seed_failure_does_not_accept_or_apply_other_seeds": true,
+    "posture_preserved": "WAITING_FOR_FOUNDATION_OWNER_REVIEW",
+    "prepare_before_commit": true,
+    "readiness_is_not_acceptance": true,
+    "readiness_is_not_canon": true,
+    "readiness_is_not_integration": true,
+    "reference_readiness": "HOLD_UNKNOWN_POSTURE",
+    "required_gates": [
+      "source_owner_review",
+      "duplicate_check",
+      "schema_validation",
+      "cold_self_test",
+      "specialist_verification",
+      "mike_merge_gate"
+    ],
+    "rollback_scope": "ISOLATED_STAGING_ROOT_ONLY"
+  },
+  "run90_evidence_boundary": {
+    "CANON": false,
+    "achieved_reference_capabilities": [
+      "dependency_contract_resolution",
+      "proof_freshness_and_invalidation",
+      "partial_availability_containment",
+      "non_applying_repair_planning",
+      "reproducible_review_packets",
+      "upgrade_compatibility_matrix",
+      "named_provenance_gap_budget",
+      "policy_conflict_arbitration",
+      "isolated_intake_readiness_simulation"
+    ],
+    "active_workshop_integration": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "posture_preserved": "WAITING_FOR_FOUNDATION_OWNER_REVIEW",
+    "production_proof": false,
+    "specialist_verification": false
+  },
+  "schema": "axm.memory.run90-capability-protocol/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "1f96d4aedbaebf8be3f9a45ae08644e459466a63bcd0eb3c8ec93bf43bafe665"
+  },
+  "source_run80": {
+    "authority": "T1_BOUNDED_LOCAL",
+    "candidate_contract_sha256": "06e3042b425de25f04b28e3ac5623b1b9744053efea6efbae81607343f5f05d5",
+    "operation_kind": "BOUNDED_TRANSFORM",
+    "permissions": [
+      "memory.handoff"
+    ],
+    "posture": "WAITING_FOR_FOUNDATION_OWNER_REVIEW",
+    "purpose": "Transfer approved goal, context, decisions, open loops, evidence, boundaries, and next actions between sessions without hidden memory authority.",
+    "risk": "LOW",
+    "run80_protocol_sha256": "8c7ffa0153971d3eef469dfe876a97c270ee0641a0fa33b674d67d88be1e0055"
+  },
+  "trust_delta": "NONE"
+}

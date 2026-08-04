@@ -4,6 +4,7 @@
   var app = document.getElementById("app");
   var toast = document.getElementById("toast");
   var params = new URLSearchParams(window.location.search);
+  var playIntent = params.get("play") === "1";
   var requestedRole = params.get("role");
   var role = requestedRole === "controller" ? "controller" : (requestedRole === "party" ? "party" : "host");
   var seatId = params.get("seat") || "";
@@ -193,12 +194,19 @@
     });
   }
 
+  function redirectToSoloController(candidateLaunch) {
+    var controllers = candidateLaunch && candidateLaunch.controllers || [];
+    if (!playIntent || controllers.length !== 1 || !controllers[0].url) return false;
+    window.location.replace(new URL(controllers[0].url, window.location.href).href);
+    return true;
+  }
+
   function initials(name) {
     return String(name || "?").split(/\s+/).map(function (part) { return part.charAt(0); }).join("").slice(0, 2).toUpperCase();
   }
 
   function modeName(mode) {
-    return mode === "house_war" ? "House War" : "Backroom Story";
+    return mode === "house_war" ? "House War" : "Free Play";
   }
 
   function locationName(location) {
@@ -256,15 +264,6 @@
       contest_won: "Party " + data.winnerPartyId + " claimed district traffic",
       contest_ended_no_winner: "The contest closed without a winner",
       traffic_claim_expired: data.spotId + " returned to the district",
-      quest_started: "New quest: " + data.title,
-      quest_progressed: "Quest progress " + data.progress + "/" + data.goal,
-      quest_completed: "Quest complete: " + data.title,
-      quest_pack_completed: "A slot chapter is complete",
-      slot_chapter_started: "New slot chapter: " + data.title,
-      slot_chapter_completed: "Slot chapter complete: " + data.title,
-      story_campaign_completed: "All ten backroom lights are awake",
-      story_lease_claimed: "The first permanent traffic lease is yours",
-      opening_shift_closed: "The opening shift closed solvent",
       party_bankrupt: "Party " + data.partyId + " went bankrupt",
       session_ended: "Session ended: " + data.reason
     };
@@ -279,11 +278,11 @@
       '<p>' + escapeHtml(message || "Choose the first local alpha route. No session is uploaded or published.") + '</p>' +
       '<div class="setup-lightline" aria-label="Ten starting cabinets">' + starterStyleIds.map(function (styleId, index) { return '<span class="setup-light setup-light-' + (index + 1) + '" title="' + escapeHtml(styleId) + '">' + slotEmblem({ id: styleId }, 'setup-emblem') + '</span>'; }).join('') + '</div>' +
       '<div class="mode-grid">' +
-        '<button class="mode-card selected" data-mode="backroom_story"><strong>Backroom Story</strong><span>One to four opt-in players share ten slot chapters and one campaign save.</span></button>' +
+        '<button class="mode-card selected" data-mode="backroom_story"><strong>Free Play</strong><span>Choose any of the ten slots immediately. No quests, searches, chapters, or unlock puzzles.</span></button>' +
         '<button class="mode-card" data-mode="house_war"><strong>House War</strong><span>Equal parties from 1v1 through 4v4 attack, switch among ten slots, and chase district contests.</span></button>' +
       '</div>' +
       '<div class="setup-controls">' +
-        '<label><span id="count-label">Story players</span><select id="player-count"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>' +
+        '<label><span id="count-label">Free-play players</span><select id="player-count"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>' +
         '<button class="button" id="start-session">Start local alpha</button>' +
       '</div>' +
       '<p class="status-message">A full session loads one casino-wide 50,000-position Draw Spine plus ten distinct 50,000-outcome slot books before play.</p>' +
@@ -348,17 +347,17 @@
       '<div class="scoreboard"><div class="score party-a"><span>GLOW HEARTS</span><strong>' + money(state.contest.scores.A) + '</strong></div><div class="versus">GROSS PAYOUT</div><div class="score party-b"><span>LUCKY BOLTS</span><strong>' + money(state.contest.scores.B) + '</strong></div></div>';
   }
 
-  function renderQuest() {
-    if (!state.quest) return "";
-    if (state.quest.finished) return '<section class="panel quest-card"><p class="eyebrow">CAMPAIGN COMPLETE</p><h2>All ten lights belong under the district.</h2><p>The shared story ledger completed every slot chapter without ever touching the outcome engine.</p></section>';
-    var quest = state.quest.current;
-    var percent = Math.min(100, Math.round(quest.progress / quest.goal * 100));
-    return '<section class="panel quest-card"><div class="panel-heading"><div><p class="eyebrow">CHAPTER ' + (state.quest.chapterIndex + 1) + ' / ' + state.quest.chapterTotal + ' · QUEST ' + (state.quest.activeIndex + 1) + ' / ' + state.quest.total + '</p><h2>' + escapeHtml(quest.title) + '</h2><p>' + escapeHtml(quest.description) + '</p></div><span class="tag">' + quest.progress + ' / ' + quest.goal + '</span></div><div class="quest-progress"><i class="progress-' + Math.round(percent / 10) + '"></i></div><div class="quest-steps">' + escapeHtml(state.quest.packTitle) + ' · shared co-op progress from settled events only.</div></section>';
+  function renderFreePlayNotice(partyScreen) {
+    return '<section class="panel free-play-card"><p class="eyebrow">SLOT-FIRST FREE PLAY</p><h2>All ten slots are ready.</h2><p>' +
+      (partyScreen
+        ? 'This party screen is view-only. Return to Game Hub and choose <strong>Open Mike controls</strong> to spin.'
+        : 'Open a player control link and choose any cabinet. There are no quests, searches, or unlock puzzles.') +
+      '</p></section>';
   }
 
   function machineOverview() {
     return '<div class="machine-overview">' + (state.styles || []).map(function (style) {
-      var stateLabel = style.unlocked ? 'READY' : (style.discoverable ? 'NEXT' : 'LOCKED');
+      var stateLabel = 'READY';
       return '<div class="machine-summary accent-' + escapeHtml(style.accent) + (style.unlocked ? ' unlocked' : '') + '"><span>' + slotEmblem(style, 'summary-emblem') + '</span><div><strong>' + escapeHtml(style.shortName) + '</strong><small>' + stateLabel + ' · ' + escapeHtml(style.signature) + '</small></div></div>';
     }).join('') + '</div>';
   }
@@ -393,14 +392,14 @@
     app.innerHTML = '<header class="topbar">' +
       '<section class="brand-card"><p class="eyebrow">CASINO ALPHA · ' + escapeHtml(state.status.toUpperCase()) + '</p><h1>' + escapeHtml(modeName(state.mode)) + '</h1><p>One authoritative district · Draw Spine ' + state.drawSpine.consumedRows + ' / ' + state.drawSpine.totalRows + ' · ten independent books</p></section>' +
       '<section class="metric-card jackpot"><span>PROGRESSIVE</span><strong>' + money(state.jackpot) + '</strong></section>' +
-      '<section class="metric-card"><span>' + (state.mode === "house_war" ? 'CLOSING BELL' : 'CHAPTER') + '</span><strong>' + (state.mode === "house_war" ? duration(state.remainingMs) : (state.quest && state.quest.finished ? 'DONE' : 'OPEN')) + '</strong></section>' +
+      '<section class="metric-card"><span>' + (state.mode === "house_war" ? 'CLOSING BELL' : 'CABINETS') + '</span><strong>' + (state.mode === "house_war" ? duration(state.remainingMs) : '10 OPEN') + '</strong></section>' +
       '<section class="metric-card"><span>ACTIVE PATRONS</span><strong>' + Object.values(state.activeNpcCounts).reduce(function (sum, value) { return sum + value; }, 0) + '</strong></section>' +
     '</header>' +
     (result ? '<section class="panel"><p class="eyebrow">SESSION RESULT</p><h2>' + escapeHtml(result.winner_party_id ? 'Party ' + result.winner_party_id + ' wins' : result.outcome) + '</h2><p>' + escapeHtml(result.reason) + ' · ' + result.style_rows_consumed + ' immutable rows consumed.</p><div class="host-actions"><button class="button cyan" data-host-action="handoff">Return result to Game Hub</button></div></section>' : '') +
     '<div class="host-grid"><div class="column">' +
       '<section class="panel"><div class="panel-heading"><div><p class="eyebrow">SHARED WORLD</p><h2>The neon district</h2><p>Party cameras point into this same state.</p></div><span class="tag live">SERVER LIVE</span></div>' + renderMap() + '</section>' +
-      (state.mode === "house_war" ? '<section class="panel"><div class="panel-heading"><div><p class="eyebrow">TWO-MINUTE WINDOW</p><h2>District contest</h2></div><span class="tag">' + (state.contest ? duration(state.contest.remainingMs) : 'WAIT') + '</span></div>' + renderContest() + '</section>' : renderQuest()) +
-      '<section class="panel"><div class="panel-heading"><div><p class="eyebrow">TEN STARTING CABINETS</p><h2>' + (state.mode === 'house_war' ? 'Every style is live' : 'One shared story unlock path') + '</h2></div><span class="tag">96% BASE RTP</span></div>' + machineOverview() + '</section>' +
+      (state.mode === "house_war" ? '<section class="panel"><div class="panel-heading"><div><p class="eyebrow">TWO-MINUTE WINDOW</p><h2>District contest</h2></div><span class="tag">' + (state.contest ? duration(state.contest.remainingMs) : 'WAIT') + '</span></div>' + renderContest() + '</section>' : renderFreePlayNotice(false)) +
+      '<section class="panel"><div class="panel-heading"><div><p class="eyebrow">TEN STARTING CABINETS</p><h2>Every style is live</h2></div><span class="tag">96% BASE RTP</span></div>' + machineOverview() + '</section>' +
       '<section class="panel"><div class="panel-heading"><div><p class="eyebrow">PARTY LEDGERS</p><h2>Solvency before swagger</h2></div><span class="tag">CONSERVES ' + money(diagnostic.conserved) + '</span></div><div class="party-row">' + state.parties.map(renderParty).join("") + '</div></section>' +
     '</div><aside class="column">' +
       '<section class="panel"><div class="panel-heading"><div><p class="eyebrow">REAL SEATS</p><h2>Player links</h2><p>Open one per phone or local browser.</p></div></div>' + controllerLinks() + '</section>' +
@@ -447,17 +446,9 @@
       (state.styles || []).map(function (style) {
         var selected = activeId === style.id;
         var disabled = contestLocked ? state.contest.styleId !== style.id : (!style.discoverable || player.freeSpinsRemaining > 0 && !selected);
-        var label = style.unlocked ? 'READY' : (style.discoverable ? 'DISCOVER' : 'STORY LOCK');
+        var label = style.unlocked ? 'READY' : 'UNAVAILABLE';
         return '<button class="machine-card accent-' + escapeHtml(style.accent) + (selected ? ' selected' : '') + (style.unlocked ? ' unlocked' : ' locked') + '" data-command="select_machine" data-style="' + escapeHtml(style.id) + '" ' + (disabled ? 'disabled' : '') + '><span>' + slotEmblem(style, 'card-emblem') + '</span><strong>' + escapeHtml(style.shortName) + '</strong><small>' + label + '</small></button>';
       }).join('') + '</div></section>';
-  }
-
-  function storyAction(quest) {
-    if (!quest || quest.finished || !quest.current || !quest.current.action) return "";
-    var action = quest.current.action;
-    return '<button class="action-button" data-command="' + escapeHtml(action.command) + '"' +
-      (action.styleId ? ' data-style="' + escapeHtml(action.styleId) + '"' : '') +
-      (action.amount ? ' data-amount="' + Number(action.amount) + '"' : '') + '>' + escapeHtml(action.label) + '</button>';
   }
 
   function renderController() {
@@ -477,7 +468,6 @@
     var canSpin = state.status === "running" && styleReady && (player.location !== "contest" || state.contest);
     var free = player.freeSpinsRemaining > 0;
     var party = state.parties.find(function (item) { return item.id === player.partyId; });
-    var quest = state.quest;
     if (freshSpin) {
       rememberSettlement(displaySpin);
       playCue(displaySpin.jackpotHit ? "jackpot" : (displaySpin.wheelTriggered ? "wheel" : tier.id));
@@ -505,8 +495,6 @@
       '<button class="spin-button ' + (free ? 'free' : '') + '" data-command="spin" ' + (!canSpin ? 'disabled' : '') + '>' + (free ? 'FREE SPIN · ' + player.freeSpinsRemaining : 'SPIN · ' + money(player.selectedWager)) + '</button>' +
       recentResultStrip() +
       '<div class="management-strip"><button class="action-button secondary" data-command="fund_house" data-amount="10">Fund house · 10</button><button class="action-button secondary" data-command="withdraw_house" data-amount="10">Take attack cash · 10</button></div>' +
-      (storyAction(quest) ? '<div class="story-actions">' + storyAction(quest) + '</div>' : '') +
-      (quest && quest.current ? '<section class="controller-quest"><p class="eyebrow">CHAPTER ' + (quest.chapterIndex + 1) + '/' + quest.chapterTotal + ' · QUEST ' + (quest.activeIndex + 1) + '/' + quest.total + '</p><h2>' + escapeHtml(quest.current.title) + '</h2><p>' + escapeHtml(quest.current.description) + '</p></section>' : '') +
       '<div class="status-message">House: ' + (party.house == null ? escapeHtml(party.houseStatus) : money(party.house)) + ' · Free spins stay locked to the cabinet that awarded them.</div>' +
       signatureLine() +
     '</div>';
@@ -523,7 +511,7 @@
       '<section class="metric-card"><span>CLOSING</span><strong>' + duration(state.remainingMs) + '</strong></section>' +
     '</header><div class="host-grid"><div class="column">' +
       '<section class="panel"><div class="panel-heading"><div><p class="eyebrow">PARTY CAMERA</p><h2>The neon district</h2></div><span class="tag live">SERVER LIVE</span></div>' + renderMap() + '</section>' +
-      (state.mode === 'house_war' ? '<section class="panel"><div class="panel-heading"><div><p class="eyebrow">GROSS PAYOUT</p><h2>District contest</h2></div></div>' + renderContest() + '</section>' : renderQuest()) +
+      (state.mode === 'house_war' ? '<section class="panel"><div class="panel-heading"><div><p class="eyebrow">GROSS PAYOUT</p><h2>District contest</h2></div></div>' + renderContest() + '</section>' : renderFreePlayNotice(true)) +
     '</div><aside class="column">' +
       '<section class="panel"><p class="eyebrow">READY PARTY</p><h2>' + members.length + ' real seat' + (members.length === 1 ? '' : 's') + '</h2><div class="controller-list">' + members.map(function (member) { return '<div class="controller-link"><span><strong>' + escapeHtml(member.displayName) + '</strong><small>' + escapeHtml(locationName(member.location)) + ' · wallet ' + money(member.wallet) + '</small></span><span class="party-pill ' + partyClass(partyId) + '">' + member.slot + '</span></div>'; }).join('') + '</div></section>' +
       '<section class="panel"><div class="panel-heading"><div><p class="eyebrow">PARTY EVENTS</p><h2>Settled ledger</h2></div></div>' + eventFeed() + '</section>' +
@@ -538,6 +526,7 @@
         return;
       }
       launch = response.launch;
+      if (redirectToSoloController(launch)) return;
       hostToken = launch.hostToken;
       state = response.state;
       renderHost();
@@ -604,7 +593,7 @@
     if (target.dataset.mode) {
       selectedMode = target.dataset.mode;
       app.querySelectorAll(".mode-card").forEach(function (button) { button.classList.toggle("selected", button === target); });
-      document.getElementById("count-label").textContent = selectedMode === "house_war" ? "Players per party" : "Story players";
+      document.getElementById("count-label").textContent = selectedMode === "house_war" ? "Players per party" : "Free-play players";
       return;
     }
     if (target.id === "retry") return bootstrapHost();
@@ -614,6 +603,7 @@
         var count = Number(document.getElementById("player-count").value);
         var response = await postJson("./api/host/start", selectedMode === "house_war" ? { mode: selectedMode, teamSize: count } : { mode: selectedMode, playerCount: count });
         launch = response.launch;
+        if (redirectToSoloController(launch)) return;
         hostToken = launch.hostToken;
         state = response.state;
         renderHost();

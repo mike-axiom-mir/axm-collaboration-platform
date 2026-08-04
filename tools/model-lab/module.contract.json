@@ -1,0 +1,51 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-lab",
+  "version": "v0.2",
+  "provides": [
+    "deterministic-model-probe-evaluation",
+    "same-prompt-multi-model-comparison",
+    "raw-model-output-evidence-preservation",
+    "explicit-human-comparison-review",
+    "local-evaluation-result-persistence",
+    "explicit-model-evaluation-json-export",
+    "prompt-workshop-comparison-handoff-intake",
+    "fallback-disabled-provider-invocation"
+  ],
+  "consumes": [
+    "hub:module-runtime",
+    "foundation:local-storage",
+    "foundation:model-connector",
+    "local-bridge:provider-discovery"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm-model-eval/v1", "axm.prompt-comparison/v1", "application/json:axm-model-eval/v1"],
+    "accepts": ["hub:init", "axm.ai-team-prompt/v1", "browser-form:model-evaluation-intent"]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  },
+  "boundaries": {
+    "writes": ["foundation:local-storage", "user-download:explicit-model-evaluation-json"],
+    "refuses": [
+      "automatic-model-call-on-load",
+      "fallback-provider-substitution",
+      "automatic-winner-selection",
+      "automatic-model-promotion",
+      "mechanical-score-as-truth",
+      "mechanical-score-as-quality-certification",
+      "unreviewed-comparison-as-reviewed",
+      "raw-response-evidence-omission",
+      "connector-secret-exposure",
+      "automatic-permission-grant",
+      "budget-allocation",
+      "training-authority",
+      "canon-authority",
+      "world-action"
+    ]
+  }
+}

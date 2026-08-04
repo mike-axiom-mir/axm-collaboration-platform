@@ -1,0 +1,44 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.state-reconciliation-loop",
+  "name": "State Reconciliation Loop",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "RECOVERY",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": [
+    "repair-seed",
+    "state-data-workflow-recovery",
+    "local-first",
+    "dependency-free",
+    "reversible"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Move actual state toward declared desired state through small idempotent actions with verification after each step."
+  ],
+  "accepts": [
+    "desired-state",
+    "actual-state",
+    "action-adapter",
+    "verifier"
+  ],
+  "produces": [
+    "axm.reconciliation.receipt/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Move actual state toward declared desired state through small idempotent actions with verification after each step.",
+  "notes": "Explicit local primitive only. Active AXM Recovery Center, Installer, Evidence Retention, and permission gates remain authoritative."
+}

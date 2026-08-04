@@ -1,0 +1,39 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "evidence-chain-candidate-review-gate",
+  "name": "AXM Evidence Chain Candidate Review Gate",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "VERIFY",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": ["evidence", "hash-chain", "recovery", "review", "decision", "integrity", "local-first"],
+  "uses": ["evidence-chain-inspector", "evidence-chain-recovery-foundry", "browser-file-picker", "web-crypto", "explicit-download"],
+  "permissions": [],
+  "actions": [
+    "bind a broken source, its inspection receipt, a recovery candidate, and its recovery receipt",
+    "independently re-inspect source and candidate",
+    "verify non-hash semantics, hashes, transitions, and receipt bindings",
+    "record one fixed review decision without granting application authority",
+    "download digest-only assessment and decision receipts"
+  ],
+  "accepts": [
+    "application/x-ndjson",
+    "axm.evidence-chain-inspection/v1",
+    "axm.evidence-chain-recovery-candidate/v1"
+  ],
+  "produces": [
+    "axm.evidence-chain-recovery-review/v1",
+    "axm.evidence-chain-recovery-review-decision/v1"
+  ],
+  "readiness": ["evidence-chain-inspector", "evidence-chain-recovery-foundry", "sha256-runtime"],
+  "verifiedAt": null,
+  "summary": "Independently checks an exact evidence-chain recovery bundle and records a bounded review decision that cannot apply or authorize the candidate.",
+  "notes": "Review-only and explicit-download-only. A PASS means the structural bundle is internally consistent, not that content is authentic or history is restored. Decisions never apply candidates, recover sessions, grant authority, promote, or change CANON."
+}

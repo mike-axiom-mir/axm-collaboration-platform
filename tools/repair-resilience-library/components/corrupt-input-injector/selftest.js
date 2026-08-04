@@ -1,0 +1,1 @@
+"use strict";const assert=require("assert");const {generateCorruptInputs}=require("./index");const s=generateCorruptInputs("{\"x\":1}",{maxBytes:100});assert(s.fixtures.length>=3);assert.equal(s.liveDeliveryAuthorized,false);const o=generateCorruptInputs({x:1,y:"a"});assert(o.fixtures.some(x=>x.kind==="missing-field"));console.log("PASS corrupt-input-injector");

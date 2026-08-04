@@ -125,7 +125,7 @@ async function finishManaged(bootstrap) {
     assert.equal(war.play_mode, "house_war");
     assert.deepStrictEqual(war.selected_players.map(function (player) { return player.slot; }).sort(), [1, 2, 5, 6]);
     assert.equal(war.runtime_port, RUNTIME_PORT);
-    assert.match(war.client_url, new RegExp("^http://127\\.0\\.0\\.1:" + RUNTIME_PORT + "/\\?role=party&party=A&token="));
+    assert.equal(war.client_url, "http://127.0.0.1:" + RUNTIME_PORT + "/?role=host&play=1");
     assert.equal(war.controller_urls.length, 4);
     assert.ok(war.controller_urls.every(function (link) {
       return new RegExp("^http://127\\.0\\.0\\.1:" + RUNTIME_PORT + "/\\?role=controller&seat=seat_[1256]&token=").test(link.local_url);
@@ -139,23 +139,22 @@ async function finishManaged(bootstrap) {
     assert.equal(bootstrap.state.styles.filter(function (style) { return style.unlocked; }).length, 10);
     await finishManaged(bootstrap);
 
-    await assignAndReady(1, "Story One");
-    await assignAndReady(2, "Story Two");
+    await assignAndReady(1, "Free Player");
     var story = await post(HUB_PORT, "/game/start", { game_id: "007-casino-alpha", play_mode: "backroom_story" });
-    assert.equal(story.selected_players.length, 2);
+    assert.equal(story.selected_players.length, 1);
     assert.equal(story.play_mode, "backroom_story");
-    assert.match(story.client_url, new RegExp("^http://127\\.0\\.0\\.1:" + RUNTIME_PORT + "/\\?role=party&party=A&token="));
-    assert.equal(story.controller_urls.length, 2);
+    assert.equal(story.client_url, "http://127.0.0.1:" + RUNTIME_PORT + "/?role=host&play=1");
+    assert.equal(story.controller_urls.length, 1);
     runtime = await waitFor(RUNTIME_PORT, "/state", function (response) { return response.json && response.json.phase === "running"; });
     assert.equal(runtime.json.session.mode, "backroom_story");
-    assert.deepStrictEqual(runtime.json.session.players.map(function (player) { return player.slot; }), [1, 2]);
+    assert.deepStrictEqual(runtime.json.session.players.map(function (player) { return player.slot; }), [1]);
     bootstrap = (await waitFor(RUNTIME_PORT, "/api/host/bootstrap")).json;
     assert.equal(bootstrap.state.styles.length, 10);
-    assert.equal(bootstrap.state.styles.filter(function (style) { return style.discoverable; }).length, 1);
-    assert.equal(bootstrap.state.quest.chapterTotal, 10);
+    assert.equal(bootstrap.state.styles.filter(function (style) { return style.discoverable && style.unlocked; }).length, 10);
+    assert.equal(bootstrap.state.quest, null);
     await finishManaged(bootstrap);
 
-    console.log("Casino alpha Game Hub integration selftest: PASS (staged discovery, ready seats, managed 2v2, managed two-player story, result return)");
+    console.log("Casino alpha Game Hub integration selftest: PASS (staged discovery, ready seats, managed 2v2, direct solo free-play intent, result return)");
   } catch (error) {
     console.error(error);
     console.error("GAME HUB OUTPUT\n" + output);

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AXM Text Compiled Bundle Manifest",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "target_id",
+    "target_kind",
+    "platforms",
+    "files"
+  ],
+  "properties": {
+    "id": {
+      "const": "axm.text.compiled_bundle"
+    },
+    "version": {
+      "type": "string"
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "target_kind": {
+      "enum": [
+        "preset",
+        "recipe"
+      ]
+    },
+    "platforms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "files": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    }
+  }
+}

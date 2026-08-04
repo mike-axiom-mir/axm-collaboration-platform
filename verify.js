@@ -25,9 +25,16 @@ function sha(p){ const t = fs.readFileSync(path.join(ROOT,p)); return crypto.cre
 /* 1 — SPINE INTEGRITY: every copy identical; fingerprint recorded */
 const SPINE_SHA = 'b618c5762240070c';   /* Mirror Native provider merge gate approved by Mike, 2026-07-16 */
 const spines = [];
-(function find(d){ fs.readdirSync(path.join(ROOT,d),{withFileTypes:true}).forEach(e=>{
+(function find(d){
+  let entries;
+  try { entries = fs.readdirSync(path.join(ROOT,d),{withFileTypes:true}); }
+  catch(e) {
+    fail('spine scan could not read '+(d||'.')+': '+(e.code||e.message));
+    return;
+  }
+  entries.forEach(e=>{
   const p = d?d+'/'+e.name:e.name;
-  if(e.isDirectory() && e.name!=='node_modules') find(p);
+  if(e.isDirectory() && !['.git','node_modules','tmp'].includes(e.name)) find(p);
   else if(e.name==='axm-foundation.js') spines.push(p); }); })('');
 const activeSpines = spines.filter(p => !p.replace(/\\/g, '/').startsWith('exports/workshop-packages/'));
 const historicalSpines = spines.filter(p => !activeSpines.includes(p));
@@ -69,10 +76,17 @@ fs.readdirSync(toolsDir,{withFileTypes:true}).forEach(e=>{
 });
 
 /* 3 — DOM ORDER + NO HARDCODED ASSET PATHS in every html (the v0.3 lesson) */
-(function scanHtml(d){ fs.readdirSync(path.join(ROOT,d),{withFileTypes:true}).forEach(e=>{
+(function scanHtml(d){
+  let entries;
+  try { entries = fs.readdirSync(path.join(ROOT,d),{withFileTypes:true}); }
+  catch(e) {
+    fail('HTML scan could not read '+(d||'.')+': '+(e.code||e.message));
+    return;
+  }
+  entries.forEach(e=>{
   const p = d?d+'/'+e.name:e.name;
   if(e.isDirectory()) {
-    if(['node_modules','exports','backups','state','logs'].includes(e.name)) return;
+    if(['.git','node_modules','exports','backups','state','logs','tmp'].includes(e.name)) return;
     return scanHtml(p);
   }
   if(!e.name.endsWith('.html')) return;
@@ -185,7 +199,8 @@ try {
 /* 13 - TOOL READINESS INDEX: promotion evidence and missing declarations stay
    visible without automatically promoting, archiving, or granting authority. */
 try {
-  const liveIndex = ToolReadiness.buildIndex(ROOT);
+  const verificationResults = JSON.parse(read('state/tool-readiness/latest-selftests.json')||'null');
+  const liveIndex = ToolReadiness.buildIndex(ROOT, { verificationResults });
   const checked = ToolReadiness.validateIndex(liveIndex);
   if(!checked.pass) checked.errors.forEach(error => fail('tools index: '+error));
   else ok('tools index schema valid: '+liveIndex.summary.tools+' tools · '+liveIndex.summary.capabilities+' contract capabilities');

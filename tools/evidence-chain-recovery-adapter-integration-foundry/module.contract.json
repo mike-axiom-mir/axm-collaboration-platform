@@ -1,0 +1,73 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "evidence-chain-recovery-adapter-integration-foundry",
+  "version": "v0.1",
+  "provides": [
+    "capability.plan.evidence-chain-recovery-adapter-integration/v1",
+    "evidence-chain-adapter-artifact-digest-binding",
+    "evidence-chain-adapter-least-authority-acceptance-gates",
+    "evidence-chain-adapter-live-proof-route"
+  ],
+  "consumes": [
+    "text/javascript",
+    "axm.evidence-chain-recovery-application-plan/v1",
+    "axm.evidence-chain-recovery-adapter-conformance-receipt/v1",
+    "capability.verify.evidence-chain-recovery-adapter/v1",
+    "current-state-bound-restore-preview",
+    "recoverable-restore-rollback",
+    "deny-by-default-permission-status",
+    "bounded-workshop-authority-inventory",
+    "human:artifact-data-only-acknowledgement",
+    "human:no-authority-and-live-proof-acknowledgements"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.evidence-chain-recovery-adapter-integration-acceptance-packet/v1"],
+    "accepts": [
+      "text/javascript",
+      "axm.evidence-chain-recovery-application-plan/v1",
+      "axm.evidence-chain-recovery-adapter-conformance-receipt/v1",
+      "axm.tool-manifest/v1",
+      "axm.module-contract/v1"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "browser:user-selected-adapter-source-plan-and-conformance-receipt",
+      "browser:served-recovery-center-manifest-and-contract",
+      "node:caller-supplied-in-memory-inputs"
+    ],
+    "writes": ["browser:explicit-download-only-acceptance-packet", "node:return-value-only-acceptance-packet"],
+    "deletes": [],
+    "refuses": [
+      "adapter-import-or-execution",
+      "adapter-syntax-or-safety-certification",
+      "adapter-path-or-name-emission",
+      "artifact-source-emission",
+      "expired-or-future-plan",
+      "plan-conformance-receipt-digest-mismatch",
+      "failed-or-incomplete-conformance-scenarios",
+      "Recovery-Center-declaration-drift",
+      "extra-or-missing-recovery-permission",
+      "candidate-staging-compatibility-claim",
+      "permission-request-grant-or-revocation",
+      "real-identity-authorization-claim",
+      "live-target-read-or-write",
+      "Recovery-Center-call",
+      "live-apply-or-rollback-claim",
+      "receipt-path-payload-identity-secret-or-raw-byte-disclosure",
+      "filesystem-write",
+      "network-call",
+      "persistent-state",
+      "automatic-installation",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

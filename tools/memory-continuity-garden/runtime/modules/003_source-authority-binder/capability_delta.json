@@ -1,0 +1,257 @@
+{
+  "capability_interface": {
+    "authority_delta": "NONE",
+    "canon_delta": "NONE",
+    "consent_delta": "NONE",
+    "consumes_clause": "human direction; exact source identity; ownership and role metadata; permission and privacy policy",
+    "human_gate_required_by_source_contract": false,
+    "input_contract": "axm.memory.reference-request/v2",
+    "invariants": [
+      "authority_delta_is_none",
+      "canon_delta_is_none",
+      "consent_delta_is_none",
+      "delivery_does_not_imply_acceptance",
+      "expected revision and durable boundary are explicit",
+      "full_semantics_are_not_claimed",
+      "history is append-only or compensating",
+      "identity fields never fuse across handoff",
+      "memory_payload_is_inert_data",
+      "source limits survive every derived view",
+      "source_truth_is_not_created_by_contract_validity",
+      "trust_delta_is_none",
+      "write is restricted to exact owned root"
+    ],
+    "operation_kind": "BOUNDED_LOCAL_WRITE",
+    "output_contract": "axm.memory.source-authority-binder.receipt/v1",
+    "postconditions": [
+      "exactly one accepted reference contract or typed HOLD is returned",
+      "no hidden mutation, authority gain, trust gain, consent gain, or CANON promotion occurs",
+      "result remains source-linked, replaceable, privacy-safe, and bounded to the declared purpose",
+      "receiver acceptance, semantic apply, owner acceptance, and integration remain separate future acts"
+    ],
+    "preconditions": [
+      "exact seed identity and purpose match",
+      "source references and digests align",
+      "authority, consent, role, permission, expiry, and namespace checks pass",
+      "boot prerequisites are ready or explicitly safe degraded mode is allowed",
+      "resource, cancellation, revision, output-root, and compatibility guards pass"
+    ],
+    "purpose_clause": "Bind every remembered item to who or what supplied it, what authority they had, and what the source can and cannot prove.",
+    "semantic_effect": "REFERENCE_ONLY_NOT_IMPLEMENTED",
+    "state_effect_envelope": "OWNED_ROOT_ONLY",
+    "trust_delta": "NONE"
+  },
+  "composition": {
+    "accepted_upstream_ids": [
+      "axm.memory.lifecycle-state-machine",
+      "axm.memory.namespace-descriptor",
+      "axm.memory.provenance-envelope"
+    ],
+    "authority_transfer": false,
+    "boot_prerequisites": [
+      "axm.memory.namespace-descriptor"
+    ],
+    "consent_transfer": false,
+    "cycles_allowed_only_outside_boot_graph": true,
+    "delivery_does_not_imply_acceptance": true,
+    "downstream_candidates": [
+      "axm.memory.ai-seat-context-adapter",
+      "axm.memory.append-only-event-store",
+      "axm.memory.bounded-continuity-orchestrator",
+      "axm.memory.branch-identity-record",
+      "axm.memory.canon-candidate-separator",
+      "axm.memory.causal-metadata-vector",
+      "axm.memory.causal-relationship-mapper",
+      "axm.memory.class-taxonomy",
+      "axm.memory.conflict-replay-fixture",
+      "axm.memory.consent-lease",
+      "axm.memory.content-addressed-object-store",
+      "axm.memory.continuity-dashboard",
+      "axm.memory.contradiction-aware-retriever",
+      "axm.memory.crdt-candidate-adapter",
+      "axm.memory.cross-chat-continuity-adapter",
+      "axm.memory.cross-replica-merge-gate",
+      "axm.memory.device-memory-slice",
+      "axm.memory.dissent-preservation-ledger",
+      "axm.memory.divergence-detector",
+      "axm.memory.diversity-dissent-retriever",
+      "axm.memory.exact-duplicate-detector",
+      "axm.memory.failure-lesson-registry",
+      "axm.memory.forgetting-candidate-recommender",
+      "axm.memory.freshness-expiry-monitor",
+      "axm.memory.hash-chained-event-ledger",
+      "axm.memory.human-correction-propagator",
+      "axm.memory.hybrid-search-index",
+      "axm.memory.identity-role-separator",
+      "axm.memory.immutable-revision-record",
+      "axm.memory.known-good-pointer-history",
+      "axm.memory.lifecycle-state-machine",
+      "axm.memory.namespace-descriptor",
+      "axm.memory.offline-sync-envelope",
+      "axm.memory.original-inference-separator",
+      "axm.memory.patch-witness-recorder",
+      "axm.memory.pattern-candidate-library",
+      "axm.memory.provenance-envelope",
+      "axm.memory.public-safe-continuity-mirror",
+      "axm.memory.purpose-limitation-gate",
+      "axm.memory.quality-profile",
+      "axm.memory.query-trace-receipt",
+      "axm.memory.recertification-scheduler",
+      "axm.memory.replica-identity-record",
+      "axm.memory.resolution-decision-receipt",
+      "axm.memory.retrieval-feedback-receipt",
+      "axm.memory.routing-graph",
+      "axm.memory.semantic-contradiction-detector",
+      "axm.memory.semantic-version-lineage",
+      "axm.memory.session-handoff-packet",
+      "axm.memory.source-authority-ranker",
+      "axm.memory.source-disagreement-holder",
+      "axm.memory.stale-memory-quarantine",
+      "axm.memory.state-transition-receipt",
+      "axm.memory.successor-briefing-generator",
+      "axm.memory.supersession-linker",
+      "axm.memory.temporal-relevance-ranker",
+      "axm.memory.three-way-merge-planner",
+      "axm.memory.touched-path-conflict-holder",
+      "axm.memory.uncertainty-confidence-envelope"
+    ],
+    "handoff_schema": "axm.memory.capability-handoff/v1",
+    "runtime_collaborators": [
+      "axm.memory.lifecycle-state-machine",
+      "axm.memory.provenance-envelope"
+    ],
+    "semantic_apply_implied": false,
+    "trust_transfer": false
+  },
+  "human_review": {
+    "automatic_apply": false,
+    "challenge_and_reopen_supported": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "packet_path": "modules/003_source-authority-binder/review_packet.json",
+    "primary_actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN"
+    ]
+  },
+  "identity": {
+    "category_number": 1,
+    "name": "Source and Authority Binder",
+    "number": 3,
+    "stable_id": "axm.memory.source-authority-binder"
+  },
+  "pipeline_membership": [
+    "PIPELINE_01_IDENTITY",
+    "PIPELINE_02_LINEAGE",
+    "PIPELINE_03_TIME",
+    "PIPELINE_04_CONFLICT",
+    "PIPELINE_05_COMPRESSION",
+    "PIPELINE_06_RETRIEVAL",
+    "PIPELINE_07_PRIVACY",
+    "PIPELINE_08_HANDOFF",
+    "PIPELINE_09_REPAIR",
+    "PIPELINE_10_GOVERNANCE"
+  ],
+  "profiles": {
+    "authority": {
+      "path": "profiles/authority_t1-bounded-local.json",
+      "sha256": "e9219d177513061d9d14f979361eda4f92f011a95e98db8074fb6da29009f428"
+    },
+    "category": {
+      "path": "profiles/category_01_identity_authority_provenance.json",
+      "sha256": "3808322f4a25dffa7b3f0536e05c1503885227d677cf286bbd20f43c0d0f304c"
+    },
+    "operation": {
+      "path": "profiles/operation_bounded-local-write.json",
+      "sha256": "b289872e9ebe9b5534794438fc3447ee6b94feedda05f33ddd61fc778dbc2d93"
+    },
+    "proof_tiers": {
+      "path": "profiles/proof_tiers.json",
+      "sha256": "ab8646803825822a1c529c9a47163827813c5ea9f2c2034031bdd103245d2f00"
+    },
+    "review_surface": {
+      "path": "profiles/review_surface.json",
+      "sha256": "d46b074a8a703365fd7243c20fae436abd8346494a3100efff73f817a65431e5"
+    },
+    "risk": {
+      "path": "profiles/risk_medium.json",
+      "sha256": "0caaae86018b2eb8daed6e7cbf6ccb9a28d3f9f383e9df56922f67143d9476fe"
+    }
+  },
+  "proof": {
+    "achieved_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE"
+    ],
+    "boundary": "Executable deltas, composition, metamorphic, resource, review, and capsule evidence remain synthetic/local reference proof.",
+    "canon": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "specialist_verification": false,
+    "workshop_integration": false
+  },
+  "resource_policy": {
+    "batch_and_step_limits_required": true,
+    "cancellation_must_be_checked": true,
+    "network_required": false,
+    "output_path_must_remain_under_exact_owned_root": true,
+    "profile_ref": {
+      "path": "profiles/risk_medium.json",
+      "sha256": "0caaae86018b2eb8daed6e7cbf6ccb9a28d3f9f383e9df56922f67143d9476fe"
+    },
+    "symlink_escape_forbidden": true,
+    "unbounded_scan_forbidden": true
+  },
+  "schema": "axm.memory.capability-delta/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "base_contract_file_sha256": "9ca65fe49101853fcf103aafdda997e1a315e463970e08cb1d914648881f01ce",
+    "body_sha256": "37e9f3d9ec2ce3de6de00723485eab1657df2384bad6e8ed7086e53e298c972f",
+    "delta_core_sha256": "ddeb7db4db573119a2094eceece2e3ee45c24e090828b687804527116d07796f"
+  },
+  "source_run50": {
+    "build_intake_file_sha256": "cf4653baebbe3cea0e6144ab98137d80afa3d31c751436e20b8fbac67ecefa28",
+    "candidate_contract_body_sha256": "fb1e68b5e514c979a8e83c7277b1210d771fda58bf33b9dee36e3248906f0c15",
+    "candidate_contract_file_sha256": "9ca65fe49101853fcf103aafdda997e1a315e463970e08cb1d914648881f01ce",
+    "candidate_contract_path": "modules/003_source-authority-binder/candidate.contract.json",
+    "fixtures_file_sha256": "7cf5db100db0b17dc2800f5617f0b7faac3afa8c536879c8482d51d2d41804cd",
+    "run50_posture_preserved": true,
+    "source_authority": "T1_BOUNDED_LOCAL",
+    "source_operation_kind": "BOUNDED_LOCAL_WRITE",
+    "source_purpose": "Bind every remembered item to who or what supplied it, what authority they had, and what the source can and cannot prove.",
+    "source_risk": "MEDIUM",
+    "source_run50_status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE",
+  "validation": {
+    "cache_is_evidence_reuse_not_truth": true,
+    "cached_result_cannot_promote_canon": true,
+    "harness_version": "axm-memory-run60-harness-v1",
+    "proof_cache_key": "9d96b1144e3b03c20fabb46d6f68736216964d31a8ce30b3175c314e556d10a5",
+    "revalidation_triggers": [
+      "candidate contract or fixture digest changes",
+      "capability delta core changes",
+      "referenced shared profile digest changes",
+      "validation harness version changes",
+      "boot prerequisite interface changes",
+      "privacy, authority, or lifecycle policy changes"
+    ],
+    "test_suites": [
+      "run50_full_reference_suite",
+      "run60_delta_preservation",
+      "run60_capability_interface",
+      "run60_composition_graph",
+      "run60_selective_validation",
+      "run60_metamorphic_laws",
+      "run60_resource_faults",
+      "run60_reference_pipelines",
+      "run60_human_review",
+      "run60_capsule_export",
+      "run60_efficiency",
+      "run60_roundtrip"
+    ]
+  }
+}

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#030711">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>AXM Pong · Cross</title>
+  <link rel="stylesheet" href="aetherglass/axm-aetherglass.css">
+  <link rel="stylesheet" href="aetherglass/axm-components.css">
+  <link rel="stylesheet" href="neon-pong-cross.css">
+</head>
+<body data-theme="aetherglass" data-axm-surface="game" data-effects="balanced" data-motion="full">
+  <header class="topbar" aria-label="Game status">
+    <div class="brand"><span>AXM</span><b>// PONG</b></div>
+    <div class="mode-cluster"><span class="game-chip">DUET</span><span class="game-chip active">CROSS</span><strong id="modeLabel">MULTIPLAYER</strong></div>
+    <div class="mission-title"><small id="playerCountLabel">4 PLAYER</small><b id="objectiveLabel">CATHEDRAL CROSS</b></div>
+    <div class="status-cluster"><span id="connection">CONNECTING</span><button id="pauseButton" type="button">PAUSE</button></div>
+  </header>
+
+  <main class="game-layout">
+    <section class="arena-shell" id="arenaShell" aria-label="AXM Pong Cross arena">
+      <canvas id="game" width="1000" height="1000" aria-label="Three- or four-player Pong arena"></canvas>
+      <div class="arena-vignette" aria-hidden="true"></div>
+
+      <section class="launch-panel" id="launchPanel" aria-labelledby="launchTitle">
+        <p class="eyebrow" id="launchEyebrow">3–4 PLAYER MULTIPLAYER</p>
+        <h1 id="launchTitle">CATHEDRAL CROSS</h1>
+        <p id="launchCopy">Every edge is a seat. Missing the light costs a life; the final player standing owns the arena.</p>
+        <div class="arena-picker" id="arenaPicker" aria-label="Choose arena"></div>
+        <button class="primary-action" id="startButton" type="button">START CROSS MATCH</button>
+        <p class="seat-note">Shared screen stays seat-free · each player uses their own controller route</p>
+      </section>
+
+      <div class="event-toast" id="eventToast" aria-live="polite">READY</div>
+    </section>
+
+    <section class="mission-bar" aria-label="Match progress">
+      <div><small id="missionKicker">MATCH</small><strong id="missionObjective">LAST LIGHT STANDING</strong></div>
+      <div class="mission-progress"><span id="progressFill"></span></div>
+      <div><small id="metricLabel">ALIVE</small><strong id="metricValue">4 / 4</strong></div>
+      <div><small>ARENA</small><strong id="arenaLabel">CATHEDRAL CROSS</strong></div>
+    </section>
+
+    <section class="controller-panel" id="controllerPanel" hidden aria-label="Pong Cross phone controller">
+      <div class="controller-identity"><small id="controllerSeat">P1 · BOTTOM</small><strong id="controllerName">PLAYER</strong><span id="controllerStatus">READY</span></div>
+      <div class="score-strip" id="scoreStrip"></div>
+      <div class="ability-panel"><small>HELD ABILITY</small><strong id="powerName">RANDOM SPECIAL</strong><span id="powerState">READY</span></div>
+      <p id="directionHint">Move along your edge. Tap power when it lights.</p>
+    </section>
+  </main>
+
+  <nav class="controls" id="controls" hidden aria-label="Player movement controls">
+    <button id="leftButton" class="move" type="button">NEGATIVE</button>
+    <button id="powerButton" class="power" type="button">USE POWER</button>
+    <button id="rightButton" class="move" type="button">POSITIVE</button>
+  </nav>
+
+  <script src="aetherglass/axm-aetherglass.js"></script>
+  <script src="aetherglass/axm-lighting-director.js"></script>
+  <script src="neon-pong-cross.js"></script>
+</body>
+</html>

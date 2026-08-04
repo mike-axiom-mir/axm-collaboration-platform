@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AXM Habitat Seat Manifest v0.3",
+  "type": "object",
+  "required": [
+    "id",
+    "display_name",
+    "provider",
+    "connection_type"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]+$",
+      "maxLength": 80
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 72
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "connection_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "avatar": {
+      "type": "string",
+      "maxLength": 6
+    },
+    "location": {
+      "enum": [
+        "commons",
+        "code_workshop",
+        "art_studio",
+        "game_room",
+        "library",
+        "test_lab",
+        "permission_gate",
+        "merge_gate"
+      ]
+    },
+    "previous_location": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "connected": {
+      "type": "boolean"
+    },
+    "capabilities": {
+      "type": "array",
+      "maxItems": 80,
+      "items": {
+        "type": "string",
+        "maxLength": 80
+      }
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "commons",
+          "code_workshop",
+          "art_studio",
+          "game_room",
+          "library",
+          "test_lab",
+          "permission_gate",
+          "merge_gate"
+        ]
+      }
+    },
+    "carrying": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "active_action_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "last_reason": {
+      "type": "string",
+      "maxLength": 300
+    },
+    "last_evidence": {
+      "type": "string",
+      "maxLength": 300
+    },
+    "expression_policy": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "show_state_face": {
+          "type": "boolean"
+        },
+        "allow_words": {
+          "type": "boolean"
+        },
+        "allow_emoticons": {
+          "type": "boolean"
+        },
+        "allow_silence": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "expression": {
+      "oneOf": [
+        {
+          "$ref": "expression.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expression_cursor": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expression_updated_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

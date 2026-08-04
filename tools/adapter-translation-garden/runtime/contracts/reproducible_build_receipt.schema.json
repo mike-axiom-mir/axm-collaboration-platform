@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm://translation/contracts/reproducible_build_receipt.schema.json",
+  "title": "Reproducible Build Receipt",
+  "type": "object",
+  "required": [
+    "schema",
+    "plan_sha256",
+    "outputs",
+    "observed_toolchain",
+    "receipt_sha256",
+    "status"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.translation.build-receipt/v1"
+    },
+    "outputs": {
+      "type": "array"
+    },
+    "status": {
+      "enum": [
+        "REPRODUCIBLE_CANDIDATE",
+        "HOLD"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

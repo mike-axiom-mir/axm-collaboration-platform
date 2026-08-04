@@ -1,0 +1,168 @@
+{
+  "allowed_hold_codes": [
+    "HOLD_APPEND_ONLY_VIOLATION",
+    "HOLD_AUTHORITY_OR_CONSENT",
+    "HOLD_CANCELLED",
+    "HOLD_CANON_OR_OWNER_AUTHORITY",
+    "HOLD_CONTRACT_SEAL_MISMATCH",
+    "HOLD_DEGRADED_MODE_NOT_ALLOWED",
+    "HOLD_DEPENDENCY_UNAVAILABLE",
+    "HOLD_EXPECTED_REVISION",
+    "HOLD_HUMAN_CONFIRMATION_REQUIRED",
+    "HOLD_IDENTITY_OR_AUTHORITY_FUSION",
+    "HOLD_IMPORT_QUARANTINE",
+    "HOLD_INPUT_DIGEST_MISMATCH",
+    "HOLD_INPUT_LIMIT",
+    "HOLD_INVALID_STATE_TRANSITION",
+    "HOLD_JOURNAL_CORRUPTION",
+    "HOLD_LOG_PRIVACY_VIOLATION",
+    "HOLD_LOW_DISK_OR_UNSAFE_WRITE",
+    "HOLD_NON_CANONICAL_VALUE",
+    "HOLD_OPERATION_ID_COLLISION",
+    "HOLD_OUTPUT_ROOT",
+    "HOLD_PERMISSION_ESCALATION",
+    "HOLD_PRIVACY_OR_ERASURE_TRUTH",
+    "HOLD_RECOVERY_OR_REPAIR_PROOF",
+    "HOLD_RETRIEVAL_PRIVACY_SCOPE",
+    "HOLD_ROOT_OR_SOURCE_OMISSION",
+    "HOLD_RUNTIME_CYCLE",
+    "HOLD_SCHEMA_OR_COMPATIBILITY",
+    "HOLD_SCOPE_OR_PURPOSE",
+    "HOLD_SEMANTIC_CONFLICT",
+    "HOLD_SOURCE_MISMATCH",
+    "HOLD_STALE_STATE",
+    "HOLD_TIME_BASIS_UNCERTAIN",
+    "HOLD_TRANSACTION_INCOMPLETE",
+    "HOLD_TRUST_OR_AUTHORITY_TRANSFER",
+    "HOLD_UNKNOWN_TOP_LEVEL_FIELD"
+  ],
+  "authority": "T1_BOUNDED_LOCAL",
+  "boot_prerequisites": [
+    "axm.memory.freshness-expiry-monitor",
+    "axm.memory.namespace-descriptor",
+    "axm.memory.provenance-envelope",
+    "axm.memory.query-trace-receipt",
+    "axm.memory.source-authority-binder"
+  ],
+  "compiler_claim_boundary": "Normalized executable interface only; not semantic implementation or owner acceptance.",
+  "contract_references": [
+    "axm.memory.freshness-expiry-monitor",
+    "axm.memory.namespace-descriptor",
+    "axm.memory.provenance-envelope",
+    "axm.memory.query-trace-receipt",
+    "axm.memory.source-authority-binder"
+  ],
+  "exact_owned_root": "local://axm-memory/axm.memory.hybrid-search-index/",
+  "hold_contract": "axm.memory.typed-hold/v2",
+  "identity": {
+    "category": "6. Retrieval, indexing, relevance, freshness, and forgetting",
+    "name": "Hybrid Memory Search Index",
+    "number": 51,
+    "stable_id": "axm.memory.hybrid-search-index"
+  },
+  "lifecycle_states": [
+    "PREPARED",
+    "APPENDING",
+    "DURABLE",
+    "RECOVERY_HOLD",
+    "FAILED",
+    "SUPERSEDED"
+  ],
+  "lifecycle_transitions": [
+    [
+      "APPENDING",
+      "DURABLE"
+    ],
+    [
+      "APPENDING",
+      "FAILED"
+    ],
+    [
+      "APPENDING",
+      "RECOVERY_HOLD"
+    ],
+    [
+      "FAILED",
+      "SUPERSEDED"
+    ],
+    [
+      "PREPARED",
+      "APPENDING"
+    ],
+    [
+      "PREPARED",
+      "FAILED"
+    ],
+    [
+      "PREPARED",
+      "RECOVERY_HOLD"
+    ],
+    [
+      "RECOVERY_HOLD",
+      "FAILED"
+    ]
+  ],
+  "operation_kind": "BOUNDED_LOCAL_WRITE",
+  "permissions": [
+    "memory.write"
+  ],
+  "privacy_forbidden_receipt_keys": [
+    "payload",
+    "source_refs",
+    "authority_ref",
+    "confirmation_ref",
+    "safety_copy_ref",
+    "deleted_content",
+    "raw_private"
+  ],
+  "purpose": "Combine exact identifiers, structured fields, full text, embeddings, temporal filters, and graph relationships while exposing the route used.",
+  "request_schema": "axm.memory.reference-request/v2",
+  "required_request_fields": [
+    "schema",
+    "seed_id",
+    "operation_id",
+    "purpose",
+    "source_refs",
+    "source_digests",
+    "authority_ref",
+    "consent_state",
+    "input_digest",
+    "target_root",
+    "request_timestamp",
+    "dependency_snapshot",
+    "expected_revision",
+    "current_revision",
+    "input_size_bytes",
+    "available_disk_bytes",
+    "cancelled",
+    "runtime_cycle_detected",
+    "import_trust_claim",
+    "payload",
+    "category_guard",
+    "requested_permissions",
+    "actor_role",
+    "request_state",
+    "requested_transition",
+    "allow_degraded",
+    "extensions",
+    "trace_id",
+    "receipt_visibility",
+    "preview_digest",
+    "confirmation_ref",
+    "confirmation_scope",
+    "confirmation_expires",
+    "safety_copy_ref",
+    "human_confirmed",
+    "transaction_id"
+  ],
+  "result_contract": "axm.memory.hybrid-search-index.receipt/v1",
+  "risk": "MEDIUM",
+  "runtime_collaborators": [],
+  "schema": "axm.memory.run100-compiled-contract/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "05e4f0866e4cab84cec7c49fc823dbbdd8be0ee729a6672b2da09d1fd4a3541f"
+  },
+  "source_contract_sha256": "232327184b2b4a0a649fac921a9552c70daf4186d061395bbb0825691a17a43b",
+  "source_run90_protocol_sha256": "f0c081477c23e37b5359e3f0fd02b04a642d49b5092b08071e09a0a274f5b81e"
+}

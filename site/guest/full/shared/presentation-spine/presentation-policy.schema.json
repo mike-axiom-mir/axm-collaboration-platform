@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.presentation-policy/v1",
+  "title": "AXM presentation policy",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.presentation-policy/v1" },
+    "defaultMode": { "enum": ["shared", "module"] },
+    "sharedProfile": { "enum": ["auto", "cockpit", "studio", "dashboard", "lab"] },
+    "moduleVisual": { "type": "boolean" },
+    "screenPreset": { "enum": ["fixed", "instrument", "balanced", "operational", "creative", "expressive"] },
+    "editableLayers": { "type": "array", "uniqueItems": true, "items": { "enum": ["surface", "depth", "motion", "density", "signal"] } },
+    "modeEditable": { "type": "boolean" }
+  }
+}

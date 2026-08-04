@@ -1,0 +1,57 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "hub-test-room",
+  "version": "v1.0",
+  "provides": [
+    "interactive-hub-verification-room",
+    "bounded-hub-persistence-probe",
+    "explicit-hub-reopen-probe",
+    "same-origin-module-paint-probe",
+    "hub-action-log-observation"
+  ],
+  "consumes": [
+    "hub:module-bridge/v1",
+    "browser:local-storage",
+    "same-origin:tools/_module-template/index.html",
+    "human:explicit-run-and-reload"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "hub:ready",
+      "hub:log-intent",
+      "hub:verify:pass-intent"
+    ],
+    "accepts": [
+      "hub:init",
+      "human:explicit-run",
+      "human:explicit-arm-and-reload"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "browser-local:axm.hub.selftest.probe",
+      "browser-local:axm.hub.selftest.reopen",
+      "browser-local:axm.hub.settings.hub-test-room",
+      "hub:action-log-intent",
+      "hub:local-lifecycle-verification-pass-intent"
+    ],
+    "refuses": [
+      "manifest-status-change",
+      "automatic-workshop-status-promotion",
+      "canon-authority",
+      "permission-request",
+      "external-network-access",
+      "cross-origin-module-inspection",
+      "reopen-proof-without-reload",
+      "pass-before-five-live-checks-and-reopen",
+      "hub-storage-outside-axm.hub-namespace"
+    ]
+  }
+}

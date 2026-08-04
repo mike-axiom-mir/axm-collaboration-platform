@@ -1,0 +1,48 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "evidence-chain-inspector",
+  "version": "v0.1",
+  "provides": [
+    "capability.inspect.evidence-chain/v1",
+    "evidence-chain-canonical-hash-verification",
+    "evidence-chain-link-localization",
+    "evidence-chain-payload-redacted-receipt",
+    "evidence-chain-explicit-input-cli"
+  ],
+  "consumes": [
+    "application/x-ndjson",
+    "axm.evidence-retention/v1",
+    "sha256-runtime",
+    "filesystem:explicit-input-only"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.evidence-chain-inspection/v1"],
+    "accepts": ["application/x-ndjson", "text/plain", "axm.evidence-retention/v1"]
+  },
+  "boundaries": {
+    "reads": ["browser:user-selected-file", "browser:pasted-text", "cli:explicit-file-or-stdin"],
+    "writes": ["browser:explicit-json-download", "stdout:inspection-json"],
+    "refuses": [
+      "implicit-session-discovery",
+      "private-state-crawl",
+      "payload-or-source-echo",
+      "full-path-disclosure",
+      "automatic-chain-repair",
+      "segment-rewrite",
+      "segment-delete",
+      "automatic-session-recovery",
+      "automatic-server-start",
+      "automatic-promotion",
+      "automatic-canon",
+      "network-access",
+      "persistent-storage"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

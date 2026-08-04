@@ -1,5 +1,11 @@
 const fs=require('fs'),path=require('path'),C=require('./knowledge-canvas-core.js');let fail=0;
 function check(v,m){console.log((v?'PASS ':'FAIL ')+m);if(!v)fail++;}
+const publishedManifest=JSON.parse(fs.readFileSync(path.join(__dirname,'manifest.json'),'utf8'));
+const publishedContract=JSON.parse(fs.readFileSync(path.join(__dirname,'module.contract.json'),'utf8'));
+check(publishedManifest.schema==='axm.tool-manifest/v1','published manifest declares the modern schema');
+check(publishedManifest.kind==='product','published manifest classifies Knowledge Canvas as a product');
+check(JSON.stringify(publishedManifest.permissions)===JSON.stringify(publishedContract.permissions),'published manifest permissions match the contract');
+check(JSON.stringify(publishedContract.lifecycle)===JSON.stringify({state_owner:'browser',reload:'resume',disconnect:'not-applicable',cleanup:'explicit'}),'contract declares browser persistence lifecycle seams');
 const p=C.emptyProject('Research Trial'),sheet=C.activeSheet(p);
 check(C.VIEWS.length===7,'seven unified Knowledge Canvas views');
 check(['research','data','visuals','diagrams','timeline','maps','whiteboard'].every(id=>C.VIEWS.some(v=>v.id===id)),'all requested research and visual modes');
@@ -21,4 +27,5 @@ const round=C.normalizeProject(JSON.parse(JSON.stringify(p)));check(round.name==
 const contract=JSON.parse(fs.readFileSync(path.join(__dirname,'module.contract.json'),'utf8')),manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'manifest.json'),'utf8'));check(contract.version===manifest.version,'manifest and contract versions agree');
 check(contract.boundaries.refuses.includes('automatic-source-acceptance'),'source acceptance remains human-controlled');check(contract.boundaries.refuses.includes('research-as-project-task-duplication'),'Project Room does not duplicate research canvas');
 const browser=fs.readFileSync(path.join(__dirname,'knowledge-canvas.js'),'utf8');check(/bindWorkbook/.test(browser)&&/inp\.oninput=function\(\)\{t\.rows/.test(browser),'workbook edits persist while typing before view changes');
+const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),attr=(tag,name)=>{const match=String(tag).match(new RegExp('\\s'+name+'\\s*=\\s*(["\\\'])([\\s\\S]*?)\\1','i'));return match?match[2]:null;},markup=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,''),labelIds=new Set(Array.from(markup.matchAll(/<label\b[^>]*\bfor\s*=\s*(["'])(.*?)\1/gi),match=>match[2]));for(const label of markup.matchAll(/<label\b[^>]*>([\s\S]*?)<\/label>/gi)){for(const control of label[1].matchAll(/<(?:input|select|textarea)\b[^>]*>/gi)){const id=attr(control[0],'id');if(id)labelIds.add(id);}}const unnamedControls=Array.from(markup.matchAll(/<(?:input|select|textarea)\b[^>]*>/gi),match=>match[0]).filter(tag=>{const type=String(attr(tag,'type')||'').toLowerCase();if(['hidden','button','submit'].includes(type))return false;const id=attr(tag,'id'),name=attr(tag,'aria-label')||attr(tag,'aria-labelledby')||attr(tag,'title');return !name&&!(id&&labelIds.has(id));});check(unnamedControls.length===0,'every form control has an accessible name');
 if(fail)process.exit(1);console.log('Knowledge Canvas selftest: PASS (research, workbook, visuals, place, time and whiteboard)');

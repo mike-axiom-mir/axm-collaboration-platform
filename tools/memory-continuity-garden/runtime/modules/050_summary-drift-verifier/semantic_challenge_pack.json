@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "ROOT_OMISSION",
+      "expected": "HOLD_ROOT_OR_SOURCE_OMISSION",
+      "stimulus": "compression omits a root constraint"
+    }
+  ],
+  "category": 5,
+  "category_name": "5. Compression, summaries, context windows, and warm re-entry",
+  "full_semantic_implementation": false,
+  "number": 50,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Compare a compressed memory against source records to detect omitted constraints, inverted meaning, invented certainty, and consensus inflation.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "5278051535684bdf27380070a91c515d3c3f4f4f3ab5164139c27e6eaba9e398"
+  },
+  "source_contract_sha256": "588c7109f5abea6c2e30c1e1545421ac8bbb33ebbe1a133eaec7c16d6c2567dd",
+  "stable_id": "axm.memory.summary-drift-verifier"
+}

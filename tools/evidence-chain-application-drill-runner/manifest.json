@@ -1,0 +1,38 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "evidence-chain-application-drill-runner",
+  "name": "AXM Evidence Chain Application Drill Runner",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "VERIFY",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": ["evidence", "hash-chain", "recovery", "filesystem-drill", "rollback", "sandbox", "local-first"],
+  "uses": ["evidence-chain-inspector", "evidence-chain-application-plan-foundry", "node-filesystem", "explicit-new-sandbox-root", "browser-file-picker", "web-crypto", "stdout"],
+  "permissions": [],
+  "actions": [
+    "validate an unexpired evidence-chain application plan against exact source and candidate bytes",
+    "create one brand-new owned sandbox root with a fixed safe name prefix",
+    "write source, safety-copy, and staged candidate fixtures inside that root",
+    "simulate atomic application, independently inspect the result, and roll back exact bytes",
+    "delete the complete owned sandbox and emit a digest-only drill receipt"
+  ],
+  "accepts": [
+    "application/x-ndjson",
+    "axm.evidence-chain-recovery-application-plan/v1"
+  ],
+  "produces": [
+    "axm.evidence-chain-recovery-application-drill-request/v1",
+    "axm.evidence-chain-recovery-application-drill/v1"
+  ],
+  "readiness": ["nodejs", "evidence-chain-inspector", "evidence-chain-application-plan-foundry", "writable-new-sandbox-parent"],
+  "verifiedAt": null,
+  "summary": "Runs an actual apply, inspection, rollback, and cleanup drill only inside a newly created owned filesystem sandbox.",
+  "notes": "Sandbox-drill-only. Existing roots, symlink parents, live targets, Recovery Center, permission checks, production state, retained drill files, promotion, and CANON are refused. Browser mode prepares a request; Node executes the real filesystem drill."
+}

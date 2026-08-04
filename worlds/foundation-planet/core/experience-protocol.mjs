@@ -154,9 +154,12 @@ function normalizeHydrology(hydrology = {}) {
     widthM: finite(reach.widthM, 0, 0, 1e6),
     depthM: finite(reach.depthM, 0, 0, 1e5),
     channelStorageKg: finite(reach.channelStorageKg, 0, 0, 1e30),
+    channelNitrogenSpecies: reach.channelNitrogenSpecies
+      ? stableValue(reach.channelNitrogenSpecies) : null,
     floodplain: reach.floodplain ? stableValue({
       waterKg: reach.floodplain.waterKg,
       chemistry: reach.floodplain.chemistry,
+      nitrogenSpecies: reach.floodplain.nitrogenSpecies,
       suspendedSedimentKg: reach.floodplain.suspendedSedimentKg,
       depositedSedimentKg: reach.floodplain.depositedSedimentKg,
       totalSedimentKg: reach.floodplain.totalSedimentKg,
@@ -275,6 +278,45 @@ function normalizeHydrology(hydrology = {}) {
           reach.floodplainRespiration.cumulativeMineralization,
         lastActivity: reach.floodplainRespiration.lastActivity,
         truth: reach.floodplainRespiration.truth
+      }) : null,
+    floodplainDenitrification: reach.floodplainDenitrification
+      ? stableValue({
+        observedDenitrificationDays:
+          reach.floodplainDenitrification.observedDenitrificationDays,
+        dormantDays: reach.floodplainDenitrification.dormantDays,
+        atmosphereUnavailableDays:
+          reach.floodplainDenitrification.atmosphereUnavailableDays,
+        oxicConstrainedDays:
+          reach.floodplainDenitrification.oxicConstrainedDays,
+        nitrogenLimitedDays:
+          reach.floodplainDenitrification.nitrogenLimitedDays,
+        temperatureConstrainedDays:
+          reach.floodplainDenitrification.temperatureConstrainedDays,
+        cumulativeReaction:
+          reach.floodplainDenitrification.cumulativeReaction,
+        lastActivity: reach.floodplainDenitrification.lastActivity,
+        truth: reach.floodplainDenitrification.truth
+      }) : null,
+    floodplainNitrification: reach.floodplainNitrification
+      ? stableValue({
+        observedNitrificationDays:
+          reach.floodplainNitrification.observedNitrificationDays,
+        dormantDays: reach.floodplainNitrification.dormantDays,
+        oxygenConstrainedDays:
+          reach.floodplainNitrification.oxygenConstrainedDays,
+        oxygenLimitedDays:
+          reach.floodplainNitrification.oxygenLimitedDays,
+        alkalinityLimitedDays:
+          reach.floodplainNitrification.alkalinityLimitedDays,
+        legacyCumulativeAlkalinityDemandDiagnosticKgCaCO3:
+          reach.floodplainNitrification
+            .legacyCumulativeAlkalinityDemandDiagnosticKgCaCO3,
+        temperatureConstrainedDays:
+          reach.floodplainNitrification.temperatureConstrainedDays,
+        cumulativeReaction:
+          reach.floodplainNitrification.cumulativeReaction,
+        lastActivity: reach.floodplainNitrification.lastActivity,
+        truth: reach.floodplainNitrification.truth
       }) : null,
     floodplainGasExchange: reach.floodplainGasExchange
       ? stableValue({
@@ -455,6 +497,11 @@ export function createExperienceSectorCapsule(source, options = {}) {
       floodplainPlantResourcesProjected: true,
       floodplainDecompositionProjected: true,
       floodplainRespirationProjected: true,
+      floodplainDenitrificationProjected: true,
+      floodplainDenitrificationTemperatureResponseProjected: true,
+      floodplainNitrificationProjected: true,
+      riverFloodplainNitrateAmmoniumProjected: true,
+      endToEndAlkalinityLedgerProjected: true,
       floodplainGasExchangeProjected: true,
       mirrorConnected: false,
       holodeckConnected: false
@@ -486,6 +533,12 @@ export function validateExperienceSectorCapsule(capsule) {
     capsule?.truth?.floodplainPlantResourcesProjected !== true ||
     capsule?.truth?.floodplainDecompositionProjected !== true ||
     capsule?.truth?.floodplainRespirationProjected !== true ||
+    capsule?.truth?.floodplainDenitrificationProjected !== true ||
+    capsule?.truth
+      ?.floodplainDenitrificationTemperatureResponseProjected !== true ||
+    capsule?.truth?.floodplainNitrificationProjected !== true ||
+    capsule?.truth?.riverFloodplainNitrateAmmoniumProjected !== true ||
+    capsule?.truth?.endToEndAlkalinityLedgerProjected !== true ||
     capsule?.truth?.floodplainGasExchangeProjected !== true) {
     errors.push('renderer-boundary');
   }

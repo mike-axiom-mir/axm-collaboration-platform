@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#06111c">
+  <title>Bloomvale: Gatewatch</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <div class="brand" aria-label="Bloomvale Gatewatch">
+        <span class="brand-sigil" aria-hidden="true"><i></i><b>G</b></span>
+        <div class="brand-copy"><small>GAME NIGHT // HEARTLIGHT PROTOCOL</small><strong>BLOOMVALE <em>GATEWATCH</em></strong></div>
+      </div>
+      <div class="mission">
+        <small>LIVE OBJECTIVE</small>
+        <strong id="objective">Meet Bloomvale</strong>
+      </div>
+      <div class="connection" id="connection" role="status" aria-live="polite" aria-atomic="true" aria-label="Connecting to the local server"><i></i><span>CONNECTING</span></div>
+    </header>
+
+    <section class="hud" aria-label="Game status">
+      <article class="hud-card wave-card"><small>GATE WAVE</small><strong id="waveValue">STORY</strong><span id="enemyValue">0 threats</span></article>
+      <article class="hud-card beacon-card" id="beaconCard" role="progressbar" aria-label="Heartlight" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-valuetext="100 percent, stable"><small>HEARTLIGHT</small><em class="beacon-state" id="beaconState">STABLE</em><strong id="beaconValue">100%</strong><div class="meter"><span id="beaconBar"></span></div></article>
+      <article class="hud-card score-card"><small>COLOR SAVED</small><strong id="scoreValue">000000</strong><span id="comboValue">combo ready</span></article>
+      <article class="hud-card ability-card" id="abilityCard" aria-label="Scout kit status"><small id="abilityLabel">SCOUT KIT</small><div class="ability-row"><span id="dashReady"><kbd>SHIFT</kbd> DASH</span><span id="pulseReady"><kbd>E</kbd> HEARTBURST</span></div></article>
+    </section>
+
+    <section class="stage" id="stage" aria-label="Bloomvale defense arena">
+      <canvas id="world" width="1600" height="900" tabindex="0" aria-describedby="threatAnnouncer" aria-label="Top-down animated shooter arena. Use WASD to move, mouse to aim, click or Space to fire, F to interact, M for the map, and Escape to pause."></canvas>
+      <div class="stage-vignette" aria-hidden="true"></div>
+      <div class="aim-note" id="aimNote">WASD MOVE · MOUSE AIM · CLICK FIRE</div>
+      <div class="event-toast" id="eventToast">A little world made of color.</div>
+
+      <aside class="explore-panel" id="explorePanel" hidden aria-label="Bloomvale expedition progress">
+        <div class="explore-heading"><small>NOW EXPLORING</small><strong id="districtName">Heartlight Commons</strong></div>
+        <div class="interaction-prompt" id="interactionPrompt"><kbd>F</kbd><span>Begin at the Heartlight or meet a neighbor</span></div>
+        <div class="wayfinder" id="wayfinder" aria-label="Recommended next lead">
+          <span class="wayfinder-arrow" id="wayfinderArrow" aria-hidden="true">→</span>
+          <span><small>NEXT LEAD</small><b id="wayfinderLabel">Mayor Maribel</b></span>
+          <em id="wayfinderDistance">east</em>
+        </div>
+        <div class="explore-progress" aria-label="Exploration activity progress">
+          <span><b id="districtProgress">1/5</b> places</span>
+          <span><b id="neighborProgress">0/5</b> people</span>
+          <span><b id="wispProgress">0/10</b> wisps</span>
+          <span><b id="unlockProgress">0/6</b> unlocks</span>
+        </div>
+      </aside>
+
+      <section class="overlay story-overlay" id="storyOverlay" role="dialog" aria-modal="true" aria-labelledby="storyTitle">
+        <div class="story-art" aria-hidden="true">
+          <span class="ring"></span><span class="orb"></span>
+          <span class="spark one"></span><span class="spark two"></span><span class="spark three"></span>
+        </div>
+        <div class="overlay-card story-card">
+          <span class="eyebrow" id="storyEyebrow">BLOOMVALE // ONE BRIGHT MORNING</span>
+          <h2 id="storyTitle">A little world<br>made of <em>color.</em></h2>
+          <p id="storyCopy">The Heartlight paints every hill, stream, and cloud in Bloomvale.</p>
+          <div class="story-dots" id="storyDots" aria-label="Story progress"></div>
+          <button class="primary primary-button" id="storyNext" type="button">CONTINUE STORY <span aria-hidden="true">&rarr;</span></button>
+          <button class="text-button" id="skipStory" type="button">Skip introduction</button>
+        </div>
+      </section>
+
+      <section class="overlay briefing-overlay" id="briefingOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="briefingTitle">
+        <div class="overlay-card briefing-card">
+          <span class="mode-chip">HUMAN + AI CO-OP DEFEND</span>
+          <h2 id="briefingTitle">HOLD THE<br><em>HEARTLIGHT</em></h2>
+          <p>Explore five districts between three defense waves. Meet Bloomvale’s neighbors, finish local activities, and unlock upgrades before choosing when to defend.</p>
+          <div class="control-grid">
+            <div><kbd>WASD</kbd><b>MOVE</b><small>Circle the beacon</small></div>
+            <div><kbd>MOUSE</kbd><b>AIM + FIRE</b><small>Hold click to paint</small></div>
+            <div><kbd>SHIFT</kbd><b>DASH + COUNTER</b><small>Evade a tell to arm ×2 damage</small></div>
+            <div><kbd>E</kbd><b>HEARTBURST</b><small>Push swarm + heal</small></div>
+            <div><kbd>F</kbd><b>INTERACT</b><small>Meet people + start waves</small></div>
+            <div><kbd>M</kbd><b>FIELD MAP</b><small>Unlocked by Maribel</small></div>
+          </div>
+          <button class="primary primary-button start" id="startButton" type="button">ENTER BLOOMVALE</button>
+          <small class="truth-line">One local human seat // one server-owned AI companion // no internet required</small>
+        </div>
+      </section>
+
+      <section class="overlay result-overlay" id="resultOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+        <div class="overlay-card result-card">
+          <span class="eyebrow" id="resultEyebrow">GATEWATCH COMPLETE</span>
+          <h2 id="resultTitle">Bloomvale stays <em>bright!</em></h2>
+          <p id="resultCopy">Pippa and Moxie kept the page alive.</p>
+          <div class="result-grid" id="resultStats"></div>
+          <button class="primary primary-button" id="restartButton" type="button">PLAY THE BETA AGAIN</button>
+        </div>
+      </section>
+
+      <section class="overlay pause-overlay" id="pauseOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+        <div class="overlay-card pause-card">
+          <span class="eyebrow">GATEWATCH PAUSED</span>
+          <h2 id="pauseTitle">Catch your <em>breath.</em></h2>
+          <p>The managed server has frozen combat. Nothing advances while this card is open.</p>
+          <button class="primary primary-button" id="resumeButton" type="button">RETURN TO BLOOMVALE</button>
+        </div>
+      </section>
+
+      <section class="map-overlay" id="mapOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="mapTitle">
+        <div class="map-card">
+          <button class="map-close" id="closeMap" type="button" aria-label="Close field map">×</button>
+          <span class="eyebrow">MARIBEL’S FIELD MAP</span>
+          <h2 id="mapTitle">Bloomvale is<br><em>bigger now.</em></h2>
+          <p id="mapSummary">Discover districts, meet the locals, gather loose color, and clear Patch’s range.</p>
+          <div class="map-surface" id="mapSurface" aria-label="Map locations and progress"></div>
+          <div class="map-legend"><span><i class="you"></i>Pippa</span><span><i class="person"></i>Neighbor</span><span><i class="wisp"></i>Color wisp</span><span><i class="target"></i>Range</span></div>
+          <div class="unlock-list" id="unlockList" aria-label="Unlocked upgrades"></div>
+        </div>
+      </section>
+
+      <section class="help-panel" id="helpPanel" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+        <button class="close" id="closeHelp" type="button" aria-label="Close how to play">×</button>
+        <span class="eyebrow">FIELD MANUAL</span>
+        <h2 id="helpTitle">Protect the center. Keep moving.</h2>
+        <p>Smudges choose the closest defender when you get in their way; otherwise they drain the Heartlight. Evade a telegraphed hit to arm a 2.4-second Prism Counter: your next shot deals double damage. Moxie automatically finds the nearest threat and returns after a reboot.</p>
+        <div class="help-keys"><span><kbd>WASD</kbd> move</span><span><kbd>CLICK</kbd> fire</span><span><kbd>SHIFT</kbd> dash</span><span><kbd>E</kbd> burst</span><span><kbd>F</kbd> interact</span><span><kbd>M</kbd> map</span><span><kbd>H</kbd> manual</span><span><kbd>ESC</kbd> pause / close</span></div>
+        <p class="gamepad-help"><b>GAMEPAD</b> Left/right sticks move and aim · RT/A paint · B dash · X Heartburst · Y interact · View map · Menu pause.</p>
+      </section>
+    </section>
+
+    <footer class="team-rail">
+      <article class="team-card pippa" id="playerCard">
+        <div class="portrait"><span></span></div>
+        <div class="team-copy"><small>HUMAN · SCOUT</small><div class="team-name-row"><strong id="playerName">Scout Pippa</strong><span class="team-state" id="playerState" aria-hidden="true" hidden>REBOOT 5s</span></div><div class="health" id="playerHealthMeter" role="progressbar" aria-label="Scout Pippa health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="playerHealth"></i></div></div>
+        <b id="playerHealthText">100</b>
+      </article>
+      <article class="team-card moxie" id="allyCard">
+        <div class="portrait"><span></span></div>
+        <div class="team-copy"><small>AI · DEFENSE COMPANION</small><div class="team-name-row"><strong>Moxie</strong><span class="team-state" id="allyState" aria-hidden="true" hidden>REBOOT 5s</span></div><div class="health" id="allyHealthMeter" role="progressbar" aria-label="Moxie health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="allyHealth"></i></div></div>
+        <b id="allyHealthText">100</b>
+      </article>
+      <div class="footer-actions">
+        <button id="mapButton" type="button" aria-pressed="false">MAP LOCKED</button>
+        <button id="helpButton" type="button">HOW TO PLAY</button>
+        <button id="soundButton" type="button" aria-pressed="false">AUDIO OFF</button>
+        <button id="motionButton" type="button" aria-pressed="false">MOTION FULL</button>
+      </div>
+    </footer>
+  </main>
+  <div class="sr-only" id="announcer" aria-live="assertive"></div>
+  <div class="sr-only" id="beaconAnnouncer" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div class="sr-only" id="threatAnnouncer" role="status" aria-live="polite" aria-atomic="true"></div>
+  <script src="game-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

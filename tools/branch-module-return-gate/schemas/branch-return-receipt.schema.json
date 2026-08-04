@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.branch-return-receipt/v1",
+  "title": "AXM branch return receipt",
+  "type": "object",
+  "required": ["schema", "status", "module", "packageDigest", "inventoryDigest", "authority", "truth"],
+  "properties": {
+    "schema": {"const": "axm.branch-return-receipt/v1"},
+    "status": {"const": "READY_FOR_GOVERNED_INTAKE"},
+    "module": {"type": "object"},
+    "packageDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "inventoryDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "authority": {"type": "object"},
+    "truth": {"type": "object"}
+  }
+}
+

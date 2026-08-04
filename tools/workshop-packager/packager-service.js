@@ -4,11 +4,50 @@ const childProcess = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const Planner = require('./package-planner');
+const WindowsOffline = require('../../shared/operations/windows-offline-gate-service');
 
 const SCRIPT = path.join(__dirname, 'package-workshop.ps1');
 const ROOT = path.resolve(__dirname, '..', '..');
 const OUTPUT_DIR = path.join(ROOT, 'exports', 'workshop-packages');
+const RUNTIME_ROOT = path.join(ROOT, 'runtime', 'node');
+const RUNTIME_MANIFEST = path.join(ROOT, 'runtime', 'RUNTIME_MANIFEST.json');
+const DEPLOYMENT_CATALOG = path.join(ROOT, 'shared', 'operations', 'deployment-capability-catalog.json');
 let active = false;
+
+function deploymentCapabilities() {
+  try {
+    const value = JSON.parse(fs.readFileSync(DEPLOYMENT_CATALOG, 'utf8').replace(/^\uFEFF/, ''));
+    return { available: true, schema: value.schema, source: value.source, policy: value.policy, summary: value.summary };
+  } catch (error) {
+    return { available: false, reason: String(error.message || error), summary: null };
+  }
+}
+
+function offlineReadiness() {
+  if (!fs.existsSync(RUNTIME_ROOT) || !fs.existsSync(RUNTIME_MANIFEST)) {
+    return { ready: false, decision: 'HOLD', reason: 'verified bundled runtime and manifest are not prepared', runtime_manifest_sha256: null };
+  }
+  try {
+    const manifest = JSON.parse(fs.readFileSync(RUNTIME_MANIFEST, 'utf8').replace(/^\uFEFF/, ''));
+    const verification = WindowsOffline.verifyRuntimeBundle(RUNTIME_ROOT, manifest);
+    const names = new Set((manifest.entries || []).map(entry => String(entry.path || '').toLowerCase()));
+    const companions = names.has('runtime_provenance.json') && [...names].some(name => /(^|\/)license(?:\.txt)?$/i.test(name));
+    const ready = verification.decision === 'PASS' && manifest.synthetic_fixture === false && companions;
+    return {
+      ready,
+      decision: ready ? 'PASS' : 'HOLD',
+      reason: ready ? 'approved runtime bytes, license and provenance verified' : (verification.errors.join(';') || 'real runtime license/provenance companion missing'),
+      runtime_id: manifest.runtime_id || null,
+      version: manifest.version || null,
+      architecture: manifest.architecture || null,
+      runtime_manifest_sha256: manifest.manifest_sha256 || null,
+      files_verified: verification.entries_observed,
+      bytes_verified: verification.bytes_observed
+    };
+  } catch (error) {
+    return { ready: false, decision: 'HOLD', reason: String(error.message || error), runtime_manifest_sha256: null };
+  }
+}
 
 function list() {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -30,7 +69,7 @@ function list() {
         bytes: stat.size,
         modified_at: stat.mtime.toISOString(),
         kind: /\.zip$/i.test(item.name)
-          ? ((item.name.match(/^axm-workshop-(full|public|module|delta)-/i) || [])[1] || 'package').toLowerCase()
+          ? ((item.name.match(/^axm-workshop-(offline-windows|full|public|module|delta)-/i) || [])[1] || 'package').toLowerCase()
           : 'refusal-report',
         restore_test: restoreTest,
         url: '/exports/workshop-packages/' + encodeURIComponent(item.name)
@@ -45,8 +84,8 @@ function catalog() {
 
 function normalizeOptions(options) {
   options = options || {};
-  const mode = ['full', 'public', 'module', 'delta'].includes(options.mode) ? options.mode : null;
-  if (!mode) throw new Error('mode must be full, public, module, or delta');
+  const mode = ['full', 'public', 'module', 'delta', 'offline-windows'].includes(options.mode) ? options.mode : null;
+  if (!mode) throw new Error('mode must be full, public, module, delta, or offline-windows');
   const scopes = Planner.normalizeScopes(ROOT, Array.isArray(options.scopes) ? options.scopes : []);
   if (mode === 'module' && !scopes.length) throw new Error('select at least one module, parent module, game, world, or shared system');
   const githubRepo = String(options.github_repo || 'mike-axiom-mir/axm-collaboration-platform').trim();
@@ -62,6 +101,10 @@ function create(options) {
   catch (error) { return Promise.reject(error); }
   if (active) return Promise.reject(new Error('a workshop package is already being built'));
   if (!fs.existsSync(SCRIPT)) return Promise.reject(new Error('packager script missing'));
+  if (request.mode === 'offline-windows') {
+    const readiness = offlineReadiness();
+    if (!readiness.ready) return Promise.reject(new Error('offline Windows candidate held: ' + readiness.reason));
+  }
   active = true;
   return new Promise((resolve, reject) => {
     const args = [
@@ -70,7 +113,9 @@ function create(options) {
       '-KeepCopy', request.keepCopy ? 'true' : 'false',
       '-ScopesBase64', Buffer.from(JSON.stringify(request.scopes), 'utf8').toString('base64'),
       '-GitHubRepo', request.githubRepo,
-      '-GitRef', request.gitRef
+      '-GitRef', request.gitRef,
+      '-RuntimeRoot', RUNTIME_ROOT,
+      '-RuntimeManifestPath', RUNTIME_MANIFEST
     ];
     const child = childProcess.spawn('powershell.exe', args, { cwd: ROOT, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
     let stdout = '';
@@ -95,6 +140,8 @@ module.exports = {
   create,
   list,
   normalizeOptions,
+  offlineReadiness,
+  deploymentCapabilities,
   isActive: () => active,
   outputDir: OUTPUT_DIR
 };

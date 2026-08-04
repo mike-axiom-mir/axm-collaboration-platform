@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm://translation/contracts/evidence_freshness.schema.json",
+  "title": "Evidence Freshness",
+  "type": "object",
+  "required": [
+    "schema",
+    "evidence_id",
+    "status",
+    "usable"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.translation.evidence-freshness/v1"
+    },
+    "status": {
+      "enum": [
+        "FRESH",
+        "STALE",
+        "EXPIRED",
+        "SUPERSEDED",
+        "FUTURE_TIMESTAMP"
+      ]
+    },
+    "usable": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true
+}

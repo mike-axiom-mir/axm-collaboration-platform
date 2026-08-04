@@ -1,0 +1,75 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "evidence-chain-recovery-adapter-conformance-lab",
+  "version": "v0.1",
+  "provides": [
+    "capability.verify.evidence-chain-recovery-adapter/v1",
+    "evidence-chain-adapter-fixture-permission-denial-probe",
+    "evidence-chain-adapter-fixture-preview-freshness-probe",
+    "evidence-chain-adapter-fixture-drift-and-tamper-probes",
+    "evidence-chain-adapter-fixture-apply-inspect-rollback-proof"
+  ],
+  "consumes": [
+    "application/x-ndjson",
+    "axm.evidence-chain-recovery-application-plan/v1",
+    "axm.evidence-chain-recovery-adapter-fixture-profile/v1",
+    "capability.inspect.evidence-chain/v1",
+    "capability.plan.evidence-chain-recovery-application/v1",
+    "capability.drill.evidence-chain-recovery-application/v1",
+    "human:exact-plan-confirmation",
+    "human:fixture-only-and-no-authority-acknowledgements"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.evidence-chain-recovery-adapter-conformance-probe/v1",
+      "axm.evidence-chain-recovery-adapter-conformance-receipt/v1"
+    ],
+    "accepts": [
+      "application/x-ndjson",
+      "axm.evidence-chain-recovery-application-plan/v1",
+      "axm.evidence-chain-recovery-adapter-fixture-profile/v1"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "browser:user-selected-source-candidate-plan-and-profile",
+      "node:caller-supplied-in-memory-source-candidate-plan-and-preloaded-adapter"
+    ],
+    "writes": ["browser:explicit-download-only-probe", "node:return-value-only-digest-receipt"],
+    "deletes": [],
+    "refuses": [
+      "adapter-module-path-loading",
+      "untrusted-code-execution",
+      "non-fixture-adapter-profile",
+      "live-target-access",
+      "filesystem-access",
+      "network-access",
+      "persistent-write",
+      "Recovery-Center-call",
+      "permission-request-or-grant",
+      "real-identity-authorization-claim",
+      "expired-or-future-plan",
+      "plan-id-or-input-digest-mismatch",
+      "invalid-candidate-chain",
+      "non-hash-semantic-change",
+      "permission-denial-bypass",
+      "stale-preview-application",
+      "wrong-confirmation-application-or-rollback",
+      "candidate-digest-substitution",
+      "application-after-current-state-drift",
+      "rollback-without-fresh-preview",
+      "receipt-path-payload-identity-or-secret-disclosure",
+      "live-apply-capability-claim",
+      "automatic-scheduling",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

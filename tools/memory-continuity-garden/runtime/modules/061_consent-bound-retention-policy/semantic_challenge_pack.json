@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "FALSE_ERASURE",
+      "expected": "HOLD_PRIVACY_OR_ERASURE_TRUTH",
+      "stimulus": "deletion receipt claims impossible universal erasure"
+    }
+  ],
+  "category": 7,
+  "category_name": "7. Privacy, consent, retention, redaction, deletion, and export",
+  "full_semantic_implementation": false,
+  "number": 61,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Declare which memory classes may be retained, for how long, for which purpose, by which store, and under what revocation conditions.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "048476075ebee6ecc40ce93356827df7947a92fa9b4fd6ab01a846ed8a618f67"
+  },
+  "source_contract_sha256": "50a88db3ab911c71621a6bd1e5b90f50cccd32a5feca18612a7dc5202514e797",
+  "stable_id": "axm.memory.consent-bound-retention-policy"
+}

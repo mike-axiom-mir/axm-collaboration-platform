@@ -14,7 +14,7 @@ async function run() {
   const bidi = sense.sniff({ materialId: 'handoff-bidi', mediaType: 'text/plain', material: 'review \u202efdp.exe', observedAt: '2026-07-23T12:00:03.000Z' });
   const signature = sense.sniff({ materialId: 'handoff-binary-as-text', mediaType: 'text/plain', material: Buffer.from([0x4d, 0x5a, 0x00, 0x01]), observedAt: '2026-07-23T12:00:04.000Z' });
   const invalidJson = sense.sniff({ materialId: 'handoff-json', mediaType: 'application/json', material: '{"broken":', observedAt: '2026-07-23T12:00:05.000Z' });
-  const credential = sense.sniff({ materialId: 'handoff-credential', mediaType: 'text/plain', material: '-----BEGIN ' + 'PRIVATE KEY-----', observedAt: '2026-07-23T12:00:06.000Z' });
+  const credential = sense.sniff({ materialId: 'handoff-credential', mediaType: 'text/plain', material: '-----BEGIN PRIVATE KEY-----', observedAt: '2026-07-23T12:00:06.000Z' });
   const invalidDigest = sense.sniff({ materialId: 'handoff-invalid-digest', mediaType: 'text/plain', material: 'bounded', expectedSha256: 'not-a-digest', observedAt: '2026-07-23T12:00:07.000Z' });
   const missing = sense.sniff({ materialId: 'handoff-missing', mediaType: 'text/plain', observedAt: '2026-07-23T12:00:08.000Z' });
   const oversized = Taint.create({ maxBytes: 1024 }).sniff({ materialId: 'handoff-large', mediaType: 'text/plain', material: 'x'.repeat(1025), observedAt: '2026-07-23T12:00:09.000Z' });

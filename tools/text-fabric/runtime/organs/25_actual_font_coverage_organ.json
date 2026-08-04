@@ -1,0 +1,23 @@
+{
+  "id": "axm.text.organ.actual_font_coverage",
+  "version": "0.9.0",
+  "label": "Actual Font Coverage Organ",
+  "purpose": "Parses project-owned TTF, OTF, or TTC files directly and verifies that the chosen face contains every required character before effects are compiled.",
+  "inputs": [
+    "font_file",
+    "font_index",
+    "text",
+    "font_coverage_policy"
+  ],
+  "outputs": [
+    "font_audit",
+    "missing_glyphs",
+    "coverage_ratio",
+    "shaping_warnings"
+  ],
+  "rules": [
+    "No font binary is copied into AXM output.",
+    "Strict policy blocks compilation when required glyphs are missing.",
+    "Coverage checks supplement, not replace, real shaping and target-device QA."
+  ]
+}

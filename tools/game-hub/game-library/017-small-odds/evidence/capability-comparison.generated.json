@@ -1,0 +1,660 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "playable-loop",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.loop.playable",
+        "runtime.browser.local"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.loop.playable": [
+          "local pre-alpha scope"
+        ],
+        "runtime.browser.local": [
+          "Chromium-class browser"
+        ]
+      }
+    },
+    {
+      "id": "honest-rng",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "rng.entropy.os",
+        "rng.map.uniform",
+        "rng.receipt.replay",
+        "rng.odds.fixed"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "rng.entropy.os": [
+          "Web Crypto required"
+        ],
+        "rng.map.uniform": [
+          "32-bit rejection sampling"
+        ],
+        "rng.receipt.replay": [
+          "item and casino receipt schemas"
+        ],
+        "rng.odds.fixed": [
+          "catalog version 4; business systems do not mutate probability tables"
+        ]
+      }
+    },
+    {
+      "id": "rng-evolution",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "rng.seed.fullmix",
+        "rng.receipt.legacy-replay"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "rng.seed.fullmix": [
+          "xoshiro128ss-v2-full-seed-mix"
+        ],
+        "rng.receipt.legacy-replay": [
+          "xoshiro128ss-v1 receipts"
+        ]
+      }
+    },
+    {
+      "id": "reactive-items",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "item.generate.combinatorial",
+        "item.react.context",
+        "item.style-family.explicit"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "item.generate.combinatorial": [
+          "first-contact catalog"
+        ],
+        "item.react.context": [
+          "six locations and current event catalog"
+        ]
+      }
+    },
+    {
+      "id": "living-world",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "visual.render.live",
+        "world.schedule.local",
+        "world.event.economy"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.render.live": [
+          "2D Canvas and DOM"
+        ],
+        "world.schedule.local": [
+          "family household, market, shore, first casino-deck cast, four-resident district, two household layers, and due/active/overdue commons-service precedence"
+        ],
+        "world.event.economy": [
+          "deterministic local calendar"
+        ]
+      }
+    },
+    {
+      "id": "life-sim-depth",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "relationship.activity",
+        "home.upgrade.visible",
+        "business.item-assets",
+        "pet.traits.stack"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "relationship.activity": [
+          "parents, local cast, and Vesper"
+        ],
+        "home.upgrade.visible": [
+          "first tiers"
+        ],
+        "business.item-assets": [
+          "one owned business"
+        ],
+        "pet.traits.stack": [
+          "first trait catalog"
+        ]
+      }
+    },
+    {
+      "id": "million-ticket-payoff",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "casino.destination.playable",
+        "casino.odds.transparent",
+        "casino.receipt.play",
+        "item.insurance.nonoutcome",
+        "asset.provenance.authored"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "casino.destination.playable": [
+          "ticket-gated first Starspite deck"
+        ],
+        "casino.odds.transparent": [
+          "three fixed-rule games"
+        ],
+        "casino.receipt.play": [
+          "seed, algorithm, outcome, winning set, stake, payout, RTP, edge, and adaptation flags"
+        ],
+        "item.insurance.nonoutcome": [
+          "loss-only refund; durability cost"
+        ],
+        "asset.provenance.authored": [
+          "fixed Starspite lots declare random false"
+        ]
+      }
+    },
+    {
+      "id": "life-without-quests",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "life.situation.deterministic",
+        "life.choice.object-routed",
+        "life.consequence.delayed",
+        "life.consequence.unattended",
+        "life.receipt.nonrandom"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "life.situation.deterministic": [
+          "six authored families; at most two active"
+        ],
+        "life.choice.object-routed": [
+          "inventory tags and durability; four families expose a resident route and Hushglass exposes supplier, work, resident, object, and pet routes"
+        ],
+        "life.consequence.delayed": [
+          "one- and two-day authored returns"
+        ],
+        "life.consequence.unattended": [
+          "authored expiration outcome per family"
+        ],
+        "life.receipt.nonrandom": [
+          "small-odds.life-choice/v1"
+        ]
+      }
+    },
+    {
+      "id": "alien-web-storefront",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "business.storefront.escrow",
+        "business.offer.deterministic",
+        "business.counter.ceiling",
+        "business.pet.assigned-stacks",
+        "business.upgrade.branch",
+        "business.callback.delayed",
+        "business.receipt.nonrandom"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "business.storefront.escrow": [
+          "one local business; reversible until sale"
+        ],
+        "business.offer.deterministic": [
+          "five authored buyers; eleven disclosed multipliers; deterministic routing score"
+        ],
+        "business.counter.ceiling": [
+          "published patience progression; above-ask downward counter blocked"
+        ],
+        "business.pet.assigned-stacks": [
+          "one assigned pet; only relevant literal traits contribute"
+        ],
+        "business.upgrade.branch": [
+          "four infrastructure upgrades; six identity-specific branch choices"
+        ],
+        "business.callback.delayed": [
+          "authored one/two-day post-sale responses"
+        ],
+        "business.receipt.nonrandom": [
+          "offer, counter, sale, daily, callback, upgrade, branch, opening, and equipment schemas"
+        ]
+      }
+    },
+    {
+      "id": "living-district",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "district.schedule.authored",
+        "district.item-state.react",
+        "district.gift.consequence",
+        "district.delivery.fixed",
+        "district.family.echo",
+        "district.receipt.nonrandom"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "district.schedule.authored": [
+          "four residents; four public time phases; no schedule rolls"
+        ],
+        "district.item-state.react": [
+          "carried, escrow-listed, gifted, and sold-and-delivered priority plus full event/tag matching"
+        ],
+        "district.gift.consequence": [
+          "one exact held-object transfer; relationship and first visible house gain"
+        ],
+        "district.delivery.fixed": [
+          "five authored buyer-to-resident routes; disclosed next-day resolution"
+        ],
+        "district.family.echo": [
+          "thank-you pennant, parcel-periscope, and kettle-crate house marks"
+        ],
+        "district.receipt.nonrandom": [
+          "observation, gift, and delivery schemas"
+        ]
+      }
+    },
+    {
+      "id": "neighborhood-dependency-web",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "district.arc.repeatable",
+        "district.supplier.persistent",
+        "district.schedule.supplier-dependent",
+        "business.supplier.factor",
+        "life.choice.relationship-routed",
+        "district.arc.receipt.nonrandom"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "district.arc.repeatable": [
+          "four resident arcs; two choices each; relationship prerequisite; public cooldown and due day"
+        ],
+        "district.supplier.persistent": [
+          "one Crooked Kettle household; four authored standing bands"
+        ],
+        "district.schedule.supplier-dependent": [
+          "strained, stocked, and flourishing deterministic schedule overrides; balancing retains base schedule"
+        ],
+        "business.supplier.factor": [
+          "one disclosed daily service multiplier: 0.90, 1.00, 1.06, or 1.12"
+        ],
+        "life.choice.relationship-routed": [
+          "four of six Life Thread families expose a base rapport-3 resident route; Hushglass adds one separately gated Oola route"
+        ],
+        "district.arc.receipt.nonrandom": [
+          "small-odds.district-arc-choice/v1 and small-odds.district-arc-return/v1; unchanged portal odds"
+        ]
+      }
+    },
+    {
+      "id": "paid-neighborhood-production",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "work.order.calendar-authored",
+        "work.tool.owned-state",
+        "work.pet.literal-traits",
+        "work.wage.disclosed",
+        "work.return.cross-system",
+        "life.choice.employment-routed",
+        "work.receipt.nonrandom"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "work.order.calendar-authored": [
+          "one Long Table employer/competitor; three base orders rotate by day modulo and one declared Hushglass due-state override; no random field"
+        ],
+        "work.tool.owned-state": [
+          "matching carried inventory only; one declared durability spent at start"
+        ],
+        "work.pet.literal-traits": [
+          "matching species tag +1 and matching named trait tag +2; unrelated traits zero"
+        ],
+        "work.wage.disclosed": [
+          "base, capped tool tags, literal pet labor, capped rating, supplier, pressure, and approach factors"
+        ],
+        "work.return.cross-system": [
+          "exact-once money, pet, resident, supplier, business, home, and work state return"
+        ],
+        "life.choice.employment-routed": [
+          "Price Oracle thread; fixed work-standing-2 prerequisite; delayed consequence preserved"
+        ],
+        "work.receipt.nonrandom": [
+          "small-odds.work-order-start/v1 and small-odds.work-order-return/v1; unchanged portal odds"
+        ]
+      }
+    },
+    {
+      "id": "hushglass-household-commons",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "district.household.second-persistent",
+        "life.choice.multi-party-routed",
+        "district.commons.schedule-authored",
+        "life.return.household-cross-system",
+        "pet.route.literal-traits",
+        "district.commons.receipt.nonrandom"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "district.household.second-persistent": [
+          "Hushglass House; warmth, trust, agreements, four public bands, history, and visible aftermath"
+        ],
+        "life.choice.multi-party-routed": [
+          "one Hushglass hearing with explicit supplier, employer, Oola, owned-object, and assigned-pet routes"
+        ],
+        "district.commons.schedule-authored": [
+          "Hushglass COLD, RATIONING, SHARED, and OPEN bands select deterministic resident overrides with public precedence"
+        ],
+        "life.return.household-cross-system": [
+          "exact-once Hushglass, supplier, work, storefront, home, resident, pet, and home-mark consequences"
+        ],
+        "pet.route.literal-traits": [
+          "assigned pet legal species +1 and matching named traits +2 each; unrelated traits zero"
+        ],
+        "district.commons.receipt.nonrandom": [
+          "small-odds.household-accord-return/v1 and household-routed life receipts; unchanged portal odds"
+        ]
+      }
+    },
+    {
+      "id": "recurring-commons-service",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "district.commons.maintenance-recurring",
+        "district.commons.route.history-gated",
+        "item.service.retained-ownership",
+        "pet.service.prior-participation",
+        "work.order.commons-due-override",
+        "district.commons.maintenance-return-exact",
+        "district.commons.overdue-exact",
+        "district.commons.maintenance-receipt.nonrandom"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "district.commons.maintenance-recurring": [
+          "one Hushglass night-valve resource; four integrity bands; four-day authored recurrence; saved active/history/next-date state"
+        ],
+        "district.commons.route.history-gated": [
+          "saved returned accord, current warmth/agreement, owned asset state, and real prior pet receipt gates remain inspectable"
+        ],
+        "item.service.retained-ownership": [
+          "installed home or storefront equipment with literal maintenance tag; ownership preserved and service history appended"
+        ],
+        "pet.service.prior-participation": [
+          "currently assigned pet id must occur in a real earlier Hushglass receipt and still supply at least three literal points"
+        ],
+        "work.order.commons-due-override": [
+          "one declared Hushglass/Long Table valve-jig order replaces the base work calendar only while maintenance is due or overdue"
+        ],
+        "district.commons.maintenance-return-exact": [
+          "exact-once integrity, household, supplier, work, business, home, resident, pet/asset, mark, and next-date return"
+        ],
+        "district.commons.overdue-exact": [
+          "one authored overdue consequence per due date after a one-day grace window; cycle remains repairable"
+        ],
+        "district.commons.maintenance-receipt.nonrandom": [
+          "small-odds.commons-maintenance-start/v1, commons-maintenance-return/v1, commons-maintenance-overdue/v1, and nested work-conflict receipt; unchanged portal odds"
+        ]
+      }
+    },
+    {
+      "id": "continuity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "state.session.restore",
+        "state.export.manual"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "state.session.restore": [
+          "localStorage and v1-v8-to-v9 migration without fabricated dependency, employment, household, maintenance-cycle, or participant history"
+        ],
+        "state.export.manual": [
+          "JSON file"
+        ]
+      }
+    },
+    {
+      "id": "visual-proof",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "visual.capture.live",
+        "visual.compare.viewports"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.capture.live": [
+          "in-app browser"
+        ],
+        "visual.compare.viewports": [
+          "manual and screenshot evidence"
+        ]
+      }
+    },
+    {
+      "id": "continuous-motion-proof",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "visual.capture.ephemeral-rolling-buffer"
+      ],
+      "declaredConstraints": {
+        "visual.capture.ephemeral-rolling-buffer": [
+          "browser route exposed sampled screenshots only"
+        ]
+      }
+    },
+    {
+      "id": "planetary-production",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "asset.character.production3d",
+        "world.content.planetary",
+        "distribution.production.multiplatform"
+      ],
+      "declaredConstraints": {
+        "asset.character.production3d": [
+          "production team and pipeline required"
+        ],
+        "world.content.planetary": [
+          "six places, four district residents, two persistent neighborhood households, one recurring service loop, one bounded employer/competitor, six situation families, and one deep storefront remain far below planetary target"
+        ],
+        "distribution.production.multiplatform": [
+          "external certification and release authority"
+        ]
+      }
+    },
+    {
+      "id": "best-on-earth-claim",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "accessibility.audit.physical"
+      ],
+      "missing": [
+        "quality.external.comparative",
+        "economy.balance.longitudinal"
+      ],
+      "declaredConstraints": {
+        "quality.external.comparative": [
+          "independent comparative study required"
+        ],
+        "economy.balance.longitudinal": [
+          "long-duration player cohort required"
+        ],
+        "accessibility.audit.physical": [
+          "physical assistive technology and human audit"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "asset.character.production3d",
+    "distribution.production.multiplatform",
+    "economy.balance.longitudinal",
+    "quality.external.comparative",
+    "visual.capture.ephemeral-rolling-buffer",
+    "world.content.planetary"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "asset.character.production3d",
+      "requiredBy": [
+        "planetary-production"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "distribution.production.multiplatform",
+      "requiredBy": [
+        "planetary-production"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "economy.balance.longitudinal",
+      "requiredBy": [
+        "best-on-earth-claim"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "quality.external.comparative",
+      "requiredBy": [
+        "best-on-earth-claim"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "visual.capture.ephemeral-rolling-buffer",
+      "requiredBy": [
+        "continuous-motion-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "world.content.planetary",
+      "requiredBy": [
+        "planetary-production"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

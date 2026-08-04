@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="/hub/professional-steward.css?v=20260727-professional-3">
 <link rel="stylesheet" href="/hub/sentient-atrium.css?v=20260727-atrium-4">
 <link rel="stylesheet" href="/hub/css-skin-fabric-adapter.css?v=20260728-unified-platform-1">
+<link rel="stylesheet" href="/hub/power-control.css?v=20260801-1">
 <script src="/shared/services/axm-foundation-services.js"></script>
 <script src="/shared/capabilities/workshop-capability-index.js"></script>
 <script src="/shared/continuity/workshop-continuity.js"></script>
@@ -87,6 +88,7 @@
         <button class="tb-btn" id="btnSettings"><span class="axm-ui-icon settings" aria-hidden="true"></span><span>Settings</span></button>
       </div>
     </details>
+    <button class="axm-power-button" id="axmPowerButton" type="button" aria-label="AXM power options" aria-haspopup="dialog" aria-controls="axmPowerScreen" aria-expanded="false" title="Close screen or stop AXM background runs"></button>
     <time class="sentient-ribbon-time" id="sentientRibbonTime" aria-label="Local time"></time>
   </header>
 
@@ -156,7 +158,9 @@
 
   <!-- ===== BOTTOM ACTION / STATUS LOG (outer stable) ===== -->
   <footer class="statusbar">
+    <span class="sb-item atrium-private"><span class="axm-ui-icon check" aria-hidden="true"></span> Private on this computer</span>
     <span class="sb-item"><span aria-hidden="true">✓</span> <b>Autosave</b> on</span>
+    <span class="sb-item atrium-approval"><span class="axm-ui-icon check" aria-hidden="true"></span> You approve changes</span>
     <span class="log-tail" id="logTail">hub starting…</span>
     <span class="sb-item">System <b>Hub v1.0</b></span>
     <button class="sb-btn" id="btnExport2" onclick="AXMHubShell.openExport()">Open Logs</button>
@@ -182,6 +186,19 @@
   </div>
 </div></div>
 
+<div class="overlay power-overlay" id="axmPowerScreen" role="dialog" aria-modal="true" aria-labelledby="axmPowerTitle" hidden><div class="sheet power-sheet">
+  <button class="close" id="axmPowerClose" type="button" aria-label="Close AXM power options">&#10005;</button>
+  <div class="power-kicker">Local lifecycle</div>
+  <h2 id="axmPowerTitle">What should happen when you leave?</h2>
+  <p class="power-intro">The Hub screen and the AXM background services are separate. Closing the browser normally keeps AXM ready for the next screen.</p>
+  <div class="power-choices">
+    <button class="power-choice keep" id="axmPowerKeep" type="button"><b>Keep AXM running</b><span>Close this browser tab whenever you like. Workshop and Mirror stay available in the background.</span></button>
+    <button class="power-choice stop" id="axmPowerStop" type="button"><b>Stop AXM and close</b><span>Stop only AXM-owned bundled runtimes. Codex, system Node, and unrelated applications are excluded.</span></button>
+  </div>
+  <p class="power-truth">No automatic shutdown is attached to the browser X. Stopping AXM always requires this explicit choice.</p>
+  <span class="power-status" id="axmPowerStatus" role="status" aria-live="polite"></span>
+</div></div>
+
 <div class="overlay" id="foundationScreen" role="dialog" aria-modal="true" aria-labelledby="foundationTitle"><div class="sheet foundation-sheet">
   <button class="close" data-close="foundationScreen" aria-label="Close foundation services">&#10005;</button>
   <div class="foundation-head"><div><h2 id="foundationTitle">Foundation services</h2><p>Permanent infrastructure underneath every workspace. These rows stay visible when a service is offline, paused or tripped.</p></div><div class="foundation-actions"><span class="foundation-count" id="foundationCount">CHECKING</span><button class="btn" id="foundationRefresh" type="button">Refresh all</button></div></div>
@@ -203,7 +220,7 @@
     <section class="profile-holders"><div class="profile-holder-head"><div><h3>Current craft holders</h3><p class="profile-note">Independent category spots, not a first-to-last leaderboard. Each spot shows its present holder and verified amount; ties share it.</p></div></div><div class="profile-holder-grid" id="profileHolders"></div></section>
     <div class="profile-contribution-head"><div><h3>Optional task contribution board</h3><p class="profile-note">Only explicit AXM task receipts. No screen tracking, no constant activity surveillance and no overall winner score.</p></div><span>GAMES · ART · PROJECTS · CODE · EMBLEMS</span></div><div class="profile-members profile-contribution-board" id="profileMembers"></div>
     <section class="profile-reflection" id="profileReflection"></section>
-    <form class="profile-code" id="profileCodeReceipt"><h3>Verified code receipt</h3><p class="profile-note">For a reviewed change only: count the exact characters, choose its purpose mood, and attach diff, commit or file evidence. Mood describes what the code serves—not which language or file it used.</p><div class="profile-receipt-health" id="profileReceiptHealth" role="status"></div><div class="profile-code-grid"><select id="profileCodeActor" aria-label="Code contributor"></select><select id="profileCodeMood" aria-label="Code purpose"><option value="infrastructure">Infrastructure</option><option value="entertainment">Entertainment</option><option value="software">Software</option></select><input id="profileCodeCount" type="number" min="1" max="100000000" required placeholder="Exact characters"><input id="profileCodeEvidence" required maxlength="1000" placeholder="Evidence: reviewed diff, commit, or files"></div><div class="profile-actions"><button class="profile-action" type="submit">Count contribution</button></div></form>
+    <form class="profile-code" id="profileCodeReceipt"><h3>Verified code receipt</h3><p class="profile-note">For a reviewed change only: count the exact characters, choose its purpose mood, and attach diff, commit or file evidence. Mood describes what the code serves—not which language or file it used.</p><div class="profile-receipt-health" id="profileReceiptHealth" role="status"></div><div class="profile-code-grid"><select id="profileCodeActor" aria-label="Code contributor"></select><select id="profileCodeMood" aria-label="Code purpose"><option value="infrastructure">Infrastructure</option><option value="entertainment">Entertainment</option><option value="software">Software</option></select><input id="profileCodeCount" type="number" min="1" max="100000000" required placeholder="Exact characters" aria-label="Exact character count"><input id="profileCodeEvidence" required maxlength="1000" placeholder="Evidence: reviewed diff, commit, or files" aria-label="Reviewed change evidence"></div><div class="profile-actions"><button class="profile-action" type="submit">Count contribution</button></div></form>
     <section class="profile-achievements"><div class="profile-achievement-head"><div><h3>Achievements · <span id="profileAchievementOwner">AXM Team</span></h3><p class="profile-note">512 px emblems · 420 px safe artwork · locked by default · tied to verified profile and identity data.</p></div><div class="profile-achievement-actions"><button class="profile-action" id="profileAchievementTeam" type="button" hidden>Team view</button><b id="profileAchievementCount">0 / 29 lit</b></div></div><div class="profile-achievement-grid" id="profileAchievements"></div></section>
     <div class="profile-future"><b>Item links remain reserved for later.</b> Unlocks are local profile records only; they do not grant access, permissions, purchases or online identity.</div>
     <div class="profile-actions"><button class="profile-action" id="profileStop" type="button">Stop tracking</button><button class="profile-action danger" id="profileDelete" type="button">Delete profile & history</button></div>
@@ -287,7 +304,7 @@
   <button class="close" data-close="radioScreen">✕</button>
   <div class="radio-head"><div class="radio-mark">♫</div><div><h2>Hub Radio</h2><p>A little commercial-free workshop atmosphere.</p></div></div>
   <div class="radio-player" id="hubRadioPlayer">
-    <div class="radio-main"><button class="radio-play" id="hubRadioPlay" aria-label="Play radio">▶</button><select class="radio-station" id="hubRadioStation" aria-label="Radio station"><option value="poptron">PopTron · electropop</option><option value="indiepop">Indie Pop Rocks! · alternative</option><option value="groovesalad">Groove Salad · chill</option><option value="thetrip">The Trip · trance</option></select></div>
+    <div class="radio-main"><button class="radio-play" id="hubRadioPlay" aria-label="Play radio">▶</button><select class="radio-station" id="hubRadioStation" aria-label="Radio station"><option value="defcon">BUILD MODE · hacker electronic</option><option value="dubstep">BASS DRIVE · dubstep &amp; deep bass</option><option value="thetrip">NIGHT DRIVE · progressive trance</option><option value="metal">METAL FORGE · metal &amp; industrial</option><option value="poptron">POP SPARK · electropop</option><option value="indiepop">INDIE GARAGE · alternative</option><option value="soul">SOUL CIRCUIT · vintage soul</option><option value="bootliquor">WILD CARD · Americana roots</option><option value="secretagent">SECRET AGENT · cinematic groove</option></select></div>
     <div class="radio-meta"><div class="radio-bars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div><span class="radio-status" id="hubRadioStatus">READY</span><span>128K MP3</span></div>
     <div class="radio-volume"><span>VOLUME</span><input id="hubRadioVolume" type="range" min="0" max="1" step="0.01" value="0.35" aria-label="Radio volume"><span id="hubRadioVolumeText">35%</span></div>
     <div class="radio-local">Local Mix appears automatically when owned or licensed tracks are added to <code>assets/audio/radio</code>.</div>
@@ -321,5 +338,6 @@
 <script src="/hub/spotify.js"></script>
 <script src="/hub/production-session.js?v=20260718-1"></script>
 <script src="/hub/sentient-atrium.js?v=20260727-atrium-1"></script>
+<script src="/hub/power-control.js?v=20260801-1"></script>
 <script>AXMHubShell.boot();</script>
 </body></html>

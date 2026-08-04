@@ -1,0 +1,92 @@
+{
+  "all_steps_bounded": true,
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "final_result_does_not_imply_owner_acceptance": true,
+  "identity": {
+    "category": "2. Append-only history, content identity, and version lineage",
+    "name": "Causal and Derivation Relationship Mapper",
+    "number": 18,
+    "stable_id": "axm.memory.causal-relationship-mapper"
+  },
+  "no_implicit_parallel_apply": true,
+  "operation_kind": "PROPOSAL",
+  "plan_is_reference_only": true,
+  "schema": "axm.memory.run80-execution-plan/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "c3f6fd0ae6a7864c9ae60893b171d735ffc82cef4f7ec2d36687acad7a5afb65"
+  },
+  "source_run70_protocol_sha256": "e2e6d6a47c5629278d03ea508e836edd60f101892d81a077828ff86f4aaa880c",
+  "step_count": 5,
+  "steps": [
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "admission_receipt",
+      "failure_result": "HOLD_ADMISSION",
+      "purpose": "validate exact scope, source, authority, and resource budget",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [],
+      "sequence": 1,
+      "side_effect_permitted": false,
+      "step_id": "ADMIT"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "evidence_view",
+      "failure_result": "HOLD_SOURCE",
+      "purpose": "load only source-linked bounded evidence",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "ADMIT"
+      ],
+      "sequence": 2,
+      "side_effect_permitted": false,
+      "step_id": "LOAD_SCOPED_EVIDENCE"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "candidate_proposal",
+      "failure_result": "HOLD_PROPOSAL",
+      "purpose": "construct a non-applying proposal",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "LOAD_SCOPED_EVIDENCE"
+      ],
+      "sequence": 3,
+      "side_effect_permitted": false,
+      "step_id": "BUILD_PROPOSAL"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "reviewable_proposal",
+      "failure_result": "HOLD_CONFLICT_REVIEW",
+      "purpose": "preserve dissent, conflicts, omissions, and rejected alternatives",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "BUILD_PROPOSAL"
+      ],
+      "sequence": 4,
+      "side_effect_permitted": false,
+      "step_id": "CHECK_ALTERNATIVES"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "proposal_receipt",
+      "failure_result": "HOLD_RECEIPT",
+      "purpose": "emit proposal without semantic apply",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "CHECK_ALTERNATIVES"
+      ],
+      "sequence": 5,
+      "side_effect_permitted": false,
+      "step_id": "EMIT_REVIEW_PACKET"
+    }
+  ]
+}

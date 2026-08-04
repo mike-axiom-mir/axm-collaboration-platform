@@ -1,9 +1,12 @@
 {
+  "schema": "axm.tool-manifest/v1",
+  "kind": "service",
   "id": "shell-guardian",
   "name": "Shell Guardian",
   "version": "v0.1",
   "status": "TEST",
   "entry": "index.html",
+  "contract": "module.contract.json",
   "type": "local-module",
   "category": "Safety",
   "audience": "machine",
@@ -14,5 +17,6 @@
   "tags": ["shell", "circuit-breaker", "grok", "audit", "alarm", "recovery"],
   "summary": "Always-armed circuit-breaker service with its dashboard surfaced inside AI Team.",
   "notes": "Open-by-default circuit breaker. Normal creation remains available. Red triggers deny the tool call, log evidence, mark the guardian tripped, and kill Grok/agent process trees. Classification is evidence-based and cannot prove intent.",
-  "uses": ["gate", "storage", "bridge"]
+  "uses": ["gate", "storage", "bridge"],
+  "permissions": ["gate", "storage", "bridge"]
 }

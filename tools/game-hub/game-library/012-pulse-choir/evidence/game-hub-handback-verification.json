@@ -1,0 +1,58 @@
+{
+  "schema": "axm.pulse-choir-game-hub-handback-verification/v1",
+  "verifiedAt": "2026-07-28T14:59:18+02:00",
+  "verdict": "PASS",
+  "sender": {
+    "sessionId": "session-1785243247668",
+    "endpoint": "/api/finish-show",
+    "summarySchema": "axm.pulse-choir-show-result/v1",
+    "completedRounds": 1,
+    "nightTotal": 2686,
+    "bestScore": 2686,
+    "bestRank": "IN RHYTHM",
+    "totalActsCleared": 1
+  },
+  "receiver": {
+    "endpoint": "http://127.0.0.1:8790/game/end",
+    "hubPhaseAfter": "LOBBY",
+    "runtimePort8802After": "stopped",
+    "storedResult": {
+      "game_id": "012-pulse-choir",
+      "status": "returned-to-game-hub",
+      "source": "012-pulse-choir",
+      "completedRounds": 1,
+      "nightTotal": 2686,
+      "bestScore": 2686,
+      "bestRank": "IN RHYTHM",
+      "totalActsCleared": 1
+    }
+  },
+  "nextLaunch": {
+    "sessionId": "session-1785243494983",
+    "phase": "lobby",
+    "completedRounds": 0,
+    "historyCount": 0,
+    "nightTotal": 0,
+    "recovery": "fresh"
+  },
+  "visual": {
+    "backend": "BROWSER_PRIMARY",
+    "observed": [
+      "RETURN TO GAME HUB is visible only after a completed round.",
+      "First click changes the action to CONFIRM RETURN · SAVE SHOW without ending the session.",
+      "Second click renders SHOW SAVED · RETURNING and a truthful receipt-saved message before the runtime stops."
+    ],
+    "hubHomeNavigation": "UNKNOWN",
+    "hubHomeNavigationReason": "The in-app browser backend blocks direct rendering of local port 8790 with ERR_BLOCKED_BY_CLIENT; Game Hub application of the callback is proven through its native HTTP state and stored-result surfaces instead."
+  },
+  "automatedCounterchecks": [
+    "unmanaged handback refused",
+    "handback before any completed round refused",
+    "callback is loopback HTTP only",
+    "callback payload is capped at 64 KiB",
+    "duplicate scheduled/sent handback refused",
+    "checkpoint retired before managed callback",
+    "failed callback restores a recoverable checkpoint",
+    "fresh next launch after successful handback"
+  ]
+}

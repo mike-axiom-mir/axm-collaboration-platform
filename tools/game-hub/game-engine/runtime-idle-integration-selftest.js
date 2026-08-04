@@ -101,7 +101,7 @@ async function run() {
     assert.equal(response.status, 200); assertions++;
     response = await request(hubPort, '/seat/ready', { method: 'POST', body: { seat_id: 'seat_1', ready: true } });
     assert.equal(response.status, 200); assertions++;
-    response = await request(hubPort, '/game/start', { method: 'POST', body: { game_id: '010-living-globe-tycoon', play_mode: 'tycoon' } });
+    response = await request(hubPort, '/game/start', { method: 'POST', body: { game_id: '010-living-globe-tycoon', play_mode: 'rules-lab' } });
     assert.equal(response.status, 200, response.text); assertions++;
     assert.equal(response.json.runtime_idle.timeout_ms, 900); assertions++;
 

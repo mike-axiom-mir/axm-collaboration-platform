@@ -1,0 +1,39 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.retry-budget-manager",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.retry-budget-status/v1"
+  ],
+  "consumes": [
+    "retry-request",
+    "caller-lineage"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_BUDGET_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/body-pulse",
+      "shared/heartbeat"
+    ],
+    "reason": "Bounds retries across global, dependency, and operation scopes to prevent layered retry storms."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "permission-grant",
+      "automatic-approval",
+      "automatic-execution",
+      "automatic-merge",
+      "automatic-promotion",
+      "automatic-canon",
+      "runtime-proof-claim"
+    ]
+  }
+}

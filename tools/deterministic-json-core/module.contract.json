@@ -1,0 +1,35 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "deterministic-json-core",
+  "version": "v0.1",
+  "provides": [
+    "strict-deterministic-canonical-json",
+    "cross-runtime-json-representation-comparison"
+  ],
+  "consumes": ["application/json-compatible-value"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["application/canonical-json"],
+    "accepts": ["application/json-compatible-value"]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "not-applicable",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "cyclic-input",
+      "non-finite-number",
+      "undefined-value",
+      "sparse-array",
+      "non-plain-object",
+      "cryptographic-proof-claim",
+      "schema-validity-claim",
+      "semantic-equivalence-claim",
+      "permission-or-promotion-change"
+    ]
+  }
+}

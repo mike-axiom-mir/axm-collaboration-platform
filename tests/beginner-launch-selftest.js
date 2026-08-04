@@ -30,6 +30,9 @@ const optionalVips = read('shared/asset-hands/optional-wasm-vips.js');
 const jspdfLoader = read('shared/asset-hands/load-jspdf.js');
 const optionalModule = read('shared/asset-hands/optional-node-module.js');
 const candidateStager = read('scripts/stage-public-candidate.js');
+const offlineVerifier = read('scripts/verify-offline-runtime.ps1');
+const safeLauncher = read('OPEN_AXM_SAFE_MODE.cmd');
+const offlineProof = read('PROVE_AXM_OFFLINE.cmd');
 const gitAttributes = read('.gitattributes');
 
 function availablePowerShell() {
@@ -48,7 +51,12 @@ check(/bootstrap-windows-runtime\.ps1/i.test(launcher), 'launcher can bootstrap 
 check(/nodejs\.org/i.test(launcher) && /SHA-256/i.test(launcher), 'launcher discloses the first-run download and verification boundary');
 check(/AXM_START_REPORT\.txt/i.test(launcher), 'launcher writes a plain-language failure report');
 check(/if not exist "server\.js" goto :needs_extract/i.test(launcher), 'launcher detects being opened without the extracted Workshop');
-check(/server\.js --open=hub/i.test(launcher), 'launcher starts the Hub route');
+check(/set "AXM_OPEN_TARGET=hub"/i.test(launcher) && /server\.js --open=%AXM_OPEN_TARGET%/i.test(launcher), 'normal launcher starts the Hub route through a confined target');
+check(/AXM_OFFLINE_FIRST\.json/i.test(launcher) && /verify-offline-runtime\.ps1/i.test(launcher), 'offline candidate verifies its bundled runtime before launch');
+check(/will not download or use a system runtime/i.test(launcher), 'offline candidate refuses download and system-runtime fallback');
+check(/AXM_SAFE_MODE=1/i.test(safeLauncher) && /OPEN_AXM_WORKSHOP\.cmd/i.test(safeLauncher), 'safe-mode launcher reaches the verified front door with safe mode enabled');
+check(/prove-windows-offline\.ps1/i.test(offlineProof), 'offline candidate exposes one-click local lifecycle proof');
+check(/Get-FileHash/.test(offlineVerifier) && /RUNTIME_UNDECLARED_FILE/.test(offlineVerifier), 'offline verifier hashes declared runtime files and refuses additions');
 check(/call "%~dp0OPEN_AXM_WORKSHOP\.cmd"/i.test(compatibility), 'legacy Run AXM All name reaches the beginner front door');
 check(/GitHub.+shows its code/is.test(readme), 'README explains GitHub source preview behavior');
 check(/Extract All/is.test(readme) && /OPEN_AXM_WORKSHOP\.cmd/is.test(readme), 'README gives extract-then-open instructions');

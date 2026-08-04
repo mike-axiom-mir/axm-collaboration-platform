@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 'use strict';
-const Core=require('./forge-core.js'), Machine=require('./machine.js'), Zip=require('./zip-store.js');
+const fs=require('node:fs'),path=require('node:path'),Core=require('./forge-core.js'), Machine=require('./machine.js'), Zip=require('./zip-store.js');
 let pass=0,fail=0;function test(name,fn){try{const r=fn();if(r&&typeof r.then==='function')return r.then(()=>{pass++;console.log('PASS '+name);},e=>{fail++;console.log('FAIL '+name+' — '+e.message);});pass++;console.log('PASS '+name);}catch(e){fail++;console.log('FAIL '+name+' — '+e.message);}}
 function assert(v,m){if(!v)throw new Error(m||'assertion failed');}
 const seed={id:'mike.demo-tool',name:'Demo Tool',kind:'foundation-tool',purpose:'Test a bounded draft.',primary_output:'A local note.',capabilities:['storage','gate'],boundaries:['No network','No installation'],risk:'LOW'};
 (async()=>{
+const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'manifest.json'),'utf8')),contract=JSON.parse(fs.readFileSync(path.join(__dirname,'module.contract.json'),'utf8'));
+test('manifest and contract agree',()=>assert(manifest.schema==='axm.tool-manifest/v1'&&manifest.contract==='module.contract.json'&&contract.id===manifest.id&&contract.version===manifest.version&&JSON.stringify(contract.permissions)===JSON.stringify(manifest.permissions)));
+test('contract refuses installation and execution',()=>assert(contract.boundaries.refuses.includes('automatic-install')&&contract.boundaries.refuses.includes('generated-code-execution')&&contract.boundaries.refuses.includes('automatic-promotion')));
 test('SHA-256 known vector',()=>assert(Core.sha256('abc')==='ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'));
 test('valid draft passes',()=>assert(Core.validateDraft(seed).ok));
 test('missing boundary fails',()=>assert(!Core.validateDraft(Object.assign({},seed,{boundaries:[]})).ok));

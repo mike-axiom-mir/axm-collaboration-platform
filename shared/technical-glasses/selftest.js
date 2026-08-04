@@ -6,6 +6,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const Glasses = require('./technical-glasses-core');
+const Cli = require('./technical-glasses-cli');
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-glasses-'));
 fs.mkdirSync(path.join(root, 'tools', 'alpha'), { recursive: true });
@@ -66,9 +67,13 @@ assert.ok(broken.priorities.some(item => item.code === 'READINESS_UNAVAILABLE' &
 const unknown = Glasses.compile({ root, tools: [tool], readiness: {} });
 assert.ok(unknown.priorities.some(item => item.code === 'READINESS_UNKNOWN' && item.severity === 'MEDIUM'));
 assert.ok(unknown.priorities.some(item => item.code === 'STRUCTURAL_READINESS_UNAVAILABLE' && item.severity === 'MEDIUM'));
+assert.equal(Cli.liveUrl('test alpha'), 'http://127.0.0.1:8788/api/workshop/technical-glasses?focus=test%20alpha');
+const livePayload = JSON.parse(JSON.stringify(first));livePayload.freshness.generatedFromLiveScan = true;
+assert.equal(Cli.acceptLivePayload(livePayload).freshness.readinessSource, 'LIVE_HUB_API');
+assert.throws(() => Cli.acceptLivePayload({ schema: Glasses.SCHEMA, freshness: { generatedFromLiveScan:false } }), /invalid Technical Glasses snapshot/);
 
 const target = path.join(root, 'state', 'technical-glasses', 'latest.json');
 Glasses.writeSnapshot(target, first);
 assert.equal(JSON.parse(fs.readFileSync(target, 'utf8')).freshness.fingerprint, first.freshness.fingerprint);
 fs.rmSync(root, { recursive: true, force: true });
-console.log('Technical Glasses selftest: PASS (23 assertions, shared readiness evidence, live fingerprint, no-guess priorities, atomic snapshot)');
+console.log('Technical Glasses selftest: PASS (26 assertions, shared readiness evidence, live Hub CLI route, live fingerprint, no-guess priorities, atomic snapshot)');

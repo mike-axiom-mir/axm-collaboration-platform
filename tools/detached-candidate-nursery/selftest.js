@@ -156,6 +156,9 @@ function main() {
     const archiveExcluded = Core.scanSupply(root, { excludeArchives: ['ready-one.zip'] });
     check(archiveExcluded.archives.length === 0 && archiveExcluded.source.excludedArchives.includes('ready-one.zip'), 'explicit self-archive exclusion remains visible');
 
+    const currentManifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
+    check(currentManifest.schema === 'axm.tool-manifest/v1' && currentManifest.kind === 'product', 'current manifest uses the modern product schema');
+
     const liveRoot = process.argv[2] || process.env.AXM_CANDIDATE_ROOT;
     if (liveRoot) {
       const live = Core.scanSupply(liveRoot, {

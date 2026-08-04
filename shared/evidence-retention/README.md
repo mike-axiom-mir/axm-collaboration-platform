@@ -8,9 +8,11 @@ Its rule is:
 
 ## What it does
 
-- Consequential events such as permission changes, consent, refusals, votes, promotion, repair, release, restore and failure remain exact.
+- Consequential events such as permission changes, consent, refusals, votes, promotion, repair, release, restore, distinct failure and resolution remain exact.
 - Meaningful work events remain exact inside a hash-chained session segment.
 - Repeated telemetry such as indexing, polling, status samples and heartbeats becomes a counted rollup with first/last timestamps and sample digests.
+- The first occurrence of a durable error or failure remains exact. Unchanged repeats become one persistent rollup, with an exact reminder checkpoint no more than once per 24 hours. Changed failures are new exact evidence.
+- Modules with volatile request identifiers may declare `retention.repeatable: true` and a stable `retention.repeatKey`; consequential non-failure events are never deduplicated by default.
 - Existing JSONL files are registered with their byte size, line count and SHA-256 digest. They are not rewritten or deleted.
 - Closing the server seals the current segment and writes a summary manifest with the segment SHA-256 and last event-chain hash.
 - Interrupted open segments are verified and sealed as recovered evidence at the next start.
@@ -36,4 +38,4 @@ Run:
 node shared/evidence-retention/selftest.js
 ```
 
-The selftest proves legacy preservation, telemetry rollup, exact-event retention, session sealing, hash evidence, machine-readable tails and non-destructive package planning.
+The selftest proves legacy preservation, telemetry and durable-repeat rollups, changed-failure and resolution retention, restart persistence, session sealing, hash evidence, machine-readable tails and non-destructive package planning.

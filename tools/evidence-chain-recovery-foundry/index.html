@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Evidence Chain Recovery Foundry</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AXM Workshop recovery adapter · TEST</p>
+        <h1>Evidence Chain Recovery Foundry</h1>
+        <p class="lede">Prepare a structurally valid copy of a hash-broken evidence segment while preserving the original and refusing to call reconstructed hashes recovered truth.</p>
+      </div>
+      <aside class="truth-card" aria-label="Recovery candidate truth boundary">
+        <strong>Valid chain ≠ authentic history</strong>
+        <p>Only previousHash, eventHash and JSON formatting may change. Every non-hash field is digest-compared. The result is a candidate for human review—not an applied repair.</p>
+      </aside>
+    </header>
+
+    <section class="panel" aria-labelledby="inputHeading">
+      <div class="panel-heading">
+        <h2 id="inputHeading">1 · Bind exact inputs</h2>
+        <span id="sourceSummary">No inputs bound.</span>
+      </div>
+      <div class="input-grid">
+        <label for="sourceFile">Broken evidence segment JSONL
+          <span>Select the same complete source used by Evidence Chain Inspector.</span>
+          <input id="sourceFile" type="file" accept=".jsonl,application/x-ndjson,text/plain">
+        </label>
+        <label for="receiptFile">Digest-only inspection receipt
+          <span>Must be axm.evidence-chain-inspection/v1 and match the exact source SHA-256.</span>
+          <input id="receiptFile" type="file" accept=".json,application/json">
+        </label>
+      </div>
+      <div class="actions" aria-label="Input actions">
+        <button class="primary" id="bindButton" type="button">Validate and bind files</button>
+        <button class="secondary" id="exampleButton" type="button">Load synthetic broken example</button>
+        <button id="clearButton" type="button">Clear Foundry</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="gateHeading">
+      <div class="panel-heading">
+        <h2 id="gateHeading">2 · Hold the truth boundary</h2>
+        <span>Explicit acknowledgement required</span>
+      </div>
+      <label class="acknowledgement" for="acknowledgement">
+        <input id="acknowledgement" type="checkbox">
+        <span>I understand that structural rehashing does not prove payload authenticity, restore source history, recover a session, or authorize applying this candidate.</span>
+      </label>
+      <div class="actions" aria-label="Candidate actions">
+        <button class="primary" id="buildButton" type="button" disabled>Build structural candidate</button>
+        <button id="candidateButton" type="button" disabled>Download candidate JSONL</button>
+        <button id="receiptButton" type="button" disabled>Download digest-only receipt</button>
+      </div>
+      <p class="status-line" id="status" role="status" aria-live="polite">Loading a synthetic broken example…</p>
+    </section>
+
+    <section class="panel result-panel" aria-labelledby="receiptHeading">
+      <div class="panel-heading">
+        <h2 id="receiptHeading">3 · Inspect candidate receipt</h2>
+        <span>axm.evidence-chain-recovery-candidate/v1</span>
+      </div>
+      <pre id="receiptPreview">No recovery candidate built.</pre>
+    </section>
+  </main>
+
+  <script src="../evidence-chain-inspector/evidence-chain-core.js"></script>
+  <script src="evidence-chain-recovery-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

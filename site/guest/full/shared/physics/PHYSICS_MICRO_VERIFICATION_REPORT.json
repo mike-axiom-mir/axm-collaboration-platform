@@ -1,0 +1,134 @@
+{
+  "schema": "axm.physics-micro-verification-receipt/v1",
+  "date": "2026-07-19",
+  "engine": {
+    "id": "axm-physics-2d",
+    "version": "0.3.1"
+  },
+  "generator": "shared/physics/physics-micro-verification.js",
+  "command": "node shared/physics/physics-micro-verification.js --json",
+  "status": "PASS_WITH_OBSERVATIONS",
+  "summary": {
+    "pass": 24,
+    "fail": 0,
+    "observation": 12,
+    "total": 36
+  },
+  "budget": {
+    "ordinaryBodySteps": 2914,
+    "capacityBodySteps": 66,
+    "totalBodySteps": 2980,
+    "maxOrdinaryBodies": 4,
+    "maxStepsPerCase": 120,
+    "generatedCases": 32,
+    "capacityException": {
+      "bodies": 66,
+      "steps": 1
+    },
+    "pass": true
+  },
+  "passingChecks": [
+    "constant-acceleration-discrete",
+    "constant-force-mass-ratio",
+    "single-impulse-mass-ratio",
+    "force-decomposition-order",
+    "force-clears-after-step",
+    "legacy-damping-discrete",
+    "isolated-inelastic-restitution",
+    "uniform-gravity-energy-convergence",
+    "body-type-contracts",
+    "sensor-non-interference",
+    "wake-by-force-and-impulse",
+    "slow-kinematic-support-wake",
+    "collision-filter-truth-table",
+    "contact-normal-reversal",
+    "contact-point-sanity",
+    "insertion-order-invariance",
+    "translation-reflection-invariance",
+    "galilean-frame-collision",
+    "broadphase-one-step-equivalence",
+    "step-refinement-observation",
+    "contact-and-sensor-lifecycle",
+    "fixed-seed-finite-invariants",
+    "impulse-sign-and-friction-bound",
+    "serialization-round-trip"
+  ],
+  "observations": [
+    {
+      "id": "exact-touch-matrix",
+      "result": "circle-circle OVERLAP_ONLY; box-box OVERLAP_ONLY; circle-box TOUCH_OR_OVERLAP",
+      "decision": "UNDECIDED"
+    },
+    {
+      "id": "query-boundary-policy",
+      "result": "point boundaries inclusive; tangent circle ray hits; origin-inside differs for circle and box"
+    },
+    {
+      "id": "bounded-tunnelling-map",
+      "result": "the six thin-wall cases tunnel at maxSubsteps=1 and contact at maxSubsteps=8",
+      "claimBoundary": "NOT_GENERAL_CCD"
+    },
+    {
+      "id": "id-renaming-order-sensitivity",
+      "result": "SEQUENTIAL_SOLVER_ORDER_DEPENDS_ON_IDS"
+    },
+    {
+      "id": "remove-body-lifecycle",
+      "result": "CLEAR_ALL_SILENTLY_THEN_REENTER",
+      "unrelatedPairReentered": true
+    },
+    {
+      "id": "body-id-reuse",
+      "result": "ID_REUSE_ALLOWED_FRESH_LINEAGE"
+    },
+    {
+      "id": "bounds-record-contract",
+      "result": "BOUNDARY_EVENT_NOT_UNIT_NORMAL_CONTACT"
+    },
+    {
+      "id": "decimal-quantization-threshold",
+      "result": "nine-decimal Math.round; positive and negative half-step behavior is asymmetric"
+    },
+    {
+      "id": "legacy-checksum-sensitivity-map",
+      "result": "STATE_HASH_NOT_CONFIGURATION_HASH",
+      "baseline": "2ca3cb3c"
+    },
+    {
+      "id": "silent-normalization-map",
+      "result": "NUMERIC_BOUNDS_AND_FALLBACKS_ARE_CURRENTLY_SILENT"
+    },
+    {
+      "id": "contact-capacity-visibility",
+      "result": "2048 stored from a 2145-pair capacity scene without truncation fields"
+    },
+    {
+      "id": "collision-filter-bit-contract",
+      "result": "category and mask bits 0..30; maximum mask 2147483647"
+    }
+  ],
+  "selectedMeasurements": {
+    "gravityEnergyAbsoluteError": {
+      "30Hz": 1.603935,
+      "60Hz": 0.8019675,
+      "120Hz": 0.40098375,
+      "monotonic": true
+    },
+    "contactCapacity": {
+      "bodies": 66,
+      "theoreticalPairs": 2145,
+      "storedContacts": 2048,
+      "storedManifolds": 2048,
+      "truncationDiagnosticPresent": false
+    }
+  },
+  "truth": {
+    "solverBehaviorChanged": false,
+    "scientificValidation": false,
+    "legacyChecksumRedefined": false,
+    "canonicalTouchPolicyDecided": false,
+    "normalizationDiagnosticsImplemented": false,
+    "contactTruncationDiagnosticsImplemented": false
+  },
+  "note": "This compact receipt names every result. Run the generator with --json for full per-check measurements, counterevidence and limitations."
+}

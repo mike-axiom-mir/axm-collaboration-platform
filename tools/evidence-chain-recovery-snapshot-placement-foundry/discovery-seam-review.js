@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+'use strict';
+
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const dir = __dirname;
+const read = name => fs.readFileSync(path.join(dir, name), 'utf8');
+const manifest = JSON.parse(read('manifest.json'));
+const contract = JSON.parse(read('module.contract.json'));
+const core = read('evidence-chain-recovery-snapshot-placement-core.js');
+const materializer = read('snapshot-placement-materializer.js');
+const cli = read('cli.js');
+const html = read('index.html');
+
+assert.equal(manifest.schema, 'axm.tool-manifest/v1');
+assert.equal(manifest.kind, 'product');
+assert.equal(manifest.status, 'TEST');
+assert.equal(manifest.risk, 'HIGH');
+assert.deepEqual(manifest.permissions, ['files', 'export', 'gate']);
+assert.equal(contract.schema, 'axm.module-contract/v1');
+assert.deepEqual(contract.permissions, manifest.permissions);
+assert(contract.provides.includes('capability.place.evidence-chain-recovery-snapshot/v1'));
+assert(contract.consumes.includes('capability.stage.evidence-chain-recovery-snapshot/v1'));
+assert(contract.boundaries.refuses.includes('Recovery-Center-call'));
+assert(contract.boundaries.refuses.includes('restore-preview-or-restore-test-claim'));
+assert(contract.boundaries.refuses.includes('apply-or-rollback-claim'));
+assert(contract.boundaries.refuses.includes('local-path-in-request-or-receipt'));
+assert(core.includes("LIVE_CAPABILITY = 'capability.apply.evidence-chain-reviewed-recovery/v1'"));
+assert(core.includes("status: 'READY_FOR_EXPLICIT_PACKAGER_OUTPUT_PLACEMENT'"));
+assert(core.includes("outputRootPathIncluded: false"));
+assert(materializer.includes("path.basename(root).toLowerCase() !== 'workshop-packages'"));
+assert(materializer.includes('fs.renameSync(scratchRoot, finalRoot)'));
+assert(materializer.includes('snapshotPlacedForDiscovery: true'));
+assert(materializer.includes('RecoveryCenterCalled: false'));
+assert(cli.includes("'--place-in-packager-output'"));
+assert(cli.includes("'--no-restore-authority'"));
+assert(html.includes('Placement is not restore'));
+assert(html.includes('No Recovery Center request is sent'));
+console.log('Evidence Chain Recovery Snapshot Placement Foundry discovery seam: PASS');

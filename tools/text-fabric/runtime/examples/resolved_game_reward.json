@@ -1,0 +1,139 @@
+{
+  "request": {
+    "text": "MISSION COMPLETE",
+    "role": "game_reward_title",
+    "mood": "luxury",
+    "platform": "game_tv",
+    "background": "dynamic",
+    "background_color": "#06101B",
+    "importance": "high",
+    "motion": "impact_reveal",
+    "accessibility": "protected",
+    "user_scale": 1.0,
+    "viewport_width": 1920,
+    "language_direction": "auto"
+  },
+  "resolved": {
+    "role": "game_reward_title",
+    "recipe": "luxury_glass",
+    "font_family": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    "size_px": 63.8,
+    "css_size": "clamp(63.80px, 8.700px + 2.8698vw, 118.90px)",
+    "weight": 860,
+    "line_height": 1.0,
+    "tracking_em": 0.035,
+    "max_ch": 20,
+    "uppercase": true,
+    "numeric": "proportional",
+    "fill": "#F8FBFF",
+    "gradient": [
+      "#FFFFFF",
+      "#C9E8FF",
+      "#E6D9FF"
+    ],
+    "surface": "glass",
+    "effects": {
+      "plate": {
+        "type": "glass",
+        "color": "rgba(8,16,30,.52)",
+        "blur_px": 18,
+        "radius_px": 18,
+        "border": "rgba(255,255,255,.15)",
+        "enabled": true
+      },
+      "outline": {
+        "width_px": 1.25,
+        "color": "rgba(212,236,255,.48)"
+      },
+      "shadow": [
+        {
+          "x": 0,
+          "y": 2,
+          "blur": 5,
+          "color": "rgba(0,0,0,.65)"
+        },
+        {
+          "x": 0,
+          "y": 10,
+          "blur": 30,
+          "color": "rgba(0,0,0,.42)"
+        }
+      ],
+      "glow": {
+        "blur_px": 18,
+        "opacity": 0.24,
+        "color": "#74C7FF"
+      }
+    },
+    "motion": "impact_reveal",
+    "rendering_strategy": "MSDF",
+    "language_direction": "auto",
+    "contrast": {
+      "ratio": 18.43,
+      "required": 3.0,
+      "passes": true
+    },
+    "safeguards": {
+      "supports_user_scale": true,
+      "reserve_localization_expansion": 0.35,
+      "avoid_fixed_height_containers": true,
+      "fallback_fonts_required": true,
+      "test_worst_background": true
+    }
+  },
+  "warnings": [
+    {
+      "code": "DYNAMIC_BACKGROUND",
+      "severity": "info",
+      "message": "Use a local plate/scrim and test against the worst visible frame."
+    }
+  ],
+  "decision_trace": [
+    "Semantic role 'game_reward_title' loaded.",
+    "Mood 'luxury' routed to recipe 'luxury_glass'.",
+    "Platform 'game_tv' normalized to scale profile 'game_tv'.",
+    "Resolved size 63.8px from role range, platform uplift, viewport, and user scale.",
+    "High importance increased weight by 40.",
+    "Dynamic background protection enabled plate and minimum outline.",
+    "Rendering strategy 'MSDF' selected from size, role, and transform risk."
+  ],
+  "adapter": {
+    "kind": "generic_game",
+    "unity": {
+      "kind": "unity_textmeshpro",
+      "font_size": 63.8,
+      "font_weight": 860,
+      "character_spacing_em": 0.035,
+      "use_sdf": true,
+      "recommended_overflow": "Overflow",
+      "fallback_assets_required": true,
+      "notes": [
+        "Keep tiny body text on native/hinted raster paths where possible.",
+        "Create a static atlas for known UI strings; add dynamic fallbacks for unknown glyphs."
+      ]
+    },
+    "unreal": {
+      "kind": "unreal_umg_slate",
+      "font_size": 63.8,
+      "font_weight": 860,
+      "rasterization": "MSDF",
+      "use_composite_font": true,
+      "auto_wrap": true,
+      "notes": [
+        "Prefer runtime composite fonts for multilingual UI.",
+        "Use SDF/MSDF mainly for large or heavily scaled text; small text benefits from direct rasterization."
+      ]
+    },
+    "godot": {
+      "kind": "godot_theme_override",
+      "font_size": 63.8,
+      "outline_size": 1.25,
+      "uppercase": true,
+      "autowrap_mode": "word_smart",
+      "notes": [
+        "Use Theme resources for reusable roles.",
+        "Use font fallbacks for supported scripts and avoid fixed-height containers."
+      ]
+    }
+  }
+}

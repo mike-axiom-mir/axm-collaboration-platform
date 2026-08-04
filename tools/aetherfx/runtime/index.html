@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#050711">
+  <title>AXM AetherFX Visual Effect Fabric Studio</title>
+  <link rel="stylesheet" href="styles/runtime.css" data-axm-runtime-stylesheet>
+  <link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+  <div class="app-shell" id="appRoot">
+    <header class="app-topbar">
+      <div class="app-brand">
+        <span class="app-brand-mark">AXM</span>
+        <span class="app-brand-copy"><strong>Visual Effect Fabric Studio</strong><small>FULLY MODULAR UNDERNEATH · SIMPLE CONTROLS ON TOP</small></span>
+      </div>
+      <div class="topbar-actions" role="toolbar" aria-label="Studio actions">
+        <button class="icon-button" id="btnUndo" title="Undo" aria-label="Undo">↶</button>
+        <button class="icon-button" id="btnRedo" title="Redo" aria-label="Redo">↷</button>
+        <button class="app-button ghost" id="btnGuide" title="Guided creation"><span>✦</span><span class="button-label-wide">Guide</span></button>
+        <button class="icon-button" id="btnPerformance" title="Performance and load inspector" aria-label="Performance inspector">◫</button>
+        <button class="icon-button" id="btnRepair" title="Repair and recovery center" aria-label="Repair center">⌁</button>
+        <button class="app-button ghost" id="btnSnapshot" title="Save rollback snapshot"><span>◇</span><span class="button-label-wide">Snapshot</span></button>
+        <button class="app-button ghost" id="btnSnapshots" title="Open snapshots"><span>▤</span><span class="button-label-wide">Restore</span></button>
+        <button class="app-button ghost" id="btnValidate"><span>✓</span><span class="button-label-wide">Validate</span></button>
+        <button class="app-button ghost" id="btnImport"><span>⇩</span><span class="button-label-wide">Import</span></button>
+        <button class="app-button primary" id="btnExport"><span>⇧</span><span>Export</span></button>
+        <details class="mobile-tools" id="mobileTools">
+          <summary class="icon-button" aria-label="More studio tools" title="More studio tools">⋯</summary>
+          <div class="mobile-tools-menu" role="menu" aria-label="More studio tools">
+            <button type="button" data-mobile-action="guide" role="menuitem">✦ Guided creation</button>
+            <button type="button" data-mobile-action="performance" role="menuitem">◫ Performance inspector</button>
+            <button type="button" data-mobile-action="repair" role="menuitem">⌁ Repair center</button>
+            <button type="button" data-mobile-action="snapshot" role="menuitem">◇ Save snapshot</button>
+            <button type="button" data-mobile-action="restore" role="menuitem">▤ Restore</button>
+            <button type="button" data-mobile-action="validate" role="menuitem">✓ Validate</button>
+            <button type="button" data-mobile-action="import" role="menuitem">⇩ Import package</button>
+          </div>
+        </details>
+        <input id="fileImport" type="file" accept=".json,.axmfx,.axmrecipe,application/json" hidden>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="panel left-panel" aria-label="Module workspace">
+        <div class="panel-head">
+          <div class="panel-head-copy"><h2>Fabric Library</h2><small id="libraryCount">Loading modules…</small></div>
+          <button class="icon-button" id="btnShowPrimitives" title="Show foundation primitives" aria-label="Show primitives">⌬</button>
+        </div>
+        <div class="tab-strip" role="tablist">
+          <button class="tab-button is-active" role="tab" aria-selected="true" data-tab="library">Library</button>
+          <button class="tab-button" role="tab" aria-selected="false" data-tab="stack">Active stack</button>
+          <button class="tab-button" role="tab" aria-selected="false" data-tab="creator">Creator</button>
+        </div>
+        <div class="tab-content" id="tabLibrary" data-tab-panel="library">
+          <div class="search-wrap"><input id="moduleSearch" type="search" placeholder="Search effects, materials, molds…" autocomplete="off" aria-label="Search modules"><span>⌕</span></div>
+          <div id="moduleLibrary"></div>
+        </div>
+        <div class="tab-content" id="tabStack" data-tab-panel="stack" hidden>
+          <div id="activeStack" class="stack-list"></div>
+          <div class="stack-tools">
+            <button class="app-button small" id="btnCaptureComposite">Capture composite</button>
+            <button class="app-button small" id="btnClearStack">Clear stack</button>
+          </div>
+        </div>
+        <div class="tab-content" id="tabCreator" data-tab-panel="creator" hidden>
+          <p class="creator-intro">Make a new reusable part from an existing module, or capture the current stack as one recursive composite. Sources stay untouched.</p>
+          <div class="creator-mode">
+            <button class="is-active" data-creator-mode="derived">Derive a module</button>
+            <button data-creator-mode="composite">Capture a composite</button>
+          </div>
+          <div id="creatorDerived">
+            <div class="field"><label for="creatorBase">Base module</label><select id="creatorBase"></select><span class="field-help">The new module inherits the base renderer and starts with your chosen defaults.</span></div>
+            <div class="field"><label for="creatorDerivedName">New module name</label><input id="creatorDerivedName" type="text" maxlength="72" placeholder="Example: Calm cyan rim"></div>
+            <div class="field"><label for="creatorDerivedDescription">Description</label><textarea id="creatorDerivedDescription" maxlength="280" placeholder="What this reusable part is for."></textarea></div>
+            <div class="creator-summary" id="creatorDerivedSummary">Select a base module to inspect what will be inherited.</div>
+            <button class="app-button primary" id="btnCreateDerived">Create reusable derivative</button>
+          </div>
+          <div id="creatorComposite" hidden>
+            <div class="field"><label for="creatorCompositeName">Composite name</label><input id="creatorCompositeName" type="text" maxlength="72" placeholder="Example: Calm command surface"></div>
+            <div class="field"><label for="creatorCompositeDescription">Description</label><textarea id="creatorCompositeDescription" maxlength="280" placeholder="Describe the combined visual role."></textarea></div>
+            <label class="switch-row creator-switch"><div><strong>Expose key controls</strong><small>Promote selected child parameters so the saved mold remains easy to tune.</small></div><input class="switch" id="creatorCompositeExpose" type="checkbox" checked></label>
+            <div class="field"><label for="creatorCompositeLimit">Maximum promoted controls</label><select id="creatorCompositeLimit"><option value="4">4 — very simple</option><option value="6" selected>6 — balanced</option><option value="8">8 — flexible</option><option value="12">12 — advanced</option></select><span class="field-help">The child graph remains intact even when only a few controls are exposed.</span></div>
+            <div class="creator-summary" id="creatorCompositeSummary">Enabled stack layers will become a single reusable mold while retaining their dependency graph.</div>
+            <button class="app-button primary" id="btnCreateComposite">Capture active stack</button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel center-panel" aria-label="Live preview">
+        <div class="preview-toolbar">
+          <div class="preview-selectors">
+            <select class="compact-select" id="sceneSelect" aria-label="Preview scene"></select>
+            <select class="compact-select" id="presetSelect" aria-label="Visual preset">
+              <option value="">Apply a scene mold…</option>
+              <option value="dashboard">Command Dashboard</option>
+              <option value="hero">Luminous Hero</option>
+              <option value="hud">Game HUD</option>
+              <option value="launcher">Launcher Shell</option>
+            </select>
+          </div>
+          <div class="preview-actions">
+            <button class="app-button small" id="btnVariation">Compose variation</button>
+            <button class="app-button small" id="btnResetRecipe">Reset</button>
+            <button class="icon-button" id="btnFullscreen" title="Toggle preview focus" aria-label="Toggle preview focus">⛶</button>
+          </div>
+        </div>
+        <div class="preview-wrap" id="previewWrap">
+          <div class="preview-frame">
+            <div class="axm-stage" id="previewStage" aria-label="Live visual preview">
+              <div class="axm-ambient-layer" data-axm-layer="ambient"></div>
+              <div class="axm-scene-layer" data-axm-layer="scene"></div>
+              <div class="axm-light-layer" data-axm-layer="light"></div>
+              <div class="axm-atmosphere-layer" data-axm-layer="atmosphere"></div>
+            </div>
+          </div>
+        </div>
+        <div class="preview-status">
+          <div class="status-left">
+            <span class="status-pill good" id="renderStatus">● Ready</span>
+            <span id="recipeStatus">Working recipe</span>
+            <span id="modulePlanStatus">0 resolved modules</span>
+          </div>
+          <div class="status-right"><span id="fpsStatus">Adaptive quality</span><span id="autosaveStatus">Local autosave</span></div>
+        </div>
+      </section>
+
+      <aside class="panel right-panel" aria-label="Controls and inspector">
+        <div class="panel-head"><div class="panel-head-copy"><h2>Simple Controls</h2><small>Human-facing controls over the modular graph</small></div><button class="icon-button" id="btnInspectJson" title="Inspect recipe JSON" aria-label="Inspect recipe JSON">{ }</button></div>
+        <div class="inspector-scroll">
+          <section class="section">
+            <div class="section-title"><h3>Scene character</h3><small>Global</small></div>
+            <div class="control-grid">
+              <div class="field"><label for="moodSelect">Mood</label><select id="moodSelect"></select></div>
+              <div class="field"><label for="qualitySelect">Performance</label><select id="qualitySelect"><option value="auto">Auto</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="cinematic">Cinematic</option></select></div>
+              <div class="field field-wide"><label for="performanceBiasSelect">Auto quality bias</label><select id="performanceBiasSelect"><option value="battery">Battery / weak device</option><option value="balanced">Balanced</option><option value="quality">Prefer visual quality</option></select><span class="field-help">Only applies while Performance is set to Auto.</span></div>
+            </div>
+            <div class="range-field"><div class="range-head"><label for="globalIntensity">Light intensity</label><output id="globalIntensityOut">72%</output></div><input id="globalIntensity" type="range" min="0" max="1" step="0.01"></div>
+            <div class="range-field"><div class="range-head"><label for="globalDepth">Depth</label><output id="globalDepthOut">64%</output></div><input id="globalDepth" type="range" min="0" max="1" step="0.01"></div>
+            <div class="range-field"><div class="range-head"><label for="globalMotion">Motion</label><output id="globalMotionOut">68%</output></div><input id="globalMotion" type="range" min="0" max="1" step="0.01"></div>
+            <label class="switch-row"><div><strong>Reduced motion</strong><small>Static fallbacks for moving effects</small></div><input class="switch" id="toggleReducedMotion" type="checkbox"></label>
+            <label class="switch-row"><div><strong>Photosensitive safe</strong><small>Suppresses repeating sweeps, flashes, and rapid overlays</small></div><input class="switch" id="togglePhotosensitiveSafe" type="checkbox"></label>
+            <label class="switch-row"><div><strong>High contrast</strong><small>Stronger borders and text separation</small></div><input class="switch" id="toggleHighContrast" type="checkbox"></label>
+            <label class="switch-row"><div><strong>Large preview text</strong><small>Raises scene copy size without zooming the editor</small></div><input class="switch" id="toggleLargeText" type="checkbox"></label>
+          </section>
+
+          <section class="section">
+            <div class="section-title"><h3>Selected module</h3><small id="selectedSource"></small></div>
+            <div id="selectedInspector" class="inspector-empty">Select a layer in the Active Stack to tune its exposed controls.</div>
+          </section>
+
+          <section class="section">
+            <div class="section-title"><h3>Integrity signal</h3><small id="validationLabel">Not checked</small></div>
+            <div id="validationMini" class="validation-mini"></div>
+          </section>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="app-footer">
+      <span class="footer-root">Mike — Axiom/Mir · AXM AetherFX Visual Effect Fabric v1.3.0 · VERIFIED local intake candidate</span>
+      <span class="footer-status"><i></i><span>No cloud, account, telemetry, or external runtime dependency.</span></span>
+    </footer>
+  </div>
+
+  <dialog class="dialog" id="validationDialog">
+    <div class="dialog-head"><h2>Validation Report</h2><button class="icon-button" data-close-dialog aria-label="Close">×</button></div>
+    <div class="dialog-body" id="validationDialogBody"></div>
+    <div class="dialog-actions"><button class="app-button" data-close-dialog>Close</button></div>
+  </dialog>
+
+  <dialog class="dialog" id="snapshotsDialog">
+    <div class="dialog-head"><h2>Rollback Snapshots</h2><button class="icon-button" data-close-dialog aria-label="Close">×</button></div>
+    <div class="dialog-body" id="snapshotsDialogBody"></div>
+    <div class="dialog-actions"><button class="app-button" data-close-dialog>Close</button></div>
+  </dialog>
+
+  <dialog class="dialog" id="exportDialog">
+    <div class="dialog-head"><h2>Export from the Fabric</h2><button class="icon-button" data-close-dialog aria-label="Close">×</button></div>
+    <div class="dialog-body">
+      <p class="creator-intro">Exports are explicit. Public sharing remains a human choice; the default provenance license is intentionally unset.</p>
+      <div class="module-list">
+        <button class="app-button" id="exportRecipePackage">Recipe package + custom dependencies</button>
+        <button class="app-button" id="exportRawRecipe">Readable raw recipe JSON</button>
+        <button class="app-button" id="exportSelectedModule">Selected module package + dependency closure</button>
+        <button class="app-button" id="exportStandalone">Standalone live HTML scene</button>
+        <button class="app-button" id="exportWebComponent">Embeddable Web Component</button>
+        <button class="app-button" id="exportCssTokens">CSS token snapshot</button>
+        <button class="app-button" id="exportVisualIntent">Engine-neutral visual intent contract</button>
+        <div class="field"><label for="exportTargetProfile">Adapter target</label><select id="exportTargetProfile"><option value="web-css">AXM web/CSS runtime</option><option value="static-svg">Static SVG approximation</option><option value="godot-theme">Godot 4 theme bridge</option><option value="unity-uitoolkit">Unity UI Toolkit bridge</option><option value="generic-game-contract">Generic game renderer contract</option></select></div>
+        <button class="app-button" id="exportTargetReport">Adapter support report</button>
+      </div>
+    </div>
+    <div class="dialog-actions"><button class="app-button" data-close-dialog>Close</button></div>
+  </dialog>
+
+  <dialog class="dialog wide-dialog" id="guideDialog">
+    <div class="dialog-head"><h2>Guided Creation</h2><button class="icon-button" data-close-dialog aria-label="Close">×</button></div>
+    <div class="dialog-body">
+      <p class="creator-intro">Choose the outcome in human terms. The studio will assemble a traceable modular starting point; nothing is hidden or irreversible.</p>
+      <div class="guide-grid">
+        <div class="field"><label for="guideGoal">1 · What are you making?</label><select id="guideGoal"><option value="dashboard">Command dashboard</option><option value="hero">Website / product hero</option><option value="hud">Game HUD</option><option value="launcher">Launcher / tool shell</option></select></div>
+        <div class="field"><label for="guideMood">2 · Mood</label><select id="guideMood"></select></div>
+        <div class="field"><label for="guideEnergy">3 · Visual energy</label><select id="guideEnergy"><option value="calm">Calm and restrained</option><option value="balanced" selected>Balanced premium</option><option value="cinematic">Cinematic showcase</option></select></div>
+        <div class="field"><label for="guideDevice">4 · Device priority</label><select id="guideDevice"><option value="battery">Weak device / battery first</option><option value="balanced" selected>Balanced</option><option value="quality">Strong device / quality first</option></select></div>
+      </div>
+      <div class="guide-options">
+        <label class="switch-row"><div><strong>Reduced motion</strong><small>Prefer static or slow fallbacks.</small></div><input class="switch" id="guideReducedMotion" type="checkbox"></label>
+        <label class="switch-row"><div><strong>Photosensitive safe</strong><small>Suppress repeating flashes and rapid sweeps.</small></div><input class="switch" id="guidePhotosensitiveSafe" type="checkbox"></label>
+        <label class="switch-row"><div><strong>High contrast</strong><small>Strengthen text and surface separation.</small></div><input class="switch" id="guideHighContrast" type="checkbox"></label>
+      </div>
+      <div class="creator-summary" id="guideSummary">A modular dashboard foundation will be created with balanced visual energy.</div>
+    </div>
+    <div class="dialog-actions"><button class="app-button" data-close-dialog>Cancel</button><button class="app-button primary" id="btnApplyGuide">Build guided foundation</button></div>
+  </dialog>
+
+  <dialog class="dialog wide-dialog" id="performanceDialog">
+    <div class="dialog-head"><h2>Performance + Load Inspector</h2><button class="icon-button" data-close-dialog aria-label="Close">×</button></div>
+    <div class="dialog-body" id="performanceDialogBody"></div>
+    <div class="dialog-actions"><button class="app-button" id="btnExportPerformanceReport">Export report</button><button class="app-button" data-close-dialog>Close</button></div>
+  </dialog>
+
+  <dialog class="dialog wide-dialog" id="graphDialog">
+    <div class="dialog-head"><h2>Dependency + Recipe Graph</h2><button class="icon-button" data-close-dialog aria-label="Close">×</button></div>
+    <div class="dialog-body" id="graphDialogBody"></div>
+    <div class="dialog-actions"><button class="app-button" id="btnCopyGraph">Copy graph text</button><button class="app-button" data-close-dialog>Close</button></div>
+  </dialog>
+
+  <dialog class="dialog wide-dialog" id="repairDialog">
+    <div class="dialog-head"><h2>Repair + Recovery Center</h2><button class="icon-button" data-close-dialog aria-label="Close">×</button></div>
+    <div class="dialog-body" id="repairDialogBody"></div>
+    <div class="dialog-actions"><button class="app-button" id="btnAnalyzeRepair">Analyze again</button><button class="app-button primary" id="btnApplyRepair">Snapshot + apply safe repair</button><button class="app-button" data-close-dialog>Close</button></div>
+  </dialog>
+
+  <dialog class="dialog wide-dialog" id="importReviewDialog">
+    <div class="dialog-head"><h2>Review Import Before Applying</h2><button class="icon-button" data-close-dialog aria-label="Close">×</button></div>
+    <div class="dialog-body" id="importReviewDialogBody"></div>
+    <div class="dialog-actions"><button class="app-button" data-close-dialog>Cancel</button><button class="app-button primary" id="btnConfirmImport">Confirm reviewed import</button></div>
+  </dialog>
+
+  <dialog class="dialog" id="jsonDialog">
+    <div class="dialog-head"><h2>Inspectable Recipe</h2><button class="icon-button" data-close-dialog aria-label="Close">×</button></div>
+    <div class="dialog-body"><pre class="code-view" id="jsonView"></pre></div>
+    <div class="dialog-actions"><button class="app-button" id="btnCopyJson">Copy JSON</button><button class="app-button" data-close-dialog>Close</button></div>
+  </dialog>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite"></div>
+
+  <script src="src/core/namespace.js"></script>
+  <script src="src/catalog/catalog.generated.js"></script>
+  <script src="src/core/registry.js"></script>
+  <script src="src/core/validator.js"></script>
+  <script src="src/core/history.js"></script>
+  <script src="src/core/package-io.js"></script>
+  <script src="src/core/composer.js"></script>
+  <script src="src/core/intent.js"></script>
+  <script src="src/core/performance.js"></script>
+  <script src="src/core/repair.js"></script>
+  <script src="src/app/scenes.js"></script>
+  <script src="src/adapters/web-adapter.js"></script>
+  <script src="src/app/runtime-css.generated.js"></script>
+  <script src="src/app/app.js"></script>
+</body>
+</html>

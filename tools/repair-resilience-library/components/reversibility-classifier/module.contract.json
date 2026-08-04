@@ -1,0 +1,38 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.reversibility-classifier",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.reversibility-classification/v1"
+  ],
+  "consumes": [
+    "repair-action"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_CLASSIFICATION_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/recovery-center",
+      "tools/repairbuddy"
+    ],
+    "reason": "Separates exact rollback, compensation, approximate recovery, and irreversible action before any gate."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "permission-grant",
+      "automatic-approval",
+      "automatic-execution",
+      "automatic-merge",
+      "automatic-promotion",
+      "automatic-canon",
+      "runtime-proof-claim"
+    ]
+  }
+}

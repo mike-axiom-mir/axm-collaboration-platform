@@ -21,7 +21,7 @@
       <div class="pulse">
         <b id="heartbeatState">Stopped</b>
         <small id="pulseDetail">Body-governed · explicit start</small>
-        <select id="cadence">
+        <select id="cadence" aria-label="Heartbeat cadence">
           <option value="15">15 min</option>
           <option value="30" selected>30 min</option>
           <option value="60">60 min</option>
@@ -140,11 +140,12 @@
           <form id="needForm">
             <input
               id="needTitle"
+              aria-label="Asset need title"
               required
               maxlength="100"
               placeholder="New asset need"
             />
-            <select id="needKind">
+            <select id="needKind" aria-label="Asset kind">
               <option>icon</option>
               <option>badge</option>
               <option>logo</option>
@@ -184,6 +185,7 @@
             </select>
             <input
               id="needIntendedUse"
+              aria-label="Intended use"
               maxlength="100"
               value="icon"
               placeholder="Intended use"
@@ -203,6 +205,7 @@
             </select>
             <input
               id="needTarget"
+              aria-label="Host target"
               maxlength="100"
               value="shared"
               placeholder="Host target"
@@ -248,12 +251,14 @@
             </select>
             <input
               id="needRequiredOutputs"
+              aria-label="Required output formats"
               maxlength="200"
               value="image/svg+xml"
               placeholder="Required outputs"
             />
             <input
               id="needRecipeFormats"
+              aria-label="Editable recipe formats"
               maxlength="200"
               value="axm.asset-creation-recipe/v1"
               placeholder="Editable recipe formats"
@@ -265,6 +270,7 @@
               <div>
                 <input
                   id="needContrast"
+                  aria-label="Minimum contrast ratio"
                   type="number"
                   min="1"
                   max="21"
@@ -272,11 +278,12 @@
                   placeholder="Contrast ratio"
                 />
                 <label
-                  ><input id="needPrintable" type="checkbox" /> printable
+                  ><input id="needPrintable" type="checkbox" aria-label="Printable colours required" /> printable
                   colours</label
                 >
                 <input
                   id="needBleed"
+                  aria-label="Bleed amount"
                   type="number"
                   min="0"
                   step="any"
@@ -284,6 +291,7 @@
                 />
                 <input
                   id="needMinStroke"
+                  aria-label="Minimum stroke width"
                   type="number"
                   min="0"
                   step="any"
@@ -291,6 +299,7 @@
                 />
                 <input
                   id="needToolWidth"
+                  aria-label="Cutting or tool width"
                   type="number"
                   min="0"
                   step="any"
@@ -298,6 +307,7 @@
                 />
                 <input
                   id="needDepth"
+                  aria-label="Canvas depth or thickness"
                   type="number"
                   min="0"
                   step="any"
@@ -305,12 +315,13 @@
                 />
                 <input
                   id="needPhysicalDepth"
+                  aria-label="Cut or engrave depth"
                   type="number"
                   min="0"
                   step="any"
                   placeholder="Cut / engrave depth"
                 />
-                <select id="needRepeat">
+                <select id="needRepeat" aria-label="Physical repeat mode">
                   <option value="none">no repeat</option>
                   <option value="x">repeat x</option>
                   <option value="y">repeat y</option>
@@ -318,29 +329,34 @@
                 </select>
                 <input
                   id="needMaterial"
+                  aria-label="Material behaviour"
                   maxlength="200"
                   placeholder="Material behaviour"
                 />
                 <input
                   id="needFileBudget"
+                  aria-label="Maximum file size in bytes"
                   type="number"
                   min="1"
                   placeholder="Max file bytes"
                 />
                 <input
                   id="needTextureBudget"
+                  aria-label="Texture memory budget in bytes"
                   type="number"
                   min="1"
                   placeholder="Texture memory bytes"
                 />
                 <input
                   id="needPolygonBudget"
+                  aria-label="Polygon count budget"
                   type="number"
                   min="0"
                   placeholder="Polygon count"
                 />
                 <input
                   id="needFrameBudget"
+                  aria-label="Frame budget in milliseconds"
                   type="number"
                   min="0.01"
                   step="any"
@@ -348,6 +364,7 @@
                 />
                 <input
                   id="needMinimumQuality"
+                  aria-label="Minimum quality threshold"
                   type="number"
                   min="0"
                   max="1"
@@ -356,23 +373,24 @@
                   placeholder="Minimum quality 0..1"
                 />
                 <label
-                  ><input id="needEditable" type="checkbox" /> editable source
+                  ><input id="needEditable" type="checkbox" aria-label="Editable source required" /> editable source
                   required</label
                 >
                 <label
-                  ><input id="needStrictValidation" type="checkbox" /> strict
+                  ><input id="needStrictValidation" type="checkbox" aria-label="Strict validation required" /> strict
                   validation required</label
                 >
                 <label
-                  ><input id="needGeneralistFallback" type="checkbox" /> permit
+                  ><input id="needGeneralistFallback" type="checkbox" aria-label="Permit declared generalist fallback" /> permit
                   declared generalist fallback</label
                 >
                 <label
-                  ><input id="needLossyFallback" type="checkbox" /> permit
+                  ><input id="needLossyFallback" type="checkbox" aria-label="Permit declared lossy conversion" /> permit
                   declared lossy conversion</label
                 >
                 <textarea
                   id="needCanvasJson"
+                  aria-label="Additional target canvas constraints as JSON"
                   rows="5"
                   spellcheck="false"
                   placeholder="Optional extra target_canvas JSON (responsive, spatial, temporal, accessibility or specialist constraints)"
@@ -396,6 +414,7 @@
               ><button id="importMachineReview">Import machine review</button
               ><input
                 id="machineReceiptFile"
+                aria-label="Import machine review receipt"
                 type="file"
                 accept="application/json,.json"
                 hidden

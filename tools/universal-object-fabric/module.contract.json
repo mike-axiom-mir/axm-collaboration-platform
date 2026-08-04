@@ -1,0 +1,53 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "universal-object-fabric",
+  "version": "v0.7.0",
+  "provides": [
+    "asset.universal-object.archive.preserve",
+    "asset.universal-object.catalog.resolve-exact",
+    "asset.universal-object.stage-game-safe",
+    "asset.universal-object.runtime-capsule.consume",
+    "asset.universal-object.visual-skin.consume",
+    "runtime.threejs.universal-object.load",
+    "runtime.godot4.universal-object.load",
+    "ui.workshop.universal-object.inspect"
+  ],
+  "consumes": [
+    "axm.uof.stage-resolution-map/v0.7",
+    "axm.runtime-capsule/v0.7",
+    "axm.visual-skin-binding/v0.6"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.uof.exact-resolution/v0.7"
+    ],
+    "accepts": [
+      "axm.uof.stage-resolution-map/v0.7"
+    ]
+  },
+  "boundaries": {
+    "writes": [
+      "browser-clipboard:explicit-resolution-copy"
+    ],
+    "refuses": [
+      "active-game-write",
+      "automatic-game-install",
+      "inferred-overlay-version",
+      "guessed-socket-transform",
+      "automatic-engine-physics",
+      "gameplay-acceptance-claim",
+      "renderer-quality-claim",
+      "godot-runtime-pass-claim",
+      "manufacturing-authority",
+      "robotics-control",
+      "canonical-promotion"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  }
+}

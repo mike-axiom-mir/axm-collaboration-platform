@@ -1,0 +1,37 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.failure-taxonomy-engine",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.failure-taxonomy-result/v1"
+  ],
+  "consumes": [
+    "failure-observation"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "EXTEND_EXISTING",
+    "targets": [
+      "tools/diagnostics-operations-center"
+    ],
+    "reason": "Normalizes observations into reusable classes without claiming root cause."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-containment",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim",
+      "mutation-of-existing-axm-organs"
+    ]
+  }
+}

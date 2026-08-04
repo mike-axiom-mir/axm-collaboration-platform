@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   var API = '/game-api', STORE = 'axm.gameNight.party.v2', FEATURED = ['003-robo-pong-cross','006-lumenwake','007-casino-alpha','008-district-party','009-circuitseed-protocol-wilds','010-living-globe-tycoon'];
-  var $ = function (id) { return document.getElementById(id); }, online = false, games = [], worlds = [], selectedGameId = null, selectedPlayMode = null, lastLaunch = null, extrasOpen = false, runtimeHealth = null, lobbyPoll = null, bootRetry = null, booting = false;
+  var $ = function (id) { return document.getElementById(id); }, online = false, games = [], worlds = [], selectedGameId = null, selectedPlayMode = null, lastLaunch = null, extrasOpen = false, runtimeHealth = null, lobbyPoll = null, bootRetry = null, booting = false, bootAttempts = 0;
   var defaults = [
     { name:'Mike', type:'human' }, { name:'Errol', type:'human' }, { name:'Nova', type:'adapter' }, { name:'Codex', type:'adapter' },
     { name:'Gemini', type:'adapter' }, { name:'Claude', type:'adapter' }, { name:'Grok', type:'adapter' }, { name:'Guest', type:'human' }
@@ -26,7 +26,12 @@
   async function call(route, body) {
     var response = await fetch(API + route, { method: body ? 'POST' : 'GET', headers: {'content-type':'application/json'}, body: body ? JSON.stringify(body) : undefined });
     var value = await response.json().catch(function(){return{};});
-    if (!response.ok || value.ok === false) throw new Error(value.error || ('HTTP ' + response.status));
+    if (!response.ok || value.ok === false) {
+      var error = new Error(value.error || ('HTTP ' + response.status));
+      error.status = response.status;
+      error.route = route;
+      throw error;
+    }
     return value;
   }
   function seatPatch(index) {
@@ -272,13 +277,17 @@
       selectedGameId=runningGameId||(party.selectedGameId&&games.some(function(item){return item.game_id===party.selectedGameId;})?party.selectedGameId:(games.find(function(item){return item.game_id===FEATURED[0];})||games[0]||{}).game_id);
       var modes=playModes(),savedMode=party.playModes&&party.playModes[selectedGameId],liveMode=lastLaunch&&lastLaunch.play_mode;
       selectedPlayMode=modes.some(function(mode){return mode.id===liveMode;})?liveMode:modes.some(function(mode){return mode.id===savedMode;})?savedMode:modes[0]&&modes[0].id||null;
-      extrasOpen=!!(playMode()&&playMode().party_rule==='balanced-parties');online=true;
+      extrasOpen=!!(playMode()&&playMode().party_rule==='balanced-parties');online=true;bootAttempts=0;
       if(bootRetry){clearTimeout(bootRetry);bootRetry=null;}
       $('status').textContent='ONLINE · '+games.length+' GAMES';renderLibrary();renderGame();buildSeats();
       if(lastLaunch){showRoom(lastLaunch);$('status').textContent='ROOM '+lastLaunch.room_code+' · LIVE';}else await syncPartyToServer();
       await pollLobbySeats();startLobbyPolling();await refreshAssets();
     }catch(error){
-      online=false;$('status').textContent='RECONNECTING · STARTING GAME SERVICE';renderChooser();buildSeats();
+      online=false;bootAttempts+=1;
+      $('status').textContent=window.AXMGameNightStatus&&typeof window.AXMGameNightStatus.classifyBootFailure==='function'
+        ? window.AXMGameNightStatus.classifyBootFailure(error,bootAttempts)
+        : 'GAME SERVICE OFFLINE · RESTART AXM FULL';
+      renderChooser();buildSeats();
       if(!bootRetry)bootRetry=setTimeout(function(){bootRetry=null;boot();},1500);
     }finally{booting=false;}
   }

@@ -1,0 +1,225 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "playable-3d-open-world",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.render.webgl3d",
+        "game.camera.brawler-angle",
+        "game.world.free-roam"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.render.webgl3d": [
+          "local Three.js r160",
+          "mixed code-native geometry and one local licensed CC0 Human rig"
+        ],
+        "game.camera.brawler-angle": [
+          "fixed elevated three-quarter shared camera"
+        ],
+        "game.world.free-roam": [
+          "dense 320x320 single valley"
+        ]
+      }
+    },
+    {
+      "id": "comedy-rpg-loop",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.combat.comedy",
+        "game.inventory.tradeoffs",
+        "game.drops.low-junk"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.combat.comedy": [
+          "five telegraphed species mechanics",
+          "procedural squash, comedy weapons and species-specific defeat gags",
+          "recoverable tax-goose theft"
+        ]
+      }
+    },
+    {
+      "id": "meaningful-life-systems",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.cooking.interactive-longterm",
+        "game.fishing.ecology-revive"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.cooking.interactive-longterm": [
+          "separate Chop, Stir and Plate rounds",
+          "three named rivals with visible scores",
+          "finite first-win permanent kitchen lessons",
+          "quality-scaled world meals rather than hit-count potions"
+        ]
+      }
+    },
+    {
+      "id": "robot-pet-endgame",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.pets.robot-bond",
+        "state.save.24hour-finale",
+        "game.finale.robot-agency"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "state.save.24hour-finale": [
+          "staged live omen, loss, reload and robot recovery verified; literal 24-hour soak pending"
+        ]
+      }
+    },
+    {
+      "id": "solo-or-coop",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.coop.same-device-two-human"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.coop.same-device-two-human": [
+          "shared keyboard/gamepad and shared camera"
+        ]
+      }
+    },
+    {
+      "id": "visible-story-and-challenges",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.story.sidequest-convergence",
+        "game.challenge.explicit-where"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.story.sidequest-convergence": [
+          "four authored adventure chains",
+          "each branch has a saved mechanic and interactive regional 3D memory"
+        ]
+      }
+    },
+    {
+      "id": "production-character-quality",
+      "required": false,
+      "status": "READY",
+      "available": [
+        "asset.character.skeletal-3d-production"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "asset.character.skeletal-3d-production": [
+          "one Quaternius CC0 Human body with 31 joints and 11 authored clips",
+          "semantic idle, walk, attack, special and dodge bindings",
+          "relocatable game-local path with SHA-256 provenance",
+          "original primitive fallback retained",
+          "Blender remains unavailable for bespoke sculpting, facial work and costume variants"
+        ]
+      }
+    },
+    {
+      "id": "separate-device-coop",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "game.coop.networked-authority"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "authored-soundtrack-and-foley",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "audio.cartoon-production-suite"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "audio.cartoon-production-suite": [
+          "synthesized Web Audio only; Workshop Audio Studio may be adapted"
+        ]
+      }
+    },
+    {
+      "id": "commercial-content-scale",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "content.openworld.authored-scale"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "content.openworld.authored-scale": [
+          "one dense valley, four authored adventure chains, four inhabited settlements and twelve routine citizens"
+        ]
+      }
+    },
+    {
+      "id": "long-session-proof",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "qa.game.long-session-human"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.game.long-session-human": [
+          "requires Mike, second player, gamepad and cumulative 24-hour save"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "game.coop.networked-authority"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "game.coop.networked-authority",
+      "requiredBy": [
+        "separate-device-coop"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

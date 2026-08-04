@@ -15,6 +15,10 @@ function check(label, action) {
   process.stdout.write('PASS ' + label + '\n');
 }
 
+const publishedManifest = require('./manifest.json');
+check('published manifest declares the modern schema', () => assert.equal(publishedManifest.schema, 'axm.tool-manifest/v1'));
+check('published manifest classifies the comparator as a product', () => assert.equal(publishedManifest.kind, 'product'));
+
 function digest(value) {
   return crypto.createHash('sha256').update(Buffer.from(value)).digest('hex');
 }

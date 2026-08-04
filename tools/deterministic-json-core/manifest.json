@@ -1,0 +1,29 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "organ",
+  "id": "deterministic-json-core",
+  "name": "AXM Deterministic JSON Core",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "LOW",
+  "tags": ["deterministic", "canonical-json", "portable", "dependency-free"],
+  "uses": [],
+  "permissions": [],
+  "actions": [
+    "serialize JSON-compatible values with recursively sorted object keys",
+    "reject cycles non-finite numbers sparse arrays undefined values and non-plain objects",
+    "compare values by their canonical JSON representation"
+  ],
+  "accepts": ["application/json-compatible-value"],
+  "produces": ["application/canonical-json"],
+  "readiness": ["local-browser", "dependency-free-node-runtime"],
+  "summary": "A strict UMD canonical JSON primitive shared by browser and Node without third-party packages.",
+  "notes": "Canonicalization proves representation equality only. It is not a cryptographic digest, schema validator, semantic-equivalence proof, or authorization grant."
+}

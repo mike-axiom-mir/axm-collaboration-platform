@@ -42,7 +42,58 @@ assert.equal(G.componentKind('shared/example/example.schema.json', '.json'), 'sc
 assert.equal(G.componentKind('shared/example/host-protocol.mjs', '.mjs'), 'protocols');
 assert.equal(G.componentKind('shared/example/external-verifier.js', '.js'), 'validators');
 assert.equal(G.componentKind('shared/example/external-verifier-selftest.js', '.js'), null);
-assert.ok(current.excluded.includes('exports') && current.excluded.includes('node_modules') && current.excluded.includes('state') && current.excluded.includes('local-data'));
+assert.ok(current.excluded.includes('exports') && current.excluded.includes('node_modules') && current.excluded.includes('state') && current.excluded.includes('local-data') && current.excluded.includes('tmp'));
+assert.equal(current.scanHealth.partial, false);
+
+const cacheFixture = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-growth-cache-'));
+try {
+  fs.mkdirSync(path.join(cacheFixture, 'tools', 'fixture'), { recursive:true });
+  fs.writeFileSync(path.join(cacheFixture, 'tools', 'fixture', 'manifest.json'), '{"id":"fixture"}\n');
+  fs.writeFileSync(path.join(cacheFixture, 'tools', 'fixture', 'index.js'), 'const first = true;\n');
+  fs.writeFileSync(path.join(cacheFixture, 'asset.bin'), Buffer.alloc(64, 1));
+  const unreadableFixture = path.join(cacheFixture, 'opaque-cache');
+  fs.mkdirSync(unreadableFixture);
+  fs.writeFileSync(path.join(unreadableFixture, 'ignored.txt'), 'must be skipped when the directory is unreadable\n');
+  const originalReaddirSync = fs.readdirSync;
+  fs.readdirSync = function (target, options) {
+    if (path.resolve(String(target)) === path.resolve(unreadableFixture)) {
+      const error = new Error('fixture directory is unreadable');
+      error.code = 'EPERM';
+      throw error;
+    }
+    return originalReaddirSync.call(fs, target, options);
+  };
+  let partial;
+  try { partial = G.scanWithCache(cacheFixture, null); }
+  finally { fs.readdirSync = originalReaddirSync; }
+  assert.equal(partial.metrics.scanHealth.partial, true);
+  assert.equal(partial.metrics.scanHealth.unreadableDirectoryCount, 1);
+  assert.deepEqual(partial.metrics.scanHealth.unreadableDirectories, [{ path:'opaque-cache', code:'EPERM' }]);
+  assert.equal(partial.metrics.totalFiles, 3);
+  const uncached = G.scanWithCache(cacheFixture, null);
+  assert.equal(uncached.cache.schema, G.SCAN_CACHE_SCHEMA);
+  assert.equal(uncached.cacheStats.contentReads, 3);
+  assert.equal(uncached.cacheStats.cacheHits, 0);
+  assert.equal(uncached.cacheChanged, true);
+  const reused = G.scanWithCache(cacheFixture, uncached.cache);
+  assert.equal(reused.metrics.fingerprint, uncached.metrics.fingerprint);
+  assert.equal(reused.cacheStats.contentReads, 0);
+  assert.equal(reused.cacheStats.cacheHits, 3);
+  assert.equal(reused.cacheChanged, false);
+  fs.appendFileSync(path.join(cacheFixture, 'tools', 'fixture', 'index.js'), 'const second = true;\n');
+  const changed = G.scanWithCache(cacheFixture, reused.cache);
+  assert.equal(changed.cacheStats.contentReads, 1);
+  assert.equal(changed.cacheStats.cacheHits, 2);
+  assert.equal(changed.metrics.codeLines, reused.metrics.codeLines + 1);
+  fs.rmSync(path.join(cacheFixture, 'tools', 'fixture', 'manifest.json'));
+  const removed = G.scanWithCache(cacheFixture, changed.cache);
+  assert.equal(removed.metrics.totalFiles, changed.metrics.totalFiles - 1);
+  assert.equal(removed.cacheStats.currentEntries, 2);
+  assert.equal(removed.cacheChanged, true);
+  assert.equal(JSON.stringify(removed.cache).includes(cacheFixture), false);
+} finally {
+  fs.rmSync(cacheFixture, { recursive:true, force:true });
+}
 
 const mirrorFixture = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-mirror-growth-'));
 function fixtureFile(relative, content) {

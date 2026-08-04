@@ -1,0 +1,45 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.outcome-provenance-ledger",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.repair-outcome-ledger/v1",
+    "axm.repair-outcome-event/v1"
+  ],
+  "consumes": [
+    "repair-lifecycle-event",
+    "source-lineage"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_APPEND_EVIDENCE_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "shared/module-evolution-ledger",
+      "shared/evidence-retention",
+      "tools/repairbuddy"
+    ],
+    "reason": "Adapts repair outcome events into an immutable hash chain while existing ledgers retain persistent write authority."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-pattern-reuse",
+      "automatic-memory-write",
+      "provider-execution",
+      "active-repair-orchestration",
+      "permission-grant",
+      "automatic-promotion",
+      "automatic-release",
+      "automatic-canon",
+      "diagnosis-from-similarity-alone",
+      "root-cause-invention"
+    ]
+  }
+}

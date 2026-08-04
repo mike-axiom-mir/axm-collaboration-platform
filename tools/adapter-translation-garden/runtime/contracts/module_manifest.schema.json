@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm://contracts/module-manifest/v1",
+  "title": "AXM Detached Module Manifest",
+  "type": "object",
+  "required": [
+    "schema",
+    "number",
+    "id",
+    "name",
+    "status",
+    "version",
+    "authority_mode",
+    "implementation"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.detached.module-manifest/v1"
+    },
+    "number": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "type": "string"
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "WORKING_CANDIDATE",
+        "LOCAL_PROTOTYPE",
+        "SHADOW_ONLY"
+      ]
+    },
+    "version": {
+      "type": "string"
+    },
+    "authority_mode": {
+      "enum": [
+        "none",
+        "inspect_only",
+        "decision_only",
+        "shadow_only"
+      ]
+    },
+    "default_enabled": {
+      "const": false
+    },
+    "implementation": {
+      "type": "object",
+      "required": [
+        "state",
+        "network_access",
+        "native_writes",
+        "external_dependencies"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "contract_only",
+            "prototype"
+          ]
+        },
+        "entrypoint": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "language": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "network_access": {
+          "const": false
+        },
+        "native_writes": {
+          "const": false
+        },
+        "external_dependencies": {
+          "type": "array"
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

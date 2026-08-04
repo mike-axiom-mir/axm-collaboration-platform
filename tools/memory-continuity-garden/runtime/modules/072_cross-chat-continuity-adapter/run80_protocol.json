@@ -1,0 +1,190 @@
+{
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "consent_delta": "NONE",
+  "identity": {
+    "category": "8. Cross-session, cross-device, human-AI, and replica continuity",
+    "name": "Cross-Chat Continuity Adapter",
+    "number": 72,
+    "stable_id": "axm.memory.cross-chat-continuity-adapter"
+  },
+  "identity_delta": "NONE",
+  "run71_execution_plan": {
+    "acyclic": true,
+    "cancellation_boundary_count": 6,
+    "path": "execution_plan.json",
+    "sha256": "896a460c083f577e2f356b350aa925b63f66a1cbbd85dc5e89ba6179d1fb9af1",
+    "side_effect_steps": [
+      "COORDINATE_WITHOUT_OWNING"
+    ],
+    "step_count": 6
+  },
+  "run72_evidence_minimization": {
+    "challenge_route_present": true,
+    "path": "evidence_capsule.json",
+    "raw_payload_included": false,
+    "sha256": "c7564caf7f99cbe66cb9cd34b845db7eb7628ef8f932c3b4ac4a5028c81cf89f",
+    "unsupported_claims_remain_explicit": true
+  },
+  "run73_resumable_batch": {
+    "batch_limit": 256,
+    "idempotency_scope": "seed_id + operation_id + exact input digest + plan digest",
+    "interruption_result": "RECOVERY_HOLD",
+    "last_completed_step_must_exist_in_plan": true,
+    "resume_requires_exact_plan_and_input": true,
+    "resume_token_algorithm": "sha256-canonical-json",
+    "resume_token_fields": [
+      "seed_id",
+      "plan_digest",
+      "input_digest",
+      "last_completed_step",
+      "ledger_head"
+    ],
+    "silent_completion_forbidden": true,
+    "terminal_state_resume_result": "HOLD_ALREADY_TERMINAL",
+    "unknown_or_tampered_token_result": "HOLD_RESUME_TOKEN"
+  },
+  "run74_fault_isolation": {
+    "automatic_restart": false,
+    "circuit_open_result": "HOLD_CIRCUIT_OPEN",
+    "default_blast_radius": [
+      "axm.memory.cross-chat-continuity-adapter"
+    ],
+    "fault_receipt_contains_no_raw_payload": true,
+    "fault_threshold_before_circuit_open": 2,
+    "healthy_evidence_preserved": true,
+    "high_risk_fail_closed": false,
+    "quarantine_result": "HOLD_QUARANTINED",
+    "runtime_collaborators_are_not_failed_automatically": true
+  },
+  "run75_acceptance_handshake": {
+    "acceptance_claimed": false,
+    "apply_performed": false,
+    "apply_requires_fresh_preview_and_exact_baseline": true,
+    "current_status": "NOT_ACCEPTED",
+    "delivery_is_not_acceptance": true,
+    "majority_vote_cannot_bypass_required_role": true,
+    "merge_gate_is_not_runtime_apply": true,
+    "owner_acceptance_is_not_specialist_verification": true,
+    "required_sequence": [
+      "DELIVERED",
+      "STRUCTURALLY_VALIDATED",
+      "OWNER_ACCEPTED",
+      "SPECIALIST_VERIFIED",
+      "MIKE_MERGE_GATE_ACCEPTED"
+    ],
+    "specialist_verification_is_not_merge_gate": true,
+    "validation_is_not_owner_acceptance": true
+  },
+  "run76_counterfactual_matrix": [
+    {
+      "expected": "HOLD_SOURCE",
+      "scenario": "TAMPERED_SOURCE_DIGEST"
+    },
+    {
+      "expected": "HOLD_EXPIRED",
+      "scenario": "EXPIRED_AUTHORITY"
+    },
+    {
+      "expected": "HOLD_DEPENDENCY_UNAVAILABLE",
+      "scenario": "MISSING_BOOT_DEPENDENCY"
+    },
+    {
+      "expected": "HOLD_STALE_REVISION",
+      "scenario": "STALE_CURRENT_REVISION"
+    },
+    {
+      "expected": "HOLD_CONFLICT_REVIEW",
+      "scenario": "CONFLICTING_CREDIBLE_EVIDENCE"
+    },
+    {
+      "expected": "HOLD_RESOURCE_BUDGET",
+      "scenario": "INSUFFICIENT_LOCAL_RESOURCES"
+    },
+    {
+      "expected": "HOLD_CANCELLED",
+      "scenario": "CANCELLED_REQUEST"
+    },
+    {
+      "expected": "HOLD_SCHEMA_UNSUPPORTED",
+      "scenario": "UNKNOWN_SCHEMA_MAJOR"
+    },
+    {
+      "expected": "HOLD_PURPOSE",
+      "scenario": "PURPOSE_CHANGED_AFTER_CAPTURE"
+    }
+  ],
+  "run77_resource_scheduler": {
+    "cancelled_tasks_are_never_requeued_silently": true,
+    "max_items_per_batch": 256,
+    "max_parallel_per_seed": 2,
+    "max_retries_without_human_review": 1,
+    "network_required": false,
+    "operation_kind": "GATED_COORDINATION",
+    "priority_is_not_truth_or_authority": true,
+    "risk_class": "MEDIUM",
+    "round_robin_across_categories": true,
+    "workers_gain_no_authority": true
+  },
+  "run78_claim_boundary": {
+    "claim_flags": {
+      "CANON": false,
+      "active_workshop_integrated": false,
+      "full_semantic_implementation": false,
+      "owner_accepted": false,
+      "physical_deletion_proven": false,
+      "production_ready": false,
+      "real_encryption_key_custody_proven": false,
+      "real_restore_proven": false,
+      "specialist_verified": false
+    },
+    "metric_cannot_substitute_for_human_acceptance": true,
+    "structural_test_cannot_be_presented_as_semantic_truth": true,
+    "true_flag_requires_exact_external_proof_ref": true,
+    "unsupported_claim_result": "HOLD_UNSUPPORTED_CLAIM"
+  },
+  "run79_multi_seed_intake": {
+    "active_workshop_target": null,
+    "bundle_id": "CATEGORY_08_TRANSACTION",
+    "bundle_membership_does_not_merge_seed_identity": true,
+    "integration_performed": false,
+    "member_acceptance_is_individual": true,
+    "one_member_failure_aborts_bundle_commit": true,
+    "prepare_all_before_commit_any": true,
+    "rollback_scope": "temporary isolated bundle root only"
+  },
+  "run80_evidence_boundary": {
+    "CANON": false,
+    "achieved_reference_capabilities": [
+      "sealed_execution_plan",
+      "minimal_evidence_capsule",
+      "resumable_batch_contract",
+      "fault_isolation_contract",
+      "acceptance_handshake",
+      "counterfactual_matrix",
+      "resource_scheduler_contract",
+      "claim_boundary_lint",
+      "isolated_multi_seed_transaction_simulation"
+    ],
+    "active_workshop_integration": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "posture_preserved": "STRONG_REVIEW_REQUIRED",
+    "production_proof": false,
+    "specialist_verification": false
+  },
+  "schema": "axm.memory.run80-capability-protocol/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "59d3f3a5648e97afe35bc5c80a2fcd2fa67771b88f4200b3e9c9baebf52c3d06"
+  },
+  "source_run70": {
+    "authority": "T2_COORDINATE_WITHOUT_OWNING_AUTHORITY",
+    "contract_file_sha256": "f25111ee019efc5268f569c2f43cf70b461ebfe86c7b4d0ac857fd232ded9b38",
+    "permissions": [],
+    "posture": "STRONG_REVIEW_REQUIRED",
+    "protocol_file_sha256": "637f28a5207e32bd0898532411b2bd1d960fea8b235163c74b01b2da06525458",
+    "purpose": "Create and verify a portable re-entry packet for a new conversation while separating supplied history from model memory claims."
+  },
+  "trust_delta": "NONE"
+}

@@ -1,0 +1,32 @@
+{
+  "authority_transfer_allowed": false,
+  "canon_promotion_allowed": false,
+  "capability_family": "append-only-content-lineage",
+  "category_number": 2,
+  "composition_constraints": [
+    "old events remain readable",
+    "new derived events never rewrite parents"
+  ],
+  "full_seed_semantics_implemented": false,
+  "metamorphic_laws": [
+    "append_extends_chain",
+    "reorder_changes_chain",
+    "duplicate_content_keeps_distinct_provenance",
+    "stale_revision_refuses",
+    "mutation_breaks_digest",
+    "patch_witness_mismatch_refuses",
+    "known_good_pointer_is_not_canon",
+    "parent_link_is_immutable",
+    "missing_event_is_detected",
+    "exact_replay_is_idempotent"
+  ],
+  "name": "IMMUTABLE_LINEAGE",
+  "schema": "axm.memory.category-capability-profile/v1",
+  "semantic_obligations": [
+    "preserve immutable source bytes or records",
+    "make reorder, omission, mutation, and stale writer visible",
+    "keep duplicate content provenance separate",
+    "never convert a known-good pointer into install or CANON authority"
+  ],
+  "trust_transfer_allowed": false
+}

@@ -1,0 +1,105 @@
+{
+  "schema": "axm.pulse-choir-live-conductor-verification/v1",
+  "verifiedAt": "2026-07-28T15:27:27+02:00",
+  "version": "0.3.0-stewarded-alpha",
+  "verdict": "PASS",
+  "contract": {
+    "schema": "axm.pulse-choir-conductor-plan/v1",
+    "modes": ["opening", "reconnect", "lock-in", "headliner"],
+    "authority": "server",
+    "deterministicFrom": ["bounded latest round receipt", "base round seed", "managed roster"],
+    "visibleFields": ["mode", "title", "cue", "reason", "sourceRound", "actKinds"]
+  },
+  "managedJourney": {
+    "openingSessionId": "session-1785244563292",
+    "result": {
+      "roundNumber": 1,
+      "seed": 12026,
+      "score": 2349,
+      "rank": "IN RHYTHM",
+      "surges": 10,
+      "perfectSurges": 0,
+      "bestSync": 2,
+      "bestStreak": 13,
+      "actsCleared": 1,
+      "humanBanked": 0,
+      "humanPulses": 0
+    },
+    "nextPlan": {
+      "mode": "reconnect",
+      "title": "RECONNECT SET",
+      "cue": "CLEARER HUMAN LINK",
+      "sourceRound": 1,
+      "reason": "Round 1 needs a clearer human link, so the next set serves direct room cues.",
+      "seed": 12027,
+      "actKinds": ["human-pulses", "all-seat-bank", "chain-four"],
+      "actTitles": ["CALL & RESPONSE", "PASS THE MIC", "CHAIN REACTION"]
+    },
+    "migrationSessionId": "session-1785244994482",
+    "finalLiveState": {
+      "sessionId": "session-1785245458320",
+      "phase": "lobby",
+      "roundNumber": 2,
+      "completedRounds": 1,
+      "nightTotal": 2349,
+      "recovery": "restored",
+      "inputLedgerCount": 0
+    }
+  },
+  "visual": {
+    "backend": "BROWSER_PRIMARY",
+    "captureMode": "Repeated bounded screenshots and semantic snapshots; no rolling-video claim.",
+    "sharedOpening1280x720": {
+      "observed": "OPENING SET title and full first-round reason rendered between Show Memory and the beat legend.",
+      "pageOverflow": [0, 0],
+      "overlayCardBottom": 559.26,
+      "stageBottom": 560.76
+    },
+    "sharedResult1280x720": {
+      "observed": "The 2349-point receipt rendered RECONNECT SET, CLEARER HUMAN LINK, the exact three-act plan, both continuation actions, and NIGHT TOTALS SAVED.",
+      "pageOverflow": [0, 0],
+      "overlayCardBottom": 553.54,
+      "stageBottom": 560.76,
+      "seatRailTop": 568.76
+    },
+    "sharedLobby1280x720": {
+      "observed": "Round 2 lobby rendered the full receipt-derived reason, exact adapted Setlist, Start, Return to Game Hub, and New Show without clipping.",
+      "pageOverflow": [0, 0],
+      "overlayCardBottom": 559.31,
+      "stageBottom": 560.76
+    },
+    "controllerResult390x844": {
+      "observed": "Portrait controller rendered the full RECONNECT SET reason, exact next Setlist, and PLAY ROUND 2 above touch-native controls.",
+      "pageOverflow": [0, 0],
+      "mainBottom": 778.4
+    },
+    "controllerActive390x844": {
+      "observed": "Round 2 active controller rendered ACT 1/3 · RECONNECT SET, CALL & RESPONSE progress, joystick, PULSE, and hazard legend.",
+      "pageOverflow": [0, 0],
+      "mainBottom": 824.6,
+      "viewportBottom": 844
+    },
+    "console": {"warnings": 0, "errors": 0}
+  },
+  "persistence": {
+    "observed": "A managed restart restored the completed result and normalized its nested Show Memory and Setlist into the current Conductor cue contract before serving clients.",
+    "counterchecks": [
+      "legacy result.show receives the same next Conductor cue as state.show",
+      "legacy result.setlist retains the current round's opening plan",
+      "aborted Round 2 returns to the same unconsumed RECONNECT SET lobby"
+    ]
+  },
+  "idleAiCountercheck": {
+    "waitMs": 900,
+    "phase": "lobby",
+    "p2LastSequence": 0,
+    "p3LastSequence": 0,
+    "inputLedgerCount": 0
+  },
+  "cleanup": {
+    "browserTabsFinalized": true,
+    "viewportReset": true,
+    "testRoundResetToLobby": true,
+    "temporaryCaptureFiles": 0
+  }
+}

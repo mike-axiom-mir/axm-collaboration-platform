@@ -1,10 +1,41 @@
 {
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
   "id": "forge-line",
   "name": "Forge Line — proposal assembly line (v0.1 STARTER)",
   "version": "v0.1",
   "status": "TEST",
   "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "CREATE",
+  "layer": "create",
+  "audience": "human",
+  "risk": "MEDIUM",
   "tags": ["core", "builder", "pipeline"],
-  "uses": ["storage", "export"],
+  "uses": ["storage", "export", "gate"],
+  "permissions": ["export"],
+  "actions": [
+    "queue a bounded manual proposal",
+    "record that a manually produced candidate arrived",
+    "record a human-entered verification summary",
+    "accept or reject a proposal explicitly",
+    "grow a draft of standards from required rejection reasons",
+    "download the standards draft explicitly"
+  ],
+  "accepts": [
+    "browser-form:manual-proposal-intent",
+    "human:manual-candidate-status",
+    "human:manual-verification-summary",
+    "human:explicit-verdict"
+  ],
+  "produces": [
+    "browser-local:forge-line-queue-format-1",
+    "browser-local:forge-line-standards-draft-format-1",
+    "local-file:axm-standards-draft.json"
+  ],
+  "readiness": ["storage", "gate", "browser-download", "human-review"],
+  "summary": "Maintain a five-item manual proposal queue from human intent through recorded candidate, verification summary, and explicit verdict while turning rejection reasons into a reviewable standards draft.",
   "notes": "The auto-build pipeline SKELETON: queue -> candidate -> verify result -> human verdict -> rejection patterns accumulate into a STANDARDS DRAFT. Works fully in manual mode today. The overnight bridge worker is SPEC ONLY (FORGE_LINE_SPEC.txt) — Opus finishes it. Proposals never self-apply; capacity cap enforced by design."
 }

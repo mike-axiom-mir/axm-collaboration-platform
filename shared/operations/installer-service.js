@@ -220,6 +220,30 @@ function create(options) {
     if (record.verificationJobId && machine && typeof machine.get === 'function') {
       job = machine.get(record.verificationJobId); if (job) state = job.state;
     }
+    let currentModuleDigest = null, currentDigestState = record.appliedAt ? 'UNKNOWN' : 'NOT_APPLIED';
+    if (record.appliedAt) {
+      const target = path.join(toolsRoot, record.moduleId);
+      if (!fs.existsSync(target)) currentDigestState = 'MISSING';
+      else {
+        try {
+          currentModuleDigest = moduleDigest(target);
+          currentDigestState = currentModuleDigest === record.digest ? 'MATCH' : 'DRIFT';
+        } catch (_) {
+          currentDigestState = 'UNKNOWN';
+        }
+      }
+    }
+    const receiptAppliesToCurrentModule = currentDigestState === 'MATCH';
+    const rollbackBackupRetained = !!(record.appliedAt && record.backupId && record.state !== 'ROLLED_BACK');
+    const rollbackAvailable = rollbackBackupRetained && receiptAppliesToCurrentModule;
+    let truth = state === 'PASS' ? 'The installed module selftest passed.' : state === 'FAIL' ? (rollbackBackupRetained ? 'The installed module selftest failed; the retained previous generation can be rolled back directly.' : 'The installed module selftest failed; no retained previous generation is available for rollback.') : state === 'RUNNING' ? 'The installed module selftest is still running.' : state === 'NOT_AVAILABLE' ? 'No executable module selftest was available; runtime behavior remains unverified.' : 'No passing post-install runtime receipt exists.';
+    if (record.appliedAt && !receiptAppliesToCurrentModule) {
+      truth = currentDigestState === 'DRIFT'
+        ? 'Historical selftest receipt only: the current module digest differs from the installed candidate; current verification is UNKNOWN.'
+        : currentDigestState === 'MISSING'
+          ? 'Historical selftest receipt only: the installed module is no longer present; current verification is UNKNOWN.'
+          : 'Selftest receipt scope is UNKNOWN because the current module digest could not be measured.';
+    }
     return {
       schema: 'axm.module-post-install-verification/v1',
       state,
@@ -228,8 +252,13 @@ function create(options) {
       endedAt: job ? job.endedAt : null,
       output: job ? String(job.output || '').slice(-12000) : '',
       selftestAvailable: ['RUNNING', 'PASS', 'FAIL', 'ERROR'].includes(state),
-      rollbackAvailable: !!(record.appliedAt && record.backupId && record.state !== 'ROLLED_BACK'),
-      truth: state === 'PASS' ? 'The installed module selftest passed.' : state === 'FAIL' ? 'The installed module selftest failed; the retained previous generation can be rolled back directly.' : state === 'RUNNING' ? 'The installed module selftest is still running.' : state === 'NOT_AVAILABLE' ? 'No executable module selftest was available; runtime behavior remains unverified.' : 'No passing post-install runtime receipt exists.'
+      candidateDigest: record.digest,
+      currentModuleDigest,
+      currentDigestState,
+      receiptAppliesToCurrentModule,
+      rollbackBackupRetained,
+      rollbackAvailable,
+      truth
     };
   }
 

@@ -1,19 +1,56 @@
-# Robo Pong Cross 003
+# AXM Pong: Cross 003
 
-Four-player modular Robo Pong map. P1 guards the bottom, P2 the top, P3 the left, and P4 the right. Every player starts with five lives. Missing the ball costs one life; an eliminated side seals into a bounce wall so play continues until one survivor remains.
+Status: **WORKING TEST** · local browser and Game Night build · physical 3/4-phone QA pending.
 
-The central diamond reflects each ball on a diagonal normal and adds a small random deflection, so a strike can redirect toward any of the four goals. Three balls stay active while three or four players survive. When only two players remain, the surge ball retires and the duel continues with two balls. Human seats use a browser phone controller; adapter seats use the same authoritative movement and random-special rules.
+Cross is the 3–4 player half of the AXM Pong pair. It uses one server-authoritative four-edge arena, real shared-screen presentation, controller-only phone routes, three arena maps, and separate competitive and cooperative rules.
 
-Anti-loop design: paddle motion adds real tangential spin, the diamond rotates slowly, and active balls exchange momentum when they collide. A final safety nudge activates only after six repeated exchanges between the same pair of sides.
+## Play modes
 
-Play stays continuous after a miss: only the ball that escaped briefly respawns at midfield, while every other ball and paddle keeps moving. Each successful paddle contact also reduces that paddle's normal size by 1% for the rest of the match; Mega Shield remains a temporary full-size boost.
+- **Cross Versus — 3–4 players.** Each ready seat guards one edge. Missing the ball costs a life; an eliminated or unused edge seals into a bounce wall until one light remains.
+- **Relay Co-op — 3–4 players.** Different teammates must touch the light to arm the relay. An armed strike against the central Warden damages it; a missed team edge damages the shared core. In a three-seat session the unused fourth edge becomes the Warden side.
 
-Controls: the two direction buttons move along your own wall. On a phone controller, tap anywhere on the arena view to activate the currently held random power; the colored special button and Space remain available too.
+## Arenas
 
-Supported phones use short vibration cues when movement engages, a power fires, a life is lost, or the player is eliminated.
+1. **Cathedral Cross — Seal the Breach.** Square, dark, and immediately readable for competitive play.
+2. **Shattered Line — Hold the Fracture.** A perspective corridor with a smaller, faster central prism.
+3. **Relay Protocol — Break the Warden.** A diamond light chamber with the largest Warden core and strongest relay focus.
 
-The stable QR controller URL now caches the single-file controller shell in the phone browser. On secure or localhost connections a service worker adds an offline shell fallback and install prompt; ordinary same-Wi-Fi HTTP still receives reusable browser-cache headers. Only the interface shell is cached. Inputs, lives, balls, powers and authoritative match state always remain live on the laptop, so a cached screen never invents gameplay.
+Each arena uses a generated project-local raster plate behind live paddles, balls, trails, lives, relay state, Warden state, and outcomes. The Aetherglass Lighting Director receives explicit match events for finite pulses; it never controls gameplay or permissions.
 
-The random pool also contains two attacks: Chaos Curve redirects the most useful midfield ball toward a living rival, while Power Return arms the next paddle contact with extra speed and stronger spin.
+## Controls
 
-For four-player shared-screen matches, phones render a controller-only dashboard instead of a duplicate arena: two oversized translucent movement zones, a large ability panel, personal lives, and the four-player score strip. This removes continuous phone-side canvas rendering and lowers controller load. The shared screen keeps the full 1000×1000 presentation, while the authoritative state stream runs at 25 updates per second and labels every side's held special, active effect, and cooldown.
+- Phone/touch: two edge-relative movement buttons and **USE POWER**.
+- Shared keyboard: P1 **A / D**, P2 **J / L**, P3 **W / S**, P4 **Up / Down Arrow**.
+- Number keys **1–4** trigger the corresponding player's power when that seat is human.
+- **Escape** pauses or resumes from the shared screen.
+
+The controller-only phone layout preserves the cached shell and avoids rendering a duplicate full arena.
+
+## Human, adapter, and Host AI seats
+
+Cross keeps all three seat types distinct. Human controllers and explicit external adapters both submit allowlisted movement/power intentions through `cross-seat-authority-v1`; game-local `ai` paddles alone use the built-in server driver. The three-seat co-op Warden is therefore Host AI, while an unconnected adapter remains still instead of being silently automated.
+
+The host-local `/api/host/bootstrap` route issues runtime controller links and private adapter bindings. Adapter observations are token-bound projections of the shared arena and that seat's HUD, never the raw input buffers, capability tokens, random state, or client-authored outcomes. See `AI_NATIVE_SEAT_CONTRACT.md` for the exact packet, observation, and evidence boundary.
+
+## Local runtime
+
+The Game Hub manages `runtime/neon-pong-cross-server.cjs` on port `8793`.
+
+Direct local routes:
+
+- Shared screen: `http://127.0.0.1:8793/?room=AXM1&player=screen`
+- Controller: `http://127.0.0.1:8793/?room=AXM1&player=p1` (replace `p1` with `p2`, `p3`, or `p4`)
+
+The older `robo-pong-cross-server.cjs` and `robo-pong-cross-client.html` remain as a rollback/reference checkpoint; the manifest launches the neon Cross runtime.
+
+Run `node neon-cross-selftest.cjs` from this package folder for the 3-player co-op, 3-player versus, and 4-player versus authoritative-state smoke test.
+
+## Controller disconnect recovery
+
+Every accepted human input renews a bounded server-side lease. The controller shell sends a 750 ms heartbeat, while the server clears held movement and marks the seat disconnected after 2.5 seconds without input traffic. A later valid packet reconnects the same seat and resumes control without resetting the authoritative match.
+
+`neon-cross-selftest.cjs` runs this lifecycle with a short test lease: it proves that a vanished controller cannot leave a ghost movement behind and that the same seat can reconnect while the match tick and phase continue. This is code-level disconnect recovery evidence; simultaneous physical-phone and same-Wi-Fi QA remain pending separately.
+
+## Honest verification boundary
+
+Local HTTP, authoritative state, three/four-seat configuration, map/mode behavior, keyboard/controller delivery, pause, and browser rendering can be tested on this machine. Simultaneous physical-device input, vibration, same-Wi-Fi recovery, and installable-shell behavior remain separate phone QA.

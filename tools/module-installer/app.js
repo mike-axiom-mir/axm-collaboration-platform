@@ -110,12 +110,16 @@
   function verificationCell(item) {
     var governance = item.governance || {};
     var verification = item.verification || { state: 'NOT_RUN' };
+    var receiptCurrent = verification.receiptAppliesToCurrentModule === true;
     var gate = governance.installEligible ? badge('ELIGIBLE TO REQUEST', 'warn') : badge(item.appliedAt ? 'APPLIED' : 'HELD', item.appliedAt ? 'ok' : 'bad');
-    var verify = item.appliedAt ? '<br>' + badge('SELF-TEST ' + verification.state, verificationTone(verification)) : '';
-    var rollback = verification.state === 'FAIL' && verification.rollbackAvailable
+    var verify = item.appliedAt ? '<br>' + badge((receiptCurrent ? 'SELF-TEST ' : 'HISTORICAL SELF-TEST ') + verification.state, receiptCurrent ? verificationTone(verification) : 'warn') : '';
+    var rollback = receiptCurrent && verification.state === 'FAIL' && verification.rollbackAvailable
       ? '<br><button class="secondary mini-action" data-prepare-rollback="' + O.esc(item.moduleId) + '">Roll back previous</button>'
       : '';
-    return gate + verify + rollback + '<br><span class="muted">' + O.esc(item.appliedAt ? (verification.truth || '') : (governance.holdReason || '')) + '</span>';
+    var truth = receiptCurrent
+      ? (verification.truth || '')
+      : (verification.currentDigestState === 'DRIFT' ? (verification.truth || 'Historical receipt only: the current module digest differs; current verification is UNKNOWN.') : 'Historical receipt only: current digest comparison is unavailable; current verification is UNKNOWN.');
+    return gate + verify + rollback + '<br><span class="muted">' + O.esc(item.appliedAt ? truth : (governance.holdReason || '')) + '</span>';
   }
 
   function load() {

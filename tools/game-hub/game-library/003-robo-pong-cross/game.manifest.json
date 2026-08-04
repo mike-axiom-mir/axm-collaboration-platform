@@ -1,15 +1,29 @@
 {
   "slot": "003",
   "game_id": "003-robo-pong-cross",
-  "name": "Robo Pong Cross",
+  "name": "AXM Pong: Cross",
   "status": "WORKING TEST",
-  "description": "Four-player last-bot-standing Robo Pong arena with four goals and a chaotic central diamond.",
-  "version": "0.1.1-cross",
-  "min_players": 4,
+  "description": "Three- or four-player dark-glass Pong with competitive last-light-standing and shared-core co-op across three arenas.",
+  "version": "2.1.0-neon-cross",
+  "min_players": 3,
   "max_players": 4,
+  "play_modes": [
+    {
+      "id": "cross_versus",
+      "label": "Cross Versus · 3-4 players",
+      "description": "Three or four ready seats defend their own edge until one light remains.",
+      "party_rule": "party-a-only"
+    },
+    {
+      "id": "cross_coop",
+      "label": "Relay Co-op · 3-4 players",
+      "description": "Build a multi-player relay, arm the shared strike, and break the Warden before the team core falls.",
+      "party_rule": "party-a-only"
+    }
+  ],
   "allowed_seat_types": ["human", "adapter", "ai"],
   "launch": {
-    "server_entry": "runtime/robo-pong-cross-server.cjs",
+    "server_entry": "runtime/neon-pong-cross-server.cjs",
     "client_entry": "/games/003/?room=AXM1&player=p1",
     "spectator_client_entry": "/games/003/?room=AXM1&player=screen",
     "ready_path": "/state?room=AXM1",
@@ -18,25 +32,28 @@
     "local_only_default": true
   },
   "join": {"supports_qr": true, "supports_lan_link": true, "supports_room_code": true, "room_code": "AXM1"},
-  "controls": {"phone_controller": true, "cached_controller_shell": true, "installable_when_secure": true, "keyboard": true, "mouse": false, "touch": true},
+  "controls": {"profile_id": "axm-pong-cross-edge-v1", "intent_protocol": "axm-semantic-input-v1", "adapter_observation": "axm-seat-screen-semantics-v1", "phone_controller": true, "cached_controller_shell": true, "installable_when_secure": true, "keyboard": true, "mouse": true, "touch": true, "shared_screen": true},
   "session": {"passes_seat_map": true, "returns_result_summary": true, "drop_in_out_later": false},
-  "rules": {"no_hidden_players": true, "host_launch_required": true, "game_does_not_override_hub_seats": true},
+  "rules": {"no_hidden_players": true, "host_launch_required": true, "game_does_not_override_hub_seats": true, "local_authoritative_state": true, "clients_send_input_intentions": true, "human_and_adapter_same_input_gate": true, "adapter_observation_is_seat_visible_only": true, "host_ai_fill_empty_seats_default": false, "runtime_internet_required": false},
   "verification": {
     "game_night": {
       "schema": "axm.game-night-seams/v1",
-      "controller_delivery": "shared-runtime",
-      "controller_evidence": ["runtime/robo-pong-cross-client.html"],
+      "controller_delivery": "runtime-issued",
+      "runtime_metadata_endpoint": "/api/host/bootstrap",
+      "controller_evidence": ["runtime/neon-pong-cross-client.html", "runtime/neon-pong-cross.js", "runtime/seat-interface.cjs", "neon-cross-selftest.cjs"],
       "state_authority": "server",
       "host_reload_recovery": "game-hub-active-launch",
       "shared_screen_occupies_seat": false,
-      "disconnect_recovery": "pending",
+      "disconnect_recovery": "verified",
+      "disconnect_recovery_evidence": ["README.md", "neon-cross-selftest.cjs"],
       "blocking_overlay_escape": "not-applicable",
       "physical_phone_qa": "pending",
-      "adapter_state_interface": "pending"
+      "adapter_state_interface": "verified",
+      "adapter_state_evidence": ["AI_NATIVE_SEAT_CONTRACT.md", "runtime/seat-interface.cjs", "neon-cross-selftest.cjs"]
     }
   },
   "package": {
-    "source_status": "clean-local-build",
-    "required_paths": ["README.md", "runtime/robo-pong-cross-server.cjs", "runtime/robo-pong-cross-client.html", "runtime/controller-sw.js", "runtime/manifest.webmanifest", "runtime/controller-icon.svg"]
+    "source_status": "working-local-neon-expansion-disconnect-and-adapter-seams-verified-physical-phone-qa-pending",
+    "required_paths": ["README.md", "AI_NATIVE_SEAT_CONTRACT.md", "neon-cross-selftest.cjs", "runtime/neon-pong-cross-server.cjs", "runtime/seat-interface.cjs", "runtime/neon-pong-cross-client.html", "runtime/neon-pong-cross.css", "runtime/neon-pong-cross.js", "runtime/assets/maps/cathedral-cross-plate.png", "runtime/assets/maps/shattered-line-plate.png", "runtime/assets/maps/relay-protocol-plate.png", "runtime/controller-sw.js", "runtime/manifest.webmanifest", "runtime/controller-icon.svg"]
   }
 }

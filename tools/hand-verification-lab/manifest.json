@@ -1,0 +1,32 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "hand-verification-lab",
+  "name": "AXM Hand Verification Lab",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "VERIFY",
+  "layer": "build",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": ["hands", "verification", "evidence", "receipts", "contracts", "local-first"],
+  "uses": ["hand-specification-foundry", "browser-dom", "explicit-download"],
+  "permissions": [],
+  "actions": [
+    "load an AXM missing-hand specification",
+    "derive a deterministic ten-family verification plan",
+    "record operator verdicts with evidence pointers and observations",
+    "downgrade unevidenced pass claims to unknown",
+    "download explicit plan and receipt JSON"
+  ],
+  "accepts": ["axm.missing-hand-specification/v1", "application/json"],
+  "produces": ["axm.hand-verification-plan/v1", "axm.hand-verification-receipt/v1"],
+  "readiness": ["local-browser", "hand-specification-foundry"],
+  "verifiedAt": null,
+  "summary": "Turns a missing-hand specification into a bounded verification matrix and an honest operator evidence receipt without executing or promoting the hand.",
+  "notes": "Receipts record declarations, not independent runtime proof. The module grants no install, execution, permission, promotion, release or CANON authority."
+}

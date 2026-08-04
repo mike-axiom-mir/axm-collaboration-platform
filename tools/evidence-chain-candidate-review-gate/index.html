@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Evidence Chain Candidate Review Gate</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AXM Workshop review adapter · TEST</p>
+        <h1>Evidence Chain Candidate Review Gate</h1>
+        <p class="lede">Bind and independently check the complete structural recovery bundle before recording a fixed, non-authorizing review decision.</p>
+      </div>
+      <aside class="truth-card" aria-label="Review gate truth boundary">
+        <strong>Review decision ≠ application authority</strong>
+        <p>A PASS proves internal structural consistency for these exact files. It does not prove authentic content, restore history, recover a session, or authorize applying the candidate.</p>
+      </aside>
+    </header>
+
+    <section class="panel" aria-labelledby="inputsHeading">
+      <div class="panel-heading">
+        <div><span>STEP 1</span><h2 id="inputsHeading">Bind four exact artifacts</h2></div>
+        <p id="bundleSummary">No bundle bound.</p>
+      </div>
+      <div class="input-grid">
+        <label for="sourceFile">Broken source JSONL
+          <small>The preserved segment inspected before candidate creation.</small>
+          <input id="sourceFile" type="file" accept=".jsonl,application/x-ndjson,text/plain">
+        </label>
+        <label for="inspectionFile">Source inspection receipt
+          <small>Must be axm.evidence-chain-inspection/v1.</small>
+          <input id="inspectionFile" type="file" accept=".json,application/json">
+        </label>
+        <label for="candidateFile">Structural candidate JSONL
+          <small>The unapplied candidate emitted by Recovery Foundry.</small>
+          <input id="candidateFile" type="file" accept=".jsonl,application/x-ndjson,text/plain">
+        </label>
+        <label for="recoveryFile">Recovery candidate receipt
+          <small>Must be axm.evidence-chain-recovery-candidate/v1.</small>
+          <input id="recoveryFile" type="file" accept=".json,application/json">
+        </label>
+      </div>
+      <div class="actions" aria-label="Bundle actions">
+        <button class="primary" id="bindButton" type="button">Bind selected files</button>
+        <button class="secondary" id="exampleButton" type="button">Load synthetic review bundle</button>
+        <button id="clearButton" type="button">Clear gate</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="assessmentHeading">
+      <div class="panel-heading">
+        <div><span>STEP 2</span><h2 id="assessmentHeading">Run independent assessment</h2></div>
+        <p>Digest-only output</p>
+      </div>
+      <div class="actions">
+        <button class="primary" id="assessButton" type="button" disabled>Assess exact bundle</button>
+        <button id="assessmentDownload" type="button" disabled>Download assessment</button>
+      </div>
+      <p class="status-line" id="status" role="status" aria-live="polite">Loading a synthetic bundle…</p>
+      <pre id="assessmentPreview">No assessment produced.</pre>
+    </section>
+
+    <section class="panel" aria-labelledby="decisionHeading">
+      <div class="panel-heading">
+        <div><span>STEP 3</span><h2 id="decisionHeading">Record a bounded decision</h2></div>
+        <p>No free-form or identity fields</p>
+      </div>
+      <div class="decision-grid">
+        <label for="decisionChoice">Fixed review choice
+          <select id="decisionChoice">
+            <option value="HOLD_FOR_MORE_EVIDENCE">Hold for more evidence</option>
+            <option value="REJECT_CANDIDATE">Reject candidate</option>
+            <option value="ACCEPT_STRUCTURE_FOR_SEPARATE_APPLICATION_REVIEW">Accept structure for separate application review</option>
+          </select>
+        </label>
+        <div class="acknowledgements">
+          <label for="noAuthorityAck"><input id="noAuthorityAck" type="checkbox"> <span>I understand this decision grants no authority to apply the candidate.</span></label>
+          <label for="authenticityAck"><input id="authenticityAck" type="checkbox"> <span>I understand content authenticity and source history remain unproven.</span></label>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="decisionButton" type="button" disabled>Record fixed decision</button>
+        <button id="decisionDownload" type="button" disabled>Download decision receipt</button>
+      </div>
+      <pre id="decisionPreview">No decision recorded.</pre>
+    </section>
+  </main>
+
+  <script src="../evidence-chain-inspector/evidence-chain-core.js"></script>
+  <script src="../evidence-chain-recovery-foundry/evidence-chain-recovery-core.js"></script>
+  <script src="evidence-chain-review-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
