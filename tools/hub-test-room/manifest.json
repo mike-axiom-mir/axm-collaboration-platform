@@ -1,13 +1,19 @@
 {
+  "schema": "axm.tool-manifest/v1",
   "id": "hub-test-room",
   "name": "Test Room",
   "version": "v1.0",
   "status": "TEST",
   "entry": "index.html",
+  "kind": "product",
+  "contract": "module.contract.json",
   "type": "hub-module",
   "hubApiVersion": "1.0",
+  "audience": "human",
+  "risk": "LOW",
   "tags": ["hub", "verify", "test", "memory"],
-  "uses": [],
+  "uses": ["hub-module-bridge", "browser-local-storage", "same-origin-module-template"],
   "permissions": [],
-  "notes": "Runs the six hub verification criteria live (saved / reopen / list survives / no blank screen / settings survive / log records) and reports PASS or FAIL. On all-pass it tells the shell to mark this module WORKING. Also the reference implementation of a full-passport hub module."
+  "summary": "Run six bounded Hub-local persistence, reopen, registry, paint, settings and log probes.",
+  "notes": "A six-pass result emits a Hub-local lifecycle verification intent. It does not change this manifest status, promote the module, grant permissions or confer CANON. A real Hub/browser reload remains required for the reopen probe."
 }

@@ -1,0 +1,29 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "branch-backfeed-lab",
+  "name": "AXM Branch Backfeed Lab",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "LOW",
+  "tags": ["branch", "backfeed", "capsule", "sha256", "intake", "local-first"],
+  "uses": ["files"],
+  "permissions": [],
+  "actions": [
+    "read an explicitly selected branch capsule directory",
+    "validate capsule structure paths dependencies byte counts and SHA-256 inventory",
+    "export a bounded intake receipt for later Graft review"
+  ],
+  "accepts": ["axm.branch-backfeed-capsule/v1"],
+  "produces": ["axm.branch-backfeed-intake-receipt/v1"],
+  "readiness": [],
+  "summary": "A local browser verifier for dependency-free branch capabilities; it proves capsule integrity but never installs or promotes code.",
+  "notes": "EXPERIMENTAL bootstrap receiver. A PASS means the selected bytes match the declared capsule and dependency boundary. It does not prove behavior, quality, safety, compatibility, registration, or CANON readiness."
+}

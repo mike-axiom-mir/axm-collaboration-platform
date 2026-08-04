@@ -1,0 +1,75 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "verifier",
+  "version": "v2.0",
+  "provides": [
+    "existing-core-verifier-report-inspection",
+    "normalized-verification-spine-report-inspection",
+    "category-and-profile-evidence-exploration",
+    "in-memory-user-check-and-retirement-proposal-editing",
+    "append-only-failure-memory-revision-editing",
+    "explicit-verifier-config-candidate-download"
+  ],
+  "consumes": [
+    "hub:module-bridge/v1",
+    "same-origin:/verify.config.json",
+    "same-origin:/exports/verify-report.txt",
+    "same-origin:/exports/verification-spine-report.json",
+    "same-origin:/exports/game-night-seam-report.json",
+    "same-origin:/exports/module-seam-gaps.json",
+    "same-origin:/shared/verification-spine/registry.json",
+    "same-origin:verification-spine-category-packs",
+    "browser:blob-download",
+    "human:explicit-review-replace-and-terminal-run"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "browser-visible:existing-verification-evidence",
+      "local-file:verify.config.json-candidate"
+    ],
+    "accepts": [
+      "hub:init",
+      "same-origin:existing-verifier-reports",
+      "same-origin:current-root-verifier-config",
+      "human:explicit-edit-and-download-action"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  },
+  "boundaries": {
+    "reads": [
+      "same-origin:root-verifier-config",
+      "same-origin:generated-verification-reports",
+      "same-origin:verification-spine-registry-and-category-packs"
+    ],
+    "explicitWrites": [
+      "user-download:verify.config.json-candidate",
+      "hub:read-only-action-log-intent"
+    ],
+    "refuses": [
+      "direct-root-config-write",
+      "hub-module-state-write",
+      "browser-command-execution",
+      "automatic-verifier-execution",
+      "downloaded-config-as-applied-state",
+      "downloaded-config-as-verification-evidence",
+      "report-freshness-claim",
+      "report-display-as-new-pass-evidence",
+      "specialist-verifier-authority-takeover",
+      "core-check-silent-mutation",
+      "silent-failure-memory-deletion",
+      "failure-memory-revision-without-reason",
+      "manual-review-as-pass",
+      "permission-request",
+      "external-network-access",
+      "manifest-status-change",
+      "automatic-workshop-status-promotion",
+      "canon-authority"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.fuzz-regression-harness",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.fuzz-regression.finding/v1",
+    "axm.fuzz-regression.fixture/v1"
+  ],
+  "consumes": [
+    "seed-inputs",
+    "bounded-mutator",
+    "target-function"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_VERIFY_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/qa-lab",
+      "tools/repairbuddy"
+    ],
+    "reason": "Creates bounded minimized fixtures; it cannot claim absence of bugs outside explored inputs."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "verification-as-permission",
+      "selftest-as-runtime-proof",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "hidden-evidence-omission"
+    ]
+  }
+}

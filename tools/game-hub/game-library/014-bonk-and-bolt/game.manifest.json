@@ -1,0 +1,113 @@
+{
+  "slot": "014",
+  "game_id": "014-bonk-and-bolt",
+  "name": "Bonk & Bolt: The 24th Hour",
+  "status": "FIRST EDITION · PLAYABLE",
+  "description": "A full-3D open-world comedy RPG where independent adventures converge after 24 saved play-hours and miniature robots—not the player—must win the final battle.",
+  "version": "1.0.0-first-edition",
+  "min_players": 1,
+  "max_players": 2,
+  "default_visible_seats": 2,
+  "allowed_seat_types": ["human"],
+  "launch": {
+    "server_entry": "runtime/server.js",
+    "client_entry": "/games/014/",
+    "spectator_client_entry": "/games/014/",
+    "ready_path": "/health",
+    "port": 8814,
+    "start_command": "managed-by-game-hub",
+    "local_only_default": true
+  },
+  "join": {
+    "supports_qr": false,
+    "supports_lan_link": false,
+    "supports_room_code": false,
+    "screen_occupies_seat": false,
+    "mode": "same-device-shared-camera"
+  },
+  "controls": {
+    "profile_id": "bonk-bolt-isometric-action-v1",
+    "intent_protocol": "local-direct-input-v1",
+    "phone_controller": false,
+    "keyboard": true,
+    "mouse": true,
+    "gamepad": true,
+    "touch": false,
+    "shared_screen": true,
+    "player_one": ["WASD", "mouse", "Space", "Q", "Shift", "E"],
+    "player_two": ["arrow keys", "/", ",", ".", "standard gamepad"]
+  },
+  "session": {
+    "passes_seat_map": true,
+    "returns_result_summary": false,
+    "drop_in_out_later": false,
+    "target_minutes": 1440,
+    "persistent_local_save": true
+  },
+  "rules": {
+    "no_hidden_players": true,
+    "host_launch_required": true,
+    "game_does_not_override_hub_seats": true,
+    "local_authoritative_state": true,
+    "runtime_internet_required": false,
+    "team_mode": "solo-or-two-human-local-coop",
+    "split_screen": false,
+    "shared_camera": true,
+    "simulation_authority": "browser-local",
+    "save_authority": "browser-localStorage",
+    "launch_session_authority": "managed-local-server",
+    "no_away_pressure": true,
+    "no_consumable_combat_upgrades": true
+  },
+  "verification": {
+    "game_night": {
+      "schema": "axm.game-night-seams/v1",
+      "controller_delivery": "shared-runtime",
+      "controller_evidence": ["runtime/index.html", "tests/package-selftest.js"],
+      "state_authority": "server",
+      "state_authority_scope": "Game Hub launch session only; world save and real-time simulation are explicitly browser-local",
+      "host_reload_recovery": "native-resume",
+      "shared_screen_occupies_seat": false,
+      "disconnect_recovery": "verified",
+      "blocking_overlay_escape": "verified",
+      "physical_phone_qa": "not-applicable"
+    }
+  },
+  "package": {
+    "source_status": "mixed-original-and-cc0-local-threejs-first-edition",
+    "required_paths": [
+      "README_FIRST.md",
+      "KNOWN_LIMITS.md",
+      "ASSET_PROVENANCE.md",
+      "CAPABILITY_GAPS.md",
+      "BUILD_RECEIPT.md",
+      "START_BONK_AND_BOLT.cmd",
+      "START_BONK_AND_BOLT.ps1",
+      "evidence/requirements.json",
+      "evidence/capabilities.json",
+      "evidence/capability-gap-report.json",
+      "evidence/visual-verification.json",
+      "runtime/server.js",
+      "runtime/index.html",
+      "runtime/styles.css",
+      "runtime/game-data.js",
+      "runtime/systems.js",
+      "runtime/motion-system.js",
+      "runtime/coop-camera.js",
+      "runtime/hero-rig-contract.js",
+      "runtime/app.js",
+      "runtime/vendor/three.module.js",
+      "runtime/vendor/GLTFLoader.js",
+      "runtime/vendor/BufferGeometryUtils.js",
+      "runtime/assets/bonk-bolt-key-art-v1.png",
+      "runtime/assets/characters/quaternius/animated-men/man-casual-a.glb",
+      "runtime/assets/characters/quaternius/animated-men/LICENSE.txt",
+      "tests/systems.test.js",
+      "tests/hero-motion.test.js",
+      "tests/coop-camera.test.js",
+      "tests/hero-rig-contract.test.js",
+      "tests/package-selftest.js",
+      "tests/server-http.test.js"
+    ]
+  }
+}

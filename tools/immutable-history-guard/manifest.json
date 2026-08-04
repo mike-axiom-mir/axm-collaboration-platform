@@ -1,0 +1,29 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "organ",
+  "id": "immutable-history-guard",
+  "name": "AXM Immutable History Guard",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "LOW",
+  "tags": ["migration", "history", "continuity", "fork", "dependency-free"],
+  "uses": [],
+  "permissions": [],
+  "actions": [
+    "assess a proposed migration against declared pinned fields and forbidden flags",
+    "hold migrations without a rollback plan",
+    "require a new branch id for an explicit fork"
+  ],
+  "accepts": ["axm.immutable-history-policy/v1", "axm.migration-proposal/v1"],
+  "produces": ["axm.migration-assessment/v1"],
+  "readiness": [],
+  "summary": "A pure proposal guard extracted from the simulator's no-silent-history-rewrite migration policy.",
+  "notes": "Assessment is deterministic policy output, not authorization to apply a migration. The caller owns hashing, persistence, and execution."
+}

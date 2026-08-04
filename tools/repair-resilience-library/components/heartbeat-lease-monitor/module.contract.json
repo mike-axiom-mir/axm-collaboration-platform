@@ -1,0 +1,39 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.heartbeat-lease-monitor",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.heartbeat-lease.status/v1"
+  ],
+  "consumes": [
+    "axm.platform-heartbeat.beat/v1"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "EXTEND_EXISTING",
+    "targets": [
+      "shared/heartbeat",
+      "tools/body-pulse"
+    ],
+    "reason": "Encodes expiring-lease semantics, coalesced missed beats and clock-skew tolerance beneath the existing Heartbeat surface."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-repair",
+      "automatic-restart",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "network-access",
+      "runtime-proof-claim",
+      "mutation-of-existing-axm-organs"
+    ]
+  }
+}

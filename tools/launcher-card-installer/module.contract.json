@@ -1,0 +1,48 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "launcher-card-installer",
+  "version": "v0_2",
+  "provides": [
+    "launcher-tool-catalog-loading",
+    "launcher-card-metadata-proposal-preview",
+    "proposal-only-effect-declaration",
+    "meaningful-action-gated-proposal-export",
+    "explicit-launcher-card-proposal-download",
+    "visible-no-fake-done-boundary"
+  ],
+  "consumes": [
+    "foundation:runtime",
+    "service:tools-catalog-read",
+    "foundation:meaningful-action-gate",
+    "browser:blob-download",
+    "browser:local-storage-growth-preference"
+  ],
+  "permissions": ["export"],
+  "handoffs": {
+    "emits": ["axm.launcher-card-proposal/v1"],
+    "accepts": ["api:tools-catalog"]
+  },
+  "boundaries": {
+    "writes": ["user-download:explicit-launcher-card-proposal-json"],
+    "refuses": [
+      "manifest-write",
+      "manifest-card-application",
+      "registry-write",
+      "cover-asset-copy",
+      "skin-pack-installation",
+      "automatic-proposal-application",
+      "automatic-tool-installation",
+      "automatic-permission-grant",
+      "automatic-status-promotion",
+      "external-network-fetch",
+      "runtime-verification-claim",
+      "canon-authority"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  }
+}

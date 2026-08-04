@@ -1,0 +1,41 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "evidence-chain-recovery-snapshot-staging-foundry",
+  "name": "AXM Evidence Chain Recovery Snapshot Staging Foundry",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "CREATE",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": ["evidence", "recovery", "snapshot", "staging", "package-manifest", "filesystem", "rollback", "local-first"],
+  "uses": ["evidence-chain-inspector", "evidence-chain-application-drill-runner", "evidence-chain-recovery-adapter-conformance-lab", "evidence-chain-recovery-adapter-integration-foundry", "Workshop-Packager-layout", "node-filesystem", "explicit-new-staging-root", "browser-file-picker"],
+  "permissions": [],
+  "actions": [
+    "validate exact broken source, reviewed candidate, application plan, conformance receipt, and integration packet lineage",
+    "confine the selected target to state/evidence-retention and a JSONL file",
+    "create one brand-new explicit staging root and one axm-workshop-full evidence-repair snapshot folder",
+    "write exact candidate bytes and an axm.workshop-package/v1 per-file digest manifest",
+    "verify staged bytes and manifest readback, retain successful staging for human review, and clean partial roots on failure"
+  ],
+  "accepts": [
+    "application/x-ndjson",
+    "axm.evidence-chain-recovery-application-plan/v1",
+    "axm.evidence-chain-recovery-adapter-conformance-receipt/v1",
+    "axm.evidence-chain-recovery-adapter-integration-acceptance-packet/v1"
+  ],
+  "produces": [
+    "axm.evidence-chain-recovery-snapshot-staging-request/v1",
+    "axm.evidence-chain-recovery-snapshot-staging-receipt/v1",
+    "axm.workshop-package/v1"
+  ],
+  "readiness": ["nodejs", "evidence-chain-inspector", "evidence-chain-application-drill-runner", "evidence-chain-recovery-adapter-integration-foundry", "writable-new-staging-parent"],
+  "verifiedAt": null,
+  "summary": "Materializes a reviewed evidence-chain candidate into an independently verified Recovery Center snapshot layout inside one explicit new staging root.",
+  "notes": "Staging-only. Success intentionally retains the exact new root for human review. The Foundry never writes Workshop Packager output, places a snapshot live, calls Recovery Center, checks or grants permission, applies or rolls back a target, installs, promotes, or changes CANON."
+}

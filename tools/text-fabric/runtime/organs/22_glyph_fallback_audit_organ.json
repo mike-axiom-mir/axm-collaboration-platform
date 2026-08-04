@@ -1,0 +1,25 @@
+{
+  "id": "axm.text.organ.glyph_fallback_audit",
+  "version": "0.7.0",
+  "label": "Glyph, Script & Fallback Audit Organ",
+  "purpose": "Inspects Unicode scripts, text direction, combining marks, hidden controls, replacement characters, private-use glyphs, and fallback requirements before visual effects are applied.",
+  "inputs": [
+    "text",
+    "language_direction",
+    "font_stack",
+    "platform"
+  ],
+  "outputs": [
+    "scripts",
+    "direction",
+    "risk",
+    "fallback_requirements",
+    "unicode_warnings"
+  ],
+  "rules": [
+    "Never assume one font covers every detected script.",
+    "Explicit bidi controls must be visible in diagnostics.",
+    "Replacement characters are treated as source-data errors.",
+    "Glitch jitter is reduced for RTL or mixed-direction text."
+  ]
+}

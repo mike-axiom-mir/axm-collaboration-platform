@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Evidence Chain Application Plan Foundry</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AXM Workshop planning adapter · TEST</p>
+        <h1>Evidence Chain Application Plan Foundry</h1>
+        <p class="lede">Turn one accepted structural review bundle into a short-lived, rollback-first operator plan—without reading a live target or granting permission to act.</p>
+      </div>
+      <aside class="truth-card" aria-label="Application plan truth boundary">
+        <strong>Plan ready ≠ ready to apply</strong>
+        <p>The plan names preconditions and stop rules. Recovery Center still needs a separate adapter, fresh preview, `recovery.apply` permission, safety copy, and trusted execution receipt.</p>
+      </aside>
+    </header>
+
+    <section class="panel" aria-labelledby="bundleHeading">
+      <div class="panel-heading">
+        <div><span>STEP 1</span><h2 id="bundleHeading">Bind the accepted review bundle</h2></div>
+        <p id="bundleSummary">No bundle bound.</p>
+      </div>
+      <div class="input-grid">
+        <label for="sourceFile">Preserved broken source JSONL
+          <small>Expected current digest for a later trusted preview.</small>
+          <input id="sourceFile" type="file" accept=".jsonl,application/x-ndjson,text/plain">
+        </label>
+        <label for="candidateFile">Reviewed candidate JSONL
+          <small>Must independently inspect as a valid chain.</small>
+          <input id="candidateFile" type="file" accept=".jsonl,application/x-ndjson,text/plain">
+        </label>
+        <label for="assessmentFile">Review assessment
+          <small>Must be an all-PASS axm.evidence-chain-recovery-review/v1.</small>
+          <input id="assessmentFile" type="file" accept=".json,application/json">
+        </label>
+        <label for="decisionFile">Review decision
+          <small>Must be the fixed structural acceptance decision.</small>
+          <input id="decisionFile" type="file" accept=".json,application/json">
+        </label>
+      </div>
+      <div class="actions" aria-label="Bundle actions">
+        <button class="primary" id="bindButton" type="button">Bind selected files</button>
+        <button class="secondary" id="exampleButton" type="button">Load synthetic accepted bundle</button>
+        <button id="clearButton" type="button">Clear Foundry</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="postureHeading">
+      <div class="panel-heading">
+        <div><span>STEP 2</span><h2 id="postureHeading">Choose posture and hold the gates</h2></div>
+        <p>Fixed choices only</p>
+      </div>
+      <div class="planning-grid">
+        <label class="posture" for="posture">Application planning posture
+          <select id="posture">
+            <option value="ISOLATED_REPLACEMENT_COPY">Isolated replacement copy</option>
+            <option value="TRUSTED_RECOVERY_SERVICE_STAGING">Trusted Recovery Center staging</option>
+            <option value="MANUAL_OPERATOR_HANDOFF">Manual operator handoff</option>
+          </select>
+        </label>
+        <div class="acknowledgements">
+          <label for="digestAck"><input id="digestAck" type="checkbox"> <span>A trusted operator must recheck the live target digest immediately before any preview.</span></label>
+          <label for="backupAck"><input id="backupAck" type="checkbox"> <span>An immutable safety copy and its receipt are required before staging or application.</span></label>
+          <label for="permissionAck"><input id="permissionAck" type="checkbox"> <span>A fresh current-state-bound preview and `recovery.apply` permission are still required.</span></label>
+          <label for="authorityAck"><input id="authorityAck" type="checkbox"> <span>This plan grants no execution, application, recovery, promotion, or CANON authority.</span></label>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="planHeading">
+      <div class="panel-heading">
+        <div><span>STEP 3</span><h2 id="planHeading">Build the time-bounded plan</h2></div>
+        <p>15-minute planning window</p>
+      </div>
+      <div class="actions">
+        <button class="primary" id="buildButton" type="button" disabled>Build rollback-first plan</button>
+        <button id="downloadButton" type="button" disabled>Download plan receipt</button>
+      </div>
+      <p class="status-line" id="status" role="status" aria-live="polite">Loading a synthetic accepted bundle…</p>
+      <pre id="planPreview">No plan produced.</pre>
+    </section>
+  </main>
+
+  <script src="../evidence-chain-inspector/evidence-chain-core.js"></script>
+  <script src="../evidence-chain-recovery-foundry/evidence-chain-recovery-core.js"></script>
+  <script src="../evidence-chain-candidate-review-gate/evidence-chain-review-core.js"></script>
+  <script src="evidence-chain-application-plan-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

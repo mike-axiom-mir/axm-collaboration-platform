@@ -1,0 +1,44 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.schema-migration-repairer",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.schema-migration-plan/v1",
+    "axm.schema-migration-simulation/v1"
+  ],
+  "consumes": [
+    "versioned-record",
+    "migration-registry",
+    "target-version"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_2_SHADOW_REPAIR",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/module-contract-workbench",
+      "tools/schema-identity-observatory",
+      "tools/recovery-center"
+    ],
+    "reason": "Adds versioned shadow migrations and loss reporting without taking storage or install authority."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-patch-application",
+      "automatic-source-rewrite",
+      "automatic-install",
+      "automatic-dependency-change",
+      "automatic-promotion",
+      "automatic-canon",
+      "verification-from-original-tests-only",
+      "runtime-proof-claim"
+    ]
+  }
+}

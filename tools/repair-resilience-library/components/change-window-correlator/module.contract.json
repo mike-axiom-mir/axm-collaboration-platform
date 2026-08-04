@@ -1,0 +1,39 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.change-window-correlator",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.change-window-correlation/v1"
+  ],
+  "consumes": [
+    "failure-timestamp",
+    "change-events"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/diagnostics-operations-center",
+      "shared/module-evolution-ledger"
+    ],
+    "reason": "Correlates failures with versioned changes while explicitly refusing causation claims."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "root-cause-certainty",
+      "canonical-state-mutation",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

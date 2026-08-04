@@ -1,0 +1,189 @@
+{
+  "capability_interface": {
+    "authority_delta": "NONE",
+    "canon_delta": "NONE",
+    "consent_delta": "NONE",
+    "consumes_clause": "exact expected revision; immutable source content; parent/event digest; author and reason",
+    "human_gate_required_by_source_contract": false,
+    "input_contract": "axm.memory.reference-request/v2",
+    "invariants": [
+      "authority_delta_is_none",
+      "canon_delta_is_none",
+      "consent_delta_is_none",
+      "delivery_does_not_imply_acceptance",
+      "false positive and false negative remain possible",
+      "finding cannot gain authority",
+      "full_semantics_are_not_claimed",
+      "memory_payload_is_inert_data",
+      "new derived events never rewrite parents",
+      "old events remain readable",
+      "source state remains untouched",
+      "source_truth_is_not_created_by_contract_validity",
+      "trust_delta_is_none"
+    ],
+    "operation_kind": "OBSERVE",
+    "output_contract": "axm.memory.exact-duplicate-detector.finding/v1",
+    "postconditions": [
+      "exactly one accepted reference contract or typed HOLD is returned",
+      "no hidden mutation, authority gain, trust gain, consent gain, or CANON promotion occurs",
+      "result remains source-linked, replaceable, privacy-safe, and bounded to the declared purpose",
+      "receiver acceptance, semantic apply, owner acceptance, and integration remain separate future acts"
+    ],
+    "preconditions": [
+      "exact seed identity and purpose match",
+      "source references and digests align",
+      "authority, consent, role, permission, expiry, and namespace checks pass",
+      "boot prerequisites are ready or explicitly safe degraded mode is allowed",
+      "resource, cancellation, revision, output-root, and compatibility guards pass"
+    ],
+    "purpose_clause": "Distinguish byte-identical, canonical-identical, semantically similar, and genuinely separate memories while preserving source lineage.",
+    "semantic_effect": "REFERENCE_ONLY_NOT_IMPLEMENTED",
+    "state_effect_envelope": "NONE",
+    "trust_delta": "NONE"
+  },
+  "composition": {
+    "accepted_upstream_ids": [
+      "axm.memory.append-only-event-store",
+      "axm.memory.namespace-descriptor",
+      "axm.memory.provenance-envelope",
+      "axm.memory.source-authority-binder",
+      "axm.memory.state-transition-receipt"
+    ],
+    "authority_transfer": false,
+    "boot_prerequisites": [
+      "axm.memory.append-only-event-store",
+      "axm.memory.namespace-descriptor",
+      "axm.memory.provenance-envelope",
+      "axm.memory.source-authority-binder",
+      "axm.memory.state-transition-receipt"
+    ],
+    "consent_transfer": false,
+    "cycles_allowed_only_outside_boot_graph": true,
+    "delivery_does_not_imply_acceptance": true,
+    "downstream_candidates": [],
+    "handoff_schema": "axm.memory.capability-handoff/v1",
+    "runtime_collaborators": [],
+    "semantic_apply_implied": false,
+    "trust_transfer": false
+  },
+  "human_review": {
+    "automatic_apply": false,
+    "challenge_and_reopen_supported": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "packet_path": "modules/019_exact-duplicate-detector/review_packet.json",
+    "primary_actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN"
+    ]
+  },
+  "identity": {
+    "category_number": 2,
+    "name": "Exact Duplicate and Near-Duplicate Detector",
+    "number": 19,
+    "stable_id": "axm.memory.exact-duplicate-detector"
+  },
+  "pipeline_membership": [],
+  "profiles": {
+    "authority": {
+      "path": "profiles/authority_t0-observe-only.json",
+      "sha256": "cd0ab172d42347db99c456032b115f1f2a37f6942dada5f1a97fd5a18be26d57"
+    },
+    "category": {
+      "path": "profiles/category_02_immutable_lineage.json",
+      "sha256": "c68f17d6347bbbc098290e02e08c29283856c57ad240ee6f08db1bb1009dc6d3"
+    },
+    "operation": {
+      "path": "profiles/operation_observe.json",
+      "sha256": "eaf8c4b7863c7c18c9a04f507c59066672f7f7bf65d361ecef8b5c573906be94"
+    },
+    "proof_tiers": {
+      "path": "profiles/proof_tiers.json",
+      "sha256": "ab8646803825822a1c529c9a47163827813c5ea9f2c2034031bdd103245d2f00"
+    },
+    "review_surface": {
+      "path": "profiles/review_surface.json",
+      "sha256": "d46b074a8a703365fd7243c20fae436abd8346494a3100efff73f817a65431e5"
+    },
+    "risk": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    }
+  },
+  "proof": {
+    "achieved_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE"
+    ],
+    "boundary": "Executable deltas, composition, metamorphic, resource, review, and capsule evidence remain synthetic/local reference proof.",
+    "canon": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "specialist_verification": false,
+    "workshop_integration": false
+  },
+  "resource_policy": {
+    "batch_and_step_limits_required": true,
+    "cancellation_must_be_checked": true,
+    "network_required": false,
+    "output_path_must_remain_under_exact_owned_root": true,
+    "profile_ref": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    },
+    "symlink_escape_forbidden": true,
+    "unbounded_scan_forbidden": true
+  },
+  "schema": "axm.memory.capability-delta/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "base_contract_file_sha256": "c033eee45f0370f0ff18324d063f2c297e71801a1d984f2a216b964eb11e54f5",
+    "body_sha256": "fce582377cdf81a63d64dff26007569da656f853fb24b02d9d820f5f1e75962a",
+    "delta_core_sha256": "69d9c9a24fc0d0a7ffed04fc570a3a9f2dae082a19a1ab44de3b8358229facda"
+  },
+  "source_run50": {
+    "build_intake_file_sha256": "98d9b0ab124eee8e293cfa92754597512ce0b9e89110d56d88480bae61495f49",
+    "candidate_contract_body_sha256": "537f035f2d69f23593562d901058b339d536555b4f9c7ace6b8d6d2761e2162d",
+    "candidate_contract_file_sha256": "c033eee45f0370f0ff18324d063f2c297e71801a1d984f2a216b964eb11e54f5",
+    "candidate_contract_path": "modules/019_exact-duplicate-detector/candidate.contract.json",
+    "fixtures_file_sha256": "c3d32a6cf1a4b3ccd80e54952cca05cda13276a941a87cf7c588b3d526ed7c8a",
+    "run50_posture_preserved": true,
+    "source_authority": "T0_OBSERVE_ONLY",
+    "source_operation_kind": "OBSERVE",
+    "source_purpose": "Distinguish byte-identical, canonical-identical, semantically similar, and genuinely separate memories while preserving source lineage.",
+    "source_risk": "HIGH",
+    "source_run50_status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE",
+  "validation": {
+    "cache_is_evidence_reuse_not_truth": true,
+    "cached_result_cannot_promote_canon": true,
+    "harness_version": "axm-memory-run60-harness-v1",
+    "proof_cache_key": "7a9400f24fe16ae8fba0fda1d40152dc684e175c475cc500594b5c4ba343a449",
+    "revalidation_triggers": [
+      "candidate contract or fixture digest changes",
+      "capability delta core changes",
+      "referenced shared profile digest changes",
+      "validation harness version changes",
+      "boot prerequisite interface changes",
+      "privacy, authority, or lifecycle policy changes"
+    ],
+    "test_suites": [
+      "run50_full_reference_suite",
+      "run60_delta_preservation",
+      "run60_capability_interface",
+      "run60_composition_graph",
+      "run60_selective_validation",
+      "run60_metamorphic_laws",
+      "run60_resource_faults",
+      "run60_reference_pipelines",
+      "run60_human_review",
+      "run60_capsule_export",
+      "run60_efficiency",
+      "run60_roundtrip"
+    ]
+  }
+}

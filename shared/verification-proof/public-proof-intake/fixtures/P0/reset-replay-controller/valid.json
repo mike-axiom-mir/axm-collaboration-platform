@@ -1,0 +1,65 @@
+{
+  "packet_schema_version": "axm.proof.run-packet.v0.3.0",
+  "packet_id": "synthetic:reset-replay-controller:valid",
+  "seed_id": "axm.proof.reset-replay-controller",
+  "seed_schema_version": "axm.proof.seed.v0.2.0",
+  "fixture_class": "VALID",
+  "run_mode": "VALIDATE_ONLY",
+  "authority": {
+    "scope": "SCHEMA_AND_DISPOSABLE_SYNTHETIC_FIXTURE_ONLY",
+    "live_activation_allowed": false,
+    "canon_authority": false,
+    "publication_authority": false,
+    "merge_gate_required": true
+  },
+  "network_policy": "DENY",
+  "write_policy": "NONE",
+  "inputs": {
+    "journey_id": "synthetic:reset_replay_controller:journey_id",
+    "schema_version": "axm.proof.synthetic-input.v0.1.0",
+    "proof_ref": "synthetic:reset_replay_controller:proof_ref",
+    "audience_route_ref": "synthetic:reset_replay_controller:audience_route_ref",
+    "entry_state": {
+      "state": "SYNTHETIC_CLEAN",
+      "digest": "sha256:placeholder-reset_replay_controller-entry_state"
+    },
+    "steps": [
+      {
+        "sequence": 1,
+        "action": "validate synthetic packet",
+        "authority": "SCHEMA_ONLY"
+      }
+    ],
+    "expected_observations": [
+      {
+        "sequence": 1,
+        "observation": "Validator returns the predeclared synthetic outcome."
+      }
+    ],
+    "reset_target": "synthetic:reset_replay_controller:reset_target",
+    "exit_state": {
+      "state": "SYNTHETIC_CLEAN",
+      "digest": "sha256:placeholder-reset_replay_controller-exit_state"
+    }
+  },
+  "expected": {
+    "decision": "ACCEPT_SCHEMA_ONLY",
+    "reason_codes": [],
+    "output_emitted": true,
+    "runtime_claim_upgraded": false
+  },
+  "privacy_canaries": [],
+  "rollback": {
+    "checkpoint_id": "synthetic:reset-replay-controller:checkpoint:clean",
+    "restore_required": false,
+    "expected_restore_digest": "sha256:synthetic-reset-replay-controller-clean",
+    "history_policy": "APPEND_ONLY_NO_DELETE"
+  },
+  "truth_guard": {
+    "canon": false,
+    "integrated": false,
+    "runtime_proof": false,
+    "published": false,
+    "automatic_promotion_allowed": false
+  }
+}

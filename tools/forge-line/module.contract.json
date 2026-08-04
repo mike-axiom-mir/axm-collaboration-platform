@@ -1,0 +1,62 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "forge-line",
+  "version": "v0.1",
+  "provides": [
+    "bounded-manual-proposal-queue",
+    "human-verdict-gated-lifecycle",
+    "manual-verification-summary-recording",
+    "rejection-reason-standards-draft",
+    "explicit-standards-draft-download"
+  ],
+  "consumes": [
+    "foundation:runtime",
+    "foundation:storage",
+    "foundation:meaningful-action-gate",
+    "browser:blob-download",
+    "human:manual-candidate-build",
+    "human:manual-verification-result",
+    "human:explicit-verdict"
+  ],
+  "permissions": ["export"],
+  "handoffs": {
+    "emits": [
+      "browser-local:forge-line-queue-format-1",
+      "browser-local:forge-line-standards-draft-format-1",
+      "local-file:axm-standards-draft.json"
+    ],
+    "accepts": [
+      "browser-form:manual-proposal-intent",
+      "human:manual-candidate-status",
+      "human:manual-verification-summary",
+      "human:explicit-verdict"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "browser-storage:forge-line/line-queue",
+      "browser-storage:forge-line/standards-draft",
+      "user-download:axm-standards-draft.json"
+    ],
+    "refuses": [
+      "automatic-candidate-build",
+      "automatic-verification-execution",
+      "automatic-tool-installation",
+      "direct-workshop-source-write",
+      "automatic-acceptance",
+      "automatic-status-promotion",
+      "automatic-standards-promotion",
+      "build-ahead-of-five-awaiting-verdicts",
+      "rejection-without-reason",
+      "verification-pass-claim-from-human-summary",
+      "network-access",
+      "canon-authority"
+    ]
+  }
+}

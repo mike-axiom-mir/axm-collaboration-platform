@@ -814,6 +814,196 @@ bidirectional Henry-law solver, resolved wind/wave or air-water turbulence,
 carbonate speciation model, global atmosphere, calibrated reaeration model or
 scientific gas-flux claim.
 
+## Rung 46: temperature-aware two-way floodplain carbon exchange
+
+Floodplain and atmosphere owners now support either direction of CO2-carbon
+transfer without converting their paired membrane into shared mutable state.
+`axm.foundation-planet.floodplain-gas-exchange-state/v2` compares the bounded
+exchangeable fraction of local floodplain DIC with a temperature-adjusted
+aqueous CO2-carbon equilibrium target derived from the native surface
+atmosphere layer's local CO2 ppm proxy. A positive gradient evades carbon to
+air; a negative gradient invades the water. The two directions are mutually
+exclusive in one transition.
+
+The target uses an explicit reference solubility proxy of 0.167 mg carbon per
+litre at 420 ppm and 25 C, adjusted by the local CO2 proxy and a bounded
+temperature factor. It does not relabel total DIC as dissolved CO2. The
+floodplain owner caps evasion by its actual DIC, while the atmosphere owner
+caps invasion by actual layer-0 CO2 carbon and refuses overdraw before
+mutation. Oxygen-deficit reaeration remains the paired one-way oxygen path.
+
+Both owner receipts and the process receipt advance to v2. Basin engine v16
+verifies the exact exchange ID, exclusive direction, native layer, quantities,
+digests and carbon/O2 residuals. A v15 save preserves prior observed and
+cumulative evasion/reaeration memory, initializes cumulative invasion to zero,
+and requires one zero-transfer checkpoint before the new direction becomes
+active. Unloaded reaches retain all three cumulative fluxes. API v42, the live
+diagnostic and renderer-independent experience capsules expose this semantic
+state without granting mutation authority.
+
+R46 closes the artificial one-way carbon boundary, but it is still a bounded
+concentration-gradient parameterization. It is not a full Henry-law or
+carbonate-speciation solver, has no pH or alkalinity state, and does not resolve
+wind, waves, bubbles, turbulence, barometric pressure or salinity corrections.
+Those remain separate realism rungs and scientific-calibration boundaries.
+
+## Rung 47: oxygen-gated floodplain denitrification
+
+Floodplain chemistry now has a bounded anaerobic nitrogen-loss path beside
+the existing aerobic DOC mineralization. After aerobic respiration, the
+denitrification plan reads floodplain-owned DOC, dissolved inorganic nitrogen
+and dissolved oxygen. Activity rises only below a declared 2 mg/L oxygen
+threshold, remains limited by living abundance and wetness, and can consume at
+most a parameterized reactive nitrate-equivalent fraction of the DIN pool.
+The default fraction is 0.5; this is deliberately not a claim that all DIN is
+nitrate or that nitrate speciation has been resolved.
+
+The local reaction converts equal DOC carbon to DIC and consumes 14/15 kg N
+per kg C, producing the same nitrogen mass as N2-N. A typed floodplain receipt
+debits DOC and DIN and credits DIC. Under the same exact transfer ID, a typed
+atmosphere boundary receipt credits that N2 to native atmosphere layer 0. The
+process receipt binds both owner digests and refuses an active transition when
+the matching atmosphere cell is unavailable. Carbon, reaction nitrogen,
+cross-owner nitrogen and both owner ledgers are independently audited.
+
+Basin engine v17 persists the process memory, retains it at unloaded reaches,
+freezes it with Life off, and migrates v16 saves through one zero-transfer,
+zero-history checkpoint. API v43, the live text diagnostic and the
+renderer-independent experience capsule expose the compact state without
+granting mutation authority.
+
+R47 is an explicit deterministic stoichiometric parameterization. It does not
+resolve nitrate/ammonium speciation, microbial populations, redox chemistry,
+pH, alkalinity, nitrous oxide, sediment porewater transport or scientific
+calibration.
+
+## Rung 48: temperature-responsive floodplain denitrification
+
+Denitrification activity now responds to the loaded Earth-system surface
+temperature through a declared water-temperature proxy. The process applies a
+bounded Q10-style multiplier to the existing wetness, anoxia and living
+activity controls: `Q10^((temperature - reference) / 10)`, with default Q10 2,
+reference 20 °C and a final factor bounded to 0.05–4. The compact v2 process
+memory records temperature-constrained days and the last proxy temperature,
+reference, Q10 and bounded response factor.
+
+Material authority does not change. Floodplain chemistry still owns DOC, DIN
+and DIC; native atmosphere layer 0 still owns received nitrogen gas; and the
+existing paired v1 reaction and atmosphere boundary receipts still move the
+material. The v2 process receipt binds those owner receipts while exposing the
+temperature response and truth boundary. Basin engine v18 migrates v17 state
+by preserving observation and cumulative-reaction history, initializing only
+new temperature history to zero, and requiring one zero-transfer checkpoint.
+API v44 and the renderer-independent experience capsule expose the result.
+
+Surface temperature is only a forcing proxy: Caelus does not yet persist
+floodplain water temperature, resolve freeze/thaw or use Arrhenius kinetics.
+The Q10 value and bounds are configurable model parameters, not calibrated
+denitrification-rate claims.
+
+## Rung 49: persistent nitrate and ammonium ownership
+
+River and floodplain chemistry now own nitrate-N and ammonium-N as separate
+persistent material pools. Aggregate dissolved inorganic nitrogen remains an
+exact compatibility sum of those two owners; it is no longer the only
+nitrogen reservoir. Generic land-runoff DIN is partitioned at the receiving
+river boundary with an explicit configurable nitrate fraction (0.5 by
+default). That partition is a declared model parameter, never a measured
+speciation claim.
+
+Reach routing and bankfull floodplain exchange carry both species with the
+same exact water fraction and independently close their ledgers. Resource-
+backed plant detrital nitrogen returns to the floodplain ammonium pool.
+Temperature-responsive denitrification now reads and consumes owned nitrate
+only, leaves ammonium unchanged, and binds that nitrate debit to the existing
+DOC/DIC and native-atmosphere nitrogen-gas owner receipts. The runtime audit
+checks both species, their aggregate compatibility sum, owner lineage and
+cross-boundary conservation.
+
+River chemistry state v3, floodplain state and exchange receipt v2,
+denitrification state and process receipt v3, and basin engine v19 carry the
+new contract. A v18 basin snapshot retains total DIN and cumulative reaction
+history, initializes legacy aggregate DIN 50/50 as an explicit model
+initialization, drops legacy receipts, and requires one zero-transfer v19
+migration checkpoint. API v45 and renderer-independent experience capsules
+project the owned species read-only.
+
+R49 does not add nitrite, nitrification, pH or alkalinity. Nitrification is a
+future reaction rung because it must debit oxygen and represent its associated
+alkalinity demand rather than silently relabel ammonium as nitrate; see the
+[EPA Nutrient Control Design Manual](https://www.epa.gov/sites/production/files/2019-08/documents/nutrient_control_design_manual.pdf).
+
+## Rung 50: oxygen-ledgered floodplain nitrification
+
+Floodplain chemistry now performs an explicit aerobic ammonium-to-nitrate
+reaction. Every transition debits the owned ammonium-N pool, credits the owned
+nitrate-N pool by the same mass, and debits owned dissolved oxygen at 4.57 kg
+O2 per kg N. The local reaction receipt independently closes ammonium debit,
+nitrate credit, total-DIN conservation, dissolved-oxygen debit and oxygen
+stoichiometry. A persistent process organ binds that owner receipt to aerobic
+availability, wetness, Life, a bounded first-order rate and the existing
+surface-temperature proxy with a parameterized Q10 response. Only dissolved
+oxygen above the configured aerobic minimum is reactive, so an oxygen-limited
+step can approach but not silently cross that threshold.
+
+The same receipt records 7.14 kg CaCO3-equivalent alkalinity demand per kg N as
+an explicit diagnostic. It does not debit a material alkalinity reservoir or
+feed pH because Caelus does not yet own those pools. Both factors follow the
+[EPA Nutrient Control Design Manual](https://www.epa.gov/sites/default/files/2019-08/documents/nutrient_control_design_manual.pdf).
+The reaction is a declared one-step ammonium-to-nitrate approximation; nitrite,
+nitrifier populations, floodplain water-temperature memory and calibrated
+kinetics remain unresolved.
+
+Floodplain state v3, nitrification state and process receipt v1, and basin
+engine v20 carry the contract. Basin nitrogen and oxygen ledgers include the
+reaction, the system audit validates typed and digest-bound process evidence,
+unloaded reach memory is retained, and Life-off freezes the biological
+reaction. A v19 basin snapshot preserves all existing material and process
+history, adds empty nitrification memory, drops legacy receipts, and requires
+one typed zero-reaction checkpoint. API v46 and renderer-independent
+experience capsules expose compact read-only nitrification truth.
+
+## Rung 51: end-to-end alkalinity ownership
+
+This rung supersedes R50 only where R50 labelled alkalinity demand as a
+non-material diagnostic. Pre-R51 diagnostic history remains separately exposed
+and is never relabelled as an owner debit.
+
+Caelus now owns acid-neutralizing capacity as kilograms of CaCO3 equivalent
+from dissolved soil water through the runoff queue, canonical rivers,
+floodplains, estuaries and the ocean mixed layer. New canonical soil state uses
+a deterministic lithology-responsive initial condition; new canonical ocean
+state uses a 2,300 micromole/kg open-ocean reference at salinity 35. These are
+model initial conditions, not observations. Exact receipts carry alkalinity
+with the same water fractions and transfer IDs as C/N/P/O2, including loaded
+neighbor runoff, reach routing, bankfull exchange, estuary passage, river-mouth
+delivery and mixed-layer neighbor transport.
+
+Floodplain nitrification now consumes the owned pool at 7.14 kg CaCO3
+equivalent per kg ammonium-N converted and becomes alkalinity-limited before an
+overdraft. Floodplain and estuary denitrification generate 3.57 kg CaCO3
+equivalent per kg nitrate-N converted to nitrogen gas. These factors follow the
+[EPA Nutrient Control Design Manual](https://www.epa.gov/sites/default/files/2019-08/documents/nutrient_control_design_manual.pdf)
+and EPA's [Municipal Nutrient Removal Technologies report](https://www.epa.gov/sites/default/files/2019-08/documents/municipal_nutrient_removal_technologies_vol_i.pdf).
+The interpretation follows the USGS definition of
+[alkalinity and acid-neutralizing capacity](https://www.usgs.gov/publications/chapter-a6-section-66-alkalinity-and-acid-neutralizing-capacity),
+while the ocean reference follows NOAA's
+[CO2 system calculation guidance](https://www.ncei.noaa.gov/access/ocean-carbon-acidification-data-system/oceans/co2rprt.html).
+
+Soil/runoff state v2, river chemistry v4, floodplain state v4,
+denitrification state v4, nitrification state v2, estuary state v2 and ocean
+ecology state v3 carry the material contract. Basin engine v21 closes dedicated
+soil, runoff, river, floodplain, estuary, ocean and coupled residuals; the
+read-only system audit exposes a separate end-to-end alkalinity check. Restored
+pre-R51 snapshots preserve every previous pool and reaction history but add
+zero alkalinity with explicit migration checkpoints rather than inventing past
+chemistry. API v47 and experience capsules project the ledger read-only.
+
+Alkalinity is not pH. Caelus does not yet resolve carbonate species, dissolved
+inorganic-carbon equilibrium, buffering feedbacks, deep-ocean alkalinity
+exchange, measured concentrations or calibrated watershed chemistry. R51 is a
+conservative capacity ledger with declared bulk reaction stoichiometry.
+
 ## Why there are two render scales
 
 A real-scale planet cannot render individual trees and a globe-sized continent mesh in one stable coordinate space. Caelus keeps one global latitude/longitude truth and renders it through two views:
@@ -851,4 +1041,4 @@ See `docs/FOUNDATION_CONTRACT.md` for the coordinate, layer and future adapter c
 
 ## Honest limits
 
-This is an exploratory procedural world model, not a scientific Earth simulator. Terrain, climate, tectonics, drainage and ecology are plausible abstractions. The loaded river network has persistent cross-scale routing, ocean-mouth receipts, a finite clay/silt/sand/gravel material cycle and conservative reach-scale floodplain storage, but no global depression filling, endorheic spill rules, resolved two-dimensional inundation, levee or bank-failure dynamics, resolved channel/coastal morphodynamics or continuously active global sediment network. Groundwater exchanges between loaded neighbors but has no three-dimensional aquifer geometry, plate provinces are not a full crustal dynamics solver, and soils have no chemistry horizons yet. Loaded atmosphere cells persist eight pressure levels with per-level dry-air mass, water tracers, sensible heat, tangent momentum, kinetic energy and hydrostatic geometry plus seven pressure-interface convective-energy and compensating-momentum states. Native level saturation, phase change, cloud reservoirs, precipitation descent, adjacent vertical exchange, interface buoyancy and loaded lateral transport are implemented and receipted. Atmosphere-owned C/O2/N2 state closes biosphere exchange, receives estuary nitrogen and is conservatively carried across loaded native dry-air routes, but it has no global mixing, continuous unloaded-cell circulation or resolved atmospheric chemistry. Horizontal terrain adjustment and bounded interface overturning expose geopotential, pressure, buoyancy and kinetic-conversion work rather than hiding it. Native liquid/ice cloud paths drive bounded broadband shortwave/longwave feedback, and native-layer CO2 now adds a reference-relative, temperature-path-aware grey-gas adjustment to the surface ledger; aged land snow, snow on sea ice, sea-ice mass and surface fusion energy persist. This is not spectral, line-by-line or scientifically validated radiative transfer and does not resolve droplet/crystal size distributions, snow grains, brine, leads, ridging or dynamic ice motion. The atmosphere still has no global angular-momentum solve, resolved three-dimensional plumes, continuous unloaded-cell upper-air circulation, resolved aerosol/droplet/ice microphysics, turbulence closure, global circulation or ocean-current solver. There is also no general rigid-body engine, automatically running shared host, active multiplayer session, complete species catalog, individual animal AI or interiors yet. The host and controller paths are explicit contracts and tested local services, not an always-on production world.
+This is an exploratory procedural world model, not a scientific Earth simulator. Terrain, climate, tectonics, drainage and ecology are plausible abstractions. The loaded river network has persistent cross-scale routing, ocean-mouth receipts, a finite clay/silt/sand/gravel material cycle and conservative reach-scale floodplain storage, but no global depression filling, endorheic spill rules, resolved two-dimensional inundation, levee or bank-failure dynamics, resolved channel/coastal morphodynamics or continuously active global sediment network. Groundwater exchanges between loaded neighbors but has no three-dimensional aquifer geometry, plate provinces are not a full crustal dynamics solver, and soils have no chemistry horizons yet. Loaded atmosphere cells persist eight pressure levels with per-level dry-air mass, water tracers, sensible heat, tangent momentum, kinetic energy and hydrostatic geometry plus seven pressure-interface convective-energy and compensating-momentum states. Native level saturation, phase change, cloud reservoirs, precipitation descent, adjacent vertical exchange, interface buoyancy and loaded lateral transport are implemented and receipted. Atmosphere-owned C/O2/N2 state closes biosphere exchange, receives estuary nitrogen and is conservatively carried across loaded native dry-air routes, but it has no global mixing, continuous unloaded-cell circulation or resolved atmospheric chemistry. Paired floodplain-atmosphere exchange now moves CO2 carbon in either concentration-gradient direction and reaerates oxygen, but it remains a bounded temperature-aware proxy without pH, alkalinity, carbonate speciation, resolved turbulence or scientific calibration. Horizontal terrain adjustment and bounded interface overturning expose geopotential, pressure, buoyancy and kinetic-conversion work rather than hiding it. Native liquid/ice cloud paths drive bounded broadband shortwave/longwave feedback, and native-layer CO2 now adds a reference-relative, temperature-path-aware grey-gas adjustment to the surface ledger; aged land snow, snow on sea ice, sea-ice mass and surface fusion energy persist. This is not spectral, line-by-line or scientifically validated radiative transfer and does not resolve droplet/crystal size distributions, snow grains, brine, leads, ridging or dynamic ice motion. The atmosphere still has no global angular-momentum solve, resolved three-dimensional plumes, continuous unloaded-cell upper-air circulation, resolved aerosol/droplet/ice microphysics, turbulence closure, global circulation or ocean-current solver. There is also no general rigid-body engine, automatically running shared host, active multiplayer session, complete species catalog, individual animal AI or interiors yet. The host and controller paths are explicit contracts and tested local services, not an always-on production world.

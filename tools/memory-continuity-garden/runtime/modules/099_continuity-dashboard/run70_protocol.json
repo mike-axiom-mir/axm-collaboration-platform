@@ -1,0 +1,250 @@
+{
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "consent_delta": "NONE",
+  "identity": {
+    "category": "10. Learning, quality, governance, public continuity, and orchestration",
+    "name": "Continuity and Memory Health Dashboard",
+    "number": 99,
+    "stable_id": "axm.memory.continuity-dashboard"
+  },
+  "identity_delta": "NONE",
+  "run61_state_model": {
+    "history_rewrite_forbidden": true,
+    "illegal_transition_result": "HOLD_ILLEGAL_STATE_TRANSITION",
+    "initial_state": "IDLE",
+    "legal_transitions": [
+      {
+        "from": "IDLE",
+        "to": "REQUESTED"
+      },
+      {
+        "from": "REQUESTED",
+        "to": "RUNNING"
+      },
+      {
+        "from": "RUNNING",
+        "to": "FINDING_READY"
+      },
+      {
+        "from": "RUNNING",
+        "to": "HELD"
+      },
+      {
+        "from": "RUNNING",
+        "to": "FAILED"
+      },
+      {
+        "from": "FINDING_READY",
+        "to": "EXPIRED"
+      },
+      {
+        "from": "HELD",
+        "to": "REQUESTED"
+      },
+      {
+        "from": "FAILED",
+        "to": "REQUESTED"
+      }
+    ],
+    "state_change_requires_receipt": true,
+    "states": [
+      "IDLE",
+      "REQUESTED",
+      "RUNNING",
+      "FINDING_READY",
+      "HELD",
+      "FAILED",
+      "EXPIRED"
+    ],
+    "terminal_or_holding_states": [
+      "FINDING_READY",
+      "HELD",
+      "FAILED",
+      "EXPIRED"
+    ]
+  },
+  "run62_policy": {
+    "allowed_actor_roles": [
+      "HUMAN_OWNER",
+      "LOCAL_OBSERVER",
+      "AUTHORIZED_LOCAL_AGENT"
+    ],
+    "consent_required": false,
+    "exact_identity_required": "axm.memory.continuity-dashboard",
+    "exact_purpose_required": "Show branches, checkpoints, open loops, conflicts, stale memory, broken sources, retention, recovery readiness, and pending human decisions.",
+    "expected_revision_required": false,
+    "explicit_confirmation_required": false,
+    "no_apply_is_performed_by_policy_interpreter": true,
+    "ready_result": "READY_REFERENCE_ONLY",
+    "required_permissions": [],
+    "source_digest_required": true,
+    "wildcard_permission_forbidden": true
+  },
+  "run63_negotiation": {
+    "boot_prerequisites": [
+      "axm.memory.bounded-continuity-orchestrator",
+      "axm.memory.canon-candidate-separator",
+      "axm.memory.failure-lesson-registry",
+      "axm.memory.lifecycle-state-machine",
+      "axm.memory.provenance-envelope",
+      "axm.memory.source-authority-binder"
+    ],
+    "downgrade_cannot_expand_authority": true,
+    "major_version_mismatch_result": "HOLD_PROTOCOL_VERSION",
+    "maximum_permissions": [],
+    "minimum_proof_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR"
+    ],
+    "missing_boot_result": "HOLD_DEPENDENCY_UNAVAILABLE",
+    "missing_optional_runtime_result": "DEGRADED_REFERENCE_ONLY",
+    "protocol_major": 1,
+    "protocol_minor": 0,
+    "runtime_collaborators": [],
+    "supported_semantic_effects": [
+      "REFERENCE_ONLY_NOT_IMPLEMENTED"
+    ]
+  },
+  "run64_lineage_impact": {
+    "correction_does_not_rewrite_source_history": true,
+    "correction_invalidation_targets": [
+      "axm.memory.continuity-dashboard"
+    ],
+    "direct_downstream_ids": [],
+    "propagation_requires_fresh_source_and_authority_checks": true,
+    "revocation_future_use_block_targets": [
+      "axm.memory.continuity-dashboard"
+    ],
+    "revocation_is_not_deletion_proof": true
+  },
+  "run65_differential_oracle": {
+    "disagreement_result": "HOLD_ORACLE_DISAGREEMENT",
+    "oracle_a": "TABLE_DRIVEN_POLICY_V1",
+    "oracle_b": "PROCEDURAL_POLICY_V1",
+    "required_parity": true,
+    "semantic_truth_created": false
+  },
+  "run66_chaos_containment": {
+    "automatic_repair_or_completion": false,
+    "fail_closed_for_high_risk": false,
+    "faults": [
+      "tampered_protocol_seal",
+      "missing_transition",
+      "wildcard_permission",
+      "semantic_effect_expansion",
+      "canon_flag_injection",
+      "owner_acceptance_injection",
+      "path_escape",
+      "source_digest_corruption",
+      "protocol_major_mismatch",
+      "stale_evidence"
+    ],
+    "typed_hold_required": true
+  },
+  "run67_adaptive_validation": {
+    "change_scope_classes": [
+      "SEED_PROTOCOL",
+      "SEED_REVIEW",
+      "SEED_INTAKE",
+      "CATEGORY_PROFILE",
+      "SHARED_POLICY",
+      "HARNESS",
+      "PUBLICATION"
+    ],
+    "priority_score": 52,
+    "priority_score_is_not_quality_truth_or_promotion": true,
+    "publication_always_requires_cold_full_suite": true,
+    "shared_policy_or_harness_change_requires_all_seeds": true,
+    "single_seed_change_may_reuse_unaffected_proofs": true
+  },
+  "run68_contestability": {
+    "actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN",
+      "CHALLENGE",
+      "CORRECT",
+      "REOPEN"
+    ],
+    "automatic_apply_action_present": false,
+    "challenge_cannot_reduce_access_or_retaliate": true,
+    "correction_preserves_prior_history": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "status_must_not_depend_on_color_only": true
+  },
+  "run69_intake_simulation": {
+    "active_workshop_target": null,
+    "commit_requires_explicit_human_confirmation": true,
+    "commit_requires_owner_acceptance": true,
+    "dry_run_only": true,
+    "phases": [
+      "VERIFY_SOURCE",
+      "STAGE_COPY",
+      "VERIFY_STAGE",
+      "SIMULATE_COMMIT",
+      "SIMULATE_ROLLBACK"
+    ],
+    "required_source_files": [
+      "candidate.contract.json",
+      "fixtures.json",
+      "capability_delta.json",
+      "review_packet.json",
+      "run70_protocol.json",
+      "decision_card.json",
+      "evidence_ledger.json"
+    ],
+    "rollback_required_before_real_intake": true,
+    "staging_root": "sandbox://axm-memory-intake/099-continuity-dashboard"
+  },
+  "run70_evidence_boundary": {
+    "CANON": false,
+    "achieved_reference_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE",
+      "MODEL_CHECK_REFERENCE",
+      "POLICY_PARITY_REFERENCE",
+      "NEGOTIATION_REFERENCE",
+      "LINEAGE_PROPAGATION_REFERENCE",
+      "CHAOS_CONTAINMENT_REFERENCE",
+      "INTAKE_DRY_RUN_REFERENCE"
+    ],
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "posture_preserved": "REFERENCE_READY_FOR_OWNER_REVIEW",
+    "specialist_verification": false,
+    "unproven_gaps": [
+      "real_governance_steward_review_and_non_promotion_evidence",
+      "full_seed_specific_semantic_implementation",
+      "existing_owner_acceptance",
+      "specialist_verification",
+      "active_workshop_integration",
+      "production_scale_and_real_world_fault_evidence",
+      "human_usability_and_accessibility_study",
+      "CANON_merge_gate"
+    ],
+    "workshop_integration": false
+  },
+  "schema": "axm.memory.run70-capability-protocol/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "4f9c8247d200818983994aebd85d867cb2c6ec609fd684e78f52835d74c16951"
+  },
+  "source_run60": {
+    "authority": "T0_OBSERVE_ONLY",
+    "candidate_contract_path": "modules/099_continuity-dashboard/candidate.contract.json",
+    "candidate_contract_sha256": "089eddc11241eb0f411af96f9a84f5c91472528cf6689c5562520ac6eadc2f5f",
+    "capability_delta_path": "modules/099_continuity-dashboard/capability_delta.json",
+    "capability_delta_sha256": "99641f2a01456e19dfb931e86af0aa100e1609da03cfdc70539ad3850f97656a",
+    "operation_kind": "OBSERVE",
+    "permissions": [],
+    "purpose": "Show branches, checkpoints, open loops, conflicts, stale memory, broken sources, retention, recovery readiness, and pending human decisions.",
+    "risk": "LOW",
+    "run60_status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_70_MODEL_POLICY_NEGOTIATION_AND_INTAKE_VALIDATED_CANDIDATE",
+  "trust_delta": "NONE"
+}

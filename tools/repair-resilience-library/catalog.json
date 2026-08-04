@@ -1,0 +1,4180 @@
+{
+  "schema": "axm.repair-resilience.catalog/v1",
+  "source": {
+    "package": "AXM_100_SEED_LOCAL_INTAKE_RUNS_001_100_2026-07-27",
+    "archiveSha256": "f4563beaa3b1ce33bcca909a4b03b2d6def01c4939ce86515c905bfe00e20bda",
+    "sourceManifestFilesVerified": 1786,
+    "checkpointChecksPassed": 2608,
+    "hardeningAssertionsPassed": 6095
+  },
+  "posture": {
+    "wrapperStatus": "WORKING",
+    "componentStatus": "EXPERIMENTAL",
+    "automaticExecution": false,
+    "automaticRepair": false,
+    "automaticPromotion": false,
+    "canon": false
+  },
+  "summary": {
+    "components": 100,
+    "supportAdapters": 1,
+    "loadableSurfaces": 101,
+    "uniqueIds": 100,
+    "emptyPermissions": 100,
+    "automaticMutationFalse": 100,
+    "filesystemSurface": 3,
+    "processSurface": 2,
+    "networkSurface": 0,
+    "exportedSymbols": 141
+  },
+  "components": [
+    {
+      "kind": "seed",
+      "id": "axm.repair.ai-regression-harness",
+      "slug": "ai-regression-harness",
+      "name": "AI Regression Harness",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "LEARNING_ORCHESTRATION",
+      "risk": "HIGH",
+      "summary": "Compare prompts, policies, models, providers, and tool routes on fixed scenarios while preserving visible behavior changes.",
+      "tags": [
+        "repair-seed",
+        "learning-ai-tool-orchestration",
+        "local-first",
+        "bounded",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Compare prompts, policies, models, providers, and tool routes on fixed scenarios while preserving visible behavior changes."
+      ],
+      "accepts": [
+        "fixed-scenarios",
+        "baseline-adapter",
+        "candidate-adapter",
+        "behavior-comparator"
+      ],
+      "produces": [
+        "axm.ai-regression.report/v1"
+      ],
+      "exportedSymbols": [
+        "runRegression"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "f5590b4576aeb2458d282448f92b1fd40b044103990a2e9c3e24a32979c304ff"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.ai-tool-contract-drift-detector",
+      "slug": "ai-tool-contract-drift-detector",
+      "name": "AI Tool Contract Drift Detector",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "LEARNING_ORCHESTRATION",
+      "risk": "HIGH",
+      "summary": "Detect when an AI seat, connector, API, schema, or tool behavior no longer matches its declared contract.",
+      "tags": [
+        "repair-seed",
+        "learning-ai-tool-orchestration",
+        "local-first",
+        "bounded",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Detect when an AI seat, connector, API, schema, or tool behavior no longer matches its declared contract."
+      ],
+      "accepts": [
+        "declared-tool-contract",
+        "observed-tool-surface"
+      ],
+      "produces": [
+        "axm.ai-tool-contract-drift.report/v1"
+      ],
+      "exportedSymbols": [
+        "detectDrift"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "f580038034d56d01c1fc8072d02008d0e0b62791ee2e13e6016c287d86dbfd7a"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.atomic-snapshotter",
+      "slug": "atomic-snapshotter",
+      "name": "Atomic Snapshotter",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RECOVERY",
+      "risk": "HIGH",
+      "summary": "Create consistent, content-addressed snapshots at declared safe boundaries.",
+      "tags": [
+        "repair-seed",
+        "state-data-workflow-recovery",
+        "local-first",
+        "dependency-free",
+        "reversible"
+      ],
+      "actions": [
+        "Create consistent, content-addressed snapshots at declared safe boundaries."
+      ],
+      "accepts": [
+        "serializable-state",
+        "snapshot-root"
+      ],
+      "produces": [
+        "axm.atomic-snapshot/v1"
+      ],
+      "exportedSymbols": [
+        "createAtomicSnapshot"
+      ],
+      "effects": {
+        "filesystem": true,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "4fad3e9d7fd492adec5e118f02f53eba41d844aa4a2e70459da469f781f92a11"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.backoff-jitter-scheduler",
+      "slug": "backoff-jitter-scheduler",
+      "name": "Backoff Jitter Scheduler",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RUNTIME",
+      "risk": "LOW",
+      "summary": "Spread bounded retries and periodic recovery work to avoid synchronized overload.",
+      "tags": [
+        "repair-seed",
+        "runtime-resilience",
+        "local-first",
+        "dependency-free",
+        "bounded"
+      ],
+      "actions": [
+        "Spread bounded retries and periodic recovery work to avoid synchronized overload."
+      ],
+      "accepts": [
+        "retry-policy",
+        "lineage-seed"
+      ],
+      "produces": [
+        "axm.backoff-schedule/v1"
+      ],
+      "exportedSymbols": [
+        "buildBackoffSchedule"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "c17712d225047416e75e3ce7a58ca028bb7c947ffe523beb219bd55fb17b810e"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.before-after-proof-packager",
+      "slug": "before-after-proof-packager",
+      "name": "Before/After Proof Packager",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "VERIFICATION",
+      "risk": "MEDIUM",
+      "summary": "Export hashes, snapshots, tests, logs, rejected candidates, limitations, and verification into a portable evidence packet.",
+      "tags": [
+        "repair-seed",
+        "verification-regression-proof",
+        "local-first",
+        "dependency-free",
+        "evidence-only"
+      ],
+      "actions": [
+        "Export hashes, snapshots, tests, logs, rejected candidates, limitations, and verification into a portable evidence packet."
+      ],
+      "accepts": [
+        "pre-state",
+        "post-state",
+        "verification-evidence",
+        "limitations"
+      ],
+      "produces": [
+        "axm.before-after-proof.packet/v1"
+      ],
+      "exportedSymbols": [
+        "redact",
+        "packageProof"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "cfa0937bbfa496c728677a04e82bffe22d0a1215315b3c81a96e72e6155bbc99"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.beginner-escalation-packet",
+      "slug": "beginner-escalation-packet",
+      "name": "Beginner Escalation Packet",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "LEARNING_ORCHESTRATION",
+      "risk": "LOW",
+      "summary": "Translate technical evidence into a clear human explanation plus one safe next action and an expert handoff packet.",
+      "tags": [
+        "repair-seed",
+        "learning-ai-tool-orchestration",
+        "local-first",
+        "bounded",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Translate technical evidence into a clear human explanation plus one safe next action and an expert handoff packet."
+      ],
+      "accepts": [
+        "incident-state",
+        "evidence-links",
+        "safe-next-action"
+      ],
+      "produces": [
+        "axm.beginner-escalation.packet/v1"
+      ],
+      "exportedSymbols": [
+        "buildPacket"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "023af64ac2efd6be32ae6b52042cb695c8e2994cee138e614334cbad539a7944"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.blast-radius-estimator",
+      "slug": "blast-radius-estimator",
+      "name": "Blast Radius Estimator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "MEDIUM",
+      "summary": "Estimate which modules, data, devices, users, and workflows could be affected by a failure or proposed repair.",
+      "tags": [
+        "repair-seed",
+        "detection-triage-containment",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Estimate which modules, data, devices, users, and workflows could be affected by a failure or proposed repair."
+      ],
+      "accepts": [
+        "dependency-health-graph",
+        "scope-declarations"
+      ],
+      "produces": [
+        "axm.blast-radius-estimate/v1"
+      ],
+      "exportedSymbols": [
+        "estimateBlastRadius"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "1334483ee560e1a8dedc5d2ba2c4a448ba915c635883752337cef335507e1326"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.bounded-orchestrator",
+      "slug": "bounded-orchestrator",
+      "name": "Bounded Orchestrator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "LEARNING_ORCHESTRATION",
+      "risk": "CRITICAL",
+      "summary": "Compose diagnosis and repair modules through authority tiers, snapshots, simulation, human gates, verification, rollback, and learning.",
+      "tags": [
+        "repair-seed",
+        "learning-ai-tool-orchestration",
+        "local-first",
+        "bounded",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Compose diagnosis and repair modules through authority tiers, snapshots, simulation, human gates, verification, rollback, and learning."
+      ],
+      "accepts": [
+        "repair-plan",
+        "authority-decision",
+        "snapshot-adapter",
+        "diagnosis-adapter",
+        "simulation-adapter",
+        "verification-adapter",
+        "rollback-adapter",
+        "learning-adapter"
+      ],
+      "produces": [
+        "axm.bounded-orchestration.receipt/v1",
+        "axm.repair-execution-candidate/v1"
+      ],
+      "exportedSymbols": [
+        "runBounded",
+        "TIERS"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "41b459a92e1ba87b8885f64961b53a1c938c024f01cd86c28af2a68d7a2f11fc"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.bulkhead-isolator",
+      "slug": "bulkhead-isolator",
+      "name": "Bulkhead Isolator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RUNTIME",
+      "risk": "MEDIUM",
+      "summary": "Partition processes, queues, resource pools, or devices so one failure cannot consume the whole platform.",
+      "tags": [
+        "repair-seed",
+        "runtime-resilience",
+        "local-first",
+        "dependency-free",
+        "bounded"
+      ],
+      "actions": [
+        "Partition processes, queues, resource pools, or devices so one failure cannot consume the whole platform."
+      ],
+      "accepts": [
+        "resource-pool-request"
+      ],
+      "produces": [
+        "axm.bulkhead.status/v1"
+      ],
+      "exportedSymbols": [
+        "Bulkhead"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "94feeca1503bc3ce784e2d81b3d74b15104969eaaeb06823a42ebcfd48d8702f"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.candidate-patch-generator",
+      "slug": "candidate-patch-generator",
+      "name": "Candidate Patch Generator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "CODE_REPAIR",
+      "risk": "HIGH",
+      "summary": "Generate multiple minimal repair candidates while preserving rejected alternatives and source lineage.",
+      "tags": [
+        "repair-seed",
+        "code-configuration-package-repair",
+        "local-first",
+        "dependency-free",
+        "shadow-only"
+      ],
+      "actions": [
+        "Generate multiple minimal repair candidates while preserving rejected alternatives and source lineage."
+      ],
+      "accepts": [
+        "repair-input",
+        "matched-patch-templates"
+      ],
+      "produces": [
+        "axm.patch-candidate-set/v1"
+      ],
+      "exportedSymbols": [
+        "generate",
+        "diffCount"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "395bb5569a4339b2d9d34b97a32c2be0e31bec3724dcff5aea91108ae3eef973"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.causal-trace-reconstructor",
+      "slug": "causal-trace-reconstructor",
+      "name": "Causal Trace Reconstructor",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Reconstruct the ordered path from initiating event through intermediate state changes to observed impact.",
+      "tags": [
+        "repair-seed",
+        "diagnosis-fault-localization",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Reconstruct the ordered path from initiating event through intermediate state changes to observed impact."
+      ],
+      "accepts": [
+        "lineage-events"
+      ],
+      "produces": [
+        "axm.causal-trace-reconstruction/v1"
+      ],
+      "exportedSymbols": [
+        "reconstructTrace"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "f2f1e49ed5e1f8dc8c78fdb37df96b6bbb6b0df5a50c8d016e66f713af19af64"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.change-window-correlator",
+      "slug": "change-window-correlator",
+      "name": "Change Window Correlator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Correlate failures with code, configuration, data, dependency, environment, and hardware changes while warning that correlation is not causation.",
+      "tags": [
+        "repair-seed",
+        "diagnosis-fault-localization",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Correlate failures with code, configuration, data, dependency, environment, and hardware changes while warning that correlation is not causation."
+      ],
+      "accepts": [
+        "failure-timestamp",
+        "change-events"
+      ],
+      "produces": [
+        "axm.change-window-correlation/v1"
+      ],
+      "exportedSymbols": [
+        "correlateChanges"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "3a7cba144e9637705a7844ffe5130a820490d2f9e576331f082584e90f52178d"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.chaos-abort-controller",
+      "slug": "chaos-abort-controller",
+      "name": "Chaos Abort Controller",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FAULT_INJECTION",
+      "risk": "HIGH",
+      "summary": "Continuously enforce blast-radius, time, user-impact, data, and emergency-stop limits during fault experiments.",
+      "tags": [
+        "repair-seed",
+        "fault-injection-recovery-drill",
+        "local-first",
+        "bounded",
+        "sandbox-first"
+      ],
+      "actions": [
+        "Continuously enforce blast-radius, time, user-impact, data, and emergency-stop limits during fault experiments."
+      ],
+      "accepts": [
+        "experiment-observation",
+        "hard-limits",
+        "emergency-stop-signal"
+      ],
+      "produces": [
+        "axm.chaos-abort.decision/v1"
+      ],
+      "exportedSymbols": [
+        "createAbortController"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "f94019914b0ece8224b831ba51c728d4e6e1897066cd9a5877899a899c7d8512"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.circuit-breaker",
+      "slug": "circuit-breaker",
+      "name": "Circuit Breaker",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RUNTIME",
+      "risk": "MEDIUM",
+      "summary": "Stop repeated calls to an unhealthy dependency and probe for recovery without flooding it.",
+      "tags": [
+        "repair-seed",
+        "runtime-resilience",
+        "local-first",
+        "dependency-free",
+        "bounded"
+      ],
+      "actions": [
+        "Stop repeated calls to an unhealthy dependency and probe for recovery without flooding it."
+      ],
+      "accepts": [
+        "dependency-call-outcomes"
+      ],
+      "produces": [
+        "axm.circuit-breaker.state/v1"
+      ],
+      "exportedSymbols": [
+        "CircuitBreaker"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "b7a3d133b218c2d547ed61cbe2f317a524295e014d5254980cd75b7f004f7225"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.compensation-registry",
+      "slug": "compensation-registry",
+      "name": "Compensation Registry",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RECOVERY",
+      "risk": "HIGH",
+      "summary": "Store domain-specific undo or counter-actions alongside every multi-step forward action.",
+      "tags": [
+        "repair-seed",
+        "state-data-workflow-recovery",
+        "local-first",
+        "dependency-free",
+        "reversible"
+      ],
+      "actions": [
+        "Store domain-specific undo or counter-actions alongside every multi-step forward action."
+      ],
+      "accepts": [
+        "forward-actions",
+        "compensation-definitions"
+      ],
+      "produces": [
+        "axm.compensation-plan/v1"
+      ],
+      "exportedSymbols": [
+        "CompensationRegistry"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "579ce79f9b5df0afe0debe2b981c74f3404973ec127876ff64afe13b7870fffb"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.confidence-calibrator",
+      "slug": "confidence-calibrator",
+      "name": "Confidence Calibrator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "GOVERNANCE",
+      "risk": "LOW",
+      "summary": "Calibrate repair confidence against historical outcomes and emit uncertainty rather than a raw ungrounded score.",
+      "tags": [
+        "repair-seed",
+        "authority-risk-decision",
+        "local-first",
+        "dependency-free",
+        "default-deny"
+      ],
+      "actions": [
+        "Calibrate repair confidence against historical outcomes and emit uncertainty rather than a raw ungrounded score."
+      ],
+      "accepts": [
+        "historical-predictions",
+        "raw-confidence"
+      ],
+      "produces": [
+        "axm.confidence-calibration/v1"
+      ],
+      "exportedSymbols": [
+        "calibrateConfidence"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "4cb7f94460ffe1712e7a321f7e9ebe9b9b327f33d49a1fb960102fa1f283d5aa"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.configuration-bisector",
+      "slug": "configuration-bisector",
+      "name": "Configuration Bisector",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "MEDIUM",
+      "summary": "Search configuration history to find the earliest state transition that reliably introduces the failure.",
+      "tags": [
+        "repair-seed",
+        "diagnosis-fault-localization",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Search configuration history to find the earliest state transition that reliably introduces the failure."
+      ],
+      "accepts": [
+        "ordered-config-history",
+        "bounded-test"
+      ],
+      "produces": [
+        "axm.configuration-bisection/v1"
+      ],
+      "exportedSymbols": [
+        "bisectFirstFailing"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "4ebcae388855f50ab797f3cdcd66df8ce608f415f60ae06711b63c1833e453f1"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.configuration-constraint-solver",
+      "slug": "configuration-constraint-solver",
+      "name": "Configuration Constraint Solver",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "CODE_REPAIR",
+      "risk": "HIGH",
+      "summary": "Find the smallest configuration change satisfying declared compatibility, safety, and resource constraints.",
+      "tags": [
+        "repair-seed",
+        "code-configuration-package-repair",
+        "local-first",
+        "dependency-free",
+        "shadow-only"
+      ],
+      "actions": [
+        "Find the smallest configuration change satisfying declared compatibility, safety, and resource constraints."
+      ],
+      "accepts": [
+        "configuration",
+        "option-domains",
+        "declared-constraints"
+      ],
+      "produces": [
+        "axm.configuration-repair-candidates/v1"
+      ],
+      "exportedSymbols": [
+        "solve"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "2c363fcb49c301d5ca19b6c7ae8c928f58ac694614bb44c1fa1dcbd06eeb332c"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.containment-recommender",
+      "slug": "containment-recommender",
+      "name": "Containment Recommender",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "MEDIUM",
+      "summary": "Recommend the smallest safe isolation, drain, freeze, disable, or degrade action before deeper repair.",
+      "tags": [
+        "repair-seed",
+        "detection-triage-containment",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Recommend the smallest safe isolation, drain, freeze, disable, or degrade action before deeper repair."
+      ],
+      "accepts": [
+        "failure-severity",
+        "blast-radius-estimate"
+      ],
+      "produces": [
+        "axm.containment-recommendation/v1"
+      ],
+      "exportedSymbols": [
+        "recommendContainment"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "611faff4c9981c083bbbe1c2d6abbb6ed911a0a0639b38ddec9628b348aae0fe"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.context-memory-integrity-checker",
+      "slug": "context-memory-integrity-checker",
+      "name": "Context Memory Integrity Checker",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "LEARNING_ORCHESTRATION",
+      "risk": "HIGH",
+      "summary": "Detect missing, contradictory, misrouted, stale, or privacy-crossing context and propose bounded restoration.",
+      "tags": [
+        "repair-seed",
+        "learning-ai-tool-orchestration",
+        "local-first",
+        "bounded",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Detect missing, contradictory, misrouted, stale, or privacy-crossing context and propose bounded restoration."
+      ],
+      "accepts": [
+        "context-records",
+        "required-context-contract",
+        "scope-policy"
+      ],
+      "produces": [
+        "axm.context-memory-integrity.report/v1"
+      ],
+      "exportedSymbols": [
+        "checkContext"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "1b36e97e5a50056df2645412904cc3af8a4aae319fd7ee5bb5d1c4ae176e7660"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.corrupt-input-injector",
+      "slug": "corrupt-input-injector",
+      "name": "Corrupt Input Injector",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FAULT_INJECTION",
+      "risk": "HIGH",
+      "summary": "Feed malformed, truncated, oversized, adversarial, and schema-drifted inputs through safe fixtures.",
+      "tags": [
+        "repair-seed",
+        "fault-injection-recovery-drill",
+        "local-first",
+        "bounded",
+        "sandbox-first"
+      ],
+      "actions": [
+        "Feed malformed, truncated, oversized, adversarial, and schema-drifted inputs through safe fixtures."
+      ],
+      "accepts": [
+        "seed-input",
+        "bounded-corruption-policy"
+      ],
+      "produces": [
+        "axm.corrupt-input.fixture-set/v1"
+      ],
+      "exportedSymbols": [
+        "generateCorruptInputs"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "77b43ef3a548aa8919eb803e692ebf3e2327a64ed553d54119687bf4288d9af9"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.corrupted-segment-renovator",
+      "slug": "corrupted-segment-renovator",
+      "name": "Corrupted Segment Renovator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RECOVERY",
+      "risk": "HIGH",
+      "summary": "Replace only independently verified corrupt blocks, files, records, or assets instead of restoring the whole body.",
+      "tags": [
+        "repair-seed",
+        "state-data-workflow-recovery",
+        "local-first",
+        "dependency-free",
+        "reversible"
+      ],
+      "actions": [
+        "Replace only independently verified corrupt blocks, files, records, or assets instead of restoring the whole body."
+      ],
+      "accepts": [
+        "segments",
+        "expected-hashes",
+        "verified-candidates"
+      ],
+      "produces": [
+        "axm.segment-renovation.receipt/v1"
+      ],
+      "exportedSymbols": [
+        "renovateSegments"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "558bf2743f3d92b5252ee1d938b90e22065ded361a093e9ca643486651eeeef2"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.crash-only-wrapper",
+      "slug": "crash-only-wrapper",
+      "name": "Crash Only Wrapper",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RUNTIME",
+      "risk": "MEDIUM",
+      "summary": "Give a component one tested stop path and one tested recovery path so partial shutdown states cannot accumulate.",
+      "tags": [
+        "repair-seed",
+        "runtime-resilience",
+        "local-first",
+        "dependency-free",
+        "bounded"
+      ],
+      "actions": [
+        "Give a component one tested stop path and one tested recovery path so partial shutdown states cannot accumulate."
+      ],
+      "accepts": [
+        "component-start-stop-contract"
+      ],
+      "produces": [
+        "axm.crash-only.lifecycle/v1"
+      ],
+      "exportedSymbols": [
+        "CrashOnlyLifecycle"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "04be77deb43e96b5f50af8f1369b450c43fe07f10f5bc3b97700ef8487b662e8"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.cross-signal-envelope",
+      "slug": "cross-signal-envelope",
+      "name": "Cross Signal Envelope",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Correlate logs, metrics, traces, profiles, state changes, and repair actions under one lineage ID.",
+      "tags": [
+        "repair-seed",
+        "health-telemetry-lineage",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Correlate logs, metrics, traces, profiles, state changes, and repair actions under one lineage ID."
+      ],
+      "accepts": [
+        "logs",
+        "metrics",
+        "traces",
+        "profiles",
+        "state-changes",
+        "repair-actions"
+      ],
+      "produces": [
+        "axm.cross-signal-envelope/v1"
+      ],
+      "exportedSymbols": [
+        "createEnvelope"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "4ff8f48a87e953f0aa87202f79bbc4afac02243a46805ab497be56957c6834d1"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.dependency-blame-ranker",
+      "slug": "dependency-blame-ranker",
+      "name": "Dependency Blame Ranker",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Rank probable failing dependencies using traces, probes, timing, and counter-evidence rather than first-error bias.",
+      "tags": [
+        "repair-seed",
+        "diagnosis-fault-localization",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Rank probable failing dependencies using traces, probes, timing, and counter-evidence rather than first-error bias."
+      ],
+      "accepts": [
+        "dependency-probes",
+        "traces",
+        "counter-evidence"
+      ],
+      "produces": [
+        "axm.dependency-blame-ranking/v1"
+      ],
+      "exportedSymbols": [
+        "rankDependencies"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "c0229ea3441cb81a1012783713ce95b15febde7425616ab87856923a35331b36"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.dependency-health-graph",
+      "slug": "dependency-health-graph",
+      "name": "Dependency Health Graph",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Maintain a live dependency graph that distinguishes local failure, upstream failure, and cascading impact.",
+      "tags": [
+        "repair-seed",
+        "health-telemetry-lineage",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Maintain a live dependency graph that distinguishes local failure, upstream failure, and cascading impact."
+      ],
+      "accepts": [
+        "dependency-declarations",
+        "node-health-snapshots"
+      ],
+      "produces": [
+        "axm.dependency-health.graph-report/v1"
+      ],
+      "exportedSymbols": [
+        "DependencyHealthGraph"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "95a5d513c3de0708df8a05eafa7907373e6dd36bb4b5aa13d9827790e992d75c"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.dependency-version-resolver",
+      "slug": "dependency-version-resolver",
+      "name": "Dependency Version Resolver",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "CODE_REPAIR",
+      "risk": "HIGH",
+      "summary": "Diagnose incompatible, missing, corrupt, or vulnerable dependencies and propose pinned repair candidates.",
+      "tags": [
+        "repair-seed",
+        "code-configuration-package-repair",
+        "local-first",
+        "dependency-free",
+        "shadow-only"
+      ],
+      "actions": [
+        "Diagnose incompatible, missing, corrupt, or vulnerable dependencies and propose pinned repair candidates."
+      ],
+      "accepts": [
+        "available-versions",
+        "version-range",
+        "vulnerability-blocklist"
+      ],
+      "produces": [
+        "axm.dependency-version-resolution/v1"
+      ],
+      "exportedSymbols": [
+        "parse",
+        "cmp",
+        "satisfies",
+        "resolve"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "75917eff1c72f7006cd784ea118f05489a56a156f53b88b4a84a9dfc4932d4cf"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.diagnostic-experiment-runner",
+      "slug": "diagnostic-experiment-runner",
+      "name": "Diagnostic Experiment Runner",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "MEDIUM",
+      "summary": "Execute bounded experiments that can confirm or disconfirm one hypothesis without mutating canonical state.",
+      "tags": [
+        "repair-seed",
+        "diagnosis-fault-localization",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Execute bounded experiments that can confirm or disconfirm one hypothesis without mutating canonical state."
+      ],
+      "accepts": [
+        "hypothesis",
+        "shadow-fixture",
+        "experiment-function"
+      ],
+      "produces": [
+        "axm.diagnostic-experiment.receipt/v1"
+      ],
+      "exportedSymbols": [
+        "runExperiment"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "81ada7ab55a313acda9605c98877b1b16cfac929d88654129f6d54dc262eeb48"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.differential-comparator",
+      "slug": "differential-comparator",
+      "name": "Differential Comparator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "VERIFICATION",
+      "risk": "MEDIUM",
+      "summary": "Compare repaired output with last-known-good, reference implementation, alternate engine, or independent model.",
+      "tags": [
+        "repair-seed",
+        "verification-regression-proof",
+        "local-first",
+        "dependency-free",
+        "evidence-only"
+      ],
+      "actions": [
+        "Compare repaired output with last-known-good, reference implementation, alternate engine, or independent model."
+      ],
+      "accepts": [
+        "reference-output",
+        "candidate-output",
+        "comparison-policy"
+      ],
+      "produces": [
+        "axm.differential-comparison.report/v1"
+      ],
+      "exportedSymbols": [
+        "compare"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "ce75b5481c3622a2c6a8d913acf123226fdc1f256b08a226c07372ae768ba706"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.event-fingerprint-normalizer",
+      "slug": "event-fingerprint-normalizer",
+      "name": "Event Fingerprint Normalizer",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Convert noisy errors and logs into stable privacy-safe fingerprints for recurrence and matching.",
+      "tags": [
+        "repair-seed",
+        "detection-triage-containment",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Convert noisy errors and logs into stable privacy-safe fingerprints for recurrence and matching."
+      ],
+      "accepts": [
+        "logs",
+        "errors"
+      ],
+      "produces": [
+        "axm.failure-fingerprint/v1"
+      ],
+      "exportedSymbols": [
+        "normalizeText",
+        "fingerprintEvent"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "f5cd569f2fa96b59d1ac5496e2ddef167539a106c4da8cfcc139e8d4c5633ea6"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.evidence-preservation-freeze",
+      "slug": "evidence-preservation-freeze",
+      "name": "Evidence Preservation Freeze",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "HIGH",
+      "summary": "Freeze volatile evidence and block cleanup or mutation when corruption, security, or uncertain failure is detected.",
+      "tags": [
+        "repair-seed",
+        "detection-triage-containment",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Freeze volatile evidence and block cleanup or mutation when corruption, security, or uncertain failure is detected."
+      ],
+      "accepts": [
+        "incident-state",
+        "evidence-paths"
+      ],
+      "produces": [
+        "axm.evidence-freeze-plan/v1"
+      ],
+      "exportedSymbols": [
+        "createEvidenceFreezePlan",
+        "mayWrite"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "a059a4adc7ec025ac73bc35f261199df9c5d9f043b4816e87bf9b2eb2c3f84cd"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.expected-actual-differ",
+      "slug": "expected-actual-differ",
+      "name": "Expected Actual Differ",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Compare declared desired state, last verified state, and current observed state at component and relationship level.",
+      "tags": [
+        "repair-seed",
+        "diagnosis-fault-localization",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Compare declared desired state, last verified state, and current observed state at component and relationship level."
+      ],
+      "accepts": [
+        "desired-state",
+        "last-verified-state",
+        "observed-state"
+      ],
+      "produces": [
+        "axm.state-diff/v1"
+      ],
+      "exportedSymbols": [
+        "walk",
+        "threeWayDiff"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "68045ad668ef3877836d7928e77ecbe31046d0ad2bb4be5340ad6f9bfa897ea2"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.failure-severity-classifier",
+      "slug": "failure-severity-classifier",
+      "name": "Failure Severity Classifier",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Classify impact, urgency, data risk, privacy risk, reversibility, and affected human/device scope.",
+      "tags": [
+        "repair-seed",
+        "detection-triage-containment",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Classify impact, urgency, data risk, privacy risk, reversibility, and affected human/device scope."
+      ],
+      "accepts": [
+        "failure-observation"
+      ],
+      "produces": [
+        "axm.failure-severity/v1"
+      ],
+      "exportedSymbols": [
+        "classifyFailure"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "f97e4c7392e4790170d2c2b6d69d7bfd29ea8efe0299c2b0b58c93d1bb809511"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.failure-signature-registry",
+      "slug": "failure-signature-registry",
+      "name": "Failure Signature Registry",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "LEARNING_ORCHESTRATION",
+      "risk": "MEDIUM",
+      "summary": "Store privacy-safe failure signatures, environments, counterexamples, and linked repair outcomes.",
+      "tags": [
+        "repair-seed",
+        "learning-ai-tool-orchestration",
+        "local-first",
+        "bounded",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Store privacy-safe failure signatures, environments, counterexamples, and linked repair outcomes."
+      ],
+      "accepts": [
+        "privacy-safe-failure-evidence",
+        "repair-outcomes"
+      ],
+      "produces": [
+        "axm.failure-signature.registry/v1"
+      ],
+      "exportedSymbols": [
+        "sanitize",
+        "normalizeObservation",
+        "createRegistry"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "71a4a93b10570d1e30802ae8f254f000a3c80d107cd94b837520793ca19823e8"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.failure-taxonomy-engine",
+      "slug": "failure-taxonomy-engine",
+      "name": "Failure Taxonomy Engine",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Normalize failures into reusable classes such as crash, corruption, timeout, overload, drift, contract mismatch, and partial completion.",
+      "tags": [
+        "repair-seed",
+        "detection-triage-containment",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Normalize failures into reusable classes such as crash, corruption, timeout, overload, drift, contract mismatch, and partial completion."
+      ],
+      "accepts": [
+        "failure-observation"
+      ],
+      "produces": [
+        "axm.failure-taxonomy-result/v1"
+      ],
+      "exportedSymbols": [
+        "RULES",
+        "classifyEvent"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "0d586f2feb9af784a6619157cf31dbb7eaf23c204f7759204379406ec68785da"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.fuzz-regression-harness",
+      "slug": "fuzz-regression-harness",
+      "name": "Fuzz Regression Harness",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "VERIFICATION",
+      "risk": "MEDIUM",
+      "summary": "Turn crashes and malformed-input findings into minimized permanent regression fixtures.",
+      "tags": [
+        "repair-seed",
+        "verification-regression-proof",
+        "local-first",
+        "dependency-free",
+        "evidence-only"
+      ],
+      "actions": [
+        "Turn crashes and malformed-input findings into minimized permanent regression fixtures."
+      ],
+      "accepts": [
+        "seed-inputs",
+        "bounded-mutator",
+        "target-function"
+      ],
+      "produces": [
+        "axm.fuzz-regression.finding/v1",
+        "axm.fuzz-regression.fixture/v1"
+      ],
+      "exportedSymbols": [
+        "fails",
+        "minimize",
+        "runFuzz"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "fa3ba3997bd20fbec55a15b16fbfa5ca858637a822d60aad9a70b6873e3e94e3"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.golden-signal-sampler",
+      "slug": "golden-signal-sampler",
+      "name": "Golden Signal Sampler",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Collect bounded latency, traffic/work, error, and saturation signals for every declared service or module.",
+      "tags": [
+        "repair-seed",
+        "health-telemetry-lineage",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Collect bounded latency, traffic/work, error, and saturation signals for every declared service or module."
+      ],
+      "accepts": [
+        "axm.golden-signals.sample/v1"
+      ],
+      "produces": [
+        "axm.golden-signals.snapshot/v1"
+      ],
+      "exportedSymbols": [
+        "GoldenSignalSampler"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "75acf4a7d46f53ce712a91aee9ef6142c165cbdf9429b4e92cf47e8d2a463707"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.graceful-degradation-router",
+      "slug": "graceful-degradation-router",
+      "name": "Graceful Degradation Router",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RUNTIME",
+      "risk": "MEDIUM",
+      "summary": "Route to a reduced but truthful capability when a noncritical dependency fails.",
+      "tags": [
+        "repair-seed",
+        "runtime-resilience",
+        "local-first",
+        "dependency-free",
+        "bounded"
+      ],
+      "actions": [
+        "Route to a reduced but truthful capability when a noncritical dependency fails."
+      ],
+      "accepts": [
+        "capability-routes",
+        "dependency-health"
+      ],
+      "produces": [
+        "axm.degradation-route/v1"
+      ],
+      "exportedSymbols": [
+        "chooseRoute"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "821127fc58e0f20beb2b552d8500bf2dad96e64d27f1a2b6d78f1d47db99bbf0"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.heartbeat-lease-monitor",
+      "slug": "heartbeat-lease-monitor",
+      "name": "Heartbeat Lease Monitor",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Treat heartbeats as expiring leases with missed-beat coalescing, clock-skew tolerance, and false-alarm controls.",
+      "tags": [
+        "repair-seed",
+        "health-telemetry-lineage",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Treat heartbeats as expiring leases with missed-beat coalescing, clock-skew tolerance, and false-alarm controls."
+      ],
+      "accepts": [
+        "axm.platform-heartbeat.beat/v1"
+      ],
+      "produces": [
+        "axm.heartbeat-lease.status/v1"
+      ],
+      "exportedSymbols": [
+        "createLease",
+        "recordBeat",
+        "evaluateLease"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "f6b05379b7268a8a289843dde5d2801454ebfa0dc73a7445503cce42c5223007"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.hold-explainer",
+      "slug": "hold-explainer",
+      "name": "Hold Explainer",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "GOVERNANCE",
+      "risk": "LOW",
+      "summary": "Explain why no safe automatic action is available and produce the smallest useful escalation request.",
+      "tags": [
+        "repair-seed",
+        "authority-risk-decision",
+        "local-first",
+        "dependency-free",
+        "default-deny"
+      ],
+      "actions": [
+        "Explain why no safe automatic action is available and produce the smallest useful escalation request."
+      ],
+      "accepts": [
+        "failed-gates",
+        "uncertainty"
+      ],
+      "produces": [
+        "axm.repair-hold-explanation/v1"
+      ],
+      "exportedSymbols": [
+        "explainHold"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "ce523948ff5af8c2b64f7757365d5f83e23c741c6705079cb4d925c932004ceb"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.human-merge-gate-adapter",
+      "slug": "human-merge-gate-adapter",
+      "name": "Human Merge Gate Adapter",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "GOVERNANCE",
+      "risk": "HIGH",
+      "summary": "Present exact pre-state, proposed change, risk, alternatives, rollback, and proof requirements for human approval.",
+      "tags": [
+        "repair-seed",
+        "authority-risk-decision",
+        "local-first",
+        "dependency-free",
+        "default-deny"
+      ],
+      "actions": [
+        "Present exact pre-state, proposed change, risk, alternatives, rollback, and proof requirements for human approval."
+      ],
+      "accepts": [
+        "pre-state",
+        "repair-candidate",
+        "risk",
+        "rollback",
+        "verification"
+      ],
+      "produces": [
+        "axm.human-merge-gate-packet/v1"
+      ],
+      "exportedSymbols": [
+        "buildGatePacket",
+        "recordDecision"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "0a6662e4acefb2633de5fe706ba41687f53beae43b7062a529daeb41797ce4a4"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.hypothesis-queue",
+      "slug": "hypothesis-queue",
+      "name": "Hypothesis Queue",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Maintain competing causal hypotheses with prior probability, supporting evidence, contradictions, and next safe test.",
+      "tags": [
+        "repair-seed",
+        "diagnosis-fault-localization",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Maintain competing causal hypotheses with prior probability, supporting evidence, contradictions, and next safe test."
+      ],
+      "accepts": [
+        "failure-hypotheses",
+        "evidence"
+      ],
+      "produces": [
+        "axm.hypothesis-queue.snapshot/v1"
+      ],
+      "exportedSymbols": [
+        "HypothesisQueue"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "ee6790f3779cad09636adb591f1ea21bb26ab0ce1e5ad5eb2d7acb07dae50e7c"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.idempotent-retry-wrapper",
+      "slug": "idempotent-retry-wrapper",
+      "name": "Idempotent Retry Wrapper",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RUNTIME",
+      "risk": "MEDIUM",
+      "summary": "Retry only operations proven or guarded to avoid duplicate side effects.",
+      "tags": [
+        "repair-seed",
+        "runtime-resilience",
+        "local-first",
+        "dependency-free",
+        "bounded"
+      ],
+      "actions": [
+        "Retry only operations proven or guarded to avoid duplicate side effects."
+      ],
+      "accepts": [
+        "idempotency-key",
+        "operation"
+      ],
+      "produces": [
+        "axm.idempotent-retry.receipt/v1"
+      ],
+      "exportedSymbols": [
+        "MemoryIdempotencyStore",
+        "runIdempotent"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "3db79d546677b2285949e1da3e88a872958f281cd7f402d06de7bc09a6e2a294"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.import-path-repairer",
+      "slug": "import-path-repairer",
+      "name": "Import Path Repairer",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "CODE_REPAIR",
+      "risk": "MEDIUM",
+      "summary": "Repair moved, renamed, case-mismatched, or platform-specific paths without blind global rewriting.",
+      "tags": [
+        "repair-seed",
+        "code-configuration-package-repair",
+        "local-first",
+        "dependency-free",
+        "shadow-only"
+      ],
+      "actions": [
+        "Repair moved, renamed, case-mismatched, or platform-specific paths without blind global rewriting."
+      ],
+      "accepts": [
+        "requested-import",
+        "declared-file-inventory"
+      ],
+      "produces": [
+        "axm.import-path-repair-candidates/v1"
+      ],
+      "exportedSymbols": [
+        "proposeImportRepairs"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "dac8194062ea9fce266c879e6ee78936dcee5de0d50e1b8e2c2ece1464c411b0"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.incident-deduplicator",
+      "slug": "incident-deduplicator",
+      "name": "Incident Deduplicator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Recognize when multiple alerts are manifestations of one incident without hiding distinct failures.",
+      "tags": [
+        "repair-seed",
+        "detection-triage-containment",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Recognize when multiple alerts are manifestations of one incident without hiding distinct failures."
+      ],
+      "accepts": [
+        "incident-state-packets"
+      ],
+      "produces": [
+        "axm.incident-deduplication/v1"
+      ],
+      "exportedSymbols": [
+        "deduplicateIncidents"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "067d5a4510cc38553860e60aeab7bc75b0b7505e22782871a9212338d04fc45a"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.incident-state-packet",
+      "slug": "incident-state-packet",
+      "name": "Incident State Packet",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Create a continuously updated, handoff-safe incident packet containing impact, actions, evidence, owners, and uncertainty.",
+      "tags": [
+        "repair-seed",
+        "detection-triage-containment",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Create a continuously updated, handoff-safe incident packet containing impact, actions, evidence, owners, and uncertainty."
+      ],
+      "accepts": [
+        "failure-observation",
+        "human-decision",
+        "containment-plan"
+      ],
+      "produces": [
+        "axm.incident-state-packet/v1"
+      ],
+      "exportedSymbols": [
+        "createIncidentPacket",
+        "updateIncidentPacket"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "ece33bd89a3a5de01e96b0bddb2b5dcf0d33d089812d24df2e73ea82d6421dc4"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.invariant-checker",
+      "slug": "invariant-checker",
+      "name": "Invariant Checker",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "VERIFICATION",
+      "risk": "HIGH",
+      "summary": "Verify safety, data, permission, state, and domain invariants before and after repair.",
+      "tags": [
+        "repair-seed",
+        "verification-regression-proof",
+        "local-first",
+        "dependency-free",
+        "evidence-only"
+      ],
+      "actions": [
+        "Verify safety, data, permission, state, and domain invariants before and after repair."
+      ],
+      "accepts": [
+        "pre-state",
+        "post-state",
+        "declared-invariants"
+      ],
+      "produces": [
+        "axm.invariant-check.report/v1"
+      ],
+      "exportedSymbols": [
+        "evaluate",
+        "checkBeforeAfter"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "52bd0aea84ba9c04288ce6d677dce94ff6b22496cfff5f63831c83bfa818bc31"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.irreversible-boundary-detector",
+      "slug": "irreversible-boundary-detector",
+      "name": "Irreversible Boundary Detector",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "GOVERNANCE",
+      "risk": "HIGH",
+      "summary": "Detect legal, financial, identity, security-root, destructive, privacy-sensitive, and other no-auto-repair boundaries.",
+      "tags": [
+        "repair-seed",
+        "authority-risk-decision",
+        "local-first",
+        "dependency-free",
+        "default-deny"
+      ],
+      "actions": [
+        "Detect legal, financial, identity, security-root, destructive, privacy-sensitive, and other no-auto-repair boundaries."
+      ],
+      "accepts": [
+        "proposed-action"
+      ],
+      "produces": [
+        "axm.irreversible-boundary-finding/v1"
+      ],
+      "exportedSymbols": [
+        "RULES",
+        "detectIrreversibleBoundary"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "741a58b1860ef94ab70a2f4f8c7040138ff9e40fd9344457a2a3b9346bd964ca"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.isolated-probe-runner",
+      "slug": "isolated-probe-runner",
+      "name": "Isolated Probe Runner",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "MEDIUM",
+      "summary": "Run diagnostic probes with strict time, memory, permission, and side-effect boundaries so the probe cannot become the failure.",
+      "tags": [
+        "repair-seed",
+        "health-telemetry-lineage",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Run diagnostic probes with strict time, memory, permission, and side-effect boundaries so the probe cannot become the failure."
+      ],
+      "accepts": [
+        "axm.probe-spec/v1"
+      ],
+      "produces": [
+        "axm.probe-run.receipt/v1"
+      ],
+      "exportedSymbols": [
+        "runNodeProbe"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": true,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "b9435514f406a1e4113c80a8577f5cdc8f1ae4bacab9f0c564191303257f4695"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.known-problem-matcher",
+      "slug": "known-problem-matcher",
+      "name": "Known Problem Matcher",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "LEARNING_ORCHESTRATION",
+      "risk": "MEDIUM",
+      "summary": "Match new evidence against prior incidents without suppressing novel or contradictory signals.",
+      "tags": [
+        "repair-seed",
+        "learning-ai-tool-orchestration",
+        "local-first",
+        "bounded",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Match new evidence against prior incidents without suppressing novel or contradictory signals."
+      ],
+      "accepts": [
+        "failure-signature-registry",
+        "new-failure-evidence"
+      ],
+      "produces": [
+        "axm.known-problem.match-report/v1"
+      ],
+      "exportedSymbols": [
+        "tokens",
+        "jaccard",
+        "matchKnownProblem"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "3af7ee6926763015676cd4ffe53a4a3f2c6e34845d506d1d7dc9324a2ee9cee2"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.last-known-good-comparator",
+      "slug": "last-known-good-comparator",
+      "name": "Last Known Good Comparator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Identify the smallest meaningful difference between the failing state and a verified working checkpoint.",
+      "tags": [
+        "repair-seed",
+        "diagnosis-fault-localization",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Identify the smallest meaningful difference between the failing state and a verified working checkpoint."
+      ],
+      "accepts": [
+        "verified-checkpoints",
+        "current-state"
+      ],
+      "produces": [
+        "axm.last-known-good-comparison/v1"
+      ],
+      "exportedSymbols": [
+        "diffCount",
+        "compareLastKnownGood"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "fef5ee19131606f73a036f5810289aee87ad01f2cb0c8f4e1a5fb335657e6271"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.lineage-propagator",
+      "slug": "lineage-propagator",
+      "name": "Lineage Propagator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Carry task, request, module, device, version, and human-decision lineage across process and tool boundaries.",
+      "tags": [
+        "repair-seed",
+        "health-telemetry-lineage",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Carry task, request, module, device, version, and human-decision lineage across process and tool boundaries."
+      ],
+      "accepts": [
+        "task",
+        "request",
+        "module",
+        "device",
+        "version",
+        "human-decision"
+      ],
+      "produces": [
+        "axm.lineage-context/v1",
+        "axm.lineage-carrier/v1"
+      ],
+      "exportedSymbols": [
+        "createLineage",
+        "childLineage",
+        "toCarrier",
+        "fromCarrier"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "22392d75307b6a6ba2bea14acae1d3b9f6b9896e5cf6593c54d74b019fe577ba"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.microrestart-controller",
+      "slug": "microrestart-controller",
+      "name": "Microrestart Controller",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RUNTIME",
+      "risk": "HIGH",
+      "summary": "Restart the smallest faulty component while separating process recovery from persistent state recovery.",
+      "tags": [
+        "repair-seed",
+        "runtime-resilience",
+        "local-first",
+        "dependency-free",
+        "bounded"
+      ],
+      "actions": [
+        "Restart the smallest faulty component while separating process recovery from persistent state recovery."
+      ],
+      "accepts": [
+        "component-state",
+        "restart-history"
+      ],
+      "produces": [
+        "axm.microrestart-plan/v1"
+      ],
+      "exportedSymbols": [
+        "planMicrorestart"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "e74acf9c470fa4f0549d198d101788c79d798dbcd850a63e629ab0c80e05013b"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.minimal-failing-fixture",
+      "slug": "minimal-failing-fixture",
+      "name": "Minimal Failing Fixture",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "MEDIUM",
+      "summary": "Reduce a complex failure into the smallest inputs, state, and dependencies that still reproduce it.",
+      "tags": [
+        "repair-seed",
+        "diagnosis-fault-localization",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Reduce a complex failure into the smallest inputs, state, and dependencies that still reproduce it."
+      ],
+      "accepts": [
+        "failing-fixture",
+        "failure-predicate"
+      ],
+      "produces": [
+        "axm.minimal-failing-fixture/v1"
+      ],
+      "exportedSymbols": [
+        "minimizeFixture"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "2804a639974adf43f1a371ecce08e1bb19f917df2529176c9ceb31405a5f7a9f"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.multi-state-health-probe",
+      "slug": "multi-state-health-probe",
+      "name": "Multi State Health Probe",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Separate startup, readiness, liveness, degraded-state, progress, and user-outcome health instead of one misleading boolean.",
+      "tags": [
+        "repair-seed",
+        "health-telemetry-lineage",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Separate startup, readiness, liveness, degraded-state, progress, and user-outcome health instead of one misleading boolean."
+      ],
+      "accepts": [
+        "axm.diagnostics-probe-result/v1"
+      ],
+      "produces": [
+        "axm.multi-state-health.snapshot/v1"
+      ],
+      "exportedSymbols": [
+        "DIMENSIONS",
+        "evaluateMultiStateHealth"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "15ee5ac01379c9683e48f382566d6568c4a81db38af33117397059545cdd843e"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.network-fault-injector",
+      "slug": "network-fault-injector",
+      "name": "Network Fault Injector",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FAULT_INJECTION",
+      "risk": "HIGH",
+      "summary": "Inject bounded latency, loss, disconnection, duplication, reordering, and partial reachability.",
+      "tags": [
+        "repair-seed",
+        "fault-injection-recovery-drill",
+        "local-first",
+        "bounded",
+        "sandbox-first"
+      ],
+      "actions": [
+        "Inject bounded latency, loss, disconnection, duplication, reordering, and partial reachability."
+      ],
+      "accepts": [
+        "message-events",
+        "bounded-fault-policy",
+        "seed"
+      ],
+      "produces": [
+        "axm.network-fault-simulation/v1"
+      ],
+      "exportedSymbols": [
+        "injectNetwork"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "dbfb811987e94bd4e906f4058d88d4bbcd7135a589f62fefa4893b105dcc3beb"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.outcome-provenance-ledger",
+      "slug": "outcome-provenance-ledger",
+      "name": "Outcome Provenance Ledger",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "LEARNING_ORCHESTRATION",
+      "risk": "HIGH",
+      "summary": "Record every proposed, attempted, accepted, rejected, failed, reverted, and superseded repair with exact lineage.",
+      "tags": [
+        "repair-seed",
+        "learning-ai-tool-orchestration",
+        "local-first",
+        "bounded",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Record every proposed, attempted, accepted, rejected, failed, reverted, and superseded repair with exact lineage."
+      ],
+      "accepts": [
+        "repair-lifecycle-event",
+        "source-lineage"
+      ],
+      "produces": [
+        "axm.repair-outcome-ledger/v1",
+        "axm.repair-outcome-event/v1"
+      ],
+      "exportedSymbols": [
+        "createLedger",
+        "TYPES"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "2151a56770fce759a2fb95ef10ccd57ef8a6008d0ce9267795a356e345302af0"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.partial-dependency-simulator",
+      "slug": "partial-dependency-simulator",
+      "name": "Partial Dependency Simulator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FAULT_INJECTION",
+      "risk": "MEDIUM",
+      "summary": "Simulate a dependency that is slow, stale, intermittently wrong, or only partly available rather than simply offline.",
+      "tags": [
+        "repair-seed",
+        "fault-injection-recovery-drill",
+        "local-first",
+        "bounded",
+        "sandbox-first"
+      ],
+      "actions": [
+        "Simulate a dependency that is slow, stale, intermittently wrong, or only partly available rather than simply offline."
+      ],
+      "accepts": [
+        "scenario-schedule",
+        "reference-values"
+      ],
+      "produces": [
+        "axm.partial-dependency-simulator/v1"
+      ],
+      "exportedSymbols": [
+        "createSimulator"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "d5551ac6ec7bb4881522d715d213abd92351c6619aba212e49dcd6c3f5b271b8"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.patch-overfitting-detector",
+      "slug": "patch-overfitting-detector",
+      "name": "Patch Overfitting Detector",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "CODE_REPAIR",
+      "risk": "HIGH",
+      "summary": "Reject patches that merely satisfy narrow tests while violating broader behavior, hidden cases, or intended semantics.",
+      "tags": [
+        "repair-seed",
+        "code-configuration-package-repair",
+        "local-first",
+        "dependency-free",
+        "shadow-only"
+      ],
+      "actions": [
+        "Reject patches that merely satisfy narrow tests while violating broader behavior, hidden cases, or intended semantics."
+      ],
+      "accepts": [
+        "training-results",
+        "holdout-results",
+        "property-results",
+        "differential-results"
+      ],
+      "produces": [
+        "axm.patch-overfitting-assessment/v1"
+      ],
+      "exportedSymbols": [
+        "detectOverfitting"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "a35072e6b4004697434f61f903f9250991306fe0d16d442dc929546deadf6c27"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.patch-template-library",
+      "slug": "patch-template-library",
+      "name": "Patch Template Library",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "CODE_REPAIR",
+      "risk": "HIGH",
+      "summary": "Store proven micro-repair templates with applicability conditions, counterexamples, and verification requirements.",
+      "tags": [
+        "repair-seed",
+        "code-configuration-package-repair",
+        "local-first",
+        "dependency-free",
+        "shadow-only"
+      ],
+      "actions": [
+        "Store proven micro-repair templates with applicability conditions, counterexamples, and verification requirements."
+      ],
+      "accepts": [
+        "lineage-backed-template",
+        "repair-context"
+      ],
+      "produces": [
+        "axm.patch-template-library/v1",
+        "axm.patch-template-match/v1"
+      ],
+      "exportedSymbols": [
+        "createLibrary"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "d79092bffa7b61d92b013dd69a265a35b46fcf07f5844afcd2f53347e7c26586"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.performance-guard",
+      "slug": "performance-guard",
+      "name": "Performance Guard",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "VERIFICATION",
+      "risk": "MEDIUM",
+      "summary": "Detect repairs that restore correctness by causing unacceptable latency, memory, compute, battery, or thermal regression.",
+      "tags": [
+        "repair-seed",
+        "verification-regression-proof",
+        "local-first",
+        "dependency-free",
+        "evidence-only"
+      ],
+      "actions": [
+        "Detect repairs that restore correctness by causing unacceptable latency, memory, compute, battery, or thermal regression."
+      ],
+      "accepts": [
+        "baseline-metrics",
+        "candidate-metrics",
+        "performance-budgets"
+      ],
+      "produces": [
+        "axm.performance-guard.report/v1"
+      ],
+      "exportedSymbols": [
+        "guard"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "d4aa8c0e63913764816cb7e195ae8e350c641f369e0136802cd784140f69f551"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.permission-matrix",
+      "slug": "permission-matrix",
+      "name": "Permission Matrix",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "GOVERNANCE",
+      "risk": "HIGH",
+      "summary": "Resolve which human, AI seat, runtime, and module may observe, propose, simulate, approve, execute, or verify each action.",
+      "tags": [
+        "repair-seed",
+        "authority-risk-decision",
+        "local-first",
+        "dependency-free",
+        "default-deny"
+      ],
+      "actions": [
+        "Resolve which human, AI seat, runtime, and module may observe, propose, simulate, approve, execute, or verify each action."
+      ],
+      "accepts": [
+        "actor",
+        "action",
+        "resource",
+        "policy-rules"
+      ],
+      "produces": [
+        "axm.permission-resolution/v1"
+      ],
+      "exportedSymbols": [
+        "resolvePermission"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "0b56e8bef1742f1ffaec1d00c09c6ab4de590fe722ff7c9214abcae7f81777d3"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.pre-repair-safety-copy",
+      "slug": "pre-repair-safety-copy",
+      "name": "Pre Repair Safety Copy",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RECOVERY",
+      "risk": "HIGH",
+      "summary": "Capture the exact pre-mutation state and lineage immediately before every repair.",
+      "tags": [
+        "repair-seed",
+        "state-data-workflow-recovery",
+        "local-first",
+        "dependency-free",
+        "reversible"
+      ],
+      "actions": [
+        "Capture the exact pre-mutation state and lineage immediately before every repair."
+      ],
+      "accepts": [
+        "file-list",
+        "safety-copy-root"
+      ],
+      "produces": [
+        "axm.pre-repair-safety-copy/v1"
+      ],
+      "exportedSymbols": [
+        "createSafetyCopy",
+        "safeRel"
+      ],
+      "effects": {
+        "filesystem": true,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "abf5fcc214a41122880e665d45092a1481f699715cf49b99de630d144fe0992b"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.process-crash-injector",
+      "slug": "process-crash-injector",
+      "name": "Process Crash Injector",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FAULT_INJECTION",
+      "risk": "HIGH",
+      "summary": "Safely terminate selected disposable processes or components to verify restart and state recovery.",
+      "tags": [
+        "repair-seed",
+        "fault-injection-recovery-drill",
+        "local-first",
+        "bounded",
+        "sandbox-first"
+      ],
+      "actions": [
+        "Safely terminate selected disposable processes or components to verify restart and state recovery."
+      ],
+      "accepts": [
+        "explicit-disposable-sandbox-intent"
+      ],
+      "produces": [
+        "axm.process-crash-injection.receipt/v1"
+      ],
+      "exportedSymbols": [
+        "injectCrash"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": true,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "e37f7b38fa3c18ccc8222ec166a477a47309b0b19d3a3bb0614e1c692b5782a3"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.progress-stall-detector",
+      "slug": "progress-stall-detector",
+      "name": "Progress Stall Detector",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Detect work that is alive but no longer making declared progress, including hangs, deadlocks, and stuck queues.",
+      "tags": [
+        "repair-seed",
+        "health-telemetry-lineage",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Detect work that is alive but no longer making declared progress, including hangs, deadlocks, and stuck queues."
+      ],
+      "accepts": [
+        "progress-samples",
+        "liveness-state"
+      ],
+      "produces": [
+        "axm.progress-stall.finding/v1"
+      ],
+      "exportedSymbols": [
+        "detectProgressStall"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "a7a70bdb4abdf49dcfe1a6c8d48055a0563bec080884351dcdcd24c2ff632dfb"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.property-test-generator",
+      "slug": "property-test-generator",
+      "name": "Property Test Generator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "VERIFICATION",
+      "risk": "MEDIUM",
+      "summary": "Generate bounded property-based tests from contracts and invariants instead of only example cases.",
+      "tags": [
+        "repair-seed",
+        "verification-regression-proof",
+        "local-first",
+        "dependency-free",
+        "evidence-only"
+      ],
+      "actions": [
+        "Generate bounded property-based tests from contracts and invariants instead of only example cases."
+      ],
+      "accepts": [
+        "bounded-data-schema",
+        "declared-properties",
+        "seed"
+      ],
+      "produces": [
+        "axm.property-test.report/v1"
+      ],
+      "exportedSymbols": [
+        "rng",
+        "generate",
+        "runProperties"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "f1acc4b52553dc17fcb41d07075aeec5689550c4c4048545cd52e55aaff44aa5"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.recovery-drill-runner",
+      "slug": "recovery-drill-runner",
+      "name": "Recovery Drill Runner",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FAULT_INJECTION",
+      "risk": "HIGH",
+      "summary": "Schedule reproducible recovery exercises and compare observed recovery time, loss, and proof against declared targets.",
+      "tags": [
+        "repair-seed",
+        "fault-injection-recovery-drill",
+        "local-first",
+        "bounded",
+        "sandbox-first"
+      ],
+      "actions": [
+        "Schedule reproducible recovery exercises and compare observed recovery time, loss, and proof against declared targets."
+      ],
+      "accepts": [
+        "steady-state-contract",
+        "sandbox-fixture",
+        "fault-injector",
+        "recovery-adapter",
+        "verifier",
+        "abort-controller"
+      ],
+      "produces": [
+        "axm.recovery-drill.receipt/v1"
+      ],
+      "exportedSymbols": [
+        "runDrill"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "749ca382628f5a673240c70b704ae9634bd643854a4c16196e9fd7baa0e3dd50"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.recurrence-freshness-monitor",
+      "slug": "recurrence-freshness-monitor",
+      "name": "Recurrence Freshness Monitor",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "LEARNING_ORCHESTRATION",
+      "risk": "MEDIUM",
+      "summary": "Detect recurring failures and warn when an old repair pattern has become stale or environment-specific.",
+      "tags": [
+        "repair-seed",
+        "learning-ai-tool-orchestration",
+        "local-first",
+        "bounded",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Detect recurring failures and warn when an old repair pattern has become stale or environment-specific."
+      ],
+      "accepts": [
+        "failure-signature-history",
+        "repair-pattern-metadata",
+        "current-environment"
+      ],
+      "produces": [
+        "axm.recurrence-freshness.report/v1"
+      ],
+      "exportedSymbols": [
+        "monitorFreshness"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "6f7db444c15c0a8e731e83e85a19346eb7ff697b674602c83b75b51170a650f5"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.regression-selector",
+      "slug": "regression-selector",
+      "name": "Regression Selector",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "VERIFICATION",
+      "risk": "MEDIUM",
+      "summary": "Select the smallest high-value regression set from changed paths, dependencies, historical failures, and risk.",
+      "tags": [
+        "repair-seed",
+        "verification-regression-proof",
+        "local-first",
+        "dependency-free",
+        "evidence-only"
+      ],
+      "actions": [
+        "Select the smallest high-value regression set from changed paths, dependencies, historical failures, and risk."
+      ],
+      "accepts": [
+        "change-scope",
+        "test-catalog",
+        "dependency-map",
+        "failure-history"
+      ],
+      "produces": [
+        "axm.regression-selection.plan/v1"
+      ],
+      "exportedSymbols": [
+        "selectRegressions"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "239048a69452f027e3ce01e1f732d0a986db0259eacac0c0efe1e63243851606"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.repair-budget-manager",
+      "slug": "repair-budget-manager",
+      "name": "Repair Budget Manager",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "GOVERNANCE",
+      "risk": "MEDIUM",
+      "summary": "Limit frequency, compute, time, mutations, and cumulative risk of automated repairs.",
+      "tags": [
+        "repair-seed",
+        "authority-risk-decision",
+        "local-first",
+        "dependency-free",
+        "default-deny"
+      ],
+      "actions": [
+        "Limit frequency, compute, time, mutations, and cumulative risk of automated repairs."
+      ],
+      "accepts": [
+        "repair-cost-estimate",
+        "repair-attempt"
+      ],
+      "produces": [
+        "axm.repair-budget-status/v1"
+      ],
+      "exportedSymbols": [
+        "RepairBudget"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "52fcebd3dad36409fc964462db47319f6df7bdb756d6440eef659529842e6922"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.replay-verifier",
+      "slug": "replay-verifier",
+      "name": "Replay Verifier",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "VERIFICATION",
+      "risk": "HIGH",
+      "summary": "Replay recorded operations against repaired state and compare outcomes, side effects, and timing bounds.",
+      "tags": [
+        "repair-seed",
+        "verification-regression-proof",
+        "local-first",
+        "dependency-free",
+        "evidence-only"
+      ],
+      "actions": [
+        "Replay recorded operations against repaired state and compare outcomes, side effects, and timing bounds."
+      ],
+      "accepts": [
+        "initial-state",
+        "recorded-operations",
+        "replay-adapter",
+        "expected-outcome"
+      ],
+      "produces": [
+        "axm.replay-verification.report/v1"
+      ],
+      "exportedSymbols": [
+        "replay"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "85e9e774c753f6e31347992b805b740d59c2049e9e03a0cddeddbe0e80637e57"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.reproduction-packager",
+      "slug": "reproduction-packager",
+      "name": "Reproduction Packager",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Package deterministic or best-effort reproduction steps, fixtures, versions, environment facts, and known nondeterminism.",
+      "tags": [
+        "repair-seed",
+        "diagnosis-fault-localization",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Package deterministic or best-effort reproduction steps, fixtures, versions, environment facts, and known nondeterminism."
+      ],
+      "accepts": [
+        "fixture",
+        "versions",
+        "environment-facts"
+      ],
+      "produces": [
+        "axm.reproduction-package/v1"
+      ],
+      "exportedSymbols": [
+        "packageReproduction"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "80f3b6bbc5f26224ae2f93a7ed3491d5f16ce107e49a63baa4df466c8336770b"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.resource-exhaustion-injector",
+      "slug": "resource-exhaustion-injector",
+      "name": "Resource Exhaustion Injector",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FAULT_INJECTION",
+      "risk": "HIGH",
+      "summary": "Apply bounded CPU, memory, thread, handle, queue, GPU, battery, or thermal pressure.",
+      "tags": [
+        "repair-seed",
+        "fault-injection-recovery-drill",
+        "local-first",
+        "bounded",
+        "sandbox-first"
+      ],
+      "actions": [
+        "Apply bounded CPU, memory, thread, handle, queue, GPU, battery, or thermal pressure."
+      ],
+      "accepts": [
+        "explicit-bounded-pressure-plan"
+      ],
+      "produces": [
+        "axm.resource-pressure-experiment.receipt/v1"
+      ],
+      "exportedSymbols": [
+        "applyCpuPulse",
+        "simulatePressure"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "e8eaedf11a1ae33b67b10f843879018e027aa4457ad79921b28501d8080526b3"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.resource-locator",
+      "slug": "resource-locator",
+      "name": "Resource Locator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "CODE_REPAIR",
+      "risk": "MEDIUM",
+      "summary": "Find missing assets, binaries, models, fonts, schemas, or runtime files through hashes and provenance.",
+      "tags": [
+        "repair-seed",
+        "code-configuration-package-repair",
+        "local-first",
+        "dependency-free",
+        "shadow-only"
+      ],
+      "actions": [
+        "Find missing assets, binaries, models, fonts, schemas, or runtime files through hashes and provenance."
+      ],
+      "accepts": [
+        "resource-query",
+        "resource-inventory",
+        "allowed-roots"
+      ],
+      "produces": [
+        "axm.resource-location-report/v1"
+      ],
+      "exportedSymbols": [
+        "buildIndex",
+        "locate"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "5065966af928054ca576c905d0de24e83033c90f165d2cf2c3a2caf79ce4f871"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.resource-pressure-sentinel",
+      "slug": "resource-pressure-sentinel",
+      "name": "Resource Pressure Sentinel",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Detect CPU, memory, disk, GPU, handle, thread, queue, battery, and thermal pressure before collapse.",
+      "tags": [
+        "repair-seed",
+        "health-telemetry-lineage",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Detect CPU, memory, disk, GPU, handle, thread, queue, battery, and thermal pressure before collapse."
+      ],
+      "accepts": [
+        "host-resource-sample"
+      ],
+      "produces": [
+        "axm.resource-pressure.finding/v1"
+      ],
+      "exportedSymbols": [
+        "DEFAULTS",
+        "evaluateResourcePressure"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "693cf57d1e1e7a0a98b0234c6f35787200bf75c2609214e6787251d7a483cc9f"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.restore-lineage-guard",
+      "slug": "restore-lineage-guard",
+      "name": "Restore Lineage Guard",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RECOVERY",
+      "risk": "HIGH",
+      "summary": "Permit restore only when source, digest, scope, freshness, and current-state assumptions match.",
+      "tags": [
+        "repair-seed",
+        "state-data-workflow-recovery",
+        "local-first",
+        "dependency-free",
+        "reversible"
+      ],
+      "actions": [
+        "Permit restore only when source, digest, scope, freshness, and current-state assumptions match."
+      ],
+      "accepts": [
+        "restore-preview",
+        "snapshot-lineage",
+        "current-digest"
+      ],
+      "produces": [
+        "axm.restore-lineage-decision/v1"
+      ],
+      "exportedSymbols": [
+        "guardRestore"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "eb475ef7bb4a58a9f904df1314383d35200168097e63a7bc418ff0cbaa075533"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.restore-preview",
+      "slug": "restore-preview",
+      "name": "Restore Preview",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RECOVERY",
+      "risk": "HIGH",
+      "summary": "Show precisely what a restore would overwrite, preserve, conflict with, or leave unresolved.",
+      "tags": [
+        "repair-seed",
+        "state-data-workflow-recovery",
+        "local-first",
+        "dependency-free",
+        "reversible"
+      ],
+      "actions": [
+        "Show precisely what a restore would overwrite, preserve, conflict with, or leave unresolved."
+      ],
+      "accepts": [
+        "snapshot-map",
+        "current-map",
+        "expected-current-map"
+      ],
+      "produces": [
+        "axm.restore-preview/v1"
+      ],
+      "exportedSymbols": [
+        "previewRestore"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "5f6681fe55ad4692311f83d8b07eb4011b75141071911e8155ccacb272baa6cc"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.retry-budget-manager",
+      "slug": "retry-budget-manager",
+      "name": "Retry Budget Manager",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "GOVERNANCE",
+      "risk": "MEDIUM",
+      "summary": "Bound retries across layered callers to prevent retry storms and hidden load amplification.",
+      "tags": [
+        "repair-seed",
+        "authority-risk-decision",
+        "local-first",
+        "dependency-free",
+        "default-deny"
+      ],
+      "actions": [
+        "Bound retries across layered callers to prevent retry storms and hidden load amplification."
+      ],
+      "accepts": [
+        "retry-request",
+        "caller-lineage"
+      ],
+      "produces": [
+        "axm.retry-budget-status/v1"
+      ],
+      "exportedSymbols": [
+        "RetryBudget"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "57687bffb66dd1f1cdb9de5901e02f461d3fab0168b8fdcd2e128b57891967c8"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.reversibility-classifier",
+      "slug": "reversibility-classifier",
+      "name": "Reversibility Classifier",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "GOVERNANCE",
+      "risk": "MEDIUM",
+      "summary": "Determine whether an action is exactly reversible, compensable, approximately recoverable, or irreversible.",
+      "tags": [
+        "repair-seed",
+        "authority-risk-decision",
+        "local-first",
+        "dependency-free",
+        "default-deny"
+      ],
+      "actions": [
+        "Determine whether an action is exactly reversible, compensable, approximately recoverable, or irreversible."
+      ],
+      "accepts": [
+        "repair-action"
+      ],
+      "produces": [
+        "axm.reversibility-classification/v1"
+      ],
+      "exportedSymbols": [
+        "classifyReversibility"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "80546f505784873a53bc88492dd72f61245d95740a7f132949088aedab11ce29"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.risk-classifier",
+      "slug": "risk-classifier",
+      "name": "Risk Classifier",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "GOVERNANCE",
+      "risk": "MEDIUM",
+      "summary": "Assign repair authority tier from impact, reversibility, evidence strength, and permission.",
+      "tags": [
+        "repair-seed",
+        "authority-risk-decision",
+        "local-first",
+        "dependency-free",
+        "default-deny"
+      ],
+      "actions": [
+        "Assign repair authority tier from impact, reversibility, evidence strength, and permission."
+      ],
+      "accepts": [
+        "repair-candidate",
+        "permission-status"
+      ],
+      "produces": [
+        "axm.repair-risk-classification/v1"
+      ],
+      "exportedSymbols": [
+        "classifyRepairRisk"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "a4db38753381d1a20c17bfcbd3a3559fea15ef6e10a4fe126f31d4e893bcca52"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.safe-mode-trigger",
+      "slug": "safe-mode-trigger",
+      "name": "Safe Mode Trigger",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "MEDIUM",
+      "summary": "Enter a declared reduced-capability mode when continuing normally risks broader damage.",
+      "tags": [
+        "repair-seed",
+        "detection-triage-containment",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Enter a declared reduced-capability mode when continuing normally risks broader damage."
+      ],
+      "accepts": [
+        "failure-severity",
+        "capability-map"
+      ],
+      "produces": [
+        "axm.safe-mode-plan/v1"
+      ],
+      "exportedSymbols": [
+        "buildSafeModePlan"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "292e18dcf88e5e452823cf5132ca4379f5b540e8df4f8f0b48f1b23732a4aa78"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.saga-recovery-orchestrator",
+      "slug": "saga-recovery-orchestrator",
+      "name": "Saga Recovery Orchestrator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RECOVERY",
+      "risk": "HIGH",
+      "summary": "Resume, retry, substitute, or compensate long-running workflows while preserving per-step evidence.",
+      "tags": [
+        "repair-seed",
+        "state-data-workflow-recovery",
+        "local-first",
+        "dependency-free",
+        "reversible"
+      ],
+      "actions": [
+        "Resume, retry, substitute, or compensate long-running workflows while preserving per-step evidence."
+      ],
+      "accepts": [
+        "workflow-steps",
+        "compensation-registry"
+      ],
+      "produces": [
+        "axm.saga-recovery.receipt/v1"
+      ],
+      "exportedSymbols": [
+        "runSaga"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "594d51d4d19c81e5011646f59832fb68a7c08e9bed3c9917d23d7ca9dfbd9dea"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.schema-migration-repairer",
+      "slug": "schema-migration-repairer",
+      "name": "Schema Migration Repairer",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "CODE_REPAIR",
+      "risk": "HIGH",
+      "summary": "Repair outdated or malformed records through versioned, reversible migrations with loss reports.",
+      "tags": [
+        "repair-seed",
+        "code-configuration-package-repair",
+        "local-first",
+        "dependency-free",
+        "shadow-only"
+      ],
+      "actions": [
+        "Repair outdated or malformed records through versioned, reversible migrations with loss reports."
+      ],
+      "accepts": [
+        "versioned-record",
+        "migration-registry",
+        "target-version"
+      ],
+      "produces": [
+        "axm.schema-migration-plan/v1",
+        "axm.schema-migration-simulation/v1"
+      ],
+      "exportedSymbols": [
+        "createRegistry",
+        "simulateMigration",
+        "findPath"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "84e97d8efbefcde622ed51327753fe9680dcde3f8197859b5c5a33c6d1c5179a"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.security-guard",
+      "slug": "security-guard",
+      "name": "Security Guard",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "VERIFICATION",
+      "risk": "HIGH",
+      "summary": "Check that repair does not weaken permissions, trust roots, signature checks, isolation, or secret boundaries.",
+      "tags": [
+        "repair-seed",
+        "verification-regression-proof",
+        "local-first",
+        "dependency-free",
+        "evidence-only"
+      ],
+      "actions": [
+        "Check that repair does not weaken permissions, trust roots, signature checks, isolation, or secret boundaries."
+      ],
+      "accepts": [
+        "pre-security-state",
+        "post-security-state",
+        "approved-expansions"
+      ],
+      "produces": [
+        "axm.security-guard.report/v1"
+      ],
+      "exportedSymbols": [
+        "guardSecurity"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "9543175fe2878a18a37934309959c906c211255c65702ab825a7f0ecba2522b0"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.shadow-simulator",
+      "slug": "shadow-simulator",
+      "name": "Shadow Simulator",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "GOVERNANCE",
+      "risk": "MEDIUM",
+      "summary": "Apply a repair candidate to an isolated copy or disposable mirror world before touching active state.",
+      "tags": [
+        "repair-seed",
+        "authority-risk-decision",
+        "local-first",
+        "dependency-free",
+        "default-deny"
+      ],
+      "actions": [
+        "Apply a repair candidate to an isolated copy or disposable mirror world before touching active state."
+      ],
+      "accepts": [
+        "pre-state",
+        "json-patch-candidate"
+      ],
+      "produces": [
+        "axm.shadow-simulation/v1"
+      ],
+      "exportedSymbols": [
+        "simulateShadow"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "8e63e253792d677ed44eef3c23f19c00344705d6d51398ddfb57b2ab2f775ee8"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.state-integrity-checker",
+      "slug": "state-integrity-checker",
+      "name": "State Integrity Checker",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RECOVERY",
+      "risk": "MEDIUM",
+      "summary": "Verify schemas, hashes, referential integrity, invariants, and cross-file relationships.",
+      "tags": [
+        "repair-seed",
+        "state-data-workflow-recovery",
+        "local-first",
+        "dependency-free",
+        "reversible"
+      ],
+      "actions": [
+        "Verify schemas, hashes, referential integrity, invariants, and cross-file relationships."
+      ],
+      "accepts": [
+        "state",
+        "hash-expectations",
+        "reference-rules",
+        "invariants"
+      ],
+      "produces": [
+        "axm.state-integrity-report/v1"
+      ],
+      "exportedSymbols": [
+        "checkIntegrity"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "78671656b72e04d8eb7764de677b7f706f7c173bbe8aa99acb517714a8b6e9b7"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.state-reconciliation-loop",
+      "slug": "state-reconciliation-loop",
+      "name": "State Reconciliation Loop",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RECOVERY",
+      "risk": "HIGH",
+      "summary": "Move actual state toward declared desired state through small idempotent actions with verification after each step.",
+      "tags": [
+        "repair-seed",
+        "state-data-workflow-recovery",
+        "local-first",
+        "dependency-free",
+        "reversible"
+      ],
+      "actions": [
+        "Move actual state toward declared desired state through small idempotent actions with verification after each step."
+      ],
+      "accepts": [
+        "desired-state",
+        "actual-state",
+        "action-adapter",
+        "verifier"
+      ],
+      "produces": [
+        "axm.reconciliation.receipt/v1"
+      ],
+      "exportedSymbols": [
+        "reconcile"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "1ee91bfd0aab7c9062c5c984f8417fa5d1af78ca7b4c123c63f9fa4a03fa1547"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.steady-state-contract-builder",
+      "slug": "steady-state-contract-builder",
+      "name": "Steady-State Contract Builder",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FAULT_INJECTION",
+      "risk": "MEDIUM",
+      "summary": "Define measurable normal behavior, tolerated deviation, abort conditions, and recovery proof before injecting faults.",
+      "tags": [
+        "repair-seed",
+        "fault-injection-recovery-drill",
+        "local-first",
+        "bounded",
+        "sandbox-first"
+      ],
+      "actions": [
+        "Define measurable normal behavior, tolerated deviation, abort conditions, and recovery proof before injecting faults."
+      ],
+      "accepts": [
+        "metric-baselines",
+        "tolerances",
+        "abort-conditions",
+        "recovery-proof-plan"
+      ],
+      "produces": [
+        "axm.steady-state-contract/v1"
+      ],
+      "exportedSymbols": [
+        "buildContract"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "58358280d0422ca8cf1ac5a28d73fefe90524cf8d14af2ae13bdebefc7ac9367"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.steady-state-monitor",
+      "slug": "steady-state-monitor",
+      "name": "Steady State Monitor",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Declare and measure normal user-visible behavior before deciding that a deviation is a fault.",
+      "tags": [
+        "repair-seed",
+        "health-telemetry-lineage",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Declare and measure normal user-visible behavior before deciding that a deviation is a fault."
+      ],
+      "accepts": [
+        "axm.steady-state.contract/v1",
+        "metric-samples"
+      ],
+      "produces": [
+        "axm.steady-state.evaluation/v1"
+      ],
+      "exportedSymbols": [
+        "evaluateSteadyState"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "f792bfb0b8c5be0f3b9cf87c89726715c7fa06334acc5f912439437aa7aacfd4"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.storage-fault-injector",
+      "slug": "storage-fault-injector",
+      "name": "Storage Fault Injector",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FAULT_INJECTION",
+      "risk": "HIGH",
+      "summary": "Simulate full disk, read-only media, slow I/O, missing files, corrupt blocks, and interrupted writes in a sandbox.",
+      "tags": [
+        "repair-seed",
+        "fault-injection-recovery-drill",
+        "local-first",
+        "bounded",
+        "sandbox-first"
+      ],
+      "actions": [
+        "Simulate full disk, read-only media, slow I/O, missing files, corrupt blocks, and interrupted writes in a sandbox."
+      ],
+      "accepts": [
+        "virtual-store",
+        "bounded-storage-fault"
+      ],
+      "produces": [
+        "axm.virtual-storage-fault.receipt/v1"
+      ],
+      "exportedSymbols": [
+        "simulate"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "a345683a186a39eddebb3d8905719088e56403ebf7e9f33e2048789bbbc22d91"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.symptom-clusterer",
+      "slug": "symptom-clusterer",
+      "name": "Symptom Clusterer",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "summary": "Group related symptoms while preserving outliers and uncertainty instead of forcing one cause.",
+      "tags": [
+        "repair-seed",
+        "detection-triage-containment",
+        "local-first",
+        "dependency-free",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Group related symptoms while preserving outliers and uncertainty instead of forcing one cause."
+      ],
+      "accepts": [
+        "failure-fingerprints"
+      ],
+      "produces": [
+        "axm.symptom-clusters/v1"
+      ],
+      "exportedSymbols": [
+        "clusterSymptoms"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "15fde96eb2ea8c006c3d20a272600e51cb8a93cb337a40780a41cd332f435c34"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.syntax-parse-gate",
+      "slug": "syntax-parse-gate",
+      "name": "Syntax Parse Gate",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "CODE_REPAIR",
+      "risk": "HIGH",
+      "summary": "Generate minimal syntax or parse repairs and accept them only after independent structural and behavioral checks.",
+      "tags": [
+        "repair-seed",
+        "code-configuration-package-repair",
+        "local-first",
+        "dependency-free",
+        "shadow-only"
+      ],
+      "actions": [
+        "Generate minimal syntax or parse repairs and accept them only after independent structural and behavioral checks."
+      ],
+      "accepts": [
+        "source-text",
+        "structural-checks",
+        "behavioral-checks"
+      ],
+      "produces": [
+        "axm.syntax-parse-assessment/v1",
+        "axm.syntax-repair-candidate/v1"
+      ],
+      "exportedSymbols": [
+        "parse",
+        "generateMinimalCandidates",
+        "evaluateCandidate",
+        "proposeRepair"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "bff0bd984b4447229f21f86771f54bdb5c6e7170ecab5630f0132395330be64f"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.test-guided-patch-selector",
+      "slug": "test-guided-patch-selector",
+      "name": "Test-Guided Patch Selector",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "CODE_REPAIR",
+      "risk": "HIGH",
+      "summary": "Rank patches using failing tests, invariants, static analysis, differential behavior, and repair risk.",
+      "tags": [
+        "repair-seed",
+        "code-configuration-package-repair",
+        "local-first",
+        "dependency-free",
+        "shadow-only"
+      ],
+      "actions": [
+        "Rank patches using failing tests, invariants, static analysis, differential behavior, and repair risk."
+      ],
+      "accepts": [
+        "patch-candidates",
+        "multi-signal-evaluation"
+      ],
+      "produces": [
+        "axm.patch-selection-report/v1"
+      ],
+      "exportedSymbols": [
+        "selectPatch"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "28a7c0645541a5e50244c466d14f0af46ee1398e51d63163fdfc55f73ec987a0"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.time-skew-injector",
+      "slug": "time-skew-injector",
+      "name": "Time Skew Injector",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "FAULT_INJECTION",
+      "risk": "MEDIUM",
+      "summary": "Test clock drift, timezone changes, timer jumps, expiry mistakes, and delayed heartbeats.",
+      "tags": [
+        "repair-seed",
+        "fault-injection-recovery-drill",
+        "local-first",
+        "bounded",
+        "sandbox-first"
+      ],
+      "actions": [
+        "Test clock drift, timezone changes, timer jumps, expiry mistakes, and delayed heartbeats."
+      ],
+      "accepts": [
+        "base-time",
+        "bounded-offset",
+        "virtual-rate"
+      ],
+      "produces": [
+        "axm.virtual-clock/v1",
+        "axm.time-skew-simulation.receipt/v1"
+      ],
+      "exportedSymbols": [
+        "createVirtualClock",
+        "evaluateExpiry"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "01f6441fed7e828bb96e968d66ed0ce86a530d1da44a3e7ead8713f93bbed650"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.timeline-postmortem-builder",
+      "slug": "timeline-postmortem-builder",
+      "name": "Timeline Postmortem Builder",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "LEARNING_ORCHESTRATION",
+      "risk": "MEDIUM",
+      "summary": "Build an evidence-linked incident timeline and draft learning report without inventing causes.",
+      "tags": [
+        "repair-seed",
+        "learning-ai-tool-orchestration",
+        "local-first",
+        "bounded",
+        "no-automatic-canon"
+      ],
+      "actions": [
+        "Build an evidence-linked incident timeline and draft learning report without inventing causes."
+      ],
+      "accepts": [
+        "timestamped-evidence-events",
+        "declared-hypotheses"
+      ],
+      "produces": [
+        "axm.incident-timeline/v1",
+        "axm.postmortem-draft/v1"
+      ],
+      "exportedSymbols": [
+        "buildPostmortem"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "1064fdbcfa22feac1345968f10768756cf60bf835f934885a2b470b4e2072752"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.timeout-policy-adapter",
+      "slug": "timeout-policy-adapter",
+      "name": "Timeout Policy Adapter",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RUNTIME",
+      "risk": "LOW",
+      "summary": "Apply separate connection, request, operation, and progress timeouts based on measured behavior and consequence.",
+      "tags": [
+        "repair-seed",
+        "runtime-resilience",
+        "local-first",
+        "dependency-free",
+        "bounded"
+      ],
+      "actions": [
+        "Apply separate connection, request, operation, and progress timeouts based on measured behavior and consequence."
+      ],
+      "accepts": [
+        "latency-samples",
+        "operation-consequence"
+      ],
+      "produces": [
+        "axm.timeout-policy/v1"
+      ],
+      "exportedSymbols": [
+        "deriveTimeoutPolicy"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "c0eabd0ba1c4ec90ebbd00c967e6ec2d5d3d1a1230aeaf15debf292ea3feb2f6"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.traffic-drain-quarantine",
+      "slug": "traffic-drain-quarantine",
+      "name": "Traffic Drain Quarantine",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RUNTIME",
+      "risk": "MEDIUM",
+      "summary": "Stop new work, drain safe in-flight work, and quarantine a suspected component while preserving evidence.",
+      "tags": [
+        "repair-seed",
+        "runtime-resilience",
+        "local-first",
+        "dependency-free",
+        "bounded"
+      ],
+      "actions": [
+        "Stop new work, drain safe in-flight work, and quarantine a suspected component while preserving evidence."
+      ],
+      "accepts": [
+        "inflight-work-events",
+        "quarantine-decision"
+      ],
+      "produces": [
+        "axm.traffic-drain.state/v1"
+      ],
+      "exportedSymbols": [
+        "DrainQuarantine"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "ccc648159b41a661db3e611103bd5109a203171b6f772c1b4deff2c445ffef5a"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.verification-harness",
+      "slug": "verification-harness",
+      "name": "Verification Harness",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "VERIFICATION",
+      "risk": "HIGH",
+      "summary": "Run independent predeclared checks proving the original failure is gone and required behavior remains.",
+      "tags": [
+        "repair-seed",
+        "verification-regression-proof",
+        "local-first",
+        "dependency-free",
+        "evidence-only"
+      ],
+      "actions": [
+        "Run independent predeclared checks proving the original failure is gone and required behavior remains."
+      ],
+      "accepts": [
+        "predeclared-verification-plan",
+        "candidate-state"
+      ],
+      "produces": [
+        "axm.repair-verification.report/v1"
+      ],
+      "exportedSymbols": [
+        "runVerification"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "8453fb2df6347a2b19d64a6ab15104f9bfd9a06116a844ce399ae423d9292c77"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.watchdog-restart-guard",
+      "slug": "watchdog-restart-guard",
+      "name": "Watchdog Restart Guard",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RUNTIME",
+      "risk": "HIGH",
+      "summary": "Restart stalled components only after loop detection, restart limits, state checks, and escalation thresholds.",
+      "tags": [
+        "repair-seed",
+        "runtime-resilience",
+        "local-first",
+        "dependency-free",
+        "bounded"
+      ],
+      "actions": [
+        "Restart stalled components only after loop detection, restart limits, state checks, and escalation thresholds."
+      ],
+      "accepts": [
+        "heartbeat-status",
+        "restart-history",
+        "state-checks"
+      ],
+      "produces": [
+        "axm.watchdog-restart-decision/v1"
+      ],
+      "exportedSymbols": [
+        "decideWatchdogRestart"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "bdb80c2b838f83b2eee64354ffb4b12eb54779850839243153a5abea60412d89"
+    },
+    {
+      "kind": "seed",
+      "id": "axm.repair.write-ahead-journal",
+      "slug": "write-ahead-journal",
+      "name": "Write Ahead Journal",
+      "version": "0.1.0",
+      "entry": "index.js",
+      "status": "EXPERIMENTAL",
+      "category": "RECOVERY",
+      "risk": "HIGH",
+      "summary": "Record intended repair steps before execution so interrupted repair can resume, compensate, or roll back.",
+      "tags": [
+        "repair-seed",
+        "state-data-workflow-recovery",
+        "local-first",
+        "dependency-free",
+        "reversible"
+      ],
+      "actions": [
+        "Record intended repair steps before execution so interrupted repair can resume, compensate, or roll back."
+      ],
+      "accepts": [
+        "repair-plan",
+        "journal-root"
+      ],
+      "produces": [
+        "axm.write-ahead-journal.entry/v1"
+      ],
+      "exportedSymbols": [
+        "WriteAheadJournal"
+      ],
+      "effects": {
+        "filesystem": true,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": false,
+      "sourceDigest": "e9bdbb9e4f6593d1ab089cadd87fc03f65ed381e6684dc48c38e23b0523034e2"
+    }
+  ],
+  "supportAdapters": [
+    {
+      "id": "axm.repair.integration.health-telemetry",
+      "slug": "health-telemetry-integration",
+      "name": "Health Telemetry Integration",
+      "version": "0.1.0-source-helper",
+      "status": "EXPERIMENTAL",
+      "category": "FOUNDATION",
+      "risk": "LOW",
+      "entry": "index.js",
+      "selftest": "selftest.js",
+      "summary": "Compose lineage, golden signals, resource pressure, progress, heartbeat lease, multidimensional health, and a cross-signal envelope into one observe-only packet.",
+      "tags": [
+        "repair-integration",
+        "health",
+        "telemetry",
+        "observe-only",
+        "local-first"
+      ],
+      "actions": [
+        "build one bounded health and telemetry packet from explicitly supplied observations"
+      ],
+      "accepts": [
+        "lineage",
+        "golden-signal-samples",
+        "resource-observation",
+        "progress-observation",
+        "heartbeat-lease",
+        "health-dimensions"
+      ],
+      "produces": [
+        "axm.health-telemetry-packet/v1"
+      ],
+      "authority": "OBSERVE_ONLY",
+      "sourceDeclaration": "AUTHORED_HELPER_WITH_SELFTEST_NO_SOURCE_MANIFEST_OR_CONTRACT",
+      "kind": "support-adapter",
+      "exportedSymbols": [
+        "buildHealthTelemetryPacket"
+      ],
+      "effects": {
+        "filesystem": false,
+        "process": false,
+        "network": false
+      },
+      "permissions": [],
+      "automaticMutation": null,
+      "sourceDigest": "a19e889bcf02981af0224443cc1c80bfb1ebc1446fef9c8ee43e0bf2079cec62"
+    }
+  ],
+  "catalogDigest": "3da3ea4746566e9612cd9cc3994ff952c3be7752f343f1e6a26d3f675022bb99"
+}

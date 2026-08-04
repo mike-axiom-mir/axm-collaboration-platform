@@ -1,7 +1,16 @@
 'use strict';
 
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const Core = require('./discord-bridge-core');
+const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
+const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
+
+assert.equal(manifest.schema, 'axm.tool-manifest/v1');
+assert.equal(manifest.kind, 'adapter');
+assert.deepEqual(manifest.permissions, contract.permissions);
+assert.deepEqual(contract.lifecycle, { state_owner: 'service', reload: 'resume', disconnect: 'graceful-degrade', cleanup: 'explicit' });
 
 const defaults = Core.defaults();
 assert.equal(defaults.enabled, false);

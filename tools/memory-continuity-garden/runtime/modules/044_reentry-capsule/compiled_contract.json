@@ -1,0 +1,174 @@
+{
+  "allowed_hold_codes": [
+    "HOLD_APPEND_ONLY_VIOLATION",
+    "HOLD_AUTHORITY_OR_CONSENT",
+    "HOLD_CANCELLED",
+    "HOLD_CANON_OR_OWNER_AUTHORITY",
+    "HOLD_CONTRACT_SEAL_MISMATCH",
+    "HOLD_DEGRADED_MODE_NOT_ALLOWED",
+    "HOLD_DEPENDENCY_UNAVAILABLE",
+    "HOLD_EXPECTED_REVISION",
+    "HOLD_HUMAN_CONFIRMATION_REQUIRED",
+    "HOLD_IDENTITY_OR_AUTHORITY_FUSION",
+    "HOLD_IMPORT_QUARANTINE",
+    "HOLD_INPUT_DIGEST_MISMATCH",
+    "HOLD_INPUT_LIMIT",
+    "HOLD_INVALID_STATE_TRANSITION",
+    "HOLD_JOURNAL_CORRUPTION",
+    "HOLD_LOG_PRIVACY_VIOLATION",
+    "HOLD_LOW_DISK_OR_UNSAFE_WRITE",
+    "HOLD_NON_CANONICAL_VALUE",
+    "HOLD_OPERATION_ID_COLLISION",
+    "HOLD_OUTPUT_ROOT",
+    "HOLD_PERMISSION_ESCALATION",
+    "HOLD_PRIVACY_OR_ERASURE_TRUTH",
+    "HOLD_RECOVERY_OR_REPAIR_PROOF",
+    "HOLD_RETRIEVAL_PRIVACY_SCOPE",
+    "HOLD_ROOT_OR_SOURCE_OMISSION",
+    "HOLD_RUNTIME_CYCLE",
+    "HOLD_SCHEMA_OR_COMPATIBILITY",
+    "HOLD_SCOPE_OR_PURPOSE",
+    "HOLD_SEMANTIC_CONFLICT",
+    "HOLD_SOURCE_MISMATCH",
+    "HOLD_STALE_STATE",
+    "HOLD_TIME_BASIS_UNCERTAIN",
+    "HOLD_TRANSACTION_INCOMPLETE",
+    "HOLD_TRUST_OR_AUTHORITY_TRANSFER",
+    "HOLD_UNKNOWN_TOP_LEVEL_FIELD"
+  ],
+  "authority": "T1_BOUNDED_LOCAL",
+  "boot_prerequisites": [
+    "axm.memory.original-inference-separator",
+    "axm.memory.provenance-envelope",
+    "axm.memory.root-branch-compression-policy",
+    "axm.memory.source-linked-summary",
+    "axm.memory.summary-drift-verifier"
+  ],
+  "compiler_claim_boundary": "Normalized executable interface only; not semantic implementation or owner acceptance.",
+  "contract_references": [
+    "axm.memory.original-inference-separator",
+    "axm.memory.provenance-envelope",
+    "axm.memory.root-branch-compression-policy",
+    "axm.memory.source-linked-summary",
+    "axm.memory.summary-drift-verifier"
+  ],
+  "exact_owned_root": "local://axm-memory/axm.memory.reentry-capsule/",
+  "hold_contract": "axm.memory.typed-hold/v2",
+  "identity": {
+    "category": "5. Compression, summaries, context windows, and warm re-entry",
+    "name": "Warm Re-Entry Capsule",
+    "number": 44,
+    "stable_id": "axm.memory.reentry-capsule"
+  },
+  "lifecycle_states": [
+    "DRAFT",
+    "VALIDATED",
+    "EXECUTED",
+    "VERIFIED",
+    "HELD",
+    "FAILED"
+  ],
+  "lifecycle_transitions": [
+    [
+      "DRAFT",
+      "FAILED"
+    ],
+    [
+      "DRAFT",
+      "HELD"
+    ],
+    [
+      "DRAFT",
+      "VALIDATED"
+    ],
+    [
+      "EXECUTED",
+      "FAILED"
+    ],
+    [
+      "EXECUTED",
+      "HELD"
+    ],
+    [
+      "EXECUTED",
+      "VERIFIED"
+    ],
+    [
+      "HELD",
+      "FAILED"
+    ],
+    [
+      "VALIDATED",
+      "EXECUTED"
+    ],
+    [
+      "VALIDATED",
+      "FAILED"
+    ],
+    [
+      "VALIDATED",
+      "HELD"
+    ]
+  ],
+  "operation_kind": "BOUNDED_TRANSFORM",
+  "permissions": [],
+  "privacy_forbidden_receipt_keys": [
+    "payload",
+    "source_refs",
+    "authority_ref",
+    "confirmation_ref",
+    "safety_copy_ref",
+    "deleted_content",
+    "raw_private"
+  ],
+  "purpose": "Restore current goal, active direction, latest checkpoint, key decisions, open risks, pending actions, and relevant source pointers for a new session.",
+  "request_schema": "axm.memory.reference-request/v2",
+  "required_request_fields": [
+    "schema",
+    "seed_id",
+    "operation_id",
+    "purpose",
+    "source_refs",
+    "source_digests",
+    "authority_ref",
+    "consent_state",
+    "input_digest",
+    "target_root",
+    "request_timestamp",
+    "dependency_snapshot",
+    "expected_revision",
+    "current_revision",
+    "input_size_bytes",
+    "available_disk_bytes",
+    "cancelled",
+    "runtime_cycle_detected",
+    "import_trust_claim",
+    "payload",
+    "category_guard",
+    "requested_permissions",
+    "actor_role",
+    "request_state",
+    "requested_transition",
+    "allow_degraded",
+    "extensions",
+    "trace_id",
+    "receipt_visibility",
+    "preview_digest",
+    "confirmation_ref",
+    "confirmation_scope",
+    "confirmation_expires",
+    "safety_copy_ref",
+    "human_confirmed",
+    "transaction_id"
+  ],
+  "result_contract": "axm.memory.reentry-capsule.receipt/v1",
+  "risk": "HIGH",
+  "runtime_collaborators": [],
+  "schema": "axm.memory.run100-compiled-contract/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "c1f67072e9d702692389c738fd692c4c98ce524db286cecfda51ec39cb278417"
+  },
+  "source_contract_sha256": "c974b7851cab6cbb777731c774c808e101638443929c726754aeb962331bb6f2",
+  "source_run90_protocol_sha256": "18c4e31406b4e99b206affce7bcbb7933d0c8914586f61f8a8b6ab102a072238"
+}

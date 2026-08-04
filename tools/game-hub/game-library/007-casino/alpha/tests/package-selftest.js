@@ -12,7 +12,8 @@ var manifest = JSON.parse(fs.readFileSync(path.join(GAME_ROOT, "game.manifest.js
 var errors = verifier.validateManifest(manifest, { gameDir: GAME_ROOT });
 assert.deepStrictEqual(errors, [], "workbench package manifest must satisfy the live Game Hub package contract: " + errors.join("; "));
 assert.equal(manifest.slot, "007");
-assert.equal(manifest.version, "0.3.2-alpha");
+assert.equal(manifest.version, "0.3.3-alpha");
+assert.equal(manifest.launch.client_entry, "/games/007/?role=host&play=1");
 assert.equal(manifest.max_players, 8);
 assert.equal(manifest.rules.no_hidden_players, true);
 assert.equal(manifest.rules.immutable_slot_outcomes, true);
@@ -23,7 +24,6 @@ for (var source of [
   "alpha/runtime/casino-core.js",
   "alpha/runtime/casino-server.cjs",
   "alpha/runtime/game-hub-adapter.js",
-  "alpha/runtime/quest-system.js",
   "alpha/client/app.js",
   "slots/slot-catalog.js",
   "slots/axm-draw-spine.js",
@@ -49,7 +49,10 @@ assert.ok(app.includes("api/player/command"));
 assert.ok(app.includes("api/host/state"));
 assert.ok(app.includes("machine-roster"));
 assert.ok(app.includes("select_machine"));
-assert.ok(app.includes("CHAPTER "));
+assert.ok(app.includes("All ten slots are ready."));
+assert.ok(app.includes("redirectToSoloController"));
+assert.equal(app.includes("renderQuest"), false);
+assert.equal(app.includes("storyAction"), false);
 assert.ok(css.includes(".mechanic-board"));
 assert.ok(css.includes(".machine-card"));
 assert.ok(app.includes("emblemShapes"));
@@ -78,4 +81,4 @@ assert.ok(intake.includes("PR14 already has"));
 assert.ok(intake.includes("no server route patch"));
 assert.equal(fs.existsSync(path.join(GAME_ROOT, "integration/workshop-slot-007.patch")), false, "obsolete duplicate slot-007 route patch must not ship");
 
-console.log("Casino alpha package selftest: PASS (v0.3.2 Overdrive Theater, six-face transform, local synth toggle, risk/history feedback, PR14-safe state, original emblems, mobile rail, local-only assets, syntax, eight-seat party contract)");
+console.log("Casino alpha package selftest: PASS (v0.3.3 quest-free play, direct solo controls, Overdrive Theater, local-only assets, syntax, eight-seat party contract)");

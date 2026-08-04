@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "REPETITION_AS_AUTHORITY",
+      "expected": "HOLD_RETRIEVAL_PRIVACY_SCOPE",
+      "stimulus": "repeated low-authority text outranks direct evidence"
+    }
+  ],
+  "category": 6,
+  "category_name": "6. Retrieval, indexing, relevance, freshness, and forgetting",
+  "full_semantic_implementation": false,
+  "number": 54,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Mark memory stale when its source, environment, dependency, policy, person preference, or validity window changes.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "1e7e97264e0274d66bae17027102631ad64c955ff49adfe741e6fdaa87c2296e"
+  },
+  "source_contract_sha256": "286f62ed3808409ce1405c1d70bd8f41ea05636800944731067adb4aa1a79065",
+  "stable_id": "axm.memory.freshness-expiry-monitor"
+}

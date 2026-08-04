@@ -3,7 +3,7 @@
 Creates verified archives under `exports/workshop-packages`. It never uploads a
 package and never changes Workshop source files.
 
-## Four package modes
+## Five package modes
 
 ### Full local backup
 
@@ -19,9 +19,36 @@ folders, secrets, private previews and private-labelled reports. Nested game
 runtime folders remain because they are game content, not body-level runtime
 state.
 
+Local relay credentials such as `bridge-token.txt` and `bridge_token.txt` are
+always excluded even when they sit beside a packageable nested runtime.
+
+Generated distributions, root working/intake packs, archive-review folders,
+nested rollback archives, coverage output and language caches are also kept out
+of public source snapshots. They remain available locally; exclusion is a
+publication boundary, not deletion or evidence erasure.
+
 The Windows beginner launcher may download a pinned private Node.js runtime on
 first use. That top-level `runtime` folder and `AXM_START_REPORT.txt` are local
 runtime material and remain excluded from every public-safe inventory.
+
+### Offline Windows candidate
+
+Builds the complete public-safe Workshop and then injects a locally prepared,
+approved Node runtime before the ZIP is created. The runtime must pass its
+per-file SHA-256 manifest and include both its Node license and provenance
+record. Synthetic fixtures are refused.
+
+The candidate contains:
+
+- `AXM_OFFLINE_FIRST.json`, which forces the launcher onto the bundled-runtime
+  path and disables downloads and system-runtime fallback;
+- `RUNTIME_MANIFEST.json` plus `runtime/node`;
+- `OPEN_AXM_SAFE_MODE.cmd` and `PROVE_AXM_OFFLINE.cmd`;
+- a candidate-bound clean-device matrix, beginner launch guide and public truth
+  draft that keep physical proof and publication authority false until tested.
+
+Restore verification rechecks every file, verifies the runtime again and boots
+the restored Hub with the runtime from inside the candidate.
 
 ### Modular collaboration slice
 

@@ -40,6 +40,8 @@ async function run() {
   const floodplainPlantResources = await import(pathToFileURL(path.join(root, 'core', 'floodplain-plant-resources.mjs')).href);
   const floodplainDecomposition = await import(pathToFileURL(path.join(root, 'core', 'floodplain-decomposition.mjs')).href);
   const floodplainRespiration = await import(pathToFileURL(path.join(root, 'core', 'floodplain-respiration.mjs')).href);
+  const floodplainDenitrification = await import(pathToFileURL(path.join(root, 'core', 'floodplain-denitrification.mjs')).href);
+  const floodplainNitrification = await import(pathToFileURL(path.join(root, 'core', 'floodplain-nitrification.mjs')).href);
   const floodplainGasExchange = await import(pathToFileURL(path.join(root, 'core', 'floodplain-gas-exchange.mjs')).href);
   const estuaryReactor = await import(pathToFileURL(path.join(root, 'core', 'estuary-reactor.mjs')).href);
   const earthSystem = await import(pathToFileURL(path.join(root, 'core', 'earth-system.mjs')).href);
@@ -100,9 +102,11 @@ async function run() {
   assert.match(app, /lockRequest\?\.catch\?\.\(\(\) => \{\}\)/, 'pointer-lock refusal is handled because drag-look remains available');
   assert.match(app, /!event\.repeat && isSurfaceLookKey\(event\.code\)/, 'runtime preserves short keyboard-look taps between render frames');
   assert.match(app, /addEventListener\('blur'.+keys\[code\] = false/s, 'runtime clears held controls when window focus is lost');
+  assert.match(app, /Profile change failed: \$\{error\.message\}/,
+    'condition-profile failures report the error and release the loading curtain instead of remaining stuck');
 
   assert.equal(manifest.id, 'world.axm.foundation-planet');
-  assert.equal(manifest.version, '0.45.0');
+  assert.equal(manifest.version, '0.51.0');
   assert.equal(manifest.scale.logical_radius_m, 6371000);
   assert.equal(manifest.scale.surface_streaming, true);
   assert.equal(manifest.scale.surface_focus_km, 3);
@@ -337,17 +341,73 @@ async function run() {
   assert.equal(manifest.systems.floodplain_respiration_life_off_freeze, true);
   assert.equal(manifest.systems.unloaded_reach_floodplain_respiration_is_retained, true);
   assert.equal(manifest.systems.basin_v13_to_v14_floodplain_respiration_migration, true);
+  assert.equal(manifest.systems.persistent_floodplain_denitrification, true);
+  assert.equal(manifest.systems.paired_floodplain_doc_din_debit_and_dic_credit, true);
+  assert.equal(manifest.systems.paired_native_surface_atmosphere_nitrogen_gas_credit, true);
+  assert.equal(manifest.systems.exact_floodplain_denitrification_transfer_identity, true);
+  assert.equal(manifest.systems.oxygen_gated_floodplain_denitrification, true);
+  assert.equal(manifest.systems.nitrogen_limited_floodplain_denitrification, true);
+  assert.equal(manifest.systems.parameterized_reactive_nitrate_equivalent_fraction, false);
+  assert.equal(manifest.systems.persistent_river_and_floodplain_nitrate_ammonium, true);
+  assert.equal(manifest.systems.dissolved_inorganic_nitrogen_compatibility_sum, true);
+  assert.equal(manifest.systems.parameterized_runoff_din_speciation, true);
+  assert.equal(manifest.systems.exact_nitrate_ammonium_reach_and_floodplain_transport, true);
+  assert.equal(manifest.systems.detrital_nitrogen_credits_floodplain_ammonium, true);
+  assert.equal(manifest.systems.nitrate_only_floodplain_denitrification, true);
+  assert.equal(manifest.systems.nitrate_ammonium_conservation_checked, true);
+  assert.equal(manifest.systems.nitrate_ammonium_integrity_audited, true);
+  assert.equal(manifest.systems.floodplain_denitrification_carbon_and_nitrogen_conservation_checked, true);
+  assert.equal(manifest.systems.floodplain_denitrification_integrity_audited, true);
+  assert.equal(manifest.systems.floodplain_denitrification_life_off_freeze, true);
+  assert.equal(manifest.systems.unloaded_reach_floodplain_denitrification_is_retained, true);
+  assert.equal(manifest.systems.unloaded_atmosphere_prevents_floodplain_denitrification, true);
+  assert.equal(manifest.systems.basin_v16_to_v17_floodplain_denitrification_migration, true);
+  assert.equal(manifest.systems.surface_temperature_proxy_responsive_floodplain_denitrification, true);
+  assert.equal(manifest.systems.bounded_q10_floodplain_denitrification_response, true);
+  assert.equal(manifest.systems.floodplain_denitrification_temperature_response_integrity_audited, true);
+  assert.equal(manifest.systems.basin_v17_to_v18_temperature_responsive_denitrification_migration, true);
+  assert.equal(manifest.systems.basin_v18_to_v19_nitrate_ammonium_migration, true);
+  assert.equal(manifest.systems.persistent_floodplain_nitrification, true);
+  assert.equal(manifest.systems.paired_local_floodplain_ammonium_debit_nitrate_credit, true);
+  assert.equal(manifest.systems.floodplain_nitrification_dissolved_oxygen_consumption, true);
+  assert.equal(manifest.systems.floodplain_nitrification_minimum_oxygen_reserve_honored, true);
+  assert.equal(manifest.systems.oxygen_gated_floodplain_nitrification, true);
+  assert.equal(manifest.systems.oxygen_limited_floodplain_nitrification, true);
+  assert.equal(manifest.systems.surface_temperature_proxy_responsive_floodplain_nitrification, true);
+  assert.equal(manifest.systems.bounded_q10_floodplain_nitrification_response, true);
+  assert.equal(manifest.systems.exact_floodplain_nitrification_transfer_identity, true);
+  assert.equal(manifest.systems.floodplain_nitrification_nitrogen_and_oxygen_conservation_checked, true);
+  assert.equal(manifest.systems.floodplain_nitrification_integrity_audited, true);
+  assert.equal(manifest.systems.floodplain_nitrification_life_off_freeze, true);
+  assert.equal(manifest.systems.unloaded_reach_floodplain_nitrification_is_retained, true);
+  assert.equal(manifest.systems.basin_v19_to_v20_floodplain_nitrification_migration, true);
+  assert.equal(manifest.systems.persistent_floodplain_alkalinity, true);
+  assert.equal(manifest.systems.floodplain_nitrification_alkalinity_demand_diagnostic, false);
+  assert.equal(manifest.systems.floodplain_nitrification_alkalinity_material_owner_debited, true);
+  assert.equal(manifest.systems.alkalinity_limited_floodplain_nitrification, true);
+  assert.equal(manifest.systems.floodplain_denitrification_alkalinity_material_owner_credited, true);
+  assert.equal(manifest.systems.estuary_alkalinity_flux_and_cumulative_generation, true);
+  assert.equal(manifest.systems.estuary_denitrification_alkalinity_generation, true);
+  assert.equal(manifest.systems.end_to_end_alkalinity_conservation_checked, true);
+  assert.equal(manifest.systems.end_to_end_alkalinity_integrity_audited, true);
+  assert.equal(manifest.systems.basin_v20_to_v21_alkalinity_migration, true);
   assert.equal(manifest.systems.persistent_floodplain_atmosphere_gas_exchange, true);
   assert.equal(manifest.systems.paired_floodplain_dic_debit_and_dissolved_oxygen_credit, true);
   assert.equal(manifest.systems.paired_native_surface_atmosphere_carbon_credit_and_oxygen_debit, true);
+  assert.equal(manifest.systems.paired_floodplain_dic_credit_for_carbon_invasion, true);
+  assert.equal(manifest.systems.paired_native_surface_atmosphere_carbon_debit_for_invasion, true);
+  assert.equal(manifest.systems.exclusive_floodplain_carbon_exchange_direction_per_transition, true);
   assert.equal(manifest.systems.exact_floodplain_atmosphere_gas_exchange_identity, true);
   assert.equal(manifest.systems.bounded_floodplain_carbon_dioxide_evasion, true);
+  assert.equal(manifest.systems.bounded_floodplain_carbon_dioxide_invasion, true);
+  assert.equal(manifest.systems.temperature_aware_bidirectional_floodplain_carbon_gradient_exchange, true);
   assert.equal(manifest.systems.bounded_floodplain_oxygen_reaeration, true);
   assert.equal(manifest.systems.floodplain_atmosphere_carbon_and_oxygen_conservation_checked, true);
   assert.equal(manifest.systems.floodplain_atmosphere_gas_exchange_integrity_audited, true);
   assert.equal(manifest.systems.physical_floodplain_gas_exchange_continues_with_life_off, true);
   assert.equal(manifest.systems.unloaded_reach_floodplain_gas_exchange_memory_is_retained, true);
   assert.equal(manifest.systems.basin_v14_to_v15_floodplain_gas_exchange_migration, true);
+  assert.equal(manifest.systems.basin_v15_to_v16_bidirectional_floodplain_gas_exchange_migration, true);
   assert.equal(manifest.systems.parameterized_land_runoff_chemistry_boundary, false);
   assert.equal(manifest.systems.persistent_estuary_carbon_nitrogen_and_phosphorus_sediment, true);
   assert.equal(manifest.systems.oxygen_limited_estuary_organic_carbon_respiration, true);
@@ -391,9 +451,9 @@ async function run() {
   assert.equal(manifest.systems.unloaded_river_handoff_water_is_retained, true);
   assert.equal(manifest.runtime.physics, 'FLOATING_ORIGIN_SECTOR_FRAME_V1');
   assert.equal(manifest.runtime.earth_system,
-    'EIGHT_LEVEL_NATIVE_MIXED_PHASE_CO2_RADIATIVE_CRYOSPHERE_ATMOSPHERE_SOIL_RUNOFF_RIVER_FLOOD_EVENT_HABITAT_SUCCESSION_PLANT_MATTER_RESOURCES_DECOMPOSITION_AND_RESPIRATION_ESTUARY_OCEAN_BIOGEOCHEMISTRY_AND_FINITE_GEOMORPHIC_SEDIMENT_V28');
+    'EIGHT_LEVEL_NATIVE_MIXED_PHASE_CO2_RADIATIVE_CRYOSPHERE_ATMOSPHERE_SOIL_RUNOFF_RIVER_FLOOD_EVENT_HABITAT_SUCCESSION_PLANT_MATTER_RESOURCES_DECOMPOSITION_RESPIRATION_NITRATE_AMMONIUM_OXYGEN_AND_ALKALINITY_LEDGERED_NITRIFICATION_TEMPERATURE_RESPONSIVE_DENITRIFICATION_ESTUARY_OCEAN_BIOGEOCHEMISTRY_AND_FINITE_GEOMORPHIC_SEDIMENT_V34');
   assert.equal(manifest.seams.earth_system,
-    'PERSISTED_NATIVE_MIXED_PHASE_CO2_RADIATIVE_CRYOSPHERE_ATMOSPHERE_SOIL_RUNOFF_RIVER_FLOOD_EVENT_HABITAT_SUCCESSION_PLANT_MATTER_RESOURCES_DECOMPOSITION_AND_RESPIRATION_ESTUARY_OCEAN_BIOGEOCHEMISTRY_AND_FINITE_SEDIMENT_V28');
+    'PERSISTED_NATIVE_MIXED_PHASE_CO2_RADIATIVE_CRYOSPHERE_ATMOSPHERE_SOIL_RUNOFF_RIVER_FLOOD_EVENT_HABITAT_SUCCESSION_PLANT_MATTER_RESOURCES_DECOMPOSITION_RESPIRATION_NITRATE_AMMONIUM_NITRIFICATION_DENITRIFICATION_AND_ALKALINITY_LEDGER_ESTUARY_OCEAN_BIOGEOCHEMISTRY_AND_FINITE_SEDIMENT_V31');
   assert.equal(manifest.seams.surface_radiation,
     'NATIVE_LIQUID_ICE_AND_LAYER_CO2_BROADBAND_SHORTWAVE_LONGWAVE_RECEIPT_V2');
   assert.equal(manifest.seams.atmosphere_co2_radiation,
@@ -401,7 +461,7 @@ async function run() {
   assert.equal(manifest.seams.earth_transport,
     'CONSERVATIVE_MIXED_PHASE_EIGHT_LEVEL_ATMOSPHERIC_GAS_OCEAN_RUNOFF_BIOGEOCHEMICAL_AND_SEDIMENT_TRANSPORT_V11');
   assert.equal(manifest.seams.ocean_ecology,
-    'PERSISTENT_MIXED_AND_DEEP_OCEAN_CARBON_NITROGEN_PHOSPHORUS_OXYGEN_AND_PLANKTON_RECEIPT_V2');
+    'PERSISTENT_MIXED_AND_DEEP_OCEAN_CARBON_NITROGEN_PHOSPHORUS_OXYGEN_ALKALINITY_AND_PLANKTON_RECEIPT_V3');
   assert.equal(manifest.seams.deep_ocean,
     'PERSISTENT_DISSOLVED_PARTICLE_REMINERALIZATION_AND_SEAFLOOR_BURIAL_RECEIPT_V1');
   assert.equal(manifest.seams.atmosphere_biogeochemistry,
@@ -413,13 +473,13 @@ async function run() {
   assert.equal(manifest.seams.system_audit,
     'READ_ONLY_SCHEMA_CONSERVATION_OWNERSHIP_AND_TRUTH_BOUNDARY_AUDIT_V1');
   assert.equal(manifest.seams.river_chemistry,
-    'PERSISTENT_LAND_SENDER_BACKED_DISSOLVED_CARBON_NITROGEN_PHOSPHORUS_AND_OXYGEN_STATE_V2');
+    'PERSISTENT_LAND_SENDER_BACKED_DISSOLVED_CARBON_NITRATE_AMMONIUM_PHOSPHORUS_OXYGEN_AND_ALKALINITY_STATE_V4');
   assert.equal(manifest.seams.soil_biogeochemistry,
-    'FINITE_DISSOLVED_SOIL_WATER_AND_RUNOFF_QUEUE_CARBON_NITROGEN_PHOSPHORUS_OXYGEN_RECEIPTS_V1');
+    'FINITE_DISSOLVED_SOIL_WATER_AND_RUNOFF_QUEUE_CARBON_NITROGEN_PHOSPHORUS_OXYGEN_ALKALINITY_RECEIPTS_V2');
   assert.equal(manifest.seams.geomorphic_sediment,
     'FINITE_GRAIN_SURFACE_RUNOFF_RIVER_BED_AND_COASTAL_SEDIMENT_RECEIPTS_V1');
   assert.equal(manifest.seams.floodplain,
-    'PERSISTENT_BANKFULL_OVERBANK_RETURN_AND_GRAIN_DEPOSITION_RECEIPT_V1');
+    'PERSISTENT_BANKFULL_OVERBANK_RETURN_GRAIN_DEPOSITION_NITRATE_AMMONIUM_ALKALINITY_TRANSPORT_DENITRIFICATION_GENERATION_AND_NITRIFICATION_DEBIT_RECEIPT_V4');
   assert.equal(manifest.seams.floodplain_habitat,
     'READ_ONLY_WET_DRY_PULSE_HYDROPERIOD_DEPOSIT_AND_NORMALIZED_POTENTIAL_HABITAT_RECEIPT_V1');
   assert.equal(manifest.seams.flood_event_history,
@@ -430,12 +490,16 @@ async function run() {
     'PAIRED_RESOURCE_BACKED_PLANT_DETRITUS_DEBIT_AND_LOCAL_FLOODPLAIN_CARBON_NITROGEN_PHOSPHORUS_RETURN_RECEIPT_V1');
   assert.equal(manifest.seams.floodplain_respiration,
     'OXYGEN_LIMITED_LOCAL_FLOODPLAIN_DOC_TO_DIC_AND_DISSOLVED_OXYGEN_DEBIT_RECEIPT_V1');
+  assert.equal(manifest.seams.floodplain_denitrification,
+    'PAIRED_SURFACE_TEMPERATURE_RESPONSIVE_OXYGEN_GATED_NITRATE_ONLY_FLOODPLAIN_DOC_NITRATE_TO_DIC_ALKALINITY_AND_NATIVE_SURFACE_ATMOSPHERE_NITROGEN_GAS_RECEIPTS_V4');
+  assert.equal(manifest.seams.floodplain_nitrification,
+    'PAIRED_SURFACE_TEMPERATURE_RESPONSIVE_OXYGEN_AND_ALKALINITY_GATED_LOCAL_FLOODPLAIN_AMMONIUM_TO_NITRATE_RECEIPTS_V2');
   assert.equal(manifest.seams.floodplain_gas_exchange,
-    'PAIRED_FLOODPLAIN_AND_NATIVE_SURFACE_ATMOSPHERE_CARBON_OXYGEN_EXCHANGE_RECEIPTS_V1');
+    'PAIRED_BIDIRECTIONAL_FLOODPLAIN_AND_NATIVE_SURFACE_ATMOSPHERE_CARBON_GRADIENT_AND_OXYGEN_EXCHANGE_RECEIPTS_V2');
   assert.equal(manifest.seams.basin_routing,
-    'PERSISTENT_CANONICAL_WATER_CHEMISTRY_FLOODPLAIN_EVENT_HISTORY_HABITAT_SUCCESSION_PLANT_MATTER_RESOURCES_DECOMPOSITION_RESPIRATION_GAS_EXCHANGE_ESTUARY_ATMOSPHERE_AND_GRAIN_SEDIMENT_ROUTING_V15');
+    'PERSISTENT_CANONICAL_WATER_CHEMISTRY_NITRATE_AMMONIUM_ALKALINITY_FLOODPLAIN_EVENT_HISTORY_HABITAT_SUCCESSION_PLANT_MATTER_RESOURCES_DECOMPOSITION_RESPIRATION_NITRIFICATION_DENITRIFICATION_GAS_EXCHANGE_ESTUARY_ATMOSPHERE_AND_GRAIN_SEDIMENT_ROUTING_V21');
   assert.equal(manifest.seams.estuary_reactor,
-    'PERSISTENT_SEDIMENT_OXYGEN_LIMITED_CNP_REACTION_RECEIPT_V1');
+    'PERSISTENT_SEDIMENT_OXYGEN_LIMITED_CNP_AND_ALKALINITY_REACTION_RECEIPT_V2');
   assert.equal(manifest.truth.persistent_estuary_sediment_reservoirs, true);
   assert.equal(manifest.truth.estuary_carbon_nitrogen_phosphorus_conservation_checked, true);
   assert.equal(manifest.truth.explicit_estuary_atmospheric_gas_receiver, true);
@@ -492,11 +556,65 @@ async function run() {
   assert.equal(manifest.truth.floodplain_respiration_anaerobic_pathway, false);
   assert.equal(manifest.truth.floodplain_respiration_microbe_population_state, false);
   assert.equal(manifest.truth.scientific_floodplain_respiration_model, false);
+  assert.equal(manifest.truth.persistent_floodplain_denitrification, true);
+  assert.equal(manifest.truth.floodplain_denitrification_exact_owner_transfer_ids, true);
+  assert.equal(manifest.truth.floodplain_denitrification_carbon_nitrogen_conservation_checked, true);
+  assert.equal(manifest.truth.floodplain_denitrification_native_atmosphere_surface_layer, true);
+  assert.equal(manifest.truth.floodplain_denitrification_oxygen_gated, true);
+  assert.equal(manifest.truth.floodplain_denitrification_nitrogen_limited, true);
+  assert.equal(manifest.truth.floodplain_denitrification_reactive_nitrate_equivalent_parameterized, false);
+  assert.equal(manifest.truth.floodplain_denitrification_surface_temperature_proxy_responsive, true);
+  assert.equal(manifest.truth.floodplain_denitrification_q10_temperature_response_parameterized, true);
+  assert.equal(manifest.truth.persistent_floodplain_water_temperature_state, false);
+  assert.equal(manifest.truth.resolved_floodplain_freeze_thaw_state, false);
+  assert.equal(manifest.truth.arrhenius_floodplain_denitrification_kinetics_resolved, false);
+  assert.equal(manifest.truth.floodplain_dissolved_inorganic_nitrogen_treated_as_fully_nitrate, false);
+  assert.equal(manifest.truth.floodplain_denitrification_nitrate_speciation_resolved, true);
+  assert.equal(manifest.truth.persistent_river_and_floodplain_nitrate_ammonium_pools, true);
+  assert.equal(manifest.truth.dissolved_inorganic_nitrogen_is_nitrate_plus_ammonium, true);
+  assert.equal(manifest.truth.runoff_din_speciation_parameterized_at_receiver, true);
+  assert.equal(manifest.truth.runoff_din_speciation_measured, false);
+  assert.equal(manifest.truth.exact_nitrate_ammonium_water_fraction_transport, true);
+  assert.equal(manifest.truth.detrital_nitrogen_returns_to_ammonium, true);
+  assert.equal(manifest.truth.nitrate_ammonium_conservation_checked, true);
+  assert.equal(manifest.truth.floodplain_denitrification_nitrate_only, true);
+  assert.equal(manifest.truth.floodplain_denitrification_consumes_ammonium, false);
+  assert.equal(manifest.truth.floodplain_nitrite_pool_resolved, false);
+  assert.equal(manifest.truth.persistent_floodplain_nitrification, true);
+  assert.equal(manifest.truth.floodplain_nitrification_reaction_modeled, true);
+  assert.equal(manifest.truth.floodplain_nitrification_ammonium_to_nitrate, true);
+  assert.equal(manifest.truth.floodplain_nitrification_one_step_approximation, true);
+  assert.equal(manifest.truth.floodplain_nitrification_exact_owner_transfer_ids, true);
+  assert.equal(manifest.truth.floodplain_nitrification_dissolved_oxygen_debited, true);
+  assert.equal(manifest.truth.floodplain_nitrification_minimum_oxygen_reserve_honored, true);
+  assert.equal(manifest.truth.floodplain_nitrification_nitrogen_and_oxygen_conservation_checked, true);
+  assert.equal(manifest.truth.floodplain_nitrification_surface_temperature_proxy_responsive, true);
+  assert.equal(manifest.truth.floodplain_nitrification_q10_temperature_response_parameterized, true);
+  assert.equal(manifest.truth.floodplain_nitrification_alkalinity_demand_diagnostic, false);
+  assert.equal(manifest.truth.floodplain_nitrification_alkalinity_material_owner_debited, true);
+  assert.equal(manifest.truth.floodplain_nitrification_alkalinity_limited, true);
+  assert.equal(manifest.truth.floodplain_denitrification_alkalinity_material_owner_credited, true);
+  assert.equal(manifest.truth.estuary_denitrification_alkalinity_generated, true);
+  assert.equal(manifest.truth.end_to_end_alkalinity_ledger_audited, true);
+  assert.equal(manifest.truth
+    .persistent_soil_runoff_river_floodplain_and_ocean_alkalinity_with_estuary_flux,
+  true);
+  assert.equal(manifest.truth.measured_alkalinity_claimed, false);
+  assert.equal(manifest.truth.carbonate_speciation_resolved, false);
+  assert.equal(manifest.truth.ph_resolved, false);
+  assert.equal(manifest.truth.deep_ocean_alkalinity_exchange, false);
+  assert.equal(manifest.truth.floodplain_nitrification_ph_feedback_modeled, false);
+  assert.equal(manifest.truth.floodplain_nitrification_microbe_population_state, false);
+  assert.equal(manifest.truth.scientific_floodplain_nitrification_model, false);
+  assert.equal(manifest.truth.floodplain_denitrification_microbe_population_state, false);
+  assert.equal(manifest.truth.mechanistic_floodplain_redox_model, false);
+  assert.equal(manifest.truth.scientific_floodplain_denitrification_model, false);
   assert.equal(manifest.truth.persistent_floodplain_atmosphere_gas_exchange, true);
   assert.equal(manifest.truth.floodplain_gas_exchange_exact_owner_transfer_ids, true);
   assert.equal(manifest.truth.floodplain_gas_exchange_carbon_oxygen_conservation_checked, true);
   assert.equal(manifest.truth.floodplain_gas_exchange_native_atmosphere_surface_layer, true);
   assert.equal(manifest.truth.floodplain_gas_exchange_physical_with_life_off, true);
+  assert.equal(manifest.truth.floodplain_gas_exchange_bidirectional_carbon_gradient_parameterized, true);
   assert.equal(manifest.truth.floodplain_gas_exchange_bidirectional_henry_law, false);
   assert.equal(manifest.truth.resolved_floodplain_air_water_turbulence, false);
   assert.equal(manifest.truth.scientific_floodplain_gas_exchange_model, false);
@@ -624,7 +742,7 @@ async function run() {
   assert.ok(html.includes('id="transportDomain"') && html.includes('id="transportWater"') && html.includes('id="transportClosure"'), 'neighbor transport graph and conservation are visible');
   assert.ok(html.includes('id="atmosphereWater"') && html.includes('id="atmosphereBiogeochemistry"') && html.includes('id="atmosphereGasProfile"') && html.includes('id="atmosphereGasTransport"') && html.includes('id="integrityAudit"') && html.includes('id="runoffQueue"') && html.includes('id="mineralSediment"') && html.includes('id="runoffDestination"'), 'closed atmospheric water, eight-level atmospheric gases, runtime integrity, runoff routing, and finite sediment are visible');
   assert.ok(html.includes('id="experienceSeam"'), 'renderer-independent observer/player/sandbox experience membrane is visible');
-  assert.ok(html.includes('id="channelStorage"') && html.includes('id="floodplainStorage"') && html.includes('id="floodplainHabitat"') && html.includes('id="floodEvents"') && html.includes('id="floodplainSuccession"') && html.includes('id="floodplainPlantMatter"') && html.includes('id="floodplainPlantResources"') && html.includes('id="floodplainDecomposition"') && html.includes('id="floodplainRespiration"') && html.includes('id="floodplainGasExchange"') && html.includes('id="channelChemistry"') && html.includes('id="estuaryStorage"') && html.includes('id="channelClosure"') && html.includes('id="riverMouth"') && html.includes('id="marineDeepOcean"'), 'persistent channel, floodplain material, event, habitat, living succession, plant C/N/P/water, decomposition, aerobic respiration and paired gas exchange state are visible');
+  assert.ok(html.includes('id="channelStorage"') && html.includes('id="floodplainStorage"') && html.includes('id="floodplainHabitat"') && html.includes('id="floodEvents"') && html.includes('id="floodplainSuccession"') && html.includes('id="floodplainPlantMatter"') && html.includes('id="floodplainPlantResources"') && html.includes('id="floodplainDecomposition"') && html.includes('id="floodplainRespiration"') && html.includes('id="floodplainDenitrification"') && html.includes('id="floodplainGasExchange"') && html.includes('id="channelChemistry"') && html.includes('id="estuaryStorage"') && html.includes('id="channelClosure"') && html.includes('id="riverMouth"') && html.includes('id="marineDeepOcean"'), 'persistent channel, floodplain material, event, habitat, living succession, plant C/N/P/water, decomposition, aerobic respiration, denitrification and paired gas exchange state are visible');
   assert.ok(html.includes('id="airMassRoute"') && html.includes('id="momentumClosure"'), 'dry-air transport and tangent-momentum closure are visible');
   assert.ok(html.includes('id="rotationDeflection"') && html.includes('id="kineticClosure"'), 'Coriolis deflection and atmospheric kinetic-energy closure are visible');
   assert.ok(html.includes('id="cloudPhaseChange"') && html.includes('id="verticalAtmosphere"') && html.includes('id="pressureColumn"') && html.includes('id="convectiveExchange"') && html.includes('id="buoyancyConversion"') && html.includes('id="upperAirTransport"') && html.includes('id="layerWindShear"') && html.includes('id="geopotentialClosure"') && html.includes('id="moistEnthalpyClosure"'), 'pressure-column, phase, overturning, buoyancy conversion, upper transport, wind shear, geopotential and moist-enthalpy closure are visible');
@@ -636,7 +754,7 @@ async function run() {
   assert.ok(app.includes('buildHydrologySector'), 'hydrology is integrated into surface streaming');
   assert.ok(app.includes('EarthSystemEngine') && app.includes('coupleHydrologyToEarthSystem') && app.includes('earthSystemColumn'), 'stateful Earth system is integrated into runtime, rivers and read API');
   assert.ok(app.includes('transportEarthSystemColumns') && app.includes('synchronizeEarthTransportDomain') && app.includes('earthTransportDescription'), 'canonical neighbor transport is integrated into runtime and read API');
-  assert.ok(app.includes("AXMFoundationPlanet/v41") && app.includes('auditFoundationSystem') && app.includes('currentSystemAudit') && app.includes('atmosphereGasProfile') && app.includes('atmosphereGasTransport') && app.includes('lastPressureColumnDynamicsReceipt') && app.includes('verticalInterfaces') && app.includes('adjacentExchangeReceipts') && app.includes('surfaceRainfallMm') && app.includes('surfaceSnowfallMm') && app.includes('cloudIceMm') && app.includes('lastPressureColumnHorizontalTransportReceipt') && app.includes('nativePressureTransportReceipt') && app.includes('lastPressureColumnSyncReceipt') && app.includes('modelTopHeightM') && app.includes('lastVerticalExchangeReceipt') && app.includes('buoyancyWorkJm2') && app.includes('atmosphereGeopotentialEnergyResidualJ') && app.includes('lastBasinRoutingReceipt') && app.includes('basinRoutingDescription') && app.includes('floodplainDescription') && app.includes('floodplainHabitatDescription') && app.includes('floodEventHistoryDescription') && app.includes('floodplainSuccessionDescription') && app.includes('floodplainPlantMatterDescription') && app.includes('floodplainPlantResourcesDescription') && app.includes('floodplainDecompositionDescription') && app.includes('floodplainRespirationDescription') && app.includes('floodplainGasExchangeDescription') && app.includes('floodplainStorage') && app.includes('floodplainHabitat') && app.includes('floodEvents') && app.includes('floodplainSuccession') && app.includes('floodplainPlantMatter') && app.includes('floodplainPlantResources') && app.includes('floodplainDecomposition') && app.includes('floodplainRespiration') && app.includes('floodplainGasExchange') && app.includes('radiationBudget') && app.includes('co2RadiativeFeedback') && app.includes('atmosphereCo2RadiativeCoupling') && app.includes('cryospherePhase') && app.includes('atmosphereBiogeochemistry') && app.includes('canopyPhysiology') && app.includes('carbonFlux') && app.includes('carbonPools') && app.includes('nitrogenCycle') && app.includes('marineProductivity') && app.includes('marineCarbon') && app.includes('marineNutrients') && app.includes('marineOxygen') && app.includes('marineDeepOcean') && app.includes('channelChemistry') && app.includes('estuaryStorage') && app.includes('runoffBiogeochemistry') && app.includes('mineralSediment') && app.includes('effectiveSoilDepthM') && app.includes('geomorphicSedimentDescription') && app.includes('createExperienceSectorCapsule') && app.includes('openExperienceLease') && app.includes('dispatchExperienceIntent') && app.includes('auditExperienceProtocol'), 'Rung 45 exposes paired floodplain-atmosphere carbon and oxygen exchange beside local respiration and the governed experience membrane');
+  assert.ok(app.includes("AXMFoundationPlanet/v47") && app.includes('auditFoundationSystem') && app.includes('currentSystemAudit') && app.includes('atmosphereGasProfile') && app.includes('atmosphereGasTransport') && app.includes('lastPressureColumnDynamicsReceipt') && app.includes('verticalInterfaces') && app.includes('adjacentExchangeReceipts') && app.includes('surfaceRainfallMm') && app.includes('surfaceSnowfallMm') && app.includes('cloudIceMm') && app.includes('lastPressureColumnHorizontalTransportReceipt') && app.includes('nativePressureTransportReceipt') && app.includes('lastPressureColumnSyncReceipt') && app.includes('modelTopHeightM') && app.includes('lastVerticalExchangeReceipt') && app.includes('buoyancyWorkJm2') && app.includes('atmosphereGeopotentialEnergyResidualJ') && app.includes('lastBasinRoutingReceipt') && app.includes('basinRoutingDescription') && app.includes('floodplainDescription') && app.includes('floodplainHabitatDescription') && app.includes('floodEventHistoryDescription') && app.includes('floodplainSuccessionDescription') && app.includes('floodplainPlantMatterDescription') && app.includes('floodplainPlantResourcesDescription') && app.includes('floodplainDecompositionDescription') && app.includes('floodplainRespirationDescription') && app.includes('floodplainDenitrificationDescription') && app.includes('floodplainNitrificationDescription') && app.includes('floodplainGasExchangeDescription') && app.includes('floodplainStorage') && app.includes('floodplainHabitat') && app.includes('floodEvents') && app.includes('floodplainSuccession') && app.includes('floodplainPlantMatter') && app.includes('floodplainPlantResources') && app.includes('floodplainDecomposition') && app.includes('floodplainRespiration') && app.includes('floodplainDenitrification') && app.includes('floodplainNitrification') && app.includes('floodplainGasExchange') && app.includes('activeProfileStoredNitrogenSpecies') && app.includes('riverFloodplainNitrateAmmonium') && app.includes('alkalinityKgCaCO3Eq') && app.includes('alkalinityGeneratedKgCaCO3Eq') && app.includes('alkalinityLimitedReachCount') && app.includes('radiationBudget') && app.includes('co2RadiativeFeedback') && app.includes('atmosphereCo2RadiativeCoupling') && app.includes('cryospherePhase') && app.includes('atmosphereBiogeochemistry') && app.includes('canopyPhysiology') && app.includes('carbonFlux') && app.includes('carbonPools') && app.includes('nitrogenCycle') && app.includes('marineProductivity') && app.includes('marineCarbon') && app.includes('marineNutrients') && app.includes('marineOxygen') && app.includes('marineDeepOcean') && app.includes('channelChemistry') && app.includes('estuaryStorage') && app.includes('runoffBiogeochemistry') && app.includes('mineralSediment') && app.includes('effectiveSoilDepthM') && app.includes('geomorphicSedimentDescription') && app.includes('createExperienceSectorCapsule') && app.includes('openExperienceLease') && app.includes('dispatchExperienceIntent') && app.includes('auditExperienceProtocol'), 'Rung 51 exposes the end-to-end CaCO3-equivalent alkalinity ledger beside the governed experience membrane');
   assert.ok(app.includes('conditionTransitioning') && app.includes('if (conditionTransitioning && !force) return'), 'condition replacement cannot mix a new profile ID with the previous surface sample');
   assert.ok(app.includes('probeFoundationHost') && app.includes('proposeHostBootstrap') && app.includes('createSectorSubscription'), 'read-only API exposes explicit named-host proposals and sector subscriptions');
   assert.ok(operationsApi.includes("'/api/living-worlds'") && operationsApi.includes("'/api/living-world/create'"), 'Workshop exposes named-world catalog and explicit creation endpoints');
@@ -645,7 +763,7 @@ async function run() {
   assert.ok(!/Math\.random\(/.test(app + read('core/planet-model.mjs') + read('core/living-system.mjs')), 'world generation avoids unseeded randomness');
   assert.ok(/["']\.mjs["']\s*:\s*["']text\/javascript; charset=utf-8["']/.test(server), 'Workshop serves planet modules with JavaScript MIME');
 
-  ['app.mjs', 'core/planet-model.mjs', 'core/layer-system.mjs', 'core/living-system.mjs', 'core/geophysics.mjs', 'core/hydrology-model.mjs', 'core/species-catalog.mjs', 'core/community-model.mjs', 'core/seasonal-weather.mjs', 'core/pressure-column.mjs', 'core/pressure-transport.mjs', 'core/surface-radiation.mjs', 'core/atmosphere-co2-radiation.mjs', 'core/atmosphere-biogeochemistry.mjs', 'core/atmosphere-biogeochemistry-vertical.mjs', 'core/atmosphere-biogeochemistry-transport.mjs', 'core/land-ecology.mjs', 'core/ocean-ecology.mjs', 'core/deep-ocean.mjs', 'core/river-chemistry.mjs', 'core/soil-biogeochemistry.mjs', 'core/geomorphic-sediment.mjs', 'core/floodplain.mjs', 'core/floodplain-habitat.mjs', 'core/flood-event-history.mjs', 'core/floodplain-succession.mjs', 'core/floodplain-plant-matter.mjs', 'core/floodplain-plant-resources.mjs', 'core/floodplain-decomposition.mjs', 'core/floodplain-respiration.mjs', 'core/floodplain-gas-exchange.mjs', 'core/estuary-reactor.mjs', 'core/earth-system.mjs', 'core/earth-transport.mjs', 'core/basin-routing.mjs', 'core/system-audit.mjs', 'core/experience-protocol.mjs', 'core/ecosystem-dynamics.mjs', 'core/physics-contract.mjs', 'core/world-state.mjs', 'core/host-protocol.mjs', 'core/world-authority.mjs'].forEach(file => {
+  ['app.mjs', 'core/planet-model.mjs', 'core/layer-system.mjs', 'core/living-system.mjs', 'core/geophysics.mjs', 'core/hydrology-model.mjs', 'core/species-catalog.mjs', 'core/community-model.mjs', 'core/seasonal-weather.mjs', 'core/pressure-column.mjs', 'core/pressure-transport.mjs', 'core/surface-radiation.mjs', 'core/atmosphere-co2-radiation.mjs', 'core/atmosphere-biogeochemistry.mjs', 'core/atmosphere-biogeochemistry-vertical.mjs', 'core/atmosphere-biogeochemistry-transport.mjs', 'core/land-ecology.mjs', 'core/ocean-ecology.mjs', 'core/deep-ocean.mjs', 'core/river-chemistry.mjs', 'core/soil-biogeochemistry.mjs', 'core/geomorphic-sediment.mjs', 'core/floodplain.mjs', 'core/floodplain-habitat.mjs', 'core/flood-event-history.mjs', 'core/floodplain-succession.mjs', 'core/floodplain-plant-matter.mjs', 'core/floodplain-plant-resources.mjs', 'core/floodplain-decomposition.mjs', 'core/floodplain-respiration.mjs', 'core/floodplain-denitrification.mjs', 'core/floodplain-nitrification.mjs', 'core/floodplain-gas-exchange.mjs', 'core/estuary-reactor.mjs', 'core/earth-system.mjs', 'core/earth-transport.mjs', 'core/basin-routing.mjs', 'core/system-audit.mjs', 'core/experience-protocol.mjs', 'core/ecosystem-dynamics.mjs', 'core/physics-contract.mjs', 'core/world-state.mjs', 'core/host-protocol.mjs', 'core/world-authority.mjs'].forEach(file => {
     childProcess.execFileSync(process.execPath, ['--check', path.join(root, file)], { stdio: 'pipe' });
   });
 
@@ -758,7 +876,41 @@ async function run() {
     soilBiogeochemistry.RUNOFF_BIOGEOCHEMISTRY_QUEUE_SCHEMA);
   assert.ok(Object.values(earthColumnA.land.soilBiogeochemistry.pools)
     .every(value => value > 0),
-  'new land starts with a finite canonical dissolved soil-water C/N/P/O2 inventory');
+  'new land starts with a finite canonical dissolved soil-water C/N/P/O2/alkalinity inventory');
+  const limestoneSoil = soilBiogeochemistry.createSoilBiogeochemistry({
+    ...grasslandSample, geology: { bedrock: 'sedimentary shale/limestone' }
+  }, earthColumnA.substrate, earthColumnA.land.ecology,
+  { accessibleWaterMm: 200, temperatureC: 15 });
+  const graniteSoil = soilBiogeochemistry.createSoilBiogeochemistry({
+    ...grasslandSample, geology: { bedrock: 'exposed granite' }
+  }, earthColumnA.substrate, earthColumnA.land.ecology,
+  { accessibleWaterMm: 200, temperatureC: 15 });
+  assert.ok(limestoneSoil.pools.alkalinityKgCaCO3Eqm2 >
+      graniteSoil.pools.alkalinityKgCaCO3Eqm2 &&
+    limestoneSoil.truth.measuredAlkalinityClaimed === false &&
+    limestoneSoil.truth.pHResolved === false,
+  'canonical alkalinity is a deterministic lithology-responsive initial condition, not a measured pH claim');
+  const legacySoilV1 = JSON.parse(JSON.stringify(
+    earthColumnA.land.soilBiogeochemistry));
+  legacySoilV1.schema =
+    soilBiogeochemistry.PREVIOUS_SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA;
+  delete legacySoilV1.pools.alkalinityKgCaCO3Eqm2;
+  const migratedSoilV1 = soilBiogeochemistry.normalizeSoilBiogeochemistry(
+    legacySoilV1);
+  assert.ok(migratedSoilV1.pools.dissolvedInorganicCarbonKgCm2 ===
+      legacySoilV1.pools.dissolvedInorganicCarbonKgCm2 &&
+    migratedSoilV1.pools.alkalinityKgCaCO3Eqm2 === 0 &&
+    migratedSoilV1.alkalinityMigrationCheckpoint === true,
+  'v1 soil migration preserves prior constituents and adds explicit zero alkalinity without invented history');
+  const legacyQueueV1 = soilBiogeochemistry
+    .emptyRunoffBiogeochemistryQueue();
+  legacyQueueV1.schema = soilBiogeochemistry
+    .PREVIOUS_RUNOFF_BIOGEOCHEMISTRY_QUEUE_SCHEMA;
+  delete legacyQueueV1.pools.alkalinityKgCaCO3Eqm2;
+  const migratedQueueV1 = soilBiogeochemistry
+    .normalizeRunoffBiogeochemistryQueue(legacyQueueV1);
+  assert.equal(migratedQueueV1.pools.alkalinityKgCaCO3Eqm2, 0,
+    'v1 runoff-queue migration adds zero alkalinity');
   const standaloneWetMobilization = soilBiogeochemistry
     .mobilizeSoilBiogeochemistry(
       earthColumnA.land.soilBiogeochemistry,
@@ -936,14 +1088,99 @@ async function run() {
   assert.ok(Object.values(riverSedimentRoute.receipt.residualKg)
     .every(value => Math.abs(value) < 1e-7),
   'river sediment sender debit, bed deposition and exported load close by grain');
+  assert.equal(riverChemistry.RIVER_CHEMISTRY_STATE_SCHEMA,
+    'axm.foundation-planet.river-chemistry-state/v4');
+  assert.equal(riverChemistry.PREVIOUS_RIVER_CHEMISTRY_STATE_SCHEMA,
+    'axm.foundation-planet.river-chemistry-state/v3');
+  assert.equal(riverChemistry.RIVER_CHEMISTRY_INPUT_SCHEMA,
+    'axm.foundation-planet.river-chemistry-input-receipt/v4');
+  const legacyAlkalinityRiver = riverChemistry.emptyRiverChemistry();
+  legacyAlkalinityRiver.schema =
+    riverChemistry.PREVIOUS_RIVER_CHEMISTRY_STATE_SCHEMA;
+  legacyAlkalinityRiver.dissolvedInorganicCarbonKgC = 4;
+  legacyAlkalinityRiver.dissolvedNitrateNitrogenKgN = 2;
+  legacyAlkalinityRiver.dissolvedAmmoniumNitrogenKgN = 1;
+  legacyAlkalinityRiver.dissolvedInorganicNitrogenKgN = 3;
+  delete legacyAlkalinityRiver.alkalinityKgCaCO3Eq;
+  const migratedAlkalinityRiver = riverChemistry.normalizeRiverChemistry(
+    legacyAlkalinityRiver);
+  assert.ok(migratedAlkalinityRiver.dissolvedInorganicCarbonKgC === 4 &&
+    migratedAlkalinityRiver.dissolvedNitrateNitrogenKgN === 2 &&
+    migratedAlkalinityRiver.dissolvedAmmoniumNitrogenKgN === 1 &&
+    migratedAlkalinityRiver.alkalinityKgCaCO3Eq === 0 &&
+    migratedAlkalinityRiver.migrationCheckpoint === true,
+  'v3 river migration preserves existing chemistry and adds zero alkalinity without invented history');
+  const legacyDinChemistry = riverChemistry.emptyRiverChemistry();
+  legacyDinChemistry.schema =
+    riverChemistry.LEGACY_RIVER_CHEMISTRY_STATE_SCHEMA;
+  legacyDinChemistry.dissolvedInorganicNitrogenKgN = 8;
+  delete legacyDinChemistry.dissolvedNitrateNitrogenKgN;
+  delete legacyDinChemistry.dissolvedAmmoniumNitrogenKgN;
+  delete legacyDinChemistry.truth;
+  const migratedDinChemistry = riverChemistry.normalizeRiverChemistry(
+    legacyDinChemistry);
+  assert.ok(migratedDinChemistry.migrationCheckpoint === true &&
+    migratedDinChemistry.dissolvedNitrateNitrogenKgN === 4 &&
+    migratedDinChemistry.dissolvedAmmoniumNitrogenKgN === 4 &&
+    migratedDinChemistry.dissolvedInorganicNitrogenKgN === 8,
+  'v2 aggregate DIN migrates into an explicit conservative 50/50 nitrate-ammonium model initialization');
+  const speciatedRiverInput = riverChemistry
+    .applyRunoffBiogeochemistryInput(
+      riverChemistry.emptyRiverChemistry(),
+      { dissolvedInorganicNitrogenKgN: 10 }, 1000,
+      { transferId: 'test:runoff-speciation', nitrateFraction: .7 });
+  assert.ok(speciatedRiverInput.state.dissolvedNitrateNitrogenKgN === 7 &&
+    Math.abs(speciatedRiverInput.state
+      .dissolvedAmmoniumNitrogenKgN - 3) < 1e-12 &&
+    speciatedRiverInput.state.dissolvedInorganicNitrogenKgN === 10 &&
+    speciatedRiverInput.receipt.truth
+      .nitrateAndAmmoniumReceiverPoolsCredited === true &&
+    speciatedRiverInput.receipt.truth.measuredInputSpeciationClaimed ===
+      false &&
+    Object.values(speciatedRiverInput.receipt.conservation)
+      .every(value => Math.abs(value) < 1e-9),
+  'generic runoff DIN is explicitly partitioned at the receiver while nitrate plus ammonium and the total-N ledger close');
+  const speciatedFraction = riverChemistry.riverChemistryFraction(
+    speciatedRiverInput.state, .25);
+  const speciatedRemainder = riverChemistry.subtractRiverChemistry(
+    speciatedRiverInput.state, speciatedFraction);
+  assert.ok(Math.abs(speciatedFraction
+      .dissolvedNitrateNitrogenKgN - 1.75) < 1e-12 &&
+    Math.abs(speciatedFraction
+      .dissolvedAmmoniumNitrogenKgN - .75) < 1e-12 &&
+    Math.abs(speciatedRemainder
+      .dissolvedNitrateNitrogenKgN - 5.25) < 1e-12 &&
+    Math.abs(speciatedRemainder
+      .dissolvedAmmoniumNitrogenKgN - 2.25) < 1e-12,
+  'water-fraction routing debits nitrate and ammonium proportionally without collapsing their identities');
   assert.equal(floodplain.FLOODPLAIN_STATE_SCHEMA,
-    'axm.foundation-planet.floodplain-state/v1');
+    'axm.foundation-planet.floodplain-state/v4');
+  assert.equal(floodplain.PREVIOUS_FLOODPLAIN_STATE_SCHEMA,
+    'axm.foundation-planet.floodplain-state/v3');
+  assert.equal(floodplain.LEGACY_FLOODPLAIN_STATE_SCHEMA,
+    'axm.foundation-planet.floodplain-state/v2');
+  const legacyAlkalinityFloodplain = floodplain.emptyFloodplainState();
+  legacyAlkalinityFloodplain.schema = floodplain
+    .PREVIOUS_FLOODPLAIN_STATE_SCHEMA;
+  legacyAlkalinityFloodplain.waterKg = 500;
+  legacyAlkalinityFloodplain.chemistry = JSON.parse(JSON.stringify(
+    legacyAlkalinityRiver));
+  const migratedAlkalinityFloodplain = floodplain.normalizeFloodplainState(
+    legacyAlkalinityFloodplain);
+  assert.ok(migratedAlkalinityFloodplain.waterKg === 500 &&
+    migratedAlkalinityFloodplain.chemistry.dissolvedInorganicCarbonKgC === 4 &&
+    migratedAlkalinityFloodplain.chemistry.alkalinityKgCaCO3Eq === 0 &&
+    migratedAlkalinityFloodplain.migrationCheckpoint === true,
+  'v3 floodplain migration preserves water and chemistry while adding zero owned alkalinity');
   const floodChannelChemistry = riverChemistry.emptyRiverChemistry();
   floodChannelChemistry.dissolvedInorganicCarbonKgC = 12;
   floodChannelChemistry.dissolvedOrganicCarbonKgC = 4;
+  floodChannelChemistry.dissolvedNitrateNitrogenKgN = 1;
+  floodChannelChemistry.dissolvedAmmoniumNitrogenKgN = 1;
   floodChannelChemistry.dissolvedInorganicNitrogenKgN = 2;
   floodChannelChemistry.dissolvedInorganicPhosphorusKgP = .5;
   floodChannelChemistry.dissolvedOxygenKgO2 = 6;
+  floodChannelChemistry.alkalinityKgCaCO3Eq = 20;
   const floodChannelSediment = geomorphicSediment.emptyRiverSediment();
   floodChannelSediment.suspendedKg = {
     clay: 100, silt: 100, sand: 100, gravel: 100
@@ -975,6 +1212,11 @@ async function run() {
   'floodplain settling is grain selective rather than a bulk percentage');
   assert.equal(overbankStep.receipt.truth.conservationClosed, true,
     'overbank water, chemistry and sediment exchange closes its combined ledger');
+  assert.ok(overbankStep.receipt.truth
+      .nitrateAndAmmoniumConservationClosed === true &&
+    overbankStep.receipt.chemistry.overbank.nitrateNitrogenKgN > 0 &&
+    overbankStep.receipt.chemistry.overbank.ammoniumNitrogenKgN > 0,
+  'overbank water carries both owned inorganic nitrogen species through a closed paired transfer');
   const returnStep = floodplain.advanceFloodplainExchange(
     overbankStep.state,
     { waterKg: 0, chemistry: riverChemistry.emptyRiverChemistry(),
@@ -988,6 +1230,10 @@ async function run() {
   'floodplain recession returns only water owned by its finite donor');
   assert.equal(returnStep.receipt.truth.conservationClosed, true,
     'floodplain return flow preserves water, chemistry and mineral mass');
+  assert.ok(returnStep.receipt.chemistry.returned.nitrateNitrogenKgN > 0 &&
+    returnStep.receipt.chemistry.returned.ammoniumNitrogenKgN > 0 &&
+    returnStep.receipt.truth.nitrateAndAmmoniumConservationClosed === true,
+  'recession return preserves nitrate and ammonium identity in the reverse transfer');
   const migratedFloodplainStep = floodplain.advanceFloodplainExchange(
     floodplain.emptyFloodplainState({ migrationCheckpoint: true }),
     { waterKg: 200_000, chemistry: floodChannelChemistry,
@@ -1099,12 +1345,14 @@ async function run() {
   assert.equal(eventStarted.state.currentEvent.cumulativeReturnWaterKg,
     overbankStep.receipt.water.returnKg);
   assert.deepEqual(eventStarted.state.currentEvent.overbankChemistry,
-    overbankStep.receipt.chemistry.overbank);
+    Object.fromEntries(['carbonKgC', 'nitrogenKgN', 'phosphorusKgP',
+      'oxygenKgO2'].map(key =>
+      [key, overbankStep.receipt.chemistry.overbank[key]])));
   assert.deepEqual(eventStarted.state.currentEvent.overbankSedimentKg,
     overbankStep.receipt.sediment.overbankKg);
   assert.deepEqual(eventStarted.state.currentEvent.depositedSedimentKg,
     overbankStep.receipt.sediment.depositedKg,
-  'event start preserves the exact water, chemistry and typed-grain payload, including honest zero-valued compartments');
+  'event start preserves exact water, aggregate chemistry and typed-grain observation payloads without claiming archived species speciation');
   const eventContinued = floodEventHistory.advanceFloodEventHistory(
     eventStarted.state, overbankStep.state, overbankStep.receipt, 1,
     { reachId: floodReach.id, startDay: 20.5 }
@@ -1782,7 +2030,7 @@ async function run() {
     floodplainPlantResources.FLOODPLAIN_PLANT_DETRITUS_RESOURCE_DEBIT_SCHEMA,
     'axm.foundation-planet.floodplain-plant-detritus-resource-debit/v1');
   assert.equal(floodplain.FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA,
-    'axm.foundation-planet.floodplain-detrital-return-credit/v1');
+    'axm.foundation-planet.floodplain-detrital-return-credit/v2');
   const decompositionMatter =
     floodplainPlantMatter.emptyFloodplainPlantMatterState();
   decompositionMatter.guilds.wetMeadow.standingDead = {
@@ -1868,8 +2116,14 @@ async function run() {
     decompositionMatterDebit.state.guilds.wetMeadow.litter.carbonKgC > 59 &&
     decompositionCredit.state.chemistry.dissolvedOrganicCarbonKgC > 0 &&
     decompositionCredit.state.chemistry.dissolvedInorganicNitrogenKgN > 0 &&
+    decompositionCredit.state.chemistry
+      .dissolvedAmmoniumNitrogenKgN > 0 &&
+    decompositionCredit.state.chemistry
+      .dissolvedNitrateNitrogenKgN === 0 &&
+    decompositionCredit.receipt.truth
+      .detritalNitrogenCreditedToAmmoniumPool === true &&
     decompositionCredit.state.chemistry.dissolvedInorganicPhosphorusKgP > 0,
-  'exact paired debits conserve C/N/P while returning material only to the local floodplain chemistry receiver');
+  'exact paired debits conserve C/N/P while returning detrital nitrogen specifically to the local ammonium owner pool');
   assert.throws(() => floodplainPlantMatter
     .applyFloodplainPlantDetritusMatterDebit(decompositionMatter, [{
       transferId: 'selftest-decomposition-overdraw',
@@ -2078,16 +2332,593 @@ async function run() {
       .dissolvedOrganicCarbonConsumedKgC === 0,
   'Life-off freezes respiration and all local chemistry transfers');
   assert.equal(
+    floodplainDenitrification.FLOODPLAIN_DENITRIFICATION_STATE_SCHEMA,
+    'axm.foundation-planet.floodplain-denitrification-state/v4');
+  assert.equal(floodplainDenitrification
+    .PREVIOUS_FLOODPLAIN_DENITRIFICATION_STATE_SCHEMA,
+  'axm.foundation-planet.floodplain-denitrification-state/v3');
+  assert.equal(floodplainDenitrification
+    .LEGACY_FLOODPLAIN_DENITRIFICATION_STATE_SCHEMA,
+  'axm.foundation-planet.floodplain-denitrification-state/v2');
+  assert.equal(
+    floodplainDenitrification.FLOODPLAIN_DENITRIFICATION_RECEIPT_SCHEMA,
+    'axm.foundation-planet.floodplain-denitrification-receipt/v4');
+  assert.equal(
+    floodplain.FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
+    'axm.foundation-planet.floodplain-denitrification-reaction-receipt/v3');
+  const denitrificationFloodplain = floodplain.emptyFloodplainState();
+  denitrificationFloodplain.waterKg = 1e6;
+  denitrificationFloodplain.inundatedFraction = .81;
+  denitrificationFloodplain.chemistry.dissolvedOrganicCarbonKgC = 12;
+  denitrificationFloodplain.chemistry.dissolvedInorganicCarbonKgC = 3;
+  denitrificationFloodplain.chemistry
+    .dissolvedNitrateNitrogenKgN = 3;
+  denitrificationFloodplain.chemistry
+    .dissolvedAmmoniumNitrogenKgN = 3;
+  denitrificationFloodplain.chemistry
+    .dissolvedInorganicNitrogenKgN = 6;
+  denitrificationFloodplain.chemistry.dissolvedOxygenKgO2 = .5;
+  const denitrificationState = floodplainDenitrification
+    .emptyFloodplainDenitrificationState();
+  const denitrificationPlan = floodplainDenitrification
+    .floodplainDenitrificationPlan(denitrificationState,
+      denitrificationFloodplain, {
+        durationDays: 1, livingEnabled: true, lifeAbundance: 1,
+        atmosphereAvailable: true, anoxicThresholdMgL: 2,
+        maximumDailyDocFraction: .25
+      });
+  assert.ok(denitrificationPlan.activity.dissolvedOxygenMgL === .5 &&
+    denitrificationPlan.activity.anoxiaFactor === .75 &&
+    denitrificationPlan.activity.waterTemperatureC === 20 &&
+    denitrificationPlan.activity.temperatureQ10 === 2 &&
+    denitrificationPlan.activity.temperatureResponseFactor === 1 &&
+    denitrificationPlan.reaction
+      .dissolvedOrganicCarbonConsumedKgC > 0 &&
+    denitrificationPlan.reaction
+      .dissolvedNitrateNitrogenConsumedKgN > 0 &&
+    denitrificationPlan.activity.availableDissolvedNitrateNitrogenKgN ===
+      3 &&
+    denitrificationPlan.activity.availableDissolvedAmmoniumNitrogenKgN ===
+      3,
+  'sub-threshold oxygen opens a bounded, DOC- and nitrate-backed denitrification plan while exposing ammonium separately');
+  const coldDenitrificationPlan = floodplainDenitrification
+    .floodplainDenitrificationPlan(denitrificationState,
+      denitrificationFloodplain, {
+        durationDays: 1, livingEnabled: true, lifeAbundance: 1,
+        atmosphereAvailable: true, anoxicThresholdMgL: 2,
+        maximumDailyDocFraction: .25,
+        waterTemperatureC: 5, referenceTemperatureC: 20,
+        temperatureQ10: 2
+      });
+  const warmDenitrificationPlan = floodplainDenitrification
+    .floodplainDenitrificationPlan(denitrificationState,
+      denitrificationFloodplain, {
+        durationDays: 1, livingEnabled: true, lifeAbundance: 1,
+        atmosphereAvailable: true, anoxicThresholdMgL: 2,
+        maximumDailyDocFraction: .25,
+        waterTemperatureC: 25, referenceTemperatureC: 20,
+        temperatureQ10: 2
+      });
+  assert.ok(coldDenitrificationPlan.activity.temperatureResponseFactor < 1 &&
+    coldDenitrificationPlan.activity.temperatureConstrained === true &&
+    warmDenitrificationPlan.activity.temperatureResponseFactor > 1 &&
+    warmDenitrificationPlan.reaction
+      .dissolvedOrganicCarbonConsumedKgC >
+      coldDenitrificationPlan.reaction
+        .dissolvedOrganicCarbonConsumedKgC &&
+    warmDenitrificationPlan.truth
+      .surfaceTemperatureForcingUsedAsWaterTemperatureProxy === true &&
+    warmDenitrificationPlan.truth
+      .persistentFloodplainWaterTemperatureState === false &&
+    warmDenitrificationPlan.truth.arrheniusKineticsResolved === false,
+  'the declared Q10-style surface-temperature proxy changes activity without claiming persistent floodplain temperature or mechanistic kinetics');
+  const extremeColdDenitrificationPlan = floodplainDenitrification
+    .floodplainDenitrificationPlan(denitrificationState,
+      denitrificationFloodplain, {
+        durationDays: 1, atmosphereAvailable: true,
+        waterTemperatureC: -80, referenceTemperatureC: 20,
+        temperatureQ10: 4
+      });
+  const extremeWarmDenitrificationPlan = floodplainDenitrification
+    .floodplainDenitrificationPlan(denitrificationState,
+      denitrificationFloodplain, {
+        durationDays: 1, atmosphereAvailable: true,
+        waterTemperatureC: 80, referenceTemperatureC: 20,
+        temperatureQ10: 4
+      });
+  assert.ok(extremeColdDenitrificationPlan.activity
+      .temperatureResponseFactor === .05 &&
+    extremeWarmDenitrificationPlan.activity
+      .temperatureResponseFactor === 4,
+  'temperature response remains explicitly bounded under extreme forcing');
+  const denitrificationContext = {
+    transferId: 'test:floodplain-denitrification:1',
+    reachId: 'test:reach:denitrification',
+    atmosphereCellId: 'test:earth-cell:denitrification',
+    startDay: 531, durationDays: 1, livingEnabled: true
+  };
+  const denitrificationReaction = floodplain
+    .applyFloodplainDenitrificationReaction(denitrificationFloodplain,
+      denitrificationPlan.reaction, denitrificationContext);
+  const denitrificationAtmosphereBefore = atmosphereBiogeochemistry
+    .createAtmosphereBiogeochemistry();
+  const denitrificationAtmosphere = atmosphereBiogeochemistry
+    .applyAtmosphereGasBoundaryInput(denitrificationAtmosphereBefore, {
+      nitrogenKgN:
+        denitrificationPlan.reaction.nitrogenGasProducedKgN
+    }, 1e6, {
+      sourceKind: 'floodplain-denitrification',
+      transferId: denitrificationContext.transferId,
+      sourceReachId: denitrificationContext.reachId,
+      sourceReceiptDigest: denitrificationReaction.receipt.digest
+    });
+  const denitrified = floodplainDenitrification
+    .advanceFloodplainDenitrification(denitrificationState,
+      denitrificationPlan, denitrificationReaction.receipt,
+      denitrificationAtmosphere.receipt, denitrificationContext);
+  assert.ok(denitrified.receipt.status ===
+      'anoxic-doc-denitrification' &&
+    denitrificationReaction.receipt.truth.localDocToDicCarbonClosed ===
+      true &&
+    denitrificationReaction.receipt.truth.nitrogenGasBoundaryClosed ===
+      true &&
+    denitrificationReaction.receipt.truth.denitrificationAlkalinityClosed ===
+      true &&
+    denitrificationReaction.receipt.truth.alkalinityReceiverCredited ===
+      true &&
+    Math.abs(denitrificationReaction.receipt.reaction
+      .alkalinityGeneratedKgCaCO3Eq -
+      denitrificationReaction.receipt.reaction
+        .nitrogenGasProducedKgN * 3.57) < 1e-7 &&
+    denitrificationAtmosphere.receipt.receiverCredits.nativeLayerIndex ===
+      0 &&
+    denitrificationAtmosphere.receipt.inputs.carbonKgC === 0 &&
+    denitrificationAtmosphere.receipt.inputs.oxygenKgO2 === 0 &&
+    denitrificationAtmosphere.receipt.inputs.nitrogenKgN ===
+      denitrificationReaction.receipt.reaction.nitrogenGasProducedKgN &&
+    denitrified.receipt.reactionReceiptDigest ===
+      denitrificationReaction.receipt.digest &&
+    denitrified.receipt.atmosphereReceiptDigest ===
+      denitrificationAtmosphere.receipt.digest &&
+    denitrified.receipt.truth.ownerLedgersClosed === true &&
+    denitrificationReaction.state.chemistry
+      .dissolvedOrganicCarbonKgC < 12 &&
+    denitrificationReaction.state.chemistry
+      .dissolvedInorganicCarbonKgC > 3 &&
+    denitrificationReaction.state.chemistry
+      .dissolvedInorganicNitrogenKgN < 6 &&
+    denitrificationReaction.state.chemistry
+      .dissolvedNitrateNitrogenKgN < 3 &&
+    denitrificationReaction.state.chemistry
+      .dissolvedAmmoniumNitrogenKgN === 3 &&
+    denitrificationReaction.state.chemistry
+      .alkalinityKgCaCO3Eq >
+        denitrificationFloodplain.chemistry.alkalinityKgCaCO3Eq &&
+    denitrificationAtmosphere.state.layers[0].nitrogenGasKgNm2 >
+      denitrificationAtmosphereBefore.layers[0].nitrogenGasKgNm2 &&
+    denitrificationAtmosphere.state.cumulative
+      .floodplainDenitrificationNitrogenGasInputKgNm2 > 0,
+  'paired owners close DOC-to-DIC carbon, nitrate-N-to-native-layer-0 N2 and the 3.57 kg CaCO3-equivalent denitrification alkalinity credit under one exact transfer identity without consuming ammonium');
+  const oxicFloodplain = JSON.parse(JSON.stringify(
+    denitrificationFloodplain));
+  oxicFloodplain.chemistry.dissolvedOxygenKgO2 = 3;
+  const oxicDenitrificationPlan = floodplainDenitrification
+    .floodplainDenitrificationPlan(denitrificationState,
+      oxicFloodplain, {
+        durationDays: 1, atmosphereAvailable: true,
+        livingEnabled: true, anoxicThresholdMgL: 2
+      });
+  assert.ok(oxicDenitrificationPlan.activity.anoxiaFactor === 0 &&
+    Object.values(oxicDenitrificationPlan.reaction)
+      .every(value => value === 0),
+  'oxygen at or above the declared threshold closes the denitrification gate');
+  const nitrogenLimitedFloodplain = JSON.parse(JSON.stringify(
+    denitrificationFloodplain));
+  nitrogenLimitedFloodplain.chemistry
+    .dissolvedNitrateNitrogenKgN = .0001;
+  nitrogenLimitedFloodplain.chemistry
+    .dissolvedInorganicNitrogenKgN = 3.0001;
+  const nitrogenLimitedDenitrificationPlan = floodplainDenitrification
+    .floodplainDenitrificationPlan(denitrificationState,
+      nitrogenLimitedFloodplain, {
+        durationDays: 1, atmosphereAvailable: true,
+        livingEnabled: true, maximumDailyDocFraction: .25
+      });
+  assert.ok(nitrogenLimitedDenitrificationPlan.activity.nitrogenLimited ===
+      true &&
+    Math.abs(nitrogenLimitedDenitrificationPlan.reaction
+      .dissolvedNitrateNitrogenConsumedKgN - .0001) < 1e-9,
+  'the actual owned nitrate pool caps nitrogen loss while ammonium remains unavailable to denitrification');
+  const ammoniumOnlyFloodplain = JSON.parse(JSON.stringify(
+    denitrificationFloodplain));
+  ammoniumOnlyFloodplain.chemistry.dissolvedNitrateNitrogenKgN = 0;
+  ammoniumOnlyFloodplain.chemistry.dissolvedAmmoniumNitrogenKgN = 6;
+  ammoniumOnlyFloodplain.chemistry.dissolvedInorganicNitrogenKgN = 6;
+  const ammoniumOnlyDenitrificationPlan = floodplainDenitrification
+    .floodplainDenitrificationPlan(denitrificationState,
+      ammoniumOnlyFloodplain, {
+        durationDays: 1, atmosphereAvailable: true,
+        livingEnabled: true, maximumDailyDocFraction: .25
+      });
+  assert.ok(ammoniumOnlyDenitrificationPlan.activity
+      .availableDissolvedAmmoniumNitrogenKgN === 6 &&
+    ammoniumOnlyDenitrificationPlan.activity
+      .availableDissolvedNitrateNitrogenKgN === 0 &&
+    Object.values(ammoniumOnlyDenitrificationPlan.reaction)
+      .every(value => value === 0),
+  'ammonium cannot be silently relabeled or consumed as nitrate by denitrification');
+  const unavailableDenitrificationPlan = floodplainDenitrification
+    .floodplainDenitrificationPlan(denitrificationState,
+      denitrificationFloodplain, {
+        durationDays: .25, atmosphereAvailable: false,
+        livingEnabled: true
+      });
+  const unavailableDenitrification = floodplainDenitrification
+    .advanceFloodplainDenitrification(denitrificationState,
+      unavailableDenitrificationPlan, null, null, {
+        ...denitrificationContext,
+        transferId: 'test:floodplain-denitrification:unloaded',
+        atmosphereCellId: '', startDay: 532, durationDays: .25
+      });
+  assert.ok(unavailableDenitrification.receipt.status ===
+      'atmosphere-unloaded-no-denitrification' &&
+    unavailableDenitrification.receipt.atmosphereCellId === null &&
+    Object.values(unavailableDenitrification.receipt.reaction)
+      .every(value => value === 0) &&
+    unavailableDenitrification.state.atmosphereUnavailableDays === .25,
+  'an unloaded atmosphere records explicit zero-transfer memory and receives no fabricated nitrogen');
+  const lifeOffDenitrificationPlan = floodplainDenitrification
+    .floodplainDenitrificationPlan(denitrificationState,
+      denitrificationFloodplain, {
+        durationDays: 1, atmosphereAvailable: true,
+        livingEnabled: false
+      });
+  const lifeOffDenitrificationContext = {
+    ...denitrificationContext,
+    transferId: 'test:floodplain-denitrification:life-off',
+    startDay: 533, livingEnabled: false
+  };
+  const lifeOffDenitrificationReaction = floodplain
+    .applyFloodplainDenitrificationReaction(denitrificationFloodplain,
+      lifeOffDenitrificationPlan.reaction,
+      lifeOffDenitrificationContext);
+  const lifeOffDenitrificationAtmosphere = atmosphereBiogeochemistry
+    .applyAtmosphereGasBoundaryInput(denitrificationAtmosphereBefore, {
+      nitrogenKgN: 0
+    }, 1e6, {
+      sourceKind: 'floodplain-denitrification',
+      transferId: lifeOffDenitrificationContext.transferId,
+      sourceReachId: lifeOffDenitrificationContext.reachId,
+      sourceReceiptDigest: lifeOffDenitrificationReaction.receipt.digest
+    });
+  const lifeOffDenitrification = floodplainDenitrification
+    .advanceFloodplainDenitrification(denitrificationState,
+      lifeOffDenitrificationPlan,
+      lifeOffDenitrificationReaction.receipt,
+      lifeOffDenitrificationAtmosphere.receipt,
+      lifeOffDenitrificationContext);
+  assert.ok(lifeOffDenitrification.receipt.status ===
+      'life-disabled-dormant' &&
+    lifeOffDenitrification.receipt.truth.denitrificationPoolsFrozen ===
+      true &&
+    Object.values(lifeOffDenitrification.receipt.reaction)
+      .every(value => value === 0),
+  'Life-off freezes floodplain denitrification while retaining typed zero owner receipts');
+  const migrationDenitrificationState = floodplainDenitrification
+    .emptyFloodplainDenitrificationState({ migrationCheckpoint: true });
+  const migrationDenitrificationPlan = floodplainDenitrification
+    .floodplainDenitrificationPlan(migrationDenitrificationState,
+      denitrificationFloodplain, {
+        durationDays: 1, atmosphereAvailable: false,
+        livingEnabled: true
+      });
+  const migratedDenitrification = floodplainDenitrification
+    .advanceFloodplainDenitrification(migrationDenitrificationState,
+      migrationDenitrificationPlan, null, null, {
+        ...denitrificationContext,
+        transferId: 'test:floodplain-denitrification:migration',
+        atmosphereCellId: '', startDay: 534
+      });
+  assert.ok(migratedDenitrification.receipt.status ===
+      'initialized-after-v18-migration-no-invented-history' &&
+    migratedDenitrification.state.migrationCheckpoint === false &&
+    Object.values(migratedDenitrification.state.cumulativeReaction)
+      .every(value => value === 0),
+  'v18 migration clears one zero-transfer checkpoint without inventing denitrification history');
+  const legacyDenitrificationState = floodplainDenitrification
+    .emptyFloodplainDenitrificationState();
+  legacyDenitrificationState.schema = floodplainDenitrification
+    .PREVIOUS_FLOODPLAIN_DENITRIFICATION_STATE_SCHEMA;
+  legacyDenitrificationState.observedDenitrificationDays = 3;
+  legacyDenitrificationState.cumulativeReaction = {
+    dissolvedOrganicCarbonConsumedKgC: 2,
+    dissolvedInorganicCarbonProducedKgC: 2,
+    dissolvedInorganicNitrogenConsumedKgN: 1.866666667,
+    nitrogenGasProducedKgN: 1.866666667
+  };
+  legacyDenitrificationState.temperatureConstrainedDays = 2;
+  legacyDenitrificationState.lastActivity.reactiveNitrateEquivalentKgN = 3;
+  legacyDenitrificationState.lastActivity
+    .reactiveNitrateEquivalentFraction = .5;
+  delete legacyDenitrificationState.lastActivity
+    .availableDissolvedNitrateNitrogenKgN;
+  delete legacyDenitrificationState.lastActivity
+    .availableDissolvedAmmoniumNitrogenKgN;
+  legacyDenitrificationState.lastTransitionReceipt = null;
+  const normalizedLegacyDenitrification = floodplainDenitrification
+    .normalizeFloodplainDenitrificationState(legacyDenitrificationState);
+  assert.ok(normalizedLegacyDenitrification.schema ===
+      floodplainDenitrification.FLOODPLAIN_DENITRIFICATION_STATE_SCHEMA &&
+    normalizedLegacyDenitrification.migrationCheckpoint === true &&
+    normalizedLegacyDenitrification.observedDenitrificationDays === 3 &&
+    normalizedLegacyDenitrification.cumulativeReaction
+      .dissolvedOrganicCarbonConsumedKgC === 2 &&
+    normalizedLegacyDenitrification.cumulativeReaction
+      .dissolvedNitrateNitrogenConsumedKgN === 1.866666667 &&
+    normalizedLegacyDenitrification.cumulativeReaction
+      .nitrogenGasProducedKgN === 1.866666667 &&
+    normalizedLegacyDenitrification.temperatureConstrainedDays === 2 &&
+    normalizedLegacyDenitrification.lastActivity
+      .availableDissolvedNitrateNitrogenKgN === 3,
+  'v2 denitrification memory migrates to v3 without erasing reaction, temperature or prior nitrate-equivalent history');
+  const mismatchedDenitrificationAtmosphere = JSON.parse(JSON.stringify(
+    denitrificationAtmosphere.receipt));
+  mismatchedDenitrificationAtmosphere.sourceReceiptDigest =
+    'fnv1a32:corrupt';
+  assert.throws(() => floodplainDenitrification
+    .advanceFloodplainDenitrification(denitrificationState,
+      denitrificationPlan, denitrificationReaction.receipt,
+      mismatchedDenitrificationAtmosphere, denitrificationContext),
+  /do not match the plan lineage/,
+  'the denitrification process refuses owner receipts with mismatched source evidence');
+  assert.equal(
+    floodplainNitrification.FLOODPLAIN_NITRIFICATION_STATE_SCHEMA,
+    'axm.foundation-planet.floodplain-nitrification-state/v2');
+  assert.equal(
+    floodplainNitrification.FLOODPLAIN_NITRIFICATION_RECEIPT_SCHEMA,
+    'axm.foundation-planet.floodplain-nitrification-receipt/v2');
+  assert.equal(floodplain
+    .FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
+  'axm.foundation-planet.floodplain-nitrification-reaction-receipt/v2');
+  assert.equal(floodplainNitrification
+    .NITRIFICATION_OXYGEN_KG_O2_PER_KG_N, 4.57);
+  assert.equal(floodplainNitrification
+    .NITRIFICATION_ALKALINITY_DEMAND_KG_CACO3_PER_KG_N, 7.14);
+  const nitrificationFloodplain = floodplain.emptyFloodplainState();
+  nitrificationFloodplain.waterKg = 1e6;
+  nitrificationFloodplain.inundatedFraction = .81;
+  nitrificationFloodplain.chemistry.dissolvedNitrateNitrogenKgN = 1;
+  nitrificationFloodplain.chemistry.dissolvedAmmoniumNitrogenKgN = 2;
+  nitrificationFloodplain.chemistry.dissolvedInorganicNitrogenKgN = 3;
+  nitrificationFloodplain.chemistry.dissolvedOxygenKgO2 = 10;
+  nitrificationFloodplain.chemistry.alkalinityKgCaCO3Eq = 10;
+  const nitrificationState = floodplainNitrification
+    .emptyFloodplainNitrificationState();
+  const nitrificationPlan = floodplainNitrification
+    .floodplainNitrificationPlan(nitrificationState,
+      nitrificationFloodplain, {
+        durationDays: 1, livingEnabled: true, lifeAbundance: 1,
+        minimumDissolvedOxygenMgL: 2,
+        optimalDissolvedOxygenMgL: 6,
+        maximumDailyAmmoniumFraction: .1,
+        waterTemperatureC: 20
+      });
+  assert.ok(nitrificationPlan.activity.dissolvedOxygenMgL === 10 &&
+    nitrificationPlan.activity.oxygenResponseFactor === 1 &&
+    nitrificationPlan.reaction
+      .dissolvedAmmoniumNitrogenConsumedKgN > 0 &&
+    nitrificationPlan.reaction.dissolvedNitrateNitrogenProducedKgN ===
+      nitrificationPlan.reaction
+        .dissolvedAmmoniumNitrogenConsumedKgN &&
+    Math.abs(nitrificationPlan.reaction.dissolvedOxygenConsumedKgO2 -
+      nitrificationPlan.reaction
+        .dissolvedAmmoniumNitrogenConsumedKgN * 4.57) < 1e-7 &&
+    Math.abs(nitrificationPlan.reaction.alkalinityDemandKgCaCO3 -
+      nitrificationPlan.reaction
+        .dissolvedAmmoniumNitrogenConsumedKgN * 7.14) < 1e-7,
+  'oxic floodplain water opens a bounded ammonium-backed nitrification plan with explicit oxygen and alkalinity-demand stoichiometry');
+  const nitrificationContext = {
+    transferId: 'test:floodplain-nitrification:1',
+    reachId: 'test:reach:nitrification',
+    startDay: 535, durationDays: 1, livingEnabled: true
+  };
+  const nitrificationReaction = floodplain
+    .applyFloodplainNitrificationReaction(nitrificationFloodplain,
+      nitrificationPlan.reaction, nitrificationContext);
+  const nitrified = floodplainNitrification
+    .advanceFloodplainNitrification(nitrificationState,
+      nitrificationPlan, nitrificationReaction.receipt,
+      nitrificationContext);
+  assert.ok(nitrified.receipt.status ===
+      'aerobic-ammonium-nitrification' &&
+    nitrificationReaction.receipt.truth
+      .ammoniumToNitrateNitrogenClosed === true &&
+    nitrificationReaction.receipt.truth
+      .dissolvedOxygenConsumptionClosed === true &&
+    nitrificationReaction.receipt.truth
+      .alkalinityConsumptionClosed === true &&
+    nitrificationReaction.receipt.truth
+      .alkalinityMaterialOwnerDebited === true &&
+    nitrificationReaction.receipt.truth.pHFeedbackModeled === false &&
+    nitrificationReaction.state.chemistry
+      .dissolvedAmmoniumNitrogenKgN < 2 &&
+    nitrificationReaction.state.chemistry
+      .dissolvedNitrateNitrogenKgN > 1 &&
+    Math.abs(nitrificationReaction.state.chemistry
+      .dissolvedInorganicNitrogenKgN - 3) < 1e-9 &&
+    nitrificationReaction.state.chemistry.dissolvedOxygenKgO2 < 10 &&
+    nitrificationReaction.state.chemistry.alkalinityKgCaCO3Eq < 10 &&
+    nitrified.receipt.reactionReceiptDigest ===
+      nitrificationReaction.receipt.digest,
+  'one exact local owner receipt conserves DIN while debiting ammonium and oxygen and crediting nitrate');
+  const oxygenConstrainedNitrificationFloodplain = JSON.parse(
+    JSON.stringify(nitrificationFloodplain));
+  oxygenConstrainedNitrificationFloodplain.chemistry
+    .dissolvedOxygenKgO2 = 1;
+  const oxygenConstrainedNitrificationPlan = floodplainNitrification
+    .floodplainNitrificationPlan(nitrificationState,
+      oxygenConstrainedNitrificationFloodplain, {
+        durationDays: 1, livingEnabled: true,
+        minimumDissolvedOxygenMgL: 2,
+        optimalDissolvedOxygenMgL: 6
+      });
+  assert.ok(oxygenConstrainedNitrificationPlan.activity
+      .oxygenResponseFactor === 0 &&
+    Object.values(oxygenConstrainedNitrificationPlan.reaction)
+      .every(value => value === 0),
+  'sub-threshold dissolved oxygen closes the nitrification gate');
+  const oxygenLimitedNitrificationFloodplain = floodplain
+    .emptyFloodplainState();
+  oxygenLimitedNitrificationFloodplain.waterKg = 1;
+  oxygenLimitedNitrificationFloodplain.inundatedFraction = 1;
+  oxygenLimitedNitrificationFloodplain.chemistry
+    .dissolvedNitrateNitrogenKgN = 0;
+  oxygenLimitedNitrificationFloodplain.chemistry
+    .dissolvedAmmoniumNitrogenKgN = 1;
+  oxygenLimitedNitrificationFloodplain.chemistry
+    .dissolvedInorganicNitrogenKgN = 1;
+  oxygenLimitedNitrificationFloodplain.chemistry
+    .dissolvedOxygenKgO2 = 3e-6;
+  oxygenLimitedNitrificationFloodplain.chemistry
+    .alkalinityKgCaCO3Eq = 10;
+  const oxygenLimitedNitrificationPlan = floodplainNitrification
+    .floodplainNitrificationPlan(nitrificationState,
+      oxygenLimitedNitrificationFloodplain, {
+        durationDays: 1, livingEnabled: true,
+        minimumDissolvedOxygenMgL: 2,
+        optimalDissolvedOxygenMgL: 6,
+        maximumDailyAmmoniumFraction: .25
+      });
+  assert.ok(oxygenLimitedNitrificationPlan.activity.oxygenLimited ===
+      true &&
+    Math.abs(oxygenLimitedNitrificationPlan.activity
+      .minimumOxygenReserveKgO2 - 2e-6) < 1e-9 &&
+    Math.abs(oxygenLimitedNitrificationPlan.activity
+      .reactiveDissolvedOxygenKgO2 - 1e-6) < 1e-9 &&
+    Math.abs(oxygenLimitedNitrificationPlan.reaction
+      .dissolvedOxygenConsumedKgO2 - 1e-6) < 1e-9 &&
+    oxygenLimitedNitrificationPlan.truth
+      .minimumDissolvedOxygenReserveHonored === true,
+  'only oxygen above the configured aerobic minimum is reactive when dissolved oxygen limits nitrification');
+  const alkalinityLimitedFloodplain = floodplain.emptyFloodplainState();
+  alkalinityLimitedFloodplain.waterKg = 1000;
+  alkalinityLimitedFloodplain.inundatedFraction = 1;
+  alkalinityLimitedFloodplain.chemistry.dissolvedNitrateNitrogenKgN = 0;
+  alkalinityLimitedFloodplain.chemistry.dissolvedAmmoniumNitrogenKgN = 1;
+  alkalinityLimitedFloodplain.chemistry.dissolvedInorganicNitrogenKgN = 1;
+  alkalinityLimitedFloodplain.chemistry.dissolvedOxygenKgO2 = 1;
+  alkalinityLimitedFloodplain.chemistry.alkalinityKgCaCO3Eq = .00714;
+  const alkalinityLimitedPlan = floodplainNitrification
+    .floodplainNitrificationPlan(nitrificationState,
+      alkalinityLimitedFloodplain, {
+        durationDays: 1, livingEnabled: true,
+        minimumDissolvedOxygenMgL: 0,
+        optimalDissolvedOxygenMgL: 1,
+        maximumDailyAmmoniumFraction: .25
+      });
+  const alkalinityLimitedReaction = floodplain
+    .applyFloodplainNitrificationReaction(alkalinityLimitedFloodplain,
+      alkalinityLimitedPlan.reaction, {
+        ...nitrificationContext,
+        transferId: 'test:floodplain-nitrification:alkalinity-limit'
+      });
+  assert.ok(alkalinityLimitedPlan.activity.alkalinityLimited === true &&
+    Math.abs(alkalinityLimitedPlan.reaction
+      .dissolvedAmmoniumNitrogenConsumedKgN - .001) < 1e-9 &&
+    Math.abs(alkalinityLimitedReaction.state.chemistry
+      .alkalinityKgCaCO3Eq) < 1e-12 &&
+    alkalinityLimitedReaction.receipt.truth
+      .alkalinityConsumptionClosed === true,
+  'finite owned alkalinity caps nitrification and is debited without overdraft');
+  const legacyNitrificationDiagnostic = floodplainNitrification
+    .emptyFloodplainNitrificationState();
+  legacyNitrificationDiagnostic.schema = floodplainNitrification
+    .PREVIOUS_FLOODPLAIN_NITRIFICATION_STATE_SCHEMA;
+  legacyNitrificationDiagnostic.cumulativeReaction = {
+    dissolvedAmmoniumNitrogenConsumedKgN: 2,
+    dissolvedNitrateNitrogenProducedKgN: 2,
+    dissolvedOxygenConsumedKgO2: 9.14,
+    alkalinityDemandKgCaCO3: 14.28
+  };
+  const migratedNitrificationDiagnostic = floodplainNitrification
+    .normalizeFloodplainNitrificationState(legacyNitrificationDiagnostic);
+  assert.ok(migratedNitrificationDiagnostic.cumulativeReaction
+      .dissolvedAmmoniumNitrogenConsumedKgN === 2 &&
+    migratedNitrificationDiagnostic.cumulativeReaction
+      .dissolvedOxygenConsumedKgO2 === 9.14 &&
+    migratedNitrificationDiagnostic.cumulativeReaction
+      .alkalinityDemandKgCaCO3 === 0 &&
+    migratedNitrificationDiagnostic
+      .legacyCumulativeAlkalinityDemandDiagnosticKgCaCO3 === 14.28,
+  'v1 nitrification migration preserves historical N/O2 reaction evidence but separates its non-material alkalinity diagnostic from v2 owner debits');
+  const migrationNitrificationState = floodplainNitrification
+    .emptyFloodplainNitrificationState({ migrationCheckpoint: true });
+  const migrationNitrificationPlan = floodplainNitrification
+    .floodplainNitrificationPlan(migrationNitrificationState,
+      nitrificationFloodplain, { durationDays: 1, livingEnabled: true });
+  const migrationNitrificationReaction = floodplain
+    .applyFloodplainNitrificationReaction(nitrificationFloodplain,
+      migrationNitrificationPlan.reaction, {
+        ...nitrificationContext,
+        transferId: 'test:floodplain-nitrification:migration'
+      });
+  const migratedNitrification = floodplainNitrification
+    .advanceFloodplainNitrification(migrationNitrificationState,
+      migrationNitrificationPlan,
+      migrationNitrificationReaction.receipt, {
+        ...nitrificationContext,
+        transferId: 'test:floodplain-nitrification:migration'
+      });
+  assert.ok(migratedNitrification.receipt.status ===
+      'initialized-after-schema-migration-no-invented-history' &&
+    migratedNitrification.state.migrationCheckpoint === false &&
+    Object.values(migratedNitrification.state.cumulativeReaction)
+      .every(value => value === 0),
+  'v19 migration clears one zero-transfer nitrification checkpoint without inventing material or history');
+  const lifeOffNitrificationPlan = floodplainNitrification
+    .floodplainNitrificationPlan(nitrificationState,
+      nitrificationFloodplain, {
+        durationDays: 1, livingEnabled: false
+      });
+  const lifeOffNitrificationReaction = floodplain
+    .applyFloodplainNitrificationReaction(nitrificationFloodplain,
+      lifeOffNitrificationPlan.reaction, {
+        ...nitrificationContext,
+        transferId: 'test:floodplain-nitrification:life-off',
+        livingEnabled: false
+      });
+  const lifeOffNitrification = floodplainNitrification
+    .advanceFloodplainNitrification(nitrificationState,
+      lifeOffNitrificationPlan, lifeOffNitrificationReaction.receipt, {
+        ...nitrificationContext,
+        transferId: 'test:floodplain-nitrification:life-off',
+        livingEnabled: false
+      });
+  assert.ok(lifeOffNitrification.receipt.status ===
+      'life-disabled-dormant' &&
+    lifeOffNitrification.receipt.truth.nitrificationPoolsFrozen === true &&
+    Object.values(lifeOffNitrification.receipt.reaction)
+      .every(value => value === 0),
+  'Life-off freezes nitrification while retaining a typed zero owner receipt');
+  assert.throws(() => floodplain.applyFloodplainNitrificationReaction(
+    nitrificationFloodplain, {
+      dissolvedAmmoniumNitrogenConsumedKgN: 1,
+      dissolvedNitrateNitrogenProducedKgN: 1,
+      dissolvedOxygenConsumedKgO2: 1,
+      alkalinityDemandKgCaCO3: 7.14
+    }, nitrificationContext), /stoichiometrically closed/,
+  'a malformed nitrification oxygen ledger is refused before chemistry mutation');
+  assert.equal(
     floodplainGasExchange.FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA,
-    'axm.foundation-planet.floodplain-gas-exchange-state/v1');
+    'axm.foundation-planet.floodplain-gas-exchange-state/v2');
   assert.equal(
     floodplainGasExchange.FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA,
-    'axm.foundation-planet.floodplain-gas-exchange-process-receipt/v1');
+    'axm.foundation-planet.floodplain-gas-exchange-process-receipt/v2');
   assert.equal(floodplain.FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
-    'axm.foundation-planet.floodplain-gas-exchange-receipt/v1');
+    'axm.foundation-planet.floodplain-gas-exchange-receipt/v2');
   assert.equal(atmosphereBiogeochemistry
     .ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
-  'axm.foundation-planet.atmosphere-floodplain-gas-exchange-receipt/v1');
+  'axm.foundation-planet.atmosphere-floodplain-gas-exchange-receipt/v2');
   assert.equal(atmosphereBiogeochemistry
     .atmosphereBiogeochemistryDescription()
     .floodplainGasExchangeAbsoluteToleranceKg, 1e-3,
@@ -2144,6 +2975,47 @@ async function run() {
       gasAtmosphere.carbonDioxideCarbonKgCm2 &&
     gasAtmosphereOwner.state.oxygenKgO2m2 < gasAtmosphere.oxygenKgO2m2,
   'both material owners mutate under one exact exchange identity and the non-owning process retains their evidence digests');
+  const invasionFloodplain = floodplain.emptyFloodplainState();
+  invasionFloodplain.waterKg = 1e6;
+  invasionFloodplain.inundatedFraction = .81;
+  invasionFloodplain.chemistry.dissolvedInorganicCarbonKgC = 0;
+  invasionFloodplain.chemistry.dissolvedOxygenKgO2 = .1;
+  const invasionPlan = floodplainGasExchange.floodplainGasExchangePlan(
+    floodplainGasExchange.emptyFloodplainGasExchangeState(),
+    invasionFloodplain, gasAtmosphere, {
+      durationDays: .5,
+      receivingAreaM2: 1e6,
+      waterTemperatureC: 20,
+      livingEnabled: false
+    });
+  assert.ok(invasionPlan.exchange.carbonToFloodplainKgC > 0 &&
+    invasionPlan.exchange.carbonToAtmosphereKgC === 0 &&
+    invasionPlan.truth.carbonExchangeDirectionExclusive === true &&
+    invasionPlan.truth.atmosphereSurfaceCarbonBoundsCarbonInvasion === true,
+  'an undersaturated floodplain plans bounded atmosphere-to-water CO2-carbon invasion');
+  const invasionContext = {
+    ...gasContext,
+    exchangeId: 'test:floodplain-atmosphere:invasion',
+    startDay: 530.5
+  };
+  const invasionFloodplainOwner = floodplain.applyFloodplainGasExchange(
+    invasionFloodplain, invasionPlan.exchange, invasionContext);
+  const invasionAtmosphereOwner = atmosphereBiogeochemistry
+    .applyAtmosphereFloodplainGasExchange(
+      gasAtmosphere, invasionPlan.exchange, 1e6, invasionContext);
+  const invasionTransition = floodplainGasExchange
+    .advanceFloodplainGasExchange(
+      floodplainGasExchange.emptyFloodplainGasExchangeState(),
+      invasionPlan, invasionFloodplainOwner.receipt,
+      invasionAtmosphereOwner.receipt, invasionContext);
+  assert.ok(invasionTransition.receipt.status ===
+      'bounded-co2-invasion-and-oxygen-reaeration' &&
+    invasionFloodplainOwner.state.chemistry
+      .dissolvedInorganicCarbonKgC > 0 &&
+    invasionAtmosphereOwner.state.carbonDioxideCarbonKgCm2 <
+      gasAtmosphere.carbonDioxideCarbonKgCm2 &&
+    invasionTransition.receipt.truth.ownerLedgersClosed === true,
+  'paired owner hands close the reverse carbon direction without changing authority');
   assert.equal(JSON.stringify(gasFloodplain), gasFloodplainBefore,
     'floodplain gas exchange does not mutate its source object');
   assert.equal(JSON.stringify(gasAtmosphere), gasAtmosphereBefore,
@@ -2161,6 +3033,14 @@ async function run() {
         gasAtmosphere.layers[0].oxygenKgO2m2 * 1e6 + 1
     }, 1e6, gasContext), /cannot overdraw surface-layer oxygen/,
   'the native atmosphere owner refuses a surface-layer oxygen overdraw');
+  assert.throws(() => atmosphereBiogeochemistry
+    .applyAtmosphereFloodplainGasExchange(gasAtmosphere, {
+      carbonToAtmosphereKgC: 0,
+      carbonToFloodplainKgC:
+        gasAtmosphere.layers[0].carbonDioxideCarbonKgCm2 * 1e6 + 1,
+      oxygenToFloodplainKgO2: 0
+    }, 1e6, gasContext), /cannot overdraw surface-layer carbon dioxide/,
+  'the native atmosphere owner refuses a surface-layer CO2-carbon overdraw');
   const mismatchedAtmosphereReceipt = JSON.parse(JSON.stringify(
     gasAtmosphereOwner.receipt));
   mismatchedAtmosphereReceipt.exchangeId = 'test:wrong-exchange';
@@ -2189,9 +3069,29 @@ async function run() {
       'atmosphere-unloaded-no-exchange' &&
     unavailableTransition.receipt.atmosphereCellId === null &&
     unavailableTransition.receipt.exchange.carbonToAtmosphereKgC === 0 &&
+    unavailableTransition.receipt.exchange.carbonToFloodplainKgC === 0 &&
     unavailableTransition.receipt.exchange.oxygenToFloodplainKgO2 === 0 &&
     unavailableTransition.state.atmosphereUnavailableDays === .25,
   'an unloaded atmosphere retains explicit process memory but moves no material and emits no owner receipt');
+  const legacyGasState = floodplainGasExchange.emptyFloodplainGasExchangeState();
+  legacyGasState.schema = floodplainGasExchange
+    .PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA;
+  legacyGasState.observedExchangeDays = 2;
+  legacyGasState.cumulativeExchange = {
+    carbonToAtmosphereKgC: 3,
+    oxygenToFloodplainKgO2: 4
+  };
+  const normalizedLegacyGasState = floodplainGasExchange
+    .normalizeFloodplainGasExchangeState(legacyGasState);
+  assert.ok(normalizedLegacyGasState.migrationCheckpoint === true &&
+    normalizedLegacyGasState.observedExchangeDays === 2 &&
+    normalizedLegacyGasState.cumulativeExchange.carbonToAtmosphereKgC ===
+      3 &&
+    normalizedLegacyGasState.cumulativeExchange.carbonToFloodplainKgC ===
+      0 &&
+    normalizedLegacyGasState.cumulativeExchange.oxygenToFloodplainKgO2 ===
+      4,
+  'v1 gas-exchange memory migrates without erasing observed history or inventing reverse carbon transfer');
   const migratedGasState = floodplainGasExchange
     .emptyFloodplainGasExchangeState({ migrationCheckpoint: true });
   const migratedGasPlan = floodplainGasExchange.floodplainGasExchangePlan(
@@ -2220,14 +3120,15 @@ async function run() {
       durationDays: 1
     });
   assert.ok(migratedGas.receipt.status ===
-      'initialized-after-v14-migration-no-invented-history' &&
+      'initialized-after-v15-migration-no-invented-history' &&
     migratedGas.receipt.exchange.carbonToAtmosphereKgC === 0 &&
+    migratedGas.receipt.exchange.carbonToFloodplainKgC === 0 &&
     migratedGas.receipt.exchange.oxygenToFloodplainKgO2 === 0 &&
     migratedGas.state.migrationCheckpoint === false &&
     Object.values(migratedGas.state.cumulativeExchange)
       .every(value => value === 0),
-  'v14 migration clears its checkpoint without inventing exchange history or moving C/O2');
-  assert.equal(earthSystem.EARTH_SYSTEM_ENGINE_SCHEMA, 'axm.foundation-planet.earth-system-engine/v25', 'engine schema records persistent geomorphic-sediment lineage');
+  'v15 migration clears its checkpoint without inventing exchange history or moving C/O2');
+  assert.equal(earthSystem.EARTH_SYSTEM_ENGINE_SCHEMA, 'axm.foundation-planet.earth-system-engine/v26', 'engine schema records persistent alkalinity lineage');
   assert.equal(earthSystem.EARTH_SYSTEM_FLUX_SCHEMA,
     'axm.foundation-planet.earth-system-flux/v4');
   assert.equal(earthSystem.EARTH_SURFACE_RADIATION_SCHEMA,
@@ -2247,9 +3148,9 @@ async function run() {
   assert.equal(earthSystem.earthSystemDescription().landEcology.stateSchema,
     landEcology.EARTH_LAND_ECOLOGY_SCHEMA);
   assert.equal(earthSystem.EARTH_OCEAN_ECOLOGY_SCHEMA,
-    'axm.foundation-planet.ocean-ecology-state/v2');
+    'axm.foundation-planet.ocean-ecology-state/v3');
   assert.equal(earthSystem.EARTH_OCEAN_ECOLOGY_FLUX_SCHEMA,
-    'axm.foundation-planet.ocean-ecology-flux-receipt/v2');
+    'axm.foundation-planet.ocean-ecology-flux-receipt/v3');
   assert.equal(earthSystem.earthSystemDescription().oceanEcology.stateSchema,
     oceanEcology.EARTH_OCEAN_ECOLOGY_SCHEMA);
   assert.equal(earthSystem.earthSystemDescription().oceanEcology.deepOcean.stateSchema,
@@ -2374,8 +3275,21 @@ async function run() {
     heldOceanEcology.carbon.phytoplanktonKgCm2 > 0 &&
     heldOceanEcology.nitrogen.dissolvedInorganicKgNm2 > 0 &&
     heldOceanEcology.phosphorus.dissolvedInorganicKgPm2 > 0 &&
-    heldOceanEcology.oxygen.dissolvedKgO2m2 > 0,
-  'marine initialization creates explicit persistent C/N/P/O2 and plankton reservoirs');
+    heldOceanEcology.oxygen.dissolvedKgO2m2 > 0 &&
+    heldOceanEcology.alkalinity.dissolvedKgCaCO3Eqm2 > 0,
+  'marine initialization creates explicit persistent C/N/P/O2/alkalinity and plankton reservoirs');
+  const legacyAlkalinityOcean = JSON.parse(JSON.stringify(
+    heldOceanEcology));
+  legacyAlkalinityOcean.schema = oceanEcology
+    .PREVIOUS_EARTH_OCEAN_ECOLOGY_SCHEMA;
+  delete legacyAlkalinityOcean.alkalinity;
+  const migratedAlkalinityOcean = oceanEcology.normalizeOceanEcology(
+    legacyAlkalinityOcean, { sample: oceanSample, ocean: heldOceanPhysical });
+  assert.ok(migratedAlkalinityOcean.carbon.dissolvedInorganicKgCm2 ===
+      heldOceanEcology.carbon.dissolvedInorganicKgCm2 &&
+    migratedAlkalinityOcean.alkalinity.dissolvedKgCaCO3Eqm2 === 0 &&
+    migratedAlkalinityOcean.alkalinityMigrationCheckpoint === true,
+  'v2 ocean migration preserves previous marine pools and adds explicit zero mixed-layer alkalinity');
   assert.equal(heldOceanEcology.deepOcean.schema,
     deepOcean.DEEP_OCEAN_STATE_SCHEMA);
   assert.ok(heldOceanEcology.deepOcean.carbon.dissolvedInorganicKgCm2 >
@@ -2738,13 +3652,26 @@ async function run() {
   assert.equal(earthTransport.earthTransportDescription().atmospherePressureImpulseReceiptSchema, earthTransport.ATMOSPHERE_PRESSURE_LAYER_IMPULSE_SCHEMA, 'transport contract exposes typed native pressure-layer pressure-gradient impulse receipts');
   assert.equal(earthTransport.earthTransportDescription().atmosphereCoriolisReceiptSchema, earthTransport.ATMOSPHERE_PRESSURE_LAYER_CORIOLIS_SCHEMA, 'transport contract exposes typed native pressure-layer rotation-aware Coriolis receipts');
   assert.equal(earthTransport.earthTransportDescription().atmosphereGeopotentialRouteReceiptSchema, earthTransport.ATMOSPHERE_PRESSURE_LAYER_GEOPOTENTIAL_ROUTE_SCHEMA, 'transport contract exposes typed native pressure-layer terrain-following geopotential work receipts');
-  assert.equal(basinRouting.basinRoutingDescription().oceanMouthReceiptSchema, 'axm.foundation-planet.ocean-mouth-receipt/v5', 'basin contract exposes typed estuary, sediment, atmosphere and ocean delivery');
+  assert.equal(basinRouting.basinRoutingDescription().oceanMouthReceiptSchema, 'axm.foundation-planet.ocean-mouth-receipt/v7', 'basin contract exposes typed nitrate/ammonium/alkalinity-bearing estuary, sediment, atmosphere and ocean delivery');
   assert.equal(basinRouting.basinRoutingDescription().riverChemistry.stateSchema,
     riverChemistry.RIVER_CHEMISTRY_STATE_SCHEMA,
     'basin contract exposes persistent river chemistry reservoirs');
   assert.equal(basinRouting.basinRoutingDescription().estuaryReactor.stateSchema,
     estuaryReactor.ESTUARY_STATE_SCHEMA,
     'basin contract exposes persistent estuary sediment reservoirs');
+  const legacyAlkalinityEstuary = estuaryReactor.emptyEstuaryState();
+  legacyAlkalinityEstuary.schema = estuaryReactor
+    .PREVIOUS_ESTUARY_STATE_SCHEMA;
+  legacyAlkalinityEstuary.sedimentOrganicCarbonKgC = 4;
+  legacyAlkalinityEstuary.cumulativeDenitrifiedNitrogenKgN = 2;
+  delete legacyAlkalinityEstuary.cumulativeAlkalinityGeneratedKgCaCO3Eq;
+  const migratedAlkalinityEstuary = estuaryReactor.normalizeEstuaryState(
+    legacyAlkalinityEstuary);
+  assert.ok(migratedAlkalinityEstuary.sedimentOrganicCarbonKgC === 4 &&
+    migratedAlkalinityEstuary.cumulativeDenitrifiedNitrogenKgN === 2 &&
+    migratedAlkalinityEstuary.cumulativeAlkalinityGeneratedKgCaCO3Eq === 0 &&
+    migratedAlkalinityEstuary.migrationCheckpoint === true,
+  'v1 estuary migration preserves sediment and denitrification history while adding zero generated-alkalinity history');
   assert.equal(earthColumnA.kind, 'land', 'land sample creates a terrestrial water-energy column');
   assert.equal(earthColumnA.atmosphere.freeTroposphere.schema, earthSystem.EARTH_FREE_TROPOSPHERE_SCHEMA, 'new columns persist a typed free-troposphere reservoir');
   assert.ok(Math.abs(earthColumnA.atmosphere.boundaryLayerPressureHpa + earthColumnA.atmosphere.freeTroposphere.pressureThicknessHpa - earthColumnA.atmosphere.surfacePressureHpa) < 1e-8, 'boundary and free-troposphere pressure partitions close to surface pressure');
@@ -3776,7 +4703,7 @@ async function run() {
   const migratedCo2RadiationColumn = rungThirtyTwoRestore
     .columnsForProfile('temperate')[0];
   assert.equal(rungThirtyTwoRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v25');
+    'axm.foundation-planet.earth-system-engine/v26');
   assert.equal(migratedCo2RadiationColumn.surface.lastRadiationReceipt, null,
     'v22 migration invalidates legacy surface radiation instead of fabricating native-layer CO2 evidence');
   assert.equal(migratedCo2RadiationColumn.truth
@@ -3815,7 +4742,7 @@ async function run() {
   const migratedNativeLayerGas = rungThirtyOneRestore
     .columnsForProfile('temperate')[0].atmosphere.biogeochemistry;
   assert.equal(rungThirtyOneRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v25');
+    'axm.foundation-planet.earth-system-engine/v26');
   assert.equal(migratedNativeLayerGas.schema,
     atmosphereBiogeochemistry.ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA);
   assert.equal(migratedNativeLayerGas.layers.length, 8,
@@ -3855,7 +4782,7 @@ async function run() {
   const migratedTransportReadyGas = rungThirtyRestore
     .columnsForProfile('temperate')[0].atmosphere.biogeochemistry;
   assert.equal(rungThirtyRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v25');
+    'axm.foundation-planet.earth-system-engine/v26');
   assert.equal(migratedTransportReadyGas.schema,
     atmosphereBiogeochemistry.ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA);
   assert.equal(migratedTransportReadyGas.migrationCheckpoint, true);
@@ -3886,7 +4813,7 @@ async function run() {
   const migratedAtmosphereGas = rungTwentyEightRestore
     .columnsForProfile('temperate')[0];
   assert.equal(rungTwentyEightRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v25');
+    'axm.foundation-planet.earth-system-engine/v26');
   assert.equal(migratedAtmosphereGas.atmosphere.biogeochemistry.schema,
     atmosphereBiogeochemistry.ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA);
   assert.equal(migratedAtmosphereGas.atmosphere.biogeochemistry
@@ -3923,7 +4850,7 @@ async function run() {
     state: rungTwentyThreeSave
   });
   assert.equal(rungTwentyThreeRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v25',
+    'axm.foundation-planet.earth-system-engine/v26',
   'v16 cache migrates into the persistent land-and-ocean-ecology engine envelope');
   assert.ok(rungTwentyThreeRestore.columnsForProfile('temperate').every(column =>
     column.land.ecology.schema === earthSystem.EARTH_LAND_ECOLOGY_SCHEMA &&
@@ -3992,7 +4919,7 @@ async function run() {
   const migratedDeepCheckpoint = rungTwentyFiveOceanRestore
     .columnsForProfile('temperate')[0].ocean.ecology;
   assert.equal(rungTwentyFiveOceanRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v25');
+    'axm.foundation-planet.earth-system-engine/v26');
   assert.equal(migratedDeepCheckpoint.schema,
     oceanEcology.EARTH_OCEAN_ECOLOGY_SCHEMA);
   assert.equal(migratedDeepCheckpoint.deepOcean.schema,
@@ -4033,7 +4960,7 @@ async function run() {
   const migratedOceanCheckpoint = rungTwentyFourOceanRestore
     .columnsForProfile('temperate')[0];
   assert.equal(rungTwentyFourOceanRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v25');
+    'axm.foundation-planet.earth-system-engine/v26');
   assert.equal(migratedOceanCheckpoint.ocean.ecology.schema,
     earthSystem.EARTH_OCEAN_ECOLOGY_SCHEMA);
   assert.equal(migratedOceanCheckpoint.ocean.ecology.migrationCheckpoint, true);
@@ -4090,7 +5017,7 @@ async function run() {
     state: rungTwentyTwoSave
   });
   assert.equal(rungTwentyTwoRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v25',
+    'axm.foundation-planet.earth-system-engine/v26',
   'v15 cache migrates into the radiative cryosphere engine envelope');
   assert.ok(rungTwentyTwoRestore.columnsForProfile('temperate').every(column =>
     column.surface.lastRadiationReceipt === null &&
@@ -4126,7 +5053,7 @@ async function run() {
     state: rungTwentyOneSave
   });
   assert.equal(rungTwentyOneRestore.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v25',
+    'axm.foundation-planet.earth-system-engine/v26',
   'v14 cache migrates into the native mixed-phase engine envelope');
   assert.ok(rungTwentyOneRestore.columnsForProfile('temperate').every(column =>
     column.atmosphere.cloudIceMm === 0 &&
@@ -4705,11 +5632,11 @@ async function run() {
   assert.ok(Object.values(landRunoffChemistryReceipt.senderDebit
     .debitedElementsKg).filter(value => typeof value === 'number')
     .every(value => value > 0),
-  'land-to-land runoff moves non-zero C/N/P/O2 from the persistent sender queue');
-  assert.ok(['Carbon', 'Nitrogen', 'Phosphorus', 'Oxygen'].every(element =>
+  'land-to-land runoff moves non-zero C/N/P/O2/alkalinity from the persistent sender queue');
+  assert.ok(['Carbon', 'Nitrogen', 'Phosphorus', 'Oxygen', 'Alkalinity'].every(element =>
     Math.abs(transportedLand.receipt.conservation[
       `runoffBiogeochemistry${element}ResidualKg`]) < 1),
-  'area-weighted runoff C/N/P/O2 stays closed across loaded land cells');
+  'area-weighted runoff C/N/P/O2/alkalinity stays closed across loaded land cells');
   assert.ok(Math.abs(transportedLand.receipt.conservation.runoffQueueResidualKg) < .1, 'land-to-land runoff routing conserves area-weighted mass');
   assert.ok(Math.abs(transportedLand.receipt.conservation.atmosphereWaterResidualKg) < .1, 'area-weighted atmospheric moisture exchange conserves mass');
   assert.ok(Math.abs(transportedLand.receipt.conservation.atmosphereCloudWaterResidualKg) < .1, 'area-weighted cloud-liquid transport conserves mass');
@@ -4928,12 +5855,12 @@ async function run() {
   'direct coastal runoff carries one exact soil-queue-to-ocean transfer identity');
   assert.equal(coastalChemistryReceipt.receiverCredit.truth
     .landRunoffQueueSenderDebited, true);
-  assert.ok(['Carbon', 'Nitrogen', 'Phosphorus', 'Oxygen'].every(element =>
+  assert.ok(['Carbon', 'Nitrogen', 'Phosphorus', 'Oxygen', 'Alkalinity'].every(element =>
     Math.abs(coastRouting.receipt.conservation[
       `runoffBiogeochemistry${element}ResidualKg`]) < 1 &&
     Math.abs(coastRouting.receipt.conservation[
       `runoffReceivingOcean${element}ResidualKg`]) < 1),
-  'direct coastal runoff closes paired queue and ocean C/N/P/O2 ledgers');
+  'direct coastal runoff closes paired queue and ocean C/N/P/O2/alkalinity ledgers');
   const coastalSedimentTransfer = coastRouting.receipt.runoffReceipts
     .find(receipt => receipt.status === 'routed')
     .runoffSedimentTransfer;
@@ -5028,11 +5955,18 @@ async function run() {
   };
   const basinEngine = new basinRouting.BasinRoutingEngine({ maximumReachStates: 64 });
   assert.equal(basinRouting.BASIN_ROUTING_ENGINE_SCHEMA,
-    'axm.foundation-planet.basin-routing-engine/v15');
+    'axm.foundation-planet.basin-routing-engine/v21');
   assert.equal(basinRouting.BASIN_ROUTING_STEP_SCHEMA,
-    'axm.foundation-planet.basin-routing-step/v15');
+    'axm.foundation-planet.basin-routing-step/v21');
   assert.equal(basinRouting.PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA,
-    'axm.foundation-planet.basin-routing-engine/v14');
+    'axm.foundation-planet.basin-routing-engine/v20');
+  const emptyBasinDescriptor = basinEngine.descriptor('temperate');
+  assert.equal(emptyBasinDescriptor.activeProfileStoredChemistry
+    .alkalinityKgCaCO3Eq, 0,
+  'a fresh browser receives a complete zero-valued river chemistry descriptor before the first basin step');
+  assert.equal(emptyBasinDescriptor.activeProfileEstuaryStorage
+    .cumulativeAlkalinityGeneratedKgCaCO3Eq, 0,
+  'a fresh browser receives a complete zero-valued estuary descriptor before the first basin step');
   const basinStepOne = basinEngine.advance(basinColumns, basinSector, 1, {
     profileId: 'temperate', startDay: 118, captureTimeDays: .02
   });
@@ -5042,11 +5976,22 @@ async function run() {
     riverChemistry.RIVER_CHEMISTRY_INPUT_SCHEMA);
   assert.ok(Object.values(basinStepOne.receipt.inletReceipts[0]
     .riverChemistryInput.inputs).every(value => value > 0),
-  'land runoff debits persistent queued C/N/P/O2 and credits persistent reach storage');
+  'land runoff debits persistent queued C/N/P/O2/alkalinity and credits persistent reach storage');
   assert.equal(basinStepOne.receipt.inletReceipts[0]
     .runoffBiogeochemistrySenderDebit.transferId,
   basinStepOne.receipt.inletReceipts[0].riverChemistryInput.transferId,
   'basin intake pairs the land sender debit with the exact river receiver credit');
+  const inletNitrogen = basinStepOne.receipt.inletReceipts[0]
+    .riverChemistryInput;
+  assert.ok(inletNitrogen.truth.nitrateAndAmmoniumReceiverPoolsCredited ===
+      true &&
+    inletNitrogen.truth.nitratePlusAmmoniumEqualsDin === true &&
+    inletNitrogen.truth.inputSpeciationParameterized === true &&
+    inletNitrogen.truth.measuredInputSpeciationClaimed === false &&
+    Math.abs(inletNitrogen.nitrogenSpeciation.nitrateNitrogenKgN +
+      inletNitrogen.nitrogenSpeciation.ammoniumNitrogenKgN -
+      inletNitrogen.inputs.nitrogenKgN) < 1e-7,
+  'generic runoff DIN is explicitly parameterized into persistent nitrate and ammonium receiver pools without a measured-speciation claim');
   assert.equal(basinStepOne.receipt.truth
     .parameterizedLandRunoffChemistryBoundary, false);
   assert.equal(basinStepOne.receipt.truth
@@ -5062,6 +6007,9 @@ async function run() {
       `runoff${element}ResidualKg${element === 'Carbon' ? 'C' :
         element === 'Nitrogen' ? 'N' : element === 'Phosphorus' ? 'P' : 'O2'}`]) < 1e-6),
   'basin intake closes each persistent land runoff queue ledger');
+  assert.ok(Math.abs(basinStepOne.receipt.conservation
+    .runoffAlkalinityResidualKgCaCO3Eq) < 1e-6,
+  'basin intake closes the persistent land runoff alkalinity queue ledger');
   assert.ok(['Clay', 'Silt', 'Sand', 'Gravel'].every(grain =>
     Math.abs(basinStepOne.receipt.conservation[
       `runoff${grain}ResidualKg`]) < 1),
@@ -5076,8 +6024,14 @@ async function run() {
   const reachChemistryTransfer = basinStepTwo.receipt.routeReceipts.find(receipt =>
     receipt.schema === basinRouting.RIVER_REACH_TRANSFER_SCHEMA).chemistryTransfer;
   assert.ok(reachChemistryTransfer.senderDebited && reachChemistryTransfer.receiverCredited &&
-    Object.values(reachChemistryTransfer.elements).every(value => value > 0),
-  'reach-to-reach routing moves C/N/P/O2 with equal sender debit and receiver credit');
+    Object.values(reachChemistryTransfer.elements).every(value => value > 0) &&
+    reachChemistryTransfer.pools.dissolvedNitrateNitrogenKgN > 0 &&
+    reachChemistryTransfer.pools.dissolvedAmmoniumNitrogenKgN > 0 &&
+    Math.abs(reachChemistryTransfer.pools
+      .dissolvedInorganicNitrogenKgN -
+      reachChemistryTransfer.pools.dissolvedNitrateNitrogenKgN -
+      reachChemistryTransfer.pools.dissolvedAmmoniumNitrogenKgN) < 1e-7,
+  'reach-to-reach routing moves nitrate and ammonium beside C/P/O2 with equal sender debit and receiver credit');
   const reachSedimentTransfer = basinStepTwo.receipt.routeReceipts.find(
     receipt => receipt.schema === basinRouting.RIVER_REACH_TRANSFER_SCHEMA)
     .sedimentTransfer;
@@ -5169,6 +6123,17 @@ async function run() {
       coastalSedimentBeforeMouth,
   'river delivery persists mineral sediment in the receiving coastal cell');
   assert.ok(Math.abs(basinStepThree.receipt.conservation.waterResidualKg) < .1, 'river-to-ocean delivery closes river storage and ocean freshwater together');
+  assert.ok(['riverNitrateNitrogenResidualKgN',
+    'riverAmmoniumNitrogenResidualKgN',
+    'riverDinCompatibilityResidualKgN'].every(key =>
+    Math.abs(basinStepThree.receipt.conservation[key]) < 1) &&
+    basinStepThree.receipt.truth
+      .persistentRiverAndFloodplainNitrateAmmoniumPools === true &&
+    basinStepThree.receipt.truth
+      .exactNitrateAmmoniumWaterFractionTransport === true &&
+    basinStepThree.receipt.truth.nitrateAmmoniumConservationClosed ===
+      true,
+  'basin routing closes independent nitrate and ammonium ledgers while retaining aggregate DIN as an exact compatibility sum');
   assert.ok(basinStepThree.receipt.transfers.oceanEcologyBoundaryInputs.carbonKgC > 0 &&
     basinStepThree.receipt.transfers.oceanEcologyBoundaryInputs.nitrogenKgN > 0 &&
     basinStepThree.receipt.transfers.oceanEcologyBoundaryInputs.phosphorusKgP > 0 &&
@@ -5186,6 +6151,9 @@ async function run() {
     `the read-only audit accepts the loaded river/estuary/ocean/atmosphere/plant closure: ${JSON.stringify({ failures: basinIntegrityAudit.checks.filter(item => item.status === 'FAIL'), truth: basinStepThree.receipt.truth, plants: basinStepThree.receipt.floodplainPlantMatterReceipts.map(entry => ({ reachId: entry.reachId, donorCellId: entry.donorCellId, sender: entry.landEcologySenderReceiptDigest, transferIds: entry.transferIds })), senders: basinStepThree.receipt.landEcologySubgridDebitReceipts.map(entry => ({ donorCellId: entry.donorCellId, digest: entry.digest, allocations: entry.allocations })) })}`);
   assert.equal(basinIntegrityAudit.checks.find(item =>
     item.id === 'basin-routing-receipt').status, 'PASS');
+  assert.equal(basinIntegrityAudit.checks.find(item =>
+    item.id === 'end-to-end-alkalinity-ledger').status, 'PASS',
+  'current basin evidence independently passes the end-to-end alkalinity owner, route, reaction and residual audit');
   assert.equal(basinIntegrityAudit.checks.find(item =>
     item.id === 'floodplain-exchange-receipts').status, 'PASS',
   'current basin evidence includes audited floodplain exchange receipts');
@@ -5210,6 +6178,9 @@ async function run() {
   assert.equal(basinIntegrityAudit.checks.find(item =>
     item.id === 'floodplain-respiration-receipts').status, 'PASS',
   'current basin evidence includes audited local oxygen-limited DOC respiration');
+  assert.equal(basinIntegrityAudit.checks.find(item =>
+    item.id === 'floodplain-denitrification-receipts').status, 'PASS',
+  'current basin evidence includes audited oxygen-gated floodplain denitrification and paired atmosphere ownership');
   assert.ok(basinStepThree.receipt.floodplainReceipts.length > 0 &&
     basinStepThree.receipt.floodplainReceipts.every(entry =>
       entry.truth.conservationClosed === true),
@@ -5312,6 +6283,67 @@ async function run() {
       .floodplainRespirationCarbonAndOxygenLedgersClosed === true,
   'every loaded reach binds persistent respiration memory to an exact closed local DOC/DIC/O2 chemistry receipt');
   assert.ok(basinStepThree.receipt
+    .floodplainDenitrificationProcessReceipts.length > 0 &&
+    basinStepThree.receipt.floodplainDenitrificationReactionReceipts
+      .every(entry =>
+        entry.truth.dissolvedNitrateNitrogenSenderDebited === true &&
+        entry.truth.dissolvedAmmoniumNitrogenUntouched === true &&
+        entry.truth.alkalinityReceiverCredited === true &&
+        entry.truth.denitrificationAlkalinityClosed === true &&
+        entry.truth.nitrateSpeciationResolved === true &&
+        entry.truth.nitrogenGasBoundaryClosed === true) &&
+    basinStepThree.receipt.truth
+      .floodplainDenitrificationNitrateSpeciationResolved === true &&
+    basinStepThree.receipt.truth
+      .floodplainDenitrificationNitrateOnly === true &&
+    basinStepThree.receipt.truth
+      .floodplainDenitrificationAmmoniumConsumption === false &&
+    basinStepThree.receipt.truth
+      .floodplainNitrificationReactionModeled === true,
+  'every loaded denitrification reaction debits nitrate only and leaves ammonium unchanged beside the independent nitrification organ');
+  assert.ok(basinStepThree.receipt
+    .floodplainNitrificationProcessReceipts.length > 0 &&
+    basinStepThree.receipt.floodplainNitrificationProcessReceipts.length ===
+      basinStepThree.receipt
+        .floodplainNitrificationReactionReceipts.length &&
+    basinStepThree.receipt.floodplainNitrificationProcessReceipts
+      .every(entry => {
+        const owner = basinStepThree.receipt
+          .floodplainNitrificationReactionReceipts.find(candidate =>
+            candidate.transferId === entry.transferId);
+        return owner?.digest === entry.reactionReceiptDigest &&
+          owner.reachId === entry.reachId &&
+          entry.truth.ammoniumToNitrateNitrogenClosed === true &&
+          entry.truth.dissolvedOxygenConsumptionClosed === true &&
+          entry.truth.minimumDissolvedOxygenReserveRequired === true &&
+          entry.truth.alkalinityConsumptionClosed === true &&
+          entry.truth.alkalinityMaterialOwnerDebited === true &&
+          entry.truth.pHFeedbackModeled === false &&
+          entry.truth.nitriteIntermediateResolved === false;
+      }) &&
+    basinStepThree.receipt.truth.persistentFloodplainNitrification ===
+      true &&
+    basinStepThree.receipt.truth
+      .floodplainNitrificationEvidenceBound === true &&
+    basinStepThree.receipt.truth
+      .floodplainNitrificationNitrogenOxygenAndAlkalinityLedgersClosed ===
+      true &&
+    basinStepThree.receipt.truth
+      .floodplainNitrificationMinimumOxygenReserveHonored === true &&
+    [
+      basinStepThree.receipt.conservation
+        .floodplainNitrificationNitrogenResidualKgN,
+      basinStepThree.receipt.conservation
+        .floodplainNitrificationOxygenResidualKgO2,
+      basinStepThree.receipt.conservation
+        .floodplainNitrificationOxygenStoichiometryResidualKgO2,
+      basinStepThree.receipt.conservation
+        .floodplainNitrificationAlkalinityOwnerResidualKgCaCO3Eq,
+      basinStepThree.receipt.conservation
+        .floodplainNitrificationAlkalinityStoichiometryResidualKgCaCO3Eq
+    ].every(value => Math.abs(value) < 1),
+  'every loaded reach binds nitrification memory to an exact local ammonium/nitrate/O2/alkalinity reaction');
+  assert.ok(basinStepThree.receipt
     .floodplainGasExchangeProcessReceipts.length ===
       basinStepThree.receipt.floodplainRespirationReceipts.length &&
     basinStepThree.receipt.floodplainGasExchangeReceipts.length ===
@@ -5355,6 +6387,9 @@ async function run() {
     item.id === 'basin-routing-receipt').status, 'NOT_APPLICABLE',
   'v10 pre-plant-matter basin evidence remains legacy rather than being relabeled as current closure');
   assert.equal(previousBasinAudit.checks.find(item =>
+    item.id === 'end-to-end-alkalinity-ledger').status, 'NOT_APPLICABLE',
+  'v20 basin evidence remains pre-alkalinity rather than being relabelled as R51 evidence');
+  assert.equal(previousBasinAudit.checks.find(item =>
     item.id === 'floodplain-exchange-receipts').status, 'NOT_APPLICABLE',
   'v9 evidence cannot be relabeled as a current succession-bound floodplain exchange');
   assert.equal(previousBasinAudit.checks.find(item =>
@@ -5383,9 +6418,17 @@ async function run() {
   'NOT_APPLICABLE',
   'v13 evidence cannot be relabeled as observed aerobic respiration');
   assert.equal(previousBasinAudit.checks.find(item =>
+    item.id === 'floodplain-denitrification-receipts').status,
+  'NOT_APPLICABLE',
+  'v17 evidence cannot be relabeled as current temperature-responsive floodplain denitrification');
+  assert.equal(previousBasinAudit.checks.find(item =>
+    item.id === 'floodplain-nitrification-receipts').status,
+  'NOT_APPLICABLE',
+  'v19 evidence cannot be relabeled as current floodplain nitrification');
+  assert.equal(previousBasinAudit.checks.find(item =>
     item.id === 'floodplain-atmosphere-gas-exchange-receipts').status,
   'NOT_APPLICABLE',
-  'v14 evidence cannot be relabeled as paired floodplain-atmosphere gas exchange');
+  'v15 evidence cannot be relabeled as bidirectional floodplain-atmosphere gas exchange');
   const malformedCurrentBasinReceipt = JSON.parse(JSON.stringify(
     basinStepOne.receipt));
   delete malformedCurrentBasinReceipt.inletReceipts[0]
@@ -5397,6 +6440,17 @@ async function run() {
   assert.equal(malformedCurrentBasinAudit.checks.find(item =>
     item.id === 'basin-routing-receipt').status, 'FAIL',
   'a current basin receipt without the land queue sender debit fails audit');
+  const malformedAlkalinityBasinReceipt = JSON.parse(JSON.stringify(
+    basinStepOne.receipt));
+  malformedAlkalinityBasinReceipt.conservation
+    .coupledAlkalinityResidualKgCaCO3Eq = 2;
+  const malformedAlkalinityBasinAudit = systemAudit.auditFoundationSystem({
+    column: basinStepOne.columns[0],
+    basinRoutingReceipt: malformedAlkalinityBasinReceipt
+  });
+  assert.equal(malformedAlkalinityBasinAudit.checks.find(item =>
+    item.id === 'end-to-end-alkalinity-ledger').status, 'FAIL',
+  'a current basin receipt with a corrupted coupled alkalinity residual fails the dedicated audit');
   const malformedSedimentBasinReceipt = JSON.parse(JSON.stringify(
     basinStepOne.receipt));
   delete malformedSedimentBasinReceipt.inletReceipts[0]
@@ -5578,6 +6632,39 @@ async function run() {
   assert.equal(malformedRespirationAudit.checks.find(item =>
     item.id === 'floodplain-respiration-receipts').status, 'FAIL',
   'a wrong reaction digest or open local DOC/DIC ledger fails the independent respiration audit');
+  const malformedDenitrificationReceipt = JSON.parse(JSON.stringify(
+    basinStepThree.receipt));
+  const malformedDenitrificationProcess = malformedDenitrificationReceipt
+    .floodplainDenitrificationProcessReceipts.find(entry =>
+      entry.atmosphereCellId !== null);
+  assert.ok(malformedDenitrificationProcess,
+    'fixture contains loaded paired floodplain denitrification evidence to corrupt');
+  malformedDenitrificationProcess.atmosphereReceiptDigest =
+    'fnv1a32:corrupt';
+  malformedDenitrificationReceipt
+    .atmosphereFloodplainDenitrificationReceipts.find(entry =>
+      entry.transferId === malformedDenitrificationProcess.transferId)
+    .truth.exactTransferIdentity = false;
+  const malformedDenitrificationAudit = systemAudit.auditFoundationSystem({
+    column: basinStepThree.columns[0],
+    basinRoutingReceipt: malformedDenitrificationReceipt
+  });
+  assert.equal(malformedDenitrificationAudit.checks.find(item =>
+    item.id === 'floodplain-denitrification-receipts').status, 'FAIL',
+  'a wrong atmosphere digest or false exact identity fails the independent denitrification audit');
+  const malformedNitrificationReceipt = JSON.parse(JSON.stringify(
+    basinStepThree.receipt));
+  malformedNitrificationReceipt.floodplainNitrificationProcessReceipts[0]
+    .reactionReceiptDigest = 'fnv1a32:corrupt';
+  malformedNitrificationReceipt.floodplainNitrificationReactionReceipts[0]
+    .closure.stoichiometricOxygenResidualKgO2 = 1;
+  const malformedNitrificationAudit = systemAudit.auditFoundationSystem({
+    column: basinStepThree.columns[0],
+    basinRoutingReceipt: malformedNitrificationReceipt
+  });
+  assert.equal(malformedNitrificationAudit.checks.find(item =>
+    item.id === 'floodplain-nitrification-receipts').status, 'FAIL',
+  'a wrong reaction digest or open oxygen stoichiometry fails the independent nitrification audit');
   const malformedGasExchangeReceipt = JSON.parse(JSON.stringify(
     basinStepThree.receipt));
   assert.ok(malformedGasExchangeReceipt
@@ -5623,10 +6710,10 @@ async function run() {
     Math.abs(basinStepThree.receipt.conservation.oxygenResidualKgO2) < 1,
   'river-mouth ocean C/N/P/O2 credits close against basin boundary inputs');
   assert.ok(Math.abs(basinStepThree.receipt.conservation.coupledCarbonResidualKgC) < 1 &&
-    Math.abs(basinStepThree.receipt.conservation.coupledNitrogenResidualKgN) < 1 &&
+    Math.abs(basinStepThree.receipt.conservation.coupledNitrogenResidualKgN) < .01 &&
     Math.abs(basinStepThree.receipt.conservation.coupledPhosphorusResidualKgP) < 1 &&
     Math.abs(basinStepThree.receipt.conservation.coupledOxygenResidualKgO2) < 1,
-  'river plus ocean C/N/P/O2 ledgers close against only the declared land-runoff boundary');
+  'river, ocean and both atmospheric denitrification-source nitrogen ledgers close without hiding a missing source inside the kilogram tolerance');
   assert.ok(Math.abs(basinStepThree.receipt.conservation
       .loadedLandFloodplainPlantCarbonResidualKgC) < 1 &&
     Math.abs(basinStepThree.receipt.conservation
@@ -5653,6 +6740,17 @@ async function run() {
     Math.abs(basinStepThree.receipt.conservation
       .floodplainOxygenStoichiometryResidualKgO2) < 1,
   'local floodplain DOC debit, DIC credit and dissolved-oxygen consumption close their coupled respiration ledgers');
+  assert.ok(Math.abs(basinStepThree.receipt.conservation
+      .floodplainDenitrificationCarbonResidualKgC) < 1 &&
+    Math.abs(basinStepThree.receipt.conservation
+      .floodplainDenitrificationNitrogenReactionResidualKgN) < 1 &&
+    Math.abs(basinStepThree.receipt.conservation
+      .floodplainAtmosphereDenitrificationTransferResidualKgN) < 1 &&
+    Math.abs(basinStepThree.receipt.conservation
+      .floodplainDenitrificationOwnerResidualKgN) < 1 &&
+    Math.abs(basinStepThree.receipt.conservation
+      .atmosphereDenitrificationOwnerResidualKgN) < 1,
+  'floodplain DOC/DIC, DIN/N2 reaction, cross-owner transfer and both nitrogen owner ledgers close');
   assert.ok(['Clay', 'Silt', 'Sand', 'Gravel'].every(grain =>
     Math.abs(basinStepThree.receipt.conservation[
       `runoff${grain}ResidualKg`]) < 1 &&
@@ -5729,6 +6827,40 @@ async function run() {
     reach.floodplainRespiration.truth.oxygenLimited === true &&
     reach.floodplainRespiration.truth
       .atmosphericGasExchangeModeled === false &&
+    Number.isFinite(reach.floodplainDenitrification
+      .observedDenitrificationDays) &&
+    Number.isFinite(reach.floodplainDenitrification
+      .atmosphereUnavailableDays) &&
+    Number.isFinite(reach.floodplainDenitrification
+      .temperatureConstrainedDays) &&
+    Object.values(reach.floodplainDenitrification.cumulativeReaction)
+      .every(Number.isFinite) &&
+    Number.isFinite(reach.floodplainDenitrification.lastActivity
+      .waterTemperatureC) &&
+    Number.isFinite(reach.floodplainDenitrification.lastActivity
+      .temperatureResponseFactor) &&
+    reach.floodplainDenitrification.truth
+      .floodplainChemistryOwnership === false &&
+    reach.floodplainDenitrification.truth.oxygenGated === true &&
+    reach.floodplainDenitrification.truth
+      .surfaceTemperatureProxyResponsive === true &&
+    reach.floodplainDenitrification.truth
+      .persistentFloodplainWaterTemperatureState === false &&
+    reach.floodplainDenitrification.truth
+      .nitrateSpeciationResolved === true &&
+    reach.floodplainDenitrification.truth
+      .nitrateOnlyDenitrification === true &&
+    reach.floodplainDenitrification.truth
+      .ammoniumConsumedByDenitrification === false &&
+    reach.channelNitrogenSpecies &&
+    Math.abs(reach.channelNitrogenSpecies.dissolvedInorganicNitrogenKgN -
+      reach.channelNitrogenSpecies.nitrateNitrogenKgN -
+      reach.channelNitrogenSpecies.ammoniumNitrogenKgN) < 1e-7 &&
+    reach.floodplain.nitrogenSpecies &&
+    Math.abs(reach.floodplain.nitrogenSpecies
+      .dissolvedInorganicNitrogenKgN -
+      reach.floodplain.nitrogenSpecies.nitrateNitrogenKgN -
+      reach.floodplain.nitrogenSpecies.ammoniumNitrogenKgN) < 1e-7 &&
     Number.isFinite(reach.floodplainGasExchange
       .observedExchangeDays) &&
     Number.isFinite(reach.floodplainGasExchange
@@ -5740,55 +6872,336 @@ async function run() {
     reach.floodplainGasExchange.truth
       .atmosphereGasOwnership === false &&
     Object.values(reach.estuaryStorage).every(Number.isFinite)),
-  'every loaded reach exposes bounded channel, floodplain material, event history, habitat potential, living succession, plant C/N/P/water, decomposition, respiration, gas exchange and estuary diagnostics');
+  'every loaded reach exposes bounded channel, floodplain material, event history, habitat potential, living succession, plant C/N/P/water, decomposition, respiration, denitrification, gas exchange and estuary diagnostics');
   const basinSave = basinEngine.snapshot();
   const restoredBasin = new basinRouting.BasinRoutingEngine({ maximumReachStates: 64, state: basinSave });
   assert.deepEqual(restoredBasin.snapshot(), basinSave, 'river reach storage, clocks and latest receipts survive exact restore');
 
-  const basinV14Save = JSON.parse(JSON.stringify(basinSave));
-  basinV14Save.schema = basinRouting.PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA;
-  for (const profile of basinV14Save.profiles) {
+  const basinV15Save = JSON.parse(JSON.stringify(basinSave));
+  basinV15Save.schema = 'axm.foundation-planet.basin-routing-engine/v15';
+  const basinV15GasMemory = new Map();
+  for (const profile of basinV15Save.profiles) {
     for (const reach of profile.reaches) {
-      delete reach.floodplainGasExchange;
+      const gas = reach.floodplainGasExchange;
+      basinV15GasMemory.set(`${profile.profileId}|${reach.reachId}`, {
+        observedExchangeDays: gas.observedExchangeDays,
+        carbonToAtmosphereKgC:
+          gas.cumulativeExchange.carbonToAtmosphereKgC,
+        oxygenToFloodplainKgO2:
+          gas.cumulativeExchange.oxygenToFloodplainKgO2
+      });
+      gas.schema = floodplainGasExchange
+        .PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA;
+      delete gas.cumulativeExchange.carbonToFloodplainKgC;
+      gas.lastTransitionReceipt = null;
+      delete reach.floodplainDenitrification;
     }
   }
-  for (const receipt of basinV14Save.receipts) {
-    receipt.receipt.schema = basinRouting.PREVIOUS_BASIN_ROUTING_STEP_SCHEMA;
+  for (const receipt of basinV15Save.receipts) {
+    receipt.receipt.schema =
+      'axm.foundation-planet.basin-routing-step/v15';
   }
-  const migratedBasinV14 = new basinRouting.BasinRoutingEngine({
-    maximumReachStates: 64, state: basinV14Save
+  const migratedBasinV15 = new basinRouting.BasinRoutingEngine({
+    maximumReachStates: 64, state: basinV15Save
   });
-  assert.equal(migratedBasinV14.status('temperate').receipt, null,
-    'v14 basin receipts are dropped instead of fabricated into paired gas-exchange evidence');
-  assert.ok(migratedBasinV14.snapshot().profiles.every(profile =>
-    profile.reaches.every(reach =>
-      reach.floodplainGasExchange.schema ===
+  assert.equal(migratedBasinV15.status('temperate').receipt, null,
+    'v15 basin receipts are dropped instead of relabeled as bidirectional gas-exchange evidence');
+  assert.ok(migratedBasinV15.snapshot().profiles.every(profile =>
+    profile.reaches.every(reach => {
+      const prior = basinV15GasMemory.get(
+        `${profile.profileId}|${reach.reachId}`);
+      return reach.floodplainGasExchange.schema ===
         floodplainGasExchange.FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA &&
       reach.floodplainGasExchange.migrationCheckpoint === true &&
-      reach.floodplainGasExchange.observedExchangeDays === 0 &&
-      Object.values(reach.floodplainGasExchange.cumulativeExchange)
-        .every(value => value === 0))),
-  'v14 reaches preserve owned water chemistry but gain empty gas-exchange process memory without invented history');
-  const firstMigratedGasExchangeBasinStep = migratedBasinV14.advance(
+      reach.floodplainGasExchange.observedExchangeDays ===
+        prior.observedExchangeDays &&
+      reach.floodplainGasExchange.cumulativeExchange
+        .carbonToAtmosphereKgC === prior.carbonToAtmosphereKgC &&
+      reach.floodplainGasExchange.cumulativeExchange
+        .oxygenToFloodplainKgO2 === prior.oxygenToFloodplainKgO2 &&
+      reach.floodplainGasExchange.cumulativeExchange
+        .carbonToFloodplainKgC === 0;
+    })),
+  'v15 reaches preserve prior evasion and reaeration memory, initialize reverse carbon to zero and require a v2 checkpoint');
+  const firstMigratedGasExchangeBasinStep = migratedBasinV15.advance(
     basinStepThree.columns, basinSector, .25,
     { profileId: 'temperate', startDay: 121 }
   );
   assert.ok(firstMigratedGasExchangeBasinStep.receipt
     .floodplainGasExchangeProcessReceipts.every(receipt =>
       receipt.status ===
-        'initialized-after-v14-migration-no-invented-history' &&
+        'initialized-after-v15-migration-no-invented-history' &&
       receipt.exchange.carbonToAtmosphereKgC === 0 &&
+      receipt.exchange.carbonToFloodplainKgC === 0 &&
       receipt.exchange.oxygenToFloodplainKgO2 === 0 &&
       receipt.truth.migrationInventedHistory === false) &&
     firstMigratedGasExchangeBasinStep.receipt
       .floodplainGasExchangeReceipts.every(receipt =>
         receipt.exchange.carbonToAtmosphereKgC === 0 &&
+        receipt.exchange.carbonToFloodplainKgC === 0 &&
         receipt.exchange.oxygenToFloodplainKgO2 === 0) &&
     firstMigratedGasExchangeBasinStep.receipt
       .atmosphereFloodplainGasExchangeReceipts.every(receipt =>
         receipt.exchange.carbonToAtmosphereKgC === 0 &&
+        receipt.exchange.carbonToFloodplainKgC === 0 &&
         receipt.exchange.oxygenToFloodplainKgO2 === 0),
-  'the first v14 migration step moves no C/O2 across either owner and records no historical exchange');
+  'the first v15 migration step moves no C/O2 across either owner and records no historical exchange');
+
+  const basinV16Save = JSON.parse(JSON.stringify(basinSave));
+  basinV16Save.schema = 'axm.foundation-planet.basin-routing-engine/v16';
+  for (const profile of basinV16Save.profiles) {
+    for (const reach of profile.reaches) {
+      delete reach.floodplainDenitrification;
+    }
+  }
+  for (const receipt of basinV16Save.receipts) {
+    receipt.receipt.schema = 'axm.foundation-planet.basin-routing-step/v16';
+  }
+  const migratedBasinV16 = new basinRouting.BasinRoutingEngine({
+    maximumReachStates: 64, state: basinV16Save
+  });
+  assert.equal(migratedBasinV16.status('temperate').receipt, null,
+    'v16 basin receipts are dropped instead of relabeled as denitrification evidence');
+  assert.ok(migratedBasinV16.snapshot().profiles.every(profile =>
+    profile.reaches.every(reach =>
+      reach.floodplainDenitrification.schema ===
+        floodplainDenitrification
+          .FLOODPLAIN_DENITRIFICATION_STATE_SCHEMA &&
+      reach.floodplainDenitrification.migrationCheckpoint === true &&
+      reach.floodplainDenitrification.observedDenitrificationDays === 0 &&
+      Object.values(reach.floodplainDenitrification.cumulativeReaction)
+        .every(value => value === 0))),
+  'v16 reaches retain all prior material and gain empty denitrification memory without invented history');
+  const firstMigratedDenitrificationBasinStep = migratedBasinV16.advance(
+    basinStepThree.columns, basinSector, .25,
+    { profileId: 'temperate', startDay: 121 }
+  );
+  assert.ok(firstMigratedDenitrificationBasinStep.receipt
+    .floodplainDenitrificationProcessReceipts.every(receipt =>
+      receipt.status ===
+        'initialized-after-v18-migration-no-invented-history' &&
+      Object.values(receipt.reaction).every(value => value === 0) &&
+      receipt.truth.migrationInventedHistory === false) &&
+    firstMigratedDenitrificationBasinStep.receipt
+      .floodplainDenitrificationReactionReceipts.every(receipt =>
+        Object.values(receipt.reaction).every(value => value === 0)) &&
+    firstMigratedDenitrificationBasinStep.receipt
+      .atmosphereFloodplainDenitrificationReceipts.every(receipt =>
+        receipt.inputs.carbonKgC === 0 &&
+        receipt.inputs.oxygenKgO2 === 0 &&
+        receipt.inputs.nitrogenKgN === 0),
+  'the first v16 migration step moves no C/N across either owner and records no historical denitrification');
+
+  const basinV18Save = JSON.parse(JSON.stringify(basinSave));
+  basinV18Save.schema =
+    'axm.foundation-planet.basin-routing-engine/v18';
+  const basinV18NitrogenMemory = new Map();
+  for (const profile of basinV18Save.profiles) {
+    for (const reach of profile.reaches) {
+      const channelNitrogen = riverChemistry.riverNitrogenSpecies(
+        reach.chemistry);
+      const floodplainNitrogen = riverChemistry.riverNitrogenSpecies(
+        reach.floodplain.chemistry);
+      const denitrification = reach.floodplainDenitrification;
+      basinV18NitrogenMemory.set(
+        `${profile.profileId}|${reach.reachId}`,
+        {
+          channelDinKgN: channelNitrogen.dissolvedInorganicNitrogenKgN,
+          floodplainDinKgN:
+            floodplainNitrogen.dissolvedInorganicNitrogenKgN,
+          observedDenitrificationDays:
+            denitrification.observedDenitrificationDays,
+          temperatureConstrainedDays:
+            denitrification.temperatureConstrainedDays,
+          cumulativeReaction: {
+            ...denitrification.cumulativeReaction
+          }
+        });
+      reach.chemistry.schema =
+        riverChemistry.PREVIOUS_RIVER_CHEMISTRY_STATE_SCHEMA;
+      delete reach.chemistry.dissolvedNitrateNitrogenKgN;
+      delete reach.chemistry.dissolvedAmmoniumNitrogenKgN;
+      delete reach.chemistry.truth;
+      reach.floodplain.schema = floodplain.LEGACY_FLOODPLAIN_STATE_SCHEMA;
+      reach.floodplain.chemistry.schema =
+        riverChemistry.PREVIOUS_RIVER_CHEMISTRY_STATE_SCHEMA;
+      delete reach.floodplain.chemistry.dissolvedNitrateNitrogenKgN;
+      delete reach.floodplain.chemistry.dissolvedAmmoniumNitrogenKgN;
+      delete reach.floodplain.chemistry.truth;
+      reach.floodplain.lastExchangeReceipt = null;
+      reach.floodplain.lastDetritalReturnReceipt = null;
+      reach.floodplain.lastDenitrificationReactionReceipt = null;
+      delete reach.floodplain.lastNitrificationReactionReceipt;
+      delete reach.floodplainNitrification;
+      denitrification.schema = floodplainDenitrification
+        .PREVIOUS_FLOODPLAIN_DENITRIFICATION_STATE_SCHEMA;
+      denitrification.cumulativeReaction
+        .dissolvedInorganicNitrogenConsumedKgN = denitrification
+          .cumulativeReaction.dissolvedNitrateNitrogenConsumedKgN;
+      delete denitrification.cumulativeReaction
+        .dissolvedNitrateNitrogenConsumedKgN;
+      denitrification.lastActivity.reactiveNitrateEquivalentKgN =
+        denitrification.lastActivity.availableDissolvedNitrateNitrogenKgN;
+      denitrification.lastActivity.reactiveNitrateEquivalentFraction = .5;
+      delete denitrification.lastActivity
+        .availableDissolvedNitrateNitrogenKgN;
+      delete denitrification.lastActivity
+        .availableDissolvedAmmoniumNitrogenKgN;
+      denitrification.lastTransitionReceipt = null;
+    }
+  }
+  for (const receipt of basinV18Save.receipts) {
+    receipt.receipt.schema =
+      'axm.foundation-planet.basin-routing-step/v18';
+  }
+  const migratedBasinV18 = new basinRouting.BasinRoutingEngine({
+    maximumReachStates: 64, state: basinV18Save
+  });
+  assert.equal(migratedBasinV18.status('temperate').receipt, null,
+    'v18 basin receipts are dropped instead of relabeled as nitrate/ammonium transport evidence');
+  assert.ok(migratedBasinV18.snapshot().profiles.every(profile =>
+    profile.reaches.every(reach => {
+      const prior = basinV18NitrogenMemory.get(
+        `${profile.profileId}|${reach.reachId}`);
+      const channelNitrogen = riverChemistry.riverNitrogenSpecies(
+        reach.chemistry);
+      const floodplainNitrogen = riverChemistry.riverNitrogenSpecies(
+        reach.floodplain.chemistry);
+      return reach.chemistry.schema ===
+          riverChemistry.RIVER_CHEMISTRY_STATE_SCHEMA &&
+        reach.chemistry.migrationCheckpoint === true &&
+        Math.abs(channelNitrogen.dissolvedInorganicNitrogenKgN -
+          prior.channelDinKgN) < 1e-7 &&
+        Math.abs(channelNitrogen.dissolvedNitrateNitrogenKgN -
+          prior.channelDinKgN * .5) < 1e-7 &&
+        Math.abs(channelNitrogen.dissolvedAmmoniumNitrogenKgN -
+          prior.channelDinKgN * .5) < 1e-7 &&
+        reach.floodplain.schema === floodplain.FLOODPLAIN_STATE_SCHEMA &&
+        reach.floodplain.migrationCheckpoint === true &&
+        Math.abs(floodplainNitrogen.dissolvedInorganicNitrogenKgN -
+          prior.floodplainDinKgN) < 1e-7 &&
+        Math.abs(floodplainNitrogen.dissolvedNitrateNitrogenKgN -
+          prior.floodplainDinKgN * .5) < 1e-7 &&
+        Math.abs(floodplainNitrogen.dissolvedAmmoniumNitrogenKgN -
+          prior.floodplainDinKgN * .5) < 1e-7 &&
+        reach.floodplainDenitrification.schema ===
+          floodplainDenitrification
+            .FLOODPLAIN_DENITRIFICATION_STATE_SCHEMA &&
+        reach.floodplainDenitrification.migrationCheckpoint === true &&
+        reach.floodplainDenitrification.observedDenitrificationDays ===
+          prior.observedDenitrificationDays &&
+        Object.entries(prior.cumulativeReaction).every(([key, value]) =>
+          reach.floodplainDenitrification.cumulativeReaction[key] ===
+            value) &&
+        reach.floodplainDenitrification.temperatureConstrainedDays ===
+          prior.temperatureConstrainedDays &&
+        reach.floodplainNitrification.schema ===
+          floodplainNitrification.FLOODPLAIN_NITRIFICATION_STATE_SCHEMA &&
+        reach.floodplainNitrification.migrationCheckpoint === true &&
+        reach.floodplainNitrification.observedNitrificationDays === 0 &&
+        Object.values(reach.floodplainNitrification.cumulativeReaction)
+          .every(value => value === 0);
+    })),
+  'v18 reaches preserve aggregate DIN and denitrification history, initialize explicit nitrate/ammonium 50/50 and require a v19 checkpoint');
+  const firstNitrateAmmoniumMigratedDenitrificationStep =
+    migratedBasinV18.advance(
+      basinStepThree.columns, basinSector, .25,
+      { profileId: 'temperate', startDay: 121 }
+    );
+  assert.ok(firstNitrateAmmoniumMigratedDenitrificationStep.receipt
+    .floodplainDenitrificationProcessReceipts.every(receipt =>
+      receipt.status ===
+        'initialized-after-v18-migration-no-invented-history' &&
+      Object.values(receipt.reaction).every(value => value === 0) &&
+      receipt.truth.migrationInventedHistory === false) &&
+    firstNitrateAmmoniumMigratedDenitrificationStep.receipt
+      .floodplainDenitrificationReactionReceipts.every(receipt =>
+        Object.values(receipt.reaction).every(value => value === 0)) &&
+    firstNitrateAmmoniumMigratedDenitrificationStep.receipt
+      .atmosphereFloodplainDenitrificationReceipts.every(receipt =>
+        receipt.inputs.carbonKgC === 0 &&
+        receipt.inputs.oxygenKgO2 === 0 &&
+        receipt.inputs.nitrogenKgN === 0) &&
+    firstNitrateAmmoniumMigratedDenitrificationStep.receipt
+      .floodplainNitrificationProcessReceipts.every(receipt =>
+        receipt.status ===
+          'initialized-after-schema-migration-no-invented-history' &&
+        Object.values(receipt.reaction).every(value => value === 0) &&
+        receipt.truth.migrationInventedHistory === false) &&
+    firstNitrateAmmoniumMigratedDenitrificationStep.receipt
+      .floodplainNitrificationReactionReceipts.every(receipt =>
+        Object.values(receipt.reaction).every(value => value === 0)),
+  'the first v18 migration step moves no C/N across either owner and records no invented nitrate/ammonium process history');
+
+  const basinV19Save = JSON.parse(JSON.stringify(basinSave));
+  basinV19Save.schema = basinRouting.PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA;
+  const basinV19NitrificationBoundary = new Map();
+  for (const profile of basinV19Save.profiles) {
+    for (const reach of profile.reaches) {
+      basinV19NitrificationBoundary.set(
+        `${profile.profileId}|${reach.reachId}`,
+        {
+          floodplainWaterKg: reach.floodplain.waterKg,
+          floodplainChemistry: JSON.parse(JSON.stringify(
+            reach.floodplain.chemistry)),
+          denitrification: JSON.parse(JSON.stringify(
+            reach.floodplainDenitrification))
+        });
+      reach.floodplain.schema =
+        floodplain.PREVIOUS_FLOODPLAIN_STATE_SCHEMA;
+      delete reach.floodplain.lastNitrificationReactionReceipt;
+      delete reach.floodplainNitrification;
+    }
+  }
+  for (const receipt of basinV19Save.receipts) {
+    receipt.receipt.schema = basinRouting.PREVIOUS_BASIN_ROUTING_STEP_SCHEMA;
+  }
+  const migratedBasinV19 = new basinRouting.BasinRoutingEngine({
+    maximumReachStates: 64, state: basinV19Save
+  });
+  assert.equal(migratedBasinV19.status('temperate').receipt, null,
+    'v19 basin receipts are dropped instead of relabeled as nitrification evidence');
+  assert.ok(migratedBasinV19.snapshot().profiles.every(profile =>
+    profile.reaches.every(reach => {
+      const prior = basinV19NitrificationBoundary.get(
+        `${profile.profileId}|${reach.reachId}`);
+      return reach.floodplain.schema === floodplain.FLOODPLAIN_STATE_SCHEMA &&
+        reach.floodplain.migrationCheckpoint === true &&
+        reach.floodplain.waterKg === prior.floodplainWaterKg &&
+        JSON.stringify(reach.floodplain.chemistry) ===
+          JSON.stringify(prior.floodplainChemistry) &&
+        JSON.stringify(reach.floodplainDenitrification) ===
+          JSON.stringify(prior.denitrification) &&
+        reach.floodplain.lastNitrificationReactionReceipt === null &&
+        reach.floodplainNitrification.schema ===
+          floodplainNitrification.FLOODPLAIN_NITRIFICATION_STATE_SCHEMA &&
+        reach.floodplainNitrification.migrationCheckpoint === true &&
+        reach.floodplainNitrification.observedNitrificationDays === 0 &&
+        reach.floodplainNitrification.oxygenConstrainedDays === 0 &&
+        reach.floodplainNitrification.oxygenLimitedDays === 0 &&
+        reach.floodplainNitrification.temperatureConstrainedDays === 0 &&
+        Object.values(reach.floodplainNitrification.cumulativeReaction)
+          .every(value => value === 0);
+    })),
+  'v19 reaches preserve prior material and process state while adding an empty explicit nitrification organ');
+  const firstNitrificationMigratedBasinStep = migratedBasinV19.advance(
+    basinStepThree.columns, basinSector, .25,
+    { profileId: 'temperate', startDay: 121 }
+  );
+  assert.ok(firstNitrificationMigratedBasinStep.receipt
+    .floodplainNitrificationProcessReceipts.every(receipt =>
+      receipt.status ===
+        'initialized-after-schema-migration-no-invented-history' &&
+      Object.values(receipt.reaction).every(value => value === 0) &&
+      receipt.truth.migrationInventedHistory === false) &&
+    firstNitrificationMigratedBasinStep.receipt
+      .floodplainNitrificationReactionReceipts.every(receipt =>
+        receipt.schema ===
+          floodplain.FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA &&
+        Object.values(receipt.reaction).every(value => value === 0) &&
+        receipt.truth.independentNitrogenCreation === false &&
+        receipt.truth.independentOxygenCreation === false),
+  'the first v19 migration step emits typed zero nitrification evidence and invents no reaction history');
 
   const basinV13Save = JSON.parse(JSON.stringify(basinSave));
   basinV13Save.schema = 'axm.foundation-planet.basin-routing-engine/v13';
@@ -5838,8 +7251,9 @@ async function run() {
     firstMigratedRespirationBasinStep.receipt
       .floodplainGasExchangeProcessReceipts.every(receipt =>
         receipt.status ===
-          'initialized-after-v14-migration-no-invented-history' &&
+          'initialized-after-v15-migration-no-invented-history' &&
         receipt.exchange.carbonToAtmosphereKgC === 0 &&
+        receipt.exchange.carbonToFloodplainKgC === 0 &&
         receipt.exchange.oxygenToFloodplainKgO2 === 0),
   'the first v13 migration step moves no local or cross-owner C/O2 and records no historical respiration or gas exchange');
 
@@ -6296,9 +7710,34 @@ async function run() {
     .floodplainRespirationReceipts,
   basinReverseFloodplain.receipt.floodplainRespirationReceipts,
   'persistent oxygen-limited respiration process receipts are independently order-invariant');
+  assert.deepEqual(basinForwardFloodplain.receipt
+    .floodplainDenitrificationReactionReceipts,
+  basinReverseFloodplain.receipt
+    .floodplainDenitrificationReactionReceipts,
+  'local floodplain DOC/DIN/DIC denitrification reactions are independently order-invariant');
+  assert.deepEqual(basinForwardFloodplain.receipt
+    .atmosphereFloodplainDenitrificationReceipts,
+  basinReverseFloodplain.receipt
+    .atmosphereFloodplainDenitrificationReceipts,
+  'native-surface atmosphere nitrogen receiver receipts are independently order-invariant');
+  assert.deepEqual(basinForwardFloodplain.receipt
+    .floodplainDenitrificationProcessReceipts,
+  basinReverseFloodplain.receipt
+    .floodplainDenitrificationProcessReceipts,
+  'persistent oxygen-gated denitrification process receipts are independently order-invariant');
+  assert.deepEqual(basinForwardFloodplain.receipt
+    .floodplainNitrificationReactionReceipts,
+  basinReverseFloodplain.receipt
+    .floodplainNitrificationReactionReceipts,
+  'local floodplain ammonium/nitrate/O2 nitrification reactions are independently order-invariant');
+  assert.deepEqual(basinForwardFloodplain.receipt
+    .floodplainNitrificationProcessReceipts,
+  basinReverseFloodplain.receipt
+    .floodplainNitrificationProcessReceipts,
+  'persistent oxygen-ledgered nitrification process receipts are independently order-invariant');
   assert.deepEqual(basinForwardEngine.snapshot(),
     basinReverseEngine.snapshot(),
-  'persistent floodplain event, habitat, succession, plant matter, resources, decomposition and respiration state is order-invariant, not only its public receipt');
+  'persistent floodplain event, habitat, succession, plant matter, resources, decomposition, respiration, denitrification and nitrification state is order-invariant, not only its public receipt');
 
   const boundaryEngine = new basinRouting.BasinRoutingEngine({ maximumReachStates: 64 });
   const boundarySector = {
@@ -6344,6 +7783,26 @@ async function run() {
       dissolvedInorganicCarbonProducedKgC: 3,
       dissolvedOxygenConsumedKgO2: 8
     };
+  retainedFloodplainReach.floodplainDenitrification
+    .observedDenitrificationDays = 5;
+  retainedFloodplainReach.floodplainDenitrification
+    .cumulativeReaction = {
+      dissolvedOrganicCarbonConsumedKgC: 2,
+      dissolvedInorganicCarbonProducedKgC: 2,
+      dissolvedNitrateNitrogenConsumedKgN: 1.866666667,
+      nitrogenGasProducedKgN: 1.866666667
+    };
+  retainedFloodplainReach.floodplainNitrification
+    .observedNitrificationDays = 6;
+  retainedFloodplainReach.floodplainNitrification
+    .oxygenLimitedDays = 1;
+  retainedFloodplainReach.floodplainNitrification
+    .cumulativeReaction = {
+      dissolvedAmmoniumNitrogenConsumedKgN: 1.25,
+      dissolvedNitrateNitrogenProducedKgN: 1.25,
+      dissolvedOxygenConsumedKgO2: 5.7125,
+      alkalinityDemandKgCaCO3: 8.925
+    };
   const retainedFloodplainEngine = new basinRouting.BasinRoutingEngine({
     maximumReachStates: 64, state: retainedFloodplainSave
   });
@@ -6369,8 +7828,17 @@ async function run() {
     entry.retainedFloodplainRespirationOxygenLimitedDays >= 2 &&
     entry.retainedFloodplainRespirationDocConsumedKgC >= 3 &&
     entry.retainedFloodplainRespirationDicProducedKgC >= 3 &&
-    entry.retainedFloodplainRespirationOxygenConsumedKgO2 >= 8),
-  `unloaded reaches retain and explicitly receipt persistent floodplain water, deposits, plant C/N/P/tissue-water, decomposition and respiration memory: ${JSON.stringify(retainedFloodplainStep.receipt.boundaryReceipts)}`);
+    entry.retainedFloodplainRespirationOxygenConsumedKgO2 >= 8 &&
+    entry.retainedFloodplainDenitrificationObservedDays >= 5 &&
+    entry.retainedFloodplainDenitrificationCarbonKgC >= 2 &&
+    entry.retainedFloodplainDenitrificationNitrogenGasKgN >=
+      1.866666667 &&
+    entry.retainedFloodplainNitrificationObservedDays >= 6 &&
+    entry.retainedFloodplainNitrificationAmmoniumConsumedKgN >= 1.25 &&
+    entry.retainedFloodplainNitrificationNitrateProducedKgN >= 1.25 &&
+    entry.retainedFloodplainNitrificationOxygenConsumedKgO2 >= 5.7125 &&
+    entry.retainedFloodplainNitrificationAlkalinityDemandKgCaCO3 >= 8.925),
+  `unloaded reaches retain and explicitly receipt persistent floodplain water, deposits, plant C/N/P/tissue-water, decomposition, respiration, denitrification and nitrification memory: ${JSON.stringify(retainedFloodplainStep.receipt.boundaryReceipts)}`);
 
   let transportDomain = [];
   for (let latitudeOffset = -1; latitudeOffset <= 1; latitudeOffset++) {
@@ -6506,7 +7974,7 @@ async function run() {
     column.truth.nativePressureLevelHorizontalResolvedEnergyClosed === false),
   'v12 columns migrate without inventing native horizontal lineage or closure evidence');
   assert.equal(migratedRungNineteenTransportEngine.snapshot().schema,
-    'axm.foundation-planet.earth-system-engine/v25',
+    'axm.foundation-planet.earth-system-engine/v26',
     'the first post-migration snapshot records the current land, mixed-layer and deep-ocean lineage');
   assert.throws(() => restoredTransportEngine.commitTransport('temperate', 155, transportedLand.columns, transportedLand.receipt), /transport clock cannot run backward/, 'transport commit refuses replay into an earlier planet day');
   const isolatedProfileEngine = new earthSystem.EarthSystemEngine({ seed: model.PLANET_DEFAULTS.seed, profileId: 'temperate', maximumColumns: 4 });
@@ -6805,6 +8273,18 @@ async function run() {
       'floodplain-respiration-receipts');
     assert.equal(sweptRespirationAudit.status, 'PASS',
       `real generated-sector floodplain-respiration audit stays current at sweep ${basinSweepStep}: ${JSON.stringify(sweptRespirationAudit.evidence)}`);
+    const sweptDenitrificationAudit = systemAudit.auditFoundationSystem({
+      column: swept.columns[0], basinRoutingReceipt: swept.receipt
+    }).checks.find(check => check.id ===
+      'floodplain-denitrification-receipts');
+    assert.equal(sweptDenitrificationAudit.status, 'PASS',
+      `real generated-sector floodplain-denitrification audit stays current at sweep ${basinSweepStep}: ${JSON.stringify(sweptDenitrificationAudit.evidence)}`);
+    const sweptNitrificationAudit = systemAudit.auditFoundationSystem({
+      column: swept.columns[0], basinRoutingReceipt: swept.receipt
+    }).checks.find(check => check.id ===
+      'floodplain-nitrification-receipts');
+    assert.equal(sweptNitrificationAudit.status, 'PASS',
+      `real generated-sector floodplain-nitrification audit stays current at sweep ${basinSweepStep}: ${JSON.stringify(sweptNitrificationAudit.evidence)}`);
     assert.ok(Math.abs(swept.receipt.conservation
         .loadedLandFloodplainPlantCarbonResidualKgC) < 1 &&
       Math.abs(swept.receipt.conservation
@@ -6826,8 +8306,29 @@ async function run() {
       Math.abs(swept.receipt.conservation
         .floodplainOxygenConsumptionResidualKgO2) < 1 &&
       Math.abs(swept.receipt.conservation
-        .floodplainOxygenStoichiometryResidualKgO2) < 1,
-    'repeated real-sector transfers close plant C/N, plant water/P, resource-backed detrital return, and local DOC/DIC/O2 respiration ledgers');
+        .floodplainOxygenStoichiometryResidualKgO2) < 1 &&
+      Math.abs(swept.receipt.conservation
+        .floodplainDenitrificationCarbonResidualKgC) < 1 &&
+      Math.abs(swept.receipt.conservation
+        .floodplainDenitrificationNitrogenReactionResidualKgN) < 1 &&
+      Math.abs(swept.receipt.conservation
+        .floodplainAtmosphereDenitrificationTransferResidualKgN) < 1 &&
+      Math.abs(swept.receipt.conservation
+        .floodplainNitrificationNitrogenResidualKgN) < 1 &&
+      Math.abs(swept.receipt.conservation
+        .floodplainNitrificationOxygenResidualKgO2) < 1 &&
+      Math.abs(swept.receipt.conservation
+        .floodplainNitrificationOxygenStoichiometryResidualKgO2) < 1 &&
+      Math.abs(swept.receipt.conservation
+        .floodplainNitrificationAlkalinityOwnerResidualKgCaCO3Eq) < 1 &&
+      Math.abs(swept.receipt.conservation
+        .floodplainNitrificationAlkalinityStoichiometryResidualKgCaCO3Eq) <
+        1 &&
+      Math.abs(swept.receipt.conservation
+        .floodplainDenitrificationAlkalinityOwnerResidualKgCaCO3Eq) < 1 &&
+      Math.abs(swept.receipt.conservation
+        .coupledAlkalinityResidualKgCaCO3Eq) < 1,
+    'repeated real-sector transfers close plant C/N, plant water/P, resource-backed detrital return, local respiration, paired denitrification and oxygen/alkalinity-ledgered nitrification');
     realBasinSweepColumns = swept.columns;
   }
   const realDecoratedBasin = realBasinEngine.decorateSector(drainageA, 'temperate');
@@ -6866,6 +8367,70 @@ async function run() {
     reach.floodplainRespiration.truth.chemistryOwnership === false &&
     reach.floodplainRespiration.truth.oxygenLimited === true),
   'all 310 canonical reaches expose bounded semantic aerobic-respiration memory, including empty unloaded states');
+  assert.ok(realDecoratedBasin.rivers.every(reach =>
+    reach.floodplainDenitrification &&
+    Number.isFinite(reach.floodplainDenitrification
+      .observedDenitrificationDays) &&
+    Number.isFinite(reach.floodplainDenitrification
+      .atmosphereUnavailableDays) &&
+    Number.isFinite(reach.floodplainDenitrification
+      .temperatureConstrainedDays) &&
+    Object.values(reach.floodplainDenitrification.cumulativeReaction)
+      .every(Number.isFinite) &&
+    Number.isFinite(reach.floodplainDenitrification.lastActivity
+      .waterTemperatureC) &&
+    Number.isFinite(reach.floodplainDenitrification.lastActivity
+      .temperatureResponseFactor) &&
+    reach.floodplainDenitrification.truth
+      .floodplainChemistryOwnership === false &&
+    reach.floodplainDenitrification.truth.oxygenGated === true &&
+    reach.floodplainDenitrification.truth
+      .surfaceTemperatureProxyResponsive === true &&
+    reach.floodplainDenitrification.truth
+      .persistentFloodplainWaterTemperatureState === false &&
+    reach.floodplainDenitrification.truth
+      .nitrateSpeciationResolved === true &&
+    reach.floodplainDenitrification.truth
+      .nitrateOnlyDenitrification === true &&
+    reach.channelNitrogenSpecies &&
+    Math.abs(reach.channelNitrogenSpecies.dissolvedInorganicNitrogenKgN -
+      reach.channelNitrogenSpecies.nitrateNitrogenKgN -
+      reach.channelNitrogenSpecies.ammoniumNitrogenKgN) < 1e-7 &&
+    reach.floodplain.nitrogenSpecies &&
+    Math.abs(reach.floodplain.nitrogenSpecies
+      .dissolvedInorganicNitrogenKgN -
+      reach.floodplain.nitrogenSpecies.nitrateNitrogenKgN -
+      reach.floodplain.nitrogenSpecies.ammoniumNitrogenKgN) < 1e-7),
+  'all 310 canonical reaches expose bounded nitrate/ammonium ownership and nitrate-only temperature-responsive denitrification memory, including empty unloaded states');
+  assert.ok(realDecoratedBasin.rivers.every(reach =>
+    reach.floodplainNitrification &&
+    Number.isFinite(reach.floodplainNitrification
+      .observedNitrificationDays) &&
+    Number.isFinite(reach.floodplainNitrification.oxygenConstrainedDays) &&
+    Number.isFinite(reach.floodplainNitrification.oxygenLimitedDays) &&
+    Number.isFinite(reach.floodplainNitrification.alkalinityLimitedDays) &&
+    Number.isFinite(reach.floodplainNitrification.alkalinityLimitedDays) &&
+    Number.isFinite(reach.floodplainNitrification
+      .temperatureConstrainedDays) &&
+    Object.values(reach.floodplainNitrification.cumulativeReaction)
+      .every(Number.isFinite) &&
+    Number.isFinite(reach.floodplainNitrification.lastActivity
+      .dissolvedOxygenMgL) &&
+    Number.isFinite(reach.floodplainNitrification.lastActivity
+      .temperatureResponseFactor) &&
+    Number.isFinite(reach.floodplainNitrification.lastActivity
+      .availableAlkalinityKgCaCO3Eq) &&
+    reach.floodplainNitrification.truth
+      .persistentNitrificationProcessMemory === true &&
+    reach.floodplainNitrification.truth
+      .ammoniumToNitrateOneStepApproximation === true &&
+    reach.floodplainNitrification.truth.nitriteIntermediateResolved ===
+      false &&
+    reach.floodplainNitrification.truth.alkalinityDemandDiagnostic ===
+      false &&
+    reach.floodplainNitrification.truth
+      .alkalinityMaterialOwnerDebited === true),
+  'all 310 canonical reaches expose bounded oxygen/alkalinity-ledgered nitrification memory, including empty unloaded states');
   const adjacentDrainage = hydrology.buildHydrologySector(25.716, -140.963, { profile: 'temperate' });
   const sharedReaches = hydrology.compareSharedReaches(drainageA, adjacentDrainage);
   assert.ok(sharedReaches.length > 100, 'overlapping sectors share substantial canonical river coverage');
@@ -6931,6 +8496,16 @@ async function run() {
     true, 'experience capsule declares the semantic decomposition projection');
   assert.equal(experienceCapsule.truth.floodplainRespirationProjected,
     true, 'experience capsule declares the semantic respiration projection');
+  assert.equal(experienceCapsule.truth.floodplainDenitrificationProjected,
+    true, 'experience capsule declares the semantic denitrification projection');
+  assert.equal(experienceCapsule.truth.floodplainNitrificationProjected,
+    true, 'experience capsule declares the semantic nitrification projection');
+  assert.equal(experienceCapsule.truth
+    .riverFloodplainNitrateAmmoniumProjected,
+  true, 'experience capsule declares its compact river/floodplain nitrate and ammonium projection');
+  assert.equal(experienceCapsule.truth
+    .floodplainDenitrificationTemperatureResponseProjected,
+  true, 'experience capsule declares the semantic denitrification temperature-response projection');
   assert.equal(experienceCapsule.authority.capsuleAuthoritative, false, 'projection never relabels itself as canonical state');
   assert.equal(experienceCapsule.access.automaticMirrorConnection, false, 'capsule does not pretend Mirror is connected');
   assert.equal(experienceCapsule.access.automaticHolodeckConnection, false, 'capsule does not pretend Holodeck is connected');
@@ -7020,6 +8595,64 @@ async function run() {
       false &&
     reach.floodplainRespiration.truth.anaerobicPathwayModeled === false),
   'renderer-independent experience capsules carry bounded aerobic-respiration memory without inventing chemistry ownership, atmosphere exchange or an anaerobic path');
+  assert.ok(experienceCapsule.components.hydrology.rivers.some(reach =>
+    reach.floodplainDenitrification &&
+    Number.isFinite(reach.floodplainDenitrification
+      .observedDenitrificationDays) &&
+    Number.isFinite(reach.floodplainDenitrification
+      .atmosphereUnavailableDays) &&
+    Number.isFinite(reach.floodplainDenitrification
+      .temperatureConstrainedDays) &&
+    Object.values(reach.floodplainDenitrification.cumulativeReaction)
+      .every(Number.isFinite) &&
+    Number.isFinite(reach.floodplainDenitrification.lastActivity
+      .waterTemperatureC) &&
+    Number.isFinite(reach.floodplainDenitrification.lastActivity
+      .temperatureResponseFactor) &&
+    reach.floodplainDenitrification.truth
+      .floodplainChemistryOwnership === false &&
+    reach.floodplainDenitrification.truth.oxygenGated === true &&
+    reach.floodplainDenitrification.truth
+      .surfaceTemperatureProxyResponsive === true &&
+    reach.floodplainDenitrification.truth
+      .persistentFloodplainWaterTemperatureState === false &&
+    reach.floodplainDenitrification.truth
+      .dissolvedInorganicNitrogenTreatedAsFullyNitrate === false &&
+    reach.floodplainDenitrification.truth
+      .nitrateSpeciationResolved === true &&
+    reach.floodplainDenitrification.truth
+      .nitrateOnlyDenitrification === true &&
+    reach.floodplainDenitrification.truth
+      .ammoniumConsumedByDenitrification === false &&
+    reach.channelNitrogenSpecies &&
+    reach.floodplain?.nitrogenSpecies),
+  'renderer-independent experience capsules carry nitrate/ammonium ownership and bounded nitrate-only temperature-responsive denitrification memory without inventing chemistry or water-temperature ownership');
+  assert.ok(experienceCapsule.components.hydrology.rivers.some(reach =>
+    reach.floodplainNitrification &&
+    Number.isFinite(reach.floodplainNitrification
+      .observedNitrificationDays) &&
+    Number.isFinite(reach.floodplainNitrification.oxygenConstrainedDays) &&
+    Number.isFinite(reach.floodplainNitrification.oxygenLimitedDays) &&
+    Number.isFinite(reach.floodplainNitrification
+      .temperatureConstrainedDays) &&
+    Object.values(reach.floodplainNitrification.cumulativeReaction)
+      .every(Number.isFinite) &&
+    Number.isFinite(reach.floodplainNitrification.lastActivity
+      .dissolvedOxygenMgL) &&
+    Number.isFinite(reach.floodplainNitrification.lastActivity
+      .temperatureResponseFactor) &&
+    reach.floodplainNitrification.truth
+      .persistentNitrificationProcessMemory === true &&
+    reach.floodplainNitrification.truth
+      .ammoniumToNitrateOneStepApproximation === true &&
+    reach.floodplainNitrification.truth.nitriteIntermediateResolved ===
+      false &&
+    reach.floodplainNitrification.truth.alkalinityDemandDiagnostic ===
+      false &&
+    reach.floodplainNitrification.truth
+      .alkalinityMaterialOwnerDebited === true &&
+    reach.floodplainNitrification.truth.pHFeedbackModeled === false),
+  'renderer-independent experience capsules carry bounded oxygen/alkalinity-ledgered nitrification memory without inventing pH or nitrite state');
   assert.equal(experienceCapsule.components.earthSystem.land.surfaceSediment
     .schema, geomorphicSediment.SURFACE_SEDIMENT_STATE_SCHEMA,
   'renderer-independent experience capsules preserve finite mineral surface ownership');

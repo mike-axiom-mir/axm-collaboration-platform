@@ -1,0 +1,189 @@
+{
+  "capability_interface": {
+    "authority_delta": "NONE",
+    "canon_delta": "NONE",
+    "consent_delta": "NONE",
+    "consumes_clause": "consent and retention policy; sensitivity; purpose; protected payload references; export or deletion request",
+    "human_gate_required_by_source_contract": true,
+    "input_contract": "axm.memory.reference-request/v2",
+    "invariants": [
+      "authority_delta_is_none",
+      "canon_delta_is_none",
+      "consent and sensitivity must be accepted before payload handoff",
+      "consent_delta_is_none",
+      "delivery_does_not_imply_acceptance",
+      "derived output is replaceable",
+      "failure returns untouched source plus HOLD or failure receipt",
+      "full_semantics_are_not_claimed",
+      "memory_payload_is_inert_data",
+      "public-safe outputs contain no raw protected content",
+      "source remains authoritative and unchanged",
+      "source_truth_is_not_created_by_contract_validity",
+      "trust_delta_is_none"
+    ],
+    "operation_kind": "BOUNDED_TRANSFORM",
+    "output_contract": "axm.memory.encryption-key-boundary.receipt/v1",
+    "postconditions": [
+      "exactly one accepted reference contract or typed HOLD is returned",
+      "no hidden mutation, authority gain, trust gain, consent gain, or CANON promotion occurs",
+      "result remains source-linked, replaceable, privacy-safe, and bounded to the declared purpose",
+      "receiver acceptance, semantic apply, owner acceptance, and integration remain separate future acts"
+    ],
+    "preconditions": [
+      "exact seed identity and purpose match",
+      "source references and digests align",
+      "authority, consent, role, permission, expiry, and namespace checks pass",
+      "boot prerequisites are ready or explicitly safe degraded mode is allowed",
+      "resource, cancellation, revision, output-root, and compatibility guards pass"
+    ],
+    "purpose_clause": "Keep encrypted payloads, key identifiers, rotation, recovery, access roles, and secret-free metadata as separate governed surfaces.",
+    "semantic_effect": "REFERENCE_ONLY_NOT_IMPLEMENTED",
+    "state_effect_envelope": "DERIVED_OUTPUT_ONLY",
+    "trust_delta": "NONE"
+  },
+  "composition": {
+    "accepted_upstream_ids": [
+      "axm.memory.consent-bound-retention-policy",
+      "axm.memory.consent-lease",
+      "axm.memory.deletion-tombstone-receipt",
+      "axm.memory.provenance-envelope",
+      "axm.memory.sensitivity-classifier"
+    ],
+    "authority_transfer": false,
+    "boot_prerequisites": [
+      "axm.memory.consent-bound-retention-policy",
+      "axm.memory.consent-lease",
+      "axm.memory.deletion-tombstone-receipt",
+      "axm.memory.provenance-envelope",
+      "axm.memory.sensitivity-classifier"
+    ],
+    "consent_transfer": false,
+    "cycles_allowed_only_outside_boot_graph": true,
+    "delivery_does_not_imply_acceptance": true,
+    "downstream_candidates": [],
+    "handoff_schema": "axm.memory.capability-handoff/v1",
+    "runtime_collaborators": [],
+    "semantic_apply_implied": false,
+    "trust_transfer": false
+  },
+  "human_review": {
+    "automatic_apply": false,
+    "challenge_and_reopen_supported": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "packet_path": "modules/066_encryption-key-boundary/review_packet.json",
+    "primary_actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN"
+    ]
+  },
+  "identity": {
+    "category_number": 7,
+    "name": "Memory Encryption and Key Boundary",
+    "number": 66,
+    "stable_id": "axm.memory.encryption-key-boundary"
+  },
+  "pipeline_membership": [],
+  "profiles": {
+    "authority": {
+      "path": "profiles/authority_t3-explicit-human-gate.json",
+      "sha256": "ea007e95ccba294079e66a17dd3341fa0fef878fb667ddbac5847c5d39e1f1be"
+    },
+    "category": {
+      "path": "profiles/category_07_privacy_retention_export.json",
+      "sha256": "3b963a4560ff1d2a0187a0c1c0be3a1cc5ff5b01200869cc6d1ecd303687e704"
+    },
+    "operation": {
+      "path": "profiles/operation_bounded-transform.json",
+      "sha256": "b3ab2464d2e6545bdea049c38bf76a0ab59b41ec29cba390c93c2a094e955bcb"
+    },
+    "proof_tiers": {
+      "path": "profiles/proof_tiers.json",
+      "sha256": "ab8646803825822a1c529c9a47163827813c5ea9f2c2034031bdd103245d2f00"
+    },
+    "review_surface": {
+      "path": "profiles/review_surface.json",
+      "sha256": "d46b074a8a703365fd7243c20fae436abd8346494a3100efff73f817a65431e5"
+    },
+    "risk": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    }
+  },
+  "proof": {
+    "achieved_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE"
+    ],
+    "boundary": "Executable deltas, composition, metamorphic, resource, review, and capsule evidence remain synthetic/local reference proof.",
+    "canon": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "specialist_verification": false,
+    "workshop_integration": false
+  },
+  "resource_policy": {
+    "batch_and_step_limits_required": true,
+    "cancellation_must_be_checked": true,
+    "network_required": false,
+    "output_path_must_remain_under_exact_owned_root": true,
+    "profile_ref": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    },
+    "symlink_escape_forbidden": true,
+    "unbounded_scan_forbidden": true
+  },
+  "schema": "axm.memory.capability-delta/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "base_contract_file_sha256": "53816adf43cf1af09722b20c48ce252adfdfd492c60b78391713894c305cb8b4",
+    "body_sha256": "6fdf415bb770588d9af0a118439ad3aff5a938f3fa05419bc5c1974bd2bff09b",
+    "delta_core_sha256": "d0776e6a298a81fc758c900f46bb961e6bc24598f1a1f2c45be40c2c7771fcfd"
+  },
+  "source_run50": {
+    "build_intake_file_sha256": "cb4c5c14d06ca73f8cf491ef8e66f3636ca4b0cda844276f527ff734ebe829c5",
+    "candidate_contract_body_sha256": "a8b28a0097484d512842a1bfcd1cfb156eff34bc71578cea889cc608ffbeed66",
+    "candidate_contract_file_sha256": "53816adf43cf1af09722b20c48ce252adfdfd492c60b78391713894c305cb8b4",
+    "candidate_contract_path": "modules/066_encryption-key-boundary/candidate.contract.json",
+    "fixtures_file_sha256": "0fe4ecd85c233011d9528a99a1927a565dd791215af33d173b31ab9ee193e260",
+    "run50_posture_preserved": true,
+    "source_authority": "T3_EXPLICIT_HUMAN_GATE",
+    "source_operation_kind": "BOUNDED_TRANSFORM",
+    "source_purpose": "Keep encrypted payloads, key identifiers, rotation, recovery, access roles, and secret-free metadata as separate governed surfaces.",
+    "source_risk": "HIGH",
+    "source_run50_status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE",
+  "validation": {
+    "cache_is_evidence_reuse_not_truth": true,
+    "cached_result_cannot_promote_canon": true,
+    "harness_version": "axm-memory-run60-harness-v1",
+    "proof_cache_key": "5b3e1f989049e18fd70f6a6e699158e083e57331cce08e05a8ee1d6a5704987a",
+    "revalidation_triggers": [
+      "candidate contract or fixture digest changes",
+      "capability delta core changes",
+      "referenced shared profile digest changes",
+      "validation harness version changes",
+      "boot prerequisite interface changes",
+      "privacy, authority, or lifecycle policy changes"
+    ],
+    "test_suites": [
+      "run50_full_reference_suite",
+      "run60_delta_preservation",
+      "run60_capability_interface",
+      "run60_composition_graph",
+      "run60_selective_validation",
+      "run60_metamorphic_laws",
+      "run60_resource_faults",
+      "run60_reference_pipelines",
+      "run60_human_review",
+      "run60_capsule_export",
+      "run60_efficiency",
+      "run60_roundtrip"
+    ]
+  }
+}

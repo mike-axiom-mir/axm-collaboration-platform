@@ -1,0 +1,55 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "asset-pack-lab",
+  "version": "v0_1",
+  "provides": [
+    "asset-pack-manifest",
+    "template-shell-manifest",
+    "slot-schema",
+    "quality-gates",
+    "registry-export",
+    "template-index-review"
+  ],
+  "consumes": [
+    "workshop:storage",
+    "workshop:gate",
+    "service:asset-librarian",
+    "service:settings",
+    "service:registry",
+    "service:template-source",
+    "workshop:server-export"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm-asset-pack/v1",
+      "axm-template-shell/v1"
+    ],
+    "accepts": [
+      "hub:init",
+      "registry:template-source-list"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "browser-local:latest-pack-manifest",
+      "browser-local:latest-template-shell",
+      "user-download:explicit-manifest",
+      "workshop-export:explicit-manifest"
+    ],
+    "refuses": [
+      "automatic-pack-installation",
+      "automatic-launcher-consumption",
+      "asset-file-copying",
+      "visual-asset-editing",
+      "automatic-promotion",
+      "hidden-network-export"
+    ]
+  }
+}

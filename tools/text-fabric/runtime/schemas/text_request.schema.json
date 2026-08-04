@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/text_request.schema.json",
+  "title": "AXM Text Request",
+  "type": "object",
+  "required": [
+    "text",
+    "role",
+    "platform"
+  ],
+  "properties": {
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "role": {
+      "type": "string"
+    },
+    "mood": {
+      "type": "string",
+      "default": "clean"
+    },
+    "platform": {
+      "type": "string"
+    },
+    "background": {
+      "enum": [
+        "solid",
+        "dynamic",
+        "image",
+        "video",
+        "transparent"
+      ],
+      "default": "solid"
+    },
+    "background_color": {
+      "type": "string",
+      "default": "#11151C"
+    },
+    "foreground_color": {
+      "type": "string"
+    },
+    "importance": {
+      "enum": [
+        "low",
+        "normal",
+        "high",
+        "critical"
+      ],
+      "default": "normal"
+    },
+    "motion": {
+      "type": "string",
+      "default": "auto"
+    },
+    "accessibility": {
+      "enum": [
+        "standard",
+        "protected",
+        "strict"
+      ],
+      "default": "protected"
+    },
+    "user_scale": {
+      "type": "number",
+      "minimum": 0.75,
+      "maximum": 3.0,
+      "default": 1.0
+    },
+    "viewport_width": {
+      "type": "integer",
+      "minimum": 240,
+      "default": 1440
+    },
+    "language_direction": {
+      "enum": [
+        "auto",
+        "ltr",
+        "rtl"
+      ],
+      "default": "auto"
+    },
+    "font_stack": {
+      "type": "string"
+    },
+    "max_lines": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "design_scale": {
+      "type": "number",
+      "minimum": 0.5,
+      "maximum": 2.5,
+      "default": 1.0
+    },
+    "force_uppercase": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "preset_tuning": {
+      "type": "object",
+      "properties": {
+        "glow": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2.5
+        },
+        "plate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1.5
+        },
+        "sheen": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2.0
+        },
+        "glitch": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1.5
+        }
+      },
+      "additionalProperties": false
+    },
+    "font_file": {
+      "type": "string",
+      "description": "Optional local project-owned TTF, OTF, or TTC path. The file is audited but never bundled."
+    },
+    "font_index": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "font_coverage_policy": {
+      "enum": [
+        "off",
+        "warn",
+        "strict"
+      ],
+      "default": "warn"
+    },
+    "font_registry": {
+      "type": "string",
+      "description": "Optional local AXM font registry path used to plan a fallback stack. Registry metadata is referenced but not bundled."
+    },
+    "container_width_px": {
+      "type": "number",
+      "minimum": 120,
+      "description": "Optional target text container width used by the layout preflight."
+    },
+    "safe_area_ratio": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 0.25,
+      "description": "Fraction reserved on each horizontal edge."
+    },
+    "localization_expansion": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1.5,
+      "default": 0.35
+    },
+    "layout_policy": {
+      "enum": [
+        "off",
+        "warn",
+        "strict"
+      ],
+      "default": "warn"
+    }
+  },
+  "additionalProperties": true
+}

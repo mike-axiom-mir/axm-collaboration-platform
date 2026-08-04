@@ -1,0 +1,42 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.last-known-good-comparator",
+  "name": "Last Known Good Comparator",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "FOUNDATION",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "repair-seed",
+    "diagnosis-fault-localization",
+    "local-first",
+    "dependency-free",
+    "no-automatic-canon"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Identify the smallest meaningful difference between the failing state and a verified working checkpoint."
+  ],
+  "accepts": [
+    "verified-checkpoints",
+    "current-state"
+  ],
+  "produces": [
+    "axm.last-known-good-comparison/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Identify the smallest meaningful difference between the failing state and a verified working checkpoint.",
+  "notes": "Diagnostic prototype only. Correlation, ranking, and experiments do not prove cause or authorize mutation."
+}

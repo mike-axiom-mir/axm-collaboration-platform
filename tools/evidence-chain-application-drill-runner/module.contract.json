@@ -1,0 +1,74 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "evidence-chain-application-drill-runner",
+  "version": "v0.1",
+  "provides": [
+    "capability.drill.evidence-chain-recovery-application/v1",
+    "evidence-chain-owned-sandbox-atomic-swap",
+    "evidence-chain-owned-sandbox-rollback-proof",
+    "evidence-chain-owned-sandbox-cleanup-receipt"
+  ],
+  "consumes": [
+    "application/x-ndjson",
+    "axm.evidence-chain-recovery-application-plan/v1",
+    "capability.inspect.evidence-chain/v1",
+    "capability.plan.evidence-chain-recovery-application/v1",
+    "human:exact-plan-confirmation",
+    "human:sandbox-only-and-cleanup-acknowledgements"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.evidence-chain-recovery-application-drill-request/v1",
+      "axm.evidence-chain-recovery-application-drill/v1"
+    ],
+    "accepts": ["application/x-ndjson", "axm.evidence-chain-recovery-application-plan/v1"]
+  },
+  "boundaries": {
+    "reads": [
+      "browser:user-selected-source-candidate-and-plan",
+      "cli:explicit-source-candidate-and-plan-files"
+    ],
+    "writes": [
+      "node:brand-new-explicit-sandbox-root/target.jsonl",
+      "node:brand-new-explicit-sandbox-root/safety-copy.jsonl",
+      "node:brand-new-explicit-sandbox-root/candidate.stage.jsonl",
+      "node:brand-new-explicit-sandbox-root/rollback-source.jsonl",
+      "stdout:digest-only-drill-receipt"
+    ],
+    "deletes": ["node:exact-owned-sandbox-root-after-drill"],
+    "refuses": [
+      "existing-sandbox-root",
+      "relative-sandbox-root",
+      "sandbox-name-without-safe-prefix",
+      "symlink-or-noncanonical-sandbox-parent",
+      "path-escape",
+      "expired-or-future-plan",
+      "plan-id-or-input-digest-mismatch",
+      "invalid-candidate-chain",
+      "non-hash-semantic-change",
+      "missing-exact-plan-confirmation",
+      "missing-sandbox-only-acknowledgement",
+      "missing-ephemeral-cleanup-acknowledgement",
+      "payload-path-or-file-name-in-receipt",
+      "source-or-candidate-input-file-write",
+      "live-target-read-or-write",
+      "Recovery-Center-call",
+      "permission-check-or-grant",
+      "trusted-service-application-claim",
+      "live-apply-capability-claim",
+      "drill-file-retention",
+      "automatic-scheduling",
+      "network-access",
+      "persistent-state",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

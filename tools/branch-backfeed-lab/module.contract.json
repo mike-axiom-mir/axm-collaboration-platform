@@ -1,0 +1,44 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "branch-backfeed-lab",
+  "version": "v0.1",
+  "provides": [
+    "bounded-branch-capsule-shape-validation",
+    "branch-capsule-path-boundary-validation",
+    "external-dependency-refusal",
+    "selected-file-sha256-and-byte-verification",
+    "graft-ready-intake-receipt"
+  ],
+  "consumes": ["user-selected:axm.branch-backfeed-capsule/v1"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.branch-backfeed-intake-receipt/v1"],
+    "accepts": ["axm.branch-backfeed-capsule/v1"]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  },
+  "boundaries": {
+    "writes": ["user-selected-download:branch-backfeed-intake-receipt.json"],
+    "refuses": [
+      "network-read",
+      "archive-extraction",
+      "code-execution-from-capsule",
+      "external-dependency-admission",
+      "path-escape",
+      "undeclared-file-admission",
+      "automatic-installation",
+      "automatic-registry-change",
+      "automatic-graft",
+      "permission-change",
+      "source-mutation",
+      "promotion",
+      "canon-change",
+      "runtime-behavior-claim-from-static-integrity",
+      "visual-quality-claim"
+    ]
+  }
+}

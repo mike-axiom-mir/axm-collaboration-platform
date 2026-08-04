@@ -1,0 +1,86 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "evidence-chain-recovery-snapshot-staging-foundry",
+  "version": "v0.1",
+  "provides": [
+    "capability.stage.evidence-chain-recovery-snapshot/v1",
+    "evidence-chain-recovery-snapshot-layout",
+    "evidence-chain-recovery-package-manifest-ledger",
+    "evidence-chain-recovery-staged-byte-readback-proof"
+  ],
+  "consumes": [
+    "application/x-ndjson",
+    "axm.evidence-chain-recovery-application-plan/v1",
+    "axm.evidence-chain-recovery-adapter-conformance-receipt/v1",
+    "axm.evidence-chain-recovery-adapter-integration-acceptance-packet/v1",
+    "capability.inspect.evidence-chain/v1",
+    "capability.drill.evidence-chain-recovery-application/v1",
+    "capability.verify.evidence-chain-recovery-adapter/v1",
+    "capability.plan.evidence-chain-recovery-adapter-integration/v1",
+    "package-manifest",
+    "human:exact-integration-packet-confirmation",
+    "human:private-target-retained-stage-and-no-live-placement-acknowledgements"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.evidence-chain-recovery-snapshot-staging-request/v1",
+      "axm.evidence-chain-recovery-snapshot-staging-receipt/v1",
+      "axm.workshop-package/v1"
+    ],
+    "accepts": [
+      "application/x-ndjson",
+      "axm.evidence-chain-recovery-application-plan/v1",
+      "axm.evidence-chain-recovery-adapter-conformance-receipt/v1",
+      "axm.evidence-chain-recovery-adapter-integration-acceptance-packet/v1"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "browser:user-selected-source-candidate-plan-conformance-and-integration-files",
+      "node:explicit-source-candidate-plan-conformance-and-integration-files"
+    ],
+    "writes": [
+      "node:brand-new-explicit-staging-root/axm-workshop-full-evidence-repair-*/PACKAGE_MANIFEST.json",
+      "node:brand-new-explicit-staging-root/axm-workshop-full-evidence-repair-*/state/evidence-retention/*.jsonl",
+      "node:brand-new-explicit-staging-root/STAGING_RECEIPT.json",
+      "stdout:digest-only-staging-receipt"
+    ],
+    "deletes": ["node:exact-owned-staging-root-after-failed-or-injected-fault"],
+    "refuses": [
+      "existing-staging-root",
+      "relative-staging-root",
+      "staging-name-without-safe-prefix",
+      "symlink-or-noncanonical-staging-parent",
+      "path-escape",
+      "target-outside-state-evidence-retention",
+      "non-jsonl-target",
+      "expired-or-future-plan-or-packet",
+      "plan-conformance-integration-digest-mismatch",
+      "invalid-candidate-chain",
+      "non-hash-semantic-change",
+      "missing-exact-packet-confirmation",
+      "missing-private-target-acknowledgement",
+      "missing-retained-staging-acknowledgement",
+      "missing-no-live-placement-acknowledgement",
+      "source-or-candidate-input-file-write",
+      "Workshop-Packager-output-write",
+      "live-snapshot-placement",
+      "Recovery-Center-call",
+      "permission-check-grant-or-revocation",
+      "live-target-read-or-write",
+      "apply-or-rollback-claim",
+      "root-or-target-path-in-stdout-receipt",
+      "network-call",
+      "automatic-installation",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  }
+}

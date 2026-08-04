@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.state-integrity-checker",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.state-integrity-report/v1"
+  ],
+  "consumes": [
+    "state",
+    "hash-expectations",
+    "reference-rules",
+    "invariants"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_VERIFICATION_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/recovery-center",
+      "tools/diagnostics-operations-center"
+    ],
+    "reason": "Combines structural, hash, reference, and invariant checks without repairing failed state."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-restore",
+      "automatic-rollback",
+      "silent-data-loss",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

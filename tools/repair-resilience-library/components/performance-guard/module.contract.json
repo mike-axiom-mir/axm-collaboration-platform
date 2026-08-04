@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.performance-guard",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.performance-guard.report/v1"
+  ],
+  "consumes": [
+    "baseline-metrics",
+    "candidate-metrics",
+    "performance-budgets"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_VERIFY_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/qa-lab",
+      "tools/body-pulse",
+      "tools/repairbuddy"
+    ],
+    "reason": "Connects repair proof to resource pressure without claiming one device baseline fits all hardware."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "verification-as-permission",
+      "selftest-as-runtime-proof",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "hidden-evidence-omission"
+    ]
+  }
+}

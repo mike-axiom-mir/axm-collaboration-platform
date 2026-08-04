@@ -1,0 +1,191 @@
+{
+  "capability_interface": {
+    "authority_delta": "NONE",
+    "canon_delta": "NONE",
+    "consent_delta": "NONE",
+    "consumes_clause": "verified outcomes; feedback; failure lessons; candidate patterns; quality evidence; human decisions",
+    "human_gate_required_by_source_contract": false,
+    "input_contract": "axm.memory.reference-request/v2",
+    "invariants": [
+      "authority_delta_is_none",
+      "canon_delta_is_none",
+      "consent_delta_is_none",
+      "coordination receipts cannot complete downstream work",
+      "coordinator cannot complete, undo, or promote downstream work",
+      "delivery and acceptance are separate",
+      "delivery_does_not_imply_acceptance",
+      "downstream owners recover their own writes",
+      "full_semantics_are_not_claimed",
+      "human decisions remain explicit and reopenable",
+      "memory_payload_is_inert_data",
+      "source_truth_is_not_created_by_contract_validity",
+      "trust_delta_is_none"
+    ],
+    "operation_kind": "GATED_COORDINATION",
+    "output_contract": "axm.memory.recertification-scheduler.proposal/v1",
+    "postconditions": [
+      "exactly one accepted reference contract or typed HOLD is returned",
+      "no hidden mutation, authority gain, trust gain, consent gain, or CANON promotion occurs",
+      "result remains source-linked, replaceable, privacy-safe, and bounded to the declared purpose",
+      "receiver acceptance, semantic apply, owner acceptance, and integration remain separate future acts"
+    ],
+    "preconditions": [
+      "exact seed identity and purpose match",
+      "source references and digests align",
+      "authority, consent, role, permission, expiry, and namespace checks pass",
+      "boot prerequisites are ready or explicitly safe degraded mode is allowed",
+      "resource, cancellation, revision, output-root, and compatibility guards pass"
+    ],
+    "purpose_clause": "Recheck due memories when sources, preferences, policies, environment, schemas, dependencies, or target profiles change.",
+    "semantic_effect": "REFERENCE_ONLY_NOT_IMPLEMENTED",
+    "state_effect_envelope": "COORDINATION_STATE_ONLY",
+    "trust_delta": "NONE"
+  },
+  "composition": {
+    "accepted_upstream_ids": [
+      "axm.memory.bounded-continuity-orchestrator",
+      "axm.memory.canon-candidate-separator",
+      "axm.memory.failure-lesson-registry",
+      "axm.memory.lifecycle-state-machine",
+      "axm.memory.provenance-envelope",
+      "axm.memory.source-authority-binder"
+    ],
+    "authority_transfer": false,
+    "boot_prerequisites": [
+      "axm.memory.bounded-continuity-orchestrator",
+      "axm.memory.canon-candidate-separator",
+      "axm.memory.failure-lesson-registry",
+      "axm.memory.lifecycle-state-machine",
+      "axm.memory.provenance-envelope",
+      "axm.memory.source-authority-binder"
+    ],
+    "consent_transfer": false,
+    "cycles_allowed_only_outside_boot_graph": true,
+    "delivery_does_not_imply_acceptance": true,
+    "downstream_candidates": [],
+    "handoff_schema": "axm.memory.capability-handoff/v1",
+    "runtime_collaborators": [],
+    "semantic_apply_implied": false,
+    "trust_transfer": false
+  },
+  "human_review": {
+    "automatic_apply": false,
+    "challenge_and_reopen_supported": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "packet_path": "modules/097_recertification-scheduler/review_packet.json",
+    "primary_actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN"
+    ]
+  },
+  "identity": {
+    "category_number": 10,
+    "name": "Memory Recertification Scheduler",
+    "number": 97,
+    "stable_id": "axm.memory.recertification-scheduler"
+  },
+  "pipeline_membership": [],
+  "profiles": {
+    "authority": {
+      "path": "profiles/authority_t2-coordinate-without-owning-authority.json",
+      "sha256": "83756e5e1a12ff79c47e3c2a601e82b3ba708c4d2f992c87a80e2b2aa00b54c2"
+    },
+    "category": {
+      "path": "profiles/category_10_governance_learning_orchestration.json",
+      "sha256": "19c404aeca5555052939a1872019f630473a67b7c74345f97b6cf68a415adc83"
+    },
+    "operation": {
+      "path": "profiles/operation_gated-coordination.json",
+      "sha256": "a0d0d1f65f0b5dcd95009e38e30b379bfa70e3549a6c27fcbd7ceb66f94f9153"
+    },
+    "proof_tiers": {
+      "path": "profiles/proof_tiers.json",
+      "sha256": "ab8646803825822a1c529c9a47163827813c5ea9f2c2034031bdd103245d2f00"
+    },
+    "review_surface": {
+      "path": "profiles/review_surface.json",
+      "sha256": "d46b074a8a703365fd7243c20fae436abd8346494a3100efff73f817a65431e5"
+    },
+    "risk": {
+      "path": "profiles/risk_medium.json",
+      "sha256": "0caaae86018b2eb8daed6e7cbf6ccb9a28d3f9f383e9df56922f67143d9476fe"
+    }
+  },
+  "proof": {
+    "achieved_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE"
+    ],
+    "boundary": "Executable deltas, composition, metamorphic, resource, review, and capsule evidence remain synthetic/local reference proof.",
+    "canon": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "specialist_verification": false,
+    "workshop_integration": false
+  },
+  "resource_policy": {
+    "batch_and_step_limits_required": true,
+    "cancellation_must_be_checked": true,
+    "network_required": false,
+    "output_path_must_remain_under_exact_owned_root": true,
+    "profile_ref": {
+      "path": "profiles/risk_medium.json",
+      "sha256": "0caaae86018b2eb8daed6e7cbf6ccb9a28d3f9f383e9df56922f67143d9476fe"
+    },
+    "symlink_escape_forbidden": true,
+    "unbounded_scan_forbidden": true
+  },
+  "schema": "axm.memory.capability-delta/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "base_contract_file_sha256": "2f869a6675ffb68ff4af642b14ad9c777665ec8a63f5a793368d39334f367f7a",
+    "body_sha256": "8d932b13b4041f1e24e587b16f619c5095053460b4a35cda579de6ab7ef8dde7",
+    "delta_core_sha256": "8e57ec4734166a12226e0f275cb2b08e213672ebe70fc6c07e77d7378b44aa45"
+  },
+  "source_run50": {
+    "build_intake_file_sha256": "0c42857b29c3e0817388ba1bb72d2eb6c906a63e4be8af31f344171cbb77feff",
+    "candidate_contract_body_sha256": "5732bebe087cb4d53688a3a4f628722faad1233cd8f3fb1730a8c4786beff5dd",
+    "candidate_contract_file_sha256": "2f869a6675ffb68ff4af642b14ad9c777665ec8a63f5a793368d39334f367f7a",
+    "candidate_contract_path": "modules/097_recertification-scheduler/candidate.contract.json",
+    "fixtures_file_sha256": "6bd842abf09222b9eab3145dc98ab723e16ebc52ace823e944a3a98dbc886f75",
+    "run50_posture_preserved": true,
+    "source_authority": "T2_COORDINATE_WITHOUT_OWNING_AUTHORITY",
+    "source_operation_kind": "GATED_COORDINATION",
+    "source_purpose": "Recheck due memories when sources, preferences, policies, environment, schemas, dependencies, or target profiles change.",
+    "source_risk": "MEDIUM",
+    "source_run50_status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE",
+  "validation": {
+    "cache_is_evidence_reuse_not_truth": true,
+    "cached_result_cannot_promote_canon": true,
+    "harness_version": "axm-memory-run60-harness-v1",
+    "proof_cache_key": "6ce3ddc5ee8893e9213abe4f252353c3f80a2d56406a5c73cf781782a6be79f1",
+    "revalidation_triggers": [
+      "candidate contract or fixture digest changes",
+      "capability delta core changes",
+      "referenced shared profile digest changes",
+      "validation harness version changes",
+      "boot prerequisite interface changes",
+      "privacy, authority, or lifecycle policy changes"
+    ],
+    "test_suites": [
+      "run50_full_reference_suite",
+      "run60_delta_preservation",
+      "run60_capability_interface",
+      "run60_composition_graph",
+      "run60_selective_validation",
+      "run60_metamorphic_laws",
+      "run60_resource_faults",
+      "run60_reference_pipelines",
+      "run60_human_review",
+      "run60_capsule_export",
+      "run60_efficiency",
+      "run60_roundtrip"
+    ]
+  }
+}

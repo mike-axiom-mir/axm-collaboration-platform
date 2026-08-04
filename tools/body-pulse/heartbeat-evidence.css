@@ -1,0 +1,66 @@
+.heartbeatEvidenceDeck {
+  grid-column: 1 / -1;
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  border: 1px solid rgba(76, 225, 255, .28);
+  background:
+    linear-gradient(115deg, rgba(5, 27, 43, .94), rgba(10, 13, 29, .96) 56%, rgba(29, 15, 44, .9)),
+    repeating-linear-gradient(90deg, transparent 0 47px, rgba(82, 226, 255, .035) 48px);
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+  box-shadow: inset 0 0 52px rgba(48, 211, 255, .055), 0 16px 50px rgba(0, 0, 0, .16);
+}
+.heartbeatEvidenceDeck::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(#56efff, #64e5a5 52%, #aa76ff);
+  box-shadow: 0 0 20px rgba(86, 239, 255, .65);
+}
+.heartbeatEvidenceDeck h3 { margin: 3px 0 0; }
+.heartbeatEvidenceDeck .sectionHead > b {
+  color: #8ff8df;
+  font: 800 10px ui-monospace, monospace;
+  letter-spacing: .12em;
+}
+.heartbeatEvidenceDeck .sectionHead > b.attention { color: var(--red); }
+.heartbeatEvidenceGrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+.heartbeatEvidenceGrid article {
+  min-height: 108px;
+  padding: 12px;
+  display: grid;
+  align-content: space-between;
+  gap: 8px;
+  border: 1px solid rgba(89, 210, 235, .16);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(4, 14, 25, .76), rgba(3, 9, 18, .86));
+}
+.heartbeatEvidenceGrid span {
+  color: #7691a8;
+  font: 700 9px ui-monospace, monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.heartbeatEvidenceGrid b {
+  color: #eafaff;
+  font: 800 18px ui-monospace, monospace;
+  letter-spacing: -.035em;
+}
+.heartbeatEvidenceGrid small { color: #71869b; font-size: 10px; line-height: 1.35; }
+.heartbeatEvidenceTruth {
+  margin-top: 10px;
+  padding: 9px 11px;
+  border-left: 2px solid rgba(170, 118, 255, .72);
+  background: rgba(12, 7, 24, .46);
+  color: #8fa3b7;
+  font-size: 10px;
+}
+@media (max-width: 1180px) { .heartbeatEvidenceGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 680px) { .heartbeatEvidenceGrid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 460px) { .heartbeatEvidenceGrid { grid-template-columns: 1fr; } }

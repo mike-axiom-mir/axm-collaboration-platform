@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.restore-lineage-guard",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.restore-lineage-decision/v1"
+  ],
+  "consumes": [
+    "restore-preview",
+    "snapshot-lineage",
+    "current-digest"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_3_HUMAN_GATED_DECISION",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/recovery-center",
+      "shared/module-evolution-ledger"
+    ],
+    "reason": "Requires exact source, digest, scope, freshness, and current-state assumptions before a restore can reach a human gate."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-restore",
+      "automatic-rollback",
+      "silent-data-loss",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

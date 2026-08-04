@@ -4,6 +4,8 @@
   var notice=document.getElementById('notice');
   var lastSnapshot=null;
   var sourceCatalog=null;
+  var offlinePacket=null;
+  var offlinePreview=null;
 
   function stateClass(value){return 'state-'+String(value||'unknown').toLowerCase().replace(/_/g,'-');}
   function chip(value){return '<span class="state-chip '+stateClass(value)+'">'+O.esc(String(value||'UNKNOWN').replace(/_/g,' '))+'</span>';}
@@ -71,22 +73,76 @@
     }).join(''):'<tr><td colspan="4">No diagnostic reports exported.</td></tr>';
   }
 
+  function renderOfflineStatus(status){
+    var state=document.getElementById('offlineState');
+    state.className='state-chip '+stateClass(status.proofState);
+    state.textContent=status.proofState.replace(/_/g,' ');
+    document.getElementById('offlineFacts').innerHTML=[
+      metric('Proof state',status.proofState.replace(/_/g,' ')),
+      metric('Recorded gates',status.assessmentCount),
+      metric('Collector',status.collectorAvailable?'Available':'Missing'),
+      metric('Private runtime',status.privateRuntime&&status.privateRuntime.present?(status.privateRuntime.verifiedVersion||'Present'):'Not present')
+    ].join('');
+    if(status.latest&&!offlinePreview)renderOfflineResult(status.latest,'Latest recorded result');
+  }
+
+  function renderOfflineResult(value,label){
+    var gate=value&&value.gate||{},errors=Array.isArray(gate.errors)?gate.errors:[];
+    document.getElementById('offlineResult').textContent=[
+      label+' / '+(gate.decision||'UNKNOWN'),
+      'Windows offline-first proven: '+(gate.windows_offline_first_proven===true?'YES':'NO'),
+      'Physical proof: '+(gate.physical_proof===true?'YES':'NO'),
+      'Public support granted: NO',
+      errors.length?'\nHolds:\n- '+errors.join('\n- '):'\nNo gate errors.'
+    ].join('\n');
+  }
+
   function load(){
     document.getElementById('refresh').disabled=true;
     return Promise.all([
       result(O.get('/api/diagnostics')),
       result(O.get('/api/diagnostics/log-sources')),
-      result(O.get('/api/diagnostics/exports'))
+      result(O.get('/api/diagnostics/exports')),
+      result(O.get('/api/diagnostics/windows-offline'))
     ]).then(function(results){
       var failures=[];
       if(results[0].ok)renderSnapshot(results[0].value);else failures.push('snapshot: '+results[0].error.message);
       if(results[1].ok)renderSources(results[1].value);else failures.push('log catalog: '+results[1].error.message);
       if(results[2].ok)renderExports(results[2].value);else failures.push('export lineage: '+results[2].error.message);
+      if(results[3].ok)renderOfflineStatus(results[3].value);else failures.push('Windows offline gate: '+results[3].error.message);
       if(failures.length)O.notice(notice,'Some diagnostic surfaces are unavailable / '+failures.join(' / '),'warn');
     }).finally(function(){document.getElementById('refresh').disabled=false;});
   }
 
   document.getElementById('refresh').onclick=load;
+  document.getElementById('offlinePacket').onchange=function(event){
+    var file=event.target.files&&event.target.files[0];
+    offlinePacket=null;offlinePreview=null;
+    document.getElementById('previewOffline').disabled=true;
+    document.getElementById('recordOffline').disabled=true;
+    if(!file){document.getElementById('offlineFileMeta').textContent='No packet selected.';return;}
+    if(file.size>2*1024*1024){O.notice(notice,'Gate packet exceeds the 2 MiB limit.','bad');return;}
+    file.text().then(function(text){
+      var parsed=JSON.parse(text);offlinePacket=parsed.packet||parsed;
+      document.getElementById('previewOffline').disabled=false;
+      document.getElementById('offlineFileMeta').textContent=file.name+' / '+O.bytes(file.size)+' / loaded locally, not yet recorded';
+    }).catch(function(error){O.notice(notice,'Gate packet is not valid JSON: '+error.message,'bad');});
+  };
+  document.getElementById('previewOffline').onclick=function(){
+    var button=document.getElementById('previewOffline');button.disabled=true;
+    O.post('/api/diagnostics/windows-offline/preview',{packet:offlinePacket}).then(function(preview){
+      offlinePreview=preview;renderOfflineResult(preview,'Read-only preview');
+      document.getElementById('recordOffline').disabled=false;
+    }).catch(function(error){O.notice(notice,error.message,'bad');}).finally(function(){button.disabled=!offlinePacket;});
+  };
+  document.getElementById('recordOffline').onclick=function(){
+    var button=document.getElementById('recordOffline');button.disabled=true;
+    O.post('/api/diagnostics/windows-offline/record',{packet:offlinePacket},{'x-axm-windows-offline':'record-reviewed-gate'}).then(function(receipt){
+      renderOfflineResult(receipt,'Recorded reviewed result');
+      O.notice(notice,'Windows offline gate result recorded / '+receipt.id,'ok');
+      return O.get('/api/diagnostics/windows-offline').then(renderOfflineStatus);
+    }).catch(function(error){O.notice(notice,error.message,'bad');}).finally(function(){button.disabled=!offlinePreview;});
+  };
   document.getElementById('loadLog').onclick=function(){
     var kind=document.getElementById('logKind').value,button=document.getElementById('loadLog');
     if(!kind)return;

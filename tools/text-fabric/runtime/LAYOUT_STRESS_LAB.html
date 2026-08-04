@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Layout Stress Lab</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(145deg, #05080d, #0a1724);
+      color: #eef8ff;
+      font-family: system-ui;
+      padding: 22px;
+    }
+    .shell { max-width: 1200px; margin: auto; min-width: 0; }
+    .panel {
+      min-width: 0;
+      background: rgba(12, 22, 34, .88);
+      border: 1px solid #2b4055;
+      border-radius: 18px;
+      padding: 18px;
+      margin: 14px 0;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      gap: 12px;
+    }
+    textarea, select, input {
+      width: 100%;
+      background: #07111b;
+      border: 1px solid #33495d;
+      color: #eef8ff;
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .frame-viewport {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+    }
+    .frame {
+      min-width: 240px;
+      margin: auto;
+      border: 1px dashed #66839d;
+      background: #06101a;
+      padding: 18px;
+      overflow: hidden;
+    }
+    .sample { font-weight: 700; line-height: 1.18; overflow-wrap: anywhere; }
+    .metrics { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .chip { border: 1px solid #40576c; border-radius: 999px; padding: 5px 8px; font-size: 12px; }
+    .warn { border-color: #c08c31; color: #ffd987; }
+    @media (max-width: 780px) {
+      .controls { grid-template-columns: 1fr 1fr; }
+      .controls textarea { grid-column: 1 / -1; }
+    }
+    @media (max-width: 480px) {
+      body { padding: 14px; }
+      h1 { font-size: clamp(1.65rem, 9vw, 2.2rem); }
+      .panel { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <h1>AXM Layout Stress Lab</h1>
+    <p>Test expansion, pseudo-RTL, narrow widths, safe areas, and line limits without loading an engine.</p>
+    <section class="panel controls">
+      <textarea id="text">SYSTEM READY — Continue to the next mission</textarea>
+      <select id="mode">
+        <option value="original">Original</option>
+        <option value="accented">Accented</option>
+        <option value="expanded">Expanded +35%</option>
+        <option value="rtl">Pseudo RTL</option>
+      </select>
+      <select id="role">
+        <option value="display">Display</option>
+        <option value="label">Label</option>
+        <option value="body">Body</option>
+        <option value="game_hud">Game HUD</option>
+        <option value="subtitle">Subtitle</option>
+      </select>
+      <label>Width <input id="width" type="range" min="240" max="1200" value="480"></label>
+      <label>Font size <input id="size" type="range" min="12" max="82" value="44"></label>
+      <label>Max lines <input id="lines" type="range" min="1" max="8" value="2"></label>
+      <label>Safe area <input id="safe" type="range" min="0" max="15" value="5"></label>
+    </section>
+    <section class="panel">
+      <div id="frameViewport" class="frame-viewport">
+        <div id="frame" class="frame"><div id="sample" class="sample"></div></div>
+      </div>
+      <div id="metrics" class="metrics"></div>
+    </section>
+  </div>
+  <script>
+    const $ = id => document.getElementById(id);
+    const map = { a: 'á', e: 'ë', i: 'ï', o: 'ö', u: 'ü', A: 'Á', E: 'Ë', I: 'Ï', O: 'Ö', U: 'Ü' };
+
+    function pseudo(text, mode) {
+      if (mode === 'accented') return '［' + [...text].map(char => map[char] || char).join('') + '］';
+      if (mode === 'expanded') {
+        const accented = [...text].map(char => map[char] || char).join('');
+        const expansion = '~'.repeat(Math.max(1, Math.round(text.replace(/\s/g, '').length * .35)));
+        return '［' + accented + ' ' + expansion + '］';
+      }
+      if (mode === 'rtl') return '⟦ ' + text.split(/(\s+)/).reverse().join('') + ' ⟧';
+      return text;
+    }
+
+    function fitInitialWidth() {
+      if (!matchMedia('(max-width: 780px)').matches) return;
+      const control = $('width');
+      const available = Math.floor($('frameViewport').clientWidth);
+      if (available > 0 && Number(control.value) > available) {
+        control.value = String(Math.max(Number(control.min), available));
+      }
+    }
+
+    function update() {
+      const width = Number($('width').value);
+      const size = Number($('size').value);
+      const maxLines = Number($('lines').value);
+      const safe = Number($('safe').value) / 100;
+      const text = pseudo($('text').value, $('mode').value);
+      $('frame').style.width = width + 'px';
+      $('frame').style.paddingLeft = $('frame').style.paddingRight = (width * safe) + 'px';
+      $('sample').style.fontSize = size + 'px';
+      $('sample').dir = $('mode').value === 'rtl' ? 'rtl' : 'ltr';
+      $('sample').textContent = text;
+      const usable = width * (1 - safe * 2);
+      const approximateWidth = text.length * size * .52;
+      const lines = Math.max(1, Math.ceil(approximateWidth / Math.max(1, usable)));
+      const risk = lines > maxLines;
+      $('metrics').innerHTML = [
+        width + 'px container',
+        Math.round(usable) + 'px usable',
+        lines + ' estimated lines',
+        'max ' + maxLines,
+        risk ? 'overflow risk' : 'within budget'
+      ].map((value, index) =>
+        '<span class="chip ' + (index === 4 && risk ? 'warn' : '') + '">' + value + '</span>'
+      ).join('');
+    }
+
+    ['text', 'mode', 'role', 'width', 'size', 'lines', 'safe'].forEach(
+      id => $(id).addEventListener('input', update)
+    );
+    fitInitialWidth();
+    update();
+  </script>
+</body>
+</html>

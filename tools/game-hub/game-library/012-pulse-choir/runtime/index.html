@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#070816">
+  <title>Pulse Choir · AXM Game Night</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div><small>AXM GAME NIGHT · LIVE COSMIC SHOW 012</small><h1>Pulse Choir</h1></div>
+      </div>
+      <div class="promise"><span>THE PROMISE</span><strong>Read the room. Build the rhythm. Pulse together.</strong></div>
+      <div class="network" id="network"><i></i><span>CONNECTING</span></div>
+    </header>
+
+    <section class="hud" aria-label="Round status">
+      <div class="hud-card score"><small>ROOM SCORE</small><strong id="score">0000</strong><span id="rank">WARM-UP</span></div>
+      <div class="hud-card core-status">
+        <small>SHARED PULSE CORE</small>
+        <div class="charge-track" aria-hidden="true"><i id="chargeFill"></i></div>
+        <strong><b id="charge">0</b>%</strong>
+      </div>
+      <div class="hud-card timer"><small>ROUND CLOCK</small><strong id="timer">1:15</strong><span id="phase">LOBBY</span></div>
+      <div class="hud-card surge"><small>CHOIR SURGES</small><strong id="surges">0</strong><span id="bestSync">BEST SYNC 0</span></div>
+      <div class="hud-card harmony"><small>LIVE HARMONY</small><strong id="combo">x1.00</strong><span id="streak">CHAIN 0</span></div>
+    </section>
+
+    <section class="stage" id="stage" aria-label="Pulse Choir shared arena">
+      <canvas id="arena" width="1280" height="720" aria-label="Neon shared arena with players, collectible beats, a central pulse core, and glitch lanes"></canvas>
+      <div class="corner-label top-left">SERVER AUTHORITY <b id="revision">R0</b></div>
+      <div class="corner-label top-right"><b id="frameCost">0.0 MS</b> / 16.7 MS</div>
+      <div class="event-toast" id="eventToast" role="status" aria-live="polite">Start when the room is ready.</div>
+      <div class="sync-banner" id="syncBanner" hidden><small>SYNC WINDOW</small><strong>PULSE TOGETHER</strong><div id="syncDots"></div></div>
+      <div class="combo-callout" id="comboCallout" hidden aria-hidden="true"></div>
+      <aside class="setlist-panel" id="setlistPanel" aria-label="Live Setlist directive" aria-live="polite" hidden>
+        <div><span id="setlistAct">ACT 1 / 3</span><b id="setlistClock">0:23</b></div>
+        <strong><i id="setlistGlyph">★</i><span id="setlistTitle">HUMAN SPOTLIGHT</span></strong>
+        <p id="setlistCopy">A human banks one complete TRIAD.</p>
+        <div class="setlist-track" aria-hidden="true"><i id="setlistFill"></i></div>
+        <small id="setlistProgress">0 / 1</small>
+      </aside>
+
+      <section class="phase-overlay" id="phaseOverlay">
+        <div class="overlay-card" id="overlayCard">
+          <span class="show-badge" id="showBadge">TONIGHT'S MAIN EVENT</span>
+          <span class="eyebrow" id="overlayEyebrow">LOCAL CO-OP · 1–4 PLAYERS</span>
+          <h2 id="overlayTitle">Steal the beat.<br><em>Own the spotlight.</em></h2>
+          <p id="overlayCopy">Bank early to play safe—or carry one of every beat for a high-scoring TRIAD. Fill the core, then PULSE together to shield the whole choir.</p>
+          <div class="show-arc" id="showArc" aria-live="polite"><b>SHOW 1 · ROUND 1/3</b><span>Tonight remembers every result and changes the next Setlist.</span></div>
+          <div class="conductor-plan" id="conductorPlan" aria-live="polite">
+            <span id="conductorMode">LIVE CONDUCTOR · OPENING SET</span>
+            <b id="conductorReason">First round establishes the room’s rhythm before the show adapts.</b>
+          </div>
+          <div class="legend" id="ruleLegend" aria-label="Beat value legend">
+            <span><i class="beat spark">△</i><b>SPARK</b> safe · 12%</span>
+            <span><i class="beat chord">□</i><b>CHORD</b> steady · 18%</span>
+            <span><i class="beat wild">◇</i><b>WILD</b> 28% · more glitches</span>
+            <span class="triad-rule"><i class="beat triad">★</i><b>TRIAD</b> one of each · huge bonus</span>
+          </div>
+          <section class="result-debrief" id="resultDebrief" aria-label="Round contribution debrief" hidden>
+            <div class="result-stats" id="resultStats"></div>
+            <div class="result-show-memory" id="resultShowMemory"></div>
+            <div class="result-setlist" id="resultSetlist"></div>
+            <div class="result-players" id="resultPlayers"></div>
+          </section>
+          <div class="overlay-actions">
+            <button class="primary" id="startButton" type="button">START 75-SECOND ROUND</button>
+            <button class="secondary" id="returnButton" type="button" hidden>RETURN TO GAME HUB</button>
+          </div>
+          <small class="start-note" id="startNote">Keyboard, gamepad, phone, and AI seats use the same host-owned action gate.</small>
+        </div>
+      </section>
+
+      <section class="help-overlay" id="helpOverlay" hidden aria-label="How to play">
+        <div class="help-card">
+          <button class="close" id="closeHelp" type="button" aria-label="Close help">×</button>
+          <span class="eyebrow">THIRTY-SECOND TRUTH</span>
+          <h2>Collect → choose → bank → read → pulse → adapt</h2>
+          <div class="help-grid">
+            <article><b>1 · COLLECT</b><p>Touch beats. You can carry three. Each one slows you slightly.</p></article>
+            <article><b>2 · CHOOSE</b><p>Bank early to stay fast, or hold Spark + Chord + Wild for the TRIAD jackpot.</p></article>
+            <article><b>3 · PULSE</b><p>At 100%, everyone gets 1.9 seconds. A perfect choir earns glitch shields.</p></article>
+            <article><b>4 · KEEP THE CHAIN</b><p>Bank again within 6.5 seconds for a rising multiplier. A glitch hit breaks it.</p></article>
+            <article><b>5 · PLAY THE SETLIST</b><p>Follow three changing room directives. Human, whole-team, and risk acts pay authoritative bonuses.</p></article>
+          </div>
+          <p class="keys"><kbd>WASD</kbd> + <kbd>Space</kbd> · <kbd>Arrows</kbd> + <kbd>Enter</kbd> · <kbd>IJKL</kbd> + <kbd>O</kbd> · <kbd>Numpad</kbd> + <kbd>0</kbd></p>
+        </div>
+      </section>
+    </section>
+
+    <section class="seat-rail" id="seatRail" aria-label="Active player seats"></section>
+
+    <footer class="footer">
+      <div class="tip"><span class="key">H</span><p><strong>How to play</strong><small>Every critical cue has text + shape + light.</small></p></div>
+      <div class="footer-actions">
+        <button id="soundToggle" type="button" aria-pressed="false">Sound off</button>
+        <button id="motionToggle" type="button" aria-pressed="false">Reduced motion</button>
+        <button id="contrastToggle" type="button" aria-pressed="false">High contrast</button>
+        <button id="resetButton" class="danger" type="button">Reset to lobby</button>
+      </div>
+    </footer>
+  </main>
+  <div class="sr-only" id="announcer" aria-live="assertive"></div>
+  <script src="game-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

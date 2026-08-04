@@ -1,0 +1,46 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.lineage-propagator",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.lineage-context/v1",
+    "axm.lineage-carrier/v1"
+  ],
+  "consumes": [
+    "task",
+    "request",
+    "module",
+    "device",
+    "version",
+    "human-decision"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "shared/technical-glasses",
+      "shared/handoffs",
+      "shared/evidence-retention"
+    ],
+    "reason": "Carries stable lineage across existing organs but owns no evidence store."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-repair",
+      "automatic-restart",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "network-access",
+      "runtime-proof-claim",
+      "mutation-of-existing-axm-organs"
+    ]
+  }
+}

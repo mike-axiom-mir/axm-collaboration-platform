@@ -1,0 +1,39 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.confidence-calibrator",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.confidence-calibration/v1"
+  ],
+  "consumes": [
+    "historical-predictions",
+    "raw-confidence"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_CALIBRATION_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "shared/module-evolution-ledger",
+      "tools/repairbuddy"
+    ],
+    "reason": "Calibrates confidence from outcomes and exposes sparse evidence instead of accepting an ungrounded score."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "permission-grant",
+      "automatic-approval",
+      "automatic-execution",
+      "automatic-merge",
+      "automatic-promotion",
+      "automatic-canon",
+      "runtime-proof-claim"
+    ]
+  }
+}

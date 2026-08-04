@@ -1,0 +1,40 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "capability-gap-workbench",
+  "version": "v0.1",
+  "provides": [
+    "capability-gap-human-workbench",
+    "capability-gap-json-normalization",
+    "capability-gap-requirement-status-view",
+    "capability-gap-contract-draft-view",
+    "capability-gap-explicit-report-download"
+  ],
+  "consumes": [
+    "capability.compare.requirements/v1",
+    "normalized-requirements",
+    "declared-capability-inventory"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.capability-gap-report/v1"],
+    "accepts": ["normalized-requirements", "declared-capability-inventory", "application/json"]
+  },
+  "boundaries": {
+    "writes": ["browser:explicit-json-download"],
+    "refuses": [
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-quality-reduction",
+      "declaration-as-runtime-proof",
+      "silent-input-persistence",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

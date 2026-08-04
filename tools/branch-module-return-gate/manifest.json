@@ -1,0 +1,56 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "adapter",
+  "id": "branch-module-return-gate",
+  "name": "AXM Branch Module Return Gate",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "MEDIUM",
+  "tags": [
+    "branch-return",
+    "dependency-free",
+    "modular-intake",
+    "portability",
+    "provenance",
+    "deterministic-package"
+  ],
+  "uses": [
+    "filesystem-read",
+    "storage",
+    "schema:axm.modular-piece-package/v1"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "actions": [
+    "inspect one explicitly selected branch module folder without executing it",
+    "refuse external packages, remote runtime services, native host components, escaping imports and undeclared files",
+    "emit a deterministic axm.modular-piece-package/v1 envelope for the existing governed modular-intake route",
+    "verify file and package digests before review"
+  ],
+  "accepts": [
+    "filesystem/explicit-branch-module-root",
+    "axm.branch-module-return/v1",
+    "axm.modular-piece-package/v1"
+  ],
+  "produces": [
+    "axm.branch-return-inspection/v1",
+    "axm.branch-return-receipt/v1",
+    "axm.modular-piece-package/v1"
+  ],
+  "readiness": [
+    "filesystem-read",
+    "node-builtins"
+  ],
+  "verifiedAt": null,
+  "summary": "A one-way portability valve that lets specialized AXM branches propose self-contained modules without making the Workshop depend on those branches.",
+  "notes": "TEST material. Passing this gate means structurally portable and ready for governed review, not installed, promoted, runtime-proven, visually approved or CANON."
+}
+

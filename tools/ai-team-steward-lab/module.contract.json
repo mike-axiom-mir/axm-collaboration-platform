@@ -1,0 +1,50 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "ai-team-steward-lab",
+  "version": "v0.5",
+  "provides": [
+    "ai-team.seed-contract-catalog",
+    "ai-team.risk-bounded-review-plan",
+    "ai-team.hold-rule-inspection",
+    "ai-team.seed-contract-local-preflight",
+    "ai-team.retained-safe-unsafe-fixture-samples",
+    "ai-team.deterministic-local-operation-catalog",
+    "ai-team.source-parity-operation-execution",
+    "ai-team.existing-runtime-handoff"
+  ],
+  "consumes": [
+    "filesystem:intakes/ai-team-collaboration-runs-01-101-v1",
+    "validator:retained-ai-team-proof-fixtures",
+    "service:ai-team",
+    "axm.ai-team-steward-request/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.ai-team-steward-catalog/v1", "axm.ai-team-steward-plan/v1", "axm.ai-team-steward-runtime-status/v1", "axm.ai-team-steward-sample/v1", "axm.ai-team-steward-validation/v1", "axm.ai-team-steward-operation-catalog/v1", "axm.ai-team-steward-operation-status/v1", "axm.ai-team-steward-operation-result/v1"],
+    "accepts": ["axm.ai-team-steward-request/v1", "application/json"]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "not-applicable"
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "automatic-agent-start",
+      "automatic-task-assignment",
+      "authority-grant",
+      "identity-inference",
+      "private-memory-access",
+      "automatic-merge",
+      "self-approval",
+      "seed-contract-as-runtime-proof",
+      "local-preflight-as-live-agent-or-result-proof",
+      "local-operation-result-as-applied-action-or-live-agent-proof",
+      "private-payload-value-echo",
+      "production-readiness-claim",
+      "canon-change"
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "ROOT_OMISSION",
+      "expected": "HOLD_ROOT_OR_SOURCE_OMISSION",
+      "stimulus": "compression omits a root constraint"
+    }
+  ],
+  "category": 5,
+  "category_name": "5. Compression, summaries, context windows, and warm re-entry",
+  "full_semantic_implementation": false,
+  "number": 42,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Produce a compact meaning-preserving summary with named omissions, uncertainty, intended audience, and source checkpoint.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "79a823bcf241fc23fe202e7a9980b4d60536bb21f070dc5304d063a0ff0df422"
+  },
+  "source_contract_sha256": "291dbcafeb597639ef4ec8cf6bd91b54f0a44d2d8744ffe9763921cef2a4332d",
+  "stable_id": "axm.memory.semantic-summary-builder"
+}

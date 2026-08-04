@@ -1,0 +1,7 @@
+"use strict"; const { iso, finite, percentile, sha256 }=require("../common");
+class GoldenSignalSampler{
+ constructor(options={}){this.capacity=Math.max(1,Math.min(options.capacity||120,10000));this.targets=new Map();}
+ record(target,sample){if(!target)throw new TypeError("target required");const s={at:sample.at||iso(),latencyMs:finite(sample.latencyMs,"latencyMs"),work:finite(sample.work,"work"),errors:finite(sample.errors,"errors"),saturation:finite(sample.saturation,"saturation")};let a=this.targets.get(target)||[];a.push(s);if(a.length>this.capacity)a=a.slice(-this.capacity);this.targets.set(target,a);return s;}
+ snapshot(target){const a=this.targets.get(target)||[];const lat=a.map(x=>x.latencyMs),work=a.map(x=>x.work),errors=a.map(x=>x.errors),sat=a.map(x=>x.saturation);const totalWork=work.reduce((x,y)=>x+y,0),totalErrors=errors.reduce((x,y)=>x+y,0);const out={schema:"axm.golden-signals.snapshot/v1",target,observedAt:iso(),sampleCount:a.length,window:{first:a[0]?.at||null,last:a.at(-1)?.at||null},latencyMs:{p50:percentile(lat,.5),p95:percentile(lat,.95),max:lat.length?Math.max(...lat):null},trafficWork:{total:totalWork,average:a.length?totalWork/a.length:null},errors:{total:totalErrors,rate:totalWork>0?totalErrors/totalWork:null},saturation:{average:a.length?sat.reduce((x,y)=>x+y,0)/a.length:null,max:sat.length?Math.max(...sat):null},boundedCapacity:this.capacity,authority:"OBSERVE_ONLY"};out.digest=sha256(out);return out;}
+}
+module.exports={GoldenSignalSampler};

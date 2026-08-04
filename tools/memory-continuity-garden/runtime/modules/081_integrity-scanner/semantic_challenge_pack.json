@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "REPAIR_WITHOUT_WITNESS",
+      "expected": "HOLD_RECOVERY_OR_REPAIR_PROOF",
+      "stimulus": "repair is proposed without source witness or safety copy"
+    }
+  ],
+  "category": 9,
+  "category_name": "9. Integrity, drift, corruption, migration, recovery, and repair",
+  "full_semantic_implementation": false,
+  "number": 81,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Check schemas, digests, parent links, indexes, references, permissions, timestamps, encryption metadata, and lifecycle consistency.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "525bea36e649488ec278819efd9f27a1192fc123fbe6beb199c4da8390c018a1"
+  },
+  "source_contract_sha256": "bf8f2fdca19ed628aa0df1310965bae1894cb73de66c876bd080927bcf4cca0a",
+  "stable_id": "axm.memory.integrity-scanner"
+}

@@ -1,19 +1,44 @@
 {
   "schema": "axm.tool-manifest/v1",
   "id": "main-hub",
-  "name": "AXM Main Hub",
-  "version": "v0.1",
+  "name": "AXM Main Hub Compatibility Card",
+  "version": "v0.2",
   "status": "SHELL",
   "entry": "index.html",
+  "contract": "module.contract.json",
   "kind": "scaffold",
   "type": "local-module",
+  "audience": "human-machine",
+  "category": "Navigation",
+  "layer": "machine",
+  "risk": "LOW",
   "tags": [
-    "hub",
-    "router",
-    "navigation"
+    "legacy-route",
+    "display-only",
+    "navigation",
+    "scaffold"
   ],
-  "notes": "Outer router shell. Opens on the clean visible layer first and keeps workshop/build tools one layer deeper \u2014 value reachable without noise. (Landing card + rules; module UI is the next build.)",
-  "uses": [],
+  "uses": [
+    "foundation-runtime",
+    "same-origin-navigation"
+  ],
   "permissions": [],
-  "verifiedAt": null
+  "actions": [
+    "preserve the legacy Main Hub URL",
+    "show four explicit same-origin module links",
+    "show whether the local Foundation script is present",
+    "disclose that layer switching and access control are not implemented"
+  ],
+  "accepts": [
+    "human:explicit-navigation-click"
+  ],
+  "produces": [
+    "browser-navigation:same-origin-explicit-click"
+  ],
+  "readiness": [
+    "foundation-runtime",
+    "same-origin-target-routes"
+  ],
+  "summary": "Preserve an older Main Hub route as a display-only compatibility card with four explicit local links and a visible non-runtime boundary.",
+  "notes": "SHELL scaffold only. It does not read or write hub state, switch layers, validate passwords, authenticate users, hide routes, or control the current Hub. HUB_LAYER_RULES.md and settings/HUB_LAYER_SETTINGS.example.json are design references with implemented=false."
 }

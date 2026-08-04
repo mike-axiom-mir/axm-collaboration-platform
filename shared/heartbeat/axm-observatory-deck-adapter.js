@@ -11,7 +11,7 @@ const MODULE_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const EXCLUDED_EXECUTION_FILES = new Set(['candidate.receipt.json', 'module-bundle.json']);
 
 const REVIEWED_MODULES = Object.freeze([
-  { id: 'archive-intake-cartographer', label: 'Archive Intake Cartographer', digest: '7695161255de7850562414cd104624df9795c20718dbe8d506740d7b1862f6c1' },
+  { id: 'archive-intake-cartographer', label: 'Archive Intake Cartographer', digest: '5a84e0836675c15ed897df01481607c7c3b4ecb323322c12a5f9e433bbf010c4' },
   { id: 'authority-surface-observatory', label: 'Authority Surface Observatory', digest: '7b9953519189267f7b01fa00a2cbb57f195e81204058df66b26a4480f46dad59' },
   { id: 'browser-global-surface-observatory', label: 'Browser Global Surface Observatory', digest: 'a1862cfac78da5857a12356ec2df0685911384109114b0fcde80148e0946af8d' },
   { id: 'dependency-declaration-observatory', label: 'Dependency Declaration Observatory', digest: '92f3298719b96384b6c5a1205b4434234a380e589e948ca13a43e578498fbc0e' },

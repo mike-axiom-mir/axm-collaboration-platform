@@ -1,0 +1,45 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "forge",
+  "version": "v1",
+  "provides": [
+    "declared-power-tool-manifest-generation",
+    "spine-wired-tool-shell-generation",
+    "bounded-ai-build-brief-generation",
+    "owner-prefixed-tool-id-generation",
+    "official-id-human-confirmation",
+    "meaningful-action-gated-generation",
+    "explicit-generated-artifact-download"
+  ],
+  "consumes": [
+    "foundation:runtime",
+    "foundation:meaningful-action-gate",
+    "browser:blob-download"
+  ],
+  "permissions": ["export"],
+  "handoffs": {
+    "emits": ["legacy-tool-manifest-json", "html:spine-wired-tool-skeleton", "text/plain:axm-tool-build-brief"],
+    "accepts": ["browser-form:tool-skeleton-intent"]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  },
+  "boundaries": {
+    "writes": ["user-download:explicit-generated-artifacts"],
+    "refuses": [
+      "automatic-tool-installation",
+      "automatic-registry-write",
+      "automatic-workshop-mutation",
+      "official-id-without-human-confirmation",
+      "undeclared-generated-power",
+      "automatic-ai-execution",
+      "automatic-permission-grant",
+      "automatic-status-promotion",
+      "runtime-verification-claim",
+      "canon-authority"
+    ]
+  }
+}

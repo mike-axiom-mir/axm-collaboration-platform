@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.reproduction-packager",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.reproduction-package/v1"
+  ],
+  "consumes": [
+    "fixture",
+    "versions",
+    "environment-facts"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/diagnostics-operations-center",
+      "shared/handoffs",
+      "shared/evidence-retention"
+    ],
+    "reason": "Packages reproduction facts and nondeterminism while existing handoff/evidence systems retain storage authority."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "root-cause-certainty",
+      "canonical-state-mutation",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

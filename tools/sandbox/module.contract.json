@@ -1,0 +1,50 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "sandbox",
+  "version": "v0.2-session1",
+  "provides": [
+    "portable-project-folder-creation",
+    "project-folder-discovery",
+    "project-manifest-validation",
+    "read-only-project-file-inspection",
+    "loopback-sandbox-host"
+  ],
+  "consumes": [
+    "filesystem:tools/sandbox/projects",
+    "http:declared-loopback-origins",
+    "human:explicit-create-project-action"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["sandbox-project-folder-format-1", "sandbox-project-status-json"],
+    "accepts": ["explicit-local-project-name"]
+  },
+  "boundaries": {
+    "writes": [
+      "tools/sandbox/projects/<safe-project-folder>/project.manifest.json",
+      "tools/sandbox/projects/<safe-project-folder>/world/scene.json",
+      "tools/sandbox/projects/<safe-project-folder>/saves"
+    ],
+    "refuses": [
+      "external-browser-origin",
+      "undeclared-loopback-origin",
+      "browser-create-without-explicit-action-header",
+      "non-json-create-request",
+      "oversized-create-request",
+      "path-traversal",
+      "symbolic-link-project-root-or-read-escape",
+      "project-folder-overwrite",
+      "project-deletion",
+      "arbitrary-filesystem-write",
+      "remote-network-access",
+      "engine-entity-clock-or-renderer-claim",
+      "automatic-promotion"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
+}

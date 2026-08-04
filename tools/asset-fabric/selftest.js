@@ -20,6 +20,14 @@ function test(name, fn) {
     process.exitCode = 1;
   }
 }
+const publishedContract = require('./module.contract.json');
+test('contract declares browser persistence lifecycle seams', () =>
+  assert.deepStrictEqual(publishedContract.lifecycle, {
+    state_owner: 'browser',
+    reload: 'resume',
+    disconnect: 'not-applicable',
+    cleanup: 'explicit',
+  }));
 function reviewReceipt(candidate, overrides) {
   return Object.assign(
     {
@@ -742,6 +750,46 @@ test("legacy machine click is quarantined and cannot promote", () => {
   const quarantine = Core.quarantineLegacyMachineSignals(state);
   assert.equal(quarantine.count, 1);
   assert.equal(quarantine.state.candidates[0].votes["axiom-mir"], null);
+});
+test("every form control has an accessible name", () => {
+  const html = fs.readFileSync(path.join(__dirname, "index.html"), "utf8");
+  function attr(tag, name) {
+    const match = String(tag).match(
+      new RegExp("\\s" + name + "\\s*=\\s*([\"'])([\\s\\S]*?)\\1", "i"),
+    );
+    return match ? match[2] : null;
+  }
+  const markup = html
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, "");
+  const labelIds = new Set(
+    Array.from(
+      markup.matchAll(/<label\b[^>]*\bfor\s*=\s*(["'])(.*?)\1/gi),
+      (match) => match[2],
+    ),
+  );
+  for (const label of markup.matchAll(/<label\b[^>]*>([\s\S]*?)<\/label>/gi)) {
+    for (const control of label[1].matchAll(/<(?:input|select|textarea)\b[^>]*>/gi)) {
+      const id = attr(control[0], "id");
+      if (id) labelIds.add(id);
+    }
+  }
+  const unnamed = Array.from(
+    markup.matchAll(/<(?:input|select|textarea)\b[^>]*>/gi),
+    (match) => match[0],
+  )
+    .filter((tag) => {
+      const type = String(attr(tag, "type") || "").toLowerCase();
+      if (["hidden", "button", "submit"].includes(type)) return false;
+      const id = attr(tag, "id");
+      const name =
+        attr(tag, "aria-label") ||
+        attr(tag, "aria-labelledby") ||
+        attr(tag, "title");
+      return !name && !(id && labelIds.has(id));
+    })
+    .map((tag) => attr(tag, "id") || tag);
+  assert.deepEqual(unnamed, []);
 });
 test("UI contains no clickable machine-seat vote", () => {
   const app = fs.readFileSync(path.join(__dirname, "app.js"), "utf8");

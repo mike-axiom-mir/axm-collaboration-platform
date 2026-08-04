@@ -1,0 +1,168 @@
+{
+  "allowed_hold_codes": [
+    "HOLD_APPEND_ONLY_VIOLATION",
+    "HOLD_AUTHORITY_OR_CONSENT",
+    "HOLD_CANCELLED",
+    "HOLD_CANON_OR_OWNER_AUTHORITY",
+    "HOLD_CONTRACT_SEAL_MISMATCH",
+    "HOLD_DEGRADED_MODE_NOT_ALLOWED",
+    "HOLD_DEPENDENCY_UNAVAILABLE",
+    "HOLD_EXPECTED_REVISION",
+    "HOLD_HUMAN_CONFIRMATION_REQUIRED",
+    "HOLD_IDENTITY_OR_AUTHORITY_FUSION",
+    "HOLD_IMPORT_QUARANTINE",
+    "HOLD_INPUT_DIGEST_MISMATCH",
+    "HOLD_INPUT_LIMIT",
+    "HOLD_INVALID_STATE_TRANSITION",
+    "HOLD_JOURNAL_CORRUPTION",
+    "HOLD_LOG_PRIVACY_VIOLATION",
+    "HOLD_LOW_DISK_OR_UNSAFE_WRITE",
+    "HOLD_NON_CANONICAL_VALUE",
+    "HOLD_OPERATION_ID_COLLISION",
+    "HOLD_OUTPUT_ROOT",
+    "HOLD_PERMISSION_ESCALATION",
+    "HOLD_PRIVACY_OR_ERASURE_TRUTH",
+    "HOLD_RECOVERY_OR_REPAIR_PROOF",
+    "HOLD_RETRIEVAL_PRIVACY_SCOPE",
+    "HOLD_ROOT_OR_SOURCE_OMISSION",
+    "HOLD_RUNTIME_CYCLE",
+    "HOLD_SCHEMA_OR_COMPATIBILITY",
+    "HOLD_SCOPE_OR_PURPOSE",
+    "HOLD_SEMANTIC_CONFLICT",
+    "HOLD_SOURCE_MISMATCH",
+    "HOLD_STALE_STATE",
+    "HOLD_TIME_BASIS_UNCERTAIN",
+    "HOLD_TRANSACTION_INCOMPLETE",
+    "HOLD_TRUST_OR_AUTHORITY_TRANSFER",
+    "HOLD_UNKNOWN_TOP_LEVEL_FIELD"
+  ],
+  "authority": "T0_OBSERVE_ONLY",
+  "boot_prerequisites": [
+    "axm.memory.current-state-baseline",
+    "axm.memory.hash-chained-event-ledger",
+    "axm.memory.integrity-scanner",
+    "axm.memory.provenance-envelope",
+    "axm.memory.repair-preview",
+    "axm.memory.restore-rollback-gate"
+  ],
+  "compiler_claim_boundary": "Normalized executable interface only; not semantic implementation or owner acceptance.",
+  "contract_references": [
+    "axm.memory.current-state-baseline",
+    "axm.memory.hash-chained-event-ledger",
+    "axm.memory.integrity-scanner",
+    "axm.memory.provenance-envelope",
+    "axm.memory.repair-preview",
+    "axm.memory.restore-rollback-gate"
+  ],
+  "exact_owned_root": "local://axm-memory/axm.memory.orphan-reference-detector/",
+  "hold_contract": "axm.memory.typed-hold/v2",
+  "identity": {
+    "category": "9. Integrity, drift, corruption, migration, recovery, and repair",
+    "name": "Orphan and Broken Reference Detector",
+    "number": 83,
+    "stable_id": "axm.memory.orphan-reference-detector"
+  },
+  "lifecycle_states": [
+    "REQUESTED",
+    "RUNNING",
+    "FINDING_READY",
+    "HELD",
+    "FAILED",
+    "EXPIRED"
+  ],
+  "lifecycle_transitions": [
+    [
+      "FAILED",
+      "EXPIRED"
+    ],
+    [
+      "HELD",
+      "FAILED"
+    ],
+    [
+      "REQUESTED",
+      "FAILED"
+    ],
+    [
+      "REQUESTED",
+      "HELD"
+    ],
+    [
+      "REQUESTED",
+      "RUNNING"
+    ],
+    [
+      "RUNNING",
+      "FAILED"
+    ],
+    [
+      "RUNNING",
+      "FINDING_READY"
+    ],
+    [
+      "RUNNING",
+      "HELD"
+    ]
+  ],
+  "operation_kind": "OBSERVE",
+  "permissions": [],
+  "privacy_forbidden_receipt_keys": [
+    "payload",
+    "source_refs",
+    "authority_ref",
+    "confirmation_ref",
+    "safety_copy_ref",
+    "deleted_content",
+    "raw_private"
+  ],
+  "purpose": "Find memories, evidence, summaries, checkpoints, indexes, and branches whose required source or parent is missing.",
+  "request_schema": "axm.memory.reference-request/v2",
+  "required_request_fields": [
+    "schema",
+    "seed_id",
+    "operation_id",
+    "purpose",
+    "source_refs",
+    "source_digests",
+    "authority_ref",
+    "consent_state",
+    "input_digest",
+    "target_root",
+    "request_timestamp",
+    "dependency_snapshot",
+    "expected_revision",
+    "current_revision",
+    "input_size_bytes",
+    "available_disk_bytes",
+    "cancelled",
+    "runtime_cycle_detected",
+    "import_trust_claim",
+    "payload",
+    "category_guard",
+    "requested_permissions",
+    "actor_role",
+    "request_state",
+    "requested_transition",
+    "allow_degraded",
+    "extensions",
+    "trace_id",
+    "receipt_visibility",
+    "preview_digest",
+    "confirmation_ref",
+    "confirmation_scope",
+    "confirmation_expires",
+    "safety_copy_ref",
+    "human_confirmed",
+    "transaction_id"
+  ],
+  "result_contract": "axm.memory.orphan-reference-detector.finding/v1",
+  "risk": "LOW",
+  "runtime_collaborators": [],
+  "schema": "axm.memory.run100-compiled-contract/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "b7b5c73a8cb753311fd9fc5f4f9639d9c69580f89cb57e24e479dcf947ec03f2"
+  },
+  "source_contract_sha256": "c9bf2d3b4522fe6dc7743f3632fd41f8faa994534f4f67c6dd6b7384b8733710",
+  "source_run90_protocol_sha256": "72609c53086f04db1b12e60cbcad84fb4b5619b1577068c0746c12c2ddba6f9a"
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.time-skew-injector",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.virtual-clock/v1",
+    "axm.time-skew-simulation.receipt/v1"
+  ],
+  "consumes": [
+    "base-time",
+    "bounded-offset",
+    "virtual-rate"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_2_SHADOW_EXPERIMENT",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/qa-lab",
+      "shared/heartbeat",
+      "tools/body-pulse"
+    ],
+    "reason": "Provides a virtual clock only; it cannot modify the host clock or timezone."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "active-process-targeting",
+      "host-network-mutation",
+      "host-clock-mutation",
+      "real-filesystem-fault",
+      "unbounded-resource-pressure",
+      "fault-without-abort-controller",
+      "automatic-scheduling",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  }
+}

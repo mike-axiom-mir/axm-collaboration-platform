@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#090b1a">
+  <title>HEXBOUND · Rooftops of Neverafter</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="game-shell" class="game-shell">
+    <canvas id="battlefield" aria-label="HEXBOUND tactical battlefield"></canvas>
+
+    <section id="title-screen" class="title-screen" aria-labelledby="game-title">
+      <div class="title-vignette"></div>
+      <div class="title-copy">
+        <p class="eyebrow"><span></span> A macro-first fairytale war <span></span></p>
+        <h1 id="game-title">HEX<span>BOUND</span></h1>
+        <p class="subtitle">Rooftops of Neverafter</p>
+        <p class="promise">Raise boroughs. Command crowds. Spend the fallen.</p>
+        <button id="enter-war" class="primary-button">Plan the invasion <b>↗</b></button>
+        <p class="tiny-note">Local playable alpha · mouse + keyboard · no internet required</p>
+      </div>
+      <div class="art-credit">Original concept art · generated for this game</div>
+    </section>
+
+    <section id="war-room" class="war-room hidden" aria-labelledby="war-room-title">
+      <header class="war-room-head">
+        <div>
+          <p class="eyebrow left">Field memorandum 016</p>
+          <h2 id="war-room-title">Choose your beautiful disaster.</h2>
+        </div>
+        <div class="edition-stamp">PLAYABLE<br><b>ALPHA</b></div>
+      </header>
+      <div class="setup-grid">
+        <div class="setup-main">
+          <div class="section-label"><span>01</span> Faction</div>
+          <div id="faction-list" class="faction-list" role="radiogroup" aria-label="Faction"></div>
+        </div>
+        <aside class="setup-aside">
+          <div class="section-label"><span>02</span> War shape</div>
+          <div class="mode-switch" role="radiogroup" aria-label="Game mode">
+            <button data-mode="skirmish" class="active"><b>SKIRMISH</b><small>You against one hungry rival.</small></button>
+            <button data-mode="coop"><b>STRONG CO-OP</b><small>A human Quartermaster and AI ally share your war.</small></button>
+          </div>
+          <label class="field-label" for="map-select">Unreasonable battlefield</label>
+          <select id="map-select"></select>
+          <div id="map-brief" class="map-brief"></div>
+          <label class="field-label" for="enemy-select">Rival faction</label>
+          <select id="enemy-select"></select>
+          <label class="field-label" for="difficulty-select">Enemy appetite</label>
+          <select id="difficulty-select">
+            <option value="story">Mildly Inconvenient</option>
+            <option value="serious" selected>Properly Serious</option>
+            <option value="nightmare">Clock Strikes Thirteen</option>
+          </select>
+          <div id="selected-trait" class="trait-card"></div>
+          <button id="start-war" class="primary-button wide">Open the rooftop <b>→</b></button>
+        </aside>
+      </div>
+    </section>
+
+    <section id="hud" class="hud hidden" aria-label="Battle controls">
+      <header class="topbar">
+        <div class="brand-chip"><b>HEXBOUND</b><span id="map-name">ROOFTOPS</span></div>
+        <div class="resources">
+          <div class="resource glow"><i>●</i><span><b id="glow-value">0</b><small id="glow-rate">+0/s</small></span><em>GLOW</em></div>
+          <div class="resource scrap"><i>◆</i><span><b id="scrap-value">0</b><small id="scrap-rate">+0/s</small></span><em>SCRAP</em></div>
+          <div class="resource essence"><i>✦</i><span><b id="essence-value">0</b><small>from every death</small></span><em>ESSENCE</em></div>
+          <div class="population"><b id="population-value">0 / 400</b><span>FIGHTERS</span></div>
+        </div>
+        <div class="match-tools">
+          <a id="coop-link" class="coop-link hidden" href="controller.html" target="_blank" rel="noopener"><span>QUARTERMASTER</span><b id="coop-status">WAITING</b></a>
+          <span id="war-clock">00:00</span>
+          <button id="pause-button" title="Pause (Esc)">Ⅱ</button>
+          <button id="help-button" title="Field guide (F1)">?</button>
+        </div>
+      </header>
+
+      <aside class="objective-panel panel-cut">
+        <p class="micro-label">WAR OBJECTIVE</p>
+        <h3>Break their Grand Clock.</h3>
+        <div class="objective-progress"><span id="enemy-clock-hp"></span></div>
+        <p id="objective-copy">Claim rooftops, raise a crowd, and make the enemy regret Tuesday.</p>
+      </aside>
+
+      <aside id="map-mechanic" class="map-mechanic-panel panel-cut" aria-label="Active map mechanic">
+        <div class="mechanic-head"><span id="mechanic-icon">II</span><p class="micro-label">MAP ANOMALY</p><b id="mechanic-phase">NEXT SHIFT</b></div>
+        <h3 id="mechanic-title">Chronogust Bridges</h3>
+        <p id="mechanic-copy">Stage formations beside a bridge, then launch when the clocks flare.</p>
+        <div class="mechanic-track"><span id="mechanic-progress"></span></div>
+      </aside>
+
+      <aside id="rival-scheme" class="rival-scheme-panel panel-cut" aria-label="Rival strategic plan">
+        <div class="rival-scheme-head"><span id="rival-scheme-icon">?</span><p class="micro-label" id="rival-scheme-kicker">RIVAL SCHEME</p><b id="rival-scheme-phase">READING</b></div>
+        <h3 id="rival-scheme-title">Reading the rival war room</h3>
+        <p id="rival-scheme-copy">Their next macro commitment will be telegraphed here.</p>
+        <div class="rival-scheme-target"><span>TARGET</span><b id="rival-scheme-target">UNKNOWN ROOF</b></div>
+      </aside>
+
+      <aside class="event-feed" id="event-feed" aria-live="polite"></aside>
+
+      <div id="selection-box" class="selection-box hidden"></div>
+      <div id="placement-tip" class="placement-tip hidden">Choose a glowing rooftop anchor · right-click to cancel</div>
+
+      <footer class="command-deck">
+        <section class="selection-panel panel-cut">
+          <div class="portrait"><span id="selection-icon">♜</span></div>
+          <div class="selection-copy">
+            <p class="micro-label" id="selection-kicker">YOUR WAR BAND</p>
+            <h3 id="selection-name">No squads selected</h3>
+            <p id="selection-detail">Drag a box across squads, or press 1 for the whole army.</p>
+            <div class="health-track"><span id="selection-health"></span></div>
+          </div>
+        </section>
+
+        <section class="command-rack">
+          <nav class="rack-tabs" aria-label="Command categories">
+            <button data-tab="council">COUNCIL <small>9·0</small></button>
+            <button data-tab="recruit" class="active">RECRUIT <small>Q–R</small></button>
+            <button data-tab="expand">EXPAND <small>Z–V·B</small></button>
+            <button data-tab="charter">CHARTER <small>5–8</small></button>
+            <button data-tab="essence">ESSENCE <small>F–H</small></button>
+            <button data-tab="macro">WAR PLANS <small>1–4</small></button>
+          </nav>
+          <div id="command-cards" class="command-cards"></div>
+        </section>
+
+        <section class="minimap-wrap panel-cut">
+          <canvas id="minimap" width="230" height="132" aria-label="Battlefield minimap"></canvas>
+          <div class="auto-scout-row">
+            <button id="auto-scout" class="toggle active"><i></i> AUTO-SCOUT <kbd>A</kbd></button>
+            <span id="stance-label">Plan: PROBE</span>
+          </div>
+        </section>
+      </footer>
+    </section>
+
+    <section id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-card panel-cut">
+        <button id="modal-close" class="modal-close" aria-label="Close">×</button>
+        <p class="eyebrow left" id="modal-eyebrow">FIELD GUIDE</p>
+        <h2 id="modal-title">Command crowds, not chores.</h2>
+        <div id="modal-content"></div>
+        <button id="modal-primary" class="primary-button wide">Back to the war</button>
+      </div>
+    </section>
+  </main>
+  <script src="game-data.js"></script>
+  <script src="systems.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -7,8 +7,14 @@ const core=require('./market-core');
 const insights=require('./market-insights');
 const sources=require('./source-adapters');
 const dictionary=JSON.parse(fs.readFileSync(path.join(__dirname,'market-dictionary.json'),'utf8'));
+const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'manifest.json'),'utf8'));
+const contract=JSON.parse(fs.readFileSync(path.join(__dirname,'module.contract.json'),'utf8'));
 let pass=0;
 function test(name,fn){try{fn();console.log('PASS '+name);pass++;}catch(e){console.error('FAIL '+name+'\n  '+e.stack);process.exitCode=1;}}
+
+test('manifest uses the current product schema',()=>{assert.equal(manifest.schema,'axm.tool-manifest/v1');assert.equal(manifest.kind,'product');});
+test('manifest and contract permissions agree',()=>assert.deepEqual(manifest.permissions,contract.permissions));
+test('contract declares browser-owned resumable lifecycle',()=>assert.deepEqual(contract.lifecycle,{state_owner:'browser',reload:'resume',disconnect:'graceful-degrade',cleanup:'explicit'}));
 
 const base={itemId:'coffee',itemName:'Coffee',category:'food',geography:'NL',observedAt:'2026-07-01',price:18,currency:'EUR',unit:'kg',quantity:1,seller:'A',availability:'in_stock',sourceId:'source-a',sourceType:'official-statistics',sourceUrl:'https://example.test',marketplaceActivity:80,searchInterest:70,sellerGrowth:60,tradeMovement:50,pricePressure:40};
 
@@ -43,6 +49,7 @@ test('source coverage groups source types',()=>{const x=insights.sourceCoverage(
 
 test('polished shell references modular UI files',()=>{const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');['market-ui.css','market-app.js','market-insights.js'].forEach(file=>assert(html.includes(file),file+' missing from shell'));});
 test('market app DOM references exist in the shell',()=>{const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');const app=fs.readFileSync(path.join(__dirname,'market-app.js'),'utf8');const ids=new Set(Array.from(html.matchAll(/id="([\w-]+)"/g),m=>m[1]));const used=new Set(Array.from(app.matchAll(/\$\('([\w-]+)'\)/g),m=>m[1]));const missing=Array.from(used).filter(id=>!ids.has(id));assert.deepEqual(missing,[]);});
+test('every form control has an accessible name',()=>{const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),attr=(tag,name)=>{const match=String(tag).match(new RegExp('\\s'+name+'\\s*=\\s*(["\\\'])([\\s\\S]*?)\\1','i'));return match?match[2]:null;},markup=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,''),labelIds=new Set(Array.from(markup.matchAll(/<label\b[^>]*\bfor\s*=\s*(["'])(.*?)\1/gi),match=>match[2]));for(const label of markup.matchAll(/<label\b[^>]*>([\s\S]*?)<\/label>/gi)){for(const control of label[1].matchAll(/<(?:input|select|textarea)\b[^>]*>/gi)){const id=attr(control[0],'id');if(id)labelIds.add(id);}}const unnamed=Array.from(markup.matchAll(/<(?:input|select|textarea)\b[^>]*>/gi),match=>match[0]).filter(tag=>{const type=String(attr(tag,'type')||'').toLowerCase();if(['hidden','button','submit'].includes(type))return false;const id=attr(tag,'id'),name=attr(tag,'aria-label')||attr(tag,'aria-labelledby')||attr(tag,'title');return !name&&!(id&&labelIds.has(id));}).map(tag=>attr(tag,'id')||tag);assert.deepEqual(unnamed,[]);});
 test('source catalog distinguishes built import from planned adapters',()=>{const catalog=dictionary.sourceCatalog||[];assert(catalog.length>=6);assert.equal(catalog.filter(x=>x.status==='import-ready').length,1);assert(catalog.filter(x=>x.status==='adapter-planned').length>=5);});
 
 if(!process.exitCode)console.log('\n'+pass+' PASS · 0 FAIL · market-core '+core.VERSION+' · insights '+insights.VERSION);

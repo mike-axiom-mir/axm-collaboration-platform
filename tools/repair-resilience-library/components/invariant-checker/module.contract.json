@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.invariant-checker",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.invariant-check.report/v1"
+  ],
+  "consumes": [
+    "pre-state",
+    "post-state",
+    "declared-invariants"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_VERIFY_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/qa-lab",
+      "tools/recovery-center",
+      "tools/repairbuddy"
+    ],
+    "reason": "Provides typed pre/post invariant evidence without granting mutation or promotion authority."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "verification-as-permission",
+      "selftest-as-runtime-proof",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "hidden-evidence-omission"
+    ]
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "all_steps_bounded": true,
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "final_result_does_not_imply_owner_acceptance": true,
+  "identity": {
+    "category": "8. Cross-session, cross-device, human-AI, and replica continuity",
+    "name": "Session Handoff Packet",
+    "number": 71,
+    "stable_id": "axm.memory.session-handoff-packet"
+  },
+  "no_implicit_parallel_apply": true,
+  "operation_kind": "BOUNDED_TRANSFORM",
+  "plan_is_reference_only": true,
+  "schema": "axm.memory.run80-execution-plan/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "b6aa57e18f4666af3bcf000b5d426c45e2f006b06f923a12130cf9ceb5d42cc1"
+  },
+  "source_run70_protocol_sha256": "f1e45cd304f4cc4f9c1fdc48ed38039881f93d4a4f8da73763f1a10b55454935",
+  "step_count": 5,
+  "steps": [
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "admission_receipt",
+      "failure_result": "HOLD_ADMISSION",
+      "purpose": "validate exact scope, source, authority, and resource budget",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [],
+      "sequence": 1,
+      "side_effect_permitted": false,
+      "step_id": "ADMIT"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "validated_input",
+      "failure_result": "HOLD_INPUT",
+      "purpose": "verify schema, digests, purpose, revision, and limitations",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "ADMIT"
+      ],
+      "sequence": 2,
+      "side_effect_permitted": false,
+      "step_id": "VALIDATE_INPUT"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "staged_output",
+      "failure_result": "RECOVERY_HOLD",
+      "purpose": "produce transformed output in an isolated staging boundary",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "VALIDATE_INPUT"
+      ],
+      "sequence": 3,
+      "side_effect_permitted": true,
+      "step_id": "TRANSFORM_IN_STAGING"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "verified_output",
+      "failure_result": "HOLD_VERIFICATION",
+      "purpose": "compare output to source and declared invariants",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "TRANSFORM_IN_STAGING"
+      ],
+      "sequence": 4,
+      "side_effect_permitted": false,
+      "step_id": "VERIFY_OUTPUT"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "transform_receipt",
+      "failure_result": "HOLD_RECEIPT",
+      "purpose": "emit receipt while leaving source untouched",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "VERIFY_OUTPUT"
+      ],
+      "sequence": 5,
+      "side_effect_permitted": false,
+      "step_id": "EMIT_RECEIPT"
+    }
+  ]
+}

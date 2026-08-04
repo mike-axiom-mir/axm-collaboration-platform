@@ -1,0 +1,269 @@
+{
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "consent_delta": "NONE",
+  "identity": {
+    "category": "9. Integrity, drift, corruption, migration, recovery, and repair",
+    "name": "Versioned Memory Schema Migration Runner",
+    "number": 85,
+    "stable_id": "axm.memory.schema-migration-runner"
+  },
+  "identity_delta": "NONE",
+  "run61_state_model": {
+    "history_rewrite_forbidden": true,
+    "illegal_transition_result": "HOLD_ILLEGAL_STATE_TRANSITION",
+    "initial_state": "DRAFT",
+    "legal_transitions": [
+      {
+        "from": "DRAFT",
+        "to": "VALIDATED"
+      },
+      {
+        "from": "VALIDATED",
+        "to": "AWAITING_CONFIRMATION"
+      },
+      {
+        "from": "VALIDATED",
+        "to": "HELD"
+      },
+      {
+        "from": "AWAITING_CONFIRMATION",
+        "to": "APPLYING"
+      },
+      {
+        "from": "AWAITING_CONFIRMATION",
+        "to": "HELD"
+      },
+      {
+        "from": "APPLYING",
+        "to": "VERIFIED"
+      },
+      {
+        "from": "APPLYING",
+        "to": "RECOVERY_HOLD"
+      },
+      {
+        "from": "APPLYING",
+        "to": "FAILED"
+      },
+      {
+        "from": "RECOVERY_HOLD",
+        "to": "AWAITING_CONFIRMATION"
+      },
+      {
+        "from": "RECOVERY_HOLD",
+        "to": "FAILED"
+      },
+      {
+        "from": "VERIFIED",
+        "to": "SUPERSEDED"
+      }
+    ],
+    "state_change_requires_receipt": true,
+    "states": [
+      "DRAFT",
+      "VALIDATED",
+      "AWAITING_CONFIRMATION",
+      "APPLYING",
+      "VERIFIED",
+      "HELD",
+      "RECOVERY_HOLD",
+      "FAILED",
+      "SUPERSEDED"
+    ],
+    "terminal_or_holding_states": [
+      "VERIFIED",
+      "HELD",
+      "FAILED",
+      "SUPERSEDED"
+    ]
+  },
+  "run62_policy": {
+    "allowed_actor_roles": [
+      "HUMAN_OWNER",
+      "EXPLICIT_HUMAN_DELEGATE"
+    ],
+    "consent_required": true,
+    "exact_identity_required": "axm.memory.schema-migration-runner",
+    "exact_purpose_required": "Migrate a reviewed memory set through reversible transforms with preconditions, exact loss report, source preservation, and rollback.",
+    "expected_revision_required": true,
+    "explicit_confirmation_required": true,
+    "no_apply_is_performed_by_policy_interpreter": true,
+    "ready_result": "READY_FOR_HUMAN_REVIEW",
+    "required_permissions": [
+      "memory.apply"
+    ],
+    "source_digest_required": true,
+    "wildcard_permission_forbidden": true
+  },
+  "run63_negotiation": {
+    "boot_prerequisites": [
+      "axm.memory.current-state-baseline",
+      "axm.memory.hash-chained-event-ledger",
+      "axm.memory.integrity-scanner",
+      "axm.memory.provenance-envelope",
+      "axm.memory.repair-preview",
+      "axm.memory.restore-rollback-gate"
+    ],
+    "downgrade_cannot_expand_authority": true,
+    "major_version_mismatch_result": "HOLD_PROTOCOL_VERSION",
+    "maximum_permissions": [
+      "memory.apply"
+    ],
+    "minimum_proof_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR"
+    ],
+    "missing_boot_result": "HOLD_DEPENDENCY_UNAVAILABLE",
+    "missing_optional_runtime_result": "HOLD_DEPENDENCY_UNAVAILABLE",
+    "protocol_major": 1,
+    "protocol_minor": 0,
+    "runtime_collaborators": [],
+    "supported_semantic_effects": [
+      "REFERENCE_ONLY_NOT_IMPLEMENTED"
+    ]
+  },
+  "run64_lineage_impact": {
+    "correction_does_not_rewrite_source_history": true,
+    "correction_invalidation_targets": [
+      "axm.memory.schema-migration-runner"
+    ],
+    "direct_downstream_ids": [],
+    "propagation_requires_fresh_source_and_authority_checks": true,
+    "revocation_future_use_block_targets": [
+      "axm.memory.schema-migration-runner"
+    ],
+    "revocation_is_not_deletion_proof": true
+  },
+  "run65_differential_oracle": {
+    "disagreement_result": "HOLD_ORACLE_DISAGREEMENT",
+    "oracle_a": "TABLE_DRIVEN_POLICY_V1",
+    "oracle_b": "PROCEDURAL_POLICY_V1",
+    "required_parity": true,
+    "semantic_truth_created": false
+  },
+  "run66_chaos_containment": {
+    "automatic_repair_or_completion": false,
+    "fail_closed_for_high_risk": true,
+    "faults": [
+      "tampered_protocol_seal",
+      "missing_transition",
+      "wildcard_permission",
+      "semantic_effect_expansion",
+      "canon_flag_injection",
+      "owner_acceptance_injection",
+      "path_escape",
+      "source_digest_corruption",
+      "protocol_major_mismatch",
+      "stale_evidence"
+    ],
+    "typed_hold_required": true
+  },
+  "run67_adaptive_validation": {
+    "change_scope_classes": [
+      "SEED_PROTOCOL",
+      "SEED_REVIEW",
+      "SEED_INTAKE",
+      "CATEGORY_PROFILE",
+      "SHARED_POLICY",
+      "HARNESS",
+      "PUBLICATION"
+    ],
+    "priority_score": 72,
+    "priority_score_is_not_quality_truth_or_promotion": true,
+    "publication_always_requires_cold_full_suite": true,
+    "shared_policy_or_harness_change_requires_all_seeds": true,
+    "single_seed_change_may_reuse_unaffected_proofs": true
+  },
+  "run68_contestability": {
+    "actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN",
+      "CHALLENGE",
+      "CORRECT",
+      "REOPEN"
+    ],
+    "automatic_apply_action_present": false,
+    "challenge_cannot_reduce_access_or_retaliate": true,
+    "correction_preserves_prior_history": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "status_must_not_depend_on_color_only": true
+  },
+  "run69_intake_simulation": {
+    "active_workshop_target": null,
+    "commit_requires_explicit_human_confirmation": true,
+    "commit_requires_owner_acceptance": true,
+    "dry_run_only": true,
+    "phases": [
+      "VERIFY_SOURCE",
+      "STAGE_COPY",
+      "VERIFY_STAGE",
+      "SIMULATE_COMMIT",
+      "SIMULATE_ROLLBACK"
+    ],
+    "required_source_files": [
+      "candidate.contract.json",
+      "fixtures.json",
+      "capability_delta.json",
+      "review_packet.json",
+      "run70_protocol.json",
+      "decision_card.json",
+      "evidence_ledger.json"
+    ],
+    "rollback_required_before_real_intake": true,
+    "staging_root": "sandbox://axm-memory-intake/085-schema-migration-runner"
+  },
+  "run70_evidence_boundary": {
+    "CANON": false,
+    "achieved_reference_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE",
+      "MODEL_CHECK_REFERENCE",
+      "POLICY_PARITY_REFERENCE",
+      "NEGOTIATION_REFERENCE",
+      "LINEAGE_PROPAGATION_REFERENCE",
+      "CHAOS_CONTAINMENT_REFERENCE",
+      "INTAKE_DRY_RUN_REFERENCE"
+    ],
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "posture_preserved": "GOVERNANCE_HOLD_PRESERVED",
+    "specialist_verification": false,
+    "unproven_gaps": [
+      "real_corrupt_store_repair_and_rollback",
+      "full_seed_specific_semantic_implementation",
+      "existing_owner_acceptance",
+      "specialist_verification",
+      "active_workshop_integration",
+      "production_scale_and_real_world_fault_evidence",
+      "human_usability_and_accessibility_study",
+      "CANON_merge_gate"
+    ],
+    "workshop_integration": false
+  },
+  "schema": "axm.memory.run70-capability-protocol/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "1eaa095e01da22d13ae7ce7a149ca32e64ac60385bb47e6445d80e4fc31a40a3"
+  },
+  "source_run60": {
+    "authority": "T3_EXPLICIT_HUMAN_GATE",
+    "candidate_contract_path": "modules/085_schema-migration-runner/candidate.contract.json",
+    "candidate_contract_sha256": "e58d3378fe4925776284cf7b5c2a701984d00e9e0fcf39d2268b8a95926e443d",
+    "capability_delta_path": "modules/085_schema-migration-runner/capability_delta.json",
+    "capability_delta_sha256": "02f731386132d6007c83c41d0dac12b597110f3bd2faf061c7e63f0ec1521b09",
+    "operation_kind": "HUMAN_GATED_APPLY",
+    "permissions": [
+      "memory.apply"
+    ],
+    "purpose": "Migrate a reviewed memory set through reversible transforms with preconditions, exact loss report, source preservation, and rollback.",
+    "risk": "HIGH",
+    "run60_status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_70_MODEL_POLICY_NEGOTIATION_AND_INTAKE_VALIDATED_CANDIDATE",
+  "trust_delta": "NONE"
+}

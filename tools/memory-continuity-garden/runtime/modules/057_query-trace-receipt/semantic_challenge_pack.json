@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "REPETITION_AS_AUTHORITY",
+      "expected": "HOLD_RETRIEVAL_PRIVACY_SCOPE",
+      "stimulus": "repeated low-authority text outranks direct evidence"
+    }
+  ],
+  "category": 6,
+  "category_name": "6. Retrieval, indexing, relevance, freshness, and forgetting",
+  "full_semantic_implementation": false,
+  "number": 57,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Record query, filters, index version, candidate set, selection reasons, omitted categories, and returned memory digests.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "d0067bf9d0e04cfeaf879e753cd1abb53cadffc0110de61bbc16198d83b3547a"
+  },
+  "source_contract_sha256": "ea0bcabaa22816dd6d84199c06e94d063b2e472a1ebfaba25f8c1d49ef1f5cfe",
+  "stable_id": "axm.memory.query-trace-receipt"
+}

@@ -2,94 +2,21 @@
 
 Status: TEST scaffold for reducing setup pain.
 
-This is the AXM wrapper for setting up and starting the real external Hermes Agent locally.
+This is an AXM wrapper for checking prerequisites and explicitly cloning or starting a locally configured external Hermes Agent source. It does not replace or bundle Hermes.
 
-It is not meant to replace Hermes.
+## Public source example
 
-## Locked source
-
-Verified public source:
+The checked-in example currently points to:
 
 ```text
 https://github.com/NousResearch/hermes-agent
 ```
 
-License checked:
+and records `MIT` as configuration metadata. The bootstrap does not independently fetch or verify source identity, license text, commit digest, installer safety, or runtime readiness. A local config may override the example.
 
-```text
-MIT License
-```
-
-Official docs installer:
-
-```text
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
-```
-
-Windows PowerShell early beta installer:
-
-```text
-irm https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.ps1 | iex
-```
-
-After install:
-
-```text
-hermes
-hermes doctor
-hermes model
-hermes tools
-```
-
-## Goal
-
-Users should not manually fight setup across many pages.
-
-The local module should become:
-
-```text
-one command
-  -> check requirements
-  -> install real Hermes from NousResearch/hermes-agent
-  -> start Hermes
-  -> expose AXM consent-controlled module layer
-```
-
-## Current command
+## Current command surface
 
 From this folder:
-
-```text
-node hermes-bootstrap.js doctor
-```
-
-This checks:
-
-- git
-- python
-- node
-- local source config
-- local Hermes folder
-
-## Source config
-
-The public example now points at the locked Hermes source.
-
-Local overrides can be made by copying:
-
-```text
-hermes-source.example.json
-```
-
-to:
-
-```text
-hermes-source.local.json
-```
-
-The local config is ignored by Git.
-
-## Next complete path
 
 ```text
 node hermes-bootstrap.js doctor
@@ -97,21 +24,42 @@ node hermes-bootstrap.js install
 node hermes-bootstrap.js start
 ```
 
-Then AXM consent/module layer connects to the local Hermes runtime.
+`doctor` checks:
 
-## AXM add-ons around Hermes
+- Git
+- Python
+- Node
+- local source config
+- local Hermes folder
 
-After Hermes is running, AXM can layer:
+`install` requires an explicit `hermes-source.local.json`, then runs a configured Git clone into `external/hermes-agent` if that folder is absent.
 
-- prompt vault
-- templates
-- reasoning shell specialist
-- wisdom/log digest
-- task queue
-- bridge/provider adapter
+`start` requires the local config and cloned folder, then runs the configured command from that folder. The external command's effects are outside the wrapper's bounded write surface.
+
+## Source config
+
+Copy:
+
+```text
+hermes-source.example.json
+```
+
+to the Git-ignored local file:
+
+```text
+hermes-source.local.json
+```
+
+Review the URL, branch, source, license, and command before using `install` or `start`.
+
+## Separate control layer
+
+`hermes-runner.js` is an optional loopback proposal service. Its consent toggle gates its own queue, proposal, and prompt-pack routes only. It does not gate bootstrap install/start and is not connected to the external Hermes runtime.
+
+## Future integration seams
+
+Identity binding, package profiles, Foundation sandboxing, connector routing, prompt-vault integration, and Shell Review transport remain planned rather than implemented.
 
 ## Rule
 
-Hermes is the runnable agent.
-
-AXM supplies the wrapper, consent gate, module seams, and project-specific add-ons.
+Explicit bootstrap is not runtime proof. Control-layer consent is not external-command authority. Runnable does not mean connected, reviewed, promoted, or CANON.

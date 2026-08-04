@@ -1,0 +1,305 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/visual-module.schema.json",
+  "title": "AXM Visual Module",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "name",
+    "version",
+    "kind",
+    "category",
+    "status",
+    "dependencies",
+    "parameters",
+    "renderer",
+    "quality",
+    "accessibility",
+    "provenance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.visual-module/1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 2
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "kind": {
+      "enum": [
+        "primitive",
+        "effect",
+        "organ",
+        "mold",
+        "scene"
+      ]
+    },
+    "category": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "CANON",
+        "WORKING",
+        "TEST-HOLD-REVIEW"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "exclusiveGroup": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "shareable": {
+      "type": "boolean"
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/parameter"
+      }
+    },
+    "renderer": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "capability",
+            "class",
+            "overlay",
+            "interaction",
+            "derived",
+            "composite",
+            "scene"
+          ]
+        },
+        "scope": {
+          "enum": [
+            "stage",
+            "scene",
+            "surface",
+            "active",
+            "loading",
+            "ambient",
+            "light",
+            "atmosphere"
+          ]
+        },
+        "className": {
+          "type": "string",
+            "pattern": "^fx-[a-z0-9_-]+$"
+        },
+        "interactive": {
+          "enum": [
+            "click",
+            "parallax",
+            "pointer"
+          ]
+        },
+        "generatedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 256
+        }
+      },
+      "additionalProperties": true
+      ,
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "cssVar"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "number",
+                  "color"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "quality": {
+      "type": "object",
+      "required": [
+        "low",
+        "medium",
+        "high",
+        "cinematic"
+      ],
+      "properties": {
+        "low": {
+          "$ref": "#/$defs/qualityTier"
+        },
+        "medium": {
+          "$ref": "#/$defs/qualityTier"
+        },
+        "high": {
+          "$ref": "#/$defs/qualityTier"
+        },
+        "cinematic": {
+          "$ref": "#/$defs/qualityTier"
+        }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "required": [
+        "reducedMotionSafe",
+        "highContrastSafe"
+      ],
+      "properties": {
+        "reducedMotionSafe": {
+          "type": "boolean"
+        },
+        "highContrastSafe": {
+          "type": "boolean"
+        },
+        "photosensitiveSafe": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "author",
+        "origin",
+        "license"
+      ],
+      "properties": {
+        "author": {
+          "type": "string"
+        },
+        "origin": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string"
+        },
+        "sourceIntegrity": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "parameter": {
+      "type": "object",
+      "required": [
+        "id",
+        "label",
+        "type",
+        "default"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+        },
+        "label": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "description": "Legacy alias accepted for migration; canonical modules use label."
+        },
+        "type": {
+          "enum": [
+            "number",
+            "boolean",
+            "select",
+            "color",
+            "text"
+          ]
+        },
+        "default": {},
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "step": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "cssVar": {
+          "type": "string",
+          "pattern": "^--(?:fx|axm)-[a-z0-9-]+$"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "number"
+            ]
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "qualityTier": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "fallbackModuleId": {
+          "type": "string"
+        },
+        "parameterOverrides": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

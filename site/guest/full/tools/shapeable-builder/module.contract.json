@@ -1,0 +1,30 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "shapeable-builder",
+  "version": "v0.13.1-beta",
+  "provides": ["shapeable.project.edit", "shapeable.project.preview", "shapeable.project.export", "shapeable.agent.proposal.review"],
+  "consumes": ["axm.shapeable.project", "axm.shapeable.block-pack", "axm.agent.proposal"],
+  "permissions": ["storage", "export"],
+  "handoffs": {
+    "emits": ["axm.shapeable.project", "axm.asset.block-request", "axm.agent.workspace", "axm.intent.packet", "axm.engine.handoff"],
+    "accepts": ["axm.shapeable.project", "axm.shapeable.block-pack", "axm.agent.proposal"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:shapeable-vault", "user-download:explicit-export"],
+    "refuses": [
+      "automatic-canon-promotion",
+      "hidden-ai-provider-contact",
+      "unreviewed-agent-apply",
+      "advanced-code-execution",
+      "outside-engine-execution",
+      "silent-permission-grant",
+      "automatic-publication"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  }
+}

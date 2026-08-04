@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.test-guided-patch-selector",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.patch-selection-report/v1"
+  ],
+  "consumes": [
+    "patch-candidates",
+    "multi-signal-evaluation"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_2_SHADOW_REPAIR",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/repairbuddy",
+      "tools/qa-lab"
+    ],
+    "reason": "Requires several evidence classes and preserves rejected candidates; original tests alone cannot select a patch."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-patch-application",
+      "automatic-source-rewrite",
+      "automatic-install",
+      "automatic-dependency-change",
+      "automatic-promotion",
+      "automatic-canon",
+      "verification-from-original-tests-only",
+      "runtime-proof-claim"
+    ]
+  }
+}

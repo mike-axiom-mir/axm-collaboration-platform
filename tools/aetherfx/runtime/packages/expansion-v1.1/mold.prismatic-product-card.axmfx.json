@@ -1,0 +1,1082 @@
+{
+  "schema": "axm.visual-module-package/1",
+  "packageId": "package.mold.prismatic-product-card.v1.1",
+  "name": "Prismatic Product Card",
+  "version": "1.1.0",
+  "entryModuleId": "mold.prismatic-product-card",
+  "created": "2026-07-28",
+  "modules": [
+    {
+      "id": "primitive.gradient",
+      "name": "Gradient",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Interpolates color, light, and opacity.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "gradient"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.glow",
+      "name": "Glow",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Creates emissive-looking light spill.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "sun"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.blend",
+      "name": "Blend",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Combines layers through controlled compositing.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "blend"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "material.crystal-prism",
+      "name": "Crystal Prism Surface",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "organ",
+      "category": "Materials",
+      "status": "WORKING",
+      "description": "A restrained crystalline surface that separates edge light into prismatic spectral hints.",
+      "tags": [
+        "material",
+        "crystal",
+        "prism",
+        "surface"
+      ],
+      "dependencies": [
+        "primitive.gradient",
+        "primitive.glow",
+        "primitive.blend"
+      ],
+      "exclusiveGroup": "material",
+      "shareable": true,
+      "ui": {
+        "icon": "diamond"
+      },
+      "parameters": [
+        {
+          "id": "intensity",
+          "label": "Prism intensity",
+          "type": "number",
+          "default": 0.34,
+          "description": "",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "cssVar": "--fx-crystal-intensity"
+        },
+        {
+          "id": "facet",
+          "label": "Facet scale",
+          "type": "number",
+          "default": 42,
+          "description": "",
+          "min": 12,
+          "max": 120,
+          "step": 1,
+          "unit": "px",
+          "cssVar": "--fx-crystal-facet"
+        },
+        {
+          "id": "edge",
+          "label": "Edge clarity",
+          "type": "number",
+          "default": 0.58,
+          "description": "",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "cssVar": "--fx-crystal-edge"
+        },
+        {
+          "id": "tint",
+          "label": "Crystal tint",
+          "type": "color",
+          "default": "#a9efff",
+          "description": "",
+          "cssVar": "--fx-crystal-tint"
+        }
+      ],
+      "renderer": {
+        "type": "class",
+        "scope": "surface",
+        "className": "fx-material-crystal-prism"
+      },
+      "quality": {
+        "low": {
+          "enabled": true,
+          "fallbackModuleId": "material.aetherglass"
+        },
+        "medium": {
+          "enabled": true,
+          "parameterOverrides": {
+            "intensity": 0.2
+          }
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true,
+          "parameterOverrides": {
+            "intensity": 0.48
+          }
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 steward upgrade",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.blur",
+      "name": "Blur",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Softens and diffuses a rendered layer.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "blur"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "light.prismatic-dispersion",
+      "name": "Prismatic Dispersion",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "effect",
+      "category": "Light",
+      "status": "WORKING",
+      "description": "A spectral light split that suggests glass dispersion without heavy shader code.",
+      "tags": [
+        "light",
+        "prism",
+        "dispersion",
+        "spectral"
+      ],
+      "dependencies": [
+        "primitive.gradient",
+        "primitive.blur",
+        "primitive.blend"
+      ],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "rainbow"
+      },
+      "parameters": [
+        {
+          "id": "intensity",
+          "label": "Intensity",
+          "type": "number",
+          "default": 0.28,
+          "description": "",
+          "min": 0,
+          "max": 0.8,
+          "step": 0.01,
+          "cssVar": "--fx-prism-intensity"
+        },
+        {
+          "id": "spread",
+          "label": "Spread",
+          "type": "number",
+          "default": 22,
+          "description": "",
+          "min": 4,
+          "max": 80,
+          "step": 1,
+          "unit": "px",
+          "cssVar": "--fx-prism-spread"
+        },
+        {
+          "id": "angle",
+          "label": "Angle",
+          "type": "number",
+          "default": 18,
+          "description": "",
+          "min": -180,
+          "max": 180,
+          "step": 1,
+          "unit": "deg",
+          "cssVar": "--fx-prism-angle"
+        },
+        {
+          "id": "position",
+          "label": "Position",
+          "type": "number",
+          "default": 58,
+          "description": "",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "cssVar": "--fx-prism-position"
+        }
+      ],
+      "renderer": {
+        "type": "overlay",
+        "scope": "light",
+        "className": "fx-overlay-prism"
+      },
+      "quality": {
+        "low": {
+          "enabled": false,
+          "fallbackModuleId": "light.neon-edge-glow"
+        },
+        "medium": {
+          "enabled": true,
+          "parameterOverrides": {
+            "intensity": 0.16
+          }
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true,
+          "parameterOverrides": {
+            "intensity": 0.4
+          }
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 steward upgrade",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.mask",
+      "name": "Mask",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Restricts an effect to a selected region.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "mask"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.shadow",
+      "name": "Shadow",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Creates separation and perceived elevation.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "layers"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "light.neon-edge-glow",
+      "name": "Neon Edge Glow",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "effect",
+      "category": "Light",
+      "status": "WORKING",
+      "description": "A crisp emissive rim around panels, controls, and selected scene elements.",
+      "tags": [
+        "light",
+        "edge",
+        "neon"
+      ],
+      "dependencies": [
+        "primitive.glow",
+        "primitive.mask",
+        "primitive.shadow"
+      ],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "frame"
+      },
+      "parameters": [
+        {
+          "id": "intensity",
+          "label": "Intensity",
+          "type": "number",
+          "default": 0.68,
+          "description": "",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "cssVar": "--fx-edge-energy"
+        },
+        {
+          "id": "width",
+          "label": "Width",
+          "type": "number",
+          "default": 2,
+          "description": "",
+          "min": 0.5,
+          "max": 8,
+          "step": 0.5,
+          "unit": "px",
+          "cssVar": "--fx-edge-width"
+        },
+        {
+          "id": "spread",
+          "label": "Spread",
+          "type": "number",
+          "default": 16,
+          "description": "",
+          "min": 0,
+          "max": 48,
+          "step": 1,
+          "unit": "px",
+          "cssVar": "--fx-glow-spread"
+        }
+      ],
+      "renderer": {
+        "type": "class",
+        "scope": "surface",
+        "className": "fx-neon-edge"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.transform",
+      "name": "Transform",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Moves, scales, tilts, and rotates a layer.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "move"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.motion-curve",
+      "name": "Motion Curve",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Defines easing and temporal behavior.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "wave"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "motion.spring-settle",
+      "name": "Spring Settle",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "effect",
+      "category": "Motion",
+      "status": "WORKING",
+      "description": "A restrained spring-like settle on hover or focus, designed to feel tactile rather than bouncy.",
+      "tags": [
+        "motion",
+        "spring",
+        "hover",
+        "tactile"
+      ],
+      "dependencies": [
+        "primitive.transform",
+        "primitive.motion-curve"
+      ],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "spring"
+      },
+      "parameters": [
+        {
+          "id": "distance",
+          "label": "Lift distance",
+          "type": "number",
+          "default": 4,
+          "description": "",
+          "min": 0,
+          "max": 12,
+          "step": 0.5,
+          "unit": "px",
+          "cssVar": "--fx-spring-distance"
+        },
+        {
+          "id": "duration",
+          "label": "Settle duration",
+          "type": "number",
+          "default": 0.62,
+          "description": "",
+          "min": 0.2,
+          "max": 1.5,
+          "step": 0.01,
+          "unit": "s",
+          "cssVar": "--fx-spring-duration"
+        },
+        {
+          "id": "overshoot",
+          "label": "Overshoot",
+          "type": "number",
+          "default": 1.018,
+          "description": "",
+          "min": 1,
+          "max": 1.08,
+          "step": 0.001,
+          "cssVar": "--fx-spring-overshoot"
+        }
+      ],
+      "renderer": {
+        "type": "class",
+        "scope": "active",
+        "className": "fx-spring-settle"
+      },
+      "quality": {
+        "low": {
+          "enabled": false,
+          "fallbackModuleId": "motion.hover-lift"
+        },
+        "medium": {
+          "enabled": true,
+          "parameterOverrides": {
+            "distance": 2
+          }
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": false,
+        "highContrastSafe": true,
+        "notes": "Disabled in reduced-motion mode.",
+        "photosensitiveSafe": false
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 steward upgrade",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.opacity",
+      "name": "Opacity",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Controls visibility and layer mixing.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "opacity"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "focus.halo",
+      "name": "Focus Halo",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "effect",
+      "category": "Focus + Depth",
+      "status": "WORKING",
+      "description": "A halo ring around active controls and current points of attention.",
+      "tags": [
+        "focus",
+        "halo",
+        "accessibility"
+      ],
+      "dependencies": [
+        "primitive.glow",
+        "primitive.mask",
+        "primitive.opacity"
+      ],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "target"
+      },
+      "parameters": [
+        {
+          "id": "intensity",
+          "label": "Intensity",
+          "type": "number",
+          "default": 0.58,
+          "description": "",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "cssVar": "--fx-focus-intensity"
+        },
+        {
+          "id": "spread",
+          "label": "Spread",
+          "type": "number",
+          "default": 10,
+          "description": "",
+          "min": 0,
+          "max": 30,
+          "step": 1,
+          "unit": "px",
+          "cssVar": "--fx-focus-spread"
+        },
+        {
+          "id": "softness",
+          "label": "Softness",
+          "type": "number",
+          "default": 0.62,
+          "description": "",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "cssVar": "--fx-focus-softness"
+        }
+      ],
+      "renderer": {
+        "type": "class",
+        "scope": "active",
+        "className": "fx-focus-halo"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "mold.prismatic-product-card",
+      "name": "Prismatic Product Card",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "mold",
+      "category": "Scene Molds",
+      "status": "WORKING",
+      "description": "A premium product-card mold built from crystal surface, prismatic dispersion, edge light, and tactile spring response.",
+      "tags": [
+        "mold",
+        "product",
+        "prism",
+        "card"
+      ],
+      "dependencies": [
+        "material.crystal-prism",
+        "light.prismatic-dispersion",
+        "light.neon-edge-glow",
+        "motion.spring-settle",
+        "focus.halo"
+      ],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "stack"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "composite",
+        "layers": [
+          {
+            "moduleId": "material.crystal-prism",
+            "params": {
+              "intensity": 0.3,
+              "facet": 46,
+              "edge": 0.62,
+              "tint": "#b7f2ff"
+            }
+          },
+          {
+            "moduleId": "light.prismatic-dispersion",
+            "params": {
+              "intensity": 0.24,
+              "spread": 20,
+              "angle": 14,
+              "position": 60
+            }
+          },
+          {
+            "moduleId": "light.neon-edge-glow",
+            "params": {
+              "intensity": 0.42,
+              "spread": 12
+            }
+          },
+          {
+            "moduleId": "motion.spring-settle",
+            "params": {
+              "distance": 4,
+              "duration": 0.58,
+              "overshoot": 1.016
+            }
+          },
+          {
+            "moduleId": "focus.halo",
+            "params": {
+              "intensity": 0.38
+            }
+          }
+        ]
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 steward upgrade",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    }
+  ],
+  "notes": "AXM AetherFX v1.1 high-end illusion expansion. Declarative only; choose a public license before redistribution.",
+  "integrity": {
+    "algorithm": "sha256",
+    "value": "9af44754e48217f026ff47fae5c69cd1e5947c9ce7d19e4bed472e0cb19a22dd"
+  }
+}

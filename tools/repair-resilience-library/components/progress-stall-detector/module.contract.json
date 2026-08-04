@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.progress-stall-detector",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.progress-stall.finding/v1"
+  ],
+  "consumes": [
+    "progress-samples",
+    "liveness-state"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "EXTEND_EXISTING",
+    "targets": [
+      "tools/body-pulse",
+      "shared/heartbeat",
+      "tools/diagnostics-operations-center"
+    ],
+    "reason": "Adds progress semantics distinct from liveness; no restart authority."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-repair",
+      "automatic-restart",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "network-access",
+      "runtime-proof-claim",
+      "mutation-of-existing-axm-organs"
+    ]
+  }
+}

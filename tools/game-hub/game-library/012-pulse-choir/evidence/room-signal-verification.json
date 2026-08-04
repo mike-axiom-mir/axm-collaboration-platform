@@ -1,0 +1,126 @@
+{
+  "schema": "axm.pulse-choir-room-signal-verification/v1",
+  "verifiedAt": "2026-07-28T16:04:36+02:00",
+  "gameId": "012-pulse-choir",
+  "version": "0.4.0-stewarded-alpha",
+  "verdict": "PASS",
+  "scope": "Server-owned, human-only, next-round steering in one managed local Game Hub session",
+  "session": {
+    "journeySessionId": "session-1785246383789",
+    "currentSessionId": "session-1785247439914",
+    "runtimePort": 8802,
+    "roomCode": "AXM1",
+    "roster": [
+      {"playerId":"p1","seatId":"seat_1","type":"human","displayName":"Mike"},
+      {"playerId":"p2","seatId":"seat_2","type":"ai","displayName":"Tempo"},
+      {"playerId":"p3","seatId":"seat_3","type":"ai","displayName":"Echo"}
+    ]
+  },
+  "contract": {
+    "schema": "axm.pulse-choir-room-signal/v1",
+    "targetRound": 2,
+    "choices": ["together", "bold", "flow"],
+    "stableTieOrder": ["together", "bold", "flow"],
+    "voteRule": "One replaceable vote per eligible human; repeated identical votes are idempotent.",
+    "resolutionRule": "The server counts only current human players and applies the stable tie order.",
+    "roundRule": "A signal targets the next unplayed round, is stored in its Conductor plan and receipt, then rolls forward after completion."
+  },
+  "authorization": {
+    "accepted": {
+      "playerId": "p1",
+      "choice": "bold",
+      "httpStatus": 200,
+      "votes": {"p1":"bold"},
+      "resolvedCount": 1,
+      "eligibleHumans": 1
+    },
+    "denied": {
+      "playerId": "p2",
+      "type": "ai",
+      "attemptedChoice": "flow",
+      "httpStatus": 403,
+      "reason": "room-signal-human-only",
+      "revisionChanged": false,
+      "votesChanged": false,
+      "planChanged": false
+    }
+  },
+  "causalPlan": {
+    "conductor": "RECONNECT SET",
+    "adaptiveCue": "CLEARER HUMAN LINK",
+    "selectedSignal": "BOLD",
+    "signalCue": "TAKE THE SPOTLIGHT",
+    "baseActKinds": ["human-pulses", "all-seat-bank", "chain-four"],
+    "appliedActKinds": ["human-triad", "all-seat-bank", "wild-two"],
+    "appliedTitles": ["HUMAN SPOTLIGHT", "PASS THE MIC", "RIDE THE STATIC"],
+    "transparentReason": "The Conductor kept its receipt-derived RECONNECT identity and appended that BOLD won 1/1 human vote before replacing the exact next-round acts."
+  },
+  "transport": {
+    "sender": "The 390x844 P1 controller exposed three named ROOM SIGNAL buttons, selected BOLD with aria-pressed=true, and rendered BOLD LEADS · 1/1 HUMAN VOTE.",
+    "receiver": "Authoritative /api/state stored votes.p1=bold and exposed the exact applied plan before Round 2 started.",
+    "activeRound": "Starting Round 2 instantiated the same ordered act kinds and titles in the server-owned live Setlist; shared and phone surfaces rendered HUMAN SPOTLIGHT as Act 1."
+  },
+  "persistence": {
+    "checkpoint": "A fresh-process recovery test restored the pending vote and exact BOLD plan from a checkpoint.",
+    "managedRestart": "The managed session began from restored Show Memory; Room Signal was added to the restored Round 2 target without rewriting the completed Round 1 receipt.",
+    "finalLobby": {
+      "phase": "lobby",
+      "roundNumber": 2,
+      "seed": 12027,
+      "completedRounds": 1,
+      "nightTotal": 2349,
+      "votes": {"p1":"bold"},
+      "nextActKinds": ["human-triad", "all-seat-bank", "wild-two"],
+      "inputLedgerCount": 0,
+      "playerSequences": {"p1":0,"p2":0,"p3":0},
+      "recovery": "restored"
+    }
+  },
+  "visual": {
+    "backend": "BROWSER_PRIMARY",
+    "captureMode": "Repeated bounded screenshots and semantic snapshots; no rolling-video capability was available.",
+    "sharedLobby": {
+      "viewport": [1280, 720],
+      "page": [1280, 720],
+      "overflow": [0, 0],
+      "overlayBottom": 553.2625,
+      "stageBottom": 560.7625,
+      "seatRailTop": 568.7625,
+      "startNoteBottom": 542.4625
+    },
+    "controllerLobby": {
+      "viewport": [390, 844],
+      "page": [390, 844],
+      "overflow": [0, 0],
+      "threeButtonsEach": {"width":110.26,"height":42},
+      "selectedPanelBottom": 352.6,
+      "selectedMainBottom": 477.4
+    },
+    "activeShared": {
+      "viewport": [1280, 720],
+      "page": [1280, 720],
+      "overflow": [0, 0],
+      "observedAct": "HUMAN SPOTLIGHT"
+    },
+    "activeController": {
+      "viewport": [390, 844],
+      "page": [390, 844],
+      "overflow": [0, 0],
+      "observedAct": "HUMAN SPOTLIGHT"
+    },
+    "console": {"warnings":0,"errors":0},
+    "cleanup": {"browserTabsFinalized":true,"viewportReset":true,"testRoundResetToLobby":true,"temporaryCaptureFiles":0}
+  },
+  "automatedChecks": {
+    "core": "23 PASS, 0 FAIL",
+    "httpLifecycle": "PASS",
+    "freshProcessRecovery": "PASS",
+    "hubHandback": "PASS",
+    "abortRoundIdentity": "PASS - reset from active Round 2 returns to Round 2 / seed 12027, not the completed Round 1 identity"
+  },
+  "boundaries": [
+    "This proves deterministic human authority and cross-surface transport, not that the three choices are balanced or delightful.",
+    "Physical-phone interaction remains untested.",
+    "The two user-owned reference archives are not claimed as fully integrated."
+  ]
+}

@@ -1,0 +1,24 @@
+# Known limits — beta 0.25
+
+- Single-player only. Co-op, competitive multiplayer, and multiple locations are future work, not hidden beta features.
+- Human balance and fun are not yet established. Deterministic simulations only prove that one active policy can retire and inactivity fails.
+- The three run lengths are provisional. The new ledger exposes an average review curve after three runs, but it does not replace broader human playtesting.
+- Browser-local saves do not roam between browsers or computers. Clearing site storage removes the save, high score, and capped 24-run balance ledger.
+- Retirement-timer suggestions are coarse, contract-specific field estimates based on review velocity. Three matching runs provide only early confidence, and the estimates never auto-rebalance a run.
+- Anonymous report export is manual and local. The game does not upload, pool, or validate reports from other players.
+- WebGL is required. There is no Canvas 2D fallback.
+- Touch layout is implemented responsively, but physical-phone QA is still pending until recorded in visual evidence.
+- Synthesized Web Audio is intentionally minimal. There are no voice performances or recorded music assets.
+- Event replay variety is presentation-only: two seeded transmissions frame each of seven existing milestone decisions, while their mechanical choices and effects remain unchanged pending human balance evidence.
+- The camera uses four authored views rather than free orbit controls, keeping management information readable.
+- Reduced Motion removes UI transition cadence and suppresses major camera/orbit movement, but low-amplitude ambient world motion remains so live station state is still readable.
+- Event, Pause, Help, and ledger overlays have browser-verified dialog semantics and keyboard focus containment; physical screen-reader testing is still pending.
+- Pausing, event decisions, the opening, and results stop simulation. The upgrade drawer deliberately does not stop simulation.
+- Current Pressure is deterministic operational guidance, not an autopilot and not a human-validated strategy coach. It points at a live constraint but never executes the suggested action.
+- Inbound Vector forecasts only the next spawn and any already-declared burst remainder. It does not reveal the randomly selected future lane or customer species, and it is not a long-range demand planner.
+- Queue Constellations describe only customers already in each lane and the current front patience. They do not predict the next random lane, and a close portrait camera can crop a world-space plate while the corresponding HUD cue and lane card remain visible.
+- Shift Horizon reflects only the existing local day clock. It is not a real-world clock or a forecast, and close portrait views can crop the horizon beacon while the HUD phase and exact time remain visible.
+- Decision traces reflect only validated choices already stored in the local run. They do not add new event mechanics or rebalance outcomes; close portrait views may crop distant traces, while isolated event cameras and the canvas decision receipt remain available for verification.
+- Consequence Reveal is a short authored flourish observed through bounded baseline, midpoint, and settled browser frames. Exact frame cadence, physical-phone feel, and representative GPU cost are not claimed. Reduced Motion uses a static confirmation and saved history never replays the reveal.
+- Debt Liberation visualizes only the existing local debt balance and sale split. It is not a new loan system or balance change. Bounded browser frames prove authored stages and the real final-payment transition, not exact animation cadence, physical-phone feel, universal comprehension, or representative GPU cost. Compact layouts intentionally use the HUD lien strip instead of the redundant world placard.
+- Performance has not been measured across representative low-end GPUs. Player-selectable Cinematic, Balanced, and Eco profiles now bound pixel ratio, particle populations, perimeter lights, and shadows, but those controls are not device certification or an FPS guarantee.

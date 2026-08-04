@@ -12,7 +12,7 @@ export const ATMOSPHERE_BIOSPHERE_GAS_FLUX_RECEIPT_SCHEMA =
 export const ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA =
   'axm.foundation-planet.atmosphere-gas-boundary-input-receipt/v1';
 export const ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA =
-  'axm.foundation-planet.atmosphere-floodplain-gas-exchange-receipt/v1';
+  'axm.foundation-planet.atmosphere-floodplain-gas-exchange-receipt/v2';
 export const ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG =
   1e-3;
 export const ATMOSPHERE_BIOGEOCHEMISTRY_HORIZONTAL_LOCAL_RECEIPT_SCHEMA =
@@ -184,6 +184,7 @@ export function createAtmosphereBiogeochemistry(options = {}) {
       oceanCarbonExchangeKgCm2: 0,
       oceanOxygenExchangeKgO2m2: 0,
       estuaryNitrogenGasInputKgNm2: 0,
+      floodplainDenitrificationNitrogenGasInputKgNm2: 0,
       floodplainCarbonInputKgCm2: 0,
       floodplainOxygenOutputKgO2m2: 0,
       horizontalCarbonThroughputKgCm2: 0,
@@ -386,17 +387,34 @@ export function applyAtmosphereGasBoundaryInput(source, inputs = {},
   const carbonKgC = Math.max(0, finite(inputs.carbonKgC));
   const oxygenKgO2 = Math.max(0, finite(inputs.oxygenKgO2));
   const nitrogenKgN = Math.max(0, finite(inputs.nitrogenKgN));
+  const sourceKind = String(options.sourceKind ||
+    'named-external-boundary');
+  const transferId = String(options.transferId || '');
+  const sourceReachId = String(options.sourceReachId || '');
+  const sourceReceiptDigest = String(options.sourceReceiptDigest || '');
+  if (sourceKind === 'floodplain-denitrification' &&
+    (!transferId || !sourceReachId || !sourceReceiptDigest ||
+      carbonKgC + oxygenKgO2 > 1e-12)) {
+    throw new Error('Floodplain denitrification atmosphere input requires nitrogen-only bound source evidence');
+  }
   state.layers[0].carbonDioxideCarbonKgCm2 += carbonKgC / area;
   state.layers[0].oxygenKgO2m2 += oxygenKgO2 / area;
   state.layers[0].nitrogenGasKgNm2 += nitrogenKgN / area;
-  if (options.sourceKind === 'estuary-denitrification') {
+  if (sourceKind === 'estuary-denitrification') {
     state.cumulative.estuaryNitrogenGasInputKgNm2 += nitrogenKgN / area;
+  }
+  if (sourceKind === 'floodplain-denitrification') {
+    state.cumulative.floodplainDenitrificationNitrogenGasInputKgNm2 +=
+      nitrogenKgN / area;
   }
   refreshAtmosphereBiogeochemistry(state, options.pressureColumn);
   const receipt = {
     schema: ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA,
     status: 'credited',
-    sourceKind: options.sourceKind || 'named-external-boundary',
+    sourceKind,
+    transferId: transferId || null,
+    sourceReachId: sourceReachId || null,
+    sourceReceiptDigest: sourceReceiptDigest || null,
     receivingAreaM2: round(area, 3),
     inputs: {
       carbonKgC: round(carbonKgC, 9),
@@ -422,10 +440,13 @@ export function applyAtmosphereGasBoundaryInput(source, inputs = {},
       horizontallyTransported: state.truth.horizontallyTransported,
       verticalTransportEnabled: true,
       verticallyTransported: state.truth.verticallyTransported,
-      globallyMixed: false
+      globallyMixed: false,
+      exactTransferIdentity: sourceKind === 'floodplain-denitrification'
+        ? Boolean(transferId && sourceReachId && sourceReceiptDigest) : true
     }
   };
-  state.lastBoundaryInputReceipt = receipt;
+  receipt.digest = stableDigest(receipt);
+  state.lastBoundaryInputReceipt = clone(receipt);
   return { state, receipt: clone(receipt) };
 }
 
@@ -443,9 +464,16 @@ export function applyAtmosphereFloodplainGasExchange(source, exchange = {},
   const area = Math.max(1, finite(areaM2, 1));
   const carbonToAtmosphereKgC = Math.max(0, finite(
     exchange.carbonToAtmosphereKgC));
+  const carbonToFloodplainKgC = Math.max(0, finite(
+    exchange.carbonToFloodplainKgC));
   const oxygenToFloodplainKgO2 = Math.max(0, finite(
     exchange.oxygenToFloodplainKgO2));
+  if (carbonToAtmosphereKgC > 1e-12 &&
+    carbonToFloodplainKgC > 1e-12) {
+    throw new Error('Atmosphere-floodplain carbon direction must be exclusive');
+  }
   const carbonCreditKgCm2 = carbonToAtmosphereKgC / area;
+  const carbonDebitKgCm2 = carbonToFloodplainKgC / area;
   const oxygenDebitKgO2m2 = oxygenToFloodplainKgO2 / area;
   const before = {
     carbonDioxideCarbonKgCm2: state.carbonDioxideCarbonKgCm2,
@@ -455,7 +483,13 @@ export function applyAtmosphereFloodplainGasExchange(source, exchange = {},
   if (oxygenDebitKgO2m2 > state.layers[0].oxygenKgO2m2 + 1e-12) {
     throw new Error('Atmosphere-floodplain gas exchange cannot overdraw surface-layer oxygen');
   }
-  state.layers[0].carbonDioxideCarbonKgCm2 += carbonCreditKgCm2;
+  if (carbonDebitKgCm2 >
+    state.layers[0].carbonDioxideCarbonKgCm2 + 1e-12) {
+    throw new Error('Atmosphere-floodplain gas exchange cannot overdraw surface-layer carbon dioxide');
+  }
+  state.layers[0].carbonDioxideCarbonKgCm2 = Math.max(0,
+    state.layers[0].carbonDioxideCarbonKgCm2 + carbonCreditKgCm2 -
+      carbonDebitKgCm2);
   state.layers[0].oxygenKgO2m2 = Math.max(0,
     state.layers[0].oxygenKgO2m2 - oxygenDebitKgO2m2);
   state.cumulative.floodplainCarbonInputKgCm2 += carbonCreditKgCm2;
@@ -465,7 +499,7 @@ export function applyAtmosphereFloodplainGasExchange(source, exchange = {},
     carbonResidualKgC: round((
       state.carbonDioxideCarbonKgCm2 -
       before.carbonDioxideCarbonKgCm2) * area -
-      carbonToAtmosphereKgC, 9),
+      carbonToAtmosphereKgC + carbonToFloodplainKgC, 9),
     oxygenResidualKgO2: round((
       before.oxygenKgO2m2 - state.oxygenKgO2m2) * area -
       oxygenToFloodplainKgO2, 9)
@@ -475,20 +509,28 @@ export function applyAtmosphereFloodplainGasExchange(source, exchange = {},
     exchangeId,
     reachId,
     atmosphereCellId,
-    status: carbonToAtmosphereKgC + oxygenToFloodplainKgO2 > 1e-12
+    status: carbonToAtmosphereKgC + carbonToFloodplainKgC +
+      oxygenToFloodplainKgO2 > 1e-12
       ? 'surface-layer-gases-exchanged' : 'surface-layer-no-op',
     receivingAreaM2: round(area, 3),
     exchange: {
       carbonToAtmosphereKgC: round(carbonToAtmosphereKgC, 9),
+      carbonToFloodplainKgC: round(carbonToFloodplainKgC, 9),
       oxygenToFloodplainKgO2: round(oxygenToFloodplainKgO2, 9)
     },
-    receiverCredit: {
+    atmosphereCarbonCredit: {
       reservoir: 'atmosphere-surface-layer-carbon-dioxide-carbon',
       nativeLayerIndex: 0,
       carbonKgC: round(carbonToAtmosphereKgC, 9),
       carbonKgCm2: round(carbonCreditKgCm2, 15)
     },
-    senderDebit: {
+    atmosphereCarbonDebit: {
+      reservoir: 'atmosphere-surface-layer-carbon-dioxide-carbon',
+      nativeLayerIndex: 0,
+      carbonKgC: round(carbonToFloodplainKgC, 9),
+      carbonKgCm2: round(carbonDebitKgCm2, 15)
+    },
+    atmosphereOxygenDebit: {
       reservoir: 'atmosphere-surface-layer-oxygen',
       nativeLayerIndex: 0,
       oxygenKgO2: round(oxygenToFloodplainKgO2, 9),
@@ -511,8 +553,12 @@ export function applyAtmosphereFloodplainGasExchange(source, exchange = {},
       authoritativeLocalGasReservoirMutated: true,
       nativePressureLayerComposition: true,
       surfaceLayerOnly: true,
-      carbonReceiverCredited: true,
+      carbonReceiverCreditedWhenEvasion: true,
+      carbonSenderDebitedWhenInvasion: true,
       oxygenSenderDebited: true,
+      carbonDirectionExclusive:
+        carbonToAtmosphereKgC <= 1e-12 ||
+          carbonToFloodplainKgC <= 1e-12,
       carbonAndOxygenClosed: Object.values(conservation).every(value =>
         Math.abs(value) <
           ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG),

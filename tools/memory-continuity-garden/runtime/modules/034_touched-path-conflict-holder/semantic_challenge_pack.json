@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "SILENT_CONSENSUS",
+      "expected": "HOLD_SEMANTIC_CONFLICT",
+      "stimulus": "dissent is omitted during merge"
+    }
+  ],
+  "category": 4,
+  "category_name": "4. Branching, merging, contradiction, dissent, and supersession",
+  "full_semantic_implementation": false,
+  "number": 34,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Hold updates that modify the same semantic path or depend on incompatible witnesses while preserving both proposals.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "bb56834907b62b05181e233e74588aef3c34b7d17456bc53aa4f2fdab04cb99c"
+  },
+  "source_contract_sha256": "fc43e57fa0639973cd7c1a81683bf35e3778664fc3f1e3c7074a65dc6135379a",
+  "stable_id": "axm.memory.touched-path-conflict-holder"
+}

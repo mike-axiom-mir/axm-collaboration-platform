@@ -1,0 +1,200 @@
+{
+  "capability_interface": {
+    "authority_delta": "NONE",
+    "canon_delta": "NONE",
+    "consent_delta": "NONE",
+    "consumes_clause": "query; scope and privacy filters; local indexes; memory graph; freshness and authority metadata",
+    "human_gate_required_by_source_contract": false,
+    "input_contract": "axm.memory.reference-request/v2",
+    "invariants": [
+      "authority_delta_is_none",
+      "canon_delta_is_none",
+      "consent_delta_is_none",
+      "delivery_does_not_imply_acceptance",
+      "false positive and false negative remain possible",
+      "finding cannot gain authority",
+      "full_semantics_are_not_claimed",
+      "indexes are rebuildable and do not own truth",
+      "memory_payload_is_inert_data",
+      "source memories remain authoritative",
+      "source state remains untouched",
+      "source_truth_is_not_created_by_contract_validity",
+      "trust_delta_is_none"
+    ],
+    "operation_kind": "OBSERVE",
+    "output_contract": "axm.memory.query-trace-receipt.finding/v1",
+    "postconditions": [
+      "exactly one accepted reference contract or typed HOLD is returned",
+      "no hidden mutation, authority gain, trust gain, consent gain, or CANON promotion occurs",
+      "result remains source-linked, replaceable, privacy-safe, and bounded to the declared purpose",
+      "receiver acceptance, semantic apply, owner acceptance, and integration remain separate future acts"
+    ],
+    "preconditions": [
+      "exact seed identity and purpose match",
+      "source references and digests align",
+      "authority, consent, role, permission, expiry, and namespace checks pass",
+      "boot prerequisites are ready or explicitly safe degraded mode is allowed",
+      "resource, cancellation, revision, output-root, and compatibility guards pass"
+    ],
+    "purpose_clause": "Record query, filters, index version, candidate set, selection reasons, omitted categories, and returned memory digests.",
+    "semantic_effect": "REFERENCE_ONLY_NOT_IMPLEMENTED",
+    "state_effect_envelope": "NONE",
+    "trust_delta": "NONE"
+  },
+  "composition": {
+    "accepted_upstream_ids": [
+      "axm.memory.freshness-expiry-monitor",
+      "axm.memory.namespace-descriptor",
+      "axm.memory.provenance-envelope",
+      "axm.memory.source-authority-binder"
+    ],
+    "authority_transfer": false,
+    "boot_prerequisites": [
+      "axm.memory.namespace-descriptor",
+      "axm.memory.provenance-envelope",
+      "axm.memory.source-authority-binder"
+    ],
+    "consent_transfer": false,
+    "cycles_allowed_only_outside_boot_graph": true,
+    "delivery_does_not_imply_acceptance": true,
+    "downstream_candidates": [
+      "axm.memory.contradiction-aware-retriever",
+      "axm.memory.diversity-dissent-retriever",
+      "axm.memory.forgetting-candidate-recommender",
+      "axm.memory.freshness-expiry-monitor",
+      "axm.memory.hybrid-search-index",
+      "axm.memory.routing-graph",
+      "axm.memory.source-authority-ranker",
+      "axm.memory.stale-memory-quarantine",
+      "axm.memory.temporal-relevance-ranker"
+    ],
+    "handoff_schema": "axm.memory.capability-handoff/v1",
+    "runtime_collaborators": [
+      "axm.memory.freshness-expiry-monitor"
+    ],
+    "semantic_apply_implied": false,
+    "trust_transfer": false
+  },
+  "human_review": {
+    "automatic_apply": false,
+    "challenge_and_reopen_supported": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "packet_path": "modules/057_query-trace-receipt/review_packet.json",
+    "primary_actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN"
+    ]
+  },
+  "identity": {
+    "category_number": 6,
+    "name": "Memory Query Trace Receipt",
+    "number": 57,
+    "stable_id": "axm.memory.query-trace-receipt"
+  },
+  "pipeline_membership": [
+    "PIPELINE_06_RETRIEVAL"
+  ],
+  "profiles": {
+    "authority": {
+      "path": "profiles/authority_t0-observe-only.json",
+      "sha256": "cd0ab172d42347db99c456032b115f1f2a37f6942dada5f1a97fd5a18be26d57"
+    },
+    "category": {
+      "path": "profiles/category_06_retrieval_freshness.json",
+      "sha256": "b425d5e93f22bb60be5092ea9edb9946243f16f7e0f5eefbfdd7897d24d2851c"
+    },
+    "operation": {
+      "path": "profiles/operation_observe.json",
+      "sha256": "eaf8c4b7863c7c18c9a04f507c59066672f7f7bf65d361ecef8b5c573906be94"
+    },
+    "proof_tiers": {
+      "path": "profiles/proof_tiers.json",
+      "sha256": "ab8646803825822a1c529c9a47163827813c5ea9f2c2034031bdd103245d2f00"
+    },
+    "review_surface": {
+      "path": "profiles/review_surface.json",
+      "sha256": "d46b074a8a703365fd7243c20fae436abd8346494a3100efff73f817a65431e5"
+    },
+    "risk": {
+      "path": "profiles/risk_low.json",
+      "sha256": "fa8c6a59e399b4b3b1d205c75408945cc9847ac60736b75b83a85faeed34dc8f"
+    }
+  },
+  "proof": {
+    "achieved_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE"
+    ],
+    "boundary": "Executable deltas, composition, metamorphic, resource, review, and capsule evidence remain synthetic/local reference proof.",
+    "canon": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "specialist_verification": false,
+    "workshop_integration": false
+  },
+  "resource_policy": {
+    "batch_and_step_limits_required": true,
+    "cancellation_must_be_checked": true,
+    "network_required": false,
+    "output_path_must_remain_under_exact_owned_root": true,
+    "profile_ref": {
+      "path": "profiles/risk_low.json",
+      "sha256": "fa8c6a59e399b4b3b1d205c75408945cc9847ac60736b75b83a85faeed34dc8f"
+    },
+    "symlink_escape_forbidden": true,
+    "unbounded_scan_forbidden": true
+  },
+  "schema": "axm.memory.capability-delta/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "base_contract_file_sha256": "ea0bcabaa22816dd6d84199c06e94d063b2e472a1ebfaba25f8c1d49ef1f5cfe",
+    "body_sha256": "42e31e6a920ecfca39921ec0070156a2d1bd23d9cdaff08db8e1893cc34a66a5",
+    "delta_core_sha256": "0a9fe8abe0f633da88eb92a8a3d14e33a413f416caa1a85e764ae28ec87c3eed"
+  },
+  "source_run50": {
+    "build_intake_file_sha256": "2b8cc3a4d1e49e3b2fe836ac9ff0882afe0cd02f01f89ffeb7568f219585d233",
+    "candidate_contract_body_sha256": "b6dfa4ececf715bb932d9c4447b7ff77f4df9fca84b542fd67382ae929a59554",
+    "candidate_contract_file_sha256": "ea0bcabaa22816dd6d84199c06e94d063b2e472a1ebfaba25f8c1d49ef1f5cfe",
+    "candidate_contract_path": "modules/057_query-trace-receipt/candidate.contract.json",
+    "fixtures_file_sha256": "ad14bca3f28bee6d99698bbe8d266e03c2d145df790a8e77bc7d4a07772a00d7",
+    "run50_posture_preserved": true,
+    "source_authority": "T0_OBSERVE_ONLY",
+    "source_operation_kind": "OBSERVE",
+    "source_purpose": "Record query, filters, index version, candidate set, selection reasons, omitted categories, and returned memory digests.",
+    "source_risk": "LOW",
+    "source_run50_status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE",
+  "validation": {
+    "cache_is_evidence_reuse_not_truth": true,
+    "cached_result_cannot_promote_canon": true,
+    "harness_version": "axm-memory-run60-harness-v1",
+    "proof_cache_key": "afccb9ff247a24611dda1471609549bd031c790d24ebe41990ca8b4582760284",
+    "revalidation_triggers": [
+      "candidate contract or fixture digest changes",
+      "capability delta core changes",
+      "referenced shared profile digest changes",
+      "validation harness version changes",
+      "boot prerequisite interface changes",
+      "privacy, authority, or lifecycle policy changes"
+    ],
+    "test_suites": [
+      "run50_full_reference_suite",
+      "run60_delta_preservation",
+      "run60_capability_interface",
+      "run60_composition_graph",
+      "run60_selective_validation",
+      "run60_metamorphic_laws",
+      "run60_resource_faults",
+      "run60_reference_pipelines",
+      "run60_human_review",
+      "run60_capsule_export",
+      "run60_efficiency",
+      "run60_roundtrip"
+    ]
+  }
+}

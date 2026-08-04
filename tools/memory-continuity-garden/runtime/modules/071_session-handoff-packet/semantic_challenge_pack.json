@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "REPLICA_AUTHORITY_INHERITANCE",
+      "expected": "HOLD_TRUST_OR_AUTHORITY_TRANSFER",
+      "stimulus": "replica handoff inherits human authority"
+    }
+  ],
+  "category": 8,
+  "category_name": "8. Cross-session, cross-device, human-AI, and replica continuity",
+  "full_semantic_implementation": false,
+  "number": 71,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Transfer approved goal, context, decisions, open loops, evidence, boundaries, and next actions between sessions without hidden memory authority.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "f0d680cfe8cc65565946ab3b3f2738605c9ec1a4199b8c3293e402fbfa29668c"
+  },
+  "source_contract_sha256": "06e3042b425de25f04b28e3ac5623b1b9744053efea6efbae81607343f5f05d5",
+  "stable_id": "axm.memory.session-handoff-packet"
+}

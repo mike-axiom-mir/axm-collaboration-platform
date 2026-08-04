@@ -15,6 +15,7 @@ const SearchService = require('./search-service');
 const AssetService = require('./asset-filesystem-service');
 const DeviceHandoffService = require('./device-handoff-service');
 const DiagnosticsService = require('./diagnostics-service');
+const WindowsOfflineGateService = require('./windows-offline-gate-service');
 const QaLabService = require('./qa-lab-service');
 const TemplateRuntimeService = require('./template-runtime-service');
 const SourceConnectorService = require('./source-connector-service');
@@ -30,12 +31,14 @@ const CognitiveEvidenceLabsService = require('../cognitive-resource/cognitive-ev
 const EvidenceRetentionService = require('../evidence-retention/evidence-retention-service');
 const HubLifecycleService = require('./hub-lifecycle-service');
 const GitHubSyncService = require('./github-sync-service');
+const CodeDraftTechnicalReviewer = require('./code-draft-technical-reviewer');
 
 function create(options) {
   const evidenceRetention = EvidenceRetentionService.forStateRoot(options.stateRoot);
   const hubLifecycle = HubLifecycleService.create(options);
   const githubSync = GitHubSyncService.create(options);
   const review = ReviewService.create(options);
+  const codeDraftTechnicalReviewer = CodeDraftTechnicalReviewer.create({ root: options.root, reviewService: review });
   const permissions = PermissionService.create(options);
   const secrets = SecretsService.create(options);
   const machine = MachineHost.create(options);
@@ -58,9 +61,10 @@ function create(options) {
   const mirror = MirrorWorldAdapterService.create(Object.assign({}, options, { worldStateService: world }));
   const novelty = NoveltyDiversityService.create(options);
   const releases = PublicReleaseService.create(Object.assign({}, options, { reviewService: review, secretsService: secrets }));
+  const windowsOffline = WindowsOfflineGateService.create(options);
   const cognitiveResources = CognitiveResourceService.create(options);
   const cognitiveLabs = CognitiveEvidenceLabsService.create(Object.assign({}, options, { meterService:cognitiveResources }));
-  const diagnostics = DiagnosticsService.create(Object.assign({}, options, { reviewService: review, permissionService: permissions, secretsService: secrets, machineHost: machine, recoveryService: recovery, searchService: search, assetService: assets, deviceHandoffService: handoff, installerService: installer, qaLabService: qa, templateRuntimeService: templates, sourceConnectorService: sources, mediaRenderService: media, livingWorldStateService: world, multiplayerTransportService: multiplayer, rulesetPhysicsAdapterService: adapters, mirrorWorldAdapterService: mirror, noveltyDiversityService: novelty, publicReleaseService: releases, evidenceRetentionService: evidenceRetention }));
+  const diagnostics = DiagnosticsService.create(Object.assign({}, options, { reviewService: review, permissionService: permissions, secretsService: secrets, machineHost: machine, recoveryService: recovery, searchService: search, assetService: assets, deviceHandoffService: handoff, installerService: installer, qaLabService: qa, templateRuntimeService: templates, sourceConnectorService: sources, mediaRenderService: media, livingWorldStateService: world, multiplayerTransportService: multiplayer, rulesetPhysicsAdapterService: adapters, mirrorWorldAdapterService: mirror, noveltyDiversityService: novelty, publicReleaseService: releases, windowsOfflineGateService: windowsOffline, evidenceRetentionService: evidenceRetention }));
   recovery.startSchedule(); assets.startWatcher();
 
   function body(req, max) { return new Promise((resolve, reject) => options.readJsonBody(req, max, (error, parsed) => error ? reject(error) : resolve(parsed || {}))); }
@@ -107,6 +111,8 @@ function create(options) {
     if (url === '/api/reviews' && req.method === 'GET') { reply(res, { items: review.list({ state: query(req).get('state') || '' }), summary: review.summary(), structuralReview: readinessObserver.snapshot() }); return true; }
     if (url === '/api/reviews' && req.method === 'POST') { reply(res, body(req, 200000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'explicit-submit'); return review.submit(parsed); })); return true; }
     if (url === '/api/reviews/vote' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'exact-digest-vote'); if (parsed.confirmation !== 'REVIEW EXACT DIGEST') throw new Error('exact review confirmation is required'); return review.vote(parsed.id, parsed); })); return true; }
+    if (url === '/api/reviews/technical-check' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'deterministic-technical-check'); if (parsed.confirmation !== 'RUN READ-ONLY TECHNICAL CHECK') throw new Error('read-only technical check confirmation is required'); return codeDraftTechnicalReviewer.review(parsed.id, parsed.artifactDigest); })); return true; }
+    if (url === '/api/reviews/technical-check-pending' && req.method === 'POST') { reply(res, body(req, 10000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'deterministic-technical-check-batch'); if (parsed.confirmation !== 'RUN BOUNDED READ-ONLY TECHNICAL CHECKS') throw new Error('bounded technical-check confirmation is required'); return codeDraftTechnicalReviewer.reviewPending(); })); return true; }
     if (url === '/api/reviews/discuss' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'explicit-discussion'); return review.discuss(parsed.id, parsed); })); return true; }
     if (url === '/api/reviews/route' && req.method === 'POST') { reply(res, body(req, 50000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-review', 'explicit-decision-pool-route'); if (parsed.confirmation !== 'ROUTE REVIEW ITEM') throw new Error('exact decision-pool confirmation is required'); return review.route(parsed.id, parsed); })); return true; }
 
@@ -147,6 +153,9 @@ function create(options) {
     if (url === '/api/diagnostics/logs' && req.method === 'GET') { reply(res, diagnostics.logs(query(req).get('kind') || 'workshop', query(req).get('bytes'))); return true; }
     if (url === '/api/diagnostics/exports' && req.method === 'GET') { reply(res, diagnostics.exportStatus()); return true; }
     if (url === '/api/diagnostics/export' && req.method === 'POST') { reply(res, body(req, 10000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-diagnostics', 'explicit-export'); return diagnostics.exportReport(actor(req, parsed)); })); return true; }
+    if (url === '/api/diagnostics/windows-offline' && req.method === 'GET') { reply(res, windowsOffline.status()); return true; }
+    if (url === '/api/diagnostics/windows-offline/preview' && req.method === 'POST') { reply(res, body(req, 2 * 1024 * 1024).then(parsed => windowsOffline.preview(parsed.packet || parsed))); return true; }
+    if (url === '/api/diagnostics/windows-offline/record' && req.method === 'POST') { reply(res, body(req, 2 * 1024 * 1024).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-windows-offline', 'record-reviewed-gate'); return windowsOffline.record(parsed.packet || parsed, actor(req, parsed)); })); return true; }
 
     if (url === '/api/search' && req.method === 'GET') { const params = query(req), q = params.get('q'); reply(res, q ? search.search(q, { limit: params.get('limit'), prefix: params.get('prefix') }) : search.summary()); return true; }
     if (url === '/api/search/reindex' && req.method === 'POST') { reply(res, Promise.resolve().then(() => { mutationAllowed(); explicit(req, 'x-axm-search', 'explicit-reindex'); return search.build(); })); return true; }
@@ -247,7 +256,7 @@ function create(options) {
   }
 
   function stop() { recovery.stopSchedule(); assets.stopWatcher(); multiplayer.stop('server-shutdown'); handoff.stop(); cognitiveResources.stop(); const evidence = evidenceRetention.seal('server-shutdown'); return { stopped: true, evidence }; }
-  return { handle, stop, services: { review, permissions, secrets, machine, recovery, installer, workbench, modularIntake, needsObservatory, search, assets, handoff, diagnostics, qa, templates, sources, media, world, multiplayer, adapters, mirror, novelty, releases, cognitiveResources, cognitiveLabs, evidenceRetention } };
+  return { handle, stop, services: { review, codeDraftTechnicalReviewer, permissions, secrets, machine, recovery, installer, workbench, modularIntake, needsObservatory, search, assets, handoff, diagnostics, windowsOffline, qa, templates, sources, media, world, multiplayer, adapters, mirror, novelty, releases, cognitiveResources, cognitiveLabs, evidenceRetention } };
 }
 
 module.exports = { create };

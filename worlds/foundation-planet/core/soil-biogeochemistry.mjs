@@ -1,11 +1,15 @@
 export const SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA =
+  'axm.foundation-planet.soil-biogeochemistry-state/v2';
+export const PREVIOUS_SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA =
   'axm.foundation-planet.soil-biogeochemistry-state/v1';
 export const RUNOFF_BIOGEOCHEMISTRY_QUEUE_SCHEMA =
+  'axm.foundation-planet.runoff-biogeochemistry-queue/v2';
+export const PREVIOUS_RUNOFF_BIOGEOCHEMISTRY_QUEUE_SCHEMA =
   'axm.foundation-planet.runoff-biogeochemistry-queue/v1';
 export const SOIL_RUNOFF_MOBILIZATION_SCHEMA =
-  'axm.foundation-planet.soil-runoff-mobilization-receipt/v1';
+  'axm.foundation-planet.soil-runoff-mobilization-receipt/v2';
 export const RUNOFF_BIOGEOCHEMISTRY_TRANSFER_SCHEMA =
-  'axm.foundation-planet.runoff-biogeochemistry-transfer-receipt/v1';
+  'axm.foundation-planet.runoff-biogeochemistry-transfer-receipt/v2';
 
 export const RUNOFF_BIOGEOCHEMISTRY_POOLS = Object.freeze([
   Object.freeze({
@@ -32,10 +36,17 @@ export const RUNOFF_BIOGEOCHEMISTRY_POOLS = Object.freeze([
     id: 'dissolvedOxygenKgO2m2',
     absoluteId: 'dissolvedOxygenKgO2',
     element: 'oxygen'
+  }),
+  Object.freeze({
+    id: 'alkalinityKgCaCO3Eqm2',
+    absoluteId: 'alkalinityKgCaCO3Eq',
+    element: 'alkalinity'
   })
 ]);
 
-const ELEMENTS = Object.freeze(['carbon', 'nitrogen', 'phosphorus', 'oxygen']);
+const ELEMENTS = Object.freeze([
+  'carbon', 'nitrogen', 'phosphorus', 'oxygen', 'alkalinity'
+]);
 const clamp = (value, min = 0, max = 1) =>
   Math.max(min, Math.min(max, value));
 const finite = (value, fallback = 0) => Number.isFinite(Number(value))
@@ -54,7 +65,9 @@ function normalizePools(source = {}) {
 }
 
 function emptyElements() {
-  return { carbon: 0, nitrogen: 0, phosphorus: 0, oxygen: 0 };
+  return {
+    carbon: 0, nitrogen: 0, phosphorus: 0, oxygen: 0, alkalinity: 0
+  };
 }
 
 function elementUnits(elements, suffix = 'm2') {
@@ -63,6 +76,7 @@ function elementUnits(elements, suffix = 'm2') {
     nitrogenKgN: round(elements.nitrogen),
     phosphorusKgP: round(elements.phosphorus),
     oxygenKgO2: round(elements.oxygen),
+    alkalinityKgCaCO3Eq: round(elements.alkalinity),
     basis: suffix
   };
 }
@@ -105,13 +119,27 @@ function canonicalConcentrations(sample = {}, substrate = {}, ecology = {},
     .25, 1.4);
   const oxygenSolubility = clamp(1.08 - Math.max(0,
     finite(temperatureC, 15)) * .012, .52, 1.12);
+  const bedrock = String(sample?.geology?.bedrock || '').toLowerCase();
+  const lithologyAlkalinityKgM3 = /limestone|carbonate|karst/.test(bedrock)
+    ? .12
+    : /shale|sandstone|sedimentary/.test(bedrock)
+      ? .064
+      : /basalt|andesite|volcan/.test(bedrock)
+        ? .046
+        : /granite|gneiss|metamorphic/.test(bedrock)
+          ? .021
+          : .048;
+  const alkalinityKgCaCO3EqM3 = clamp(lithologyAlkalinityKgM3 *
+    (.72 + weatheringSignal * .28) * (.82 + moistureSignal * .18),
+  .012, .16);
   return {
     dissolvedInorganicCarbonKgM3: .008 + .006 * weatheringSignal,
     dissolvedOrganicCarbonKgM3: (.0025 + .008 * litterSignal) *
       (.6 + moistureSignal * .4),
     dissolvedInorganicNitrogenKgM3: .00025 + .00155 * mineralSignal,
     dissolvedInorganicPhosphorusKgM3: .000035 + .000085 * weatheringSignal,
-    dissolvedOxygenKgM3: .0086 * oxygenSolubility
+    dissolvedOxygenKgM3: .0086 * oxygenSolubility,
+    alkalinityKgCaCO3EqM3
   };
 }
 
@@ -127,7 +155,9 @@ function poolsFromConcentrations(concentrations, accessibleWaterMm) {
     dissolvedInorganicPhosphorusKgPm2: waterM3m2 *
       finite(concentrations.dissolvedInorganicPhosphorusKgM3),
     dissolvedOxygenKgO2m2: waterM3m2 *
-      finite(concentrations.dissolvedOxygenKgM3)
+      finite(concentrations.dissolvedOxygenKgM3),
+    alkalinityKgCaCO3Eqm2: waterM3m2 *
+      finite(concentrations.alkalinityKgCaCO3EqM3)
   };
 }
 
@@ -136,7 +166,11 @@ function stateTruth() {
     persistentDissolvedSoilWaterReservoirs: true,
     finiteRunoffDonorPools: true,
     runoffMobilizationWaterCoupled: true,
-    carbonNitrogenPhosphorusOxygenTracked: true,
+    carbonNitrogenPhosphorusOxygenAndAlkalinityTracked: true,
+    alkalinityIsAcidNeutralizingCapacityEquivalent: true,
+    measuredAlkalinityClaimed: false,
+    carbonateSpeciationResolved: false,
+    pHResolved: false,
     mechanisticSoilChemistry: false,
     resolvedSoilPoreNetwork: false
   };
@@ -150,6 +184,7 @@ export function createSoilBiogeochemistry(sample = {}, substrate = {},
   return {
     schema: SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA,
     migrationCheckpoint: false,
+    alkalinityMigrationCheckpoint: false,
     initialization: {
       status: 'canonical-initial-condition',
       accessibleWaterMm: round(accessibleWaterMm, 9),
@@ -167,6 +202,7 @@ export function emptyMigratedSoilBiogeochemistry() {
   return {
     schema: SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA,
     migrationCheckpoint: true,
+    alkalinityMigrationCheckpoint: true,
     initialization: {
       status: 'migration-empty-checkpoint',
       accessibleWaterMm: 0,
@@ -180,11 +216,19 @@ export function emptyMigratedSoilBiogeochemistry() {
 }
 
 export function normalizeSoilBiogeochemistry(source) {
-  if (source?.schema !== SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA) {
+  if (![
+    SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA,
+    PREVIOUS_SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA
+  ].includes(source?.schema)) {
     return emptyMigratedSoilBiogeochemistry();
   }
   const state = clone(source);
+  const migratedAlkalinity = source.schema ===
+    PREVIOUS_SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA;
+  state.schema = SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA;
   state.migrationCheckpoint = state.migrationCheckpoint === true;
+  state.alkalinityMigrationCheckpoint = migratedAlkalinity ||
+    state.alkalinityMigrationCheckpoint === true;
   state.initialization = {
     status: String(state.initialization?.status || 'normalized'),
     accessibleWaterMm: Math.max(0,
@@ -218,7 +262,10 @@ export function emptyRunoffBiogeochemistryQueue() {
 
 export function normalizeRunoffBiogeochemistryQueue(source) {
   const queue = emptyRunoffBiogeochemistryQueue();
-  if (source?.schema !== RUNOFF_BIOGEOCHEMISTRY_QUEUE_SCHEMA) return queue;
+  if (![
+    RUNOFF_BIOGEOCHEMISTRY_QUEUE_SCHEMA,
+    PREVIOUS_RUNOFF_BIOGEOCHEMISTRY_QUEUE_SCHEMA
+  ].includes(source?.schema)) return queue;
   queue.pools = normalizePools(source.pools);
   queue.lastTransferReceipt = source.lastTransferReceipt?.schema ===
     RUNOFF_BIOGEOCHEMISTRY_TRANSFER_SCHEMA
@@ -413,10 +460,15 @@ export function soilBiogeochemistryDescription() {
       'canonical-soil-water-initial-condition',
       'runoff-fraction-bounded-dissolved-material-mobilization',
       'persistent-runoff-chemistry-queue',
-      'paired-area-weighted-sender-debit-and-receiver-credit'
+      'paired-area-weighted-sender-debit-and-receiver-credit',
+      'lithology-parameterized-alkalinity-initial-condition'
     ],
     sideEffects: ['soil-biogeochemistry-state', 'runoff-biogeochemistry-queue'],
     persistentFiniteDonors: true,
+    alkalinityUnit: 'kg-CaCO3-equivalent',
+    alkalinityMeasured: false,
+    carbonateSpeciationResolved: false,
+    pHResolved: false,
     mechanisticSoilChemistry: false,
     resolvedSoilPoreNetwork: false
   };

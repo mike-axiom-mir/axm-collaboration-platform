@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm://contracts/translation-proof-packet/v1",
+  "title": "AXM Translation Proof Packet",
+  "type": "object",
+  "required": [
+    "schema",
+    "request_id",
+    "claims",
+    "fingerprints",
+    "loss",
+    "authority",
+    "verdict"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.translation.proof-packet/v1"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "claims": {
+      "type": "array"
+    },
+    "fingerprints": {
+      "type": "object"
+    },
+    "loss": {
+      "type": "object"
+    },
+    "authority": {
+      "type": "object"
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "PASS_WITH_VISIBLE_LOSS",
+        "REFUSE",
+        "UNPROVEN"
+      ]
+    }
+  }
+}

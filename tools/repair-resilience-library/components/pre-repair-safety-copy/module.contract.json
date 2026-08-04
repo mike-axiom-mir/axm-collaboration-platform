@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.pre-repair-safety-copy",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.pre-repair-safety-copy/v1"
+  ],
+  "consumes": [
+    "file-list",
+    "safety-copy-root"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_3_HUMAN_GATED_PRIMITIVE",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/recovery-center",
+      "tools/repairbuddy"
+    ],
+    "reason": "Copies exact pre-mutation files with hashes and a manifest before any explicit repair caller proceeds."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [
+      "caller-provided:safety-copy-root/**"
+    ],
+    "refuses": [
+      "automatic-restore",
+      "automatic-rollback",
+      "silent-data-loss",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

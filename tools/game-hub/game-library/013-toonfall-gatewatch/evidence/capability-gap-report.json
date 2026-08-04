@@ -1,0 +1,41 @@
+{
+  "schema": "axm.capability-gap-report/v1",
+  "artifact": "013-toonfall-gatewatch",
+  "evaluated_at": "2026-07-28",
+  "status": "REQUIRED_CAPABILITIES_SATISFIED_WITH_OPTIONAL_GAPS",
+  "route": "DEGRADED",
+  "required_gaps": [],
+  "satisfied_required": [
+    "authoritative-runtime",
+    "fixed-one-human-one-ai",
+    "story-to-combat-journey",
+    "three-wave-outcome-and-restart",
+    "keyboard-mouse-controls",
+    "pause-help-reload-recovery",
+    "guided-exploration-and-progress",
+    "safe-modal-and-reload-controls",
+    "desktop-and-narrow-layout",
+    "local-offline-assets"
+  ],
+  "non_blocking_gaps": [
+    { "id": "physical-gamepad", "type": "HAND/EVIDENCE", "reason": "Mapping and edge-trigger logic are implemented, but no physical controller is available for this beta run." },
+    { "id": "multi-device-lan-or-phone", "type": "CONTRACT/EVIDENCE", "reason": "Out of scope by design; one human shares the main screen with a server-owned AI." },
+    { "id": "long-session-performance", "type": "EVIDENCE", "reason": "No extended soak is available; only bounded local telemetry may be claimed." },
+    { "id": "visual.capture.ephemeral-rolling-buffer/v1", "type": "HAND/EVIDENCE", "reason": "Repeated screenshots prove selected frames, but not continuous motion between samples." },
+    { "id": "visual.browser.localhost", "type": "SUBSTRATE/EVIDENCE", "reason": "The selected in-app browser currently rejects the 127.0.0.1 route; new client deltas are source-, package-, and live-static verified but not freshly rendered." }
+  ],
+  "missing_hand_contract": {
+    "capability_id": "visual.capture.ephemeral-rolling-buffer/v1",
+    "purpose": "Bounded continuous frame evidence for camera, animation, and input timing claims.",
+    "inputs": ["declared browser surface", "viewport", "duration", "frame cadence", "temporary root"],
+    "outputs": ["bounded frame manifest", "timestamps", "digest", "cleanup result"],
+    "side_effects": ["temporary local frame chunks only"],
+    "permissions": ["target-surface sight only"],
+    "resource_budget": "bounded by explicit duration, bytes, and cadence",
+    "failure_recovery": "report UNKNOWN timing and delete exact temporary manifest",
+    "compatibility": "visual.capture.ephemeral-rolling-buffer/v1",
+    "verification": ["bounded size", "frame order", "target isolation", "exact cleanup"],
+    "promotion_gate": "available only after contract verification"
+  },
+  "decision": "The required local Game Night beta route is READY. Overall perfection evidence remains DEGRADED by the named optional hardware, soak, networking, localhost-browser, and rolling-capture gaps."
+}

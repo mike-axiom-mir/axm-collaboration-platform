@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/studio-upgrade-handoff-v1.schema.json",
+  "title": "AXM Studio upgrade handoff v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "importable", "automatic_apply", "request", "target_canvas", "target_canvas_original", "intended_use", "quality_requirements", "required_outputs", "editable_recipe_formats", "capability_route", "capability_receipts", "selected_hand", "missing", "creation_recipe", "validation_receipt", "preview", "provenance", "digest"],
+  "properties": {
+    "schema": { "const": "axm.studio-upgrade-handoff/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "enum": ["EXECUTED_AWAITING_EXPLICIT_IMPORT", "EXECUTED_OUTPUT_REQUIREMENT_HOLD", "ROUTED_AWAITING_EXECUTION", "MISSING_HAND", "UNSUPPORTED_CANVAS", "MISSING_SUBSTRATE", "REVIEW_REQUIRED"] },
+    "importable": { "type": "boolean" },
+    "automatic_apply": { "const": false },
+    "request": { "type": "object" },
+    "target_canvas": { "type": "object" },
+    "target_canvas_original": { "type": "object" },
+    "intended_use": { "type": "string" },
+    "quality_requirements": { "type": "object" },
+    "required_outputs": { "type": "array", "items": { "type": "string" } },
+    "editable_recipe_formats": { "type": "array", "items": { "type": "string" } },
+    "capability_route": { "type": "object" },
+    "capability_receipts": { "type": "array", "items": { "type": "object" } },
+    "selected_hand": { "type": ["object", "null"] },
+    "missing": { "type": "array", "items": { "type": "string" } },
+    "creation_recipe": { "type": ["object", "null"] },
+    "validation_receipt": { "type": ["object", "null"] },
+    "preview": { "type": ["object", "null"] },
+    "provenance": { "type": "object" },
+    "digest": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

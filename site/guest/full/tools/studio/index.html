@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AXM Studio — 2D & Interface Workspace</title>
+  <link rel="stylesheet" href="studio-shell.css">
+  <link rel="stylesheet" href="../../shared/presentation-spine/presentation-spine.css?v=20260724-spine-1">
+</head>
+<body class="axm-spine" data-axm-profile="studio" data-axm-surface="studio">
+  <div class="studio-app">
+    <header class="studio-topbar">
+      <div class="studio-brand">
+        <a class="back" href="/hub/index.html" aria-label="Back to Hub">‹</a>
+        <span class="brand-mark">AXM</span>
+        <div><span class="eyebrow">Complete creative workspace</span><h1>Studio</h1></div>
+      </div>
+      <label class="project-name"><span>Project</span><input id="projectName" maxlength="100" value="Untitled studio project"></label>
+      <div class="top-actions">
+        <span id="vaultState" class="vault-state available"><i></i>Asset Vault available</span>
+        <button id="openCommandDeck" class="button command-button" aria-haspopup="dialog" aria-label="Open Command Deck"><span>Commands</span><kbd>Ctrl K</kbd></button>
+        <button id="openHands" class="button secondary">Creation Hands</button>
+        <button id="openAssets" class="button secondary">Assets</button>
+        <button id="saveWorkspace" class="button primary" disabled>Save workspace</button>
+      </div>
+    </header>
+
+    <div class="studio-body">
+      <aside class="mode-rail" aria-label="Studio modes">
+        <div class="rail-title"><span>Modes</span><small>One Studio</small></div>
+        <nav id="modeNav"></nav>
+        <div class="rail-service">
+          <span>Shared service</span>
+          <button id="openAssetsRail"><i></i><b>Asset Vault</b><small>Library behind Studio</small></button>
+          <button id="openHandsRail"><i></i><b>Creation Hands</b><small>Shared modular makers</small></button>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="mode-header">
+          <div class="mode-identity"><span id="modeIcon" class="mode-icon"></span><div><span id="modeGroup" class="eyebrow"></span><h2 id="modeTitle"></h2><p id="modeDescription"></p></div></div>
+          <div class="mode-meta"><span id="modeRoute">Layered canvas</span><span>Local first</span><span>Shared library</span></div>
+        </header>
+        <div class="workspace-stage">
+          <iframe id="canvasFrame" class="mode-frame" src="engine.html?embedded=1" title="Studio 2D canvas"></iframe>
+          <iframe id="uiuxFrame" class="mode-frame" data-src="../ui-ux-builder/index.html?studio=1" title="Studio UI UX workspace" hidden></iframe>
+          <iframe id="skinFrame" class="mode-frame" data-src="../skinner/index.html?studio=1" title="Studio skin production" hidden></iframe>
+          <iframe id="packFrame" class="mode-frame" data-src="../asset-pack-lab/index.html?studio=1" title="Studio asset pack production" hidden></iframe>
+        </div>
+        <footer class="studio-status"><span><i></i><b id="statusText">Studio ready</b></span><span id="saveState">Auto-save on</span></footer>
+      </main>
+    </div>
+  </div>
+
+  <div id="assetDrawer" class="drawer" aria-hidden="true">
+    <button class="drawer-shade" data-close-assets aria-label="Close Asset Vault"></button>
+    <section class="drawer-panel">
+      <header><div><span class="eyebrow">Shared Studio service</span><h2>Asset Vault</h2><p>Import, find and organize assets without leaving Studio.</p></div><button class="drawer-close" data-close-assets>×</button></header>
+      <iframe id="vaultFrame" title="Studio Asset Vault"></iframe>
+    </section>
+  </div>
+  <div id="handsDrawer" class="drawer hands-drawer" aria-hidden="true">
+    <button class="drawer-shade" data-close-hands aria-label="Close Creation Hands"></button>
+    <section class="drawer-panel">
+      <header><div><span class="eyebrow">Shared executable capability</span><h2>Creation Hands</h2><p>Run only the hands compatible with this asset brief, then explicitly send one result into Studio.</p></div><button class="drawer-close" data-close-hands>×</button></header>
+      <iframe id="handsFrame" title="AXM shared Asset Hands"></iframe>
+    </section>
+  </div>
+  <div id="commandDeck" class="command-deck" aria-hidden="true">
+    <button class="command-shade" data-close-commands aria-label="Close Command Deck"></button>
+    <section class="command-panel" role="dialog" aria-modal="true" aria-labelledby="commandDeckTitle">
+      <header class="command-head">
+        <div><span class="eyebrow">Visual action layer</span><h2 id="commandDeckTitle">Command Deck</h2><p>Find an action by what you want to do. Core controls appear first; nothing runs until you choose it.</p></div>
+        <button class="drawer-close" data-close-commands aria-label="Close Command Deck">×</button>
+      </header>
+      <div class="command-search-row">
+        <label class="command-search"><span aria-hidden="true">⌕</span><input id="commandSearch" type="search" autocomplete="off" placeholder="Try “undo”, “add layer”, “vector”, or “export”…" aria-label="Search Studio commands"></label>
+        <label class="advanced-toggle"><input id="commandAdvanced" type="checkbox"><span>Advanced + specialist</span></label>
+      </div>
+      <div id="commandResults" class="command-results" role="listbox" aria-label="Studio commands"></div>
+      <footer class="command-foot"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>Enter</kbd> run</span><span><kbd>Esc</kbd> close</span><b id="commandCount">0 actions</b></footer>
+    </section>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="../../shared/visual-actions/visual-actions.js"></script>
+  <script src="studio-actions.js"></script>
+  <script src="studio-core.js"></script>
+  <script src="/hub/axm-hub-module.js"></script>
+  <script src="/shared/continuity/workshop-continuity.js"></script>
+  <script>document.documentElement.classList.add('studio-shell-ready');</script>
+  <script src="studio-shell.js"></script>
+</body>
+</html>

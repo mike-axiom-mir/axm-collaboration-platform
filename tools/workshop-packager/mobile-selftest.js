@@ -33,10 +33,10 @@ check(/bridge-token\.txt/.test(builder) && /latest-screen\.jpg/.test(builder), '
 const nestedPrivateNames = (publicPackager.match(/\$privateDirNames\s*=\s*@\(([\s\S]*?)\n\s*\)/) || [,''])[1];
 check(!/(?:^|[,'"\s])runtime(?:[,'"\s]|$)/i.test(nestedPrivateNames), 'public packager preserves declared nested game runtimes');
 check(/Join-Path \$Root 'runtime'/.test(publicPackager), 'public packager excludes private top-level runtime state');
-check(/ValidateSet\('full','public','module','delta'\)/.test(publicPackager), 'packager exposes four typed modes');
+check(/ValidateSet\('full','public','module','delta','offline-windows'\)/.test(publicPackager), 'packager exposes five typed modes including offline Windows');
 check(/axm\.package-plan\/v1/.test(publicPackager) && /removed_paths/.test(publicPackager), 'packager consumes a typed plan and preserves the deletion ledger');
 check(/not-applicable-partial-package/.test(restoreTest) && /Selected scope has no restored files/.test(restoreTest), 'restore test distinguishes partial packages from whole Workshop boots');
-check(/Current build-on ZIP/.test(packagerUi) && /Create build-on ZIP/.test(packagerUi) && /Create changed\/new ZIP/.test(packagerUi), 'human UI exposes current build-on and GitHub-delta flows');
+check(/Current build-on ZIP/.test(packagerUi) && /Create build-on ZIP/.test(packagerUi) && /Create changed\/new ZIP/.test(packagerUi) && /Create offline Windows ZIP/.test(packagerUi), 'human UI exposes build-on, delta and offline Windows flows');
 check(/BUILD_ON_GUIDE\.md/.test(publicPackager) && /axm\.build-on-handoff\/v1/.test(publicPackager), 'modular sender includes a plain-language return guide and typed exact-base handoff');
 check(/export_id=\$BaseName/.test(publicPackager) && /intended_return_schema='axm\.workshop-package-return\/v1'/.test(publicPackager), 'build-on handoff records its export identity and intended receiver schema');
 check(/catalog: WorkshopPackager\.catalog\(\)/.test(server) && /github_repo: parsed\.github_repo/.test(server), 'server routes catalog and bounded delta inputs');
@@ -45,19 +45,40 @@ const catalog = Packager.catalog();
 check(catalog.length > 20, 'catalog discovers packageable Workshop boundaries');
 check(['module', 'parent-module', 'game', 'world', 'shared-system'].every(kind => catalog.some(item => item.kind === kind)), 'catalog includes modules, parents, games, worlds, and shared systems');
 check(Packager.normalizeOptions({ mode: 'module', scopes: ['tools/workshop-packager'] }).scopes[0] === 'tools/workshop-packager', 'service accepts a safe modular scope');
+check(Packager.normalizeOptions({ mode: 'offline-windows' }).mode === 'offline-windows', 'service accepts the offline Windows candidate mode');
+check(typeof Packager.offlineReadiness().ready === 'boolean', 'service exposes runtime-bundle readiness without building');
+check(Packager.deploymentCapabilities().summary.total === 100, 'service exposes the deduplicated 100-card deployment capability catalog');
 try { Packager.normalizeOptions({ mode: 'module', scopes: ['../outside'] }); check(false, 'service refuses escaping scopes'); }
 catch (_) { check(true, 'service refuses escaping scopes'); }
 
 const plannerRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-package-plan-'));
 try {
   fs.mkdirSync(path.join(plannerRoot, 'tools', 'demo', 'runtime'), { recursive: true });
+  fs.mkdirSync(path.join(plannerRoot, 'tools', 'demo', 'rollback'), { recursive: true });
   fs.mkdirSync(path.join(plannerRoot, 'state'), { recursive: true });
+  fs.mkdirSync(path.join(plannerRoot, 'distributions', 'demo', 'build'), { recursive: true });
+  fs.mkdirSync(path.join(plannerRoot, 'AXM_EXAMPLE_v0_1_WORKING'), { recursive: true });
+  fs.mkdirSync(path.join(plannerRoot, '_archive_review_example'), { recursive: true });
   fs.writeFileSync(path.join(plannerRoot, 'tools', 'demo', 'index.js'), 'hello\n');
+  fs.writeFileSync(path.join(plannerRoot, 'tools', 'demo', 'index.js.bak-editor'), 'backup\n');
+  fs.writeFileSync(path.join(plannerRoot, 'tools', 'demo', 'runtime', 'bridge_token.txt'), 'private relay token\n');
   fs.writeFileSync(path.join(plannerRoot, 'tools', 'demo', 'runtime', 'game.js'), 'game\n');
+  fs.writeFileSync(path.join(plannerRoot, 'tools', 'demo', 'rollback', 'old.zip'), 'archive\n');
   fs.writeFileSync(path.join(plannerRoot, 'state', 'private.json'), '{}\n');
+  fs.writeFileSync(path.join(plannerRoot, 'distributions', 'demo', 'build', 'demo.zip'), 'derived\n');
+  fs.writeFileSync(path.join(plannerRoot, 'AXM_EXAMPLE_v0_1_WORKING', 'candidate.js'), 'candidate\n');
+  fs.writeFileSync(path.join(plannerRoot, '_archive_review_example', 'review.txt'), 'review\n');
   const planned = Planner.collectFiles(plannerRoot, ['tools/demo']);
   check(planned.files.has('tools/demo/index.js') && planned.files.has('tools/demo/runtime/game.js'), 'modular planner preserves nested game runtime content');
+  check(!planned.files.has('tools/demo/rollback/old.zip'), 'modular planner excludes nested rollback archives');
+  check(!planned.files.has('tools/demo/index.js.bak-editor'), 'modular planner excludes editor backup variants');
+  check(!planned.files.has('tools/demo/runtime/bridge_token.txt'), 'modular planner excludes underscore-style runtime bridge tokens');
   check(!planned.files.has('state/private.json'), 'modular planner excludes body-level private state');
+  const publicPlanned = Planner.collectFiles(plannerRoot, []);
+  check(publicPlanned.files.has('tools/demo/runtime/game.js'), 'public planner preserves production game runtime content');
+  check(!publicPlanned.files.has('distributions/demo/build/demo.zip'), 'public planner excludes generated distributions');
+  check(!publicPlanned.files.has('AXM_EXAMPLE_v0_1_WORKING/candidate.js'), 'public planner excludes root working handoffs');
+  check(!publicPlanned.files.has('_archive_review_example/review.txt'), 'public planner excludes archive-review workspaces');
   check(Planner.gitBlobSha(path.join(plannerRoot, 'tools', 'demo', 'index.js')) === 'ce013625030ba8dba906f756967f9e9ca394464a', 'GitHub delta uses canonical Git blob hashing');
   const syntheticDelta = Planner.diffAgainstTree(planned.files, [
     { type: 'blob', path: 'tools/demo/index.js', sha: 'ce013625030ba8dba906f756967f9e9ca394464a' },

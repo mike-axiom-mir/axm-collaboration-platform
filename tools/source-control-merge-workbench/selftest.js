@@ -101,11 +101,11 @@ function git(executable, cwd, args) {
     ok(repeatPlan.changes.length === 0, 'repeat plan is source-idempotent');
     const noChanges = service.executeManual({ planDigest:repeatPlan.planDigest, confirmation:Sync.MANUAL_PUSH_CONFIRMATION, actor:'Mike' });
     ok(noChanges.state === 'NO_CHANGES' && noChanges.committed === false && noChanges.pushed === false, 'empty reviewed plan performs no commit or push');
-    fs.writeFileSync(path.join(sourceRoot, 'scanner-example.js'), "const privateKeyHeader = /-----BEGIN " + "PRIVATE KEY-----/;\n");
+    fs.writeFileSync(path.join(sourceRoot, 'scanner-example.js'), "const privateKeyHeader = /-----BEGIN PRIVATE KEY-----/;\n");
     const scannerSource = service.buildPlan();
     ok(scannerSource.source.publicSafety === 'PASS', 'scanner source containing only a key-header matcher is not a false positive');
     fs.rmSync(path.join(sourceRoot, 'scanner-example.js'));
-    fs.writeFileSync(path.join(sourceRoot, 'private-key.txt'), '-----BEGIN ' + 'PRIVATE KEY-----\n' + 'A'.repeat(32) + '\n');
+    fs.writeFileSync(path.join(sourceRoot, 'private-key.txt'), '-----BEGIN PRIVATE KEY-----\n' + 'A'.repeat(32) + '\n');
     const privateKeyRefused = service.buildPlan();
     ok(!privateKeyRefused.executable && privateKeyRefused.blockers.some(row => row.rule === 'private-key'), 'multiline private-key material remains refused');
     fs.rmSync(path.join(sourceRoot, 'private-key.txt'));

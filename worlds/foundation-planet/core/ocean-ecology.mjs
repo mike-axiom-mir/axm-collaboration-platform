@@ -8,13 +8,15 @@ import {
 } from './deep-ocean.mjs';
 
 export const EARTH_OCEAN_ECOLOGY_SCHEMA =
+  'axm.foundation-planet.ocean-ecology-state/v3';
+export const PREVIOUS_EARTH_OCEAN_ECOLOGY_SCHEMA =
   'axm.foundation-planet.ocean-ecology-state/v2';
 export const EARTH_OCEAN_ECOLOGY_FLUX_SCHEMA =
-  'axm.foundation-planet.ocean-ecology-flux-receipt/v2';
+  'axm.foundation-planet.ocean-ecology-flux-receipt/v3';
 export const EARTH_OCEAN_ECOLOGY_RIVER_INPUT_SCHEMA =
-  'axm.foundation-planet.ocean-ecology-river-input-receipt/v1';
+  'axm.foundation-planet.ocean-ecology-river-input-receipt/v2';
 export const EARTH_OCEAN_ECOLOGY_RUNOFF_INPUT_SCHEMA =
-  'axm.foundation-planet.ocean-ecology-runoff-input-receipt/v1';
+  'axm.foundation-planet.ocean-ecology-runoff-input-receipt/v2';
 const LEGACY_OCEAN_ECOLOGY_SCHEMA = 'axm.foundation-planet.ocean-ecology-state/v1';
 
 const REFERENCE_ATMOSPHERIC_CARBON_KG_C_M2 = 3.45;
@@ -46,7 +48,10 @@ export const OCEAN_ECOLOGY_TRANSPORT_POOLS = Object.freeze([
   Object.freeze({ id: 'phosphorus.phytoplanktonKgPm2', element: 'phosphorus' }),
   Object.freeze({ id: 'phosphorus.zooplanktonKgPm2', element: 'phosphorus' }),
   Object.freeze({ id: 'phosphorus.detritusKgPm2', element: 'phosphorus' }),
-  Object.freeze({ id: 'oxygen.dissolvedKgO2m2', element: 'oxygen' })
+  Object.freeze({ id: 'oxygen.dissolvedKgO2m2', element: 'oxygen' }),
+  Object.freeze({
+    id: 'alkalinity.dissolvedKgCaCO3Eqm2', element: 'alkalinity'
+  })
 ]);
 
 function pathParts(path) {
@@ -131,12 +136,17 @@ function oxygenTotal(oxygen, deepOcean) {
     deepOceanElementTotals(deepOcean).oxygenKgO2m2;
 }
 
+function alkalinityTotal(alkalinity) {
+  return finite(alkalinity?.dissolvedKgCaCO3Eqm2);
+}
+
 export function oceanEcologyElementTotals(source) {
   return {
     carbonKgCm2: carbonTotal(source?.carbon, source?.deepOcean),
     nitrogenKgNm2: nitrogenTotal(source?.nitrogen, source?.deepOcean),
     phosphorusKgPm2: phosphorusTotal(source?.phosphorus, source?.deepOcean),
-    oxygenKgO2m2: oxygenTotal(source?.oxygen, source?.deepOcean)
+    oxygenKgO2m2: oxygenTotal(source?.oxygen, source?.deepOcean),
+    alkalinityKgCaCO3Eqm2: alkalinityTotal(source?.alkalinity)
   };
 }
 
@@ -148,6 +158,8 @@ function refreshDiagnostics(state) {
   state.nitrogen.totalKgNm2 = round(nitrogenTotal(state.nitrogen, state.deepOcean));
   state.phosphorus.totalKgPm2 = round(phosphorusTotal(state.phosphorus, state.deepOcean));
   state.oxygen.totalKgO2m2 = round(oxygenTotal(state.oxygen, state.deepOcean));
+  state.alkalinity.totalKgCaCO3Eqm2 = round(
+    alkalinityTotal(state.alkalinity));
   const depthM = Math.max(1, finite(state.traits?.mixedLayerDepthM, 50));
   const chlorophyllProxyMgM3 = clamp(
     state.carbon.phytoplanktonKgCm2 / depthM * 1000 * 1.35,
@@ -181,7 +193,8 @@ function emptyMigrationInputs() {
     carbonKgCm2: 0,
     nitrogenKgNm2: 0,
     phosphorusKgPm2: 0,
-    oxygenKgO2m2: 0
+    oxygenKgO2m2: 0,
+    alkalinityKgCaCO3Eqm2: 0
   };
 }
 
@@ -204,9 +217,11 @@ export function createOceanEcology(sample, ocean = {}, options = {}) {
   const dissolvedInorganicN = depthM * (.00008 +
     clamp(finite(sample?.latitudeAbs) / 90) * .00028 + mixing * .00007);
   const dissolvedInorganicP = depthM * (.000014 + mixing * .000018);
+  const dissolvedAlkalinity = depthM * .115 * (salinityPsu / 35);
   const state = {
     schema: EARTH_OCEAN_ECOLOGY_SCHEMA,
     migrationCheckpoint: false,
+    alkalinityMigrationCheckpoint: false,
     migrationBoundaryInputs: emptyMigrationInputs(),
     traits,
     carbon: {
@@ -239,6 +254,11 @@ export function createOceanEcology(sample, ocean = {}, options = {}) {
         (.82 + mixing * .14),
       totalKgO2m2: 0
     },
+    alkalinity: {
+      dissolvedKgCaCO3Eqm2: dissolvedAlkalinity,
+      totalKgCaCO3Eqm2: 0,
+      initialization: 'parameterized-open-ocean-2300-umol-kg-reference'
+    },
     deepOcean: createDeepOceanState(sample, ocean),
     waterColumn: {
       chlorophyllProxyMgM3: 0,
@@ -266,6 +286,11 @@ export function createOceanEcology(sample, ocean = {}, options = {}) {
       localNitrogenLedger: true,
       localPhosphorusLedger: true,
       oxygenFluxLedger: true,
+      persistentAlkalinityLedger: true,
+      alkalinityIsAcidNeutralizingCapacityEquivalent: true,
+      measuredAlkalinityClaimed: false,
+      carbonateSpeciationResolved: false,
+      pHResolved: false,
       persistentDeepOceanReservoirs: true,
       sinkingCarbonExportAndBurial: true,
       physicalChemistryContinuesWithLifeOff: true,
@@ -290,6 +315,8 @@ function migratedOceanEcology(ocean = {}) {
   state.carbon.dissolvedInorganicKgCm2 = 0;
   state.carbon.dissolvedOrganicKgCm2 = 0;
   state.oxygen.dissolvedKgO2m2 = 0;
+  state.alkalinity.dissolvedKgCaCO3Eqm2 = 0;
+  state.alkalinityMigrationCheckpoint = true;
   state.nitrogen.dissolvedInorganicKgNm2 = 0;
   state.phosphorus.dissolvedInorganicKgPm2 = 0;
   state.deepOcean = emptyDeepOceanState({ migrationCheckpoint: true });
@@ -300,6 +327,7 @@ function migratedOceanEcology(ocean = {}) {
 export function normalizeOceanEcology(source, context = {}) {
   if (!source || ![
     EARTH_OCEAN_ECOLOGY_SCHEMA,
+    PREVIOUS_EARTH_OCEAN_ECOLOGY_SCHEMA,
     LEGACY_OCEAN_ECOLOGY_SCHEMA
   ].includes(source.schema)) {
     return context.sample && context.sample.land !== true
@@ -307,9 +335,12 @@ export function normalizeOceanEcology(source, context = {}) {
       : migratedOceanEcology(context.ocean);
   }
   const migratedFromV1 = source.schema === LEGACY_OCEAN_ECOLOGY_SCHEMA;
+  const migratedAlkalinity = source.schema !== EARTH_OCEAN_ECOLOGY_SCHEMA;
   const state = clone(source);
   state.schema = EARTH_OCEAN_ECOLOGY_SCHEMA;
   state.migrationCheckpoint = state.migrationCheckpoint === true;
+  state.alkalinityMigrationCheckpoint = migratedAlkalinity ||
+    state.alkalinityMigrationCheckpoint === true;
   state.migrationBoundaryInputs = {
     ...emptyMigrationInputs(),
     ...(state.migrationBoundaryInputs || {})
@@ -351,6 +382,13 @@ export function normalizeOceanEcology(source, context = {}) {
     dissolvedKgO2m2: Math.max(0, finite(state.oxygen?.dissolvedKgO2m2)),
     totalKgO2m2: 0
   };
+  state.alkalinity = {
+    dissolvedKgCaCO3Eqm2: Math.max(0, finite(
+      state.alkalinity?.dissolvedKgCaCO3Eqm2)),
+    totalKgCaCO3Eqm2: 0,
+    initialization: String(state.alkalinity?.initialization ||
+      (migratedAlkalinity ? 'explicit-zero-migration' : 'normalized'))
+  };
   state.deepOcean = migratedFromV1
     ? emptyDeepOceanState({ migrationCheckpoint: true })
     : normalizeDeepOceanState(state.deepOcean, {
@@ -384,6 +422,11 @@ export function normalizeOceanEcology(source, context = {}) {
     localNitrogenLedger: true,
     localPhosphorusLedger: true,
     oxygenFluxLedger: true,
+    persistentAlkalinityLedger: true,
+    alkalinityIsAcidNeutralizingCapacityEquivalent: true,
+    measuredAlkalinityClaimed: false,
+    carbonateSpeciationResolved: false,
+    pHResolved: false,
     persistentDeepOceanReservoirs: true,
     sinkingCarbonExportAndBurial: true,
     physicalChemistryContinuesWithLifeOff: true,
@@ -423,6 +466,8 @@ function applyMigrationInputs(state, inputs) {
   state.nitrogen.dissolvedInorganicKgNm2 += finite(inputs?.nitrogenKgNm2);
   state.phosphorus.dissolvedInorganicKgPm2 += finite(inputs?.phosphorusKgPm2);
   state.oxygen.dissolvedKgO2m2 += finite(inputs?.oxygenKgO2m2);
+  state.alkalinity.dissolvedKgCaCO3Eqm2 += finite(
+    inputs?.alkalinityKgCaCO3Eqm2);
   return refreshDiagnostics(state);
 }
 
@@ -473,6 +518,8 @@ function fluxReceipt(state, initial, duration, exchange, biology, deepOceanRecei
   const oxygenResidual = final.oxygenKgO2m2 - initial.oxygenKgO2m2 -
     biology.photosyntheticOxygenKgO2m2 + biology.respirationOxygenKgO2m2 +
     finite(deepOceanReceipt?.deepRemineralization?.oxygenConsumedKgO2m2);
+  const alkalinityResidual = final.alkalinityKgCaCO3Eqm2 -
+    initial.alkalinityKgCaCO3Eqm2;
   return {
     schema: EARTH_OCEAN_ECOLOGY_FLUX_SCHEMA,
     durationDays: round(duration),
@@ -482,13 +529,17 @@ function fluxReceipt(state, initial, duration, exchange, biology, deepOceanRecei
       totalCarbonKgCm2: round(initial.carbonKgCm2),
       totalNitrogenKgNm2: round(initial.nitrogenKgNm2),
       totalPhosphorusKgPm2: round(initial.phosphorusKgPm2),
-      totalOxygenKgO2m2: round(initial.oxygenKgO2m2)
+      totalOxygenKgO2m2: round(initial.oxygenKgO2m2),
+      totalAlkalinityKgCaCO3Eqm2: round(
+        initial.alkalinityKgCaCO3Eqm2)
     },
     final: {
       totalCarbonKgCm2: round(final.carbonKgCm2),
       totalNitrogenKgNm2: round(final.nitrogenKgNm2),
       totalPhosphorusKgPm2: round(final.phosphorusKgPm2),
-      totalOxygenKgO2m2: round(final.oxygenKgO2m2)
+      totalOxygenKgO2m2: round(final.oxygenKgO2m2),
+      totalAlkalinityKgCaCO3Eqm2: round(
+        final.alkalinityKgCaCO3Eqm2)
     },
     carbon: {
       grossPrimaryProductionKgCm2: round(biology.grossPrimaryProductionKgCm2),
@@ -516,6 +567,9 @@ function fluxReceipt(state, initial, duration, exchange, biology, deepOceanRecei
       airSeaFluxToOceanKgO2m2: round(exchange.oxygenToOceanKgO2m2),
       residualKgO2m2: round(oxygenResidual, 12)
     },
+    alkalinity: {
+      residualKgCaCO3Eqm2: round(alkalinityResidual, 12)
+    },
     waterColumn: clone(state.waterColumn),
     deepOcean: deepOceanReceipt ? clone(deepOceanReceipt) : null,
     stresses: {
@@ -533,6 +587,7 @@ function fluxReceipt(state, initial, duration, exchange, biology, deepOceanRecei
       nitrogenClosed: Math.abs(nitrogenResidual) < 1e-9,
       phosphorusClosed: Math.abs(phosphorusResidual) < 1e-9,
       oxygenFluxClosed: Math.abs(oxygenResidual) < 1e-9,
+      alkalinityClosed: Math.abs(alkalinityResidual) < 1e-9,
       persistentDeepOceanReservoirs: true,
       mixedToDeepMaterialClosure: deepOceanReceipt
         ? Object.values(deepOceanReceipt.conservation)
@@ -855,6 +910,8 @@ export function applyRiverBiogeochemistryInput(source, deliveredFreshwaterKg,
     dissolvedInorganicPhosphorusKgPm2:
       state.phosphorus.dissolvedInorganicKgPm2,
     dissolvedOxygenKgO2m2: state.oxygen.dissolvedKgO2m2
+    , alkalinityKgCaCO3Eqm2:
+      state.alkalinity.dissolvedKgCaCO3Eqm2
   };
   const waterVolumeM3m2 = waterKg / 1000 / area;
   const explicit = options.explicitInputsKg && typeof options.explicitInputsKg === 'object'
@@ -869,7 +926,10 @@ export function applyRiverBiogeochemistryInput(source, deliveredFreshwaterKg,
     dissolvedInorganicPhosphorusKgM3: waterKg > 0
       ? Math.max(0, finite(explicit.dissolvedInorganicPhosphorusKgP)) / (waterKg / 1000) : 0,
     dissolvedOxygenKgM3: waterKg > 0
-      ? Math.max(0, finite(explicit.dissolvedOxygenKgO2)) / (waterKg / 1000) : 0
+      ? Math.max(0, finite(explicit.dissolvedOxygenKgO2)) / (waterKg / 1000) : 0,
+    alkalinityKgCaCO3EqM3: waterKg > 0
+      ? Math.max(0, finite(explicit.alkalinityKgCaCO3Eq)) /
+        (waterKg / 1000) : 0
   } : {
     dissolvedInorganicCarbonKgM3: Math.max(0,
       finite(options.dissolvedInorganicCarbonKgM3, .012)),
@@ -880,7 +940,9 @@ export function applyRiverBiogeochemistryInput(source, deliveredFreshwaterKg,
     dissolvedInorganicPhosphorusKgM3: Math.max(0,
       finite(options.dissolvedInorganicPhosphorusKgM3, .00012)),
     dissolvedOxygenKgM3: Math.max(0,
-      finite(options.dissolvedOxygenKgM3, .008))
+      finite(options.dissolvedOxygenKgM3, .008)),
+    alkalinityKgCaCO3EqM3: Math.max(0,
+      finite(options.alkalinityKgCaCO3EqM3, .05))
   };
   const inputs = explicit ? {
     dissolvedInorganicCarbonKgCm2:
@@ -892,7 +954,9 @@ export function applyRiverBiogeochemistryInput(source, deliveredFreshwaterKg,
     dissolvedInorganicPhosphorusKgPm2:
       Math.max(0, finite(explicit.dissolvedInorganicPhosphorusKgP)) / area,
     dissolvedOxygenKgO2m2:
-      Math.max(0, finite(explicit.dissolvedOxygenKgO2)) / area
+      Math.max(0, finite(explicit.dissolvedOxygenKgO2)) / area,
+    alkalinityKgCaCO3Eqm2:
+      Math.max(0, finite(explicit.alkalinityKgCaCO3Eq)) / area
   } : {
     dissolvedInorganicCarbonKgCm2: waterVolumeM3m2 *
       concentrations.dissolvedInorganicCarbonKgM3,
@@ -903,7 +967,9 @@ export function applyRiverBiogeochemistryInput(source, deliveredFreshwaterKg,
     dissolvedInorganicPhosphorusKgPm2: waterVolumeM3m2 *
       concentrations.dissolvedInorganicPhosphorusKgM3,
     dissolvedOxygenKgO2m2: waterVolumeM3m2 *
-      concentrations.dissolvedOxygenKgM3
+      concentrations.dissolvedOxygenKgM3,
+    alkalinityKgCaCO3Eqm2: waterVolumeM3m2 *
+      concentrations.alkalinityKgCaCO3EqM3
   };
   state.carbon.dissolvedInorganicKgCm2 +=
     inputs.dissolvedInorganicCarbonKgCm2;
@@ -913,12 +979,15 @@ export function applyRiverBiogeochemistryInput(source, deliveredFreshwaterKg,
   state.phosphorus.dissolvedInorganicKgPm2 +=
     inputs.dissolvedInorganicPhosphorusKgPm2;
   state.oxygen.dissolvedKgO2m2 += inputs.dissolvedOxygenKgO2m2;
+  state.alkalinity.dissolvedKgCaCO3Eqm2 +=
+    inputs.alkalinityKgCaCO3Eqm2;
   const inputTotals = {
     carbonKgCm2: inputs.dissolvedInorganicCarbonKgCm2 +
       inputs.dissolvedOrganicCarbonKgCm2,
     nitrogenKgNm2: inputs.dissolvedInorganicNitrogenKgNm2,
     phosphorusKgPm2: inputs.dissolvedInorganicPhosphorusKgPm2,
-    oxygenKgO2m2: inputs.dissolvedOxygenKgO2m2
+    oxygenKgO2m2: inputs.dissolvedOxygenKgO2m2,
+    alkalinityKgCaCO3Eqm2: inputs.alkalinityKgCaCO3Eqm2
   };
   if (state.migrationCheckpoint) {
     for (const [key, value] of Object.entries(inputTotals)) {
@@ -937,7 +1006,10 @@ export function applyRiverBiogeochemistryInput(source, deliveredFreshwaterKg,
     phosphorusKgPm2: state.phosphorus.dissolvedInorganicKgPm2 -
       initialReceivingPools.dissolvedInorganicPhosphorusKgPm2,
     oxygenKgO2m2: state.oxygen.dissolvedKgO2m2 -
-      initialReceivingPools.dissolvedOxygenKgO2m2
+      initialReceivingPools.dissolvedOxygenKgO2m2,
+    alkalinityKgCaCO3Eqm2:
+      state.alkalinity.dissolvedKgCaCO3Eqm2 -
+      initialReceivingPools.alkalinityKgCaCO3Eqm2
   };
   const receipt = {
     schema: landRunoffInput
@@ -956,7 +1028,9 @@ export function applyRiverBiogeochemistryInput(source, deliveredFreshwaterKg,
       carbonKgC: round(inputTotals.carbonKgCm2 * area, 6),
       nitrogenKgN: round(inputTotals.nitrogenKgNm2 * area, 6),
       phosphorusKgP: round(inputTotals.phosphorusKgPm2 * area, 6),
-      oxygenKgO2: round(inputTotals.oxygenKgO2m2 * area, 6)
+      oxygenKgO2: round(inputTotals.oxygenKgO2m2 * area, 6),
+      alkalinityKgCaCO3Eq: round(
+        inputTotals.alkalinityKgCaCO3Eqm2 * area, 6)
     },
     conservation: {
       carbonResidualKgC: round((credited.carbonKgCm2 -
@@ -966,7 +1040,10 @@ export function applyRiverBiogeochemistryInput(source, deliveredFreshwaterKg,
       phosphorusResidualKgP: round((credited.phosphorusKgPm2 -
         inputTotals.phosphorusKgPm2) * area, 9),
       oxygenResidualKgO2: round((credited.oxygenKgO2m2 -
-        inputTotals.oxygenKgO2m2) * area, 9)
+        inputTotals.oxygenKgO2m2) * area, 9),
+      alkalinityResidualKgCaCO3Eq: round((
+        credited.alkalinityKgCaCO3Eqm2 -
+        inputTotals.alkalinityKgCaCO3Eqm2) * area, 9)
     },
     truth: {
       explicitBoundaryConcentrations: !explicit,
@@ -975,7 +1052,11 @@ export function applyRiverBiogeochemistryInput(source, deliveredFreshwaterKg,
       landRunoffQueueSenderDebited: Boolean(explicit) && landRunoffInput,
       exactPairedTransferId: Boolean(options.transferId),
       senderNutrientsDebited: Boolean(explicit),
-      receivingOceanPoolsCredited: true
+      receivingOceanPoolsCredited: true,
+      alkalinitySenderDebited: Boolean(explicit),
+      alkalinityReceiverPoolCredited: true,
+      carbonateSpeciationResolved: false,
+      pHResolved: false
     }
   };
   if (landRunoffInput) state.lastRunoffInputReceipt = receipt;
@@ -1009,7 +1090,8 @@ export function oceanEcologyDescription() {
       'dissolved-inorganic-nitrogen',
       'dissolved-inorganic-phosphorus',
       'local-exchangeable-atmospheric-oxygen',
-      'dissolved-oxygen'
+      'dissolved-oxygen',
+      'dissolved-alkalinity-as-CaCO3-equivalent'
       , 'deep-ocean-dissolved-carbon-nitrogen-phosphorus-and-oxygen'
       , 'deep-ocean-detritus-and-seafloor-buried-organic-matter'
     ],
@@ -1031,6 +1113,12 @@ export function oceanEcologyDescription() {
     globallyMixedAtmosphericGases: false,
     upstreamRiverChemistryReservoirs: true,
     persistentLandRunoffQueueInputs: true,
+    persistentMixedLayerAlkalinity: true,
+    alkalinityUnit: 'kg-CaCO3-equivalent',
+    alkalinityReferenceInitialization: '2300-umol-kg-at-salinity-35',
+    deepOceanAlkalinityExchange: false,
+    carbonateSpeciationResolved: false,
+    pHResolved: false,
     threeDimensionalOceanCirculation: false,
     mechanisticPlanktonBiochemistry: false,
     scientificModel: false

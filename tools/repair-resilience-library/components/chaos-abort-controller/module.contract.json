@@ -1,0 +1,44 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.chaos-abort-controller",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.chaos-abort.decision/v1"
+  ],
+  "consumes": [
+    "experiment-observation",
+    "hard-limits",
+    "emergency-stop-signal"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_1_EXPERIMENT_STOP_AUTHORITY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/qa-lab",
+      "tools/body-pulse",
+      "tools/recovery-center"
+    ],
+    "reason": "Has only stop authority inside a declared experiment; it cannot launch or widen one."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "active-process-targeting",
+      "host-network-mutation",
+      "host-clock-mutation",
+      "real-filesystem-fault",
+      "unbounded-resource-pressure",
+      "fault-without-abort-controller",
+      "automatic-scheduling",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  }
+}

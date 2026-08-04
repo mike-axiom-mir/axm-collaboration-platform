@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "METRIC_PROMOTION",
+      "expected": "HOLD_CANON_OR_OWNER_AUTHORITY",
+      "stimulus": "high metrics automatically promote candidate to CANON"
+    }
+  ],
+  "category": 10,
+  "category_name": "10. Learning, quality, governance, public continuity, and orchestration",
+  "full_semantic_implementation": false,
+  "number": 97,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Recheck due memories when sources, preferences, policies, environment, schemas, dependencies, or target profiles change.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "f949f8b4093e5366a234856fa2f37d182b43bb60c00166595eb3621696e5853b"
+  },
+  "source_contract_sha256": "2f869a6675ffb68ff4af642b14ad9c777665ec8a63f5a793368d39334f367f7a",
+  "stable_id": "axm.memory.recertification-scheduler"
+}

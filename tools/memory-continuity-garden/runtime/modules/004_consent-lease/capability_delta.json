@@ -1,0 +1,211 @@
+{
+  "capability_interface": {
+    "authority_delta": "NONE",
+    "canon_delta": "NONE",
+    "consent_delta": "NONE",
+    "consumes_clause": "human direction; exact source identity; ownership and role metadata; permission and privacy policy",
+    "human_gate_required_by_source_contract": true,
+    "input_contract": "axm.memory.reference-request/v2",
+    "invariants": [
+      "authority_delta_is_none",
+      "canon_delta_is_none",
+      "consent_delta_is_none",
+      "delivery_does_not_imply_acceptance",
+      "derived output is replaceable",
+      "failure returns untouched source plus HOLD or failure receipt",
+      "full_semantics_are_not_claimed",
+      "identity fields never fuse across handoff",
+      "memory_payload_is_inert_data",
+      "source limits survive every derived view",
+      "source remains authoritative and unchanged",
+      "source_truth_is_not_created_by_contract_validity",
+      "trust_delta_is_none"
+    ],
+    "operation_kind": "BOUNDED_TRANSFORM",
+    "output_contract": "axm.memory.consent-lease.receipt/v1",
+    "postconditions": [
+      "exactly one accepted reference contract or typed HOLD is returned",
+      "no hidden mutation, authority gain, trust gain, consent gain, or CANON promotion occurs",
+      "result remains source-linked, replaceable, privacy-safe, and bounded to the declared purpose",
+      "receiver acceptance, semantic apply, owner acceptance, and integration remain separate future acts"
+    ],
+    "preconditions": [
+      "exact seed identity and purpose match",
+      "source references and digests align",
+      "authority, consent, role, permission, expiry, and namespace checks pass",
+      "boot prerequisites are ready or explicitly safe degraded mode is allowed",
+      "resource, cancellation, revision, output-root, and compatibility guards pass"
+    ],
+    "purpose_clause": "Limit capture, retention, retrieval, sharing, training, export, and expiry through an exact revocable human permission.",
+    "semantic_effect": "REFERENCE_ONLY_NOT_IMPLEMENTED",
+    "state_effect_envelope": "DERIVED_OUTPUT_ONLY",
+    "trust_delta": "NONE"
+  },
+  "composition": {
+    "accepted_upstream_ids": [
+      "axm.memory.lifecycle-state-machine",
+      "axm.memory.namespace-descriptor",
+      "axm.memory.provenance-envelope",
+      "axm.memory.source-authority-binder"
+    ],
+    "authority_transfer": false,
+    "boot_prerequisites": [
+      "axm.memory.lifecycle-state-machine",
+      "axm.memory.namespace-descriptor",
+      "axm.memory.provenance-envelope",
+      "axm.memory.source-authority-binder"
+    ],
+    "consent_transfer": false,
+    "cycles_allowed_only_outside_boot_graph": true,
+    "delivery_does_not_imply_acceptance": true,
+    "downstream_candidates": [
+      "axm.memory.ai-seat-context-adapter",
+      "axm.memory.causal-metadata-vector",
+      "axm.memory.consent-bound-retention-policy",
+      "axm.memory.crdt-candidate-adapter",
+      "axm.memory.cross-chat-continuity-adapter",
+      "axm.memory.cross-replica-merge-gate",
+      "axm.memory.data-minimizer",
+      "axm.memory.deletion-tombstone-receipt",
+      "axm.memory.device-memory-slice",
+      "axm.memory.encryption-key-boundary",
+      "axm.memory.offline-sync-envelope",
+      "axm.memory.portable-export-bundle",
+      "axm.memory.raw-private-session-filter",
+      "axm.memory.redaction-provenance",
+      "axm.memory.replica-identity-record",
+      "axm.memory.retention-expiry-controller",
+      "axm.memory.revocation-propagator",
+      "axm.memory.sensitivity-classifier",
+      "axm.memory.session-handoff-packet",
+      "axm.memory.successor-briefing-generator"
+    ],
+    "handoff_schema": "axm.memory.capability-handoff/v1",
+    "runtime_collaborators": [],
+    "semantic_apply_implied": false,
+    "trust_transfer": false
+  },
+  "human_review": {
+    "automatic_apply": false,
+    "challenge_and_reopen_supported": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "packet_path": "modules/004_consent-lease/review_packet.json",
+    "primary_actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN"
+    ]
+  },
+  "identity": {
+    "category_number": 1,
+    "name": "Memory Consent and Use Lease",
+    "number": 4,
+    "stable_id": "axm.memory.consent-lease"
+  },
+  "pipeline_membership": [
+    "PIPELINE_07_PRIVACY",
+    "PIPELINE_08_HANDOFF"
+  ],
+  "profiles": {
+    "authority": {
+      "path": "profiles/authority_t3-explicit-human-gate.json",
+      "sha256": "ea007e95ccba294079e66a17dd3341fa0fef878fb667ddbac5847c5d39e1f1be"
+    },
+    "category": {
+      "path": "profiles/category_01_identity_authority_provenance.json",
+      "sha256": "3808322f4a25dffa7b3f0536e05c1503885227d677cf286bbd20f43c0d0f304c"
+    },
+    "operation": {
+      "path": "profiles/operation_bounded-transform.json",
+      "sha256": "b3ab2464d2e6545bdea049c38bf76a0ab59b41ec29cba390c93c2a094e955bcb"
+    },
+    "proof_tiers": {
+      "path": "profiles/proof_tiers.json",
+      "sha256": "ab8646803825822a1c529c9a47163827813c5ea9f2c2034031bdd103245d2f00"
+    },
+    "review_surface": {
+      "path": "profiles/review_surface.json",
+      "sha256": "d46b074a8a703365fd7243c20fae436abd8346494a3100efff73f817a65431e5"
+    },
+    "risk": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    }
+  },
+  "proof": {
+    "achieved_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE"
+    ],
+    "boundary": "Executable deltas, composition, metamorphic, resource, review, and capsule evidence remain synthetic/local reference proof.",
+    "canon": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "specialist_verification": false,
+    "workshop_integration": false
+  },
+  "resource_policy": {
+    "batch_and_step_limits_required": true,
+    "cancellation_must_be_checked": true,
+    "network_required": false,
+    "output_path_must_remain_under_exact_owned_root": true,
+    "profile_ref": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    },
+    "symlink_escape_forbidden": true,
+    "unbounded_scan_forbidden": true
+  },
+  "schema": "axm.memory.capability-delta/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "base_contract_file_sha256": "c2560c82388444c2e244c984d79105d5f5f5b4a9bac0b984864cc7350112ec1b",
+    "body_sha256": "b2d6ea17d64fd339f81add3eb1eb88c34d2bca9e1a9bdffe130fc385c31e0369",
+    "delta_core_sha256": "7df39cf92567dfea1dec5acadac810c23f4323cff6df13c1df504c3176106729"
+  },
+  "source_run50": {
+    "build_intake_file_sha256": "e6aabd6ee0e9122cebc9af7d6991354094f16d6c8056634f1132d589319c63cb",
+    "candidate_contract_body_sha256": "8191c54cd46832d7feda13880ea194b7574df4f1204a2fbf8213358318bcb3df",
+    "candidate_contract_file_sha256": "c2560c82388444c2e244c984d79105d5f5f5b4a9bac0b984864cc7350112ec1b",
+    "candidate_contract_path": "modules/004_consent-lease/candidate.contract.json",
+    "fixtures_file_sha256": "7f19684c01a9a735baef30f1871abc0a963f004a3b17bba00734e9324d9d0dba",
+    "run50_posture_preserved": true,
+    "source_authority": "T3_EXPLICIT_HUMAN_GATE",
+    "source_operation_kind": "BOUNDED_TRANSFORM",
+    "source_purpose": "Limit capture, retention, retrieval, sharing, training, export, and expiry through an exact revocable human permission.",
+    "source_risk": "HIGH",
+    "source_run50_status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE",
+  "validation": {
+    "cache_is_evidence_reuse_not_truth": true,
+    "cached_result_cannot_promote_canon": true,
+    "harness_version": "axm-memory-run60-harness-v1",
+    "proof_cache_key": "4778649b48482999468686cf07c0f1aa19ae194e8a326dd00fc3d1d6459be8ee",
+    "revalidation_triggers": [
+      "candidate contract or fixture digest changes",
+      "capability delta core changes",
+      "referenced shared profile digest changes",
+      "validation harness version changes",
+      "boot prerequisite interface changes",
+      "privacy, authority, or lifecycle policy changes"
+    ],
+    "test_suites": [
+      "run50_full_reference_suite",
+      "run60_delta_preservation",
+      "run60_capability_interface",
+      "run60_composition_graph",
+      "run60_selective_validation",
+      "run60_metamorphic_laws",
+      "run60_resource_faults",
+      "run60_reference_pipelines",
+      "run60_human_review",
+      "run60_capsule_export",
+      "run60_efficiency",
+      "run60_roundtrip"
+    ]
+  }
+}

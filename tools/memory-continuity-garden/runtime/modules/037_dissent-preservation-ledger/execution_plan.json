@@ -1,0 +1,106 @@
+{
+  "all_steps_bounded": true,
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "final_result_does_not_imply_owner_acceptance": true,
+  "identity": {
+    "category": "4. Branching, merging, contradiction, dissent, and supersession",
+    "name": "Dissent and Alternative Interpretation Ledger",
+    "number": 37,
+    "stable_id": "axm.memory.dissent-preservation-ledger"
+  },
+  "no_implicit_parallel_apply": true,
+  "operation_kind": "BOUNDED_LOCAL_WRITE",
+  "plan_is_reference_only": true,
+  "schema": "axm.memory.run80-execution-plan/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "adabc6961028af8a52acaab5e4230bc2b53fb55737a045d1546bf482b82129ea"
+  },
+  "source_run70_protocol_sha256": "42d89b472cf77ee10c04b80a3024bbc0792e45e3aaa8d0958344e6ec889d6ad1",
+  "step_count": 6,
+  "steps": [
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "admission_receipt",
+      "failure_result": "HOLD_ADMISSION",
+      "purpose": "validate exact scope, source, authority, and resource budget",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [],
+      "sequence": 1,
+      "side_effect_permitted": false,
+      "step_id": "ADMIT"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "validated_preconditions",
+      "failure_result": "HOLD_PRECONDITION",
+      "purpose": "verify expected revision, owned root, disk, and permission",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "ADMIT"
+      ],
+      "sequence": 2,
+      "side_effect_permitted": false,
+      "step_id": "VALIDATE_PRECONDITIONS"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "write_intent",
+      "failure_result": "RECOVERY_HOLD",
+      "purpose": "create write-ahead intent under exact owned root",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "VALIDATE_PRECONDITIONS"
+      ],
+      "sequence": 3,
+      "side_effect_permitted": true,
+      "step_id": "PREPARE_WRITE"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "commit_marker",
+      "failure_result": "RECOVERY_HOLD",
+      "purpose": "commit one bounded local write without rewriting history",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "PREPARE_WRITE"
+      ],
+      "sequence": 4,
+      "side_effect_permitted": true,
+      "step_id": "COMMIT_ATOMICALLY"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "durability_receipt",
+      "failure_result": "HOLD_DURABILITY",
+      "purpose": "reload and verify committed content and lineage",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "COMMIT_ATOMICALLY"
+      ],
+      "sequence": 5,
+      "side_effect_permitted": false,
+      "step_id": "VERIFY_DURABLE"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "write_receipt",
+      "failure_result": "HOLD_RECEIPT",
+      "purpose": "emit a privacy-safe result receipt",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "VERIFY_DURABLE"
+      ],
+      "sequence": 6,
+      "side_effect_permitted": false,
+      "step_id": "EMIT_RECEIPT"
+    }
+  ]
+}

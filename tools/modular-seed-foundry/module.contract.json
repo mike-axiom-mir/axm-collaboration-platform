@@ -1,0 +1,59 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "modular-seed-foundry",
+  "version": "v0.1",
+  "provides": [
+    "modular.seed.intent.normalize/v1",
+    "modular.seed.family.compile/v1",
+    "modular.seed.lane.balance/v1",
+    "modular.seed.lineage.bind/v1",
+    "modular.seed.growth-budget.bound/v1",
+    "modular.seed.disconfirming-tests.compose/v1",
+    "modular.seed.platform-brief.compose/v1",
+    "modular.seed.integrity.digest/v1",
+    "modular.seed.explicit-export/v1",
+    "modular.seed.ui.compose/v1"
+  ],
+  "consumes": [
+    "axm.seed-intent/v1",
+    "axm.module-contract/v1",
+    "axm.modular-piece-package/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.modular-growth-seed/v1",
+      "axm.modular-growth-brief/v1"
+    ],
+    "accepts": [
+      "axm.seed-intent/v1",
+      "axm.modular-growth-seed/v1"
+    ]
+  },
+  "boundaries": {
+    "writes": [
+      "browser-local:axm.modular-seed-foundry.v1",
+      "user-download:explicit"
+    ],
+    "refuses": [
+      "automatic-platform-run",
+      "automatic-module-build",
+      "automatic-intake",
+      "automatic-installation",
+      "automatic-promotion",
+      "automatic-publication",
+      "seed-as-runtime-proof",
+      "untested-claim-as-capability",
+      "identity-replacement-during-growth",
+      "unbounded-growth-multiplier",
+      "private-path-export",
+      "network-access"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  }
+}

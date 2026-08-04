@@ -1,0 +1,67 @@
+{
+  "packet_schema_version": "axm.proof.run-packet.v0.3.0",
+  "packet_id": "synthetic:version-environment-lock:rollback",
+  "seed_id": "axm.proof.version-environment-lock",
+  "seed_schema_version": "axm.proof.seed.v0.2.0",
+  "fixture_class": "ROLLBACK",
+  "run_mode": "ROLLBACK_SIMULATION",
+  "authority": {
+    "scope": "SCHEMA_AND_DISPOSABLE_SYNTHETIC_FIXTURE_ONLY",
+    "live_activation_allowed": false,
+    "canon_authority": false,
+    "publication_authority": false,
+    "merge_gate_required": true
+  },
+  "network_policy": "DENY",
+  "write_policy": "DISPOSABLE_FIXTURE_ONLY",
+  "inputs": {
+    "record_id": "synthetic:version_environment_lock:record_id",
+    "schema_version": "axm.proof.synthetic-input.v0.1.0",
+    "proof_ref": "synthetic:version_environment_lock:proof_ref",
+    "claim_refs": [
+      "synthetic:version_environment_lock:claim_refs:1"
+    ],
+    "artifact_refs": [
+      "synthetic:version_environment_lock:artifact_refs:1"
+    ],
+    "environment_ref": "synthetic:version_environment_lock:environment_ref",
+    "limitations": [
+      "Synthetic fixture only; no AXM runtime or public claim is upgraded."
+    ],
+    "owner_ref": "synthetic:version_environment_lock:owner_ref"
+  },
+  "expected": {
+    "decision": "ROLLBACK_VERIFIED_SYNTHETIC",
+    "reason_codes": [],
+    "output_emitted": true,
+    "runtime_claim_upgraded": false
+  },
+  "privacy_canaries": [],
+  "rollback": {
+    "checkpoint_id": "synthetic:version-environment-lock:checkpoint:before-mutation",
+    "restore_required": true,
+    "expected_restore_digest": "sha256:synthetic-version-environment-lock-before-mutation",
+    "history_policy": "APPEND_ONLY_NO_DELETE"
+  },
+  "truth_guard": {
+    "canon": false,
+    "integrated": false,
+    "runtime_proof": false,
+    "published": false,
+    "automatic_promotion_allowed": false
+  },
+  "synthetic_transition": {
+    "before": {
+      "state": "CLEAN",
+      "digest": "sha256:synthetic-version-environment-lock-before-mutation"
+    },
+    "mutation": {
+      "state": "TEST_MUTATION",
+      "reversible": true
+    },
+    "after_rollback": {
+      "state": "CLEAN",
+      "digest": "sha256:synthetic-version-environment-lock-before-mutation"
+    }
+  }
+}

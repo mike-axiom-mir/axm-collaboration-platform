@@ -8,6 +8,7 @@ h1{font-size:19px;margin:6px 0}.tag{font-size:11px;color:var(--warn);border:1px 
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0}
 .dim{color:var(--dim);font-size:13px}
 button{background:var(--accent);border:0;color:#fff;border-radius:8px;padding:10px 14px;font-size:15px}
+label{display:block;font-weight:700;margin-top:6px}
 input{background:#0f0b22;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:10px;font-size:15px;width:100%;margin:6px 0}
 .ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
 .mono{font-family:ui-monospace,monospace;font-size:12px;word-break:break-all}
@@ -17,9 +18,10 @@ input{background:#0f0b22;border:1px solid var(--line);color:var(--txt);border-ra
 
 <div class="card">
   <b>New project</b>
-  <input id="pname" placeholder="Project name" maxlength="48">
+  <label for="pname">Project name</label>
+  <input id="pname" placeholder="Forest Test" maxlength="48">
   <button onclick="createProject()">Create project folder</button>
-  <div id="createOut" class="dim"></div>
+  <div id="createOut" class="dim" role="status" aria-live="polite"></div>
 </div>
 
 <div class="card"><b>Projects</b> <span class="dim">(folders under tools/sandbox/projects/ — delete a folder to remove a project)</span>
@@ -29,10 +31,10 @@ input{background:#0f0b22;border:1px solid var(--line);color:var(--txt);border-ra
 <div class="card dim" id="health">checking host…</div>
 
 <script>
-// When opened as a Workshop card, the private-preview adapter exposes the
-// module host only under this scoped path. When opened on the module's own
-// loopback port, keep the original root API behavior.
-const API_BASE = location.pathname.startsWith('/tools/sandbox/') ? '/sandbox-api' : '';
+// The Sandbox host owns 8815. The Workshop card calls that finite loopback
+// origin directly; the host reflects only its own and the Workshop's origins.
+const SANDBOX_PORT = '8815';
+const API_BASE = location.port === SANDBOX_PORT ? '' : 'http://127.0.0.1:'+SANDBOX_PORT;
 async function j(u,opt){const r=await fetch(API_BASE+u,opt);return r.json();}
 async function refresh(){
   try{
@@ -53,7 +55,7 @@ async function refresh(){
 async function createProject(){
   const name=document.getElementById('pname').value;
   const out=document.getElementById('createOut');
-  const r=await j('/api/projects/create',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name})});
+  const r=await j('/api/projects/create',{method:'POST',headers:{'content-type':'application/json','x-axm-sandbox-action':'create-project'},body:JSON.stringify({name})});
   out.innerHTML=r.ok?'<span class="ok">created '+r.folder+'/ · '+r.manifest.id+'</span>':'<span class="bad">'+r.error+'</span>';
   refresh();
 }

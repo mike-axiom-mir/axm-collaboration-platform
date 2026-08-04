@@ -1,0 +1,40 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "hand-specification-foundry",
+  "version": "v0.1",
+  "provides": [
+    "capability.specify.missing-hand/v1",
+    "missing-hand-gap-report-intake",
+    "missing-hand-nine-field-validation",
+    "missing-hand-explicit-draft-download"
+  ],
+  "consumes": [
+    "axm.capability-gap-report/v1",
+    "capability-gap-contract-draft",
+    "human-authored-boundaries"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.missing-hand-specification/v1"],
+    "accepts": ["axm.capability-gap-report/v1", "application/json"]
+  },
+  "boundaries": {
+    "writes": ["browser:explicit-json-download"],
+    "refuses": [
+      "automatic-hand-implementation",
+      "automatic-install",
+      "automatic-execution",
+      "automatic-permission-grant",
+      "prototype-as-gap-closure",
+      "specification-as-runtime-proof",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

@@ -1,0 +1,261 @@
+{
+  "schema": "axm.visual-module-package/1",
+  "packageId": "package.material.frosted-panel",
+  "name": "Frosted Panel",
+  "version": "1.1.0",
+  "entryModuleId": "material.frosted-panel",
+  "created": "2026-07-28",
+  "modules": [
+    {
+      "id": "primitive.blur",
+      "name": "Blur",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Softens and diffuses a rendered layer.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "blur"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.opacity",
+      "name": "Opacity",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Controls visibility and layer mixing.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "opacity"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.shadow",
+      "name": "Shadow",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Creates separation and perceived elevation.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "layers"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "material.frosted-panel",
+      "name": "Frosted Panel",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "organ",
+      "category": "Materials",
+      "status": "WORKING",
+      "description": "Diffused glass surface for calm separation and readable layering.",
+      "tags": [
+        "glass",
+        "frost",
+        "surface"
+      ],
+      "dependencies": [
+        "primitive.blur",
+        "primitive.opacity",
+        "primitive.shadow"
+      ],
+      "exclusiveGroup": "material",
+      "shareable": true,
+      "ui": {
+        "icon": "snow"
+      },
+      "parameters": [
+        {
+          "id": "opacity",
+          "label": "Opacity",
+          "type": "number",
+          "default": 0.84,
+          "description": "",
+          "min": 0.35,
+          "max": 1,
+          "step": 0.01,
+          "cssVar": "--fx-frost-opacity"
+        },
+        {
+          "id": "frost",
+          "label": "Frost",
+          "type": "number",
+          "default": 0.72,
+          "description": "",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "cssVar": "--fx-frost-strength"
+        },
+        {
+          "id": "blur",
+          "label": "Blur",
+          "type": "number",
+          "default": 24,
+          "description": "",
+          "min": 0,
+          "max": 48,
+          "step": 1,
+          "unit": "px",
+          "cssVar": "--fx-glass-blur"
+        }
+      ],
+      "renderer": {
+        "type": "class",
+        "scope": "surface",
+        "className": "fx-material-frosted"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    }
+  ],
+  "notes": "Starter package. Set a public-sharing license before redistribution.",
+  "integrity": {
+    "algorithm": "sha256",
+    "value": "e07b8b79aa3cd2a4f39f3488aba454e621f08cb73458ae40d0746f135f39196c"
+  }
+}

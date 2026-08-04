@@ -1,0 +1,95 @@
+{
+  "schema": "axm.public-proof.batch1-integration-map/v1",
+  "version": "v0.1.0",
+  "status": "IMPLEMENTED_LOCAL_CONTRACT_SLICE",
+  "source_package_sha256": "5df9d3a05d48b506e879f09e747864e549e8727e5449c7a4294712def3e38290",
+  "source_registry_sha256": "6d7d60425f164eb500337ccd13d57354562f1491df0ba80384fc08507e4ec3fe",
+  "authority": {
+    "merge_gate_approved_for_batch1_contract_implementation": true,
+    "live_activation_allowed": false,
+    "publication_authority": false,
+    "canon_authority": false,
+    "network_allowed": false
+  },
+  "truth": {
+    "local_contract_layer_implemented": true,
+    "runtime_proof": false,
+    "human_tested": false,
+    "accessibility_conformance": false,
+    "field_tested": false,
+    "published": false,
+    "canon": false
+  },
+  "seeds": [
+    {
+      "id": "axm.proof.demo-descriptor",
+      "classification": "EXTEND_EXISTING",
+      "owner": "evidence-desk",
+      "consumers": ["registry/public-status.json", "technical-glasses"],
+      "dependencies": []
+    },
+    {
+      "id": "axm.proof.version-environment-lock",
+      "classification": "EXTEND_EXISTING",
+      "owner": "workshop-packager",
+      "consumers": ["device-handoff"],
+      "dependencies": ["axm.proof.demo-descriptor"]
+    },
+    {
+      "id": "axm.proof.claim-scope-card",
+      "classification": "EXTEND_EXISTING",
+      "owner": "evidence-desk",
+      "consumers": ["registry/proofs.json", "registry/public-status.json"],
+      "dependencies": ["axm.proof.demo-descriptor"]
+    },
+    {
+      "id": "axm.proof.proof-strength-level",
+      "classification": "EXTEND_EXISTING",
+      "owner": "verification-proof-lab",
+      "consumers": ["evidence-desk", "registry/public-status.json"],
+      "dependencies": ["axm.proof.demo-descriptor", "axm.proof.claim-scope-card"]
+    },
+    {
+      "id": "axm.proof.nonclaim-limitation-panel",
+      "classification": "EXTEND_EXISTING",
+      "owner": "registry/public-status.json",
+      "consumers": ["evidence-desk"],
+      "dependencies": ["axm.proof.demo-descriptor", "axm.proof.claim-scope-card", "axm.proof.proof-strength-level", "axm.proof.version-environment-lock"]
+    },
+    {
+      "id": "axm.proof.audience-route-profile",
+      "classification": "ADAPTER_BETWEEN_EXISTING",
+      "owner": "accessibility-adaptation-lab",
+      "consumers": ["hub", "technical-glasses"],
+      "dependencies": ["axm.proof.demo-descriptor", "axm.proof.claim-scope-card"]
+    },
+    {
+      "id": "axm.proof.native-surface-binder",
+      "classification": "ADAPTER_BETWEEN_EXISTING",
+      "owner": "evidence-desk",
+      "consumers": ["device-handoff", "technical-glasses"],
+      "dependencies": ["axm.proof.demo-descriptor", "axm.proof.claim-scope-card", "axm.proof.proof-strength-level"]
+    },
+    {
+      "id": "axm.proof.risk-privacy-classifier",
+      "classification": "ADAPTER_BETWEEN_EXISTING",
+      "owner": "authority-surface-observatory",
+      "consumers": ["evidence-desk", "device-handoff"],
+      "dependencies": ["axm.proof.demo-descriptor", "axm.proof.claim-scope-card", "axm.proof.nonclaim-limitation-panel"]
+    },
+    {
+      "id": "axm.proof.proof-lifecycle-state",
+      "classification": "EXTEND_EXISTING",
+      "owner": "verification-proof-lab",
+      "consumers": ["registry/public-status.json", "workshop-command-center"],
+      "dependencies": ["axm.proof.demo-descriptor", "axm.proof.claim-scope-card", "axm.proof.proof-strength-level", "axm.proof.version-environment-lock", "axm.proof.nonclaim-limitation-panel"]
+    },
+    {
+      "id": "axm.proof.comparison-contract",
+      "classification": "ADAPTER_BETWEEN_EXISTING",
+      "owner": "evidence-desk",
+      "consumers": ["technical-glasses", "schema-identity-observatory", "workshop-census-observatory"],
+      "dependencies": ["axm.proof.demo-descriptor", "axm.proof.claim-scope-card", "axm.proof.proof-strength-level", "axm.proof.version-environment-lock", "axm.proof.nonclaim-limitation-panel"]
+    }
+  ]
+}

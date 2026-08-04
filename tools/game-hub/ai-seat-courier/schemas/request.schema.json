@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.ai-seat-courier.request/v1",
+  "type": "object",
+  "required": ["schema", "id", "action"],
+  "properties": {
+    "schema": { "const": "axm.ai-seat-courier.request/v1" },
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9._-]{1,100}$" },
+    "action": { "enum": ["ping", "status", "launch", "click", "key", "wait", "screenshot", "snapshot", "http", "stop", "shutdown"] },
+    "gameId": { "type": "string" },
+    "selector": { "type": "string", "maxLength": 500 },
+    "code": { "type": "string" },
+    "durationMs": { "type": "integer", "minimum": 20, "maximum": 5000 },
+    "path": { "type": "string" },
+    "method": { "enum": ["GET", "POST"] },
+    "body": {},
+    "viewport": {
+      "type": "object",
+      "properties": { "width": { "type": "integer" }, "height": { "type": "integer" } },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

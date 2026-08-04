@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.corrupt-input-injector",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.corrupt-input.fixture-set/v1"
+  ],
+  "consumes": [
+    "seed-input",
+    "bounded-corruption-policy"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_2_SHADOW_EXPERIMENT",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/qa-lab",
+      "tools/repairbuddy"
+    ],
+    "reason": "Generates data fixtures only and never routes them to live endpoints automatically."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "active-process-targeting",
+      "host-network-mutation",
+      "host-clock-mutation",
+      "real-filesystem-fault",
+      "unbounded-resource-pressure",
+      "fault-without-abort-controller",
+      "automatic-scheduling",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "evidence-chain-recovery-snapshot-placement-foundry",
+  "version": "v0.1",
+  "provides": [
+    "capability.place.evidence-chain-recovery-snapshot/v1",
+    "evidence-chain-recovery-receiver-visible-copy-proof",
+    "evidence-chain-recovery-placement-collision-refusal",
+    "evidence-chain-recovery-placement-failure-cleanup"
+  ],
+  "consumes": [
+    "capability.stage.evidence-chain-recovery-snapshot/v1",
+    "axm.evidence-chain-recovery-snapshot-staging-receipt/v1",
+    "axm.workshop-package/v1",
+    "application/x-ndjson",
+    "private-workshop-backup",
+    "package-manifest",
+    "human:exact-snapshot-and-packager-output-placement-confirmation",
+    "human:private-local-data-retained-staging-and-no-restore-authority-acknowledgements"
+  ],
+  "permissions": ["files", "export", "gate"],
+  "handoffs": {
+    "emits": [
+      "axm.evidence-chain-recovery-snapshot-placement-request/v1",
+      "axm.evidence-chain-recovery-snapshot-placement-receipt/v1"
+    ],
+    "accepts": [
+      "axm.evidence-chain-recovery-snapshot-staging-receipt/v1",
+      "axm.workshop-package/v1",
+      "application/x-ndjson"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "node:explicit-retained-staging-root/STAGING_RECEIPT.json",
+      "node:explicit-retained-staging-root/axm-workshop-full-evidence-repair-*/PACKAGE_MANIFEST.json",
+      "node:explicit-retained-staging-root/axm-workshop-full-evidence-repair-*/state/evidence-retention/*.jsonl",
+      "browser:user-selected-staging-receipt-package-manifest-and-candidate-files"
+    ],
+    "writes": [
+      "node:explicit-existing-canonical-exports/workshop-packages/.axm-workshop-full-evidence-repair-*.placement-*",
+      "node:explicit-existing-canonical-exports/workshop-packages/axm-workshop-full-evidence-repair-*",
+      "node:explicit-retained-staging-root/PLACEMENT_RECEIPT.json",
+      "stdout:digest-only-placement-receipt"
+    ],
+    "deletes": [
+      "node:exact-owned-placement-scratch-after-failure",
+      "node:exact-owned-final-placement-after-post-rename-failure",
+      "node:exact-owned-placement-receipt-after-failed-readback"
+    ],
+    "refuses": [
+      "relative-staging-or-packager-output-root",
+      "staging-root-without-safe-prefix",
+      "packager-output-outside-exports/workshop-packages-shape",
+      "symlink-or-noncanonical-staging-or-output-root",
+      "path-escape-or-special-files",
+      "unexpected-unledgered-staging-payload",
+      "invalid-utf8-candidate",
+      "staging-receipt-manifest-or-candidate-digest-mismatch",
+      "stale-or-future-staging-manifest",
+      "existing-final-snapshot-or-placement-receipt",
+      "orphan-placement-scratch-for-the-same-snapshot",
+      "missing-exact-snapshot-confirmation",
+      "missing-packager-output-private-data-retained-staging-or-no-authority-acknowledgement",
+      "staging-source-file-overwrite-or-delete",
+      "Recovery-Center-call",
+      "restore-preview-or-restore-test-claim",
+      "permission-check-grant-or-revocation",
+      "live-recovery-target-read-or-write",
+      "apply-or-rollback-claim",
+      "local-path-in-request-or-receipt",
+      "network-call",
+      "automatic-installation",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  }
+}

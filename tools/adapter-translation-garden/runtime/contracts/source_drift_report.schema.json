@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm://translation/contracts/source_drift_report.schema.json",
+  "title": "Source Drift Report",
+  "type": "object",
+  "required": [
+    "schema",
+    "baseline_sha256",
+    "current_sha256",
+    "changes",
+    "unexplained",
+    "verdict"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.translation.source-drift-report/v1"
+    },
+    "changes": {
+      "type": "array"
+    },
+    "unexplained": {
+      "type": "array"
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "HOLD"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

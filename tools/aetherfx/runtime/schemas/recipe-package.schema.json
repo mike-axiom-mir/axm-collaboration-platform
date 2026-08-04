@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/recipe-package.schema.json",
+  "title": "AXM Visual Recipe Package",
+  "type": "object",
+  "required": [
+    "schema",
+    "packageId",
+    "name",
+    "version",
+    "recipe",
+    "bundledCustomModules",
+    "requiredBuiltins",
+    "integrity"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.visual-recipe-package/1"
+    },
+    "packageId": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "recipe": {
+      "$ref": "visual-recipe.schema.json"
+    },
+    "bundledCustomModules": {
+      "type": "array",
+      "items": {
+        "$ref": "visual-module.schema.json"
+      }
+    },
+    "requiredBuiltins": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sharing": {
+      "type": "object"
+    },
+    "integrity": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "value"
+      ],
+      "properties": {
+    "algorithm": {
+      "const": "sha256"
+    },
+    "value": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$"
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "axm.pulse-choir-runtime-recovery-verification/v1",
+  "verifiedAt": "2026-07-28T14:39:03+02:00",
+  "verdict": "PASS",
+  "scope": "Same host, same normalized roster, local managed Game Hub runtime",
+  "processBoundary": {
+    "beforeSessionId": "session-1785242081396",
+    "afterSessionId": "session-1785242157913",
+    "managedStopStart": true,
+    "freshRuntimeProcess": true
+  },
+  "before": {
+    "phase": "playing",
+    "seed": 12026,
+    "roundNumber": 1,
+    "completedRounds": 0,
+    "score": 1183,
+    "revision": 901,
+    "timeLeftMs": 39420,
+    "player": {"id":"p1","x":56.81720000000001,"y":16,"lastSequence":2},
+    "setlist": {"activeKind":"perfect-choir","progress":0}
+  },
+  "after": {
+    "phase": "playing",
+    "seed": 12026,
+    "roundNumber": 1,
+    "completedRounds": 0,
+    "score": 1183,
+    "revision": 901,
+    "timeLeftMs": 39420,
+    "player": {"id":"p1","x":56.81720000000001,"y":16,"lastSequence":2,"input":{"x":0,"y":0}},
+    "setlist": {"activeKind":"perfect-choir","progress":0},
+    "recovery": {"status":"restored","sourceAgeMs":18853}
+  },
+  "visibleTransition": ["HOST LIVE", "RECONNECTING", "HOST RESTORED"],
+  "controllerObservation": "P1 · HUMAN · ROUND 1 · REJOINED",
+  "postRecoveryShowMemory": {
+    "phase": "lobby",
+    "completedRounds": 1,
+    "historyCount": 1,
+    "nightTotal": 2686,
+    "nextRoundNumber": 2,
+    "nextSeed": 12027,
+    "nextActs": ["human-triad", "perfect-choir", "wild-two"]
+  },
+  "roomSignalCheckpointProof": {
+    "version": "0.4.0-stewarded-alpha",
+    "targetRound": 2,
+    "votes": {"p1":"bold"},
+    "restoredChoice": "bold",
+    "restoredActKinds": ["human-triad", "all-seat-bank", "wild-two"],
+    "method": "Separate fresh runtime process restored a checkpoint created with a pending human Room Signal vote."
+  },
+  "automatedCounterchecks": [
+    "fresh-process active-round restore",
+    "pending Room Signal vote and exact next-plan restore",
+    "paused deadline rebasing",
+    "neutral held input",
+    "stale input sequence refusal",
+    "next input sequence acceptance",
+    "explicit New Show reset",
+    "corrupt checkpoint fallback",
+    "expired checkpoint fallback",
+    "roster mismatch fallback"
+  ],
+  "boundaries": [
+    "No cross-machine host migration claim.",
+    "No physical-phone reconnect claim.",
+    "Checkpoint TTL defaults to 30 minutes."
+  ]
+}

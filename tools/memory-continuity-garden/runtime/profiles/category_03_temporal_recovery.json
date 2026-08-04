@@ -1,0 +1,32 @@
+{
+  "authority_transfer_allowed": false,
+  "canon_promotion_allowed": false,
+  "capability_family": "time-checkpoint-and-recovery",
+  "category_number": 3,
+  "composition_constraints": [
+    "restore authority remains with Recovery Center",
+    "preview and apply are separate contracts"
+  ],
+  "full_seed_semantics_implemented": false,
+  "metamorphic_laws": [
+    "timezone_equivalent_instants_normalize_equal",
+    "concurrency_is_not_forced_into_total_order",
+    "snapshot_scope_is_explicit_subset",
+    "stale_baseline_invalidates_preview",
+    "preview_never_applies",
+    "missing_parent_creates_gap",
+    "interruption_remains_unfinished",
+    "as_of_query_is_revision_bounded",
+    "current_state_change_blocks_restore",
+    "snapshot_is_not_backup_proof"
+  ],
+  "name": "TEMPORAL_RECOVERY",
+  "schema": "axm.memory.category-capability-profile/v1",
+  "semantic_obligations": [
+    "preserve source time, timezone, precision, sequence, and uncertainty",
+    "bind previews and restore proposals to exact current state",
+    "separate checkpoint, snapshot, backup, preview, restore, and proof claims",
+    "make interruptions and continuity gaps explicit"
+  ],
+  "trust_transfer_allowed": false
+}

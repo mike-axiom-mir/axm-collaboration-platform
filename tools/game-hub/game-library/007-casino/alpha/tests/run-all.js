@@ -32,4 +32,4 @@ for (var script of scripts) {
   }
 }
 
-console.log("\nCasino alpha v0.3.2 Overdrive Theater verification: PASS (browser and physical-phone QA remain separate and unrun)");
+console.log("\nCasino alpha v0.3.3 quest-free play verification: PASS (physical-phone QA remains separate and unrun)");

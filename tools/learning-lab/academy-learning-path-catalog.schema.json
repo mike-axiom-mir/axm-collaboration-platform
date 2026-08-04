@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.academy.learning-path-catalog.schema.json",
+  "title": "AXM Academy Learning Path Catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "paths"],
+  "properties": {
+    "schema": { "const": "axm.academy.learning-path-catalog/v1" },
+    "version": { "const": 1 },
+    "paths": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "items": { "$ref": "#/$defs/path" }
+    }
+  },
+  "$defs": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "level", "audience", "summary", "boundary", "outcomes", "stages"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 80 },
+        "title": { "type": "string", "minLength": 3, "maxLength": 140 },
+        "level": { "type": "string", "minLength": 3, "maxLength": 80 },
+        "audience": { "type": "string", "minLength": 20, "maxLength": 300 },
+        "summary": { "type": "string", "minLength": 40, "maxLength": 500 },
+        "boundary": { "type": "string", "minLength": 40, "maxLength": 600 },
+        "outcomes": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "items": { "type": "string", "minLength": 10, "maxLength": 240 }
+        },
+        "stages": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 12,
+          "items": { "$ref": "#/$defs/stage" }
+        }
+      }
+    },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "reason"],
+      "properties": {
+        "sourceId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 80 },
+        "reason": { "type": "string", "minLength": 20, "maxLength": 300 }
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "HISTORY_REWRITE",
+      "expected": "HOLD_APPEND_ONLY_VIOLATION",
+      "stimulus": "prior immutable event is edited in place"
+    }
+  ],
+  "category": 2,
+  "category_name": "2. Append-only history, content identity, and version lineage",
+  "full_semantic_implementation": false,
+  "number": 12,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Link immutable memory events through exact digests so missing, reordered, or modified history becomes visible.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "25f6a473678006815dea24dd08a3c76fe45e4139229190c878a7c0e904556517"
+  },
+  "source_contract_sha256": "d2c3a8b52af02365afa30a13ec0aab2ed75c0180202a877792e911f6df12095d",
+  "stable_id": "axm.memory.hash-chained-event-ledger"
+}

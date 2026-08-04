@@ -1,0 +1,55 @@
+{
+  "packet_schema_version": "axm.proof.run-packet.v0.3.0",
+  "packet_id": "synthetic:proof-strength-level:invalid_required_field",
+  "seed_id": "axm.proof.proof-strength-level",
+  "seed_schema_version": "axm.proof.seed.v0.2.0",
+  "fixture_class": "INVALID_REQUIRED_FIELD",
+  "run_mode": "VALIDATE_ONLY",
+  "authority": {
+    "scope": "SCHEMA_AND_DISPOSABLE_SYNTHETIC_FIXTURE_ONLY",
+    "live_activation_allowed": false,
+    "canon_authority": false,
+    "publication_authority": false,
+    "merge_gate_required": true
+  },
+  "network_policy": "DENY",
+  "write_policy": "NONE",
+  "inputs": {
+    "schema_version": "axm.proof.synthetic-input.v0.1.0",
+    "proof_ref": "synthetic:proof_strength_level:proof_ref",
+    "claim_refs": [
+      "synthetic:proof_strength_level:claim_refs:1"
+    ],
+    "artifact_refs": [
+      "synthetic:proof_strength_level:artifact_refs:1"
+    ],
+    "environment_ref": "synthetic:proof_strength_level:environment_ref",
+    "limitations": [
+      "Synthetic fixture only; no AXM runtime or public claim is upgraded."
+    ],
+    "owner_ref": "synthetic:proof_strength_level:owner_ref"
+  },
+  "expected": {
+    "decision": "BLOCK",
+    "reason_codes": [
+      "AXM_PROOF_REQUIRED_FIELD_MISSING"
+    ],
+    "output_emitted": false,
+    "runtime_claim_upgraded": false
+  },
+  "privacy_canaries": [],
+  "rollback": {
+    "checkpoint_id": "synthetic:proof-strength-level:checkpoint:clean",
+    "restore_required": false,
+    "expected_restore_digest": "sha256:synthetic-proof-strength-level-clean",
+    "history_policy": "APPEND_ONLY_NO_DELETE"
+  },
+  "truth_guard": {
+    "canon": false,
+    "integrated": false,
+    "runtime_proof": false,
+    "published": false,
+    "automatic_promotion_allowed": false
+  },
+  "fixture_note": "Intentionally omits required input `record_id`."
+}

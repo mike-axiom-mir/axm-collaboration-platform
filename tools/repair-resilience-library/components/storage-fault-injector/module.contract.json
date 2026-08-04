@@ -1,0 +1,43 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.storage-fault-injector",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.virtual-storage-fault.receipt/v1"
+  ],
+  "consumes": [
+    "virtual-store",
+    "bounded-storage-fault"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_2_SHADOW_EXPERIMENT",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/qa-lab",
+      "tools/recovery-center",
+      "tools/module-installer"
+    ],
+    "reason": "Operates on a copied in-memory store; no real filesystem fault is introduced."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "active-process-targeting",
+      "host-network-mutation",
+      "host-clock-mutation",
+      "real-filesystem-fault",
+      "unbounded-resource-pressure",
+      "fault-without-abort-controller",
+      "automatic-scheduling",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  }
+}

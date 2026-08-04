@@ -26,7 +26,9 @@ pre{background:var(--ink);border:1px solid var(--line);border-radius:10px;paddin
 <h1>Assembly line</h1>
 
 <div class="panel"><b style="font-size:13px">Queue a build</b>
+<label class="mono" for="qname">Tool or module name</label>
 <input id="qname" placeholder="Tool/module name (e.g. mike.snow-tally)" />
+<label class="mono" for="qdesc">Proposal description</label>
 <textarea id="qdesc" placeholder="What it should do + which templates/lessons to use…"></textarea>
 <div class="row"><button class="go" id="addBtn">Queue it</button></div>
 <p class="mono">Cap: 5 items awaiting your verdict. The line never builds ahead of judgment.</p></div>
@@ -83,8 +85,8 @@ $('addBtn').onclick=()=>{
   $('qname').value='';$('qdesc').value='';save().then(render);
 };
 $('expDraft').onclick=()=>{const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,2)],{type:'application/json'}));
-  a.download='axm-standards-draft.json';a.click();};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(D,null,2)],{type:'application/json'}));a.href=url;
+  a.download='axm-standards-draft.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),0);};
 (async()=>{
   const info=await AXM.init({id:'forge-line',name:'AXM Forge Line',version:'v0.1'});
   AXM.wisdom.on(localStorage.getItem('axm.identity.growth.enabled') !== 'false');

@@ -1,0 +1,43 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.pre-repair-safety-copy",
+  "name": "Pre Repair Safety Copy",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "RECOVERY",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": [
+    "repair-seed",
+    "state-data-workflow-recovery",
+    "local-first",
+    "dependency-free",
+    "reversible"
+  ],
+  "uses": [
+    "local-cpu",
+    "storage"
+  ],
+  "permissions": [],
+  "actions": [
+    "Capture the exact pre-mutation state and lineage immediately before every repair."
+  ],
+  "accepts": [
+    "file-list",
+    "safety-copy-root"
+  ],
+  "produces": [
+    "axm.pre-repair-safety-copy/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Capture the exact pre-mutation state and lineage immediately before every repair.",
+  "notes": "Explicit local primitive only. Active AXM Recovery Center, Installer, Evidence Retention, and permission gates remain authoritative."
+}

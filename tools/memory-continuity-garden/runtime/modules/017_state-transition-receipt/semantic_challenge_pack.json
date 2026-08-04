@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "HISTORY_REWRITE",
+      "expected": "HOLD_APPEND_ONLY_VIOLATION",
+      "stimulus": "prior immutable event is edited in place"
+    }
+  ],
+  "category": 2,
+  "category_name": "2. Append-only history, content identity, and version lineage",
+  "full_semantic_implementation": false,
+  "number": 17,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Seal the old state, requested transition, authority, checks, resulting state, refusal reasons, and time for every lifecycle change.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "3de720abb308ddf6f6466e733b21017402ab85308c7abfeb39497fbbe901abe4"
+  },
+  "source_contract_sha256": "8bc34d548e884284cde1b5d0868acb05798a9d81013262c397f757cebc02f4f6",
+  "stable_id": "axm.memory.state-transition-receipt"
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "immutable-history-guard",
+  "version": "v0.1",
+  "provides": [
+    "pinned-field-migration-assessment",
+    "silent-history-rewrite-refusal",
+    "explicit-fork-and-rollback-holds"
+  ],
+  "consumes": ["axm.immutable-history-policy/v1", "axm.migration-proposal/v1"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.migration-assessment/v1"],
+    "accepts": ["axm.immutable-history-policy/v1", "axm.migration-proposal/v1"]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "not-applicable",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "migration-execution",
+      "source-state-mutation",
+      "silent-pinned-field-change",
+      "history-or-evidence-destruction",
+      "authorization-inference",
+      "automatic-fork",
+      "automatic-promotion",
+      "canon-change"
+    ]
+  }
+}

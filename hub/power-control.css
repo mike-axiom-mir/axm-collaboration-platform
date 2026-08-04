@@ -1,0 +1,83 @@
+.axm-power-button {
+  order: 12;
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid rgba(116,156,185,.24);
+  border-radius: 10px;
+  background: rgba(2,8,16,.3);
+  color: #8fa8b7;
+  cursor: pointer;
+}
+.axm-power-button::before {
+  content: '';
+  width: 15px;
+  height: 15px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(98,232,239,.12);
+}
+.axm-power-button::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 9px;
+  margin-top: -11px;
+  border-radius: 2px;
+  background: currentColor;
+}
+.axm-power-button { position: relative; }
+.sentient-atrium .sentient-ribbon-time { order: 13; }
+.axm-power-button:hover,
+.axm-power-button:focus-visible {
+  color: #62e8ef;
+  border-color: rgba(98,232,239,.52);
+  outline: none;
+}
+
+.power-overlay[hidden] { display: none !important; }
+.power-sheet { width: min(620px, 94vw); }
+.power-kicker {
+  color: #62e8ef;
+  font: 750 10px/1.2 var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.power-sheet h2 { margin-top: 9px; }
+.power-intro { max-width: 54ch; color: var(--muted); line-height: 1.55; }
+.power-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+.power-choice {
+  min-height: 132px;
+  padding: 16px;
+  border: 1px solid rgba(116,156,185,.25);
+  border-radius: 13px;
+  background: rgba(6,16,27,.72);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.power-choice b,
+.power-choice span { display: block; }
+.power-choice b { margin-bottom: 8px; font-size: 14px; }
+.power-choice span { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.power-choice.keep:hover,
+.power-choice.keep:focus-visible { border-color: rgba(98,232,239,.55); outline: none; }
+.power-choice.stop { border-color: rgba(255,119,111,.34); }
+.power-choice.stop b { color: #ff9c94; }
+.power-choice.stop:hover,
+.power-choice.stop:focus-visible { border-color: rgba(255,119,111,.72); outline: none; }
+.power-choice:disabled { cursor: wait; opacity: .58; }
+.power-truth { margin: 14px 0 0; color: #86a0b1; font-size: 11px; }
+.power-status { display: block; min-height: 20px; margin-top: 13px; font: 650 11px/1.45 var(--mono); }
+.power-status.working { color: #ffd075; }
+.power-status.accepted { color: #65f0c2; }
+.power-status.failed { color: #ff9c94; }
+
+@media (max-width: 620px) {
+  .power-choices { grid-template-columns: 1fr; }
+  .power-choice { min-height: 104px; }
+}

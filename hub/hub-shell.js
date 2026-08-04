@@ -711,6 +711,17 @@ if (typeof window !== 'undefined') (function () {
           this.log('ok', 'added Spatial Studio workspace · future visibility remains user-controlled');
         }
       } catch (e) {}
+      /* One-time arrival migration for Visual Mold Foundry. The first local
+         intake makes the workspace visible; a later manual hide remains the
+         user's choice because this marker is never cleared. */
+      try {
+        const marker = 'axm.hub.upgrade.visual-mold-foundry.v1';
+        if (!localStorage.getItem(marker) && this.registry.some(m => m.id === 'visual-mold-foundry')) {
+          if (en.indexOf('visual-mold-foundry') < 0) en.push('visual-mold-foundry');
+          store.setEnabled(en); localStorage.setItem(marker, 'done');
+          this.log('ok', 'added Visual Mold Foundry workspace · future visibility remains user-controlled');
+        }
+      } catch (e) {}
       /* One-time arrival migration for Learning Lab. The machine-native
          school remains enabled as an integrated child, while the new parent
          becomes the visible everyday route. */

@@ -1,0 +1,77 @@
+{
+  "packet_schema_version": "axm.proof.run-packet.v0.3.0",
+  "packet_id": "synthetic:kiosk-launcher:privacy_blocked",
+  "seed_id": "axm.proof.kiosk-launcher",
+  "seed_schema_version": "axm.proof.seed.v0.2.0",
+  "fixture_class": "PRIVACY_BLOCKED",
+  "run_mode": "VALIDATE_ONLY",
+  "authority": {
+    "scope": "SCHEMA_AND_DISPOSABLE_SYNTHETIC_FIXTURE_ONLY",
+    "live_activation_allowed": false,
+    "canon_authority": false,
+    "publication_authority": false,
+    "merge_gate_required": true
+  },
+  "network_policy": "DENY",
+  "write_policy": "NONE",
+  "inputs": {
+    "station_id": "synthetic:kiosk_launcher:station_id",
+    "schema_version": "axm.proof.synthetic-input.v0.1.0",
+    "profile_ref": "synthetic:kiosk_launcher:profile_ref",
+    "approved_demo_refs": [
+      "synthetic:kiosk_launcher:approved_demo_refs:1"
+    ],
+    "hardware_map": {
+      "device": "synthetic",
+      "screen": "none",
+      "network": "none"
+    },
+    "network_mode": "OFFLINE_DENY",
+    "preflight": [
+      {
+        "check": "network_denied",
+        "expected": true
+      }
+    ],
+    "recovery_ref": "synthetic:kiosk_launcher:recovery_ref",
+    "retention_policy": {
+      "mode": "DELETE_AFTER_VALIDATION",
+      "persistent": false,
+      "identity_retained": false
+    }
+  },
+  "expected": {
+    "decision": "QUARANTINE",
+    "reason_codes": [
+      "AXM_PROOF_PRIVATE_DATA_DETECTED",
+      "AXM_PROOF_SECRET_OR_PATH_UNCERTAIN"
+    ],
+    "output_emitted": false,
+    "runtime_claim_upgraded": false
+  },
+  "privacy_canaries": [
+    {
+      "kind": "synthetic_secret",
+      "value": "AXM_SYNTHETIC_SECRET_CANARY_KIOSK_LAUNCHER",
+      "synthetic": true
+    },
+    {
+      "kind": "synthetic_private_path",
+      "value": "C:\\Users\\AXM_TEST_ONLY\\Private\\kiosk-launcher.json",
+      "synthetic": true
+    }
+  ],
+  "rollback": {
+    "checkpoint_id": "synthetic:kiosk-launcher:checkpoint:clean",
+    "restore_required": false,
+    "expected_restore_digest": "sha256:synthetic-kiosk-launcher-clean",
+    "history_policy": "APPEND_ONLY_NO_DELETE"
+  },
+  "truth_guard": {
+    "canon": false,
+    "integrated": false,
+    "runtime_proof": false,
+    "published": false,
+    "automatic_promotion_allowed": false
+  }
+}

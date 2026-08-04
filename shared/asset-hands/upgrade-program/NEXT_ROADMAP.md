@@ -12,7 +12,15 @@ The fifty-upgrade build is complete at the **executable contract** layer:
 - Multi-capability requests receive a deterministic dependency-ordered plan.
 - Every invocation carries artifacts, the original canvas, a replayable recipe,
   preview when one exists, a validation receipt, provenance and hand identity.
-- The existing 34 provider registry, saved state and governance remain intact.
+- The existing 36 provider registry, saved state and governance remain intact.
+
+Rank 8, `asset.performance.benchmark-receipts`, now has a runtime-observed
+v1.1 receipt engine: separate warmups, per-repetition samples, distribution
+statistics, host-bound runtime labels, bounded failure evidence, budget checks,
+tamper verification and a portable JSON Schema. It remains `PARTIAL`, not
+`READY`: execution is synchronous and in-process, heap use is sampled only at
+repetition boundaries, and independent workload-specific review is still
+required for production performance claims.
 
 This is not the same as fifty production certifications. On the current local
 machine the visible acceptance audit reports:
@@ -33,7 +41,7 @@ than copying these counts into another system.
    Asset Fabric v0.10 integration and Studio v2.6 handoff.
 3. Publish the exact acceptance states; do not describe all fifty as
    production-certified.
-4. Keep the 34 existing creation providers separate from the 50 capability
+4. Keep the 36 existing creation providers separate from the 50 capability
    extensions so old consumers do not change behavior.
 5. Keep raw sessions, logs, local paths, runtime tokens and generated private
    evidence outside the public package.

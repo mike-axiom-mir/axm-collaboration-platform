@@ -1,6 +1,9 @@
 'use strict';
 
 const childProcess = require('child_process');
+
+const GIT_OUTPUT_BUFFER_BYTES = 64 * 1024 * 1024;
+const GIT_STAGE_TIMEOUT_MS = 10 * 60 * 1000;
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -90,7 +93,7 @@ function gitRun(git, repositoryRoot, args, options) {
     input: options && options.input,
     env: Object.assign({}, process.env, options && options.env || {}),
     timeout: options && options.timeout || 120000,
-    maxBuffer: 8 * 1024 * 1024
+    maxBuffer: GIT_OUTPUT_BUFFER_BYTES
   });
   if (result.error || result.status !== 0) {
     const message = String(result.stderr || result.stdout || result.error && result.error.message || 'Git command failed').trim().slice(-3000);
@@ -100,7 +103,7 @@ function gitRun(git, repositoryRoot, args, options) {
 }
 
 function gitTry(git, repositoryRoot, args, options) {
-  const result = childProcess.spawnSync(git, ['-C', repositoryRoot].concat(args), { windowsHide:true, shell:false, encoding:'utf8', input:options && options.input, timeout:30000, maxBuffer:8*1024*1024 });
+  const result = childProcess.spawnSync(git, ['-C', repositoryRoot].concat(args), { windowsHide:true, shell:false, encoding:'utf8', input:options && options.input, timeout:30000, maxBuffer:GIT_OUTPUT_BUFFER_BYTES });
   return { ok:!result.error && result.status === 0, stdout:String(result.stdout || '').trim(), stderr:String(result.stderr || '').trim() };
 }
 
@@ -461,7 +464,11 @@ function create(options) {
         fs.copyFileSync(source, target);
       });
       const pathInput = Buffer.from(plan.changes.map(change => change.path).join('\0') + '\0');
-      gitRun(git, config.repositoryRoot, ['add','--pathspec-from-file=-','--pathspec-file-nul'], { input:pathInput });
+      gitRun(git, config.repositoryRoot, ['add','--pathspec-from-file=-','--pathspec-file-nul'], {
+        input:pathInput,
+        timeout:GIT_STAGE_TIMEOUT_MS,
+        env:{ GIT_CONFIG_COUNT:'1', GIT_CONFIG_KEY_0:'core.autocrlf', GIT_CONFIG_VALUE_0:'false' }
+      });
       const dirty = pathListFromNul(gitRun(git, config.repositoryRoot, ['status','--porcelain=v1','-z']));
       const planned = new Set(plan.changes.map(change => change.path));
       const unexpected = dirty.filter(relative => !planned.has(relative));

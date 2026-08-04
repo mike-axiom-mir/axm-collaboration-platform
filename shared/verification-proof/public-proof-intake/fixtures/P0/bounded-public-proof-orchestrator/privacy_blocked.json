@@ -1,0 +1,90 @@
+{
+  "packet_schema_version": "axm.proof.run-packet.v0.3.0",
+  "packet_id": "synthetic:bounded-public-proof-orchestrator:privacy_blocked",
+  "seed_id": "axm.proof.bounded-public-proof-orchestrator",
+  "seed_schema_version": "axm.proof.seed.v0.2.0",
+  "fixture_class": "PRIVACY_BLOCKED",
+  "run_mode": "VALIDATE_ONLY",
+  "authority": {
+    "scope": "SCHEMA_AND_DISPOSABLE_SYNTHETIC_FIXTURE_ONLY",
+    "live_activation_allowed": false,
+    "canon_authority": false,
+    "publication_authority": false,
+    "merge_gate_required": true
+  },
+  "network_policy": "DENY",
+  "write_policy": "NONE",
+  "inputs": {
+    "coordination_id": "synthetic:bounded_public_proof_orchestrator:coordination_id",
+    "schema_version": "axm.proof.synthetic-input.v0.1.0",
+    "owner_refs": [
+      "synthetic:bounded_public_proof_orchestrator:owner_refs:1"
+    ],
+    "input_registry_refs": [
+      "synthetic:bounded_public_proof_orchestrator:input_registry_refs:1"
+    ],
+    "prerequisites": [
+      "schema present",
+      "fixture isolated",
+      "network denied"
+    ],
+    "stop_conditions": [
+      "authority exceeded",
+      "private data detected",
+      "dependency blocked"
+    ],
+    "planned_actions": [
+      {
+        "action": "schema_validation",
+        "live_activation": false
+      }
+    ],
+    "decision_packets": [
+      {
+        "decision": "HOLD_FOR_MERGE_GATE",
+        "synthetic": true
+      }
+    ],
+    "audit_events": [
+      {
+        "event": "fixture_created",
+        "sequence": 1,
+        "synthetic": true
+      }
+    ]
+  },
+  "expected": {
+    "decision": "QUARANTINE",
+    "reason_codes": [
+      "AXM_PROOF_PRIVATE_DATA_DETECTED",
+      "AXM_PROOF_SECRET_OR_PATH_UNCERTAIN"
+    ],
+    "output_emitted": false,
+    "runtime_claim_upgraded": false
+  },
+  "privacy_canaries": [
+    {
+      "kind": "synthetic_secret",
+      "value": "AXM_SYNTHETIC_SECRET_CANARY_BOUNDED_PUBLIC_PROOF_ORCHESTRATOR",
+      "synthetic": true
+    },
+    {
+      "kind": "synthetic_private_path",
+      "value": "C:\\Users\\AXM_TEST_ONLY\\Private\\bounded-public-proof-orchestrator.json",
+      "synthetic": true
+    }
+  ],
+  "rollback": {
+    "checkpoint_id": "synthetic:bounded-public-proof-orchestrator:checkpoint:clean",
+    "restore_required": false,
+    "expected_restore_digest": "sha256:synthetic-bounded-public-proof-orchestrator-clean",
+    "history_policy": "APPEND_ONLY_NO_DELETE"
+  },
+  "truth_guard": {
+    "canon": false,
+    "integrated": false,
+    "runtime_proof": false,
+    "published": false,
+    "automatic_promotion_allowed": false
+  }
+}

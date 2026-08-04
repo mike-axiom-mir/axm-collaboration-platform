@@ -1,0 +1,78 @@
+{
+  "schema": "bonk-bolt-evidence-v1",
+  "capturedAt": "2026-07-28T14:06:54.7414265+02:00",
+  "scope": "tomorrows-weather-is-missing-authored-adventure-and-world-consequence",
+  "classification": "DURABLE_EVENT",
+  "verdict": "pass",
+  "automated": {
+    "systemsChecks": 226,
+    "packageChecks": 96,
+    "http": { "pass": 4, "fail": 0 },
+    "sourceSyntax": "pass",
+    "focusedVerifier": { "errors": 0, "warnings": 0 }
+  },
+  "live": [
+    {
+      "claim": "The three-clearing forecast is a readable authored combat rule rather than generic enemy volume.",
+      "surface": "in-app browser / ?testSteward=encounter-forecast / 1280x720",
+      "backend": "BROWSER_PRIMARY",
+      "baseline": "A broad Wobblewoods platform showed three separate circles, exactly two Mood Clouds in each and one gold current clearing. The action label and HUD stated the full exact rule.",
+      "action": "Started the real encounter, moved between the circles and used Human Panzer attacks.",
+      "observed": "Progress changed 0/6 to 2/6 with only the second circle becoming gold, then 4/6 with only the final circle gold, and finally 6/6. The next-clearing announcement named 1 of 3 and 2 of 3 transitions.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "One area attack cannot cascade across a newly activated forecast clearing.",
+      "surface": "in-app browser / corrected forecast replay / 1280x720",
+      "backend": "BROWSER_PRIMARY",
+      "baseline": "Six low-health staged encounter clouds occupied all three nearby circles.",
+      "action": "Used one Breakfast Avalanche from within the first circle.",
+      "observed": "The attack defeated exactly the two active-circle clouds, stopped at 2/6, displayed NEXT CLEARING LIT and left both later pairs alive. A deterministic 0.45-second transition gate protects every multi-target damage path from same-action progression cascades.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The conclusion presents two explicit permanent world rules without hidden correctness or pressure rewards.",
+      "surface": "in-app browser / story-choice modal / 1280x720",
+      "backend": "BROWSER_PRIMARY",
+      "baseline": "Completing 6/6 opened Tomorrow's Weather Is Missing as a permanent saved-world decision.",
+      "action": "Read both outcomes and chose Build the Public Forecast Lattice.",
+      "observed": "The modal named the 1.1-second gold warning and the alternative 10-second rainbow shelter, stated there was no hidden correct answer, and completion exposed Permanent weather pact + Raincheck-4 witness rather than currency or consumables.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The selected warning rule is visible in ordinary combat and persists through an ordinary canonical reload.",
+      "surface": "in-app browser / ?testSteward=forecast-rule then canonical /games/014/ / 1280x720",
+      "backend": "BROWSER_PRIMARY",
+      "baseline": "The saved region HUD read MEMORY: WARNINGS ON and a real Mood Cloud announced LOCALIZED FEELINGS.",
+      "action": "Observed separated states around one puddle spawn, then navigated to the canonical route and continued the same saved world.",
+      "observed": "A bright gold warning ring appeared around the hero before a later FEELINGS: DAMP state. The canonical reload again displayed MEMORY: WARNINGS ON with the hero at 100 health in the invulnerable QA observation. Browser warnings and errors were exactly empty.",
+      "verdict": "PASS"
+    }
+  ],
+  "typedObservation": {
+    "arena": { "clouds": 6, "clearings": 3, "perClearing": 2, "transitionProgress": [2, 4, 6] },
+    "choice": { "selected": "warning-lattice", "alternative": "rainbow-shelters", "pressureCost": 0 },
+    "warningRule": { "deterministicArmSeconds": 1.1, "visibleWarning": "gold ring", "laterVisibleState": "FEELINGS: DAMP" },
+    "persistence": { "canonicalRoute": true, "regionMemory": "WARNINGS ON", "browserWarnings": 0, "browserErrors": 0 }
+  },
+  "limitations": [
+    "The rolling-frame capability was unavailable. The exact 1.1-second arm value is deterministic source/test evidence; separated screenshots prove only the visible warning and later armed states.",
+    "The warning-lattice branch was exercised live. The rainbow-shelter duration, damage blocking and save contract are deterministic evidence.",
+    "Production Blender character rigs and animation assets remained unavailable, so this pass deepened authored gameplay while preserving procedural character stand-ins."
+  ],
+  "visualReceipt": {
+    "namedSeam": "tomorrows-weather-is-missing-forecast-relay",
+    "bufferDigest": "not-created-rolling-buffer-unavailable",
+    "temporaryPathsDeleted": [],
+    "cleanupComplete": true,
+    "nextCheapestTest": "When rolling capture exists, measure warning creation to first damaging tick without replacing deterministic assertions."
+  },
+  "retention": {
+    "rawScreenshotsCopied": false,
+    "rawVideoCreated": false,
+    "rawTerminalLogsCopied": false,
+    "summaryEvidenceRetained": true,
+    "browserTabsFinalized": true,
+    "port8814Clean": true
+  }
+}

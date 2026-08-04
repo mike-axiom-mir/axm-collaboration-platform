@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070719">
+  <meta name="description" content="AXM: MIRRORSHIFT is a four-racer, equal-machine combat circuit built for local game night.">
+  <title>AXM: MIRRORSHIFT</title>
+  <link rel="stylesheet" href="styles.css?v=0.21.0">
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand" aria-label="AXM MirrorShift">
+        <span class="brand-kicker">AXM // GAME NIGHT 015</span>
+        <span class="brand-title">MIRROR<span>SHIFT</span></span>
+      </div>
+      <div class="fairness-chip"><i></i> SAME STATS. LOUDER PERSONALITIES.</div>
+      <div class="top-actions">
+        <button id="lanLabButton" class="icon-button lan-lab-button" type="button" hidden>LAN LAB</button>
+        <button id="perfLabButton" class="icon-button perf-lab-button" type="button" hidden>TARGET LAB</button>
+        <button id="echoButton" class="icon-button echo-button" type="button" aria-label="Toggle fastest lap Mirror Echo" aria-pressed="true">ECHO EMPTY</button>
+        <button id="muteButton" class="icon-button" type="button" aria-label="Mute game audio" aria-pressed="false">SOUND ON</button>
+        <button id="resetButton" class="icon-button danger" type="button">RESET</button>
+      </div>
+    </header>
+
+    <section class="game-frame" aria-label="AXM MirrorShift game">
+      <canvas id="gameCanvas" width="1280" height="800" aria-label="Top-down neon combat game between Mike, Axiom Mir, Codex, and Mirror"></canvas>
+
+      <div class="race-hud" id="raceHud" aria-hidden="true">
+        <section class="standings-panel glass-panel" aria-label="Race standings">
+          <p class="hud-label">LIVE ORDER</p>
+          <ol id="standings"></ol>
+        </section>
+
+        <section class="player-panel glass-panel" aria-label="Player one status">
+          <div id="variantBadge" class="variant-badge">CLEAR SIGNAL // 3 LAPS</div>
+          <div class="player-line">
+            <div>
+              <span id="playerRank" class="rank-number">P1</span>
+              <span id="playerName" class="pilot-name">MIKE</span>
+            </div>
+            <span id="lapReadout" class="lap-readout">LAP 1 / 3</span>
+          </div>
+          <div class="shield-row">
+            <span>FLUX GUARD</span>
+            <div id="shieldSegments" class="shield-segments" aria-label="Three shield segments"></div>
+          </div>
+          <div class="speed-row">
+            <div class="speed-track"><i id="speedFill"></i></div>
+            <span id="catchupReadout">BASE SPEED</span>
+          </div>
+          <div class="drift-row">
+            <span>MIRROR DRIFT</span>
+            <div class="drift-track" aria-label="Drift charge"><i id="driftFill"></i><b></b><b></b><b></b></div>
+            <span id="driftReadout">READY</span>
+          </div>
+        </section>
+
+        <section class="item-panel glass-panel" aria-label="Current item">
+          <span class="hud-label">ATTACK SLOT</span>
+          <button id="itemButton" class="item-button" type="button" aria-label="Use held item">
+            <span id="itemIcon" class="item-icon">·</span>
+            <span id="itemLabel">EMPTY</span>
+          </button>
+          <span class="key-hint">SPACE / TAP</span>
+        </section>
+
+        <div id="threatAlert" class="threat-alert" role="status" aria-live="assertive"><i></i><span>ARC LOCK</span></div>
+        <div id="echoHud" class="echo-hud glass-panel" aria-hidden="true">MIRROR ECHO // NO LAP SEALED</div>
+        <div id="eventFeed" class="event-feed" aria-live="polite"></div>
+      </div>
+
+      <section id="lobby" class="overlay lobby-overlay" aria-labelledby="gameTitle">
+        <div class="key-art" role="img" aria-label="Mike, Axiom Mir, Codex, and Mirror race through a neon workshop circuit">
+          <div class="art-vignette"></div>
+          <div class="hero-copy">
+            <span class="eyebrow">FOUR RACERS // ONE SPEC</span>
+            <h1 id="gameTitle">MIRROR<br><em>SHIFT</em></h1>
+            <p>Race clean if you can. Crack guards if you can&rsquo;t.</p>
+          </div>
+        </div>
+        <div class="lobby-panel">
+          <div class="lobby-heading">
+            <div>
+              <span class="eyebrow">THE FIRST FOUR</span>
+              <h2>Choose a favourite.<br>The circuit chooses chaos.</h2>
+            </div>
+            <span id="modePill" class="mode-pill">3 LAPS · 85% ATTACKS</span>
+          </div>
+          <div class="mode-selector" aria-label="Game mode">
+            <button type="button" class="mode-card is-selected" data-mode="race" aria-pressed="true">
+              <b>CIRCUIT CROWN</b><span>2–4 laps · drift lines · 85% attacks</span>
+            </button>
+            <button type="button" class="mode-card" data-mode="tour" aria-pressed="false">
+              <b>SIGNAL TOUR</b><span>3 rounds · fixed route · 9–6–4–2 points</span>
+            </button>
+            <button type="button" class="mode-card" data-mode="battle" aria-pressed="false">
+              <b>MIRROR CORE</b><span>60 seconds · score guard breaks · 90% attacks</span>
+            </button>
+          </div>
+          <section id="trackSelector" class="track-selector" aria-labelledby="trackSelectorLabel">
+            <div class="track-selector-heading">
+              <span id="trackSelectorLabel" class="eyebrow">SELECT CIRCUIT</span>
+              <span id="trackRisk">AUTHORED ROUTES // LIVE HAZARDS</span>
+            </div>
+            <div class="track-grid">
+              <button type="button" class="track-card is-selected" data-track="mirror-forge" aria-pressed="true">
+                <i class="track-sigil forge" aria-hidden="true"></i><b>MIRROR FORGE</b><span>Flow · phase gates</span>
+              </button>
+              <button type="button" class="track-card" data-track="splitglass-gardens" aria-pressed="false">
+                <i class="track-sigil gardens" aria-hidden="true"></i><b>SPLITGLASS</b><span>Petals · prism blooms</span>
+              </button>
+              <button type="button" class="track-card" data-track="null-foundry" aria-pressed="false">
+                <i class="track-sigil foundry" aria-hidden="true"></i><b>NULL FOUNDRY</b><span>Corners · heat vents</span>
+              </button>
+            </div>
+            <div class="route-direction-row">
+              <span id="routeDirectionLabel" class="eyebrow">ROUTE DIRECTION</span>
+              <div class="route-direction-grid" aria-labelledby="routeDirectionLabel">
+                <button type="button" class="route-direction-card is-selected" data-route-direction="forward" aria-pressed="true"><b>FLOW LINE</b><span>AUTHORED</span></button>
+                <button type="button" class="route-direction-card" data-route-direction="reflection" aria-pressed="false"><b>REFLECTION</b><span>REVERSED</span></button>
+              </div>
+              <span id="routeDirectionRisk">FIXED FINISH // REMAPPED HAZARDS</span>
+            </div>
+            <div class="variant-selector-heading">
+              <span id="variantSelectorLabel" class="eyebrow">SELECT SIGNAL CONDITION</span>
+              <span id="variantRisk">GLOBAL RULES // IDENTICAL CARS</span>
+            </div>
+            <div id="variantGrid" class="variant-grid" aria-label="Race signal condition">
+              <button type="button" class="variant-card is-selected" data-variant="clear-signal" aria-pressed="true">
+                <b>CLEAR SIGNAL</b><span>3 laps · authored mix</span><i>BASELINE</i>
+              </button>
+              <button type="button" class="variant-card" data-variant="shardline-sprint" aria-pressed="false">
+                <b>SHARDLINE</b><span>2 laps · tighter shortcuts</span><i>RISK / REWARD</i>
+              </button>
+              <button type="button" class="variant-card" data-variant="redline-gauntlet" aria-pressed="false">
+                <b>REDLINE</b><span>4 laps · faster hazards</span><i>MAX PRESSURE</i>
+              </button>
+            </div>
+          </section>
+          <section class="accessibility-strip" aria-labelledby="accessibilityLabel">
+            <span id="accessibilityLabel" class="eyebrow">CONTROL ACCESS</span>
+            <label class="layout-control" for="keyboardLayout"><span>KEYS</span>
+              <select id="keyboardLayout" aria-label="Keyboard driving layout">
+                <option value="hybrid">WASD + ARROWS</option>
+                <option value="ijkl">IJKL</option>
+                <option value="esdf">ESDF</option>
+              </select>
+            </label>
+            <button id="steeringAssist" class="assist-toggle" type="button" aria-pressed="false"><b>STEER HELP</b><span>OFF</span></button>
+            <button id="autoAccelerate" class="assist-toggle" type="button" aria-pressed="false"><b>AUTO GAS</b><span>OFF</span></button>
+            <small>INPUT ONLY · EQUAL STATS</small>
+          </section>
+          <div id="echoReadout" class="echo-readout"><span>MIRROR ECHO // NO LAP SEALED</span><small>FASTEST LAP REPLAY // NON-COLLIDING // NOT A FIFTH RACER</small></div>
+          <div class="character-selector-heading">
+            <span class="eyebrow">P1 // CHOOSE DRIVER</span>
+            <span>OCCUPIED PICKS SWAP · IDENTICAL PERFORMANCE</span>
+          </div>
+          <div id="characterGrid" class="character-grid"></div>
+          <div class="rule-strip">
+            <div><strong>01</strong><span>Equal car stats</span></div>
+            <div><strong>02</strong><span>Up to +7.5% catch-up</span></div>
+            <div><strong>03</strong><span>Three-hit Flux Guard</span></div>
+          </div>
+          <div class="launch-row">
+            <div id="controlsCopy" class="controls-copy">
+              <b>DRIVE</b> WASD / ARROWS &nbsp; <b>DRIFT</b> GAS + BRAKE + TURN &nbsp; <b>FIRE</b> SPACE
+            </div>
+            <button id="startButton" class="start-button" type="button"><span id="startLabel">ARM THE CIRCUIT</span><i>→</i></button>
+          </div>
+        </div>
+      </section>
+
+      <section id="countdown" class="countdown overlay hidden" aria-live="assertive" aria-label="Race countdown">
+        <div class="countdown-core">
+          <span id="countdownNumber">3</span>
+          <small>GUARDS ARMED</small>
+        </div>
+        <div class="start-grid-stage">
+          <p id="startGridHeading">MIRROR FORGE // FORWARD // CLEAR</p>
+          <ol id="startGridRoster" class="start-grid-roster" aria-label="Four-racer start grid"></ol>
+          <em>SERVER GRID // PRESENTATION ONLY</em>
+        </div>
+      </section>
+
+      <section id="results" class="overlay results-overlay hidden" aria-labelledby="resultsTitle">
+        <div class="results-card">
+          <span id="resultsEyebrow" class="eyebrow">MIRROR CROWN CLAIMED</span>
+          <h2 id="resultsTitle">MIKE WINS</h2>
+          <p id="resultsSignature" class="results-signature">RATCHET ROAR // “IF IT RATTLES, IT RUNS.”</p>
+          <p id="resultsVehicle">Maker GT · equal spec, better line</p>
+          <p id="resultsEcho" class="results-echo">MIRROR ECHO // A FASTEST LAP WILL SEAL AFTER THIS RUN</p>
+          <div class="result-stage-heading"><span>FINAL SIGNAL // FOUR RACERS</span><small>SERVER RANKING // PRESENTATION ONLY</small></div>
+          <ol id="resultsRanking" class="results-ranking" aria-label="Final standings tableau"></ol>
+          <div class="results-rules">
+            <span><b id="resultRuleOne">100%</b><i id="resultRuleOneLabel">equal base stats</i></span>
+            <span><b id="resultRuleTwo">85%</b><i id="resultRuleTwoLabel">attack drops</i></span>
+            <span><b id="resultRuleThree">3</b><i id="resultRuleThreeLabel">starting guards</i></span>
+          </div>
+          <button id="againButton" class="start-button" type="button"><span>RUN IT BACK</span><i>↻</i></button>
+        </div>
+      </section>
+
+      <section id="performancePanel" class="performance-panel hidden" aria-labelledby="perfTitle" aria-hidden="true">
+        <div class="performance-heading">
+          <div><span class="eyebrow">TARGET DEVICE EVIDENCE</span><h2 id="perfTitle">SESSION RECORDER</h2></div>
+          <button id="perfCloseButton" class="performance-close" type="button" aria-label="Close target session recorder">×</button>
+        </div>
+        <p class="performance-boundary">Measures this browser and local authority. Thermal, compositor, perceived smoothness, and human judgment still require native external evidence.</p>
+        <div class="performance-metrics" aria-live="polite">
+          <span><i>ELAPSED</i><b id="perfElapsed">00:00</b></span>
+          <span><i>FRAME P95</i><b id="perfFrameP95">WAIT</b></span>
+          <span><i>RENDER P95</i><b id="perfRenderP95">WAIT</b></span>
+          <span><i>TICK P95</i><b id="perfTickP95">WAIT</b></span>
+          <span><i>LONG TASKS</i><b id="perfLongTasks">WAIT</b></span>
+          <span><i>JS HEAP</i><b id="perfMemory">WAIT</b></span>
+          <span><i>INTERRUPTS</i><b id="perfInterruptions">0</b></span>
+          <span><i>AUTHORITY WRITES</i><b>0</b></span>
+        </div>
+        <label class="performance-duration" for="perfDuration"><span>SESSION LENGTH</span>
+          <select id="perfDuration">
+            <option value="120000">2 MINUTE CHECK</option>
+            <option value="600000">10 MINUTE SOAK</option>
+            <option value="1800000" selected>30 MINUTE TARGET GATE</option>
+          </select>
+        </label>
+        <p id="perfStatus" class="performance-status">READY // OPT-IN MEASUREMENT ONLY</p>
+        <div class="performance-actions">
+          <button id="perfStartButton" type="button">START RECORDING</button>
+          <button id="perfStopButton" type="button" disabled>STOP</button>
+          <button id="perfDownloadButton" type="button" disabled>DOWNLOAD JSON</button>
+        </div>
+        <p class="performance-privacy">Bounded histograms · 128 recent transitions · no raw frame log · no user agent · no network address</p>
+      </section>
+
+      <section id="lanLabPanel" class="lan-lab-panel hidden" aria-labelledby="lanTitle" aria-hidden="true">
+        <div class="lan-lab-heading">
+          <div><span class="eyebrow">GAME-NIGHT QUALIFICATION</span><h2 id="lanTitle">FOUR-PHONE LAN LAB</h2></div>
+          <button id="lanCloseButton" class="performance-close" type="button" aria-label="Close four-phone LAN Lab">×</button>
+        </div>
+        <p class="lan-boundary">Machine receipts verify controller transport. They cannot prove four independent physical phones; that verdict always requires external steward review.</p>
+        <div class="lan-seat-grid">
+          <article class="lan-seat" data-lan-seat="p1"><header><b>P1 · MIKE</b><span data-lan-role="link">WAITING FOR PHONE</span></header><p data-lan-role="rtt">RTT —</p><small data-lan-role="session">0 SESSION · MAX 0 ACTIVE</small><ul><li data-lan-role="drive">WAIT · DRIVE 0</li><li data-lan-role="item">WAIT · FIRE 0</li><li data-lan-role="heartbeat">WAIT · HEARTBEAT 0</li><li data-lan-role="latency">WAIT · RTT SAMPLES 0</li><li data-lan-role="identity">WAIT · STABLE ID</li></ul></article>
+          <article class="lan-seat" data-lan-seat="p2"><header><b>P2 · AXIOM/MIR</b><span data-lan-role="link">WAITING FOR PHONE</span></header><p data-lan-role="rtt">RTT —</p><small data-lan-role="session">0 SESSION · MAX 0 ACTIVE</small><ul><li data-lan-role="drive">WAIT · DRIVE 0</li><li data-lan-role="item">WAIT · FIRE 0</li><li data-lan-role="heartbeat">WAIT · HEARTBEAT 0</li><li data-lan-role="latency">WAIT · RTT SAMPLES 0</li><li data-lan-role="identity">WAIT · STABLE ID</li></ul></article>
+          <article class="lan-seat" data-lan-seat="p3"><header><b>P3 · CODEX</b><span data-lan-role="link">WAITING FOR PHONE</span></header><p data-lan-role="rtt">RTT —</p><small data-lan-role="session">0 SESSION · MAX 0 ACTIVE</small><ul><li data-lan-role="drive">WAIT · DRIVE 0</li><li data-lan-role="item">WAIT · FIRE 0</li><li data-lan-role="heartbeat">WAIT · HEARTBEAT 0</li><li data-lan-role="latency">WAIT · RTT SAMPLES 0</li><li data-lan-role="identity">WAIT · STABLE ID</li></ul></article>
+          <article class="lan-seat" data-lan-seat="p4"><header><b>P4 · MIRROR</b><span data-lan-role="link">WAITING FOR PHONE</span></header><p data-lan-role="rtt">RTT —</p><small data-lan-role="session">0 SESSION · MAX 0 ACTIVE</small><ul><li data-lan-role="drive">WAIT · DRIVE 0</li><li data-lan-role="item">WAIT · FIRE 0</li><li data-lan-role="heartbeat">WAIT · HEARTBEAT 0</li><li data-lan-role="latency">WAIT · RTT SAMPLES 0</li><li data-lan-role="identity">WAIT · STABLE ID</li></ul></article>
+        </div>
+        <div class="lan-summary"><span><i>ELAPSED</i><b id="lanElapsed">00:00</b></span><span><i>ALL FOUR LIVE</i><b id="lanAllFour">0%</b></span><span><i>RECONNECTS</i><b id="lanReconnect">0</b></span><span><i>OWNER GUARD</i><b id="lanOwnership">WAIT</b></span><span><i>PHYSICAL VERDICT</i><b id="lanPhysicalVerdict">EXTERNAL REVIEW</b></span></div>
+        <fieldset class="lan-attestations"><legend>HOST ATTESTATIONS · NEVER AUTO-CHECKED</legend><label><input type="checkbox" data-lan-attestation="fourIndependentPhysicalPhones"> Four independent physical phones are present</label><label><input type="checkbox" data-lan-attestation="intendedRouterLan"> All devices use the intended router/LAN</label><label><input type="checkbox" data-lan-attestation="seatIdentityConfirmed"> Every player visibly confirmed their seat</label></fieldset>
+        <div class="lan-controls"><label for="lanDuration"><span>SESSION LENGTH</span><select id="lanDuration"><option value="120000">2 MINUTE CHECK</option><option value="600000">10 MINUTE SOAK</option><option value="1800000" selected>30 MINUTE FOUR-PHONE GATE</option></select></label><p id="lanStatus">PREFLIGHT · CONNECT AND CONFIRM ONE CONTROLLER ON P1–P4</p><div><button id="lanStartButton" type="button" disabled>START QUALIFICATION</button><button id="lanStopButton" type="button" disabled>STOP</button><button id="lanDownloadButton" type="button" disabled>DOWNLOAD JSON</button></div></div>
+        <p class="lan-privacy">Read-only telemetry · no session IDs in receipt · no IP address · no user agent · no raw actions · authority writes 0</p>
+      </section>
+
+      <div id="touchControls" class="touch-controls" aria-label="Touch driving controls">
+        <div class="touch-steer">
+          <button type="button" data-control="left" aria-label="Steer left">←</button>
+          <button type="button" data-control="right" aria-label="Steer right">→</button>
+        </div>
+        <button type="button" class="touch-gas" data-control="gas">GO</button>
+        <button type="button" class="touch-drift" data-control="brake">DRIFT</button>
+        <button type="button" class="touch-item" data-control="item" aria-label="Use item">✹</button>
+      </div>
+    </section>
+
+    <footer class="footer-line">
+      <span>SERVER-AUTHORITATIVE LOCAL PARTY COMBAT</span>
+      <span>ALL VEHICLES // 260 MAX // 178 ACCEL // 2.45 TURN</span>
+      <span id="musicStatus">MUSIC // FORGE · LOBBY · L0</span>
+      <span id="connectionStatus">CONNECTING TO WORKSHOP…</span>
+    </footer>
+  </main>
+  <div id="screenReaderStatus" class="sr-only" aria-live="polite"></div>
+  <script src="game-core.js?v=0.23.0"></script>
+  <script src="mirror-echo.js?v=0.21.0"></script>
+  <script src="performance-recorder.js?v=0.13.0"></script>
+  <script src="lan-qualification.js?v=0.16.0"></script>
+  <script src="app.js?v=0.23.0"></script>
+  <script src="performance-ui.js?v=0.13.0"></script>
+  <script src="lan-lab-ui.js?v=0.16.0"></script>
+</body>
+</html>

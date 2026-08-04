@@ -1,0 +1,84 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "hermes-local",
+  "version": "v0.2",
+  "provides": [
+    "local-bootstrap-prerequisite-report",
+    "explicit-config-external-source-clone",
+    "explicit-config-external-command-launch",
+    "loopback-control-layer-health",
+    "local-consent-state-read-and-write",
+    "consent-gated-task-proposal-creation",
+    "consent-gated-review-proposal-creation",
+    "consent-gated-prompt-pack-creation"
+  ],
+  "consumes": [
+    "runtime:node",
+    "runtime:git-for-install",
+    "human:explicit-bootstrap-command",
+    "local-config:hermes-source.local.json",
+    "filesystem:tools/hermes",
+    "filesystem:tools/agent-tool-forge/prompt-packs",
+    "network:configured-git-remote-on-explicit-install",
+    "process:configured-command-on-explicit-start"
+  ],
+  "permissions": [
+    "files",
+    "network",
+    "machine.execute"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.hermes-task-proposal/v1",
+      "axm.hermes-review-proposal/v1",
+      "agent-tool-forge:prompt-pack-json",
+      "process:configured-external-hermes-command"
+    ],
+    "accepts": [
+      "human:explicit-cli-action",
+      "local-file:hermes-source.local.json",
+      "http:loopback-json-request",
+      "human:local-consent-toggle"
+    ]
+  },
+  "boundaries": {
+    "automaticWrites": [
+      "tools/hermes/queue:directory-initialization",
+      "tools/hermes/outbox:directory-initialization",
+      "tools/hermes/logs:startup-log",
+      "tools/hermes/external:bootstrap-directory-initialization",
+      "tools/agent-tool-forge/prompt-packs:directory-initialization"
+    ],
+    "explicitWrites": [
+      "tools/hermes/.hermes-consent.json",
+      "tools/hermes/queue:task-proposal-json",
+      "tools/hermes/outbox:review-proposal-markdown",
+      "tools/agent-tool-forge/prompt-packs:prompt-pack-json",
+      "tools/hermes/external/hermes-agent:configured-git-clone",
+      "configured-external-command:effects-outside-wrapper-not-bounded"
+    ],
+    "refuses": [
+      "automatic-bootstrap-install-or-start",
+      "implicit-external-source-selection",
+      "bundled-hermes-runtime",
+      "hermes-runtime-readiness-claim",
+      "control-layer-to-hermes-runtime-connection-claim",
+      "identity-or-package-profile-binding-claim",
+      "foundation-sandbox-enforcement-claim",
+      "external-command-sandbox-claim",
+      "source-example-as-live-source-or-license-verification",
+      "consent-state-as-bootstrap-permission-gate",
+      "consent-state-as-runtime-readiness-proof",
+      "direct-workshop-source-edit",
+      "automatic-proposal-application",
+      "automatic-status-promotion",
+      "canon-authority"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
+}

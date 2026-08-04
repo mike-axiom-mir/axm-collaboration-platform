@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.saga-recovery-orchestrator",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.saga-recovery.receipt/v1"
+  ],
+  "consumes": [
+    "workflow-steps",
+    "compensation-registry"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_3_EXPLICIT_LOCAL_EXECUTION",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/recovery-center",
+      "shared/module-evolution-ledger",
+      "tools/repairbuddy"
+    ],
+    "reason": "Executes an explicit local saga adapter with evidence and reverse compensation on failure; not wired to active AXM."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-restore",
+      "automatic-rollback",
+      "silent-data-loss",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

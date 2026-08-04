@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Brace Room — AXM Game Night</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="app" class="theme-normal">
+
+  <header id="hud">
+    <div class="hud-left">
+      <span class="hud-label">HULL</span>
+      <div id="hull-bar" class="hull-bar"><div id="hull-fill" class="hull-fill"></div></div>
+      <span id="hull-value" class="hud-value">100</span>
+    </div>
+    <div class="hud-center">
+      <span id="wave-label" class="hud-value">WAVE 1</span>
+    </div>
+    <div class="hud-right">
+      <span id="timer-value" class="hud-value">09:00</span>
+      <button type="button" id="sound-toggle" class="icon-button" aria-pressed="false" title="Mute sound">&#128266;</button>
+    </div>
+  </header>
+
+  <canvas id="scene" width="640" height="640" aria-label="Brace Room play field"></canvas>
+
+  <div id="toast-layer" aria-live="polite"></div>
+
+  <section id="start-screen" class="overlay">
+    <h1>BRACE ROOM</h1>
+    <p class="tagline">One hull. Four crew. Nothing fixes itself.</p>
+
+    <div class="setup-row">
+      <label for="player-count">Crew size</label>
+      <div id="player-count" class="chip-row" role="radiogroup" aria-label="Crew size">
+        <button type="button" class="chip" data-players="1">1</button>
+        <button type="button" class="chip" data-players="2">2</button>
+        <button type="button" class="chip" data-players="3">3</button>
+        <button type="button" class="chip active" data-players="4">4</button>
+      </div>
+    </div>
+
+    <div class="setup-row">
+      <label for="session-length">Shift length</label>
+      <div id="session-length" class="chip-row" role="radiogroup" aria-label="Shift length">
+        <button type="button" class="chip" data-minutes="6">6 min</button>
+        <button type="button" class="chip active" data-minutes="9">9 min</button>
+        <button type="button" class="chip" data-minutes="12">12 min</button>
+      </div>
+    </div>
+
+    <div class="controls-legend">
+      <div><strong>P1</strong> WASD + Space</div>
+      <div><strong>P2</strong> Arrow keys + Enter</div>
+      <div><strong>P3</strong> IJKL + O</div>
+      <div><strong>P4</strong> Numpad 8456 + Numpad 0</div>
+      <div class="legend-note">H help &middot; M reduced motion &middot; C high contrast &middot; Esc pause</div>
+    </div>
+
+    <button type="button" id="start-button" class="primary-button">Start shift</button>
+    <p class="fine-print">Shared screen, shared keyboard by default. Join through Game Hub's QR lobby to control a seat from your phone instead — see KNOWN_LIMITS.md for what's still rough about that.</p>
+  </section>
+
+  <section id="pause-screen" class="overlay hidden">
+    <h2>Paused</h2>
+    <p>Press <kbd>Esc</kbd> to resume.</p>
+  </section>
+
+  <section id="end-screen" class="overlay hidden">
+    <h2 id="end-title">Hull held</h2>
+    <dl id="end-summary" class="summary-grid"></dl>
+    <div class="end-actions">
+      <button type="button" id="quick-restart-button" class="primary-button">Go again</button>
+      <button type="button" id="restart-button" class="secondary-button">Change crew</button>
+    </div>
+  </section>
+
+  <div id="help-overlay" class="overlay hidden">
+    <h2>How to brace</h2>
+    <ul>
+      <li>Run to a station showing an amber ring and hold/tap your action key.</li>
+      <li><strong>Engine Bay</strong> &amp; <strong>Vent</strong> — mash your action key.</li>
+      <li><strong>Breaker</strong> &amp; <strong>Ballast</strong> — hold your action key steady.</li>
+      <li><strong>Radio</strong> — a dot orbits the station once per beat; tap your action key right when it flashes bright.</li>
+      <li><strong>Bulkhead</strong> — needs two crew holding together at once. Cannot be soloed.</li>
+      <li>A <strong>grey ring</strong> is a false alarm — leave it alone, don't act on it.</li>
+      <li>Let a real fault run out, or act on a false one, and the hull takes damage.</li>
+    </ul>
+    <button type="button" id="help-close" class="primary-button">Close</button>
+  </div>
+
+</div>
+
+<script src="game-core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

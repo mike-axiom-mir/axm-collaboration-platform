@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Evidence Chain Recovery Adapter Conformance Lab</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AXM Workshop adapter verifier - TEST</p>
+        <h1>Recovery Adapter Conformance Lab</h1>
+        <p class="lede">Bind a reviewed recovery plan to a zero-authority adapter profile, then prepare the exact probe set a trusted Node host can execute against an in-memory fixture implementation.</p>
+      </div>
+      <aside class="truth-card" aria-label="Conformance truth boundary">
+        <strong>Fixture conformance does not grant live authority</strong>
+        <p>No production adapter is executed. No live target, permission service, filesystem, network, or Recovery Center endpoint is touched. Live authorization remains unverified.</p>
+      </aside>
+    </header>
+
+    <section class="panel" aria-labelledby="bundleHeading">
+      <div class="panel-heading">
+        <div><span>STEP 1</span><h2 id="bundleHeading">Bind evidence and profile</h2></div>
+        <p id="bundleSummary">No bundle bound.</p>
+      </div>
+      <div class="input-grid">
+        <label for="sourceFile">Broken source JSONL
+          <small>Must match the application's expected current digest.</small>
+          <input id="sourceFile" type="file" accept=".jsonl,application/x-ndjson,text/plain">
+        </label>
+        <label for="candidateFile">Reviewed candidate JSONL
+          <small>Must independently inspect as a valid chain.</small>
+          <input id="candidateFile" type="file" accept=".jsonl,application/x-ndjson,text/plain">
+        </label>
+        <label for="planFile">Application plan
+          <small>Must be exact, structurally accepted, and unexpired.</small>
+          <input id="planFile" type="file" accept=".json,application/json">
+        </label>
+        <label for="profileFile">Fixture adapter profile
+          <small>Must declare no live, filesystem, network, persistent, or permission access.</small>
+          <input id="profileFile" type="file" accept=".json,application/json">
+        </label>
+      </div>
+      <div class="actions" aria-label="Bundle actions">
+        <button class="primary" id="bindButton" type="button">Bind selected files</button>
+        <button class="secondary" id="exampleButton" type="button">Load fresh synthetic bundle</button>
+        <button id="clearButton" type="button">Clear Lab</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="probeHeading">
+      <div class="panel-heading">
+        <div><span>STEP 2</span><h2 id="probeHeading">Prepare the conformance probe</h2></div>
+        <p>Browser prepares - trusted Node host executes</p>
+      </div>
+      <div class="acknowledgements">
+        <label for="fixtureAck"><input id="fixtureAck" type="checkbox"> <span>I understand this probe is limited to a synthetic in-memory fixture adapter.</span></label>
+        <label for="authorityAck"><input id="authorityAck" type="checkbox"> <span>I understand a passing receipt proves no production authority, identity permission, or live application.</span></label>
+      </div>
+      <div class="actions">
+        <button class="primary" id="prepareButton" type="button" disabled>Prepare conformance probe</button>
+        <button id="downloadButton" type="button" disabled>Download probe</button>
+      </div>
+      <p class="status-line" id="status" role="status" aria-live="polite">Loading a fresh synthetic bundle...</p>
+      <pre id="probePreview">No conformance probe prepared.</pre>
+    </section>
+
+    <section class="panel proof-panel" aria-labelledby="proofHeading">
+      <div class="panel-heading">
+        <div><span>NODE PROOF</span><h2 id="proofHeading">Seven mandatory scenarios</h2></div>
+        <p>Fail closed on any missing observation</p>
+      </div>
+      <ol>
+        <li>Permission denial produces a typed refusal and zero applications.</li>
+        <li>A wrong apply confirmation is refused before any write.</li>
+        <li>An expired preview cannot be applied.</li>
+        <li>A substituted candidate digest cannot be applied.</li>
+        <li>Current-state drift stops before safety-copy or application.</li>
+        <li>Apply and rollback are each followed by independent digest inspection.</li>
+        <li>Responses and the final receipt expose no path, payload, identity, token, or raw bytes.</li>
+      </ol>
+      <p>The runner accepts only a trusted, already-loaded adapter object. It does not accept a module path or execute uploaded code.</p>
+    </section>
+  </main>
+
+  <script src="../evidence-chain-inspector/evidence-chain-core.js"></script>
+  <script src="../evidence-chain-recovery-foundry/evidence-chain-recovery-core.js"></script>
+  <script src="../evidence-chain-candidate-review-gate/evidence-chain-review-core.js"></script>
+  <script src="../evidence-chain-application-plan-foundry/evidence-chain-application-plan-core.js"></script>
+  <script src="../evidence-chain-application-drill-runner/evidence-chain-application-drill-core.js"></script>
+  <script src="evidence-chain-recovery-adapter-conformance-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

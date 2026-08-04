@@ -1,0 +1,44 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.failure-signature-registry",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.failure-signature.registry/v1"
+  ],
+  "consumes": [
+    "privacy-safe-failure-evidence",
+    "repair-outcomes"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_EVIDENCE_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/repairbuddy",
+      "shared/sensorium",
+      "shared/evidence-retention"
+    ],
+    "reason": "Creates a bounded signature layer around existing repair memory and evidence stores without learning or promotion authority."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-pattern-reuse",
+      "automatic-memory-write",
+      "provider-execution",
+      "active-repair-orchestration",
+      "permission-grant",
+      "automatic-promotion",
+      "automatic-release",
+      "automatic-canon",
+      "diagnosis-from-similarity-alone",
+      "root-cause-invention"
+    ]
+  }
+}

@@ -23,6 +23,7 @@ button.ghost{border-color:var(--edge);background:transparent;color:var(--text)}
 <div class="wrap">
   <h1>Test Room</h1>
   <p class="sub">A module is not “done” because it appears once. Run the six checks. Then fully reload the hub to confirm the reopen ones.</p>
+  <p class="sub">A pass updates Hub-local lifecycle evidence only. It does not change manifest status, promote this module, grant permissions, or confer CANON.</p>
 
   <div class="bar">
     <button id="runBtn">Run all checks</button>
@@ -68,6 +69,7 @@ function waitFor(cond, ms, done){
 
 function runAll(){
   var results = {};
+  window.__axmResults = results;
 
   /* 1 files saved */
   set('selftest.probe', { v: 'ok', at: Date.now() });
@@ -77,6 +79,7 @@ function runAll(){
      load is ASYNC. Poll briefly instead of reading once (race fix). */
   waitFor(function(){ var reg = get('registry'); return Array.isArray(reg) && reg.length > 0; }, 2000, function(ok){
     results.c3 = ok; chip('c3', ok ? 'PASS' : 'FAIL');
+    finish();
   });
 
   /* 5 settings survive switch away & back (same store the shell uses on switch) */
@@ -103,7 +106,7 @@ function runAll(){
   probe.onload = function(){
     var painted = false;
     try { painted = !!(probe.contentDocument && probe.contentDocument.body && probe.contentDocument.body.childNodes.length); } catch(e){ painted = true; }
-    results.c4 = painted; chip('c4', painted ? 'PASS' : 'FAIL'); probe.remove();
+    results.c4 = painted; chip('c4', painted ? 'PASS' : 'FAIL'); probe.remove(); finish();
   };
   document.body.appendChild(probe);
 
@@ -111,7 +114,7 @@ function runAll(){
   chip('c5', results.c5 ? 'PASS' : 'FAIL');
   if ($('c2').textContent === 'PENDING') chip('c2', 'PENDING');
 
-  window.__axmResults = results;
+  finish();
 }
 
 function finish(){
@@ -119,7 +122,11 @@ function finish(){
   var passNow = ['c1','c3','c4','c5','c6'].filter(function(k){ return $(k).textContent === 'PASS'; }).length;
   var reopen = $('c2').textContent;
   $('summary').textContent = passNow + '/5 live checks PASS · reopen: ' + reopen + '  (arm + reload hub to prove reopen)';
-  if (passNow === 5 && reopen === 'PASS') { AXMHub.verifyPass(); AXMHub.log('Test Room: all six criteria PASS'); }
+  if (passNow === 5 && reopen === 'PASS' && !window.__axmVerifyPassSent) {
+    window.__axmVerifyPassSent = true;
+    AXMHub.verifyPass();
+    AXMHub.log('Test Room: all six criteria PASS');
+  }
 }
 
 $('runBtn').onclick = runAll;

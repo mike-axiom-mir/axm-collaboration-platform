@@ -137,6 +137,15 @@ try {
     assert.equal(one.record.status, 'READY_FOR_CONTENT_REVIEW');
     assert.equal(one.record.fileEntries, 1);
   });
+  check('the shared central-directory parser remains structural and non-extracting', () => {
+    const parsed = Core.parseCentralDirectory(
+      makeZip([{ name: 'shared.txt', content: 'not decompressed' }]),
+    );
+    assert.equal(parsed.ok, true);
+    assert.equal(parsed.entries.length, 1);
+    assert.equal(parsed.entries[0].name, 'shared.txt');
+    assert.equal(Object.prototype.hasOwnProperty.call(parsed.entries[0], 'content'), false);
+  });
   check('structural inspection explicitly proves no extraction or content integrity', () => {
     assert.equal(one.record.truth.archiveExtracted, false);
     assert.equal(one.record.truth.entryContentDecompressed, false);
@@ -247,6 +256,8 @@ try {
   const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
   const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
   check('manifest and contract identity and permissions remain aligned', () => {
+    assert.equal(manifest.schema, 'axm.tool-manifest/v1');
+    assert.equal(manifest.kind, 'product');
     assert.equal(manifest.id, contract.id);
     assert.equal(manifest.version, contract.version);
     assert.deepEqual(contract.permissions, ['storage']);

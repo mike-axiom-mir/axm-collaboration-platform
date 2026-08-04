@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.microrestart-controller",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.microrestart-plan/v1"
+  ],
+  "consumes": [
+    "component-state",
+    "restart-history"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_3_HUMAN_GATED_PLAN",
+    "automaticMutation": false,
+    "integrationRequiredForAutomation": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/body-pulse",
+      "tools/recovery-center",
+      "tools/diagnostics-operations-center"
+    ],
+    "reason": "Plans the smallest restart only when state and loop limits are known; it does not restart anything itself."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "unbounded-retry",
+      "unbounded-restart",
+      "hidden-degradation",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

@@ -122,6 +122,10 @@ function create(options) {
       serviceProbe('device-handoff', 'Device Handoff', options.deviceHandoffService, 'status', true, value => assessed('HEALTHY', { running: value.running, activeSessions: value.activeSessions.length })),
       { id: 'evidence-retention', label: 'Evidence Retention', required: true, read: () => evidenceRetention.status() },
       { id: 'diagnostic-exports', label: 'Diagnostic export lineage', required: true, read: exportStatus },
+      serviceProbe('windows-offline-gate', 'Windows offline evidence gate', options.windowsOfflineGateService, 'status', false, value => {
+        const evidence = { collectorAvailable: value.collectorAvailable, assessmentCount: value.assessmentCount, proofState: value.proofState, latest: value.latest };
+        return assessed(value.proofState === 'HELD' ? 'DEGRADED' : 'HEALTHY', evidence, value.proofState === 'HELD' ? { code: 'WINDOWS_OFFLINE_GATE_HELD', message: 'The latest reviewed Windows offline assessment is held; inspect its named gate errors.' } : null);
+      }),
       serviceProbe('qa-lab', 'Browser LAN Hardware QA Lab', options.qaLabService, 'status', false),
       serviceProbe('template-runtime', 'Template Runtime', options.templateRuntimeService, 'status', false),
       serviceProbe('source-connectors', 'Source Connector Hub', options.sourceConnectorService, 'status', false),
@@ -156,7 +160,8 @@ function create(options) {
       secrets: data('secrets', { initialized: null, unlocked: null, records: null }),
       deviceHandoff: data('device-handoff', { running: null, activeSessions: null }),
       evidenceRetention: data('evidence-retention', null),
-      diagnosticExports: data('diagnostic-exports', { count: null, exports: [] })
+      diagnosticExports: data('diagnostic-exports', { count: null, exports: [] }),
+      windowsOffline: data('windows-offline-gate', { collectorAvailable: null, assessmentCount: null, proofState: 'NOT_CONFIGURED', latest: null })
     };
     const waveIds = ['qa-lab', 'template-runtime', 'source-connectors', 'media-render', 'living-world', 'multiplayer-transport', 'world-adapters', 'mirror-world', 'novelty-diversity', 'public-release'];
     if (waveIds.every(id => byId.get(id).state !== 'NOT_CONFIGURED')) {
@@ -198,7 +203,9 @@ function create(options) {
         healthIsCertification: false,
         evidenceCompactionDeletesExactEvents: false,
         mirrorApplyAuthority: false,
-        automaticPublicDeploy: false
+        automaticPublicDeploy: false,
+        windowsOfflineFirstProven: operations.windowsOffline.proofState === 'PROVEN',
+        windowsOfflineGateCanPublish: false
       }
     };
   }
@@ -253,6 +260,7 @@ function create(options) {
       { id: 'device-handoff', label: 'Device Handoff', resolve: () => options.deviceHandoffService && options.deviceHandoffService.auditFile },
       { id: 'secret-access', label: 'Secret access metadata', resolve: () => options.secretsService && options.secretsService.auditFile },
       { id: 'permissions', label: 'Permission decisions', resolve: () => options.permissionService && options.permissionService.auditFile },
+      { id: 'windows-offline-gates', label: 'Windows offline gate assessments', resolve: () => options.windowsOfflineGateService && options.windowsOfflineGateService.stateFile },
       { id: 'qa-lab', label: 'Browser LAN Hardware QA Lab', resolve: () => options.qaLabService && options.qaLabService.auditFile },
       { id: 'templates', label: 'Template Runtime', resolve: () => options.templateRuntimeService && options.templateRuntimeService.auditFile },
       { id: 'sources', label: 'Source Connectors', resolve: () => options.sourceConnectorService && options.sourceConnectorService.auditFile },

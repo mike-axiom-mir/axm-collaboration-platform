@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "ROOT_OMISSION",
+      "expected": "HOLD_ROOT_OR_SOURCE_OMISSION",
+      "stimulus": "compression omits a root constraint"
+    }
+  ],
+  "category": 5,
+  "category_name": "5. Compression, summaries, context windows, and warm re-entry",
+  "full_semantic_implementation": false,
+  "number": 49,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Select the smallest sufficient memory set for one task using relevance, authority, freshness, risk, diversity, and token or compute limits.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "dcb2049b5945f8c98414ce793246075207123a2ba5356af37fa93efeed394ce2"
+  },
+  "source_contract_sha256": "dda9a0c368285888e10ba922bf705933f508aecb549f95b97b7379d6baad51aa",
+  "stable_id": "axm.memory.context-budget-allocator"
+}

@@ -1,0 +1,120 @@
+{
+  "all_steps_bounded": true,
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "final_result_does_not_imply_owner_acceptance": true,
+  "identity": {
+    "category": "10. Learning, quality, governance, public continuity, and orchestration",
+    "name": "Human Correction Propagator",
+    "number": 95,
+    "stable_id": "axm.memory.human-correction-propagator"
+  },
+  "no_implicit_parallel_apply": true,
+  "operation_kind": "HUMAN_GATED_APPLY",
+  "plan_is_reference_only": true,
+  "schema": "axm.memory.run80-execution-plan/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "7df5fa0df2538e0cc999c8af61a33338f04d2e9ab51f6539be1d9b6af443e7f5"
+  },
+  "source_run70_protocol_sha256": "339811472d9a4221dc9f24151654a19709c8fc408e67f166c86426328e6b935f",
+  "step_count": 7,
+  "steps": [
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "admission_receipt",
+      "failure_result": "HOLD_ADMISSION",
+      "purpose": "validate exact scope, source, authority, and resource budget",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [],
+      "sequence": 1,
+      "side_effect_permitted": false,
+      "step_id": "ADMIT"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "fresh_preview",
+      "failure_result": "HOLD_STALE_PREVIEW",
+      "purpose": "verify preview, baseline, permission, and requested effect",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "ADMIT"
+      ],
+      "sequence": 2,
+      "side_effect_permitted": false,
+      "step_id": "VALIDATE_FRESH_PREVIEW"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "confirmation_receipt",
+      "failure_result": "HOLD_CONFIRMATION",
+      "purpose": "require fresh human confirmation for exact seed and effect",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "VALIDATE_FRESH_PREVIEW"
+      ],
+      "sequence": 3,
+      "side_effect_permitted": false,
+      "step_id": "WAIT_EXPLICIT_CONFIRMATION"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "safety_copy_receipt",
+      "failure_result": "RECOVERY_HOLD",
+      "purpose": "create and verify a bounded pre-state safety copy",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "WAIT_EXPLICIT_CONFIRMATION"
+      ],
+      "sequence": 4,
+      "side_effect_permitted": true,
+      "step_id": "CREATE_SAFETY_COPY"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "apply_marker",
+      "failure_result": "RECOVERY_HOLD",
+      "purpose": "apply only the reviewed change under the exact owner boundary",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "CREATE_SAFETY_COPY"
+      ],
+      "sequence": 5,
+      "side_effect_permitted": true,
+      "step_id": "APPLY_BOUNDED_CHANGE"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "post_apply_receipt",
+      "failure_result": "HOLD_POST_VERIFY",
+      "purpose": "verify resulting state, remaining references, and rollback route",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "APPLY_BOUNDED_CHANGE"
+      ],
+      "sequence": 6,
+      "side_effect_permitted": false,
+      "step_id": "POST_APPLY_VERIFY"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "apply_receipt",
+      "failure_result": "HOLD_RECEIPT",
+      "purpose": "emit apply receipt without claiming CANON",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "POST_APPLY_VERIFY"
+      ],
+      "sequence": 7,
+      "side_effect_permitted": false,
+      "step_id": "EMIT_RECEIPT"
+    }
+  ]
+}

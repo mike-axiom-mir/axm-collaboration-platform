@@ -240,6 +240,8 @@ try {
   check('manifest and contract identity versions and permissions align', () => {
     const manifestValue = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
     const contractValue = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
+    assert.equal(manifestValue.schema, 'axm.tool-manifest/v1');
+    assert.equal(manifestValue.kind, 'product');
     assert.equal(manifestValue.id, contractValue.id);
     assert.equal(manifestValue.version, contractValue.version);
     assert.deepEqual(manifestValue.permissions, contractValue.permissions);

@@ -1,0 +1,275 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.proof.demo-descriptor.run-packet.schema.v0.3.0",
+  "title": "Public Proof Demonstration Descriptor — Synthetic/Local Intake Run Packet",
+  "description": "Executable contract for schema validation and disposable synthetic fixtures only. It grants no live, publication, CANON, or Merge Gate authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "packet_schema_version",
+    "packet_id",
+    "seed_id",
+    "seed_schema_version",
+    "fixture_class",
+    "run_mode",
+    "authority",
+    "network_policy",
+    "write_policy",
+    "inputs",
+    "expected",
+    "privacy_canaries",
+    "rollback",
+    "truth_guard"
+  ],
+  "properties": {
+    "packet_schema_version": {
+      "const": "axm.proof.run-packet.v0.3.0"
+    },
+    "packet_id": {
+      "type": "string",
+      "pattern": "^synthetic:[a-z0-9._:-]+$"
+    },
+    "seed_id": {
+      "const": "axm.proof.demo-descriptor"
+    },
+    "seed_schema_version": {
+      "const": "axm.proof.seed.v0.2.0"
+    },
+    "fixture_class": {
+      "enum": [
+        "VALID",
+        "INVALID_REQUIRED_FIELD",
+        "PRIVACY_BLOCKED",
+        "ROLLBACK"
+      ]
+    },
+    "run_mode": {
+      "enum": [
+        "VALIDATE_ONLY",
+        "SYNTHETIC_DRY_RUN",
+        "ROLLBACK_SIMULATION"
+      ]
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "live_activation_allowed",
+        "canon_authority",
+        "publication_authority",
+        "merge_gate_required"
+      ],
+      "properties": {
+        "scope": {
+          "const": "SCHEMA_AND_DISPOSABLE_SYNTHETIC_FIXTURE_ONLY"
+        },
+        "live_activation_allowed": {
+          "const": false
+        },
+        "canon_authority": {
+          "const": false
+        },
+        "publication_authority": {
+          "const": false
+        },
+        "merge_gate_required": {
+          "const": true
+        }
+      }
+    },
+    "network_policy": {
+      "const": "DENY"
+    },
+    "write_policy": {
+      "enum": [
+        "NONE",
+        "DISPOSABLE_FIXTURE_ONLY"
+      ]
+    },
+    "inputs": {
+      "type": "object",
+      "required": [
+        "record_id",
+        "schema_version",
+        "proof_ref",
+        "claim_refs",
+        "artifact_refs",
+        "environment_ref",
+        "limitations",
+        "owner_ref"
+      ],
+      "properties": {
+        "record_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schema_version": {
+          "type": "string",
+          "pattern": "^axm\\.proof\\.[a-z0-9._-]+$"
+        },
+        "proof_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "claim_refs": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object",
+              "number",
+              "boolean"
+            ]
+          }
+        },
+        "artifact_refs": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object",
+              "number",
+              "boolean"
+            ]
+          }
+        },
+        "environment_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "object",
+              "number",
+              "boolean"
+            ]
+          }
+        },
+        "owner_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision",
+        "reason_codes",
+        "output_emitted",
+        "runtime_claim_upgraded"
+      ],
+      "properties": {
+        "decision": {
+          "enum": [
+            "ACCEPT_SCHEMA_ONLY",
+            "BLOCK",
+            "QUARANTINE",
+            "ROLLBACK_VERIFIED_SYNTHETIC"
+          ]
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "output_emitted": {
+          "type": "boolean"
+        },
+        "runtime_claim_upgraded": {
+          "const": false
+        }
+      }
+    },
+    "privacy_canaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "value",
+          "synthetic"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "synthetic": {
+            "const": true
+          }
+        }
+      }
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpoint_id",
+        "restore_required",
+        "expected_restore_digest",
+        "history_policy"
+      ],
+      "properties": {
+        "checkpoint_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "restore_required": {
+          "type": "boolean"
+        },
+        "expected_restore_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-z0-9-]+$"
+        },
+        "history_policy": {
+          "const": "APPEND_ONLY_NO_DELETE"
+        }
+      }
+    },
+    "fixture_note": {
+      "type": "string"
+    },
+    "synthetic_transition": {
+      "type": "object"
+    },
+    "truth_guard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canon",
+        "integrated",
+        "runtime_proof",
+        "published",
+        "automatic_promotion_allowed"
+      ],
+      "properties": {
+        "canon": {
+          "const": false
+        },
+        "integrated": {
+          "const": false
+        },
+        "runtime_proof": {
+          "const": false
+        },
+        "published": {
+          "const": false
+        },
+        "automatic_promotion_allowed": {
+          "const": false
+        }
+      }
+    }
+  }
+}

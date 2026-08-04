@@ -1,0 +1,40 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.dependency-blame-ranker",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.dependency-blame-ranking/v1"
+  ],
+  "consumes": [
+    "dependency-probes",
+    "traces",
+    "counter-evidence"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/dependency-declaration-observatory",
+      "tools/diagnostics-operations-center"
+    ],
+    "reason": "Ranks dependency hypotheses and counter-evidence without assigning guilt or cause."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "root-cause-certainty",
+      "canonical-state-mutation",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

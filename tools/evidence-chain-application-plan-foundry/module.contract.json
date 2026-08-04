@@ -1,0 +1,71 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "evidence-chain-application-plan-foundry",
+  "version": "v0.1",
+  "provides": [
+    "capability.plan.evidence-chain-recovery-application/v1",
+    "evidence-chain-accepted-review-binding",
+    "evidence-chain-rollback-first-phase-plan",
+    "evidence-chain-application-adapter-gap-declaration"
+  ],
+  "consumes": [
+    "application/x-ndjson",
+    "axm.evidence-chain-recovery-review/v1",
+    "axm.evidence-chain-recovery-review-decision/v1",
+    "capability.inspect.evidence-chain/v1",
+    "capability.review.evidence-chain-recovery-candidate/v1",
+    "human:rollback-and-permission-acknowledgements"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.evidence-chain-recovery-application-plan/v1"],
+    "accepts": [
+      "application/x-ndjson",
+      "axm.evidence-chain-recovery-review/v1",
+      "axm.evidence-chain-recovery-review-decision/v1"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "browser:user-selected-source-segment",
+      "browser:user-selected-candidate-segment",
+      "browser:user-selected-review-assessment",
+      "browser:user-selected-review-decision"
+    ],
+    "writes": ["browser:explicit-plan-download"],
+    "refuses": [
+      "implicit-live-target-discovery",
+      "source-or-candidate-digest-mismatch",
+      "invalid-candidate-chain",
+      "non-hash-semantic-change",
+      "failing-review-assessment",
+      "unbound-review-decision",
+      "hold-or-reject-decision-as-acceptance",
+      "application-authority-claim-in-input",
+      "plan-without-current-digest-recheck-acknowledgement",
+      "plan-without-safety-copy-acknowledgement",
+      "plan-without-fresh-permission-acknowledgement",
+      "plan-without-no-authority-acknowledgement",
+      "path-or-command-emission",
+      "payload-or-source-in-plan",
+      "live-target-read",
+      "file-write-or-backup-creation",
+      "candidate-staging-or-application",
+      "rollback-execution",
+      "permission-check-or-grant",
+      "content-authenticity-claim",
+      "history-restoration-claim",
+      "session-recovery",
+      "automatic-promotion",
+      "automatic-canon",
+      "network-access",
+      "persistent-storage"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

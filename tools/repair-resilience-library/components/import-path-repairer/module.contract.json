@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.import-path-repairer",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.import-path-repair-candidates/v1"
+  ],
+  "consumes": [
+    "requested-import",
+    "declared-file-inventory"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_2_SHADOW_REPAIR",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/repairbuddy",
+      "tools/entry-resource-closure-observatory",
+      "tools/module-installer"
+    ],
+    "reason": "Uses inventory-backed path candidates and refuses global search-and-replace."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-patch-application",
+      "automatic-source-rewrite",
+      "automatic-install",
+      "automatic-dependency-change",
+      "automatic-promotion",
+      "automatic-canon",
+      "verification-from-original-tests-only",
+      "runtime-proof-claim"
+    ]
+  }
+}

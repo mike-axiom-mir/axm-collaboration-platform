@@ -1,0 +1,73 @@
+:root {
+  color-scheme: dark;
+  --ink: #eef7ff;
+  --muted: #8ea5b6;
+  --line: rgba(103, 219, 255, .2);
+  --cyan: #62e7ff;
+  --mint: #66f2bd;
+  --amber: #ffc668;
+  --red: #ff7f87;
+  --panel: rgba(8, 25, 38, .78);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 82% 10%, rgba(80, 75, 210, .2), transparent 34rem),
+    radial-gradient(circle at 12% 35%, rgba(40, 220, 215, .12), transparent 28rem),
+    #020a12;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(86, 190, 219, .04) 1px, transparent 1px), linear-gradient(90deg, rgba(86, 190, 219, .04) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: linear-gradient(to bottom, #000, transparent 88%);
+}
+.shell { width: min(1180px, calc(100% - 36px)); margin: 0 auto; padding: 48px 0 64px; position: relative; }
+.hero { display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; padding: 34px; border: 1px solid var(--line); background: linear-gradient(135deg, rgba(8, 32, 47, .9), rgba(7, 13, 28, .72)); clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px)); }
+.eyebrow { margin: 0 0 10px; color: var(--cyan); font: 700 11px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .18em; }
+h1 { margin: 0; font-size: clamp(36px, 6vw, 72px); line-height: .98; letter-spacing: -.05em; }
+h2 { margin: 0; }
+.lede { max-width: 720px; margin: 18px 0 0; color: var(--muted); font-size: 17px; line-height: 1.6; }
+.authority { white-space: nowrap; color: #cbe1ec; font: 700 12px ui-monospace, monospace; text-transform: uppercase; letter-spacing: .1em; }
+.authority span { display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 18px var(--mint); }
+.boundary-grid, .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 1px; background: var(--line); border: 1px solid var(--line); }
+.boundary-grid article, .metrics article { padding: 18px; background: #06111c; }
+.boundary-grid strong, .boundary-grid small { display: block; }
+.boundary-grid strong { font-size: 13px; }
+.boundary-grid small { margin-top: 5px; color: var(--muted); }
+.loader, .command { display: flex; justify-content: space-between; align-items: center; gap: 30px; margin-top: 24px; padding: 26px; border: 1px solid var(--line); background: var(--panel); }
+.loader p:not(.eyebrow) { margin: 8px 0 0; color: var(--muted); }
+.file-button { position: relative; overflow: hidden; padding: 14px 20px; border: 1px solid var(--cyan); border-radius: 999px; color: #021018; background: var(--cyan); font-weight: 800; cursor: pointer; box-shadow: 0 0 28px rgba(98, 231, 255, .22); }
+.file-button input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.status { margin: 18px 0; color: var(--muted); font: 12px ui-monospace, monospace; }
+.metrics { margin-top: 0; }
+.metrics strong, .metrics small { display: block; }
+.metrics strong { font-size: 30px; }
+.metrics small { color: var(--muted); margin-top: 5px; }
+.queue-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; }
+.queue-columns > article, details { border: 1px solid var(--line); background: var(--panel); padding: 24px; }
+.eyebrow.danger { color: var(--amber); }
+.eyebrow.ready { color: var(--mint); }
+ol { margin: 18px 0 0; padding-left: 22px; max-height: 320px; overflow: auto; color: var(--muted); }
+li { padding: 7px 0; overflow-wrap: anywhere; }
+details { margin-top: 18px; }
+summary { cursor: pointer; font-weight: 700; }
+pre { white-space: pre-wrap; color: var(--muted); font-size: 12px; }
+.command { align-items: flex-start; flex-direction: column; }
+.command code { width: 100%; overflow: auto; padding: 16px; color: var(--mint); background: #020911; border: 1px solid rgba(102, 242, 189, .18); }
+@media (max-width: 800px) {
+  .hero, .loader { flex-direction: column; }
+  .boundary-grid, .metrics { grid-template-columns: 1fr 1fr; }
+  .queue-columns { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .shell { width: min(100% - 20px, 1180px); padding-top: 18px; }
+  .boundary-grid, .metrics { grid-template-columns: 1fr; }
+}

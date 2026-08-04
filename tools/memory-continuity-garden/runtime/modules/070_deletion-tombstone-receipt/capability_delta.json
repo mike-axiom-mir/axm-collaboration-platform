@@ -1,0 +1,199 @@
+{
+  "capability_interface": {
+    "authority_delta": "NONE",
+    "canon_delta": "NONE",
+    "consent_delta": "NONE",
+    "consumes_clause": "consent and retention policy; sensitivity; purpose; protected payload references; export or deletion request",
+    "human_gate_required_by_source_contract": true,
+    "input_contract": "axm.memory.reference-request/v2",
+    "invariants": [
+      "authority_delta_is_none",
+      "canon_delta_is_none",
+      "consent and sensitivity must be accepted before payload handoff",
+      "consent_delta_is_none",
+      "delivery_does_not_imply_acceptance",
+      "fresh preview, state guard, safety copy, exact permission, and human confirmation are required",
+      "full_semantics_are_not_claimed",
+      "memory_payload_is_inert_data",
+      "post-apply verification is mandatory in a future implementation",
+      "public-safe outputs contain no raw protected content",
+      "reference harness never performs semantic apply",
+      "source_truth_is_not_created_by_contract_validity",
+      "trust_delta_is_none"
+    ],
+    "operation_kind": "HUMAN_GATED_APPLY",
+    "output_contract": "axm.memory.deletion-tombstone-receipt.receipt/v1",
+    "postconditions": [
+      "exactly one accepted reference contract or typed HOLD is returned",
+      "no hidden mutation, authority gain, trust gain, consent gain, or CANON promotion occurs",
+      "result remains source-linked, replaceable, privacy-safe, and bounded to the declared purpose",
+      "receiver acceptance, semantic apply, owner acceptance, and integration remain separate future acts"
+    ],
+    "preconditions": [
+      "exact seed identity and purpose match",
+      "source references and digests align",
+      "authority, consent, role, permission, expiry, and namespace checks pass",
+      "boot prerequisites are ready or explicitly safe degraded mode is allowed",
+      "resource, cancellation, revision, output-root, and compatibility guards pass"
+    ],
+    "purpose_clause": "Record deletion scope, authority, affected copies, remaining references, retention exceptions, and proof without retaining the deleted private content.",
+    "semantic_effect": "REFERENCE_ONLY_NOT_IMPLEMENTED",
+    "state_effect_envelope": "EXTERNAL_APPLY_POSSIBLE_AFTER_GATE",
+    "trust_delta": "NONE"
+  },
+  "composition": {
+    "accepted_upstream_ids": [
+      "axm.memory.consent-bound-retention-policy",
+      "axm.memory.consent-lease",
+      "axm.memory.provenance-envelope",
+      "axm.memory.sensitivity-classifier"
+    ],
+    "authority_transfer": false,
+    "boot_prerequisites": [
+      "axm.memory.consent-bound-retention-policy",
+      "axm.memory.consent-lease",
+      "axm.memory.provenance-envelope",
+      "axm.memory.sensitivity-classifier"
+    ],
+    "consent_transfer": false,
+    "cycles_allowed_only_outside_boot_graph": true,
+    "delivery_does_not_imply_acceptance": true,
+    "downstream_candidates": [
+      "axm.memory.consent-bound-retention-policy",
+      "axm.memory.data-minimizer",
+      "axm.memory.encryption-key-boundary",
+      "axm.memory.portable-export-bundle",
+      "axm.memory.raw-private-session-filter",
+      "axm.memory.redaction-provenance",
+      "axm.memory.retention-expiry-controller",
+      "axm.memory.revocation-propagator",
+      "axm.memory.sensitivity-classifier"
+    ],
+    "handoff_schema": "axm.memory.capability-handoff/v1",
+    "runtime_collaborators": [],
+    "semantic_apply_implied": false,
+    "trust_transfer": false
+  },
+  "human_review": {
+    "automatic_apply": false,
+    "challenge_and_reopen_supported": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "packet_path": "modules/070_deletion-tombstone-receipt/review_packet.json",
+    "primary_actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN"
+    ]
+  },
+  "identity": {
+    "category_number": 7,
+    "name": "Deletion and Tombstone Receipt",
+    "number": 70,
+    "stable_id": "axm.memory.deletion-tombstone-receipt"
+  },
+  "pipeline_membership": [
+    "PIPELINE_07_PRIVACY"
+  ],
+  "profiles": {
+    "authority": {
+      "path": "profiles/authority_t3-explicit-human-gate.json",
+      "sha256": "ea007e95ccba294079e66a17dd3341fa0fef878fb667ddbac5847c5d39e1f1be"
+    },
+    "category": {
+      "path": "profiles/category_07_privacy_retention_export.json",
+      "sha256": "3b963a4560ff1d2a0187a0c1c0be3a1cc5ff5b01200869cc6d1ecd303687e704"
+    },
+    "operation": {
+      "path": "profiles/operation_human-gated-apply.json",
+      "sha256": "0a04405cae3533d8cc6bd709fc0d9a5aac6d87417a7ffddda6b2e792074342df"
+    },
+    "proof_tiers": {
+      "path": "profiles/proof_tiers.json",
+      "sha256": "ab8646803825822a1c529c9a47163827813c5ea9f2c2034031bdd103245d2f00"
+    },
+    "review_surface": {
+      "path": "profiles/review_surface.json",
+      "sha256": "d46b074a8a703365fd7243c20fae436abd8346494a3100efff73f817a65431e5"
+    },
+    "risk": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    }
+  },
+  "proof": {
+    "achieved_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE"
+    ],
+    "boundary": "Executable deltas, composition, metamorphic, resource, review, and capsule evidence remain synthetic/local reference proof.",
+    "canon": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "specialist_verification": false,
+    "workshop_integration": false
+  },
+  "resource_policy": {
+    "batch_and_step_limits_required": true,
+    "cancellation_must_be_checked": true,
+    "network_required": false,
+    "output_path_must_remain_under_exact_owned_root": true,
+    "profile_ref": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    },
+    "symlink_escape_forbidden": true,
+    "unbounded_scan_forbidden": true
+  },
+  "schema": "axm.memory.capability-delta/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "base_contract_file_sha256": "53465864c2dd33cd4c337feecb28c1428156eab04a81aad5258bd389c59ec56a",
+    "body_sha256": "f9df1ded3a6f086b7f6009eeac8730bdb670af6c038b7a8a31acec6a35ff80e8",
+    "delta_core_sha256": "aef5da89a3560f076f733a5ad249b37992a619cfceaa38fabcad46cb9b4dd996"
+  },
+  "source_run50": {
+    "build_intake_file_sha256": "996412f8495f1c1fb1d2d34a6cf405a5b199441363e0cb38a2015a7b03cf1690",
+    "candidate_contract_body_sha256": "70c36d7218af8f19c9b7fd0481e1f67bc73319eb8196ce8eb68ce7f8623b07d6",
+    "candidate_contract_file_sha256": "53465864c2dd33cd4c337feecb28c1428156eab04a81aad5258bd389c59ec56a",
+    "candidate_contract_path": "modules/070_deletion-tombstone-receipt/candidate.contract.json",
+    "fixtures_file_sha256": "1a8e866b50844b43a98b5b3aea5b15558c959df0d6b98dc845148d786db7b7ee",
+    "run50_posture_preserved": true,
+    "source_authority": "T3_EXPLICIT_HUMAN_GATE",
+    "source_operation_kind": "HUMAN_GATED_APPLY",
+    "source_purpose": "Record deletion scope, authority, affected copies, remaining references, retention exceptions, and proof without retaining the deleted private content.",
+    "source_risk": "HIGH",
+    "source_run50_status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE",
+  "validation": {
+    "cache_is_evidence_reuse_not_truth": true,
+    "cached_result_cannot_promote_canon": true,
+    "harness_version": "axm-memory-run60-harness-v1",
+    "proof_cache_key": "5f6c8e7a524cf606dccb98779c4a92af87c98cce78c63c74c9c4d43fdc029533",
+    "revalidation_triggers": [
+      "candidate contract or fixture digest changes",
+      "capability delta core changes",
+      "referenced shared profile digest changes",
+      "validation harness version changes",
+      "boot prerequisite interface changes",
+      "privacy, authority, or lifecycle policy changes"
+    ],
+    "test_suites": [
+      "run50_full_reference_suite",
+      "run60_delta_preservation",
+      "run60_capability_interface",
+      "run60_composition_graph",
+      "run60_selective_validation",
+      "run60_metamorphic_laws",
+      "run60_resource_faults",
+      "run60_reference_pipelines",
+      "run60_human_review",
+      "run60_capsule_export",
+      "run60_efficiency",
+      "run60_roundtrip"
+    ]
+  }
+}

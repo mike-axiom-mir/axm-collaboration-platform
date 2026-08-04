@@ -1,0 +1,38 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.failure-severity-classifier",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.failure-severity/v1"
+  ],
+  "consumes": [
+    "failure-observation"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/diagnostics-operations-center",
+      "tools/authority-surface-observatory"
+    ],
+    "reason": "Adds transparent severity scoring while existing authority surfaces remain decisive."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-containment",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim",
+      "mutation-of-existing-axm-organs"
+    ]
+  }
+}

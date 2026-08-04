@@ -20,10 +20,13 @@ const presentationPolicy = require(path.join(__dirname, '..', 'shared', 'present
 const presentationRecipe = require(path.join(__dirname, '..', 'shared', 'presentation-spine', 'presentation-recipe.js'));
 const screenContract = require(path.join(__dirname, '..', 'shared', 'presentation-spine', 'screen-contract.js'));
 const hubJs = fs.readFileSync(path.join(__dirname, 'hub-shell.js'), 'utf8');
+const radioJs = fs.readFileSync(path.join(__dirname, 'radio.js'), 'utf8');
 const presenceJs = fs.readFileSync(path.join(__dirname, 'ai-presence.js'), 'utf8');
 const navJs = fs.readFileSync(path.join(__dirname, 'workshop-navigation.js'), 'utf8');
 const productionSessionJs = fs.readFileSync(path.join(__dirname, 'production-session.js'), 'utf8');
 const productionSessionCss = fs.readFileSync(path.join(__dirname, 'production-session.css'), 'utf8');
+const powerJs = fs.readFileSync(path.join(__dirname, 'power-control.js'), 'utf8');
+const powerCss = fs.readFileSync(path.join(__dirname, 'power-control.css'), 'utf8');
 const serverJs = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
 const operationsApiJs = fs.readFileSync(path.join(__dirname, '..', 'shared', 'operations', 'operations-api.js'), 'utf8');
 const productionSessionCoreJs = fs.readFileSync(path.join(__dirname, '..', 'shared', 'production-session', 'production-session-core.js'), 'utf8');
@@ -33,6 +36,20 @@ function bad(m){ out.push('  FAIL  ' + m); fails++; }
 function eq(a, b){ return JSON.stringify(a) === JSON.stringify(b); }
 
 /id="sidebarToggle"[^>]+aria-controls="hubSidebar"/.test(hubHtml) ? ok('sidebar: visible collapse/reopen handle exists') : bad('sidebar toggle missing');
+/id="axmPowerButton"[^>]+aria-controls="axmPowerScreen"/.test(hubHtml) && /id="axmPowerKeep"/.test(hubHtml) && /id="axmPowerStop"/.test(hubHtml)
+  ? ok('lifecycle: visible power dialog offers keep-running and explicit stop choices') : bad('lifecycle: explicit power choices are missing');
+/\/api\/runtime\/stop-all/.test(powerJs) && /x-axm-lifecycle/.test(powerJs) && /explicit-local-stop-all/.test(powerJs) && !/beforeunload|unload/.test(powerJs)
+  ? ok('lifecycle: stop is explicit and no browser-close auto-shutdown hook exists') : bad('lifecycle: stop intent or browser-close separation is wrong');
+/ExecutablePath/.test(fs.readFileSync(path.join(__dirname, '..', 'scripts', 'Stop-AxmOwnedServices.ps1'), 'utf8')) && /bundledNode/.test(fs.readFileSync(path.join(__dirname, '..', 'scripts', 'Stop-AxmOwnedServices.ps1'), 'utf8')) && /loopback-only/.test(serverJs) && /power-overlay\[hidden\]/.test(powerCss)
+  ? ok('lifecycle: server and stopper enforce local, bundled-runtime ownership') : bad('lifecycle: local or executable ownership boundary missing');
+/value="defcon"/.test(hubHtml) && /value="dubstep"/.test(hubHtml) && /value="metal"/.test(hubHtml) && /value="soul"/.test(hubHtml) && /value="bootliquor"/.test(hubHtml) && /value="secretagent"/.test(hubHtml)
+  ? ok('radio: picker spans genuinely different high-energy and genre choices') : bad('radio: diverse station choices missing');
+((hubHtml.match(/<option value="(?:defcon|dubstep|thetrip|metal|poptron|indiepop|soul|bootliquor|secretagent)">/g) || []).length === 9) && !/groovesalad/.test(hubHtml)
+  ? ok('radio: nine distinct choices replace the sleepy duplicate set') : bad('radio: station picker count or retired sleepy choice is wrong');
+/station: 'defcon'/.test(radioJs) && /defcon-128-mp3/.test(radioJs) && /dubstep-128-mp3/.test(radioJs) && /metal-128-mp3/.test(radioJs) && /7soul-128-mp3/.test(radioJs) && /secretagent-128-mp3/.test(radioJs)
+  ? ok('radio: diverse picker choices have matching primary and fallback stream definitions') : bad('radio: station source map is incomplete');
+/growth-worker-runner/.test(serverJs) && /GROWTH_SCAN_RUNNER\.scanBodies\(\)/.test(serverJs) && /measurementReuse: GROWTH_SCAN_STATUS/.test(serverJs)
+  ? ok('growth: exact cached measurements run off the request thread and remain source-content-free') : bad('growth: isolated incremental measurement reuse is not wired');
 /presentation-policy\.js/.test(hubHtml) && /presentation-recipe\.js/.test(hubHtml) && /id="presentationModeQuick"/.test(hubHtml) && /applyPresentationToFrame/.test(hubJs)
   ? ok('presentation: Hub owns a visible shared/module control plane') : bad('presentation: control plane wiring missing');
 /setSharedPresentationLayer/.test(hubJs) && /downloadPresentationRecipe/.test(hubJs) && /hub:presentation:recipe/.test(hubJs) && /Portable skin recipe/.test(hubJs)

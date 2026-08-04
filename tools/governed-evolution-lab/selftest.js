@@ -2,6 +2,11 @@
 'use strict';
 const assert=require('assert'),fs=require('fs'),path=require('path'),Core=require('./evolution-core');
 let pass=0;function test(name,fn){try{fn();console.log('PASS '+name);pass++;}catch(e){console.error('FAIL '+name+'\n  '+e.stack);process.exitCode=1;}}
+const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'manifest.json'),'utf8'));
+const contract=JSON.parse(fs.readFileSync(path.join(__dirname,'module.contract.json'),'utf8'));
+test('manifest uses the current product schema',()=>{assert.equal(manifest.schema,'axm.tool-manifest/v1');assert.equal(manifest.kind,'product');});
+test('manifest and contract permissions agree',()=>assert.deepEqual(manifest.permissions,contract.permissions));
+test('contract declares browser-owned resumable lifecycle',()=>assert.deepEqual(contract.lifecycle,{state_owner:'browser',reload:'resume',disconnect:'graceful-degrade',cleanup:'explicit'}));
 function run(verdict,start,end,min,max,born,died){return{schema:'axm.grafthold.world-exam-result/v1',seed:7,years:12,verdict:verdict,minTrees:min,maxTrees:max,endTrees:end,series:Array.from({length:12},(_,i)=>({year:i,trees:i?end:start,fish:4,born:born,died:died}))};}
 test('fresh lineage starts from the v0.9 genome',()=>assert.deepEqual(Core.emptyLineage('x').currentGenome,Core.BASELINE));
 test('collapsed worlds score below stable worlds',()=>assert(Core.scoreRun(run('STABLE',14,15,10,25,2,1)).score>Core.scoreRun(run('COLLAPSED',14,0,0,14,0,2)).score));
@@ -14,5 +19,5 @@ test('subject uses local Three and publishes exam messages',()=>{const html=fs.r
 test('exam reproduction decisions use the seeded tree RNG',()=>{const html=fs.readFileSync(path.join(__dirname,'subject','grafthold-globe-v0.9.html'),'utf8'),start=html.indexOf('function populationStep()'),end=html.indexOf('/* ---------- campfire',start),step=html.slice(start,end);assert(!step.includes('Math.random'));assert(step.includes('const whole=Math.floor(TUNE.offspring)'));});
 test('app obtains challengers from Mirror and has no local candidate fallback',()=>{const js=fs.readFileSync(path.join(__dirname,'app.js'),'utf8');assert(js.includes('/axm/v1/organs/world-genome-candidates'));assert(js.includes('surface:\'axm-governed-evolution-disposable-globe\''));assert(!js.includes('fallbackCandidates'));});
 test('automatic heartbeat is explicit, body-leased and visible',()=>{const js=fs.readFileSync(path.join(__dirname,'app.js'),'utf8'),html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');assert(js.includes('Pulse.runOnce(PULSE_MODULE_ID'));assert(js.includes("run(1,'body-pulse')"));assert(js.includes('if(running){heartbeatRecord(\'busy-skip\')'));assert(html.includes('id="heartbeatToggle"'));assert(html.includes('axm-body-pulse-client.js'));assert(!html.includes('page-local pulse'));});
-test('contract confines automatic writes to disposable lineage',()=>{const c=JSON.parse(fs.readFileSync(path.join(__dirname,'module.contract.json'),'utf8'));assert.equal(c.boundaries.automaticWrites.length,1);assert(c.boundaries.refuses.includes('canonical-globe-rewrite'));assert(c.boundaries.refuses.includes('mirror-root-or-permission-mutation'));});
+test('contract confines automatic writes to disposable lineage',()=>{assert.equal(contract.boundaries.automaticWrites.length,1);assert(contract.boundaries.refuses.includes('canonical-globe-rewrite'));assert(contract.boundaries.refuses.includes('mirror-root-or-permission-mutation'));});
 if(!process.exitCode)console.log('\n'+pass+' PASS · 0 FAIL · governed-evolution-core '+Core.VERSION);

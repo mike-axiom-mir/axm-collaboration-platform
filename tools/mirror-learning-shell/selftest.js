@@ -1,0 +1,34 @@
+#!/usr/bin/env node
+'use strict';
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const read = name => fs.readFileSync(path.join(__dirname, name), 'utf8');
+const manifest = JSON.parse(read('manifest.json'));
+const contract = JSON.parse(read('module.contract.json'));
+const html = read('index.html');
+const app = read('app.js');
+
+assert.equal(manifest.schema, 'axm.tool-manifest/v1');
+assert.equal(manifest.kind, 'product');
+assert.equal(manifest.contract, 'module.contract.json');
+assert.equal(manifest.version, 'v0.3-action-lessons');
+assert.equal(contract.id, manifest.id);
+assert.equal(contract.version, manifest.version);
+assert.deepEqual(contract.permissions, manifest.permissions);
+assert(html.includes('/hub/axm-hub-module.js'));
+assert(html.includes('/tools/body-pulse/index.html'));
+assert(html.includes('Public/package default: off.'));
+assert(app.includes('var feedEnabled = false, feedKnown = false'));
+assert(app.includes('var initialized = false'));
+assert(app.includes('if(initialized) return'));
+assert(app.includes('}); init(); } else init();'));
+assert(app.includes('if(feedKnown) changeFeed(); else checkFeed();'));
+assert(app.includes("feedToggle.textContent='Check again'"));
+assert(app.includes('Rechecking does not change its preference.'));
+assert(app.includes('/action-feed/status'));
+assert(app.includes('/action-feed/settings'));
+assert(contract.boundaries.refuses.includes('automatic-action-feed-opt-in'));
+assert(contract.boundaries.refuses.includes('raw-prompt-or-output-lesson-intake'));
+assert(contract.boundaries.refuses.includes('cross-identity-memory-merge'));
+console.log('PASS Mirror Learning shell · version-aligned Hub lifecycle · recoverable read-only recheck · explicit private-feed opt-in');

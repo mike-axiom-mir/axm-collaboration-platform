@@ -1,20 +1,31 @@
 # Hermes Local Runner Module
 
-Status: TEST scaffold / runnable local module.
+Status: TEST scaffold / local wrapper.
 
-Hermes is an external public open-source agent ecosystem, not an AXM-built tool by default.
+Hermes is an external public open-source agent ecosystem, not an AXM-built or bundled runtime.
 
-This folder is for the AXM local runner and adapter seam around Hermes.
+This folder currently contains two separate paths:
 
-## What exists now
+1. `hermes-bootstrap.js` checks prerequisites and can clone or start an explicitly configured external command.
+2. `hermes-runner.js` serves a loopback-only local proposal control layer.
 
-This module now has a runnable local Node runner:
+The control layer does not connect to the external Hermes runtime yet.
 
-```text
-hermes-runner.js
-```
+## Bootstrap path
 
 Run from this folder:
+
+```text
+node hermes-bootstrap.js doctor
+node hermes-bootstrap.js install
+node hermes-bootstrap.js start
+```
+
+`install` and `start` require `hermes-source.local.json`. The public example is a configuration starting point, not live verification of the source, license, installation, command safety, or runtime readiness. Those commands are explicit CLI actions and are not gated by the control-layer consent toggle.
+
+## Optional control-layer test
+
+Run:
 
 ```text
 node hermes-runner.js
@@ -28,23 +39,19 @@ http://127.0.0.1:8791/health
 
 Consent starts OFF by default.
 
-## Consent rule
-
-Hermes actions are blocked until consent is turned ON locally.
-
 With consent OFF:
 
-- health works
-- module list works
-- queue/proposal/vault writes are refused
+- health, consent state, and module-list reads work
+- queue, proposal, prompt-pack add, and prompt-pack list routes are refused
 
 With consent ON:
 
-- `/queue` can write local task JSON
-- `/proposal` can write local review proposal Markdown
-- `/prompt-vault/add` can write a local prompt record
+- `/queue` can write local task JSON under `queue/`
+- `/proposal` can write local review-proposal Markdown under `outbox/`
+- `/prompt-packs/add` can write a local prompt record under `../agent-tool-forge/prompt-packs/`
+- `/prompt-packs/list` can list those prompt records
 
-## Current endpoints
+## Current control-layer endpoints
 
 ```text
 GET  /health
@@ -53,54 +60,19 @@ POST /consent
 GET  /modules
 POST /queue
 POST /proposal
-POST /prompt-vault/add
-GET  /prompt-vault/list
+POST /prompt-packs/add
+GET  /prompt-packs/list
 ```
 
-## AXM module slots
+## Explicit limits
 
-Hermes is the local runner body where AXM can later attach:
+- The landing card is display-only.
+- The control layer does not install, start, invoke, or verify Hermes.
+- Identity binding, package profiles, Foundation sandboxing, Shell Review transport, and connector routing are plans, not implemented integrations.
+- The consent toggle limits the control-layer write routes only; it is not a bootstrap or external-runtime permission gate.
+- A configured external start command may have effects the wrapper cannot bound.
+- Runtime, connector, source, license, and integration readiness remain `UNKNOWN` until checked on the local installation.
 
-- prompt vault
-- templates
-- reasoning shell specialist
-- wisdom/log digest
-- task queue
-- bridge/local provider tests
+## Public boundary
 
-## What AXM wants from Hermes
-
-Hermes may be useful for local/server continuity work:
-
-- local agent runtime experiments
-- local dashboard/status reading
-- task packet creation
-- local queue management
-- log/digest summaries
-- handoff packets
-- proposal files for Mike review
-- possible LM Studio/local model routing
-
-Hermes is not the whole AXM brain.
-
-Hermes should work behind the AXM Foundation Gate and bridge rules.
-
-## Do not copy blindly
-
-Do not import external Hermes code into AXM until:
-
-- source repo is confirmed
-- license is checked
-- integration route is chosen
-- private/runtime files are excluded
-- adapter test is defined
-
-## Safety
-
-Default access is none.
-
-Every source must be allowlisted.
-
-Every write should be local and proposal-first until approved.
-
-No private logs, tokens, API keys, state databases, sessions, account data, or `.env` files belong in the public repo.
+No private logs, tokens, API keys, state databases, sessions, account data, `.env` files, local source config, or downloaded runtime belongs in the public repository.

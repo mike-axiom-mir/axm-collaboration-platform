@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070812">
+  <meta name="description" content="Last Stop: Nebula — a 3D pressure-management game about surviving guaranteed growth and retiring rich before 1,000 bad reviews end everything.">
+  <title>LAST STOP: NEBULA</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="game-shell" data-screen="title">
+    <canvas id="world" aria-label="3D view of an alien petrol station inside a nebula"></canvas>
+    <div class="space-wash" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <div id="boot-screen" class="screen boot-screen">
+      <div class="boot-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+      <p>AXM FRONTIER SYSTEMS</p>
+      <strong>WAKING THE LAST STATION...</strong>
+      <div class="boot-line"><span></span></div>
+    </div>
+
+    <main id="title-screen" class="screen title-screen" hidden>
+      <section class="title-card">
+        <div class="eyebrow"><span class="signal-dot"></span> AXM GAME HUB · SLOT 018</div>
+        <h1><span>LAST STOP</span><em>NEBULA</em></h1>
+        <p class="title-tagline">Guaranteed growth.<br>Absolutely no preparation.</p>
+        <p class="title-copy">Keep one ruined space station alive until retirement. Serve the rush, rebuild under pressure, and escape before <strong>1,000 bad reviews</strong> take the keys.</p>
+        <div class="title-actions">
+          <button id="new-run-button" class="primary-button" type="button"><span>BEGIN A RUN</span><kbd>ENTER</kbd></button>
+          <button id="continue-button" class="secondary-button" type="button" hidden><span>CONTINUE DAY <b id="continue-day">1</b></span><small id="continue-meta">Saved locally</small></button>
+          <button id="how-button" class="text-button" type="button">How this disaster works</button>
+        </div>
+        <div class="record-strip">
+          <span>BEST ESCAPE</span>
+          <strong id="title-highscore">0 CR</strong>
+          <small id="title-highscore-mode">NO RETIREMENTS YET</small>
+        </div>
+        <button id="ledger-button" class="field-data-button" type="button">
+          <span>PRIVATE FIELD DATA</span>
+          <strong id="ledger-field-summary">NO RUNS LOGGED</strong>
+          <small>OPEN BALANCE LEDGER</small>
+        </button>
+      </section>
+      <aside class="title-status" aria-label="Station condition">
+        <span class="status-label">LIVE STATION SCAN</span>
+        <div><small>PLASMA TANK</small><strong class="danger">LEAKING</strong></div>
+        <div><small>OUTSTANDING DEBT</small><strong>720 CR</strong></div>
+        <div><small>RETIREMENT</small><strong>SOON™</strong></div>
+        <p>“Back when anyone still cared about the view, this place had a waiting list.”</p>
+      </aside>
+      <footer class="title-footer">
+        <span>ORIGINAL LOCAL 3D BETA</span>
+        <span>MOUSE · KEYBOARD · TOUCH</span>
+        <span>NO INTERNET REQUIRED</span>
+      </footer>
+    </main>
+
+    <section id="setup-screen" class="screen setup-screen" hidden aria-labelledby="setup-title">
+      <div class="setup-card">
+        <button class="corner-close" id="setup-close" type="button" aria-label="Return to title">×</button>
+        <div class="eyebrow">CHOOSE YOUR RETIREMENT LIE</div>
+        <h2 id="setup-title">How long can you pretend this is fine?</h2>
+        <p>Every contract ends in retirement. Longer runs multiply the score—and give the frontier more time to ruin you.</p>
+        <div class="mode-grid" id="mode-grid">
+          <button class="mode-card" type="button" data-mode="quick">
+            <span class="mode-days">14 <small>DAYS</small></span>
+            <strong>Close Enough</strong>
+            <p>A sharp six-minute escape. Lower legacy multiplier.</p>
+            <em>×0.8 SCORE</em>
+          </button>
+          <button class="mode-card selected" type="button" data-mode="standard">
+            <i>INTENDED RUN</i>
+            <span class="mode-days">21 <small>DAYS</small></span>
+            <strong>Three Weeks Left</strong>
+            <p>The full opening-week pressure cooker.</p>
+            <em>×1.0 SCORE</em>
+          </button>
+          <button class="mode-card" type="button" data-mode="legend">
+            <span class="mode-days">30 <small>DAYS</small></span>
+            <strong>One Last Month</strong>
+            <p>Stay too long. Earn too much. Regret everything.</p>
+            <em>×1.35 SCORE</em>
+          </button>
+        </div>
+        <div class="setup-warning"><span>LOSE CONDITION</span><strong>1,000 bad reviews</strong><p>Debt lowers your final retirement payout, but reviews end the run immediately.</p></div>
+        <button id="sign-contract-button" class="primary-button wide" type="button"><span>SIGN THE TERRIBLE CONTRACT</span><small>Watch opening · Start day one</small></button>
+      </div>
+    </section>
+
+    <section id="intro-screen" class="screen intro-screen" hidden aria-live="polite">
+      <div class="cinema-bars" aria-hidden="true"></div>
+      <article class="story-card">
+        <div id="story-kicker" class="eyebrow">FIVE MONTHS WITHOUT PROFIT</div>
+        <h2 id="story-title">The nebula stopped being enough.</h2>
+        <p id="story-copy">Nobody visits. The plasma tank leaks. Most days, you choose between food and keeping the sign on.</p>
+        <blockquote id="story-quote">Three weeks until the bank takes the station.</blockquote>
+        <div class="story-footer">
+          <div id="story-progress" class="story-progress" aria-label="Opening progress"></div>
+          <button id="story-next" class="primary-button" type="button"><span>NEXT</span><kbd>SPACE</kbd></button>
+        </div>
+      </article>
+      <button id="skip-intro" class="skip-button" type="button">SKIP OPENING</button>
+    </section>
+
+    <section id="hud" class="hud" hidden aria-label="Station control interface">
+      <header class="top-hud">
+        <div class="mini-brand"><span>LAST STOP</span><strong>NEBULA</strong></div>
+        <div class="day-block" id="day-block" data-shift-tone="dawn">
+          <small>RETIREMENT RUN <span id="shift-phase" class="shift-phase">FIRST LIGHT</span></small>
+          <div><strong>DAY <span id="day-value">1</span></strong><em>/ <span id="total-days">21</span></em><b id="clock-value">07:00</b></div>
+          <div class="retirement-track"><span id="retirement-progress"></span><i id="retirement-marker"></i></div>
+        </div>
+        <div class="top-stat credits-stat"><small>CASH</small><strong id="credits-value">96</strong><em>CR</em></div>
+        <div class="top-stat debt-stat" id="debt-stat"><small>DEBT <span id="debt-stage" class="debt-stage">LIEN LOCKED</span></small><strong id="debt-value">720</strong><em>CR</em></div>
+        <div class="review-stat" id="review-stat">
+          <div><small>BAD REVIEWS</small><strong><span id="reviews-value">64</span><em>/1000</em></strong></div>
+          <div class="review-track"><span id="review-progress"></span><i id="review-pulse"></i></div>
+        </div>
+        <nav class="top-controls" aria-label="Game controls">
+          <button id="camera-button" class="icon-button" type="button" title="Change camera (C)" aria-label="Change camera">◈<small>VIEW</small></button>
+          <button id="upgrade-button" class="icon-button upgrade-button" type="button" title="Open upgrades (U)" aria-label="Open upgrades">⌁<small>BUILD</small><b id="upgrade-ready" hidden>!</b></button>
+          <button id="sound-button" class="icon-button" type="button" title="Toggle sound (M)" aria-label="Toggle sound">♪<small>SOUND</small></button>
+          <button id="pause-button" class="icon-button" type="button" title="Pause (Escape)" aria-label="Pause">Ⅱ<small>PAUSE</small></button>
+        </nav>
+      </header>
+
+      <aside id="mission-panel" class="mission-panel glass-panel" data-tone="steady">
+        <div class="panel-kicker"><span class="signal-dot"></span> CURRENT PRESSURE</div>
+        <h2 id="pressure-title">The first convoy</h2>
+        <p id="pressure-copy">Serve manually. Buy automation before the queues outgrow you.</p>
+        <button id="pressure-action" class="pressure-action" type="button" aria-describedby="pressure-copy"><span>SCAN STATION</span><small aria-hidden="true">→</small></button>
+        <div id="debt-line" class="debt-line" data-tone="warning" aria-label="AXM lien locked, 720 credits remain">
+          <span><i aria-hidden="true"></i> AXM LIEN</span><strong id="debt-phase">LIEN LOCKED</strong>
+          <div><i id="debt-meter"></i></div><small id="debt-line-value">720 CR</small>
+        </div>
+        <div id="arrival-line" class="arrival-line" data-tone="steady" aria-label="Next arrival on vector">
+          <span><i aria-hidden="true"></i> INBOUND VECTOR</span><strong id="arrival-label">ON VECTOR</strong>
+          <div><i id="arrival-meter"></i></div><small id="arrival-eta">2.0 SEC</small>
+        </div>
+        <div class="demand-line"><span>DEMAND</span><strong id="demand-label">WAKING UP</strong><div><i id="demand-meter"></i></div></div>
+        <div class="queue-total"><span>WAITING NOW</span><strong id="queue-total">0</strong><small id="served-total">0 served</small></div>
+      </aside>
+
+      <aside class="resource-panel glass-panel">
+        <div class="panel-kicker">SUPPLIES &amp; YOU</div>
+        <div class="resource-row fuel-resource">
+          <div><span class="resource-icon">◒</span><p><small>PLASMA</small><strong><b id="fuel-value">61</b> / <em id="fuel-capacity">100</em></strong></p></div>
+          <div class="resource-track"><span id="fuel-progress"></span><i id="leak-indicator">LEAK</i></div>
+          <button id="buy-fuel-button" type="button"><span>+42</span><small>118 CR</small></button>
+        </div>
+        <div class="resource-row stock-resource">
+          <div><span class="resource-icon">▤</span><p><small>SHOP STOCK</small><strong><b id="stock-value">27</b> / <em id="stock-capacity">80</em></strong></p></div>
+          <div class="resource-track"><span id="stock-progress"></span></div>
+          <button id="buy-stock-button" type="button"><span>+26</span><small>84 CR</small></button>
+        </div>
+        <div class="resource-row energy-resource">
+          <div><span class="resource-icon">ϟ</span><p><small>YOUR ENERGY</small><strong><b id="energy-value">88</b> / <em id="energy-capacity">100</em></strong></p></div>
+          <div class="resource-track"><span id="energy-progress"></span></div>
+          <button id="rest-button" type="button"><span>MICRO NAP</span><small id="rest-status">+24 energy · +8 reviews</small></button>
+        </div>
+        <div class="morale-line"><span>MORALE</span><div><i id="morale-progress"></i></div><strong id="morale-value">62%</strong></div>
+      </aside>
+
+      <div class="camera-dock" id="camera-dock" aria-label="Camera scenes">
+        <button type="button" class="active" data-camera="forecourt"><span>01</span>FORECOURT</button>
+        <button type="button" data-camera="mart"><span>02</span>MART</button>
+        <button type="button" data-camera="engineering"><span>03</span>ENGINEERING</button>
+        <button type="button" data-camera="vista"><span>04</span>NEBULA</button>
+      </div>
+
+      <div class="lane-dock" id="lane-dock">
+        <article class="lane-card fuel-lane" data-lane="fuel">
+          <header><span class="lane-number">1</span><div><small>PLASMA</small><strong>PUMPS</strong></div><b class="lane-queue" id="fuel-queue">0</b></header>
+          <div class="customer-line"><span id="fuel-customer">NO VEHICLE</span><em id="fuel-mood">CLEAR</em></div>
+          <div class="patience-track"><span id="fuel-patience"></span><i id="fuel-auto"></i></div>
+          <button type="button" class="serve-button" data-serve="fuel"><span>SERVE PUMPS</span><kbd>1</kbd><small id="fuel-action-meta">4 energy</small></button>
+        </article>
+        <article class="lane-card mart-lane" data-lane="mart">
+          <header><span class="lane-number">2</span><div><small>FOOD &amp; GOODS</small><strong>NEBULA MART</strong></div><b class="lane-queue" id="mart-queue">0</b></header>
+          <div class="customer-line"><span id="mart-customer">NO CUSTOMER</span><em id="mart-mood">CLEAR</em></div>
+          <div class="patience-track"><span id="mart-patience"></span><i id="mart-auto"></i></div>
+          <button type="button" class="serve-button" data-serve="mart"><span>SERVE MART</span><kbd>2</kbd><small id="mart-action-meta">4 energy</small></button>
+        </article>
+        <article class="lane-card garage-lane" data-lane="garage">
+          <header><span class="lane-number">3</span><div><small>REPAIRS</small><strong>SERVICE BAY</strong></div><b class="lane-queue" id="garage-queue">0</b></header>
+          <div class="customer-line"><span id="garage-customer">NO VEHICLE</span><em id="garage-mood">CLEAR</em></div>
+          <div class="patience-track"><span id="garage-patience"></span><i id="garage-auto"></i></div>
+          <button type="button" class="serve-button" data-serve="garage"><span>SERVE BAY</span><kbd>3</kbd><small id="garage-action-meta">4 energy</small></button>
+        </article>
+      </div>
+      <div class="key-hint">SERVE <b>1</b><b>2</b><b>3</b> · BUILD <b>U</b> · VIEW <b>C</b> · PAUSE <b>ESC</b></div>
+    </section>
+
+    <aside id="upgrade-panel" class="drawer upgrade-panel" hidden aria-labelledby="upgrade-title">
+      <header>
+        <div><div class="eyebrow">REBUILD WHILE OPEN</div><h2 id="upgrade-title">Station evolution</h2></div>
+        <button id="upgrade-close" class="corner-close" type="button" aria-label="Close upgrades">×</button>
+      </header>
+      <p class="drawer-intro">Every purchase changes the station in 3D. Automation keeps working while you panic elsewhere.</p>
+      <div class="upgrade-summary"><span>CASH <b id="upgrade-cash">96 CR</b></span><span>BUILT <b id="upgrade-count">0 / 12</b></span></div>
+      <div id="upgrade-grid" class="upgrade-grid"></div>
+    </aside>
+
+    <section id="event-modal" class="modal-layer" hidden role="dialog" aria-modal="true" aria-labelledby="event-title" aria-describedby="event-copy event-note">
+      <article class="event-card">
+        <div class="event-signal" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div id="event-kicker" class="eyebrow">INCOMING EVENT</div>
+        <div id="event-route" class="event-route">DAY 00 · FORECOURT FEED · DISPATCH 1/2</div>
+        <h2 id="event-title">Something expensive is happening.</h2>
+        <p id="event-copy"></p>
+        <div id="event-choices" class="event-choices"></div>
+        <small id="event-note" class="event-note">PRESS 1–3 OR SELECT · STATION PAUSED</small>
+      </article>
+    </section>
+
+    <section id="pause-modal" class="modal-layer" hidden role="dialog" aria-modal="true" aria-labelledby="pause-title" aria-describedby="pause-copy">
+      <article class="pause-card">
+        <div class="eyebrow">TIME HAS POLITELY STOPPED</div>
+        <h2 id="pause-title">Paused</h2>
+        <p id="pause-copy">Take the breath your alien refuses to take.</p>
+        <button id="resume-button" class="primary-button wide" type="button" aria-keyshortcuts="Escape"><span>BACK TO THE RUSH</span><kbd>ESC</kbd></button>
+        <div class="settings-row">
+          <button id="motion-button" type="button" aria-pressed="false"><span>REDUCED MOTION</span><strong id="motion-value">OFF</strong></button>
+          <button id="pause-sound-button" type="button"><span>SOUND</span><strong id="pause-sound-value">ON</strong></button>
+          <button id="graphics-button" type="button" aria-label="Graphics quality: Cinematic"><span>GRAPHICS</span><strong id="graphics-value" aria-live="polite">CINEMATIC</strong></button>
+        </div>
+        <button id="pause-help-button" class="secondary-button wide" type="button">CONTROLS &amp; RULES</button>
+        <button id="save-title-button" class="text-button" type="button">Save and return to title</button>
+        <button id="abandon-button" class="danger-button" type="button">Abandon this run</button>
+      </article>
+    </section>
+
+    <section id="help-modal" class="modal-layer" hidden role="dialog" aria-modal="true" aria-labelledby="help-title" aria-describedby="help-summary">
+      <article class="help-card">
+        <button id="help-close" class="corner-close" type="button" aria-label="Close help" aria-keyshortcuts="Escape">×</button>
+        <div class="eyebrow">THE SURVIVAL MANUAL THEY DIDN'T SEND</div>
+        <h2 id="help-title">Serve. Automate. Escape.</h2>
+        <p id="help-summary" class="sr-only">Controls and survival rules for the current station run.</p>
+        <div class="help-grid">
+          <div><span>01</span><h3>Protect patience</h3><p>Each lane's bar is the front customer's patience. If it empties, bad reviews land immediately.</p></div>
+          <div><span>02</span><h3>Watch supplies</h3><p>Pumps consume plasma. The mart and repair bay consume stock. A service fails if its supply is empty.</p></div>
+          <div><span>03</span><h3>Spend to survive</h3><p>Upgrades add real 3D machinery and automated throughput. Demand keeps growing whether you build or not.</p></div>
+          <div><span>04</span><h3>Reach retirement</h3><p>Survive until the final day under 1,000 bad reviews. Cash, remaining assets, debt, and run length determine your score.</p></div>
+        </div>
+        <div class="control-list"><span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> Serve lanes</span><span><kbd>U</kbd> Upgrades</span><span><kbd>C</kbd> Camera</span><span><kbd>M</kbd> Sound</span><span><kbd>ESC</kbd> Pause / close</span></div>
+        <button id="help-done" class="primary-button wide" type="button"><span>I UNDERSTAND THE BAD IDEA</span></button>
+      </article>
+    </section>
+
+    <section id="ledger-modal" class="modal-layer" hidden role="dialog" aria-modal="true" aria-labelledby="ledger-title" aria-describedby="ledger-copy">
+      <article class="ledger-card">
+        <button id="ledger-close" class="corner-close" type="button" aria-label="Close balance ledger" aria-keyshortcuts="Escape">×</button>
+        <div class="eyebrow">LOCAL BALANCE LEDGER · LAST 24 RUNS</div>
+        <h2 id="ledger-title">What the rush is actually doing.</h2>
+        <p id="ledger-copy">Compact run summaries stay on this device. Contracts remain separate, so a short escape never distorts the standard retirement estimate.</p>
+        <div class="ledger-filters" role="group" aria-label="Filter balance ledger by contract">
+          <button type="button" data-ledger-mode="all" aria-pressed="false">ALL</button>
+          <button type="button" data-ledger-mode="quick" aria-pressed="false">14 DAY</button>
+          <button class="selected" type="button" data-ledger-mode="standard" aria-pressed="true">21 DAY</button>
+          <button type="button" data-ledger-mode="legend" aria-pressed="false">30 DAY</button>
+        </div>
+        <div id="ledger-scope" class="ledger-scope">THREE WEEKS LEFT · 0 TOTAL RUNS</div>
+        <div class="ledger-metrics">
+          <div><small>RUNS LOGGED</small><strong id="ledger-runs">0</strong></div>
+          <div><small>RETIRE RATE</small><strong id="ledger-retire-rate">0%</strong></div>
+          <div><small>REVIEW VELOCITY</small><strong id="ledger-review-velocity">—</strong></div>
+          <div><small>PROJECTED COLLAPSE</small><strong id="ledger-collapse-day">—</strong></div>
+        </div>
+        <div id="ledger-guidance" class="ledger-guidance">3 finished runs needed before the retirement-timer estimate appears.</div>
+        <div id="ledger-curve" class="ledger-curve"></div>
+        <div id="ledger-list" class="ledger-list"></div>
+        <div class="ledger-actions">
+          <a id="ledger-download" class="secondary-button" href="#" download="last-stop-nebula-balance.json"><span>DOWNLOAD REPORT</span><small>ANONYMOUS JSON FILE</small></a>
+          <button id="ledger-export" class="secondary-button" type="button"><span>COPY REPORT</span><small>LOCAL CLIPBOARD</small></button>
+          <button id="ledger-done" class="primary-button" type="button"><span>CLOSE FIELD DATA</span></button>
+        </div>
+      </article>
+    </section>
+
+    <section id="results-screen" class="screen results-screen" hidden aria-labelledby="result-title">
+      <article class="results-card">
+        <div id="result-kicker" class="eyebrow">RETIREMENT SHUTTLE DOCKED</div>
+        <h2 id="result-title">You got away with it.</h2>
+        <p id="result-copy">The station is someone else's emergency now.</p>
+        <div class="score-display"><small>RETIREMENT SCORE</small><strong id="result-score">0</strong><em>CR</em><b id="new-record" hidden>NEW RECORD</b></div>
+        <div class="result-stats">
+          <div><small>CUSTOMERS SERVED</small><strong id="result-served">0</strong></div>
+          <div><small>TURNED AWAY</small><strong id="result-lost">0</strong></div>
+          <div><small>BAD REVIEWS</small><strong id="result-reviews">0</strong></div>
+          <div><small>STATION UPGRADES</small><strong id="result-upgrades">0 / 12</strong></div>
+        </div>
+        <div class="run-analysis">
+          <div class="run-grade"><small>RUN GRADE</small><strong id="result-grade">—</strong></div>
+          <div><small>REVIEWS / DAY</small><strong id="result-velocity">—</strong></div>
+          <div><small>DEMAND CAPTURED</small><strong id="result-capture">—</strong></div>
+          <div><small>AUTOMATED SERVICE</small><strong id="result-automation">—</strong></div>
+        </div>
+        <div class="payout-breakdown" id="payout-breakdown"></div>
+        <button id="result-ledger-button" class="text-button result-ledger-button" type="button">VIEW THE LOCAL BALANCE LEDGER</button>
+        <div class="result-actions"><button id="retry-button" class="primary-button" type="button"><span>ANOTHER RUN</span></button><button id="result-title-button" class="secondary-button" type="button">RETURN TO TITLE</button></div>
+      </article>
+    </section>
+
+    <div id="toast-stack" class="toast-stack" aria-live="polite"></div>
+    <div id="announcement" class="announcement" hidden><small id="announcement-kicker">DAY 2</small><strong id="announcement-title">DEMAND IS RISING</strong></div>
+    <div id="live-region" class="sr-only" aria-live="assertive"></div>
+  </div>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

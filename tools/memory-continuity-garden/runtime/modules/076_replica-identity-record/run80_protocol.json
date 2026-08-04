@@ -1,0 +1,194 @@
+{
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "consent_delta": "NONE",
+  "identity": {
+    "category": "8. Cross-session, cross-device, human-AI, and replica continuity",
+    "name": "Memory Replica Identity Record",
+    "number": 76,
+    "stable_id": "axm.memory.replica-identity-record"
+  },
+  "identity_delta": "NONE",
+  "run71_execution_plan": {
+    "acyclic": true,
+    "cancellation_boundary_count": 6,
+    "path": "execution_plan.json",
+    "sha256": "6178d6d4ad5783fa0abd5b6a94b095f09550d1dfa21f3f4f44ba2bca2c53c8be",
+    "side_effect_steps": [
+      "PREPARE_WRITE",
+      "COMMIT_ATOMICALLY"
+    ],
+    "step_count": 6
+  },
+  "run72_evidence_minimization": {
+    "challenge_route_present": true,
+    "path": "evidence_capsule.json",
+    "raw_payload_included": false,
+    "sha256": "c3f1f75d1fbb3c4da3bf079d9a5c8b6c0dc10175a68dcc0da82fa5b3be5312c2",
+    "unsupported_claims_remain_explicit": true
+  },
+  "run73_resumable_batch": {
+    "batch_limit": 64,
+    "idempotency_scope": "seed_id + operation_id + exact input digest + plan digest",
+    "interruption_result": "RECOVERY_HOLD",
+    "last_completed_step_must_exist_in_plan": true,
+    "resume_requires_exact_plan_and_input": true,
+    "resume_token_algorithm": "sha256-canonical-json",
+    "resume_token_fields": [
+      "seed_id",
+      "plan_digest",
+      "input_digest",
+      "last_completed_step",
+      "ledger_head"
+    ],
+    "silent_completion_forbidden": true,
+    "terminal_state_resume_result": "HOLD_ALREADY_TERMINAL",
+    "unknown_or_tampered_token_result": "HOLD_RESUME_TOKEN"
+  },
+  "run74_fault_isolation": {
+    "automatic_restart": false,
+    "circuit_open_result": "HOLD_CIRCUIT_OPEN",
+    "default_blast_radius": [
+      "axm.memory.replica-identity-record"
+    ],
+    "fault_receipt_contains_no_raw_payload": true,
+    "fault_threshold_before_circuit_open": 1,
+    "healthy_evidence_preserved": true,
+    "high_risk_fail_closed": true,
+    "quarantine_result": "HOLD_QUARANTINED",
+    "runtime_collaborators_are_not_failed_automatically": true
+  },
+  "run75_acceptance_handshake": {
+    "acceptance_claimed": false,
+    "apply_performed": false,
+    "apply_requires_fresh_preview_and_exact_baseline": true,
+    "current_status": "NOT_ACCEPTED",
+    "delivery_is_not_acceptance": true,
+    "majority_vote_cannot_bypass_required_role": true,
+    "merge_gate_is_not_runtime_apply": true,
+    "owner_acceptance_is_not_specialist_verification": true,
+    "required_sequence": [
+      "DELIVERED",
+      "STRUCTURALLY_VALIDATED",
+      "OWNER_ACCEPTED",
+      "SPECIALIST_VERIFIED",
+      "MIKE_MERGE_GATE_ACCEPTED"
+    ],
+    "specialist_verification_is_not_merge_gate": true,
+    "validation_is_not_owner_acceptance": true
+  },
+  "run76_counterfactual_matrix": [
+    {
+      "expected": "HOLD_SOURCE",
+      "scenario": "TAMPERED_SOURCE_DIGEST"
+    },
+    {
+      "expected": "HOLD_EXPIRED",
+      "scenario": "EXPIRED_AUTHORITY"
+    },
+    {
+      "expected": "HOLD_DEPENDENCY_UNAVAILABLE",
+      "scenario": "MISSING_BOOT_DEPENDENCY"
+    },
+    {
+      "expected": "HOLD_STALE_REVISION",
+      "scenario": "STALE_CURRENT_REVISION"
+    },
+    {
+      "expected": "HOLD_CONFLICT_REVIEW",
+      "scenario": "CONFLICTING_CREDIBLE_EVIDENCE"
+    },
+    {
+      "expected": "HOLD_RESOURCE_BUDGET",
+      "scenario": "INSUFFICIENT_LOCAL_RESOURCES"
+    },
+    {
+      "expected": "HOLD_CANCELLED",
+      "scenario": "CANCELLED_REQUEST"
+    },
+    {
+      "expected": "HOLD_SCHEMA_UNSUPPORTED",
+      "scenario": "UNKNOWN_SCHEMA_MAJOR"
+    },
+    {
+      "expected": "HOLD_PURPOSE",
+      "scenario": "PURPOSE_CHANGED_AFTER_CAPTURE"
+    }
+  ],
+  "run77_resource_scheduler": {
+    "cancelled_tasks_are_never_requeued_silently": true,
+    "max_items_per_batch": 64,
+    "max_parallel_per_seed": 1,
+    "max_retries_without_human_review": 0,
+    "network_required": false,
+    "operation_kind": "BOUNDED_LOCAL_WRITE",
+    "priority_is_not_truth_or_authority": true,
+    "risk_class": "HIGH",
+    "round_robin_across_categories": true,
+    "workers_gain_no_authority": true
+  },
+  "run78_claim_boundary": {
+    "claim_flags": {
+      "CANON": false,
+      "active_workshop_integrated": false,
+      "full_semantic_implementation": false,
+      "owner_accepted": false,
+      "physical_deletion_proven": false,
+      "production_ready": false,
+      "real_encryption_key_custody_proven": false,
+      "real_restore_proven": false,
+      "specialist_verified": false
+    },
+    "metric_cannot_substitute_for_human_acceptance": true,
+    "structural_test_cannot_be_presented_as_semantic_truth": true,
+    "true_flag_requires_exact_external_proof_ref": true,
+    "unsupported_claim_result": "HOLD_UNSUPPORTED_CLAIM"
+  },
+  "run79_multi_seed_intake": {
+    "active_workshop_target": null,
+    "bundle_id": "CATEGORY_08_TRANSACTION",
+    "bundle_membership_does_not_merge_seed_identity": true,
+    "integration_performed": false,
+    "member_acceptance_is_individual": true,
+    "one_member_failure_aborts_bundle_commit": true,
+    "prepare_all_before_commit_any": true,
+    "rollback_scope": "temporary isolated bundle root only"
+  },
+  "run80_evidence_boundary": {
+    "CANON": false,
+    "achieved_reference_capabilities": [
+      "sealed_execution_plan",
+      "minimal_evidence_capsule",
+      "resumable_batch_contract",
+      "fault_isolation_contract",
+      "acceptance_handshake",
+      "counterfactual_matrix",
+      "resource_scheduler_contract",
+      "claim_boundary_lint",
+      "isolated_multi_seed_transaction_simulation"
+    ],
+    "active_workshop_integration": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "posture_preserved": "STRONG_REVIEW_REQUIRED",
+    "production_proof": false,
+    "specialist_verification": false
+  },
+  "schema": "axm.memory.run80-capability-protocol/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "95a0ed7c5f9c1182b6cc0f3bce3420f8c7eda350f2da07db643321ad83ee362f"
+  },
+  "source_run70": {
+    "authority": "T3_EXPLICIT_HUMAN_GATE",
+    "contract_file_sha256": "d5951c468b57a650c42fb4bdc4cf7cd6c96f309436d8d744aac6cf4807b8fbd6",
+    "permissions": [
+      "memory.write",
+      "memory.handoff"
+    ],
+    "posture": "STRONG_REVIEW_REQUIRED",
+    "protocol_file_sha256": "78ce323708c45d03948ed0856ba71e1c6c9997fd4b5763e4aeef556fb58a2d2f",
+    "purpose": "Assign stable local replica identity, creation lineage, device role, trust status, and reset history without equating a replica with a human identity."
+  },
+  "trust_delta": "NONE"
+}

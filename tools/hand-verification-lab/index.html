@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Hand Verification Lab</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AXM Workshop hand · TEST</p>
+        <h1>Hand Verification Lab</h1>
+        <p class="lede">Turn a missing-hand specification into a ten-family verification matrix, then record evidence without letting a checkbox impersonate proof.</p>
+      </div>
+      <aside class="truth-card" aria-label="Verification truth boundary">
+        <strong>Recorded is not independently proven</strong>
+        <p>The Lab creates plans and operator-declared receipts. It does not execute tests, install hands, grant authority, promote releases or change CANON.</p>
+      </aside>
+    </header>
+
+    <section class="intake" aria-labelledby="intakeHeading">
+      <div class="panel-heading">
+        <h2 id="intakeHeading">1 · Load the hand contract</h2>
+        <span>Consumes axm.missing-hand-specification/v1</span>
+      </div>
+      <label for="specificationInput">Missing-hand specification JSON
+        <span>Paste a DRAFT emitted by Hand Specification Foundry. Input remains in this browser session.</span>
+        <textarea id="specificationInput" spellcheck="false"></textarea>
+      </label>
+      <div class="actions" aria-label="Specification actions">
+        <button class="primary" id="loadButton" type="button">Build verification plan</button>
+        <button class="secondary" id="exampleButton" type="button">Load complete example</button>
+        <button id="clearButton" type="button">Clear Lab</button>
+      </div>
+      <p class="status-line" id="status" role="status" aria-live="polite">Loading the complete local example…</p>
+    </section>
+
+    <section class="plan-panel" aria-labelledby="planHeading">
+      <div class="panel-heading">
+        <h2 id="planHeading">2 · Record bounded observations</h2>
+        <span id="planSummary">No valid plan loaded.</span>
+      </div>
+      <div class="legend" aria-label="Verdict meanings">
+        <span><strong>PASS</strong> needs a pointer and observation</span>
+        <span><strong>FAIL</strong> dominates the receipt</span>
+        <span><strong>UNKNOWN / NOT_RUN</strong> keep the result unknown</span>
+      </div>
+      <div id="caseList" class="case-list"></div>
+      <div class="actions" aria-label="Verification receipt actions">
+        <button class="primary" id="receiptButton" type="button" disabled>Build evidence receipt</button>
+        <button id="planDownloadButton" type="button" disabled>Download plan JSON</button>
+        <button id="receiptDownloadButton" type="button" disabled>Download receipt JSON</button>
+      </div>
+    </section>
+
+    <section class="result-panel" aria-labelledby="receiptHeading">
+      <div class="panel-heading">
+        <h2 id="receiptHeading">3 · Inspect the receipt</h2>
+        <span>axm.hand-verification-receipt/v1</span>
+      </div>
+      <pre id="receiptPreview">No receipt has been recorded.</pre>
+    </section>
+  </main>
+
+  <script src="hand-verification-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,814 @@
+{
+  "boundary": "Pipelines validate typed handoff and invariant preservation only; they do not execute the full seed purposes.",
+  "pipeline_count": 10,
+  "pipelines": [
+    {
+      "authority_transfer": false,
+      "category": 1,
+      "handoffs": [
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.namespace-descriptor",
+          "target_id": "axm.memory.source-authority-binder",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.source-authority-binder",
+          "target_id": "axm.memory.provenance-envelope",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.provenance-envelope",
+          "target_id": "axm.memory.lifecycle-state-machine",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.lifecycle-state-machine",
+          "target_id": "axm.memory.original-inference-separator",
+          "trust_transfer": false
+        }
+      ],
+      "id": "PIPELINE_01_IDENTITY",
+      "name": "Identity and provenance foundation",
+      "pipeline_sha256": "b6b003f3e24fa4ef794d9ea52db699b53c71e99c106eb797cd7649576842fc6d",
+      "proof_scope": "typed reference composition only",
+      "semantic_apply": false,
+      "steps": [
+        "axm.memory.namespace-descriptor",
+        "axm.memory.source-authority-binder",
+        "axm.memory.provenance-envelope",
+        "axm.memory.lifecycle-state-machine",
+        "axm.memory.original-inference-separator"
+      ],
+      "trust_transfer": false
+    },
+    {
+      "authority_transfer": false,
+      "category": 2,
+      "handoffs": [
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.namespace-descriptor",
+          "target_id": "axm.memory.source-authority-binder",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.source-authority-binder",
+          "target_id": "axm.memory.provenance-envelope",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.provenance-envelope",
+          "target_id": "axm.memory.state-transition-receipt",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.state-transition-receipt",
+          "target_id": "axm.memory.append-only-event-store",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.append-only-event-store",
+          "target_id": "axm.memory.hash-chained-event-ledger",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.append-only-event-store",
+          "target_id": "axm.memory.immutable-revision-record",
+          "trust_transfer": false
+        }
+      ],
+      "id": "PIPELINE_02_LINEAGE",
+      "name": "Append-only lineage reference",
+      "pipeline_sha256": "e8d4b67b5013ec3429dfca8860012c7ea61d583f3f0e79eaa535b9090e57f2b9",
+      "proof_scope": "typed reference composition only",
+      "semantic_apply": false,
+      "steps": [
+        "axm.memory.namespace-descriptor",
+        "axm.memory.source-authority-binder",
+        "axm.memory.provenance-envelope",
+        "axm.memory.state-transition-receipt",
+        "axm.memory.append-only-event-store",
+        "axm.memory.hash-chained-event-ledger",
+        "axm.memory.immutable-revision-record"
+      ],
+      "trust_transfer": false
+    },
+    {
+      "authority_transfer": false,
+      "category": 3,
+      "handoffs": [
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.namespace-descriptor",
+          "target_id": "axm.memory.source-authority-binder",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.source-authority-binder",
+          "target_id": "axm.memory.provenance-envelope",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.provenance-envelope",
+          "target_id": "axm.memory.timestamp-normalizer",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.timestamp-normalizer",
+          "target_id": "axm.memory.current-state-baseline",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.current-state-baseline",
+          "target_id": "axm.memory.session-boundary-receipt",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.session-boundary-receipt",
+          "target_id": "axm.memory.checkpoint-planner",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.session-boundary-receipt",
+          "target_id": "axm.memory.restore-preview",
+          "trust_transfer": false
+        }
+      ],
+      "id": "PIPELINE_03_TIME",
+      "name": "Checkpoint and restore-preview reference",
+      "pipeline_sha256": "9b3b68a4b1aaeb79574372564da05549ca7a23c8d275a27fbadca7931100bfdf",
+      "proof_scope": "typed reference composition only",
+      "semantic_apply": false,
+      "steps": [
+        "axm.memory.namespace-descriptor",
+        "axm.memory.source-authority-binder",
+        "axm.memory.provenance-envelope",
+        "axm.memory.timestamp-normalizer",
+        "axm.memory.current-state-baseline",
+        "axm.memory.session-boundary-receipt",
+        "axm.memory.checkpoint-planner",
+        "axm.memory.restore-preview"
+      ],
+      "trust_transfer": false
+    },
+    {
+      "authority_transfer": false,
+      "category": 4,
+      "handoffs": [
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.namespace-descriptor",
+          "target_id": "axm.memory.source-authority-binder",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.source-authority-binder",
+          "target_id": "axm.memory.provenance-envelope",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.provenance-envelope",
+          "target_id": "axm.memory.branch-identity-record",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.branch-identity-record",
+          "target_id": "axm.memory.semantic-contradiction-detector",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.semantic-contradiction-detector",
+          "target_id": "axm.memory.resolution-decision-receipt",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.resolution-decision-receipt",
+          "target_id": "axm.memory.three-way-merge-planner",
+          "trust_transfer": false
+        }
+      ],
+      "id": "PIPELINE_04_CONFLICT",
+      "name": "Branch contradiction and review reference",
+      "pipeline_sha256": "b8d8db1b1d3f0c6fcf2bdcd9aa73b479e0affe03f3a595d5cdd1f44a04c40426",
+      "proof_scope": "typed reference composition only",
+      "semantic_apply": false,
+      "steps": [
+        "axm.memory.namespace-descriptor",
+        "axm.memory.source-authority-binder",
+        "axm.memory.provenance-envelope",
+        "axm.memory.branch-identity-record",
+        "axm.memory.semantic-contradiction-detector",
+        "axm.memory.resolution-decision-receipt",
+        "axm.memory.three-way-merge-planner"
+      ],
+      "trust_transfer": false
+    },
+    {
+      "authority_transfer": false,
+      "category": 5,
+      "handoffs": [
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.namespace-descriptor",
+          "target_id": "axm.memory.source-authority-binder",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.source-authority-binder",
+          "target_id": "axm.memory.provenance-envelope",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.provenance-envelope",
+          "target_id": "axm.memory.lifecycle-state-machine",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.lifecycle-state-machine",
+          "target_id": "axm.memory.original-inference-separator",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.original-inference-separator",
+          "target_id": "axm.memory.root-branch-compression-policy",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.root-branch-compression-policy",
+          "target_id": "axm.memory.source-linked-summary",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.source-linked-summary",
+          "target_id": "axm.memory.summary-drift-verifier",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.summary-drift-verifier",
+          "target_id": "axm.memory.semantic-summary-builder",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.summary-drift-verifier",
+          "target_id": "axm.memory.reentry-capsule",
+          "trust_transfer": false
+        }
+      ],
+      "id": "PIPELINE_05_COMPRESSION",
+      "name": "Source-linked compression and re-entry reference",
+      "pipeline_sha256": "93a02303463dbded3274edbc4ece8db1d1e65e26391568a6be62438473e35762",
+      "proof_scope": "typed reference composition only",
+      "semantic_apply": false,
+      "steps": [
+        "axm.memory.namespace-descriptor",
+        "axm.memory.source-authority-binder",
+        "axm.memory.provenance-envelope",
+        "axm.memory.lifecycle-state-machine",
+        "axm.memory.original-inference-separator",
+        "axm.memory.root-branch-compression-policy",
+        "axm.memory.source-linked-summary",
+        "axm.memory.summary-drift-verifier",
+        "axm.memory.semantic-summary-builder",
+        "axm.memory.reentry-capsule"
+      ],
+      "trust_transfer": false
+    },
+    {
+      "authority_transfer": false,
+      "category": 6,
+      "handoffs": [
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.namespace-descriptor",
+          "target_id": "axm.memory.source-authority-binder",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.source-authority-binder",
+          "target_id": "axm.memory.provenance-envelope",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.provenance-envelope",
+          "target_id": "axm.memory.query-trace-receipt",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.query-trace-receipt",
+          "target_id": "axm.memory.freshness-expiry-monitor",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.freshness-expiry-monitor",
+          "target_id": "axm.memory.hybrid-search-index",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.freshness-expiry-monitor",
+          "target_id": "axm.memory.contradiction-aware-retriever",
+          "trust_transfer": false
+        }
+      ],
+      "id": "PIPELINE_06_RETRIEVAL",
+      "name": "Freshness-aware retrieval reference",
+      "pipeline_sha256": "126f29da90ebe27e8749da9262d60fa5751504389e9070b8e973a8c08fcc9098",
+      "proof_scope": "typed reference composition only",
+      "semantic_apply": false,
+      "steps": [
+        "axm.memory.namespace-descriptor",
+        "axm.memory.source-authority-binder",
+        "axm.memory.provenance-envelope",
+        "axm.memory.query-trace-receipt",
+        "axm.memory.freshness-expiry-monitor",
+        "axm.memory.hybrid-search-index",
+        "axm.memory.contradiction-aware-retriever"
+      ],
+      "trust_transfer": false
+    },
+    {
+      "authority_transfer": false,
+      "category": 7,
+      "handoffs": [
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.namespace-descriptor",
+          "target_id": "axm.memory.source-authority-binder",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.source-authority-binder",
+          "target_id": "axm.memory.provenance-envelope",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.provenance-envelope",
+          "target_id": "axm.memory.lifecycle-state-machine",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.lifecycle-state-machine",
+          "target_id": "axm.memory.consent-lease",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.consent-lease",
+          "target_id": "axm.memory.sensitivity-classifier",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.sensitivity-classifier",
+          "target_id": "axm.memory.consent-bound-retention-policy",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.consent-bound-retention-policy",
+          "target_id": "axm.memory.deletion-tombstone-receipt",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.deletion-tombstone-receipt",
+          "target_id": "axm.memory.data-minimizer",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.deletion-tombstone-receipt",
+          "target_id": "axm.memory.redaction-provenance",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.deletion-tombstone-receipt",
+          "target_id": "axm.memory.portable-export-bundle",
+          "trust_transfer": false
+        }
+      ],
+      "id": "PIPELINE_07_PRIVACY",
+      "name": "Consent-bound retention and export reference",
+      "pipeline_sha256": "672540bd3819e3bae6cc05a28f279a99c3e2dd6242f6918335257fd92cea7bcd",
+      "proof_scope": "typed reference composition only",
+      "semantic_apply": false,
+      "steps": [
+        "axm.memory.namespace-descriptor",
+        "axm.memory.source-authority-binder",
+        "axm.memory.provenance-envelope",
+        "axm.memory.lifecycle-state-machine",
+        "axm.memory.consent-lease",
+        "axm.memory.sensitivity-classifier",
+        "axm.memory.consent-bound-retention-policy",
+        "axm.memory.deletion-tombstone-receipt",
+        "axm.memory.data-minimizer",
+        "axm.memory.redaction-provenance",
+        "axm.memory.portable-export-bundle"
+      ],
+      "trust_transfer": false
+    },
+    {
+      "authority_transfer": false,
+      "category": 8,
+      "handoffs": [
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.namespace-descriptor",
+          "target_id": "axm.memory.source-authority-binder",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.source-authority-binder",
+          "target_id": "axm.memory.provenance-envelope",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.provenance-envelope",
+          "target_id": "axm.memory.lifecycle-state-machine",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.lifecycle-state-machine",
+          "target_id": "axm.memory.consent-lease",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.consent-lease",
+          "target_id": "axm.memory.replica-identity-record",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.replica-identity-record",
+          "target_id": "axm.memory.session-handoff-packet",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.session-handoff-packet",
+          "target_id": "axm.memory.cross-replica-merge-gate",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.cross-replica-merge-gate",
+          "target_id": "axm.memory.causal-metadata-vector",
+          "trust_transfer": false
+        }
+      ],
+      "id": "PIPELINE_08_HANDOFF",
+      "name": "Replica and handoff reference",
+      "pipeline_sha256": "87b56b04bf7a575b86dbf4980d38cbab32862c11678b63bd006d6d64b027d7f5",
+      "proof_scope": "typed reference composition only",
+      "semantic_apply": false,
+      "steps": [
+        "axm.memory.namespace-descriptor",
+        "axm.memory.source-authority-binder",
+        "axm.memory.provenance-envelope",
+        "axm.memory.lifecycle-state-machine",
+        "axm.memory.consent-lease",
+        "axm.memory.replica-identity-record",
+        "axm.memory.session-handoff-packet",
+        "axm.memory.cross-replica-merge-gate",
+        "axm.memory.causal-metadata-vector"
+      ],
+      "trust_transfer": false
+    },
+    {
+      "authority_transfer": false,
+      "category": 9,
+      "handoffs": [
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.namespace-descriptor",
+          "target_id": "axm.memory.source-authority-binder",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.source-authority-binder",
+          "target_id": "axm.memory.provenance-envelope",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.provenance-envelope",
+          "target_id": "axm.memory.state-transition-receipt",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.state-transition-receipt",
+          "target_id": "axm.memory.append-only-event-store",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.append-only-event-store",
+          "target_id": "axm.memory.hash-chained-event-ledger",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.provenance-envelope",
+          "target_id": "axm.memory.timestamp-normalizer",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.timestamp-normalizer",
+          "target_id": "axm.memory.current-state-baseline",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.current-state-baseline",
+          "target_id": "axm.memory.integrity-scanner",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.integrity-scanner",
+          "target_id": "axm.memory.repair-preview",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.repair-preview",
+          "target_id": "axm.memory.restore-rollback-gate",
+          "trust_transfer": false
+        }
+      ],
+      "id": "PIPELINE_09_REPAIR",
+      "name": "Integrity scan and restore-gate reference",
+      "pipeline_sha256": "c4fa95a0cab3363dcd8d1eef5624c7a5536d4f1c41458509c8072389d4ec8952",
+      "proof_scope": "typed reference composition only",
+      "semantic_apply": false,
+      "steps": [
+        "axm.memory.namespace-descriptor",
+        "axm.memory.source-authority-binder",
+        "axm.memory.provenance-envelope",
+        "axm.memory.state-transition-receipt",
+        "axm.memory.append-only-event-store",
+        "axm.memory.hash-chained-event-ledger",
+        "axm.memory.timestamp-normalizer",
+        "axm.memory.current-state-baseline",
+        "axm.memory.integrity-scanner",
+        "axm.memory.repair-preview",
+        "axm.memory.restore-rollback-gate"
+      ],
+      "trust_transfer": false
+    },
+    {
+      "authority_transfer": false,
+      "category": 10,
+      "handoffs": [
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.namespace-descriptor",
+          "target_id": "axm.memory.source-authority-binder",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.source-authority-binder",
+          "target_id": "axm.memory.provenance-envelope",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.provenance-envelope",
+          "target_id": "axm.memory.lifecycle-state-machine",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.lifecycle-state-machine",
+          "target_id": "axm.memory.canon-candidate-separator",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.canon-candidate-separator",
+          "target_id": "axm.memory.failure-lesson-registry",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.failure-lesson-registry",
+          "target_id": "axm.memory.bounded-continuity-orchestrator",
+          "trust_transfer": false
+        },
+        {
+          "authority_transfer": false,
+          "delivery_implies_acceptance": false,
+          "relation": "BOOT_PREREQUISITE",
+          "source_id": "axm.memory.bounded-continuity-orchestrator",
+          "target_id": "axm.memory.continuity-dashboard",
+          "trust_transfer": false
+        }
+      ],
+      "id": "PIPELINE_10_GOVERNANCE",
+      "name": "Candidate governance and bounded orchestration reference",
+      "pipeline_sha256": "c6363a057263dd1489115687d02a778ef92284cdc294f8358009709161ac3b73",
+      "proof_scope": "typed reference composition only",
+      "semantic_apply": false,
+      "steps": [
+        "axm.memory.namespace-descriptor",
+        "axm.memory.source-authority-binder",
+        "axm.memory.provenance-envelope",
+        "axm.memory.lifecycle-state-machine",
+        "axm.memory.canon-candidate-separator",
+        "axm.memory.failure-lesson-registry",
+        "axm.memory.bounded-continuity-orchestrator",
+        "axm.memory.continuity-dashboard"
+      ],
+      "trust_transfer": false
+    }
+  ],
+  "schema": "axm.memory.reference-pipeline-registry/v1"
+}

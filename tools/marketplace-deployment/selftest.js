@@ -22,6 +22,10 @@ Core.addReview(project, { listingId:appListing.listing.id, reviewer:'Mike', seat
 check(!Core.listingReadiness(project, appListing.listing.id).ready, 'dual governance does not collapse into one human review');
 Core.addReview(project, { listingId:appListing.listing.id, reviewer:'Codex', seatKind:'machine', scope:'technical', verdict:'UPVOTE', note:'Machine review found the declared package and rollback route coherent.' });
 check(Core.listingReadiness(project, appListing.listing.id).ready, 'dual governance recognizes separate human and machine upvotes');
+Core.addReview(project, { listingId:appListing.listing.id, reviewer:'Mike', seatKind:'human', scope:'both', verdict:'HOLD', note:'Human seat pauses export while a new concern is inspected.' });
+check(!Core.listingReadiness(project, appListing.listing.id).ready && Core.listingReadiness(project, appListing.listing.id).reasons.some(x => /active hold/i.test(x)), 'latest active seat hold blocks export readiness');
+Core.addReview(project, { listingId:appListing.listing.id, reviewer:'Mike', seatKind:'human', scope:'both', verdict:'UPVOTE', note:'Human seat closes the concern with an attributed follow-up.' });
+check(Core.listingReadiness(project, appListing.listing.id).ready, 'later attributed seat review can explicitly clear its prior hold');
 const ready = Core.markReviewReady(project, appListing.listing.id, 'mike');
 check(ready.ok && ready.listing.state === 'READY_FOR_EXPORT', 'passed listing becomes ready for export but not published');
 
@@ -40,20 +44,48 @@ check(gallery.ok && gallery.entry.state === 'DRAFT', 'gallery entry stays a loca
 const update = Core.addUpdate(project, { listingId:appListing.listing.id, channel:'beta', version:'0.2.0', changelog:'Repair and accessibility pass.', rollbackVersion:'0.1.0' }, 'mike');
 check(update.ok && update.update.automaticInstall === false && update.update.rollbackVersion === '0.1.0', 'update draft requires rollback and cannot auto-install');
 
+const tainted = Core.normalize({
+  schema: Core.FORMAT,
+  id: 'tainted-import',
+  governance: 'dual',
+  settings: { mode: 'deploy' },
+  listings: [{ id:'tainted-listing', name:'Claimed Live App', version:'9.9.9', kind:'application', accessPolicy:'paid-proposal', summary:'Imported data that claims authority it does not have.', state:'READY_FOR_EXPORT', rightsState:'PASS_FOR_REVIEW' }],
+  rightsReviews: [{ id:'rights-tainted', listingId:'tainted-listing', license:'UNDECLARED', provenance:'', dependencies:'', rightsConfirmed:false, verdict:'PASS_FOR_REVIEW', legalAuthority:'FULL' }],
+  reviews: [],
+  pluginPackages: [{ id:'plugin-tainted', listingId:'tainted-listing', state:'INSTALLED', installAuthority:'FULL' }],
+  deploymentPlans: [{ id:'deploy-tainted', listingId:'tainted-listing', target:'self-host', requirements:'A host.', rollback:'Restore 9.9.8.', state:'DEPLOYED', blockers:[], steps:['Upload immediately.'], executionAuthority:'FULL', networkAction:'UPLOAD' }],
+  galleryEntries: [{ id:'gallery-tainted', listingId:'tainted-listing', caption:'Claimed publication.', visibility:'public-proposal', state:'PUBLISHED' }],
+  updateChannels: [{ id:'stable', automaticInstall:true, releases:[{ id:'update-tainted', listingId:'tainted-listing', version:'10.0.0', changelog:'Claimed live release.', rollbackVersion:'9.9.9', state:'INSTALLED', automaticInstall:true }] }]
+});
+const taintedListing = tainted.listings[0];
+const taintedRights = tainted.rightsReviews[0];
+const taintedPlan = tainted.deploymentPlans[0];
+const taintedPlugin = tainted.pluginPackages[0];
+const taintedGallery = tainted.galleryEntries[0];
+const taintedStable = tainted.updateChannels.find(channel => channel.id === 'stable');
+check(taintedListing.state === 'DRAFT' && taintedListing.rightsState === 'HOLD_REPAIR' && taintedRights.verdict === 'HOLD_REPAIR' && taintedRights.legalAuthority === 'NONE', 'import recomputes listing and rights authority from preserved evidence');
+check(taintedPlan.state === 'HOLD_REPAIR' && taintedPlan.executionAuthority === 'NONE' && taintedPlan.networkAction === 'NONE' && taintedPlan.steps.some(step => /Human confirms/.test(step)), 'import replaces claimed deployment authority and steps with bounded local plan data');
+check(taintedPlugin.state === 'HOLD_REPAIR' && taintedPlugin.installAuthority === 'NONE' && taintedGallery.state === 'DRAFT', 'import cannot claim plugin installation or gallery publication');
+check(taintedStable.automaticInstall === false && taintedStable.releases[0].automaticInstall === false && taintedStable.releases[0].state === 'DRAFT', 'import cannot enable or claim automatic update installation');
+
 const solo = Core.createProject({ governance:'solo' });
 const soloListing = Core.addListing(solo, { name:'Solo Tool', version:'1.0.0', kind:'other', summary:'Single-steward distribution candidate.' }, 'solo');
 Core.reviewRights(solo, { listingId:soloListing.listing.id, license:'MIT', provenance:'Created by the solo steward.', dependencies:'None.', rightsConfirmed:true }, 'solo');
 Core.addReview(solo, { listingId:soloListing.listing.id, reviewer:'Solo steward', seatKind:'machine', scope:'both', verdict:'UPVOTE', note:'Explicit single-seat review.' });
 check(Core.listingReadiness(solo, soloListing.listing.id).ready, 'solo mode remains usable by one human or machine intelligence');
-check(Core.normalize(JSON.parse(JSON.stringify(project))).listings.length === project.listings.length, 'project survives JSON round trip');
+const restored = Core.normalize(JSON.parse(JSON.stringify(project)));
+check(restored.listings.length === project.listings.length && restored.listings[0].state === 'READY_FOR_EXPORT', 'project survives JSON round trip with readiness re-derived from evidence');
+check(restored.deploymentPlans[1].state === 'PROPOSAL_READY' && restored.deploymentPlans[1].executionAuthority === 'NONE' && restored.updateChannels.find(channel => channel.id === 'beta').releases[0].automaticInstall === false, 'valid plan and update boundaries survive normalized reload');
 check(Core.summary(project).ready === 1 && Core.summary(project).plans === 2 && Core.summary(project).updates === 1, 'summary reports real ledger state');
 
 const manifest = json('tools/marketplace-deployment/manifest.json');
 const contract = json('tools/marketplace-deployment/module.contract.json');
 const publishManifest = json('tools/publish-library/manifest.json');
-check(manifest.id === 'marketplace-deployment' && manifest.audience === 'human-machine' && manifest.status === 'TEST', 'manifest registers visible human-machine parent');
+check(manifest.schema === 'axm.tool-manifest/v1' && manifest.kind === 'product' && manifest.id === 'marketplace-deployment' && manifest.audience === 'human-machine' && manifest.status === 'TEST', 'manifest registers a modern visible human-machine product');
+check(JSON.stringify(manifest.permissions) === JSON.stringify(contract.permissions), 'manifest and contract permissions agree');
+check(JSON.stringify(contract.lifecycle) === JSON.stringify({ state_owner:'browser', reload:'resume', disconnect:'graceful-degrade', cleanup:'explicit' }), 'contract declares browser-owned resumable lifecycle');
 check(publishManifest.integratedInto === 'marketplace-deployment', 'Publish & Library points at the final parent while retaining its route');
-check(contract.boundaries.refuses.includes('marketplace-publication') && contract.boundaries.refuses.includes('automatic-network-upload') && contract.boundaries.refuses.includes('payment-processing'), 'contract refuses fake publication payment and upload authority');
+check(['marketplace-publication','automatic-network-upload','payment-processing','trusted-imported-derived-authority','readiness-with-active-hold-or-repair'].every(boundary => contract.boundaries.refuses.includes(boundary)), 'contract refuses fake publication payment upload import and review authority');
 const html = read('tools/marketplace-deployment/index.html');
 check(['catalogPanel','rightsPanel','pluginsPanel','deployPanel','galleryPanel','updatesPanel','reviewsPanel','publishPanel'].every(id => html.includes('id="' + id + '"')), 'interface exposes every promised distribution surface');
 check(/data-src="\.\.\/publish-library\/index\.html/.test(html), 'real Publish & Library loads as the child foundation');

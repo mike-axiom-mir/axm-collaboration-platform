@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "HISTORY_REWRITE",
+      "expected": "HOLD_APPEND_ONLY_VIOLATION",
+      "stimulus": "prior immutable event is edited in place"
+    }
+  ],
+  "category": 2,
+  "category_name": "2. Append-only history, content identity, and version lineage",
+  "full_semantic_implementation": false,
+  "number": 18,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Represent generated-by, derived-from, used, informed-by, attributed-to, and associated-with relationships without inventing causation.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "b9c12eac9c148c96e53e1971ddfdebbe9eb6a9db506a9aa18818d4eb99788fe9"
+  },
+  "source_contract_sha256": "0a217178f5738af4aae08a0aa3d5acf2fd32b6896741086581a2c674e792aab2",
+  "stable_id": "axm.memory.causal-relationship-mapper"
+}

@@ -39,6 +39,19 @@ const request={schema:Registry.REQUEST_SCHEMA,required_capabilities:['asset.rast
 const diagnosis=Registry.diagnose(request);
 assert.equal(diagnosis.status,'READY_CONTRACT');
 assert.equal(diagnosis.selected_hand.id,'asset.raster.nondestructive-document');
+const benchmarkRequest=Object.assign({},request,{required_capabilities:['asset.performance.measure'],required_outputs:['application/json'],required_constraints:[]});
+function registryBenchmarkWorkload(index){return{output:{index,payload:'route'},metrics:{route_runs:1}};}
+const benchmarkExecuted=Registry.invoke('asset.performance.benchmark-receipts','run',[{
+  workload:{id:'registry-route',digest:'declared-registry-route-v1',description:'Exercise the benchmark through the public Asset Hands registry.'},
+  environment:{runtime:'declared',platform:'declared',architecture:'declared',isolation:'registry-selftest'},
+  repetitions:2,warmup_repetitions:1,budgets:{duration_ms:5000,p95_duration_ms:5000,output_bytes:10000}
+},registryBenchmarkWorkload],benchmarkRequest);
+assert.equal(benchmarkExecuted.status,'EXECUTED');
+assert.equal(benchmarkExecuted.output.status,'PASS');
+assert.equal(benchmarkExecuted.output.samples.length,2);
+assert.equal(benchmarkExecuted.output.workload.observed_function_digest,benchmarkExecuted.creation_recipe.parameters.arguments[1].digest);
+assert.equal(benchmarkExecuted.creation_recipe.parameters.arguments[1].kind,'local-function');
+assert(!Object.prototype.hasOwnProperty.call(benchmarkExecuted.creation_recipe.parameters.arguments[1],'source'));
 const executed=Registry.invoke('asset.raster.nondestructive-document','create',[{id:'canvas-bound-test',layers:[{id:'base',rgba8:Buffer.alloc(3*2*4)}]}],request);
 assert.equal(executed.status,'EXECUTED');
 assert.equal(executed.output.width,3);

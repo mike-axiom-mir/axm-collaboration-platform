@@ -2,6 +2,18 @@
 const assert = require('assert');
 const Core = require('./ui-ux-core.js');
 
+const publishedManifest = require('./manifest.json');
+const publishedContract = require('./module.contract.json');
+assert.equal(publishedManifest.schema, 'axm.tool-manifest/v1');
+assert.equal(publishedManifest.kind, 'product');
+assert.deepStrictEqual(publishedManifest.permissions, publishedContract.permissions);
+assert.deepStrictEqual(publishedContract.lifecycle, {
+  state_owner: 'browser',
+  reload: 'resume',
+  disconnect: 'not-applicable',
+  cleanup: 'explicit'
+});
+
 const blank = Core.baseWorkspace();
 assert.equal(blank.format, Core.FORMAT);
 assert.equal(Core.audit(blank).gatePassed, false);

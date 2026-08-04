@@ -1,0 +1,92 @@
+{
+  "all_steps_bounded": true,
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "final_result_does_not_imply_owner_acceptance": true,
+  "identity": {
+    "category": "9. Integrity, drift, corruption, migration, recovery, and repair",
+    "name": "Memory and Active-Direction Drift Comparator",
+    "number": 88,
+    "stable_id": "axm.memory.drift-comparator"
+  },
+  "no_implicit_parallel_apply": true,
+  "operation_kind": "OBSERVE",
+  "plan_is_reference_only": true,
+  "schema": "axm.memory.run80-execution-plan/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "44575530666354616de9b16239fc244d66cc5d3955062e2d667baedf25954350"
+  },
+  "source_run70_protocol_sha256": "92f5dfb2ec39f29310b934e10e2b802a7f60a3f2b23f19ce217748d43d102a8c",
+  "step_count": 5,
+  "steps": [
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "admission_receipt",
+      "failure_result": "HOLD_ADMISSION",
+      "purpose": "validate exact scope, source, authority, and resource budget",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [],
+      "sequence": 1,
+      "side_effect_permitted": false,
+      "step_id": "ADMIT"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "evidence_view",
+      "failure_result": "HOLD_SOURCE",
+      "purpose": "load only source-linked bounded evidence",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "ADMIT"
+      ],
+      "sequence": 2,
+      "side_effect_permitted": false,
+      "step_id": "LOAD_SCOPED_EVIDENCE"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "candidate_finding",
+      "failure_result": "HOLD_OBSERVATION",
+      "purpose": "perform read-only observation",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "LOAD_SCOPED_EVIDENCE"
+      ],
+      "sequence": 3,
+      "side_effect_permitted": false,
+      "step_id": "EXECUTE_OBSERVATION"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "verified_finding",
+      "failure_result": "HOLD_VERIFICATION",
+      "purpose": "verify limits, uncertainty, contradiction, and provenance",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "EXECUTE_OBSERVATION"
+      ],
+      "sequence": 4,
+      "side_effect_permitted": false,
+      "step_id": "VERIFY_FINDING"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "finding_receipt",
+      "failure_result": "HOLD_RECEIPT",
+      "purpose": "emit finding and limitations",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "VERIFY_FINDING"
+      ],
+      "sequence": 5,
+      "side_effect_permitted": false,
+      "step_id": "EMIT_RECEIPT"
+    }
+  ]
+}

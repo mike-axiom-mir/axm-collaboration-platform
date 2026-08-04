@@ -189,8 +189,10 @@ function result(status,request,compatible,rejections,missing,selected){
   const out={schema:RESULT_SCHEMA,status,request,selected_hand:selected?clone(selected):null,compatible_hands:clone(compatible),rejections:clone(rejections),missing:missing.slice(),fallback_used:false,invocation:null};
   out.digest=U.sha256(out); return out;
 }
-function effectiveArguments(args, request){
-  const next=Array.isArray(args)?clone(args):[];
+function effectiveArguments(args, request, hand, operation){
+  const supplied=Array.isArray(args)?args:[];
+  const next=clone(supplied);
+  if(hand&&hand.rank===8&&operation==='run'&&typeof supplied[1]==='function')next[1]=supplied[1];
   const canvas=request.target_canvas;
   if(!next.length||!next[0]||typeof next[0]!=='object'||Array.isArray(next[0])) next.unshift({});
   const spec=next[0];
@@ -200,6 +202,7 @@ function effectiveArguments(args, request){
   if(canvas.dimensions&&canvas.dimensions.unit==='px'){ if(spec.width==null)spec.width=canvas.dimensions.width; if(spec.height==null)spec.height=canvas.dimensions.height; }
   return next;
 }
+function argumentEvidence(args){return(args||[]).map((value)=>typeof value==='function'?{kind:'local-function',name:String(value.name||'anonymous').slice(0,100),digest:U.sha256(Function.prototype.toString.call(value))}:clone(value));}
 function operationMode(name){if(/^(create|synthesize|barcode)/i.test(name))return'create';if(/^(apply|edit|stroke|retouch|split|join|offset|boolean|deform|relink|addLayer)/i.test(name))return'edit';if(/^(finish|approve)/i.test(name))return'finish';if(/^(render|capture|html|streamAt)/i.test(name))return'inspect';return'validate';}
 function sourceDigests(value,path,out,depth){out=out||[];path=path||'$';depth=depth||0;if(depth>5||out.length>=100||value==null)return out;if(Array.isArray(value)){value.slice(0,100).forEach((item,index)=>sourceDigests(item,path+'['+index+']',out,depth+1));return out;}if(typeof value==='object'){Object.keys(value).slice(0,100).forEach((key)=>{const item=value[key];if(/digest$/i.test(key)&&typeof item==='string'&&item&&!out.some((entry)=>entry.digest===item))out.push({path:path+'.'+key,digest:item});else sourceDigests(item,path+'.'+key,out,depth+1);});}return out;}
 function artifactInventory(output){const artifacts=[],seen=new Set();
@@ -218,11 +221,11 @@ function invoke(id, operation, args, rawRequest){
   U.ensure(hand,'unknown upgrade hand: '+id); U.ensure(hand.functions.includes(operation),'operation is not declared by '+id+': '+operation);
   const diagnosis=diagnose(rawRequest); U.ensure(diagnosis.status==='READY_CONTRACT','upgrade route is not executable: '+diagnosis.status+' '+diagnosis.missing.join(', '));
   U.ensure(diagnosis.selected_hand&&diagnosis.selected_hand.id===id,'request selected a different upgrade hand');
-  const effective=effectiveArguments(args,diagnosis.request), output=Modules[hand.module][operation].apply(null,effective);
-  const invocation={schema:INVOCATION_SCHEMA,hand_id:id,hand_version:hand.version,operation,request_digest:U.sha256(diagnosis.request),target_canvas:clone(diagnosis.request.target_canvas),target_canvas_digest:U.sha256(diagnosis.request.target_canvas),effective_arguments_digest:U.sha256(effective),constraint_paths:diagnosis.request.required_constraints.slice(),fallback_used:false};
+  const effective=effectiveArguments(args,diagnosis.request,hand,operation),evidenceArguments=argumentEvidence(effective),output=Modules[hand.module][operation].apply(null,effective);
+  const invocation={schema:INVOCATION_SCHEMA,hand_id:id,hand_version:hand.version,operation,request_digest:U.sha256(diagnosis.request),target_canvas:clone(diagnosis.request.target_canvas),target_canvas_digest:U.sha256(diagnosis.request.target_canvas),effective_arguments_digest:U.sha256(evidenceArguments),constraint_paths:diagnosis.request.required_constraints.slice(),fallback_used:false};
   invocation.digest=U.sha256(invocation);
   const artifacts=artifactInventory(output),outputStatus=output&&typeof output==='object'&&typeof output.status==='string'?output.status:'EXECUTED',missingOutputArtifacts=diagnosis.request.required_outputs.filter((mime)=>!artifacts.some((item)=>item.mime===mime));
-  const creationRecipe={schema:'axm.asset-creation-recipe/v1',format:INVOCATION_SCHEMA,hand:{id:hand.id,version:hand.version},operation_mode:operationMode(operation),source_artifact_digests:sourceDigests(effective),seed:String(effective[0]&&effective[0].seed||''),target_canvas:clone(diagnosis.request.target_canvas),target_canvas_original:clone(diagnosis.request.target_canvas_original),canvas_transformations:diagnosis.request.target_canvas_validation.transformations.slice(),intended_use:diagnosis.request.intended_use,parameters:{arguments:clone(effective)},steps:[{operation,module:hand.module,function:operation,invocation_digest:invocation.digest}],editable:hand.operations.edit,deterministic:hand.required_substrates.length===0&&![1,8].includes(hand.rank)};
+  const creationRecipe={schema:'axm.asset-creation-recipe/v1',format:INVOCATION_SCHEMA,hand:{id:hand.id,version:hand.version},operation_mode:operationMode(operation),source_artifact_digests:sourceDigests(evidenceArguments),seed:String(effective[0]&&effective[0].seed||''),target_canvas:clone(diagnosis.request.target_canvas),target_canvas_original:clone(diagnosis.request.target_canvas_original),canvas_transformations:diagnosis.request.target_canvas_validation.transformations.slice(),intended_use:diagnosis.request.intended_use,parameters:{arguments:evidenceArguments},steps:[{operation,module:hand.module,function:operation,invocation_digest:invocation.digest}],editable:hand.operations.edit,deterministic:hand.required_substrates.length===0&&![1,8].includes(hand.rank)};
   const productionPass=hand.acceptance_state==='READY'&&outputStatus==='PASS';
   const validationReceipt={schema:'axm.asset-validation-receipt/v1',status:productionPass&&missingOutputArtifacts.length===0?'PASS':'HOLD',validator:{id:'asset-hand-upgrade-registry',version:'1.1.0',capability:'canvas-bound-technical-execution'},target_canvas_digest:invocation.target_canvas_digest,artifact_digests:artifacts.map((item)=>({id:item.id,digest:item.digest,mime:item.mime})),checks:[{name:'operation-executed',pass:true},{name:'no-fallback',pass:true},{name:'required-output-artifacts',pass:missingOutputArtifacts.length===0,missing:missingOutputArtifacts.slice()},{name:'production-acceptance',pass:productionPass,observed_status:outputStatus,acceptance_state:hand.acceptance_state}],createdAt:String(rawRequest&&rawRequest.createdAt||'UNRECORDED')};
   const previewArtifact=artifacts.find((item)=>/^image\//.test(item.mime)||/^audio\//.test(item.mime)||/^video\//.test(item.mime))||null;

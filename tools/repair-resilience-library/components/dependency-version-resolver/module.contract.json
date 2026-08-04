@@ -1,0 +1,43 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.dependency-version-resolver",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.dependency-version-resolution/v1"
+  ],
+  "consumes": [
+    "available-versions",
+    "version-range",
+    "vulnerability-blocklist"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_2_SHADOW_REPAIR",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/module-installer",
+      "shared/workshop-updater",
+      "tools/dependency-declaration-observatory"
+    ],
+    "reason": "Adds deterministic pinned candidates while Installer and Updater retain file and release authority."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-patch-application",
+      "automatic-source-rewrite",
+      "automatic-install",
+      "automatic-dependency-change",
+      "automatic-promotion",
+      "automatic-canon",
+      "verification-from-original-tests-only",
+      "runtime-proof-claim"
+    ]
+  }
+}

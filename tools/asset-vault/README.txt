@@ -1,5 +1,5 @@
 ============================================================
-AXM ASSET VAULT — Workshop tool v0.1
+AXM ASSET VAULT — Workshop tool v0.2
 ============================================================
 
 Status: TEST branch build
@@ -41,8 +41,8 @@ WHAT V0.1 CAN DO
   - Export an Issue Report template for repair/testing.
 
 NO FAKE DONE
-  - Real folder watching/indexing is not built in v0.1.
-  - Automatic asset-pack zipping/copying is not built in v0.1.
+  - Real folder watching/indexing is not built in v0.2.
+  - Automatic asset-pack zipping/copying is not built in v0.2.
   - Workshop launcher now reads static manifest.card metadata.
   - Vault-exported card packets are not automatically installed yet.
   - Layer editing/compositing belongs to AXM Studio; this tool stores and indexes assets.

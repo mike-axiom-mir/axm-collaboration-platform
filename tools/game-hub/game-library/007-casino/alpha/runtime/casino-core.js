@@ -2,12 +2,11 @@
 
 var crypto = require("crypto");
 var adapter = require("./game-hub-adapter.js");
-var quests = require("./quest-system.js");
 var catalog = require("../../slots/slot-catalog.js");
 var drawTools = require("../../slots/axm-draw-spine.js");
 
 var GAME_ID = "007-casino-alpha";
-var VERSION = "0.3.2-alpha";
+var VERSION = "0.3.3-alpha";
 var MONEY_SCALE = 1000000;
 var HUMAN_JACKPOT_BPS = 500;
 var NPC_JACKPOT_BPS = 100;
@@ -195,15 +194,11 @@ function CasinoSession(options) {
   this.events = [];
   this.nextEventId = 1;
   this.result = null;
-  this.unlockedStyleIds = this.mode === "house_war"
-    ? catalog.styleIds.slice()
-    : (Array.isArray(storySave.unlockedStyleIds) ? storySave.unlockedStyleIds.filter(function (styleId) {
-        return catalog.styleIds.indexOf(styleId) !== -1;
-      }) : []);
-  if (this.mode === "backroom_story" && storySave.machineOpen === true && this.unlockedStyleIds.indexOf("lux-5") === -1) {
-    this.unlockedStyleIds.push("lux-5");
-  }
-  this.machineOpen = this.mode === "house_war" || this.unlockedStyleIds.indexOf("lux-5") !== -1;
+  // Free Play is slot-first: every cabinet is available from the first frame.
+  // Older story saves keep their money and permanent leases, but no quest or
+  // discovery state can gate a cabinet again.
+  this.unlockedStyleIds = catalog.styleIds.slice();
+  this.machineOpen = true;
   this.jackpotUnits = initialJackpotUnits;
   this.districtReserveUnits = creditsToUnits(typeof resolved.districtReserve === "number" ? resolved.districtReserve : 100000, "district reserve");
   this.npcEnteredUnits = 0;
@@ -263,9 +258,7 @@ function CasinoSession(options) {
   Object.keys(this.parties).forEach(function (partyId) {
     self.nextBaseNpcAtMs[partyId] = self.nowMs + self.timings.initialNpcDelayMs;
   });
-  this.questProgress = this.mode === "backroom_story"
-    ? quests.normalizeProgress(storySave.questProgress)
-    : null;
+  this.questProgress = null;
   this.initialConservedUnits = this._currentConservedUnits();
 
   this._emit("session_started", "public", {
@@ -274,10 +267,6 @@ function CasinoSession(options) {
     slotStyles: catalog.styleIds.slice(),
     drawSpineRows: bookLength
   });
-  if (this.questProgress && !this.questProgress.finished) {
-    var initialQuest = quests.currentQuest(this.questProgress);
-    this._appendEvent("quest_started", "party_a", { questId: initialQuest.id, styleId: initialQuest.slotStyleId, title: initialQuest.title });
-  }
   if (this.mode === "house_war") this._startContest();
   this._assertInvariants();
 }
@@ -296,15 +285,7 @@ CasinoSession.prototype._appendEvent = function (type, visibility, data) {
 };
 
 CasinoSession.prototype._emit = function (type, visibility, data) {
-  var event = this._appendEvent(type, visibility, data);
-  if (this.questProgress && !/^quest_/.test(type)) {
-    var questResult = quests.applyEvent(this.questProgress, event);
-    var self = this;
-    questResult.emitted.forEach(function (item) {
-      self._appendEvent(item.type, item.visibility, item.data);
-    });
-  }
-  return event;
+  return this._appendEvent(type, visibility, data);
 };
 
 CasinoSession.prototype._currentConservedUnits = function () {
@@ -370,23 +351,12 @@ CasinoSession.prototype._targetPartyId = function (targetId) {
   return null;
 };
 
-CasinoSession.prototype._currentQuestStyleId = function () {
-  var quest = this.questProgress ? quests.currentQuest(this.questProgress) : null;
-  return quest ? quest.slotStyleId : null;
-};
-
 CasinoSession.prototype._isStyleUnlocked = function (styleId) {
   return this.mode === "house_war" || this.unlockedStyleIds.indexOf(styleId) !== -1;
 };
 
 CasinoSession.prototype._isStyleDiscoverable = function (styleId) {
-  return this._isStyleUnlocked(styleId) || (this.mode === "backroom_story" && this._currentQuestStyleId() === styleId);
-};
-
-CasinoSession.prototype._unlockStyle = function (styleId) {
-  if (!catalog.definitionById(styleId)) throw new CasinoError("UNKNOWN_STYLE", "that slot style does not exist");
-  if (this.unlockedStyleIds.indexOf(styleId) === -1) this.unlockedStyleIds.push(styleId);
-  if (styleId === "lux-5") this.machineOpen = true;
+  return this._isStyleUnlocked(styleId);
 };
 
 CasinoSession.prototype._takeRow = function (styleId) {
@@ -433,7 +403,7 @@ CasinoSession.prototype._settleSpin = function (actor, requestedTargetId, reques
   }
   if (!styleDefinition) throw new CasinoError("UNKNOWN_STYLE", "that slot style does not exist");
   if (targetPartyId && !this._isStyleUnlocked(styleId)) {
-    throw new CasinoError("MACHINE_CLOSED", styleDefinition.name + " has not been unlocked in this story yet");
+    throw new CasinoError("MACHINE_UNAVAILABLE", styleDefinition.name + " is unavailable");
   }
 
   if (!isFree) {
@@ -648,9 +618,7 @@ CasinoSession.prototype._npcStyleChoices = function () {
 
 CasinoSession.prototype._chooseNpcStyle = function (previousStyleId) {
   var choices = this._npcStyleChoices();
-  var questStyleId = this._currentQuestStyleId();
   if (!choices.length) return null;
-  if (this.mode === "backroom_story" && questStyleId && choices.indexOf(questStyleId) !== -1) return questStyleId;
   if (choices.length > 1 && previousStyleId) choices = choices.filter(function (styleId) { return styleId !== previousStyleId; });
   return choices[this.worldRandom.integer(0, choices.length - 1)];
 };
@@ -848,7 +816,7 @@ CasinoSession.prototype._selectMachine = function (actor, styleId) {
   if (actor.location === "contest" && this.contest && this.contest.styleId !== styleId) {
     throw new CasinoError("CONTEST_STYLE_LOCKED", "this contest is running on " + this.contest.styleName);
   }
-  if (!this._isStyleDiscoverable(styleId)) throw new CasinoError("MACHINE_LOCKED", definition.name + " has not been discovered yet");
+  if (!this._isStyleDiscoverable(styleId)) throw new CasinoError("MACHINE_UNAVAILABLE", definition.name + " is unavailable");
   actor.selectedStyleId = styleId;
   this._emit("machine_selected", "public", {
     seatId: actor.seatId,
@@ -918,42 +886,8 @@ CasinoSession.prototype._applyCommand = function (actor, command) {
     amountUnits = creditsToUnits(Number(command.amount), "withdraw amount");
     return this._withdrawHouse(actor, amountUnits);
   }
-  if (type === "interact") {
-    var styleId = String(command.styleId || command.objectId || "").replace(/^lux5$/, "lux-5");
-    var definition = catalog.definitionById(styleId);
-    var currentQuest = this.questProgress ? quests.currentQuest(this.questProgress) : null;
-    if (this.mode !== "backroom_story" || actor.partyId !== "A" || !definition || !currentQuest || currentQuest.objective.event !== "machine_interacted" || currentQuest.slotStyleId !== styleId) {
-      throw new CasinoError("INVALID_INTERACTION", "there is nothing to interact with there");
-    }
-    this._unlockStyle(styleId);
-    actor.selectedStyleId = styleId;
-    this._emit("machine_interacted", "party_a", {
-      seatId: actor.seatId,
-      machineId: styleId,
-      styleId: styleId,
-      styleName: definition.name,
-      open: true
-    });
-    return { machineOpen: true, styleId: styleId, styleName: definition.name };
-  }
-  if (type === "close_opening_shift") {
-    if (this.mode !== "backroom_story" || actor.partyId !== "A") throw new CasinoError("INVALID_INTERACTION", "only the story party can close this shift");
-    if (this.parties.A.stats.playerPaidSpins < 5 || this.parties.A.stats.npcPaidSpins < 1 || this.parties.A.houseUnits <= 0) {
-      throw new CasinoError("SHIFT_NOT_READY", "settle five paid player spins and one NPC paid spin while the house remains solvent");
-    }
-    this._emit("opening_shift_closed", "party_a", { seatId: actor.seatId, house: unitsToCredits(this.parties.A.houseUnits) });
-    return { closed: true };
-  }
-  if (type === "claim_story_lease") {
-    if (this.mode !== "backroom_story" || actor.partyId !== "A") throw new CasinoError("INVALID_INTERACTION", "only the story party can claim this lease");
-    var current = quests.currentQuest(this.questProgress);
-    if (!current || current.id !== "place_upstairs" || this.parties.A.houseUnits <= 0) {
-      throw new CasinoError("LEASE_NOT_READY", "finish the opening shift before claiming the lease");
-    }
-    this.spots[0].claim = { partyId: "A", expiresAtMs: null, source: "story_lease" };
-    this.spots[0].nextNpcAtMs = this.nowMs + Math.min(5000, this.timings.trafficNpcIntervalMs);
-    this._emit("story_lease_claimed", "party_a", { seatId: actor.seatId, spotId: this.spots[0].id });
-    return { claimed: this.spots[0].id };
+  if (["interact", "close_opening_shift", "claim_story_lease"].indexOf(type) !== -1) {
+    throw new CasinoError("QUESTS_REMOVED", "Quest actions were removed. Choose any cabinet and spin.");
   }
   throw new CasinoError("UNKNOWN_COMMAND", "unsupported casino command: " + type);
 };
@@ -1019,8 +953,7 @@ CasinoSession.prototype._baseObservation = function (partyId, seatId, host) {
   var self = this;
   var own = seatId ? this.players[seatId] : null;
   var drawState = this.drawSpine.publicState();
-  var discoverableStyleId = this._currentQuestStyleId();
-  var styleStates = catalog.publicStyles(this.mode === "house_war" ? catalog.styleIds : this.unlockedStyleIds, discoverableStyleId);
+  var styleStates = catalog.publicStyles(catalog.styleIds, null);
   return {
     ok: true,
     gameId: this.gameId,
@@ -1090,7 +1023,7 @@ CasinoSession.prototype._baseObservation = function (partyId, seatId, host) {
       return counts;
     }, {}),
     abilitySlots: Object.keys(this.abilitySlots).map(function (id) { return clone(self.abilitySlots[id]); }),
-    quest: this.questProgress && (host || partyId === "A") ? quests.publicState(this.questProgress) : null,
+    quest: null,
     events: this.events.filter(function (event) { return eventVisible(event, partyId, seatId, host); }).slice(-80).map(clone),
     result: this.result ? clone(this.result) : null
   };
@@ -1177,7 +1110,7 @@ CasinoSession.prototype.end = function (reason, winnerPartyId) {
     mode: this.mode,
     reason: reason,
     outcome: this.mode === "backroom_story"
-      ? (reason === "story_bankruptcy" ? "lost" : "chapter-ended")
+      ? (reason === "story_bankruptcy" ? "lost" : "session-ended")
       : (winnerPartyId ? "party-win" : "draw"),
     winner_party_id: winnerPartyId || null,
     duration_ms: this.endedAtMs - this.startedAtMs,
@@ -1212,9 +1145,8 @@ CasinoSession.prototype.exportPersistentState = function () {
     jackpotUnits: this.jackpotUnits,
     story: this.mode === "backroom_story" ? {
       houseUnits: this.parties.A.houseUnits,
-      machineOpen: this.machineOpen,
-      unlockedStyleIds: this.unlockedStyleIds.slice(),
-      questProgress: clone(this.questProgress),
+      machineOpen: true,
+      unlockedStyleIds: catalog.styleIds.slice(),
       permanentSpotIds: permanent
     } : null,
     updatedAt: new Date(this.nowMs).toISOString()

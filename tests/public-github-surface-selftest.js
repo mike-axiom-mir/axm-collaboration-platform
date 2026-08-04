@@ -17,7 +17,7 @@ const documents = [
   'LICENSE_STATUS.md',
   'CHANGELOG.md',
   'docs/README.md',
-  'docs/releases/v0.4.1-experimental.md'
+  'docs/releases/v0.3.0-experimental.md'
 ];
 
 for (const relative of documents) {
@@ -34,7 +34,7 @@ for (const relative of documents) {
 
 const readme = read('README.md');
 assert(readme.includes('site/assets/axm-workshop-social-v4.jpg'), 'README must present the reviewed AXM hero');
-assert(readme.includes('v0.4.1-experimental'), 'README must route visitors to the current prerelease');
+assert(readme.includes('v0.3.0-experimental'), 'README must route visitors to the current prerelease');
 assert(readme.includes('OPEN_AXM_WORKSHOP.cmd'), 'README must keep the Windows beginner door visible');
 assert(readme.includes('177 tool modules') && readme.includes('1,183 declared capabilities'), 'README counts must remain explicit declarations');
 assert(readme.includes('not automatic redistribution'), 'README must disclose the license boundary');

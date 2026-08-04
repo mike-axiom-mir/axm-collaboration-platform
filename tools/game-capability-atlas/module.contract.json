@@ -1,0 +1,28 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "game-capability-atlas",
+  "version": "v1.0",
+  "provides": [
+    "500-module-game-production-search",
+    "20-domain-balanced-game-plan",
+    "game-forge-capability-plan-handoff",
+    "portable-game-plan-export"
+  ],
+  "consumes": ["service:game-capability-atlas", "axm.game-forge-project/v1"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.game-capability-plan/v1"],
+    "accepts": ["axm.game-capability-atlas/v1"]
+  },
+  "boundaries": {
+    "writes": ["browser-local:explicit-game-forge-project-plan", "user-download:explicit-plan-json"],
+    "refuses": [
+      "automatic-project-mutation",
+      "automatic-game-code-generation",
+      "automatic-installation",
+      "claim-knowledge-is-runtime-behavior",
+      "claim-playtest-pass-from-static-records"
+    ]
+  },
+  "lifecycle": {"state_owner": "browser", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"}
+}

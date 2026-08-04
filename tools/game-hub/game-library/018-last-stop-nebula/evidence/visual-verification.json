@@ -1,0 +1,208 @@
+{
+  "schema": "axm.visual-verification/v1",
+  "gameId": "018-last-stop-nebula",
+  "status": "PASS_WITH_DECLARED_LIMITS",
+  "backend": "BROWSER_PRIMARY",
+  "rollingBuffer": {
+    "available": false,
+    "fallback": "bounded repeated screenshots",
+    "temporaryPathsCreated": [],
+    "cleanupComplete": true
+  },
+  "observations": [
+    {
+      "claim": "Title and cinematic scenes render as a composed 3D launch experience.",
+      "viewport": "1440x900",
+      "action": "load, begin run, sign contract, advance opening scene",
+      "evidence": ["visual/title-desktop-1440x900.png", "visual/opening-desktop-1440x900.png", "visual/opening-scene2-desktop-1440x900.png"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Active play exposes readable pressure, three service lanes, queues, vehicles, supplies, event choices, and upgrades over the live 3D station.",
+      "viewport": "1440x900",
+      "action": "play to opening event, serve mart, purchase patch, recruit pump drone, open and close upgrades",
+      "evidence": ["visual/gameplay-desktop-1440x900.png", "visual/upgrade-drawer-desktop-1440x900.png", "visual/restored-run-desktop-1440x900.png"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Station upgrades create a visibly different high-tech 3D state across authored camera scenes.",
+      "viewport": "1440x900",
+      "action": "open local non-saving QA showcase, select nebula and engineering cameras, observe midpoint and settled frames",
+      "evidence": ["visual/showcase-desktop-1440x900.png", "visual/engineering-desktop-1440x900.png"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "All 12 declared upgrades have dedicated, legible world-space visuals and the expanded station atmosphere moves without affecting the paused QA simulation.",
+      "viewport": "1440x900 and 390x844",
+      "action": "inspect all-upgrade forecourt, mart, engineering, and nebula cameras; isolate Twin Pumps; correct its swallowed geometry; compare two bounded frames 420 ms apart; toggle Reduced Motion through Pause; inspect responsive overflow",
+      "evidence": ["semantic browser observation: static route coverage=12/12; Twin Pumps=two visible roof rails plus six nodes; frame SHA-256 prefixes 75525d45133c and fadfeac8a462 differ; Reduced Motion dataset=reduced aria-pressed=true; 390x844 scrollWidth=clientWidth=390"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Cinematic, Balanced, and Eco are reachable player controls that apply distinct renderer workloads, persist locally, and preserve a usable scene and Pause layout.",
+      "viewport": "1440x900 and 390x844",
+      "action": "open Pause from the non-saving showcase; activate Graphics three times; inspect declared live renderer state after each change; resume in Eco; reload; reopen Pause on mobile; restore Cinematic",
+      "evidence": ["semantic browser observation: Cinematic stars=1700 dust=280 rimLights=30 shadows=true maxPixelRatio=1.7; Balanced=1250/180/15/true/1.35; Eco=850/90/10/false/1; Eco values persisted after reload; mobile card left=8 right=382.4 bottom=626.65 in 390x844 with horizontal overflow=false; Cinematic restored after QA"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Installed upgrades are directly inspectable in the 3D station without mutating the paused showcase state or leaving keyboard focus inside hidden drawer content.",
+      "viewport": "1440x900 and 390x844",
+      "action": "open Station evolution; inspect the 12 named built-card actions; activate Emergency Patch Kit and Pump Drone P-1; compare visible state before/after; close the drawer normally; inspect focus and bounds",
+      "evidence": ["semantic browser observation: installed controls=12; Patch Kit selected engineering and rendered tank bounds/ring/glow; Pump Drone selected forecourt; day=17 clock=15:05 cash=4260 debt=0 reviews=386 fuel=118 stock=94 energy=114 unchanged; inspection focus=data-camera engineering with focusHidden=false; ordinary close focus=upgrade-button; mobile drawer left=0 right=390.4, first card left=13.8 right=362.2, horizontal overflow=false"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Manual service, automation, angry customer loss, and blocked input have distinct world-space and camera-independent lane-card feedback without altering the established action paths.",
+      "viewport": "1440x900 and 390x844",
+      "action": "open the non-saving service route; activate manual Fuel and Mart service; observe automated Garage service and a timed angry Fuel departure; press 1 on an empty Fuel lane; repeat manual Fuel service with Reduced Motion enabled",
+      "evidence": ["semantic browser observation: manual Fuel=teal chevrons/energy arc plus MANUAL CLEAR; automated Garage=white orbital signal plus AUTO CLEAR; angry Fuel=red broken signal plus CUSTOMER LOST and reviews 386→410; blocked Fuel=local red X/ring plus BLOCKED with queue remaining 0; mobile Mart credits 4260→4295, reviews remained 386, scrollWidth=clientWidth=390; Reduced Motion class=true, pressed=true, lane-card animation=none, opacity=.96"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Current Pressure exposes deterministic, focus-only operational guidance without playing the game for the user, and the cue remains visible at the responsive viewport.",
+      "viewport": "1280x720 and 390x844",
+      "action": "activate urgent Repair Bay guidance; activate affordable-build guidance; inspect camera, target, focus, displayed state, responsive bounds, and Reduced Motion style",
+      "evidence": ["visual/tactical-guidance-urgent-desktop-1280x720.png", "visual/tactical-guidance-desktop-1280x720.png", "visual/tactical-guidance-mobile-390x844.png", "semantic browser observation: urgent action activeServe=garage targetLane=garage camera=engineering while credits=4260 reviews=386 waiting=3; build action activeId=pump-bot target=pump-bot panelHidden=false while credits=4260 built=2/12 waiting=3; mobile mission left=8 right=188 action top=231.4 bottom=265.4 resources left=204.4 right=382.4 horizontalOverflow=false; Reduced Motion target=pump-bot animation=none duration=0s"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The authoritative next-customer clock is legible as a synchronized HUD forecast and 3D attraction-to-forecourt vector without changing arrival mechanics.",
+      "viewport": "1280x720 and 390x844",
+      "action": "compare held distant, imminent, and surge forecast states; then observe one real unpaused countdown through customer arrival",
+      "evidence": ["visual/inbound-vector-imminent-desktop-1280x720.png", "visual/inbound-vector-live-before-desktop-1280x720.png", "visual/inbound-vector-live-after-desktop-1280x720.png", "visual/inbound-vector-mobile-390x844.png", "semantic browser observation: distant HUD/scene=ON VECTOR steady progress 0.000 ETA 2.4 SEC; surge HUD/scene=CONVOY SURGE danger progress .500 ETA .2 SEC +3; live baseline ON VECTOR 2.3 SEC waiting=3, midpoint APPROACHING 1.1 SEC waiting=3, after arrival APPROACHING 1.2 SEC waiting=4; credits remained 4260 and reviews 386; mobile mission left=8 right=188 bottom=309.2, arrival strip top=272.4 bottom=298.4, resources left=204.4, horizontalOverflow=false; Reduced Motion CSS animation=none"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Current lane load and front-customer danger are legible as lane-anchored 3D Queue Constellations without changing queue rules.",
+      "viewport": "1280x720 and 390x844",
+      "action": "compare held steady and critical queue states; enable Reduced Motion; then serve the real Pumps front customer and observe the world signal clear",
+      "evidence": ["visual/queue-constellations-critical-desktop-1280x720.png", "visual/queue-constellations-critical-mobile-390x844.png", "visual/queue-constellations-service-before-desktop-1280x720.png", "visual/queue-constellations-service-after-desktop-1280x720.png", "semantic browser observation: steady loads=fuel:4|mart:3|garage:3 tones=steady/steady/steady danger=none; critical loads=4/3/3 lead=fuel danger=fuel tones=danger/warning/steady; real service loads fuel:1|mart:1|garage:1 → fuel:0|mart:1|garage:1, Pumps lane card 1→0, cash 4260→4317, reviews remained 386; Reduced Motion pressed=true shell=reduced canvas=reduced; mobile mission left=8 right=188 bottom=309.2, resources left=204.4, lane dock left=8 right=382.4, horizontalOverflow=false; runtime-error UI=false"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Existing shift time is legible as four distinct HUD and 3D atmosphere states without changing simulation or balance rules.",
+      "viewport": "1280x720 and 390x844",
+      "action": "compare held First Light, High Orbit, Ember Shift, and Deep Watch states; inspect canvas receipts, responsive bounds, full-motion and Reduced Motion branches, and browser warnings/errors",
+      "evidence": ["visual/shift-horizon-dawn-desktop-1280x720.png", "visual/shift-horizon-day-desktop-1280x720.png", "visual/shift-horizon-dusk-desktop-1280x720.png", "visual/shift-horizon-night-desktop-1280x720.png", "visual/shift-horizon-dusk-mobile-390x844.png", "semantic browser observation: dawn=FIRST LIGHT/08:26/0.080; day=HIGH ORBIT/13:50/0.380; dusk=EMBER SHIFT/18:52/0.660; night=DEEP WATCH/22:50/0.880; canvas phase/tone/progress matched the HUD; full-motion and Reduced Motion reported full/reduced; 390x844 phase bounds left=81.5 right=126.5, mission left=8 right=188, resources left=204.4 right=382.4, lane dock left=8 right=382.4, horizontalOverflow=false; runtime-error UI=false; focused console warnings=0 errors=0"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Every permanent event choice can leave a distinct persistent physical trace on the station without changing the established event mechanics.",
+      "viewport": "1280x720 and 390x844",
+      "action": "open the non-saving seven-trace showcase; use the real Pause control to compare full and Reduced Motion; open a real Inspector event with zero traces; activate Emergency compliance; inspect the modal-to-world transition; isolate the same trace at the responsive viewport",
+      "evidence": ["visual/decision-archaeology-all-desktop-1280x720.png", "visual/decision-archaeology-choice-desktop-1280x720.png", "visual/decision-archaeology-mobile-390x844.png", "semantic browser observation: real Inspector choice decisionCount 0→1, ids=inspector:repair, modalHidden false→true; accumulated decisionCount=7 with seven ordered event:choice ids; full/reduced branches reported full/reduced; desktop and 390x844 horizontalOverflow=0"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A newly resolved event choice visibly assembles its permanent station trace, while Reduced Motion stays static and restored history does not replay the reveal.",
+      "viewport": "1280x720 and 390x844",
+      "action": "capture modal-open baseline; activate real Inspector / Emergency compliance; capture bounded active and settled frames; enable Reduced Motion through Pause and repeat; open seven-trace restored history; repeat full motion at compact width",
+      "evidence": ["visual/consequence-reveal-baseline-desktop-1280x720.png", "visual/consequence-reveal-midpoint-desktop-1280x720.png", "visual/consequence-reveal-settled-desktop-1280x720.png", "visual/consequence-reveal-reduced-desktop-1280x720.png", "visual/consequence-reveal-reduced-later-desktop-1280x720.png", "visual/consequence-reveal-mobile-390x844.png", "semantic browser observation: baseline decisionCount=0 phase=idle; full active decisionCount=1 id=inspector:repair phase=assembling progress=.489 artifactScale=1.044; settled progress=1 scale=1; Reduced Motion active phase=static-confirmation motion=reduced scale=1 and settled scale=1; restored seven-trace route reveal=none phase=idle; compact active effectScale=.74 progress=.404 artifactScale=1.081; desktop/mobile horizontalOverflow=0; runtime-error UI=false; fresh focused console warnings=0 errors=0"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The existing AXM lien visibly releases the station as authoritative debt falls, including through a real final service payment, without changing economy rules.",
+      "viewport": "1280x720 and 390x844",
+      "action": "compare four held debt stages; activate the real Serve Pumps control from 14 credits; repeat through the real Reduced Motion control; inspect the compact responsive HUD and world placard fallback",
+      "evidence": ["visual/debt-liberation-locked-desktop-1280x720.png", "visual/debt-liberation-cracking-desktop-1280x720.png", "visual/debt-liberation-final-before-desktop-1280x720.png", "visual/debt-liberation-release-desktop-1280x720.png", "visual/debt-liberation-settled-desktop-1280x720.png", "visual/debt-liberation-release-reduced-motion-desktop-1280x720.png", "visual/debt-liberation-clear-desktop-1280x720.png", "visual/debt-liberation-mobile-390x844.png", "semantic browser observation: locked=720/0.000/6, cracking=420/.417/4, final=14/.981/1, clear=0/1.000/0; real service debt 14→0 and payment=cleared/active; announcement=AXM LIEN RELEASED / THE STATION IS YOURS; Reduced Motion=static-confirmation/reduced; compact debt line visible at [19,272,158,26], world placard=hud-only, scrollWidth=clientWidth=390; runtime-error UI=false; focused console warnings=0 errors=0"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Pause and blocking overlays have a working escape path.",
+      "viewport": "1440x900",
+      "action": "open pause, press Escape, confirm pause modal hidden and simulation resumes",
+      "evidence": ["semantic browser observation: pauseVisibleAfterEsc=false"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "An in-progress run survives reload with exact visible values.",
+      "viewport": "1440x900",
+      "action": "save day 5 / 77 CR / 701 reviews, reload, Continue",
+      "evidence": ["visual/restored-run-desktop-1440x900.png", "semantic browser observation: restored day=5 credits=77 reviews=701"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Both retirement and 1,000-review revocation produce legible, correct payouts.",
+      "viewport": "1440x900",
+      "action": "open local non-saving retirement and failure QA states",
+      "evidence": ["visual/retirement-desktop-1440x900.png", "visual/revoked-desktop-1440x900.png"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Run analysis and the private balance ledger expose legible field metrics without obscuring the 3D station.",
+      "viewport": "1440x900 and 1280x720",
+      "action": "open local non-saving retirement and populated-ledger QA states; activate the results-to-ledger control; inspect the contract-specific curve and report actions",
+      "evidence": ["visual/run-analysis-desktop-1440x900.png", "visual/contract-ledger-desktop-1280x720.png", "semantic browser observation: desktop ledger clientHeight=596, scrollHeight=596, actions bottom=634, horizontal overflow=false"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Title, active HUD, upgrade drawer, and retirement result fit a 390x844 responsive viewport.",
+      "viewport": "390x844",
+      "action": "load title, showcase, drawer, and results under explicit viewport override",
+      "evidence": ["visual/title-mobile-390x844.png", "visual/showcase-mobile-390x844.png", "visual/upgrade-mobile-390x844.png", "visual/retirement-mobile-390x844.png"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The upgraded result, contract ledger, portable report actions, and title field-data entry remain usable at 390x844.",
+      "viewport": "390x844",
+      "action": "open non-saving QA states under explicit viewport override, inspect the ledger top, scroll its bounded container to the report controls, close to title, and measure rendered bounds",
+      "evidence": ["visual/run-analysis-mobile-390x844.png", "visual/contract-ledger-mobile-390x844.png", "visual/contract-ledger-mobile-actions-390x844.png", "visual/title-field-data-mobile-390x844.png", "semantic browser observation: ledger horizontal overflow=false; max internal scroll=88; all actions visible at scrollTop=88"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Contract filters do not mix incompatible run lengths into one retirement recommendation.",
+      "viewport": "390x844",
+      "action": "activate All, 14 Day, and 21 Day filters and inspect the resulting scope, row count, and guidance",
+      "evidence": ["semantic browser observation: All=5 rows and no estimate; 14 Day=1 row and requests 2 more matching runs; 21 Day=3 rows"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A seeded milestone transmission renders in its declared camera context and returns to play with authored consequence feedback.",
+      "viewport": "1280x720",
+      "action": "open non-saving inspector event QA with seed 18018, inspect dispatch 2/2, activate Emergency compliance, and observe the settled play state",
+      "evidence": ["visual/event-dispatch-desktop-1280x720.png", "visual/event-consequence-desktop-1280x720.png", "semantic browser observation: event card top=75 bottom=645 clientHeight=569 scrollHeight=569; active camera=engineering; modalHiddenAfterChoice=true; horizontal overflow=false"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The alternate seeded milestone transmission and every choice remain visible at the responsive viewport.",
+      "viewport": "390x844",
+      "action": "open non-saving inspector event QA with seed 18019 and inspect dispatch 1/2",
+      "evidence": ["visual/event-dispatch-mobile-390x844.png", "semantic browser observation: event card top=174 bottom=670 clientHeight=495 scrollHeight=495; three choices visible; active camera=engineering; horizontal overflow=false"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A keyboard player can remain inside the event dialog, resolve a numbered choice, and recover focus to active play.",
+      "viewport": "1280x720",
+      "action": "open inspector event QA, inspect initial focus, press Shift+Tab and Tab, then press 2",
+      "evidence": ["visual/event-keyboard-focus-desktop-1280x720.png", "semantic browser observation: role=dialog; aria-modal=true; shortcuts=1,2,3; initial activeChoiceIndex=0; Shift+Tab=2; Tab=0; key 2 modalHidden=true; activeElementId=pause-button"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Keyboard focus remains contained and returns to the invoking control across Pause, nested Help, and the private balance ledger.",
+      "viewport": "1280x720",
+      "action": "open Pause from gameplay, traverse both boundaries, enter and leave Help, close Pause, then open and close the populated ledger QA state",
+      "evidence": ["semantic browser observation: Pause role=dialog aria-modal=true initial=resume-button Shift+Tab=abandon-button Tab=resume-button; nested Help initial=help-close Shift+Tab=help-done Tab=help-close Escape=pause-help-button; Pause Escape=pause-button; title Help Escape=how-button; ledger initial=ledger-close Shift+Tab=ledger-done Tab=ledger-close Escape=ledger-button"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The in-game Reduced Motion setting accurately suppresses CSS animation and transition timing and restores authored timing when disabled.",
+      "viewport": "1280x720",
+      "action": "load with Reduced Motion ON, inspect computed event styles, then toggle OFF from Pause and inspect again",
+      "evidence": ["semantic browser observation: ON class=true pressed=true signal/modal/choice=0.00001s; OFF class=false pressed=false signal=1.5s modal=0.25s"],
+      "verdict": "PASS"
+    }
+  ],
+  "console": { "errors": 0, "warnings": 0, "scope": "0.10 full visual journey, focused 0.12/0.13 event sessions, focused 0.14 Pause/Help/ledger session, focused 0.15 all-camera/isolated-upgrade/responsive session, focused 0.16 renderer-profile session, focused 0.17 upgrade-inspection session, focused 0.22 Shift Horizon session, fresh focused 0.23 accumulated/real-choice/responsive routes, fresh focused 0.24 baseline/active/settled/Reduced Motion/responsive/history routes, and fresh focused 0.25 staged/real-payment/Reduced Motion/responsive debt routes; the 0.11 ledger session had no exposed console-log reader" },
+  "limitations": [
+    "The focused 0.21 Queue Constellations browser session exposed no console-log reader; screenshots, semantic state, runtime-error UI, automated tests, and fresh-server checks are used without extending the earlier zero-console claim.",
+    "The focused 0.20 inbound-vector browser session exposed no console-log reader; screenshots, semantic state, runtime-error UI, automated tests, and fresh-server checks are used without extending the earlier zero-console claim.",
+    "The focused 0.19 tactical-guidance browser session exposed no console-log reader; screenshots, semantic state, runtime-error UI, automated tests, and fresh-server checks are used without extending the earlier zero-console claim.",
+    "The focused 0.18 service-choreography browser session exposed no console-log reader; screenshots, semantic state, runtime-error UI, automated tests, and fresh-server checks are used without extending the earlier zero-console claim.",
+    "No ephemeral rolling-video capability was exposed; 0.15 scene motion, 0.24 Consequence Reveal, and 0.25 Debt Liberation were verified through bounded repeated frames and Reduced Motion through live state plus source routing rather than continuous cadence capture.",
+    "390x844 proves responsive browser layout, not physical-phone feel or performance.",
+    "Browser dialog semantics and keyboard behavior do not prove physical screen-reader announcements or assistive-technology interoperability.",
+    "Visual evidence cannot prove final human balance, fun, or representative GPU performance."
+  ],
+  "updatedAt": "2026-07-28T13:41:06.1126029Z"
+}

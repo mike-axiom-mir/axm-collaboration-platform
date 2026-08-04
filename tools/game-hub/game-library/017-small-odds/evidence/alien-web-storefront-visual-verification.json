@@ -1,0 +1,65 @@
+{
+  "schema": "small-odds.visual-verification/v1",
+  "milestone": "alien-web-storefront",
+  "visualBackend": "BROWSER_PRIMARY",
+  "rollingBufferCapability": "unavailable",
+  "continuousMotionVerdict": "UNKNOWN",
+  "claims": [
+    {
+      "id": "desktop-live-listing",
+      "viewport": {"width": 1280, "height": 720},
+      "action": "Open the persisted storefront and focus the live listing controls.",
+      "expected": "Item, buyer, offer, ask, ceiling, accept, audit, delist, disabled above-ask counter, and pet shift remain readable.",
+      "observed": "All expected controls and prices were visible; no horizontal clipping occurred.",
+      "verdict": "PASS",
+      "proof": "evidence/visual/storefront-listing-desktop-1280x720.png",
+      "sha256": "C6F9115AC886A7A3ECC0F8A289306218F8A056E25D1E678CE594FED42DDC8CA5"
+    },
+    {
+      "id": "desktop-offer-receipt",
+      "viewport": {"width": 1280, "height": 720},
+      "action": "Audit the Vesper offer receipt.",
+      "expected": "Non-random boundary, eleven multipliers, buyer-routing explanation, raw offer, rounded offer, ask, and ceiling are readable.",
+      "observed": "Receipt rendered in a bounded scroll panel with the declared arithmetic and routing evidence.",
+      "verdict": "PASS",
+      "proof": "evidence/visual/storefront-offer-receipt-desktop-1280x720.png",
+      "sha256": "6FAB09D143525E8B70EFDF344AB8CF36928B69A15C45DE36FE6F3527E4E1DD23"
+    },
+    {
+      "id": "desktop-room-integration",
+      "viewport": {"width": 1280, "height": 720},
+      "action": "Close the storefront after sale and observe Pip's old room.",
+      "expected": "A local-web terminal and shipment props appear without hiding Pip, Dad, portal, hotspots, travel, or dock.",
+      "observed": "The business nook was visible and the complete game shell remained unobscured.",
+      "verdict": "PASS",
+      "proof": "evidence/visual/storefront-room-desktop-1280x720.png",
+      "sha256": "BFB30218A9AB363DC67A0FA2BE933B260E974E9B44B1692FCD0645DCD21AAAF7"
+    },
+    {
+      "id": "phone-live-listing",
+      "targetOuterViewport": {"width": 390, "height": 844},
+      "capturedPageSurface": {"width": 375, "height": 811},
+      "action": "Resize, focus the live listing, and inspect offer controls.",
+      "expected": "Price cells stack, controls wrap, close remains reachable, and content has no horizontal clipping.",
+      "observed": "The listing, all three prices, accept/audit/delist, disabled counter, and pet section fit the narrow surface.",
+      "verdict": "PASS",
+      "proof": "evidence/visual/storefront-listing-mobile-375x811.png",
+      "sha256": "9AE08BC4FA7890A55A24E48933565C898D60A489226A28A25ACA7CA4A7EE5DA3"
+    },
+    {
+      "id": "phone-offer-receipt",
+      "targetOuterViewport": {"width": 390, "height": 844},
+      "capturedPageSurface": {"width": 375, "height": 811},
+      "action": "Open the offer receipt on the narrow surface.",
+      "expected": "Four receipt summary cells, arithmetic prose, and factor table remain readable and scrollable.",
+      "observed": "Summary cells became a 2x2 layout and the factor table remained legible without horizontal loss.",
+      "verdict": "PASS",
+      "proof": "evidence/visual/storefront-receipt-mobile-375x811.png",
+      "sha256": "64751B1D0F6191DE31B11AE8B169C86041E2EB877A0386C6F1A4397C24016563"
+    }
+  ],
+  "runtimeDiagnostics": {"consoleErrors": 0, "consoleWarnings": 0},
+  "temporaryCapturePaths": [],
+  "cleanupComplete": true,
+  "note": "Selected still frames prove these named rendered states, not continuous animation timing or frame pacing."
+}

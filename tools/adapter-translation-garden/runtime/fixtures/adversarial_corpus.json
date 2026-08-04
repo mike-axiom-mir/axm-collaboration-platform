@@ -1,0 +1,682 @@
+{
+  "schema": "axm.translation.adversarial-corpus/v1",
+  "reviewed": true,
+  "cases": [
+    {
+      "id": "empty-object",
+      "value": {},
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "empty-list",
+      "value": [],
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "unicode-mixed",
+      "value": {
+        "text": "Axiom–Mir 😀 café é العربية 日本語"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "command-looking-string",
+      "value": {
+        "value": "$(rm -rf /); <script>alert(1)</script>"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": "Data-looking text is not executed."
+    },
+    {
+      "id": "path-traversal-looking-string",
+      "value": {
+        "path": "../../etc/passwd"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": "Generic guard records shape only; confinement belongs to path module."
+    },
+    {
+      "id": "null-bool-int",
+      "value": {
+        "n": null,
+        "t": true,
+        "f": false,
+        "i": 0
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "large-integer",
+      "value": {
+        "n": 1208925819614629174706176
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "negative-number",
+      "value": {
+        "n": -999999
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "float",
+      "value": {
+        "n": 1.25
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "long-string-reject",
+      "value": {
+        "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "budget": {
+        "max_string_bytes": 64
+      },
+      "expected": "REFUSE",
+      "reason": ""
+    },
+    {
+      "id": "node-limit-reject",
+      "value": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49
+      ],
+      "budget": {
+        "max_nodes": 20
+      },
+      "expected": "REFUSE",
+      "reason": ""
+    },
+    {
+      "id": "depth-reject",
+      "value": {
+        "x": {
+          "x": {
+            "x": {
+              "x": {
+                "x": {
+                  "x": {
+                    "x": {
+                      "x": {
+                        "x": {
+                          "x": {
+                            "x": {
+                              "x": "leaf"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "budget": {
+        "max_depth": 8
+      },
+      "expected": "REFUSE",
+      "reason": ""
+    },
+    {
+      "id": "list-limit-reject",
+      "value": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "budget": {
+        "max_list_items": 10
+      },
+      "expected": "REFUSE",
+      "reason": ""
+    },
+    {
+      "id": "mapping-limit-reject",
+      "value": {
+        "0": 0,
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "5": 5,
+        "6": 6,
+        "7": 7,
+        "8": 8,
+        "9": 9,
+        "10": 10,
+        "11": 11,
+        "12": 12,
+        "13": 13,
+        "14": 14,
+        "15": 15,
+        "16": 16,
+        "17": 17,
+        "18": 18,
+        "19": 19
+      },
+      "budget": {
+        "max_mapping_items": 10
+      },
+      "expected": "REFUSE",
+      "reason": ""
+    },
+    {
+      "id": "total-string-reject",
+      "value": {
+        "a": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "b": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+      },
+      "budget": {
+        "max_total_string_bytes": 64
+      },
+      "expected": "REFUSE",
+      "reason": ""
+    },
+    {
+      "id": "small-object-01",
+      "value": {
+        "id": 1,
+        "items": [
+          1,
+          2
+        ],
+        "label": "case-1"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-02",
+      "value": {
+        "id": 2,
+        "items": [
+          2,
+          3
+        ],
+        "label": "case-2"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-03",
+      "value": {
+        "id": 3,
+        "items": [
+          3,
+          4
+        ],
+        "label": "case-3"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-04",
+      "value": {
+        "id": 4,
+        "items": [
+          4,
+          5
+        ],
+        "label": "case-4"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-05",
+      "value": {
+        "id": 5,
+        "items": [
+          5,
+          6
+        ],
+        "label": "case-5"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-06",
+      "value": {
+        "id": 6,
+        "items": [
+          6,
+          7
+        ],
+        "label": "case-6"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-07",
+      "value": {
+        "id": 7,
+        "items": [
+          7,
+          8
+        ],
+        "label": "case-7"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-08",
+      "value": {
+        "id": 8,
+        "items": [
+          8,
+          9
+        ],
+        "label": "case-8"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-09",
+      "value": {
+        "id": 9,
+        "items": [
+          9,
+          10
+        ],
+        "label": "case-9"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-10",
+      "value": {
+        "id": 10,
+        "items": [
+          10,
+          11
+        ],
+        "label": "case-10"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-11",
+      "value": {
+        "id": 11,
+        "items": [
+          11,
+          12
+        ],
+        "label": "case-11"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-12",
+      "value": {
+        "id": 12,
+        "items": [
+          12,
+          13
+        ],
+        "label": "case-12"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-13",
+      "value": {
+        "id": 13,
+        "items": [
+          13,
+          14
+        ],
+        "label": "case-13"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-14",
+      "value": {
+        "id": 14,
+        "items": [
+          14,
+          15
+        ],
+        "label": "case-14"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-15",
+      "value": {
+        "id": 15,
+        "items": [
+          15,
+          16
+        ],
+        "label": "case-15"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "small-object-16",
+      "value": {
+        "id": 16,
+        "items": [
+          16,
+          17
+        ],
+        "label": "case-16"
+      },
+      "budget": {},
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "bounded-list-01",
+      "value": [
+        0,
+        1,
+        2
+      ],
+      "budget": {
+        "max_nodes": 100,
+        "max_list_items": 30
+      },
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "bounded-list-02",
+      "value": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "budget": {
+        "max_nodes": 100,
+        "max_list_items": 30
+      },
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "bounded-list-03",
+      "value": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "budget": {
+        "max_nodes": 100,
+        "max_list_items": 30
+      },
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "bounded-list-04",
+      "value": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "budget": {
+        "max_nodes": 100,
+        "max_list_items": 30
+      },
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "bounded-list-05",
+      "value": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "budget": {
+        "max_nodes": 100,
+        "max_list_items": 30
+      },
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "bounded-list-06",
+      "value": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "budget": {
+        "max_nodes": 100,
+        "max_list_items": 30
+      },
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "bounded-list-07",
+      "value": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "budget": {
+        "max_nodes": 100,
+        "max_list_items": 30
+      },
+      "expected": "ACCEPT",
+      "reason": ""
+    },
+    {
+      "id": "bounded-list-08",
+      "value": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "budget": {
+        "max_nodes": 100,
+        "max_list_items": 30
+      },
+      "expected": "ACCEPT",
+      "reason": ""
+    }
+  ]
+}

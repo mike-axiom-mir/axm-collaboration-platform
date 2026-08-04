@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.game-capability-plan/v1",
+  "type": "object",
+  "required": ["schema", "version", "project", "items", "coverage", "truth"],
+  "properties": {
+    "schema": { "const": "axm.game-capability-plan/v1" },
+    "version": { "type": "string" },
+    "project": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 }
+      }
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "required": ["moduleId", "title", "category", "status", "action", "guard"],
+        "properties": {
+          "moduleId": { "pattern": "^AXM-GAME-KNOWLEDGE-[0-9]{3}$" },
+          "category": { "pattern": "^[0-9]{2}$" },
+          "status": { "enum": ["PROPOSED", "ACTIVE", "PASS", "FAIL", "HELD", "SKIPPED"] }
+        }
+      }
+    },
+    "truth": {
+      "type": "object",
+      "required": ["authority", "automaticInstall", "behavioralValidation"]
+    }
+  }
+}

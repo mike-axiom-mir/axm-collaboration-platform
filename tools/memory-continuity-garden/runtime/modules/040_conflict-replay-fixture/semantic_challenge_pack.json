@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "SILENT_CONSENSUS",
+      "expected": "HOLD_SEMANTIC_CONFLICT",
+      "stimulus": "dissent is omitted during merge"
+    }
+  ],
+  "category": 4,
+  "category_name": "4. Branching, merging, contradiction, dissent, and supersession",
+  "full_semantic_implementation": false,
+  "number": 40,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Package the shared base, divergent operations, evidence, and expected holds so merge behavior can be reproduced and tested.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "df779db41dce52dc51a39112111aef46ee423d7dffc0c8395f74062ddb473e6c"
+  },
+  "source_contract_sha256": "4f6c5101c57c1df45e628a65ff757e483169a77e2b5aef3a497e1fad142d4cff",
+  "stable_id": "axm.memory.conflict-replay-fixture"
+}

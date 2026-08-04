@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#11192b">
+  <title>Bonk &amp; Bolt: The 24th Hour</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="gameShell" class="game-shell">
+    <canvas id="world" aria-label="3D open-world action RPG"></canvas>
+    <div class="world-vignette" aria-hidden="true"></div>
+
+    <header class="hud top-hud" id="topHud" hidden>
+      <div class="identity-card glass">
+        <span class="portrait" id="heroPortrait" aria-hidden="true">B</span>
+        <div><small id="heroMeta">HUMAN · PANZER</small><strong id="heroName">BIX</strong><div class="bar health"><i id="healthBar"></i></div></div>
+        <b id="healthText">100</b>
+      </div>
+      <div class="place-card glass">
+        <small id="clockValue">DAY 1 · 08:00</small>
+        <strong id="regionValue">PATCHWORK VALE</strong>
+        <span id="regionBlurb">Every road arrives here eventually.</span>
+      </div>
+      <div class="world-card glass">
+        <div><small>SAVED WORLD AGE</small><strong id="worldAge">00:00 / 24:00</strong></div>
+        <div class="omen-track"><i id="omenBar"></i></div>
+        <span id="worldPhase">THE VALE IS BRIGHT</span>
+      </div>
+      <button class="round-button glass" id="pauseButton" type="button" aria-label="Pause">II</button>
+    </header>
+
+    <aside class="hud quest-hud glass" id="questHud" hidden>
+      <div class="quest-cap"><span>ADVENTURE THREAD</span><button id="journalButton" type="button">ALL THREADS</button></div>
+      <strong id="questTitle">No single main quest</strong>
+      <p id="questTask">Walk toward any bright story marker. Every thread tells you exactly what and where.</p>
+      <small id="questWhere">PATCHWORK VALE · CHOOSE YOUR TROUBLE</small>
+      <div class="quest-progress"><i id="questProgress"></i></div>
+    </aside>
+
+    <aside class="hud resource-hud glass" id="resourceHud" hidden>
+      <span title="RNG stones found in the world"><i class="stone-icon"></i><b id="stoneCount">0</b> stones</span>
+      <span title="Useful salvage currency"><i class="bolt-icon">✦</i><b id="boltCount">0</b> bolts</span>
+      <span title="Active miniature partner"><i class="pet-icon">●</i><b id="petName">no partner</b></span>
+    </aside>
+
+    <nav class="hud action-dock glass" id="actionDock" hidden aria-label="Actions">
+      <button id="attackButton" type="button"><kbd>LMB</kbd><strong id="attackName">PAN SLAP</strong><span>attack</span></button>
+      <button id="specialButton" type="button"><kbd>Q</kbd><strong id="specialName">BREAKFAST AVALANCHE</strong><span id="specialState">ready</span></button>
+      <button id="petActionButton" type="button"><kbd>R</kbd><strong id="petActionName">NO PARTNER</strong><span id="petActionState">bond a miniature</span></button>
+      <button id="interactButton" class="primary-action" type="button"><kbd>E</kbd><strong id="interactName">LOOK AROUND</strong><span id="interactHint">near marked people &amp; places</span></button>
+      <button id="dodgeButton" type="button"><kbd>SHIFT</kbd><strong>DODGE</strong><span id="dodgeState">ready</span></button>
+    </nav>
+
+    <div class="hud quick-menu" id="quickMenu" hidden>
+      <button id="inventoryButton" type="button"><kbd>I</kbd> Equipment</button>
+      <button id="partnerButton" type="button"><kbd>P</kbd> Miniatures</button>
+      <button id="challengeButton" type="button"><kbd>J</kbd> Adventures</button>
+      <button id="mapButton" type="button"><kbd>M</kbd> World map</button>
+    </div>
+
+    <canvas class="hud minimap glass" id="minimap" width="220" height="220" hidden aria-label="World map"></canvas>
+    <div class="hud coop-card glass" id="coopCard" data-state="together" hidden><small>LOCAL CO-OP</small><strong>P2 ACTIVE</strong><em id="coopRange">TOGETHER · 3m</em><span>ARROWS move · / attack · . dodge</span></div>
+
+    <div class="event-toast" id="eventToast" hidden><small id="toastKicker">PATCHWORK VALE</small><strong id="toastTitle">Welcome, probably.</strong><p id="toastCopy">There is no main quest. Pick a problem and make it stranger.</p></div>
+    <div class="speech-bubble" id="speechBubble" hidden><b id="speaker">MAYOR</b><p id="speechText"></p></div>
+    <div class="bonk-word" id="bonkWord" hidden>BONK!</div>
+    <div class="screen-flash" id="screenFlash" aria-hidden="true"></div>
+
+    <section class="screen title-screen" id="titleScreen">
+      <div class="key-art" role="img" aria-label="A human, a toon and miniature robots overlooking Patchwork Vale"></div>
+      <div class="title-shade"></div>
+      <div class="title-content">
+        <span class="eyebrow">AN OPEN-WORLD COMEDY RPG</span>
+        <h1>BONK <i>&amp;</i> BOLT</h1>
+        <h2>THE 24<sup>TH</sup> HOUR</h2>
+        <p>No chosen one. No main quest. Just a valley full of small problems that slowly realize they are one enormous problem.</p>
+        <div class="title-actions">
+          <button class="hero-button" id="newGameButton" type="button">NEW MISADVENTURE <span>→</span></button>
+          <button class="ghost-button" id="continueButton" type="button" hidden>CONTINUE SAVED WORLD</button>
+        </div>
+        <div class="feature-line"><span>SOLO / 2-PLAYER LOCAL CO-OP</span><span>FULL 3D</span><span>OFFLINE SAVE</span><span>ONE REAL ENDING</span></div>
+      </div>
+      <button class="access-button" id="titleHelp" type="button">CONTROLS + ACCESSIBILITY</button>
+    </section>
+
+    <section class="screen setup-screen" id="setupScreen" hidden>
+      <div class="setup-backdrop"></div>
+      <div class="setup-wrap">
+        <div class="setup-heading"><span class="eyebrow">BEFORE THE VALE REGRETS MEETING YOU</span><h2>Choose your shape.<br>Choose your <em>problem-solving noise.</em></h2></div>
+        <div class="setup-step">
+          <div class="step-label"><b>01</b><span>STARTING PEOPLE</span><small>Changes your home, silhouette and world perk.</small></div>
+          <div class="choice-grid two" id="raceChoices"></div>
+        </div>
+        <div class="setup-step">
+          <div class="step-label"><b>02</b><span>COMEDY PROFESSION</span><small>Equipment is flexible later. Your class decides the first joke.</small></div>
+          <div class="choice-grid three" id="classChoices"></div>
+        </div>
+        <div class="setup-step mode-step">
+          <div class="step-label"><b>03</b><span>COMPANY</span><small>Solo has one hero. Local co-op shares the same camera and world.</small></div>
+          <div class="mode-toggle">
+            <button type="button" data-coop="false" class="selected"><strong>SOLO</strong><span>One hero, bonded miniature companion later</span></button>
+            <button type="button" data-coop="true"><strong>2-PLAYER CO-OP</strong><span>P2 joins as a Toon Pun Slinger</span></button>
+          </div>
+        </div>
+        <button class="hero-button enter-button" id="enterWorldButton" type="button" disabled>ENTER PATCHWORK VALE <span>→</span></button>
+      </div>
+    </section>
+
+    <section class="panel adventure-panel" id="adventurePanel" hidden aria-label="Adventures and challenges">
+      <header><div><span class="eyebrow">NO MAIN QUEST</span><h2>Every problem is its own adventure.</h2><p>Tasks always say what to do and where to do it. No internet treasure hunts. No luck-only riddles.</p></div><button class="close-button" data-close-panel type="button">×</button></header>
+      <div class="panel-tabs"><button class="selected" data-tab="threads" type="button">ADVENTURE THREADS</button><button data-tab="challenges" type="button">CLEAR CHALLENGES</button><button data-tab="world" type="button">24TH HOUR</button></div>
+      <div class="panel-scroll" id="adventureContent"></div>
+    </section>
+
+    <section class="panel inventory-panel" id="inventoryPanel" hidden aria-label="Equipment and inventory">
+      <header><div><span class="eyebrow">EQUIPMENT IS A DECISION</span><h2>Keep the power. Accept the weird.</h2><p>No temporary “three-hit” potions. Every item has a branch and a drawback.</p></div><button class="close-button" data-close-panel type="button">×</button></header>
+      <div class="inventory-layout">
+        <div class="paper-doll" id="paperDoll"></div>
+        <div class="inventory-list"><div class="inventory-tools"><strong>FOUND EQUIPMENT</strong><label>AUTO-SALVAGE <select id="salvageSelect"><option value="none">Off</option><option value="common">Common only</option><option value="all-oddities">Unkept oddities</option></select></label></div><div class="item-grid" id="itemGrid"></div></div>
+        <div class="ingredient-shelf"><strong>COOKING + FISHING SHELF</strong><p>Ingredients change the world or unlock robot relationships. They are never combat chores.</p><div id="ingredientGrid"></div></div>
+      </div>
+    </section>
+
+    <section class="panel partner-panel" id="partnerPanel" hidden aria-label="Bonded miniature robots">
+      <header><div><span class="eyebrow">PARTNERS, NOT PROPERTY</span><h2>Miniature Robot Workshop</h2><p>Choose one field partner. Every bond keeps its own health, job and saved-world cooldown.</p></div><button class="close-button" data-close-panel type="button">×</button></header>
+      <div class="partner-layout"><div class="active-pet-summary" id="activePetSummary"></div><div class="pet-roster" id="petRoster"></div></div>
+    </section>
+
+    <section class="panel map-panel" id="mapPanel" hidden aria-label="World map">
+      <header><div><span class="eyebrow">BIG ENOUGH TO GET DISTRACTED</span><h2>Patchwork Vale</h2><p>Every adventure and challenge names its region. Bright markers are visible in the world and here.</p></div><button class="close-button" data-close-panel type="button">×</button></header>
+      <div class="world-map" id="worldMap"></div>
+    </section>
+
+    <section class="modal activity-modal" id="cookModal" hidden aria-label="Cook-off">
+      <div class="activity-card cook-card">
+        <button class="close-button" data-close-activity type="button">×</button><span class="eyebrow">SIZZLEBANK COOK-OFF · FINITE RIVAL LADDER</span><h2>Chop. Stir. Plate. Try not to become the side dish.</h2>
+        <p id="cookIntro">Choose a recipe. Three different kitchen rounds decide quality and a visible rival decides whether you earn a permanent lesson.</p>
+        <div class="cook-versus" id="cookVersus"><div class="cook-chef player"><small>YOUR KITCHEN</small><strong>BIX &amp; A DANGEROUS PAN</strong></div><b>VS</b><div class="cook-chef rival"><small id="cookRivalMeta">NEXT RIVAL</small><strong id="cookRivalName">Mayor Marmalade</strong></div></div>
+        <div class="cook-legacy" id="cookLegacy">Rival lessons are finite permanent upgrades, not an endless level bar.</div>
+        <div class="recipe-grid" id="recipeGrid"></div>
+        <div class="timing-game" id="cookTiming" hidden>
+          <div class="cook-rounds" id="cookRounds"></div><span class="eyebrow" id="cookRoundLabel">ROUND 1 · CHOP</span><p id="cookPrompt">Stop the runaway ingredient inside the flavor zone.</p>
+          <div class="timing-track"><i id="cookZone"></i><b id="cookNeedle"></b></div>
+          <button class="hero-button" id="stirButton" type="button">CHOP! <kbd>SPACE</kbd></button>
+          <div class="cook-scoreboard"><span>YOU <strong id="cookPlayerScore">0</strong></span><span>RIVAL <strong id="cookRivalScore">0</strong></span></div>
+          <strong id="cookScore">0 / 3 ROUNDS</strong><p class="cook-commentary" id="cookCommentary">The judges have placed their dignity behind protective glass.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="modal activity-modal" id="fishModal" hidden aria-label="Fishing">
+      <div class="activity-card fish-card">
+        <button class="close-button" data-close-activity type="button">×</button><span class="eyebrow">FISHING WITH CONSEQUENCES</span><h2>Keep the duck-shaped bobber inside the current.</h2>
+        <p>Catches feed cook-offs, restore ponds, change village work, and sometimes produce a Golden Duck that fully rebuilds every downed bonded miniature.</p>
+        <div class="fish-game"><div class="fish-track"><i id="fishTarget">◆</i><b id="fishBobber">●</b></div><div class="fish-meter"><i id="fishMeter"></i></div></div>
+        <button class="hero-button" id="fishButton" type="button">CAST LINE <kbd>SPACE</kbd></button><strong id="fishStatus">Golden Duck chance: very small, never zero.</strong>
+      </div>
+    </section>
+
+    <section class="modal choice-modal" id="choiceModal" hidden aria-label="Story choice">
+      <div class="choice-card"><span class="eyebrow" id="choiceKicker">THIS WILL CHANGE A SMALL PART OF THE WORLD</span><h2 id="choiceTitle">Choose.</h2><p id="choiceCopy"></p><div class="story-options" id="choiceOptions"></div></div>
+    </section>
+
+    <section class="modal pet-modal" id="petModal" hidden aria-label="Miniature robot bond">
+      <div class="pet-card"><button class="close-button" data-close-activity type="button">×</button><span class="eyebrow">THE STONE HUMS LIKE A TINY BAD IDEA</span><h2 id="petTitle">A miniature robot is evaluating you.</h2><p id="petWant"></p><div class="stone-warning" id="stoneWarning"></div><button class="hero-button" id="bondButton" type="button">OFFER STONE + REQUEST</button></div>
+    </section>
+
+    <section class="modal activity-modal" id="gearCouncilModal" hidden aria-label="Equipment contradiction council">
+      <div class="activity-card council-card">
+        <button class="close-button" data-close-activity type="button">×</button><span class="eyebrow">BOLTBOROUGH CIVIC CONTRADICTION BENCH</span><h2>The robots disagree about your equipment.</h2>
+        <p id="gearCouncilStatus">Hear any two named robot reports. Their incompatible opinions become permanent workshop options here.</p>
+        <div class="council-layout">
+          <div><strong>KEPT EQUIPMENT</strong><small>Choose one item. Nothing is consumed and no bolts leave your pocket.</small><div class="council-items" id="gearCouncilItems"></div></div>
+          <div><strong>FREE, REVERSIBLE ARGUMENTS</strong><small>The selected wiring remains until you revisit this physical bench.</small><div class="council-arguments" id="gearCouncilArguments"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="modal finale-modal" id="finaleModal" hidden aria-label="The 24th Hour finale">
+      <div class="finale-card"><span class="eyebrow">THE SIDE ADVENTURES HAVE STARTED TALKING TO EACH OTHER</span><h2>The 24th Hour</h2><p>The violet visitor does not care about Humans or Toons. You cannot defeat it. The miniature robots can—but only if you help them remember who they chose to be.</p><div class="brain-grid" id="brainGrid"></div><button class="hero-button" id="startFinaleButton" type="button" disabled>DEPLOY THE VILLAGE ROBOTS</button><small>Your own bonded pets can be revived. The village machines selected for this battle cannot.</small></div>
+    </section>
+
+    <section class="modal result-modal" id="resultModal" hidden aria-label="Game result">
+      <div class="result-card"><span class="eyebrow" id="resultKicker">THE GAME HAS AN END</span><h2 id="resultTitle">You won.</h2><p id="resultCopy"></p><div class="result-stats" id="resultStats"></div><button class="hero-button" id="keepPlayingButton" type="button">KEEP LIVING IN THE WON WORLD</button><button class="ghost-button" id="retryFinaleButton" type="button" hidden>TRY TO STOP THE DESTRUCTION AGAIN</button></div>
+    </section>
+
+    <section class="modal pause-modal" id="pauseModal" hidden aria-label="Pause menu">
+      <div class="pause-card"><span class="eyebrow">NOTHING MOVES WHILE YOU ARE HERE</span><h2>Paused, with boundaries.</h2><div class="pause-actions"><button class="hero-button" id="resumeButton" type="button">RETURN TO VALE</button><button class="ghost-button" id="controlsButton" type="button">CONTROLS + ACCESSIBILITY</button><button class="ghost-button danger" id="titleButton" type="button">SAVE + RETURN TO TITLE</button></div><p>Your save advances only while you play. No away timers, expiring chores, daily pressure or “come back in four hours” traps.</p></div>
+    </section>
+
+    <section class="modal help-modal" id="helpModal" hidden aria-label="Controls and accessibility">
+      <div class="help-card"><button class="close-button" data-close-help type="button">×</button><span class="eyebrow">FIELD MANUAL</span><h2>Everything important is visible.</h2><div class="control-columns"><div><strong>PLAYER ONE</strong><span><kbd>WASD</kbd> move</span><span><kbd>MOUSE</kbd> aim</span><span><kbd>LMB / SPACE</kbd> attack</span><span><kbd>Q</kbd> class special</span><span><kbd>R</kbd> partner job</span><span><kbd>SHIFT</kbd> dodge</span><span><kbd>E</kbd> interact</span></div><div><strong>PLAYER TWO</strong><span><kbd>ARROWS</kbd> move</span><span><kbd>/</kbd> attack</span><span><kbd>,</kbd> special</span><span><kbd>.</kbd> dodge</span><span>Gamepad supported</span></div><div><strong>MENUS</strong><span><kbd>I</kbd> equipment</span><span><kbd>P</kbd> miniatures</span><span><kbd>J</kbd> adventures</span><span><kbd>M</kbd> world map</span><span><kbd>ESC</kbd> pause / close</span></div></div><div class="settings-row"><label><input id="reducedMotion" type="checkbox"> Reduced motion</label><label><input id="highContrast" type="checkbox"> High contrast markers</label><label><input id="soundToggle" type="checkbox" checked> Comedic sound</label></div></div>
+    </section>
+
+    <section class="loading-screen" id="loadingScreen" hidden><div class="loading-gear">B</div><strong>ASSEMBLING AN UNREASONABLY LARGE VALLEY</strong><span id="loadingText">Teaching the river labor law...</span></section>
+  </main>
+  <div class="sr-only" id="announcer" aria-live="assertive"></div>
+  <script src="game-data.js"></script>
+  <script src="systems.js"></script>
+  <script src="motion-system.js"></script>
+  <script src="coop-camera.js"></script>
+  <script src="hero-rig-contract.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

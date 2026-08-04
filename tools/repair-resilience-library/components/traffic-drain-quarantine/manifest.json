@@ -1,0 +1,42 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.traffic-drain-quarantine",
+  "name": "Traffic Drain Quarantine",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "RUNTIME",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "MEDIUM",
+  "tags": [
+    "repair-seed",
+    "runtime-resilience",
+    "local-first",
+    "dependency-free",
+    "bounded"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Stop new work, drain safe in-flight work, and quarantine a suspected component while preserving evidence."
+  ],
+  "accepts": [
+    "inflight-work-events",
+    "quarantine-decision"
+  ],
+  "produces": [
+    "axm.traffic-drain.state/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Stop new work, drain safe in-flight work, and quarantine a suspected component while preserving evidence.",
+  "notes": "Standalone bounded runtime primitive. Invocation is explicit; active AXM authority, integration, and safe operating limits remain unproven."
+}

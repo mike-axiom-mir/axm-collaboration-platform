@@ -5,7 +5,7 @@ const read=file=>fs.readFileSync(path.join(__dirname,file),'utf8'),root=path.joi
 const checks=[
  ['Every API request recompiles current source',server.includes('compileTechnicalGlasses(focus)')&&server.includes('/api/workshop/technical-glasses')],
  ['Portable text and structured JSON share one snapshot',server.includes('/api/workshop/technical-glasses.txt')&&server.includes('snapshot.briefing')],
- ['Offline use invokes the same compiler',fs.existsSync(path.join(__dirname,'..','..','shared','technical-glasses','technical-glasses-cli.js'))],
+ ['CLI prefers the live Hub snapshot and keeps an explicit source-only fallback',cli.includes('/api/workshop/technical-glasses')&&cli.includes('--offline-source-only')&&cli.includes('LIVE_HUB_API')&&cli.includes('OFFLINE_SOURCE_ONLY')],
  ['Snapshot persistence is atomic',core.includes("file + '.tmp'")&&core.includes('fs.renameSync')],
  ['README and chat memory are explicitly below technical evidence',core.includes('readmeTechnicalAuthority: false')&&core.includes('chatMemoryTechnicalAuthority: false')],
  ['Missing state is UNKNOWN instead of guessed',core.includes('missingMeansUnknown: true')&&core.includes('noGuessing: true')],

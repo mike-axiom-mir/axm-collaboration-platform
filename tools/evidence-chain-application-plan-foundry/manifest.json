@@ -1,0 +1,36 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "evidence-chain-application-plan-foundry",
+  "name": "AXM Evidence Chain Application Plan Foundry",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "VERIFY",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": ["evidence", "hash-chain", "recovery", "application-plan", "rollback", "review", "local-first"],
+  "uses": ["evidence-chain-inspector", "evidence-chain-candidate-review-gate", "recovery-center-contract", "browser-file-picker", "web-crypto", "explicit-download"],
+  "permissions": [],
+  "actions": [
+    "bind an accepted review assessment and decision to exact source and candidate JSONL",
+    "independently re-inspect the source and candidate before planning",
+    "require current-digest, safety-copy, fresh-permission, and no-authority acknowledgements",
+    "produce a time-bounded rollback-first operator plan with fixed stop conditions",
+    "name the still-missing executable Recovery Center adapter"
+  ],
+  "accepts": [
+    "application/x-ndjson",
+    "axm.evidence-chain-recovery-review/v1",
+    "axm.evidence-chain-recovery-review-decision/v1"
+  ],
+  "produces": ["axm.evidence-chain-recovery-application-plan/v1"],
+  "readiness": ["evidence-chain-inspector", "evidence-chain-candidate-review-gate", "sha256-runtime"],
+  "verifiedAt": null,
+  "summary": "Builds a digest-bound, rollback-first, non-executable plan from an accepted evidence-chain recovery review without reading or changing live state.",
+  "notes": "Plan-only and explicit-download-only. The Foundry does not read a live target, create a backup, check permission, stage, apply, roll back, restore history, recover a session, promote, or change CANON. Recovery Center integration remains an explicit missing adapter."
+}

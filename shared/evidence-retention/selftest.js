@@ -30,6 +30,54 @@ function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: 
     check(sealed.sealed && /^[a-f0-9]{64}$/.test(sealed.manifest.segmentSha256) && sealed.manifest.lastEventHash, 'session close produces a hash-chained sealed segment and manifest');
     check(manager.status().sealedSessions === 1 && manager.status().currentSession === null, 'sealed sessions remain discoverable without keeping an open writer');
 
+    const repeatStateRoot = path.join(workshop, 'repeat-state'), repeatSource = path.join(repeatStateRoot, 'runtime', 'events.jsonl'), repeatManager = Retention.create({ stateRoot:repeatStateRoot, limits:{ maxEvents:100, maxBytes:1024 * 1024 } });
+    const firstFailure = repeatManager.record(repeatSource, { type:'workshop-error', at:'2026-01-02T00:00:00.000Z', message:'renderer timeout at stable boundary' });
+    let repeatedFailure = null;
+    for (let index = 1; index <= 9; index++) repeatedFailure = repeatManager.record(repeatSource, { type:'workshop-error', at:'2026-01-02T00:' + String(index).padStart(2, '0') + ':00.000Z', message:'renderer timeout at stable boundary' });
+    const changedFailure = repeatManager.record(repeatSource, { type:'workshop-error', at:'2026-01-02T00:10:00.000Z', message:'renderer timeout at a different boundary' });
+    const checkpointFailure = repeatManager.record(repeatSource, { type:'workshop-error', at:'2026-01-03T00:01:00.000Z', message:'renderer timeout at stable boundary' });
+    const resolution = repeatManager.record(repeatSource, { type:'workshop-recovered', at:'2026-01-03T00:02:00.000Z', message:'renderer timeout cleared' });
+    const repeatStatus = repeatManager.status(), repeatTail = repeatManager.tailForSource(repeatSource, 100000);
+    check(firstFailure.evidenceClass === 'PERMANENT_EXACT' && repeatedFailure.evidenceClass === 'REPETITIVE_DURABLE_ROLLUP' && repeatedFailure.summarizedRepeats === 9, 'the first durable failure stays exact while nine unchanged repeats become one counted rollup');
+    check(changedFailure.evidenceClass === 'PERMANENT_EXACT' && checkpointFailure.evidenceClass === 'PERMANENT_EXACT' && checkpointFailure.repeatCheckpoint, 'a changed failure and the bounded 24-hour reminder remain exact');
+    check(resolution.evidenceClass === 'PERMANENT_EXACT', 'a recovery or resolution event remains exact');
+    check(repeatStatus.currentSession.events === 4 && repeatStatus.repetition.occurrences === 12 && repeatStatus.repetition.exactCheckpoints === 3 && repeatStatus.repetition.summarizedRepeats === 9, 'repeat status exposes exact checkpoints and summarized occurrence totals without duplicate session events');
+    check(repeatTail.includes('"evidenceClass":"REPETITIVE_DURABLE_ROLLUP"') && repeatTail.includes('"summarizedRepeats":9'), 'diagnostic tails expose compact repeat evidence beside exact records');
+    const repeatSeal = repeatManager.seal('repeat-rollup-test');
+    const restartedRepeatManager = Retention.create({ stateRoot:repeatStateRoot, limits:{ maxEvents:100, maxBytes:1024 * 1024 } }), afterRestart = restartedRepeatManager.record(repeatSource, { type:'workshop-error', at:'2026-01-03T00:30:00.000Z', message:'renderer timeout at stable boundary' });
+    check(repeatSeal.manifest.events === 4 && afterRestart.evidenceClass === 'REPETITIVE_DURABLE_ROLLUP' && afterRestart.summarizedRepeats === 10, 'repeat knowledge survives sealing and a fresh manager restart');
+    const keyedFirst = restartedRepeatManager.record(repeatSource, { type:'provider-failure', at:'2026-01-03T01:00:00.000Z', message:'request 101 failed', retention:{ repeatable:true, repeatKey:'provider-request-failure' } }), keyedRepeat = restartedRepeatManager.record(repeatSource, { type:'provider-failure', at:'2026-01-03T01:01:00.000Z', message:'request 102 failed', retention:{ repeatable:true, repeatKey:'provider-request-failure' } });
+    check(keyedFirst.evidenceClass === 'PERMANENT_EXACT' && keyedRepeat.evidenceClass === 'REPETITIVE_DURABLE_ROLLUP', 'modules can reuse a stable repeat key when volatile request identifiers differ');
+    restartedRepeatManager.seal('repeat-rollup-restart-test');
+
+    const activeSource = path.join(stateRoot, 'active-writer', 'events.jsonl'), activeWriter = Retention.create({ stateRoot, limits:{ maxEvents:100, maxBytes:1024 * 1024 } });
+    activeWriter.record(activeSource, { type:'vote', at:'2026-01-03T01:00:00.000Z', verdict:'KEEP_OPEN' });
+    const activeSegment = fs.readdirSync(path.join(stateRoot, 'evidence-retention', 'sessions', 'open')).find(name => name.endsWith('.jsonl'));
+    const competingManager = Retention.create({ stateRoot, limits:{ maxEvents:100, maxBytes:1024 * 1024 } });
+    check(fs.existsSync(path.join(stateRoot, 'evidence-retention', 'sessions', 'open', activeSegment)), 'a competing process cannot recover a session whose writer is still active');
+    activeWriter.record(activeSource, { type:'render-preview', at:'2026-01-03T01:01:00.000Z', pass:true });
+    const activeSeal = activeWriter.seal('active-writer-test');
+    check(activeSeal.sealed && activeSeal.manifest.events === 2, 'the protected active writer can finish and seal its complete chain');
+
+    const splitWriter = Retention.create({ stateRoot, limits:{ maxEvents:100, maxBytes:1024 * 1024 } });
+    splitWriter.record(activeSource, { type:'vote', at:'2026-01-04T01:00:00.000Z', verdict:'FIRST_HALF' });
+    const splitName = fs.readdirSync(path.join(stateRoot, 'evidence-retention', 'sessions', 'open')).find(name => name.endsWith('.jsonl'));
+    const splitFile = path.join(stateRoot, 'evidence-retention', 'sessions', 'open', splitName), splitLease = splitFile + '.writer.json';
+    const staleWriter = JSON.parse(fs.readFileSync(splitLease, 'utf8')); staleWriter.pid = 2147483647; writeJson(splitLease, staleWriter);
+    Retention.create({ stateRoot, limits:{ maxEvents:100, maxBytes:1024 * 1024 } });
+    splitWriter.record(activeSource, { type:'render-preview', at:'2026-01-04T01:01:00.000Z', pass:true });
+    Retention.create({ stateRoot, limits:{ maxEvents:100, maxBytes:1024 * 1024 } });
+    const splitManifests = fs.readdirSync(path.join(stateRoot, 'evidence-retention', 'sessions', 'sealed', '2026-01')).filter(name => name.startsWith(splitName.replace(/\.jsonl$/, '')) && name.endsWith('.manifest.json')).map(name => JSON.parse(fs.readFileSync(path.join(stateRoot, 'evidence-retention', 'sessions', 'sealed', '2026-01', name), 'utf8')));
+    const preservedSplitFiles = fs.readdirSync(path.join(stateRoot, 'evidence-retention', 'sessions', 'superseded', '2026-01')).filter(name => name.startsWith(splitName.replace(/\.jsonl$/, '')) && name.endsWith('.jsonl'));
+    check(splitManifests.length === 1 && splitManifests[0].sealReason === 'consolidated-split-session' && splitManifests[0].events === 2, 'a split but cryptographically anchored session is consolidated into one canonical sealed chain');
+    check(preservedSplitFiles.length === 2, 'both original split halves remain preserved in the superseded repair archive');
+    check(!fs.existsSync(splitFile), 'the recovered continuation no longer remains in the open-session startup path');
+
+    const corruptFile = path.join(stateRoot, 'evidence-retention', 'sessions', 'open', 'session-corrupt.jsonl');
+    fs.writeFileSync(corruptFile, '{"incomplete":', 'utf8');
+    Retention.create({ stateRoot, limits:{ maxEvents:100, maxBytes:1024 * 1024 } });
+    check(!fs.existsSync(corruptFile) && fs.readdirSync(path.join(stateRoot, 'evidence-retention', 'sessions', 'quarantine')).some(name => name === 'session-corrupt.jsonl'), 'an untrusted broken segment is preserved in quarantine instead of blocking startup');
+
     const packages = path.join(workshop, 'exports', 'workshop-packages');
     for (const item of [{ id:'axm-workshop-full-new', at:'2026-07-19T05:00:00.000Z' }, { id:'axm-workshop-full-old', at:'2026-07-18T05:00:00.000Z' }]) {
       writeJson(path.join(packages, item.id, 'PACKAGE_MANIFEST.json'), { schema:'axm.workshop-package/v1', created_at:item.at, total_bytes:1000, file_count:1, files:[] });
@@ -38,9 +86,9 @@ function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: 
     const plan = manager.packageRetentionPlan();
     check(plan.policy.mode === 'PREVIEW_ONLY' && plan.policy.automaticDeletion === false, 'package retention is visible but cannot silently delete existing artifacts');
     check(plan.keep.includes('axm-workshop-full-new') && plan.review.some(item => item.id === 'axm-workshop-full-old'), 'package plan keeps the latest unpacked copy and names older copies for review');
+    competingManager.seal('selftest-cleanup');
     console.log('\nEvidence retention selftest: PASS (' + checks + ' checks)');
   } finally {
     Retention.resetForTests(); fs.rmSync(temp, { recursive:true, force:true });
   }
 })()
-

@@ -1,0 +1,53 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.bounded-orchestrator",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.bounded-orchestration.receipt/v1",
+    "axm.repair-execution-candidate/v1"
+  ],
+  "consumes": [
+    "repair-plan",
+    "authority-decision",
+    "snapshot-adapter",
+    "diagnosis-adapter",
+    "simulation-adapter",
+    "verification-adapter",
+    "rollback-adapter",
+    "learning-adapter"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_3_HUMAN_GATED_SHADOW_ORCHESTRATION",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/repairbuddy",
+      "tools/recovery-center",
+      "tools/qa-lab",
+      "shared/module-evolution-ledger",
+      "tools/body-pulse"
+    ],
+    "reason": "Composes existing authorities over a disposable copy only; it refuses active-state, permission, promotion, release, and CANON authority."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-pattern-reuse",
+      "automatic-memory-write",
+      "provider-execution",
+      "active-repair-orchestration",
+      "permission-grant",
+      "automatic-promotion",
+      "automatic-release",
+      "automatic-canon",
+      "diagnosis-from-similarity-alone",
+      "root-cause-invention"
+    ]
+  }
+}

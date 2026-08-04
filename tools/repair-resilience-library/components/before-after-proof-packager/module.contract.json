@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.before-after-proof-packager",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.before-after-proof.packet/v1"
+  ],
+  "consumes": [
+    "pre-state",
+    "post-state",
+    "verification-evidence",
+    "limitations"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_EVIDENCE_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "shared/evidence-retention",
+      "tools/repairbuddy",
+      "tools/recovery-center"
+    ],
+    "reason": "Packages evidence for handoff without interpreting a packet as permission or CANON."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "verification-as-permission",
+      "selftest-as-runtime-proof",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "hidden-evidence-omission"
+    ]
+  }
+}

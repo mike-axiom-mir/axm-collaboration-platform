@@ -1,0 +1,40 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.containment-recommender",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.containment-recommendation/v1"
+  ],
+  "consumes": [
+    "failure-severity",
+    "blast-radius-estimate"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_3_HUMAN_GATED_RECOMMENDATION",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/diagnostics-operations-center",
+      "tools/recovery-center",
+      "tools/authority-surface-observatory"
+    ],
+    "reason": "Recommends the smallest declared reversible containment while execution stays elsewhere and human-gated."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-containment",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim",
+      "mutation-of-existing-axm-organs"
+    ]
+  }
+}

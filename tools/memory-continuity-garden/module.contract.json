@@ -1,0 +1,53 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "memory-continuity-garden",
+  "version": "v0.10.0-axm.1",
+  "provides": [
+    "memory.reference-catalog.browse",
+    "memory.contract.inspect",
+    "memory.package-integrity.verify",
+    "memory.reference-suite.windows-portable-evidence",
+    "memory.capability-gap.route"
+  ],
+  "consumes": [
+    "application/json",
+    "python:standard-library",
+    "filesystem:explicit-input-only"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.memory.reference-catalog/v1",
+      "axm.memory.reference-review/v1",
+      "axm.memory.capability-gap-route/v1"
+    ],
+    "accepts": [
+      "stable-memory-capability-id",
+      "human-review-query"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "not-applicable",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  },
+  "boundaries": {
+    "writes": [
+      "stdout:explicit-cli-result"
+    ],
+    "refuses": [
+      "memory-semantic-execution",
+      "private-memory-ingestion",
+      "active-memory-write",
+      "automatic-install",
+      "automatic-orchestration",
+      "authority-inference",
+      "owner-acceptance-inference",
+      "physical-erasure-claim",
+      "production-proof-claim",
+      "automatic-promotion",
+      "canon-change"
+    ]
+  }
+}

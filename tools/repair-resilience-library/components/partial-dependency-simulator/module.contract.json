@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.partial-dependency-simulator",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.partial-dependency-simulator/v1"
+  ],
+  "consumes": [
+    "scenario-schedule",
+    "reference-values"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_2_SHADOW_EXPERIMENT",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/qa-lab",
+      "tools/diagnostics-operations-center"
+    ],
+    "reason": "Creates an in-memory dependency adapter with declared scenarios and no network access."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "active-process-targeting",
+      "host-network-mutation",
+      "host-clock-mutation",
+      "real-filesystem-fault",
+      "unbounded-resource-pressure",
+      "fault-without-abort-controller",
+      "automatic-scheduling",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  }
+}

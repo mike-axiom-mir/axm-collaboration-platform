@@ -1,88 +1,40 @@
-# Main Hub Layer Rules
+# Main Hub Layer Plan
 
-Status: WORKING / TEST seed.
+Status: `PLAN_ONLY` / not implemented / no runtime authority.
 
-The Main Hub is mainly a router.
+This document preserves a possible future navigation model. The current Main Hub module is only a display card with explicit links. Nothing reads this document to switch layers, hide routes, validate passwords, authenticate users, or persist hub state.
 
-It should keep useful tools reachable without turning the first screen into noise.
-
-The layer system exists so value can be present without overwhelming the user.
-
-## Starter model
+## Proposed starter model
 
 ```text
 Layer 0: visible-hub
-  Seen first.
-  Clean local hub/menu.
-  Shows only what normal users or players need first.
+  Proposed clean entry layer.
 
 Layer -1: workshop-build
-  Not seen first.
-  Crew/build/system layer.
-  Enter by moving down.
-  Simple local password gate for now.
+  Proposed crew/build layer entered by an explicit layer action.
 ```
 
-## Router rule
+## Proposed noise-control rule
 
-The Main Hub should route to modules.
+A future router could keep ordinary entry simple while making build tools deliberately reachable. That is a product-design direction, not current behavior.
 
-It should not become a dumping ground for every tool button.
+## Password boundary
 
-```text
-Good:
-  Hub -> Game Hub
-  Hub -> Workshop Build Layer
-  Hub -> selected public/local tools
+The historical plan mentioned a simple local password convenience. It would not be internet-grade security or authentication. No password input, validation, storage, denied/allowed boundary, or runtime exists in this module today.
 
-Bad:
-  Hub first screen contains every internal tool, setting, adapter, test panel, and build file
-```
+Any future access-control implementation requires:
 
-## Noise-control rule
+- an explicit authority contract
+- ignored local secret storage
+- allowed and denied identity tests
+- restart and persistence tests
+- visible recovery behavior
+- independent security review
 
-A tool can be valuable and still not belong on the first visible layer.
+## Current truth
 
-Default rule:
-
-```text
-First layer = simple, useful, low-noise
-Lower layer = build tools, crew tools, settings, tests, adapters
-Later layers = optional routing layers when needed
-```
-
-## Layer movement
-
-```text
-open hub
-  -> visible-hub
-
-move down
-  -> workshop-build
-
-later optional:
-move up / side
-  -> public/community/game/event layers
-```
-
-## Password rule
-
-The workshop layer can use a simple local password gate for now.
-
-This is local convenience, not internet-grade security.
-
-Do not commit real passwords.
-
-Real local passwords belong in ignored local settings or environment variables.
-
-## AXM rule
-
-Make value reachable.
-
-Do not make value noisy.
-
-Route first, clutter never.
-
-Visible first layer should help beginners.
-
-Deeper layers can hold crew/system power.
+- `index.html` is display-only.
+- Four same-origin links are explicit.
+- The Foundation presence indicator is display-only.
+- `settings/HUB_LAYER_SETTINGS.example.json` is a design example with `implemented: false`.
+- The active Hub remains separate.

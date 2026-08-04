@@ -73,7 +73,7 @@ async function main() {
   let verificationResults = null;
   const preliminary = Readiness.buildIndex(ROOT);
   if (verify) {
-    const targets = preliminary.tools.filter(tool => tool.status === 'TEST' && tool.selftest.promotionPath);
+    const targets = preliminary.tools.filter(Readiness.isVerificationTarget);
     const results = await runBounded(targets);
     verificationResults = {
       schema: 'axm.tool-selftest-results/v1',

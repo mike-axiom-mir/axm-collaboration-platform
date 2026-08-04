@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.corrupted-segment-renovator",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.segment-renovation.receipt/v1"
+  ],
+  "consumes": [
+    "segments",
+    "expected-hashes",
+    "verified-candidates"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_2_SHADOW_RENOVATION",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/recovery-center",
+      "tools/repairbuddy"
+    ],
+    "reason": "Replaces only hash-proven corrupt segments in a copy and holds when a verified candidate is absent."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-restore",
+      "automatic-rollback",
+      "silent-data-loss",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

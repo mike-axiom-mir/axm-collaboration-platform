@@ -9,9 +9,13 @@ import {
 } from './floodplain.mjs';
 
 export const FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA =
+  'axm.foundation-planet.floodplain-gas-exchange-state/v2';
+export const PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA =
   'axm.foundation-planet.floodplain-gas-exchange-state/v1';
 export const FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA =
-  'axm.foundation-planet.floodplain-gas-exchange-process-receipt/v1';
+  'axm.foundation-planet.floodplain-gas-exchange-process-receipt/v2';
+export const REFERENCE_CO2_SOLUBILITY_CARBON_MG_L = .167;
+export const REFERENCE_CO2_PPM = 420;
 
 const finite = (value, fallback = 0) => Number.isFinite(Number(value))
   ? Number(value) : fallback;
@@ -34,6 +38,8 @@ function fluxes(source = {}) {
   return {
     carbonToAtmosphereKgC: Math.max(0,
       finite(source.carbonToAtmosphereKgC)),
+    carbonToFloodplainKgC: Math.max(0,
+      finite(source.carbonToFloodplainKgC)),
     oxygenToFloodplainKgO2: Math.max(0,
       finite(source.oxygenToFloodplainKgO2))
   };
@@ -58,6 +64,8 @@ function truth() {
     atmosphereGasOwnership: false,
     pairedOwnerReceiptsRequiredWhenAtmosphereLoaded: true,
     carbonDioxideEvasionParameterized: true,
+    carbonDioxideInvasionParameterized: true,
+    bidirectionalCarbonDioxideGradientExchange: true,
     oxygenReaerationParameterized: true,
     physicalExchangeContinuesWithLifeOff: true,
     nativeAtmosphereSurfaceLayerRequired: true,
@@ -85,6 +93,11 @@ export function emptyFloodplainGasExchangeState(options = {}) {
       oxygenSaturationTargetKgO2: 0,
       oxygenDeficitKgO2: 0,
       exchangeableDicKgC: 0,
+      surfaceAtmosphereCo2Ppm: 0,
+      co2SolubilityCarbonMgL: 0,
+      aqueousCo2EquilibriumTargetKgC: 0,
+      signedCarbonGradientKgC: 0,
+      surfaceAtmosphereCarbonAvailableKgC: 0,
       surfaceAtmosphereOxygenAvailableKgO2: 0
     },
     lastFloodplainReceiptDigest: null,
@@ -96,8 +109,13 @@ export function emptyFloodplainGasExchangeState(options = {}) {
 
 export function normalizeFloodplainGasExchangeState(source, options = {}) {
   const state = emptyFloodplainGasExchangeState(options);
-  if (source?.schema !== FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA) return state;
-  state.migrationCheckpoint = source.migrationCheckpoint === true;
+  if (![FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA,
+    PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA].includes(source?.schema)) {
+    return state;
+  }
+  state.migrationCheckpoint = source.schema ===
+    PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA ||
+    source.migrationCheckpoint === true;
   state.observedExchangeDays = Math.max(0,
     finite(source.observedExchangeDays));
   state.inactiveDays = Math.max(0, finite(source.inactiveDays));
@@ -120,6 +138,16 @@ export function normalizeFloodplainGasExchangeState(source, options = {}) {
       source.lastActivity?.oxygenDeficitKgO2)),
     exchangeableDicKgC: Math.max(0, finite(
       source.lastActivity?.exchangeableDicKgC)),
+    surfaceAtmosphereCo2Ppm: Math.max(0, finite(
+      source.lastActivity?.surfaceAtmosphereCo2Ppm)),
+    co2SolubilityCarbonMgL: Math.max(0, finite(
+      source.lastActivity?.co2SolubilityCarbonMgL)),
+    aqueousCo2EquilibriumTargetKgC: Math.max(0, finite(
+      source.lastActivity?.aqueousCo2EquilibriumTargetKgC)),
+    signedCarbonGradientKgC: finite(
+      source.lastActivity?.signedCarbonGradientKgC),
+    surfaceAtmosphereCarbonAvailableKgC: Math.max(0, finite(
+      source.lastActivity?.surfaceAtmosphereCarbonAvailableKgC)),
     surfaceAtmosphereOxygenAvailableKgO2: Math.max(0, finite(
       source.lastActivity?.surfaceAtmosphereOxygenAvailableKgO2))
   };
@@ -177,6 +205,19 @@ export function floodplainGasExchangePlan(source, floodplainSource,
   const exchangeableDicKgC =
     floodplain.chemistry.dissolvedInorganicCarbonKgC *
     exchangeableDicFraction;
+  const surfaceAtmosphereCo2Ppm = atmosphereAvailable
+    ? Math.max(0, finite(atmosphere.layers[0].co2PpmProxy,
+      atmosphere.co2Ppm)) : 0;
+  const temperatureSolubilityFactor = Math.exp(-.025 *
+    (waterTemperatureC - 25));
+  const co2SolubilityCarbonMgL = clamp(
+    REFERENCE_CO2_SOLUBILITY_CARBON_MG_L *
+      (surfaceAtmosphereCo2Ppm / REFERENCE_CO2_PPM) *
+      temperatureSolubilityFactor, 0, 10);
+  const aqueousCo2EquilibriumTargetKgC = floodplain.waterKg *
+    co2SolubilityCarbonMgL * 1e-6;
+  const signedCarbonGradientKgC = exchangeableDicKgC -
+    aqueousCo2EquilibriumTargetKgC;
   const surfaceContactFactor = floodplain.waterKg > 1e-9
     ? clamp(.1 + .9 * Math.sqrt(clamp(floodplain.inundatedFraction))) : 0;
   const maximumDailyEquilibrationFraction = clamp(finite(
@@ -187,9 +228,14 @@ export function floodplainGasExchangePlan(source, floodplainSource,
       durationDays * surfaceContactFactor);
   const surfaceAtmosphereOxygenAvailableKgO2 = atmosphereAvailable
     ? atmosphere.layers[0].oxygenKgO2m2 * receivingAreaM2 : 0;
+  const surfaceAtmosphereCarbonAvailableKgC = atmosphereAvailable
+    ? atmosphere.layers[0].carbonDioxideCarbonKgCm2 * receivingAreaM2 : 0;
   const carbonToAtmosphereKgC = Math.min(
     floodplain.chemistry.dissolvedInorganicCarbonKgC,
-    exchangeableDicKgC * equilibrationFraction);
+    Math.max(0, signedCarbonGradientKgC) * equilibrationFraction);
+  const carbonToFloodplainKgC = Math.min(
+    surfaceAtmosphereCarbonAvailableKgC,
+    Math.max(0, -signedCarbonGradientKgC) * equilibrationFraction);
   const oxygenToFloodplainKgO2 = Math.min(
     oxygenDeficitKgO2 * equilibrationFraction,
     surfaceAtmosphereOxygenAvailableKgO2);
@@ -206,21 +252,36 @@ export function floodplainGasExchangePlan(source, floodplainSource,
         oxygenSaturationTargetKgO2, 9),
       oxygenDeficitKgO2: round(oxygenDeficitKgO2, 9),
       exchangeableDicKgC: round(exchangeableDicKgC, 9),
+      surfaceAtmosphereCo2Ppm: round(surfaceAtmosphereCo2Ppm, 9),
+      co2SolubilityCarbonMgL: round(co2SolubilityCarbonMgL, 12),
+      aqueousCo2EquilibriumTargetKgC: round(
+        aqueousCo2EquilibriumTargetKgC, 9),
+      signedCarbonGradientKgC: round(signedCarbonGradientKgC, 9),
+      surfaceAtmosphereCarbonAvailableKgC: round(
+        surfaceAtmosphereCarbonAvailableKgC, 9),
       surfaceAtmosphereOxygenAvailableKgO2: round(
         surfaceAtmosphereOxygenAvailableKgO2, 9)
     },
     exchange: roundedFluxes({
       carbonToAtmosphereKgC,
+      carbonToFloodplainKgC,
       oxygenToFloodplainKgO2
     }),
     truth: {
       ...truth(),
       atmosphereLoaded: atmosphereAvailable,
       migrationHasZeroExchange: state.migrationCheckpoint
-        ? carbonToAtmosphereKgC + oxygenToFloodplainKgO2 <= 1e-12 : true,
+        ? carbonToAtmosphereKgC + carbonToFloodplainKgC +
+          oxygenToFloodplainKgO2 <= 1e-12 : true,
       floodplainDicBoundsCarbonEvasion:
         carbonToAtmosphereKgC <=
           floodplain.chemistry.dissolvedInorganicCarbonKgC + 1e-12,
+      atmosphereSurfaceCarbonBoundsCarbonInvasion:
+        carbonToFloodplainKgC <=
+          surfaceAtmosphereCarbonAvailableKgC + 1e-12,
+      carbonExchangeDirectionExclusive:
+        carbonToAtmosphereKgC <= 1e-12 ||
+          carbonToFloodplainKgC <= 1e-12,
       atmosphereSurfaceOxygenBoundsReaeration:
         oxygenToFloodplainKgO2 <=
           surfaceAtmosphereOxygenAvailableKgO2 + 1e-12
@@ -249,7 +310,8 @@ export function advanceFloodplainGasExchange(source, plan,
     throw new TypeError('Loaded floodplain gas exchange requires both owner receipts');
   }
   if (!atmosphereAvailable && (floodplainReceipt || atmosphereReceipt ||
-    planned.carbonToAtmosphereKgC + planned.oxygenToFloodplainKgO2 > 1e-12)) {
+    planned.carbonToAtmosphereKgC + planned.carbonToFloodplainKgC +
+      planned.oxygenToFloodplainKgO2 > 1e-12)) {
     throw new Error('Unloaded atmosphere cannot emit floodplain gas transfers or owner receipts');
   }
   if (atmosphereAvailable) {
@@ -271,27 +333,34 @@ export function advanceFloodplainGasExchange(source, plan,
   let status;
   if (state.migrationCheckpoint) {
     if (planned.carbonToAtmosphereKgC +
+      planned.carbonToFloodplainKgC +
       planned.oxygenToFloodplainKgO2 > 1e-12) {
       throw new Error('Floodplain gas-exchange migration cannot move material');
     }
     state.migrationCheckpoint = false;
-    status = 'initialized-after-v14-migration-no-invented-history';
+    status = 'initialized-after-v15-migration-no-invented-history';
   } else if (!atmosphereAvailable) {
     state.atmosphereUnavailableDays += durationDays;
     status = 'atmosphere-unloaded-no-exchange';
   } else {
     state.observedExchangeDays += durationDays;
     if (planned.carbonToAtmosphereKgC +
+      planned.carbonToFloodplainKgC +
       planned.oxygenToFloodplainKgO2 <= 1e-12) {
       state.inactiveDays += durationDays;
       status = 'exchange-maintained-no-gradient';
     } else {
-      status = 'bounded-co2-evasion-and-oxygen-reaeration';
+      status = planned.carbonToFloodplainKgC > 1e-12
+        ? 'bounded-co2-invasion-and-oxygen-reaeration'
+        : 'bounded-co2-evasion-and-oxygen-reaeration';
     }
     state.cumulativeExchange = fluxes({
       carbonToAtmosphereKgC:
         state.cumulativeExchange.carbonToAtmosphereKgC +
         planned.carbonToAtmosphereKgC,
+      carbonToFloodplainKgC:
+        state.cumulativeExchange.carbonToFloodplainKgC +
+        planned.carbonToFloodplainKgC,
       oxygenToFloodplainKgO2:
         state.cumulativeExchange.oxygenToFloodplainKgO2 +
         planned.oxygenToFloodplainKgO2
@@ -362,10 +431,12 @@ export function floodplainGasExchangeDescription() {
       ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
     processes: [
       'bounded-exchangeable-dic-evasion',
+      'bounded-atmosphere-to-floodplain-co2-invasion',
+      'temperature-aware-two-way-carbon-gradient',
       'bounded-oxygen-deficit-reaeration',
       'paired-floodplain-atmosphere-owner-receipts',
       'native-surface-atmosphere-layer-exchange',
-      'v14-zero-history-migration',
+      'v15-zero-transfer-migration',
       'Life-off-physical-exchange-continuity'
     ],
     maximumStepDays: 1,

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AXM Text Visual QA Manifest",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "target_count",
+    "quality_tiers",
+    "asset_count",
+    "entries"
+  ],
+  "properties": {
+    "id": {
+      "const": "axm.text.visual_qa_matrix"
+    },
+    "version": {
+      "type": "string"
+    },
+    "target_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "quality_tiers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "asset_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "target_id",
+          "quality_tier",
+          "recipe",
+          "svg",
+          "svg_sha256"
+        ]
+      }
+    }
+  },
+  "additionalProperties": true
+}

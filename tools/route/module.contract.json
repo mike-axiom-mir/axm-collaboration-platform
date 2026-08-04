@@ -1,0 +1,47 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "route",
+  "version": "v0.1",
+  "provides": [
+    "append-only-roadmap-editing",
+    "checked-step-state-guard",
+    "sourced-claim-and-open-need-tracking",
+    "evidence-aware-conflict-diagnosis",
+    "human-chosen-route-state",
+    "bounded-resume-packet",
+    "explicit-route-json-export",
+    "inert-research-resolution-seam"
+  ],
+  "consumes": [
+    "hub:module-runtime",
+    "hub:route-core",
+    "browser:blob-download"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.route/v1", "application/json:axm.route/v1", "resume-packet:axm.route/v1"],
+    "accepts": ["hub:init", "hub:module-state:route", "browser-form:route-intent"]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  },
+  "boundaries": {
+    "writes": ["hub:module-state", "user-download:explicit-route-json"],
+    "refuses": [
+      "checkbox-derived-route-closure",
+      "automatic-route-closure",
+      "unsourced-claim-as-answer",
+      "automatic-conflict-vote",
+      "destructive-history-deletion",
+      "automatic-external-research",
+      "automatic-workshop-mutation",
+      "automatic-permission-grant",
+      "automatic-status-promotion",
+      "runtime-verification-claim",
+      "canon-authority"
+    ]
+  }
+}

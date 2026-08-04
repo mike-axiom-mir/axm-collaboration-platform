@@ -4,21 +4,23 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>AXM Learning Lab</title>
+  <title>AXM Academy · Learning Lab</title>
   <link rel="stylesheet" href="learning-lab.css">
+  <link rel="stylesheet" href="academy.css">
+  <link rel="stylesheet" href="session-review.css">
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div class="brand-mark" aria-hidden="true"><span></span><i>10</i></div>
       <div class="brand-copy">
-        <span>AXM PARENT WORKSPACE · LOCAL-FIRST · TEST</span>
-        <h1>Learning Lab</h1>
+        <span>AXM ACADEMY · LOCAL-FIRST · TEST</span>
+        <h1>Academy</h1>
       </div>
       <div class="truth-strip">
-        <span><i class="pulse"></i> attributed learners</span>
+        <span><i class="pulse"></i> source-linked lessons</span>
         <span>grades ≠ authority</span>
-        <span>school state separated</span>
+        <span>organs stay independent</span>
       </div>
       <div class="top-actions">
         <label class="file-button">Import<input id="importProject" type="file" accept="application/json,.json"></label>
@@ -28,7 +30,7 @@
     </header>
 
     <aside class="rail">
-      <div class="rail-title"><span>Workspace</span><b id="projectTitle">Learning Lab</b></div>
+      <div class="rail-title"><span>Learning routes</span><b id="projectTitle">Academy</b></div>
       <nav id="modeNav" aria-label="Learning Lab modes"></nav>
       <div class="rail-foot">
         <span id="saveState">Local checkpoint ready</span>
@@ -38,7 +40,7 @@
 
     <main class="workspace">
       <section class="workspace-head">
-        <div><span id="modeKicker">LEARNING MAP</span><h2 id="modeTitle">Learn with evidence, not pressure.</h2><p id="modeDescription">One room for lessons, practice, simulation, code, discussion and the separate machine-native school.</p></div>
+        <div><span id="modeKicker">ACADEMY</span><h2 id="modeTitle">Turn what the Workshop learns into paths people can follow.</h2><p id="modeDescription">Curated local data becomes categorized, source-linked lessons; practice and learner state remain inside the Learning Lab.</p></div>
         <div class="workspace-metrics">
           <article><b id="metricCourses">2</b><span>courses</span></article>
           <article><b id="metricLearners">0</b><span>learners</span></article>
@@ -51,13 +53,36 @@
         <div class="hero-card">
           <div class="hero-orbit" aria-hidden="true"><span class="orbit-one"></span><span class="orbit-two"></span><b>LEARN</b></div>
           <div class="hero-copy">
-            <span class="eyebrow">SHARED PRACTICE · SEPARATE MINDS</span>
-            <h3>The same lesson door. Never the same identity.</h3>
-            <p>Humans, AI collaborators and machine learners can study common material while keeping consent, notes, results, memory and authority separate.</p>
-            <div class="hero-flow"><i>Choose</i><i>Attempt</i><i>Observe</i><i>Repair</i><i>Review</i><i>Transfer</i></div>
-            <button class="button primary" data-mode-jump="study">Start a bounded session</button>
+            <span class="eyebrow">WORKSHOP KNOWLEDGE · HUMAN TEACHING</span>
+            <h3>What the Workshop learns should become teachable.</h3>
+            <p>The Academy reads trustworthy local data, names the organ that produced it, extracts bounded facts and turns them into lessons a future learner can inspect, repeat and challenge.</p>
+            <div class="hero-flow"><i>Source</i><i>Organ</i><i>Lesson</i><i>Attempt</i><i>Evidence</i><i>Inheritance</i></div>
+            <button class="button primary" id="browseAcademy">Browse the living curriculum</button>
           </div>
         </div>
+        <section class="academy-foundation" id="academyFoundation">
+          <header class="academy-head">
+            <div><span class="eyebrow">THE FIRST ACADEMY SHELF</span><h3>Local organs, translated for human learning</h3><p>Every lesson starts from a validated catalog entry and named local source. The extraction is deterministic, the boundary stays visible, and adding it to the curriculum remains an explicit choice.</p></div>
+            <div class="academy-metrics" aria-label="Academy catalog status">
+              <article><b id="academySourceCount">0</b><span>sources</span></article>
+              <article><b id="academyReadyCount">0</b><span>ready</span></article>
+              <article><b id="academyLessonCount">0</b><span>editions</span></article>
+            </div>
+          </header>
+          <div class="academy-pipeline" aria-label="Source to lesson pipeline">
+            <span><b>01</b> Find good data</span><i>→</i><span><b>02</b> Name its organ</span><i>→</i><span><b>03</b> Extract facts</span><i>→</i><span><b>04</b> Build a lesson</span><i>→</i><span><b>05</b> Leave provenance</span>
+          </div>
+          <section class="academy-guided-paths" aria-labelledby="academyPathHeading">
+            <header><div><span>START HERE · OPTIONAL</span><h4 id="academyPathHeading">A first trail for humans</h4></div><p>Learn the Workshop’s method in a reasoned order. The trail recommends what to inspect next; it never enrolls you, declares mastery or turns a lesson into canon.</p></header>
+            <div id="academyLearningPaths"><div class="academy-path-loading">Reading the optional foundation trail from its local data contract…</div></div>
+          </section>
+          <div id="academyCategories" class="academy-categories" aria-label="Academy categories"></div>
+          <div class="academy-layout">
+            <div id="academyCatalog" class="academy-catalog"><div class="empty">Reading the local Academy sources…</div></div>
+            <aside id="academyDetail" class="academy-detail"><div class="empty">Choose a source to inspect its facts, boundaries and lesson path.</div></aside>
+          </div>
+          <p class="academy-oath"><span><b>Academy rule:</b> data does not become teaching merely because it exists. A lesson must name its source, organ, boundary, human activity and repeatable evidence path.</span><a href="ACADEMY_SOURCE_CONTRACT.md" target="_blank" rel="noopener">Register the next organ ↗</a></p>
+        </section>
         <div class="home-grid">
           <section class="panel course-shelf"><header><div><span class="eyebrow">CURRICULUM SHELF</span><h3>Practice paths</h3></div><b id="courseCount">2</b></header><div id="courseShelf" class="course-list"></div></section>
           <section class="panel learner-desk"><header><div><span class="eyebrow">ATTRIBUTED SEATS</span><h3>Learners</h3></div><b id="learnerCount">0</b></header><div id="learnerList" class="learner-list"><div class="empty">No learner has been added.</div></div><button class="button secondary" data-mode-jump="study">Manage learner seats</button></section>
@@ -92,7 +117,7 @@
           <section class="panel lesson-stage">
             <header><div><span class="eyebrow">CURRENT STEP</span><h3 id="lessonTitle">No active lesson</h3></div><span id="lessonProgress" class="status">0 / 0</span></header>
             <div id="lessonBody" class="lesson-body"><div class="empty">Start a session to open the first step.</div></div>
-            <label>Evidence / reflection<textarea id="lessonEvidence" rows="4" maxlength="1800" placeholder="What did this attempt show? What remains uncertain?"></textarea></label>
+            <label id="lessonEvidenceField">Evidence / reflection<textarea id="lessonEvidence" rows="4" maxlength="1800" placeholder="What did this attempt show? What remains uncertain?"></textarea></label>
             <div class="inline-actions"><button id="openStepTool" class="button secondary" disabled>Open step tool</button><button id="completeStep" class="button primary" disabled>Record step + continue</button></div>
           </section>
         </div>
@@ -161,10 +186,32 @@
       </section>
     </main>
 
-    <footer class="footer-bar"><span>Learning Lab v0.1</span><span id="footerStatus">Ready · no active learner</span><span>Project Room + Knowledge Canvas + Game/Simulation + AI Team + separate school</span></footer>
+    <footer class="footer-bar"><span>Academy foundation · Learning Lab v0.1</span><span id="footerStatus">Ready · no active learner</span><span>Sources + organs + human lessons + separate learner state</span></footer>
   </div>
+  <dialog id="academyImportReview" class="academy-review-dialog" aria-labelledby="academyReviewHeading" aria-describedby="academyReviewSummary">
+    <div class="academy-review-shell">
+      <header><div><span>HUMAN ADMISSION GATE</span><h2 id="academyReviewHeading">Inspect before this becomes teaching</h2></div><button id="academyReviewClose" class="button secondary academy-review-close" type="button" aria-label="Close lesson review">×</button></header>
+      <div class="academy-review-state"><span id="academyReviewCategory">CATEGORY · LEVEL</span><em id="academyReviewStatus" class="status held">AWAITING PACKET</em></div>
+      <h3 id="academyReviewTitle" class="academy-review-title">Lesson title</h3>
+      <p id="academyReviewSummary" class="academy-review-summary">A validated lesson preview will appear here before the project can change.</p>
+      <div class="academy-review-grid">
+        <article><span>PRODUCING ORGAN</span><b id="academyReviewOrgan">—</b></article>
+        <article><span>SOURCE PATH</span><code id="academyReviewPath">—</code></article>
+        <article><span>EDITION FINGERPRINT</span><code id="academyReviewFingerprint">—</code></article>
+        <article><span>COMPILER RECIPE</span><code id="academyReviewRecipe">—</code></article>
+        <article><span>EDITION ID</span><code id="academyReviewEdition">—</code></article>
+        <article><span>TEACHING SCOPE</span><b id="academyReviewScope">—</b></article>
+      </div>
+      <section class="academy-review-boundary"><span>BOUNDARY THAT WILL STAY IN THE LESSON</span><p id="academyReviewBoundary">—</p></section>
+      <section class="academy-review-privacy"><span>PACKET EXCLUDES</span><div><b>learners</b><b>sessions</b><b>attempts</b><b>notebooks</b><b>classroom</b><b>private evidence</b></div></section>
+      <p id="academyReviewAuthenticity" class="academy-review-authenticity">The fingerprint detects change; it is not an authenticity signature.</p>
+      <p id="academyReviewExisting" class="academy-review-existing" hidden>This exact edition is already present. Continuing only opens the existing course.</p>
+      <footer class="academy-review-actions"><button id="academyReviewCancel" class="button secondary" type="button">Keep project unchanged</button><button id="academyReviewAccept" class="button primary" type="button">Add lesson to shelf</button></footer>
+    </div>
+  </dialog>
   <div id="toast" role="status" aria-live="polite"></div>
   <script src="../../shared/engines/axm-shared-engines.js"></script>
+  <script src="academy-catalog.js"></script>
   <script src="learning-lab-core.js"></script>
   <script src="learning-lab-app.js"></script>
 </body>

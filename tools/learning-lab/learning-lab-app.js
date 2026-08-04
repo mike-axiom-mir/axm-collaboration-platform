@@ -1,11 +1,13 @@
 (function () {
   'use strict';
   var Core = window.AXMLearningLabCore;
+  var Academy = window.AXMAcademyCatalog;
   if (!Core) throw new Error('Learning Lab core is unavailable');
+  if (!Academy) throw new Error('Academy catalog is unavailable');
   var STORE = 'axm.learning-lab.project.v1';
   var SHARED_STORE = 'axm.learning-lab.shared.v1';
   var MODE_COPY = {
-    home: ['LEARNING MAP', 'Learn with evidence, not pressure.', 'One room for lessons, practice, simulation, code, discussion and the separate machine-native school.'],
+    home: ['ACADEMY', 'Turn what the Workshop learns into paths people can follow.', 'Curated local data becomes categorized, source-linked lessons; practice and learner state remain inside the Learning Lab.'],
     study: ['GUIDED STUDY', 'Choose a learner. Open one bounded path.', 'Every completed step keeps a reflection or result. Nobody is enrolled merely because a seat exists.'],
     assess: ['ASSESSMENT', 'Measure this attempt—never the learner’s worth.', 'Visible questions, explicit answers and repair explanations. Scores grant no permissions or authority.'],
     lab: ['SIMULATION LAB', 'Change inputs. Watch the verdict move.', 'A small deterministic teaching model with replayable receipts and an explicit domain boundary.'],
@@ -23,6 +25,15 @@
   var lastAssessment = null;
   var lastLab = Core.runEvidenceLab({ evidence: 2, sourceQuality: 2, contradictions: 0 });
   var codeTimer = null;
+  var academyRows = [];
+  var academyCategory = 'all';
+  var academySelected = null;
+  var academyLoadStarted = false;
+  var academyCatalogError = '';
+  var academyPaths = [];
+  var academyPathError = '';
+  var academyLearnerChoice = null;
+  var pendingInheritanceReview = null;
 
   function $(id) { return document.getElementById(id); }
   function esc(value) { return String(value == null ? '' : value).replace(/[&<>'"]/g, function (char) { return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' })[char]; }); }
@@ -68,9 +79,326 @@
     var url = URL.createObjectURL(blob), a = document.createElement('a');
     a.href = url; a.download = name; a.click(); setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
   }
+  function renderInheritanceReview(prepared) {
+    var preview = prepared.preview;
+    $('academyReviewStatus').textContent = prepared.requiresAdmission ? 'READY FOR HUMAN REVIEW' : 'ALREADY ON SHELF';
+    $('academyReviewStatus').className = 'status ' + (prepared.requiresAdmission ? 'held' : 'ready');
+    $('academyReviewTitle').textContent = preview.title;
+    $('academyReviewSummary').textContent = preview.summary;
+    $('academyReviewCategory').textContent = preview.category.replace(/-/g, ' ').toUpperCase() + ' · ' + preview.level;
+    $('academyReviewOrgan').textContent = preview.organ;
+    $('academyReviewPath').textContent = preview.path;
+    $('academyReviewFingerprint').textContent = preview.fingerprint.slice(0, 12).toUpperCase();
+    $('academyReviewRecipe').textContent = preview.compilerRecipe;
+    $('academyReviewEdition').textContent = preview.editionId;
+    $('academyReviewScope').textContent = preview.stepCount + ' steps · ' + preview.factCount + ' extracted facts · ' + preview.minutes + ' minutes';
+    $('academyReviewBoundary').textContent = preview.boundary;
+    $('academyReviewAuthenticity').textContent = preview.authenticity;
+    $('academyReviewExisting').hidden = prepared.requiresAdmission;
+    $('academyReviewAccept').textContent = prepared.requiresAdmission ? 'Add lesson to shelf' : 'Open existing edition';
+  }
+  function closeInheritanceReview() {
+    var dialog = $('academyImportReview');
+    if (dialog && dialog.open) dialog.close();
+    pendingInheritanceReview = null;
+  }
+  function openInheritanceReview(packet) {
+    var prepared = Academy.prepareInheritanceReview(state.courses, packet);
+    if (!prepared.ok) throw new Error('Lesson packet refused: ' + prepared.errors.join('; '));
+    var dialog = $('academyImportReview');
+    if (!dialog || typeof dialog.showModal !== 'function') throw new Error('Lesson review is unavailable; nothing was imported');
+    pendingInheritanceReview = { packet:clone(packet) };
+    renderInheritanceReview(prepared);
+    if (!dialog.open) dialog.showModal();
+    toast('Lesson packet validated · human review required before admission');
+  }
+  function admitInheritanceReview() {
+    try {
+      if (!pendingInheritanceReview) throw new Error('No lesson packet is awaiting review');
+      var prepared = Academy.prepareInheritanceReview(state.courses, pendingInheritanceReview.packet);
+      if (!prepared.ok) throw new Error('Lesson packet refused on admission: ' + prepared.errors.join('; '));
+      var existing = prepared.existingCourseId && state.courses.find(function (course) { return course.id === prepared.existingCourseId; });
+      if (existing) {
+        state.settings.activeCourseId = existing.id;
+        closeInheritanceReview();
+        persist('Existing Academy edition opened · no learner state imported');
+        return;
+      }
+      var added = Core.addCourse(state, prepared.course);
+      state = added.project;
+      state.settings.activeCourseId = added.course.id;
+      closeInheritanceReview();
+      persist('Reviewed Academy edition added to the shelf · no learner or session imported');
+    } catch (error) { toast(error.message); }
+  }
+  function importLearningFile(parsed) {
+    if (parsed && parsed.schema === Academy.INHERITANCE_FORMAT) { openInheritanceReview(parsed); return; }
+    var project = parsed && (parsed.project || parsed);
+    if (!project || project.schema !== Core.FORMAT) throw new Error('not a Learning Lab project or Academy lesson packet');
+    state = Core.importProject(project);
+    persist('Learning project admitted with consent reset and imported evidence re-derived');
+  }
   function activeSession() { return state.sessions.find(function (session) { return session.id === state.settings.activeSessionId; }) || null; }
   function activeLearner() { return state.learners.find(function (learner) { return learner.id === state.settings.activeLearnerId; }) || null; }
   function activeCourse() { return state.courses.find(function (course) { return course.id === state.settings.activeCourseId; }) || state.courses[0]; }
+  function courseEditionLabel(course) {
+    var fingerprint = course && course.provenance && course.provenance.lessonFingerprint;
+    return fingerprint && /^[a-f0-9]{16}$/.test(fingerprint.value || '') ? ' · EDITION ' + fingerprint.value.slice(0, 8).toUpperCase() : '';
+  }
+  function academyOpenSession(learnerId) {
+    return state.sessions.slice().reverse().find(function (session) {
+      return session.learnerId === learnerId && ['ACTIVE','PAUSED','READY_FOR_REVIEW','REPAIR'].indexOf(session.status) >= 0;
+    }) || null;
+  }
+  function academyCoursesForSnapshot(snapshot) {
+    var baseId = 'academy-' + snapshot.sourceId;
+    return state.courses.filter(function (course) {
+      return course.id === baseId || (course.provenance && course.provenance.sourceId === snapshot.sourceId);
+    });
+  }
+  function academyCourseProgress(snapshot) {
+    var courses = academyCoursesForSnapshot(snapshot), courseIds = courses.map(function (course) { return course.id; });
+    var sessions = state.sessions.filter(function (session) { return courseIds.indexOf(session.courseId) >= 0; });
+    var current = sessions.slice().reverse().find(function (session) { return ['ACTIVE','PAUSED','READY_FOR_REVIEW','REPAIR'].indexOf(session.status) >= 0; });
+    var installed = current ? courses.find(function (course) { return course.id === current.courseId; }) : null;
+    if (current) {
+      if (current.status === 'READY_FOR_REVIEW' || current.status === 'REPAIR') return { state:current.status, label:'REVIEW READY' };
+      var editionState = installed ? Academy.freshness(installed, snapshot).state : 'UNVERIFIED_EDITION';
+      return { state:current.status, label:(current.status === 'PAUSED' ? 'PAUSED · ' : '') + 'STEP ' + Math.min(current.currentStep + 1, installed ? installed.steps.length : current.currentStep + 1) + (editionState === 'CURRENT' ? '' : ' · OLD EDITION') };
+    }
+    var currentCourse = courses.find(function (course) { return Academy.freshness(course, snapshot).state === 'CURRENT'; });
+    if (currentCourse && sessions.some(function (session) { return session.courseId === currentCourse.id && session.status === 'COMPLETE'; })) return { state:'COMPLETE', label:'COMPLETED' };
+    if (currentCourse) return { state:'SHELVED', label:'ON SHELF · CURRENT' };
+    if (courses.some(function (course) { return Academy.freshness(course, snapshot).state === 'COMPILER_CHANGED'; })) return { state:'COMPILER_CHANGED', label:'COMPILER UPDATED' };
+    if (courses.length) return { state:'SOURCE_CHANGED', label:'SOURCE CHANGED' };
+    return { state:'AVAILABLE', label:'READY TO LEARN' };
+  }
+  function academyLearnerOptions(selectedId) {
+    var rows = state.learners.map(function (learner) {
+      return '<option value="' + esc(learner.id) + '"' + (learner.id === selectedId ? ' selected' : '') + '>' + esc(learner.displayName) + ' · ' + (learner.optedIn ? 'opted in' : 'paused') + '</option>';
+    });
+    rows.push('<option value="__new__"' + (selectedId === '__new__' ? ' selected' : '') + '>New human learner…</option>');
+    return rows.join('');
+  }
+  function academyLearnerId(name) {
+    var stem = String(name || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 44) || 'local-learner';
+    var candidate = stem, suffix = 2;
+    while (state.learners.some(function (learner) { return learner.id === candidate; })) { candidate = stem.slice(0, 40) + '-' + suffix; suffix += 1; }
+    return candidate;
+  }
+  function installAcademyCourse(course) {
+    var existing = state.courses.find(function (item) { return item.id === course.id; });
+    if (existing) return existing;
+    var result = Core.addCourse(state, course);
+    state = result.project;
+    state.settings.activeCourseId = result.course.id;
+    return result.course;
+  }
+
+  function academyCourseCount() { return state.courses.filter(function (course) { return /^academy:/.test(course.source || ''); }).length; }
+  function loadAcademySources() {
+    if (academyLoadStarted) return;
+    academyLoadStarted = true;
+    fetch('./academy-source-catalog.json', { cache:'no-store' }).then(function (response) {
+      if (!response.ok) throw new Error('catalog HTTP ' + response.status);
+      return response.json();
+    }).then(function (catalog) {
+      var checked = Academy.validateCatalog(catalog);
+      if (!checked.ok) throw new Error(checked.errors.join('; '));
+      academyRows = checked.sources.map(function (item) { return { source:item, state:'LOADING', snapshot:null, error:'' }; });
+      academySelected = academyRows.length ? academyRows[0].source.id : null;
+      renderAcademy();
+      fetch('./academy-learning-path-catalog.json', { cache:'no-store' }).then(function (response) {
+        if (!response.ok) throw new Error('learning path catalog HTTP ' + response.status);
+        return response.json();
+      }).then(function (catalog) {
+        var pathCheck = Academy.validateLearningPaths(catalog, checked.sources);
+        if (!pathCheck.ok) throw new Error(pathCheck.errors.join('; '));
+        academyPaths = pathCheck.paths;
+        academyPathError = '';
+      }).catch(function (error) {
+        academyPaths = [];
+        academyPathError = error.message;
+      }).finally(renderAcademy);
+      academyRows.forEach(function (row) {
+        fetch(row.source.path, { cache:'no-store' }).then(function (response) {
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          return response.json();
+        }).then(function (data) {
+          row.snapshot = Academy.buildSnapshot(row.source, data);
+          row.state = 'READY';
+        }).catch(function (error) {
+          row.state = 'HELD';
+          row.error = error.message;
+        }).finally(renderAcademy);
+      });
+    }).catch(function (error) {
+      academyCatalogError = error.message;
+      academyRows = [];
+      academySelected = null;
+      renderAcademy();
+    });
+  }
+  function renderAcademyPaths() {
+    if (!$('academyLearningPaths')) return;
+    if (academyPathError) {
+      $('academyLearningPaths').innerHTML = '<div class="academy-path-held"><b>FOUNDATION TRAIL HELD</b><span>' + esc(academyPathError) + '</span></div>';
+      return;
+    }
+    if (!academyPaths.length) {
+      $('academyLearningPaths').innerHTML = '<div class="academy-path-loading">Reading the optional foundation trail from its local data contract…</div>';
+      return;
+    }
+    var learner = activeLearner();
+    var currentSnapshots = academyRows.filter(function (row) { return row.state === 'READY' && row.snapshot; }).map(function (row) { return row.snapshot; });
+    $('academyLearningPaths').innerHTML = academyPaths.map(function (path) {
+      var progress = Academy.learningPathProgress(path, state.courses, state.sessions, learner ? learner.id : null, currentSnapshots);
+      var nextRow = academyRows.find(function (row) { return row.source.id === progress.nextSourceId; });
+      var nextTitle = nextRow ? nextRow.source.title : progress.nextSourceId;
+      var historicalCopy = progress.historicalCompleted ? ' · ' + progress.historicalCompleted + ' earlier edition completion' + (progress.historicalCompleted === 1 ? '' : 's') + ' preserved' : '';
+      var learnerCopy = learner ? esc(learner.displayName) + ' · ' + progress.completed + ' of ' + progress.total + ' current' + historicalCopy : 'No learner selected · inspect the route before taking a seat';
+      var stages = progress.stages.map(function (stage, index) {
+        var row = academyRows.find(function (item) { return item.source.id === stage.sourceId; });
+        var revisionNote = stage.status === 'REVIEW_UPDATED' ? 'Earlier completion preserved · the current edition awaits review.' : stage.status === 'OLD_IN_PROGRESS' ? 'An earlier edition is still open · its attributed session remains intact.' : stage.status === 'UPDATE_AVAILABLE' ? 'A different edition is on the shelf · inspect the current lesson before continuing.' : '';
+        return '<li class="' + stage.status.toLowerCase() + '"><span class="academy-path-index">' + String(index + 1).padStart(2, '0') + '</span><div><b>' + esc(row ? row.source.title : stage.sourceId) + '</b><p>' + esc(stage.reason) + '</p>' + (revisionNote ? '<small class="academy-path-revision">' + esc(revisionNote) + '</small>' : '') + '</div><em>' + esc(stage.status.replace(/_/g, ' ')) + '</em></li>';
+      }).join('');
+      var nextStage = progress.stages.find(function (stage) { return stage.sourceId === progress.nextSourceId; });
+      var nextVerb = nextStage && ['REVIEW_UPDATED', 'OLD_IN_PROGRESS', 'UPDATE_AVAILABLE'].indexOf(nextStage.status) >= 0 ? 'Inspect current edition' : 'Inspect next lesson';
+      var nextAction = progress.nextSourceId ? '<button class="button primary academy-path-next" data-academy-next="' + esc(progress.nextSourceId) + '">' + nextVerb + ' · ' + esc(nextTitle) + '</button>' : '<span class="academy-path-finished">Trail complete · revisit any lesson whenever it helps.</span>';
+      return '<article class="academy-learning-path"><header><div><span>' + esc(path.level) + '</span><h4>' + esc(path.title) + '</h4></div><strong>' + progress.percent + '%</strong></header><p class="academy-path-summary">' + esc(path.summary) + '</p><div class="academy-path-audience"><b>For</b><span>' + esc(path.audience) + '</span></div><ol>' + stages + '</ol><div class="academy-path-actions"><span>' + learnerCopy + '</span>' + nextAction + '</div><details><summary>Outcomes and limits</summary><ul>' + path.outcomes.map(function (outcome) { return '<li>' + esc(outcome) + '</li>'; }).join('') + '</ul><p>' + esc(path.boundary) + '</p></details></article>';
+    }).join('');
+    $('academyLearningPaths').querySelectorAll('[data-academy-next]').forEach(function (button) {
+      button.onclick = function () {
+        academyCategory = 'all';
+        academySelected = button.dataset.academyNext;
+        renderAcademy();
+        setTimeout(function () { if ($('academyDetail')) $('academyDetail').scrollIntoView({ behavior:'smooth', block:'start' }); }, 0);
+      };
+    });
+  }
+  function renderAcademyCategories() {
+    $('academyCategories').innerHTML = Academy.categories().map(function (category) {
+      var count = category.id === 'all' ? academyRows.length : academyRows.filter(function (row) { return row.source.category === category.id; }).length;
+      return '<button class="academy-category' + (academyCategory === category.id ? ' active' : '') + '" data-academy-category="' + esc(category.id) + '"><b>' + esc(category.title) + '</b><span>' + count + '</span></button>';
+    }).join('');
+    $('academyCategories').querySelectorAll('[data-academy-category]').forEach(function (button) {
+      button.onclick = function () {
+        academyCategory = button.dataset.academyCategory;
+        var visible = academyRows.filter(function (row) { return academyCategory === 'all' || row.source.category === academyCategory; });
+        if (!visible.some(function (row) { return row.source.id === academySelected; })) academySelected = visible.length ? visible[0].source.id : null;
+        renderAcademy();
+      };
+    });
+  }
+  function renderAcademy() {
+    if (!$('academyCatalog')) return;
+    var ready = academyRows.filter(function (row) { return row.state === 'READY'; }).length;
+    $('academySourceCount').textContent = academyRows.length;
+    $('academyReadyCount').textContent = ready;
+    $('academyLessonCount').textContent = academyCourseCount();
+    renderAcademyPaths();
+    renderAcademyCategories();
+    var visible = academyRows.filter(function (row) { return academyCategory === 'all' || row.source.category === academyCategory; });
+    $('academyCatalog').innerHTML = visible.map(function (row) {
+      var category = Academy.categories().find(function (item) { return item.id === row.source.category; });
+      var factCount = row.snapshot ? row.snapshot.facts.length : 0;
+      var progress = row.snapshot ? academyCourseProgress(row.snapshot) : null;
+      return '<button class="academy-source-card' + (row.source.id === academySelected ? ' active' : '') + '" data-academy-source="' + esc(row.source.id) + '">'
+        + '<span class="academy-card-top"><i>' + esc(category ? category.title : row.source.category) + '</i><em class="' + row.state.toLowerCase() + '">' + esc(row.state) + '</em></span>'
+        + '<b>' + esc(row.source.title) + '</b><small>' + esc(row.source.organ) + '</small><span class="academy-card-summary">' + esc(row.source.summary) + '</span>'
+        + '<span class="academy-card-foot"><span>' + (factCount ? factCount + ' facts · ' + esc(progress.label) : 'reading local source') + '</span><i>→</i></span></button>';
+    }).join('') || '<div class="empty">' + (academyCatalogError ? 'Academy catalog held: ' + esc(academyCatalogError) : 'No Academy sources are assigned to this category yet.') + '</div>';
+    $('academyCatalog').querySelectorAll('[data-academy-source]').forEach(function (button) {
+      button.onclick = function () { academySelected = button.dataset.academySource; renderAcademy(); };
+    });
+    var selected = academyRows.find(function (row) { return row.source.id === academySelected; });
+    if (!selected) { $('academyDetail').innerHTML = '<div class="empty">' + (academyCatalogError ? 'No source was admitted. Repair the catalog before compiling lessons.' : 'Choose a source to inspect its lesson path.') + '</div>'; return; }
+    if (selected.state !== 'READY') {
+      $('academyDetail').innerHTML = '<span class="eyebrow">' + esc(selected.state) + ' · LOCAL SOURCE</span><h3>' + esc(selected.source.title) + '</h3><p>' + (selected.error ? 'The source could not be read: ' + esc(selected.error) : 'Reading the organ data and extracting bounded facts…') + '</p><code>' + esc(selected.source.path) + '</code>';
+      return;
+    }
+    var snapshot = selected.snapshot, templateCourse = Academy.courseFromSnapshot(snapshot);
+    var admissionPassed = snapshot.admission.checks.filter(function (check) { return check.pass; }).length;
+    var lineageCourses = academyCoursesForSnapshot(snapshot);
+    var lineageStates = lineageCourses.map(function (item) { return Academy.freshness(item, snapshot).state; });
+    var currentCourse = lineageCourses.find(function (item) { return Academy.freshness(item, snapshot).state === 'CURRENT'; }) || null;
+    var unverifiedOnly = lineageStates.length && lineageStates.every(function (item) { return item === 'UNVERIFIED_EDITION'; });
+    var compilerChangedOnly = lineageStates.length && lineageStates.every(function (item) { return item === 'COMPILER_CHANGED'; });
+    var revised = lineageCourses.length > 0 && !currentCourse;
+    var course = currentCourse || (revised ? Academy.courseFromSnapshot(snapshot, { edition:true }) : templateCourse);
+    var installed = !!currentCourse;
+    var freshnessState = currentCourse ? 'CURRENT EDITION' : unverifiedOnly ? 'UNVERIFIED EDITION' : compilerChangedOnly ? 'COMPILER UPDATED' : revised ? 'SOURCE CHANGED' : 'NEW SNAPSHOT';
+    var freshnessClass = currentCourse ? 'current' : revised ? 'changed' : 'new';
+    var fingerprintShort = snapshot.lessonFingerprint.value.slice(0, 12);
+    var freshnessCopy = currentCourse ? 'The installed lesson matches the current source, compiler recipe and generated teaching steps. Existing attempts remain attached to this exact edition.' : unverifiedOnly ? 'An installed legacy lesson has no usable fingerprint. It stays intact; adding the tracked edition creates a new course instead of rewriting that history.' : compilerChangedOnly ? 'The source may be unchanged, but the teaching compiler receipt is older. Existing lessons and attempts stay intact; the current recipe becomes a separate reviewed edition.' : revised ? 'The current source now compiles into a different lesson. Earlier editions and their sessions stay intact; this revision is added as a separate course.' : 'No edition is installed yet. This fingerprint covers both source meaning and generated teaching steps so neither can change silently.';
+    if (!academyLearnerChoice || (academyLearnerChoice !== '__new__' && !state.learners.some(function (learner) { return learner.id === academyLearnerChoice; }))) {
+      academyLearnerChoice = state.settings.activeLearnerId || (state.learners.length ? state.learners[0].id : '__new__');
+    }
+    var launchLearner = state.learners.find(function (learner) { return learner.id === academyLearnerChoice; }) || null;
+    var launchSession = launchLearner ? academyOpenSession(launchLearner.id) : null;
+    var sameCourse = launchSession && launchSession.courseId === course.id;
+    var completedBefore = launchLearner && state.sessions.some(function (session) { return session.learnerId === launchLearner.id && session.courseId === course.id && session.status === 'COMPLETE'; });
+    var launchState = academyLearnerChoice === '__new__' ? 'NEW LEARNER' : sameCourse ? (launchSession.status === 'READY_FOR_REVIEW' || launchSession.status === 'REPAIR' ? 'REVIEW READY' : launchSession.status === 'PAUSED' ? 'PAUSED' : 'IN PROGRESS') : launchSession ? 'OTHER LESSON ACTIVE' : completedBefore ? 'COMPLETED BEFORE' : installed ? 'READY TO BEGIN' : 'ADD + BEGIN';
+    var launchButton = academyLearnerChoice === '__new__' ? (revised ? 'Create learner + begin revised edition' : 'Create learner + begin') : sameCourse ? (launchSession.status === 'PAUSED' ? 'Opt in + resume lesson' : 'Resume this lesson') : launchSession ? 'Resume current lesson' : completedBefore ? 'Study this lesson again' : launchLearner && !launchLearner.optedIn ? (revised ? 'Opt in + begin revised edition' : 'Opt in + begin lesson') : installed ? 'Begin this lesson' : revised ? 'Add revised edition + begin' : 'Add + begin lesson';
+    var launchCopy = launchSession && !sameCourse ? esc(launchLearner.displayName) + ' already has “' + esc((state.courses.find(function (item) { return item.id === launchSession.courseId; }) || { title:launchSession.courseId }).title) + '” open. This lesson can wait on the shelf while that attributed session resumes.' : 'Beginning creates or resumes one attributed, evidence-bearing session. Reloading the Workshop keeps the learner at the same step.';
+    $('academyDetail').innerHTML = '<div class="academy-detail-head"><div><span class="eyebrow">' + esc(snapshot.level) + ' · ' + esc(snapshot.organ) + '</span><h3>' + esc(snapshot.title) + '</h3></div><span class="status ready">ADMITTED ' + admissionPassed + '/' + snapshot.admission.checks.length + '</span></div>'
+      + '<p class="academy-summary">' + esc(snapshot.summary) + '</p>'
+      + '<div class="academy-provenance"><span>LOCAL · CONTRACT GATED</span><code>' + esc(snapshot.path) + '</code><a href="' + esc(snapshot.path) + '" target="_blank" rel="noopener">Inspect data ↗</a></div>'
+      + '<div class="academy-freshness ' + freshnessClass + '"><div><span>' + esc(freshnessState) + '</span><code>' + esc(fingerprintShort) + '</code></div><p>' + esc(freshnessCopy) + '</p><small>Recipe ' + esc(snapshot.lessonFingerprint.recipe) + ' · ' + esc(snapshot.lessonFingerprint.boundary) + '</small></div>'
+      + '<div class="academy-facts">' + snapshot.facts.map(function (item) { return '<article><b>' + esc(item.value) + '</b><span>' + esc(item.label) + '</span><small>' + esc(item.meaning) + '</small></article>'; }).join('') + '</div>'
+      + '<div class="academy-boundary"><span>BOUNDARY STAYS IN THE LESSON</span><p>' + esc(snapshot.boundary) + '</p></div>'
+      + '<h4>Human lesson path</h4><ol class="academy-steps">' + course.steps.map(function (step) { return '<li><span>' + esc(step.minutes) + ' min</span><div><b>' + esc(step.title) + '</b><small>' + esc(step.prompt) + '</small></div></li>'; }).join('') + '</ol>'
+      + '<section class="academy-inheritance"><div><span>LESSON INHERITANCE</span><b>Carry this exact edition forward</b><p>One source-linked lesson only. No learners, sessions, attempts, notebook entries, classroom messages or private evidence leave with it.</p></div><button id="academyExportLesson" class="button secondary">Export lesson packet</button><small>The fingerprint detects change; it is not a source signature. Import through the top bar adds the lesson without enrolling or starting anyone.</small></section>'
+      + '<section class="academy-launchpad" aria-labelledby="academyLaunchTitle"><header><div><span>LEARNER HANDOFF</span><h4 id="academyLaunchTitle">Learn this lesson</h4></div><em class="' + (launchState === 'OTHER LESSON ACTIVE' || launchState === 'PAUSED' ? 'held' : 'ready') + '">' + esc(launchState) + '</em></header><p>' + launchCopy + '</p>'
+      + '<div class="academy-learner-fields"><label><span>Learner</span><select id="academyLearnerChoice">' + academyLearnerOptions(academyLearnerChoice) + '</select></label>'
+      + '<label id="academyNewLearnerField"' + (academyLearnerChoice === '__new__' ? '' : ' hidden') + '><span>Your learning name</span><input id="academyNewLearnerName" maxlength="80" autocomplete="name" placeholder="Name kept on this device"></label></div>'
+      + '<div class="academy-actions"><button id="academyBeginCourse" class="button primary">' + esc(launchButton) + '</button>' + (!installed ? '<button id="academyAddCourse" class="button secondary">' + (revised ? 'Add revised edition only' : 'Add to shelf only') + '</button>' : '') + '<a class="button secondary" href="' + esc(snapshot.tool) + '">Open producing organ</a></div>'
+      + '<small class="academy-consent">A new or paused learner opts in only through the named button above. Completion remains a learning receipt—not authority or canon.</small></section>';
+    $('academyLearnerChoice').onchange = function () { academyLearnerChoice = this.value; renderAcademy(); };
+    if ($('academyNewLearnerName')) $('academyNewLearnerName').onkeydown = function (event) { if (event.key === 'Enter') $('academyBeginCourse').click(); };
+    if ($('academyAddCourse')) $('academyAddCourse').onclick = function () {
+      try { installAcademyCourse(course); persist(revised ? 'Revised Academy edition added · earlier learning history preserved' : 'Academy lesson added with source provenance'); } catch (error) { toast(error.message); }
+    };
+    $('academyExportLesson').onclick = function () {
+      try {
+        var packet = Academy.buildInheritancePacket(course);
+        var fingerprint = packet.lesson.provenance.lessonFingerprint.value.slice(0, 12);
+        download('AXM_ACADEMY_LESSON_' + snapshot.sourceId + '_' + fingerprint + '.json', packet);
+        toast('Lesson-only inheritance packet exported · no learner data included');
+      } catch (error) { toast(error.message); }
+    };
+    $('academyBeginCourse').onclick = function () { beginAcademyCourse(course); };
+  }
+
+  function beginAcademyCourse(course) {
+    try {
+      var isRevision = /--[a-f0-9]{12}$/.test(course.id);
+      var learner = state.learners.find(function (item) { return item.id === academyLearnerChoice; }) || null;
+      if (academyLearnerChoice === '__new__') {
+        var name = $('academyNewLearnerName').value.trim();
+        if (!name) { $('academyNewLearnerName').focus(); throw new Error('Name the learner before beginning'); }
+        var added = Core.addLearner(state, { id:academyLearnerId(name), displayName:name, kind:'human', optedIn:true });
+        state = added.project;
+        learner = added.learner;
+        academyLearnerChoice = learner.id;
+      } else if (!learner) throw new Error('Choose an attributed learner');
+      if (!learner.optedIn) { state = Core.setOptIn(state, learner.id, true); learner = state.learners.find(function (item) { return item.id === learner.id; }); }
+      installAcademyCourse(course);
+      var open = academyOpenSession(learner.id);
+      if (open) {
+        state.settings.activeLearnerId = learner.id;
+        state.settings.activeCourseId = open.courseId;
+        state.settings.activeSessionId = open.id;
+        selectMode('study');
+        persist(open.courseId === course.id ? 'Resumed attributed Academy lesson' : (isRevision ? 'Revised Academy edition shelved · resumed the learner’s current practice' : 'Academy lesson shelved · resumed the learner’s current practice'));
+        return;
+      }
+      var started = Core.startSession(state, { learnerId:learner.id, courseId:course.id });
+      state = started.project;
+      selectMode('study');
+      persist(isRevision ? 'Revised Academy edition begun · earlier sessions remain intact' : 'Academy lesson begun · progress will resume after reload');
+    } catch (error) { toast(error.message); }
+  }
 
   function renderNav() {
     $('modeNav').innerHTML = Core.MODES.map(function (mode) { return '<button class="mode-button" data-mode="' + esc(mode.id) + '"><i>' + ICONS[mode.id] + '</i><b>' + esc(mode.title) + '</b></button>'; }).join('');
@@ -79,6 +407,8 @@
   }
   function selectMode(mode) {
     activeMode = MODE_COPY[mode] ? mode : 'home'; state.settings.mode = activeMode;
+    localStorage.setItem(STORE, JSON.stringify(state));
+    if (window.AXMHub) AXMHub.save({ project:state, shared:shared });
     document.querySelectorAll('.mode-panel').forEach(function (panel) { panel.hidden = panel.id !== activeMode + 'Panel'; });
     document.querySelectorAll('.mode-button').forEach(function (button) { button.classList.toggle('active', button.dataset.mode === activeMode); });
     $('modeKicker').textContent = MODE_COPY[activeMode][0]; $('modeTitle').textContent = MODE_COPY[activeMode][1]; $('modeDescription').textContent = MODE_COPY[activeMode][2];
@@ -90,7 +420,7 @@
     if (!state.learners.length) return '<option value="">No learners yet</option>';
     return state.learners.map(function (learner) { return '<option value="' + esc(learner.id) + '"' + (learner.id === selectedId ? ' selected' : '') + '>' + esc(learner.displayName) + ' · ' + esc(learner.kind) + (learner.optedIn ? ' · opted in' : ' · paused') + '</option>'; }).join('');
   }
-  function courseOptions(selectedId) { return state.courses.map(function (course) { return '<option value="' + esc(course.id) + '"' + (course.id === selectedId ? ' selected' : '') + '>' + esc(course.title) + ' · ' + esc(course.status) + '</option>'; }).join(''); }
+  function courseOptions(selectedId) { return state.courses.map(function (course) { return '<option value="' + esc(course.id) + '"' + (course.id === selectedId ? ' selected' : '') + '>' + esc(course.title) + ' · ' + esc(course.status + courseEditionLabel(course)) + '</option>'; }).join(''); }
   function renderMetrics() {
     var summary = Core.summary(state), session = activeSession();
     $('metricCourses').textContent = summary.courses; $('metricLearners').textContent = summary.learners; $('metricSessions').textContent = summary.activeSessions; $('metricReceipts').textContent = state.receipts.length;
@@ -98,7 +428,7 @@
     $('footerStatus').textContent = session ? session.status + ' · ' + session.learnerId + ' · ' + session.courseId : 'Ready · no active learner';
   }
   function renderHome() {
-    $('courseShelf').innerHTML = state.courses.map(function (course) { return '<article class="course-item" data-course="' + esc(course.id) + '"><span>' + esc(course.level) + ' · ' + course.steps.length + ' STEPS · ' + esc(course.status) + '</span><b>' + esc(course.title) + '</b><small>' + esc(course.summary) + '</small></article>'; }).join('');
+    $('courseShelf').innerHTML = state.courses.map(function (course) { return '<article class="course-item" data-course="' + esc(course.id) + '"><span>' + esc(course.level) + ' · ' + course.steps.length + ' STEPS · ' + esc(course.status + courseEditionLabel(course)) + '</span><b>' + esc(course.title) + '</b><small>' + esc(course.summary) + '</small></article>'; }).join('');
     $('courseShelf').querySelectorAll('[data-course]').forEach(function (card) { card.onclick = function () { state.settings.activeCourseId = card.dataset.course; $('courseSelect').value = card.dataset.course; selectMode('study'); }; });
     $('learnerList').innerHTML = state.learners.length ? state.learners.map(function (learner) { return '<article class="learner-item"><span>' + esc(learner.kind.toUpperCase()) + ' · ' + (learner.optedIn ? 'OPTED IN' : 'PAUSED') + '</span><b>' + esc(learner.displayName) + '</b><small>' + learner.privateProfile.completedSessions + ' completed · ' + learner.privateProfile.repairSessions + ' repair · ' + learner.privateProfile.reviewedSteps + ' steps</small></article>'; }).join('') : '<div class="empty">No learner has been added.</div>';
     var session = activeSession();
@@ -107,6 +437,7 @@
       var course = state.courses.find(function (item) { return item.id === session.courseId; }), learner = state.learners.find(function (item) { return item.id === session.learnerId; });
       $('activeSessionHome').outerHTML = '<div id="activeSessionHome" class="truth-box"><b>' + esc(learner ? learner.displayName : session.learnerId) + '</b><br>' + esc(course ? course.title : session.courseId) + '<br>Step ' + Math.min(session.currentStep + 1, course.steps.length) + ' / ' + course.steps.length + ' · ' + esc(session.status) + '</div>';
     }
+    renderAcademy();
   }
   function renderLearnersAndSession() {
     var learner = activeLearner(), session = activeSession();
@@ -120,21 +451,44 @@
     }
     renderLesson();
   }
+  function sessionEvidenceReviewMarkup(review) {
+    var repaired = review.repairs.filter(function (item) { return !!item.resolvedAt; }).length;
+    return '<div class="session-evidence-review"><div class="session-review-summary"><div><span>LEARNER EVIDENCE REVIEW</span><b>' + review.completedSteps + ' / ' + review.totalSteps + ' responses visible</b></div><em>' + repaired + ' repaired</em></div>'
+      + '<p>Compare each response with its original prompt. Completion stays available only after every step has visible evidence; choose one response to revisit if it can be clearer or more honest.</p>'
+      + '<div class="session-review-rows">' + review.rows.map(function (row) {
+        return '<article class="session-review-row"><header><span>' + String(row.order).padStart(2, '0') + ' · ' + esc(row.type.toUpperCase()) + '</span><em>' + row.attemptCount + ' attempt' + (row.attemptCount === 1 ? '' : 's') + '</em></header><b>' + esc(row.title) + '</b><small>Prompt · ' + esc(row.prompt) + '</small><blockquote>' + esc(row.evidence || 'Evidence missing for this step.') + '</blockquote><button class="button secondary" data-repair-step="' + esc(row.stepId) + '" aria-label="Revisit step: ' + esc(row.title) + '">Revisit this step</button></article>';
+      }).join('') + '</div><div class="session-review-boundary"><span>REVIEW BOUNDARY</span><p>' + esc(review.boundary) + '</p><small>Earlier attempts remain in the session. Repair adds evidence; it never overwrites history.</small></div></div>';
+  }
+  function revisitEvidenceStep(session, stepId) {
+    try {
+      var learner = state.learners.find(function (item) { return item.id === session.learnerId; }) || null;
+      var course = state.courses.find(function (item) { return item.id === session.courseId; }) || null;
+      var step = course && course.steps.find(function (item) { return item.id === stepId; });
+      if (!step) throw new Error('review step is no longer available');
+      var reopened = Core.reviewSession(state, { sessionId:session.id, decision:'REPAIR', stepId:step.id, note:'Learner explicitly reopened “' + step.title + '” after comparing the visible evidence sequence.', reviewer:learner ? learner.id : 'local-learner' });
+      state = reopened.project;
+      persist('Reopened one evidence step for repair · prior attempts preserved');
+    } catch (error) { toast(error.message); }
+  }
   function renderLesson() {
     var session = activeSession();
-    if (!session) { $('lessonTitle').textContent = 'No active lesson'; $('lessonProgress').textContent = '0 / 0'; $('lessonBody').innerHTML = '<div class="empty">Start a session to open the first step.</div>'; $('openStepTool').disabled = true; $('completeStep').disabled = true; return; }
+    if (!session) { $('lessonTitle').textContent = 'No active lesson'; $('lessonProgress').textContent = '0 / 0'; $('lessonBody').innerHTML = '<div class="empty">Start a session to open the first step.</div>'; $('lessonEvidenceField').hidden = true; $('openStepTool').disabled = true; $('completeStep').disabled = true; $('completeStep').textContent = 'Record step + continue'; return; }
     var course = state.courses.find(function (item) { return item.id === session.courseId; });
     if (session.status === 'PAUSED') {
       $('lessonTitle').textContent = 'Session paused by learner'; $('lessonProgress').textContent = session.currentStep + ' / ' + course.steps.length;
       $('lessonBody').innerHTML = '<h4>Consent is currently paused.</h4><p>The session and its evidence remain preserved, but no next step may be recorded until this learner explicitly opts in again.</p>';
-      $('openStepTool').disabled = true; $('completeStep').disabled = true; $('completeStep').textContent = 'Paused'; return;
+      $('lessonEvidenceField').hidden = true; $('openStepTool').disabled = true; $('completeStep').disabled = true; $('completeStep').textContent = 'Paused'; return;
     }
     if (session.status === 'READY_FOR_REVIEW' || session.status === 'REPAIR') {
-      $('lessonTitle').textContent = session.status === 'REPAIR' ? 'Repair review' : 'Session ready for review'; $('lessonProgress').textContent = course.steps.length + ' / ' + course.steps.length;
-      $('lessonBody').innerHTML = '<h4>' + esc(course.title) + '</h4><p>All ordered steps carry evidence. Review the sequence before closing it. Completion remains a session receipt—not permission, wisdom or canon.</p><p class="prompt">Use the button below as the explicit review gate.</p>';
-      $('openStepTool').disabled = true; $('completeStep').disabled = false; $('completeStep').textContent = 'Review + complete session'; return;
+      var review = Core.prepareSessionReview(state, session.id);
+      $('lessonTitle').textContent = session.status === 'REPAIR' ? 'Repair review' : 'Session evidence review'; $('lessonProgress').textContent = review.completedSteps + ' / ' + review.totalSteps;
+      $('lessonBody').innerHTML = '<h4>' + esc(course.title) + '</h4>' + sessionEvidenceReviewMarkup(review);
+      $('lessonEvidenceField').hidden = true;
+      $('lessonBody').querySelectorAll('[data-repair-step]').forEach(function (button) { button.onclick = function () { revisitEvidenceStep(session, button.dataset.repairStep); }; });
+      $('openStepTool').disabled = true; $('completeStep').disabled = !review.canComplete; $('completeStep').textContent = review.canComplete ? 'Complete after evidence review' : 'Evidence missing'; return;
     }
     var step = course.steps[session.currentStep];
+    $('lessonEvidenceField').hidden = false;
     $('lessonTitle').textContent = step.title; $('lessonProgress').textContent = (session.currentStep + 1) + ' / ' + course.steps.length;
     var detail = step.body || (step.type === 'flashcards' ? step.cards.length + ' cards are ready in this step.' : step.type === 'assessment' ? step.questions.length + ' visible questions are ready.' : 'Open the dedicated tool, make one bounded attempt, then preserve what it showed.');
     $('lessonBody').innerHTML = '<span class="eyebrow">' + esc(step.type.toUpperCase()) + ' · ' + step.minutes + ' MIN</span><h4>' + esc(step.title) + '</h4><p>' + esc(detail) + '</p><p class="prompt">' + esc(step.prompt || 'Record what the attempt showed.') + '</p>' + renderStepExtra(step);
@@ -191,7 +545,7 @@
   function finishOrAdvance() {
     var session = activeSession(); if (!session) return;
     try {
-      if (session.status === 'READY_FOR_REVIEW' || session.status === 'REPAIR') { var reviewed = Core.reviewSession(state, { sessionId:session.id, decision:'COMPLETE', note:'Explicit Learning Lab interface review: ordered evidence-bearing steps preserved.', reviewer:'local-steward' }); state = reviewed.project; persist('Session reviewed and completed · no authority granted'); return; }
+      if (session.status === 'READY_FOR_REVIEW' || session.status === 'REPAIR') { var review = Core.prepareSessionReview(state, session.id), learner = state.learners.find(function (item) { return item.id === session.learnerId; }) || null; var reviewed = Core.reviewSession(state, { sessionId:session.id, decision:'COMPLETE', note:'Learner reviewed ' + review.completedSteps + '/' + review.totalSteps + ' visible evidence responses. Earlier attempts and focused repairs remain preserved.', reviewer:learner ? learner.id : 'local-steward' }); state = reviewed.project; persist('Visible evidence reviewed and session completed · no authority granted'); return; }
       var evidence = $('lessonEvidence').value.trim(); var step = Core.currentStep(state, session.id); var result = Core.completeStep(state, { sessionId:session.id, stepId:step.id, evidence:evidence, result:'RECORDED' }); state = result.project; $('lessonEvidence').value = ''; persist(result.session.status === 'READY_FOR_REVIEW' ? 'All steps recorded · explicit review still required' : 'Step recorded · next practice opened');
     } catch (error) { toast(error.message); }
   }
@@ -260,22 +614,25 @@
   }
 
   function bind() {
+    $('browseAcademy').onclick = function () { $('academyFoundation').scrollIntoView({ behavior:'smooth', block:'start' }); };
     $('addLearner').onclick = addLearner; $('learnerSelect').onchange = selectLearner; $('courseSelect').onchange = selectCourse; $('toggleOptIn').onclick = toggleOptIn; $('startSession').onclick = startSession; $('openStepTool').onclick = openStepTool; $('completeStep').onclick = finishOrAdvance;
     $('gradeAssessment').onclick = gradeAssessment; ['evidenceInput','sourceInput','contradictionInput'].forEach(function (id) { $(id).oninput = updateLabPreview; }); $('runLab').onclick = runLab;
     $('resetCode').onclick = function () { $('codeSource').value = codeChallenge.starter; toast('Starter restored'); }; $('runCode').onclick = runCodeSandbox;
     $('sendClassroom').onclick = sendClassroom; $('addNote').onclick = addNote; $('checkSchool').onclick = checkSchool; $('buildSchoolHandoff').onclick = buildSchoolHandoff; $('createCourse').onclick = createCourse;
+    $('academyReviewClose').onclick = closeInheritanceReview; $('academyReviewCancel').onclick = closeInheritanceReview; $('academyReviewAccept').onclick = admitInheritanceReview;
+    $('academyImportReview').addEventListener('cancel', function (event) { event.preventDefault(); closeInheritanceReview(); });
     $('exportProject').onclick = function () { download('AXM_LEARNING_LAB_' + state.id + '.json', Core.exportPacket(state)); toast('Portable learning project exported'); };
-    $('importProject').onchange = function (event) { var file = event.target.files[0]; if (!file) return; file.text().then(function (content) { var parsed = JSON.parse(content), project = parsed.project || parsed; if (project.schema !== Core.FORMAT) throw new Error('not a Learning Lab project'); state = Core.normalize(project); persist('Learning project imported explicitly'); }).catch(function (error) { toast(error.message); }); event.target.value = ''; };
+    $('importProject').onchange = function (event) { var file = event.target.files[0]; if (!file) return; file.text().then(function (content) { importLearningFile(JSON.parse(content)); }).catch(function (error) { toast(error.message); }); event.target.value = ''; };
     $('newProject').onclick = function () { if (!window.confirm('Start a fresh Learning Lab project? Export first if this project matters.')) return; state = Core.createProject(); shared = createShared(); persist('Fresh Learning Lab project created'); selectMode('home'); };
   }
 
   function init(saved) {
     if (saved && saved.project && saved.project.schema === Core.FORMAT) state = Core.normalize(saved.project);
     if (saved && saved.shared) shared = saved.shared;
-    renderNav(); bind(); selectMode(activeMode); updateLabPreview();
+    renderNav(); bind(); selectMode(activeMode); updateLabPreview(); loadAcademySources();
   }
   if (window.AXMHub) {
     AXMHub.onInit(function (payload) { init(payload && payload.savedState); });
-    AXMHub.ready({ id:'learning-lab', name:'AXM Learning Lab', version:'v0.1', hubApiVersion:'1.0', permissions:['storage','export','shared-engines'], savesState:true, handlesShutdown:false, capabilities:['lessons','assessment','simulation','sandboxed-code','classroom','notebook','course-authoring','school-door'] });
+    AXMHub.ready({ id:'learning-lab', name:'AXM Academy · Learning Lab', version:'v0.1', hubApiVersion:'1.0', permissions:['storage','export','shared-engines'], savesState:true, handlesShutdown:false, capabilities:['source-to-lesson-academy','categorized-local-curriculum','lessons','assessment','simulation','sandboxed-code','classroom','notebook','course-authoring','school-door'] });
   } else init();
 }());

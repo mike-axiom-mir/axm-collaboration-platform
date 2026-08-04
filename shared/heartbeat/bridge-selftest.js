@@ -50,6 +50,18 @@ const bridge = Bridge.create({
   assert.equal(manual.reason, 'manual-beats-do-not-spend-verification-pulses');
   assert.equal(bridge.status().maxChecksPerHour, 15);
   assert.equal(bridge.status().repairAuthority, 'FINDINGS_ONLY');
+  const evidence = bridge.status().evidenceSummary;
+  assert.equal(evidence.durationKind, 'WALL_CLOCK_PROCESS_WINDOW');
+  assert.equal(evidence.retainedWindowCount, 2);
+  assert.equal(evidence.passWindowCount, 2);
+  assert.equal(evidence.checkExecutionCount, 30);
+  assert.equal(evidence.passCheckCount, 30);
+  assert.equal(evidence.failedCheckCount, 0);
+  assert.equal(evidence.uniqueCheckCount, 30);
+  assert.equal(evidence.lastDurationMs, 0);
+  assert.equal(evidence.pressureSampleCount, 32);
+  assert.equal(evidence.peakCpuUsedRatio, 0.1);
+  assert(Math.abs(evidence.averageCpuUsedRatio - 0.1) < 1e-12);
   let bootstrapPulseState = null;
   const bootstrapPulse = PulseService.create({ read: () => bootstrapPulseState, write: value => { bootstrapPulseState = value; } });
   let bootstrapBridgeState = null;

@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "REPLICA_AUTHORITY_INHERITANCE",
+      "expected": "HOLD_TRUST_OR_AUTHORITY_TRANSFER",
+      "stimulus": "replica handoff inherits human authority"
+    }
+  ],
+  "category": 8,
+  "category_name": "8. Cross-session, cross-device, human-AI, and replica continuity",
+  "full_semantic_implementation": false,
+  "number": 73,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Give each AI seat only the scoped memory, role, sources, permissions, task contract, and unresolved questions needed for one assignment.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "fa7c47026ace5bb8d72096b617f832537aff0ea7ee6774021695aba0b62c6007"
+  },
+  "source_contract_sha256": "143a739fd2d81ab5517a8d40b9bf5441ab9b1ed67cbdd0a727c27059b3046d7d",
+  "stable_id": "axm.memory.ai-seat-context-adapter"
+}

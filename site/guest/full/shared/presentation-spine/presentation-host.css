@@ -1,0 +1,154 @@
+/* AXM presentation host v1
+   This layer is deliberately inert unless the Hub selects Shared mode. */
+body[data-axm-presentation-mode="shared"] {
+  color: var(--axm-text, #eaf5ff);
+  background:
+    radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--axm-accent, #67efff) 12%, transparent), transparent 34rem),
+    radial-gradient(circle at 88% 16%, color-mix(in srgb, var(--axm-secondary, #9b7cff) 11%, transparent), transparent 32rem),
+    linear-gradient(145deg, #07111c, #091321 48%, #060d16);
+  font-family: var(--axm-font-sans, Inter, "Segoe UI", sans-serif);
+}
+body[data-axm-presentation-mode="shared"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .2;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--axm-accent, #67efff) 13%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--axm-accent, #67efff) 13%, transparent) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: linear-gradient(to bottom, #000, transparent 82%);
+}
+body[data-axm-presentation-mode="shared"] :is(button, input, select, textarea) {
+  color: inherit;
+  border-color: color-mix(in srgb, var(--axm-accent, #67efff) 34%, #203449);
+  background-color: color-mix(in srgb, #091522 86%, transparent);
+}
+body[data-axm-presentation-mode="shared"] :is(button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--axm-accent, #67efff);
+  outline-offset: 2px;
+  box-shadow: 0 0 22px color-mix(in srgb, var(--axm-accent, #67efff) 28%, transparent);
+}
+body[data-axm-presentation-mode="shared"] :is(.panel, .card, .sheet, .drawer, .toolbar, .topbar, .sidebar, [class$="-card"]) {
+  border-color: color-mix(in srgb, var(--axm-accent, #67efff) 18%, #203449);
+  background-color: color-mix(in srgb, #07121f 82%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025), 0 14px 38px rgba(0,0,0,.18);
+  backdrop-filter: blur(14px) saturate(118%);
+}
+body[data-axm-presentation-mode="shared"] :is(a, button):hover {
+  border-color: color-mix(in srgb, var(--axm-accent, #67efff) 58%, #203449);
+}
+
+/* Portable presentation-recipe layers. These selectors only become active
+   after the Hub has selected Shared mode and applied a validated data recipe. */
+body[data-axm-presentation-mode="shared"][data-axm-surface="solid"] :is(.panel, .card, .sheet, .drawer, .toolbar, .topbar, .sidebar, [class$="-card"]) {
+  background-color:#091522;
+  backdrop-filter:none;
+}
+body[data-axm-presentation-mode="shared"][data-axm-surface="minimal"] :is(.panel, .card, .sheet, .drawer, .toolbar, .topbar, .sidebar, [class$="-card"]) {
+  background-color:color-mix(in srgb,#07121f 48%,transparent);
+  border-color:color-mix(in srgb,var(--axm-accent,#67efff) 10%,transparent);
+  backdrop-filter:none;
+}
+body[data-axm-presentation-mode="shared"][data-axm-depth="flat"] :is(.panel, .card, .sheet, .drawer, .toolbar, .topbar, .sidebar, [class$="-card"]) { box-shadow:none; }
+body[data-axm-presentation-mode="shared"][data-axm-depth="dimensional"] :is(.panel, .card, .sheet, .drawer, .toolbar, .topbar, .sidebar, [class$="-card"]) {
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 2px 0 color-mix(in srgb,var(--axm-accent,#67efff) 15%,transparent),0 20px 52px rgba(0,0,0,.34);
+  transform:translateZ(0);
+}
+body[data-axm-presentation-mode="shared"][data-axm-motion="responsive"] :is(button, a, .card, [class$="-card"]) { transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease; }
+body[data-axm-presentation-mode="shared"][data-axm-motion="responsive"] :is(button, a):hover { transform:translateY(-1px); }
+body[data-axm-presentation-mode="shared"][data-axm-motion="ambient"]::before { animation:axm-presentation-drift 18s ease-in-out infinite alternate; }
+@keyframes axm-presentation-drift { from{background-position:0 0,0 0} to{background-position:32px 18px,-24px 28px} }
+body[data-axm-presentation-mode="shared"][data-axm-density="compact"] :is(.panel, .card, .sheet, .drawer, [class$="-card"]) { --axm-recipe-space:.78; }
+body[data-axm-presentation-mode="shared"][data-axm-density="comfortable"] :is(.panel, .card, .sheet, .drawer, [class$="-card"]) { --axm-recipe-space:1.18; }
+body[data-axm-presentation-mode="shared"][data-axm-density] :is(button, input, select, textarea) { min-height:calc(2.35rem * var(--axm-recipe-space,1)); }
+body[data-axm-presentation-mode="shared"][data-axm-signal="quiet"]::before { opacity:.08; }
+body[data-axm-presentation-mode="shared"][data-axm-signal="luminous"]::before { opacity:.32; }
+body[data-axm-presentation-mode="shared"][data-axm-signal="luminous"] :is(button, a, [aria-current="page"], .active) {
+  text-shadow:0 0 14px color-mix(in srgb,var(--axm-accent,#67efff) 48%,transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-axm-presentation-mode="shared"] *,
+  body[data-axm-presentation-mode="shared"] *::before,
+  body[data-axm-presentation-mode="shared"] *::after { scroll-behavior:auto !important; transition:none !important; animation:none !important; }
+}
+
+/* AXM presentation host v2 — professional shared-mode finish.
+   Presentation only: structure, behavior and data authority remain module-owned. */
+body[data-axm-presentation-mode="shared"] {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body[data-axm-presentation-mode="shared"] :is(h1, h2, h3) {
+  line-height: 1.12;
+  letter-spacing: -.02em;
+  text-wrap: balance;
+}
+
+body[data-axm-presentation-mode="shared"] :is(p, li, dd) {
+  line-height: 1.58;
+}
+
+body[data-axm-presentation-mode="shared"] :is(button, input, select, textarea) {
+  border-radius: var(--spine-radius, 9px);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .025);
+}
+
+body[data-axm-presentation-mode="shared"] :is(input, select, textarea) {
+  padding-inline: .78rem;
+}
+
+body[data-axm-presentation-mode="shared"] button:not(:disabled),
+body[data-axm-presentation-mode="shared"] summary {
+  cursor: pointer;
+}
+
+body[data-axm-presentation-mode="shared"] :is(button, input, select, textarea):disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+body[data-axm-presentation-mode="shared"] :is(.panel, .card, .sheet, .drawer, .toolbar, .topbar, .sidebar, [class$="-card"]) {
+  border-radius: var(--spine-radius, 11px);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .035), 0 16px 42px rgba(0, 0, 0, .22);
+}
+
+body[data-axm-presentation-mode="shared"] :is(.panel, .card, .sheet, [class$="-card"]):hover {
+  border-color: color-mix(in srgb, var(--axm-accent, #67efff) 34%, #203449);
+}
+
+body[data-axm-presentation-mode="shared"] table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+body[data-axm-presentation-mode="shared"] th {
+  color: color-mix(in srgb, var(--axm-text, #eaf5ff) 72%, var(--axm-accent, #67efff));
+  font-size: .76rem;
+  letter-spacing: .055em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+body[data-axm-presentation-mode="shared"] :is(th, td) {
+  border-bottom: 1px solid color-mix(in srgb, var(--axm-accent, #67efff) 12%, #203449);
+}
+
+body[data-axm-presentation-mode="shared"] summary {
+  border-radius: var(--spine-radius, 9px);
+}
+
+body[data-axm-presentation-mode="shared"] hr {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--axm-accent, #67efff) 36%, transparent), transparent);
+}
+
+@media (max-width: 720px) {
+  body[data-axm-presentation-mode="shared"] :is(button, input, select, textarea) { min-height: 44px; }
+  body[data-axm-presentation-mode="shared"] h1 { font-size: clamp(1.65rem, 8vw, 2.3rem); }
+}

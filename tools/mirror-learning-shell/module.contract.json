@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "mirror-learning-shell",
-  "version": "v0.2-shared-door",
+  "version": "v0.3-action-lessons",
   "status": "TEST",
   "provides": [
     "mirror-observable-learning-view",
@@ -23,8 +23,14 @@
     "emits": ["axm.mirror.learning-shell-session/v1"],
     "accepts": ["hub:init", "hub:settings:value", "axm.ai-learning.session-proposal/v1"]
   },
+  "lifecycle": {
+    "state_owner": "service",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  },
   "boundaries": {
-    "writes": ["learner-private:attributed-session-artifacts", "learner-private:approved-practice-lessons", "learner-private:challenger-training-runs"],
-    "refuses": ["cross-identity-memory-merge", "unattributed-study", "forced-enrollment", "workshop-action-execution", "external-network", "runtime-promotion", "canon-promotion", "identity-mutation", "permission-expansion", "tool-authority", "hidden-chain-of-thought-capture", "fake-hermes-runtime"]
+    "writes": ["mirror-service:explicit-action-feed-preference", "learner-private:attributed-session-artifacts", "learner-private:approved-practice-lessons", "learner-private:challenger-training-runs"],
+    "refuses": ["automatic-action-feed-opt-in", "raw-prompt-or-output-lesson-intake", "cross-identity-memory-merge", "unattributed-study", "forced-enrollment", "workshop-action-execution", "external-network", "runtime-promotion", "canon-promotion", "identity-mutation", "permission-expansion", "tool-authority", "hidden-chain-of-thought-capture", "fake-hermes-runtime"]
   }
 }

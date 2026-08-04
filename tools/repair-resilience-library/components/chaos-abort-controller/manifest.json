@@ -1,0 +1,43 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.chaos-abort-controller",
+  "name": "Chaos Abort Controller",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "FAULT_INJECTION",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": [
+    "repair-seed",
+    "fault-injection-recovery-drill",
+    "local-first",
+    "bounded",
+    "sandbox-first"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Continuously enforce blast-radius, time, user-impact, data, and emergency-stop limits during fault experiments."
+  ],
+  "accepts": [
+    "experiment-observation",
+    "hard-limits",
+    "emergency-stop-signal"
+  ],
+  "produces": [
+    "axm.chaos-abort.decision/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Continuously enforce blast-radius, time, user-impact, data, and emergency-stop limits during fault experiments.",
+  "notes": "Sandbox or virtual experiment primitive only. Active-process, host-network, host-clock, real-storage, broad resource, production, promotion, and CANON authority are refused."
+}

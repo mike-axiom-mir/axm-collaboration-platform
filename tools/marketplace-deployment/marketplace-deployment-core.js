@@ -37,6 +37,27 @@
   function baseChannels() {
     return CHANNELS.map(function (id) { return { id: id, releases: [], automaticInstall: false, description: id === 'stable' ? 'Reviewed releases only.' : id === 'beta' ? 'Early reviewed candidates.' : 'Explicitly experimental packages.' }; });
   }
+  function records(value) {
+    return array(value).filter(function (item) { return item && typeof item === 'object' && !Array.isArray(item); });
+  }
+  function rightsFindings(license, provenance, dependencies, rightsConfirmed) {
+    var findings = [];
+    if (license === 'UNDECLARED') findings.push('License is undeclared.');
+    if (!provenance) findings.push('Provenance is missing.');
+    if (!dependencies) findings.push('Dependency and third-party disclosure is missing.');
+    if (!rightsConfirmed) findings.push('Distribution rights were not explicitly confirmed.');
+    return findings;
+  }
+  function deploymentSteps(target) {
+    return [
+      'Create a verified package through Publish & Library.',
+      'Re-run hashes, secret scan, rights manifest and dependency inventory.',
+      target === 'local-network' ? 'Bind the reviewed service to the chosen private LAN interface only.' : target === 'self-host' ? 'Provision the user-owned host without embedding credentials in the package.' : target === 'static-host' ? 'Upload only the reviewed static output through a separately approved host adapter.' : 'Deliver the reviewed archive without executing it.',
+      'Run health, route and restore checks against the deployed candidate.',
+      'Keep the previous verified package available for rollback.',
+      'Human confirms whether the live/public transition may occur.'
+    ];
+  }
   function createProject(input) {
     input = input || {};
     return {
@@ -54,9 +75,82 @@
     project.createdAt = text(input.createdAt, 40) || project.createdAt;
     project.updatedAt = text(input.updatedAt, 40) || project.updatedAt;
     project.settings.mode = MODES.some(function (m) { return m.id === (input.settings && input.settings.mode); }) ? input.settings.mode : 'home';
-    ['listings', 'rightsReviews', 'pluginPackages', 'deploymentPlans', 'galleryEntries', 'reviews', 'receipts'].forEach(function (key) { project[key] = clone(array(input[key])); });
-    project.updateChannels = array(input.updateChannels).length ? clone(input.updateChannels) : baseChannels();
-    CHANNELS.forEach(function (id) { if (!project.updateChannels.some(function (c) { return c.id === id; })) project.updateChannels.push(baseChannels().filter(function (c) { return c.id === id; })[0]); });
+    project.listings = records(input.listings).map(function (listing) {
+      return {
+        id: text(listing.id, 120) || uid('listing'), name: text(listing.name, 120), version: text(listing.version, 40),
+        kind: enumValue(listing.kind, LISTING_KINDS, 'other'), accessPolicy: enumValue(listing.accessPolicy, ACCESS_POLICIES, 'free-open'),
+        audience: text(listing.audience, 160) || 'Any intelligence able to use the declared format', summary: text(listing.summary, 800),
+        sourceRoute: text(listing.sourceRoute, 300), state: 'DRAFT', createdAt: text(listing.createdAt, 40) || now(),
+        updatedAt: text(listing.updatedAt, 40) || now(), rightsState: 'UNREVIEWED'
+      };
+    }).filter(function (listing) { return listing.name && listing.version && listing.summary; });
+    project.rightsReviews = records(input.rightsReviews).filter(function (review) { return findListing(project, review.listingId); }).map(function (review) {
+      var license = enumValue(review.license, LICENSES, 'UNDECLARED');
+      var provenance = text(review.provenance, 1600), dependencies = text(review.dependencies, 1600), rightsConfirmed = review.rightsConfirmed === true;
+      var findings = rightsFindings(license, provenance, dependencies, rightsConfirmed);
+      return {
+        id: text(review.id, 120) || uid('rights'), listingId: text(review.listingId, 120), license: license,
+        provenance: provenance, dependencies: dependencies, rightsConfirmed: rightsConfirmed,
+        verdict: findings.length ? 'HOLD_REPAIR' : 'PASS_FOR_REVIEW', findings: findings,
+        legalAuthority: 'NONE', at: text(review.at, 40) || now(), actor: text(review.actor || 'local-steward', 80)
+      };
+    });
+    project.reviews = records(input.reviews).filter(function (review) { return findListing(project, review.listingId) && text(review.reviewer, 100) && text(review.note, 1200); }).map(function (review) {
+      return {
+        id: text(review.id, 120) || uid('review'), listingId: text(review.listingId, 120), reviewer: text(review.reviewer, 100),
+        seatKind: enumValue(review.seatKind, ['human', 'machine'], 'human'), scope: enumValue(review.scope, ['technical', 'experience', 'both'], 'both'),
+        verdict: enumValue(review.verdict, ['UPVOTE', 'HOLD', 'REPAIR'], 'HOLD'), note: text(review.note, 1200), at: text(review.at, 40) || now()
+      };
+    });
+    project.listings.forEach(function (listing) {
+      var rights = latestRights(project, listing.id);
+      listing.rightsState = rights ? rights.verdict : 'UNREVIEWED';
+      listing.state = listingReadiness(project, listing.id).ready ? 'READY_FOR_EXPORT' : 'DRAFT';
+    });
+    project.pluginPackages = records(input.pluginPackages).filter(function (proposal) { return findListing(project, proposal.listingId); }).map(function (proposal) {
+      var listing = findListing(project, proposal.listingId), entry = text(proposal.entry, 260), compatibility = text(proposal.compatibility, 800), permissions = text(proposal.permissions, 800), findings = [];
+      if (['plugin', 'extension'].indexOf(listing.kind) < 0) findings.push('Listing kind is not plugin or extension.');
+      if (!entry) findings.push('Package entry is missing.');
+      if (!compatibility) findings.push('Host compatibility is undeclared.');
+      if (!permissions) findings.push('Permission surface is undeclared.');
+      return {
+        schema: 'axm.plugin-distribution-proposal/v1', id: text(proposal.id, 120) || uid('plugin-package'), listingId: listing.id,
+        name: listing.name, version: listing.version, entry: entry, compatibility: compatibility, permissions: permissions,
+        state: findings.length ? 'HOLD_REPAIR' : 'PROPOSAL_READY', findings: findings, installAuthority: 'NONE', at: text(proposal.at, 40) || now()
+      };
+    });
+    project.deploymentPlans = records(input.deploymentPlans).filter(function (plan) { return findListing(project, plan.listingId); }).map(function (plan) {
+      var listing = findListing(project, plan.listingId), target = enumValue(plan.target, TARGETS, 'download-archive');
+      var requirements = text(plan.requirements, 1400), rollback = text(plan.rollback, 1000), readiness = listingReadiness(project, listing.id), blockers = [];
+      if (listing.state !== 'READY_FOR_EXPORT' || !readiness.ready) blockers = readiness.reasons.length ? readiness.reasons.slice() : ['Listing has not passed the export gate.'];
+      if (!requirements) blockers.push('Runtime/hosting requirements are missing.');
+      if (!rollback) blockers.push('Rollback procedure is missing.');
+      return {
+        schema: 'axm.deployment-plan/v1', id: text(plan.id, 120) || uid('deploy'), listingId: listing.id, target: target,
+        requirements: requirements, rollback: rollback, state: blockers.length ? 'HOLD_REPAIR' : 'PROPOSAL_READY',
+        blockers: blockers, steps: deploymentSteps(target), executionAuthority: 'NONE', networkAction: 'NONE', at: text(plan.at, 40) || now()
+      };
+    });
+    project.galleryEntries = records(input.galleryEntries).filter(function (entry) { return findListing(project, entry.listingId) && text(entry.caption, 700); }).map(function (entry) {
+      return {
+        id: text(entry.id, 120) || uid('gallery'), listingId: text(entry.listingId, 120), caption: text(entry.caption, 700),
+        mediaRef: text(entry.mediaRef, 300), visibility: enumValue(entry.visibility, ['private-preview', 'public-proposal'], 'private-preview'),
+        state: 'DRAFT', at: text(entry.at, 40) || now()
+      };
+    });
+    project.updateChannels = baseChannels();
+    records(input.updateChannels).forEach(function (sourceChannel) {
+      if (CHANNELS.indexOf(sourceChannel.id) < 0) return;
+      var targetChannel = project.updateChannels.find(function (channel) { return channel.id === sourceChannel.id; });
+      targetChannel.releases = records(sourceChannel.releases).filter(function (update) { return findListing(project, update.listingId); }).map(function (update) {
+        return {
+          id: text(update.id, 120) || uid('update'), listingId: text(update.listingId, 120), version: text(update.version, 40),
+          changelog: text(update.changelog, 1400), rollbackVersion: text(update.rollbackVersion, 40), state: 'DRAFT',
+          automaticInstall: false, at: text(update.at, 40) || now()
+        };
+      }).filter(function (update) { return update.version && update.changelog && update.rollbackVersion; });
+    });
+    project.receipts = clone(records(input.receipts));
     return project;
   }
   function findListing(project, id) { return project.listings.find(function (item) { return item.id === id; }) || null; }
@@ -86,11 +180,7 @@
     if (!listing) return { ok: false, error: 'Choose a real listing.' };
     var license = enumValue(input.license, LICENSES, 'UNDECLARED');
     var provenance = text(input.provenance, 1600), dependencies = text(input.dependencies, 1600), rightsConfirmed = input.rightsConfirmed === true;
-    var findings = [];
-    if (license === 'UNDECLARED') findings.push('License is undeclared.');
-    if (!provenance) findings.push('Provenance is missing.');
-    if (!dependencies) findings.push('Dependency and third-party disclosure is missing.');
-    if (!rightsConfirmed) findings.push('Distribution rights were not explicitly confirmed.');
+    var findings = rightsFindings(license, provenance, dependencies, rightsConfirmed);
     var review = {
       id: uid('rights'), listingId: listing.id, license: license, provenance: provenance,
       dependencies: dependencies, rightsConfirmed: rightsConfirmed,
@@ -127,15 +217,18 @@
     if (!listing) return { ready: false, state: 'MISSING', reasons: ['Listing not found.'] };
     var rights = latestRights(project, listing.id);
     var reviews = project.reviews.filter(function (r) { return r.listingId === listing.id; });
-    var positive = reviews.filter(function (r) { return r.verdict === 'UPVOTE'; });
+    var active = project.governance === 'dual' ? ['human', 'machine'].map(function (seatKind) {
+      return reviews.filter(function (review) { return review.seatKind === seatKind; }).slice(-1)[0] || null;
+    }).filter(Boolean) : reviews.slice(-1);
+    var positive = active.filter(function (r) { return r.verdict === 'UPVOTE'; });
     var reasons = [];
     if (!rights || rights.verdict !== 'PASS_FOR_REVIEW') reasons.push('Rights and dependency gate has not passed.');
     if (project.governance === 'dual') {
       if (!positive.some(function (r) { return r.seatKind === 'human'; })) reasons.push('Human review seat has not upvoted.');
       if (!positive.some(function (r) { return r.seatKind === 'machine'; })) reasons.push('Machine review seat has not upvoted.');
     } else if (!positive.length) reasons.push('No steward review has upvoted.');
-    if (reviews.some(function (r) { return r.verdict === 'REPAIR'; })) reasons.push('A repair review remains open.');
-    return { ready: reasons.length === 0, state: reasons.length ? 'HOLD_REPAIR' : 'READY_FOR_EXPORT', reasons: reasons, rights: rights ? rights.verdict : 'UNREVIEWED', governance: project.governance, reviews: reviews.length };
+    if (active.some(function (r) { return r.verdict === 'HOLD' || r.verdict === 'REPAIR'; })) reasons.push('An active hold or repair review remains open.');
+    return { ready: reasons.length === 0, state: reasons.length ? 'HOLD_REPAIR' : 'READY_FOR_EXPORT', reasons: reasons, rights: rights ? rights.verdict : 'UNREVIEWED', governance: project.governance, reviews: reviews.length, activeReviews: active.length };
   }
   function markReviewReady(project, listingId, actor) {
     var listing = findListing(project, listingId), ready = listingReadiness(project, listingId);
@@ -177,14 +270,7 @@
     if (listing.state !== 'READY_FOR_EXPORT' || !readiness.ready) blockers = readiness.reasons.length ? readiness.reasons.slice() : ['Listing has not passed the export gate.'];
     if (!requirements) blockers.push('Runtime/hosting requirements are missing.');
     if (!rollback) blockers.push('Rollback procedure is missing.');
-    var steps = [
-      'Create a verified package through Publish & Library.',
-      'Re-run hashes, secret scan, rights manifest and dependency inventory.',
-      target === 'local-network' ? 'Bind the reviewed service to the chosen private LAN interface only.' : target === 'self-host' ? 'Provision the user-owned host without embedding credentials in the package.' : target === 'static-host' ? 'Upload only the reviewed static output through a separately approved host adapter.' : 'Deliver the reviewed archive without executing it.',
-      'Run health, route and restore checks against the deployed candidate.',
-      'Keep the previous verified package available for rollback.',
-      'Human confirms whether the live/public transition may occur.'
-    ];
+    var steps = deploymentSteps(target);
     var plan = {
       schema: 'axm.deployment-plan/v1', id: uid('deploy'), listingId: listing.id, target: target,
       requirements: requirements, rollback: rollback, state: blockers.length ? 'HOLD_REPAIR' : 'PROPOSAL_READY',

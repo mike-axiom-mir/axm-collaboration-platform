@@ -1,0 +1,82 @@
+{
+  "packet_schema_version": "axm.proof.run-packet.v0.3.0",
+  "packet_id": "synthetic:event-trace-recorder:privacy_blocked",
+  "seed_id": "axm.proof.event-trace-recorder",
+  "seed_schema_version": "axm.proof.seed.v0.2.0",
+  "fixture_class": "PRIVACY_BLOCKED",
+  "run_mode": "VALIDATE_ONLY",
+  "authority": {
+    "scope": "SCHEMA_AND_DISPOSABLE_SYNTHETIC_FIXTURE_ONLY",
+    "live_activation_allowed": false,
+    "canon_authority": false,
+    "publication_authority": false,
+    "merge_gate_required": true
+  },
+  "network_policy": "DENY",
+  "write_policy": "NONE",
+  "inputs": {
+    "evidence_id": "synthetic:event_trace_recorder:evidence_id",
+    "schema_version": "axm.proof.synthetic-input.v0.1.0",
+    "proof_ref": "synthetic:event_trace_recorder:proof_ref",
+    "claim_refs": [
+      "synthetic:event_trace_recorder:claim_refs:1"
+    ],
+    "artifact_ref": "synthetic:event_trace_recorder:artifact_ref",
+    "capture_scope": {
+      "recording": false,
+      "windows": [],
+      "private_zones_masked": true
+    },
+    "consent_state": {
+      "status": "NOT_REQUIRED_FOR_NONHUMAN_SYNTHETIC_FIXTURE",
+      "recording": false,
+      "retention": false
+    },
+    "timestamp": "2000-01-01T00:00:00Z",
+    "transforms": [
+      {
+        "operation": "none",
+        "synthetic": true
+      }
+    ],
+    "retention": {
+      "mode": "DELETE_AFTER_VALIDATION",
+      "persistent": false,
+      "identity_retained": false
+    }
+  },
+  "expected": {
+    "decision": "QUARANTINE",
+    "reason_codes": [
+      "AXM_PROOF_PRIVATE_DATA_DETECTED",
+      "AXM_PROOF_SECRET_OR_PATH_UNCERTAIN"
+    ],
+    "output_emitted": false,
+    "runtime_claim_upgraded": false
+  },
+  "privacy_canaries": [
+    {
+      "kind": "synthetic_secret",
+      "value": "AXM_SYNTHETIC_SECRET_CANARY_EVENT_TRACE_RECORDER",
+      "synthetic": true
+    },
+    {
+      "kind": "synthetic_private_path",
+      "value": "C:\\Users\\AXM_TEST_ONLY\\Private\\event-trace-recorder.json",
+      "synthetic": true
+    }
+  ],
+  "rollback": {
+    "checkpoint_id": "synthetic:event-trace-recorder:checkpoint:clean",
+    "restore_required": false,
+    "expected_restore_digest": "sha256:synthetic-event-trace-recorder-clean",
+    "history_policy": "APPEND_ONLY_NO_DELETE"
+  },
+  "truth_guard": {
+    "canon": false,
+    "integrated": false,
+    "runtime_proof": false,
+    "published": false,
+    "automatic_promotion_allowed": false
+  }
+}

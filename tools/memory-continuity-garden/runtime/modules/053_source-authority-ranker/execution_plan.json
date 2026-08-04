@@ -1,0 +1,92 @@
+{
+  "all_steps_bounded": true,
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "final_result_does_not_imply_owner_acceptance": true,
+  "identity": {
+    "category": "6. Retrieval, indexing, relevance, freshness, and forgetting",
+    "name": "Source Authority and Evidence Ranker",
+    "number": 53,
+    "stable_id": "axm.memory.source-authority-ranker"
+  },
+  "no_implicit_parallel_apply": true,
+  "operation_kind": "OBSERVE",
+  "plan_is_reference_only": true,
+  "schema": "axm.memory.run80-execution-plan/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "2813db64f68ffd7f4f38c6095ae774ec3612fcbf723b54419e55e31c36f9cfce"
+  },
+  "source_run70_protocol_sha256": "ab91cd75b91e5ab88083dd0054e924a0e5d1b694c696f0d6e4f919e7ee873301",
+  "step_count": 5,
+  "steps": [
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "admission_receipt",
+      "failure_result": "HOLD_ADMISSION",
+      "purpose": "validate exact scope, source, authority, and resource budget",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [],
+      "sequence": 1,
+      "side_effect_permitted": false,
+      "step_id": "ADMIT"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "evidence_view",
+      "failure_result": "HOLD_SOURCE",
+      "purpose": "load only source-linked bounded evidence",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "ADMIT"
+      ],
+      "sequence": 2,
+      "side_effect_permitted": false,
+      "step_id": "LOAD_SCOPED_EVIDENCE"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "candidate_finding",
+      "failure_result": "HOLD_OBSERVATION",
+      "purpose": "perform read-only observation",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "LOAD_SCOPED_EVIDENCE"
+      ],
+      "sequence": 3,
+      "side_effect_permitted": false,
+      "step_id": "EXECUTE_OBSERVATION"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "verified_finding",
+      "failure_result": "HOLD_VERIFICATION",
+      "purpose": "verify limits, uncertainty, contradiction, and provenance",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "EXECUTE_OBSERVATION"
+      ],
+      "sequence": 4,
+      "side_effect_permitted": false,
+      "step_id": "VERIFY_FINDING"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "finding_receipt",
+      "failure_result": "HOLD_RECEIPT",
+      "purpose": "emit finding and limitations",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "VERIFY_FINDING"
+      ],
+      "sequence": 5,
+      "side_effect_permitted": false,
+      "step_id": "EMIT_RECEIPT"
+    }
+  ]
+}

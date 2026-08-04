@@ -1,0 +1,310 @@
+{
+  "admission": {
+    "category_guard": "summary_as_authority",
+    "category_guard_hold_code": "HOLD_ROOT_OR_SOURCE_OMISSION",
+    "exact_revision_required": true,
+    "imported_signatures_do_not_transfer_trust": true,
+    "maximum_input_size_bytes": 1048576,
+    "memory_payload_is_inert_data": true,
+    "minimum_available_disk_bytes": 1048576,
+    "payload_digest_must_match": true,
+    "purpose_must_equal_declared_purpose": true,
+    "required_fields": [
+      "schema",
+      "seed_id",
+      "operation_id",
+      "purpose",
+      "source_refs",
+      "source_digests",
+      "authority_ref",
+      "consent_state",
+      "input_digest",
+      "target_root",
+      "request_timestamp",
+      "dependency_snapshot",
+      "expected_revision",
+      "current_revision",
+      "input_size_bytes",
+      "available_disk_bytes",
+      "cancelled",
+      "runtime_cycle_detected",
+      "import_trust_claim",
+      "payload",
+      "category_guard",
+      "requested_permissions",
+      "actor_role",
+      "request_state",
+      "requested_transition",
+      "allow_degraded",
+      "extensions",
+      "trace_id",
+      "receipt_visibility",
+      "preview_digest",
+      "confirmation_ref",
+      "confirmation_scope",
+      "confirmation_expires",
+      "safety_copy_ref",
+      "human_confirmed",
+      "transaction_id"
+    ],
+    "source_digests_required": true,
+    "source_ref_digest_count_must_match": true,
+    "unknown_top_level_fields": "HOLD"
+  },
+  "authority_policy": {
+    "allowed_actor_roles": [
+      "LOCAL_OPERATOR"
+    ],
+    "authority_expiry_compared_to_request_time": true,
+    "confirmation_must_be_fresh": false,
+    "confirmation_must_match_seed_scope": false,
+    "declared_permissions": [],
+    "human_confirmation_required": false,
+    "permission_match": "EXACT",
+    "wildcards_forbidden": true
+  },
+  "compatibility": {
+    "current_request_schema": "axm.memory.reference-request/v2",
+    "extensions_container_required": true,
+    "floating_point_values_forbidden": true,
+    "legacy_adapter_adds_no_authority": true,
+    "legacy_v1_adapter": true,
+    "max_extension_bytes": 16384,
+    "max_extension_depth": 8,
+    "unknown_top_level_fields_hold": true
+  },
+  "degraded_mode": {
+    "accepted_status": "ACCEPTED_DEGRADED_REFERENCE_CONTRACT",
+    "allowed": true,
+    "explicit_opt_in_required": true,
+    "required": false,
+    "writes_forbidden": true
+  },
+  "dependencies": {
+    "acceptance_does_not_imply_apply": true,
+    "boot_cluster": null,
+    "boot_prerequisites": [
+      "axm.memory.original-inference-separator",
+      "axm.memory.provenance-envelope",
+      "axm.memory.root-branch-compression-policy",
+      "axm.memory.source-linked-summary",
+      "axm.memory.summary-drift-verifier"
+    ],
+    "boot_stage": 8,
+    "contract_references": [
+      "axm.memory.original-inference-separator",
+      "axm.memory.provenance-envelope",
+      "axm.memory.root-branch-compression-policy",
+      "axm.memory.source-linked-summary",
+      "axm.memory.summary-drift-verifier"
+    ],
+    "delivery_does_not_imply_acceptance": true,
+    "runtime_collaborators": []
+  },
+  "identity": {
+    "category": "5. Compression, summaries, context windows, and warm re-entry",
+    "name": "Active Direction Extractor",
+    "number": 45,
+    "stable_id": "axm.memory.active-direction-extractor"
+  },
+  "integration": {
+    "composition_role": "PROPOSAL leaf; consumes foundational memory contracts and emits one portable contract. May be composed by the bounded continuity orchestrator but remains independently testable and replaceable.",
+    "merge_gate": "Not CANON. Eligible for build intake only after duplicate review, exact owner acceptance, contract validation, self-test, specialist verification, and Mike’s explicit Merge Gate.",
+    "overlap_rule": "Extend or adapt the named owner; do not fork its authority, storage root, verification role, or public/private boundary.",
+    "run20_wave": "WAVE_A_FOUNDATION_OR_QUICK_WIN",
+    "run30_posture": "PILOT_CANDIDATE_AFTER_OWNER_REVIEW",
+    "target": "Successor Briefing; AI Start Here; Orientation Core"
+  },
+  "known_failure_modes": "source omission, summary overreach, root compression, invented closure, context overflow; unsafe or incomplete proposal",
+  "lifecycle": [
+    "DRAFT",
+    "REVIEWABLE",
+    "ACCEPTED_FOR_BUILD",
+    "REJECTED",
+    "SUPERSEDED",
+    "EXPIRED"
+  ],
+  "lifecycle_policy": {
+    "allowed_transitions": [
+      [
+        "DRAFT",
+        "REVIEWABLE"
+      ],
+      [
+        "REJECTED",
+        "SUPERSEDED"
+      ],
+      [
+        "REVIEWABLE",
+        "ACCEPTED_FOR_BUILD"
+      ]
+    ],
+    "states": [
+      "DRAFT",
+      "REVIEWABLE",
+      "ACCEPTED_FOR_BUILD",
+      "REJECTED",
+      "SUPERSEDED",
+      "EXPIRED"
+    ],
+    "terminal_states_do_not_restart_silently": true,
+    "validation_does_not_apply": true
+  },
+  "lineage": {
+    "evolution": "additive safety-harness evolution; stable identity, purpose, authority, and owner seams preserved",
+    "source_run30_checkpoint": {
+      "artifact": "AXM_MEMORY_CONTINUITY_STEWARD_RUN_30_STRONGER_100_SEEDS.txt",
+      "sha256": "7e1bb18c9cb6393ec13fed09947a7053cb9303cac42ae1b4e099ab2f9b21c3a2",
+      "source_run": 30
+    },
+    "source_run40_contract_sha256": "3817bc8c849c27c587da5dcfaf2474823dfe27daf4d5c715c9e7d3877cb20b54"
+  },
+  "local_offline_boundary": "YES — first implementation must run locally with no required network or provider; external adapters remain optional and explicit.",
+  "non_claims": [
+    "Not CANON.",
+    "Not integrated into the AXM Workshop.",
+    "Not a full semantic implementation of the seed purpose.",
+    "Reference, durability, privacy, compatibility, fuzz, and category probes validate bounded harness behavior only.",
+    "No authority, consent, identity, trust, owner status, or active direction is inherited from this scaffold.",
+    "No real deletion/erasure, encryption key custody, production restore, or Workshop-scale performance is proven."
+  ],
+  "privacy_policy": {
+    "erasure_claim_requires_external_proof": true,
+    "forbidden_receipt_keys": [
+      "payload",
+      "source_refs",
+      "authority_ref",
+      "confirmation_ref",
+      "safety_copy_ref",
+      "deleted_content",
+      "raw_private"
+    ],
+    "raw_payload_forbidden_in_logs": true,
+    "receipt_visibility": "PRIVATE_SAFE",
+    "source_digests_may_be_referenced_only_by_digest": true
+  },
+  "receipt_policy": {
+    "accepted_required_fields": [
+      "schema",
+      "status",
+      "seed_id",
+      "operation_id",
+      "trace_id",
+      "fingerprint",
+      "request_digest",
+      "contract_digest",
+      "requested_permissions",
+      "transition_validated",
+      "requested_transition",
+      "degraded_dependencies",
+      "limitations",
+      "payload_executed",
+      "authority_gained",
+      "canon_promoted",
+      "hidden_mutation",
+      "replayed"
+    ],
+    "hidden_mutation_forbidden": true,
+    "hold_contract": "axm.memory.typed-hold/v2"
+  },
+  "recovery_path": "No canonical mutation. Discard the result, retain the evidence receipt if approved, and re-run from the same source checkpoint.",
+  "refusal_boundary": "No root compression, invented closure, summary-as-authority, removed dissent, or hidden omission.",
+  "replay_policy": {
+    "durable_hash_chain_supported": true,
+    "operation_id_collision_holds": true,
+    "raw_payload_forbidden_in_ledger": true,
+    "same_fingerprint_replays_exact_result": true
+  },
+  "result_union": {
+    "accepted_contract": "axm.memory.active-direction-extractor.proposal/v1",
+    "allowed_hold_codes": [
+      "HOLD_APPEND_ONLY_VIOLATION",
+      "HOLD_AUTHORITY_OR_CONSENT",
+      "HOLD_CANCELLED",
+      "HOLD_CANON_OR_OWNER_AUTHORITY",
+      "HOLD_CONTRACT_SEAL_MISMATCH",
+      "HOLD_DEGRADED_MODE_NOT_ALLOWED",
+      "HOLD_DEPENDENCY_UNAVAILABLE",
+      "HOLD_EXPECTED_REVISION",
+      "HOLD_HUMAN_CONFIRMATION_REQUIRED",
+      "HOLD_IDENTITY_OR_AUTHORITY_FUSION",
+      "HOLD_IMPORT_QUARANTINE",
+      "HOLD_INPUT_DIGEST_MISMATCH",
+      "HOLD_INPUT_LIMIT",
+      "HOLD_INVALID_STATE_TRANSITION",
+      "HOLD_JOURNAL_CORRUPTION",
+      "HOLD_LOG_PRIVACY_VIOLATION",
+      "HOLD_LOW_DISK_OR_UNSAFE_WRITE",
+      "HOLD_NON_CANONICAL_VALUE",
+      "HOLD_OPERATION_ID_COLLISION",
+      "HOLD_OUTPUT_ROOT",
+      "HOLD_PERMISSION_ESCALATION",
+      "HOLD_PRIVACY_OR_ERASURE_TRUTH",
+      "HOLD_RECOVERY_OR_REPAIR_PROOF",
+      "HOLD_RETRIEVAL_PRIVACY_SCOPE",
+      "HOLD_ROOT_OR_SOURCE_OMISSION",
+      "HOLD_RUNTIME_CYCLE",
+      "HOLD_SCHEMA_OR_COMPATIBILITY",
+      "HOLD_SCOPE_OR_PURPOSE",
+      "HOLD_SEMANTIC_CONFLICT",
+      "HOLD_SOURCE_MISMATCH",
+      "HOLD_STALE_STATE",
+      "HOLD_TIME_BASIS_UNCERTAIN",
+      "HOLD_TRANSACTION_INCOMPLETE",
+      "HOLD_TRUST_OR_AUTHORITY_TRANSFER",
+      "HOLD_UNKNOWN_TOP_LEVEL_FIELD"
+    ],
+    "exactly_one_result": true,
+    "hold_contract": "axm.memory.typed-hold/v2"
+  },
+  "schema": "axm.memory.seed-candidate-contract/v2",
+  "scope": {
+    "authority": "T2_SHADOW_OR_PROPOSAL",
+    "consumes": "source-linked memories; current goal; approved roots; decisions; open loops; context budget",
+    "emits": "axm.memory.active-direction-extractor.proposal/v1",
+    "exact_owned_root": "local://axm-memory/axm.memory.active-direction-extractor/",
+    "operation_kind": "PROPOSAL",
+    "permissions": [],
+    "purpose": "Identify the currently approved direction separately from historical possibilities, abandoned paths, and future ideas.",
+    "risk": "LOW"
+  },
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "1f54b521d66c27a65f421465d1f1e7491d7fbde3d27bdc7237d341dedb128cba",
+    "sealed_fields_exclude": [
+      "seal"
+    ],
+    "source_run40_contract_sha256": "3817bc8c849c27c587da5dcfaf2474823dfe27daf4d5c715c9e7d3877cb20b54"
+  },
+  "semantic_probe": {
+    "category_number": 5,
+    "check_count": 8,
+    "full_seed_semantics_implemented": false,
+    "profile": "CATEGORY_05_COMPRESSION_REENTRY",
+    "scope": "synthetic category seam probe only"
+  },
+  "source_checkpoint": {
+    "artifact": "AXM_MEMORY_CONTINUITY_STEWARD_RUN_40_STRONGER_100_SEEDS.txt",
+    "sha256": "db7e217d4b32342012993d57a486c80fabb1b3f5ebca57f0f010bf43bdc60c11",
+    "source_run": 40
+  },
+  "status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE",
+  "transaction_policy": {
+    "atomic_file_replace": true,
+    "fsync_before_visibility": true,
+    "no_silent_auto_commit_after_interruption": true,
+    "recovery_states": [
+      "NOT_STARTED",
+      "INTENT_DURABLE_RECOVERY_HOLD",
+      "RESULT_DURABLE_RECOVERY_HOLD",
+      "COMMITTED",
+      "CORRUPT_HOLD"
+    ],
+    "stages": [
+      "INTENT_DURABLE",
+      "RESULT_DURABLE",
+      "COMMIT_DURABLE"
+    ]
+  },
+  "truth_requirements": "Exact source pointers and digests; original versus inference separation; uncertainty state; target scope; timestamps; rejected alternatives where relevant; no structural proof presented as semantic truth."
+}

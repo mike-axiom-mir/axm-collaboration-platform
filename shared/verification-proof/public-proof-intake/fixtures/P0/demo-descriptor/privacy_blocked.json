@@ -1,0 +1,67 @@
+{
+  "packet_schema_version": "axm.proof.run-packet.v0.3.0",
+  "packet_id": "synthetic:demo-descriptor:privacy_blocked",
+  "seed_id": "axm.proof.demo-descriptor",
+  "seed_schema_version": "axm.proof.seed.v0.2.0",
+  "fixture_class": "PRIVACY_BLOCKED",
+  "run_mode": "VALIDATE_ONLY",
+  "authority": {
+    "scope": "SCHEMA_AND_DISPOSABLE_SYNTHETIC_FIXTURE_ONLY",
+    "live_activation_allowed": false,
+    "canon_authority": false,
+    "publication_authority": false,
+    "merge_gate_required": true
+  },
+  "network_policy": "DENY",
+  "write_policy": "NONE",
+  "inputs": {
+    "record_id": "synthetic:demo_descriptor:record_id",
+    "schema_version": "axm.proof.synthetic-input.v0.1.0",
+    "proof_ref": "synthetic:demo_descriptor:proof_ref",
+    "claim_refs": [
+      "synthetic:demo_descriptor:claim_refs:1"
+    ],
+    "artifact_refs": [
+      "synthetic:demo_descriptor:artifact_refs:1"
+    ],
+    "environment_ref": "synthetic:demo_descriptor:environment_ref",
+    "limitations": [
+      "Synthetic fixture only; no AXM runtime or public claim is upgraded."
+    ],
+    "owner_ref": "synthetic:demo_descriptor:owner_ref"
+  },
+  "expected": {
+    "decision": "QUARANTINE",
+    "reason_codes": [
+      "AXM_PROOF_PRIVATE_DATA_DETECTED",
+      "AXM_PROOF_SECRET_OR_PATH_UNCERTAIN"
+    ],
+    "output_emitted": false,
+    "runtime_claim_upgraded": false
+  },
+  "privacy_canaries": [
+    {
+      "kind": "synthetic_secret",
+      "value": "AXM_SYNTHETIC_SECRET_CANARY_DEMO_DESCRIPTOR",
+      "synthetic": true
+    },
+    {
+      "kind": "synthetic_private_path",
+      "value": "C:\\Users\\AXM_TEST_ONLY\\Private\\demo-descriptor.json",
+      "synthetic": true
+    }
+  ],
+  "rollback": {
+    "checkpoint_id": "synthetic:demo-descriptor:checkpoint:clean",
+    "restore_required": false,
+    "expected_restore_digest": "sha256:synthetic-demo-descriptor-clean",
+    "history_policy": "APPEND_ONLY_NO_DELETE"
+  },
+  "truth_guard": {
+    "canon": false,
+    "integrated": false,
+    "runtime_proof": false,
+    "published": false,
+    "automatic_promotion_allowed": false
+  }
+}

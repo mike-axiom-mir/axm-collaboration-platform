@@ -1,0 +1,35 @@
+{
+  "package": "AXM_TEXT_FABRIC_v1_0_0",
+  "intake_type": "modular_visual_system",
+  "canonical_status": "WORKING",
+  "recommended_parent": "CREATE/VISUAL/TEXT_FABRIC",
+  "entry_points": [
+    "manifest.json",
+    "START_HERE.html",
+    "axm_text_fabric/cli.py"
+  ],
+  "imports": [
+    "tokens",
+    "recipes",
+    "organs",
+    "adapters",
+    "schemas",
+    "presets",
+    "compiled_bundles",
+    "integrity_manifests",
+    "portable_static_assets",
+    "visual_qa_manifests"
+  ],
+  "integration_targets": [
+    "AXM_STYLE_FABRIC",
+    "AXM_AETHERGLASS_VISUAL_ENGINE",
+    "AXM_VISUAL_MOLD_FACTORY",
+    "GAME_UI",
+    "WEB_UI",
+    "APP_UI"
+  ],
+  "merge_policy": "adapter-first; no silent rewrite of existing visual engines",
+  "verification": "python tests/run_all.py && python -m axm_text_fabric.cli verify-bundle <compiled_bundle> && python -m axm_text_fabric.cli qa-matrix <output> --ids axm_future_core",
+  "rollback": "retain previous versioned directory; compiled outputs include source snapshots, lock files, and ROLLBACK.md",
+  "notes": "Release-candidate intake with premium effects, engine exports, font verification, portable assets, and deterministic layout/pseudo-localization stress testing. No font binaries included."
+}

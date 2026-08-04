@@ -2,12 +2,17 @@
   'use strict';
   var KEY = 'axm.hub.radio.v1';
   var stations = {
-    poptron: { name: 'PopTron', urls: ['https://ice5.somafm.com/poptron-128-mp3', 'https://ice3.somafm.com/poptron-128-mp3'] },
-    indiepop: { name: 'Indie Pop Rocks!', urls: ['https://ice5.somafm.com/indiepop-128-mp3', 'https://ice3.somafm.com/indiepop-128-mp3'] },
-    groovesalad: { name: 'Groove Salad', urls: ['https://ice5.somafm.com/groovesalad-128-mp3', 'https://ice3.somafm.com/groovesalad-128-mp3'] },
-    thetrip: { name: 'The Trip', urls: ['https://ice5.somafm.com/thetrip-128-mp3', 'https://ice3.somafm.com/thetrip-128-mp3'] }
+    defcon: { name: 'DEF CON Radio', urls: ['https://ice5.somafm.com/defcon-128-mp3', 'https://ice2.somafm.com/defcon-128-mp3'] },
+    dubstep: { name: 'Dub Step Beyond', urls: ['https://ice5.somafm.com/dubstep-128-mp3', 'https://ice6.somafm.com/dubstep-128-mp3'] },
+    thetrip: { name: 'The Trip', urls: ['https://ice5.somafm.com/thetrip-128-mp3', 'https://ice6.somafm.com/thetrip-128-mp3'] },
+    metal: { name: 'Metal Detector', urls: ['https://ice5.somafm.com/metal-128-mp3', 'https://ice2.somafm.com/metal-128-mp3'] },
+    poptron: { name: 'PopTron', urls: ['https://ice5.somafm.com/poptron-128-mp3', 'https://ice2.somafm.com/poptron-128-mp3'] },
+    indiepop: { name: 'Indie Pop Rocks!', urls: ['https://ice5.somafm.com/indiepop-128-mp3', 'https://ice2.somafm.com/indiepop-128-mp3'] },
+    soul: { name: 'Seven Inch Soul', urls: ['https://ice5.somafm.com/7soul-128-mp3', 'https://ice6.somafm.com/7soul-128-mp3'] },
+    bootliquor: { name: 'Boot Liquor', urls: ['https://ice5.somafm.com/bootliquor-128-mp3', 'https://ice2.somafm.com/bootliquor-128-mp3'] },
+    secretagent: { name: 'Secret Agent', urls: ['https://ice5.somafm.com/secretagent-128-mp3', 'https://ice2.somafm.com/secretagent-128-mp3'] }
   };
-  var state = { station: 'poptron', volume: 0.35, playingIntent: false };
+  var state = { station: 'defcon', volume: 0.35, playingIntent: false };
   var audio, select, play, status, player, topButton, volume, upButton, downButton;
   var requested = false, resumeNeeded = false, sourceIndex = 0, localTracks = [], localIndex = 0;
 

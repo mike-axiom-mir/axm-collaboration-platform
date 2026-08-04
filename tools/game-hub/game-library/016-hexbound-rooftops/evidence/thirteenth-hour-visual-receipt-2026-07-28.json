@@ -1,0 +1,37 @@
+{
+  "schema": "hexbound.live-visual-receipt/v1",
+  "claim": "Clockwork's Thirteenth-Hour Union Hall visibly applies and clears one automatic four-second local formation-tempo window while remaining distinct from the Shift-Bell Foundry.",
+  "surface": "http://127.0.0.1:8816/games/016/?release=v016-thirteenth-hour",
+  "visual_backend": "BROWSER_PRIMARY",
+  "viewport": "1280x720",
+  "matched_setup": {
+    "faction": "clockwork-coven",
+    "map": "Rooftops at the End of Tuesday",
+    "difficulty": "Mildly Inconvenient",
+    "auto_scout": false,
+    "selected_squads": 4,
+    "selected_fighters": 31,
+    "charter_multiplier": 1,
+    "expected_move_multiplier": 1.18,
+    "expected_attack_recovery_multiplier": 1.16
+  },
+  "expected_visible_change": "Within one twelve-second cycle, nearby allied formations gain XIII rings, chevrons, and x1.18 selection/battlefield status for four seconds; those markers then clear while the Union Hall remains ordinary infrastructure and Shift-Bell Foundry remains a separate card.",
+  "observed_sequence": "settled selected-army baseline -> automatic Hall feed receipt -> active XIII clock ring, four squad rings, x1.18 labels, and selection receipt -> stable post-window selection and squads with shift markers cleared",
+  "typed_observation": "The active frame exposed four affected formations, THIRTEENTH HOUR x1.18 in the selected-army panel, XIII x1.18 over affected squads, SHIFT CHANGE x1.18 above the Hall, and a four-formation feed receipt. The confirmed settled frame removed formation and selection markers. The Expand rack simultaneously showed Z XIII Thirteenth-Hour Union Hall and B XII Shift-Bell Foundry, proving the roles remain distinct.",
+  "verdict": "PASS",
+  "captures": [
+    {"state":"baseline-settled","path":"evidence/thirteenth-hour-live-2026-07-28/01-baseline-settled.png","width":1280,"height":720,"sha256":"23a99ac73d28725a61ddb20f07205cab4c613aeb2dbf91755a62527d3044c66a"},
+    {"state":"active-shift","path":"evidence/thirteenth-hour-live-2026-07-28/02-active-shift.png","width":1280,"height":720,"sha256":"bb0965b61adb70404e1ce5e1c132fc9504f6c5849130625a174148aef1e26859"},
+    {"state":"post-shift-confirmed","path":"evidence/thirteenth-hour-live-2026-07-28/04-post-shift-confirmed.png","width":1280,"height":720,"sha256":"26bc00f4c9e29c82d8993b7e6ade31e2c392d183f7a047a22b18d03fd5e585f0"}
+  ],
+  "named_seams": [
+    "No rolling visual buffer was exposed, so exact sub-frame animation cadence remains UNKNOWN; repeated screenshots and semantic polling prove the bounded state sequence.",
+    "The first post-window screenshot caught stale HUD pixels even though semantic selection state had cleared; it was rejected, a stable eight-sample quiet interval produced the confirmed frame, and the rejected exact path was deleted.",
+    "The externally owned PID 20208 serves current v0.16 static assets but its in-memory health and launcher metadata remains v0.14 until an allowed restart seam is available."
+  ],
+  "console_warnings": [],
+  "console_errors": [],
+  "temporary_paths_deleted": ["evidence/thirteenth-hour-live-2026-07-28/03-post-shift-settled.png"],
+  "cleanup_complete_for_current_loop": true,
+  "next_cheapest_test": "A future hardware/rolling-capture hand can measure exact frame cadence; no further still-frame test is needed for this four-second state transition."
+}

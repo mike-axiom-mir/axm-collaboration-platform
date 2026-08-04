@@ -1,0 +1,79 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "text-fabric",
+  "version": "v1.0.0-axm.1",
+  "provides": [
+    "text.semantic-role-resolution",
+    "text.preset-and-recipe-catalog",
+    "text.readability-and-contrast-preflight",
+    "text.render-cost-budgeting",
+    "text.unicode-control-and-glyph-audit",
+    "text.project-font-metadata-and-coverage-audit",
+    "text.font-fallback-stack-planning",
+    "text.pseudolocalization-and-layout-preflight",
+    "text.cross-platform-bundle-compilation",
+    "text.portable-svg-fallback",
+    "text.visual-qa-matrix",
+    "text.bundle-integrity-verification"
+  ],
+  "consumes": [
+    "axm.text-request/v1",
+    "python:standard-library",
+    "filesystem:explicit-input-and-output-only",
+    "project-owned-font-file:explicit",
+    "optional-local-svg-renderer",
+    "font/glyph-run+json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.text-resolved-plan/v1",
+      "axm.text-compiled-bundle/v1",
+      "axm.text-compiled-library/v1",
+      "axm.text-font-audit/v1",
+      "axm.text-font-registry/v1",
+      "axm.text-font-stack-plan/v1",
+      "axm.text-layout-audit/v1",
+      "axm.text-static-asset/v1",
+      "axm.text-visual-qa-manifest/v1",
+      "text/css",
+      "image/svg+xml"
+    ],
+    "accepts": [
+      "axm.text-request/v1",
+      "project-owned font/ttf",
+      "project-owned font/otf",
+      "project-owned font/collection",
+      "font/glyph-run+json"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "mixed",
+    "reload": "resume",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "browser-local-storage:explicit-favorites-and-custom-presets",
+      "browser-download:explicit",
+      "filesystem:user-selected-output-only",
+      "temporary-files:selftest-and-optional-renderer-only"
+    ],
+    "refuses": [
+      "network-access",
+      "font-installation",
+      "font-binary-redistribution",
+      "implicit-output-destination",
+      "silent-existing-output-replacement",
+      "exact-shaping-claim-from-layout-heuristic",
+      "target-engine-validation-claim-without-target-engine-evidence",
+      "style-fabric-internal-rewrite",
+      "aetherglass-internal-rewrite",
+      "engine-native-text-system-replacement",
+      "automatic-preset-activation",
+      "automatic-canon",
+      "canon-change"
+    ]
+  }
+}

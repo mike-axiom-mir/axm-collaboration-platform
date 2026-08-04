@@ -1,17 +1,65 @@
 {
+  "schema": "axm.tool-manifest/v1",
   "id": "hermes-local",
   "folderAlias": "hermes",
   "name": "Hermes Local Runtime Wrapper",
-  "version": "v0.1",
+  "version": "v0.2",
   "status": "TEST",
   "entry": "index.html",
+  "contract": "module.contract.json",
   "type": "local-module",
+  "kind": "adapter",
+  "audience": "human-machine",
+  "category": "AI Team",
+  "layer": "machine",
+  "risk": "HIGH",
   "tags": [
     "connector",
     "runtime",
     "local-ai",
-    "model"
+    "model",
+    "consent-gated",
+    "proposal-first"
   ],
-  "notes": "An AXM wrapper around the real NousResearch Hermes agent runtime \u2014 one runnable local AI body/connector, kept behind AXM consent and review. (Landing card + rules; module UI is the next build.)",
-  "uses": []
+  "uses": [
+    "node-runtime",
+    "git-runtime",
+    "configured-external-hermes-source",
+    "configured-external-command",
+    "loopback-http",
+    "local-filesystem",
+    "agent-tool-forge-prompt-packs"
+  ],
+  "permissions": [
+    "files",
+    "network",
+    "machine.execute"
+  ],
+  "actions": [
+    "check local bootstrap prerequisites",
+    "clone an explicitly configured external Hermes source on an explicit install command",
+    "start an explicitly configured command from the cloned external folder",
+    "serve loopback-only health, consent, and module status",
+    "create consent-gated local task, review-proposal, and prompt-pack files"
+  ],
+  "accepts": [
+    "human:explicit-cli-action",
+    "local-file:hermes-source.local.json",
+    "http:loopback-json-request",
+    "human:local-consent-toggle"
+  ],
+  "produces": [
+    "axm.hermes-task-proposal/v1",
+    "axm.hermes-review-proposal/v1",
+    "agent-tool-forge:prompt-pack-json",
+    "process:configured-external-hermes-command"
+  ],
+  "readiness": [
+    "node-runtime",
+    "git-runtime-for-install",
+    "hermes-source.local.json-for-install-or-start",
+    "tools/hermes/external/hermes-agent-for-start"
+  ],
+  "summary": "Explicit-config bootstrap plus a loopback, consent-gated local proposal service for an external Hermes Agent installation.",
+  "notes": "AXM does not bundle Hermes or connect this control layer to it yet. The source example is configuration, not live source, license, installation, readiness, identity binding, sandbox, or runtime proof. Bootstrap install/start is explicit but separate from the control-layer consent toggle."
 }

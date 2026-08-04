@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/visual-action.schema.json",
+  "title": "AXM Visual Action",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "title", "family", "level", "summary", "handler", "contexts", "requires"],
+  "properties": {
+    "schema": {"const": "axm.visual-action/v1"},
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 100},
+    "family": {"type": "string", "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$"},
+    "level": {"enum": ["core", "advanced", "specialist"]},
+    "summary": {"type": "string", "minLength": 1, "maxLength": 240},
+    "handler": {"type": "string", "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$"},
+    "aliases": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "contexts": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "requires": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "payload": {"type": "object"},
+    "bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["keys"],
+        "properties": {
+          "keys": {"type": "string", "minLength": 1},
+          "platform": {"enum": ["all", "windows", "macos"]},
+          "context": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "destructive": {"type": "boolean"},
+    "reversible": {"type": "boolean"}
+  }
+}

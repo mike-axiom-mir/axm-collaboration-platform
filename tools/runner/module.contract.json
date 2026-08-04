@@ -1,0 +1,59 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "runner",
+  "version": "v1.1",
+  "provides": [
+    "same-origin-workshop-health-inspection",
+    "existing-verifier-report-display",
+    "proposal-only-verification-run-request-export"
+  ],
+  "consumes": [
+    "hub:module-bridge/v1",
+    "same-origin:/api/health",
+    "same-origin:/exports/verify-report.txt",
+    "browser:blob-download",
+    "human:explicit-review-and-terminal-run"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "hub:ready",
+      "hub:read-only-action-log-intent",
+      "local-file:axm.run-request/v1"
+    ],
+    "accepts": [
+      "hub:init",
+      "human:explicit-read-or-export-action",
+      "same-origin:health-json-response",
+      "same-origin:existing-verify-report-text"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  },
+  "boundaries": {
+    "reads": [
+      "same-origin:/api/health",
+      "same-origin:/exports/verify-report.txt"
+    ],
+    "explicitWrites": [
+      "user-download:axm-verify-run-request.json",
+      "hub:read-only-action-log-intent"
+    ],
+    "refuses": [
+      "browser-command-execution",
+      "unauthenticated-machine-host-access",
+      "verify-pass-claim-from-run-request",
+      "verify-pass-claim-from-server-health",
+      "report-freshness-claim",
+      "direct-workshop-source-write",
+      "manifest-status-change",
+      "automatic-workshop-status-promotion",
+      "canon-authority",
+      "external-network-access"
+    ]
+  }
+}
