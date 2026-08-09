@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-run/v1",
+  "type": "object",
+  "required": ["schema", "id", "version", "state", "domain", "intent_ref", "graph_ref", "source_anchor", "started_at", "updated_at", "internal_step_receipts", "overall_verdict", "human_review", "adapter", "authority", "limitations", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-run/v1" },
+    "id": { "type": "string" },
+    "version": { "type": "string" },
+    "state": { "enum": ["CANDIDATE_READY", "HUMAN_REVIEW", "HELD", "FAILED", "CANCELLED"] },
+    "domain": { "type": "string" },
+    "intent_ref": { "type": "object" },
+    "graph_ref": { "type": "object" },
+    "source_anchor": { "type": "string" },
+    "started_at": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "internal_step_receipts": { "type": "array" },
+    "overall_verdict": { "enum": ["VERIFIED", "HUMAN_REVIEW", "HELD", "FAILED"] },
+    "human_review": { "type": "boolean" },
+    "adapter": { "type": "object" },
+    "authority": { "type": "object" },
+    "limitations": { "type": "array", "minItems": 1 },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

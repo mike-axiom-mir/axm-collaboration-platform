@@ -12,7 +12,9 @@
     "independent-verifier-binding",
     "interruption-safe-resume",
     "candidate-only-assembly-state",
-    "read-only-axm-integration-adapters"
+    "read-only-axm-integration-adapters",
+    "portable-production-profile-adapter",
+    "cross-domain-orchestration-fixture"
   ],
   "consumes": [
     "axm.game-intent-lock/v1",
@@ -22,12 +24,15 @@
     "axm.verification-receipt/v2",
     "service:game-forge",
     "service:game-hub",
-    "service:local-godot-substrate"
+    "service:local-godot-substrate",
+    "axm.production-intent-lock/v1",
+    "axm.production-package/v1",
+    "axm.production-graph/v1"
   ],
   "permissions": [],
   "handoffs": {
-    "emits": ["axm.game-production-plan/v1", "axm.game-step-receipt/v1", "axm.game-production-run/v1"],
-    "accepts": ["human:explicit-run-start", "human:cancel", "axm.game-intent-lock/v1", "axm.game-production-graph/v1"]
+    "emits": ["axm.game-production-plan/v1", "axm.game-step-receipt/v1", "axm.game-production-run/v1", "axm.production-profile-binding/v1", "axm.production-plan/v1", "axm.production-run-state/v1", "axm.production-run/v1"],
+    "accepts": ["human:explicit-run-start", "human:explicit-portable-run-start", "human:cancel", "axm.game-intent-lock/v1", "axm.game-production-graph/v1", "axm.production-intent-lock/v1", "axm.production-graph/v1"]
   },
   "boundaries": {
     "writes": ["explicit-external-candidate-job-root-only"],
@@ -43,7 +48,10 @@
       "automatic-promotion",
       "automatic-canon",
       "automatic-release",
-      "unreviewed-native-execution"
+      "unreviewed-native-execution",
+      "universal-kernel-claim-by-adapter",
+      "domain-quality-claim-by-fixture",
+      "neutral-step-receipt-claim-v0.1"
     ]
   }
 }

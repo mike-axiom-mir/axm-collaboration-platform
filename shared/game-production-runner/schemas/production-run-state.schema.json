@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-run-state/v1",
+  "type": "object",
+  "required": ["schema", "id", "state", "overall_verdict", "plan_digest", "completed_packages", "attempt_counts", "updated_at", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-run-state/v1" },
+    "id": { "type": "string" },
+    "state": { "enum": ["RUNNING", "INTERRUPTED", "CANDIDATE_READY", "HUMAN_REVIEW", "HELD", "FAILED", "CANCELLED"] },
+    "overall_verdict": { "enum": ["PENDING", "VERIFIED", "HUMAN_REVIEW", "HELD", "FAILED"] },
+    "plan_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "completed_packages": { "type": "array" },
+    "attempt_counts": { "type": "object" },
+    "updated_at": { "type": "string" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

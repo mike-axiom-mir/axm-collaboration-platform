@@ -1,0 +1,71 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "subject": "axm.production-profile.game-runner-adapter@0.1.0",
+  "status": "EXPERIMENTAL",
+  "claims": [
+    {
+      "claim_id": "portable.contracts.exist",
+      "kind": "static-structure",
+      "risk": "medium",
+      "pass_condition": "Neutral intent, package, graph, binding, plan, and run schemas parse and are declared by the module.",
+      "primary_surface": "JSON parsing plus manifest/contract seam review",
+      "counterevidence": "A schema fails to parse or is absent from the declared handoff surface.",
+      "observed_evidence": "All changed JSON parsed; discovery seam review passed.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "portable.adaptation.deterministic",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "pass_condition": "Identical neutral inputs produce the same sealed portable plan and exact portable-to-internal binding.",
+      "primary_surface": "Repeated executable compilation with digest equality assertions",
+      "counterevidence": "Equivalent inputs produce different plan or binding digests.",
+      "secondary_surface_if_needed": "Resume requires the exact same portable and internal plan identities.",
+      "observed_evidence": "Repeated compilation and terminal resume passed with exact digest equality.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "portable.non_game.orchestration",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "pass_condition": "A documentation-domain fixture executes three ordered packages and reaches candidate-ready with neutral plan and run receipts.",
+      "primary_surface": "Focused in-process fixture execution in an external temporary job root",
+      "counterevidence": "The domain is rewritten to game, ordering fails, evidence is missing, or the neutral receipt is absent.",
+      "observed_evidence": "Documentation fixture reached CANDIDATE_READY and preserved axm.production-run/v1 beside internal evidence.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "portable.authority.fail_closed",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "Adaptation grants no execution authority; missing verifiers hold; execution requires the portable phrase; altered bindings or authority receipts are refused.",
+      "primary_surface": "Allowed and denied focused boundary tests",
+      "counterevidence": "A plan executes without the portable phrase, passes without a verifier, or resumes from altered authority evidence.",
+      "secondary_surface_if_needed": "Sealed adapter and run receipts retain install, promote, canon, and release as false.",
+      "observed_evidence": "Missing-verifier, wrong-phrase, resealed-reference-tamper, and portable-receipt-tamper checks all held as designed.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "portable.kernel.universal",
+      "kind": "quality",
+      "risk": "high",
+      "pass_condition": "Several real domains execute through neutral Hands and neutral step receipts without game-specific internal contracts.",
+      "primary_surface": "Held-out real domain pipelines plus contract inspection",
+      "counterevidence": "Any required step still depends on game-specific receipt or execution semantics.",
+      "observed_evidence": "The v0.1 adapter intentionally retains axm.game-step-receipt/v1 internally.",
+      "verdict": "UNKNOWN",
+      "named_seam": "NEUTRAL_KERNEL_NOT_YET_EARNED"
+    },
+    {
+      "claim_id": "portable.domain.quality",
+      "kind": "quality",
+      "risk": "high",
+      "pass_condition": "An appointed domain reviewer accepts a representative real output against declared criteria.",
+      "primary_surface": "Representative artifact inspection and human/domain review",
+      "counterevidence": "The fixture passes mechanically but the produced artifact is incomplete, wrong, or undesirable.",
+      "observed_evidence": "Only inert fixture facts exist; no domain-quality review was requested or performed.",
+      "verdict": "UNKNOWN",
+      "named_seam": "FIXTURE_IS_NOT_DOMAIN_QUALITY"
+    }
+  ]
+}

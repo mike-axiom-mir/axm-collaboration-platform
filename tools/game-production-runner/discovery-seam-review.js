@@ -17,6 +17,9 @@ ok(manifest.status === 'EXPERIMENTAL' && contract.status === 'EXPERIMENTAL', 'st
 ok(JSON.stringify(manifest.permissions.slice().sort()) === JSON.stringify(contract.permissions.slice().sort()), 'permissions agree');
 ok(contract.boundaries.refuses.includes('native-execution-v0.1'), 'native execution remains refused');
 ok(contract.boundaries.refuses.includes('automatic-game-hub-install'), 'Game Hub install remains refused');
+ok(manifest.accepts.includes('axm.production-intent-lock/v1') && manifest.produces.includes('axm.production-run-state/v1') && manifest.produces.includes('axm.production-run/v1'), 'portable profile schemas are declared');
+ok(contract.boundaries.refuses.includes('universal-kernel-claim-by-adapter'), 'portable adapter cannot claim a universal kernel');
+ok(Core.portable.SCHEMAS.plan === 'axm.production-plan/v1' && Core.portable.SCHEMAS.run === 'axm.production-run/v1', 'portable profile exposes exact neutral plan and run schemas');
 ok(integration.checks.every((item) => item.available), 'all tracked read-only AXM seams are present');
 ok(integration.native_runtime_probed === false && integration.authority_granted === false, 'discovery grants no runtime authority');
 console.log('Game Production Runner discovery seam review passed ' + checks + ' checks.');

@@ -13,6 +13,13 @@ It does not build Proofyard in Godot yet. The included Proofyard foundation is
 an inert fixture that proves runner behavior, not native gameplay. Godot remains
 behind the existing substrate resolver and a separate explicit native gate.
 
+The portable production profile is a bounded adapter experiment. It accepts
+neutral intent, package, and graph schemas and binds them to the unchanged game
+runner internally. A documentation fixture proves cross-domain orchestration
+mechanics; it does not prove that the core is already universal. Internal step
+receipts intentionally retain their game schema until a neutral kernel earns
+independent evidence.
+
 ## Current truth ceiling
 
 - Contract and graph behavior: executable and self-tested.
@@ -20,6 +27,8 @@ behind the existing substrate resolver and a separate explicit native gate.
 - Restart/resume, digest-chained ledger validation, and tamper holds: executable
   and self-tested.
 - AXM adapter discovery: read-only.
+- Portable non-game profile adaptation: executable and self-tested with an
+  explicit evidence ceiling.
 - Native Godot production: `MISSING_SUBSTRATE` until separately resolved.
 - Game quality, feel, and superiority over another engine: human/future evidence.
 
@@ -27,6 +36,8 @@ behind the existing substrate resolver and a separate explicit native gate.
 
 - Exact phrase `RUN GAME PRODUCTION CANDIDATE` is required for every run or
   resume.
+- Portable profiles require their distinct phrase `RUN PRODUCTION CANDIDATE`;
+  adapting a profile grants no execution authority.
 - Candidate job roots must be absolute and outside the source tree.
 - Symbolic links and junctions cannot disguise the source tree as a job root.
 - Only declared output paths are written.

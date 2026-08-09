@@ -7,5 +7,7 @@ module.exports = Object.freeze({
   runner: require('./runner'),
   adapters: require('./axm-adapters'),
   fixtures: require('./fixture-registry'),
-  proofyard: require('./proofyard-foundation')
+  proofyard: require('./proofyard-foundation'),
+  portable: require('./portable-profile'),
+  portableFixture: require('./portable-profile-fixture')
 });

@@ -43,6 +43,23 @@ async function main() {
   const planA = Core.compiler.compile(spec, registry.inventory);
   const planB = Core.compiler.compile(Core.canonical.clone(spec), registry.inventory);
   equal(planA.digest, planB.digest, 'unchanged compile is deterministic');
+
+  const portableSpec = Core.portableFixture.build();
+  const portablePlanA = Core.portable.compile(portableSpec, registry.inventory);
+  const portablePlanB = Core.portable.compile(Core.canonical.clone(portableSpec), registry.inventory);
+  equal(portablePlanA.schema, Core.portable.SCHEMAS.plan, 'portable profile emits a neutral plan schema');
+  equal(portablePlanA.domain, 'documentation', 'portable plan preserves the non-game domain');
+  equal(portablePlanA.digest, portablePlanB.digest, 'portable adaptation and compilation are deterministic');
+  ok(Core.canonical.validDigest(portablePlanA.adapter_binding), 'portable-to-internal binding is sealed');
+  equal(portablePlanA.adapter_binding.authority.execution, false, 'profile binding grants no execution authority');
+  equal(Core.portable.compile(portableSpec, { executors: registry.inventory.executors, verifiers: [] }).status, 'HELD', 'portable plan fails closed when its verifier is unavailable');
+  const portableTamper = Core.canonical.clone(portableSpec);
+  portableTamper.intent.human_goal = 'silently changed';
+  throws(() => Core.portable.compile(portableTamper, registry.inventory), /digest mismatch/, 'portable intent mutation cannot compile');
+  const portableRefTamper = Core.canonical.clone(portableSpec);
+  portableRefTamper.graph.intent_ref.digest = 'f'.repeat(64);
+  portableRefTamper.graph = Core.canonical.seal(portableRefTamper.graph);
+  throws(() => Core.portable.compile(portableRefTamper, registry.inventory), /intent_ref mismatch/, 'resealed portable graph cannot detach from its intent');
   equal(planA.status, 'READY', 'exact fixture Hands make plan ready');
   equal(planA.execution_order, spec.packages.map((pkg) => pkg.id), 'serial order follows dependencies');
   const heldPlan = Core.compiler.compile(spec, { executors: [], verifiers: [] });
@@ -140,6 +157,22 @@ async function main() {
     const human = await Core.runner.run({ plan: humanPlan, packages: humanSpec.packages, executors: registry.executors, verifiers: registry.verifiers, jobRoot: path.join(temporary, 'human'), sourceRoot, runId: 'human-review-run', confirmation: Core.runner.START_CONFIRMATION, clock: clock() });
     equal(human.state.status, 'HUMAN_REVIEW', 'subjective game quality remains human review');
     equal(human.runReceipt.overall_verdict, 'HUMAN_REVIEW', 'final receipt preserves human judgment');
+
+    await rejects(() => Core.portable.run({ spec: portableSpec, plan: portablePlanA, executors: registry.executors, verifiers: registry.verifiers, jobRoot: path.join(temporary, 'portable-denied'), sourceRoot, confirmation: Core.runner.START_CONFIRMATION, clock: clock() }), /portable production confirmation/, 'portable profile has its own explicit start phrase');
+    const portable = await Core.portable.run({ spec: portableSpec, plan: portablePlanA, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(sourceRoot), jobRoot: path.join(temporary, 'portable'), sourceRoot, runId: 'portable-doc-run', confirmation: Core.portable.START_CONFIRMATION, clock: clock() });
+    equal(portable.state.state, 'CANDIDATE_READY', 'non-game profile reaches candidate ready through the same bounded mechanics');
+    equal(portable.runReceipt.schema, Core.portable.SCHEMAS.run, 'portable profile emits a neutral run receipt');
+    equal(portable.runReceipt.domain, 'documentation', 'portable receipt retains the source domain');
+    equal(portable.runReceipt.authority.installed, false, 'portable candidate is not installed');
+    ok(Core.canonical.validDigest(portable.runReceipt), 'portable run receipt is sealed');
+    ok(fs.existsSync(portable.runReceiptFile), 'portable run receipt is preserved beside internal evidence');
+    const portableResume = await Core.portable.run({ spec: portableSpec, plan: portablePlanA, executors: registry.executors, verifiers: registry.verifiers, jobRoot: path.join(temporary, 'portable'), sourceRoot, runId: 'portable-doc-run', confirmation: Core.portable.START_CONFIRMATION, resume: true, clock: clock() });
+    equal(portableResume.runReceipt.digest, portable.runReceipt.digest, 'portable terminal resume preserves exact receipt identity');
+    const portableReceiptFile = portable.runReceiptFile;
+    const portableReceiptTamper = JSON.parse(fs.readFileSync(portableReceiptFile, 'utf8'));
+    portableReceiptTamper.authority.installed = true;
+    fs.writeFileSync(portableReceiptFile, JSON.stringify(portableReceiptTamper, null, 2) + '\n');
+    await rejects(() => Core.portable.run({ spec: portableSpec, plan: portablePlanA, executors: registry.executors, verifiers: registry.verifiers, jobRoot: path.join(temporary, 'portable'), sourceRoot, runId: 'portable-doc-run', confirmation: Core.portable.START_CONFIRMATION, resume: true, clock: clock() }), /portable run receipt drift/, 'portable resume refuses a tampered adapter authority receipt');
 
     const cancelled = await Core.runner.run({ plan: planA, packages: spec.packages, executors: registry.executors, verifiers: registry.verifiers, jobRoot: path.join(temporary, 'cancelled'), sourceRoot, runId: 'cancelled-run', confirmation: Core.runner.START_CONFIRMATION, cancelled: () => true, clock: clock() });
     equal(cancelled.state.status, 'CANCELLED', 'explicit cancellation stops before work');

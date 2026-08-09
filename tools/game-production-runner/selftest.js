@@ -29,6 +29,13 @@ async function main() {
   equal(planned.counts.packages, 5, 'demo exposes five package foundation');
   equal(planned.truth.execution_started, false, 'planning does not execute');
 
+  const profilePlan = invoke(['plan-profile-demo']);
+  equal(profilePlan.status, 0, 'portable non-game demo plan is ready');
+  const profilePlanned = parsed(profilePlan);
+  equal(profilePlanned.plan.schema, 'axm.production-plan/v1', 'portable CLI returns the neutral plan schema');
+  equal(profilePlanned.plan.domain, 'documentation', 'portable CLI retains the documentation domain');
+  equal(profilePlanned.counts.packages, 3, 'portable demo exposes three bounded packages');
+
   const noProbe = invoke(['probe-godot']);
   equal(noProbe.status, 0, 'unrequested Godot probe is a safe no-op');
   equal(parsed(noProbe).status, 'NOT_PROBED', 'Godot remains unprobed without opt-in');
@@ -50,6 +57,18 @@ async function main() {
     const resume = invoke(['run-demo', '--automated-only', '--job-root', path.join(temporary, 'runs'), '--run-id', 'cli-test-run', '--resume', '--confirm', 'RUN GAME PRODUCTION CANDIDATE']);
     equal(resume.status, 0, 'explicit terminal resume is safe');
     equal(parsed(resume).state.status, 'CANDIDATE_READY', 'resume observes completed state');
+
+    const profileDenied = invoke(['run-profile-demo', '--job-root', path.join(temporary, 'profile-denied')]);
+    equal(profileDenied.status, 1, 'portable run without its confirmation is refused');
+    ok(/portable production confirmation/.test(parsed(profileDenied).reason), 'portable refusal names its distinct start gate');
+    const profileRun = invoke(['run-profile-demo', '--job-root', path.join(temporary, 'profile-runs'), '--run-id', 'profile-cli-run', '--confirm', 'RUN PRODUCTION CANDIDATE']);
+    equal(profileRun.status, 0, 'confirmed portable fixture exits successfully');
+    const profileResult = parsed(profileRun);
+    equal(profileResult.state.state, 'CANDIDATE_READY', 'portable CLI returns candidate ready state');
+    equal(profileResult.domain, 'documentation', 'portable CLI output names its domain');
+    equal(profileResult.proof_scope, 'cross-domain orchestration mechanics only', 'portable CLI preserves its evidence ceiling');
+    equal(profileResult.automatic_install, false, 'portable CLI never installs the candidate');
+    ok(fs.existsSync(path.join(profileResult.local_run_directory, 'portable-run-receipt.json')), 'portable CLI preserves the neutral receipt');
 
     const sourceDenied = invoke(['run-demo', '--automated-only', '--job-root', path.join(Cli.ROOT, 'exports', 'bad-run'), '--run-id', 'source-denied', '--confirm', 'RUN GAME PRODUCTION CANDIDATE']);
     equal(sourceDenied.status, 1, 'source-tree candidate root is refused');
