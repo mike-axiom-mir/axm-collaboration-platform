@@ -31,12 +31,14 @@ function usage() {
     '  inspect',
     '  plan-demo [--automated-only]',
     '  plan-profile-demo',
+    '  plan-document-demo',
     '  plan --spec FILE',
     '  run-demo --job-root DIRECTORY [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.runner.START_CONFIRMATION + '"',
     '  run-profile-demo --job-root DIRECTORY [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
+    '  run-document-demo --job-root DIRECTORY [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
     '  probe-godot --read-only-probe [--substrate-root DIRECTORY]',
     '',
-    'v0.1 runs inert fixtures only. It does not install, promote, canonize, release, or execute Godot.'
+    'v0.1 runs inert fixtures and one trusted in-process deterministic documentation Hand. It does not install, promote, canonize, release, or execute Godot.'
   ].join('\n');
 }
 
@@ -60,11 +62,12 @@ async function main(argv) {
   const options = parse(argv || process.argv.slice(2));
   if (options.command === 'help' || options.command === '--help') return { output: usage(), code: 0 };
   if (options.command === 'inspect') return { output: JSON.stringify(Core.adapters.inspect(ROOT), null, 2), code: 0 };
-  if (options.command === 'plan-demo' || options.command === 'plan-profile-demo' || options.command === 'plan') {
-    const registry = Core.fixtures.create();
+  if (options.command === 'plan-demo' || options.command === 'plan-profile-demo' || options.command === 'plan-document-demo' || options.command === 'plan') {
+    const documentProfile = options.command === 'plan-document-demo';
+    const registry = documentProfile ? Core.documentRegistry.create() : Core.fixtures.create();
     const portable = options.command === 'plan-profile-demo';
-    const spec = options.command === 'plan' ? loadSpec(options.spec) : portable ? Core.portableFixture.build() : Core.proofyard.build({ includeHumanReview: !options.automatedOnly });
-    const plan = portable ? Core.portable.compile(spec, registry.inventory) : Core.compiler.compile(spec, registry.inventory);
+    const spec = options.command === 'plan' ? loadSpec(options.spec) : documentProfile ? Core.portableDocuments.build() : portable ? Core.portableFixture.build() : Core.proofyard.build({ includeHumanReview: !options.automatedOnly });
+    const plan = portable || documentProfile ? Core.portable.compile(spec, registry.inventory) : Core.compiler.compile(spec, registry.inventory);
     return { output: JSON.stringify(summary(spec, plan), null, 2), code: plan.status === 'READY' ? 0 : 2 };
   }
   if (options.command === 'run-demo') {
@@ -83,6 +86,15 @@ async function main(argv) {
     const plan = Core.portable.compile(spec, registry.inventory);
     const result = await Core.portable.run({ spec, plan, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
     const output = { schema: 'axm.production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, local_run_directory: result.runDir, domain: plan.domain, proof_scope: 'cross-domain orchestration mechanics only', automatic_install: false, canon: false };
+    return { output: JSON.stringify(output, null, 2), code: ['CANDIDATE_READY', 'HUMAN_REVIEW', 'INTERRUPTED'].includes(result.state.state) ? 0 : 2 };
+  }
+  if (options.command === 'run-document-demo') {
+    if (!options.jobRoot) throw new Error('run-document-demo requires --job-root');
+    const registry = Core.documentRegistry.create();
+    const spec = Core.portableDocuments.build();
+    const plan = Core.portable.compile(spec, registry.inventory);
+    const result = await Core.portable.run({ spec, plan, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
+    const output = { schema: 'axm.production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, local_run_directory: result.runDir, domain: plan.domain, proof_scope: 'content-derived deterministic documentation verification; editorial quality remains human review', automatic_install: false, canon: false };
     return { output: JSON.stringify(output, null, 2), code: ['CANDIDATE_READY', 'HUMAN_REVIEW', 'INTERRUPTED'].includes(result.state.state) ? 0 : 2 };
   }
   if (options.command === 'probe-godot') {

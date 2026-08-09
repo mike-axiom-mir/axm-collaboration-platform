@@ -20,6 +20,13 @@ mechanics; it does not prove that the core is already universal. Internal step
 receipts intentionally retain their game schema until a neutral kernel earns
 independent evidence.
 
+The content-verified documentation profile goes beyond fixture testimony. Its
+Hand deterministically renders a release note from a locked brief, while a
+separately identified verifier reads declared dependency and output bytes
+through copy-returning runner APIs. Executor-supplied facts cannot make malformed
+bytes pass. This proves content-derived verification inside the trusted
+in-process registry; it is not an operating-system process sandbox.
+
 ## Current truth ceiling
 
 - Contract and graph behavior: executable and self-tested.
@@ -29,6 +36,8 @@ independent evidence.
 - AXM adapter discovery: read-only.
 - Portable non-game profile adaptation: executable and self-tested with an
   explicit evidence ceiling.
+- Content-derived documentation verification: executable and self-tested,
+  including a deliberately lying executor and undeclared-read refusal.
 - Native Godot production: `MISSING_SUBSTRATE` until separately resolved.
 - Game quality, feel, and superiority over another engine: human/future evidence.
 
@@ -43,6 +52,8 @@ independent evidence.
 - Only declared output paths are written.
 - Fixture executors return bytes to the runner; they receive no output path.
 - A package cannot appoint its executor as verifier.
+- Appointed verifiers may read copies of declared output bytes and direct
+  dependency bytes; undeclared reads fail the attempt.
 - Missing or contradictory evidence holds the run.
 - No install, Game Hub copy, promotion, CANON, release, or network authority.
 

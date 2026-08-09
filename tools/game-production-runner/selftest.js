@@ -16,7 +16,7 @@ function parsed(result) { return JSON.parse(result.stdout || result.stderr); }
 async function main() {
   equal(Cli.parse(['run-demo', '--job-root', 'X', '--resume']).resume, true, 'CLI parses explicit resume');
   assert.throws(() => Cli.parse(['inspect', '--unknown']), /unknown argument/); checks += 1;
-  ok(Cli.usage().includes('inert fixtures only'), 'usage preserves fixture truth ceiling');
+  ok(Cli.usage().includes('trusted in-process deterministic documentation Hand'), 'usage preserves the Hand trust boundary');
 
   const inspect = invoke(['inspect']);
   equal(inspect.status, 0, 'inspect exits successfully');
@@ -35,6 +35,12 @@ async function main() {
   equal(profilePlanned.plan.schema, 'axm.production-plan/v1', 'portable CLI returns the neutral plan schema');
   equal(profilePlanned.plan.domain, 'documentation', 'portable CLI retains the documentation domain');
   equal(profilePlanned.counts.packages, 3, 'portable demo exposes three bounded packages');
+
+  const documentPlan = invoke(['plan-document-demo']);
+  equal(documentPlan.status, 0, 'content-verified document plan is ready');
+  const documentPlanned = parsed(documentPlan);
+  equal(documentPlanned.plan.schema, 'axm.production-plan/v1', 'document Hand uses the neutral plan schema');
+  equal(documentPlanned.counts.packages, 3, 'document Hand declares three content-derived packages');
 
   const noProbe = invoke(['probe-godot']);
   equal(noProbe.status, 0, 'unrequested Godot probe is a safe no-op');
@@ -69,6 +75,14 @@ async function main() {
     equal(profileResult.proof_scope, 'cross-domain orchestration mechanics only', 'portable CLI preserves its evidence ceiling');
     equal(profileResult.automatic_install, false, 'portable CLI never installs the candidate');
     ok(fs.existsSync(path.join(profileResult.local_run_directory, 'portable-run-receipt.json')), 'portable CLI preserves the neutral receipt');
+
+    const documentRun = invoke(['run-document-demo', '--job-root', path.join(temporary, 'document-runs'), '--run-id', 'document-cli-run', '--confirm', 'RUN PRODUCTION CANDIDATE']);
+    equal(documentRun.status, 0, 'confirmed content-verified document run exits successfully');
+    const documentResult = parsed(documentRun);
+    equal(documentResult.state.state, 'CANDIDATE_READY', 'document CLI returns candidate ready state');
+    ok(/content-derived deterministic documentation verification/.test(documentResult.proof_scope), 'document CLI names its content-derived evidence scope');
+    equal(documentResult.automatic_install, false, 'document CLI never installs the candidate');
+    ok(fs.existsSync(path.join(documentResult.local_run_directory, 'portable-run-receipt.json')), 'document CLI preserves the neutral receipt');
 
     const sourceDenied = invoke(['run-demo', '--automated-only', '--job-root', path.join(Cli.ROOT, 'exports', 'bad-run'), '--run-id', 'source-denied', '--confirm', 'RUN GAME PRODUCTION CANDIDATE']);
     equal(sourceDenied.status, 1, 'source-tree candidate root is refused');

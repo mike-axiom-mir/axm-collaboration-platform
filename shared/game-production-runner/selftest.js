@@ -60,6 +60,17 @@ async function main() {
   portableRefTamper.graph.intent_ref.digest = 'f'.repeat(64);
   portableRefTamper.graph = Core.canonical.seal(portableRefTamper.graph);
   throws(() => Core.portable.compile(portableRefTamper, registry.inventory), /intent_ref mismatch/, 'resealed portable graph cannot detach from its intent');
+
+  const documentRegistry = Core.documentRegistry.create();
+  const documentSpec = Core.portableDocuments.build();
+  const documentPlan = Core.portable.compile(documentSpec, documentRegistry.inventory);
+  equal(documentPlan.status, 'READY', 'content-verified documentation profile is ready');
+  ok(Core.documentRegistry.EXECUTOR.id !== Core.documentRegistry.VERIFIER.id, 'documentation producer and verifier identities are separate');
+  equal(documentPlan.domain, 'documentation', 'content-verified profile retains its domain');
+  const normalizedDocumentBrief = Core.documentRegistry.normalizeBrief(documentSpec.packages[0].document_payload);
+  const renderedDocumentBrief = Core.documentRegistry.renderReleaseNote(normalizedDocumentBrief);
+  ok(Core.documentRegistry.inspectReleaseNote(renderedDocumentBrief, normalizedDocumentBrief), 'documentation verifier independently parses a correct deterministic draft');
+  ok(!Core.documentRegistry.inspectReleaseNote(renderedDocumentBrief.replace(normalizedDocumentBrief.evidence[0], 'altered evidence'), normalizedDocumentBrief), 'documentation verifier rejects a semantically altered deterministic draft');
   equal(planA.status, 'READY', 'exact fixture Hands make plan ready');
   equal(planA.execution_order, spec.packages.map((pkg) => pkg.id), 'serial order follows dependencies');
   const heldPlan = Core.compiler.compile(spec, { executors: [], verifiers: [] });
@@ -173,6 +184,60 @@ async function main() {
     portableReceiptTamper.authority.installed = true;
     fs.writeFileSync(portableReceiptFile, JSON.stringify(portableReceiptTamper, null, 2) + '\n');
     await rejects(() => Core.portable.run({ spec: portableSpec, plan: portablePlanA, executors: registry.executors, verifiers: registry.verifiers, jobRoot: path.join(temporary, 'portable'), sourceRoot, runId: 'portable-doc-run', confirmation: Core.portable.START_CONFIRMATION, resume: true, clock: clock() }), /portable run receipt drift/, 'portable resume refuses a tampered adapter authority receipt');
+
+    const documents = await Core.portable.run({ spec: documentSpec, plan: documentPlan, executors: documentRegistry.executors, verifiers: documentRegistry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(sourceRoot), jobRoot: path.join(temporary, 'documents'), sourceRoot, runId: 'content-document-run', confirmation: Core.portable.START_CONFIRMATION, clock: clock() });
+    equal(documents.state.state, 'CANDIDATE_READY', 'content-inspected documentation Hand reaches candidate ready');
+    const documentLedger = lines(path.join(documents.runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line));
+    equal(documentLedger.length, 3, 'documentation run preserves three independently verified steps');
+    ok(documentLedger.every((receipt) => receipt.evidence[0].claims[0].evidence[0].kind === 'artifact-content-inspection'), 'documentation claims derive from artifact-content inspection');
+    ok(documentLedger.every((receipt) => !JSON.stringify(receipt.evidence).includes('fixture-declaration')), 'documentation verifier does not rely on fixture declarations');
+    const draftStep = documents.state.completed_packages.includes('document.release-note-draft');
+    ok(draftStep, 'content-verified draft is present in the portable state');
+    const draftReceipt = documentLedger.find((receipt) => receipt.package_ref.id === 'document.release-note-draft');
+    const draftBytes = fs.readFileSync(path.join(documents.runDir, draftReceipt.outputs[0].run_relative_path), 'utf8');
+    equal(draftBytes, renderedDocumentBrief, 'written draft bytes match the deterministic rendering');
+
+    const lyingExecutor = {
+      identity: Core.documentRegistry.EXECUTOR,
+      execute(context) {
+        return { artifacts: context.package.outputs.map((item) => ({ path: item.path, content: '{}' })), facts: { claims: Object.fromEntries(context.package.claims.map((claim) => [claim.id, true])) } };
+      }
+    };
+    const lied = await Core.portable.run({ spec: documentSpec, plan: documentPlan, executors: [lyingExecutor], verifiers: documentRegistry.verifiers, jobRoot: path.join(temporary, 'lying-documents'), sourceRoot, runId: 'lying-document-run', confirmation: Core.portable.START_CONFIRMATION, clock: clock() });
+    equal(lied.state.state, 'FAILED', 'content verifier rejects malformed bytes despite executor PASS facts');
+    const liedLedger = lines(path.join(lied.runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line));
+    ok(liedLedger.every((receipt) => receipt.verdict === 'FAILED'), 'executor testimony cannot convert failed content evidence into PASS');
+
+    const escapingVerifier = {
+      identity: Core.documentRegistry.VERIFIER,
+      verify(context) { context.readArtifact('../undeclared'); return documentRegistry.verifiers[0].verify(context); }
+    };
+    const escapedVerification = await Core.portable.run({ spec: documentSpec, plan: documentPlan, executors: documentRegistry.executors, verifiers: [escapingVerifier], jobRoot: path.join(temporary, 'escaping-verifier'), sourceRoot, runId: 'escaping-verifier-run', confirmation: Core.portable.START_CONFIRMATION, clock: clock() });
+    equal(escapedVerification.state.state, 'FAILED', 'verifier cannot read outside declared outputs');
+
+    const mutatingVerifier = {
+      identity: Core.documentRegistry.VERIFIER,
+      verify(context) {
+        context.readArtifact(context.package.outputs[0].path).fill(0);
+        return documentRegistry.verifiers[0].verify(context);
+      }
+    };
+    const mutationProof = await Core.portable.run({ spec: documentSpec, plan: documentPlan, executors: documentRegistry.executors, verifiers: [mutatingVerifier], jobRoot: path.join(temporary, 'mutating-verifier'), sourceRoot, runId: 'mutating-verifier-run', confirmation: Core.portable.START_CONFIRMATION, clock: clock() });
+    equal(mutationProof.state.state, 'CANDIDATE_READY', 'verifier receives an isolated copy of declared artifact bytes');
+    const mutationLedger = lines(path.join(mutationProof.runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line));
+    const mutationDraftReceipt = mutationLedger.find((receipt) => receipt.package_ref.id === 'document.release-note-draft');
+    const mutationDraftBytes = fs.readFileSync(path.join(mutationProof.runDir, mutationDraftReceipt.outputs[0].run_relative_path), 'utf8');
+    equal(mutationDraftBytes, draftBytes, 'mutating a verifier byte copy cannot change runner-owned output');
+
+    const undeclaredInputVerifier = {
+      identity: Core.documentRegistry.VERIFIER,
+      verify(context) {
+        context.readInput('not-a-dependency', 'private/undeclared.txt');
+        return documentRegistry.verifiers[0].verify(context);
+      }
+    };
+    const undeclaredInput = await Core.portable.run({ spec: documentSpec, plan: documentPlan, executors: documentRegistry.executors, verifiers: [undeclaredInputVerifier], jobRoot: path.join(temporary, 'undeclared-input-verifier'), sourceRoot, runId: 'undeclared-input-verifier-run', confirmation: Core.portable.START_CONFIRMATION, clock: clock() });
+    equal(undeclaredInput.state.state, 'FAILED', 'verifier cannot read undeclared dependency inputs');
 
     const cancelled = await Core.runner.run({ plan: planA, packages: spec.packages, executors: registry.executors, verifiers: registry.verifiers, jobRoot: path.join(temporary, 'cancelled'), sourceRoot, runId: 'cancelled-run', confirmation: Core.runner.START_CONFIRMATION, cancelled: () => true, clock: clock() });
     equal(cancelled.state.status, 'CANCELLED', 'explicit cancellation stops before work');

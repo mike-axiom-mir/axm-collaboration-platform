@@ -9,5 +9,7 @@ module.exports = Object.freeze({
   fixtures: require('./fixture-registry'),
   proofyard: require('./proofyard-foundation'),
   portable: require('./portable-profile'),
-  portableFixture: require('./portable-profile-fixture')
+  portableFixture: require('./portable-profile-fixture'),
+  documentRegistry: require('./document-profile-registry'),
+  portableDocuments: require('./portable-document-profile')
 });

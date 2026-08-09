@@ -266,7 +266,22 @@ async function run(options) {
         }
         if (total > pkg.resource_budget.max_output_bytes) throw new Error('executor output exceeds package byte budget');
         const evidenceArtifacts = produced.artifacts.map((artifact) => ({ path: artifact.path, bytes: artifact.content.length, digest: Codec.sha256(artifact.content) }));
-        verification = await Promise.resolve(verifier.verify({ package: Codec.clone(pkg), artifacts: Codec.clone(evidenceArtifacts), facts: Codec.clone(produced.facts || {}), inputs: Codec.clone(inputArtifacts) }));
+        const producedByPath = new Map(produced.artifacts.map((artifact) => [artifact.path, artifact]));
+        verification = await Promise.resolve(verifier.verify({
+          package: Codec.clone(pkg),
+          artifacts: Codec.clone(evidenceArtifacts),
+          facts: Codec.clone(produced.facts || {}),
+          inputs: Codec.clone(inputArtifacts),
+          readArtifact: (relative) => {
+            if (!declared.has(relative) || !producedByPath.has(relative)) throw new Error('verifier requested an undeclared output');
+            return Buffer.from(producedByPath.get(relative).content);
+          },
+          readInput: (packageIdValue, relative) => {
+            const artifact = inputArtifacts.find((item) => item.package_id === packageIdValue && item.path === relative);
+            if (!artifact) throw new Error('verifier requested an undeclared input');
+            return Buffer.from(fs.readFileSync(safeTarget(runDir, artifact.run_relative_path)));
+          }
+        }));
         const receiptErrors = verificationErrors(verification, pkg);
         if (typeof options.receiptValidator === 'function') receiptErrors.push(...(options.receiptValidator(verification) || []));
         if (receiptErrors.length) outcome = { verdict: 'HELD', reason: receiptErrors.join('; ') };
