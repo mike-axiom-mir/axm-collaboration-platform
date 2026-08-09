@@ -21,6 +21,8 @@ node tools/game-production-runner/cli.js run-demo --job-root D:\candidate\runs -
 node tools/game-production-runner/cli.js run-demo --job-root D:\candidate\runs --run-id proofyard-demo --resume --confirm "RUN GAME PRODUCTION CANDIDATE"
 node tools/game-production-runner/cli.js run-profile-demo --job-root D:\candidate\runs --run-id portable-demo --confirm "RUN PRODUCTION CANDIDATE"
 node tools/game-production-runner/cli.js run-document-demo --job-root D:\candidate\runs --run-id document-demo --confirm "RUN PRODUCTION CANDIDATE"
+node tools/game-production-runner/cli.js run-document-demo --job-root D:\candidate\runs --cache-root D:\candidate\verified-cache --run-id cached-document --confirm "RUN PRODUCTION CANDIDATE"
+node tools/game-production-runner/cli.js invalidate-cache --cache-root D:\candidate\verified-cache --cache-key SHA256 --explicit-invalidate
 node tools/game-production-runner/cli.js probe-godot --read-only-probe
 node tools/game-production-runner/cli.js probe-hand-confinement --explicit-probe
 ```
@@ -35,6 +37,15 @@ coverage and digest binding; editorial quality remains human review. Both
 portable commands emit `axm.production-step-receipt/v1` ledgers and disclose
 that schema in new portable state and terminal receipts. An interrupted
 pre-upgrade ledger continues its original game receipt schema without mixing.
+
+`--cache-root` enables verified reuse only for an executor that explicitly
+declares `deterministic-v1`. The cache root must be external to both the
+Workshop and candidate job root. Every hit is byte-checked and sent through the
+current verifier again; prior verifier testimony is never treated as current
+evidence. Tampered entries and current-verifier disagreement fall back to fresh
+execution and remain visible in the step receipt. Exact invalidation is a
+separate command and does nothing without `--explicit-invalidate`. There is no
+automatic eviction or cache garbage collection in v0.1.
 
 `probe-hand-confinement` is diagnostic and must be requested explicitly. It
 creates and removes a disposable operating-system temporary root and opens only

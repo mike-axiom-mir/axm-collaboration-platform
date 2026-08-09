@@ -1,6 +1,7 @@
 'use strict';
 
 const assert = require('assert');
+const childProcess = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -13,6 +14,29 @@ function throws(fn, pattern, message) { assert.throws(fn, pattern, message); che
 async function rejects(fn, pattern, message) { await assert.rejects(fn, pattern, message); checks += 1; }
 function clock() { let tick = 0; return () => new Date(Date.UTC(2000, 0, 1, 0, 0, tick++)).toISOString(); }
 function lines(file) { return fs.readFileSync(file, 'utf8').trim().split(/\r?\n/).filter(Boolean); }
+
+function publishCacheInChild(payload) {
+  return new Promise((resolve, reject) => {
+    const source = [
+      "'use strict';",
+      "const payload=JSON.parse(Buffer.from(process.env.AXM_CACHE_PUBLISH_PAYLOAD,'base64').toString('utf8'));",
+      "const Cache=require(payload.module);",
+      "const handle=Cache.open({cacheRoot:payload.cacheRoot,sourceRoot:payload.sourceRoot,jobRoot:payload.jobRoot});",
+      "const result=handle.publish(payload.pkg,payload.inputs,payload.seed,payload.produced);",
+      "process.stdout.write(JSON.stringify(result));"
+    ].join('\n');
+    const environment = Object.assign({}, process.env, { AXM_CACHE_PUBLISH_PAYLOAD: Buffer.from(JSON.stringify(payload), 'utf8').toString('base64') });
+    const child = childProcess.spawn(process.execPath, ['-e', source], { encoding: 'utf8', windowsHide: true, env: environment, stdio: ['ignore', 'pipe', 'pipe'] });
+    let stdout = '', stderr = '';
+    child.stdout.on('data', (chunk) => { stdout += chunk; });
+    child.stderr.on('data', (chunk) => { stderr += chunk; });
+    child.once('error', reject);
+    child.once('close', (code) => {
+      if (code !== 0) { reject(new Error('cache publisher child failed: ' + stderr)); return; }
+      try { resolve(JSON.parse(stdout)); } catch (error) { reject(error); }
+    });
+  });
+}
 
 function resealGraph(spec) {
   spec.graph.nodes = spec.packages.map((pkg) => ({ package_id: pkg.id, package_digest: pkg.digest }));
@@ -269,6 +293,7 @@ async function main() {
     equal(documents.state.state, 'CANDIDATE_READY', 'content-inspected documentation Hand reaches candidate ready');
     const documentLedger = lines(path.join(documents.runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line));
     equal(documentLedger.length, 3, 'documentation run preserves three independently verified steps');
+    ok(documentLedger.every((receipt) => receipt.cache.state === 'DISABLED' && receipt.process.executor_invoked === true), 'a run without an explicit cache root performs no cache reuse or write');
     ok(documentLedger.every((receipt) => receipt.evidence[0].claims[0].evidence[0].kind === 'artifact-content-inspection'), 'documentation claims derive from artifact-content inspection');
     ok(documentLedger.every((receipt) => !JSON.stringify(receipt.evidence).includes('fixture-declaration')), 'documentation verifier does not rely on fixture declarations');
     const draftStep = documents.state.completed_packages.includes('document.release-note-draft');
@@ -276,6 +301,127 @@ async function main() {
     const draftReceipt = documentLedger.find((receipt) => receipt.package_ref.id === 'document.release-note-draft');
     const draftBytes = fs.readFileSync(path.join(documents.runDir, draftReceipt.outputs[0].run_relative_path), 'utf8');
     equal(draftBytes, renderedDocumentBrief, 'written draft bytes match the deterministic rendering');
+
+    const cacheEntrySchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-entry.schema.json'), 'utf8'));
+    equal(cacheEntrySchema.$id, Core.artifactCache.ENTRY_SCHEMA, 'tracked artifact cache schema matches the runtime contract');
+    const cacheRunsRoot = path.join(temporary, 'cache-runs');
+    const cacheRoot = path.join(temporary, 'artifact-cache');
+    const cachedRegistry = Core.documentRegistry.create();
+    const cachedExecute = cachedRegistry.executors[0].execute;
+    const cachedVerify = cachedRegistry.verifiers[0].verify;
+    let cacheExecutions = 0, cacheVerifications = 0;
+    cachedRegistry.executors[0].execute = (context) => { cacheExecutions += 1; return cachedExecute(context); };
+    cachedRegistry.verifiers[0].verify = (context) => { cacheVerifications += 1; return cachedVerify(context); };
+    const cachedRunOptions = { spec: documentSpec, plan: documentPlan, executors: cachedRegistry.executors, verifiers: cachedRegistry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(sourceRoot), jobRoot: cacheRunsRoot, cacheRoot, sourceRoot, confirmation: Core.portable.START_CONFIRMATION };
+    const cacheMissRun = await Core.portable.run(Object.assign({}, cachedRunOptions, { runId: 'cache-miss-run', clock: clock() }));
+    const cacheMissLedger = lines(path.join(cacheMissRun.runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line));
+    equal(cacheExecutions, 3, 'cold cache executes every deterministic documentation package once');
+    equal(cacheVerifications, 3, 'cold cache independently verifies every produced package');
+    ok(cacheMissLedger.every((receipt) => receipt.cache.state === 'MISS_STORED' && receipt.process.executor_invoked === true), 'cold run atomically stores every exact verified miss');
+    ok(cacheMissLedger.every((receipt) => Core.stepReceipts.validate(receipt, Core.portable.SCHEMAS.step).length === 0), 'cache miss receipts satisfy the neutral step contract');
+    const cacheHandle = Core.artifactCache.open({ cacheRoot, sourceRoot, jobRoot: cacheRunsRoot });
+    const firstCacheKey = cacheMissLedger[0].cache.key;
+    const firstEntryRoot = path.join(cacheRoot, 'entries', firstCacheKey.slice(0, 2), firstCacheKey);
+    const firstEntry = JSON.parse(fs.readFileSync(path.join(firstEntryRoot, 'entry.json'), 'utf8'));
+    ok(Core.canonical.validDigest(firstEntry) && firstEntry.digest === cacheMissLedger[0].cache.entry_digest, 'cache miss receipt binds the sealed immutable entry');
+    ok(!/[A-Za-z]:\\/.test(JSON.stringify(firstEntry)), 'cache entry contains no local machine path');
+
+    cacheExecutions = 0; cacheVerifications = 0;
+    const cacheHitRun = await Core.portable.run(Object.assign({}, cachedRunOptions, { runId: 'cache-hit-run', clock: clock() }));
+    const cacheHitLedger = lines(path.join(cacheHitRun.runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line));
+    equal(cacheExecutions, 0, 'warm cache skips all deterministic executor calls');
+    equal(cacheVerifications, 3, 'warm cache still invokes the current verifier for every hit');
+    ok(cacheHitLedger.every((receipt) => receipt.cache.state === 'HIT' && receipt.process.executor_invoked === false), 'warm run discloses exact verified hits and skipped executors');
+    equal(cacheHitLedger.map((receipt) => receipt.outputs.map((item) => item.digest)), cacheMissLedger.map((receipt) => receipt.outputs.map((item) => item.digest)), 'cache hits reproduce the exact independently verified artifact digests');
+
+    const intermittentRegistry = Core.documentRegistry.create();
+    const intermittentExecute = intermittentRegistry.executors[0].execute;
+    const intermittentVerify = intermittentRegistry.verifiers[0].verify;
+    let intermittentExecutions = 0, intermittentVerifications = 0;
+    intermittentRegistry.executors[0].execute = (context) => { intermittentExecutions += 1; return intermittentExecute(context); };
+    intermittentRegistry.verifiers[0].verify = (context) => {
+      intermittentVerifications += 1;
+      const receipt = intermittentVerify(context);
+      if (intermittentVerifications === 1) receipt.claims.forEach((claim) => { claim.status = 'FAIL'; });
+      return receipt;
+    };
+    const reverified = await Core.portable.run(Object.assign({}, cachedRunOptions, { executors: intermittentRegistry.executors, verifiers: intermittentRegistry.verifiers, runId: 'cache-reverify-rejection-run', clock: clock() }));
+    const reverifiedLedger = lines(path.join(reverified.runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line));
+    equal(intermittentExecutions, 1, 'a cache hit rejected by the current verifier falls back to one fresh execution');
+    equal(intermittentVerifications, 4, 'cache rejection preserves fresh verification instead of trusting prior testimony');
+    equal(reverifiedLedger[0].cache.state, 'REJECTED', 'current-verifier disagreement remains visible in the successful fresh step receipt');
+    equal(reverified.state.state, 'CANDIDATE_READY', 'fresh verified execution can recover from a rejected cache hit');
+
+    const tamperedArtifactFile = path.join(firstEntryRoot, firstEntry.artifacts[0].entry_relative_path.replace(/\//g, path.sep));
+    fs.writeFileSync(tamperedArtifactFile, 'tampered cache bytes\n');
+    cacheExecutions = 0; cacheVerifications = 0;
+    const tamperRecovery = await Core.portable.run(Object.assign({}, cachedRunOptions, { runId: 'cache-tamper-recovery-run', clock: clock() }));
+    const tamperLedger = lines(path.join(tamperRecovery.runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line));
+    equal(cacheExecutions, 1, 'tampered cache entry executes only the affected package again');
+    equal(cacheVerifications, 3, 'tamper recovery still verifies fresh and reused artifacts independently');
+    equal(tamperLedger[0].cache, { state: 'REJECTED', key: firstCacheKey, reason: 'CACHE_ARTIFACT_INTEGRITY_MISMATCH' }, 'tampered entry is rejected with stable counterevidence and no path disclosure');
+    equal(tamperRecovery.state.state, 'CANDIDATE_READY', 'tampered cache data cannot block a valid fresh candidate result');
+    const refusedInvalidation = cacheHandle.invalidate(firstCacheKey, {});
+    equal(refusedInvalidation.status, 'REFUSED', 'cache invalidation requires explicit authority');
+    ok(fs.existsSync(firstEntryRoot), 'refused invalidation changes no cache entry');
+    equal(cacheHandle.invalidate('../escape', { explicit: true }).status, 'INVALID_KEY', 'cache invalidation rejects every non-digest path target');
+    const invalidated = cacheHandle.invalidate(firstCacheKey, { explicit: true });
+    equal(invalidated.status, 'REMOVED', 'explicit invalidation removes only the selected entry');
+    ok(!fs.existsSync(firstEntryRoot), 'selected invalidated entry is absent');
+    const secondCacheKey = cacheMissLedger[1].cache.key;
+    ok(fs.existsSync(path.join(cacheRoot, 'entries', secondCacheKey.slice(0, 2), secondCacheKey)), 'selective invalidation preserves unrelated entries');
+    cacheExecutions = 0; cacheVerifications = 0;
+    const invalidationRecovery = await Core.portable.run(Object.assign({}, cachedRunOptions, { runId: 'cache-invalidation-recovery-run', clock: clock() }));
+    const invalidationLedger = lines(path.join(invalidationRecovery.runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line));
+    equal(cacheExecutions, 1, 'invalidated package is rebuilt while unaffected packages remain reusable');
+    equal(invalidationLedger.map((receipt) => receipt.cache.state), ['MISS_STORED', 'HIT', 'HIT'], 'selective invalidation produces one new store and two verified hits');
+
+    const noPolicyRegistry = Core.documentRegistry.create();
+    delete noPolicyRegistry.executors[0].cache_policy;
+    const bypassed = await Core.portable.run(Object.assign({}, cachedRunOptions, { executors: noPolicyRegistry.executors, verifiers: noPolicyRegistry.verifiers, runId: 'cache-policy-bypass-run', clock: clock() }));
+    const bypassLedger = lines(path.join(bypassed.runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line));
+    ok(bypassLedger.every((receipt) => receipt.cache.state === 'BYPASSED' && receipt.cache.reason === 'EXECUTOR_DETERMINISM_UNDECLARED'), 'cache refuses executors without an explicit deterministic policy');
+    throws(() => Core.artifactCache.open({ cacheRoot: path.join(cacheRunsRoot, 'nested-cache'), sourceRoot, jobRoot: cacheRunsRoot }), /CACHE_ROOT_OVERLAPS_JOB_ROOT/, 'cache root must be isolated from candidate job roots');
+    throws(() => Core.artifactCache.open({ cacheRoot: path.join(sourceRoot, 'cache-not-allowed'), sourceRoot, jobRoot: cacheRunsRoot }), /CACHE_ROOT_OVERLAPS_SOURCE/, 'cache root cannot write inside the source tree');
+
+    const firstPackage = Core.portable.adaptSpec(documentSpec).internal.packages[0];
+    const bindingInput = { package_id: 'dependency', path: 'input/a.txt', digest: 'a'.repeat(64), bytes: 10 };
+    const changedPackage = Core.canonical.clone(firstPackage); changedPackage.digest = firstPackage.digest[0] === 'f' ? 'e' + firstPackage.digest.slice(1) : 'f' + firstPackage.digest.slice(1);
+    const changedExecutor = Core.canonical.clone(firstPackage); changedExecutor.executor.version = '1.0.1'; changedExecutor.digest = Core.canonical.seal(changedExecutor).digest;
+    const changedVerifier = Core.canonical.clone(firstPackage); changedVerifier.verifier.version = '1.0.1'; changedVerifier.digest = Core.canonical.seal(changedVerifier).digest;
+    const exactKey = Core.artifactCache.keyFor(firstPackage, [], documentPlan.intent_ref.digest);
+    equal(Core.artifactCache.keyFor(Core.canonical.clone(firstPackage), [], documentPlan.intent_ref.digest), exactKey, 'equivalent cache bindings produce the same exact key');
+    const changedKeys = [
+      Core.artifactCache.keyFor(changedPackage, [], documentPlan.intent_ref.digest),
+      Core.artifactCache.keyFor(firstPackage, [bindingInput], documentPlan.intent_ref.digest),
+      Core.artifactCache.keyFor(firstPackage, [Object.assign({}, bindingInput, { path: 'input/b.txt' })], documentPlan.intent_ref.digest),
+      Core.artifactCache.keyFor(firstPackage, [Object.assign({}, bindingInput, { digest: 'b'.repeat(64) })], documentPlan.intent_ref.digest),
+      Core.artifactCache.keyFor(firstPackage, [Object.assign({}, bindingInput, { bytes: 11 })], documentPlan.intent_ref.digest),
+      Core.artifactCache.keyFor(changedExecutor, [], documentPlan.intent_ref.digest),
+      Core.artifactCache.keyFor(changedVerifier, [], documentPlan.intent_ref.digest),
+      Core.artifactCache.keyFor(firstPackage, [], 'different-seed')
+    ];
+    ok(changedKeys.every((key) => key !== exactKey) && new Set(changedKeys).size === changedKeys.length, 'every bound package, input, Hand, verifier, and seed change produces a distinct cache key');
+    const concurrentRoot = path.join(temporary, 'concurrent-cache');
+    const concurrentJobs = path.join(temporary, 'concurrent-jobs');
+    fs.mkdirSync(concurrentJobs, { recursive: true });
+    const concurrentPayload = {
+      module: require.resolve('./artifact-cache'),
+      cacheRoot: concurrentRoot,
+      sourceRoot,
+      jobRoot: concurrentJobs,
+      pkg: firstPackage,
+      inputs: [],
+      seed: documentPlan.intent_ref.digest,
+      produced: { artifacts: [{ path: firstPackage.outputs[0].path, content: JSON.stringify(Core.documentRegistry.normalizeBrief(firstPackage.document_payload), null, 2) + '\n' }], facts: { operation: firstPackage.document_operation } }
+    };
+    const concurrentResults = await Promise.all([publishCacheInChild(concurrentPayload), publishCacheInChild(concurrentPayload)]);
+    equal(concurrentResults.map((item) => item.state).sort(), ['EXISTS', 'STORED'], 'concurrent publishers converge on one immutable cache entry');
+    const concurrentHandle = Core.artifactCache.open({ cacheRoot: concurrentRoot, sourceRoot, jobRoot: concurrentJobs });
+    equal(concurrentHandle.load(firstPackage, [], documentPlan.intent_ref.digest).state, 'HIT', 'concurrently published entry reads back with exact integrity');
+    equal(fs.readdirSync(path.join(concurrentRoot, 'entries', concurrentResults[0].key.slice(0, 2))).filter((name) => name.includes('.next-')), [], 'concurrent publication leaves no temporary directories');
+    const conflict = concurrentHandle.publish(firstPackage, [], documentPlan.intent_ref.digest, { artifacts: [{ path: firstPackage.outputs[0].path, content: 'different deterministic result\n' }], facts: { operation: firstPackage.document_operation } });
+    equal(conflict.state, 'CONFLICT', 'same cache key with different result is preserved as nondeterminism counterevidence');
 
     const lyingExecutor = {
       identity: Core.documentRegistry.EXECUTOR,

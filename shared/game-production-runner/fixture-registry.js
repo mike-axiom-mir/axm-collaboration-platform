@@ -8,6 +8,7 @@ const VERIFIER = Object.freeze({ id: 'axm.fixture.claim-verifier', version: '1.0
 function create() {
   const executor = {
     identity: EXECUTOR,
+    cache_policy: 'deterministic-v1',
     async execute(context) {
       const fixture = context.package.fixture;
       if (!fixture || !Array.isArray(fixture.artifacts)) throw new Error('fixture package needs inert declared artifacts');

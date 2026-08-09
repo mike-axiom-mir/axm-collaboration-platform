@@ -14,11 +14,24 @@
     "completed_at": { "type": "string" },
     "inputs": { "type": "array" },
     "outputs": { "type": "array" },
-    "process": { "type": "object" },
+    "process": {
+      "type": "object",
+      "properties": { "executor_invoked": { "type": "boolean" } }
+    },
     "evidence": { "type": "array" },
     "verdict": { "enum": ["VERIFIED", "VERIFIED_WITH_LIMITS", "HUMAN_REVIEW", "HELD", "FAILED"] },
     "detail": { "type": "string" },
-    "cache": { "type": "object" },
+    "cache": {
+      "type": "object",
+      "required": ["state", "key"],
+      "properties": {
+        "state": { "enum": ["MISS", "DISABLED", "BYPASSED", "MISS_STORED", "MISS_ENTRY_EXISTS", "MISS_CONFLICT", "MISS_NOT_STORED", "HIT", "REJECTED"] },
+        "key": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "entry_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "reason": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
     "previous_receipt_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
     "authority": { "type": "object" },
     "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }

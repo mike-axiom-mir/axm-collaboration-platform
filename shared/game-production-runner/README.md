@@ -29,6 +29,16 @@ through copy-returning runner APIs. Executor-supplied facts cannot make malforme
 bytes pass. This proves content-derived verification inside the trusted
 in-process registry; it is not an operating-system process sandbox.
 
+Cross-run artifact reuse is opt-in through an absolute external cache root.
+Only an executor that declares `deterministic-v1` is eligible. Cache keys bind
+the exact package digest, dependency package/path/digest/byte descriptors,
+executor, verifier, and a digest of the seed. Entries are immutable and
+published atomically. A hit verifies the entry manifest and every artifact byte,
+then runs the currently appointed verifier again before the output can enter a
+candidate. Tamper or verifier disagreement is recorded as `REJECTED` and falls
+back to fresh execution. Same-key/different-result publication is preserved as
+a conflict instead of overwriting prior evidence.
+
 The confinement substrate probe is a separate, explicit diagnostic. It launches
 disposable permission-mode child processes, tests individual filesystem,
 child-process, worker-thread, and local-loopback capabilities, removes its
@@ -52,6 +62,11 @@ not as a security boundary for malicious code.
   interrupted resume, schema tamper, and legacy game-ledger continuation.
 - Content-derived documentation verification: executable and self-tested,
   including a deliberately lying executor and undeclared-read refusal.
+- Deterministic cross-run artifact reuse: executable and self-tested across
+  cold miss, verified hit, tamper fallback, verifier disagreement, explicit
+  invalidation, and concurrent publication.
+- Automatic cache retention, quota enforcement, eviction, and garbage
+  collection: missing; cache roots remain human-owned local state.
 - Explicit Hand confinement substrate diagnosis: executable and self-tested;
   the current Node 24 observation is `DEGRADED` because network denial failed.
 - Process-hosted production Hands and a malicious-code sandbox: missing.
@@ -74,6 +89,11 @@ not as a security boundary for malicious code.
 - Missing or contradictory evidence holds the run.
 - A run's step receipt schema is pinned before the first receipt and rechecked
   on every resume.
+- Cache roots must be explicit, absolute, outside the source and disjoint from
+  candidate job roots. A run without one performs no cache write.
+- A cache hit never reuses prior verification testimony; the current verifier
+  must pass the cached bytes again.
+- Invalidation requires an exact digest key and separate explicit authority.
 - Confinement probing is opt-in, local-loopback-only, and grants no execution
   authority even if every check passes.
 - Any required capability that is allowed or unknown holds process-Hand

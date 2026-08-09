@@ -16,6 +16,8 @@ function ledger(file) { return fs.readFileSync(file, 'utf8').trim().split(/\r?\n
 
 async function main() {
   equal(Cli.parse(['run-demo', '--job-root', 'X', '--resume']).resume, true, 'CLI parses explicit resume');
+  equal(Cli.parse(['run-demo', '--cache-root', 'Y']).cacheRoot, 'Y', 'CLI parses an explicit cache root');
+  equal(Cli.parse(['invalidate-cache', '--cache-key', 'a', '--explicit-invalidate']).explicitInvalidate, true, 'CLI parses explicit cache invalidation authority');
   equal(Cli.parse(['probe-hand-confinement', '--explicit-probe']).explicitProbe, true, 'CLI parses explicit confinement probe consent');
   assert.throws(() => Cli.parse(['inspect', '--unknown']), /unknown argument/); checks += 1;
   ok(Cli.usage().includes('trusted in-process deterministic documentation Hand'), 'usage preserves the Hand trust boundary');
@@ -103,6 +105,28 @@ async function main() {
     ok(fs.existsSync(path.join(documentResult.local_run_directory, 'portable-run-receipt.json')), 'document CLI preserves the neutral receipt');
     equal(documentResult.state.step_receipt_schema, 'axm.production-step-receipt/v1', 'content-verified document state declares neutral step receipts');
     ok(ledger(path.join(documentResult.local_run_directory, 'step-receipts.jsonl')).every((receipt) => receipt.schema === 'axm.production-step-receipt/v1'), 'content-verified document ledger is neutral at every step');
+
+    const cacheRuns = path.join(temporary, 'cache-cli-runs'), cacheStore = path.join(temporary, 'cache-cli-store');
+    const cacheMiss = invoke(['run-document-demo', '--job-root', cacheRuns, '--cache-root', cacheStore, '--run-id', 'cache-cli-miss', '--confirm', 'RUN PRODUCTION CANDIDATE']);
+    equal(cacheMiss.status, 0, 'CLI explicit cache miss run exits successfully');
+    const cacheMissResult = parsed(cacheMiss);
+    const cacheMissLedger = ledger(path.join(cacheMissResult.local_run_directory, 'step-receipts.jsonl'));
+    ok(cacheMissLedger.every((receipt) => receipt.cache.state === 'MISS_STORED' && receipt.process.executor_invoked === true), 'CLI cache miss stores exact verified artifacts');
+    const cacheHit = invoke(['run-document-demo', '--job-root', cacheRuns, '--cache-root', cacheStore, '--run-id', 'cache-cli-hit', '--confirm', 'RUN PRODUCTION CANDIDATE']);
+    equal(cacheHit.status, 0, 'CLI explicit cache hit run exits successfully');
+    const cacheHitResult = parsed(cacheHit);
+    ok(ledger(path.join(cacheHitResult.local_run_directory, 'step-receipts.jsonl')).every((receipt) => receipt.cache.state === 'HIT' && receipt.process.executor_invoked === false && receipt.evidence.length === 1), 'CLI hit skips executors but preserves fresh verifier evidence');
+    const unrequestedInvalidationRoot = path.join(temporary, 'unrequested-invalidation-cache');
+    const unrequestedInvalidation = invoke(['invalidate-cache', '--cache-root', unrequestedInvalidationRoot, '--cache-key', cacheMissLedger[0].cache.key]);
+    equal(unrequestedInvalidation.status, 0, 'unrequested CLI cache invalidation is a safe no-op');
+    equal(parsed(unrequestedInvalidation).status, 'NOT_REQUESTED', 'unrequested invalidation returns a sealed refusal receipt');
+    ok(!fs.existsSync(unrequestedInvalidationRoot), 'unrequested invalidation creates no cache directory');
+    const explicitInvalidation = invoke(['invalidate-cache', '--cache-root', cacheStore, '--cache-key', cacheMissLedger[0].cache.key, '--explicit-invalidate']);
+    equal(explicitInvalidation.status, 0, 'explicit CLI invalidation succeeds');
+    equal(parsed(explicitInvalidation).status, 'REMOVED', 'CLI invalidation reports exact selected-entry removal');
+    const cacheOverlap = invoke(['run-document-demo', '--job-root', path.join(temporary, 'overlap-runs'), '--cache-root', path.join(temporary, 'overlap-runs', 'cache'), '--run-id', 'cache-overlap', '--confirm', 'RUN PRODUCTION CANDIDATE']);
+    equal(cacheOverlap.status, 1, 'CLI refuses a cache root nested inside its job root');
+    ok(/CACHE_ROOT_OVERLAPS_JOB_ROOT/.test(parsed(cacheOverlap).reason), 'CLI cache isolation refusal is explicit');
 
     const sourceDenied = invoke(['run-demo', '--automated-only', '--job-root', path.join(Cli.ROOT, 'exports', 'bad-run'), '--run-id', 'source-denied', '--confirm', 'RUN GAME PRODUCTION CANDIDATE']);
     equal(sourceDenied.status, 1, 'source-tree candidate root is refused');

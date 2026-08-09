@@ -13,6 +13,8 @@ function parse(argv) {
     const item = argv[index];
     if (item === '--spec') result.spec = argv[++index];
     else if (item === '--job-root') result.jobRoot = argv[++index];
+    else if (item === '--cache-root') result.cacheRoot = argv[++index];
+    else if (item === '--cache-key') result.cacheKey = argv[++index];
     else if (item === '--run-id') result.runId = argv[++index];
     else if (item === '--confirm') result.confirmation = argv[++index];
     else if (item === '--max-steps') result.maxSteps = Number(argv[++index]);
@@ -21,6 +23,7 @@ function parse(argv) {
     else if (item === '--automated-only') result.automatedOnly = true;
     else if (item === '--read-only-probe') result.readOnlyProbe = true;
     else if (item === '--explicit-probe') result.explicitProbe = true;
+    else if (item === '--explicit-invalidate') result.explicitInvalidate = true;
     else throw new Error('unknown argument: ' + item);
   }
   return result;
@@ -34,9 +37,10 @@ function usage() {
     '  plan-profile-demo',
     '  plan-document-demo',
     '  plan --spec FILE',
-    '  run-demo --job-root DIRECTORY [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.runner.START_CONFIRMATION + '"',
-    '  run-profile-demo --job-root DIRECTORY [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
-    '  run-document-demo --job-root DIRECTORY [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
+    '  run-demo --job-root DIRECTORY [--cache-root DIRECTORY] [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.runner.START_CONFIRMATION + '"',
+    '  run-profile-demo --job-root DIRECTORY [--cache-root DIRECTORY] [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
+    '  run-document-demo --job-root DIRECTORY [--cache-root DIRECTORY] [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
+    '  invalidate-cache --cache-root DIRECTORY --cache-key SHA256 --explicit-invalidate',
     '  probe-godot --read-only-probe [--substrate-root DIRECTORY]',
     '  probe-hand-confinement --explicit-probe',
     '',
@@ -77,7 +81,7 @@ async function main(argv) {
     const registry = Core.fixtures.create();
     const spec = Core.proofyard.build({ includeHumanReview: !options.automatedOnly });
     const plan = Core.compiler.compile(spec, registry.inventory);
-    const result = await Core.runner.run({ plan, packages: spec.packages, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
+    const result = await Core.runner.run({ plan, packages: spec.packages, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), cacheRoot: options.cacheRoot ? path.resolve(options.cacheRoot) : undefined, sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
     const output = { schema: 'axm.game-production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, local_run_directory: result.runDir, native_game_proven: false, automatic_install: false, canon: false };
     return { output: JSON.stringify(output, null, 2), code: ['CANDIDATE_READY', 'HUMAN_REVIEW', 'INTERRUPTED'].includes(result.state.status) ? 0 : 2 };
   }
@@ -86,7 +90,7 @@ async function main(argv) {
     const registry = Core.fixtures.create();
     const spec = Core.portableFixture.build();
     const plan = Core.portable.compile(spec, registry.inventory);
-    const result = await Core.portable.run({ spec, plan, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
+    const result = await Core.portable.run({ spec, plan, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), cacheRoot: options.cacheRoot ? path.resolve(options.cacheRoot) : undefined, sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
     const output = { schema: 'axm.production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, local_run_directory: result.runDir, domain: plan.domain, proof_scope: 'cross-domain orchestration mechanics only', automatic_install: false, canon: false };
     return { output: JSON.stringify(output, null, 2), code: ['CANDIDATE_READY', 'HUMAN_REVIEW', 'INTERRUPTED'].includes(result.state.state) ? 0 : 2 };
   }
@@ -95,7 +99,7 @@ async function main(argv) {
     const registry = Core.documentRegistry.create();
     const spec = Core.portableDocuments.build();
     const plan = Core.portable.compile(spec, registry.inventory);
-    const result = await Core.portable.run({ spec, plan, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
+    const result = await Core.portable.run({ spec, plan, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), cacheRoot: options.cacheRoot ? path.resolve(options.cacheRoot) : undefined, sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
     const output = { schema: 'axm.production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, local_run_directory: result.runDir, domain: plan.domain, proof_scope: 'content-derived deterministic documentation verification; editorial quality remains human review', automatic_install: false, canon: false };
     return { output: JSON.stringify(output, null, 2), code: ['CANDIDATE_READY', 'HUMAN_REVIEW', 'INTERRUPTED'].includes(result.state.state) ? 0 : 2 };
   }
@@ -106,6 +110,13 @@ async function main(argv) {
   if (options.command === 'probe-hand-confinement') {
     const result = await Core.confinement.probe({ explicitProbe: options.explicitProbe === true });
     return { output: JSON.stringify(result, null, 2), code: ['NOT_PROBED', 'READY_WITH_LIMITS'].includes(result.status) ? 0 : 2 };
+  }
+  if (options.command === 'invalidate-cache') {
+    if (!options.explicitInvalidate) return { output: JSON.stringify(Core.artifactCache.invalidationNotRequested(options.cacheKey), null, 2), code: 0 };
+    if (!options.cacheRoot) throw new Error('invalidate-cache requires --cache-root');
+    const cache = Core.artifactCache.open({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT });
+    const result = cache.invalidate(options.cacheKey, { explicit: true });
+    return { output: JSON.stringify(result, null, 2), code: ['REMOVED', 'ABSENT'].includes(result.status) ? 0 : 2 };
   }
   throw new Error('unknown command: ' + options.command + '\n' + usage());
 }

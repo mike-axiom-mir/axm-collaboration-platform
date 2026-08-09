@@ -190,6 +190,7 @@ async function run(options) {
     verifiers: options.verifiers,
     receiptValidator: options.receiptValidator,
     jobRoot: options.jobRoot,
+    cacheRoot: options.cacheRoot,
     sourceRoot: options.sourceRoot,
     runId: options.runId,
     confirmation: GameRunner.START_CONFIRMATION,

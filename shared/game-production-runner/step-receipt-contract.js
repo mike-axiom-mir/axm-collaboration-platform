@@ -10,6 +10,8 @@ const SCHEMAS = Object.freeze({
 });
 const STATES = Object.freeze(['VERIFIED', 'HELD', 'FAILED']);
 const VERDICTS = Object.freeze(['VERIFIED', 'VERIFIED_WITH_LIMITS', 'HUMAN_REVIEW', 'HELD', 'FAILED']);
+const CACHE_STATES = Object.freeze(['MISS', 'DISABLED', 'BYPASSED', 'MISS_STORED', 'MISS_ENTRY_EXISTS', 'MISS_CONFLICT', 'MISS_NOT_STORED', 'HIT', 'REJECTED']);
+const CACHE_KEYS = Object.freeze(['state', 'key', 'entry_digest', 'reason']);
 const KEYS = Object.freeze([
   'schema', 'run_id', 'step_id', 'package_ref', 'attempt', 'state', 'started_at', 'completed_at',
   'inputs', 'outputs', 'process', 'evidence', 'verdict', 'detail', 'cache',
@@ -46,11 +48,11 @@ function validate(receipt, expectedSchema) {
   if (!STATES.includes(receipt.state)) errors.push('step receipt state is invalid');
   if (!text(receipt.started_at) || !text(receipt.completed_at)) errors.push('step receipt timestamps are required');
   if (!Array.isArray(receipt.inputs) || !Array.isArray(receipt.outputs)) errors.push('step receipt inputs and outputs must be arrays');
-  if (!record(receipt.process) || !Contracts.exactIdentity(receipt.process.executor) || typeof receipt.process.native_process_started !== 'boolean') errors.push('step receipt process descriptor is invalid');
+  if (!record(receipt.process) || !Contracts.exactIdentity(receipt.process.executor) || typeof receipt.process.native_process_started !== 'boolean' || (receipt.process.executor_invoked != null && typeof receipt.process.executor_invoked !== 'boolean')) errors.push('step receipt process descriptor is invalid');
   if (!Array.isArray(receipt.evidence)) errors.push('step receipt evidence must be an array');
   if (!VERDICTS.includes(receipt.verdict)) errors.push('step receipt verdict is invalid');
   if (!text(receipt.detail)) errors.push('step receipt detail is required');
-  if (!record(receipt.cache) || !text(receipt.cache.state) || !DIGEST.test(String(receipt.cache.key || ''))) errors.push('step receipt cache descriptor is invalid');
+  if (!record(receipt.cache) || !CACHE_STATES.includes(receipt.cache.state) || !DIGEST.test(String(receipt.cache.key || '')) || (receipt.cache.entry_digest != null && !DIGEST.test(String(receipt.cache.entry_digest))) || (receipt.cache.reason != null && !text(receipt.cache.reason)) || (record(receipt.cache) && Object.keys(receipt.cache).some((key) => !CACHE_KEYS.includes(key)))) errors.push('step receipt cache descriptor is invalid');
   if (receipt.previous_receipt_digest !== null && !DIGEST.test(String(receipt.previous_receipt_digest || ''))) errors.push('step receipt previous digest is invalid');
   if (!record(receipt.authority) || receipt.authority.source_write !== false || receipt.authority.installed !== false || receipt.authority.promoted !== false || receipt.authority.canon !== false) errors.push('step receipt authority boundary is invalid');
   const expectedState = ['VERIFIED', 'VERIFIED_WITH_LIMITS', 'HUMAN_REVIEW'].includes(receipt.verdict) ? 'VERIFIED' : receipt.verdict;
@@ -73,4 +75,4 @@ function inferSchema(receipts, fallback) {
   return schemas[0];
 }
 
-module.exports = { PROFILES, SCHEMAS, STATES, VERDICTS, schemaFor, validate, assertValid, inferSchema };
+module.exports = { PROFILES, SCHEMAS, STATES, VERDICTS, CACHE_STATES, schemaFor, validate, assertValid, inferSchema };

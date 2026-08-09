@@ -6,6 +6,7 @@ const Codec = require('./canonical');
 const Contracts = require('./contracts');
 const Compiler = require('./compiler');
 const StepReceipts = require('./step-receipt-contract');
+const ArtifactCache = require('./artifact-cache');
 
 const START_CONFIRMATION = 'RUN GAME PRODUCTION CANDIDATE';
 const CLAIM_STATUSES = ['PASS', 'FAIL', 'WARNING', 'UNKNOWN', 'MISSING_VALIDATOR', 'HUMAN_REVIEW', 'NOT_APPLICABLE'];
@@ -151,6 +152,64 @@ function verdictFor(pkg, receipt) {
   return { verdict: 'VERIFIED', reason: 'all required claims have native evidence' };
 }
 
+function normalizeProduced(pkg, produced) {
+  if (!produced || !Array.isArray(produced.artifacts)) throw new Error('executor must return artifacts');
+  const declared = new Set(pkg.outputs.map((item) => item.path));
+  const returned = produced.artifacts.map((item) => item && item.path);
+  if (returned.length !== declared.size || new Set(returned).size !== returned.length || returned.some((item) => !declared.has(item))) throw new Error('executor outputs do not match declared paths');
+  let total = 0;
+  const artifacts = produced.artifacts.map((artifact) => {
+    const content = Buffer.isBuffer(artifact.content) ? Buffer.from(artifact.content) : Buffer.from(String(artifact.content == null ? '' : artifact.content), 'utf8');
+    total += content.length;
+    return { path: artifact.path, content };
+  });
+  if (total > pkg.resource_budget.max_output_bytes) throw new Error('executor output exceeds package byte budget');
+  const order = new Map(pkg.outputs.map((item, index) => [item.path, index]));
+  artifacts.sort((left, right) => order.get(left.path) - order.get(right.path));
+  return { artifacts, facts: Codec.clone(produced.facts || {}) };
+}
+
+async function verifyProduced(pkg, producedValue, verifier, inputArtifacts, runDir, receiptValidator) {
+  const produced = normalizeProduced(pkg, producedValue);
+  const declared = new Set(pkg.outputs.map((item) => item.path));
+  const evidenceArtifacts = produced.artifacts.map((artifact) => ({ path: artifact.path, bytes: artifact.content.length, digest: Codec.sha256(artifact.content) }));
+  const producedByPath = new Map(produced.artifacts.map((artifact) => [artifact.path, artifact]));
+  const verification = await Promise.resolve(verifier.verify({
+    package: Codec.clone(pkg),
+    artifacts: Codec.clone(evidenceArtifacts),
+    facts: Codec.clone(produced.facts),
+    inputs: Codec.clone(inputArtifacts),
+    readArtifact: (relative) => {
+      if (!declared.has(relative) || !producedByPath.has(relative)) throw new Error('verifier requested an undeclared output');
+      return Buffer.from(producedByPath.get(relative).content);
+    },
+    readInput: (packageIdValue, relative) => {
+      const artifact = inputArtifacts.find((item) => item.package_id === packageIdValue && item.path === relative);
+      if (!artifact) throw new Error('verifier requested an undeclared input');
+      return Buffer.from(fs.readFileSync(safeTarget(runDir, artifact.run_relative_path)));
+    }
+  }));
+  const receiptErrors = verificationErrors(verification, pkg);
+  if (typeof receiptValidator === 'function') receiptErrors.push(...(receiptValidator(verification) || []));
+  const outcome = receiptErrors.length ? { verdict: 'HELD', reason: receiptErrors.join('; ') } : verdictFor(pkg, verification);
+  return { produced, verification, outcome };
+}
+
+function cacheDescriptor(state, key, entryDigest, reason) {
+  const descriptor = { state, key };
+  if (entryDigest) descriptor.entry_digest = entryDigest;
+  if (reason) descriptor.reason = reason;
+  return descriptor;
+}
+
+function publishedCacheDescriptor(observed) {
+  if (observed.state === 'STORED') return cacheDescriptor('MISS_STORED', observed.key, observed.entry_digest, null);
+  if (observed.state === 'EXISTS') return cacheDescriptor('MISS_ENTRY_EXISTS', observed.key, observed.entry_digest, null);
+  if (observed.state === 'CONFLICT') return cacheDescriptor('MISS_CONFLICT', observed.key, observed.entry_digest, observed.reason);
+  if (observed.state === 'REJECTED') return cacheDescriptor('REJECTED', observed.key, null, observed.reason);
+  return cacheDescriptor('MISS_NOT_STORED', observed.key, null, observed.reason || 'CACHE_PUBLISH_FAILED');
+}
+
 function artifactIndex(state) {
   const index = [];
   for (const step of Object.values(state.steps || {})) for (const artifact of step.outputs || []) index.push(Object.assign({ package_id: step.package_id }, artifact));
@@ -219,7 +278,7 @@ async function run(options) {
   const requestedStepReceiptSchema = StepReceipts.schemaFor(options.stepReceiptProfile);
   let stepReceiptSchema = requestedStepReceiptSchema;
   let legacyStepReceiptSchema = false;
-  let state;
+  let state, cache = null;
 
   if (fs.existsSync(runDir)) {
     if (!options.resume) throw new Error('run already exists; explicit resume is required');
@@ -243,12 +302,16 @@ async function run(options) {
     if (legacyStepReceiptSchema) state.step_receipt_compatibility = 'legacy-game';
     for (const step of Object.values(state.steps || {})) if (step.state === 'VERIFIED' && !verifyPreservedOutputs(runDir, step)) throw new Error('verified output drift blocks resume for ' + step.package_id);
     if (terminal(state)) return { state: Codec.clone(state), runReceipt: terminalReceipt, runDir, stepReceiptSchema, legacyStepReceiptSchema };
+    cache = options.cacheRoot ? ArtifactCache.open({ cacheRoot: options.cacheRoot, sourceRoot: options.sourceRoot, jobRoot: root }) : null;
+    if (!state.boundaries || typeof state.boundaries !== 'object' || Array.isArray(state.boundaries)) throw new Error('resume state boundaries are invalid');
+    state.boundaries.cache_write = state.boundaries.cache_write === true || !!cache;
     state.status = 'RUNNING'; state.updated_at = clock();
   } else {
+    cache = options.cacheRoot ? ArtifactCache.open({ cacheRoot: options.cacheRoot, sourceRoot: options.sourceRoot, jobRoot: root }) : null;
     fs.mkdirSync(runDir, { recursive: false });
     writeJsonAtomic(path.join(runDir, 'plan.json'), plan);
     writeJsonAtomic(path.join(runDir, 'packages.json'), packages);
-    state = { schema: 'axm.game-production-run-state/v1', id: runId, plan_digest: plan.digest, step_receipt_schema: stepReceiptSchema, status: 'RUNNING', overall_verdict: 'PENDING', started_at: clock(), updated_at: clock(), steps: {}, attempts: {}, ledger_count: 0, ledger_tail: null, boundaries: { source_write: false, network: false, automatic_install: false, automatic_promotion: false } };
+    state = { schema: 'axm.game-production-run-state/v1', id: runId, plan_digest: plan.digest, step_receipt_schema: stepReceiptSchema, status: 'RUNNING', overall_verdict: 'PENDING', started_at: clock(), updated_at: clock(), steps: {}, attempts: {}, ledger_count: 0, ledger_tail: null, boundaries: { source_write: false, cache_write: !!cache, network: false, automatic_install: false, automatic_promotion: false } };
   }
   writeJsonAtomic(stateFile, state);
 
@@ -267,53 +330,61 @@ async function run(options) {
     if (!executor || !verifier) { state.status = 'HELD'; state.overall_verdict = 'HELD'; state.hold_reason = 'exact executor or verifier disappeared for ' + packageId; state.updated_at = clock(); writeJsonAtomic(stateFile, state); break; }
 
     const inputArtifacts = artifactIndex(state).filter((artifact) => pkg.dependencies.includes(artifact.package_id));
+    const seed = String(options.seed || plan.intent_ref.digest);
+    const cacheKey = ArtifactCache.keyFor(pkg, inputArtifacts, seed);
+    const cacheEligible = !!cache && executor.cache_policy === ArtifactCache.POLICY;
+    let cacheObserved = !cache
+      ? { state: 'DISABLED', key: cacheKey, entry_digest: null, reason: null, produced: null }
+      : !cacheEligible
+        ? { state: 'BYPASSED', key: cacheKey, entry_digest: null, reason: 'EXECUTOR_DETERMINISM_UNDECLARED', produced: null }
+        : cache.load(pkg, inputArtifacts, seed);
+    let cacheTried = false;
     let accepted = false;
     for (let attempt = (state.attempts[packageId] || 0) + 1; attempt <= pkg.repair_policy.max_attempts; attempt += 1) {
       state.attempts[packageId] = attempt; state.updated_at = clock(); writeJsonAtomic(stateFile, state);
       const startedAt = clock();
-      let produced = null, verification = null, outcome = { verdict: 'FAILED', reason: 'executor did not return' }, error = null;
+      let produced = null, verification = null, outcome = { verdict: 'FAILED', reason: 'executor did not return' }, error = null, executorInvoked = false;
+      let cacheReceipt = cacheDescriptor(cacheObserved.state, cacheKey, cacheObserved.entry_digest, cacheObserved.reason);
       try {
-        produced = await timeout(executor.execute({
-          package: Codec.clone(pkg),
-          seed: String(options.seed || plan.intent_ref.digest),
-          inputs: inputArtifacts.map((item) => ({ package_id: item.package_id, path: item.path, digest: item.digest, bytes: item.bytes })),
-          readInput: (packageIdValue, relative) => {
-            const artifact = inputArtifacts.find((item) => item.package_id === packageIdValue && item.path === relative);
-            if (!artifact) throw new Error('undeclared input requested');
-            return fs.readFileSync(safeTarget(runDir, artifact.run_relative_path));
+        if (!cacheTried && cacheObserved.state === 'HIT') {
+          cacheTried = true;
+          try {
+            const cached = await verifyProduced(pkg, cacheObserved.produced, verifier, inputArtifacts, runDir, options.receiptValidator);
+            if (['VERIFIED', 'VERIFIED_WITH_LIMITS', 'HUMAN_REVIEW'].includes(cached.outcome.verdict)) {
+              produced = cached.produced;
+              verification = cached.verification;
+              outcome = cached.outcome;
+              cacheReceipt = cacheDescriptor('HIT', cacheKey, cacheObserved.entry_digest, null);
+            } else {
+              cacheReceipt = cacheDescriptor('REJECTED', cacheKey, cacheObserved.entry_digest, 'CACHE_CURRENT_VERIFIER_' + cached.outcome.verdict);
+              cacheObserved = { state: cacheReceipt.state, key: cacheKey, entry_digest: cacheObserved.entry_digest, reason: cacheReceipt.reason, produced: null };
+            }
+          } catch (_) {
+            cacheReceipt = cacheDescriptor('REJECTED', cacheKey, cacheObserved.entry_digest, 'CACHE_CURRENT_VERIFIER_ERROR');
+            cacheObserved = { state: cacheReceipt.state, key: cacheKey, entry_digest: cacheObserved.entry_digest, reason: cacheReceipt.reason, produced: null };
           }
-        }), pkg.resource_budget.timeout_ms);
-        if (!produced || !Array.isArray(produced.artifacts)) throw new Error('executor must return artifacts');
-        const declared = new Set(pkg.outputs.map((item) => item.path));
-        const returned = produced.artifacts.map((item) => item && item.path);
-        if (returned.length !== declared.size || new Set(returned).size !== returned.length || returned.some((item) => !declared.has(item))) throw new Error('executor outputs do not match declared paths');
-        let total = 0;
-        for (const artifact of produced.artifacts) {
-          const content = Buffer.isBuffer(artifact.content) ? artifact.content : Buffer.from(String(artifact.content == null ? '' : artifact.content), 'utf8');
-          total += content.length; artifact.content = content;
         }
-        if (total > pkg.resource_budget.max_output_bytes) throw new Error('executor output exceeds package byte budget');
-        const evidenceArtifacts = produced.artifacts.map((artifact) => ({ path: artifact.path, bytes: artifact.content.length, digest: Codec.sha256(artifact.content) }));
-        const producedByPath = new Map(produced.artifacts.map((artifact) => [artifact.path, artifact]));
-        verification = await Promise.resolve(verifier.verify({
-          package: Codec.clone(pkg),
-          artifacts: Codec.clone(evidenceArtifacts),
-          facts: Codec.clone(produced.facts || {}),
-          inputs: Codec.clone(inputArtifacts),
-          readArtifact: (relative) => {
-            if (!declared.has(relative) || !producedByPath.has(relative)) throw new Error('verifier requested an undeclared output');
-            return Buffer.from(producedByPath.get(relative).content);
-          },
-          readInput: (packageIdValue, relative) => {
-            const artifact = inputArtifacts.find((item) => item.package_id === packageIdValue && item.path === relative);
-            if (!artifact) throw new Error('verifier requested an undeclared input');
-            return Buffer.from(fs.readFileSync(safeTarget(runDir, artifact.run_relative_path)));
+        if (!produced) {
+          executorInvoked = true;
+          const executed = await timeout(executor.execute({
+            package: Codec.clone(pkg),
+            seed,
+            inputs: inputArtifacts.map((item) => ({ package_id: item.package_id, path: item.path, digest: item.digest, bytes: item.bytes })),
+            readInput: (packageIdValue, relative) => {
+              const artifact = inputArtifacts.find((item) => item.package_id === packageIdValue && item.path === relative);
+              if (!artifact) throw new Error('undeclared input requested');
+              return fs.readFileSync(safeTarget(runDir, artifact.run_relative_path));
+            }
+          }), pkg.resource_budget.timeout_ms);
+          const evaluated = await verifyProduced(pkg, executed, verifier, inputArtifacts, runDir, options.receiptValidator);
+          produced = evaluated.produced;
+          verification = evaluated.verification;
+          outcome = evaluated.outcome;
+          if (cacheEligible && cacheReceipt.state !== 'REJECTED') {
+            if (outcome.verdict === 'VERIFIED') cacheReceipt = publishedCacheDescriptor(cache.publish(pkg, inputArtifacts, seed, produced));
+            else cacheReceipt = cacheDescriptor('MISS_NOT_STORED', cacheKey, null, 'CURRENT_VERDICT_' + outcome.verdict);
           }
-        }));
-        const receiptErrors = verificationErrors(verification, pkg);
-        if (typeof options.receiptValidator === 'function') receiptErrors.push(...(options.receiptValidator(verification) || []));
-        if (receiptErrors.length) outcome = { verdict: 'HELD', reason: receiptErrors.join('; ') };
-        else outcome = verdictFor(pkg, verification);
+        }
       } catch (caught) { error = caught; outcome = { verdict: 'FAILED', reason: String(caught && caught.message || caught) }; }
 
       const attemptRootRelative = 'packages/' + pkg.id + '/attempt-' + attempt;
@@ -341,11 +412,11 @@ async function run(options) {
         completed_at: completedAt,
         inputs: inputArtifacts.map((item) => ({ package_id: item.package_id, path: item.path, digest: item.digest })),
         outputs,
-        process: { executor: Codec.clone(pkg.executor), native_process_started: false, cooperative_timeout_ms: pkg.resource_budget.timeout_ms, error: error ? outcome.reason : null },
+        process: { executor: Codec.clone(pkg.executor), executor_invoked: executorInvoked, native_process_started: false, cooperative_timeout_ms: pkg.resource_budget.timeout_ms, error: error ? outcome.reason : null },
         evidence: verification ? [verification] : [],
         verdict: outcome.verdict,
         detail: outcome.reason,
-        cache: { state: 'MISS', key: Codec.digest({ package_digest: pkg.digest, inputs: inputArtifacts.map((item) => item.digest), executor: pkg.executor, verifier: pkg.verifier, seed: String(options.seed || plan.intent_ref.digest) }) },
+        cache: cacheReceipt,
         previous_receipt_digest: state.ledger_tail,
         authority: { source_write: false, installed: false, promoted: false, canon: false }
       });

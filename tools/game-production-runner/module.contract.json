@@ -3,16 +3,16 @@
   "id": "game-production-runner",
   "version": "v0.1",
   "status": "EXPERIMENTAL",
-  "provides": ["game-production-integration-inspection", "deterministic-game-production-plan", "portable-production-profile-plan", "neutral-portable-step-receipts", "explicit-fixture-candidate-run", "explicit-portable-profile-fixture-run", "explicit-content-verified-document-run", "interrupted-run-resume", "read-only-godot-availability-probe", "explicit-trusted-hand-confinement-substrate-probe"],
+  "provides": ["game-production-integration-inspection", "deterministic-game-production-plan", "portable-production-profile-plan", "neutral-portable-step-receipts", "explicit-fixture-candidate-run", "explicit-portable-profile-fixture-run", "explicit-content-verified-document-run", "verified-deterministic-cross-run-cache", "fresh-verifier-cache-hit-gate", "explicit-cache-entry-invalidation", "interrupted-run-resume", "read-only-godot-availability-probe", "explicit-trusted-hand-confinement-substrate-probe"],
   "consumes": ["service:game-production-runner-core", "service:verification-spine", "service:local-godot-substrate", "service:node-permission-model"],
   "permissions": ["files", "runtime", "network.listen"],
   "handoffs": {
-    "emits": ["axm.game-production-plan/v1", "axm.game-production-run/v1", "axm.production-plan/v1", "axm.production-step-receipt/v1", "axm.production-run-state/v1", "axm.production-run/v1", "axm.hand-process-confinement-probe/v1"],
-    "accepts": ["human:explicit-run-start", "human:explicit-portable-run-start", "human:explicit-resume", "human:explicit-read-only-substrate-probe", "human:explicit-confinement-probe"]
+    "emits": ["axm.game-production-plan/v1", "axm.game-production-run/v1", "axm.production-plan/v1", "axm.production-step-receipt/v1", "axm.production-run-state/v1", "axm.production-run/v1", "axm.production-artifact-cache-entry/v1", "axm.production-artifact-cache-invalidation/v1", "axm.hand-process-confinement-probe/v1"],
+    "accepts": ["human:explicit-run-start", "human:explicit-portable-run-start", "human:explicit-cache-root", "human:explicit-cache-invalidation", "human:explicit-resume", "human:explicit-read-only-substrate-probe", "human:explicit-confinement-probe"]
   },
   "boundaries": {
-    "writes": ["user-selected-external-candidate-job-root", "disposable-operating-system-temp-probe-root"],
-    "refuses": ["source-tree-write", "implicit-run", "implicit-resume", "implicit-native-probe", "implicit-confinement-probe", "native-execution-v0.1", "external-network", "production-hand-network-without-denial-proof", "automatic-game-hub-install", "automatic-promotion", "automatic-canon", "automatic-release", "universal-kernel-claim-by-adapter", "domain-quality-claim-by-fixture", "editorial-quality-claim-by-structure", "operating-system-sandbox-claim-for-in-process-hands", "node-permission-mode-as-malicious-code-sandbox", "process-hand-activation-when-any-required-denial-fails"]
+    "writes": ["user-selected-external-candidate-job-root", "user-selected-external-artifact-cache-root", "disposable-operating-system-temp-probe-root"],
+    "refuses": ["source-tree-write", "source-tree-cache", "cache-job-root-overlap", "implicit-run", "implicit-resume", "implicit-cache-write", "implicit-cache-invalidation", "cache-reuse-for-undeclared-deterministic-executor", "cache-hit-without-current-verifier-pass", "automatic-cache-garbage-collection", "same-cache-key-different-result-overwrite", "implicit-native-probe", "implicit-confinement-probe", "native-execution-v0.1", "external-network", "production-hand-network-without-denial-proof", "automatic-game-hub-install", "automatic-promotion", "automatic-canon", "automatic-release", "universal-kernel-claim-by-adapter", "domain-quality-claim-by-fixture", "editorial-quality-claim-by-structure", "operating-system-sandbox-claim-for-in-process-hands", "node-permission-mode-as-malicious-code-sandbox", "process-hand-activation-when-any-required-denial-fails"]
   },
   "lifecycle": { "state_owner": "filesystem", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit" }
 }

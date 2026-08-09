@@ -10,6 +10,8 @@ const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'
 const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
 const neutralStepSchema = JSON.parse(fs.readFileSync(path.join(root, 'shared', 'game-production-runner', 'schemas', 'production-step-receipt.schema.json'), 'utf8'));
 const confinementSchema = JSON.parse(fs.readFileSync(path.join(root, 'shared', 'game-production-runner', 'schemas', 'hand-process-confinement-probe.schema.json'), 'utf8'));
+const cacheEntrySchema = JSON.parse(fs.readFileSync(path.join(root, 'shared', 'game-production-runner', 'schemas', 'production-artifact-cache-entry.schema.json'), 'utf8'));
+const cacheInvalidationSchema = JSON.parse(fs.readFileSync(path.join(root, 'shared', 'game-production-runner', 'schemas', 'production-artifact-cache-invalidation.schema.json'), 'utf8'));
 const integration = Core.adapters.inspect(root);
 let checks = 0;
 function ok(value, message) { assert.ok(value, message); checks += 1; }
@@ -32,6 +34,11 @@ ok(confinementSchema.$id === Core.confinement.SCHEMA && confinementSchema.proper
 ok(manifest.produces.includes(Core.confinement.SCHEMA), 'tool manifest declares the confinement receipt');
 ok(manifest.actions.includes('probe trusted Hand confinement substrate explicitly'), 'explicit confinement probe action is declared');
 ok(contract.boundaries.refuses.includes('node-permission-mode-as-malicious-code-sandbox') && contract.boundaries.refuses.includes('process-hand-activation-when-any-required-denial-fails'), 'confinement claim and activation boundaries are explicit');
+ok(cacheEntrySchema.$id === Core.artifactCache.ENTRY_SCHEMA && cacheInvalidationSchema.$id === Core.artifactCache.INVALIDATION_SCHEMA, 'tracked cache schemas match the runtime contracts');
+ok(manifest.produces.includes(Core.artifactCache.ENTRY_SCHEMA) && manifest.produces.includes(Core.artifactCache.INVALIDATION_SCHEMA), 'tool manifest declares cache entry and invalidation receipts');
+ok(manifest.actions.includes('reuse an explicit external verified artifact cache') && manifest.actions.includes('invalidate one exact cache entry explicitly'), 'cache reuse and invalidation actions are declared');
+ok(contract.boundaries.refuses.includes('cache-hit-without-current-verifier-pass') && contract.boundaries.refuses.includes('same-cache-key-different-result-overwrite'), 'cache verification and nondeterminism boundaries are explicit');
+ok(Core.fixtures.create().executors[0].cache_policy === Core.artifactCache.POLICY && Core.documentRegistry.create().executors[0].cache_policy === Core.artifactCache.POLICY, 'only the tracked deterministic registries opt into cache reuse');
 ok(integration.checks.every((item) => item.available), 'all tracked read-only AXM seams are present');
 ok(integration.native_runtime_probed === false && integration.authority_granted === false, 'discovery grants no runtime authority');
 console.log('Game Production Runner discovery seam review passed ' + checks + ' checks.');

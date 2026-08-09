@@ -148,7 +148,7 @@ function verify(context) {
 }
 
 function create() {
-  const executor = { identity: EXECUTOR, execute };
+  const executor = { identity: EXECUTOR, cache_policy: 'deterministic-v1', execute };
   const verifier = { identity: VERIFIER, verify };
   return { executors: [executor], verifiers: [verifier], inventory: { executors: [EXECUTOR], verifiers: [VERIFIER] } };
 }

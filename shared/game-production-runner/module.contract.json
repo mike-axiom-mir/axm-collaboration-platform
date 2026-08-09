@@ -19,7 +19,11 @@
     "content-derived-documentation-hand",
     "content-derived-documentation-verifier",
     "neutral-production-step-receipt",
-    "explicit-trusted-hand-confinement-substrate-probe"
+    "explicit-trusted-hand-confinement-substrate-probe",
+    "deterministic-cross-run-artifact-cache",
+    "fresh-verifier-cache-hit-gate",
+    "atomic-concurrent-cache-publication",
+    "explicit-selective-cache-invalidation"
   ],
   "consumes": [
     "axm.game-intent-lock/v1",
@@ -37,11 +41,11 @@
   ],
   "permissions": ["files", "runtime", "network.listen"],
   "handoffs": {
-    "emits": ["axm.game-production-plan/v1", "axm.game-step-receipt/v1", "axm.game-production-run/v1", "axm.production-profile-binding/v1", "axm.production-plan/v1", "axm.production-step-receipt/v1", "axm.production-run-state/v1", "axm.production-run/v1", "axm.hand-process-confinement-probe/v1"],
-    "accepts": ["human:explicit-run-start", "human:explicit-portable-run-start", "human:explicit-confinement-probe", "human:cancel", "axm.game-intent-lock/v1", "axm.game-production-graph/v1", "axm.production-intent-lock/v1", "axm.production-graph/v1"]
+    "emits": ["axm.game-production-plan/v1", "axm.game-step-receipt/v1", "axm.game-production-run/v1", "axm.production-profile-binding/v1", "axm.production-plan/v1", "axm.production-step-receipt/v1", "axm.production-run-state/v1", "axm.production-run/v1", "axm.hand-process-confinement-probe/v1", "axm.production-artifact-cache-entry/v1", "axm.production-artifact-cache-invalidation/v1"],
+    "accepts": ["human:explicit-run-start", "human:explicit-portable-run-start", "human:explicit-cache-root", "human:explicit-cache-invalidation", "human:explicit-confinement-probe", "human:cancel", "axm.game-intent-lock/v1", "axm.game-production-graph/v1", "axm.production-intent-lock/v1", "axm.production-graph/v1"]
   },
   "boundaries": {
-    "writes": ["explicit-external-candidate-job-root-only", "disposable-operating-system-temp-probe-root"],
+    "writes": ["explicit-external-candidate-job-root-only", "explicit-external-artifact-cache-root-only", "disposable-operating-system-temp-probe-root"],
     "refuses": [
       "source-tree-write",
       "filesystem-root-job",
@@ -59,7 +63,15 @@
       "domain-quality-claim-by-fixture",
       "operating-system-sandbox-claim-for-in-process-hands",
       "node-permission-mode-as-malicious-code-sandbox",
-      "process-hand-activation-when-any-required-denial-fails"
+      "process-hand-activation-when-any-required-denial-fails",
+      "implicit-cache-write",
+      "source-tree-cache",
+      "cache-job-root-overlap",
+      "cache-reuse-for-undeclared-deterministic-executor",
+      "cache-hit-without-current-verifier-pass",
+      "automatic-cache-invalidation",
+      "automatic-cache-garbage-collection",
+      "same-cache-key-different-result-overwrite"
     ]
   }
 }
