@@ -18,7 +18,8 @@
     "declared-artifact-byte-verifier-interface",
     "content-derived-documentation-hand",
     "content-derived-documentation-verifier",
-    "neutral-production-step-receipt"
+    "neutral-production-step-receipt",
+    "explicit-trusted-hand-confinement-substrate-probe"
   ],
   "consumes": [
     "axm.game-intent-lock/v1",
@@ -31,15 +32,16 @@
     "service:local-godot-substrate",
     "axm.production-intent-lock/v1",
     "axm.production-package/v1",
-    "axm.production-graph/v1"
+    "axm.production-graph/v1",
+    "service:node-permission-model"
   ],
-  "permissions": [],
+  "permissions": ["files", "runtime", "network.listen"],
   "handoffs": {
-    "emits": ["axm.game-production-plan/v1", "axm.game-step-receipt/v1", "axm.game-production-run/v1", "axm.production-profile-binding/v1", "axm.production-plan/v1", "axm.production-step-receipt/v1", "axm.production-run-state/v1", "axm.production-run/v1"],
-    "accepts": ["human:explicit-run-start", "human:explicit-portable-run-start", "human:cancel", "axm.game-intent-lock/v1", "axm.game-production-graph/v1", "axm.production-intent-lock/v1", "axm.production-graph/v1"]
+    "emits": ["axm.game-production-plan/v1", "axm.game-step-receipt/v1", "axm.game-production-run/v1", "axm.production-profile-binding/v1", "axm.production-plan/v1", "axm.production-step-receipt/v1", "axm.production-run-state/v1", "axm.production-run/v1", "axm.hand-process-confinement-probe/v1"],
+    "accepts": ["human:explicit-run-start", "human:explicit-portable-run-start", "human:explicit-confinement-probe", "human:cancel", "axm.game-intent-lock/v1", "axm.game-production-graph/v1", "axm.production-intent-lock/v1", "axm.production-graph/v1"]
   },
   "boundaries": {
-    "writes": ["explicit-external-candidate-job-root-only"],
+    "writes": ["explicit-external-candidate-job-root-only", "disposable-operating-system-temp-probe-root"],
     "refuses": [
       "source-tree-write",
       "filesystem-root-job",
@@ -55,7 +57,9 @@
       "unreviewed-native-execution",
       "universal-kernel-claim-by-adapter",
       "domain-quality-claim-by-fixture",
-      "operating-system-sandbox-claim-for-in-process-hands"
+      "operating-system-sandbox-claim-for-in-process-hands",
+      "node-permission-mode-as-malicious-code-sandbox",
+      "process-hand-activation-when-any-required-denial-fails"
     ]
   }
 }

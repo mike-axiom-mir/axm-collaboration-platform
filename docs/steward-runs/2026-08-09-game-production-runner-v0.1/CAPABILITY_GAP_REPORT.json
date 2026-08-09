@@ -15,15 +15,23 @@
     "portable non-game profile adaptation with exact source-to-internal binding",
     "content-derived verifier access to declared output and direct dependency bytes",
     "deterministic documentation Hand with separately identified content verifier",
-    "neutral digest-chained production step receipts with legacy game-ledger continuity"
+    "neutral digest-chained production step receipts with legacy game-ledger continuity",
+    "explicit local Node permission substrate probe with sealed per-capability evidence"
   ],
   "gaps": [
     {
       "capability": "hand.production.process-sandbox",
       "kind": "SUBSTRATE",
       "state": "MISSING_SUBSTRATE",
-      "impact": "Trusted in-process Hands and verifiers can use host Node APIs outside the bounded reader interface.",
-      "next_evidence": "Define an isolated process protocol, deny undeclared filesystem and network access at the host boundary, and verify termination plus recovery."
+      "impact": "The supported local Node 24 permission model denied filesystem, child-process, and worker access but allowed loopback network, and its documented threat model does not protect against malicious code.",
+      "next_evidence": "Provide an OS isolation boundary or a supported runtime that denies network too, then repeat the same capability probe plus separate-user and escape adversaries."
+    },
+    {
+      "capability": "hand.production.process-host",
+      "kind": "HAND",
+      "state": "MISSING_HAND",
+      "impact": "No production executor is routed through a child-process request/response protocol; current Hands remain trusted in-process JavaScript.",
+      "next_evidence": "Build the process host only after every required confinement denial passes, then prove timeout termination, crash recovery, protocol integrity, and exact artifact transfer."
     },
     {
       "capability": "runtime.godot.4.7.1.pinned",

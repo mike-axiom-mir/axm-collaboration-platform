@@ -1,0 +1,28 @@
+{
+  "requirements": [
+    {
+      "id": "explicit-confinement-diagnosis-exists",
+      "capabilities": ["probe.hand-process.confinement"],
+      "required": true,
+      "gapType": "HAND"
+    },
+    {
+      "id": "trusted-process-hand-is-confined",
+      "capabilities": [
+        "confinement.filesystem-read.deny",
+        "confinement.filesystem-write.deny",
+        "confinement.child-process.deny",
+        "confinement.worker-thread.deny",
+        "confinement.network.deny"
+      ],
+      "required": true,
+      "gapType": "SUBSTRATE"
+    },
+    {
+      "id": "untrusted-process-hand-is-sandboxed",
+      "capabilities": ["sandbox.hand-process.malicious-code"],
+      "required": true,
+      "gapType": "SUBSTRATE"
+    }
+  ]
+}

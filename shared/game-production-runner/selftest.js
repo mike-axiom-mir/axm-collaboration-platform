@@ -74,6 +74,32 @@ async function main() {
   const renderedDocumentBrief = Core.documentRegistry.renderReleaseNote(normalizedDocumentBrief);
   ok(Core.documentRegistry.inspectReleaseNote(renderedDocumentBrief, normalizedDocumentBrief), 'documentation verifier independently parses a correct deterministic draft');
   ok(!Core.documentRegistry.inspectReleaseNote(renderedDocumentBrief.replace(normalizedDocumentBrief.evidence[0], 'altered evidence'), normalizedDocumentBrief), 'documentation verifier rejects a semantically altered deterministic draft');
+  const confinementSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'hand-process-confinement-probe.schema.json'), 'utf8'));
+  equal(confinementSchema.$id, Core.confinement.SCHEMA, 'confinement schema document and runtime constant agree');
+  const confinementInspection = Core.confinement.inspect({ clock: () => '2000-01-01T00:00:00.000Z' });
+  equal(confinementInspection.status, 'NOT_PROBED', 'confinement inspection starts no child probes');
+  equal(confinementInspection.execution_authority, false, 'confinement inspection grants no execution authority');
+  const priorNodeOptions = process.env.NODE_OPTIONS;
+  process.env.NODE_OPTIONS = '--require=AXM_GPR_PROBE_MUST_SCRUB';
+  let confinement;
+  try {
+    confinement = await Core.confinement.probe({ explicitProbe: true, clock: () => '2000-01-01T00:00:00.000Z' });
+  } finally {
+    if (priorNodeOptions === undefined) delete process.env.NODE_OPTIONS;
+    else process.env.NODE_OPTIONS = priorNodeOptions;
+  }
+  ok(Core.canonical.validDigest(confinement), 'confinement probe receipt is sealed');
+  equal(confinement.cleanup, { temporary_root_removed: true, loopback_server_closed: true }, 'confinement probe cleans its temporary root and listener');
+  equal(confinement.checks.map((item) => item.id), ['permission-api-available', 'filesystem-read-denied', 'filesystem-write-denied', 'child-process-denied', 'worker-thread-denied', 'loopback-network-denied'], 'confinement probe covers the declared capability set');
+  ok(confinement.checks.slice(0, 5).every((item) => item.verdict === 'PASS'), 'permission API, filesystem, child-process, and worker denials pass');
+  equal(confinement.checks[0].observed.outcome, 'AVAILABLE', 'confinement probe scrubs ambient NODE_* child settings');
+  const networkConfinement = confinement.checks.find((item) => item.id === 'loopback-network-denied');
+  equal(networkConfinement.observed.outcome, 'ALLOWED', 'supported Node 20-24 substrate does not deny loopback network');
+  equal(confinement.status, 'DEGRADED', 'missing network denial holds the trusted Hand process substrate');
+  equal(confinement.activation, { trusted_hand_process: 'HOLD', untrusted_code: 'REFUSED', execution_authority: false }, 'degraded confinement receipt refuses activation and untrusted code');
+  ok(!/[A-Za-z]:\\/.test(JSON.stringify(confinement)), 'confinement receipt exposes no local machine path');
+  const repeatedConfinement = await Core.confinement.probe({ explicitProbe: true, clock: () => '2000-01-01T00:00:00.000Z' });
+  equal(repeatedConfinement.digest, confinement.digest, 'same runtime and clock produce the same confinement receipt digest');
   equal(planA.status, 'READY', 'exact fixture Hands make plan ready');
   equal(planA.execution_order, spec.packages.map((pkg) => pkg.id), 'serial order follows dependencies');
   const heldPlan = Core.compiler.compile(spec, { executors: [], verifiers: [] });

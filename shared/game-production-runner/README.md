@@ -29,6 +29,16 @@ through copy-returning runner APIs. Executor-supplied facts cannot make malforme
 bytes pass. This proves content-derived verification inside the trusted
 in-process registry; it is not an operating-system process sandbox.
 
+The confinement substrate probe is a separate, explicit diagnostic. It launches
+disposable permission-mode child processes, tests individual filesystem,
+child-process, worker-thread, and local-loopback capabilities, removes its
+temporary root, and seals the observations. On the supported local Node 24
+runtime, filesystem access, child processes, and worker threads were denied but
+loopback networking remained allowed. The resulting status is therefore
+`DEGRADED`, process-Hand activation stays on `HOLD`, and untrusted code remains
+refused. Node permission mode is treated as accidental-capability containment,
+not as a security boundary for malicious code.
+
 ## Current truth ceiling
 
 - Contract and graph behavior: executable and self-tested.
@@ -42,6 +52,9 @@ in-process registry; it is not an operating-system process sandbox.
   interrupted resume, schema tamper, and legacy game-ledger continuation.
 - Content-derived documentation verification: executable and self-tested,
   including a deliberately lying executor and undeclared-read refusal.
+- Explicit Hand confinement substrate diagnosis: executable and self-tested;
+  the current Node 24 observation is `DEGRADED` because network denial failed.
+- Process-hosted production Hands and a malicious-code sandbox: missing.
 - Native Godot production: `MISSING_SUBSTRATE` until separately resolved.
 - Game quality, feel, and superiority over another engine: human/future evidence.
 
@@ -61,7 +74,13 @@ in-process registry; it is not an operating-system process sandbox.
 - Missing or contradictory evidence holds the run.
 - A run's step receipt schema is pinned before the first receipt and rechecked
   on every resume.
-- No install, Game Hub copy, promotion, CANON, release, or network authority.
+- Confinement probing is opt-in, local-loopback-only, and grants no execution
+  authority even if every check passes.
+- Any required capability that is allowed or unknown holds process-Hand
+  activation; a separate explicit gate would still be required after a pass.
+- No install, Game Hub copy, promotion, CANON, release, or external-network
+  authority. The explicit diagnostic declares its temporary loopback-listener
+  power separately.
 
 Run the shared and tool tests from the Workshop root:
 

@@ -9,6 +9,7 @@ const root = path.resolve(__dirname, '..', '..');
 const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
 const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
 const neutralStepSchema = JSON.parse(fs.readFileSync(path.join(root, 'shared', 'game-production-runner', 'schemas', 'production-step-receipt.schema.json'), 'utf8'));
+const confinementSchema = JSON.parse(fs.readFileSync(path.join(root, 'shared', 'game-production-runner', 'schemas', 'hand-process-confinement-probe.schema.json'), 'utf8'));
 const integration = Core.adapters.inspect(root);
 let checks = 0;
 function ok(value, message) { assert.ok(value, message); checks += 1; }
@@ -27,6 +28,10 @@ ok(manifest.produces.includes(Core.portable.SCHEMAS.step), 'tool manifest declar
 ok(manifest.actions.includes('run an explicit content-verified documentation candidate'), 'content-derived documentation route is declared');
 ok(contract.boundaries.refuses.includes('operating-system-sandbox-claim-for-in-process-hands'), 'in-process Hands do not claim an operating-system sandbox');
 ok(Core.documentRegistry.EXECUTOR.id !== Core.documentRegistry.VERIFIER.id, 'documentation Hand and verifier identities remain separate');
+ok(confinementSchema.$id === Core.confinement.SCHEMA && confinementSchema.properties.schema.const === Core.confinement.SCHEMA, 'tracked confinement schema matches the runtime contract');
+ok(manifest.produces.includes(Core.confinement.SCHEMA), 'tool manifest declares the confinement receipt');
+ok(manifest.actions.includes('probe trusted Hand confinement substrate explicitly'), 'explicit confinement probe action is declared');
+ok(contract.boundaries.refuses.includes('node-permission-mode-as-malicious-code-sandbox') && contract.boundaries.refuses.includes('process-hand-activation-when-any-required-denial-fails'), 'confinement claim and activation boundaries are explicit');
 ok(integration.checks.every((item) => item.available), 'all tracked read-only AXM seams are present');
 ok(integration.native_runtime_probed === false && integration.authority_granted === false, 'discovery grants no runtime authority');
 console.log('Game Production Runner discovery seam review passed ' + checks + ' checks.');

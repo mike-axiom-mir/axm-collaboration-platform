@@ -20,6 +20,7 @@ function parse(argv) {
     else if (item === '--resume') result.resume = true;
     else if (item === '--automated-only') result.automatedOnly = true;
     else if (item === '--read-only-probe') result.readOnlyProbe = true;
+    else if (item === '--explicit-probe') result.explicitProbe = true;
     else throw new Error('unknown argument: ' + item);
   }
   return result;
@@ -37,6 +38,7 @@ function usage() {
     '  run-profile-demo --job-root DIRECTORY [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
     '  run-document-demo --job-root DIRECTORY [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
     '  probe-godot --read-only-probe [--substrate-root DIRECTORY]',
+    '  probe-hand-confinement --explicit-probe',
     '',
     'v0.1 runs inert fixtures and one trusted in-process deterministic documentation Hand. It does not install, promote, canonize, release, or execute Godot.'
   ].join('\n');
@@ -100,6 +102,10 @@ async function main(argv) {
   if (options.command === 'probe-godot') {
     const result = Core.adapters.probeGodot(ROOT, { explicitReadOnlyProbe: options.readOnlyProbe === true, substrateRoot: options.substrateRoot });
     return { output: JSON.stringify(result, null, 2), code: result.status === 'READY' || result.status === 'NOT_PROBED' ? 0 : 2 };
+  }
+  if (options.command === 'probe-hand-confinement') {
+    const result = await Core.confinement.probe({ explicitProbe: options.explicitProbe === true });
+    return { output: JSON.stringify(result, null, 2), code: ['NOT_PROBED', 'READY_WITH_LIMITS'].includes(result.status) ? 0 : 2 };
   }
   throw new Error('unknown command: ' + options.command + '\n' + usage());
 }

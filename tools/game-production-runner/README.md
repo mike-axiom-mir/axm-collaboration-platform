@@ -22,6 +22,7 @@ node tools/game-production-runner/cli.js run-demo --job-root D:\candidate\runs -
 node tools/game-production-runner/cli.js run-profile-demo --job-root D:\candidate\runs --run-id portable-demo --confirm "RUN PRODUCTION CANDIDATE"
 node tools/game-production-runner/cli.js run-document-demo --job-root D:\candidate\runs --run-id document-demo --confirm "RUN PRODUCTION CANDIDATE"
 node tools/game-production-runner/cli.js probe-godot --read-only-probe
+node tools/game-production-runner/cli.js probe-hand-confinement --explicit-probe
 ```
 
 `plan` may honestly return `HELD` when a supplied spec names executors or
@@ -34,6 +35,15 @@ coverage and digest binding; editorial quality remains human review. Both
 portable commands emit `axm.production-step-receipt/v1` ledgers and disclose
 that schema in new portable state and terminal receipts. An interrupted
 pre-upgrade ledger continues its original game receipt schema without mixing.
+
+`probe-hand-confinement` is diagnostic and must be requested explicitly. It
+creates and removes a disposable operating-system temporary root and opens only
+an ephemeral local-loopback listener. The command exits `2` when any required
+denial fails or is unknown. The supported local Node 24 runtime currently emits
+a sealed `DEGRADED` receipt because loopback networking is allowed; activation
+therefore remains `HOLD`. The probe never installs a runtime, executes supplied
+code, grants Hand authority, or claims that Node permission mode is a
+malicious-code sandbox.
 
 The long-range module is intended to become the production intelligence used
 to build and evolve an AXM-native engine. This CLI does not claim that engine

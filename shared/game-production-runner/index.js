@@ -6,6 +6,7 @@ module.exports = Object.freeze({
   compiler: require('./compiler'),
   runner: require('./runner'),
   stepReceipts: require('./step-receipt-contract'),
+  confinement: require('./permission-substrate'),
   adapters: require('./axm-adapters'),
   fixtures: require('./fixture-registry'),
   proofyard: require('./proofyard-foundation'),

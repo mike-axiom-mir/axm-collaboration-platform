@@ -16,6 +16,7 @@ function ledger(file) { return fs.readFileSync(file, 'utf8').trim().split(/\r?\n
 
 async function main() {
   equal(Cli.parse(['run-demo', '--job-root', 'X', '--resume']).resume, true, 'CLI parses explicit resume');
+  equal(Cli.parse(['probe-hand-confinement', '--explicit-probe']).explicitProbe, true, 'CLI parses explicit confinement probe consent');
   assert.throws(() => Cli.parse(['inspect', '--unknown']), /unknown argument/); checks += 1;
   ok(Cli.usage().includes('trusted in-process deterministic documentation Hand'), 'usage preserves the Hand trust boundary');
 
@@ -46,6 +47,17 @@ async function main() {
   const noProbe = invoke(['probe-godot']);
   equal(noProbe.status, 0, 'unrequested Godot probe is a safe no-op');
   equal(parsed(noProbe).status, 'NOT_PROBED', 'Godot remains unprobed without opt-in');
+  const noConfinementProbe = invoke(['probe-hand-confinement']);
+  equal(noConfinementProbe.status, 0, 'unrequested confinement probe is a safe no-op');
+  equal(parsed(noConfinementProbe).status, 'NOT_PROBED', 'confinement remains unprobed without opt-in');
+  const confinementProbe = invoke(['probe-hand-confinement', '--explicit-probe']);
+  equal(confinementProbe.status, 2, 'degraded confinement substrate exits held');
+  const confinementResult = parsed(confinementProbe);
+  equal(confinementResult.status, 'DEGRADED', 'CLI exposes the supported Node 20-24 network denial gap');
+  equal(confinementResult.activation, { execution_authority: false, trusted_hand_process: 'HOLD', untrusted_code: 'REFUSED' }, 'CLI confinement receipt grants no activation authority');
+  ok(confinementResult.checks.slice(0, 5).every((item) => item.verdict === 'PASS') && confinementResult.checks[5].verdict === 'FAIL', 'CLI preserves each passed and failed confinement observation');
+  equal(confinementResult.cleanup, { loopback_server_closed: true, temporary_root_removed: true }, 'CLI confinement probe cleans disposable resources');
+  ok(!/[A-Za-z]:\\/.test(JSON.stringify(confinementResult)), 'CLI confinement receipt contains no machine path');
 
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'AXM-GPR-CLI-'));
   try {
