@@ -8,6 +8,7 @@ module.exports = Object.freeze({
   runCheckpoints: require('./run-checkpoint-contract'),
   stepReceipts: require('./step-receipt-contract'),
   artifactCache: require('./artifact-cache'),
+  cacheLeases: require('./artifact-cache-lease'),
   cacheReferences: require('./cache-reference-discovery'),
   cacheRetention: require('./artifact-cache-retention'),
   confinement: require('./permission-substrate'),

@@ -49,6 +49,7 @@ function usage() {
     '  run-profile-demo --job-root DIRECTORY [--cache-root DIRECTORY] [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
     '  run-document-demo --job-root DIRECTORY [--cache-root DIRECTORY] [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
     '  invalidate-cache --cache-root DIRECTORY --cache-key SHA256 --explicit-invalidate',
+    '  discover-cache-leases --cache-root DIRECTORY',
     '  discover-cache-references --job-root DIRECTORY',
     '  inventory-cache --cache-root DIRECTORY',
     '  plan-cache-retention --cache-root DIRECTORY --max-cache-entries N --max-cache-bytes N --max-cache-age-ms N [--reference-job-root DIRECTORY] [--protect-key SHA256 ...]',
@@ -109,7 +110,7 @@ async function main(argv) {
     const spec = Core.proofyard.build({ includeHumanReview: !options.automatedOnly });
     const plan = Core.compiler.compile(spec, registry.inventory);
     const result = await Core.runner.run({ plan, packages: spec.packages, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), cacheRoot: options.cacheRoot ? path.resolve(options.cacheRoot) : undefined, sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
-    const output = { schema: 'axm.game-production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, run_checkpoint: result.checkpointReceipt, local_run_directory: result.runDir, native_game_proven: false, automatic_install: false, canon: false };
+    const output = { schema: 'axm.game-production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, run_checkpoint: result.checkpointReceipt, cache_lease_release: result.cacheLeaseRelease, local_run_directory: result.runDir, native_game_proven: false, automatic_install: false, canon: false };
     return { output: JSON.stringify(output, null, 2), code: ['CANDIDATE_READY', 'HUMAN_REVIEW', 'INTERRUPTED'].includes(result.state.status) ? 0 : 2 };
   }
   if (options.command === 'run-profile-demo') {
@@ -118,7 +119,7 @@ async function main(argv) {
     const spec = Core.portableFixture.build();
     const plan = Core.portable.compile(spec, registry.inventory);
     const result = await Core.portable.run({ spec, plan, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), cacheRoot: options.cacheRoot ? path.resolve(options.cacheRoot) : undefined, sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
-    const output = { schema: 'axm.production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, run_checkpoint: result.checkpointReceipt, local_run_directory: result.runDir, domain: plan.domain, proof_scope: 'cross-domain orchestration mechanics only', automatic_install: false, canon: false };
+    const output = { schema: 'axm.production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, run_checkpoint: result.checkpointReceipt, cache_lease_release: result.cacheLeaseRelease, local_run_directory: result.runDir, domain: plan.domain, proof_scope: 'cross-domain orchestration mechanics only', automatic_install: false, canon: false };
     return { output: JSON.stringify(output, null, 2), code: ['CANDIDATE_READY', 'HUMAN_REVIEW', 'INTERRUPTED'].includes(result.state.state) ? 0 : 2 };
   }
   if (options.command === 'run-document-demo') {
@@ -127,7 +128,7 @@ async function main(argv) {
     const spec = Core.portableDocuments.build();
     const plan = Core.portable.compile(spec, registry.inventory);
     const result = await Core.portable.run({ spec, plan, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), cacheRoot: options.cacheRoot ? path.resolve(options.cacheRoot) : undefined, sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
-    const output = { schema: 'axm.production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, run_checkpoint: result.checkpointReceipt, local_run_directory: result.runDir, domain: plan.domain, proof_scope: 'content-derived deterministic documentation verification; editorial quality remains human review', automatic_install: false, canon: false };
+    const output = { schema: 'axm.production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, run_checkpoint: result.checkpointReceipt, cache_lease_release: result.cacheLeaseRelease, local_run_directory: result.runDir, domain: plan.domain, proof_scope: 'content-derived deterministic documentation verification; editorial quality remains human review', automatic_install: false, canon: false };
     return { output: JSON.stringify(output, null, 2), code: ['CANDIDATE_READY', 'HUMAN_REVIEW', 'INTERRUPTED'].includes(result.state.state) ? 0 : 2 };
   }
   if (options.command === 'probe-godot') {
@@ -148,6 +149,11 @@ async function main(argv) {
   if (options.command === 'inventory-cache') {
     if (!options.cacheRoot) throw new Error('inventory-cache requires --cache-root');
     const result = Core.cacheRetention.inventory({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT });
+    return { output: JSON.stringify(result, null, 2), code: result.status === 'COMPLETE' ? 0 : 2 };
+  }
+  if (options.command === 'discover-cache-leases') {
+    if (!options.cacheRoot) throw new Error('discover-cache-leases requires --cache-root');
+    const result = Core.cacheLeases.discover({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT });
     return { output: JSON.stringify(result, null, 2), code: result.status === 'COMPLETE' ? 0 : 2 };
   }
   if (options.command === 'discover-cache-references') {

@@ -24,6 +24,7 @@ node tools/game-production-runner/cli.js run-document-demo --job-root D:\candida
 node tools/game-production-runner/cli.js run-document-demo --job-root D:\candidate\runs --cache-root D:\candidate\verified-cache --run-id cached-document --confirm "RUN PRODUCTION CANDIDATE"
 node tools/game-production-runner/cli.js invalidate-cache --cache-root D:\candidate\verified-cache --cache-key SHA256 --explicit-invalidate
 node tools/game-production-runner/cli.js discover-cache-references --job-root D:\candidate\runs
+node tools/game-production-runner/cli.js discover-cache-leases --cache-root D:\candidate\verified-cache
 node tools/game-production-runner/cli.js inventory-cache --cache-root D:\candidate\verified-cache
 node tools/game-production-runner/cli.js plan-cache-retention --cache-root D:\candidate\verified-cache --reference-job-root D:\candidate\runs --max-cache-entries 500 --max-cache-bytes 10737418240 --max-cache-age-ms 2592000000
 node tools/game-production-runner/cli.js apply-cache-retention --cache-root D:\candidate\verified-cache --reference-job-root D:\candidate\runs --proposal D:\candidate\retention-proposal.json --approve-proposal SHA256 --explicit-apply
@@ -55,8 +56,22 @@ execution and remain visible in the step receipt. Exact invalidation is a
 separate command and does nothing without `--explicit-invalidate`. There is no
 automatic eviction or cache garbage collection in v0.1.
 
-`inventory-cache` is read-only and does not create an absent cache. It emits a
-sealed, path-free inventory of exact cache layouts and holds on unclassified or
+A cache-enabled run acquires a bounded append-only lease before cache use and
+protects each exact key before loading or publishing it. The owner fields are
+path-private digests for local continuity, not authentication. Lease duration is
+derived to cover cache-hit verification plus executor and verifier fallback for
+every remaining attempt and is capped at seven days. Terminal or
+graceful-checkpoint evidence releases it. If the
+process exits abruptly, the lease remains protective only until expiry; the
+same run can renew it during resume. No daemon, heartbeat, or polling task is
+created. Run output exposes the sealed release event when one was written.
+
+`discover-cache-leases` is bounded and read-only. It emits a sealed, path-free
+set whose protection contains only unexpired active leases; released and
+expired ledgers remain auditable but grant no authority. An invalid or
+over-limit ledger set holds lease-based deletion. `inventory-cache` is read-only
+and does not create an absent cache. It embeds the lease set, emits a sealed,
+path-free inventory of exact cache layouts, and holds on unclassified or
 actively publishing content. `discover-cache-references` is also read-only and
 bounded. It derives a sealed, path-private protection set only from complete
 terminal receipts or the latest exact graceful checkpoint. Checkpoint histories
@@ -69,13 +84,15 @@ logical-byte, and observed filesystem-age budgets. It can combine repeatable man
 `--protect-key` values with `--reference-job-root`; discovered bindings include
 the exact cache key and entry digest. Its output performs no deletion. Save
 only the nested `proposal` object to a JSON file. `apply-cache-retention`
-rereads that file and both roots, refuses a stale cache or reference snapshot,
-and deletes only when `--explicit-apply` and the proposal's exact digest are
-supplied. The sealed application receipt includes the fresh reference snapshot,
-each selective invalidation digest, and post-delete usage. No discovery,
-retention policy, or deletion runs in the background or during a candidate.
-There is no in-flight cache lease: checkpoint protection covers completed
-receipts through its exact tail, not work produced while a resumed run advances.
+rereads that file and both roots, refuses a stale cache, reference, or lease
+snapshot, and deletes only when `--explicit-apply` and the proposal's exact
+digest are supplied. Each final deletion is coordinated per key with runner
+lease protection. The sealed application receipt includes the fresh reference
+and lease snapshots, each selective invalidation digest, and post-delete usage.
+No discovery, retention policy, lease renewal, or deletion runs in the
+background. Direct `invalidate-cache` remains a distinct explicit human
+override. Released and expired lease ledgers are not yet compacted and can
+eventually reach the bounded discovery ceiling.
 
 `probe-hand-confinement` is diagnostic and must be requested explicitly. It
 creates and removes a disposable operating-system temporary root and opens only

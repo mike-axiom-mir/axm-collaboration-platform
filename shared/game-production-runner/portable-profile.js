@@ -198,6 +198,7 @@ async function run(options) {
     maxSteps: options.maxSteps,
     cancelled: options.cancelled,
     clock: options.clock,
+    leaseClock: options.leaseClock,
     seed: options.seed,
     stepReceiptProfile: StepReceipts.PROFILES.production,
     allowLegacyGameStepReceipts: true
@@ -208,12 +209,14 @@ async function run(options) {
     state: portableState(result.state, expectedPlan, result.stepReceiptSchema, result.legacyStepReceiptSchema),
     runReceipt: receipt,
     checkpointReceipt: result.checkpointReceipt,
+    cacheLeaseRelease: result.cacheLeaseRelease,
     runReceiptFile: receiptFile,
     runDir: result.runDir,
     internal: {
       plan_digest: internalPlan.digest,
       run_receipt_digest: result.runReceipt && result.runReceipt.digest,
       checkpoint_receipt_digest: result.checkpointReceipt && result.checkpointReceipt.digest,
+      cache_lease_release_digest: result.cacheLeaseRelease && result.cacheLeaseRelease.digest,
       step_receipt_schema: result.stepReceiptSchema,
       legacy_step_receipt_schema: result.legacyStepReceiptSchema
     }

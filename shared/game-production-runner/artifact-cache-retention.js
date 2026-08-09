@@ -5,6 +5,7 @@ const path = require('path');
 const Codec = require('./canonical');
 const Contracts = require('./contracts');
 const ArtifactCache = require('./artifact-cache');
+const CacheLeases = require('./artifact-cache-lease');
 const CacheReferences = require('./cache-reference-discovery');
 
 const INVENTORY_SCHEMA = 'axm.production-artifact-cache-inventory/v1';
@@ -64,6 +65,36 @@ function normalizeReferenceBinding(referenceSet, inventoryRootFingerprint) {
     discovered_keys: normalizeProtectedKeys(referenceSet.protected_keys),
     entry_bindings: referenceSet.references.map((item) => ({ key: item.key, entry_digest: item.entry_digests[0] })).sort((left, right) => left.key.localeCompare(right.key)),
     root_overlap: referenceSet.job_root_fingerprint === inventoryRootFingerprint
+  };
+}
+
+function leaseDiscoveryOptions(options, observedAt, budget) {
+  const selected = budget || {};
+  return {
+    cacheRoot: options.cacheRoot,
+    sourceRoot: options.sourceRoot,
+    jobRoot: options.jobRoot,
+    nowMs: observedAt,
+    scanMaxDirectoryEntries: selected.max_directory_entries == null ? options.leaseScanMaxDirectoryEntries : selected.max_directory_entries,
+    scanMaxLedgers: selected.max_ledgers == null ? options.leaseScanMaxLedgers : selected.max_ledgers,
+    scanMaxEvents: selected.max_events == null ? options.leaseScanMaxEvents : selected.max_events,
+    scanMaxBytes: selected.max_bytes == null ? options.leaseScanMaxBytes : selected.max_bytes
+  };
+}
+
+function normalizeLeaseBinding(leaseSet, inventoryRootFingerprint) {
+  const errors = CacheLeases.validateSet(leaseSet);
+  if (errors.length) fail('RETENTION_LEASE_SET_INVALID');
+  return {
+    status: leaseSet.status,
+    digest: leaseSet.digest,
+    snapshot_digest: leaseSet.snapshot_digest,
+    root_fingerprint: leaseSet.cache_root_fingerprint,
+    observed_at_ms: leaseSet.observed_at_ms,
+    scan_budget: Codec.clone(leaseSet.scan_budget),
+    protected_keys: normalizeProtectedKeys(leaseSet.protected_keys),
+    active_lease_count: leaseSet.usage.active,
+    root_mismatch: leaseSet.cache_root_fingerprint !== inventoryRootFingerprint
   };
 }
 
@@ -159,7 +190,9 @@ function snapshotDigest(receipt) {
     entries_root_exists: receipt.entries_root_exists,
     entries: receipt.entries,
     unclassified: receipt.unclassified,
-    temporary_publishers: receipt.temporary_publishers
+    temporary_publishers: receipt.temporary_publishers,
+    lease_snapshot_digest: receipt.lease_set.snapshot_digest,
+    lease_set_digest: receipt.lease_set.digest
   });
 }
 
@@ -168,6 +201,9 @@ function inventory(options) {
   const location = ArtifactCache.locate(options), budget = scanBudget(options);
   const observedAt = options.nowMs == null ? Date.now() : options.nowMs;
   if (!finiteInteger(observedAt)) fail('RETENTION_OBSERVATION_TIME_INVALID');
+  const leaseObservedAt = options.leaseNowMs == null ? observedAt : options.leaseNowMs;
+  if (!finiteInteger(leaseObservedAt)) fail('RETENTION_LEASE_OBSERVATION_TIME_INVALID');
+  const leaseSet = CacheLeases.discover(leaseDiscoveryOptions(options, leaseObservedAt));
   const receipt = {
     schema: INVENTORY_SCHEMA,
     version: VERSION,
@@ -180,7 +216,8 @@ function inventory(options) {
     entries: [],
     unclassified: [],
     temporary_publishers: 0,
-    usage: { entries: 0, logical_bytes: 0, unclassified: 0 }
+    lease_set: leaseSet,
+    usage: { entries: 0, logical_bytes: 0, unclassified: 0, leased_keys: leaseSet.protected_keys.length }
   };
   if (location.entriesExist) {
     const counters = { entries: 0, files: 0 };
@@ -221,23 +258,28 @@ function inventory(options) {
   receipt.usage = {
     entries: receipt.entries.length,
     logical_bytes: receipt.entries.reduce((sum, item) => sum + item.logical_bytes, 0),
-    unclassified: receipt.unclassified.length
+    unclassified: receipt.unclassified.length,
+    leased_keys: leaseSet.protected_keys.length
   };
+  if (leaseSet.status === 'LIMIT_EXCEEDED') receipt.status = 'LIMIT_EXCEEDED';
+  else if (receipt.status === 'COMPLETE' && leaseSet.status === 'REVIEW_REQUIRED') receipt.status = 'REVIEW_REQUIRED';
   receipt.snapshot_digest = snapshotDigest(receipt);
   return Codec.seal(receipt);
 }
 
 function validateInventory(receipt) {
-  if (!receipt || receipt.schema !== INVENTORY_SCHEMA || receipt.version !== VERSION || !Codec.validDigest(receipt) || !DIGEST.test(String(receipt.snapshot_digest || '')) || receipt.snapshot_digest !== snapshotDigest(receipt)) fail('RETENTION_INVENTORY_INVALID');
+  if (!receipt || receipt.schema !== INVENTORY_SCHEMA || receipt.version !== VERSION || !Codec.validDigest(receipt) || !DIGEST.test(String(receipt.snapshot_digest || '')) || receipt.snapshot_digest !== snapshotDigest(receipt) || !receipt.lease_set || CacheLeases.validateSet(receipt.lease_set).length || receipt.lease_set.cache_root_fingerprint !== receipt.root_fingerprint || !receipt.usage || receipt.usage.leased_keys !== receipt.lease_set.protected_keys.length) fail('RETENTION_INVENTORY_INVALID');
 }
 
 function plan(inventoryReceipt, policyValue, protectedKeysValue, referenceSetValue) {
   validateInventory(inventoryReceipt);
   const policy = normalizePolicy(policyValue), manualKeys = normalizeProtectedKeys(protectedKeysValue || []);
   const referenceBinding = normalizeReferenceBinding(referenceSetValue, inventoryReceipt.root_fingerprint);
-  const protectedKeys = Array.from(new Set(manualKeys.concat(referenceBinding.discovered_keys))).sort(), protectedSet = new Set(protectedKeys);
+  const leaseBinding = normalizeLeaseBinding(inventoryReceipt.lease_set, inventoryReceipt.root_fingerprint);
+  const referenceProtectedKeys = Array.from(new Set(manualKeys.concat(referenceBinding.discovered_keys))).sort();
+  const protectedKeys = Array.from(new Set(referenceProtectedKeys.concat(leaseBinding.protected_keys))).sort(), protectedSet = new Set(protectedKeys);
   const inventoryByKey = new Map(inventoryReceipt.entries.map((entry) => [entry.key, entry]));
-  const absentKeys = protectedKeys.filter((key) => !inventoryByKey.has(key));
+  const absentKeys = referenceProtectedKeys.filter((key) => !inventoryByKey.has(key));
   const mismatchedKeys = referenceBinding.entry_bindings.filter((binding) => inventoryByKey.has(binding.key) && inventoryByKey.get(binding.key).entry_digest !== binding.entry_digest).map((binding) => binding.key);
   const proposal = {
     schema: PROPOSAL_SCHEMA,
@@ -252,7 +294,7 @@ function plan(inventoryReceipt, policyValue, protectedKeysValue, referenceSetVal
     references: {
       manual_keys: manualKeys,
       discovered_keys: referenceBinding.discovered_keys,
-      protected_keys: protectedKeys,
+      protected_keys: referenceProtectedKeys,
       entry_bindings: referenceBinding.entry_bindings,
       absent_keys: absentKeys,
       mismatched_keys: mismatchedKeys,
@@ -264,6 +306,17 @@ function plan(inventoryReceipt, policyValue, protectedKeysValue, referenceSetVal
       reference_scan_budget: referenceBinding.scan_budget,
       reference_root_overlap: referenceBinding.root_overlap
     },
+    leases: {
+      lease_set_status: leaseBinding.status,
+      lease_set_digest: leaseBinding.digest,
+      lease_set_snapshot_digest: leaseBinding.snapshot_digest,
+      lease_root_fingerprint: leaseBinding.root_fingerprint,
+      lease_observed_at_ms: leaseBinding.observed_at_ms,
+      lease_scan_budget: leaseBinding.scan_budget,
+      protected_keys: leaseBinding.protected_keys,
+      active_lease_count: leaseBinding.active_lease_count,
+      lease_root_mismatch: leaseBinding.root_mismatch
+    },
     usage_before: Codec.clone(inventoryReceipt.usage),
     candidates: [],
     protected: [],
@@ -271,7 +324,7 @@ function plan(inventoryReceipt, policyValue, protectedKeysValue, referenceSetVal
     application_allowed: false,
     authority: { read_only: true, deletion: false, explicit_approval_required: true, installed: false, promoted: false, canon: false }
   };
-  if (inventoryReceipt.status !== 'COMPLETE' || (referenceBinding.status !== null && referenceBinding.status !== 'COMPLETE') || referenceBinding.root_overlap || mismatchedKeys.length) {
+  if (inventoryReceipt.status !== 'COMPLETE' || (referenceBinding.status !== null && referenceBinding.status !== 'COMPLETE') || referenceBinding.root_overlap || mismatchedKeys.length || leaseBinding.status !== 'COMPLETE' || leaseBinding.root_mismatch) {
     proposal.status = 'HELD';
     return Codec.seal(proposal);
   }
@@ -281,7 +334,11 @@ function plan(inventoryReceipt, policyValue, protectedKeysValue, referenceSetVal
   for (const entry of ordered) {
     const age = Math.max(0, observedAt - entry.observed_mtime_ms);
     if (protectedSet.has(entry.key)) {
-      proposal.protected.push({ key: entry.key, entry_digest: entry.entry_digest, logical_bytes: entry.logical_bytes, filesystem_age_ms: age });
+      const sources = [];
+      if (manualKeys.includes(entry.key)) sources.push('MANUAL');
+      if (referenceBinding.discovered_keys.includes(entry.key)) sources.push('SEALED_RUN_EVIDENCE');
+      if (leaseBinding.protected_keys.includes(entry.key)) sources.push('ACTIVE_CACHE_LEASE');
+      proposal.protected.push({ key: entry.key, entry_digest: entry.entry_digest, logical_bytes: entry.logical_bytes, filesystem_age_ms: age, sources });
       continue;
     }
     if (age > policy.max_filesystem_age_ms) selected.set(entry.key, ['FILESYSTEM_AGE']);
@@ -313,7 +370,7 @@ function plan(inventoryReceipt, policyValue, protectedKeysValue, referenceSetVal
   return Codec.seal(proposal);
 }
 
-function applicationReceipt(proposalDigest, approvedDigest, status, explicit, outcomes, usageAfter, policySatisfied, recordedAtValue, referenceSnapshotValue) {
+function applicationReceipt(proposalDigest, approvedDigest, status, explicit, outcomes, usageAfter, policySatisfied, recordedAtValue, referenceSnapshotValue, leaseSnapshotValue) {
   const recordedAt = recordedAtValue == null ? Date.now() : recordedAtValue;
   if (!finiteInteger(recordedAt)) fail('RETENTION_APPLICATION_TIME_INVALID');
   return Codec.seal({
@@ -325,6 +382,7 @@ function applicationReceipt(proposalDigest, approvedDigest, status, explicit, ou
     explicit: explicit === true,
     recorded_at_ms: recordedAt,
     reference_snapshot_digest: referenceSnapshotValue || null,
+    lease_snapshot_digest: leaseSnapshotValue || null,
     outcomes: outcomes || [],
     usage_after: usageAfter || null,
     policy_satisfied: policySatisfied === true,
@@ -348,7 +406,12 @@ function validateProposal(proposal) {
   if (hasReferenceSet) {
     if (!DIGEST.test(String(references.reference_set_digest || '')) || !DIGEST.test(String(references.reference_set_snapshot_digest || '')) || !DIGEST.test(String(references.reference_root_fingerprint || '')) || !finiteInteger(references.reference_observed_at_ms) || !references.reference_scan_budget || !Number.isInteger(references.reference_scan_budget.max_directory_entries) || !Number.isInteger(references.reference_scan_budget.max_runs) || !Number.isInteger(references.reference_scan_budget.max_receipts) || !Number.isSafeInteger(references.reference_scan_budget.max_ledger_bytes) || !Number.isInteger(references.reference_scan_budget.max_checkpoints) || !Number.isSafeInteger(references.reference_scan_budget.max_checkpoint_ledger_bytes) || !['COMPLETE', 'REVIEW_REQUIRED', 'LIMIT_EXCEEDED'].includes(references.reference_set_status)) fail('RETENTION_PROPOSAL_REFERENCE_BINDING_INVALID');
   } else if (references.reference_set_status !== null || references.reference_set_snapshot_digest !== null || references.reference_root_fingerprint !== null || references.reference_observed_at_ms !== null || references.reference_scan_budget !== null || discoveredKeys.length || references.entry_bindings.length || mismatchedKeys.length) fail('RETENTION_PROPOSAL_REFERENCE_BINDING_INVALID');
+  const leases = proposal.leases;
+  if (!leases || !['COMPLETE', 'REVIEW_REQUIRED', 'LIMIT_EXCEEDED'].includes(leases.lease_set_status) || !DIGEST.test(String(leases.lease_set_digest || '')) || !DIGEST.test(String(leases.lease_set_snapshot_digest || '')) || !DIGEST.test(String(leases.lease_root_fingerprint || '')) || !finiteInteger(leases.lease_observed_at_ms) || !leases.lease_scan_budget || !Number.isInteger(leases.lease_scan_budget.max_directory_entries) || !Number.isInteger(leases.lease_scan_budget.max_ledgers) || !Number.isInteger(leases.lease_scan_budget.max_events) || !Number.isSafeInteger(leases.lease_scan_budget.max_bytes) || !Array.isArray(leases.protected_keys) || !finiteInteger(leases.active_lease_count) || typeof leases.lease_root_mismatch !== 'boolean') fail('RETENTION_PROPOSAL_LEASE_BINDING_INVALID');
+  const leasedKeys = normalizeProtectedKeys(leases.protected_keys);
+  if (Codec.canonical(leasedKeys) !== Codec.canonical(leases.protected_keys)) fail('RETENTION_PROPOSAL_LEASE_BINDING_INVALID');
   if (!Array.isArray(proposal.candidates) || proposal.candidates.some((item) => !item || !DIGEST.test(String(item.key || '')) || !DIGEST.test(String(item.entry_digest || '')) || !finiteInteger(item.logical_bytes) || !finiteInteger(item.observed_mtime_ms))) fail('RETENTION_PROPOSAL_CANDIDATES_INVALID');
+  if (proposal.candidates.some((item) => leasedKeys.includes(item.key))) fail('RETENTION_PROPOSAL_LEASED_CANDIDATE');
 }
 
 function apply(options) {
@@ -360,9 +423,15 @@ function apply(options) {
   if (options.explicit !== true) return applicationReceipt(proposal.digest, options.approvedDigest, 'NOT_APPROVED', false, [], null, false, recordedAt, null);
   if (options.approvedDigest !== proposal.digest) return applicationReceipt(proposal.digest, options.approvedDigest, 'APPROVAL_MISMATCH', true, [], null, false, recordedAt, null);
   if (!proposal.application_allowed) return applicationReceipt(proposal.digest, options.approvedDigest, 'PROPOSAL_NOT_APPLICABLE', true, [], proposal.usage_before, proposal.predicted_after.policy_satisfied, recordedAt, null);
+  if (rootFingerprint(ArtifactCache.locate(options).root) !== proposal.root_fingerprint) return applicationReceipt(proposal.digest, options.approvedDigest, 'STALE', true, [], null, false, recordedAt, null, null);
+  if (recordedAt < proposal.leases.lease_observed_at_ms) return applicationReceipt(proposal.digest, options.approvedDigest, 'LEASES_STALE', true, [], null, false, recordedAt, null, null);
+  let currentLeases;
+  try { currentLeases = CacheLeases.discover(leaseDiscoveryOptions(options, recordedAt, proposal.leases.lease_scan_budget)); }
+  catch (_) { return applicationReceipt(proposal.digest, options.approvedDigest, 'LEASES_STALE', true, [], null, false, recordedAt, null, null); }
+  if (currentLeases.status !== 'COMPLETE' || currentLeases.cache_root_fingerprint !== proposal.leases.lease_root_fingerprint || currentLeases.snapshot_digest !== proposal.leases.lease_set_snapshot_digest) return applicationReceipt(proposal.digest, options.approvedDigest, 'LEASES_STALE', true, [], null, false, recordedAt, null, currentLeases.snapshot_digest);
   let currentReferences = null;
   if (proposal.references.reference_set_digest !== null) {
-    if (!options.referenceJobRoot) return applicationReceipt(proposal.digest, options.approvedDigest, 'REFERENCES_REQUIRED', true, [], null, false, recordedAt, null);
+    if (!options.referenceJobRoot) return applicationReceipt(proposal.digest, options.approvedDigest, 'REFERENCES_REQUIRED', true, [], null, false, recordedAt, null, currentLeases.snapshot_digest);
     try {
       currentReferences = CacheReferences.discover({
         jobRoot: options.referenceJobRoot,
@@ -376,36 +445,56 @@ function apply(options) {
         scanMaxCheckpointLedgerBytes: proposal.references.reference_scan_budget.max_checkpoint_ledger_bytes
       });
     } catch (_) {
-      return applicationReceipt(proposal.digest, options.approvedDigest, 'REFERENCES_STALE', true, [], null, false, recordedAt, null);
+      return applicationReceipt(proposal.digest, options.approvedDigest, 'REFERENCES_STALE', true, [], null, false, recordedAt, null, currentLeases.snapshot_digest);
     }
-    if (currentReferences.status !== 'COMPLETE' || currentReferences.job_root_fingerprint !== proposal.references.reference_root_fingerprint || currentReferences.snapshot_digest !== proposal.references.reference_set_snapshot_digest || currentReferences.digest !== proposal.references.reference_set_digest) return applicationReceipt(proposal.digest, options.approvedDigest, 'REFERENCES_STALE', true, [], null, false, recordedAt, currentReferences.snapshot_digest);
-  } else if (options.referenceJobRoot) return applicationReceipt(proposal.digest, options.approvedDigest, 'PROPOSAL_NOT_REPRODUCIBLE', true, [], null, false, recordedAt, null);
+    if (currentReferences.status !== 'COMPLETE' || currentReferences.job_root_fingerprint !== proposal.references.reference_root_fingerprint || currentReferences.snapshot_digest !== proposal.references.reference_set_snapshot_digest || currentReferences.digest !== proposal.references.reference_set_digest) return applicationReceipt(proposal.digest, options.approvedDigest, 'REFERENCES_STALE', true, [], null, false, recordedAt, currentReferences.snapshot_digest, currentLeases.snapshot_digest);
+  } else if (options.referenceJobRoot) return applicationReceipt(proposal.digest, options.approvedDigest, 'PROPOSAL_NOT_REPRODUCIBLE', true, [], null, false, recordedAt, null, currentLeases.snapshot_digest);
   const current = inventory(Object.assign({}, options, {
     nowMs: proposal.inventory_observed_at_ms,
+    leaseNowMs: proposal.leases.lease_observed_at_ms,
     scanMaxEntries: proposal.inventory_scan_budget.max_entries,
-    scanMaxFiles: proposal.inventory_scan_budget.max_files
+    scanMaxFiles: proposal.inventory_scan_budget.max_files,
+    leaseScanMaxDirectoryEntries: proposal.leases.lease_scan_budget.max_directory_entries,
+    leaseScanMaxLedgers: proposal.leases.lease_scan_budget.max_ledgers,
+    leaseScanMaxEvents: proposal.leases.lease_scan_budget.max_events,
+    leaseScanMaxBytes: proposal.leases.lease_scan_budget.max_bytes
   }));
   const referenceSnapshot = currentReferences && currentReferences.snapshot_digest;
-  if (current.status !== 'COMPLETE' || current.root_fingerprint !== proposal.root_fingerprint || current.snapshot_digest !== proposal.inventory_snapshot_digest) return applicationReceipt(proposal.digest, options.approvedDigest, 'STALE', true, [], current.usage, false, recordedAt, referenceSnapshot);
-  if (current.digest !== proposal.inventory_digest) return applicationReceipt(proposal.digest, options.approvedDigest, 'STALE', true, [], current.usage, false, recordedAt, referenceSnapshot);
+  if (current.status !== 'COMPLETE' || current.root_fingerprint !== proposal.root_fingerprint || current.snapshot_digest !== proposal.inventory_snapshot_digest) return applicationReceipt(proposal.digest, options.approvedDigest, 'STALE', true, [], current.usage, false, recordedAt, referenceSnapshot, currentLeases.snapshot_digest);
+  if (current.digest !== proposal.inventory_digest) return applicationReceipt(proposal.digest, options.approvedDigest, 'STALE', true, [], current.usage, false, recordedAt, referenceSnapshot, currentLeases.snapshot_digest);
   const reproduced = plan(current, proposal.policy, proposal.references.manual_keys, currentReferences);
-  if (reproduced.digest !== proposal.digest) return applicationReceipt(proposal.digest, options.approvedDigest, 'PROPOSAL_NOT_REPRODUCIBLE', true, [], current.usage, false, recordedAt, referenceSnapshot);
+  if (reproduced.digest !== proposal.digest) return applicationReceipt(proposal.digest, options.approvedDigest, 'PROPOSAL_NOT_REPRODUCIBLE', true, [], current.usage, false, recordedAt, referenceSnapshot, currentLeases.snapshot_digest);
   const currentByKey = new Map(current.entries.map((entry) => [entry.key, entry]));
   for (const candidate of proposal.candidates) {
     const observed = currentByKey.get(candidate.key);
-    if (!observed || observed.entry_digest !== candidate.entry_digest || observed.logical_bytes !== candidate.logical_bytes || observed.observed_mtime_ms !== candidate.observed_mtime_ms) return applicationReceipt(proposal.digest, options.approvedDigest, 'STALE', true, [], current.usage, false, recordedAt, referenceSnapshot);
+    if (!observed || observed.entry_digest !== candidate.entry_digest || observed.logical_bytes !== candidate.logical_bytes || observed.observed_mtime_ms !== candidate.observed_mtime_ms) return applicationReceipt(proposal.digest, options.approvedDigest, 'STALE', true, [], current.usage, false, recordedAt, referenceSnapshot, currentLeases.snapshot_digest);
   }
   const cache = ArtifactCache.open(options), outcomes = [];
+  let haltStatus = null, leaseSnapshot = currentLeases.snapshot_digest;
   for (const candidate of proposal.candidates) {
-    const result = cache.invalidate(candidate.key, { explicit: true });
+    let result;
+    try {
+      CacheLeases.withKeyLock(options, candidate.key, () => {
+        const guarded = CacheLeases.discover(leaseDiscoveryOptions(options, recordedAt, proposal.leases.lease_scan_budget));
+        leaseSnapshot = guarded.snapshot_digest;
+        if (guarded.status !== 'COMPLETE' || guarded.cache_root_fingerprint !== proposal.leases.lease_root_fingerprint || guarded.snapshot_digest !== proposal.leases.lease_set_snapshot_digest || guarded.protected_keys.includes(candidate.key)) fail('RETENTION_LEASES_CHANGED_DURING_APPLY');
+        result = cache.invalidate(candidate.key, { explicit: true });
+      });
+    } catch (error) {
+      if (error instanceof CacheLeases.LeaseError && error.code === 'CACHE_LEASE_COORDINATION_BUSY') haltStatus = 'LEASE_COORDINATION_BUSY';
+      else if (error instanceof RetentionError && error.code === 'RETENTION_LEASES_CHANGED_DURING_APPLY') haltStatus = 'LEASES_STALE';
+      else throw error;
+      outcomes.push({ key: candidate.key, entry_digest: candidate.entry_digest, classification: 'TEMPORARY_CAPTURE', status: haltStatus, entry_removed: false, invalidation_receipt_digest: null });
+      break;
+    }
     outcomes.push({ key: candidate.key, entry_digest: candidate.entry_digest, classification: 'TEMPORARY_CAPTURE', status: result.status, entry_removed: result.entry_removed === true, invalidation_receipt_digest: result.digest });
     if (result.status !== 'REMOVED') break;
   }
-  const after = inventory(options), afterPlan = plan(after, proposal.policy, proposal.references.manual_keys, currentReferences);
+  const after = inventory(Object.assign({}, options, { nowMs: recordedAt, leaseNowMs: recordedAt })), afterPlan = plan(after, proposal.policy, proposal.references.manual_keys, currentReferences);
   const allRemoved = outcomes.length === proposal.candidates.length && outcomes.every((item) => item.entry_removed);
   const policySatisfied = after.status === 'COMPLETE' && afterPlan.predicted_after.policy_satisfied && afterPlan.candidates.length === 0;
-  const status = allRemoved ? (policySatisfied ? 'APPLIED' : 'APPLIED_WITH_LIMITS') : 'PARTIAL';
-  return applicationReceipt(proposal.digest, options.approvedDigest, status, true, outcomes, after.usage, policySatisfied, recordedAt, referenceSnapshot);
+  const status = allRemoved ? (policySatisfied ? 'APPLIED' : 'APPLIED_WITH_LIMITS') : outcomes.some((item) => item.entry_removed) ? 'PARTIAL' : haltStatus || 'PARTIAL';
+  return applicationReceipt(proposal.digest, options.approvedDigest, status, true, outcomes, after.usage, policySatisfied, recordedAt, referenceSnapshot, leaseSnapshot);
 }
 
 module.exports = {

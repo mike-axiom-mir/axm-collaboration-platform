@@ -1,0 +1,15 @@
+{
+  "schema": "axm.capability-requirements/v1",
+  "subject": "game-production-runner in-flight artifact-cache leases",
+  "requirements": [
+    { "id": "lease-history-is-sealed-and-append-only", "capabilities": ["cache.production.lease.ledger"], "required": true, "gapType": "CONTRACT" },
+    { "id": "lease-owner-and-session-continuity-is-exact", "capabilities": ["cache.production.lease.owner-session-binding"], "required": true, "gapType": "CONTRACT" },
+    { "id": "lease-deadline-is-bounded-without-background-load", "capabilities": ["cache.production.lease.bounded-deadline"], "required": true, "gapType": "SUBSTRATE" },
+    { "id": "crash-protection-expires-and-recovers", "capabilities": ["cache.production.lease.crash-recovery"], "required": true, "gapType": "EVIDENCE" },
+    { "id": "runner-protects-before-cache-use-and-releases-after-anchor", "capabilities": ["cache.production.lease.runner-lifecycle"], "required": true, "gapType": "AUTHORITY" },
+    { "id": "lease-discovery-is-bounded-private-and-fail-closed", "capabilities": ["cache.production.lease.discovery"], "required": true, "gapType": "HAND" },
+    { "id": "retention-planning-and-apply-rescan-active-leases", "capabilities": ["cache.production.retention.lease-binding"], "required": true, "gapType": "AUTHORITY" },
+    { "id": "runner-protection-and-retention-deletion-are-key-coordinated", "capabilities": ["cache.production.retention.key-coordination"], "required": true, "gapType": "CONTRACT" },
+    { "id": "checkpoint-evidence-takes-over-after-lease-release", "capabilities": ["cache.production.lease.checkpoint-handoff"], "required": true, "gapType": "EVIDENCE" }
+  ]
+}

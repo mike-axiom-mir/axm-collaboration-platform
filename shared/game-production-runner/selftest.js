@@ -64,6 +64,21 @@ function publishCacheInChild(payload) {
   });
 }
 
+function protectLeaseInChild(payload) {
+  const source = [
+    "'use strict';",
+    "const payload=JSON.parse(Buffer.from(process.env.AXM_CACHE_LEASE_PAYLOAD,'base64').toString('utf8'));",
+    "const Leases=require(payload.module);",
+    "const session=Leases.acquire(payload.options);",
+    "const event=session.protect(payload.key,payload.protectAt);",
+    "process.stdout.write(JSON.stringify(event));"
+  ].join('\n');
+  const environment = Object.assign({}, process.env, { AXM_CACHE_LEASE_PAYLOAD: Buffer.from(JSON.stringify(payload), 'utf8').toString('base64') });
+  const child = childProcess.spawnSync(process.execPath, ['-e', source], { encoding: 'utf8', windowsHide: true, env: environment });
+  if (child.status !== 0) throw new Error('cache lease child failed: ' + child.stderr);
+  return JSON.parse(child.stdout);
+}
+
 function resealGraph(spec) {
   spec.graph.nodes = spec.packages.map((pkg) => ({ package_id: pkg.id, package_digest: pkg.digest }));
   spec.graph = Core.canonical.seal(spec.graph);
@@ -364,8 +379,23 @@ async function main() {
     const draftBytes = fs.readFileSync(path.join(documents.runDir, draftReceipt.outputs[0].run_relative_path), 'utf8');
     equal(draftBytes, renderedDocumentBrief, 'written draft bytes match the deterministic rendering');
 
+    const verifierTimeoutSpec = Core.canonical.clone(documentSpec);
+    verifierTimeoutSpec.packages[0].resource_budget.timeout_ms = 25;
+    verifierTimeoutSpec.packages[0].repair_policy.max_attempts = 1;
+    verifierTimeoutSpec.packages[0] = Core.canonical.seal(verifierTimeoutSpec.packages[0]);
+    resealGraph(verifierTimeoutSpec);
+    const verifierTimeoutRegistry = Core.documentRegistry.create();
+    verifierTimeoutRegistry.verifiers[0].verify = () => new Promise(() => {});
+    const verifierTimeoutPlan = Core.portable.compile(verifierTimeoutSpec, verifierTimeoutRegistry.inventory);
+    const verifierTimeoutRun = await Core.portable.run({ spec: verifierTimeoutSpec, plan: verifierTimeoutPlan, executors: verifierTimeoutRegistry.executors, verifiers: verifierTimeoutRegistry.verifiers, jobRoot: path.join(temporary, 'verifier-timeout-runs'), cacheRoot: path.join(temporary, 'verifier-timeout-cache'), sourceRoot, runId: 'verifier-timeout-run', confirmation: Core.portable.START_CONFIRMATION, clock: clock() });
+    const verifierTimeoutReceipt = JSON.parse(lines(path.join(verifierTimeoutRun.runDir, 'step-receipts.jsonl'))[0]);
+    ok(verifierTimeoutRun.state.state === 'FAILED' && verifierTimeoutReceipt.detail === 'verifier exceeded cooperative timeout' && verifierTimeoutRun.cacheLeaseRelease.event === 'RELEASED', 'verifier work is cooperatively bounded and a timed-out terminal run releases its protected cache lease after evidence');
+
     const cacheEntrySchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-entry.schema.json'), 'utf8'));
+    const cacheLeaseEventSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-lease-event.schema.json'), 'utf8'));
+    const cacheLeaseSetSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-lease-set.schema.json'), 'utf8'));
     equal(cacheEntrySchema.$id, Core.artifactCache.ENTRY_SCHEMA, 'tracked artifact cache schema matches the runtime contract');
+    equal([cacheLeaseEventSchema.$id, cacheLeaseSetSchema.$id], [Core.cacheLeases.EVENT_SCHEMA, Core.cacheLeases.SET_SCHEMA], 'tracked cache lease schemas match the runtime contracts');
     const cacheRunsRoot = path.join(temporary, 'cache-runs');
     const cacheRoot = path.join(temporary, 'artifact-cache');
     const cachedRegistry = Core.documentRegistry.create();
@@ -381,6 +411,43 @@ async function main() {
     equal(cacheVerifications, 3, 'cold cache independently verifies every produced package');
     ok(cacheMissLedger.every((receipt) => receipt.cache.state === 'MISS_STORED' && receipt.process.executor_invoked === true), 'cold run atomically stores every exact verified miss');
     ok(cacheMissLedger.every((receipt) => Core.stepReceipts.validate(receipt, Core.portable.SCHEMAS.step).length === 0), 'cache miss receipts satisfy the neutral step contract');
+    ok(cacheMissRun.cacheLeaseRelease && cacheMissRun.cacheLeaseRelease.event === 'RELEASED' && cacheMissRun.internal.cache_lease_release_digest === cacheMissRun.cacheLeaseRelease.digest, 'terminal portable run releases its exact cache lease only after sealing terminal evidence');
+    const terminalLeaseSet = Core.cacheLeases.discover({ cacheRoot, sourceRoot, jobRoot: cacheRunsRoot, nowMs: Date.now() });
+    ok(Core.cacheLeases.validateSet(terminalLeaseSet).length === 0 && terminalLeaseSet.usage.released === 1 && terminalLeaseSet.leases[0].key_count === 3 && terminalLeaseSet.leases[0].generation === 5 && terminalLeaseSet.protected_keys.length === 0, 'runner protects each exact cache key before use and leaves an auditable non-protective terminal release');
+    ok(!/[A-Za-z]:\\/.test(JSON.stringify(terminalLeaseSet)) && !JSON.stringify(terminalLeaseSet).includes('cache-miss-run'), 'lease discovery discloses owner digests without local paths or private run identifiers');
+    const crashProtectedKey = cacheMissLedger[0].cache.key;
+    const leaseCrashRoot = path.join(temporary, 'lease-crash-cache'), leaseCrashJobs = path.join(temporary, 'lease-crash-jobs');
+    fs.mkdirSync(leaseCrashJobs);
+    Core.artifactCache.open({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs });
+    const leaseCrashOptions = { cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, runId: 'crashed-lease-run', planDigest: 'c'.repeat(64), startedAt: 'crashed-run-start', durationMs: 1000, nowMs: 20000000 };
+    const childLeaseEvent = protectLeaseInChild({ module: require.resolve('./artifact-cache-lease'), options: leaseCrashOptions, key: crashProtectedKey, protectAt: 20000001 });
+    ok(childLeaseEvent.event === 'PROTECTED' && childLeaseEvent.generation === 2, 'fresh child process persists active lease protection before exiting without release');
+    const liveCrashLeaseSet = Core.cacheLeases.discover({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 20000500 });
+    ok(liveCrashLeaseSet.status === 'COMPLETE' && liveCrashLeaseSet.protected_keys[0] === crashProtectedKey && liveCrashLeaseSet.usage.active === 1, 'crashed process lease remains protective only inside its bounded expiry window');
+    const expiredCrashLeaseSet = Core.cacheLeases.discover({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 20002000 });
+    ok(expiredCrashLeaseSet.usage.expired === 1 && expiredCrashLeaseSet.protected_keys.length === 0 && expiredCrashLeaseSet.snapshot_digest === liveCrashLeaseSet.snapshot_digest, 'expiry removes protection without rewriting the append-only lease evidence snapshot');
+    equal(Core.cacheLeases.discover({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 20000500, scanMaxEvents: 1 }).status, 'LIMIT_EXCEEDED', 'lease discovery enforces its aggregate event ceiling');
+    equal(Core.cacheLeases.discover({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 20000500, scanMaxBytes: 1 }).status, 'LIMIT_EXCEEDED', 'lease discovery enforces its aggregate byte ceiling');
+    const recoveredLease = Core.cacheLeases.acquire(Object.assign({}, leaseCrashOptions, { nowMs: 20002000 }));
+    ok(recoveredLease.event.event === 'RENEWED' && recoveredLease.event.generation === 3 && recoveredLease.event.keys[0] === crashProtectedKey, 'resume renews the crashed owner binding and preserves every previously protected key');
+    const recoveredLeaseSet = Core.cacheLeases.discover({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 20002001 });
+    equal(recoveredLeaseSet.protected_keys, [crashProtectedKey], 'crash recovery restores active protection from the same append-only ledger');
+    const supersedingLease = Core.cacheLeases.acquire(Object.assign({}, leaseCrashOptions, { nowMs: 20002001 }));
+    throws(() => recoveredLease.protect('d'.repeat(64), 20002002), /CACHE_LEASE_SESSION_STALE/, 'new recovery session fences an older same-run session before it can add keys');
+    const supersedingRelease = supersedingLease.release(20002003);
+    ok(supersedingRelease.event === 'RELEASED' && supersedingRelease.generation === 5, 'superseding session appends an exact release event');
+    throws(() => Core.cacheLeases.duration(Core.cacheLeases.MAX_DURATION_MS + 1), /CACHE_LEASE_DURATION_INVALID/, 'lease duration cannot silently exceed its seven-day resource ceiling');
+    equal(Core.cacheLeases.durationForPackages([{ id: 'budgeted', resource_budget: { timeout_ms: 1000 }, repair_policy: { max_attempts: 2 } }], { steps: {}, attempts: {} }), 426000, 'lease budget covers cache-hit verification plus executor and verifier fallback for every remaining attempt');
+    const tamperedLeaseRoot = path.join(temporary, 'tampered-lease-cache');
+    fs.cpSync(leaseCrashRoot, tamperedLeaseRoot, { recursive: true });
+    const tamperedLeaseFile = path.join(tamperedLeaseRoot, 'leases', fs.readdirSync(path.join(tamperedLeaseRoot, 'leases'))[0]);
+    const tamperedLeaseLines = lines(tamperedLeaseFile), tamperedLeaseTail = JSON.parse(tamperedLeaseLines[tamperedLeaseLines.length - 1]);
+    tamperedLeaseTail.expires_at_ms += 1;
+    tamperedLeaseLines[tamperedLeaseLines.length - 1] = JSON.stringify(tamperedLeaseTail);
+    fs.writeFileSync(tamperedLeaseFile, tamperedLeaseLines.join('\n') + '\n');
+    const tamperedLeaseSet = Core.cacheLeases.discover({ cacheRoot: tamperedLeaseRoot, sourceRoot, nowMs: 20002004 });
+    ok(tamperedLeaseSet.status === 'REVIEW_REQUIRED' && !tamperedLeaseSet.authority.protection_granted, 'tampered lease ledger holds the aggregate set instead of granting or silently dropping protection');
+    equal(Core.cacheRetention.inventory({ cacheRoot: tamperedLeaseRoot, sourceRoot, nowMs: 20002004 }).status, 'REVIEW_REQUIRED', 'retention inherits malformed lease evidence as a no-delete review hold');
     const cacheHandle = Core.artifactCache.open({ cacheRoot, sourceRoot, jobRoot: cacheRunsRoot });
     const firstCacheKey = cacheMissLedger[0].cache.key;
     const firstEntryRoot = path.join(cacheRoot, 'entries', firstCacheKey.slice(0, 2), firstCacheKey);
@@ -399,6 +466,7 @@ async function main() {
     const cacheCheckpointRun = await Core.portable.run(Object.assign({}, cachedRunOptions, { jobRoot: cacheCheckpointRunsRoot, runId: 'cache-checkpoint-run', maxSteps: 1, clock: clock() }));
     const cacheCheckpointLedger = lines(path.join(cacheCheckpointRun.runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line));
     ok(cacheCheckpointRun.state.state === 'INTERRUPTED' && cacheCheckpointLedger.length === 1 && cacheCheckpointLedger[0].cache.state === 'HIT', 'warm cached production can stop at an exact checkpointed reference boundary');
+    ok(cacheCheckpointRun.cacheLeaseRelease.event === 'RELEASED' && cacheCheckpointRun.checkpointReceipt.digest, 'graceful interruption seals its checkpoint before releasing in-flight cache protection');
 
     const intermittentRegistry = Core.documentRegistry.create();
     const intermittentExecute = intermittentRegistry.executors[0].execute;
@@ -576,6 +644,7 @@ async function main() {
     const checkpointBoundCacheInventory = Core.cacheRetention.inventory({ cacheRoot, sourceRoot, jobRoot: cacheCheckpointRunsRoot, nowMs: 10000000 });
     const checkpointBoundCachePlan = Core.cacheRetention.plan(checkpointBoundCacheInventory, { max_entries: 2, max_logical_bytes: checkpointBoundCacheInventory.usage.logical_bytes, max_filesystem_age_ms: 999999999 }, [], cacheCheckpointReferences);
     ok(checkpointBoundCachePlan.status === 'READY' && checkpointBoundCachePlan.references.mismatched_keys.length === 0 && checkpointBoundCachePlan.protected[0].key === cacheCheckpointReferences.protected_keys[0], 'retention accepts an exact checkpoint-derived entry binding and excludes it from deletion candidates');
+    ok(checkpointBoundCacheInventory.lease_set.protected_keys.length === 0 && checkpointBoundCachePlan.protected[0].sources.includes('SEALED_RUN_EVIDENCE'), 'released in-flight lease hands protection to the sealed checkpoint without overlapping mutable authority');
     const missingReferenceRoot = path.join(temporary, 'missing-reference-root');
     const missingReferences = Core.cacheReferences.discover({ jobRoot: missingReferenceRoot, sourceRoot, nowMs: 10000000 });
     ok(missingReferences.status === 'REVIEW_REQUIRED' && !missingReferences.authority.protection_granted && !fs.existsSync(missingReferenceRoot), 'missing reference root is a sealed non-authoritative no-op');
@@ -654,6 +723,31 @@ async function main() {
     ok(retentionReferences.status === 'COMPLETE' && retentionReferences.authority.protection_granted && Core.cacheReferences.validate(retentionReferences).length === 0, 'one fully sealed terminal ledger grants a bounded cache protection reference set');
     equal(retentionReferences.protected_keys, [protectedKey], 'the derived reference set protects only the exact verified cache key');
     const retentionOptions = { cacheRoot: retentionRoot, sourceRoot, jobRoot: retentionJobs, nowMs: retentionNow };
+    const leaseRaceRoot = path.join(temporary, 'lease-retention-race-cache'), leaseRaceJobs = path.join(temporary, 'lease-retention-race-jobs');
+    fs.mkdirSync(leaseRaceJobs);
+    const leaseRaceHandle = Core.artifactCache.open({ cacheRoot: leaseRaceRoot, sourceRoot, jobRoot: leaseRaceJobs });
+    const leaseRaceStore = leaseRaceHandle.publish(firstPackage, [], 'lease-retention-race', retentionProduced);
+    const leaseRaceNow = 30000000, leaseRaceEntry = path.join(leaseRaceRoot, 'entries', leaseRaceStore.key.slice(0, 2), leaseRaceStore.key);
+    setTreeMtime(leaseRaceEntry, leaseRaceNow - 10000);
+    const leaseRaceOptions = { cacheRoot: leaseRaceRoot, sourceRoot, jobRoot: leaseRaceJobs, nowMs: leaseRaceNow };
+    const leaseRacePolicy = { max_entries: 0, max_logical_bytes: 0, max_filesystem_age_ms: 999999999 };
+    const beforeLeaseInventory = Core.cacheRetention.inventory(leaseRaceOptions);
+    const beforeLeaseProposal = Core.cacheRetention.plan(beforeLeaseInventory, leaseRacePolicy, []);
+    equal(beforeLeaseProposal.candidates.map((item) => item.key), [leaseRaceStore.key], 'unleased retention fixture begins as one exact deletion candidate');
+    const activeRetentionLease = Core.cacheLeases.acquire({ cacheRoot: leaseRaceRoot, sourceRoot, jobRoot: leaseRaceJobs, runId: 'active-retention-run', planDigest: 'e'.repeat(64), startedAt: 'active-retention-start', durationMs: 10000, nowMs: leaseRaceNow + 1 });
+    activeRetentionLease.protect(leaseRaceStore.key, leaseRaceNow + 2);
+    const leasedInventory = Core.cacheRetention.inventory(Object.assign({}, leaseRaceOptions, { nowMs: leaseRaceNow + 3 }));
+    const leasedProposal = Core.cacheRetention.plan(leasedInventory, leaseRacePolicy, []);
+    ok(leasedInventory.lease_set.protected_keys[0] === leaseRaceStore.key && leasedProposal.candidates.length === 0 && leasedProposal.protected[0].sources.includes('ACTIVE_CACHE_LEASE'), 'retention planning excludes an exact active leased key and records its protection source');
+    const staleLeaseApplication = Core.cacheRetention.apply(Object.assign({}, leaseRaceOptions, { nowMs: leaseRaceNow + 3, proposal: beforeLeaseProposal, approvedDigest: beforeLeaseProposal.digest, explicit: true }));
+    ok(staleLeaseApplication.status === 'LEASES_STALE' && !staleLeaseApplication.authority.deletion_performed && fs.existsSync(leaseRaceEntry), 'lease acquired after planning invalidates approval before any deletion');
+    activeRetentionLease.release(leaseRaceNow + 4);
+    const releasedLeaseInventory = Core.cacheRetention.inventory(Object.assign({}, leaseRaceOptions, { nowMs: leaseRaceNow + 5 }));
+    const releasedLeaseProposal = Core.cacheRetention.plan(releasedLeaseInventory, leaseRacePolicy, []);
+    const busyLeaseApplication = Core.cacheLeases.withKeyLock({ cacheRoot: leaseRaceRoot, sourceRoot, jobRoot: leaseRaceJobs }, leaseRaceStore.key, () => Core.cacheRetention.apply(Object.assign({}, leaseRaceOptions, { nowMs: leaseRaceNow + 5, proposal: releasedLeaseProposal, approvedDigest: releasedLeaseProposal.digest, explicit: true })));
+    ok(busyLeaseApplication.status === 'LEASE_COORDINATION_BUSY' && !busyLeaseApplication.authority.deletion_performed && fs.existsSync(leaseRaceEntry), 'held per-key coordination lock prevents the check/delete race without partial mutation');
+    const releasedLeaseApplication = Core.cacheRetention.apply(Object.assign({}, leaseRaceOptions, { nowMs: leaseRaceNow + 5, proposal: releasedLeaseProposal, approvedDigest: releasedLeaseProposal.digest, explicit: true }));
+    ok(releasedLeaseApplication.status === 'APPLIED' && releasedLeaseApplication.lease_snapshot_digest === releasedLeaseProposal.leases.lease_set_snapshot_digest && !fs.existsSync(leaseRaceEntry), 'released lease permits the exact approved deletion and application binds the guarded lease snapshot');
     const retentionInventory = Core.cacheRetention.inventory(retentionOptions);
     ok(Core.canonical.validDigest(retentionInventory) && retentionInventory.status === 'COMPLETE' && retentionInventory.usage.entries === 3, 'retention inventory is sealed and counts exact eligible entries');
     ok(retentionInventory.entries.every((item) => item.classification === 'TEMPORARY_CAPTURE' && item.integrity_scope === 'SEALED_MANIFEST_LAYOUT_AND_SIZE'), 'inventory classifies cache copies without claiming artifact-content revalidation');

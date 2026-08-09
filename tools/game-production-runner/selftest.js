@@ -115,6 +115,7 @@ async function main() {
     const cacheMissResult = parsed(cacheMiss);
     const cacheMissLedger = ledger(path.join(cacheMissResult.local_run_directory, 'step-receipts.jsonl'));
     ok(cacheMissLedger.every((receipt) => receipt.cache.state === 'MISS_STORED' && receipt.process.executor_invoked === true), 'CLI cache miss stores exact verified artifacts');
+    ok(cacheMissResult.cache_lease_release && cacheMissResult.cache_lease_release.event === 'RELEASED' && cacheMissResult.cache_lease_release.keys.length === 3, 'CLI exposes the sealed release after protecting every used cache key');
     const cacheHit = invoke(['run-document-demo', '--job-root', cacheRuns, '--cache-root', cacheStore, '--run-id', 'cache-cli-hit', '--confirm', 'RUN PRODUCTION CANDIDATE']);
     equal(cacheHit.status, 0, 'CLI explicit cache hit run exits successfully');
     const cacheHitResult = parsed(cacheHit);
@@ -123,6 +124,7 @@ async function main() {
     equal(cacheCheckpoint.status, 0, 'CLI graceful cached interruption exits successfully');
     const cacheCheckpointResult = parsed(cacheCheckpoint);
     ok(cacheCheckpointResult.state.state === 'INTERRUPTED' && cacheCheckpointResult.run_receipt === null && cacheCheckpointResult.run_checkpoint.schema === 'axm.production-run-checkpoint/v1', 'CLI returns the sealed nonterminal checkpoint without claiming a terminal receipt');
+    ok(cacheCheckpointResult.cache_lease_release.event === 'RELEASED' && cacheCheckpointResult.cache_lease_release.keys.length === 1, 'CLI checkpoint handoff releases exactly one in-flight key after sealing the checkpoint');
     ok(fs.existsSync(path.join(cacheCheckpointResult.local_run_directory, 'run-checkpoints.jsonl')), 'CLI preserves the append-only checkpoint ledger beside step evidence');
     const discoveredCacheReferences = invoke(['discover-cache-references', '--job-root', cacheRuns]);
     equal(discoveredCacheReferences.status, 0, 'CLI bounded terminal-ledger reference discovery exits successfully');
@@ -136,7 +138,10 @@ async function main() {
     ok(!fs.existsSync(unrequestedRetentionRoot), 'unrequested retention application creates no cache directory');
     const retentionInventory = invoke(['inventory-cache', '--cache-root', cacheStore]);
     equal(retentionInventory.status, 0, 'CLI read-only cache inventory exits successfully for a plain cache');
-    ok(parsed(retentionInventory).usage.entries === 3 && parsed(retentionInventory).status === 'COMPLETE', 'CLI inventory observes all three cache entries without deleting them');
+    ok(parsed(retentionInventory).usage.entries === 3 && parsed(retentionInventory).status === 'COMPLETE' && parsed(retentionInventory).lease_set.usage.released === 3, 'CLI inventory observes entries and released lease evidence without deleting either');
+    const discoveredLeases = invoke(['discover-cache-leases', '--cache-root', cacheStore]);
+    equal(discoveredLeases.status, 0, 'CLI bounded cache lease discovery exits successfully');
+    ok(parsed(discoveredLeases).usage.released === 3 && parsed(discoveredLeases).protected_keys.length === 0 && parsed(discoveredLeases).authority.protection_granted, 'CLI exposes path-private released lease evidence without inventing active protection');
     const fullyReferencedPlan = invoke(['plan-cache-retention', '--cache-root', cacheStore, '--reference-job-root', cacheRuns, '--max-cache-entries', '1', '--max-cache-bytes', '9999999', '--max-cache-age-ms', '999999999999']);
     equal(fullyReferencedPlan.status, 2, 'CLI holds a policy that would require deleting discovered referenced evidence');
     const fullyReferencedResult = parsed(fullyReferencedPlan);

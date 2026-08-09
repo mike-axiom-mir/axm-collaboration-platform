@@ -7,6 +7,7 @@ const Contracts = require('./contracts');
 const Compiler = require('./compiler');
 const StepReceipts = require('./step-receipt-contract');
 const ArtifactCache = require('./artifact-cache');
+const CacheLeases = require('./artifact-cache-lease');
 const RunCheckpoints = require('./run-checkpoint-contract');
 
 const START_CONFIRMATION = 'RUN GAME PRODUCTION CANDIDATE';
@@ -175,7 +176,7 @@ async function verifyProduced(pkg, producedValue, verifier, inputArtifacts, runD
   const declared = new Set(pkg.outputs.map((item) => item.path));
   const evidenceArtifacts = produced.artifacts.map((artifact) => ({ path: artifact.path, bytes: artifact.content.length, digest: Codec.sha256(artifact.content) }));
   const producedByPath = new Map(produced.artifacts.map((artifact) => [artifact.path, artifact]));
-  const verification = await Promise.resolve(verifier.verify({
+  const verification = await timeout(Promise.resolve().then(() => verifier.verify({
     package: Codec.clone(pkg),
     artifacts: Codec.clone(evidenceArtifacts),
     facts: Codec.clone(produced.facts),
@@ -189,7 +190,7 @@ async function verifyProduced(pkg, producedValue, verifier, inputArtifacts, runD
       if (!artifact) throw new Error('verifier requested an undeclared input');
       return Buffer.from(fs.readFileSync(safeTarget(runDir, artifact.run_relative_path)));
     }
-  }));
+  })), pkg.resource_budget.timeout_ms, 'verifier');
   const receiptErrors = verificationErrors(verification, pkg);
   if (typeof receiptValidator === 'function') receiptErrors.push(...(receiptValidator(verification) || []));
   const outcome = receiptErrors.length ? { verdict: 'HELD', reason: receiptErrors.join('; ') } : verdictFor(pkg, verification);
@@ -227,11 +228,11 @@ function verifyPreservedOutputs(runDir, step) {
   return true;
 }
 
-function timeout(promise, milliseconds) {
+function timeout(promise, milliseconds, actor) {
   let timer;
   return Promise.race([
     Promise.resolve(promise),
-    new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('executor exceeded cooperative timeout')), milliseconds); })
+    new Promise((_, reject) => { timer = setTimeout(() => reject(new Error((actor || 'operation') + ' exceeded cooperative timeout')), milliseconds); })
   ]).finally(() => clearTimeout(timer));
 }
 
@@ -276,10 +277,11 @@ async function run(options) {
   if (fs.existsSync(runDir) && resolveExistingLinks(runDir).toLowerCase() !== path.resolve(runDir).toLowerCase()) throw new Error('run directory may not be a symbolic link or junction');
   const stateFile = path.join(runDir, 'run-state.json'), receiptFile = path.join(runDir, 'step-receipts.jsonl'), runReceiptFile = path.join(runDir, 'run-receipt.json'), checkpointFile = path.join(runDir, 'run-checkpoints.jsonl');
   const clock = typeof options.clock === 'function' ? options.clock : () => new Date().toISOString();
+  const leaseClock = typeof options.leaseClock === 'function' ? options.leaseClock : () => Date.now();
   const requestedStepReceiptSchema = StepReceipts.schemaFor(options.stepReceiptProfile);
   let stepReceiptSchema = requestedStepReceiptSchema;
   let legacyStepReceiptSchema = false;
-  let state, cache = null, checkpointReceipt = null, checkpointTail = null;
+  let state, cache = null, cacheLease = null, cacheLeaseRelease = null, checkpointReceipt = null, checkpointTail = null;
 
   if (fs.existsSync(runDir)) {
     if (!options.resume) throw new Error('run already exists; explicit resume is required');
@@ -305,7 +307,7 @@ async function run(options) {
     state.step_receipt_schema = stepReceiptSchema;
     if (legacyStepReceiptSchema) state.step_receipt_compatibility = 'legacy-game';
     for (const step of Object.values(state.steps || {})) if (step.state === 'VERIFIED' && !verifyPreservedOutputs(runDir, step)) throw new Error('verified output drift blocks resume for ' + step.package_id);
-    if (terminal(state)) return { state: Codec.clone(state), runReceipt: terminalReceipt, checkpointReceipt: null, runDir, stepReceiptSchema, legacyStepReceiptSchema };
+    if (terminal(state)) return { state: Codec.clone(state), runReceipt: terminalReceipt, checkpointReceipt: null, cacheLeaseRelease: null, runDir, stepReceiptSchema, legacyStepReceiptSchema };
     cache = options.cacheRoot ? ArtifactCache.open({ cacheRoot: options.cacheRoot, sourceRoot: options.sourceRoot, jobRoot: root }) : null;
     if (!state.boundaries || typeof state.boundaries !== 'object' || Array.isArray(state.boundaries)) throw new Error('resume state boundaries are invalid');
     state.boundaries.cache_write = state.boundaries.cache_write === true || !!cache;
@@ -318,6 +320,18 @@ async function run(options) {
     state = { schema: 'axm.game-production-run-state/v1', id: runId, plan_digest: plan.digest, step_receipt_schema: stepReceiptSchema, status: 'RUNNING', overall_verdict: 'PENDING', started_at: clock(), updated_at: clock(), steps: {}, attempts: {}, ledger_count: 0, ledger_tail: null, boundaries: { source_write: false, cache_write: !!cache, network: false, automatic_install: false, automatic_promotion: false } };
   }
   writeJsonAtomic(stateFile, state);
+  if (cache) {
+    cacheLease = CacheLeases.acquire({
+      cacheRoot: cache.root,
+      sourceRoot: options.sourceRoot,
+      jobRoot: root,
+      runId,
+      planDigest: plan.digest,
+      startedAt: state.started_at,
+      durationMs: CacheLeases.durationForPackages(packages, state),
+      nowMs: leaseClock()
+    });
+  }
 
   let completedThisCall = 0;
   for (const packageId of plan.execution_order) {
@@ -337,6 +351,7 @@ async function run(options) {
     const seed = String(options.seed || plan.intent_ref.digest);
     const cacheKey = ArtifactCache.keyFor(pkg, inputArtifacts, seed);
     const cacheEligible = !!cache && executor.cache_policy === ArtifactCache.POLICY;
+    if (cacheEligible) cacheLease.protect(cacheKey, leaseClock());
     let cacheObserved = !cache
       ? { state: 'DISABLED', key: cacheKey, entry_digest: null, reason: null, produced: null }
       : !cacheEligible
@@ -370,7 +385,7 @@ async function run(options) {
         }
         if (!produced) {
           executorInvoked = true;
-          const executed = await timeout(executor.execute({
+          const executed = await timeout(Promise.resolve().then(() => executor.execute({
             package: Codec.clone(pkg),
             seed,
             inputs: inputArtifacts.map((item) => ({ package_id: item.package_id, path: item.path, digest: item.digest, bytes: item.bytes })),
@@ -379,7 +394,7 @@ async function run(options) {
               if (!artifact) throw new Error('undeclared input requested');
               return fs.readFileSync(safeTarget(runDir, artifact.run_relative_path));
             }
-          }), pkg.resource_budget.timeout_ms);
+          })), pkg.resource_budget.timeout_ms, 'executor');
           const evaluated = await verifyProduced(pkg, executed, verifier, inputArtifacts, runDir, options.receiptValidator);
           produced = evaluated.produced;
           verification = evaluated.verification;
@@ -442,10 +457,16 @@ async function run(options) {
   if (state.status === 'INTERRUPTED') {
     checkpointReceipt = RunCheckpoints.create(state, plan, checkpointTail);
     RunCheckpoints.appendFile(checkpointFile, checkpointReceipt);
+    if (cacheLease) cacheLeaseRelease = cacheLease.release(leaseClock());
   }
   if (state.status === 'RUNNING' && Object.keys(state.steps).length === plan.execution_order.length) { state.status = 'CANDIDATE_READY'; state.overall_verdict = 'VERIFIED'; state.updated_at = clock(); writeJsonAtomic(stateFile, state); }
-  if (terminal(state)) { const receipt = finalReceipt(state, plan, clock()); writeJsonAtomic(runReceiptFile, receipt); return { state: Codec.clone(state), runReceipt: receipt, checkpointReceipt: null, runDir, stepReceiptSchema, legacyStepReceiptSchema }; }
-  return { state: Codec.clone(state), runReceipt: null, checkpointReceipt, runDir, stepReceiptSchema, legacyStepReceiptSchema };
+  if (terminal(state)) {
+    const receipt = finalReceipt(state, plan, clock());
+    writeJsonAtomic(runReceiptFile, receipt);
+    if (cacheLease) cacheLeaseRelease = cacheLease.release(leaseClock());
+    return { state: Codec.clone(state), runReceipt: receipt, checkpointReceipt: null, cacheLeaseRelease, runDir, stepReceiptSchema, legacyStepReceiptSchema };
+  }
+  return { state: Codec.clone(state), runReceipt: null, checkpointReceipt, cacheLeaseRelease, runDir, stepReceiptSchema, legacyStepReceiptSchema };
 }
 
 module.exports = { START_CONFIRMATION, assertJobRoot, verificationErrors, verdictFor, run };

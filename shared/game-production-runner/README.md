@@ -48,6 +48,18 @@ candidate. Tamper or verifier disagreement is recorded as `REJECTED` and falls
 back to fresh execution. Same-key/different-result publication is preserved as
 a conflict instead of overwriting prior evidence.
 
+Every cache-enabled candidate opens a bounded append-only lease before it can
+use the cache. The lease owner binds cache root, job root, run, plan, and start
+time as digests; those bindings support exact local continuity but are not
+authentication. Before a deterministic step can load or publish an exact cache
+key, that key is appended to the lease under the same per-key coordination lock
+used by retention deletion. A newer resume session fences an older session. The
+deadline covers cache-hit verification plus executor and verifier fallback for
+every remaining attempt and cannot exceed seven days. There is no renewal daemon
+or background task. Terminal and graceful-checkpoint anchors release the lease;
+an abrupt process exit leaves it protective only until expiry, and the same run
+can renew it on resume.
+
 Cache retention is a separate on-demand governor, never part of candidate
 execution. Its inventory is read-only and bounded by entry/file scan limits.
 It classifies only exact sealed cache layouts as temporary captures, measures
@@ -56,8 +68,13 @@ an active publisher. A dry-run policy independently limits entry count,
 logical bytes, and filesystem age while protecting exact referenced keys.
 Application requires the sealed proposal's exact digest, separate explicit
 authority, an unchanged inventory snapshot, exact selective invalidations, and
-post-delete readback. Filesystem age is an observed modification-age signal,
-not a claim about original publication time.
+post-delete readback. Inventory and application also perform bounded, path-free
+lease discovery. Active leased keys are never candidates; apply freshly checks
+the lease snapshot and, for each exact key, coordinates its final check and
+deletion against runner protection. A changing or unreadable lease state holds
+deletion. Filesystem age is an observed modification-age signal, not a claim
+about original publication time. Direct explicit invalidation remains a
+separate human override rather than lease-governed retention.
 
 Protected references no longer need to be copied by hand. An explicit,
 read-only discovery pass scans only direct run directories under a separate
@@ -109,9 +126,14 @@ not as a security boundary for malicious code.
   across game and portable schemas, repeated interruption, rollback, stale
   tails, truncation, invalid-terminal precedence, limits, path privacy, exact
   entry binding, and reference-snapshot races.
-- Persisted retention policies, scheduling, and in-flight cache leases are
-  missing; cache and reference roots remain human-owned local state. A
-  checkpoint covers completed receipts only, not work advancing after it.
+- In-flight cache leases: executable and self-tested across acquire, exact-key
+  protection, resume-session fencing, checkpoint and terminal release, abrupt
+  child-process exit, expiry, recovery, bounded discovery, stale-lease refusal,
+  and per-key retention coordination. They add no daemon or polling loop.
+- Persisted retention policies, scheduling, and released/expired lease-ledger
+  curation are missing. Cache and reference roots remain human-owned local
+  state; append-only lease history can eventually reach its explicit scan
+  ceiling until a governed compaction contract exists.
 - Explicit Hand confinement substrate diagnosis: executable and self-tested;
   the current Node 24 observation is `DEGRADED` because network denial failed.
 - Process-hosted production Hands and a malicious-code sandbox: missing.
@@ -139,10 +161,17 @@ not as a security boundary for malicious code.
 - A cache hit never reuses prior verification testimony; the current verifier
   must pass the cached bytes again.
 - Invalidation requires an exact digest key and separate explicit authority.
+- Runner cache use requires an active bounded lease, and each exact key must be
+  protected before reuse or publication. Expired or released leases grant no
+  retention protection; digest-bound owners are continuity evidence, not
+  authenticated principals.
 - Retention planning never deletes. Application requires a saved sealed
   proposal, its exact digest as approval, and an unchanged inventory snapshot.
 - Protected keys, unclassified layouts, and active publishers cannot be
-  retention-deletion candidates. Retention never runs during a candidate.
+  retention-deletion candidates. Active leased keys cannot be candidates, and
+  a final per-key coordination gate prevents a runner protection event from
+  racing an approved deletion. Retention never runs automatically during a
+  candidate.
 - Reference discovery is an explicit bounded read-only action. It grants
   protection only for complete terminal ledgers or exact latest graceful
   checkpoints. Uncheckpointed progress, stale checkpoints, and malformed

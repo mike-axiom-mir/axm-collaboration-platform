@@ -1,0 +1,181 @@
+{
+  "schema": "capability-gap-report/v1",
+  "subject": "game-production-runner in-flight artifact-cache leases",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "lease-history-is-sealed-and-append-only",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease.ledger"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease.ledger": [
+          "one cache-local JSONL ledger per digest-bound run owner",
+          "sealed digest chain with ACQUIRED, RENEWED, PROTECTED, and RELEASED events",
+          "maximum 10000 events and 16 MiB per ledger"
+        ]
+      }
+    },
+    {
+      "id": "lease-owner-and-session-continuity-is-exact",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease.owner-session-binding"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease.owner-session-binding": [
+          "cache root, job root, run id, plan, and start time are stored only as digests",
+          "newer same-run acquisition fences older session handles",
+          "digest binding is continuity evidence, not principal authentication"
+        ]
+      }
+    },
+    {
+      "id": "lease-deadline-is-bounded-without-background-load",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease.bounded-deadline"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease.bounded-deadline": [
+          "duration covers cache-hit verification plus executor and verifier fallback for every remaining attempt, with margin",
+          "maximum duration is seven days",
+          "no daemon, heartbeat, renewal timer, or background scan"
+        ]
+      }
+    },
+    {
+      "id": "crash-protection-expires-and-recovers",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease.crash-recovery"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease.crash-recovery": [
+          "abrupt exit leaves the last event intact",
+          "active protection is time-derived and disappears after expiry without ledger rewrite",
+          "same owner can append a recovery renewal"
+        ]
+      }
+    },
+    {
+      "id": "runner-protects-before-cache-use-and-releases-after-anchor",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease.runner-lifecycle"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease.runner-lifecycle": [
+          "cache-enabled runner acquires before package cache access",
+          "exact key protected before load or publish",
+          "release appended only after terminal receipt or graceful checkpoint persistence",
+          "unexpected throw relies on bounded expiry"
+        ]
+      }
+    },
+    {
+      "id": "lease-discovery-is-bounded-private-and-fail-closed",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease.discovery"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease.discovery": [
+          "explicit read-only path-private sealed set",
+          "maximum 20000 directory entries, 10000 ledgers, 100000 events, and 64 MiB aggregate",
+          "invalid, linked, malformed, or over-limit evidence holds retention"
+        ]
+      }
+    },
+    {
+      "id": "retention-planning-and-apply-rescan-active-leases",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.retention.lease-binding"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.retention.lease-binding": [
+          "inventory embeds exact lease set",
+          "planning excludes active leased keys",
+          "apply freshly rescans stable lease snapshot before mutation",
+          "released and expired leases grant no protection"
+        ]
+      }
+    },
+    {
+      "id": "runner-protection-and-retention-deletion-are-key-coordinated",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.retention.key-coordination"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.retention.key-coordination": [
+          "runner key protection and final retention check-delete use the same atomic cache-local key lock",
+          "busy or changed coordination state deletes nothing for that key",
+          "scope is the governed retention path, not direct explicit human invalidation"
+        ]
+      }
+    },
+    {
+      "id": "checkpoint-evidence-takes-over-after-lease-release",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease.checkpoint-handoff"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease.checkpoint-handoff": [
+          "graceful checkpoint is sealed before lease release",
+          "released lease grants no protection",
+          "checkpoint-derived exact reference remains protected by retention"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": [],
+  "outOfScopeGaps": [
+    "released and expired lease-ledger curation or compaction",
+    "cross-host or distributed leases",
+    "cryptographic owner authentication",
+    "malicious-code sandboxing",
+    "direct explicit human invalidation coordination",
+    "native game execution"
+  ]
+}

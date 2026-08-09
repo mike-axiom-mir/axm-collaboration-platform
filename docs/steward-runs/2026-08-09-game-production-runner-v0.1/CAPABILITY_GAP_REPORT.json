@@ -20,7 +20,8 @@
     "verified deterministic cross-run artifact cache with fresh verifier hits, atomic publication, tamper fallback, conflict preservation, and explicit selective invalidation",
     "explicit on-demand cache retention governor with bounded read-only inventory, separate count/logical-byte/filesystem-age budgets, protected exact references, sealed dry-run proposals, exact digest approval, stale-snapshot refusal, and post-delete readback",
     "bounded read-only terminal-ledger cache-reference discovery with complete digest-chain validation, path-private sealed sets, exact key/entry binding, fail-closed aggregate holds, and fresh apply-time reference rescans",
-    "append-only graceful-interruption checkpoints with exact step-ledger prefix binding, repeated-checkpoint continuity, legacy resume compatibility, and bounded nonterminal cache-reference discovery"
+    "append-only graceful-interruption checkpoints with exact step-ledger prefix binding, repeated-checkpoint continuity, legacy resume compatibility, and bounded nonterminal cache-reference discovery",
+    "bounded append-only in-flight cache leases with path-private owner binding, resume-session fencing, exact-key protection before runner cache use, terminal and checkpoint release, crash expiry and recovery, bounded fail-closed discovery, fresh retention rescans, and per-key runner-retention coordination"
   ],
   "gaps": [
     {
@@ -73,11 +74,11 @@
       "next_evidence": "Define a user-owned policy store and scheduling authority that still emits a reviewable proposal or an explicitly pre-authorized policy receipt before deletion."
     },
     {
-      "capability": "cache.production.reference-discovery.inflight-lease",
+      "capability": "cache.production.lease-ledger-curation",
       "kind": "CONTRACT",
       "state": "MISSING_CONTRACT",
-      "impact": "A graceful interruption now protects every verified cache reference through its latest exact checkpoint. Work published after that checkpoint during an actively advancing run has no lease, so concurrent retention may evict optional reuse material before the next checkpoint or terminal receipt; uncheckpointed ledger progress holds discovery once visible.",
-      "next_evidence": "Define a bounded run/cache lease with owner identity, expiry, crash recovery, and retention readback; prove concurrent publish, checkpoint, expiry, and deletion races without turning stale leases into permanent authority."
+      "impact": "Released and expired lease ledgers remain append-only audit evidence and grant no protection, but they accumulate until bounded discovery reaches its explicit ledger, event, or byte ceiling and holds retention.",
+      "next_evidence": "Define an exact digest-approved archive or compaction contract that preserves the latest terminal evidence, never removes active leases, records a deletion receipt, and proves recovery plus discovery equivalence before and after curation."
     },
     {
       "capability": "ui.game-production-workbench",

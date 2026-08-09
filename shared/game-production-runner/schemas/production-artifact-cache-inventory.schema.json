@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "axm.production-artifact-cache-inventory/v1",
   "type": "object",
-  "required": ["schema", "version", "status", "observed_at_ms", "root_fingerprint", "root_exists", "entries_root_exists", "scan_budget", "entries", "unclassified", "temporary_publishers", "usage", "snapshot_digest", "digest"],
+  "required": ["schema", "version", "status", "observed_at_ms", "root_fingerprint", "root_exists", "entries_root_exists", "scan_budget", "entries", "unclassified", "temporary_publishers", "lease_set", "usage", "snapshot_digest", "digest"],
   "properties": {
     "schema": { "const": "axm.production-artifact-cache-inventory/v1" },
     "version": { "const": "0.1.0" },
@@ -15,6 +15,7 @@
     "entries": { "type": "array" },
     "unclassified": { "type": "array" },
     "temporary_publishers": { "type": "integer", "minimum": 0 },
+    "lease_set": { "type": "object" },
     "usage": { "type": "object" },
     "snapshot_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
     "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
