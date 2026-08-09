@@ -12,6 +12,7 @@ function ok(value, message) { assert.ok(value, message); checks += 1; }
 function equal(actual, expected, message) { assert.deepStrictEqual(actual, expected, message); checks += 1; }
 function invoke(args) { return childProcess.spawnSync(process.execPath, [path.join(__dirname, 'cli.js')].concat(args), { cwd: Cli.ROOT, encoding: 'utf8', windowsHide: true, shell: false, timeout: 15000 }); }
 function parsed(result) { return JSON.parse(result.stdout || result.stderr); }
+function ledger(file) { return fs.readFileSync(file, 'utf8').trim().split(/\r?\n/).filter(Boolean).map((line) => JSON.parse(line)); }
 
 async function main() {
   equal(Cli.parse(['run-demo', '--job-root', 'X', '--resume']).resume, true, 'CLI parses explicit resume');
@@ -59,6 +60,8 @@ async function main() {
     equal(result.native_game_proven, false, 'CLI does not relabel fixture as native game proof');
     equal(result.automatic_install, false, 'CLI never installs candidate');
     ok(fs.existsSync(path.join(result.local_run_directory, 'run-receipt.json')), 'CLI writes sealed run receipt in external job root');
+    equal(JSON.parse(fs.readFileSync(path.join(result.local_run_directory, 'run-receipt.json'), 'utf8')).step_receipt_schema, 'axm.game-step-receipt/v1', 'game CLI preserves its game receipt schema');
+    ok(ledger(path.join(result.local_run_directory, 'step-receipts.jsonl')).every((receipt) => receipt.schema === 'axm.game-step-receipt/v1'), 'game CLI ledger remains game scoped');
 
     const resume = invoke(['run-demo', '--automated-only', '--job-root', path.join(temporary, 'runs'), '--run-id', 'cli-test-run', '--resume', '--confirm', 'RUN GAME PRODUCTION CANDIDATE']);
     equal(resume.status, 0, 'explicit terminal resume is safe');
@@ -75,6 +78,9 @@ async function main() {
     equal(profileResult.proof_scope, 'cross-domain orchestration mechanics only', 'portable CLI preserves its evidence ceiling');
     equal(profileResult.automatic_install, false, 'portable CLI never installs the candidate');
     ok(fs.existsSync(path.join(profileResult.local_run_directory, 'portable-run-receipt.json')), 'portable CLI preserves the neutral receipt');
+    equal(profileResult.state.step_receipt_schema, 'axm.production-step-receipt/v1', 'portable CLI state declares neutral step receipts');
+    equal(JSON.parse(fs.readFileSync(path.join(profileResult.local_run_directory, 'portable-run-receipt.json'), 'utf8')).step_receipt_schema, 'axm.production-step-receipt/v1', 'portable CLI receipt declares the neutral ledger schema');
+    ok(ledger(path.join(profileResult.local_run_directory, 'step-receipts.jsonl')).every((receipt) => receipt.schema === 'axm.production-step-receipt/v1'), 'portable CLI ledger is neutral at every step');
 
     const documentRun = invoke(['run-document-demo', '--job-root', path.join(temporary, 'document-runs'), '--run-id', 'document-cli-run', '--confirm', 'RUN PRODUCTION CANDIDATE']);
     equal(documentRun.status, 0, 'confirmed content-verified document run exits successfully');
@@ -83,6 +89,8 @@ async function main() {
     ok(/content-derived deterministic documentation verification/.test(documentResult.proof_scope), 'document CLI names its content-derived evidence scope');
     equal(documentResult.automatic_install, false, 'document CLI never installs the candidate');
     ok(fs.existsSync(path.join(documentResult.local_run_directory, 'portable-run-receipt.json')), 'document CLI preserves the neutral receipt');
+    equal(documentResult.state.step_receipt_schema, 'axm.production-step-receipt/v1', 'content-verified document state declares neutral step receipts');
+    ok(ledger(path.join(documentResult.local_run_directory, 'step-receipts.jsonl')).every((receipt) => receipt.schema === 'axm.production-step-receipt/v1'), 'content-verified document ledger is neutral at every step');
 
     const sourceDenied = invoke(['run-demo', '--automated-only', '--job-root', path.join(Cli.ROOT, 'exports', 'bad-run'), '--run-id', 'source-denied', '--confirm', 'RUN GAME PRODUCTION CANDIDATE']);
     equal(sourceDenied.status, 1, 'source-tree candidate root is refused');

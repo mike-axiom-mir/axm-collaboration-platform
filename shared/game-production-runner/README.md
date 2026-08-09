@@ -16,9 +16,11 @@ behind the existing substrate resolver and a separate explicit native gate.
 The portable production profile is a bounded adapter experiment. It accepts
 neutral intent, package, and graph schemas and binds them to the unchanged game
 runner internally. A documentation fixture proves cross-domain orchestration
-mechanics; it does not prove that the core is already universal. Internal step
-receipts intentionally retain their game schema until a neutral kernel earns
-independent evidence.
+mechanics; it does not prove that the core is already universal. New portable
+runs emit `axm.production-step-receipt/v1` ledgers whose schema is bound into
+state and terminal receipts. Pre-upgrade portable runs that already began with
+game-scoped receipts continue that same schema explicitly; a ledger is never
+silently mixed during resume.
 
 The content-verified documentation profile goes beyond fixture testimony. Its
 Hand deterministically renders a release note from a locked brief, while a
@@ -36,6 +38,8 @@ in-process registry; it is not an operating-system process sandbox.
 - AXM adapter discovery: read-only.
 - Portable non-game profile adaptation: executable and self-tested with an
   explicit evidence ceiling.
+- Neutral portable step receipts: executable and self-tested across clean runs,
+  interrupted resume, schema tamper, and legacy game-ledger continuation.
 - Content-derived documentation verification: executable and self-tested,
   including a deliberately lying executor and undeclared-read refusal.
 - Native Godot production: `MISSING_SUBSTRATE` until separately resolved.
@@ -55,6 +59,8 @@ in-process registry; it is not an operating-system process sandbox.
 - Appointed verifiers may read copies of declared output bytes and direct
   dependency bytes; undeclared reads fail the attempt.
 - Missing or contradictory evidence holds the run.
+- A run's step receipt schema is pinned before the first receipt and rechecked
+  on every resume.
 - No install, Game Hub copy, promotion, CANON, release, or network authority.
 
 Run the shared and tool tests from the Workshop root:

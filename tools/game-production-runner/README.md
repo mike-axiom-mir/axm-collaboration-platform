@@ -30,7 +30,10 @@ inert declarative fixtures, while the document command uses a trusted in-process
 deterministic Hand. None can write inside the Workshop. The portable fixture
 demo proves reuse of orchestration mechanics, not a universal production
 kernel or documentation quality. The document demo proves deterministic content
-coverage and digest binding; editorial quality remains human review.
+coverage and digest binding; editorial quality remains human review. Both
+portable commands emit `axm.production-step-receipt/v1` ledgers and disclose
+that schema in new portable state and terminal receipts. An interrupted
+pre-upgrade ledger continues its original game receipt schema without mixing.
 
 The long-range module is intended to become the production intelligence used
 to build and evolve an AXM-native engine. This CLI does not claim that engine

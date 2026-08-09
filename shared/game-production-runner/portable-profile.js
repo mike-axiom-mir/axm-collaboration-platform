@@ -6,6 +6,7 @@ const Codec = require('./canonical');
 const GameContracts = require('./contracts');
 const GameCompiler = require('./compiler');
 const GameRunner = require('./runner');
+const StepReceipts = require('./step-receipt-contract');
 
 const START_CONFIRMATION = 'RUN PRODUCTION CANDIDATE';
 const ADAPTER = Object.freeze({ id: 'axm.production-profile.game-runner-adapter', version: '0.1.0' });
@@ -14,6 +15,7 @@ const SCHEMAS = Object.freeze({
   package: 'axm.production-package/v1',
   graph: 'axm.production-graph/v1',
   plan: 'axm.production-plan/v1',
+  step: StepReceipts.SCHEMAS.production,
   runState: 'axm.production-run-state/v1',
   run: 'axm.production-run/v1',
   binding: 'axm.production-profile-binding/v1'
@@ -115,8 +117,8 @@ function inventoryFrom(executors, verifiers) {
   };
 }
 
-function portableState(state, plan) {
-  return Codec.seal({
+function portableState(state, plan, stepReceiptSchema, legacyStepReceiptSchema) {
+  const portable = {
     schema: SCHEMAS.runState,
     id: state.id,
     state: state.status,
@@ -126,12 +128,14 @@ function portableState(state, plan) {
     attempt_counts: Codec.clone(state.attempts || {}),
     updated_at: state.updated_at,
     authority: { installed: false, promoted: false, canon: false, released: false }
-  });
+  };
+  if (!legacyStepReceiptSchema) portable.step_receipt_schema = stepReceiptSchema;
+  return Codec.seal(portable);
 }
 
 function portableReceipt(result, plan, binding) {
   if (!result.runReceipt) return null;
-  return Codec.seal({
+  const receipt = {
     schema: SCHEMAS.run,
     id: result.runReceipt.id,
     version: '0.1.0',
@@ -147,8 +151,12 @@ function portableReceipt(result, plan, binding) {
     human_review: result.runReceipt.human_review,
     adapter: { id: ADAPTER.id, version: ADAPTER.version, binding_digest: binding.digest, internal_plan_digest: binding.internal_plan_digest, internal_run_digest: result.runReceipt.digest },
     authority: Codec.clone(result.runReceipt.authority),
-    limitations: ['Internal step receipts retain axm.game-step-receipt/v1 until a neutral runner kernel is independently proven.', 'This receipt does not assert domain quality or receiver acceptance.']
-  });
+    limitations: result.legacyStepReceiptSchema
+      ? ['Internal step receipts retain axm.game-step-receipt/v1 until a neutral runner kernel is independently proven.', 'This receipt does not assert domain quality or receiver acceptance.']
+      : ['Step receipts use axm.production-step-receipt/v1 through the adapter-hosted experimental runner.', 'This receipt does not assert domain quality or receiver acceptance.']
+  };
+  if (!result.legacyStepReceiptSchema) receipt.step_receipt_schema = result.stepReceiptSchema;
+  return Codec.seal(receipt);
 }
 
 function preservePortableReceipt(runDir, receipt) {
@@ -189,11 +197,24 @@ async function run(options) {
     maxSteps: options.maxSteps,
     cancelled: options.cancelled,
     clock: options.clock,
-    seed: options.seed
+    seed: options.seed,
+    stepReceiptProfile: StepReceipts.PROFILES.production,
+    allowLegacyGameStepReceipts: true
   });
   const receipt = portableReceipt(result, expectedPlan, binding);
   const receiptFile = preservePortableReceipt(result.runDir, receipt);
-  return { state: portableState(result.state, expectedPlan), runReceipt: receipt, runReceiptFile: receiptFile, runDir: result.runDir, internal: { plan_digest: internalPlan.digest, run_receipt_digest: result.runReceipt && result.runReceipt.digest } };
+  return {
+    state: portableState(result.state, expectedPlan, result.stepReceiptSchema, result.legacyStepReceiptSchema),
+    runReceipt: receipt,
+    runReceiptFile: receiptFile,
+    runDir: result.runDir,
+    internal: {
+      plan_digest: internalPlan.digest,
+      run_receipt_digest: result.runReceipt && result.runReceipt.digest,
+      step_receipt_schema: result.stepReceiptSchema,
+      legacy_step_receipt_schema: result.legacyStepReceiptSchema
+    }
+  };
 }
 
 module.exports = { START_CONFIRMATION, ADAPTER, SCHEMAS, adaptSpec, compile, run };

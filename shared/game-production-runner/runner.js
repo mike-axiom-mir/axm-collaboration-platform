@@ -5,6 +5,7 @@ const path = require('path');
 const Codec = require('./canonical');
 const Contracts = require('./contracts');
 const Compiler = require('./compiler');
+const StepReceipts = require('./step-receipt-contract');
 
 const START_CONFIRMATION = 'RUN GAME PRODUCTION CANDIDATE';
 const CLAIM_STATUSES = ['PASS', 'FAIL', 'WARNING', 'UNKNOWN', 'MISSING_VALIDATOR', 'HUMAN_REVIEW', 'NOT_APPLICABLE'];
@@ -68,25 +69,32 @@ function appendReceipt(file, receipt) {
 
 function readJson(file) { return JSON.parse(fs.readFileSync(file, 'utf8')); }
 
-function readReceiptLedger(file) {
+function readReceiptLedger(file, expectedSchema) {
   if (!fs.existsSync(file)) return [];
   const raw = fs.readFileSync(file, 'utf8').trim();
   if (!raw) return [];
   const lines = raw.split(/\r?\n/);
-  return lines.map((line, index) => {
+  const receipts = lines.map((line, index) => {
     let receipt;
     try { receipt = JSON.parse(line); } catch (_) { throw new Error('step receipt ledger line ' + (index + 1) + ' is invalid JSON'); }
     if (!Codec.validDigest(receipt)) throw new Error('step receipt ledger digest mismatch at line ' + (index + 1));
     return receipt;
-  }).map((receipt, index, receipts) => {
+  });
+  const observedSchema = StepReceipts.inferSchema(receipts, expectedSchema || StepReceipts.SCHEMAS.game);
+  if (expectedSchema && observedSchema !== expectedSchema) throw new Error('step receipt ledger schema mismatch');
+  receipts.forEach((receipt, index) => {
+    const errors = StepReceipts.validate(receipt, observedSchema);
+    if (errors.length) throw new Error('step receipt ledger contract mismatch at line ' + (index + 1) + ': ' + errors.join('; '));
+  });
+  return receipts.map((receipt, index) => {
     const expected = index === 0 ? null : receipts[index - 1].digest;
     if (receipt.previous_receipt_digest !== expected) throw new Error('step receipt ledger chain mismatch at line ' + (index + 1));
     return receipt;
   });
 }
 
-function assertResumeIntegrity(state, plan, receiptFile, runReceiptFile) {
-  const ledger = readReceiptLedger(receiptFile);
+function assertResumeIntegrity(state, plan, receiptFile, runReceiptFile, stepReceiptSchema) {
+  const ledger = readReceiptLedger(receiptFile, stepReceiptSchema);
   if (state.ledger_count !== ledger.length) throw new Error('step receipt ledger count mismatch');
   const tail = ledger.length ? ledger[ledger.length - 1].digest : null;
   if (state.ledger_tail !== tail) throw new Error('step receipt ledger tail mismatch');
@@ -106,6 +114,8 @@ function assertResumeIntegrity(state, plan, receiptFile, runReceiptFile) {
     if (!fs.existsSync(runReceiptFile)) throw new Error('terminal run has no sealed run receipt');
     const receipt = readJson(runReceiptFile);
     if (!Codec.validDigest(receipt) || receipt.id !== state.id || receipt.state !== state.status || receipt.intent_ref.digest !== plan.intent_ref.digest || receipt.graph_ref.digest !== plan.graph_ref.digest) throw new Error('terminal run receipt integrity mismatch');
+    const terminalSchemaRequired = stepReceiptSchema === StepReceipts.SCHEMAS.production || !!state.step_receipt_schema;
+    if ((terminalSchemaRequired && receipt.step_receipt_schema !== stepReceiptSchema) || (receipt.step_receipt_schema != null && receipt.step_receipt_schema !== stepReceiptSchema)) throw new Error('terminal run receipt step schema mismatch');
     if (Codec.canonical(receipt.step_receipts) !== Codec.canonical(Object.values(state.steps).map((step) => step.receipt_digest))) throw new Error('terminal run receipt step binding mismatch');
     return receipt;
   }
@@ -178,6 +188,7 @@ function finalReceipt(state, plan, at) {
     source_anchor: plan.source_anchor,
     started_at: state.started_at,
     updated_at: at,
+    step_receipt_schema: state.step_receipt_schema,
     step_receipts: Object.values(state.steps).map((step) => step.receipt_digest),
     overall_verdict: state.overall_verdict,
     human_review: state.status === 'HUMAN_REVIEW',
@@ -205,6 +216,9 @@ async function run(options) {
   if (fs.existsSync(runDir) && resolveExistingLinks(runDir).toLowerCase() !== path.resolve(runDir).toLowerCase()) throw new Error('run directory may not be a symbolic link or junction');
   const stateFile = path.join(runDir, 'run-state.json'), receiptFile = path.join(runDir, 'step-receipts.jsonl'), runReceiptFile = path.join(runDir, 'run-receipt.json');
   const clock = typeof options.clock === 'function' ? options.clock : () => new Date().toISOString();
+  const requestedStepReceiptSchema = StepReceipts.schemaFor(options.stepReceiptProfile);
+  let stepReceiptSchema = requestedStepReceiptSchema;
+  let legacyStepReceiptSchema = false;
   let state;
 
   if (fs.existsSync(runDir)) {
@@ -212,15 +226,29 @@ async function run(options) {
     if (!fs.existsSync(stateFile)) throw new Error('existing run has no state receipt');
     state = readJson(stateFile);
     if (state.plan_digest !== plan.digest) throw new Error('resume plan digest mismatch');
-    const terminalReceipt = assertResumeIntegrity(state, plan, receiptFile, runReceiptFile);
+    if (state.step_receipt_compatibility != null && state.step_receipt_compatibility !== 'legacy-game') throw new Error('unsupported step receipt compatibility marker');
+    const existingLedger = readReceiptLedger(receiptFile);
+    const observedStepReceiptSchema = existingLedger.length ? StepReceipts.inferSchema(existingLedger) : null;
+    const persistedStepReceiptSchema = state.step_receipt_schema || null;
+    if (persistedStepReceiptSchema) StepReceipts.inferSchema([], persistedStepReceiptSchema);
+    if (persistedStepReceiptSchema && observedStepReceiptSchema && persistedStepReceiptSchema !== observedStepReceiptSchema) throw new Error('run state step receipt schema disagrees with ledger');
+    stepReceiptSchema = persistedStepReceiptSchema || observedStepReceiptSchema || StepReceipts.SCHEMAS.game;
+    const legacyUpgrade = !persistedStepReceiptSchema && requestedStepReceiptSchema === StepReceipts.SCHEMAS.production && stepReceiptSchema === StepReceipts.SCHEMAS.game;
+    const legacyContinuation = state.step_receipt_compatibility === 'legacy-game';
+    const mismatchAllowed = options.allowLegacyGameStepReceipts === true && (legacyUpgrade || (legacyContinuation && requestedStepReceiptSchema === StepReceipts.SCHEMAS.production && stepReceiptSchema === StepReceipts.SCHEMAS.game));
+    if (stepReceiptSchema !== requestedStepReceiptSchema && !mismatchAllowed) throw new Error('resume step receipt profile mismatch');
+    legacyStepReceiptSchema = stepReceiptSchema !== requestedStepReceiptSchema;
+    const terminalReceipt = assertResumeIntegrity(state, plan, receiptFile, runReceiptFile, stepReceiptSchema);
+    state.step_receipt_schema = stepReceiptSchema;
+    if (legacyStepReceiptSchema) state.step_receipt_compatibility = 'legacy-game';
     for (const step of Object.values(state.steps || {})) if (step.state === 'VERIFIED' && !verifyPreservedOutputs(runDir, step)) throw new Error('verified output drift blocks resume for ' + step.package_id);
-    if (terminal(state)) return { state: Codec.clone(state), runReceipt: terminalReceipt, runDir };
+    if (terminal(state)) return { state: Codec.clone(state), runReceipt: terminalReceipt, runDir, stepReceiptSchema, legacyStepReceiptSchema };
     state.status = 'RUNNING'; state.updated_at = clock();
   } else {
     fs.mkdirSync(runDir, { recursive: false });
     writeJsonAtomic(path.join(runDir, 'plan.json'), plan);
     writeJsonAtomic(path.join(runDir, 'packages.json'), packages);
-    state = { schema: 'axm.game-production-run-state/v1', id: runId, plan_digest: plan.digest, status: 'RUNNING', overall_verdict: 'PENDING', started_at: clock(), updated_at: clock(), steps: {}, attempts: {}, ledger_count: 0, ledger_tail: null, boundaries: { source_write: false, network: false, automatic_install: false, automatic_promotion: false } };
+    state = { schema: 'axm.game-production-run-state/v1', id: runId, plan_digest: plan.digest, step_receipt_schema: stepReceiptSchema, status: 'RUNNING', overall_verdict: 'PENDING', started_at: clock(), updated_at: clock(), steps: {}, attempts: {}, ledger_count: 0, ledger_tail: null, boundaries: { source_write: false, network: false, automatic_install: false, automatic_promotion: false } };
   }
   writeJsonAtomic(stateFile, state);
 
@@ -303,7 +331,7 @@ async function run(options) {
       }
       const completedAt = clock();
       const stepReceipt = Codec.seal({
-        schema: Contracts.SCHEMAS.step,
+        schema: stepReceiptSchema,
         run_id: runId,
         step_id: pkg.id + '.attempt-' + attempt,
         package_ref: { id: pkg.id, version: pkg.version, digest: pkg.digest },
@@ -337,8 +365,8 @@ async function run(options) {
   }
 
   if (state.status === 'RUNNING' && Object.keys(state.steps).length === plan.execution_order.length) { state.status = 'CANDIDATE_READY'; state.overall_verdict = 'VERIFIED'; state.updated_at = clock(); writeJsonAtomic(stateFile, state); }
-  if (terminal(state)) { const receipt = finalReceipt(state, plan, clock()); writeJsonAtomic(runReceiptFile, receipt); return { state: Codec.clone(state), runReceipt: receipt, runDir }; }
-  return { state: Codec.clone(state), runReceipt: null, runDir };
+  if (terminal(state)) { const receipt = finalReceipt(state, plan, clock()); writeJsonAtomic(runReceiptFile, receipt); return { state: Codec.clone(state), runReceipt: receipt, runDir, stepReceiptSchema, legacyStepReceiptSchema }; }
+  return { state: Codec.clone(state), runReceipt: null, runDir, stepReceiptSchema, legacyStepReceiptSchema };
 }
 
 module.exports = { START_CONFIRMATION, assertJobRoot, verificationErrors, verdictFor, run };

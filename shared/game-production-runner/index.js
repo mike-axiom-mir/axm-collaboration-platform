@@ -5,6 +5,7 @@ module.exports = Object.freeze({
   contracts: require('./contracts'),
   compiler: require('./compiler'),
   runner: require('./runner'),
+  stepReceipts: require('./step-receipt-contract'),
   adapters: require('./axm-adapters'),
   fixtures: require('./fixture-registry'),
   proofyard: require('./proofyard-foundation'),

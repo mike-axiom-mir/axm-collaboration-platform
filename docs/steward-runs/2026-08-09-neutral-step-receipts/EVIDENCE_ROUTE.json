@@ -1,0 +1,71 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "subject": "portable production neutral step receipts",
+  "status": "EXPERIMENTAL",
+  "claims": [
+    {
+      "claim_id": "contract.production.step-receipt.neutral",
+      "kind": "static-structure",
+      "risk": "medium",
+      "pass_condition": "A tracked neutral schema and runtime contract agree exactly on axm.production-step-receipt/v1 and reject undeclared fields or an alternate schema.",
+      "primary_surface": "Parsed JSON schema plus runtime contract assertions",
+      "counterevidence": "The file is absent, fails JSON parsing, disagrees with the runtime constant, or accepts an undeclared receipt shape.",
+      "observed_evidence": "The schema parses, discovery binds its identifier to the runtime constant, emitted receipts pass the exact runtime contract, and a validly resealed undeclared field is rejected.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "runtime.production.step-ledger.neutral",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "pass_condition": "Every receipt in a new portable fixture or documentation ledger uses the neutral schema, and state plus terminal receipt disclose the same schema.",
+      "primary_surface": "Core portable runs with complete ledger inspection",
+      "counterevidence": "Any new portable ledger line is game-scoped or the state and terminal declarations disagree with the ledger.",
+      "secondary_surface_if_needed": "Independent CLI process runs and on-disk ledger inspection",
+      "observed_evidence": "Both in-process core runs and separate CLI processes emitted only neutral portable receipts and matching state and terminal declarations.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "state.production.step-schema.resume",
+      "kind": "persistence",
+      "risk": "high",
+      "pass_condition": "An interrupted neutral run resumes without duplicate or mixed receipts, while a resealed game-schema substitution is refused.",
+      "primary_surface": "Stop, persist, resume, and compare the neutral ledger",
+      "counterevidence": "Resume duplicates a receipt, appends another schema, accepts a schema substitution, or loses verified output binding.",
+      "secondary_surface_if_needed": "Adversarial schema mutation with a recomputed canonical digest",
+      "observed_evidence": "Interrupted resume completed with one neutral schema throughout; validly resealed ledger and terminal game-schema substitutions were both rejected before continuation.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "compatibility.production.legacy-game-ledger",
+      "kind": "persistence",
+      "risk": "high",
+      "pass_condition": "A pre-upgrade interrupted portable ledger resumes using only its original game schema and preserves exact terminal resume identity.",
+      "primary_surface": "Pre-upgrade state fixture followed by two fresh resume calls",
+      "counterevidence": "The old run becomes unreadable, neutral receipts are mixed into it, or terminal receipt identity drifts.",
+      "secondary_surface_if_needed": "On-disk inspection of every legacy ledger line and compatibility marker",
+      "observed_evidence": "The simulated pre-upgrade run completed with only game receipts, disclosed legacy continuation internally, preserved its prior external shape, and resumed terminally with the same digest.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "runtime.game.step-receipt.legacy",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "pass_condition": "The original game entry point continues to emit axm.game-step-receipt/v1 and declares that schema in its terminal receipt.",
+      "primary_surface": "Existing five-package game fixture run",
+      "counterevidence": "The game ledger silently changes schema or its terminal declaration disagrees.",
+      "observed_evidence": "All five game receipts remained game-scoped and the terminal game receipt declared the same schema.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "schema.jsonschema.draft202012.validate",
+      "kind": "static-structure",
+      "risk": "medium",
+      "pass_condition": "A pinned independent Draft 2020-12 implementation validates the schema document and representative receipts.",
+      "primary_surface": "Pinned standards validator",
+      "counterevidence": "The schema is invalid Draft 2020-12 or a representative receipt fails standards validation.",
+      "observed_evidence": "JSON parsing and the local exact contract pass; no pinned independent standards validator was available in this slice.",
+      "verdict": "UNKNOWN",
+      "named_seam": "PARSED_JSON_AND_LOCAL_CONTRACT_ARE_NOT_INDEPENDENT_JSON_SCHEMA_CONFORMANCE"
+    }
+  ]
+}

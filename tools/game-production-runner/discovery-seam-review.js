@@ -8,6 +8,7 @@ const Core = require('../../shared/game-production-runner');
 const root = path.resolve(__dirname, '..', '..');
 const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
 const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
+const neutralStepSchema = JSON.parse(fs.readFileSync(path.join(root, 'shared', 'game-production-runner', 'schemas', 'production-step-receipt.schema.json'), 'utf8'));
 const integration = Core.adapters.inspect(root);
 let checks = 0;
 function ok(value, message) { assert.ok(value, message); checks += 1; }
@@ -20,6 +21,9 @@ ok(contract.boundaries.refuses.includes('automatic-game-hub-install'), 'Game Hub
 ok(manifest.accepts.includes('axm.production-intent-lock/v1') && manifest.produces.includes('axm.production-run-state/v1') && manifest.produces.includes('axm.production-run/v1'), 'portable profile schemas are declared');
 ok(contract.boundaries.refuses.includes('universal-kernel-claim-by-adapter'), 'portable adapter cannot claim a universal kernel');
 ok(Core.portable.SCHEMAS.plan === 'axm.production-plan/v1' && Core.portable.SCHEMAS.run === 'axm.production-run/v1', 'portable profile exposes exact neutral plan and run schemas');
+ok(Core.portable.SCHEMAS.step === 'axm.production-step-receipt/v1' && Core.stepReceipts.SCHEMAS.production === Core.portable.SCHEMAS.step, 'portable profile and receipt contract agree on the neutral step schema');
+ok(neutralStepSchema.$id === Core.portable.SCHEMAS.step && neutralStepSchema.properties.schema.const === Core.portable.SCHEMAS.step, 'tracked neutral step schema document matches the runtime contract');
+ok(manifest.produces.includes(Core.portable.SCHEMAS.step), 'tool manifest declares neutral step receipts');
 ok(manifest.actions.includes('run an explicit content-verified documentation candidate'), 'content-derived documentation route is declared');
 ok(contract.boundaries.refuses.includes('operating-system-sandbox-claim-for-in-process-hands'), 'in-process Hands do not claim an operating-system sandbox');
 ok(Core.documentRegistry.EXECUTOR.id !== Core.documentRegistry.VERIFIER.id, 'documentation Hand and verifier identities remain separate');

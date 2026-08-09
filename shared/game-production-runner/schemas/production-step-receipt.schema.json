@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-step-receipt/v1",
+  "type": "object",
+  "required": ["schema", "run_id", "step_id", "package_ref", "attempt", "state", "started_at", "completed_at", "inputs", "outputs", "process", "evidence", "verdict", "detail", "cache", "previous_receipt_digest", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-step-receipt/v1" },
+    "run_id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$" },
+    "step_id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$" },
+    "package_ref": {
+      "type": "object",
+      "required": ["id", "version", "digest"],
+      "properties": {
+        "id": { "type": "string" },
+        "version": { "type": "string" },
+        "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "attempt": { "type": "integer", "minimum": 1 },
+    "state": { "enum": ["VERIFIED", "HELD", "FAILED"] },
+    "started_at": { "type": "string", "minLength": 1 },
+    "completed_at": { "type": "string", "minLength": 1 },
+    "inputs": { "type": "array" },
+    "outputs": { "type": "array" },
+    "process": { "type": "object" },
+    "evidence": { "type": "array" },
+    "verdict": { "enum": ["VERIFIED", "VERIFIED_WITH_LIMITS", "HUMAN_REVIEW", "HELD", "FAILED"] },
+    "detail": { "type": "string", "minLength": 1 },
+    "cache": { "type": "object" },
+    "previous_receipt_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}
