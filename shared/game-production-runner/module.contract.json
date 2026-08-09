@@ -1,0 +1,49 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "game-production-runner-core",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "immutable-game-intent-validation",
+    "exact-digest-production-package-graph-compilation",
+    "explicit-serial-candidate-execution",
+    "isolated-job-root-enforcement",
+    "append-only-step-receipts",
+    "independent-verifier-binding",
+    "interruption-safe-resume",
+    "candidate-only-assembly-state",
+    "read-only-axm-integration-adapters"
+  ],
+  "consumes": [
+    "axm.game-intent-lock/v1",
+    "axm.game-production-package/v1",
+    "axm.game-production-graph/v1",
+    "axm.game-organism-assembly-receipt/v1",
+    "axm.verification-receipt/v2",
+    "service:game-forge",
+    "service:game-hub",
+    "service:local-godot-substrate"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.game-production-plan/v1", "axm.game-step-receipt/v1", "axm.game-production-run/v1"],
+    "accepts": ["human:explicit-run-start", "human:cancel", "axm.game-intent-lock/v1", "axm.game-production-graph/v1"]
+  },
+  "boundaries": {
+    "writes": ["explicit-external-candidate-job-root-only"],
+    "refuses": [
+      "source-tree-write",
+      "filesystem-root-job",
+      "undeclared-output",
+      "undeclared-network",
+      "package-self-verification",
+      "missing-evidence-pass",
+      "silent-resume-completion",
+      "automatic-installation",
+      "automatic-promotion",
+      "automatic-canon",
+      "automatic-release",
+      "unreviewed-native-execution"
+    ]
+  }
+}

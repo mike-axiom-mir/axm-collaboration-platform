@@ -1,0 +1,18 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "game-production-runner",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": ["game-production-integration-inspection", "deterministic-game-production-plan", "explicit-fixture-candidate-run", "interrupted-run-resume", "read-only-godot-availability-probe"],
+  "consumes": ["service:game-production-runner-core", "service:verification-spine", "service:local-godot-substrate"],
+  "permissions": ["files"],
+  "handoffs": {
+    "emits": ["axm.game-production-plan/v1", "axm.game-production-run/v1"],
+    "accepts": ["human:explicit-run-start", "human:explicit-resume", "human:explicit-read-only-substrate-probe"]
+  },
+  "boundaries": {
+    "writes": ["user-selected-external-candidate-job-root"],
+    "refuses": ["source-tree-write", "implicit-run", "implicit-resume", "implicit-native-probe", "native-execution-v0.1", "network", "automatic-game-hub-install", "automatic-promotion", "automatic-canon", "automatic-release"]
+  },
+  "lifecycle": { "state_owner": "filesystem", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit" }
+}

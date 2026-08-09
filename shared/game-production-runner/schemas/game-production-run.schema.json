@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.game-production-run/v1",
+  "type": "object",
+  "required": ["schema", "id", "version", "state", "intent_ref", "graph_ref", "source_anchor", "started_at", "updated_at", "step_receipts", "overall_verdict", "human_review", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.game-production-run/v1" },
+    "id": { "type": "string" },
+    "version": { "type": "string" },
+    "state": { "enum": ["CANDIDATE_READY", "HUMAN_REVIEW", "HELD", "FAILED", "CANCELLED"] },
+    "intent_ref": { "type": "object" },
+    "graph_ref": { "type": "object" },
+    "source_anchor": { "type": "string" },
+    "started_at": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "step_receipts": { "type": "array" },
+    "overall_verdict": { "enum": ["VERIFIED", "HUMAN_REVIEW", "HELD", "FAILED"] },
+    "human_review": { "type": "boolean" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

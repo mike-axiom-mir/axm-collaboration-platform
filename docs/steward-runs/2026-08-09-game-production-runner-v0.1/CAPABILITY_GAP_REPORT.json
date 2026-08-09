@@ -1,0 +1,82 @@
+{
+  "schema": "axm.capability-gap-report/v1",
+  "module": "game-production-runner",
+  "version": "v0.1",
+  "status": "PARTIAL",
+  "achieved": [
+    "deterministic locked-intent and package-graph validation",
+    "fail-closed capability planning",
+    "explicit serial fixture-candidate execution",
+    "isolated declared-output writes",
+    "independent receipt verification",
+    "append-only digest-chained step receipts",
+    "interruption resume with artifact digest revalidation",
+    "read-only AXM seam inspection"
+  ],
+  "gaps": [
+    {
+      "capability": "runtime.godot.4.7.1.pinned",
+      "kind": "SUBSTRATE",
+      "state": "MISSING_SUBSTRATE",
+      "impact": "No native Godot execution or native game claim is available.",
+      "next_evidence": "Resolve the exact runtime through the trusted substrate resolver, then record its version and digest."
+    },
+    {
+      "capability": "executor.godot.complete-project",
+      "kind": "HAND",
+      "state": "MISSING_HAND",
+      "impact": "The runner cannot yet generate a complete native project.",
+      "next_evidence": "Implement a bounded executor only after the pinned runtime exists, then prove declared-output isolation in a disposable project."
+    },
+    {
+      "capability": "verifier.godot.native-game",
+      "kind": "HAND",
+      "state": "MISSING_HAND",
+      "impact": "Gameplay, rendering, input, collision, restart, and export claims remain unverified.",
+      "next_evidence": "Add a separately identified native verifier and route visual claims to live repeated observation."
+    },
+    {
+      "capability": "schema.jsonschema.draft202012.validate",
+      "kind": "EVIDENCE",
+      "state": "UNKNOWN",
+      "impact": "The included schema documents parse as JSON, but standards-conformance has not been independently validated.",
+      "next_evidence": "Run every schema and fixture through a pinned Draft 2020-12 validator."
+    },
+    {
+      "capability": "cache.production.cross-run.verified",
+      "kind": "HAND",
+      "state": "MISSING_HAND",
+      "impact": "No production cache hit or invalidation claim is made.",
+      "next_evidence": "Add a digest-keyed cache with tamper, invalidation, and concurrent-access tests."
+    },
+    {
+      "capability": "ui.game-production-workbench",
+      "kind": "HAND",
+      "state": "MISSING_HAND",
+      "impact": "v0.1 is CLI-only and is not a visible Hub workflow.",
+      "next_evidence": "Design a human-reviewed workbench after the native execution contract stabilizes."
+    },
+    {
+      "capability": "adapter.game-hub.candidate-install",
+      "kind": "AUTHORITY",
+      "state": "MISSING_AUTHORITY",
+      "impact": "A completed candidate cannot install, promote, release, or become CANON automatically.",
+      "next_evidence": "Define a separate explicit human gate and Game Hub acceptance contract with readback verification."
+    },
+    {
+      "capability": "comparison.engine.axm-vs-unreal",
+      "kind": "EVIDENCE",
+      "state": "UNKNOWN",
+      "impact": "No superiority or parity claim is supportable from the fixture runner.",
+      "next_evidence": "Define comparable workloads and independently measure build time, iteration cost, runtime behavior, output quality, and maintainability."
+    }
+  ],
+  "boundaries": {
+    "native_game_produced": false,
+    "godot_installed": false,
+    "game_hub_installed": false,
+    "promoted": false,
+    "canon": false,
+    "released": false
+  }
+}
