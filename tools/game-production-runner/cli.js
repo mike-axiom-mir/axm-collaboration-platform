@@ -109,7 +109,7 @@ async function main(argv) {
     const spec = Core.proofyard.build({ includeHumanReview: !options.automatedOnly });
     const plan = Core.compiler.compile(spec, registry.inventory);
     const result = await Core.runner.run({ plan, packages: spec.packages, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), cacheRoot: options.cacheRoot ? path.resolve(options.cacheRoot) : undefined, sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
-    const output = { schema: 'axm.game-production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, local_run_directory: result.runDir, native_game_proven: false, automatic_install: false, canon: false };
+    const output = { schema: 'axm.game-production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, run_checkpoint: result.checkpointReceipt, local_run_directory: result.runDir, native_game_proven: false, automatic_install: false, canon: false };
     return { output: JSON.stringify(output, null, 2), code: ['CANDIDATE_READY', 'HUMAN_REVIEW', 'INTERRUPTED'].includes(result.state.status) ? 0 : 2 };
   }
   if (options.command === 'run-profile-demo') {
@@ -118,7 +118,7 @@ async function main(argv) {
     const spec = Core.portableFixture.build();
     const plan = Core.portable.compile(spec, registry.inventory);
     const result = await Core.portable.run({ spec, plan, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), cacheRoot: options.cacheRoot ? path.resolve(options.cacheRoot) : undefined, sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
-    const output = { schema: 'axm.production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, local_run_directory: result.runDir, domain: plan.domain, proof_scope: 'cross-domain orchestration mechanics only', automatic_install: false, canon: false };
+    const output = { schema: 'axm.production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, run_checkpoint: result.checkpointReceipt, local_run_directory: result.runDir, domain: plan.domain, proof_scope: 'cross-domain orchestration mechanics only', automatic_install: false, canon: false };
     return { output: JSON.stringify(output, null, 2), code: ['CANDIDATE_READY', 'HUMAN_REVIEW', 'INTERRUPTED'].includes(result.state.state) ? 0 : 2 };
   }
   if (options.command === 'run-document-demo') {
@@ -127,7 +127,7 @@ async function main(argv) {
     const spec = Core.portableDocuments.build();
     const plan = Core.portable.compile(spec, registry.inventory);
     const result = await Core.portable.run({ spec, plan, executors: registry.executors, verifiers: registry.verifiers, receiptValidator: Core.adapters.verificationReceiptValidator(ROOT), jobRoot: path.resolve(options.jobRoot), cacheRoot: options.cacheRoot ? path.resolve(options.cacheRoot) : undefined, sourceRoot: ROOT, runId: options.runId, confirmation: options.confirmation, resume: options.resume, maxSteps: Number.isInteger(options.maxSteps) ? options.maxSteps : undefined });
-    const output = { schema: 'axm.production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, local_run_directory: result.runDir, domain: plan.domain, proof_scope: 'content-derived deterministic documentation verification; editorial quality remains human review', automatic_install: false, canon: false };
+    const output = { schema: 'axm.production-runner-cli-result/v1', state: result.state, run_receipt: result.runReceipt, run_checkpoint: result.checkpointReceipt, local_run_directory: result.runDir, domain: plan.domain, proof_scope: 'content-derived deterministic documentation verification; editorial quality remains human review', automatic_install: false, canon: false };
     return { output: JSON.stringify(output, null, 2), code: ['CANDIDATE_READY', 'HUMAN_REVIEW', 'INTERRUPTED'].includes(result.state.state) ? 0 : 2 };
   }
   if (options.command === 'probe-godot') {

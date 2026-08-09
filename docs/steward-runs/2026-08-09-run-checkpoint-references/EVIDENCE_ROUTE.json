@@ -1,0 +1,78 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "subject": "game-production-runner graceful interruption checkpoints and cache references",
+  "claims": [
+    {
+      "claim_id": "run.production.checkpoint.emit",
+      "claim_type": "persistence",
+      "pass_condition": "A graceful interruption appends one sealed checkpoint bound to the exact current step-ledger position and returns no terminal receipt.",
+      "primary_surface": "shared/game-production-runner/selftest.js",
+      "counterevidence": "Missing file, terminal receipt present, wrong count/tail, or non-false authority.",
+      "observed_evidence": "Game and portable interrupted runs return axm.production-run-checkpoint/v1 with matching count, tail, verified receipts, and false authority.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "run.production.checkpoint.append-only",
+      "claim_type": "persistence",
+      "pass_condition": "Repeated interruptions extend one checkpoint digest chain without rolling back any prior ledger prefix.",
+      "primary_surface": "run-checkpoint-contract runtime plus repeated-interruption fixture",
+      "counterevidence": "Broken previous digest, lower ledger count, removed verified prefix, or checkpoint/step-ledger mismatch.",
+      "observed_evidence": "Two portable checkpoints preserve the first verified prefix; a validly resealed rollback is refused.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "run.production.checkpoint.resume",
+      "claim_type": "behavioral",
+      "pass_condition": "Valid checkpoint history and pre-checkpoint legacy interruption both resume without duplicating step evidence; tampered history blocks.",
+      "primary_surface": "fresh runner resume executions",
+      "counterevidence": "Receipt duplication, schema mixing, legacy rejection, or tampered checkpoint accepted.",
+      "observed_evidence": "Game, neutral portable, repeated, legacy-without-checkpoint, and tampered-checkpoint resume assertions cover the route.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.reference.checkpoint",
+      "claim_type": "authorization",
+      "pass_condition": "Only the latest checkpoint matching the whole current ledger can grant cache-reference protection.",
+      "primary_surface": "cache-reference-discovery runtime and adversarial fixtures",
+      "counterevidence": "Mutable state alone, stale tail, uncheckpointed append, tamper, truncation, or earlier checkpoint accepted.",
+      "observed_evidence": "Game and portable checkpoint sets complete; every stale, missing, tampered, truncated, or mismatched anchor is REVIEW_REQUIRED with protection false.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.reference.anchor-precedence",
+      "claim_type": "authorization",
+      "pass_condition": "A present invalid terminal receipt cannot fall back to an older valid checkpoint.",
+      "primary_surface": "terminal-precedence adversarial fixture",
+      "counterevidence": "Discovery status COMPLETE using checkpoint evidence after terminal validation fails.",
+      "observed_evidence": "The fixture returns REVIEW_REQUIRED with REFERENCE_RUN_RECEIPT_SHAPE_INVALID.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.reference.checkpoint-load",
+      "claim_type": "performance",
+      "pass_condition": "Checkpoint scanning has explicit independent count and byte ceilings and runs only on explicit discovery or retention application.",
+      "primary_surface": "runtime scan budgets and limit assertions",
+      "counterevidence": "Unbounded checkpoint file/root enumeration or candidate-run scan.",
+      "observed_evidence": "Per-run 10000/16 MiB and aggregate 100000/64 MiB ceilings are enforced; explicit low ceilings produce LIMIT_EXCEEDED.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.retention.checkpoint-binding",
+      "claim_type": "contract",
+      "pass_condition": "An exact checkpoint-derived key and entry digest is protected by planning and rechecked before deletion.",
+      "primary_surface": "retention plan fixture plus existing apply-time reference freshness suite",
+      "counterevidence": "Referenced key becomes a candidate, entry mismatch applies, or changed reference snapshot deletes.",
+      "observed_evidence": "Checkpoint binding is protected with no mismatch; existing fresh-rescan race tests remain green.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.reference.checkpoint-privacy",
+      "claim_type": "privacy",
+      "pass_condition": "Derived checkpoint reference sets contain no local path or private run identifier.",
+      "primary_surface": "serialized reference-set assertions in shared and CLI self-tests",
+      "counterevidence": "Drive path, local run directory, or run id appears in the derived set.",
+      "observed_evidence": "Both shared and CLI checkpoint-derived sets pass path and run-id absence checks.",
+      "decision": "PASS"
+    }
+  ]
+}

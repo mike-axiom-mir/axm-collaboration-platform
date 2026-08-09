@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-run-checkpoint/v1",
+  "type": "object",
+  "required": ["schema", "version", "run_id", "state", "plan_digest", "intent_ref", "graph_ref", "source_anchor", "started_at", "updated_at", "step_receipt_schema", "ledger_count", "ledger_tail", "verified_step_receipts", "previous_checkpoint_digest", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-run-checkpoint/v1" },
+    "version": { "const": "0.1.0" },
+    "run_id": { "type": "string" },
+    "state": { "const": "INTERRUPTED" },
+    "plan_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "intent_ref": { "type": "object" },
+    "graph_ref": { "type": "object" },
+    "source_anchor": { "type": "string", "minLength": 1 },
+    "started_at": { "type": "string", "minLength": 1 },
+    "updated_at": { "type": "string", "minLength": 1 },
+    "step_receipt_schema": { "enum": ["axm.game-step-receipt/v1", "axm.production-step-receipt/v1"] },
+    "ledger_count": { "type": "integer", "minimum": 0 },
+    "ledger_tail": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "verified_step_receipts": { "type": "array", "items": { "type": "string", "pattern": "^[a-f0-9]{64}$" }, "uniqueItems": true },
+    "previous_checkpoint_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

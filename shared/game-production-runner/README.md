@@ -22,6 +22,15 @@ state and terminal receipts. Pre-upgrade portable runs that already began with
 game-scoped receipts continue that same schema explicitly; a ledger is never
 silently mixed during resume.
 
+A graceful `INTERRUPTED` stop appends
+`axm.production-run-checkpoint/v1` to `run-checkpoints.jsonl`. Each checkpoint
+binds the internal plan and source references, pinned step-receipt schema,
+exact step-ledger count and tail, complete verified-receipt prefix, and previous
+checkpoint digest. Repeated interruptions therefore extend one append-only
+history. Mutable `run-state.json` alone grants no checkpoint authority. Old
+interrupted runs without this ledger remain resumable, but they cannot grant
+cache-reference protection until they next checkpoint or finish terminally.
+
 The content-verified documentation profile goes beyond fixture testimony. Its
 Hand deterministically renders a release note from a locked brief, while a
 separately identified verifier reads declared dependency and output bytes
@@ -52,10 +61,13 @@ not a claim about original publication time.
 
 Protected references no longer need to be copied by hand. An explicit,
 read-only discovery pass scans only direct run directories under a separate
-external job root. It accepts fully sealed terminal run receipts only after
-validating the complete bounded step ledger, one pinned step-receipt schema,
-the digest chain, exact run binding, and the terminal receipt's complete list
-of verified step digests. Only verified `HIT`, `MISS_STORED`,
+external job root. It accepts either a fully sealed terminal run receipt or the
+latest checkpoint in a fully validated append-only checkpoint history. Every
+checkpoint must match its exact prefix of the complete bounded step ledger;
+the latest must match the current count and tail. A present invalid terminal
+receipt never falls back to older checkpoint evidence. Both anchor routes pin
+one step-receipt schema, the digest chain, exact run binding, and the complete
+verified step list. Only verified `HIT`, `MISS_STORED`,
 `MISS_ENTRY_EXISTS`, and `MISS_CONFLICT` observations contribute protection.
 The sealed result discloses digests and counts, never local paths or run IDs.
 Any incomplete, linked, malformed, mixed-schema, over-limit, or contradictory
@@ -93,12 +105,13 @@ not as a security boundary for malicious code.
   inventory, separate count/logical-byte/filesystem-age budgets, protected
   references, dry-run authority, stale proposals, malformed layouts, exact
   deletion, and post-delete readback.
-- Terminal-ledger cache-reference discovery: executable and self-tested across
-  game and portable schemas, limits, tamper, incomplete and mixed ledgers,
-  conflicting entry digests, path privacy, and reference-snapshot races.
-- Persisted retention policies, scheduling, leases, and authoritative
-  nonterminal checkpoints: missing; cache and reference roots remain
-  human-owned local state.
+- Terminal and checkpoint cache-reference discovery: executable and self-tested
+  across game and portable schemas, repeated interruption, rollback, stale
+  tails, truncation, invalid-terminal precedence, limits, path privacy, exact
+  entry binding, and reference-snapshot races.
+- Persisted retention policies, scheduling, and in-flight cache leases are
+  missing; cache and reference roots remain human-owned local state. A
+  checkpoint covers completed receipts only, not work advancing after it.
 - Explicit Hand confinement substrate diagnosis: executable and self-tested;
   the current Node 24 observation is `DEGRADED` because network denial failed.
 - Process-hosted production Hands and a malicious-code sandbox: missing.
@@ -131,8 +144,9 @@ not as a security boundary for malicious code.
 - Protected keys, unclassified layouts, and active publishers cannot be
   retention-deletion candidates. Retention never runs during a candidate.
 - Reference discovery is an explicit bounded read-only action. It grants
-  protection only for complete terminal ledgers; interrupted or incomplete
-  runs hold the derived set, and apply must rescan the same reference root.
+  protection only for complete terminal ledgers or exact latest graceful
+  checkpoints. Uncheckpointed progress, stale checkpoints, and malformed
+  anchors hold the derived set; apply must rescan the same reference root.
 - Confinement probing is opt-in, local-loopback-only, and grants no execution
   authority even if every check passes.
 - Any required capability that is allowed or unknown holds process-Hand

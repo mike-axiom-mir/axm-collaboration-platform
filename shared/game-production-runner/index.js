@@ -5,6 +5,7 @@ module.exports = Object.freeze({
   contracts: require('./contracts'),
   compiler: require('./compiler'),
   runner: require('./runner'),
+  runCheckpoints: require('./run-checkpoint-contract'),
   stepReceipts: require('./step-receipt-contract'),
   artifactCache: require('./artifact-cache'),
   cacheReferences: require('./cache-reference-discovery'),

@@ -5,6 +5,7 @@ const path = require('path');
 const Codec = require('./canonical');
 const Contracts = require('./contracts');
 const StepReceipts = require('./step-receipt-contract');
+const RunCheckpoints = require('./run-checkpoint-contract');
 
 const SCHEMA = 'axm.production-artifact-cache-reference-set/v1';
 const VERSION = '0.1.0';
@@ -15,6 +16,8 @@ const DEFAULT_MAX_DIRECTORY_ENTRIES = 20000;
 const DEFAULT_MAX_RUNS = 10000;
 const DEFAULT_MAX_RECEIPTS = 100000;
 const DEFAULT_MAX_LEDGER_BYTES = 268435456;
+const DEFAULT_MAX_CHECKPOINTS = 100000;
+const DEFAULT_MAX_CHECKPOINT_LEDGER_BYTES = 67108864;
 const MAX_SINGLE_LEDGER_BYTES = 16777216;
 const MAX_RUN_RECEIPT_BYTES = 1048576;
 const RUN_RECEIPT_KEYS = Object.freeze([
@@ -80,8 +83,10 @@ function scanBudget(options) {
   const maxRuns = options.scanMaxRuns == null ? DEFAULT_MAX_RUNS : options.scanMaxRuns;
   const maxReceipts = options.scanMaxReceipts == null ? DEFAULT_MAX_RECEIPTS : options.scanMaxReceipts;
   const maxLedgerBytes = options.scanMaxLedgerBytes == null ? DEFAULT_MAX_LEDGER_BYTES : options.scanMaxLedgerBytes;
-  if (!Number.isInteger(maxDirectoryEntries) || maxDirectoryEntries < 1 || maxDirectoryEntries > DEFAULT_MAX_DIRECTORY_ENTRIES || !Number.isInteger(maxRuns) || maxRuns < 1 || maxRuns > DEFAULT_MAX_RUNS || !Number.isInteger(maxReceipts) || maxReceipts < 1 || maxReceipts > DEFAULT_MAX_RECEIPTS || !Number.isSafeInteger(maxLedgerBytes) || maxLedgerBytes < 1 || maxLedgerBytes > DEFAULT_MAX_LEDGER_BYTES) fail('REFERENCE_SCAN_BUDGET_INVALID');
-  return { max_directory_entries: maxDirectoryEntries, max_runs: maxRuns, max_receipts: maxReceipts, max_ledger_bytes: maxLedgerBytes, max_single_ledger_bytes: MAX_SINGLE_LEDGER_BYTES };
+  const maxCheckpoints = options.scanMaxCheckpoints == null ? DEFAULT_MAX_CHECKPOINTS : options.scanMaxCheckpoints;
+  const maxCheckpointLedgerBytes = options.scanMaxCheckpointLedgerBytes == null ? DEFAULT_MAX_CHECKPOINT_LEDGER_BYTES : options.scanMaxCheckpointLedgerBytes;
+  if (!Number.isInteger(maxDirectoryEntries) || maxDirectoryEntries < 1 || maxDirectoryEntries > DEFAULT_MAX_DIRECTORY_ENTRIES || !Number.isInteger(maxRuns) || maxRuns < 1 || maxRuns > DEFAULT_MAX_RUNS || !Number.isInteger(maxReceipts) || maxReceipts < 1 || maxReceipts > DEFAULT_MAX_RECEIPTS || !Number.isSafeInteger(maxLedgerBytes) || maxLedgerBytes < 1 || maxLedgerBytes > DEFAULT_MAX_LEDGER_BYTES || !Number.isInteger(maxCheckpoints) || maxCheckpoints < 1 || maxCheckpoints > DEFAULT_MAX_CHECKPOINTS || !Number.isSafeInteger(maxCheckpointLedgerBytes) || maxCheckpointLedgerBytes < 1 || maxCheckpointLedgerBytes > DEFAULT_MAX_CHECKPOINT_LEDGER_BYTES) fail('REFERENCE_SCAN_BUDGET_INVALID');
+  return { max_directory_entries: maxDirectoryEntries, max_runs: maxRuns, max_receipts: maxReceipts, max_ledger_bytes: maxLedgerBytes, max_single_ledger_bytes: MAX_SINGLE_LEDGER_BYTES, max_checkpoints: maxCheckpoints, max_checkpoint_ledger_bytes: maxCheckpointLedgerBytes, max_single_checkpoint_ledger_bytes: RunCheckpoints.MAX_LEDGER_BYTES };
 }
 
 function boundedDirectNames(root, maximum) {
@@ -104,6 +109,23 @@ function plainFile(directory, name, missingCode) {
   const stat = fs.lstatSync(file);
   if (!stat.isFile() || stat.isSymbolicLink() || normalizedPath(fs.realpathSync.native(file)) !== normalizedPath(file)) fail('REFERENCE_RUN_FILE_NOT_PLAIN');
   return { file, stat };
+}
+
+function readBoundedFile(descriptor, maximum, limitCode) {
+  const buffer = Buffer.allocUnsafe(maximum + 1);
+  const handle = fs.openSync(descriptor.file, 'r');
+  let offset = 0;
+  try {
+    const stat = fs.fstatSync(handle);
+    if (!stat.isFile()) fail('REFERENCE_RUN_FILE_NOT_PLAIN');
+    while (offset <= maximum) {
+      const read = fs.readSync(handle, buffer, offset, buffer.length - offset, null);
+      if (read === 0) break;
+      offset += read;
+    }
+  } finally { fs.closeSync(handle); }
+  if (offset > maximum) fail(limitCode);
+  return buffer.subarray(0, offset);
 }
 
 function exactKeys(value, expected) {
@@ -149,39 +171,84 @@ function parseLedger(raw, expectedSchema, runId, counters, budget) {
   return receipts;
 }
 
-function inspectRun(runRoot, relative, budget, counters) {
-  const receiptDescriptor = plainFile(runRoot, 'run-receipt.json', 'REFERENCE_RUN_RECEIPT_MISSING');
-  const ledgerDescriptor = plainFile(runRoot, 'step-receipts.jsonl', 'REFERENCE_LEDGER_MISSING');
-  if (receiptDescriptor.stat.size > MAX_RUN_RECEIPT_BYTES) fail('REFERENCE_RUN_RECEIPT_TOO_LARGE');
-  if (ledgerDescriptor.stat.size > budget.max_single_ledger_bytes) fail('REFERENCE_SINGLE_LEDGER_LIMIT');
-  counters.ledgerBytes += ledgerDescriptor.stat.size;
-  if (counters.ledgerBytes > budget.max_ledger_bytes) fail('REFERENCE_SCAN_LEDGER_BYTE_LIMIT');
-  let runReceipt;
-  try { runReceipt = JSON.parse(fs.readFileSync(receiptDescriptor.file, 'utf8')); }
-  catch (_) { fail('REFERENCE_RUN_RECEIPT_JSON_INVALID'); }
-  validateRunReceipt(runReceipt);
-  const receipts = parseLedger(fs.readFileSync(ledgerDescriptor.file, 'utf8'), runReceipt.step_receipt_schema, runReceipt.id, counters, budget);
-  const verified = receipts.filter((receipt) => receipt.state === 'VERIFIED');
-  if (Codec.canonical(verified.map((receipt) => receipt.digest)) !== Codec.canonical(runReceipt.step_receipts)) fail('REFERENCE_RUN_RECEIPT_LEDGER_MISMATCH');
+function protectiveReferences(receipts) {
   const references = [];
-  for (const receipt of verified) {
+  for (const receipt of receipts.filter((item) => item.state === 'VERIFIED')) {
     if (!PROTECTIVE_CACHE_STATES.includes(receipt.cache.state)) continue;
     if (!DIGEST.test(String(receipt.cache.entry_digest || ''))) fail('REFERENCE_CACHE_ENTRY_DIGEST_MISSING');
     references.push({ key: receipt.cache.key, entry_digest: receipt.cache.entry_digest, cache_state: receipt.cache.state, step_receipt_digest: receipt.digest });
   }
+  return references;
+}
+
+function inspectedRun(anchorDigest, evidenceKind, state, ledgerSchema, receipts, references, checkpointCount, relative) {
+  const verified = receipts.filter((receipt) => receipt.state === 'VERIFIED');
   return {
     run: {
-      run_receipt_digest: runReceipt.digest,
-      state: runReceipt.state,
-      ledger_schema: runReceipt.step_receipt_schema,
+      evidence_kind: evidenceKind,
+      anchor_receipt_digest: anchorDigest,
+      state,
+      ledger_schema: ledgerSchema,
       receipt_count: receipts.length,
       verified_receipt_count: verified.length,
       ledger_tail: receipts.length ? receipts[receipts.length - 1].digest : null,
-      reference_count: references.length
+      reference_count: references.length,
+      checkpoint_count: checkpointCount
     },
     references,
     locator_digest: locatorDigest(relative)
   };
+}
+
+function inspectTerminalRun(runRoot, relative, budget, counters) {
+  const receiptDescriptor = plainFile(runRoot, 'run-receipt.json', 'REFERENCE_RUN_RECEIPT_MISSING');
+  const ledgerDescriptor = plainFile(runRoot, 'step-receipts.jsonl', 'REFERENCE_LEDGER_MISSING');
+  const receiptRaw = readBoundedFile(receiptDescriptor, MAX_RUN_RECEIPT_BYTES, 'REFERENCE_RUN_RECEIPT_TOO_LARGE');
+  const ledgerRaw = readBoundedFile(ledgerDescriptor, budget.max_single_ledger_bytes, 'REFERENCE_SINGLE_LEDGER_LIMIT');
+  counters.ledgerBytes += ledgerRaw.length;
+  if (counters.ledgerBytes > budget.max_ledger_bytes) fail('REFERENCE_SCAN_LEDGER_BYTE_LIMIT');
+  let runReceipt;
+  try { runReceipt = JSON.parse(receiptRaw.toString('utf8')); }
+  catch (_) { fail('REFERENCE_RUN_RECEIPT_JSON_INVALID'); }
+  validateRunReceipt(runReceipt);
+  const receipts = parseLedger(ledgerRaw.toString('utf8'), runReceipt.step_receipt_schema, runReceipt.id, counters, budget);
+  const verified = receipts.filter((receipt) => receipt.state === 'VERIFIED');
+  if (Codec.canonical(verified.map((receipt) => receipt.digest)) !== Codec.canonical(runReceipt.step_receipts)) fail('REFERENCE_RUN_RECEIPT_LEDGER_MISMATCH');
+  const references = protectiveReferences(receipts);
+  return inspectedRun(runReceipt.digest, 'TERMINAL_RUN_RECEIPT', runReceipt.state, runReceipt.step_receipt_schema, receipts, references, 0, relative);
+}
+
+function inspectCheckpointRun(runRoot, relative, budget, counters) {
+  const checkpointDescriptor = plainFile(runRoot, 'run-checkpoints.jsonl', 'REFERENCE_CHECKPOINT_LEDGER_MISSING');
+  const ledgerDescriptor = plainFile(runRoot, 'step-receipts.jsonl', 'REFERENCE_LEDGER_MISSING');
+  const checkpointRaw = readBoundedFile(checkpointDescriptor, budget.max_single_checkpoint_ledger_bytes, 'REFERENCE_SINGLE_CHECKPOINT_LEDGER_LIMIT');
+  const ledgerRaw = readBoundedFile(ledgerDescriptor, budget.max_single_ledger_bytes, 'REFERENCE_SINGLE_LEDGER_LIMIT');
+  counters.checkpointLedgerBytes += checkpointRaw.length;
+  counters.ledgerBytes += ledgerRaw.length;
+  if (counters.checkpointLedgerBytes > budget.max_checkpoint_ledger_bytes) fail('REFERENCE_SCAN_CHECKPOINT_LEDGER_BYTE_LIMIT');
+  if (counters.ledgerBytes > budget.max_ledger_bytes) fail('REFERENCE_SCAN_LEDGER_BYTE_LIMIT');
+  let checkpoints;
+  try { checkpoints = RunCheckpoints.parseLedger(checkpointRaw); }
+  catch (error) {
+    if (error instanceof RunCheckpoints.CheckpointError && error.code === 'RUN_CHECKPOINT_LEDGER_COUNT_LIMIT') fail('REFERENCE_SINGLE_CHECKPOINT_COUNT_LIMIT');
+    fail('REFERENCE_CHECKPOINT_LEDGER_INVALID');
+  }
+  if (!checkpoints.length) fail('REFERENCE_CHECKPOINT_LEDGER_EMPTY');
+  counters.checkpoints += checkpoints.length;
+  if (counters.checkpoints > budget.max_checkpoints) fail('REFERENCE_SCAN_CHECKPOINT_LIMIT');
+  const latest = checkpoints[checkpoints.length - 1];
+  const receipts = parseLedger(ledgerRaw.toString('utf8'), latest.step_receipt_schema, latest.run_id, counters, budget);
+  try { RunCheckpoints.assertLedgerHistory(checkpoints, receipts); }
+  catch (_) { fail('REFERENCE_CHECKPOINT_HISTORY_LEDGER_MISMATCH'); }
+  if (!RunCheckpoints.matchesLedger(latest, receipts)) fail('REFERENCE_CHECKPOINT_LEDGER_MISMATCH');
+  const references = protectiveReferences(receipts);
+  return inspectedRun(latest.digest, 'NONTERMINAL_CHECKPOINT', latest.state, latest.step_receipt_schema, receipts, references, checkpoints.length, relative);
+}
+
+function inspectRun(runRoot, relative, budget, counters) {
+  if (fs.existsSync(path.join(runRoot, 'run-receipt.json'))) return inspectTerminalRun(runRoot, relative, budget, counters);
+  if (fs.existsSync(path.join(runRoot, 'run-checkpoints.jsonl'))) return inspectCheckpointRun(runRoot, relative, budget, counters);
+  fail('REFERENCE_RUN_ANCHOR_MISSING');
 }
 
 function snapshotDigest(receipt) {
@@ -214,14 +281,14 @@ function discover(options) {
     protected_keys: [],
     holds: [],
     ignored_files: 0,
-    usage: { runs: 0, receipts: 0, ledger_bytes: 0, references: 0 },
+    usage: { runs: 0, receipts: 0, ledger_bytes: 0, checkpoints: 0, checkpoint_ledger_bytes: 0, references: 0 },
     authority: { read_only: true, protection_granted: false, deletion: false, installed: false, promoted: false, canon: false }
   };
   if (!location.exists) {
     receipt.status = 'REVIEW_REQUIRED';
     receipt.holds.push({ locator_digest: locatorDigest('job-root'), reason: 'REFERENCE_JOB_ROOT_MISSING' });
   } else {
-    const counters = { runs: 0, receipts: 0, ledgerBytes: 0 }, aggregated = new Map();
+    const counters = { runs: 0, receipts: 0, ledgerBytes: 0, checkpoints: 0, checkpointLedgerBytes: 0 }, aggregated = new Map();
     const direct = boundedDirectNames(location.root, budget.max_directory_entries);
     for (const name of direct.names) {
       const target = path.join(location.root, name), stat = fs.lstatSync(target), relative = 'runs/' + name;
@@ -240,16 +307,17 @@ function discover(options) {
         const inspected = inspectRun(target, relative, budget, counters);
         receipt.runs.push(inspected.run);
         for (const reference of inspected.references) {
-          if (!aggregated.has(reference.key)) aggregated.set(reference.key, { key: reference.key, entryDigests: new Set(), runReceipts: new Set(), stepReceipts: new Set(), states: new Set() });
+          if (!aggregated.has(reference.key)) aggregated.set(reference.key, { key: reference.key, entryDigests: new Set(), anchorReceipts: new Set(), stepReceipts: new Set(), states: new Set(), evidenceKinds: new Set() });
           const item = aggregated.get(reference.key);
           item.entryDigests.add(reference.entry_digest);
-          item.runReceipts.add(inspected.run.run_receipt_digest);
+          item.anchorReceipts.add(inspected.run.anchor_receipt_digest);
           item.stepReceipts.add(reference.step_receipt_digest);
           item.states.add(reference.cache_state);
+          item.evidenceKinds.add(inspected.run.evidence_kind);
         }
       } catch (error) {
         const reason = error instanceof ReferenceError ? error.code : 'REFERENCE_RUN_INSPECTION_FAILED';
-        if (['REFERENCE_SCAN_RECEIPT_LIMIT', 'REFERENCE_SCAN_LEDGER_BYTE_LIMIT'].includes(reason)) receipt.status = 'LIMIT_EXCEEDED';
+        if (['REFERENCE_SCAN_RECEIPT_LIMIT', 'REFERENCE_SCAN_LEDGER_BYTE_LIMIT', 'REFERENCE_SCAN_CHECKPOINT_LIMIT', 'REFERENCE_SCAN_CHECKPOINT_LEDGER_BYTE_LIMIT', 'REFERENCE_SINGLE_CHECKPOINT_LEDGER_LIMIT', 'REFERENCE_SINGLE_CHECKPOINT_COUNT_LIMIT'].includes(reason)) receipt.status = 'LIMIT_EXCEEDED';
         receipt.holds.push({ locator_digest: locatorDigest(relative), reason });
         if (receipt.status === 'LIMIT_EXCEEDED') break;
       }
@@ -258,19 +326,20 @@ function discover(options) {
       receipt.status = 'LIMIT_EXCEEDED';
       receipt.holds.push({ locator_digest: locatorDigest('directory-entry-limit'), reason: 'REFERENCE_SCAN_DIRECTORY_ENTRY_LIMIT' });
     }
-    receipt.runs.sort((left, right) => left.run_receipt_digest.localeCompare(right.run_receipt_digest));
+    receipt.runs.sort((left, right) => left.anchor_receipt_digest.localeCompare(right.anchor_receipt_digest));
     receipt.references = Array.from(aggregated.values()).map((item) => ({
       key: item.key,
       entry_digests: Array.from(item.entryDigests).sort(),
-      run_receipt_digests: Array.from(item.runReceipts).sort(),
+      anchor_receipt_digests: Array.from(item.anchorReceipts).sort(),
       step_receipt_digests: Array.from(item.stepReceipts).sort(),
-      cache_states: Array.from(item.states).sort()
+      cache_states: Array.from(item.states).sort(),
+      evidence_kinds: Array.from(item.evidenceKinds).sort()
     })).sort((left, right) => left.key.localeCompare(right.key));
     for (const reference of receipt.references) if (reference.entry_digests.length !== 1) receipt.holds.push({ key: reference.key, reason: 'REFERENCE_ENTRY_DIGEST_CONFLICT' });
     receipt.holds.sort((left, right) => String(left.key || left.locator_digest).localeCompare(String(right.key || right.locator_digest)) || left.reason.localeCompare(right.reason));
     if (receipt.status === 'COMPLETE' && receipt.holds.length) receipt.status = 'REVIEW_REQUIRED';
     receipt.protected_keys = receipt.references.map((item) => item.key);
-    receipt.usage = { runs: receipt.runs.length, receipts: counters.receipts, ledger_bytes: counters.ledgerBytes, references: receipt.references.length };
+    receipt.usage = { runs: receipt.runs.length, receipts: counters.receipts, ledger_bytes: counters.ledgerBytes, checkpoints: counters.checkpoints, checkpoint_ledger_bytes: counters.checkpointLedgerBytes, references: receipt.references.length };
   }
   receipt.authority.protection_granted = receipt.status === 'COMPLETE';
   receipt.snapshot_digest = snapshotDigest(receipt);
@@ -287,16 +356,18 @@ function validate(receipt) {
   try { snapshotValid = receipt.snapshot_digest === snapshotDigest(receipt); } catch (_) { snapshotValid = false; }
   if (!DIGEST.test(String(receipt.job_root_fingerprint || '')) || !DIGEST.test(String(receipt.snapshot_digest || '')) || !snapshotValid) errors.push('cache reference set snapshot is invalid');
   const budget = receipt.scan_budget;
-  if (!exactKeys(budget, ['max_directory_entries', 'max_runs', 'max_receipts', 'max_ledger_bytes', 'max_single_ledger_bytes']) || !Number.isInteger(budget.max_directory_entries) || budget.max_directory_entries < 1 || budget.max_directory_entries > DEFAULT_MAX_DIRECTORY_ENTRIES || !Number.isInteger(budget.max_runs) || budget.max_runs < 1 || budget.max_runs > DEFAULT_MAX_RUNS || !Number.isInteger(budget.max_receipts) || budget.max_receipts < 1 || budget.max_receipts > DEFAULT_MAX_RECEIPTS || !Number.isSafeInteger(budget.max_ledger_bytes) || budget.max_ledger_bytes < 1 || budget.max_ledger_bytes > DEFAULT_MAX_LEDGER_BYTES || budget.max_single_ledger_bytes !== MAX_SINGLE_LEDGER_BYTES) errors.push('cache reference scan budget is invalid');
-  if (!Array.isArray(receipt.runs) || receipt.runs.some((run) => !exactKeys(run, ['run_receipt_digest', 'state', 'ledger_schema', 'receipt_count', 'verified_receipt_count', 'ledger_tail', 'reference_count']) || !DIGEST.test(String(run.run_receipt_digest || '')) || !TERMINAL_STATES.includes(run.state) || !Object.values(StepReceipts.SCHEMAS).includes(run.ledger_schema) || !Number.isSafeInteger(run.receipt_count) || run.receipt_count < 0 || !Number.isSafeInteger(run.verified_receipt_count) || run.verified_receipt_count < 0 || run.verified_receipt_count > run.receipt_count || !Number.isSafeInteger(run.reference_count) || run.reference_count < 0 || run.reference_count > run.verified_receipt_count || (run.receipt_count === 0 ? run.ledger_tail !== null : !DIGEST.test(String(run.ledger_tail || ''))))) errors.push('cache reference run summaries are invalid');
-  if (!Array.isArray(receipt.references) || receipt.references.some((item) => !exactKeys(item, ['key', 'entry_digests', 'run_receipt_digests', 'step_receipt_digests', 'cache_states']) || !DIGEST.test(String(item.key || '')) || !Array.isArray(item.entry_digests) || !item.entry_digests.length || item.entry_digests.some((digest) => !DIGEST.test(String(digest || ''))) || new Set(item.entry_digests).size !== item.entry_digests.length || !Array.isArray(item.run_receipt_digests) || !item.run_receipt_digests.length || item.run_receipt_digests.some((digest) => !DIGEST.test(String(digest || ''))) || new Set(item.run_receipt_digests).size !== item.run_receipt_digests.length || !Array.isArray(item.step_receipt_digests) || !item.step_receipt_digests.length || item.step_receipt_digests.some((digest) => !DIGEST.test(String(digest || ''))) || new Set(item.step_receipt_digests).size !== item.step_receipt_digests.length || !Array.isArray(item.cache_states) || !item.cache_states.length || item.cache_states.some((state) => !PROTECTIVE_CACHE_STATES.includes(state)) || new Set(item.cache_states).size !== item.cache_states.length)) errors.push('cache reference bindings are invalid');
+  if (!exactKeys(budget, ['max_directory_entries', 'max_runs', 'max_receipts', 'max_ledger_bytes', 'max_single_ledger_bytes', 'max_checkpoints', 'max_checkpoint_ledger_bytes', 'max_single_checkpoint_ledger_bytes']) || !Number.isInteger(budget.max_directory_entries) || budget.max_directory_entries < 1 || budget.max_directory_entries > DEFAULT_MAX_DIRECTORY_ENTRIES || !Number.isInteger(budget.max_runs) || budget.max_runs < 1 || budget.max_runs > DEFAULT_MAX_RUNS || !Number.isInteger(budget.max_receipts) || budget.max_receipts < 1 || budget.max_receipts > DEFAULT_MAX_RECEIPTS || !Number.isSafeInteger(budget.max_ledger_bytes) || budget.max_ledger_bytes < 1 || budget.max_ledger_bytes > DEFAULT_MAX_LEDGER_BYTES || budget.max_single_ledger_bytes !== MAX_SINGLE_LEDGER_BYTES || !Number.isInteger(budget.max_checkpoints) || budget.max_checkpoints < 1 || budget.max_checkpoints > DEFAULT_MAX_CHECKPOINTS || !Number.isSafeInteger(budget.max_checkpoint_ledger_bytes) || budget.max_checkpoint_ledger_bytes < 1 || budget.max_checkpoint_ledger_bytes > DEFAULT_MAX_CHECKPOINT_LEDGER_BYTES || budget.max_single_checkpoint_ledger_bytes !== RunCheckpoints.MAX_LEDGER_BYTES) errors.push('cache reference scan budget is invalid');
+  if (!Array.isArray(receipt.runs) || receipt.runs.some((run) => !exactKeys(run, ['evidence_kind', 'anchor_receipt_digest', 'state', 'ledger_schema', 'receipt_count', 'verified_receipt_count', 'ledger_tail', 'reference_count', 'checkpoint_count']) || !['TERMINAL_RUN_RECEIPT', 'NONTERMINAL_CHECKPOINT'].includes(run.evidence_kind) || !DIGEST.test(String(run.anchor_receipt_digest || '')) || !(TERMINAL_STATES.includes(run.state) || run.state === 'INTERRUPTED') || (run.evidence_kind === 'TERMINAL_RUN_RECEIPT' && (!TERMINAL_STATES.includes(run.state) || run.checkpoint_count !== 0)) || (run.evidence_kind === 'NONTERMINAL_CHECKPOINT' && (run.state !== 'INTERRUPTED' || !Number.isSafeInteger(run.checkpoint_count) || run.checkpoint_count < 1)) || !Object.values(StepReceipts.SCHEMAS).includes(run.ledger_schema) || !Number.isSafeInteger(run.receipt_count) || run.receipt_count < 0 || !Number.isSafeInteger(run.verified_receipt_count) || run.verified_receipt_count < 0 || run.verified_receipt_count > run.receipt_count || !Number.isSafeInteger(run.reference_count) || run.reference_count < 0 || run.reference_count > run.verified_receipt_count || (run.receipt_count === 0 ? run.ledger_tail !== null : !DIGEST.test(String(run.ledger_tail || ''))))) errors.push('cache reference run summaries are invalid');
+  if (!Array.isArray(receipt.references) || receipt.references.some((item) => !exactKeys(item, ['key', 'entry_digests', 'anchor_receipt_digests', 'step_receipt_digests', 'cache_states', 'evidence_kinds']) || !DIGEST.test(String(item.key || '')) || !Array.isArray(item.entry_digests) || !item.entry_digests.length || item.entry_digests.some((digest) => !DIGEST.test(String(digest || ''))) || new Set(item.entry_digests).size !== item.entry_digests.length || !Array.isArray(item.anchor_receipt_digests) || !item.anchor_receipt_digests.length || item.anchor_receipt_digests.some((digest) => !DIGEST.test(String(digest || ''))) || new Set(item.anchor_receipt_digests).size !== item.anchor_receipt_digests.length || !Array.isArray(item.step_receipt_digests) || !item.step_receipt_digests.length || item.step_receipt_digests.some((digest) => !DIGEST.test(String(digest || ''))) || new Set(item.step_receipt_digests).size !== item.step_receipt_digests.length || !Array.isArray(item.cache_states) || !item.cache_states.length || item.cache_states.some((state) => !PROTECTIVE_CACHE_STATES.includes(state)) || new Set(item.cache_states).size !== item.cache_states.length || !Array.isArray(item.evidence_kinds) || !item.evidence_kinds.length || item.evidence_kinds.some((kind) => !['TERMINAL_RUN_RECEIPT', 'NONTERMINAL_CHECKPOINT'].includes(kind)) || new Set(item.evidence_kinds).size !== item.evidence_kinds.length)) errors.push('cache reference bindings are invalid');
   const referenceKeys = Array.isArray(receipt.references) ? receipt.references.filter((item) => item && DIGEST.test(String(item.key || ''))).map((item) => item.key).sort() : [];
   if (!Array.isArray(receipt.protected_keys) || receipt.protected_keys.some((key) => !DIGEST.test(String(key || ''))) || new Set(receipt.protected_keys).size !== receipt.protected_keys.length || Codec.canonical(receipt.protected_keys.slice().sort()) !== Codec.canonical(referenceKeys)) errors.push('cache reference protected keys are invalid');
   if (!Array.isArray(receipt.holds) || receipt.holds.some((hold) => !hold || typeof hold.reason !== 'string' || !hold.reason || (!DIGEST.test(String(hold.key || '')) && !DIGEST.test(String(hold.locator_digest || ''))) || (hold.key != null && hold.locator_digest != null) || !exactKeys(hold, hold.key != null ? ['key', 'reason'] : ['locator_digest', 'reason']))) errors.push('cache reference holds are invalid');
-  const usage = receipt.usage, inspectedReceipts = Array.isArray(receipt.runs) ? receipt.runs.reduce((sum, run) => sum + (run && Number.isSafeInteger(run.receipt_count) ? run.receipt_count : 0), 0) : 0;
-  if (!exactKeys(usage, ['runs', 'receipts', 'ledger_bytes', 'references']) || !Number.isSafeInteger(usage.runs) || usage.runs !== (Array.isArray(receipt.runs) ? receipt.runs.length : -1) || !Number.isSafeInteger(usage.receipts) || usage.receipts < inspectedReceipts || !Number.isSafeInteger(usage.ledger_bytes) || usage.ledger_bytes < 0 || !Number.isSafeInteger(usage.references) || usage.references !== (Array.isArray(receipt.references) ? receipt.references.length : -1)) errors.push('cache reference usage is invalid');
+  const usage = receipt.usage;
+  const inspectedReceipts = Array.isArray(receipt.runs) ? receipt.runs.reduce((sum, run) => sum + (run && Number.isSafeInteger(run.receipt_count) ? run.receipt_count : 0), 0) : 0;
+  const inspectedCheckpoints = Array.isArray(receipt.runs) ? receipt.runs.reduce((sum, run) => sum + (run && Number.isSafeInteger(run.checkpoint_count) ? run.checkpoint_count : 0), 0) : 0;
+  if (!exactKeys(usage, ['runs', 'receipts', 'ledger_bytes', 'checkpoints', 'checkpoint_ledger_bytes', 'references']) || !Number.isSafeInteger(usage.runs) || usage.runs !== (Array.isArray(receipt.runs) ? receipt.runs.length : -1) || !Number.isSafeInteger(usage.receipts) || usage.receipts < inspectedReceipts || !Number.isSafeInteger(usage.ledger_bytes) || usage.ledger_bytes < 0 || !Number.isSafeInteger(usage.checkpoints) || usage.checkpoints < inspectedCheckpoints || !Number.isSafeInteger(usage.checkpoint_ledger_bytes) || usage.checkpoint_ledger_bytes < 0 || !Number.isSafeInteger(usage.references) || usage.references !== (Array.isArray(receipt.references) ? receipt.references.length : -1)) errors.push('cache reference usage is invalid');
   if (receipt.status === 'COMPLETE' && (!Array.isArray(receipt.holds) || !Array.isArray(receipt.references) || receipt.holds.length || receipt.references.some((item) => !item || !Array.isArray(item.entry_digests) || item.entry_digests.length !== 1))) errors.push('complete cache reference set contains unresolved holds');
-  if (!receipt.root_exists && (receipt.status === 'COMPLETE' || (!Array.isArray(receipt.runs) || receipt.runs.length) || (!Array.isArray(receipt.references) || receipt.references.length) || (!Array.isArray(receipt.protected_keys) || receipt.protected_keys.length) || (exactKeys(receipt.usage, ['runs', 'receipts', 'ledger_bytes', 'references']) && (receipt.usage.runs || receipt.usage.receipts || receipt.usage.ledger_bytes || receipt.usage.references)))) errors.push('missing cache reference root contains invented observations');
+  if (!receipt.root_exists && (receipt.status === 'COMPLETE' || (!Array.isArray(receipt.runs) || receipt.runs.length) || (!Array.isArray(receipt.references) || receipt.references.length) || (!Array.isArray(receipt.protected_keys) || receipt.protected_keys.length) || (exactKeys(receipt.usage, ['runs', 'receipts', 'ledger_bytes', 'checkpoints', 'checkpoint_ledger_bytes', 'references']) && Object.values(receipt.usage).some((value) => value !== 0)))) errors.push('missing cache reference root contains invented observations');
   if (!exactKeys(receipt.authority, ['read_only', 'protection_granted', 'deletion', 'installed', 'promoted', 'canon']) || receipt.authority.read_only !== true || receipt.authority.deletion !== false || receipt.authority.installed !== false || receipt.authority.promoted !== false || receipt.authority.canon !== false || receipt.authority.protection_granted !== (receipt.status === 'COMPLETE')) errors.push('cache reference authority is invalid');
   return errors;
 }

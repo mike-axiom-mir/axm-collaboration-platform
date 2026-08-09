@@ -1,0 +1,22 @@
+{
+  "schema": "axm.capability-comparison/v1",
+  "subject": "game-production-runner graceful interruption checkpoints and cache references",
+  "status": "READY",
+  "required_missing": [],
+  "comparisons": [
+    { "requirement": "graceful-interruption-is-sealed", "available": ["run.production.checkpoint.sealed"], "missing": [] },
+    { "requirement": "checkpoint-history-is-append-only", "available": ["run.production.checkpoint.chain"], "missing": [] },
+    { "requirement": "checkpoint-history-binds-ledger-prefixes", "available": ["run.production.checkpoint.ledger-prefix"], "missing": [] },
+    { "requirement": "legacy-interruption-remains-resumable", "available": ["run.production.checkpoint.legacy-resume"], "missing": [] },
+    { "requirement": "checkpoint-references-are-discoverable", "available": ["cache.production.reference.checkpoint"], "missing": [] },
+    { "requirement": "unsafe-checkpoint-evidence-fails-closed", "available": ["cache.production.reference.checkpoint-hold"], "missing": [] },
+    { "requirement": "checkpoint-discovery-is-bounded-and-private", "available": ["cache.production.reference.checkpoint-bounded-private"], "missing": [] },
+    { "requirement": "retention-protects-checkpoint-bindings", "available": ["cache.production.retention.checkpoint-binding"], "missing": [] }
+  ],
+  "out_of_scope_gaps": [
+    "in-flight cache lease after the latest checkpoint",
+    "automatic checkpoint timer",
+    "persisted retention scheduler",
+    "native game execution"
+  ]
+}

@@ -7,6 +7,7 @@ const Contracts = require('./contracts');
 const Compiler = require('./compiler');
 const StepReceipts = require('./step-receipt-contract');
 const ArtifactCache = require('./artifact-cache');
+const RunCheckpoints = require('./run-checkpoint-contract');
 
 const START_CONFIRMATION = 'RUN GAME PRODUCTION CANDIDATE';
 const CLAIM_STATUSES = ['PASS', 'FAIL', 'WARNING', 'UNKNOWN', 'MISSING_VALIDATOR', 'HUMAN_REVIEW', 'NOT_APPLICABLE'];
@@ -273,12 +274,12 @@ async function run(options) {
   const runDir = path.join(root, runId);
   if (!inside(root, runDir)) throw new Error('run directory escaped job root');
   if (fs.existsSync(runDir) && resolveExistingLinks(runDir).toLowerCase() !== path.resolve(runDir).toLowerCase()) throw new Error('run directory may not be a symbolic link or junction');
-  const stateFile = path.join(runDir, 'run-state.json'), receiptFile = path.join(runDir, 'step-receipts.jsonl'), runReceiptFile = path.join(runDir, 'run-receipt.json');
+  const stateFile = path.join(runDir, 'run-state.json'), receiptFile = path.join(runDir, 'step-receipts.jsonl'), runReceiptFile = path.join(runDir, 'run-receipt.json'), checkpointFile = path.join(runDir, 'run-checkpoints.jsonl');
   const clock = typeof options.clock === 'function' ? options.clock : () => new Date().toISOString();
   const requestedStepReceiptSchema = StepReceipts.schemaFor(options.stepReceiptProfile);
   let stepReceiptSchema = requestedStepReceiptSchema;
   let legacyStepReceiptSchema = false;
-  let state, cache = null;
+  let state, cache = null, checkpointReceipt = null, checkpointTail = null;
 
   if (fs.existsSync(runDir)) {
     if (!options.resume) throw new Error('run already exists; explicit resume is required');
@@ -298,10 +299,13 @@ async function run(options) {
     if (stepReceiptSchema !== requestedStepReceiptSchema && !mismatchAllowed) throw new Error('resume step receipt profile mismatch');
     legacyStepReceiptSchema = stepReceiptSchema !== requestedStepReceiptSchema;
     const terminalReceipt = assertResumeIntegrity(state, plan, receiptFile, runReceiptFile, stepReceiptSchema);
+    const checkpoints = RunCheckpoints.assertHistory(RunCheckpoints.readFile(checkpointFile), { runId: state.id, plan, stepReceiptSchema });
+    RunCheckpoints.assertLedgerHistory(checkpoints, existingLedger);
+    checkpointTail = checkpoints.length ? checkpoints[checkpoints.length - 1].digest : null;
     state.step_receipt_schema = stepReceiptSchema;
     if (legacyStepReceiptSchema) state.step_receipt_compatibility = 'legacy-game';
     for (const step of Object.values(state.steps || {})) if (step.state === 'VERIFIED' && !verifyPreservedOutputs(runDir, step)) throw new Error('verified output drift blocks resume for ' + step.package_id);
-    if (terminal(state)) return { state: Codec.clone(state), runReceipt: terminalReceipt, runDir, stepReceiptSchema, legacyStepReceiptSchema };
+    if (terminal(state)) return { state: Codec.clone(state), runReceipt: terminalReceipt, checkpointReceipt: null, runDir, stepReceiptSchema, legacyStepReceiptSchema };
     cache = options.cacheRoot ? ArtifactCache.open({ cacheRoot: options.cacheRoot, sourceRoot: options.sourceRoot, jobRoot: root }) : null;
     if (!state.boundaries || typeof state.boundaries !== 'object' || Array.isArray(state.boundaries)) throw new Error('resume state boundaries are invalid');
     state.boundaries.cache_write = state.boundaries.cache_write === true || !!cache;
@@ -435,9 +439,13 @@ async function run(options) {
     if (!accepted || state.status === 'HUMAN_REVIEW') break;
   }
 
+  if (state.status === 'INTERRUPTED') {
+    checkpointReceipt = RunCheckpoints.create(state, plan, checkpointTail);
+    RunCheckpoints.appendFile(checkpointFile, checkpointReceipt);
+  }
   if (state.status === 'RUNNING' && Object.keys(state.steps).length === plan.execution_order.length) { state.status = 'CANDIDATE_READY'; state.overall_verdict = 'VERIFIED'; state.updated_at = clock(); writeJsonAtomic(stateFile, state); }
-  if (terminal(state)) { const receipt = finalReceipt(state, plan, clock()); writeJsonAtomic(runReceiptFile, receipt); return { state: Codec.clone(state), runReceipt: receipt, runDir, stepReceiptSchema, legacyStepReceiptSchema }; }
-  return { state: Codec.clone(state), runReceipt: null, runDir, stepReceiptSchema, legacyStepReceiptSchema };
+  if (terminal(state)) { const receipt = finalReceipt(state, plan, clock()); writeJsonAtomic(runReceiptFile, receipt); return { state: Codec.clone(state), runReceipt: receipt, checkpointReceipt: null, runDir, stepReceiptSchema, legacyStepReceiptSchema }; }
+  return { state: Codec.clone(state), runReceipt: null, checkpointReceipt, runDir, stepReceiptSchema, legacyStepReceiptSchema };
 }
 
 module.exports = { START_CONFIRMATION, assertJobRoot, verificationErrors, verdictFor, run };

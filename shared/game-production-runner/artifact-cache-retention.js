@@ -346,7 +346,7 @@ function validateProposal(proposal) {
   if (references.entry_bindings.some((item) => !exactKeys(item, ['key', 'entry_digest']) || !DIGEST.test(String(item.key || '')) || !DIGEST.test(String(item.entry_digest || ''))) || new Set(references.entry_bindings.map((item) => item.key)).size !== references.entry_bindings.length || Codec.canonical(references.entry_bindings.map((item) => item.key).sort()) !== Codec.canonical(discoveredKeys) || absentKeys.some((key) => !protectedKeys.includes(key)) || mismatchedKeys.some((key) => !discoveredKeys.includes(key)) || mismatchedKeys.some((key) => absentKeys.includes(key))) fail('RETENTION_PROPOSAL_REFERENCE_BINDING_INVALID');
   const hasReferenceSet = references.reference_set_digest !== null;
   if (hasReferenceSet) {
-    if (!DIGEST.test(String(references.reference_set_digest || '')) || !DIGEST.test(String(references.reference_set_snapshot_digest || '')) || !DIGEST.test(String(references.reference_root_fingerprint || '')) || !finiteInteger(references.reference_observed_at_ms) || !references.reference_scan_budget || !Number.isInteger(references.reference_scan_budget.max_directory_entries) || !Number.isInteger(references.reference_scan_budget.max_runs) || !Number.isInteger(references.reference_scan_budget.max_receipts) || !Number.isSafeInteger(references.reference_scan_budget.max_ledger_bytes) || !['COMPLETE', 'REVIEW_REQUIRED', 'LIMIT_EXCEEDED'].includes(references.reference_set_status)) fail('RETENTION_PROPOSAL_REFERENCE_BINDING_INVALID');
+    if (!DIGEST.test(String(references.reference_set_digest || '')) || !DIGEST.test(String(references.reference_set_snapshot_digest || '')) || !DIGEST.test(String(references.reference_root_fingerprint || '')) || !finiteInteger(references.reference_observed_at_ms) || !references.reference_scan_budget || !Number.isInteger(references.reference_scan_budget.max_directory_entries) || !Number.isInteger(references.reference_scan_budget.max_runs) || !Number.isInteger(references.reference_scan_budget.max_receipts) || !Number.isSafeInteger(references.reference_scan_budget.max_ledger_bytes) || !Number.isInteger(references.reference_scan_budget.max_checkpoints) || !Number.isSafeInteger(references.reference_scan_budget.max_checkpoint_ledger_bytes) || !['COMPLETE', 'REVIEW_REQUIRED', 'LIMIT_EXCEEDED'].includes(references.reference_set_status)) fail('RETENTION_PROPOSAL_REFERENCE_BINDING_INVALID');
   } else if (references.reference_set_status !== null || references.reference_set_snapshot_digest !== null || references.reference_root_fingerprint !== null || references.reference_observed_at_ms !== null || references.reference_scan_budget !== null || discoveredKeys.length || references.entry_bindings.length || mismatchedKeys.length) fail('RETENTION_PROPOSAL_REFERENCE_BINDING_INVALID');
   if (!Array.isArray(proposal.candidates) || proposal.candidates.some((item) => !item || !DIGEST.test(String(item.key || '')) || !DIGEST.test(String(item.entry_digest || '')) || !finiteInteger(item.logical_bytes) || !finiteInteger(item.observed_mtime_ms))) fail('RETENTION_PROPOSAL_CANDIDATES_INVALID');
 }
@@ -371,7 +371,9 @@ function apply(options) {
         scanMaxDirectoryEntries: proposal.references.reference_scan_budget.max_directory_entries,
         scanMaxRuns: proposal.references.reference_scan_budget.max_runs,
         scanMaxReceipts: proposal.references.reference_scan_budget.max_receipts,
-        scanMaxLedgerBytes: proposal.references.reference_scan_budget.max_ledger_bytes
+        scanMaxLedgerBytes: proposal.references.reference_scan_budget.max_ledger_bytes,
+        scanMaxCheckpoints: proposal.references.reference_scan_budget.max_checkpoints,
+        scanMaxCheckpointLedgerBytes: proposal.references.reference_scan_budget.max_checkpoint_ledger_bytes
       });
     } catch (_) {
       return applicationReceipt(proposal.digest, options.approvedDigest, 'REFERENCES_STALE', true, [], null, false, recordedAt, null);

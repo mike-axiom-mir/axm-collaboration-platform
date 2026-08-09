@@ -41,6 +41,10 @@ coverage and digest binding; editorial quality remains human review. Both
 portable commands emit `axm.production-step-receipt/v1` ledgers and disclose
 that schema in new portable state and terminal receipts. An interrupted
 pre-upgrade ledger continues its original game receipt schema without mixing.
+Every new graceful interruption also returns `run_checkpoint` and appends the
+same sealed `axm.production-run-checkpoint/v1` record to
+`run-checkpoints.jsonl`. Repeated interruptions extend that digest chain; a
+terminal result still returns the separate terminal `run_receipt`.
 
 `--cache-root` enables verified reuse only for an executor that explicitly
 declares `deterministic-v1`. The cache root must be external to both the
@@ -55,10 +59,13 @@ automatic eviction or cache garbage collection in v0.1.
 sealed, path-free inventory of exact cache layouts and holds on unclassified or
 actively publishing content. `discover-cache-references` is also read-only and
 bounded. It derives a sealed, path-private protection set only from complete
-terminal receipts whose entire digest-chained ledger validates; interrupted,
-tampered, linked, mixed-schema, contradictory, or over-limit observations hold
-the set. `plan-cache-retention` adds independent entry, logical-byte, and
-observed filesystem-age budgets. It can combine repeatable manual
+terminal receipts or the latest exact graceful checkpoint. Checkpoint histories
+must be append-only, bind every historical ledger prefix, and end at the current
+step-ledger count and tail. Uncheckpointed progress, tampered or truncated
+checkpoints, linked or mixed-schema ledgers, contradictory entry digests, and
+over-limit observations hold the set. A bad terminal receipt cannot fall back
+to older checkpoint evidence. `plan-cache-retention` adds independent entry,
+logical-byte, and observed filesystem-age budgets. It can combine repeatable manual
 `--protect-key` values with `--reference-job-root`; discovered bindings include
 the exact cache key and entry digest. Its output performs no deletion. Save
 only the nested `proposal` object to a JSON file. `apply-cache-retention`
@@ -67,6 +74,8 @@ and deletes only when `--explicit-apply` and the proposal's exact digest are
 supplied. The sealed application receipt includes the fresh reference snapshot,
 each selective invalidation digest, and post-delete usage. No discovery,
 retention policy, or deletion runs in the background or during a candidate.
+There is no in-flight cache lease: checkpoint protection covers completed
+receipts through its exact tail, not work produced while a resumed run advances.
 
 `probe-hand-confinement` is diagnostic and must be requested explicitly. It
 creates and removes a disposable operating-system temporary root and opens only

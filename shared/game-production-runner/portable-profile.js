@@ -207,11 +207,13 @@ async function run(options) {
   return {
     state: portableState(result.state, expectedPlan, result.stepReceiptSchema, result.legacyStepReceiptSchema),
     runReceipt: receipt,
+    checkpointReceipt: result.checkpointReceipt,
     runReceiptFile: receiptFile,
     runDir: result.runDir,
     internal: {
       plan_digest: internalPlan.digest,
       run_receipt_digest: result.runReceipt && result.runReceipt.digest,
+      checkpoint_receipt_digest: result.checkpointReceipt && result.checkpointReceipt.digest,
       step_receipt_schema: result.stepReceiptSchema,
       legacy_step_receipt_schema: result.legacyStepReceiptSchema
     }

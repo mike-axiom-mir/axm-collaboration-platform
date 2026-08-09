@@ -119,10 +119,15 @@ async function main() {
     equal(cacheHit.status, 0, 'CLI explicit cache hit run exits successfully');
     const cacheHitResult = parsed(cacheHit);
     ok(ledger(path.join(cacheHitResult.local_run_directory, 'step-receipts.jsonl')).every((receipt) => receipt.cache.state === 'HIT' && receipt.process.executor_invoked === false && receipt.evidence.length === 1), 'CLI hit skips executors but preserves fresh verifier evidence');
+    const cacheCheckpoint = invoke(['run-document-demo', '--job-root', cacheRuns, '--cache-root', cacheStore, '--run-id', 'cache-cli-checkpoint', '--max-steps', '1', '--confirm', 'RUN PRODUCTION CANDIDATE']);
+    equal(cacheCheckpoint.status, 0, 'CLI graceful cached interruption exits successfully');
+    const cacheCheckpointResult = parsed(cacheCheckpoint);
+    ok(cacheCheckpointResult.state.state === 'INTERRUPTED' && cacheCheckpointResult.run_receipt === null && cacheCheckpointResult.run_checkpoint.schema === 'axm.production-run-checkpoint/v1', 'CLI returns the sealed nonterminal checkpoint without claiming a terminal receipt');
+    ok(fs.existsSync(path.join(cacheCheckpointResult.local_run_directory, 'run-checkpoints.jsonl')), 'CLI preserves the append-only checkpoint ledger beside step evidence');
     const discoveredCacheReferences = invoke(['discover-cache-references', '--job-root', cacheRuns]);
     equal(discoveredCacheReferences.status, 0, 'CLI bounded terminal-ledger reference discovery exits successfully');
     const discoveredCacheReferenceSet = parsed(discoveredCacheReferences);
-    ok(discoveredCacheReferenceSet.status === 'COMPLETE' && discoveredCacheReferenceSet.protected_keys.length === 3 && discoveredCacheReferenceSet.authority.protection_granted, 'CLI derives all three exact protected cache keys from sealed terminal runs');
+    ok(discoveredCacheReferenceSet.status === 'COMPLETE' && discoveredCacheReferenceSet.protected_keys.length === 3 && discoveredCacheReferenceSet.usage.checkpoints === 1 && discoveredCacheReferenceSet.authority.protection_granted, 'CLI composes terminal and nonterminal anchors into three exact protected cache keys');
     ok(!/[A-Za-z]:\\/.test(JSON.stringify(discoveredCacheReferenceSet)) && !JSON.stringify(discoveredCacheReferenceSet).includes('cache-cli-miss'), 'CLI reference set exposes neither machine paths nor private run identifiers');
     const unrequestedRetentionRoot = path.join(temporary, 'unrequested-retention-cache');
     const unrequestedRetention = invoke(['apply-cache-retention', '--cache-root', unrequestedRetentionRoot, '--approve-proposal', 'a'.repeat(64)]);

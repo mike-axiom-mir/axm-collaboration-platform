@@ -204,6 +204,13 @@ async function main() {
     const interrupted = await Core.runner.run({ plan: planA, packages: spec.packages, executors: registry.executors, verifiers: registry.verifiers, jobRoot: interruptedRoot, sourceRoot, runId: 'resume-run', confirmation: Core.runner.START_CONFIRMATION, maxSteps: 2, clock: clock() });
     equal(interrupted.state.status, 'INTERRUPTED', 'bounded stop preserves interrupted state');
     equal(Object.keys(interrupted.state.steps).length, 2, 'interruption stops at exact package boundary');
+    ok(interrupted.runReceipt === null && Core.runCheckpoints.validate(interrupted.checkpointReceipt).length === 0, 'graceful interruption returns a sealed nonterminal checkpoint instead of a terminal receipt');
+    const interruptedCheckpoints = lines(path.join(interrupted.runDir, 'run-checkpoints.jsonl')).map((line) => JSON.parse(line));
+    ok(interruptedCheckpoints.length === 1 && interruptedCheckpoints[0].ledger_count === 2 && interruptedCheckpoints[0].ledger_tail === interrupted.state.ledger_tail && interruptedCheckpoints[0].previous_checkpoint_digest === null, 'first checkpoint binds the exact current ledger count, tail, and chain origin');
+    ok(interruptedCheckpoints[0].verified_step_receipts.length === 2 && Object.values(interruptedCheckpoints[0].authority).every((value) => value === false), 'checkpoint binds every verified step while granting no execution or lifecycle authority');
+    const gameCheckpointReferenceRoot = path.join(temporary, 'game-checkpoint-reference-root');
+    fs.mkdirSync(gameCheckpointReferenceRoot);
+    fs.cpSync(interrupted.runDir, path.join(gameCheckpointReferenceRoot, 'checkpointed-game-run'), { recursive: true });
     const resumed = await Core.runner.run({ plan: planA, packages: spec.packages, executors: registry.executors, verifiers: registry.verifiers, jobRoot: interruptedRoot, sourceRoot, runId: 'resume-run', confirmation: Core.runner.START_CONFIRMATION, resume: true, clock: clock() });
     equal(resumed.state.status, 'CANDIDATE_READY', 'resume completes remaining packages');
     equal(lines(path.join(resumed.runDir, 'step-receipts.jsonl')).length, 5, 'resume preserves one receipt per successful package');
@@ -239,6 +246,20 @@ async function main() {
     chainLines[0] = JSON.stringify(Core.canonical.seal(resealedFirst));
     fs.writeFileSync(chainFile, chainLines.join('\n') + '\n');
     await rejects(() => Core.runner.run({ plan: planA, packages: spec.packages, executors: registry.executors, verifiers: registry.verifiers, jobRoot: chainTamperRoot, sourceRoot, runId: 'chain-tamper-run', confirmation: Core.runner.START_CONFIRMATION, resume: true, clock: clock() }), /ledger chain mismatch/, 'resume refuses a resealed receipt that breaks the append-only chain');
+
+    const checkpointTamperRoot = path.join(temporary, 'checkpoint-tamper');
+    const checkpointTamper = await Core.runner.run({ plan: planA, packages: spec.packages, executors: registry.executors, verifiers: registry.verifiers, jobRoot: checkpointTamperRoot, sourceRoot, runId: 'checkpoint-tamper-run', confirmation: Core.runner.START_CONFIRMATION, maxSteps: 1, clock: clock() });
+    const checkpointTamperFile = path.join(checkpointTamper.runDir, 'run-checkpoints.jsonl');
+    const checkpointTamperReceipt = JSON.parse(lines(checkpointTamperFile)[0]);
+    checkpointTamperReceipt.updated_at = 'changed without resealing';
+    fs.writeFileSync(checkpointTamperFile, JSON.stringify(checkpointTamperReceipt) + '\n');
+    await rejects(() => Core.runner.run({ plan: planA, packages: spec.packages, executors: registry.executors, verifiers: registry.verifiers, jobRoot: checkpointTamperRoot, sourceRoot, runId: 'checkpoint-tamper-run', confirmation: Core.runner.START_CONFIRMATION, resume: true, clock: clock() }), /RUN_CHECKPOINT_INVALID/, 'resume refuses a tampered nonterminal checkpoint history');
+
+    const legacyInterruptedRoot = path.join(temporary, 'legacy-interrupted-without-checkpoint');
+    const legacyInterrupted = await Core.runner.run({ plan: planA, packages: spec.packages, executors: registry.executors, verifiers: registry.verifiers, jobRoot: legacyInterruptedRoot, sourceRoot, runId: 'legacy-interrupted-run', confirmation: Core.runner.START_CONFIRMATION, maxSteps: 1, clock: clock() });
+    fs.unlinkSync(path.join(legacyInterrupted.runDir, 'run-checkpoints.jsonl'));
+    const legacyInterruptedResumed = await Core.runner.run({ plan: planA, packages: spec.packages, executors: registry.executors, verifiers: registry.verifiers, jobRoot: legacyInterruptedRoot, sourceRoot, runId: 'legacy-interrupted-run', confirmation: Core.runner.START_CONFIRMATION, resume: true, clock: clock() });
+    equal(legacyInterruptedResumed.state.status, 'CANDIDATE_READY', 'pre-checkpoint interrupted runs remain resumable from their independently validated state and step ledger');
 
     const missingEvidence = Core.proofyard.build({ includeHumanReview: false });
     delete missingEvidence.packages[1].fixture.facts.claims['player.moves'];
@@ -286,6 +307,21 @@ async function main() {
     const neutralInterrupted = await Core.portable.run({ spec: portableSpec, plan: portablePlanA, executors: registry.executors, verifiers: registry.verifiers, jobRoot: neutralInterruptedRoot, sourceRoot, runId: 'neutral-interrupted-run', confirmation: Core.portable.START_CONFIRMATION, maxSteps: 1, clock: clock() });
     equal(neutralInterrupted.state.state, 'INTERRUPTED', 'neutral receipt run preserves interrupted state');
     equal(lines(path.join(neutralInterrupted.runDir, 'step-receipts.jsonl')).length, 1, 'neutral interruption stops at an exact receipt boundary');
+    ok(neutralInterrupted.checkpointReceipt.step_receipt_schema === Core.stepReceipts.SCHEMAS.production && neutralInterrupted.internal.checkpoint_receipt_digest === neutralInterrupted.checkpointReceipt.digest, 'portable adapter exposes the exact neutral checkpoint without inventing a second authority record');
+    const neutralInterruptedAgain = await Core.portable.run({ spec: portableSpec, plan: portablePlanA, executors: registry.executors, verifiers: registry.verifiers, jobRoot: neutralInterruptedRoot, sourceRoot, runId: 'neutral-interrupted-run', confirmation: Core.portable.START_CONFIRMATION, resume: true, maxSteps: 1, clock: clock() });
+    equal(neutralInterruptedAgain.state.state, 'INTERRUPTED', 'a resumed portable run can checkpoint again at its next exact package boundary');
+    const neutralCheckpointLedger = Core.runCheckpoints.readFile(path.join(neutralInterruptedAgain.runDir, 'run-checkpoints.jsonl'));
+    ok(neutralCheckpointLedger.length === 2 && neutralCheckpointLedger[1].previous_checkpoint_digest === neutralCheckpointLedger[0].digest && neutralCheckpointLedger[1].ledger_count === 2, 'repeated interruptions form one monotonic digest-chained checkpoint history');
+    ok(neutralCheckpointLedger[0].verified_step_receipts.every((digest, index) => neutralCheckpointLedger[1].verified_step_receipts[index] === digest), 'later checkpoint preserves the complete earlier verified receipt prefix');
+    const resealedCheckpointRollback = Core.canonical.clone(neutralCheckpointLedger[1]);
+    resealedCheckpointRollback.ledger_count = 0;
+    resealedCheckpointRollback.ledger_tail = null;
+    resealedCheckpointRollback.verified_step_receipts = [];
+    const rollbackCheckpointLedger = JSON.stringify(neutralCheckpointLedger[0]) + '\n' + JSON.stringify(Core.canonical.seal(resealedCheckpointRollback)) + '\n';
+    throws(() => Core.runCheckpoints.parseLedger(rollbackCheckpointLedger), /RUN_CHECKPOINT_LEDGER_ROLLBACK/, 'validly resealed checkpoint rollback cannot rewrite append-only progress');
+    const repeatedCheckpointReferenceRoot = path.join(temporary, 'repeated-checkpoint-reference-root');
+    fs.mkdirSync(repeatedCheckpointReferenceRoot);
+    fs.cpSync(neutralInterruptedAgain.runDir, path.join(repeatedCheckpointReferenceRoot, 'checkpointed-portable-run'), { recursive: true });
     const neutralResumed = await Core.portable.run({ spec: portableSpec, plan: portablePlanA, executors: registry.executors, verifiers: registry.verifiers, jobRoot: neutralInterruptedRoot, sourceRoot, runId: 'neutral-interrupted-run', confirmation: Core.portable.START_CONFIRMATION, resume: true, clock: clock() });
     equal(neutralResumed.state.state, 'CANDIDATE_READY', 'neutral receipt run resumes to candidate ready');
     ok(lines(path.join(neutralResumed.runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line)).every((receipt) => receipt.schema === Core.portable.SCHEMAS.step), 'neutral resume never mixes step receipt schemas');
@@ -359,6 +395,10 @@ async function main() {
     equal(cacheVerifications, 3, 'warm cache still invokes the current verifier for every hit');
     ok(cacheHitLedger.every((receipt) => receipt.cache.state === 'HIT' && receipt.process.executor_invoked === false), 'warm run discloses exact verified hits and skipped executors');
     equal(cacheHitLedger.map((receipt) => receipt.outputs.map((item) => item.digest)), cacheMissLedger.map((receipt) => receipt.outputs.map((item) => item.digest)), 'cache hits reproduce the exact independently verified artifact digests');
+    const cacheCheckpointRunsRoot = path.join(temporary, 'cache-checkpoint-runs');
+    const cacheCheckpointRun = await Core.portable.run(Object.assign({}, cachedRunOptions, { jobRoot: cacheCheckpointRunsRoot, runId: 'cache-checkpoint-run', maxSteps: 1, clock: clock() }));
+    const cacheCheckpointLedger = lines(path.join(cacheCheckpointRun.runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line));
+    ok(cacheCheckpointRun.state.state === 'INTERRUPTED' && cacheCheckpointLedger.length === 1 && cacheCheckpointLedger[0].cache.state === 'HIT', 'warm cached production can stop at an exact checkpointed reference boundary');
 
     const intermittentRegistry = Core.documentRegistry.create();
     const intermittentExecute = intermittentRegistry.executors[0].execute;
@@ -461,16 +501,81 @@ async function main() {
     equal(conflict.state, 'CONFLICT', 'same cache key with different result is preserved as nondeterminism counterevidence');
 
     const referenceSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-reference-set.schema.json'), 'utf8'));
+    const checkpointSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-run-checkpoint.schema.json'), 'utf8'));
     equal(referenceSchema.$id, Core.cacheReferences.SCHEMA, 'tracked cache reference-set schema matches the runtime contract');
+    equal(checkpointSchema.$id, Core.runCheckpoints.SCHEMA, 'tracked nonterminal checkpoint schema matches the runtime contract');
     const gameReferences = Core.cacheReferences.discover({ jobRoot: interruptedRoot, sourceRoot, nowMs: 10000000 });
     ok(Core.canonical.validDigest(gameReferences) && gameReferences.status === 'COMPLETE' && gameReferences.runs.length === 1, 'read-only discovery accepts a valid terminal game ledger');
     ok(gameReferences.runs[0].ledger_schema === Core.stepReceipts.SCHEMAS.game && gameReferences.protected_keys.length === 0, 'game ledger without cache material grants no invented protection');
+    const gameCheckpointReferences = Core.cacheReferences.discover({ jobRoot: gameCheckpointReferenceRoot, sourceRoot, nowMs: 10000000 });
+    ok(gameCheckpointReferences.status === 'COMPLETE' && gameCheckpointReferences.runs[0].evidence_kind === 'NONTERMINAL_CHECKPOINT' && gameCheckpointReferences.runs[0].state === 'INTERRUPTED' && gameCheckpointReferences.runs[0].ledger_schema === Core.stepReceipts.SCHEMAS.game, 'discovery accepts an exact graceful game checkpoint without relabeling it terminal');
+    const repeatedCheckpointReferences = Core.cacheReferences.discover({ jobRoot: repeatedCheckpointReferenceRoot, sourceRoot, nowMs: 10000000 });
+    ok(repeatedCheckpointReferences.status === 'COMPLETE' && repeatedCheckpointReferences.usage.checkpoints === 2 && repeatedCheckpointReferences.runs[0].checkpoint_count === 2 && repeatedCheckpointReferences.runs[0].ledger_schema === Core.stepReceipts.SCHEMAS.production, 'discovery validates the full repeated portable checkpoint chain and latest ledger position');
+    equal(Core.cacheReferences.discover({ jobRoot: repeatedCheckpointReferenceRoot, sourceRoot, nowMs: 10000000, scanMaxCheckpoints: 1 }).status, 'LIMIT_EXCEEDED', 'reference discovery stops at its aggregate checkpoint ceiling');
+    equal(Core.cacheReferences.discover({ jobRoot: repeatedCheckpointReferenceRoot, sourceRoot, nowMs: 10000000, scanMaxCheckpointLedgerBytes: 1 }).status, 'LIMIT_EXCEEDED', 'reference discovery stops at its aggregate checkpoint-ledger byte ceiling');
+    const cacheCheckpointReferences = Core.cacheReferences.discover({ jobRoot: cacheCheckpointRunsRoot, sourceRoot, nowMs: 10000000 });
+    ok(cacheCheckpointReferences.status === 'COMPLETE' && cacheCheckpointReferences.usage.checkpoints === 1 && cacheCheckpointReferences.references[0].evidence_kinds[0] === 'NONTERMINAL_CHECKPOINT', 'checkpoint discovery produces an authoritative path-private cache reference set');
+    equal(cacheCheckpointReferences.protected_keys, [cacheCheckpointLedger[0].cache.key], 'checkpoint protection includes only the exact verified cache material at the safe interruption boundary');
+    ok(!/[A-Za-z]:\\/.test(JSON.stringify(cacheCheckpointReferences)) && !JSON.stringify(cacheCheckpointReferences).includes('cache-checkpoint-run'), 'checkpoint reference set discloses neither machine paths nor private run identifiers');
+
+    const staleCheckpointRoot = path.join(temporary, 'stale-checkpoint-reference-root'), staleCheckpointRun = path.join(staleCheckpointRoot, 'stale-checkpoint-run');
+    fs.mkdirSync(staleCheckpointRoot);
+    fs.cpSync(cacheCheckpointRun.runDir, staleCheckpointRun, { recursive: true });
+    const staleCheckpointLedgerFile = path.join(staleCheckpointRun, 'step-receipts.jsonl');
+    const uncheckpointedReceipt = Core.canonical.clone(cacheCheckpointLedger[0]);
+    uncheckpointedReceipt.step_id = uncheckpointedReceipt.package_ref.id + '.attempt-2';
+    uncheckpointedReceipt.attempt = 2;
+    uncheckpointedReceipt.previous_receipt_digest = cacheCheckpointLedger[0].digest;
+    uncheckpointedReceipt.started_at = 'uncheckpointed-start';
+    uncheckpointedReceipt.completed_at = 'uncheckpointed-complete';
+    fs.appendFileSync(staleCheckpointLedgerFile, JSON.stringify(Core.canonical.seal(uncheckpointedReceipt)) + '\n');
+    const staleCheckpointReferences = Core.cacheReferences.discover({ jobRoot: staleCheckpointRoot, sourceRoot, nowMs: 10000000 });
+    ok(staleCheckpointReferences.status === 'REVIEW_REQUIRED' && staleCheckpointReferences.holds[0].reason === 'REFERENCE_CHECKPOINT_LEDGER_MISMATCH' && !staleCheckpointReferences.authority.protection_granted, 'a valid receipt appended after the latest checkpoint holds the whole reference set');
+
+    const tamperedCheckpointReferenceRoot = path.join(temporary, 'tampered-checkpoint-reference-root'), tamperedCheckpointReferenceRun = path.join(tamperedCheckpointReferenceRoot, 'tampered-checkpoint-run');
+    fs.mkdirSync(tamperedCheckpointReferenceRoot);
+    fs.cpSync(cacheCheckpointRun.runDir, tamperedCheckpointReferenceRun, { recursive: true });
+    const tamperedCheckpointReferenceFile = path.join(tamperedCheckpointReferenceRun, 'run-checkpoints.jsonl');
+    const tamperedCheckpointAnchor = JSON.parse(lines(tamperedCheckpointReferenceFile)[0]);
+    tamperedCheckpointAnchor.updated_at = 'tampered without a seal';
+    fs.writeFileSync(tamperedCheckpointReferenceFile, JSON.stringify(tamperedCheckpointAnchor) + '\n');
+    equal(Core.cacheReferences.discover({ jobRoot: tamperedCheckpointReferenceRoot, sourceRoot, nowMs: 10000000 }).holds[0].reason, 'REFERENCE_CHECKPOINT_LEDGER_INVALID', 'tampered checkpoint bytes cannot grant protection authority');
+
+    const truncatedCheckpointReferenceRoot = path.join(temporary, 'truncated-checkpoint-reference-root'), truncatedCheckpointReferenceRun = path.join(truncatedCheckpointReferenceRoot, 'truncated-checkpoint-run');
+    fs.mkdirSync(truncatedCheckpointReferenceRoot);
+    fs.cpSync(cacheCheckpointRun.runDir, truncatedCheckpointReferenceRun, { recursive: true });
+    const truncatedCheckpointFile = path.join(truncatedCheckpointReferenceRun, 'run-checkpoints.jsonl'), truncatedCheckpointBytes = fs.readFileSync(truncatedCheckpointFile);
+    fs.writeFileSync(truncatedCheckpointFile, truncatedCheckpointBytes.subarray(0, truncatedCheckpointBytes.length - 7));
+    equal(Core.cacheReferences.discover({ jobRoot: truncatedCheckpointReferenceRoot, sourceRoot, nowMs: 10000000 }).holds[0].reason, 'REFERENCE_CHECKPOINT_LEDGER_INVALID', 'truncated checkpoint append cannot be mistaken for a complete anchor');
+
+    const terminalPrecedenceReferenceRoot = path.join(temporary, 'terminal-precedence-reference-root'), terminalPrecedenceReferenceRun = path.join(terminalPrecedenceReferenceRoot, 'terminal-precedence-run');
+    fs.mkdirSync(terminalPrecedenceReferenceRoot);
+    fs.cpSync(cacheCheckpointRun.runDir, terminalPrecedenceReferenceRun, { recursive: true });
+    fs.writeFileSync(path.join(terminalPrecedenceReferenceRun, 'run-receipt.json'), '{}\n');
+    const terminalPrecedenceReferences = Core.cacheReferences.discover({ jobRoot: terminalPrecedenceReferenceRoot, sourceRoot, nowMs: 10000000 });
+    ok(terminalPrecedenceReferences.status === 'REVIEW_REQUIRED' && terminalPrecedenceReferences.holds[0].reason === 'REFERENCE_RUN_RECEIPT_SHAPE_INVALID', 'a present bad terminal receipt cannot fall back to an older valid checkpoint');
+
+    const legacyCheckpointReferenceRoot = path.join(temporary, 'legacy-checkpoint-reference-root'), legacyCheckpointReferenceRun = path.join(legacyCheckpointReferenceRoot, 'legacy-interrupted-run');
+    fs.mkdirSync(legacyCheckpointReferenceRoot);
+    fs.cpSync(cacheCheckpointRun.runDir, legacyCheckpointReferenceRun, { recursive: true });
+    fs.unlinkSync(path.join(legacyCheckpointReferenceRun, 'run-checkpoints.jsonl'));
+    equal(Core.cacheReferences.discover({ jobRoot: legacyCheckpointReferenceRoot, sourceRoot, nowMs: 10000000 }).holds[0].reason, 'REFERENCE_RUN_ANCHOR_MISSING', 'legacy interrupted state without a sealed checkpoint remains visible but non-authoritative');
+
+    const mixedAnchorReferenceRoot = path.join(temporary, 'mixed-anchor-reference-root');
+    fs.mkdirSync(mixedAnchorReferenceRoot);
+    fs.cpSync(cacheMissRun.runDir, path.join(mixedAnchorReferenceRoot, 'terminal-run'), { recursive: true });
+    fs.cpSync(cacheCheckpointRun.runDir, path.join(mixedAnchorReferenceRoot, 'checkpoint-run'), { recursive: true });
+    const mixedAnchorReferences = Core.cacheReferences.discover({ jobRoot: mixedAnchorReferenceRoot, sourceRoot, nowMs: 10000000 });
+    ok(mixedAnchorReferences.status === 'COMPLETE' && new Set(mixedAnchorReferences.runs.map((run) => run.evidence_kind)).size === 2 && mixedAnchorReferences.references.some((item) => item.evidence_kinds.length === 2), 'terminal and checkpoint anchors compose without losing their distinct evidence kinds');
     const discoveredReferences = Core.cacheReferences.discover({ jobRoot: cacheRunsRoot, sourceRoot, nowMs: 10000000 });
     ok(Core.cacheReferences.validate(discoveredReferences).length === 0 && discoveredReferences.status === 'COMPLETE' && discoveredReferences.runs.length === 6, 'discovery validates all six terminal portable cache-run ledgers');
     ok(Core.cacheReferences.validate(Core.canonical.seal({ schema: Core.cacheReferences.SCHEMA, version: Core.cacheReferences.VERSION, status: 'COMPLETE' })).length > 0, 'malformed but canonically sealed reference input returns contract errors instead of escaping validation');
     equal(discoveredReferences.protected_keys, cacheMissLedger.map((receipt) => receipt.cache.key).sort(), 'discovery protects exactly the three cache keys referenced by verified material');
-    ok(discoveredReferences.references.every((item) => item.entry_digests.length === 1 && item.run_receipt_digests.length >= 1 && item.step_receipt_digests.length >= 1), 'each protected key binds exact entry, run, and step receipt digests');
+    ok(discoveredReferences.references.every((item) => item.entry_digests.length === 1 && item.anchor_receipt_digests.length >= 1 && item.step_receipt_digests.length >= 1), 'each protected key binds exact entry, anchor, and step receipt digests');
     ok(!/[A-Za-z]:\\/.test(JSON.stringify(discoveredReferences)) && !JSON.stringify(discoveredReferences).includes('cache-miss-run'), 'reference set discloses neither machine paths nor private run identifiers');
+    const checkpointBoundCacheInventory = Core.cacheRetention.inventory({ cacheRoot, sourceRoot, jobRoot: cacheCheckpointRunsRoot, nowMs: 10000000 });
+    const checkpointBoundCachePlan = Core.cacheRetention.plan(checkpointBoundCacheInventory, { max_entries: 2, max_logical_bytes: checkpointBoundCacheInventory.usage.logical_bytes, max_filesystem_age_ms: 999999999 }, [], cacheCheckpointReferences);
+    ok(checkpointBoundCachePlan.status === 'READY' && checkpointBoundCachePlan.references.mismatched_keys.length === 0 && checkpointBoundCachePlan.protected[0].key === cacheCheckpointReferences.protected_keys[0], 'retention accepts an exact checkpoint-derived entry binding and excludes it from deletion candidates');
     const missingReferenceRoot = path.join(temporary, 'missing-reference-root');
     const missingReferences = Core.cacheReferences.discover({ jobRoot: missingReferenceRoot, sourceRoot, nowMs: 10000000 });
     ok(missingReferences.status === 'REVIEW_REQUIRED' && !missingReferences.authority.protection_granted && !fs.existsSync(missingReferenceRoot), 'missing reference root is a sealed non-authoritative no-op');

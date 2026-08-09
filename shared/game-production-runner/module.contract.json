@@ -19,6 +19,8 @@
     "content-derived-documentation-hand",
     "content-derived-documentation-verifier",
     "neutral-production-step-receipt",
+    "append-only-run-checkpoint-ledger",
+    "checkpoint-ledger-prefix-validation",
     "explicit-trusted-hand-confinement-substrate-probe",
     "deterministic-cross-run-artifact-cache",
     "fresh-verifier-cache-hit-gate",
@@ -26,6 +28,7 @@
     "explicit-selective-cache-invalidation",
     "bounded-read-only-cache-inventory",
     "bounded-terminal-ledger-cache-reference-discovery",
+    "bounded-nonterminal-checkpoint-cache-reference-discovery",
     "path-private-sealed-cache-reference-set",
     "deterministic-cache-retention-proposal",
     "protected-cache-reference-hold",
@@ -49,7 +52,7 @@
   ],
   "permissions": ["files", "runtime", "network.listen"],
   "handoffs": {
-    "emits": ["axm.game-production-plan/v1", "axm.game-step-receipt/v1", "axm.game-production-run/v1", "axm.production-profile-binding/v1", "axm.production-plan/v1", "axm.production-step-receipt/v1", "axm.production-run-state/v1", "axm.production-run/v1", "axm.hand-process-confinement-probe/v1", "axm.production-artifact-cache-entry/v1", "axm.production-artifact-cache-invalidation/v1", "axm.production-artifact-cache-reference-set/v1", "axm.production-artifact-cache-inventory/v1", "axm.production-artifact-cache-retention-proposal/v1", "axm.production-artifact-cache-retention-application/v1"],
+    "emits": ["axm.game-production-plan/v1", "axm.game-step-receipt/v1", "axm.game-production-run/v1", "axm.production-profile-binding/v1", "axm.production-plan/v1", "axm.production-step-receipt/v1", "axm.production-run-state/v1", "axm.production-run-checkpoint/v1", "axm.production-run/v1", "axm.hand-process-confinement-probe/v1", "axm.production-artifact-cache-entry/v1", "axm.production-artifact-cache-invalidation/v1", "axm.production-artifact-cache-reference-set/v1", "axm.production-artifact-cache-inventory/v1", "axm.production-artifact-cache-retention-proposal/v1", "axm.production-artifact-cache-retention-application/v1"],
     "accepts": ["human:explicit-run-start", "human:explicit-portable-run-start", "human:explicit-cache-root", "human:explicit-cache-reference-job-root", "human:explicit-cache-invalidation", "human:explicit-cache-retention-policy", "human:explicit-protected-cache-references", "human:exact-cache-retention-proposal-approval", "human:explicit-confinement-probe", "human:cancel", "axm.game-intent-lock/v1", "axm.game-production-graph/v1", "axm.production-intent-lock/v1", "axm.production-graph/v1"]
   },
   "boundaries": {
@@ -85,9 +88,13 @@
       "retention-delete-unclassified-entry",
       "retention-apply-stale-inventory",
       "retention-apply-stale-references",
-      "cache-reference-authority-from-incomplete-run",
+      "cache-reference-authority-from-uncheckpointed-run",
+      "cache-reference-authority-from-stale-checkpoint",
       "cache-reference-authority-from-tampered-or-mixed-ledger",
+      "cache-reference-fallback-from-invalid-terminal-to-checkpoint",
       "cache-reference-key-entry-digest-contradiction",
+      "run-checkpoint-authority-from-mutable-state",
+      "run-checkpoint-history-rollback",
       "same-cache-key-different-result-overwrite"
     ]
   }
