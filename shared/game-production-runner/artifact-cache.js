@@ -41,7 +41,7 @@ function resolveExistingLinks(candidate) {
   return path.resolve(existing, ...tail);
 }
 
-function assertCacheRoot(cacheRoot, sourceRoot, jobRoot) {
+function cacheRootState(cacheRoot, sourceRoot, jobRoot, create) {
   if (!path.isAbsolute(String(cacheRoot || ''))) fail('CACHE_ROOT_NOT_ABSOLUTE');
   const requested = path.resolve(cacheRoot), resolved = resolveExistingLinks(requested), parsed = path.parse(resolved);
   if (resolved === parsed.root) fail('CACHE_ROOT_IS_FILESYSTEM_ROOT');
@@ -54,16 +54,50 @@ function assertCacheRoot(cacheRoot, sourceRoot, jobRoot) {
     const jobs = resolveExistingLinks(jobRoot);
     if (inside(jobs, resolved) || inside(resolved, jobs)) fail('CACHE_ROOT_OVERLAPS_JOB_ROOT');
   }
-  fs.mkdirSync(resolved, { recursive: true });
-  if (fs.realpathSync.native(resolved).toLowerCase() !== resolved.toLowerCase()) fail('CACHE_ROOT_BECAME_LINK');
-  fs.mkdirSync(path.join(resolved, 'entries'), { recursive: true });
-  return resolved;
+  if (!fs.existsSync(resolved) && create) fs.mkdirSync(resolved, { recursive: true });
+  const exists = fs.existsSync(resolved);
+  if (exists) {
+    const rootStat = fs.lstatSync(resolved);
+    if (!rootStat.isDirectory() || rootStat.isSymbolicLink()) fail('CACHE_ROOT_NOT_PLAIN_DIRECTORY');
+    if (fs.realpathSync.native(resolved).toLowerCase() !== resolved.toLowerCase()) fail('CACHE_ROOT_BECAME_LINK');
+  }
+  const entriesRoot = path.join(resolved, 'entries');
+  if (create && !fs.existsSync(entriesRoot)) fs.mkdirSync(entriesRoot, { recursive: false });
+  const entriesExist = fs.existsSync(entriesRoot);
+  if (entriesExist) {
+    const entriesStat = fs.lstatSync(entriesRoot);
+    if (!entriesStat.isDirectory() || entriesStat.isSymbolicLink() || fs.realpathSync.native(entriesRoot).toLowerCase() !== path.resolve(entriesRoot).toLowerCase()) fail('CACHE_ENTRIES_NOT_PLAIN_DIRECTORY');
+  }
+  return { root: resolved, exists, entriesRoot, entriesExist };
+}
+
+function assertCacheRoot(cacheRoot, sourceRoot, jobRoot) { return cacheRootState(cacheRoot, sourceRoot, jobRoot, true).root; }
+
+function locate(options) {
+  options = options || {};
+  return Object.freeze(cacheRootState(options.cacheRoot, options.sourceRoot, options.jobRoot, false));
+}
+
+function refusePathLinks(root, target) {
+  const relative = path.relative(path.resolve(root), path.resolve(target));
+  let cursor = path.resolve(root);
+  for (const part of relative.split(path.sep).filter(Boolean)) {
+    cursor = path.join(cursor, part);
+    let stat;
+    try { stat = fs.lstatSync(cursor); }
+    catch (error) {
+      if (error && error.code === 'ENOENT') continue;
+      throw error;
+    }
+    if (stat.isSymbolicLink()) fail('CACHE_PATH_TRAVERSES_LINK');
+  }
 }
 
 function safeTarget(root, relative) {
   if (!Contracts.safeRelative(relative)) fail('CACHE_RELATIVE_PATH_INVALID');
   const target = path.resolve(root, String(relative).replace(/\//g, path.sep));
   if (!inside(root, target) || target === path.resolve(root)) fail('CACHE_PATH_ESCAPE');
+  refusePathLinks(root, target);
   if (!inside(resolveExistingLinks(root), resolveExistingLinks(target))) fail('CACHE_LINK_ESCAPE');
   return target;
 }
@@ -167,9 +201,10 @@ function validateManifest(entryRoot, manifest, key, binding, pkg) {
 function codeFor(error) { return error instanceof CacheError ? error.code : 'CACHE_ENTRY_UNREADABLE'; }
 
 function load(root, pkg, inputs, seed) {
-  const binding = bindingFor(pkg, inputs, seed), key = Codec.digest(binding), entryRoot = entryDirectory(root, key);
-  if (!fs.existsSync(entryRoot)) return { state: 'MISS', key, entry_digest: null, reason: null, produced: null };
+  const binding = bindingFor(pkg, inputs, seed), key = Codec.digest(binding);
   try {
+    const entryRoot = entryDirectory(root, key);
+    if (!fs.existsSync(entryRoot)) return { state: 'MISS', key, entry_digest: null, reason: null, produced: null };
     const manifestFile = safeTarget(entryRoot, 'entry.json');
     if (!fs.existsSync(manifestFile) || !fs.lstatSync(manifestFile).isFile()) fail('CACHE_MANIFEST_MISSING');
     const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
@@ -206,7 +241,10 @@ function publish(root, pkg, inputs, seed, produced) {
   let expected;
   try { expected = manifestFor(key, binding, pkg, produced); }
   catch (error) { return { state: 'NOT_STORED', key, entry_digest: null, reason: codeFor(error) }; }
-  const entryRoot = entryDirectory(root, key), parent = path.dirname(entryRoot);
+  let entryRoot;
+  try { entryRoot = entryDirectory(root, key); }
+  catch (error) { return { state: 'NOT_STORED', key, entry_digest: null, reason: codeFor(error) }; }
+  const parent = path.dirname(entryRoot);
   fs.mkdirSync(parent, { recursive: true });
   if (fs.existsSync(entryRoot)) return compareExisting(root, key, binding, pkg, expected.manifest);
   const nonce = crypto.randomBytes(8).toString('hex');
@@ -251,7 +289,12 @@ function invalidate(root, key, options) {
   const receipt = { schema: INVALIDATION_SCHEMA, key: String(key || ''), status: 'REFUSED', entry_removed: false, explicit: options && options.explicit === true, authority: { installed: false, promoted: false, canon: false } };
   if (!receipt.explicit) return Codec.seal(receipt);
   if (!DIGEST.test(receipt.key)) { receipt.status = 'INVALID_KEY'; return Codec.seal(receipt); }
-  const entryRoot = entryDirectory(root, receipt.key);
+  let entryRoot;
+  try { entryRoot = entryDirectory(root, receipt.key); }
+  catch (error) {
+    receipt.status = error instanceof CacheError && ['CACHE_PATH_TRAVERSES_LINK', 'CACHE_LINK_ESCAPE'].includes(error.code) ? 'REFUSED_LINK' : 'FAILED';
+    return Codec.seal(receipt);
+  }
   if (!fs.existsSync(entryRoot)) { receipt.status = 'ABSENT'; return Codec.seal(receipt); }
   if (resolveExistingLinks(entryRoot).toLowerCase() !== path.resolve(entryRoot).toLowerCase() || treeHasLink(entryRoot)) { receipt.status = 'REFUSED_LINK'; return Codec.seal(receipt); }
   fs.rmSync(entryRoot, { recursive: true, force: true });
@@ -271,4 +314,4 @@ function open(options) {
   });
 }
 
-module.exports = { ENTRY_SCHEMA, INVALIDATION_SCHEMA, KEY_SCHEMA, POLICY, CacheError, assertCacheRoot, bindingFor, keyFor, invalidationNotRequested, open };
+module.exports = { ENTRY_SCHEMA, INVALIDATION_SCHEMA, KEY_SCHEMA, POLICY, CacheError, assertCacheRoot, bindingFor, keyFor, invalidationNotRequested, locate, open };

@@ -15,6 +15,15 @@ async function rejects(fn, pattern, message) { await assert.rejects(fn, pattern,
 function clock() { let tick = 0; return () => new Date(Date.UTC(2000, 0, 1, 0, 0, tick++)).toISOString(); }
 function lines(file) { return fs.readFileSync(file, 'utf8').trim().split(/\r?\n/).filter(Boolean); }
 
+function setTreeMtime(root, milliseconds) {
+  for (const name of fs.readdirSync(root)) {
+    const target = path.join(root, name), stat = fs.lstatSync(target);
+    if (stat.isDirectory() && !stat.isSymbolicLink()) setTreeMtime(target, milliseconds);
+    else fs.utimesSync(target, new Date(milliseconds), new Date(milliseconds));
+  }
+  fs.utimesSync(root, new Date(milliseconds), new Date(milliseconds));
+}
+
 function publishCacheInChild(payload) {
   return new Promise((resolve, reject) => {
     const source = [
@@ -383,7 +392,10 @@ async function main() {
     ok(bypassLedger.every((receipt) => receipt.cache.state === 'BYPASSED' && receipt.cache.reason === 'EXECUTOR_DETERMINISM_UNDECLARED'), 'cache refuses executors without an explicit deterministic policy');
     throws(() => Core.artifactCache.open({ cacheRoot: path.join(cacheRunsRoot, 'nested-cache'), sourceRoot, jobRoot: cacheRunsRoot }), /CACHE_ROOT_OVERLAPS_JOB_ROOT/, 'cache root must be isolated from candidate job roots');
     throws(() => Core.artifactCache.open({ cacheRoot: path.join(sourceRoot, 'cache-not-allowed'), sourceRoot, jobRoot: cacheRunsRoot }), /CACHE_ROOT_OVERLAPS_SOURCE/, 'cache root cannot write inside the source tree');
-
+    const linkedEntriesCache = path.join(temporary, 'linked-entries-cache'), linkedEntriesTarget = path.join(temporary, 'linked-entries-target');
+    fs.mkdirSync(linkedEntriesCache); fs.mkdirSync(linkedEntriesTarget);
+    fs.symlinkSync(linkedEntriesTarget, path.join(linkedEntriesCache, 'entries'), 'junction');
+    throws(() => Core.artifactCache.open({ cacheRoot: linkedEntriesCache, sourceRoot, jobRoot: cacheRunsRoot }), /CACHE_ENTRIES_NOT_PLAIN_DIRECTORY/, 'cache entries root cannot be redirected through a junction');
     const firstPackage = Core.portable.adaptSpec(documentSpec).internal.packages[0];
     const bindingInput = { package_id: 'dependency', path: 'input/a.txt', digest: 'a'.repeat(64), bytes: 10 };
     const changedPackage = Core.canonical.clone(firstPackage); changedPackage.digest = firstPackage.digest[0] === 'f' ? 'e' + firstPackage.digest.slice(1) : 'f' + firstPackage.digest.slice(1);
@@ -415,6 +427,14 @@ async function main() {
       seed: documentPlan.intent_ref.digest,
       produced: { artifacts: [{ path: firstPackage.outputs[0].path, content: JSON.stringify(Core.documentRegistry.normalizeBrief(firstPackage.document_payload), null, 2) + '\n' }], facts: { operation: firstPackage.document_operation } }
     };
+    const linkedPrefixCache = path.join(temporary, 'linked-prefix-cache'), linkedPrefixTarget = path.join(temporary, 'linked-prefix-target');
+    const linkedPrefixHandle = Core.artifactCache.open({ cacheRoot: linkedPrefixCache, sourceRoot, jobRoot: cacheRunsRoot });
+    fs.mkdirSync(linkedPrefixTarget);
+    const linkedPrefixKey = Core.artifactCache.keyFor(firstPackage, [], 'linked-prefix-seed');
+    fs.symlinkSync(linkedPrefixTarget, path.join(linkedPrefixCache, 'entries', linkedPrefixKey.slice(0, 2)), 'junction');
+    equal(linkedPrefixHandle.load(firstPackage, [], 'linked-prefix-seed').reason, 'CACHE_PATH_TRAVERSES_LINK', 'cache read refuses a redirected digest-prefix directory');
+    equal(linkedPrefixHandle.publish(firstPackage, [], 'linked-prefix-seed', concurrentPayload.produced).reason, 'CACHE_PATH_TRAVERSES_LINK', 'cache publication refuses a redirected digest-prefix directory');
+    equal(linkedPrefixHandle.invalidate(linkedPrefixKey, { explicit: true }).status, 'REFUSED_LINK', 'cache invalidation refuses a redirected digest-prefix directory');
     const concurrentResults = await Promise.all([publishCacheInChild(concurrentPayload), publishCacheInChild(concurrentPayload)]);
     equal(concurrentResults.map((item) => item.state).sort(), ['EXISTS', 'STORED'], 'concurrent publishers converge on one immutable cache entry');
     const concurrentHandle = Core.artifactCache.open({ cacheRoot: concurrentRoot, sourceRoot, jobRoot: concurrentJobs });
@@ -422,6 +442,80 @@ async function main() {
     equal(fs.readdirSync(path.join(concurrentRoot, 'entries', concurrentResults[0].key.slice(0, 2))).filter((name) => name.includes('.next-')), [], 'concurrent publication leaves no temporary directories');
     const conflict = concurrentHandle.publish(firstPackage, [], documentPlan.intent_ref.digest, { artifacts: [{ path: firstPackage.outputs[0].path, content: 'different deterministic result\n' }], facts: { operation: firstPackage.document_operation } });
     equal(conflict.state, 'CONFLICT', 'same cache key with different result is preserved as nondeterminism counterevidence');
+
+    const inventorySchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-inventory.schema.json'), 'utf8'));
+    const proposalSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-retention-proposal.schema.json'), 'utf8'));
+    const applicationSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-retention-application.schema.json'), 'utf8'));
+    equal([inventorySchema.$id, proposalSchema.$id, applicationSchema.$id], [Core.cacheRetention.INVENTORY_SCHEMA, Core.cacheRetention.PROPOSAL_SCHEMA, Core.cacheRetention.APPLICATION_SCHEMA], 'tracked retention schemas match the runtime contracts');
+    const absentRetentionRoot = path.join(temporary, 'absent-retention-cache');
+    const absentInventory = Core.cacheRetention.inventory({ cacheRoot: absentRetentionRoot, sourceRoot, nowMs: 10000000 });
+    ok(absentInventory.status === 'COMPLETE' && absentInventory.root_exists === false && absentInventory.usage.entries === 0, 'read-only retention inventory represents an absent cache without inventing entries');
+    ok(!fs.existsSync(absentRetentionRoot), 'read-only retention inventory does not create an absent cache root');
+
+    const retentionRoot = path.join(temporary, 'retention-cache'), retentionJobs = path.join(temporary, 'retention-jobs');
+    fs.mkdirSync(retentionJobs, { recursive: true });
+    const retentionHandle = Core.artifactCache.open({ cacheRoot: retentionRoot, sourceRoot, jobRoot: retentionJobs });
+    const retentionProduced = { artifacts: [{ path: firstPackage.outputs[0].path, content: JSON.stringify(Core.documentRegistry.normalizeBrief(firstPackage.document_payload), null, 2) + '\n' }], facts: { operation: firstPackage.document_operation } };
+    const retentionStores = ['retention-oldest', 'retention-protected', 'retention-newest'].map((seed) => retentionHandle.publish(firstPackage, [], seed, retentionProduced));
+    ok(retentionStores.every((item) => item.state === 'STORED'), 'retention fixture starts from three immutable verified cache entries');
+    const retentionNow = 10000000;
+    [10000, 5000, 1000].forEach((age, index) => setTreeMtime(path.join(retentionRoot, 'entries', retentionStores[index].key.slice(0, 2), retentionStores[index].key), retentionNow - age));
+    const retentionOptions = { cacheRoot: retentionRoot, sourceRoot, jobRoot: retentionJobs, nowMs: retentionNow };
+    const retentionInventory = Core.cacheRetention.inventory(retentionOptions);
+    ok(Core.canonical.validDigest(retentionInventory) && retentionInventory.status === 'COMPLETE' && retentionInventory.usage.entries === 3, 'retention inventory is sealed and counts exact eligible entries');
+    ok(retentionInventory.entries.every((item) => item.classification === 'TEMPORARY_CAPTURE' && item.integrity_scope === 'SEALED_MANIFEST_LAYOUT_AND_SIZE'), 'inventory classifies cache copies without claiming artifact-content revalidation');
+    ok(!/[A-Za-z]:\\/.test(JSON.stringify(retentionInventory)), 'retention inventory discloses no local cache path');
+    equal(Core.cacheRetention.inventory(Object.assign({}, retentionOptions, { scanMaxEntries: 1 })).status, 'LIMIT_EXCEEDED', 'retention inventory stops at its explicit entry scan budget');
+
+    const bytePolicy = { max_entries: 99, max_logical_bytes: retentionInventory.usage.logical_bytes - retentionInventory.entries[0].logical_bytes, max_filesystem_age_ms: 999999 };
+    const byteProposal = Core.cacheRetention.plan(retentionInventory, bytePolicy, []);
+    ok(byteProposal.candidates.length === 1 && byteProposal.candidates[0].reasons.includes('LOGICAL_BYTES'), 'logical-byte pressure selects the oldest exact entry deterministically');
+    const protectedKey = retentionStores[1].key;
+    const retentionPolicy = { max_entries: 1, max_logical_bytes: retentionInventory.usage.logical_bytes, max_filesystem_age_ms: 6000 };
+    const retentionProposal = Core.cacheRetention.plan(retentionInventory, retentionPolicy, [protectedKey]);
+    ok(Core.canonical.validDigest(retentionProposal) && retentionProposal.status === 'READY' && retentionProposal.application_allowed, 'retention planner emits a sealed applicable proposal');
+    equal(retentionProposal.candidates.map((item) => item.key), [retentionStores[0].key, retentionStores[2].key], 'age and count budgets select exact unprotected entries in oldest-first order');
+    ok(retentionProposal.candidates[0].reasons.includes('FILESYSTEM_AGE') && retentionProposal.candidates[1].reasons.includes('ENTRY_COUNT'), 'proposal preserves the separate reason for each budget decision');
+    equal(retentionProposal.protected.map((item) => item.key), [protectedKey], 'an exact referenced key is excluded from every deletion candidate');
+    ok(retentionStores.every((item) => fs.existsSync(path.join(retentionRoot, 'entries', item.key.slice(0, 2), item.key))), 'planning is a dry run and deletes nothing');
+    equal(Core.cacheRetention.plan(retentionInventory, Object.assign({}, retentionPolicy, { max_filesystem_age_ms: 100 }), [protectedKey]).status, 'READY_WITH_LIMITS', 'protected expired evidence remains held instead of being evicted to fake policy satisfaction');
+    throws(() => Core.cacheRetention.plan(retentionInventory, { max_entries: -1, max_logical_bytes: 1, max_filesystem_age_ms: 1 }, []), /RETENTION_POLICY_VALUE_INVALID/, 'negative retention budgets are refused');
+
+    const notRequestedApplication = Core.cacheRetention.applicationNotRequested(retentionProposal.digest);
+    ok(notRequestedApplication.status === 'NOT_REQUESTED' && !notRequestedApplication.authority.deletion_performed, 'unrequested retention application is a sealed content-free no-op');
+    equal(Core.cacheRetention.apply(Object.assign({}, retentionOptions, { proposal: retentionProposal, approvedDigest: retentionProposal.digest })).status, 'NOT_APPROVED', 'proposal digest without explicit apply authority deletes nothing');
+    equal(Core.cacheRetention.apply(Object.assign({}, retentionOptions, { proposal: retentionProposal, approvedDigest: 'f'.repeat(64), explicit: true })).status, 'APPROVAL_MISMATCH', 'explicit apply with the wrong proposal digest deletes nothing');
+    const substitutedProposal = Core.canonical.clone(retentionProposal);
+    substitutedProposal.candidates[0].key = protectedKey;
+    substitutedProposal.candidates[0].entry_digest = retentionProposal.protected[0].entry_digest;
+    const resealedSubstitution = Core.canonical.seal(substitutedProposal);
+    equal(Core.cacheRetention.apply(Object.assign({}, retentionOptions, { proposal: resealedSubstitution, approvedDigest: resealedSubstitution.digest, explicit: true })).status, 'PROPOSAL_NOT_REPRODUCIBLE', 'a validly resealed arbitrary candidate substitution cannot impersonate the official planner');
+    ok(retentionStores.every((item) => fs.existsSync(path.join(retentionRoot, 'entries', item.key.slice(0, 2), item.key))), 'all retention authority and proposal-integrity refusals preserve every entry');
+    const differentRetentionRoot = path.join(temporary, 'different-retention-cache');
+    Core.artifactCache.open({ cacheRoot: differentRetentionRoot, sourceRoot, jobRoot: retentionJobs });
+    equal(Core.cacheRetention.apply({ cacheRoot: differentRetentionRoot, sourceRoot, jobRoot: retentionJobs, nowMs: retentionNow, proposal: retentionProposal, approvedDigest: retentionProposal.digest, explicit: true }).status, 'STALE', 'an approved proposal is bound to one hashed cache root identity');
+
+    const lateStore = await publishCacheInChild({ module: require.resolve('./artifact-cache'), cacheRoot: retentionRoot, sourceRoot, jobRoot: retentionJobs, pkg: firstPackage, inputs: [], seed: 'retention-late-write', produced: retentionProduced });
+    equal(Core.cacheRetention.apply(Object.assign({}, retentionOptions, { proposal: retentionProposal, approvedDigest: retentionProposal.digest, explicit: true })).status, 'STALE', 'a separate publisher invalidates the approved inventory snapshot before deletion');
+    ok(retentionStores.every((item) => fs.existsSync(path.join(retentionRoot, 'entries', item.key.slice(0, 2), item.key))), 'stale proposal refusal deletes none of its originally selected entries');
+    equal(retentionHandle.invalidate(lateStore.key, { explicit: true }).status, 'REMOVED', 'test removes only the exact concurrent entry before retrying the original sealed proposal');
+    const appliedRetention = Core.cacheRetention.apply(Object.assign({}, retentionOptions, { proposal: retentionProposal, approvedDigest: retentionProposal.digest, explicit: true }));
+    ok(Core.canonical.validDigest(appliedRetention) && appliedRetention.status === 'APPLIED' && appliedRetention.policy_satisfied, 'exact approved proposal applies and seals post-delete policy satisfaction');
+    ok(appliedRetention.outcomes.length === 2 && appliedRetention.outcomes.every((item) => item.entry_removed && Core.canonical.validDigest({ schema: Core.artifactCache.INVALIDATION_SCHEMA, key: item.key, status: item.status, entry_removed: item.entry_removed, explicit: true, authority: { installed: false, promoted: false, canon: false }, digest: item.invalidation_receipt_digest })), 'application binds two exact selective invalidation receipts');
+    ok(fs.existsSync(path.join(retentionRoot, 'entries', protectedKey.slice(0, 2), protectedKey)) && appliedRetention.usage_after.entries === 1, 'post-delete readback preserves the protected entry and observes exact remaining usage');
+
+    const protectedRoot = path.join(retentionRoot, 'entries', protectedKey.slice(0, 2), protectedKey);
+    const unexpectedFile = path.join(protectedRoot, 'unexpected.bin');
+    fs.writeFileSync(unexpectedFile, 'not declared cache data');
+    const heldMalformedInventory = Core.cacheRetention.inventory(retentionOptions);
+    equal(heldMalformedInventory.status, 'REVIEW_REQUIRED', 'undeclared cache contents become unclassified instead of automatic deletion material');
+    ok(Core.cacheRetention.plan(heldMalformedInventory, retentionPolicy, []).status === 'HELD', 'unclassified content holds the retention proposal');
+    fs.unlinkSync(unexpectedFile);
+    const publisherDirectory = path.join(retentionRoot, 'entries', protectedKey.slice(0, 2), protectedKey + '.next-active');
+    fs.mkdirSync(publisherDirectory);
+    const busyInventory = Core.cacheRetention.inventory(retentionOptions);
+    ok(busyInventory.status === 'REVIEW_REQUIRED' && busyInventory.temporary_publishers === 1, 'active publication marker holds retention planning without being deleted');
+    fs.rmdirSync(publisherDirectory);
 
     const lyingExecutor = {
       identity: Core.documentRegistry.EXECUTOR,

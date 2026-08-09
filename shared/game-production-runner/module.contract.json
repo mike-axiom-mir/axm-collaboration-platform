@@ -23,7 +23,12 @@
     "deterministic-cross-run-artifact-cache",
     "fresh-verifier-cache-hit-gate",
     "atomic-concurrent-cache-publication",
-    "explicit-selective-cache-invalidation"
+    "explicit-selective-cache-invalidation",
+    "bounded-read-only-cache-inventory",
+    "deterministic-cache-retention-proposal",
+    "protected-cache-reference-hold",
+    "exact-approved-cache-retention-application",
+    "post-delete-cache-readback-receipt"
   ],
   "consumes": [
     "axm.game-intent-lock/v1",
@@ -41,8 +46,8 @@
   ],
   "permissions": ["files", "runtime", "network.listen"],
   "handoffs": {
-    "emits": ["axm.game-production-plan/v1", "axm.game-step-receipt/v1", "axm.game-production-run/v1", "axm.production-profile-binding/v1", "axm.production-plan/v1", "axm.production-step-receipt/v1", "axm.production-run-state/v1", "axm.production-run/v1", "axm.hand-process-confinement-probe/v1", "axm.production-artifact-cache-entry/v1", "axm.production-artifact-cache-invalidation/v1"],
-    "accepts": ["human:explicit-run-start", "human:explicit-portable-run-start", "human:explicit-cache-root", "human:explicit-cache-invalidation", "human:explicit-confinement-probe", "human:cancel", "axm.game-intent-lock/v1", "axm.game-production-graph/v1", "axm.production-intent-lock/v1", "axm.production-graph/v1"]
+    "emits": ["axm.game-production-plan/v1", "axm.game-step-receipt/v1", "axm.game-production-run/v1", "axm.production-profile-binding/v1", "axm.production-plan/v1", "axm.production-step-receipt/v1", "axm.production-run-state/v1", "axm.production-run/v1", "axm.hand-process-confinement-probe/v1", "axm.production-artifact-cache-entry/v1", "axm.production-artifact-cache-invalidation/v1", "axm.production-artifact-cache-inventory/v1", "axm.production-artifact-cache-retention-proposal/v1", "axm.production-artifact-cache-retention-application/v1"],
+    "accepts": ["human:explicit-run-start", "human:explicit-portable-run-start", "human:explicit-cache-root", "human:explicit-cache-invalidation", "human:explicit-cache-retention-policy", "human:explicit-protected-cache-references", "human:exact-cache-retention-proposal-approval", "human:explicit-confinement-probe", "human:cancel", "axm.game-intent-lock/v1", "axm.game-production-graph/v1", "axm.production-intent-lock/v1", "axm.production-graph/v1"]
   },
   "boundaries": {
     "writes": ["explicit-external-candidate-job-root-only", "explicit-external-artifact-cache-root-only", "disposable-operating-system-temp-probe-root"],
@@ -71,6 +76,11 @@
       "cache-hit-without-current-verifier-pass",
       "automatic-cache-invalidation",
       "automatic-cache-garbage-collection",
+      "retention-scan-on-candidate-run",
+      "retention-application-without-exact-proposal-approval",
+      "retention-delete-protected-reference",
+      "retention-delete-unclassified-entry",
+      "retention-apply-stale-inventory",
       "same-cache-key-different-result-overwrite"
     ]
   }

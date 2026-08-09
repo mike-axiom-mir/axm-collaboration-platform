@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-retention-proposal/v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "inventory_digest", "inventory_snapshot_digest", "inventory_observed_at_ms", "inventory_scan_budget", "root_fingerprint", "policy", "references", "usage_before", "candidates", "protected", "predicted_after", "application_allowed", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-retention-proposal/v1" },
+    "version": { "const": "0.1.0" },
+    "status": { "enum": ["READY", "READY_WITH_LIMITS", "NO_CHANGES", "HELD"] },
+    "inventory_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "inventory_snapshot_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "inventory_observed_at_ms": { "type": "integer", "minimum": 0 },
+    "inventory_scan_budget": { "type": "object" },
+    "root_fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "policy": { "type": "object" },
+    "references": { "type": "object" },
+    "usage_before": { "type": "object" },
+    "candidates": { "type": "array" },
+    "protected": { "type": "array" },
+    "predicted_after": { "type": "object" },
+    "application_allowed": { "type": "boolean" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

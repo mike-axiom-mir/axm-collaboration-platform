@@ -15,6 +15,12 @@ function parse(argv) {
     else if (item === '--job-root') result.jobRoot = argv[++index];
     else if (item === '--cache-root') result.cacheRoot = argv[++index];
     else if (item === '--cache-key') result.cacheKey = argv[++index];
+    else if (item === '--max-cache-entries') result.maxCacheEntries = Number(argv[++index]);
+    else if (item === '--max-cache-bytes') result.maxCacheBytes = Number(argv[++index]);
+    else if (item === '--max-cache-age-ms') result.maxCacheAgeMs = Number(argv[++index]);
+    else if (item === '--protect-key') { result.protectedKeys = result.protectedKeys || []; result.protectedKeys.push(argv[++index]); }
+    else if (item === '--proposal') result.proposal = argv[++index];
+    else if (item === '--approve-proposal') result.approvedProposal = argv[++index];
     else if (item === '--run-id') result.runId = argv[++index];
     else if (item === '--confirm') result.confirmation = argv[++index];
     else if (item === '--max-steps') result.maxSteps = Number(argv[++index]);
@@ -24,6 +30,7 @@ function parse(argv) {
     else if (item === '--read-only-probe') result.readOnlyProbe = true;
     else if (item === '--explicit-probe') result.explicitProbe = true;
     else if (item === '--explicit-invalidate') result.explicitInvalidate = true;
+    else if (item === '--explicit-apply') result.explicitApply = true;
     else throw new Error('unknown argument: ' + item);
   }
   return result;
@@ -41,6 +48,9 @@ function usage() {
     '  run-profile-demo --job-root DIRECTORY [--cache-root DIRECTORY] [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
     '  run-document-demo --job-root DIRECTORY [--cache-root DIRECTORY] [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
     '  invalidate-cache --cache-root DIRECTORY --cache-key SHA256 --explicit-invalidate',
+    '  inventory-cache --cache-root DIRECTORY',
+    '  plan-cache-retention --cache-root DIRECTORY --max-cache-entries N --max-cache-bytes N --max-cache-age-ms N [--protect-key SHA256 ...]',
+    '  apply-cache-retention --cache-root DIRECTORY --proposal FILE --approve-proposal SHA256 --explicit-apply',
     '  probe-godot --read-only-probe [--substrate-root DIRECTORY]',
     '  probe-hand-confinement --explicit-probe',
     '',
@@ -52,6 +62,21 @@ function loadSpec(file) {
   if (!file) throw new Error('plan requires --spec');
   const resolved = path.resolve(file);
   return JSON.parse(fs.readFileSync(resolved, 'utf8'));
+}
+
+function loadProposal(file) {
+  if (!file) throw new Error('apply-cache-retention requires --proposal');
+  const resolved = path.resolve(file), stat = fs.lstatSync(resolved);
+  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 2097152) throw new Error('retention proposal must be a plain JSON file no larger than 2 MiB');
+  return JSON.parse(fs.readFileSync(resolved, 'utf8'));
+}
+
+function retentionPolicy(options) {
+  return {
+    max_entries: options.maxCacheEntries,
+    max_logical_bytes: options.maxCacheBytes,
+    max_filesystem_age_ms: options.maxCacheAgeMs
+  };
 }
 
 function summary(spec, plan) {
@@ -118,9 +143,28 @@ async function main(argv) {
     const result = cache.invalidate(options.cacheKey, { explicit: true });
     return { output: JSON.stringify(result, null, 2), code: ['REMOVED', 'ABSENT'].includes(result.status) ? 0 : 2 };
   }
+  if (options.command === 'inventory-cache') {
+    if (!options.cacheRoot) throw new Error('inventory-cache requires --cache-root');
+    const result = Core.cacheRetention.inventory({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT });
+    return { output: JSON.stringify(result, null, 2), code: result.status === 'COMPLETE' ? 0 : 2 };
+  }
+  if (options.command === 'plan-cache-retention') {
+    if (!options.cacheRoot) throw new Error('plan-cache-retention requires --cache-root');
+    const inventory = Core.cacheRetention.inventory({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT });
+    const proposal = Core.cacheRetention.plan(inventory, retentionPolicy(options), options.protectedKeys || []);
+    const result = { schema: 'axm.production-artifact-cache-retention-plan-output/v1', inventory, proposal, deletion_performed: false };
+    return { output: JSON.stringify(result, null, 2), code: ['READY', 'READY_WITH_LIMITS', 'NO_CHANGES'].includes(proposal.status) ? 0 : 2 };
+  }
+  if (options.command === 'apply-cache-retention') {
+    if (!options.explicitApply) return { output: JSON.stringify(Core.cacheRetention.applicationNotRequested(options.approvedProposal), null, 2), code: 0 };
+    if (!options.cacheRoot) throw new Error('apply-cache-retention requires --cache-root');
+    if (!options.approvedProposal) throw new Error('apply-cache-retention requires --approve-proposal');
+    const result = Core.cacheRetention.apply({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT, proposal: loadProposal(options.proposal), approvedDigest: options.approvedProposal, explicit: true });
+    return { output: JSON.stringify(result, null, 2), code: result.status === 'APPLIED' ? 0 : 2 };
+  }
   throw new Error('unknown command: ' + options.command + '\n' + usage());
 }
 
 if (require.main === module) main().then((result) => { process.stdout.write(result.output + '\n'); process.exitCode = result.code; }).catch((error) => { process.stderr.write(JSON.stringify({ schema: 'axm.game-production-runner-cli-error/v1', status: 'ERROR', reason: String(error.message || error) }, null, 2) + '\n'); process.exitCode = 1; });
 
-module.exports = { ROOT, parse, usage, loadSpec, summary, main };
+module.exports = { ROOT, parse, usage, loadSpec, loadProposal, retentionPolicy, summary, main };

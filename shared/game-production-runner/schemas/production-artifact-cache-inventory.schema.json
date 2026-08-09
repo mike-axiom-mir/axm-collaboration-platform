@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-inventory/v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "observed_at_ms", "root_fingerprint", "root_exists", "entries_root_exists", "scan_budget", "entries", "unclassified", "temporary_publishers", "usage", "snapshot_digest", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-inventory/v1" },
+    "version": { "const": "0.1.0" },
+    "status": { "enum": ["COMPLETE", "REVIEW_REQUIRED", "LIMIT_EXCEEDED"] },
+    "observed_at_ms": { "type": "integer", "minimum": 0 },
+    "root_fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "root_exists": { "type": "boolean" },
+    "entries_root_exists": { "type": "boolean" },
+    "scan_budget": { "type": "object" },
+    "entries": { "type": "array" },
+    "unclassified": { "type": "array" },
+    "temporary_publishers": { "type": "integer", "minimum": 0 },
+    "usage": { "type": "object" },
+    "snapshot_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

@@ -39,6 +39,17 @@ candidate. Tamper or verifier disagreement is recorded as `REJECTED` and falls
 back to fresh execution. Same-key/different-result publication is preserved as
 a conflict instead of overwriting prior evidence.
 
+Cache retention is a separate on-demand governor, never part of candidate
+execution. Its inventory is read-only and bounded by entry/file scan limits.
+It classifies only exact sealed cache layouts as temporary captures, measures
+logical file bytes, and holds on undeclared content, links, special files, or
+an active publisher. A dry-run policy independently limits entry count,
+logical bytes, and filesystem age while protecting exact referenced keys.
+Application requires the sealed proposal's exact digest, separate explicit
+authority, an unchanged inventory snapshot, exact selective invalidations, and
+post-delete readback. Filesystem age is an observed modification-age signal,
+not a claim about original publication time.
+
 The confinement substrate probe is a separate, explicit diagnostic. It launches
 disposable permission-mode child processes, tests individual filesystem,
 child-process, worker-thread, and local-loopback capabilities, removes its
@@ -65,8 +76,12 @@ not as a security boundary for malicious code.
 - Deterministic cross-run artifact reuse: executable and self-tested across
   cold miss, verified hit, tamper fallback, verifier disagreement, explicit
   invalidation, and concurrent publication.
-- Automatic cache retention, quota enforcement, eviction, and garbage
-  collection: missing; cache roots remain human-owned local state.
+- On-demand cache retention: executable and self-tested across bounded
+  inventory, separate count/logical-byte/filesystem-age budgets, protected
+  references, dry-run authority, stale proposals, malformed layouts, exact
+  deletion, and post-delete readback.
+- Persisted retention policies, scheduling, leases, and automatic discovery of
+  run-ledger references: missing; cache roots remain human-owned local state.
 - Explicit Hand confinement substrate diagnosis: executable and self-tested;
   the current Node 24 observation is `DEGRADED` because network denial failed.
 - Process-hosted production Hands and a malicious-code sandbox: missing.
@@ -94,6 +109,10 @@ not as a security boundary for malicious code.
 - A cache hit never reuses prior verification testimony; the current verifier
   must pass the cached bytes again.
 - Invalidation requires an exact digest key and separate explicit authority.
+- Retention planning never deletes. Application requires a saved sealed
+  proposal, its exact digest as approval, and an unchanged inventory snapshot.
+- Protected keys, unclassified layouts, and active publishers cannot be
+  retention-deletion candidates. Retention never runs during a candidate.
 - Confinement probing is opt-in, local-loopback-only, and grants no execution
   authority even if every check passes.
 - Any required capability that is allowed or unknown holds process-Hand

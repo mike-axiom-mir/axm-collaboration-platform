@@ -1,0 +1,14 @@
+{
+  "capabilities": [
+    { "id": "cache.production.retention.inventory.readonly", "status": "available", "constraints": ["explicit external cache root", "absent cache is not created", "no candidate-run integration"] },
+    { "id": "cache.production.retention.scan.bounded", "status": "available", "constraints": ["maximum 100000 entries and 1000000 files", "logical bytes from lstat", "artifact contents are not hashed during inventory"] },
+    { "id": "cache.production.retention.policy.separate", "status": "available", "constraints": ["entry count", "logical file bytes", "observed filesystem modification age"] },
+    { "id": "cache.production.retention.reference.protect", "status": "available", "constraints": ["caller supplies exact digest keys", "automatic run-ledger discovery remains missing"] },
+    { "id": "cache.production.retention.proposal.sealed", "status": "available", "constraints": ["canonical SHA-256 receipt", "planning performs no deletion", "oldest-first deterministic ordering"] },
+    { "id": "cache.production.retention.apply.authorized", "status": "available", "constraints": ["explicit apply flag", "exact proposal digest", "saved proposal is a plain JSON file no larger than 2 MiB"] },
+    { "id": "cache.production.retention.apply.stale-refuse", "status": "available", "constraints": ["root fingerprint and inventory snapshot digest", "new, removed, or changed entries invalidate application"] },
+    { "id": "cache.production.retention.delete.selective", "status": "available", "constraints": ["only proposal candidate keys", "existing exact invalidation boundary", "links are refused"] },
+    { "id": "cache.production.retention.readback", "status": "available", "constraints": ["fresh inventory after deletion", "each invalidation receipt digest retained", "policy satisfaction recomputed"] },
+    { "id": "cache.production.retention.unclassified-hold", "status": "available", "constraints": ["undeclared files or directories", "links or special files", "active publishers", "scan limit exhaustion"] }
+  ]
+}

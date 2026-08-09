@@ -17,7 +17,8 @@
     "deterministic documentation Hand with separately identified content verifier",
     "neutral digest-chained production step receipts with legacy game-ledger continuity",
     "explicit local Node permission substrate probe with sealed per-capability evidence",
-    "verified deterministic cross-run artifact cache with fresh verifier hits, atomic publication, tamper fallback, conflict preservation, and explicit selective invalidation"
+    "verified deterministic cross-run artifact cache with fresh verifier hits, atomic publication, tamper fallback, conflict preservation, and explicit selective invalidation",
+    "explicit on-demand cache retention governor with bounded read-only inventory, separate count/logical-byte/filesystem-age budgets, protected exact references, sealed dry-run proposals, exact digest approval, stale-snapshot refusal, and post-delete readback"
   ],
   "gaps": [
     {
@@ -63,11 +64,18 @@
       "next_evidence": "Run every schema and fixture through a pinned Draft 2020-12 validator."
     },
     {
-      "capability": "cache.production.retention-governor",
-      "kind": "HAND",
-      "state": "MISSING_HAND",
-      "impact": "Verified cache entries persist until exact explicit invalidation; no quota, lease, age policy, reachability analysis, or automatic garbage collection bounds long-running storage growth.",
-      "next_evidence": "Add a separately governed retention planner with dry-run inventory, byte quotas, reference-aware deletion proposals, explicit approval, and post-delete readback receipts."
+      "capability": "cache.production.retention-scheduler",
+      "kind": "AUTHORITY",
+      "state": "MISSING_AUTHORITY",
+      "impact": "Retention policy is neither persisted nor scheduled. Cache growth remains possible until a human or authorized host explicitly inventories, plans, approves, and applies a proposal.",
+      "next_evidence": "Define a user-owned policy store and scheduling authority that still emits a reviewable proposal or an explicitly pre-authorized policy receipt before deletion."
+    },
+    {
+      "capability": "cache.production.reference-discovery",
+      "kind": "CONTRACT",
+      "state": "MISSING_CONTRACT",
+      "impact": "The governor protects exact keys supplied by its caller but does not yet discover live references from candidate job receipts or project state automatically.",
+      "next_evidence": "Add a read-only adapter that extracts cache keys from validated run ledgers and seals the resulting reference set without treating unverified files as authority."
     },
     {
       "capability": "ui.game-production-workbench",
