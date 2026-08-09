@@ -1,0 +1,13 @@
+{
+  "schema": "axm.capability-inventory/v1",
+  "capabilities": [
+    { "id": "cache.production.reference.scan.readonly", "status": "available", "constraints": ["explicit absolute external job root", "absent root is not created", "no candidate-run integration", "links and filesystem roots refused"] },
+    { "id": "cache.production.reference.scan.bounded", "status": "available", "constraints": ["streamed maximum 20000 direct directory entries", "maximum 10000 direct run directories", "maximum 100000 ledger receipts", "maximum 256 MiB aggregate ledger bytes", "maximum 16 MiB per ledger", "maximum 1 MiB per terminal receipt"] },
+    { "id": "cache.production.reference.terminal-only", "status": "available", "constraints": ["CANDIDATE_READY, HUMAN_REVIEW, HELD, FAILED, or CANCELLED terminal receipts", "nonterminal checkpoints remain missing"] },
+    { "id": "cache.production.reference.ledger-complete", "status": "available", "constraints": ["one pinned game or portable step schema", "canonical digest and previous-digest chain", "exact run id binding", "terminal verified-step list equals the whole verified ledger"] },
+    { "id": "cache.production.reference.path-private", "status": "available", "constraints": ["root represented by fingerprint", "runs represented by terminal receipt digests", "no local paths or run identifiers"] },
+    { "id": "cache.production.reference.aggregate-hold", "status": "available", "constraints": ["incomplete, linked, malformed, mixed-schema, contradictory, or over-limit observations grant no protection authority", "valid observations remain visible as non-authoritative evidence"] },
+    { "id": "cache.production.reference.entry-binding", "status": "available", "constraints": ["only VERIFIED protective cache states", "exact cache key and entry digest", "key/entry mismatch holds retention"] },
+    { "id": "cache.production.reference.apply-freshness", "status": "available", "constraints": ["proposal binds reference root fingerprint, scan budget, observed time, sealed set digest, and snapshot digest", "apply rediscovers before cache inventory or deletion", "changed set deletes nothing"] }
+  ]
+}

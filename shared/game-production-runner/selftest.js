@@ -24,6 +24,23 @@ function setTreeMtime(root, milliseconds) {
   fs.utimesSync(root, new Date(milliseconds), new Date(milliseconds));
 }
 
+function resealRunLedger(runDir, mutate) {
+  let receipts = lines(path.join(runDir, 'step-receipts.jsonl')).map((line) => JSON.parse(line));
+  mutate(receipts);
+  let previous = null;
+  receipts = receipts.map((receipt) => {
+    receipt.previous_receipt_digest = previous;
+    const sealed = Core.canonical.seal(receipt);
+    previous = sealed.digest;
+    return sealed;
+  });
+  fs.writeFileSync(path.join(runDir, 'step-receipts.jsonl'), receipts.map((receipt) => JSON.stringify(receipt)).join('\n') + '\n');
+  const runReceiptFile = path.join(runDir, 'run-receipt.json');
+  const runReceipt = JSON.parse(fs.readFileSync(runReceiptFile, 'utf8'));
+  runReceipt.step_receipts = receipts.filter((receipt) => receipt.state === 'VERIFIED').map((receipt) => receipt.digest);
+  fs.writeFileSync(runReceiptFile, JSON.stringify(Core.canonical.seal(runReceipt), null, 2) + '\n');
+}
+
 function publishCacheInChild(payload) {
   return new Promise((resolve, reject) => {
     const source = [
@@ -443,10 +460,67 @@ async function main() {
     const conflict = concurrentHandle.publish(firstPackage, [], documentPlan.intent_ref.digest, { artifacts: [{ path: firstPackage.outputs[0].path, content: 'different deterministic result\n' }], facts: { operation: firstPackage.document_operation } });
     equal(conflict.state, 'CONFLICT', 'same cache key with different result is preserved as nondeterminism counterevidence');
 
+    const referenceSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-reference-set.schema.json'), 'utf8'));
+    equal(referenceSchema.$id, Core.cacheReferences.SCHEMA, 'tracked cache reference-set schema matches the runtime contract');
+    const gameReferences = Core.cacheReferences.discover({ jobRoot: interruptedRoot, sourceRoot, nowMs: 10000000 });
+    ok(Core.canonical.validDigest(gameReferences) && gameReferences.status === 'COMPLETE' && gameReferences.runs.length === 1, 'read-only discovery accepts a valid terminal game ledger');
+    ok(gameReferences.runs[0].ledger_schema === Core.stepReceipts.SCHEMAS.game && gameReferences.protected_keys.length === 0, 'game ledger without cache material grants no invented protection');
+    const discoveredReferences = Core.cacheReferences.discover({ jobRoot: cacheRunsRoot, sourceRoot, nowMs: 10000000 });
+    ok(Core.cacheReferences.validate(discoveredReferences).length === 0 && discoveredReferences.status === 'COMPLETE' && discoveredReferences.runs.length === 6, 'discovery validates all six terminal portable cache-run ledgers');
+    ok(Core.cacheReferences.validate(Core.canonical.seal({ schema: Core.cacheReferences.SCHEMA, version: Core.cacheReferences.VERSION, status: 'COMPLETE' })).length > 0, 'malformed but canonically sealed reference input returns contract errors instead of escaping validation');
+    equal(discoveredReferences.protected_keys, cacheMissLedger.map((receipt) => receipt.cache.key).sort(), 'discovery protects exactly the three cache keys referenced by verified material');
+    ok(discoveredReferences.references.every((item) => item.entry_digests.length === 1 && item.run_receipt_digests.length >= 1 && item.step_receipt_digests.length >= 1), 'each protected key binds exact entry, run, and step receipt digests');
+    ok(!/[A-Za-z]:\\/.test(JSON.stringify(discoveredReferences)) && !JSON.stringify(discoveredReferences).includes('cache-miss-run'), 'reference set discloses neither machine paths nor private run identifiers');
+    const missingReferenceRoot = path.join(temporary, 'missing-reference-root');
+    const missingReferences = Core.cacheReferences.discover({ jobRoot: missingReferenceRoot, sourceRoot, nowMs: 10000000 });
+    ok(missingReferences.status === 'REVIEW_REQUIRED' && !missingReferences.authority.protection_granted && !fs.existsSync(missingReferenceRoot), 'missing reference root is a sealed non-authoritative no-op');
+    throws(() => Core.cacheReferences.discover({ jobRoot: sourceRoot, sourceRoot }), /REFERENCE_JOB_ROOT_OVERLAPS_SOURCE/, 'reference discovery refuses to scan the source tree');
+    equal(Core.cacheReferences.discover({ jobRoot: cacheRunsRoot, sourceRoot, nowMs: 10000000, scanMaxDirectoryEntries: 1 }).status, 'LIMIT_EXCEEDED', 'reference discovery bounds the initial direct-directory enumeration');
+    equal(Core.cacheReferences.discover({ jobRoot: cacheRunsRoot, sourceRoot, nowMs: 10000000, scanMaxRuns: 1 }).status, 'LIMIT_EXCEEDED', 'reference discovery stops at its explicit run ceiling');
+    equal(Core.cacheReferences.discover({ jobRoot: cacheRunsRoot, sourceRoot, nowMs: 10000000, scanMaxReceipts: 1 }).status, 'LIMIT_EXCEEDED', 'reference discovery stops at its explicit receipt ceiling');
+
+    const incompleteReferenceRoot = path.join(temporary, 'incomplete-reference-root');
+    fs.mkdirSync(incompleteReferenceRoot);
+    fs.cpSync(cacheMissRun.runDir, path.join(incompleteReferenceRoot, 'valid-run-copy'), { recursive: true });
+    fs.mkdirSync(path.join(incompleteReferenceRoot, 'incomplete-run'));
+    const incompleteReferences = Core.cacheReferences.discover({ jobRoot: incompleteReferenceRoot, sourceRoot, nowMs: 10000000 });
+    ok(incompleteReferences.status === 'REVIEW_REQUIRED' && incompleteReferences.protected_keys.length === 3 && !incompleteReferences.authority.protection_granted, 'one incomplete run holds the whole derived protection set without hiding valid references');
+    const tamperedReferenceRoot = path.join(temporary, 'tampered-reference-root');
+    fs.mkdirSync(tamperedReferenceRoot);
+    const tamperedReferenceRun = path.join(tamperedReferenceRoot, 'tampered-run-copy');
+    fs.cpSync(cacheMissRun.runDir, tamperedReferenceRun, { recursive: true });
+    const tamperedReferenceLedger = lines(path.join(tamperedReferenceRun, 'step-receipts.jsonl'));
+    const tamperedReferenceReceipt = JSON.parse(tamperedReferenceLedger[0]);
+    tamperedReferenceReceipt.detail = 'changed without a new seal';
+    tamperedReferenceLedger[0] = JSON.stringify(tamperedReferenceReceipt);
+    fs.writeFileSync(path.join(tamperedReferenceRun, 'step-receipts.jsonl'), tamperedReferenceLedger.join('\n') + '\n');
+    const tamperedReferences = Core.cacheReferences.discover({ jobRoot: tamperedReferenceRoot, sourceRoot, nowMs: 10000000 });
+    ok(tamperedReferences.status === 'REVIEW_REQUIRED' && tamperedReferences.holds[0].reason === 'REFERENCE_LEDGER_DIGEST_INVALID', 'tampered ledger bytes cannot grant cache protection');
+    const mixedReferenceRoot = path.join(temporary, 'mixed-reference-root');
+    fs.mkdirSync(mixedReferenceRoot);
+    const mixedReferenceRun = path.join(mixedReferenceRoot, 'mixed-run-copy');
+    fs.cpSync(cacheMissRun.runDir, mixedReferenceRun, { recursive: true });
+    resealRunLedger(mixedReferenceRun, (receipts) => { receipts[0].schema = Core.stepReceipts.SCHEMAS.game; });
+    const mixedReferences = Core.cacheReferences.discover({ jobRoot: mixedReferenceRoot, sourceRoot, nowMs: 10000000 });
+    ok(mixedReferences.status === 'REVIEW_REQUIRED' && mixedReferences.holds[0].reason === 'REFERENCE_LEDGER_SCHEMA_INVALID', 'mixed-schema ledger cannot grant cache protection even after resealing');
+    const conflictingReferenceRoot = path.join(temporary, 'conflicting-reference-root');
+    fs.mkdirSync(conflictingReferenceRoot);
+    const originalReferenceRun = path.join(conflictingReferenceRoot, 'original-run-copy'), conflictingReferenceRun = path.join(conflictingReferenceRoot, 'conflicting-run-copy');
+    fs.cpSync(cacheMissRun.runDir, originalReferenceRun, { recursive: true });
+    fs.cpSync(cacheMissRun.runDir, conflictingReferenceRun, { recursive: true });
+    resealRunLedger(conflictingReferenceRun, (receipts) => { receipts[0].cache.entry_digest = 'f'.repeat(64); });
+    const conflictingReferences = Core.cacheReferences.discover({ jobRoot: conflictingReferenceRoot, sourceRoot, nowMs: 10000000 });
+    ok(conflictingReferences.status === 'REVIEW_REQUIRED' && conflictingReferences.holds.some((item) => item.reason === 'REFERENCE_ENTRY_DIGEST_CONFLICT'), 'contradictory exact entry digests hold the aggregate reference set');
+    const linkedReferenceRoot = path.join(temporary, 'linked-reference-root');
+    fs.mkdirSync(linkedReferenceRoot);
+    fs.symlinkSync(cacheMissRun.runDir, path.join(linkedReferenceRoot, 'linked-run'), 'junction');
+    const linkedReferences = Core.cacheReferences.discover({ jobRoot: linkedReferenceRoot, sourceRoot, nowMs: 10000000 });
+    ok(linkedReferences.status === 'REVIEW_REQUIRED' && linkedReferences.holds[0].reason === 'REFERENCE_RUN_DIRECTORY_LINK_REFUSED', 'reference discovery records but never follows a linked run directory');
+
     const inventorySchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-inventory.schema.json'), 'utf8'));
     const proposalSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-retention-proposal.schema.json'), 'utf8'));
     const applicationSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-retention-application.schema.json'), 'utf8'));
-    equal([inventorySchema.$id, proposalSchema.$id, applicationSchema.$id], [Core.cacheRetention.INVENTORY_SCHEMA, Core.cacheRetention.PROPOSAL_SCHEMA, Core.cacheRetention.APPLICATION_SCHEMA], 'tracked retention schemas match the runtime contracts');
+    equal([referenceSchema.$id, inventorySchema.$id, proposalSchema.$id, applicationSchema.$id], [Core.cacheReferences.SCHEMA, Core.cacheRetention.INVENTORY_SCHEMA, Core.cacheRetention.PROPOSAL_SCHEMA, Core.cacheRetention.APPLICATION_SCHEMA], 'tracked cache governance schemas match the runtime contracts');
     const absentRetentionRoot = path.join(temporary, 'absent-retention-cache');
     const absentInventory = Core.cacheRetention.inventory({ cacheRoot: absentRetentionRoot, sourceRoot, nowMs: 10000000 });
     ok(absentInventory.status === 'COMPLETE' && absentInventory.root_exists === false && absentInventory.usage.entries === 0, 'read-only retention inventory represents an absent cache without inventing entries');
@@ -460,47 +534,75 @@ async function main() {
     ok(retentionStores.every((item) => item.state === 'STORED'), 'retention fixture starts from three immutable verified cache entries');
     const retentionNow = 10000000;
     [10000, 5000, 1000].forEach((age, index) => setTreeMtime(path.join(retentionRoot, 'entries', retentionStores[index].key.slice(0, 2), retentionStores[index].key), retentionNow - age));
+    const protectedKey = retentionStores[1].key;
+    const retentionReferenceRoot = path.join(temporary, 'retention-reference-runs'), retentionReferenceRun = path.join(retentionReferenceRoot, 'sealed-reference-run');
+    fs.mkdirSync(retentionReferenceRoot);
+    fs.cpSync(cacheMissRun.runDir, retentionReferenceRun, { recursive: true });
+    resealRunLedger(retentionReferenceRun, (receipts) => {
+      receipts.forEach((receipt, index) => {
+        receipt.cache = index === 0
+          ? { state: 'HIT', key: protectedKey, entry_digest: retentionStores[1].entry_digest }
+          : { state: 'DISABLED', key: receipt.cache.key };
+      });
+    });
+    const retentionReferences = Core.cacheReferences.discover({ jobRoot: retentionReferenceRoot, sourceRoot, nowMs: retentionNow });
+    ok(retentionReferences.status === 'COMPLETE' && retentionReferences.authority.protection_granted && Core.cacheReferences.validate(retentionReferences).length === 0, 'one fully sealed terminal ledger grants a bounded cache protection reference set');
+    equal(retentionReferences.protected_keys, [protectedKey], 'the derived reference set protects only the exact verified cache key');
     const retentionOptions = { cacheRoot: retentionRoot, sourceRoot, jobRoot: retentionJobs, nowMs: retentionNow };
     const retentionInventory = Core.cacheRetention.inventory(retentionOptions);
     ok(Core.canonical.validDigest(retentionInventory) && retentionInventory.status === 'COMPLETE' && retentionInventory.usage.entries === 3, 'retention inventory is sealed and counts exact eligible entries');
     ok(retentionInventory.entries.every((item) => item.classification === 'TEMPORARY_CAPTURE' && item.integrity_scope === 'SEALED_MANIFEST_LAYOUT_AND_SIZE'), 'inventory classifies cache copies without claiming artifact-content revalidation');
     ok(!/[A-Za-z]:\\/.test(JSON.stringify(retentionInventory)), 'retention inventory discloses no local cache path');
     equal(Core.cacheRetention.inventory(Object.assign({}, retentionOptions, { scanMaxEntries: 1 })).status, 'LIMIT_EXCEEDED', 'retention inventory stops at its explicit entry scan budget');
+    const mismatchedEntryReferenceRoot = path.join(temporary, 'mismatched-entry-reference-runs'), mismatchedEntryReferenceRun = path.join(mismatchedEntryReferenceRoot, 'sealed-reference-run');
+    fs.mkdirSync(mismatchedEntryReferenceRoot);
+    fs.cpSync(retentionReferenceRun, mismatchedEntryReferenceRun, { recursive: true });
+    resealRunLedger(mismatchedEntryReferenceRun, (receipts) => { receipts[0].cache.entry_digest = 'f'.repeat(64); });
+    const mismatchedEntryReferences = Core.cacheReferences.discover({ jobRoot: mismatchedEntryReferenceRoot, sourceRoot, nowMs: retentionNow });
+    const mismatchedEntryProposal = Core.cacheRetention.plan(retentionInventory, { max_entries: 1, max_logical_bytes: retentionInventory.usage.logical_bytes, max_filesystem_age_ms: 6000 }, [], mismatchedEntryReferences);
+    ok(mismatchedEntryReferences.status === 'COMPLETE' && mismatchedEntryProposal.status === 'HELD' && mismatchedEntryProposal.references.mismatched_keys[0] === protectedKey, 'a reference key bound to a different sealed entry digest holds retention instead of granting ambiguous protection');
 
     const bytePolicy = { max_entries: 99, max_logical_bytes: retentionInventory.usage.logical_bytes - retentionInventory.entries[0].logical_bytes, max_filesystem_age_ms: 999999 };
     const byteProposal = Core.cacheRetention.plan(retentionInventory, bytePolicy, []);
     ok(byteProposal.candidates.length === 1 && byteProposal.candidates[0].reasons.includes('LOGICAL_BYTES'), 'logical-byte pressure selects the oldest exact entry deterministically');
-    const protectedKey = retentionStores[1].key;
     const retentionPolicy = { max_entries: 1, max_logical_bytes: retentionInventory.usage.logical_bytes, max_filesystem_age_ms: 6000 };
-    const retentionProposal = Core.cacheRetention.plan(retentionInventory, retentionPolicy, [protectedKey]);
+    const retentionProposal = Core.cacheRetention.plan(retentionInventory, retentionPolicy, [], retentionReferences);
     ok(Core.canonical.validDigest(retentionProposal) && retentionProposal.status === 'READY' && retentionProposal.application_allowed, 'retention planner emits a sealed applicable proposal');
+    ok(retentionProposal.references.manual_keys.length === 0 && retentionProposal.references.discovered_keys[0] === protectedKey && retentionProposal.references.reference_set_digest === retentionReferences.digest, 'retention proposal binds the discovered set instead of trusting an untracked manual key');
     equal(retentionProposal.candidates.map((item) => item.key), [retentionStores[0].key, retentionStores[2].key], 'age and count budgets select exact unprotected entries in oldest-first order');
     ok(retentionProposal.candidates[0].reasons.includes('FILESYSTEM_AGE') && retentionProposal.candidates[1].reasons.includes('ENTRY_COUNT'), 'proposal preserves the separate reason for each budget decision');
     equal(retentionProposal.protected.map((item) => item.key), [protectedKey], 'an exact referenced key is excluded from every deletion candidate');
     ok(retentionStores.every((item) => fs.existsSync(path.join(retentionRoot, 'entries', item.key.slice(0, 2), item.key))), 'planning is a dry run and deletes nothing');
-    equal(Core.cacheRetention.plan(retentionInventory, Object.assign({}, retentionPolicy, { max_filesystem_age_ms: 100 }), [protectedKey]).status, 'READY_WITH_LIMITS', 'protected expired evidence remains held instead of being evicted to fake policy satisfaction');
+    equal(Core.cacheRetention.plan(retentionInventory, Object.assign({}, retentionPolicy, { max_filesystem_age_ms: 100 }), [], retentionReferences).status, 'READY_WITH_LIMITS', 'protected expired evidence remains held instead of being evicted to fake policy satisfaction');
     throws(() => Core.cacheRetention.plan(retentionInventory, { max_entries: -1, max_logical_bytes: 1, max_filesystem_age_ms: 1 }, []), /RETENTION_POLICY_VALUE_INVALID/, 'negative retention budgets are refused');
 
     const notRequestedApplication = Core.cacheRetention.applicationNotRequested(retentionProposal.digest);
     ok(notRequestedApplication.status === 'NOT_REQUESTED' && !notRequestedApplication.authority.deletion_performed, 'unrequested retention application is a sealed content-free no-op');
     equal(Core.cacheRetention.apply(Object.assign({}, retentionOptions, { proposal: retentionProposal, approvedDigest: retentionProposal.digest })).status, 'NOT_APPROVED', 'proposal digest without explicit apply authority deletes nothing');
     equal(Core.cacheRetention.apply(Object.assign({}, retentionOptions, { proposal: retentionProposal, approvedDigest: 'f'.repeat(64), explicit: true })).status, 'APPROVAL_MISMATCH', 'explicit apply with the wrong proposal digest deletes nothing');
+    equal(Core.cacheRetention.apply(Object.assign({}, retentionOptions, { proposal: retentionProposal, approvedDigest: retentionProposal.digest, explicit: true })).status, 'REFERENCES_REQUIRED', 'approved discovered-reference proposal cannot apply without a fresh reference root');
     const substitutedProposal = Core.canonical.clone(retentionProposal);
     substitutedProposal.candidates[0].key = protectedKey;
     substitutedProposal.candidates[0].entry_digest = retentionProposal.protected[0].entry_digest;
     const resealedSubstitution = Core.canonical.seal(substitutedProposal);
-    equal(Core.cacheRetention.apply(Object.assign({}, retentionOptions, { proposal: resealedSubstitution, approvedDigest: resealedSubstitution.digest, explicit: true })).status, 'PROPOSAL_NOT_REPRODUCIBLE', 'a validly resealed arbitrary candidate substitution cannot impersonate the official planner');
+    equal(Core.cacheRetention.apply(Object.assign({}, retentionOptions, { referenceJobRoot: retentionReferenceRoot, proposal: resealedSubstitution, approvedDigest: resealedSubstitution.digest, explicit: true })).status, 'PROPOSAL_NOT_REPRODUCIBLE', 'a validly resealed arbitrary candidate substitution cannot impersonate the official planner');
     ok(retentionStores.every((item) => fs.existsSync(path.join(retentionRoot, 'entries', item.key.slice(0, 2), item.key))), 'all retention authority and proposal-integrity refusals preserve every entry');
+    const lateReferenceRun = path.join(retentionReferenceRoot, 'late-terminal-run');
+    fs.cpSync(retentionReferenceRun, lateReferenceRun, { recursive: true });
+    equal(Core.cacheRetention.apply(Object.assign({}, retentionOptions, { referenceJobRoot: retentionReferenceRoot, proposal: retentionProposal, approvedDigest: retentionProposal.digest, explicit: true })).status, 'REFERENCES_STALE', 'a newly sealed terminal run invalidates the approved reference snapshot before deletion');
+    fs.rmSync(lateReferenceRun, { recursive: true });
+    ok(retentionStores.every((item) => fs.existsSync(path.join(retentionRoot, 'entries', item.key.slice(0, 2), item.key))), 'reference-snapshot refusal deletes none of the selected cache entries');
     const differentRetentionRoot = path.join(temporary, 'different-retention-cache');
     Core.artifactCache.open({ cacheRoot: differentRetentionRoot, sourceRoot, jobRoot: retentionJobs });
-    equal(Core.cacheRetention.apply({ cacheRoot: differentRetentionRoot, sourceRoot, jobRoot: retentionJobs, nowMs: retentionNow, proposal: retentionProposal, approvedDigest: retentionProposal.digest, explicit: true }).status, 'STALE', 'an approved proposal is bound to one hashed cache root identity');
+    equal(Core.cacheRetention.apply({ cacheRoot: differentRetentionRoot, sourceRoot, jobRoot: retentionJobs, referenceJobRoot: retentionReferenceRoot, nowMs: retentionNow, proposal: retentionProposal, approvedDigest: retentionProposal.digest, explicit: true }).status, 'STALE', 'an approved proposal is bound to one hashed cache root identity');
 
     const lateStore = await publishCacheInChild({ module: require.resolve('./artifact-cache'), cacheRoot: retentionRoot, sourceRoot, jobRoot: retentionJobs, pkg: firstPackage, inputs: [], seed: 'retention-late-write', produced: retentionProduced });
-    equal(Core.cacheRetention.apply(Object.assign({}, retentionOptions, { proposal: retentionProposal, approvedDigest: retentionProposal.digest, explicit: true })).status, 'STALE', 'a separate publisher invalidates the approved inventory snapshot before deletion');
+    equal(Core.cacheRetention.apply(Object.assign({}, retentionOptions, { referenceJobRoot: retentionReferenceRoot, proposal: retentionProposal, approvedDigest: retentionProposal.digest, explicit: true })).status, 'STALE', 'a separate publisher invalidates the approved inventory snapshot before deletion');
     ok(retentionStores.every((item) => fs.existsSync(path.join(retentionRoot, 'entries', item.key.slice(0, 2), item.key))), 'stale proposal refusal deletes none of its originally selected entries');
     equal(retentionHandle.invalidate(lateStore.key, { explicit: true }).status, 'REMOVED', 'test removes only the exact concurrent entry before retrying the original sealed proposal');
-    const appliedRetention = Core.cacheRetention.apply(Object.assign({}, retentionOptions, { proposal: retentionProposal, approvedDigest: retentionProposal.digest, explicit: true }));
+    const appliedRetention = Core.cacheRetention.apply(Object.assign({}, retentionOptions, { referenceJobRoot: retentionReferenceRoot, proposal: retentionProposal, approvedDigest: retentionProposal.digest, explicit: true }));
     ok(Core.canonical.validDigest(appliedRetention) && appliedRetention.status === 'APPLIED' && appliedRetention.policy_satisfied, 'exact approved proposal applies and seals post-delete policy satisfaction');
+    equal(appliedRetention.reference_snapshot_digest, retentionReferences.snapshot_digest, 'application receipt binds the freshly rediscovered terminal-ledger snapshot');
     ok(appliedRetention.outcomes.length === 2 && appliedRetention.outcomes.every((item) => item.entry_removed && Core.canonical.validDigest({ schema: Core.artifactCache.INVALIDATION_SCHEMA, key: item.key, status: item.status, entry_removed: item.entry_removed, explicit: true, authority: { installed: false, promoted: false, canon: false }, digest: item.invalidation_receipt_digest })), 'application binds two exact selective invalidation receipts');
     ok(fs.existsSync(path.join(retentionRoot, 'entries', protectedKey.slice(0, 2), protectedKey)) && appliedRetention.usage_after.entries === 1, 'post-delete readback preserves the protected entry and observes exact remaining usage');
 

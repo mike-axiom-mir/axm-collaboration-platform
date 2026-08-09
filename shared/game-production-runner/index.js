@@ -7,6 +7,7 @@ module.exports = Object.freeze({
   runner: require('./runner'),
   stepReceipts: require('./step-receipt-contract'),
   artifactCache: require('./artifact-cache'),
+  cacheReferences: require('./cache-reference-discovery'),
   cacheRetention: require('./artifact-cache-retention'),
   confinement: require('./permission-substrate'),
   adapters: require('./axm-adapters'),

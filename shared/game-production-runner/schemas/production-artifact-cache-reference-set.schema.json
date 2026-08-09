@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-reference-set/v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "observed_at_ms", "job_root_fingerprint", "root_exists", "scan_budget", "runs", "references", "protected_keys", "holds", "ignored_files", "usage", "authority", "snapshot_digest", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-reference-set/v1" },
+    "version": { "const": "0.1.0" },
+    "status": { "enum": ["COMPLETE", "REVIEW_REQUIRED", "LIMIT_EXCEEDED"] },
+    "observed_at_ms": { "type": "integer", "minimum": 0 },
+    "job_root_fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "root_exists": { "type": "boolean" },
+    "scan_budget": { "type": "object" },
+    "runs": { "type": "array" },
+    "references": { "type": "array" },
+    "protected_keys": { "type": "array", "items": { "type": "string", "pattern": "^[a-f0-9]{64}$" } },
+    "holds": { "type": "array" },
+    "ignored_files": { "type": "integer", "minimum": 0 },
+    "usage": { "type": "object" },
+    "authority": { "type": "object" },
+    "snapshot_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

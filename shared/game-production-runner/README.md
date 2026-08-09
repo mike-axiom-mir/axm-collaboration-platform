@@ -50,6 +50,19 @@ authority, an unchanged inventory snapshot, exact selective invalidations, and
 post-delete readback. Filesystem age is an observed modification-age signal,
 not a claim about original publication time.
 
+Protected references no longer need to be copied by hand. An explicit,
+read-only discovery pass scans only direct run directories under a separate
+external job root. It accepts fully sealed terminal run receipts only after
+validating the complete bounded step ledger, one pinned step-receipt schema,
+the digest chain, exact run binding, and the terminal receipt's complete list
+of verified step digests. Only verified `HIT`, `MISS_STORED`,
+`MISS_ENTRY_EXISTS`, and `MISS_CONFLICT` observations contribute protection.
+The sealed result discloses digests and counts, never local paths or run IDs.
+Any incomplete, linked, malformed, mixed-schema, over-limit, or contradictory
+run holds authority for the whole set. Retention binds both cache key and exact
+entry digest, then freshly rediscovers references at apply time; a changed
+reference snapshot deletes nothing.
+
 The confinement substrate probe is a separate, explicit diagnostic. It launches
 disposable permission-mode child processes, tests individual filesystem,
 child-process, worker-thread, and local-loopback capabilities, removes its
@@ -80,8 +93,12 @@ not as a security boundary for malicious code.
   inventory, separate count/logical-byte/filesystem-age budgets, protected
   references, dry-run authority, stale proposals, malformed layouts, exact
   deletion, and post-delete readback.
-- Persisted retention policies, scheduling, leases, and automatic discovery of
-  run-ledger references: missing; cache roots remain human-owned local state.
+- Terminal-ledger cache-reference discovery: executable and self-tested across
+  game and portable schemas, limits, tamper, incomplete and mixed ledgers,
+  conflicting entry digests, path privacy, and reference-snapshot races.
+- Persisted retention policies, scheduling, leases, and authoritative
+  nonterminal checkpoints: missing; cache and reference roots remain
+  human-owned local state.
 - Explicit Hand confinement substrate diagnosis: executable and self-tested;
   the current Node 24 observation is `DEGRADED` because network denial failed.
 - Process-hosted production Hands and a malicious-code sandbox: missing.
@@ -113,6 +130,9 @@ not as a security boundary for malicious code.
   proposal, its exact digest as approval, and an unchanged inventory snapshot.
 - Protected keys, unclassified layouts, and active publishers cannot be
   retention-deletion candidates. Retention never runs during a candidate.
+- Reference discovery is an explicit bounded read-only action. It grants
+  protection only for complete terminal ledgers; interrupted or incomplete
+  runs hold the derived set, and apply must rescan the same reference root.
 - Confinement probing is opt-in, local-loopback-only, and grants no execution
   authority even if every check passes.
 - Any required capability that is allowed or unknown holds process-Hand

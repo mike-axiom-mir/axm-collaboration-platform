@@ -17,6 +17,7 @@ function ledger(file) { return fs.readFileSync(file, 'utf8').trim().split(/\r?\n
 async function main() {
   equal(Cli.parse(['run-demo', '--job-root', 'X', '--resume']).resume, true, 'CLI parses explicit resume');
   equal(Cli.parse(['run-demo', '--cache-root', 'Y']).cacheRoot, 'Y', 'CLI parses an explicit cache root');
+  equal(Cli.parse(['plan-cache-retention', '--reference-job-root', 'R']).referenceJobRoot, 'R', 'CLI parses a separate terminal-ledger reference root');
   equal(Cli.parse(['invalidate-cache', '--cache-key', 'a', '--explicit-invalidate']).explicitInvalidate, true, 'CLI parses explicit cache invalidation authority');
   equal(Cli.parse(['plan-cache-retention', '--max-cache-entries', '2', '--max-cache-bytes', '100', '--max-cache-age-ms', '50', '--protect-key', 'a', '--protect-key', 'b']).protectedKeys, ['a', 'b'], 'CLI preserves repeated protected cache references');
   equal(Cli.parse(['apply-cache-retention', '--proposal', 'p.json', '--approve-proposal', 'a', '--explicit-apply']).explicitApply, true, 'CLI parses separate explicit retention application authority');
@@ -118,6 +119,11 @@ async function main() {
     equal(cacheHit.status, 0, 'CLI explicit cache hit run exits successfully');
     const cacheHitResult = parsed(cacheHit);
     ok(ledger(path.join(cacheHitResult.local_run_directory, 'step-receipts.jsonl')).every((receipt) => receipt.cache.state === 'HIT' && receipt.process.executor_invoked === false && receipt.evidence.length === 1), 'CLI hit skips executors but preserves fresh verifier evidence');
+    const discoveredCacheReferences = invoke(['discover-cache-references', '--job-root', cacheRuns]);
+    equal(discoveredCacheReferences.status, 0, 'CLI bounded terminal-ledger reference discovery exits successfully');
+    const discoveredCacheReferenceSet = parsed(discoveredCacheReferences);
+    ok(discoveredCacheReferenceSet.status === 'COMPLETE' && discoveredCacheReferenceSet.protected_keys.length === 3 && discoveredCacheReferenceSet.authority.protection_granted, 'CLI derives all three exact protected cache keys from sealed terminal runs');
+    ok(!/[A-Za-z]:\\/.test(JSON.stringify(discoveredCacheReferenceSet)) && !JSON.stringify(discoveredCacheReferenceSet).includes('cache-cli-miss'), 'CLI reference set exposes neither machine paths nor private run identifiers');
     const unrequestedRetentionRoot = path.join(temporary, 'unrequested-retention-cache');
     const unrequestedRetention = invoke(['apply-cache-retention', '--cache-root', unrequestedRetentionRoot, '--approve-proposal', 'a'.repeat(64)]);
     equal(unrequestedRetention.status, 0, 'unrequested CLI retention application is a safe no-op');
@@ -126,6 +132,10 @@ async function main() {
     const retentionInventory = invoke(['inventory-cache', '--cache-root', cacheStore]);
     equal(retentionInventory.status, 0, 'CLI read-only cache inventory exits successfully for a plain cache');
     ok(parsed(retentionInventory).usage.entries === 3 && parsed(retentionInventory).status === 'COMPLETE', 'CLI inventory observes all three cache entries without deleting them');
+    const fullyReferencedPlan = invoke(['plan-cache-retention', '--cache-root', cacheStore, '--reference-job-root', cacheRuns, '--max-cache-entries', '1', '--max-cache-bytes', '9999999', '--max-cache-age-ms', '999999999999']);
+    equal(fullyReferencedPlan.status, 2, 'CLI holds a policy that would require deleting discovered referenced evidence');
+    const fullyReferencedResult = parsed(fullyReferencedPlan);
+    ok(fullyReferencedResult.reference_set.status === 'COMPLETE' && fullyReferencedResult.proposal.status === 'HELD' && fullyReferencedResult.proposal.candidates.length === 0 && fullyReferencedResult.proposal.protected.length === 3, 'CLI plan binds terminal-ledger discovery and proposes no referenced deletion');
     const retentionPlan = invoke(['plan-cache-retention', '--cache-root', cacheStore, '--max-cache-entries', '1', '--max-cache-bytes', '9999999', '--max-cache-age-ms', '999999999999', '--protect-key', cacheMissLedger[0].cache.key]);
     equal(retentionPlan.status, 0, 'CLI retention dry-run produces an applicable proposal');
     const retentionPlanResult = parsed(retentionPlan), retentionProposal = retentionPlanResult.proposal;

@@ -1,0 +1,62 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "subject": "game-production-runner terminal-ledger cache-reference discovery",
+  "claims": [
+    {
+      "claim_id": "cache.production.reference.scan.readonly-bounded",
+      "claim_type": "behavioral",
+      "pass_condition": "Discovery neither creates an absent root nor follows links or exceeds declared work ceilings.",
+      "primary_surface": "shared/game-production-runner/selftest.js",
+      "observed_evidence": "Absent-root, source-overlap, linked-run, run-limit, receipt-limit, and valid direct-root assertions pass.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.reference.terminal-ledger",
+      "claim_type": "technical",
+      "pass_condition": "Only an exact terminal receipt bound to a fully validated homogeneous digest-chained ledger contributes references.",
+      "primary_surface": "shared/game-production-runner/cache-reference-discovery.js",
+      "observed_evidence": "Valid game and portable ledgers pass; incomplete, tampered, mixed-schema, and contradictory fixtures hold.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.reference.path-private",
+      "claim_type": "privacy",
+      "pass_condition": "The sealed derived view contains neither machine paths nor private run identifiers.",
+      "primary_surface": "shared and CLI self-tests",
+      "observed_evidence": "Serialized reference sets are asserted free of Windows paths and fixture run ids.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.reference.aggregate-hold",
+      "claim_type": "authority",
+      "pass_condition": "Any unsafe direct run or conflicting entry digest prevents the whole set from granting protection authority.",
+      "primary_surface": "shared/game-production-runner/selftest.js",
+      "observed_evidence": "REVIEW_REQUIRED sets preserve visible valid references while authority.protection_granted remains false.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.reference.entry-binding",
+      "claim_type": "contract",
+      "pass_condition": "Retention protection binds each discovered cache key to its exact referenced entry digest.",
+      "primary_surface": "shared/game-production-runner/artifact-cache-retention.js",
+      "observed_evidence": "Matching binding protects the selected entry; a fully sealed mismatching binding produces a HELD proposal.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.reference.apply-freshness",
+      "claim_type": "persistence",
+      "pass_condition": "An approved proposal cannot delete unless its reference root is present and freshly reproduces the exact bound set and snapshot.",
+      "primary_surface": "shared/game-production-runner/selftest.js",
+      "observed_evidence": "Missing root returns REFERENCES_REQUIRED; a new terminal run returns REFERENCES_STALE with no deletion; unchanged reference and cache snapshots apply exact candidates and seal the fresh snapshot digest.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.reference.cli",
+      "claim_type": "transport",
+      "pass_condition": "CLI discovery and retention planning expose the runtime boundary without automatic work.",
+      "primary_surface": "tools/game-production-runner/selftest.js",
+      "observed_evidence": "CLI discovery returns three exact protected keys; a policy requiring their deletion is HELD with zero candidates.",
+      "decision": "PASS"
+    }
+  ]
+}

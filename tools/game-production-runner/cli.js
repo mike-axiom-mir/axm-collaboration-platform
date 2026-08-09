@@ -13,6 +13,7 @@ function parse(argv) {
     const item = argv[index];
     if (item === '--spec') result.spec = argv[++index];
     else if (item === '--job-root') result.jobRoot = argv[++index];
+    else if (item === '--reference-job-root') result.referenceJobRoot = argv[++index];
     else if (item === '--cache-root') result.cacheRoot = argv[++index];
     else if (item === '--cache-key') result.cacheKey = argv[++index];
     else if (item === '--max-cache-entries') result.maxCacheEntries = Number(argv[++index]);
@@ -48,9 +49,10 @@ function usage() {
     '  run-profile-demo --job-root DIRECTORY [--cache-root DIRECTORY] [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
     '  run-document-demo --job-root DIRECTORY [--cache-root DIRECTORY] [--run-id ID] [--resume] [--max-steps N] --confirm "' + Core.portable.START_CONFIRMATION + '"',
     '  invalidate-cache --cache-root DIRECTORY --cache-key SHA256 --explicit-invalidate',
+    '  discover-cache-references --job-root DIRECTORY',
     '  inventory-cache --cache-root DIRECTORY',
-    '  plan-cache-retention --cache-root DIRECTORY --max-cache-entries N --max-cache-bytes N --max-cache-age-ms N [--protect-key SHA256 ...]',
-    '  apply-cache-retention --cache-root DIRECTORY --proposal FILE --approve-proposal SHA256 --explicit-apply',
+    '  plan-cache-retention --cache-root DIRECTORY --max-cache-entries N --max-cache-bytes N --max-cache-age-ms N [--reference-job-root DIRECTORY] [--protect-key SHA256 ...]',
+    '  apply-cache-retention --cache-root DIRECTORY --proposal FILE --approve-proposal SHA256 [--reference-job-root DIRECTORY] --explicit-apply',
     '  probe-godot --read-only-probe [--substrate-root DIRECTORY]',
     '  probe-hand-confinement --explicit-probe',
     '',
@@ -148,18 +150,24 @@ async function main(argv) {
     const result = Core.cacheRetention.inventory({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT });
     return { output: JSON.stringify(result, null, 2), code: result.status === 'COMPLETE' ? 0 : 2 };
   }
+  if (options.command === 'discover-cache-references') {
+    if (!options.jobRoot) throw new Error('discover-cache-references requires --job-root');
+    const result = Core.cacheReferences.discover({ jobRoot: path.resolve(options.jobRoot), sourceRoot: ROOT });
+    return { output: JSON.stringify(result, null, 2), code: result.status === 'COMPLETE' ? 0 : 2 };
+  }
   if (options.command === 'plan-cache-retention') {
     if (!options.cacheRoot) throw new Error('plan-cache-retention requires --cache-root');
     const inventory = Core.cacheRetention.inventory({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT });
-    const proposal = Core.cacheRetention.plan(inventory, retentionPolicy(options), options.protectedKeys || []);
-    const result = { schema: 'axm.production-artifact-cache-retention-plan-output/v1', inventory, proposal, deletion_performed: false };
+    const referenceSet = options.referenceJobRoot ? Core.cacheReferences.discover({ jobRoot: path.resolve(options.referenceJobRoot), sourceRoot: ROOT }) : null;
+    const proposal = Core.cacheRetention.plan(inventory, retentionPolicy(options), options.protectedKeys || [], referenceSet);
+    const result = { schema: 'axm.production-artifact-cache-retention-plan-output/v1', inventory, reference_set: referenceSet, proposal, deletion_performed: false };
     return { output: JSON.stringify(result, null, 2), code: ['READY', 'READY_WITH_LIMITS', 'NO_CHANGES'].includes(proposal.status) ? 0 : 2 };
   }
   if (options.command === 'apply-cache-retention') {
     if (!options.explicitApply) return { output: JSON.stringify(Core.cacheRetention.applicationNotRequested(options.approvedProposal), null, 2), code: 0 };
     if (!options.cacheRoot) throw new Error('apply-cache-retention requires --cache-root');
     if (!options.approvedProposal) throw new Error('apply-cache-retention requires --approve-proposal');
-    const result = Core.cacheRetention.apply({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT, proposal: loadProposal(options.proposal), approvedDigest: options.approvedProposal, explicit: true });
+    const result = Core.cacheRetention.apply({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT, referenceJobRoot: options.referenceJobRoot ? path.resolve(options.referenceJobRoot) : undefined, proposal: loadProposal(options.proposal), approvedDigest: options.approvedProposal, explicit: true });
     return { output: JSON.stringify(result, null, 2), code: result.status === 'APPLIED' ? 0 : 2 };
   }
   throw new Error('unknown command: ' + options.command + '\n' + usage());

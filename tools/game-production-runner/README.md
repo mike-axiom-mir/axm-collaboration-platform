@@ -23,9 +23,10 @@ node tools/game-production-runner/cli.js run-profile-demo --job-root D:\candidat
 node tools/game-production-runner/cli.js run-document-demo --job-root D:\candidate\runs --run-id document-demo --confirm "RUN PRODUCTION CANDIDATE"
 node tools/game-production-runner/cli.js run-document-demo --job-root D:\candidate\runs --cache-root D:\candidate\verified-cache --run-id cached-document --confirm "RUN PRODUCTION CANDIDATE"
 node tools/game-production-runner/cli.js invalidate-cache --cache-root D:\candidate\verified-cache --cache-key SHA256 --explicit-invalidate
+node tools/game-production-runner/cli.js discover-cache-references --job-root D:\candidate\runs
 node tools/game-production-runner/cli.js inventory-cache --cache-root D:\candidate\verified-cache
-node tools/game-production-runner/cli.js plan-cache-retention --cache-root D:\candidate\verified-cache --max-cache-entries 500 --max-cache-bytes 10737418240 --max-cache-age-ms 2592000000 --protect-key SHA256
-node tools/game-production-runner/cli.js apply-cache-retention --cache-root D:\candidate\verified-cache --proposal D:\candidate\retention-proposal.json --approve-proposal SHA256 --explicit-apply
+node tools/game-production-runner/cli.js plan-cache-retention --cache-root D:\candidate\verified-cache --reference-job-root D:\candidate\runs --max-cache-entries 500 --max-cache-bytes 10737418240 --max-cache-age-ms 2592000000
+node tools/game-production-runner/cli.js apply-cache-retention --cache-root D:\candidate\verified-cache --reference-job-root D:\candidate\runs --proposal D:\candidate\retention-proposal.json --approve-proposal SHA256 --explicit-apply
 node tools/game-production-runner/cli.js probe-godot --read-only-probe
 node tools/game-production-runner/cli.js probe-hand-confinement --explicit-probe
 ```
@@ -52,15 +53,20 @@ automatic eviction or cache garbage collection in v0.1.
 
 `inventory-cache` is read-only and does not create an absent cache. It emits a
 sealed, path-free inventory of exact cache layouts and holds on unclassified or
-actively publishing content. `plan-cache-retention` adds independent entry,
-logical-byte, and observed filesystem-age budgets plus repeatable
-`--protect-key` references; its output performs no deletion. Save only the
-nested `proposal` object to a JSON file. `apply-cache-retention` rereads that
-file and the cache, refuses a stale snapshot, and deletes only when both
-`--explicit-apply` and the proposal's exact digest are supplied. The sealed
-application receipt includes each selective invalidation digest and post-delete
-usage. No policy is persisted or scheduled, and live references are protected
-only when their exact keys are supplied by the caller.
+actively publishing content. `discover-cache-references` is also read-only and
+bounded. It derives a sealed, path-private protection set only from complete
+terminal receipts whose entire digest-chained ledger validates; interrupted,
+tampered, linked, mixed-schema, contradictory, or over-limit observations hold
+the set. `plan-cache-retention` adds independent entry, logical-byte, and
+observed filesystem-age budgets. It can combine repeatable manual
+`--protect-key` values with `--reference-job-root`; discovered bindings include
+the exact cache key and entry digest. Its output performs no deletion. Save
+only the nested `proposal` object to a JSON file. `apply-cache-retention`
+rereads that file and both roots, refuses a stale cache or reference snapshot,
+and deletes only when `--explicit-apply` and the proposal's exact digest are
+supplied. The sealed application receipt includes the fresh reference snapshot,
+each selective invalidation digest, and post-delete usage. No discovery,
+retention policy, or deletion runs in the background or during a candidate.
 
 `probe-hand-confinement` is diagnostic and must be requested explicitly. It
 creates and removes a disposable operating-system temporary root and opens only
