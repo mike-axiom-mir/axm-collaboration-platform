@@ -191,6 +191,8 @@ function fakeRunner(sourceFacts, options) {
   equal(firstPlan.next.number, 32, 'explicit first eligible candidate is selected');
   equal(firstPlan.next.expectedHead, HEADS[32], 'next action binds exact head');
   equal(firstPlan.next.checkpointBase, MAIN, 'next action binds exact checkpoint base');
+  equal(firstPlan.next.ifMergedThen.refreshRequiredCandidates.join(','), '33', 'next action projects the exact candidate requiring post-merge refresh');
+  equal(firstPlan.next.ifMergedThen.alreadyHeldCandidates.map(row => row.number).join(','), '29,30', 'next action preserves already-held later candidates');
   equal(firstPlan.candidates.filter(row => row.sequenceState === 'READY_NEXT').length, 1, 'only one candidate is next');
   equal(firstPlan.candidates.find(row => row.number === 33).sequenceState, 'WAIT_FOR_PREDECESSOR', 'later ready family remains waiting');
   equal(firstPlan.candidates.find(row => row.number === 33).intrinsicState, 'DRAFT_REVIEW_REQUIRED', 'draft state remains visible behind predecessor');
@@ -205,6 +207,7 @@ function fakeRunner(sourceFacts, options) {
   const platformPacket = Core.buildPlatformHandoff(firstPlan);
   equal(platformPacket.state, 'NEXT_READY', 'platform packet preserves plan state');
   equal(platformPacket.next.pullRequest, 32, 'platform packet names one PR');
+  equal(platformPacket.next.ifMergedThen.refreshRequiredCandidates.join(','), '33', 'platform packet carries bounded post-merge refresh projection');
   ok(/stop and request a fresh sequence plan/.test(platformPacket.next.instruction), 'platform packet requires post-action stop');
   ok(Object.values(platformPacket.authority).every(value => value === false), 'platform packet grants no review or merge authority');
   equal(Core.verifyPlatformHandoff(platformPacket).state, 'PASS', 'platform packet verifies');

@@ -288,6 +288,7 @@ function buildPlan(input) {
   });
   if (firstIncomplete >= 0 && candidates[firstIncomplete] && candidates[firstIncomplete].sequenceState === 'READY_NEXT') {
     const row = candidates[firstIncomplete];
+    const following = candidates.filter(candidate => candidate.order > row.order && candidate.intrinsicState !== 'MERGED_EXACT');
     next = {
       action:PLATFORM_ACTION,
       number:row.number,
@@ -300,7 +301,13 @@ function buildPlan(input) {
       mergeMethod:policy.mergeMethod,
       independentReviewRequired:true,
       exactReceiverRecheckRequired:true,
-      reprobeAfterAction:true
+      reprobeAfterAction:true,
+      ifMergedThen:{
+        assumption:'The declared merge method creates a new main commit from the exact selected head.',
+        remoteMainMustAdvance:true,
+        refreshRequiredCandidates:following.filter(candidate => candidate.handoff && candidate.handoff.pullRequest.baseCommit === remoteMainCommit).map(candidate => candidate.number),
+        alreadyHeldCandidates:following.filter(candidate => candidate.issues.length > 0 && (!candidate.handoff || candidate.handoff.pullRequest.baseCommit !== remoteMainCommit)).map(candidate => ({ number:candidate.number, issues:candidate.issues.map(item => item.code) }))
+      }
     };
   }
   const state = candidates.length && firstIncomplete < 0 && globalIssues.length === 0 ? 'COMPLETE' : next ? 'NEXT_READY' : 'HELD';
@@ -366,6 +373,7 @@ function buildPlatformHandoff(plan) {
       checkpointBase:plan.next.checkpointBase,
       checkpointDigest:plan.next.checkpointDigest,
       mergeMethod:plan.next.mergeMethod,
+      ifMergedThen:plan.next.ifMergedThen,
       instruction:'Independently review the exact head. If accepted, merge only this PR, then stop and request a fresh sequence plan.'
     } : null,
     holds:plan.state === 'HELD' ? {

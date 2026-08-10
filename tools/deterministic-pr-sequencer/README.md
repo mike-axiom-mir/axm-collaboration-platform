@@ -8,6 +8,11 @@ heads, public-safe platform handoff receipts, and fresh GitHub receiver facts.
 It emits at most one technical next candidate, then requires a complete reprobe
 after that candidate is acted on.
 
+The compact handoff also projects which later checkpointed candidates will need
+refresh if that exact merge advances `main`, while keeping already-held work and
+its reasons separate. This forecast is conditional and never substitutes for
+the required post-action receiver reprobe.
+
 `NEXT_READY` means the declared technical evidence matched. It is not approval,
 merge permission, promotion, roots, or CANON. Platform Axiom/Mir still performs
 an independent review and may reject the candidate.
