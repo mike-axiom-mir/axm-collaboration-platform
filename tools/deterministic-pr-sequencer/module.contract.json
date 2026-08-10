@@ -1,0 +1,64 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "deterministic-pr-sequencer",
+  "version": "v0.1",
+  "provides": [
+    "git-pr.multi-handoff-sequence-plan",
+    "git-pr.exact-next-candidate-selection",
+    "git-pr.base-and-head-drift-hold",
+    "git-pr.required-check-receiver-gate",
+    "git-pr.compact-platform-next-action-handoff",
+    "git-pr.post-action-reprobe-boundary",
+    "git-pr.merge-authority-refusal"
+  ],
+  "consumes": [
+    "git-pr.deterministic-checkpoint-handoff",
+    "git-pr.publisher-transport-handoff-optional",
+    "host-authenticated-github-cli-session",
+    "human-or-steward-explicit-sequence-policy"
+  ],
+  "permissions": ["network", "export"],
+  "handoffs": {
+    "emits": [
+      "axm.git-pr-sequence-plan/v1",
+      "axm.git-pr-next-action-handoff/v1",
+      "platform-axiom-mir/independent-review-next-action"
+    ],
+    "accepts": [
+      "axm.git-pr-sequence-policy/v1",
+      "axm.chatgpt-platform-merge-handoff/v1",
+      "host:existing-github-authentication"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "not-applicable",
+    "disconnect": "graceful-degrade",
+    "cleanup": "not-applicable"
+  },
+  "boundaries": {
+    "writes": ["explicit-create-new-output-outside-repository"],
+    "refuses": [
+      "repository-write",
+      "branch-write",
+      "pull-request-create-or-edit",
+      "pull-request-ready-transition",
+      "pull-request-close",
+      "automatic-or-local-merge",
+      "credential-storage-or-output",
+      "technical-readiness-as-review-acceptance",
+      "multiple-next-candidates",
+      "stale-plan-reuse-after-external-action",
+      "checkpoint-base-drift",
+      "head-drift",
+      "missing-or-invalid-handoff",
+      "failed-pending-missing-or-ambiguous-required-check",
+      "draft-pull-request-as-next",
+      "unlisted-review-branch",
+      "out-of-order-merge",
+      "promotion",
+      "roots-change",
+      "canon-change"
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "gate",
+  "id": "deterministic-pr-sequencer",
+  "name": "AXM Deterministic PR Sequencer",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "pr-sequencer-cli.js",
+  "contract": "module.contract.json",
+  "type": "machine-capability",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "HIGH",
+  "tags": [
+    "pull-request",
+    "sequence",
+    "deterministic",
+    "github-read",
+    "base-drift",
+    "merge-handoff",
+    "reasoning-cost"
+  ],
+  "uses": [
+    "deterministic-pr-checkpoint",
+    "deterministic-pr-publisher",
+    "platform-merge-handoff-receipts",
+    "host-authenticated-github-cli",
+    "explicit-sequence-policy"
+  ],
+  "permissions": [
+    "network",
+    "export"
+  ],
+  "machine": {
+    "entry": "pr-sequencer-cli.js",
+    "actions": ["plan", "verify-plan", "render-handoff", "verify-handoff"]
+  },
+  "actions": [
+    "read current main and pull-request receiver state from GitHub",
+    "bind ordered candidates to exact expected heads and deterministic platform handoffs",
+    "select at most one technically ready next candidate",
+    "hold on stale base, head drift, missing evidence, draft state, check failure, route drift, unlisted review work, or sequence violation",
+    "emit a compact non-authoritative next-action handoff for independent platform review",
+    "require a complete reprobe after every external action"
+  ],
+  "accepts": [
+    "axm.git-pr-sequence-policy/v1",
+    "axm.chatgpt-platform-merge-handoff/v1",
+    "host/github-cli-authenticated-session"
+  ],
+  "produces": [
+    "axm.git-pr-sequence-plan/v1",
+    "axm.git-pr-sequence-plan-verification/v1",
+    "axm.git-pr-next-action-handoff/v1",
+    "axm.git-pr-next-action-handoff-verification/v1"
+  ],
+  "readiness": [
+    "explicit-ordered-candidate-policy",
+    "exact-expected-heads",
+    "required-check-names",
+    "host-github-session-authenticated",
+    "fresh-github-receiver-observation"
+  ],
+  "summary": "Select at most one exact next PR for independent platform review while deterministically holding stale or incomplete concurrent work and refusing all merge authority.",
+  "notes": "EXPERIMENTAL high-consequence read-only advisor. Technical readiness is not review acceptance, merge permission, promotion, roots, or CANON."
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "axm.git-pr-evidence-input/v1",
+  "claims": [
+    {
+      "claimId": "sequencer-focused-selftest",
+      "status": "PASS",
+      "command": "node tools/deterministic-pr-sequencer/selftest.js",
+      "summary": "72 deterministic selection, drift, authority, redaction, integrity, CLI-boundary, and mocked GitHub-read assertions passed.",
+      "evidenceDigest": "c3703674b851c058475b292e51ca1d9edcee0091bc9bde71bf5f49785aca7c12",
+      "evidenceLocator": "tools/deterministic-pr-sequencer/evidence/focused-selftest.receipt.json"
+    },
+    {
+      "claimId": "sequencer-workshop-regression",
+      "status": "PASS",
+      "command": "node verify.js and the nine required Workshop follow-up checks",
+      "summary": "All required Workshop commands exited zero; verify reported zero failures and 43 unchanged baseline warnings.",
+      "evidenceDigest": "c38c98bb5044559b30d74d47b7e709296e8e4b2e33255abae3d1d017ba772967",
+      "evidenceLocator": "tools/deterministic-pr-sequencer/evidence/workshop-regression.receipt.json"
+    },
+    {
+      "claimId": "sequencer-live-github-read",
+      "status": "PASS",
+      "command": "deterministic-pr-sequencer plan over current GitHub PRs 29, 30, 32, and 33 plus plan and handoff verification",
+      "summary": "The real receiver plan selected only exact PR 32, held or queued the other candidates with typed reasons, found no unlisted review PR, and performed no GitHub write.",
+      "evidenceDigest": "364c4b77a45f04123427d64cde48cced89d69ef2f8c62d46b6f6ce2526e9f8f6",
+      "evidenceLocator": "tools/deterministic-pr-sequencer/evidence/live-github-read.receipt.json"
+    }
+  ]
+}

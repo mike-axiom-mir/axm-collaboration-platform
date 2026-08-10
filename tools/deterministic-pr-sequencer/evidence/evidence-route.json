@@ -1,0 +1,57 @@
+{
+  "schema": "axm.claim-evidence-route/v1",
+  "claims": [
+    {
+      "claim_id": "sequencer-static-contract",
+      "claim": "The module declares read/export behavior, lifecycle, packet contracts, and every refused authority.",
+      "kind": "static structure",
+      "risk": "high",
+      "pass_condition": "Manifest and contract validate; schemas parse; source has no Git or GitHub PR write invocation.",
+      "primary_surface": "module contract verifier and parsed artifacts",
+      "counterevidence": "Undeclared write, invalid contract, or reachable mutation command.",
+      "secondary_surface_if_needed": "source invocation audit",
+      "observed_evidence": "72-check focused receipt PASS; module contract validates; source and executed mocked trace contain reads only.",
+      "verdict": "PASS",
+      "named_seam": "Static absence plus mocked traces cannot prove the host executed real GitHub reads."
+    },
+    {
+      "claim_id": "sequencer-single-next-determinism",
+      "claim": "The same ordered policy, handoffs, and receiver facts produce the same digest and at most one next candidate.",
+      "kind": "deterministic behavior",
+      "risk": "high",
+      "pass_condition": "Equivalent input ordering preserves digest; explicit candidate order is preserved; plan and compact handoff tamper fail verification.",
+      "primary_surface": "focused execution with held-out state variants",
+      "counterevidence": "Two next candidates, skipped predecessor, unstable digest, or undetected tamper.",
+      "secondary_surface_if_needed": "real current-PR plan",
+      "observed_evidence": "72-check focused receipt PASS plus verified real plan 5e9138a6ccd7e1f2b5f4df73e4a1e969fdf196b859526e74701fb6b17083f5bb selecting only PR 32.",
+      "verdict": "PASS",
+      "named_seam": "Candidate order is explicit policy material, not an inferred value judgment."
+    },
+    {
+      "claim_id": "sequencer-drift-and-review-boundary",
+      "claim": "Stale bases, changed heads, missing handoffs, drafts, required-check problems, unlisted work, and out-of-order merges cannot become NEXT_READY.",
+      "kind": "deterministic behavior and authorization",
+      "risk": "high",
+      "pass_condition": "Every denied state yields HELD or remains waiting with a typed issue; technical readiness never grants review or merge authority.",
+      "primary_surface": "focused denied-state matrix",
+      "counterevidence": "Any denied state becomes next or any packet sets reviewDecision or merge true.",
+      "secondary_surface_if_needed": "current PRs 29, 30, 32, and 33",
+      "observed_evidence": "Focused denied-state matrix PASS; real receiver plan keeps PR 33 waiting as draft and identifies PR 29 and PR 30 as missing handoffs with stale observed bases.",
+      "verdict": "PASS",
+      "named_seam": "Platform Axiom/Mir remains the independent judgment seat."
+    },
+    {
+      "claim_id": "sequencer-live-github-read",
+      "claim": "The host adapter can read current main and all declared PR receiver facts without mutating GitHub.",
+      "kind": "transport and authorization",
+      "risk": "high",
+      "pass_condition": "Mock trace contains reads only; real receiver plan binds current main and PRs 29, 30, 32, and 33; remote state remains unchanged.",
+      "primary_surface": "mocked command trace plus real GitHub read-only plan",
+      "counterevidence": "Mutation command, missing candidate, receiver mismatch, or only sender-side assertion.",
+      "secondary_surface_if_needed": "independent GitHub CLI readback",
+      "observed_evidence": "Mock trace PASS; real GitHub read binds main a4f99fbfc05268173458bf3fb8f3fe616919e376 and PRs 29, 30, 32, and 33; plan and compact handoff independently verify; no write effect exists.",
+      "verdict": "PASS",
+      "named_seam": "This proves one observed receiver state, not persistence of that state or platform acceptance."
+    }
+  ]
+}

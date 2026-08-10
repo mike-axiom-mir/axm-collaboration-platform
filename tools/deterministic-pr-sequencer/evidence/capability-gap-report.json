@@ -1,0 +1,126 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "github-receiver-state",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "github.pr.receiver-state.read"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "github.pr.receiver-state.read": [
+          "host-authenticated GitHub CLI; public receiver facts only"
+        ]
+      }
+    },
+    {
+      "id": "deterministic-handoff-binding",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "git.pr.platform-handoff.verify"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "git.pr.platform-handoff.verify": [
+          "checkpoint and publisher handoffs exist but no multi-handoff sequence verifier composes them"
+        ]
+      }
+    },
+    {
+      "id": "single-next-selection",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "github.pr.sequence.single-next-plan"
+      ],
+      "declaredConstraints": {
+        "github.pr.sequence.single-next-plan": [
+          "no current module binds candidate order, exact heads, checkpoint bases, checks, and current main into one next action"
+        ]
+      }
+    },
+    {
+      "id": "compact-platform-routing",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "github.pr.next-action-handoff"
+      ],
+      "declaredConstraints": {
+        "github.pr.next-action-handoff": [
+          "no compact receiver-bound packet tells platform Axiom/Mir to act once and then stop for reprobe"
+        ]
+      }
+    },
+    {
+      "id": "merge-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "github.merge.refuse"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "github.merge.refuse": [
+          "checkpoint and publisher modules explicitly retain no merge, promotion, roots, or CANON authority"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "github.pr.next-action-handoff",
+    "github.pr.sequence.single-next-plan"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "github.pr.next-action-handoff",
+      "requiredBy": [
+        "compact-platform-routing"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "github.pr.sequence.single-next-plan",
+      "requiredBy": [
+        "single-next-selection"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

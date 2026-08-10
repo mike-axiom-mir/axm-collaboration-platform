@@ -1,0 +1,45 @@
+{
+  "schema": "axm.git-pr-scope-policy/v1",
+  "id": "deterministic-pr-sequencer-v0.1",
+  "baseRef": "origin/main",
+  "remoteName": "origin",
+  "allowedRemoteHosts": ["github.com"],
+  "allowedBranchPrefixes": ["codex/"],
+  "refusedBranches": ["main", "master"],
+  "allowedPrefixes": [
+    "shared/deterministic-pr-sequencer/",
+    "tools/deterministic-pr-sequencer/"
+  ],
+  "allowedExactPaths": [],
+  "requiredPrefixes": [
+    "shared/deterministic-pr-sequencer/",
+    "tools/deterministic-pr-sequencer/"
+  ],
+  "requiredPaths": [
+    "shared/deterministic-pr-sequencer/sequencer-core.js",
+    "shared/deterministic-pr-sequencer/sequencer-host.js",
+    "tools/deterministic-pr-sequencer/manifest.json",
+    "tools/deterministic-pr-sequencer/module.contract.json",
+    "tools/deterministic-pr-sequencer/pr-sequencer-cli.js",
+    "tools/deterministic-pr-sequencer/pr-sequencer-cli.cmd",
+    "tools/deterministic-pr-sequencer/selftest.js"
+  ],
+  "forbiddenPrefixes": ["state/", "logs/"],
+  "forbiddenExactPaths": [
+    "bridge/bridge-token.txt",
+    "bridge/bridge.log",
+    "logs/workshop.log"
+  ],
+  "requiredEvidenceClaims": [
+    "sequencer-focused-selftest",
+    "sequencer-workshop-regression",
+    "sequencer-live-github-read"
+  ],
+  "allowDeletions": false,
+  "allowRenames": false,
+  "allowCopies": false,
+  "scanSecrets": true,
+  "maxFiles": 50,
+  "maxChangedBytes": 1048576,
+  "maxCommits": 10
+}
