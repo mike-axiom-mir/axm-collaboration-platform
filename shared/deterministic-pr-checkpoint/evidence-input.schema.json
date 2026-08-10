@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-evidence-input/v1",
+  "title": "AXM declared PR evidence input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "claims"],
+  "properties": {
+    "schema": { "const": "axm.git-pr-evidence-input/v1" },
+    "claims": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claimId", "status", "command", "summary"],
+        "properties": {
+          "claimId": { "type": "string" },
+          "status": { "enum": ["PASS", "FAIL", "UNKNOWN"] },
+          "command": { "type": "string", "maxLength": 500 },
+          "summary": { "type": "string", "maxLength": 500 },
+          "evidenceDigest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+          "evidenceLocator": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}

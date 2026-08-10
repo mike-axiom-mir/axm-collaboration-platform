@@ -1,0 +1,70 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "gate",
+  "id": "deterministic-pr-checkpoint",
+  "name": "AXM Deterministic PR Checkpoint",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "pr-checkpoint-cli.js",
+  "contract": "module.contract.json",
+  "type": "machine-capability",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "MEDIUM",
+  "tags": [
+    "pull-request",
+    "deterministic",
+    "scope-gate",
+    "evidence-bound",
+    "read-only-git",
+    "review-cost"
+  ],
+  "uses": [
+    "local-git-runtime",
+    "filesystem-read",
+    "deterministic-json-core",
+    "explicit-scope-policy",
+    "optional-declared-evidence-receipts"
+  ],
+  "permissions": [
+    "export"
+  ],
+  "machine": {
+    "entry": "pr-checkpoint-cli.js",
+    "actions": [
+      "inspect",
+      "verify",
+      "render"
+    ]
+  },
+  "actions": [
+    "inspect one clean local review branch without fetching or writing",
+    "bind base head tree commits changed blobs policy and declared evidence into one deterministic digest",
+    "hold mixed scope drift credentials sensitive content deletions renames and missing required evidence",
+    "verify a saved checkpoint without trusting its claimed digest",
+    "render a bounded deterministic draft review packet"
+  ],
+  "accepts": [
+    "filesystem/explicit-clean-git-working-copy",
+    "axm.git-pr-scope-policy/v1",
+    "axm.git-pr-evidence-input/v1",
+    "axm.git-pr-checkpoint/v1",
+    "axm.git-pr-review-metadata/v1"
+  ],
+  "produces": [
+    "axm.git-pr-checkpoint/v1",
+    "axm.git-pr-checkpoint-verification/v1",
+    "axm.git-pr-review-packet/v1"
+  ],
+  "readiness": [
+    "git-installed",
+    "clean-local-working-copy",
+    "locally-resolved-base-ref",
+    "credential-free-approved-remote",
+    "explicit-bounded-scope-policy"
+  ],
+  "summary": "Create a path-independent, evidence-bound review checkpoint for an ordinary AXM branch before any push or pull-request action.",
+  "notes": "EXPERIMENTAL review support. READY means the exact local Git objects satisfy the declared policy. It does not prove a remote is current, execute tests, create a PR, merge, promote, or change CANON."
+}

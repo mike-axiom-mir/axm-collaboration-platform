@@ -1,0 +1,23 @@
+{
+  "schema": "axm.local-command-evidence-receipt/v1",
+  "claimId": "workshop-regression",
+  "status": "PASS",
+  "commands": [
+    { "command": "node verify.js", "exitCode": 0, "summary": "0 FAIL, 43 warnings" },
+    { "command": "node hub/hub-selftest.js", "exitCode": 0 },
+    { "command": "node hub/route-selftest.js", "exitCode": 0 },
+    { "command": "node hub/graft-selftest.js", "exitCode": 0 },
+    { "command": "node hub/skin-selftest.js", "exitCode": 0 },
+    { "command": "node hub/verify-plus.js", "exitCode": 0 },
+    { "command": "node tests/html-script-syntax-test.js", "exitCode": 0, "summary": "55 PASS, 0 FAIL" },
+    { "command": "node tests/tool-forge-package-test.js", "exitCode": 0 },
+    { "command": "node tools/agent-tool-forge/selftest.js", "exitCode": 0, "summary": "17 PASS, 0 FAIL" },
+    { "command": "node tools/evidence-desk/selftest.js", "exitCode": 0, "summary": "36 PASS, 0 FAIL" }
+  ],
+  "rawOutputRetained": false,
+  "baselineWarnings": 43,
+  "limitations": [
+    "The warning baseline includes the known stale generated tools index and existing promotion or manifest migration warnings.",
+    "Script execution does not prove browser rendering, remote CI, or remote-base freshness."
+  ]
+}
