@@ -1,0 +1,45 @@
+{
+  "schema": "axm.claim-evidence-route/v1",
+  "claims": [
+    {
+      "claimId": "baseline-exact",
+      "kind": "static structure",
+      "risk": "medium",
+      "passCondition": "The baseline names an exact source commit, contains 43 unique warnings, preserves open truth, and matches its canonical digest.",
+      "primarySurface": "baseline parser and digest validation",
+      "counterevidence": "Missing source, duplicate warning, changed truth boundary, or digest mismatch.",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "delta-deterministic",
+      "kind": "deterministic behavior",
+      "risk": "medium",
+      "passCondition": "Input order does not change the delta digest and add, resolve, detail-change, and tamper fixtures remain distinct.",
+      "primarySurface": "RepairBuddy focused selftest",
+      "counterevidence": "Reordered inputs change the digest or one fixture enters the wrong delta set.",
+      "secondarySurface": "CLI strict and JSON output against the live verify report",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "warnings-not-weakened",
+      "kind": "authorization",
+      "risk": "medium",
+      "passCondition": "Baseline and delta state zero acknowledgements, zero suppressions, zero automatic repairs, and no baseline write route.",
+      "primarySurface": "contract, schema, packet, and CLI inspection",
+      "counterevidence": "Any comparison changes verifier output or claims a warning pass.",
+      "secondarySurface": "verify-plus output still reports 43 warnings before the delta section",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "workshop-regression",
+      "kind": "deterministic behavior",
+      "risk": "medium",
+      "passCondition": "All required Workshop commands exit zero with the complete warning delta visible as MATCH.",
+      "primarySurface": "required Workshop command suite",
+      "counterevidence": "Any required command fails or verify-plus cannot produce the delta.",
+      "secondarySurface": "GitHub CI after draft PR publication",
+      "observedEvidence": "All required Workshop commands exited zero; verify reported 0 FAIL and 43 warnings; verify-plus displayed MATCH with 43 unchanged warnings.",
+      "verdict": "PASS"
+    }
+  ]
+}

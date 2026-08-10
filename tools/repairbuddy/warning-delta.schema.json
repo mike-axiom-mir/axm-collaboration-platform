@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.repairbuddy.warning-delta/v1",
+  "title": "AXM RepairBuddy deterministic warning delta",
+  "type": "object",
+  "required": ["schema", "state", "baseline", "current", "summary", "added", "resolved", "changed", "truth", "deltaDigest"],
+  "properties": {
+    "schema": { "const": "axm.repairbuddy.warning-delta/v1" },
+    "state": { "enum": ["MATCH", "DRIFT"] },
+    "added": { "type": "array" },
+    "resolved": { "type": "array" },
+    "changed": { "type": "array" },
+    "truth": {
+      "type": "object",
+      "required": ["warningsOpen", "warningsAcknowledged", "warningsSuppressed", "automaticRepair", "resolvedWarningsNotDeletedFromDelta"],
+      "properties": {
+        "warningsOpen": { "const": true },
+        "warningsAcknowledged": { "const": 0 },
+        "warningsSuppressed": { "const": 0 },
+        "automaticRepair": { "const": false },
+        "resolvedWarningsNotDeletedFromDelta": { "const": true }
+      }
+    },
+    "deltaDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

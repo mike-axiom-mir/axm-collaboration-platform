@@ -1,0 +1,42 @@
+{
+  "schema": "axm.capability-gap-scout-receipt/v1",
+  "route": "READY",
+  "requestedOutcome": "Reduce repeated reasoning over the same Workshop warning set without hiding, acknowledging, or suppressing warnings.",
+  "reuse": [
+    {
+      "capability": "repairbuddy.warning-routing",
+      "status": "REUSED",
+      "scope": "The existing queue continues routing 37 game warnings to evidence or repair design."
+    },
+    {
+      "capability": "deterministic-json-core",
+      "status": "REUSED",
+      "scope": "Canonical semantic digests for baseline and delta packets."
+    },
+    {
+      "capability": "verify-plus",
+      "status": "ADAPTED",
+      "scope": "Display the complete delta after the unchanged core verifier output."
+    }
+  ],
+  "gap": {
+    "capability": "repairbuddy.warning.complete-delta",
+    "type": "CONTRACT",
+    "before": "Only 37 game warnings were routed; the complete 43-warning set had no same, new, resolved, or changed comparison.",
+    "implemented": "Digest-bound known-open baseline plus deterministic four-way comparison."
+  },
+  "degradedCapabilities": [
+    {
+      "capability": "warning.semantic-resolution",
+      "reason": "A delta can show that warning text or structured detail changed; it cannot decide whether the underlying concern is truly resolved.",
+      "cheapestHonestRoute": "Keep the original verifier and relevant human or evidence gate authoritative."
+    }
+  ],
+  "authorityGapsPreserved": [
+    "warning acknowledgement",
+    "warning suppression or retirement",
+    "automatic baseline rewrite",
+    "automatic repair",
+    "promotion or CANON change"
+  ]
+}
