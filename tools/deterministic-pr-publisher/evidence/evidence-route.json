@@ -36,7 +36,7 @@
       "primary_surface": "allowed and denied mocked host command traces",
       "counterevidence": "Any prohibited command is reachable or credential material appears in a receipt.",
       "secondary_surface_if_needed": "source invocation audit and host pre-push hook",
-      "observed_evidence": "Focused boundary assertions; live self-publication is pending.",
+      "observed_evidence": "Focused boundary assertions plus receiver-confirmed draft PR 33 bootstrap publication; the receipt reports merge false and all wider authority false.",
       "verdict": "PASS",
       "named_seam": "The host GitHub session supplies transport authority; the tool never owns the credential."
     },
@@ -46,12 +46,12 @@
       "kind": "transport",
       "risk": "high",
       "pass_condition": "Sender push succeeds, receiver branch head equals checkpoint head, PR readback equals head/base/title/body, and the receipt verifies.",
-      "primary_surface": "mocked sender and receiver receipts tied by exact head",
+      "primary_surface": "real self-publication sender and GitHub receiver receipt tied by exact head",
       "counterevidence": "Remote or PR readback differs, receiver cannot be queried, or only the sender reports success.",
-      "secondary_surface_if_needed": "real self-publication receipt from GitHub",
-      "observed_evidence": "Mock transport PASS; real self-publication pending.",
-      "verdict": "UNKNOWN",
-      "named_seam": "No production GitHub write has yet been performed by this new adapter."
+      "secondary_surface_if_needed": "mocked transport matrix and external final-head handoff receipt",
+      "observed_evidence": "Draft PR 33 bootstrap receipt PASS at exact head 911a8a695d59be6cc1751a399b167a016afb0200; receipt verification PASS; both GitHub checks passed.",
+      "verdict": "PASS",
+      "named_seam": "The committed bootstrap receipt proves the executable code head; the final evidence-only head requires its separate external receiver receipt."
     }
   ]
 }
