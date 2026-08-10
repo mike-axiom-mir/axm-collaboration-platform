@@ -28,6 +28,8 @@ node tools/game-production-runner/cli.js discover-cache-leases --cache-root D:\c
 node tools/game-production-runner/cli.js plan-cache-lease-curation --cache-root D:\candidate\verified-cache --minimum-released-age-ms 604800000 --minimum-expired-age-ms 2592000000 --max-curation-candidates 100
 node tools/game-production-runner/cli.js apply-cache-lease-curation --cache-root D:\candidate\verified-cache --proposal D:\candidate\lease-curation-proposal.json --approve-proposal SHA256 --explicit-apply
 node tools/game-production-runner/cli.js audit-cache-lease-archives --cache-root D:\candidate\verified-cache
+node tools/game-production-runner/cli.js plan-cache-lease-rollup --cache-root D:\candidate\verified-cache --minimum-released-age-ms 604800000 --minimum-expired-age-ms 2592000000 --minimum-rollup-reclaim-bytes 1048576 --max-rollup-candidates 20
+node tools/game-production-runner/cli.js apply-cache-lease-rollup --cache-root D:\candidate\verified-cache --proposal D:\candidate\lease-rollup-proposal.json --approve-proposal SHA256 --explicit-apply
 node tools/game-production-runner/cli.js inventory-cache --cache-root D:\candidate\verified-cache
 node tools/game-production-runner/cli.js plan-cache-retention --cache-root D:\candidate\verified-cache --reference-job-root D:\candidate\runs --max-cache-entries 500 --max-cache-bytes 10737418240 --max-cache-age-ms 2592000000
 node tools/game-production-runner/cli.js apply-cache-retention --cache-root D:\candidate\verified-cache --reference-job-root D:\candidate\runs --proposal D:\candidate\retention-proposal.json --approve-proposal SHA256 --explicit-apply
@@ -88,6 +90,16 @@ event transition, and emits a path-private audit. Routine
 `discover-cache-leases` deliberately checks only the hot anchor, latest receipt,
 and cold-blob presence and size, so it cannot claim full cold-byte integrity.
 
+`plan-cache-lease-rollup` performs the full audit and then measures each eligible
+inactive source chain against its deterministic replacement. It selects only
+chains whose target is smaller by at least `--minimum-rollup-reclaim-bytes` and
+performs no removal. Save only the nested `proposal`. Exact approved
+`apply-cache-lease-rollup` preserves the complete concatenated event bytes,
+every original archive receipt, and every prior rollup receipt in a sealed
+lineage before replacing the hot anchor and removing the exact hashed source
+files. Active or unarchived live history, stale roots, busy owners, unmeasured
+savings, and lineage loss hold. Reapplication completes an interrupted cleanup.
+
 `discover-cache-leases` is bounded and read-only. It emits a sealed, path-free
 set whose protection contains only unexpired active leases; released and
 expired ledgers remain auditable but grant no authority. An invalid or
@@ -111,10 +123,11 @@ snapshot, and deletes only when `--explicit-apply` and the proposal's exact
 digest are supplied. Each final deletion is coordinated per key with runner
 lease protection. The sealed application receipt includes the fresh reference
 and lease snapshots, each selective invalidation digest, and post-delete usage.
-No discovery, retention policy, lease renewal, or deletion runs in the
+No discovery, retention policy, lease renewal, rollup, or deletion runs in the
 background. Direct `invalidate-cache` remains a distinct explicit human
-override. Cold lease archives are append-only and never automatically deleted;
-their storage and full-audit cost can still grow.
+override. Rollup can reduce inactive container count and measured storage
+overhead, but exact durable event bytes and receipt lineage still grow with real
+history and remain subject to independent audit ceilings.
 
 `probe-hand-confinement` is diagnostic and must be requested explicitly. It
 creates and removes a disposable operating-system temporary root and opens only

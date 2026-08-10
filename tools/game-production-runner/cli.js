@@ -22,6 +22,8 @@ function parse(argv) {
     else if (item === '--minimum-released-age-ms') result.minimumReleasedAgeMs = Number(argv[++index]);
     else if (item === '--minimum-expired-age-ms') result.minimumExpiredAgeMs = Number(argv[++index]);
     else if (item === '--max-curation-candidates') result.maxCurationCandidates = Number(argv[++index]);
+    else if (item === '--minimum-rollup-reclaim-bytes') result.minimumRollupReclaimBytes = Number(argv[++index]);
+    else if (item === '--max-rollup-candidates') result.maxRollupCandidates = Number(argv[++index]);
     else if (item === '--protect-key') { result.protectedKeys = result.protectedKeys || []; result.protectedKeys.push(argv[++index]); }
     else if (item === '--proposal') result.proposal = argv[++index];
     else if (item === '--approve-proposal') result.approvedProposal = argv[++index];
@@ -56,6 +58,8 @@ function usage() {
     '  plan-cache-lease-curation --cache-root DIRECTORY --minimum-released-age-ms N --minimum-expired-age-ms N --max-curation-candidates N',
     '  apply-cache-lease-curation --cache-root DIRECTORY --proposal FILE --approve-proposal SHA256 --explicit-apply',
     '  audit-cache-lease-archives --cache-root DIRECTORY',
+    '  plan-cache-lease-rollup --cache-root DIRECTORY --minimum-released-age-ms N --minimum-expired-age-ms N --minimum-rollup-reclaim-bytes N --max-rollup-candidates N',
+    '  apply-cache-lease-rollup --cache-root DIRECTORY --proposal FILE --approve-proposal SHA256 --explicit-apply',
     '  discover-cache-references --job-root DIRECTORY',
     '  inventory-cache --cache-root DIRECTORY',
     '  plan-cache-retention --cache-root DIRECTORY --max-cache-entries N --max-cache-bytes N --max-cache-age-ms N [--reference-job-root DIRECTORY] [--protect-key SHA256 ...]',
@@ -93,6 +97,15 @@ function leaseCurationPolicy(options) {
     minimum_released_age_ms: options.minimumReleasedAgeMs,
     minimum_expired_age_ms: options.minimumExpiredAgeMs,
     max_candidates: options.maxCurationCandidates
+  };
+}
+
+function leaseRollupPolicy(options) {
+  return {
+    minimum_released_age_ms: options.minimumReleasedAgeMs,
+    minimum_expired_age_ms: options.minimumExpiredAgeMs,
+    minimum_reclaim_bytes: options.minimumRollupReclaimBytes,
+    max_candidates: options.maxRollupCandidates
   };
 }
 
@@ -189,6 +202,19 @@ async function main(argv) {
     const result = Core.cacheLeaseCuration.audit({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT });
     return { output: JSON.stringify(result, null, 2), code: result.status === 'COMPLETE' ? 0 : 2 };
   }
+  if (options.command === 'plan-cache-lease-rollup') {
+    if (!options.cacheRoot) throw new Error('plan-cache-lease-rollup requires --cache-root');
+    const result = Core.cacheLeaseRollup.plan({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT }, leaseRollupPolicy(options));
+    const output = Object.assign({ schema: 'axm.production-artifact-cache-lease-archive-rollup-plan-output/v1', source_archive_removal_performed: false }, result);
+    return { output: JSON.stringify(output, null, 2), code: ['READY', 'READY_WITH_LIMITS', 'NO_CHANGES'].includes(result.proposal.status) ? 0 : 2 };
+  }
+  if (options.command === 'apply-cache-lease-rollup') {
+    if (!options.explicitApply) return { output: JSON.stringify(Core.cacheLeaseRollup.applicationNotRequested(options.approvedProposal), null, 2), code: 0 };
+    if (!options.cacheRoot) throw new Error('apply-cache-lease-rollup requires --cache-root');
+    if (!options.approvedProposal) throw new Error('apply-cache-lease-rollup requires --approve-proposal');
+    const result = Core.cacheLeaseRollup.apply({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT, proposal: loadProposal(options.proposal), approvedDigest: options.approvedProposal, explicit: true });
+    return { output: JSON.stringify(result, null, 2), code: result.status === 'APPLIED' ? 0 : 2 };
+  }
   if (options.command === 'discover-cache-references') {
     if (!options.jobRoot) throw new Error('discover-cache-references requires --job-root');
     const result = Core.cacheReferences.discover({ jobRoot: path.resolve(options.jobRoot), sourceRoot: ROOT });
@@ -214,4 +240,4 @@ async function main(argv) {
 
 if (require.main === module) main().then((result) => { process.stdout.write(result.output + '\n'); process.exitCode = result.code; }).catch((error) => { process.stderr.write(JSON.stringify({ schema: 'axm.game-production-runner-cli-error/v1', status: 'ERROR', reason: String(error.message || error) }, null, 2) + '\n'); process.exitCode = 1; });
 
-module.exports = { ROOT, parse, usage, loadSpec, loadProposal, retentionPolicy, leaseCurationPolicy, summary, main };
+module.exports = { ROOT, parse, usage, loadSpec, loadProposal, retentionPolicy, leaseCurationPolicy, leaseRollupPolicy, summary, main };

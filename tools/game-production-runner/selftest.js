@@ -6,6 +6,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const Cli = require('./cli');
+const Core = require('../../shared/game-production-runner');
 
 let checks = 0;
 function ok(value, message) { assert.ok(value, message); checks += 1; }
@@ -22,6 +23,7 @@ async function main() {
   equal(Cli.parse(['plan-cache-retention', '--max-cache-entries', '2', '--max-cache-bytes', '100', '--max-cache-age-ms', '50', '--protect-key', 'a', '--protect-key', 'b']).protectedKeys, ['a', 'b'], 'CLI preserves repeated protected cache references');
   equal(Cli.parse(['apply-cache-retention', '--proposal', 'p.json', '--approve-proposal', 'a', '--explicit-apply']).explicitApply, true, 'CLI parses separate explicit retention application authority');
   equal(Cli.parse(['plan-cache-lease-curation', '--minimum-released-age-ms', '1', '--minimum-expired-age-ms', '2', '--max-curation-candidates', '3']).maxCurationCandidates, 3, 'CLI parses explicit lease-curation age and candidate budgets');
+  equal(Cli.parse(['plan-cache-lease-rollup', '--minimum-rollup-reclaim-bytes', '4', '--max-rollup-candidates', '5']).minimumRollupReclaimBytes, 4, 'CLI parses explicit archive-rollup reclaim and candidate budgets');
   equal(Cli.parse(['probe-hand-confinement', '--explicit-probe']).explicitProbe, true, 'CLI parses explicit confinement probe consent');
   assert.throws(() => Cli.parse(['inspect', '--unknown']), /unknown argument/); checks += 1;
   ok(Cli.usage().includes('trusted in-process deterministic documentation Hand'), 'usage preserves the Hand trust boundary');
@@ -163,6 +165,34 @@ async function main() {
     const archiveAudit = invoke(['audit-cache-lease-archives', '--cache-root', cacheStore]);
     equal(archiveAudit.status, 0, 'CLI explicit cold-archive audit exits successfully');
     ok(parsed(archiveAudit).status === 'COMPLETE' && parsed(archiveAudit).usage.segments === 3 && parsed(archiveAudit).usage.history_events === 13, 'CLI cold audit rehashes and decompresses the complete thirteen-event lease history');
+    const rollupCache = path.join(temporary, 'rollup-cli-cache'), rollupJobs = path.join(temporary, 'rollup-cli-jobs');
+    fs.mkdirSync(rollupJobs);
+    Core.artifactCache.open({ cacheRoot: rollupCache, sourceRoot: Cli.ROOT, jobRoot: rollupJobs });
+    const rollupOptions = { cacheRoot: rollupCache, sourceRoot: Cli.ROOT, jobRoot: rollupJobs, runId: 'rollup-cli-run', planDigest: '7'.repeat(64), startedAt: 'rollup-cli-start', durationMs: 1000 };
+    for (let index = 0; index < 5; index += 1) {
+      const now = 60000000 + index * 10, session = Core.cacheLeases.acquire(Object.assign({}, rollupOptions, { nowMs: now }));
+      session.protect(String(index + 1).repeat(64), now + 1);
+      session.release(now + 2);
+      const leaseSet = Core.cacheLeases.discover({ cacheRoot: rollupCache, sourceRoot: Cli.ROOT, nowMs: now + 3 });
+      const proposal = Core.cacheLeaseCuration.plan(leaseSet, { minimum_released_age_ms: 0, minimum_expired_age_ms: 0, max_candidates: 10 });
+      equal(Core.cacheLeaseCuration.apply({ cacheRoot: rollupCache, sourceRoot: Cli.ROOT, proposal, approvedDigest: proposal.digest, explicit: true, nowMs: now + 3 }).status, 'APPLIED', 'CLI rollup fixture archives one released segment');
+    }
+    const unrequestedRollupRoot = path.join(temporary, 'unrequested-rollup-cache');
+    const unrequestedRollup = invoke(['apply-cache-lease-rollup', '--cache-root', unrequestedRollupRoot, '--approve-proposal', 'a'.repeat(64)]);
+    ok(unrequestedRollup.status === 0 && parsed(unrequestedRollup).status === 'NOT_REQUESTED' && !fs.existsSync(unrequestedRollupRoot), 'unrequested CLI rollup is a sealed no-op and creates no cache root');
+    const rollupPlanCommand = invoke(['plan-cache-lease-rollup', '--cache-root', rollupCache, '--minimum-released-age-ms', '0', '--minimum-expired-age-ms', '0', '--minimum-rollup-reclaim-bytes', '1', '--max-rollup-candidates', '10']);
+    equal(rollupPlanCommand.status, 0, 'CLI archive-rollup dry-run exits successfully');
+    const rollupPlanResult = parsed(rollupPlanCommand), rollupProposal = rollupPlanResult.proposal;
+    ok(rollupPlanResult.source_archive_removal_performed === false && rollupProposal.status === 'READY' && rollupProposal.candidates[0].projected_reduction_bytes > 0, 'CLI rollup plan exposes measured savings without removal authority');
+    const rollupProposalFile = path.join(temporary, 'lease-rollup-proposal.json');
+    fs.writeFileSync(rollupProposalFile, JSON.stringify(rollupProposal, null, 2) + '\n');
+    const wrongRollupApproval = invoke(['apply-cache-lease-rollup', '--cache-root', rollupCache, '--proposal', rollupProposalFile, '--approve-proposal', 'd'.repeat(64), '--explicit-apply']);
+    equal(parsed(wrongRollupApproval).status, 'APPROVAL_MISMATCH', 'CLI wrong rollup approval removes no source archive');
+    const appliedRollup = invoke(['apply-cache-lease-rollup', '--cache-root', rollupCache, '--proposal', rollupProposalFile, '--approve-proposal', rollupProposal.digest, '--explicit-apply']);
+    equal(appliedRollup.status, 0, 'CLI exact approved archive rollup exits successfully');
+    ok(parsed(appliedRollup).status === 'APPLIED' && parsed(appliedRollup).source_files_removed === 10, 'CLI rollup removes exactly the ten approved source files after publishing its verified target');
+    const rolledAudit = invoke(['audit-cache-lease-archives', '--cache-root', rollupCache]);
+    ok(parsed(rolledAudit).status === 'COMPLETE' && parsed(rolledAudit).usage.segments === 1 && parsed(rolledAudit).usage.rollups === 1 && parsed(rolledAudit).usage.history_events === 15, 'CLI deep audit verifies all fifteen events through one current rollup head');
     const fullyReferencedPlan = invoke(['plan-cache-retention', '--cache-root', cacheStore, '--reference-job-root', cacheRuns, '--max-cache-entries', '1', '--max-cache-bytes', '9999999', '--max-cache-age-ms', '999999999999']);
     equal(fullyReferencedPlan.status, 2, 'CLI holds a policy that would require deleting discovered referenced evidence');
     const fullyReferencedResult = parsed(fullyReferencedPlan);

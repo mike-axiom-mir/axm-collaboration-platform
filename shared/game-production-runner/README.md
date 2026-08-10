@@ -72,6 +72,17 @@ proposal can finish removal idempotently. Normal discovery reads the small
 anchor, latest receipt, and cold-blob shape; full blob hashing, decompression,
 and event-chain validation occur only during the separate bounded archive audit.
 
+Cold container count no longer has to grow once enough inactive segments exist
+to produce a genuinely smaller replacement. A separate rollup dry run measures
+the exact source files against a deterministic target and selects nothing unless
+the target is smaller by the declared minimum. Exact approved application holds
+the lease lifecycle lock, concatenates every original event byte, preserves
+every original archive receipt and prior rollup receipt in a sealed lineage,
+publishes one event blob plus one lineage blob and small head receipt, replaces
+the recovery anchor, then removes only the source files named and hashed by the
+proposal. The same proposal finishes a publication/cleanup crash window
+idempotently. Rollup is never automatic and never semantically deletes history.
+
 Cache retention is a separate on-demand governor, never part of candidate
 execution. Its inventory is read-only and bounded by entry/file scan limits.
 It classifies only exact sealed cache layouts as temporary captures, measures
@@ -147,10 +158,14 @@ not as a security boundary for malicious code.
   discovery equivalence, interrupted-apply recovery, repeated archive chains,
   fresh-process released and expired recovery, bounded full audit, missing-blob
   holds, and same-size corruption detection.
-- Persisted retention policies and scheduling are missing. Cold archive segments
-  remain append-only and are never automatically deleted; their storage and
-  explicit full-audit cost can still grow until a separate archive-retention or
-  rollup contract exists.
+- Lossless cold-archive rollup: executable and self-tested across measured
+  reduction, exact root-bound approval, active/stale/busy refusal, interruption
+  recovery, fresh-process continuation, repeated rollup, receipt lineage,
+  bounded deep audit, missing lineage, and same-size corruption.
+- Persisted retention policies and scheduling are missing. Rollup bounds current
+  container count and removes duplicated container overhead, but exact durable
+  event bytes and receipt lineage still grow with real history until their
+  independent audit ceilings hold.
 - Explicit Hand confinement substrate diagnosis: executable and self-tested;
   the current Node 24 observation is `DEGRADED` because network denial failed.
 - Process-hosted production Hands and a malicious-code sandbox: missing.
@@ -186,8 +201,11 @@ not as a security boundary for malicious code.
   requires an exact saved proposal, its approval digest, and the same observed
   cache-root fingerprint, and may remove only the
   named inactive hot segments while preserving their exact compressed bytes.
-  Cold archives are not deletion candidates. Normal hot discovery does not
-  claim full cold-blob integrity; request the bounded archive audit for that.
+  Cold history is not a semantic-deletion candidate. A separate exact-approved
+  rollup may replace only named inactive source containers when its measured
+  target is smaller and preserves the complete event bytes and receipt lineage.
+  Normal hot discovery does not claim full cold-blob or lineage integrity;
+  request the bounded archive audit for that.
 - Retention planning never deletes. Application requires a saved sealed
   proposal, its exact digest as approval, and an unchanged inventory snapshot.
 - Protected keys, unclassified layouts, and active publishers cannot be

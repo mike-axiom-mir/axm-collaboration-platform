@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-lease-archive-rollup-lineage/v1",
+  "type": "object",
+  "required": ["schema", "version", "lease_id", "owner_digest", "archive_receipts", "prior_rollup_receipts", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-lease-archive-rollup-lineage/v1" },
+    "version": { "const": "0.1.0" },
+    "lease_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "owner_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "archive_receipts": { "type": "array", "minItems": 2 },
+    "prior_rollup_receipts": { "type": "array" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

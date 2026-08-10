@@ -13,6 +13,8 @@ const SET_SCHEMA = 'axm.production-artifact-cache-lease-set/v1';
 const ARCHIVE_ANCHOR_SCHEMA = 'axm.production-artifact-cache-lease-archive-anchor/v1';
 const ARCHIVE_RECEIPT_SCHEMA = 'axm.production-artifact-cache-lease-archive-receipt/v1';
 const ARCHIVE_AUDIT_SCHEMA = 'axm.production-artifact-cache-lease-archive-audit/v1';
+const ARCHIVE_ROLLUP_RECEIPT_SCHEMA = 'axm.production-artifact-cache-lease-archive-rollup-receipt/v1';
+const ARCHIVE_ROLLUP_LINEAGE_SCHEMA = 'axm.production-artifact-cache-lease-archive-rollup-lineage/v1';
 const OWNER_SCHEMA = 'axm.production-artifact-cache-lease-owner/v1';
 const LOCK_SCHEMA = 'axm.production-artifact-cache-coordination-lock/v1';
 const VERSION = '0.1.0';
@@ -24,6 +26,9 @@ const MAX_EVENTS_PER_LEDGER = 10000;
 const MAX_LEDGER_BYTES = 16777216;
 const MAX_ANCHOR_BYTES = 2097152;
 const MAX_ARCHIVE_RECEIPT_BYTES = 1048576;
+const MAX_ROLLUP_RECEIPT_BYTES = 2097152;
+const MAX_ROLLUP_LINEAGE_COMPRESSED_BYTES = 16777216;
+const MAX_ROLLUP_LINEAGE_RAW_BYTES = 67108864;
 const DEFAULT_MAX_ARCHIVE_SEGMENTS = 10000;
 const DEFAULT_MAX_ARCHIVE_COMPRESSED_BYTES = 67108864;
 const DEFAULT_MAX_ARCHIVE_RAW_BYTES = 268435456;
@@ -62,6 +67,24 @@ const ARCHIVE_RECEIPT_KEYS = Object.freeze([
   'source_tail_event_digest', 'archive_blob_digest', 'archive_blob_bytes',
   'recorded_at_ms', 'authority', 'digest'
 ]);
+const ROLLUP_RECEIPT_KEYS = Object.freeze([
+  'schema', 'version', 'lease_id', 'owner_digest',
+  'previous_archive_receipt_digest', 'previous_anchor_digest',
+  'source_segment_digest', 'source_segment_bytes', 'source_event_count',
+  'source_first_generation', 'source_last_generation',
+  'source_tail_event_digest', 'archive_blob_digest', 'archive_blob_bytes',
+  'source_archive_snapshot_digest', 'source_anchor_digest',
+  'source_head_receipt_digest', 'source_segment_count', 'source_file_count',
+  'source_storage_bytes', 'archive_receipt_count',
+  'archive_receipt_set_digest', 'prior_rollup_receipt_count',
+  'prior_rollup_receipt_set_digest', 'lineage_digest',
+  'lineage_blob_digest', 'lineage_blob_bytes', 'lineage_raw_bytes',
+  'recorded_at_ms', 'authority', 'digest'
+]);
+const ROLLUP_LINEAGE_KEYS = Object.freeze([
+  'schema', 'version', 'lease_id', 'owner_digest', 'archive_receipts',
+  'prior_rollup_receipts', 'authority', 'digest'
+]);
 
 class LeaseError extends Error {
   constructor(code) {
@@ -72,6 +95,12 @@ class LeaseError extends Error {
 }
 
 function fail(code) { throw new LeaseError(code); }
+function createDirectoryOnce(directory) {
+  try { fs.mkdirSync(directory, { recursive: false }); }
+  catch (error) {
+    if (!error || error.code !== 'EEXIST') throw error;
+  }
+}
 function exactKeys(value, expected) {
   return value && typeof value === 'object' && !Array.isArray(value) && Codec.canonical(Object.keys(value).sort()) === Codec.canonical(expected.slice().sort());
 }
@@ -115,7 +144,7 @@ function location(options, create) {
     ? { root: ArtifactCache.assertCacheRoot(options.cacheRoot, options.sourceRoot, options.jobRoot), exists: true }
     : ArtifactCache.locate(options);
   const leasesRoot = path.join(state.root, 'leases');
-  if (create && !fs.existsSync(leasesRoot)) fs.mkdirSync(leasesRoot, { recursive: false });
+  if (create) createDirectoryOnce(leasesRoot);
   const exists = fs.existsSync(leasesRoot);
   if (exists) {
     const stat = fs.lstatSync(leasesRoot);
@@ -230,6 +259,35 @@ function validateArchiveReceipt(receipt) {
   return receipt;
 }
 
+function validateRollupReceipt(receipt) {
+  if (!exactKeys(receipt, ROLLUP_RECEIPT_KEYS) || receipt.schema !== ARCHIVE_ROLLUP_RECEIPT_SCHEMA || receipt.version !== VERSION || !Codec.validDigest(receipt) || !digest(receipt.lease_id) || !digest(receipt.owner_digest) || receipt.previous_archive_receipt_digest !== null || receipt.previous_anchor_digest !== null || !digest(receipt.source_segment_digest) || !finiteInteger(receipt.source_segment_bytes) || receipt.source_segment_bytes < 1 || receipt.source_segment_bytes > DEFAULT_MAX_ARCHIVE_RAW_BYTES || !Number.isSafeInteger(receipt.source_event_count) || receipt.source_event_count < 1 || receipt.source_event_count > DEFAULT_MAX_EVENTS || receipt.source_first_generation !== 1 || receipt.source_last_generation !== receipt.source_event_count || !digest(receipt.source_tail_event_digest) || !digest(receipt.archive_blob_digest) || !finiteInteger(receipt.archive_blob_bytes) || receipt.archive_blob_bytes < 1 || receipt.archive_blob_bytes > DEFAULT_MAX_ARCHIVE_COMPRESSED_BYTES || !digest(receipt.source_archive_snapshot_digest) || !digest(receipt.source_anchor_digest) || !digest(receipt.source_head_receipt_digest) || !Number.isInteger(receipt.source_segment_count) || receipt.source_segment_count < 2 || receipt.source_segment_count > DEFAULT_MAX_ARCHIVE_SEGMENTS || !Number.isInteger(receipt.source_file_count) || receipt.source_file_count < 4 || !finiteInteger(receipt.source_storage_bytes) || receipt.source_storage_bytes < 1 || !Number.isInteger(receipt.archive_receipt_count) || receipt.archive_receipt_count < 2 || receipt.archive_receipt_count > DEFAULT_MAX_ARCHIVE_SEGMENTS || !digest(receipt.archive_receipt_set_digest) || !Number.isInteger(receipt.prior_rollup_receipt_count) || receipt.prior_rollup_receipt_count < 0 || receipt.prior_rollup_receipt_count > DEFAULT_MAX_ARCHIVE_SEGMENTS || !digest(receipt.prior_rollup_receipt_set_digest) || !digest(receipt.lineage_digest) || !digest(receipt.lineage_blob_digest) || !finiteInteger(receipt.lineage_blob_bytes) || receipt.lineage_blob_bytes < 1 || receipt.lineage_blob_bytes > MAX_ROLLUP_LINEAGE_COMPRESSED_BYTES || !finiteInteger(receipt.lineage_raw_bytes) || receipt.lineage_raw_bytes < 1 || receipt.lineage_raw_bytes > MAX_ROLLUP_LINEAGE_RAW_BYTES || !finiteInteger(receipt.recorded_at_ms) || !exactKeys(receipt.authority, ['read_only_evidence', 'cache_protection', 'deletion', 'execution', 'installed', 'promoted', 'canon']) || Codec.canonical(receipt.authority) !== Codec.canonical(archiveAuthority())) fail('CACHE_LEASE_ARCHIVE_ROLLUP_RECEIPT_INVALID');
+  return receipt;
+}
+
+function receiptDigestSet(receipts) { return Codec.digest(receipts.map((item) => item.digest)); }
+
+function validateRollupLineage(lineage, receipt) {
+  if (!exactKeys(lineage, ROLLUP_LINEAGE_KEYS) || lineage.schema !== ARCHIVE_ROLLUP_LINEAGE_SCHEMA || lineage.version !== VERSION || !Codec.validDigest(lineage) || !digest(lineage.lease_id) || !digest(lineage.owner_digest) || !Array.isArray(lineage.archive_receipts) || lineage.archive_receipts.length < 2 || lineage.archive_receipts.length > DEFAULT_MAX_ARCHIVE_SEGMENTS || !Array.isArray(lineage.prior_rollup_receipts) || lineage.prior_rollup_receipts.length > DEFAULT_MAX_ARCHIVE_SEGMENTS || !exactKeys(lineage.authority, ['read_only_evidence', 'cache_protection', 'deletion', 'execution', 'installed', 'promoted', 'canon']) || Codec.canonical(lineage.authority) !== Codec.canonical(archiveAuthority())) fail('CACHE_LEASE_ARCHIVE_ROLLUP_LINEAGE_INVALID');
+  const archiveDigests = new Set(), rollupDigests = new Set();
+  let expectedGeneration = 1;
+  for (const archived of lineage.archive_receipts) {
+    validateArchiveReceipt(archived);
+    if (archived.lease_id !== lineage.lease_id || archived.owner_digest !== lineage.owner_digest || archiveDigests.has(archived.digest) || archived.source_first_generation !== expectedGeneration) fail('CACHE_LEASE_ARCHIVE_ROLLUP_LINEAGE_INVALID');
+    archiveDigests.add(archived.digest);
+    expectedGeneration = archived.source_last_generation + 1;
+  }
+  for (let index = 0; index < lineage.prior_rollup_receipts.length; index += 1) {
+    const prior = validateRollupReceipt(lineage.prior_rollup_receipts[index]);
+    if (prior.lease_id !== lineage.lease_id || prior.owner_digest !== lineage.owner_digest || rollupDigests.has(prior.digest) || prior.archive_receipt_count > lineage.archive_receipts.length || prior.prior_rollup_receipt_count !== index || prior.archive_receipt_set_digest !== receiptDigestSet(lineage.archive_receipts.slice(0, prior.archive_receipt_count)) || prior.prior_rollup_receipt_set_digest !== receiptDigestSet(lineage.prior_rollup_receipts.slice(0, index)) || prior.source_event_count !== lineage.archive_receipts[prior.archive_receipt_count - 1].source_last_generation) fail('CACHE_LEASE_ARCHIVE_ROLLUP_LINEAGE_INVALID');
+    rollupDigests.add(prior.digest);
+  }
+  if (receipt) {
+    validateRollupReceipt(receipt);
+    if (receipt.lease_id !== lineage.lease_id || receipt.owner_digest !== lineage.owner_digest || receipt.archive_receipt_count !== lineage.archive_receipts.length || receipt.archive_receipt_set_digest !== receiptDigestSet(lineage.archive_receipts) || receipt.prior_rollup_receipt_count !== lineage.prior_rollup_receipts.length || receipt.prior_rollup_receipt_set_digest !== receiptDigestSet(lineage.prior_rollup_receipts) || receipt.source_event_count !== expectedGeneration - 1 || receipt.lineage_digest !== lineage.digest) fail('CACHE_LEASE_ARCHIVE_ROLLUP_LINEAGE_INVALID');
+  }
+  return lineage;
+}
+
 function validateArchiveAnchor(anchor, expectedLeaseId) {
   if (!exactKeys(anchor, ANCHOR_KEYS) || anchor.schema !== ARCHIVE_ANCHOR_SCHEMA || anchor.version !== VERSION || !Codec.validDigest(anchor) || !digest(anchor.lease_id) || (expectedLeaseId && anchor.lease_id !== expectedLeaseId) || !exactKeys(anchor.owner, OWNER_KEYS) || Object.values(anchor.owner).some((value) => !digest(value)) || anchor.lease_id !== leaseIdFor(anchor.owner) || validateEvent(anchor.tail_event).length || anchor.tail_event.lease_id !== anchor.lease_id || !sameOwner(anchor.tail_event.owner, anchor.owner) || !Number.isSafeInteger(anchor.history_event_count) || anchor.history_event_count !== anchor.tail_event.generation || !Number.isSafeInteger(anchor.archived_segment_count) || anchor.archived_segment_count < 1 || !digest(anchor.latest_archive_receipt_digest) || !exactKeys(anchor.authority, ['read_only_evidence', 'cache_protection', 'deletion', 'execution', 'installed', 'promoted', 'canon']) || Codec.canonical(anchor.authority) !== Codec.canonical(archiveAuthority())) fail('CACHE_LEASE_ARCHIVE_ANCHOR_INVALID');
   return anchor;
@@ -237,12 +295,12 @@ function validateArchiveAnchor(anchor, expectedLeaseId) {
 
 function archiveDirectory(cacheRoot, leaseId, create) {
   const archives = path.join(cacheRoot, 'lease-archives');
-  if (create && !fs.existsSync(archives)) fs.mkdirSync(archives, { recursive: false });
+  if (create) createDirectoryOnce(archives);
   if (!fs.existsSync(archives)) fail('CACHE_LEASE_ARCHIVE_ROOT_MISSING');
   let stat = fs.lstatSync(archives);
   if (!stat.isDirectory() || stat.isSymbolicLink() || normalizedPath(fs.realpathSync.native(archives)) !== normalizedPath(archives)) fail('CACHE_LEASE_ARCHIVE_ROOT_NOT_PLAIN');
   const directory = path.join(archives, leaseId);
-  if (create && !fs.existsSync(directory)) fs.mkdirSync(directory, { recursive: false });
+  if (create) createDirectoryOnce(directory);
   if (!fs.existsSync(directory)) fail('CACHE_LEASE_ARCHIVE_DIRECTORY_MISSING');
   stat = fs.lstatSync(directory);
   if (!stat.isDirectory() || stat.isSymbolicLink() || normalizedPath(fs.realpathSync.native(directory)) !== normalizedPath(directory)) fail('CACHE_LEASE_ARCHIVE_DIRECTORY_NOT_PLAIN');
@@ -255,6 +313,24 @@ function archiveRecordFiles(cacheRoot, leaseId, receiptDigest, create) {
   return { receipt: path.join(directory, receiptDigest + '.json'), blob: path.join(directory, receiptDigest + '.jsonl.gz') };
 }
 
+function archiveRollupFiles(cacheRoot, leaseId, receiptDigest, create) {
+  if (!digest(leaseId) || !digest(receiptDigest)) fail('CACHE_LEASE_ARCHIVE_LOCATOR_INVALID');
+  const directory = archiveDirectory(cacheRoot, leaseId, create);
+  return {
+    receipt: path.join(directory, receiptDigest + '.rollup.json'),
+    blob: path.join(directory, receiptDigest + '.jsonl.gz'),
+    lineage: path.join(directory, receiptDigest + '.lineage.json.gz')
+  };
+}
+
+function recordMaximumForName(name) {
+  if (/^[a-f0-9]{64}\.rollup\.json$/.test(name)) return MAX_ROLLUP_RECEIPT_BYTES;
+  if (/^[a-f0-9]{64}\.lineage\.json\.gz$/.test(name)) return MAX_ROLLUP_LINEAGE_COMPRESSED_BYTES;
+  if (/^[a-f0-9]{64}\.jsonl\.gz$/.test(name)) return DEFAULT_MAX_ARCHIVE_COMPRESSED_BYTES;
+  if (/^[a-f0-9]{64}\.json$/.test(name)) return MAX_ARCHIVE_RECEIPT_BYTES;
+  fail('CACHE_LEASE_ARCHIVE_STORAGE_NAME_INVALID');
+}
+
 function readArchiveReceipt(cacheRoot, leaseId, receiptDigest) {
   const files = archiveRecordFiles(cacheRoot, leaseId, receiptDigest, false);
   let receipt, raw;
@@ -264,7 +340,43 @@ function readArchiveReceipt(cacheRoot, leaseId, receiptDigest) {
   if (receipt.digest !== receiptDigest || receipt.lease_id !== leaseId) fail('CACHE_LEASE_ARCHIVE_RECEIPT_BINDING_INVALID');
   const blobStat = fs.lstatSync(files.blob);
   if (!blobStat.isFile() || blobStat.isSymbolicLink() || blobStat.size !== receipt.archive_blob_bytes) fail('CACHE_LEASE_ARCHIVE_BLOB_SHAPE_INVALID');
-  return { receipt, files, bytes: raw.length };
+  return { receipt, files, bytes: raw.length, fileDigest: Codec.sha256(raw) };
+}
+
+function readRollupReceipt(cacheRoot, leaseId, receiptDigest) {
+  const files = archiveRollupFiles(cacheRoot, leaseId, receiptDigest, false);
+  let receipt, raw;
+  try { raw = readBoundedFile(files.receipt, MAX_ROLLUP_RECEIPT_BYTES, false); receipt = JSON.parse(raw.toString('utf8')); }
+  catch (error) { if (error instanceof LeaseError) throw error; fail('CACHE_LEASE_ARCHIVE_ROLLUP_RECEIPT_UNREADABLE'); }
+  validateRollupReceipt(receipt);
+  if (receipt.digest !== receiptDigest || receipt.lease_id !== leaseId) fail('CACHE_LEASE_ARCHIVE_ROLLUP_RECEIPT_BINDING_INVALID');
+  const blobStat = fs.lstatSync(files.blob), lineageStat = fs.lstatSync(files.lineage);
+  if (!blobStat.isFile() || blobStat.isSymbolicLink() || blobStat.size !== receipt.archive_blob_bytes) fail('CACHE_LEASE_ARCHIVE_BLOB_SHAPE_INVALID');
+  if (!lineageStat.isFile() || lineageStat.isSymbolicLink() || lineageStat.size !== receipt.lineage_blob_bytes) fail('CACHE_LEASE_ARCHIVE_ROLLUP_LINEAGE_SHAPE_INVALID');
+  return { kind: 'ROLLUP', receipt, files, bytes: raw.length, fileDigest: Codec.sha256(raw) };
+}
+
+function readRollupLineage(record) {
+  if (!record || record.kind !== 'ROLLUP') fail('CACHE_LEASE_ARCHIVE_ROLLUP_RECORD_INVALID');
+  const compressed = readBoundedFile(record.files.lineage, MAX_ROLLUP_LINEAGE_COMPRESSED_BYTES, false);
+  if (Codec.sha256(compressed) !== record.receipt.lineage_blob_digest) fail('CACHE_LEASE_ARCHIVE_ROLLUP_LINEAGE_BLOB_DIGEST_INVALID');
+  let raw, lineage;
+  try { raw = zlib.gunzipSync(compressed, { maxOutputLength: MAX_ROLLUP_LINEAGE_RAW_BYTES }); }
+  catch (_) { fail('CACHE_LEASE_ARCHIVE_ROLLUP_LINEAGE_DECOMPRESSION_INVALID'); }
+  if (raw.length !== record.receipt.lineage_raw_bytes) fail('CACHE_LEASE_ARCHIVE_ROLLUP_LINEAGE_BYTE_COUNT_INVALID');
+  try { lineage = JSON.parse(raw.toString('utf8')); }
+  catch (_) { fail('CACHE_LEASE_ARCHIVE_ROLLUP_LINEAGE_JSON_INVALID'); }
+  validateRollupLineage(lineage, record.receipt);
+  if (lineage.digest !== record.receipt.lineage_digest) fail('CACHE_LEASE_ARCHIVE_ROLLUP_LINEAGE_DIGEST_INVALID');
+  return { lineage, compressed, raw };
+}
+
+function readArchiveHead(cacheRoot, leaseId, receiptDigest) {
+  const direct = archiveRecordFiles(cacheRoot, leaseId, receiptDigest, false), rollup = archiveRollupFiles(cacheRoot, leaseId, receiptDigest, false);
+  const directExists = fs.existsSync(direct.receipt), rollupExists = fs.existsSync(rollup.receipt);
+  if (directExists === rollupExists) fail(directExists ? 'CACHE_LEASE_ARCHIVE_HEAD_AMBIGUOUS' : 'CACHE_LEASE_ARCHIVE_RECEIPT_MISSING');
+  if (directExists) return Object.assign({ kind: 'SEGMENT' }, readArchiveReceipt(cacheRoot, leaseId, receiptDigest));
+  return readRollupReceipt(cacheRoot, leaseId, receiptDigest);
 }
 
 function readArchiveAnchor(cacheRoot, anchorFile, leaseId) {
@@ -273,7 +385,7 @@ function readArchiveAnchor(cacheRoot, anchorFile, leaseId) {
   try { raw = readBoundedFile(anchorFile, MAX_ANCHOR_BYTES, false); anchor = JSON.parse(raw.toString('utf8')); }
   catch (error) { if (error instanceof LeaseError) throw error; fail('CACHE_LEASE_ARCHIVE_ANCHOR_UNREADABLE'); }
   validateArchiveAnchor(anchor, leaseId);
-  const latest = readArchiveReceipt(cacheRoot, leaseId, anchor.latest_archive_receipt_digest);
+  const latest = readArchiveHead(cacheRoot, leaseId, anchor.latest_archive_receipt_digest);
   if (latest.receipt.owner_digest !== ownerDigest(anchor.owner) || latest.receipt.source_tail_event_digest !== anchor.tail_event.digest || latest.receipt.source_last_generation !== anchor.history_event_count) fail('CACHE_LEASE_ARCHIVE_HEAD_BINDING_INVALID');
   return { anchor, latest, bytes: raw.length };
 }
@@ -337,7 +449,7 @@ function appendEvent(file, event, prefixTail) {
 }
 
 function ensurePlainDirectory(directory) {
-  if (!fs.existsSync(directory)) fs.mkdirSync(directory, { recursive: false });
+  createDirectoryOnce(directory);
   const stat = fs.lstatSync(directory);
   if (!stat.isDirectory() || stat.isSymbolicLink() || normalizedPath(fs.realpathSync.native(directory)) !== normalizedPath(directory)) fail('CACHE_LEASE_COORDINATION_ROOT_NOT_PLAIN');
 }
@@ -629,6 +741,238 @@ function archiveCandidate(options, candidate, recordedAtValue) {
   return Object.freeze(clone(outcome));
 }
 
+function verifyRollupCoverage(record, raw, lineageState, leaseId) {
+  let offset = 0, prefix = null;
+  for (const archived of lineageState.lineage.archive_receipts) {
+    const source = raw.subarray(offset, offset + archived.source_segment_bytes);
+    if (source.length !== archived.source_segment_bytes || Codec.sha256(source) !== archived.source_segment_digest) fail('CACHE_LEASE_ARCHIVE_ROLLUP_SOURCE_COVERAGE_INVALID');
+    const events = parseSegment(source, leaseId, prefix);
+    if (events.length !== archived.source_event_count || events[0].generation !== archived.source_first_generation || events[events.length - 1].generation !== archived.source_last_generation || events[events.length - 1].digest !== archived.source_tail_event_digest) fail('CACHE_LEASE_ARCHIVE_ROLLUP_SOURCE_COVERAGE_INVALID');
+    prefix = events[events.length - 1];
+    offset += source.length;
+  }
+  if (offset !== raw.length || !prefix || prefix.digest !== record.receipt.source_tail_event_digest) fail('CACHE_LEASE_ARCHIVE_ROLLUP_SOURCE_COVERAGE_INVALID');
+  for (const prior of lineageState.lineage.prior_rollup_receipts) {
+    const priorBytes = lineageState.lineage.archive_receipts.slice(0, prior.archive_receipt_count).reduce((sum, archived) => sum + archived.source_segment_bytes, 0);
+    if (prior.source_segment_bytes !== priorBytes || Codec.sha256(raw.subarray(0, priorBytes)) !== prior.source_segment_digest || prior.source_tail_event_digest !== lineageState.lineage.archive_receipts[prior.archive_receipt_count - 1].source_tail_event_digest) fail('CACHE_LEASE_ARCHIVE_ROLLUP_HISTORY_INVALID');
+  }
+  return prefix;
+}
+
+function readFullArchiveRecord(record) {
+  const maximumBlob = record.kind === 'ROLLUP' ? DEFAULT_MAX_ARCHIVE_COMPRESSED_BYTES : MAX_LEDGER_BYTES + 65536;
+  const maximumRaw = record.kind === 'ROLLUP' ? DEFAULT_MAX_ARCHIVE_RAW_BYTES : MAX_LEDGER_BYTES;
+  const blob = readBoundedFile(record.files.blob, maximumBlob, false);
+  if (Codec.sha256(blob) !== record.receipt.archive_blob_digest) fail('CACHE_LEASE_ARCHIVE_BLOB_DIGEST_INVALID');
+  let raw;
+  try { raw = zlib.gunzipSync(blob, { maxOutputLength: maximumRaw }); }
+  catch (_) { fail('CACHE_LEASE_ARCHIVE_BLOB_DECOMPRESSION_INVALID'); }
+  if (raw.length !== record.receipt.source_segment_bytes || Codec.sha256(raw) !== record.receipt.source_segment_digest) fail('CACHE_LEASE_ARCHIVE_SOURCE_DIGEST_INVALID');
+  const lineageState = record.kind === 'ROLLUP' ? readRollupLineage(record) : null;
+  if (lineageState) verifyRollupCoverage(record, raw, lineageState, record.receipt.lease_id);
+  return { blob, raw, lineageState };
+}
+
+function sourceFileDescriptors(records) {
+  const descriptors = [];
+  for (const record of records) {
+    descriptors.push({ name: path.basename(record.files.receipt), bytes: record.bytes, content_digest: record.fileDigest });
+    descriptors.push({ name: path.basename(record.files.blob), bytes: record.receipt.archive_blob_bytes, content_digest: record.receipt.archive_blob_digest });
+    if (record.kind === 'ROLLUP') descriptors.push({ name: path.basename(record.files.lineage), bytes: record.receipt.lineage_blob_bytes, content_digest: record.receipt.lineage_blob_digest });
+  }
+  return descriptors.sort((left, right) => left.name.localeCompare(right.name));
+}
+
+function archiveChainState(cache, leaseId, ignoredNames, allowLiveSegment) {
+  const storage = readLeaseStorage(cache, leaseId);
+  if (!storage.anchor || storage.compactionPending || (storage.raw.length && allowLiveSegment !== true)) fail('CACHE_LEASE_ARCHIVE_ROLLUP_SOURCE_STALE');
+  const anchorState = readArchiveAnchor(cache.root, storage.files.anchor, leaseId), records = [], seen = new Set();
+  let next = anchorState.anchor.latest_archive_receipt_digest;
+  while (next) {
+    if (seen.has(next) || records.length >= DEFAULT_MAX_ARCHIVE_SEGMENTS) fail('CACHE_LEASE_ARCHIVE_ROLLUP_SOURCE_INVALID');
+    seen.add(next);
+    const record = readArchiveHead(cache.root, leaseId, next);
+    records.push(record);
+    next = record.receipt.previous_archive_receipt_digest;
+  }
+  records.reverse();
+  if (records.length !== anchorState.anchor.archived_segment_count || records.length < 1) fail('CACHE_LEASE_ARCHIVE_ROLLUP_SOURCE_INVALID');
+  const full = records.map(readFullArchiveRecord), archiveReceipts = [], priorRollupReceipts = [];
+  let prefix = null, historyEvents = 0, previousReceiptDigest = null, previousAnchorDigest = null;
+  for (let index = 0; index < records.length; index += 1) {
+    const record = records[index], raw = full[index].raw;
+    if (record.receipt.previous_archive_receipt_digest !== previousReceiptDigest || record.receipt.previous_anchor_digest !== previousAnchorDigest) fail('CACHE_LEASE_ARCHIVE_PREDECESSOR_BINDING_INVALID');
+    if (record.kind === 'ROLLUP') {
+      if (index !== 0 || prefix !== null) fail('CACHE_LEASE_ARCHIVE_ROLLUP_POSITION_INVALID');
+      archiveReceipts.push(...full[index].lineageState.lineage.archive_receipts.map(clone));
+      priorRollupReceipts.push(...full[index].lineageState.lineage.prior_rollup_receipts.map(clone), clone(record.receipt));
+    } else archiveReceipts.push(clone(record.receipt));
+    const events = parseSegment(raw, leaseId, prefix);
+    if (events.length !== record.receipt.source_event_count || events[0].generation !== record.receipt.source_first_generation || events[events.length - 1].generation !== record.receipt.source_last_generation || events[events.length - 1].digest !== record.receipt.source_tail_event_digest) fail('CACHE_LEASE_ARCHIVE_SOURCE_BINDING_INVALID');
+    prefix = events[events.length - 1];
+    historyEvents += events.length;
+    previousReceiptDigest = record.receipt.digest;
+    previousAnchorDigest = Codec.seal({ schema: ARCHIVE_ANCHOR_SCHEMA, version: VERSION, lease_id: leaseId, owner: clone(anchorState.anchor.owner), tail_event: clone(prefix), history_event_count: historyEvents, archived_segment_count: index + 1, latest_archive_receipt_digest: previousReceiptDigest, authority: archiveAuthority() }).digest;
+  }
+  if (!prefix || prefix.digest !== anchorState.anchor.tail_event.digest || historyEvents !== anchorState.anchor.history_event_count || previousAnchorDigest !== anchorState.anchor.digest) fail('CACHE_LEASE_ARCHIVE_HISTORY_BINDING_INVALID');
+  const files = sourceFileDescriptors(records), archiveRoot = archiveDirectory(cache.root, leaseId, false), names = boundedNames(archiveRoot, DEFAULT_MAX_DIRECTORY_ENTRIES), ignored = new Set(ignoredNames || []);
+  const observedSourceNames = names.names.filter((name) => !ignored.has(name));
+  if (names.exceeded || Codec.canonical(observedSourceNames) !== Codec.canonical(files.map((item) => item.name))) fail('CACHE_LEASE_ARCHIVE_UNCLASSIFIED_FILE');
+  return {
+    storage,
+    anchor: anchorState.anchor,
+    records,
+    full,
+    raw: Buffer.concat(full.map((item) => item.raw)),
+    archiveReceipts,
+    priorRollupReceipts,
+    files,
+    storageBytes: files.reduce((sum, item) => sum + item.bytes, 0),
+    storageSnapshotDigest: Codec.digest(files)
+  };
+}
+
+function rollupCandidateFrom(state, target) {
+  return {
+    lease_id: state.anchor.lease_id,
+    owner_digest: ownerDigest(state.anchor.owner),
+    source_anchor_digest: state.anchor.digest,
+    source_head_receipt_digest: state.anchor.latest_archive_receipt_digest,
+    source_archive_snapshot_digest: state.storageSnapshotDigest,
+    source_segment_count: state.records.length,
+    source_file_count: state.files.length,
+    source_storage_bytes: state.storageBytes,
+    source_files: clone(state.files),
+    history_event_count: state.anchor.history_event_count,
+    tail_event_digest: state.anchor.tail_event.digest,
+    target_rollup_receipt_digest: target.receipt.digest,
+    target_anchor_digest: target.anchor.digest,
+    target_storage_bytes: target.storageBytes,
+    projected_reduction_bytes: state.storageBytes - target.storageBytes
+  };
+}
+
+function buildArchiveRollupTarget(state, recordedAt) {
+  if (!finiteInteger(recordedAt) || state.records.length < 2 || state.archiveReceipts.length < 2 || state.raw.length < 1 || state.raw.length > DEFAULT_MAX_ARCHIVE_RAW_BYTES) fail('CACHE_LEASE_ARCHIVE_ROLLUP_TARGET_INVALID');
+  const leaseId = state.anchor.lease_id, ownerDigestValue = ownerDigest(state.anchor.owner);
+  const lineage = validateRollupLineage(Codec.seal({ schema: ARCHIVE_ROLLUP_LINEAGE_SCHEMA, version: VERSION, lease_id: leaseId, owner_digest: ownerDigestValue, archive_receipts: state.archiveReceipts.map(clone), prior_rollup_receipts: state.priorRollupReceipts.map(clone), authority: archiveAuthority() }), null);
+  const lineageRaw = Buffer.from(JSON.stringify(lineage) + '\n', 'utf8');
+  if (lineageRaw.length > MAX_ROLLUP_LINEAGE_RAW_BYTES) fail('CACHE_LEASE_ARCHIVE_ROLLUP_LINEAGE_BYTE_LIMIT');
+  const lineageBlob = zlib.gzipSync(lineageRaw, { level: 9, mtime: 0 });
+  if (lineageBlob.length > MAX_ROLLUP_LINEAGE_COMPRESSED_BYTES) fail('CACHE_LEASE_ARCHIVE_ROLLUP_LINEAGE_BYTE_LIMIT');
+  const archiveBlob = zlib.gzipSync(state.raw, { level: 9, mtime: 0 });
+  if (archiveBlob.length > DEFAULT_MAX_ARCHIVE_COMPRESSED_BYTES) fail('CACHE_LEASE_ARCHIVE_ROLLUP_BLOB_BYTE_LIMIT');
+  const receipt = validateRollupReceipt(Codec.seal({
+    schema: ARCHIVE_ROLLUP_RECEIPT_SCHEMA,
+    version: VERSION,
+    lease_id: leaseId,
+    owner_digest: ownerDigestValue,
+    previous_archive_receipt_digest: null,
+    previous_anchor_digest: null,
+    source_segment_digest: Codec.sha256(state.raw),
+    source_segment_bytes: state.raw.length,
+    source_event_count: state.anchor.history_event_count,
+    source_first_generation: 1,
+    source_last_generation: state.anchor.history_event_count,
+    source_tail_event_digest: state.anchor.tail_event.digest,
+    archive_blob_digest: Codec.sha256(archiveBlob),
+    archive_blob_bytes: archiveBlob.length,
+    source_archive_snapshot_digest: state.storageSnapshotDigest,
+    source_anchor_digest: state.anchor.digest,
+    source_head_receipt_digest: state.anchor.latest_archive_receipt_digest,
+    source_segment_count: state.records.length,
+    source_file_count: state.files.length,
+    source_storage_bytes: state.storageBytes,
+    archive_receipt_count: state.archiveReceipts.length,
+    archive_receipt_set_digest: receiptDigestSet(state.archiveReceipts),
+    prior_rollup_receipt_count: state.priorRollupReceipts.length,
+    prior_rollup_receipt_set_digest: receiptDigestSet(state.priorRollupReceipts),
+    lineage_digest: lineage.digest,
+    lineage_blob_digest: Codec.sha256(lineageBlob),
+    lineage_blob_bytes: lineageBlob.length,
+    lineage_raw_bytes: lineageRaw.length,
+    recorded_at_ms: recordedAt,
+    authority: archiveAuthority()
+  }));
+  validateRollupLineage(lineage, receipt);
+  const receiptBytes = Buffer.from(JSON.stringify(receipt) + '\n', 'utf8');
+  const anchor = validateArchiveAnchor(Codec.seal({ schema: ARCHIVE_ANCHOR_SCHEMA, version: VERSION, lease_id: leaseId, owner: clone(state.anchor.owner), tail_event: clone(state.anchor.tail_event), history_event_count: state.anchor.history_event_count, archived_segment_count: 1, latest_archive_receipt_digest: receipt.digest, authority: archiveAuthority() }), leaseId);
+  return { receipt, receiptBytes, archiveBlob, lineage, lineageRaw, lineageBlob, anchor, storageBytes: receiptBytes.length + archiveBlob.length + lineageBlob.length };
+}
+
+function prepareArchiveRollup(options, leaseId, recordedAtValue) {
+  options = options || {};
+  const recordedAt = recordedAtValue == null ? Date.now() : recordedAtValue;
+  if (!digest(leaseId) || !finiteInteger(recordedAt)) fail('CACHE_LEASE_ARCHIVE_ROLLUP_INPUT_INVALID');
+  const cache = location(options, false), state = archiveChainState(cache, leaseId), target = buildArchiveRollupTarget(state, recordedAt);
+  return Object.freeze(rollupCandidateFrom(state, target));
+}
+
+function removeExactSourceFiles(cacheRoot, leaseId, descriptors) {
+  const directory = archiveDirectory(cacheRoot, leaseId, false);
+  let removed = 0;
+  for (const descriptor of descriptors) {
+    if (!descriptor || !/^[a-f0-9]{64}(?:\.json|\.jsonl\.gz|\.rollup\.json|\.lineage\.json\.gz)$/.test(descriptor.name) || !finiteInteger(descriptor.bytes) || !digest(descriptor.content_digest)) fail('CACHE_LEASE_ARCHIVE_ROLLUP_SOURCE_FILE_INVALID');
+    const file = path.join(directory, descriptor.name);
+    if (!fs.existsSync(file)) continue;
+    const raw = readBoundedFile(file, recordMaximumForName(descriptor.name), false);
+    if (raw.length !== descriptor.bytes || Codec.sha256(raw) !== descriptor.content_digest) fail('CACHE_LEASE_ARCHIVE_ROLLUP_SOURCE_FILE_STALE');
+    fs.unlinkSync(file);
+    removed += 1;
+  }
+  return removed;
+}
+
+function findArchiveRecord(cacheRoot, leaseId, headDigest, targetDigest) {
+  const seen = new Set();
+  let next = headDigest;
+  while (next) {
+    if (seen.has(next) || seen.size >= DEFAULT_MAX_ARCHIVE_SEGMENTS) fail('CACHE_LEASE_ARCHIVE_ROLLUP_SOURCE_INVALID');
+    seen.add(next);
+    const record = readArchiveHead(cacheRoot, leaseId, next);
+    if (record.receipt.digest === targetDigest) return record;
+    next = record.receipt.previous_archive_receipt_digest;
+  }
+  return null;
+}
+
+function applyArchiveRollupCandidate(options, candidate, recordedAtValue) {
+  options = options || {};
+  const recordedAt = recordedAtValue == null ? Date.now() : recordedAtValue;
+  if (!candidate || !digest(candidate.lease_id) || !digest(candidate.source_anchor_digest) || !digest(candidate.source_archive_snapshot_digest) || !digest(candidate.target_rollup_receipt_digest) || !digest(candidate.target_anchor_digest) || !Array.isArray(candidate.source_files) || !finiteInteger(recordedAt)) fail('CACHE_LEASE_ARCHIVE_ROLLUP_CANDIDATE_INVALID');
+  const cache = location(options, true), leaseId = candidate.lease_id;
+  let outcome;
+  withLeaseLock(options, leaseId, () => {
+    const storage = readLeaseStorage(cache, leaseId);
+    const installedTarget = storage.anchor && !storage.compactionPending ? findArchiveRecord(cache.root, leaseId, storage.anchor.latest_archive_receipt_digest, candidate.target_rollup_receipt_digest) : null;
+    if (installedTarget) {
+      if (installedTarget.kind !== 'ROLLUP') fail('CACHE_LEASE_ARCHIVE_ROLLUP_CANDIDATE_STALE');
+      const target = installedTarget;
+      readFullArchiveRecord(target);
+      if (target.receipt.source_archive_snapshot_digest !== candidate.source_archive_snapshot_digest || target.receipt.source_anchor_digest !== candidate.source_anchor_digest) fail('CACHE_LEASE_ARCHIVE_ROLLUP_CANDIDATE_STALE');
+      const removed = removeExactSourceFiles(cache.root, leaseId, candidate.source_files);
+      outcome = { status: removed ? 'RECOVERED' : 'ALREADY_ROLLED_UP', lease_id: leaseId, source_files_removed: removed, rollup_receipt_digest: target.receipt.digest, archive_anchor_digest: storage.anchor.digest, history_event_count: storage.tail.generation };
+      return;
+    }
+    let state, target;
+    const targetNames = [candidate.target_rollup_receipt_digest + '.rollup.json', candidate.target_rollup_receipt_digest + '.jsonl.gz', candidate.target_rollup_receipt_digest + '.lineage.json.gz'];
+    const archiveRoot = archiveDirectory(cache.root, leaseId, false), partialTargetExists = targetNames.some((name) => fs.existsSync(path.join(archiveRoot, name)));
+    try { state = archiveChainState(cache, leaseId, targetNames, !!(partialTargetExists && storage.anchor && storage.anchor.digest === candidate.source_anchor_digest)); target = buildArchiveRollupTarget(state, recordedAt); }
+    catch (error) { if (error instanceof LeaseError) fail('CACHE_LEASE_ARCHIVE_ROLLUP_CANDIDATE_STALE'); throw error; }
+    const observed = rollupCandidateFrom(state, target);
+    for (const key of ['owner_digest', 'source_anchor_digest', 'source_head_receipt_digest', 'source_archive_snapshot_digest', 'source_segment_count', 'source_file_count', 'source_storage_bytes', 'history_event_count', 'tail_event_digest', 'target_rollup_receipt_digest', 'target_anchor_digest', 'target_storage_bytes', 'projected_reduction_bytes']) if (observed[key] !== candidate[key]) fail('CACHE_LEASE_ARCHIVE_ROLLUP_CANDIDATE_STALE');
+    if (Codec.canonical(observed.source_files) !== Codec.canonical(candidate.source_files)) fail('CACHE_LEASE_ARCHIVE_ROLLUP_CANDIDATE_STALE');
+    const files = archiveRollupFiles(cache.root, leaseId, target.receipt.digest, true);
+    writeExactFile(files.blob, target.archiveBlob);
+    writeExactFile(files.lineage, target.lineageBlob);
+    writeExactFile(files.receipt, target.receiptBytes);
+    replaceAnchor(storage.files.anchor, target.anchor, path.dirname(files.receipt));
+    const removed = removeExactSourceFiles(cache.root, leaseId, candidate.source_files);
+    outcome = { status: 'ROLLED_UP', lease_id: leaseId, source_files_removed: removed, rollup_receipt_digest: target.receipt.digest, archive_anchor_digest: target.anchor.digest, history_event_count: target.anchor.history_event_count };
+  });
+  return Object.freeze(clone(outcome));
+}
+
 function archiveAuditBudget(options) {
   const anchors = options.auditMaxAnchors == null ? DEFAULT_MAX_LEDGERS : options.auditMaxAnchors;
   const segments = options.auditMaxSegments == null ? DEFAULT_MAX_ARCHIVE_SEGMENTS : options.auditMaxSegments;
@@ -642,7 +986,7 @@ function auditArchives(options) {
   options = options || {};
   const cache = location(options, false), budget = archiveAuditBudget(options), observedAt = options.nowMs == null ? Date.now() : options.nowMs;
   if (!finiteInteger(observedAt)) fail('CACHE_LEASE_ARCHIVE_AUDIT_TIME_INVALID');
-  const audit = { schema: ARCHIVE_AUDIT_SCHEMA, version: VERSION, status: 'COMPLETE', observed_at_ms: observedAt, cache_root_fingerprint: rootFingerprint(cache.root), scan_budget: budget, anchors: [], holds: [], usage: { anchors: 0, segments: 0, compressed_bytes: 0, raw_bytes: 0, history_events: 0 }, authority: { read_only: true, cache_protection: false, deletion: false, installed: false, promoted: false, canon: false } };
+  const audit = { schema: ARCHIVE_AUDIT_SCHEMA, version: VERSION, status: 'COMPLETE', observed_at_ms: observedAt, cache_root_fingerprint: rootFingerprint(cache.root), scan_budget: budget, anchors: [], holds: [], usage: { anchors: 0, segments: 0, rollups: 0, archive_files: 0, storage_bytes: 0, compressed_bytes: 0, raw_bytes: 0, lineage_compressed_bytes: 0, lineage_raw_bytes: 0, history_events: 0 }, authority: { read_only: true, cache_protection: false, deletion: false, installed: false, promoted: false, canon: false } };
   if (cache.exists) {
     const direct = boundedNames(cache.leasesRoot, DEFAULT_MAX_DIRECTORY_ENTRIES), anchorNames = direct.names.filter((name) => /^[a-f0-9]{64}\.anchor\.json$/.test(name));
     for (const name of anchorNames) {
@@ -650,15 +994,18 @@ function auditArchives(options) {
       audit.usage.anchors += 1;
       if (audit.usage.anchors > budget.max_anchors) { audit.status = 'LIMIT_EXCEEDED'; audit.holds.push({ locator_digest: locator, reason: 'CACHE_LEASE_ARCHIVE_AUDIT_ANCHOR_LIMIT' }); break; }
       try {
-        const anchorState = readArchiveAnchor(cache.root, path.join(cache.leasesRoot, name), leaseId), receipts = [], seen = new Set();
+        const anchorState = readArchiveAnchor(cache.root, path.join(cache.leasesRoot, name), leaseId), receipts = [], seen = new Set(), expectedFiles = new Set();
         let next = anchorState.anchor.latest_archive_receipt_digest;
         while (next) {
           if (seen.has(next)) fail('CACHE_LEASE_ARCHIVE_RECEIPT_CYCLE');
           seen.add(next);
           audit.usage.segments += 1;
           if (audit.usage.segments > budget.max_segments) fail('CACHE_LEASE_ARCHIVE_AUDIT_SEGMENT_LIMIT');
-          const record = readArchiveReceipt(cache.root, leaseId, next);
+          const record = readArchiveHead(cache.root, leaseId, next);
           receipts.push(record);
+          expectedFiles.add(path.basename(record.files.receipt));
+          expectedFiles.add(path.basename(record.files.blob));
+          if (record.kind === 'ROLLUP') expectedFiles.add(path.basename(record.files.lineage));
           next = record.receipt.previous_archive_receipt_digest;
         }
         receipts.reverse();
@@ -669,14 +1016,39 @@ function auditArchives(options) {
           if (record.receipt.previous_archive_receipt_digest !== previousReceiptDigest || record.receipt.previous_anchor_digest !== previousAnchorDigest) fail('CACHE_LEASE_ARCHIVE_PREDECESSOR_BINDING_INVALID');
           audit.usage.compressed_bytes += record.receipt.archive_blob_bytes;
           if (audit.usage.compressed_bytes > budget.max_compressed_bytes) fail('CACHE_LEASE_ARCHIVE_AUDIT_COMPRESSED_BYTE_LIMIT');
-          const blob = readBoundedFile(record.files.blob, MAX_LEDGER_BYTES + 65536, false);
+          const maximumBlob = record.kind === 'ROLLUP' ? DEFAULT_MAX_ARCHIVE_COMPRESSED_BYTES : MAX_LEDGER_BYTES + 65536;
+          const maximumRaw = record.kind === 'ROLLUP' ? DEFAULT_MAX_ARCHIVE_RAW_BYTES : MAX_LEDGER_BYTES;
+          const blob = readBoundedFile(record.files.blob, maximumBlob, false);
           if (Codec.sha256(blob) !== record.receipt.archive_blob_digest) fail('CACHE_LEASE_ARCHIVE_BLOB_DIGEST_INVALID');
           let raw;
-          try { raw = zlib.gunzipSync(blob, { maxOutputLength: MAX_LEDGER_BYTES }); }
+          try { raw = zlib.gunzipSync(blob, { maxOutputLength: maximumRaw }); }
           catch (_) { fail('CACHE_LEASE_ARCHIVE_BLOB_DECOMPRESSION_INVALID'); }
           audit.usage.raw_bytes += raw.length;
           if (audit.usage.raw_bytes > budget.max_raw_bytes) fail('CACHE_LEASE_ARCHIVE_AUDIT_RAW_BYTE_LIMIT');
           if (raw.length !== record.receipt.source_segment_bytes || Codec.sha256(raw) !== record.receipt.source_segment_digest) fail('CACHE_LEASE_ARCHIVE_SOURCE_DIGEST_INVALID');
+          if (record.kind === 'ROLLUP') {
+            if (index !== 0 || prefix !== null) fail('CACHE_LEASE_ARCHIVE_ROLLUP_POSITION_INVALID');
+            const lineageState = readRollupLineage(record);
+            audit.usage.rollups += 1;
+            audit.usage.lineage_compressed_bytes += lineageState.compressed.length;
+            audit.usage.lineage_raw_bytes += lineageState.raw.length;
+            audit.usage.compressed_bytes += lineageState.compressed.length;
+            if (audit.usage.compressed_bytes > budget.max_compressed_bytes) fail('CACHE_LEASE_ARCHIVE_AUDIT_COMPRESSED_BYTE_LIMIT');
+            let offset = 0, lineagePrefix = null;
+            for (const archived of lineageState.lineage.archive_receipts) {
+              const source = raw.subarray(offset, offset + archived.source_segment_bytes);
+              if (source.length !== archived.source_segment_bytes || Codec.sha256(source) !== archived.source_segment_digest) fail('CACHE_LEASE_ARCHIVE_ROLLUP_SOURCE_COVERAGE_INVALID');
+              const sourceEvents = parseSegment(source, leaseId, lineagePrefix);
+              if (sourceEvents.length !== archived.source_event_count || sourceEvents[0].generation !== archived.source_first_generation || sourceEvents[sourceEvents.length - 1].generation !== archived.source_last_generation || sourceEvents[sourceEvents.length - 1].digest !== archived.source_tail_event_digest) fail('CACHE_LEASE_ARCHIVE_ROLLUP_SOURCE_COVERAGE_INVALID');
+              lineagePrefix = sourceEvents[sourceEvents.length - 1];
+              offset += source.length;
+            }
+            if (offset !== raw.length || !lineagePrefix || lineagePrefix.digest !== record.receipt.source_tail_event_digest) fail('CACHE_LEASE_ARCHIVE_ROLLUP_SOURCE_COVERAGE_INVALID');
+            for (const prior of lineageState.lineage.prior_rollup_receipts) {
+              const priorBytes = lineageState.lineage.archive_receipts.slice(0, prior.archive_receipt_count).reduce((sum, archived) => sum + archived.source_segment_bytes, 0);
+              if (prior.source_segment_bytes !== priorBytes || Codec.sha256(raw.subarray(0, priorBytes)) !== prior.source_segment_digest || prior.source_tail_event_digest !== lineageState.lineage.archive_receipts[prior.archive_receipt_count - 1].source_tail_event_digest) fail('CACHE_LEASE_ARCHIVE_ROLLUP_HISTORY_INVALID');
+            }
+          }
           const events = parseSegment(raw, leaseId, prefix);
           if (events.length !== record.receipt.source_event_count || events[0].generation !== record.receipt.source_first_generation || events[events.length - 1].generation !== record.receipt.source_last_generation || events[events.length - 1].digest !== record.receipt.source_tail_event_digest) fail('CACHE_LEASE_ARCHIVE_SOURCE_BINDING_INVALID');
           prefix = events[events.length - 1];
@@ -695,8 +1067,14 @@ function auditArchives(options) {
           }).digest;
         }
         if (!prefix || prefix.digest !== anchorState.anchor.tail_event.digest || historyEvents !== anchorState.anchor.history_event_count || previousAnchorDigest !== anchorState.anchor.digest) fail('CACHE_LEASE_ARCHIVE_HISTORY_BINDING_INVALID');
+        const archiveRoot = archiveDirectory(cache.root, leaseId, false), directNames = boundedNames(archiveRoot, DEFAULT_MAX_DIRECTORY_ENTRIES);
+        if (directNames.exceeded) fail('CACHE_LEASE_ARCHIVE_AUDIT_DIRECTORY_LIMIT');
+        if (Codec.canonical(directNames.names) !== Codec.canonical(Array.from(expectedFiles).sort())) fail('CACHE_LEASE_ARCHIVE_UNCLASSIFIED_FILE');
+        const storageDescriptors = sourceFileDescriptors(receipts), storageBytes = storageDescriptors.reduce((sum, item) => sum + item.bytes, 0);
+        audit.usage.archive_files += directNames.names.length;
+        audit.usage.storage_bytes += storageBytes;
         audit.usage.history_events += historyEvents;
-        audit.anchors.push({ lease_id: leaseId, anchor_digest: anchorState.anchor.digest, tail_event_digest: prefix.digest, archived_segments: receipts.length, history_events: historyEvents, latest_archive_receipt_digest: anchorState.anchor.latest_archive_receipt_digest });
+        audit.anchors.push({ lease_id: leaseId, anchor_digest: anchorState.anchor.digest, tail_event_digest: prefix.digest, archived_segments: receipts.length, history_events: historyEvents, latest_archive_receipt_digest: anchorState.anchor.latest_archive_receipt_digest, rollups: receipts.filter((record) => record.kind === 'ROLLUP').length, archive_files: directNames.names.length, storage_bytes: storageBytes, storage_snapshot_digest: Codec.digest(storageDescriptors) });
       } catch (error) {
         const reason = error instanceof LeaseError ? error.code : 'CACHE_LEASE_ARCHIVE_AUDIT_FAILED';
         if (reason.includes('_LIMIT')) audit.status = 'LIMIT_EXCEEDED';
@@ -839,6 +1217,8 @@ module.exports = {
   ARCHIVE_ANCHOR_SCHEMA,
   ARCHIVE_RECEIPT_SCHEMA,
   ARCHIVE_AUDIT_SCHEMA,
+  ARCHIVE_ROLLUP_RECEIPT_SCHEMA,
+  ARCHIVE_ROLLUP_LINEAGE_SCHEMA,
   VERSION,
   DEFAULT_DURATION_MS,
   MAX_DURATION_MS,
@@ -855,6 +1235,8 @@ module.exports = {
   acquire,
   discover,
   archiveCandidate,
+  prepareArchiveRollup,
+  applyArchiveRollupCandidate,
   auditArchives,
   validateSet,
   assertSet,

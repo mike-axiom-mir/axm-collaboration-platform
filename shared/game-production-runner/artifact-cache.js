@@ -23,6 +23,13 @@ class CacheError extends Error {
 
 function fail(code) { throw new CacheError(code); }
 
+function createDirectoryOnce(directory) {
+  try { fs.mkdirSync(directory, { recursive: false }); }
+  catch (error) {
+    if (!error || error.code !== 'EEXIST') throw error;
+  }
+}
+
 function inside(root, candidate) {
   const base = path.resolve(root), target = path.resolve(candidate);
   return target === base || target.startsWith(base + path.sep);
@@ -62,7 +69,7 @@ function cacheRootState(cacheRoot, sourceRoot, jobRoot, create) {
     if (fs.realpathSync.native(resolved).toLowerCase() !== resolved.toLowerCase()) fail('CACHE_ROOT_BECAME_LINK');
   }
   const entriesRoot = path.join(resolved, 'entries');
-  if (create && !fs.existsSync(entriesRoot)) fs.mkdirSync(entriesRoot, { recursive: false });
+  if (create) createDirectoryOnce(entriesRoot);
   const entriesExist = fs.existsSync(entriesRoot);
   if (entriesExist) {
     const entriesStat = fs.lstatSync(entriesRoot);

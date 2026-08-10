@@ -1,0 +1,87 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "subject": "game-production-runner lossless cold lease-archive rollup",
+  "claims": [
+    {
+      "claim_id": "cache.production.lease-rollup.plan-approval",
+      "claim_type": "authorization",
+      "pass_condition": "Planning removes nothing and application requires the exact, structurally valid, root-bound proposal.",
+      "primary_surface": "artifact-cache-lease-rollup runtime and shared/CLI adversaries",
+      "counterevidence": "Wrong, reshaped, copied-root, or implicit authority removes a source file.",
+      "observed_evidence": "Wrong digest, undeclared sealed field, copied root, unrequested CLI, and exact approval assertions pass.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-rollup.measured-smaller-target",
+      "claim_type": "performance",
+      "pass_condition": "The named disposable workload has fewer files and fewer storage bytes after rollup, and no non-smaller target is selectable.",
+      "primary_surface": "pre/post deep-audit counters under the five-segment fixture",
+      "counterevidence": "Target bytes are equal/larger, source count does not fall, or planning selects a non-positive reduction.",
+      "observed_evidence": "Five-segment fixture moves from ten source files to three target files, storage bytes decrease, and candidate reduction is positive and exact.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-rollup.lifecycle-fence",
+      "claim_type": "concurrency",
+      "pass_condition": "Final source validation and removal hold the owner lifecycle lock and reject live, busy, or changed unapproved history.",
+      "primary_surface": "held-lock and post-plan active-session adversaries",
+      "counterevidence": "A busy owner or newly active segment loses source history.",
+      "observed_evidence": "Held lock returns COORDINATION_BUSY; new active session returns STALE; both record zero removal authority.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-rollup.lossless-lineage",
+      "claim_type": "persistence",
+      "pass_condition": "The current event blob reproduces every original source byte and the lineage retains all original archive and prior rollup receipts.",
+      "primary_surface": "lineage-aware deep audit plus direct lineage inspection",
+      "counterevidence": "Any receipt boundary, digest, event transition, original receipt, prior rollup receipt, or final tail is missing or inconsistent.",
+      "observed_evidence": "Thirty-three events validate through one rollup head; lineage contains ten original archive receipts and the prior rollup receipt with matching receipt-set digest.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-rollup.interrupted-apply",
+      "claim_type": "persistence",
+      "pass_condition": "Exact replay completes both pre-anchor partial publication and post-anchor source cleanup without touching later live history.",
+      "primary_surface": "partial-target, restored-source, and live-cleanup recovery fixtures",
+      "counterevidence": "Replay conflicts with its own exact target, silently accepts extra source files, deletes changed files, or breaks the active session.",
+      "observed_evidence": "One prewritten target blob is reused; restored sources produce REVIEW_REQUIRED; exact replay returns RECOVERED while a later session protects and releases normally.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-rollup.restart-repeat",
+      "claim_type": "persistence",
+      "pass_condition": "A fresh process and a later rollup continue exact generation and lineage from the first rollup.",
+      "primary_surface": "fresh Node child process followed by new curation and repeated rollup",
+      "counterevidence": "Generation restarts, new history cannot be archived, or the second rollup loses the first receipt lineage.",
+      "observed_evidence": "Fresh child continues at generations nineteen through twenty-one; later exact curation and rollup finish with thirty-three events and one preserved prior rollup receipt.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-rollup.full-audit",
+      "claim_type": "integrity",
+      "pass_condition": "Deep audit detects missing or corrupted lineage, unexpected extra source files, and exceeded raw-byte ceilings while accepting the valid repeated rollup.",
+      "primary_surface": "auditArchives missing, same-size tamper, interruption, and budget fixtures",
+      "counterevidence": "Any named corruption passes or valid repeated lineage fails.",
+      "observed_evidence": "Valid repeated rollup is COMPLETE; missing lineage and same-size corruption are REVIEW_REQUIRED; raw byte ceiling is LIMIT_EXCEEDED.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-rollup.transport-contract",
+      "claim_type": "transport",
+      "pass_condition": "CLI and module declarations expose separate plan/apply routes and all four rollup schemas without broadening authority.",
+      "primary_surface": "CLI self-test and discovery seam review",
+      "counterevidence": "CLI lacks dry-run separation, schemas are undeclared, or boundaries permit automatic or lossy rollup.",
+      "observed_evidence": "121 CLI checks and 53 discovery-seam checks pass with explicit measured-plan, exact-apply, no-automation, and no-history-loss declarations.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-rollup.truth-boundary",
+      "claim_type": "authority",
+      "pass_condition": "Only derived cold containers are replaced; durable event bytes and receipts remain, and long-horizon semantic retention stays open.",
+      "primary_surface": "runtime authority objects, contracts, gap report, and implementation receipt",
+      "counterevidence": "Rollup claims history deletion, scheduling, general performance, native execution, promotion, or CANON.",
+      "observed_evidence": "All authority objects keep install/promotion/CANON false; contracts refuse semantic deletion; the next gap is durable-history tiering and retention.",
+      "decision": "PASS"
+    }
+  ]
+}

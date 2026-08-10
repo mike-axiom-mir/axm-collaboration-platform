@@ -22,7 +22,8 @@
     "bounded read-only terminal-ledger cache-reference discovery with complete digest-chain validation, path-private sealed sets, exact key/entry binding, fail-closed aggregate holds, and fresh apply-time reference rescans",
     "append-only graceful-interruption checkpoints with exact step-ledger prefix binding, repeated-checkpoint continuity, legacy resume compatibility, and bounded nonterminal cache-reference discovery",
     "bounded append-only in-flight cache leases with path-private owner binding, resume-session fencing, exact-key protection before runner cache use, terminal and checkpoint release, crash expiry and recovery, bounded fail-closed discovery, fresh retention rescans, and per-key runner-retention coordination",
-    "exact-approved inactive lease-ledger curation with lossless compressed cold archives, sealed hot recovery anchors, active and stale refusal, interrupted-apply recovery, fresh-process released and expired continuation, and bounded full archive audit"
+    "exact-approved inactive lease-ledger curation with lossless compressed cold archives, sealed hot recovery anchors, active and stale refusal, interrupted-apply recovery, fresh-process released and expired continuation, and bounded full archive audit",
+    "exact-approved lossless cold-archive rollup with measured smaller targets, complete concatenated event-byte preservation, original and prior-rollup receipt lineage, inactive lifecycle fencing, interrupted cleanup recovery, repeated rollup, fresh-process continuation, and bounded lineage-aware audit"
   ],
   "gaps": [
     {
@@ -75,11 +76,11 @@
       "next_evidence": "Define a user-owned policy store and scheduling authority that still emits a reviewable proposal or an explicitly pre-authorized policy receipt before deletion."
     },
     {
-      "capability": "cache.production.lease-cold-archive-retention",
+      "capability": "cache.production.lease-cold-history-tiering-and-retention",
       "kind": "CONTRACT",
       "state": "MISSING_CONTRACT",
-      "impact": "Hot discovery now stays compact because inactive JSONL segments can move into small recovery anchors, but the lossless cold segments remain append-only and their storage plus explicit full-audit cost can grow until audit ceilings hold.",
-      "next_evidence": "Define a user-owned cold-archive retention or chained rollup contract with exact segment coverage, no active-history loss, explicit deletion authority where applicable, restart recovery, and full-audit equivalence before and after the operation."
+      "impact": "Rollup now bounds current inactive container count and applies only when the measured target is smaller, but exact durable event bytes and receipt lineage still grow with real history until the independent raw-byte and lineage ceilings hold.",
+      "next_evidence": "Define a user-owned long-horizon tiering or retention contract that distinguishes durable events from derived containers, preserves required decision and failure history, names any external immutable storage and restore proof, and requires explicit authority plus full-audit equivalence before any semantic history removal."
     },
     {
       "capability": "ui.game-production-workbench",

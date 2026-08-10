@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-lease-archive-rollup-application/v1",
+  "type": "object",
+  "required": ["schema", "version", "proposal_digest", "approved_digest", "status", "explicit", "recorded_at_ms", "before_archive_audit_digest", "after_archive_audit_digest", "outcomes", "source_files_removed", "projected_reduction_bytes", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-lease-archive-rollup-application/v1" },
+    "version": { "const": "0.1.0" },
+    "proposal_digest": { "type": "string" },
+    "approved_digest": { "type": ["string", "null"] },
+    "status": { "enum": ["NOT_REQUESTED", "NOT_APPROVED", "APPROVAL_MISMATCH", "PROPOSAL_NOT_APPLICABLE", "COORDINATION_BUSY", "STALE", "PARTIAL", "APPLIED"] },
+    "explicit": { "type": "boolean" },
+    "recorded_at_ms": { "type": "integer", "minimum": 0 },
+    "before_archive_audit_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "after_archive_audit_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "outcomes": { "type": "array" },
+    "source_files_removed": { "type": "integer", "minimum": 0 },
+    "projected_reduction_bytes": { "type": "integer", "minimum": 0 },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

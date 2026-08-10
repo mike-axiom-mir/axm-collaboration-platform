@@ -1,0 +1,190 @@
+{
+  "schema": "capability-gap-report/v1",
+  "subject": "game-production-runner lossless cold lease-archive rollup",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "rollup-planning-is-read-only-and-measured",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-rollup.measured-plan"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-rollup.measured-plan": [
+          "explicit dry run starts from COMPLETE lease discovery and COMPLETE deep archive audit",
+          "separate released and expired minimum ages plus reclaim-byte and candidate ceilings",
+          "deterministic source and target file bytes are measured before selection",
+          "zero or negative storage reduction is never a candidate",
+          "planning has no source-removal authority"
+        ]
+      }
+    },
+    {
+      "id": "application-requires-exact-root-bound-approval",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-rollup.approval"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-rollup.approval": [
+          "requires explicit application and the exact structurally validated proposal digest",
+          "proposal is bound to the observed cache-root fingerprint",
+          "every source filename, byte count, and content digest plus target receipt and anchor digest is sealed",
+          "no scheduler, daemon, polling loop, or automatic application"
+        ]
+      }
+    },
+    {
+      "id": "live-busy-and-stale-history-is-fenced",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-rollup.lifecycle-fence"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-rollup.lifecycle-fence": [
+          "planning excludes ACTIVE leases and every owner with an unarchived live segment",
+          "application holds the same per-lease lifecycle lock used by acquire, protect, release, and curation",
+          "changed anchors, active post-plan segments, busy coordination, and changed source files remove nothing",
+          "cleanup replay may remove only already-covered source files while later live history remains untouched"
+        ]
+      }
+    },
+    {
+      "id": "all-durable-event-bytes-and-receipts-survive",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-rollup.lossless-lineage"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-rollup.lossless-lineage": [
+          "target event blob contains the exact byte concatenation of all original archived JSONL segments",
+          "sealed lineage retains every original archive receipt and every prior rollup receipt exactly",
+          "old compressed containers are classified as replaceable derived storage only after their source bytes and receipts are preserved",
+          "hot anchor retains the exact tail event and history count"
+        ]
+      }
+    },
+    {
+      "id": "current-container-count-and-storage-decrease",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-rollup.smaller-target"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-rollup.smaller-target": [
+          "target is one small receipt, one deterministic event gzip, and one deterministic lineage gzip",
+          "application reproduces the exact proposed target digest before source removal",
+          "five-segment native fixture reduces ten source files to three and lowers observed storage bytes",
+          "no general throughput or latency claim"
+        ]
+      }
+    },
+    {
+      "id": "partial-publication-and-cleanup-are-recoverable",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-rollup.interrupted-apply"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-rollup.interrupted-apply": [
+          "exact writes reuse a partial target blob published before anchor replacement",
+          "anchor-first cleanup window is REVIEW_REQUIRED in deep audit because old files are unclassified extras",
+          "same proposal completes only the remaining exact source removals",
+          "cleanup remains safe after a new live segment begins"
+        ]
+      }
+    },
+    {
+      "id": "fresh-process-and-repeated-rollup-continuity-holds",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-rollup.restart-continuity"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-rollup.restart-continuity": [
+          "fresh child process continues generation from a rollup anchor",
+          "new live history can be curated after that continuation",
+          "later rollup merges the prior lineage plus new receipts without recursive container nesting",
+          "current archive head returns to one rollup storage segment"
+        ]
+      }
+    },
+    {
+      "id": "deep-audit-proves-event-and-lineage-integrity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-rollup.full-audit"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-rollup.full-audit": [
+          "explicit audit rehashes and decompresses current event and lineage blobs",
+          "each preserved archive receipt is proven against its exact byte boundary and event transition chain",
+          "prior rollup coverage and current anchor reconstruction are validated",
+          "missing lineage, same-size corruption, extra source files, and byte ceilings fail closed",
+          "audit output is path- and run-id-private"
+        ]
+      }
+    },
+    {
+      "id": "rollup-is-never-automatic-or-semantic-deletion",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "cache.production.lease-rollup.truth-boundary"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-rollup.truth-boundary": [
+          "rollup never runs automatically and cannot apply without measured savings and exact approval",
+          "durable event bytes and receipt lineage are not semantic-deletion candidates",
+          "routine discovery verifies only current head shape; deep audit owns full integrity claims",
+          "long-horizon durable-history tiering or retention, scheduling, authentication, distributed coordination, native game execution, promotion, and CANON remain outside this capability"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": [],
+  "outOfScopeGaps": [
+    "long-horizon durable-history tiering or semantic retention",
+    "automatic rollup or retention scheduling",
+    "cross-host or distributed lease coordination",
+    "cryptographic principal authentication",
+    "malicious-code sandboxing",
+    "native game execution, engine construction, installation, promotion, or CANON"
+  ]
+}

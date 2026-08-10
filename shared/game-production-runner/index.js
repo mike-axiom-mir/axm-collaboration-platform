@@ -10,6 +10,7 @@ module.exports = Object.freeze({
   artifactCache: require('./artifact-cache'),
   cacheLeases: require('./artifact-cache-lease'),
   cacheLeaseCuration: require('./artifact-cache-lease-curation'),
+  cacheLeaseRollup: require('./artifact-cache-lease-rollup'),
   cacheReferences: require('./cache-reference-discovery'),
   cacheRetention: require('./artifact-cache-retention'),
   confinement: require('./permission-substrate'),
