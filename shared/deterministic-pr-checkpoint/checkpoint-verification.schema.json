@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-checkpoint-verification/v1",
+  "title": "AXM deterministic PR checkpoint verification",
+  "type": "object",
+  "required": ["schema", "checkpointDigest", "state", "checks", "verificationDigest"],
+  "properties": {
+    "schema": { "const": "axm.git-pr-checkpoint-verification/v1" },
+    "checkpointDigest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "state": { "enum": ["PASS", "FAIL"] },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "pass"],
+        "properties": {
+          "id": { "type": "string" },
+          "pass": { "type": "boolean" }
+        }
+      }
+    },
+    "verificationDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

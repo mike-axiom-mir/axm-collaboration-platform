@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-checkpoint/v1",
+  "title": "AXM deterministic PR checkpoint",
+  "type": "object",
+  "required": [
+    "schema",
+    "policyVersion",
+    "state",
+    "policy",
+    "repository",
+    "commits",
+    "changes",
+    "evidence",
+    "summary",
+    "blockers",
+    "authority",
+    "checkpointDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.git-pr-checkpoint/v1" },
+    "state": { "enum": ["READY", "HELD"] },
+    "checkpointDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "commits": { "type": "array" },
+    "changes": { "type": "array" },
+    "blockers": { "type": "array" },
+    "authority": {
+      "type": "object",
+      "required": ["fetch", "commandExecution", "repositoryWrite", "push", "pullRequestCreation", "merge", "promotion", "canon"],
+      "properties": {
+        "fetch": { "const": false },
+        "commandExecution": { "const": false },
+        "repositoryWrite": { "const": false },
+        "push": { "const": false },
+        "pullRequestCreation": { "const": false },
+        "merge": { "const": false },
+        "promotion": { "const": false },
+        "canon": { "const": false }
+      }
+    }
+  }
+}

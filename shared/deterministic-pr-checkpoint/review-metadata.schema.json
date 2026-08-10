@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-review-metadata/v1",
+  "title": "AXM deterministic PR review metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "title", "summary"],
+  "properties": {
+    "schema": { "const": "axm.git-pr-review-metadata/v1" },
+    "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "summary": { "type": "string", "minLength": 1, "maxLength": 1000 },
+    "changeNotes": { "type": "array", "maxItems": 20, "items": { "type": "string", "maxLength": 500 } },
+    "riskNotes": { "type": "array", "maxItems": 20, "items": { "type": "string", "maxLength": 500 } },
+    "followUps": { "type": "array", "maxItems": 20, "items": { "type": "string", "maxLength": 500 } }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-scope-policy/v1",
+  "title": "AXM deterministic PR scope policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "id",
+    "baseRef"
+  ],
+  "anyOf": [
+    { "required": ["allowedPrefixes"], "properties": { "allowedPrefixes": { "minItems": 1 } } },
+    { "required": ["allowedExactPaths"], "properties": { "allowedExactPaths": { "minItems": 1 } } }
+  ],
+  "properties": {
+    "schema": { "const": "axm.git-pr-scope-policy/v1" },
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+    "baseRef": { "type": "string", "minLength": 1, "maxLength": 240 },
+    "remoteName": { "type": "string", "default": "origin" },
+    "allowedRemoteHosts": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "allowedBranchPrefixes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "refusedBranches": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "allowedPrefixes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "allowedExactPaths": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "requiredPrefixes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "requiredPaths": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "forbiddenPrefixes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "forbiddenExactPaths": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "requiredEvidenceClaims": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "allowDeletions": { "type": "boolean", "default": false },
+    "allowRenames": { "type": "boolean", "default": false },
+    "allowCopies": { "type": "boolean", "default": false },
+    "scanSecrets": { "type": "boolean", "default": true },
+    "maxFiles": { "type": "integer", "minimum": 1, "maximum": 10000 },
+    "maxChangedBytes": { "type": "integer", "minimum": 1, "maximum": 1073741824 },
+    "maxCommits": { "type": "integer", "minimum": 1, "maximum": 10000 }
+  }
+}
