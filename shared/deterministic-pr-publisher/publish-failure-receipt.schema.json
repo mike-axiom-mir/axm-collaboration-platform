@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-publish-failure-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "state", "planDigest", "checkpointDigest", "pushAction", "pullRequestConfirmed", "error", "recovery", "authority", "receiptDigest"],
+  "properties": {
+    "schema": { "const": "axm.git-pr-publish-failure-receipt/v1" },
+    "state": { "enum": ["REFUSED", "REMOTE_BRANCH_PUSHED_PR_UNCONFIRMED"] },
+    "planDigest": { "type": ["string", "null"] },
+    "checkpointDigest": { "type": ["string", "null"] },
+    "pushAction": { "type": "string" },
+    "pullRequestConfirmed": { "const": false },
+    "error": { "type": "string" },
+    "recovery": { "type": "string" },
+    "authority": { "type": "object" },
+    "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-publish-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "state", "planDigest", "checkpointDigest", "repository", "action", "transport", "checks", "routing", "authority", "receiptDigest"],
+  "properties": {
+    "schema": { "const": "axm.git-pr-publish-receipt/v1" },
+    "state": { "enum": ["PASS", "FAIL"] },
+    "planDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "checkpointDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "repository": { "type": "object" },
+    "action": { "type": "object" },
+    "transport": { "type": "object" },
+    "checks": { "type": "array", "items": { "type": "object", "required": ["id", "pass"] } },
+    "routing": { "type": "object" },
+    "authority": { "type": "object" },
+    "receiptDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

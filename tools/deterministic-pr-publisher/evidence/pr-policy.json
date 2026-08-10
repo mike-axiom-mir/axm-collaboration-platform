@@ -1,0 +1,44 @@
+{
+  "schema": "axm.git-pr-scope-policy/v1",
+  "id": "deterministic-pr-publisher-v0.1",
+  "baseRef": "origin/main",
+  "remoteName": "origin",
+  "allowedRemoteHosts": ["github.com"],
+  "allowedBranchPrefixes": ["codex/"],
+  "refusedBranches": ["main", "master"],
+  "allowedPrefixes": [
+    "shared/deterministic-pr-publisher/",
+    "tools/deterministic-pr-publisher/"
+  ],
+  "allowedExactPaths": [],
+  "requiredPrefixes": [
+    "shared/deterministic-pr-publisher/",
+    "tools/deterministic-pr-publisher/"
+  ],
+  "requiredPaths": [
+    "shared/deterministic-pr-publisher/publisher-core.js",
+    "shared/deterministic-pr-publisher/publisher-host.js",
+    "tools/deterministic-pr-publisher/manifest.json",
+    "tools/deterministic-pr-publisher/module.contract.json",
+    "tools/deterministic-pr-publisher/pr-publisher-cli.js",
+    "tools/deterministic-pr-publisher/pr-publisher-cli.cmd",
+    "tools/deterministic-pr-publisher/selftest.js"
+  ],
+  "forbiddenPrefixes": ["state/", "logs/"],
+  "forbiddenExactPaths": [
+    "bridge/bridge-token.txt",
+    "bridge/bridge.log",
+    "logs/workshop.log"
+  ],
+  "requiredEvidenceClaims": [
+    "publisher-focused-selftest",
+    "publisher-workshop-regression"
+  ],
+  "allowDeletions": false,
+  "allowRenames": false,
+  "allowCopies": false,
+  "scanSecrets": true,
+  "maxFiles": 40,
+  "maxChangedBytes": 1048576,
+  "maxCommits": 10
+}

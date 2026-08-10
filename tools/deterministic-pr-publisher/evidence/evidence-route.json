@@ -1,0 +1,57 @@
+{
+  "schema": "axm.claim-evidence-route/v1",
+  "claims": [
+    {
+      "claim_id": "publisher-static-contract",
+      "claim": "The module declares its network writes, inputs, outputs, lifecycle, and refused authority.",
+      "kind": "static structure",
+      "risk": "high",
+      "pass_condition": "Manifest and module contract validate and schemas parse; merge, force, branch deletion, promotion, roots, and CANON paths are refused.",
+      "primary_surface": "module contract verifier plus parsed JSON artifacts",
+      "counterevidence": "Invalid contract, missing side effect, or undeclared permission.",
+      "secondary_surface_if_needed": "source invocation audit",
+      "observed_evidence": "Focused selftest assertions and required Workshop verifier.",
+      "verdict": "PASS",
+      "named_seam": "A valid contract declares behavior but does not prove remote transport."
+    },
+    {
+      "claim_id": "publisher-deterministic-plan",
+      "claim": "The same packets and local/remote facts produce the same plan digest and typed drift or authority holds.",
+      "kind": "deterministic behavior",
+      "risk": "high",
+      "pass_condition": "Repeated fixture plans match; packet tamper, dirty state, base drift, non-fast-forward state, wrong lane, missing auth, and ambiguous PRs are held.",
+      "primary_surface": "focused execution with temporary Git fixture",
+      "counterevidence": "Digest changes for semantic-equivalent input or any refused state produces READY.",
+      "secondary_surface_if_needed": "real read-only plan against PR 32",
+      "observed_evidence": "73-check focused suite plus live-read-plan receipt.",
+      "verdict": "PASS",
+      "named_seam": "Remote facts are observations and must be rebuilt immediately before publication."
+    },
+    {
+      "claim_id": "publisher-authorization-boundary",
+      "claim": "Only explicit checkpointed feature-branch push and draft PR upsert are executable.",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "Wrong confirmation is refused; command trace contains no force, stage, commit, reset, checkout, ready, close, merge, branch deletion, promotion, roots, or CANON action.",
+      "primary_surface": "allowed and denied mocked host command traces",
+      "counterevidence": "Any prohibited command is reachable or credential material appears in a receipt.",
+      "secondary_surface_if_needed": "source invocation audit and host pre-push hook",
+      "observed_evidence": "Focused boundary assertions; live self-publication is pending.",
+      "verdict": "PASS",
+      "named_seam": "The host GitHub session supplies transport authority; the tool never owns the credential."
+    },
+    {
+      "claim_id": "publisher-transport",
+      "claim": "A successful publication binds the sent head to both the remote branch and GitHub PR receiver state.",
+      "kind": "transport",
+      "risk": "high",
+      "pass_condition": "Sender push succeeds, receiver branch head equals checkpoint head, PR readback equals head/base/title/body, and the receipt verifies.",
+      "primary_surface": "mocked sender and receiver receipts tied by exact head",
+      "counterevidence": "Remote or PR readback differs, receiver cannot be queried, or only the sender reports success.",
+      "secondary_surface_if_needed": "real self-publication receipt from GitHub",
+      "observed_evidence": "Mock transport PASS; real self-publication pending.",
+      "verdict": "UNKNOWN",
+      "named_seam": "No production GitHub write has yet been performed by this new adapter."
+    }
+  ]
+}

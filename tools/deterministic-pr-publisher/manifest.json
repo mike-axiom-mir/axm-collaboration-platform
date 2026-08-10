@@ -1,0 +1,76 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "gate",
+  "id": "deterministic-pr-publisher",
+  "name": "AXM Deterministic PR Publisher",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "pr-publisher-cli.js",
+  "contract": "module.contract.json",
+  "type": "machine-capability",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "HIGH",
+  "tags": [
+    "pull-request",
+    "deterministic",
+    "public-safe",
+    "git-push",
+    "github-transport",
+    "merge-handoff",
+    "reasoning-cost"
+  ],
+  "uses": [
+    "deterministic-pr-checkpoint",
+    "clean-publish-lane-worktree",
+    "local-git-runtime",
+    "host-authenticated-github-cli",
+    "explicit-one-use-confirmation"
+  ],
+  "permissions": [
+    "network",
+    "export"
+  ],
+  "machine": {
+    "entry": "pr-publisher-cli.js",
+    "actions": [
+      "plan",
+      "verify-plan",
+      "publish",
+      "verify-receipt"
+    ]
+  },
+  "actions": [
+    "plan an exact checkpoint-bound feature-branch publication using read-only local and remote observations",
+    "push only the already committed clean codex or agent branch without force",
+    "create or update one draft GitHub pull request from the deterministic review packet",
+    "bind the remote branch head and GitHub pull-request receiver state into a transport receipt",
+    "hand independent merge review to platform Axiom or Mir"
+  ],
+  "accepts": [
+    "axm.git-pr-checkpoint/v1",
+    "axm.git-pr-checkpoint-verification/v1",
+    "axm.git-pr-review-packet/v1",
+    "axm.git-pr-publish-plan/v1",
+    "filesystem/explicit-clean-publish-lane-worktree",
+    "host/github-cli-authenticated-session"
+  ],
+  "produces": [
+    "axm.git-pr-publish-plan/v1",
+    "axm.git-pr-publish-receipt/v1",
+    "github/draft-pull-request"
+  ],
+  "readiness": [
+    "checkpoint-ready-and-independently-verified",
+    "review-packet-ready-and-digest-valid",
+    "exact-remote-main-still-current",
+    "clean-review-branch-in-explicit-publish-lane",
+    "host-git-and-github-cli-available",
+    "host-github-session-authenticated",
+    "exact-one-use-confirmation"
+  ],
+  "summary": "Publish an exact public-safe checkpointed feature branch and draft PR for independent platform review while preserving merge and CANON boundaries.",
+  "notes": "EXPERIMENTAL network-writing adapter. It does not stage or commit work, force-push, merge, delete branches, promote modules, change roots, or change CANON."
+}

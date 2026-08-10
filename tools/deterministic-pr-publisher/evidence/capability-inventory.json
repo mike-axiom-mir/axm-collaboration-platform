@@ -1,0 +1,29 @@
+{
+  "capabilities": [
+    {
+      "id": "git.pr.checkpoint.verify",
+      "status": "available",
+      "constraints": ["read-only deterministic checkpoint merged in PR 31"]
+    },
+    {
+      "id": "git.branch.push.exact-fast-forward",
+      "status": "degraded",
+      "constraints": ["pre-push hook guards the lane but no checkpoint-consuming publisher composes it"]
+    },
+    {
+      "id": "github.pr.create-or-update",
+      "status": "unavailable",
+      "constraints": ["existing GitHub sync emits a PR candidate but explicitly does not create a PR"]
+    },
+    {
+      "id": "github.pr.transport.receipt",
+      "status": "unavailable",
+      "constraints": ["no sender and GitHub receiver receipt is bound to the checkpoint digest"]
+    },
+    {
+      "id": "github.merge.refuse",
+      "status": "available",
+      "constraints": ["checkpoint and GitHub sync both explicitly deny merge and CANON authority"]
+    }
+  ]
+}
