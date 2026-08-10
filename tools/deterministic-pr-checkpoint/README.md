@@ -20,20 +20,27 @@ Mike Tobi remains AXM's review, merge, and canon gate.
 
 ## Commands
 
+On Windows, use the checked-in `.cmd` launcher below. Do not open or invoke the
+`.js` file through its Windows file association: that can hand Node.js source to
+Windows Script Host instead of Node.js.
+
 ```powershell
-node tools/deterministic-pr-checkpoint/pr-checkpoint-cli.js inspect `
+tools\deterministic-pr-checkpoint\pr-checkpoint-cli.cmd inspect `
   --repo D:\path\to\clean-worktree `
   --policy D:\receipts\policy.json `
   --evidence D:\receipts\evidence.json `
   --out D:\receipts\checkpoint.json
 
-node tools/deterministic-pr-checkpoint/pr-checkpoint-cli.js verify `
+tools\deterministic-pr-checkpoint\pr-checkpoint-cli.cmd verify `
   --packet D:\receipts\checkpoint.json
 
-node tools/deterministic-pr-checkpoint/pr-checkpoint-cli.js render `
+tools\deterministic-pr-checkpoint\pr-checkpoint-cli.cmd render `
   --packet D:\receipts\checkpoint.json `
   --metadata D:\receipts\metadata.json
 ```
+
+On any platform, explicit `node tools/deterministic-pr-checkpoint/pr-checkpoint-cli.js ...`
+invocation remains supported.
 
 Output is printed to stdout unless `--out` is supplied. File output is create-new, requires `--repo`, and must remain outside the inspected repository. A held checkpoint is still emitted and exits with code `2` so automation can preserve the exact reasons.
 

@@ -71,6 +71,7 @@ function blocker(packet, code) {
   ok(ContractVerifier.validateContract(contract, manifest).pass, 'module contract validates');
   ok(contract.boundaries.refuses.includes('git-push') && contract.boundaries.refuses.includes('pull-request-creation') && contract.boundaries.refuses.includes('canon-change'), 'authority boundaries are explicit');
   ok(manifest.machine.actions.join(',') === 'inspect,verify,render', 'bounded machine actions declared');
+  equal(fs.readFileSync(path.join(moduleRoot, 'pr-checkpoint-cli.cmd'), 'utf8').replace(/\r/g, ''), '@echo off\nsetlocal\nnode "%~dp0pr-checkpoint-cli.js" %*\nexit /b %errorlevel%\n', 'Windows launcher explicitly routes JavaScript through Node.js');
 
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-pr-checkpoint-selftest-'));
   try {
