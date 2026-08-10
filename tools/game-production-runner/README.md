@@ -30,6 +30,10 @@ node tools/game-production-runner/cli.js apply-cache-lease-curation --cache-root
 node tools/game-production-runner/cli.js audit-cache-lease-archives --cache-root D:\candidate\verified-cache
 node tools/game-production-runner/cli.js plan-cache-lease-rollup --cache-root D:\candidate\verified-cache --minimum-released-age-ms 604800000 --minimum-expired-age-ms 2592000000 --minimum-rollup-reclaim-bytes 1048576 --max-rollup-candidates 20
 node tools/game-production-runner/cli.js apply-cache-lease-rollup --cache-root D:\candidate\verified-cache --proposal D:\candidate\lease-rollup-proposal.json --approve-proposal SHA256 --explicit-apply
+node tools/game-production-runner/cli.js plan-cache-lease-tier-export --cache-root D:\candidate\verified-cache --tier-root E:\axm-cold-tier --minimum-released-age-ms 604800000 --minimum-expired-age-ms 2592000000 --minimum-tier-history-bytes 1048576 --maximum-tier-package-bytes 268435456 --maximum-tier-total-bytes 536870912 --max-tier-candidates 10
+node tools/game-production-runner/cli.js apply-cache-lease-tier-export --cache-root D:\candidate\verified-cache --tier-root E:\axm-cold-tier --proposal D:\candidate\tier-export-proposal.json --approve-proposal SHA256 --explicit-apply
+node tools/game-production-runner/cli.js audit-cache-lease-tier-package --tier-root E:\axm-cold-tier --package-digest SHA256
+node tools/game-production-runner/cli.js restore-cache-lease-tier-package --tier-root E:\axm-cold-tier --package-digest SHA256 --restore-cache-root D:\candidate\restored-cache --approve-package SHA256 --explicit-restore
 node tools/game-production-runner/cli.js inventory-cache --cache-root D:\candidate\verified-cache
 node tools/game-production-runner/cli.js plan-cache-retention --cache-root D:\candidate\verified-cache --reference-job-root D:\candidate\runs --max-cache-entries 500 --max-cache-bytes 10737418240 --max-cache-age-ms 2592000000
 node tools/game-production-runner/cli.js apply-cache-retention --cache-root D:\candidate\verified-cache --reference-job-root D:\candidate\runs --proposal D:\candidate\retention-proposal.json --approve-proposal SHA256 --explicit-apply
@@ -100,6 +104,23 @@ lineage before replacing the hot anchor and removing the exact hashed source
 files. Active or unarchived live history, stale roots, busy owners, unmeasured
 savings, and lineage loss hold. Reapplication completes an interrupted cleanup.
 
+`plan-cache-lease-tier-export` is also deletion-free. It requires a separate
+absolute `--tier-root`, complete lease discovery, and complete deep archive
+audit. Only inactive histories with no live segment can qualify. The minimum
+history size, per-package byte ceiling, aggregate selected-byte ceiling, and
+candidate count are independent explicit budgets. Save only the nested
+`proposal`; planning creates no tier directory. `apply-cache-lease-tier-export`
+requires the exact proposal digest and unchanged source snapshots, then copies
+the anchor and every current archive file into a content-addressed package. The
+manifest is written last, partial exact packages can resume, and source files
+are never removed. `audit-cache-lease-tier-package` rehashes the manifest and
+every payload without exposing paths. `restore-cache-lease-tier-package`
+requires the exact package digest as separate approval, accepts only a fresh or
+exact-partial target cache, writes archive payloads before the anchor, and then
+requires target deep-audit equality with the package's source summary. A local
+tier root is tamper-evident storage, not a claim of external immutability,
+backup durability, or semantic-retention authority.
+
 `discover-cache-leases` is bounded and read-only. It emits a sealed, path-free
 set whose protection contains only unexpired active leases; released and
 expired ledgers remain auditable but grant no authority. An invalid or
@@ -123,7 +144,7 @@ snapshot, and deletes only when `--explicit-apply` and the proposal's exact
 digest are supplied. Each final deletion is coordinated per key with runner
 lease protection. The sealed application receipt includes the fresh reference
 and lease snapshots, each selective invalidation digest, and post-delete usage.
-No discovery, retention policy, lease renewal, rollup, or deletion runs in the
+No discovery, retention policy, lease renewal, rollup, tier export, restore, or deletion runs in the
 background. Direct `invalidate-cache` remains a distinct explicit human
 override. Rollup can reduce inactive container count and measured storage
 overhead, but exact durable event bytes and receipt lineage still grow with real

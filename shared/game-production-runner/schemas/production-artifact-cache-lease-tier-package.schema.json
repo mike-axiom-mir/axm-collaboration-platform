@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-lease-tier-package/v1",
+  "type": "object",
+  "required": ["schema", "version", "package_kind", "lease_id", "owner_digest", "source_anchor_digest", "source_archive_summary", "payload_files", "payload_file_count", "payload_bytes", "payload_snapshot_digest", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-lease-tier-package/v1" },
+    "version": { "const": "0.1.0" },
+    "package_kind": { "const": "LEASE_ARCHIVE" },
+    "lease_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "owner_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source_anchor_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source_archive_summary": { "type": "object" },
+    "payload_files": { "type": "array", "minItems": 3 },
+    "payload_file_count": { "type": "integer", "minimum": 3 },
+    "payload_bytes": { "type": "integer", "minimum": 1 },
+    "payload_snapshot_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

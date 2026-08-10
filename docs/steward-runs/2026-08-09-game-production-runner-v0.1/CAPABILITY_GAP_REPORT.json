@@ -23,7 +23,8 @@
     "append-only graceful-interruption checkpoints with exact step-ledger prefix binding, repeated-checkpoint continuity, legacy resume compatibility, and bounded nonterminal cache-reference discovery",
     "bounded append-only in-flight cache leases with path-private owner binding, resume-session fencing, exact-key protection before runner cache use, terminal and checkpoint release, crash expiry and recovery, bounded fail-closed discovery, fresh retention rescans, and per-key runner-retention coordination",
     "exact-approved inactive lease-ledger curation with lossless compressed cold archives, sealed hot recovery anchors, active and stale refusal, interrupted-apply recovery, fresh-process released and expired continuation, and bounded full archive audit",
-    "exact-approved lossless cold-archive rollup with measured smaller targets, complete concatenated event-byte preservation, original and prior-rollup receipt lineage, inactive lifecycle fencing, interrupted cleanup recovery, repeated rollup, fresh-process continuation, and bounded lineage-aware audit"
+    "exact-approved lossless cold-archive rollup with measured smaller targets, complete concatenated event-byte preservation, original and prior-rollup receipt lineage, inactive lifecycle fencing, interrupted cleanup recovery, repeated rollup, fresh-process continuation, and bounded lineage-aware audit",
+    "exact-approved portable cold-history tier export with content-addressed path-private packages, source-preserving interrupted export recovery, read-only package audit, explicit fresh-root restore, fresh-process reopen, and full deep-audit summary equivalence"
   ],
   "gaps": [
     {
@@ -76,11 +77,18 @@
       "next_evidence": "Define a user-owned policy store and scheduling authority that still emits a reviewable proposal or an explicitly pre-authorized policy receipt before deletion."
     },
     {
-      "capability": "cache.production.lease-cold-history-tiering-and-retention",
-      "kind": "CONTRACT",
-      "state": "MISSING_CONTRACT",
-      "impact": "Rollup now bounds current inactive container count and applies only when the measured target is smaller, but exact durable event bytes and receipt lineage still grow with real history until the independent raw-byte and lineage ceilings hold.",
-      "next_evidence": "Define a user-owned long-horizon tiering or retention contract that distinguishes durable events from derived containers, preserves required decision and failure history, names any external immutable storage and restore proof, and requires explicit authority plus full-audit equivalence before any semantic history removal."
+      "capability": "cache.production.lease-cold-tier-external-durability",
+      "kind": "SUBSTRATE",
+      "state": "MISSING_SUBSTRATE",
+      "impact": "Portable content-addressed packages now survive exact audit and fresh-root restore, but the current tier is a user-selected local folder and is not evidence of off-device durability, immutability, or receiver acceptance.",
+      "next_evidence": "Name an external durable substrate, add a bounded adapter with payload-digest sender and receiver receipts, then perform a fresh-machine restore drill whose full archive summary equals the source package."
+    },
+    {
+      "capability": "cache.production.lease-cold-history-semantic-retention",
+      "kind": "AUTHORITY",
+      "state": "MISSING_AUTHORITY",
+      "impact": "Tier export deliberately duplicates history and removes nothing. Exact durable event bytes and receipt lineage therefore continue to grow in the source cache; a package receipt alone grants no semantic-deletion authority.",
+      "next_evidence": "Define a user-owned retention policy that classifies durable decisions and failures, requires an accepted externally durable package plus successful restore audit, and names exact source histories and approval before any semantic history removal."
     },
     {
       "capability": "ui.game-production-workbench",

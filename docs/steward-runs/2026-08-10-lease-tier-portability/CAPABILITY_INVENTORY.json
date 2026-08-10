@@ -1,0 +1,82 @@
+{
+  "capabilities": [
+    {
+      "id": "cache.production.lease-tier.bounded-plan",
+      "status": "available",
+      "constraints": [
+        "explicit plan starts from COMPLETE lease discovery and COMPLETE deep archive audit",
+        "only inactive owners with no unarchived live segment are considered",
+        "separate age, minimum-history, per-package, aggregate-byte, and candidate ceilings",
+        "planning creates no tier root and has no tier-write or deletion authority"
+      ]
+    },
+    {
+      "id": "cache.production.lease-tier.export-approval",
+      "status": "available",
+      "constraints": [
+        "proposal binds source-cache and tier-root fingerprints plus exact lease and archive snapshots",
+        "application requires explicit authority and the structurally validated proposal digest",
+        "changed source history, copied source root, overlap, or changed payload bytes fail before tier writes"
+      ]
+    },
+    {
+      "id": "cache.production.lease-tier.source-preservation",
+      "status": "available",
+      "constraints": [
+        "export copies the exact sealed anchor and every current archive file",
+        "application receipt fixes source_files_removed at zero",
+        "source deep-audit summary is unchanged before and after export",
+        "no semantic deletion function or CLI route is exposed"
+      ]
+    },
+    {
+      "id": "cache.production.lease-tier.content-addressed-package",
+      "status": "available",
+      "constraints": [
+        "package directory is named by the sealed manifest digest",
+        "manifest binds sorted relative path, byte count, and content digest descriptors",
+        "payload files are exact-written before the manifest",
+        "exact partial export is resumable and conflicting or unclassified content is never overwritten"
+      ]
+    },
+    {
+      "id": "cache.production.lease-tier.package-audit",
+      "status": "available",
+      "constraints": [
+        "read-only audit validates package directory shape, manifest seal, every payload byte, and snapshot digest",
+        "same-size corruption, missing payload, links, and extra content become path-private REVIEW_REQUIRED holds",
+        "audit does not claim remote durability, immutability, or authenticity"
+      ]
+    },
+    {
+      "id": "cache.production.lease-tier.restore-approval",
+      "status": "available",
+      "constraints": [
+        "restore requires explicit authority and exact package-digest approval",
+        "target must be absent, fresh, or contain only exact partial package paths",
+        "archive payload is written before the recovery anchor",
+        "corrupt packages, overlap, and unclassified target content fail before authoritative restore"
+      ]
+    },
+    {
+      "id": "cache.production.lease-tier.restore-equivalence",
+      "status": "available",
+      "constraints": [
+        "target full audit must reproduce the source anchor, tail, segment, event, rollup, file, byte, and storage-snapshot summary",
+        "target lease discovery must reproduce lease id, anchor digest, and history generation",
+        "fresh child process independently reopens the package and deep-audits the restored cache",
+        "proof is for the named bounded fixture and exact package only"
+      ]
+    },
+    {
+      "id": "cache.production.lease-tier.truth-boundary",
+      "status": "available",
+      "constraints": [
+        "local content-addressed storage is tamper-evident but external_immutability remains false",
+        "export and restore never run automatically",
+        "tier package existence grants no semantic-retention or source-deletion authority",
+        "off-device durability, receiver acceptance, scheduling, authentication, promotion, and CANON remain outside this capability"
+      ]
+    }
+  ]
+}

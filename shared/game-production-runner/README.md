@@ -83,6 +83,22 @@ the recovery anchor, then removes only the source files named and hashed by the
 proposal. The same proposal finishes a publication/cleanup crash window
 idempotently. Rollup is never automatic and never semantically deletes history.
 
+Cold history can also cross a cache boundary without becoming less auditable.
+A separate tier-export dry run starts from complete lease discovery and complete
+deep archive audit, considers only inactive owners with no live segment, applies
+per-package and total byte ceilings, and derives a content-addressed package
+without creating the tier root. Exact approved export copies the sealed anchor
+and every current archive payload byte under a separate user-selected root,
+writes the package manifest last, and removes nothing from the source cache.
+Package identity excludes operation time, so identical archived content dedupes
+to the same manifest digest across later planning passes.
+Partial exact packages can be completed idempotently. A read-only package audit
+rehashes every payload; exact package approval can restore only into a fresh or
+exact-partial cache root, writes the anchor last, and then requires the target's
+full archive audit summary to equal the source summary. The local tier folder is
+tamper-evident content-addressed storage, not an external immutability claim and
+not authority for semantic history deletion.
+
 Cache retention is a separate on-demand governor, never part of candidate
 execution. Its inventory is read-only and bounded by entry/file scan limits.
 It classifies only exact sealed cache layouts as temporary captures, measures
@@ -162,10 +178,16 @@ not as a security boundary for malicious code.
   reduction, exact root-bound approval, active/stale/busy refusal, interruption
   recovery, fresh-process continuation, repeated rollup, receipt lineage,
   bounded deep audit, missing lineage, and same-size corruption.
+- Portable cold-history tier export and restore: executable and self-tested
+  across deletion-free planning, exact root-bound approval, package-size and
+  aggregate-load ceilings, partial export and restore recovery, fresh-process
+  package audit, fresh-root deep-audit equivalence, overlap and collision
+  refusal, stale source history, and same-size package corruption.
 - Persisted retention policies and scheduling are missing. Rollup bounds current
-  container count and removes duplicated container overhead, but exact durable
-  event bytes and receipt lineage still grow with real history until their
-  independent audit ceilings hold.
+  container count and tier export provides a portable verified copy, but exact
+  durable event bytes and receipt lineage still grow locally until a separately
+  authorized semantic-retention policy and externally durable storage contract
+  exist.
 - Explicit Hand confinement substrate diagnosis: executable and self-tested;
   the current Node 24 observation is `DEGRADED` because network denial failed.
 - Process-hosted production Hands and a malicious-code sandbox: missing.

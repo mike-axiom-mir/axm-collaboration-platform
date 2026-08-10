@@ -15,7 +15,10 @@ function parse(argv) {
     else if (item === '--job-root') result.jobRoot = argv[++index];
     else if (item === '--reference-job-root') result.referenceJobRoot = argv[++index];
     else if (item === '--cache-root') result.cacheRoot = argv[++index];
+    else if (item === '--tier-root') result.tierRoot = argv[++index];
+    else if (item === '--restore-cache-root') result.restoreCacheRoot = argv[++index];
     else if (item === '--cache-key') result.cacheKey = argv[++index];
+    else if (item === '--package-digest') result.packageDigest = argv[++index];
     else if (item === '--max-cache-entries') result.maxCacheEntries = Number(argv[++index]);
     else if (item === '--max-cache-bytes') result.maxCacheBytes = Number(argv[++index]);
     else if (item === '--max-cache-age-ms') result.maxCacheAgeMs = Number(argv[++index]);
@@ -24,9 +27,14 @@ function parse(argv) {
     else if (item === '--max-curation-candidates') result.maxCurationCandidates = Number(argv[++index]);
     else if (item === '--minimum-rollup-reclaim-bytes') result.minimumRollupReclaimBytes = Number(argv[++index]);
     else if (item === '--max-rollup-candidates') result.maxRollupCandidates = Number(argv[++index]);
+    else if (item === '--minimum-tier-history-bytes') result.minimumTierHistoryBytes = Number(argv[++index]);
+    else if (item === '--maximum-tier-package-bytes') result.maximumTierPackageBytes = Number(argv[++index]);
+    else if (item === '--maximum-tier-total-bytes') result.maximumTierTotalBytes = Number(argv[++index]);
+    else if (item === '--max-tier-candidates') result.maxTierCandidates = Number(argv[++index]);
     else if (item === '--protect-key') { result.protectedKeys = result.protectedKeys || []; result.protectedKeys.push(argv[++index]); }
     else if (item === '--proposal') result.proposal = argv[++index];
     else if (item === '--approve-proposal') result.approvedProposal = argv[++index];
+    else if (item === '--approve-package') result.approvedPackage = argv[++index];
     else if (item === '--run-id') result.runId = argv[++index];
     else if (item === '--confirm') result.confirmation = argv[++index];
     else if (item === '--max-steps') result.maxSteps = Number(argv[++index]);
@@ -37,6 +45,7 @@ function parse(argv) {
     else if (item === '--explicit-probe') result.explicitProbe = true;
     else if (item === '--explicit-invalidate') result.explicitInvalidate = true;
     else if (item === '--explicit-apply') result.explicitApply = true;
+    else if (item === '--explicit-restore') result.explicitRestore = true;
     else throw new Error('unknown argument: ' + item);
   }
   return result;
@@ -60,6 +69,10 @@ function usage() {
     '  audit-cache-lease-archives --cache-root DIRECTORY',
     '  plan-cache-lease-rollup --cache-root DIRECTORY --minimum-released-age-ms N --minimum-expired-age-ms N --minimum-rollup-reclaim-bytes N --max-rollup-candidates N',
     '  apply-cache-lease-rollup --cache-root DIRECTORY --proposal FILE --approve-proposal SHA256 --explicit-apply',
+    '  plan-cache-lease-tier-export --cache-root DIRECTORY --tier-root DIRECTORY --minimum-released-age-ms N --minimum-expired-age-ms N --minimum-tier-history-bytes N --maximum-tier-package-bytes N --maximum-tier-total-bytes N --max-tier-candidates N',
+    '  apply-cache-lease-tier-export --cache-root DIRECTORY --tier-root DIRECTORY --proposal FILE --approve-proposal SHA256 --explicit-apply',
+    '  audit-cache-lease-tier-package --tier-root DIRECTORY --package-digest SHA256',
+    '  restore-cache-lease-tier-package --tier-root DIRECTORY --package-digest SHA256 --restore-cache-root DIRECTORY --approve-package SHA256 --explicit-restore',
     '  discover-cache-references --job-root DIRECTORY',
     '  inventory-cache --cache-root DIRECTORY',
     '  plan-cache-retention --cache-root DIRECTORY --max-cache-entries N --max-cache-bytes N --max-cache-age-ms N [--reference-job-root DIRECTORY] [--protect-key SHA256 ...]',
@@ -106,6 +119,17 @@ function leaseRollupPolicy(options) {
     minimum_expired_age_ms: options.minimumExpiredAgeMs,
     minimum_reclaim_bytes: options.minimumRollupReclaimBytes,
     max_candidates: options.maxRollupCandidates
+  };
+}
+
+function leaseTierPolicy(options) {
+  return {
+    minimum_released_age_ms: options.minimumReleasedAgeMs,
+    minimum_expired_age_ms: options.minimumExpiredAgeMs,
+    minimum_history_bytes: options.minimumTierHistoryBytes,
+    maximum_package_bytes: options.maximumTierPackageBytes,
+    maximum_total_payload_bytes: options.maximumTierTotalBytes,
+    max_candidates: options.maxTierCandidates
   };
 }
 
@@ -215,6 +239,36 @@ async function main(argv) {
     const result = Core.cacheLeaseRollup.apply({ cacheRoot: path.resolve(options.cacheRoot), sourceRoot: ROOT, proposal: loadProposal(options.proposal), approvedDigest: options.approvedProposal, explicit: true });
     return { output: JSON.stringify(result, null, 2), code: result.status === 'APPLIED' ? 0 : 2 };
   }
+  if (options.command === 'plan-cache-lease-tier-export') {
+    if (!options.cacheRoot) throw new Error('plan-cache-lease-tier-export requires --cache-root');
+    if (!options.tierRoot) throw new Error('plan-cache-lease-tier-export requires --tier-root');
+    const result = Core.cacheLeaseTier.plan({ cacheRoot: path.resolve(options.cacheRoot), tierRoot: path.resolve(options.tierRoot), sourceRoot: ROOT }, leaseTierPolicy(options));
+    const output = Object.assign({ schema: 'axm.production-artifact-cache-lease-tier-export-plan-output/v1', tier_write_performed: false, source_history_deletion_performed: false }, result);
+    return { output: JSON.stringify(output, null, 2), code: ['READY', 'READY_WITH_LIMITS', 'NO_CHANGES'].includes(result.proposal.status) ? 0 : 2 };
+  }
+  if (options.command === 'apply-cache-lease-tier-export') {
+    if (!options.explicitApply) return { output: JSON.stringify(Core.cacheLeaseTier.applicationNotRequested(options.approvedProposal), null, 2), code: 0 };
+    if (!options.cacheRoot) throw new Error('apply-cache-lease-tier-export requires --cache-root');
+    if (!options.tierRoot) throw new Error('apply-cache-lease-tier-export requires --tier-root');
+    if (!options.approvedProposal) throw new Error('apply-cache-lease-tier-export requires --approve-proposal');
+    const result = Core.cacheLeaseTier.apply({ cacheRoot: path.resolve(options.cacheRoot), tierRoot: path.resolve(options.tierRoot), sourceRoot: ROOT, proposal: loadProposal(options.proposal), approvedDigest: options.approvedProposal, explicit: true });
+    return { output: JSON.stringify(result, null, 2), code: result.status === 'APPLIED' ? 0 : 2 };
+  }
+  if (options.command === 'audit-cache-lease-tier-package') {
+    if (!options.tierRoot) throw new Error('audit-cache-lease-tier-package requires --tier-root');
+    if (!options.packageDigest) throw new Error('audit-cache-lease-tier-package requires --package-digest');
+    const result = Core.cacheLeaseTier.auditPackage({ tierRoot: path.resolve(options.tierRoot), packageDigest: options.packageDigest, sourceRoot: ROOT });
+    return { output: JSON.stringify(result, null, 2), code: result.status === 'COMPLETE' ? 0 : 2 };
+  }
+  if (options.command === 'restore-cache-lease-tier-package') {
+    if (!options.explicitRestore) return { output: JSON.stringify(Core.cacheLeaseTier.restoreNotRequested(options.packageDigest, options.approvedPackage), null, 2), code: 0 };
+    if (!options.tierRoot) throw new Error('restore-cache-lease-tier-package requires --tier-root');
+    if (!options.packageDigest) throw new Error('restore-cache-lease-tier-package requires --package-digest');
+    if (!options.restoreCacheRoot) throw new Error('restore-cache-lease-tier-package requires --restore-cache-root');
+    if (!options.approvedPackage) throw new Error('restore-cache-lease-tier-package requires --approve-package');
+    const result = Core.cacheLeaseTier.restore({ tierRoot: path.resolve(options.tierRoot), packageDigest: options.packageDigest, restoreCacheRoot: path.resolve(options.restoreCacheRoot), sourceRoot: ROOT, approvedDigest: options.approvedPackage, explicit: true });
+    return { output: JSON.stringify(result, null, 2), code: ['RESTORED', 'ALREADY_RESTORED'].includes(result.status) ? 0 : 2 };
+  }
   if (options.command === 'discover-cache-references') {
     if (!options.jobRoot) throw new Error('discover-cache-references requires --job-root');
     const result = Core.cacheReferences.discover({ jobRoot: path.resolve(options.jobRoot), sourceRoot: ROOT });
@@ -240,4 +294,4 @@ async function main(argv) {
 
 if (require.main === module) main().then((result) => { process.stdout.write(result.output + '\n'); process.exitCode = result.code; }).catch((error) => { process.stderr.write(JSON.stringify({ schema: 'axm.game-production-runner-cli-error/v1', status: 'ERROR', reason: String(error.message || error) }, null, 2) + '\n'); process.exitCode = 1; });
 
-module.exports = { ROOT, parse, usage, loadSpec, loadProposal, retentionPolicy, leaseCurationPolicy, leaseRollupPolicy, summary, main };
+module.exports = { ROOT, parse, usage, loadSpec, loadProposal, retentionPolicy, leaseCurationPolicy, leaseRollupPolicy, leaseTierPolicy, summary, main };

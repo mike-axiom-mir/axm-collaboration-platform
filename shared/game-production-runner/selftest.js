@@ -65,6 +65,22 @@ function publishCacheInChild(payload) {
   });
 }
 
+function inspectTierInChild(payload) {
+  const source = [
+    "'use strict';",
+    "const payload=JSON.parse(Buffer.from(process.env.AXM_CACHE_TIER_PAYLOAD,'base64').toString('utf8'));",
+    "const Tier=require(payload.tierModule);",
+    "const Leases=require(payload.leaseModule);",
+    "const packageAudit=Tier.auditPackage({tierRoot:payload.tierRoot,packageDigest:payload.packageDigest,nowMs:payload.nowMs});",
+    "const archiveAudit=Leases.auditArchives({cacheRoot:payload.restoreRoot,sourceRoot:payload.sourceRoot,nowMs:payload.nowMs});",
+    "process.stdout.write(JSON.stringify({packageAudit,archiveAudit}));"
+  ].join('\n');
+  const environment = Object.assign({}, process.env, { AXM_CACHE_TIER_PAYLOAD: Buffer.from(JSON.stringify(payload), 'utf8').toString('base64') });
+  const child = childProcess.spawnSync(process.execPath, ['-e', source], { encoding: 'utf8', windowsHide: true, env: environment });
+  if (child.status !== 0) throw new Error('cache tier child failed: ' + child.stderr);
+  return JSON.parse(child.stdout);
+}
+
 function protectLeaseInChild(payload) {
   const source = [
     "'use strict';",
@@ -421,10 +437,12 @@ async function main() {
     const cacheLeaseRollupLineageSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-lease-archive-rollup-lineage.schema.json'), 'utf8'));
     const cacheLeaseRollupProposalSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-lease-archive-rollup-proposal.schema.json'), 'utf8'));
     const cacheLeaseRollupApplicationSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-lease-archive-rollup-application.schema.json'), 'utf8'));
+    const cacheLeaseTierSchemas = ['package', 'export-proposal', 'export-application', 'package-audit', 'restore'].map((name) => JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-lease-tier-' + name + '.schema.json'), 'utf8')));
     equal(cacheEntrySchema.$id, Core.artifactCache.ENTRY_SCHEMA, 'tracked artifact cache schema matches the runtime contract');
     equal([cacheLeaseEventSchema.$id, cacheLeaseSetSchema.$id], [Core.cacheLeases.EVENT_SCHEMA, Core.cacheLeases.SET_SCHEMA], 'tracked cache lease schemas match the runtime contracts');
     equal([cacheLeaseArchiveAnchorSchema.$id, cacheLeaseArchiveReceiptSchema.$id, cacheLeaseArchiveAuditSchema.$id, cacheLeaseCurationProposalSchema.$id, cacheLeaseCurationApplicationSchema.$id], [Core.cacheLeases.ARCHIVE_ANCHOR_SCHEMA, Core.cacheLeases.ARCHIVE_RECEIPT_SCHEMA, Core.cacheLeases.ARCHIVE_AUDIT_SCHEMA, Core.cacheLeaseCuration.PROPOSAL_SCHEMA, Core.cacheLeaseCuration.APPLICATION_SCHEMA], 'tracked cache lease curation and archive schemas match the runtime contracts');
     equal([cacheLeaseRollupReceiptSchema.$id, cacheLeaseRollupLineageSchema.$id, cacheLeaseRollupProposalSchema.$id, cacheLeaseRollupApplicationSchema.$id], [Core.cacheLeases.ARCHIVE_ROLLUP_RECEIPT_SCHEMA, Core.cacheLeases.ARCHIVE_ROLLUP_LINEAGE_SCHEMA, Core.cacheLeaseRollup.PROPOSAL_SCHEMA, Core.cacheLeaseRollup.APPLICATION_SCHEMA], 'tracked lossless archive-rollup schemas match the runtime contracts');
+    equal(cacheLeaseTierSchemas.map((schema) => schema.$id), [Core.cacheLeaseTier.PACKAGE_SCHEMA, Core.cacheLeaseTier.PROPOSAL_SCHEMA, Core.cacheLeaseTier.APPLICATION_SCHEMA, Core.cacheLeaseTier.AUDIT_SCHEMA, Core.cacheLeaseTier.RESTORE_SCHEMA], 'tracked tier export, audit, and restore schemas match the runtime contracts');
     const cacheRunsRoot = path.join(temporary, 'cache-runs');
     const cacheRoot = path.join(temporary, 'artifact-cache');
     const cachedRegistry = Core.documentRegistry.create();
@@ -614,6 +632,81 @@ async function main() {
     const lineageName = rollupReceipt.digest + '.lineage.json.gz', lineage = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(rollupArchiveRoot, lineageName))).toString('utf8'));
     ok(lineage.archive_receipts.length === 10 && lineage.prior_rollup_receipts.length === 1 && rollupReceipt.archive_receipt_set_digest === Core.canonical.digest(lineage.archive_receipts.map((item) => item.digest)), 'current lineage preserves every original archive receipt plus the prior rollup receipt exactly');
     equal(Core.cacheLeases.auditArchives({ cacheRoot: rollupRoot, sourceRoot, nowMs: rollupTime + 1, auditMaxRawBytes: 1 }).status, 'LIMIT_EXCEEDED', 'rollup audit retains an independent expanded-event byte ceiling');
+
+    const tierRoot = path.join(temporary, 'lease-tier-store'), tierNow = rollupTime + 2;
+    const tierPolicy = { minimum_released_age_ms: 0, minimum_expired_age_ms: 0, minimum_history_bytes: 1, maximum_package_bytes: 268435456, maximum_total_payload_bytes: 536870912, max_candidates: 10 };
+    const tierPlanResult = Core.cacheLeaseTier.plan({ cacheRoot: rollupRoot, sourceRoot, tierRoot, nowMs: tierNow }, tierPolicy), tierPlan = tierPlanResult.proposal, tierCandidate = tierPlan.candidates[0];
+    ok(tierPlan.status === 'READY' && tierPlan.candidates.length === 1 && tierCandidate.history_event_count === 33 && !tierPlan.authority.tier_write && !tierPlan.authority.source_history_deletion && !fs.existsSync(tierRoot), 'tier export planning binds the thirty-three-event cold history without writing the tier or deleting source history');
+    equal(Core.cacheLeaseTier.plan({ cacheRoot: rollupRoot, sourceRoot, tierRoot, nowMs: tierNow + 1 }, tierPolicy).proposal.candidates[0].package_digest, tierCandidate.package_digest, 'identical archived content retains one package identity across planning times');
+    const historyThresholdPlan = Core.cacheLeaseTier.plan({ cacheRoot: rollupRoot, sourceRoot, tierRoot, nowMs: tierNow }, Object.assign({}, tierPolicy, { minimum_history_bytes: 268435456 })).proposal;
+    ok(historyThresholdPlan.status === 'NO_CHANGES' && historyThresholdPlan.inefficient_count === 1, 'tier export respects its independent minimum-history threshold');
+    const packageCeilingPlan = Core.cacheLeaseTier.plan({ cacheRoot: rollupRoot, sourceRoot, tierRoot, nowMs: tierNow }, Object.assign({}, tierPolicy, { maximum_package_bytes: 1 })).proposal;
+    ok(packageCeilingPlan.status === 'HELD' && packageCeilingPlan.oversized_count === 1 && packageCeilingPlan.candidates.length === 0, 'tier export holds a history above the per-package byte ceiling');
+    const aggregateCeilingPlan = Core.cacheLeaseTier.plan({ cacheRoot: rollupRoot, sourceRoot, tierRoot, nowMs: tierNow }, Object.assign({}, tierPolicy, { maximum_total_payload_bytes: 1 })).proposal;
+    ok(aggregateCeilingPlan.status === 'HELD' && aggregateCeilingPlan.deferred_count === 1 && aggregateCeilingPlan.candidates.length === 0, 'tier export defers selection above the aggregate payload ceiling');
+    throws(() => Core.cacheLeaseTier.plan({ cacheRoot: rollupRoot, sourceRoot, tierRoot: path.join(rollupRoot, 'tier-overlap'), nowMs: tierNow }, tierPolicy), /CACHE_LEASE_TIER_ROOT_OVERLAP/, 'tier root cannot overlap the source cache');
+    const reshapedTierPlan = Core.canonical.seal(Object.assign({}, tierPlan, { semantic_deletion_allowed: true }));
+    throws(() => Core.cacheLeaseTier.validateProposal(reshapedTierPlan), /CACHE_LEASE_TIER_PROPOSAL_INVALID/, 'tier export rejects a newly sealed proposal with undeclared deletion authority');
+    const wrongTierApproval = Core.cacheLeaseTier.apply({ cacheRoot: rollupRoot, sourceRoot, tierRoot, proposal: tierPlan, approvedDigest: '0'.repeat(64), explicit: true, nowMs: tierNow + 1 });
+    ok(wrongTierApproval.status === 'APPROVAL_MISMATCH' && !fs.existsSync(tierRoot), 'wrong tier approval creates no tier root and changes no source history');
+    const copiedTierSource = path.join(temporary, 'copied-tier-source');
+    fs.cpSync(rollupRoot, copiedTierSource, { recursive: true });
+    equal(Core.cacheLeaseTier.apply({ cacheRoot: copiedTierSource, sourceRoot, tierRoot, proposal: tierPlan, approvedDigest: tierPlan.digest, explicit: true, nowMs: tierNow + 1 }).status, 'STALE', 'tier approval remains bound to the exact observed source cache root');
+
+    const builderTierRoot = path.join(temporary, 'builder-tier-store'), builderTierPlan = Core.cacheLeaseTier.plan({ cacheRoot: rollupRoot, sourceRoot, tierRoot: builderTierRoot, nowMs: tierNow }, tierPolicy).proposal;
+    equal(builderTierPlan.candidates[0].package_digest, tierCandidate.package_digest, 'content-addressed tier package identity is independent of the selected tier root');
+    equal(Core.cacheLeaseTier.apply({ cacheRoot: rollupRoot, sourceRoot, tierRoot: builderTierRoot, proposal: builderTierPlan, approvedDigest: builderTierPlan.digest, explicit: true, nowMs: tierNow + 1 }).status, 'APPLIED', 'disposable tier builder writes the deterministic package');
+    const packageDigest = tierCandidate.package_digest, builderPackageRoot = path.join(builderTierRoot, 'packages', packageDigest), partialPackageRoot = path.join(tierRoot, 'packages', packageDigest);
+    const partialRelative = fs.readdirSync(path.join(builderPackageRoot, 'payload', 'lease-archives', rollupLeaseId))[0];
+    fs.mkdirSync(path.join(partialPackageRoot, 'payload', 'lease-archives', rollupLeaseId), { recursive: true });
+    fs.copyFileSync(path.join(builderPackageRoot, 'payload', 'lease-archives', rollupLeaseId, partialRelative), path.join(partialPackageRoot, 'payload', 'lease-archives', rollupLeaseId, partialRelative), fs.constants.COPYFILE_EXCL);
+    const sourceAuditBeforeTier = Core.cacheLeases.auditArchives({ cacheRoot: rollupRoot, sourceRoot, nowMs: tierNow + 1 });
+    const appliedTier = Core.cacheLeaseTier.apply({ cacheRoot: rollupRoot, sourceRoot, tierRoot, proposal: tierPlan, approvedDigest: tierPlan.digest, explicit: true, nowMs: tierNow + 1 });
+    const sourceAuditAfterTier = Core.cacheLeases.auditArchives({ cacheRoot: rollupRoot, sourceRoot, nowMs: tierNow + 1 });
+    ok(appliedTier.status === 'APPLIED' && appliedTier.outcomes[0].status === 'RECOVERED' && appliedTier.source_files_removed === 0, 'exact tier replay completes a partial content-addressed package without source removal');
+    equal(sourceAuditAfterTier.anchors, sourceAuditBeforeTier.anchors, 'tier export leaves the source archive summaries byte-for-byte equivalent');
+    const tierAudit = Core.cacheLeaseTier.auditPackage({ tierRoot, packageDigest, nowMs: tierNow + 1 });
+    ok(tierAudit.status === 'COMPLETE' && tierAudit.payload_file_count === 4 && tierAudit.payload_bytes === tierCandidate.payload_bytes && !/[A-Za-z]:\\/.test(JSON.stringify(tierAudit)), 'read-only tier audit verifies one anchor plus three rollup payload files without exposing local paths');
+
+    const restoreRoot = path.join(temporary, 'tier-restore-cache');
+    const wrongRestore = Core.cacheLeaseTier.restore({ tierRoot, packageDigest, restoreCacheRoot: restoreRoot, sourceRoot, approvedDigest: '1'.repeat(64), explicit: true, nowMs: tierNow + 2 });
+    ok(wrongRestore.status === 'APPROVAL_MISMATCH' && !fs.existsSync(restoreRoot), 'wrong package approval creates no restore cache');
+    throws(() => Core.cacheLeaseTier.restore({ tierRoot, packageDigest, restoreCacheRoot: rollupRoot, sourceRoot, approvedDigest: packageDigest, explicit: true, nowMs: tierNow + 2 }), /CACHE_LEASE_TIER_RESTORE_TARGET_NOT_FRESH/, 'tier restore refuses to merge into a non-fresh source cache');
+    const restored = Core.cacheLeaseTier.restore({ tierRoot, packageDigest, restoreCacheRoot: restoreRoot, sourceRoot, approvedDigest: packageDigest, explicit: true, nowMs: tierNow + 2 });
+    const restoredAudit = Core.cacheLeases.auditArchives({ cacheRoot: restoreRoot, sourceRoot, nowMs: tierNow + 2 });
+    ok(restored.status === 'RESTORED' && restored.payload_files_written === 4 && restored.full_audit_equivalence.source_archive_summary_digest === restored.full_audit_equivalence.restored_archive_summary_digest, 'explicit fresh-root restore writes the exact package and seals full-audit equivalence');
+    equal(restoredAudit.anchors[0], repeatedRollupAudit.anchors[0], 'fresh-root deep audit reconstructs the exact source anchor, history count, rollup, file, byte, and snapshot summary');
+    equal(Core.cacheLeaseTier.restore({ tierRoot, packageDigest, restoreCacheRoot: restoreRoot, sourceRoot, approvedDigest: packageDigest, explicit: true, nowMs: tierNow + 3 }).status, 'ALREADY_RESTORED', 'exact restore replay is idempotent after anchor publication');
+    const childTierInspection = inspectTierInChild({ tierModule: require.resolve('./artifact-cache-lease-tier'), leaseModule: require.resolve('./artifact-cache-lease'), tierRoot, packageDigest, restoreRoot, sourceRoot, nowMs: tierNow + 3 });
+    ok(childTierInspection.packageAudit.status === 'COMPLETE' && childTierInspection.archiveAudit.status === 'COMPLETE' && childTierInspection.archiveAudit.anchors[0].history_events === 33, 'fresh process independently reopens the package and deep-audits all restored history');
+
+    const partialRestoreRoot = path.join(temporary, 'partial-tier-restore-cache'), partialRestoreSource = path.join(restoreRoot, 'lease-archives', rollupLeaseId, partialRelative), partialRestoreTarget = path.join(partialRestoreRoot, 'lease-archives', rollupLeaseId, partialRelative);
+    fs.mkdirSync(path.dirname(partialRestoreTarget), { recursive: true });
+    fs.copyFileSync(partialRestoreSource, partialRestoreTarget, fs.constants.COPYFILE_EXCL);
+    const recoveredRestore = Core.cacheLeaseTier.restore({ tierRoot, packageDigest, restoreCacheRoot: partialRestoreRoot, sourceRoot, approvedDigest: packageDigest, explicit: true, nowMs: tierNow + 3 });
+    ok(recoveredRestore.status === 'RESTORED' && recoveredRestore.payload_files_written === 3, 'restore replay preserves one exact partial payload and completes the remaining files before publishing the anchor');
+    const collisionRestoreRoot = path.join(temporary, 'collision-tier-restore-cache');
+    fs.mkdirSync(collisionRestoreRoot); fs.writeFileSync(path.join(collisionRestoreRoot, 'unclassified.bin'), 'collision');
+    throws(() => Core.cacheLeaseTier.restore({ tierRoot, packageDigest, restoreCacheRoot: collisionRestoreRoot, sourceRoot, approvedDigest: packageDigest, explicit: true, nowMs: tierNow + 3 }), /CACHE_LEASE_TIER_RESTORE_TARGET_NOT_FRESH/, 'restore refuses unclassified target content instead of merging or overwriting it');
+
+    const tamperedTierRoot = path.join(temporary, 'tampered-tier-store');
+    fs.cpSync(tierRoot, tamperedTierRoot, { recursive: true });
+    const tamperedPackageFile = path.join(tamperedTierRoot, 'packages', packageDigest, 'payload', 'lease-archives', rollupLeaseId, partialRelative), tamperedPackageBytes = fs.readFileSync(tamperedPackageFile);
+    tamperedPackageBytes[Math.floor(tamperedPackageBytes.length / 2)] ^= 1; fs.writeFileSync(tamperedPackageFile, tamperedPackageBytes);
+    const tamperedTierAudit = Core.cacheLeaseTier.auditPackage({ tierRoot: tamperedTierRoot, packageDigest, nowMs: tierNow + 3 }), tamperedRestoreRoot = path.join(temporary, 'tampered-tier-restore-cache');
+    ok(tamperedTierAudit.status === 'REVIEW_REQUIRED' && !/[A-Za-z]:\\/.test(JSON.stringify(tamperedTierAudit)), 'same-size tier payload corruption fails closed with a path-private audit hold');
+    equal(Core.cacheLeaseTier.restore({ tierRoot: tamperedTierRoot, packageDigest, restoreCacheRoot: tamperedRestoreRoot, sourceRoot, approvedDigest: packageDigest, explicit: true, nowMs: tierNow + 3 }).status, 'PACKAGE_REVIEW_REQUIRED', 'corrupt package cannot create a restore cache');
+    ok(!fs.existsSync(tamperedRestoreRoot), 'package audit refusal occurs before any restore write');
+
+    const staleTierSource = path.join(temporary, 'stale-tier-source'), staleTierRoot = path.join(temporary, 'stale-tier-store');
+    fs.cpSync(rollupRoot, staleTierSource, { recursive: true });
+    const staleTierPlan = Core.cacheLeaseTier.plan({ cacheRoot: staleTierSource, sourceRoot, tierRoot: staleTierRoot, nowMs: tierNow }, tierPolicy).proposal;
+    const staleTierSession = Core.cacheLeases.acquire(Object.assign({}, rollupOptions, { cacheRoot: staleTierSource, nowMs: tierNow + 1 }));
+    equal(Core.cacheLeaseTier.apply({ cacheRoot: staleTierSource, sourceRoot, tierRoot: staleTierRoot, proposal: staleTierPlan, approvedDigest: staleTierPlan.digest, explicit: true, nowMs: tierNow + 2 }).status, 'STALE', 'new post-plan lease history invalidates export before any tier write');
+    ok(!fs.existsSync(staleTierRoot), 'stale export proposal leaves its tier root absent');
+    staleTierSession.release(tierNow + 3);
+    equal(Core.cacheLeaseTier.plan({ cacheRoot: activeCurationRoot, sourceRoot, tierRoot: path.join(temporary, 'live-tier-store'), nowMs: 40000007 }, tierPolicy).proposal.status, 'NO_CHANGES', 'unarchived live history is never a tier-package candidate');
+
     const missingLineageRoot = path.join(temporary, 'missing-rollup-lineage-cache');
     fs.cpSync(rollupRoot, missingLineageRoot, { recursive: true });
     fs.unlinkSync(path.join(missingLineageRoot, 'lease-archives', rollupLeaseId, lineageName));
