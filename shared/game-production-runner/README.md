@@ -60,6 +60,18 @@ or background task. Terminal and graceful-checkpoint anchors release the lease;
 an abrupt process exit leaves it protective only until expiry, and the same run
 can renew it on resume.
 
+Inactive lease history no longer has to remain hot forever. A separate explicit
+curation route plans only released or policy-aged expired live segments, seals
+their exact digests into a proposal, and requires that proposal's digest as
+application authority. Application holds the per-lease lifecycle lock, writes
+the complete original JSONL bytes to a lossless compressed cold archive, writes
+a chained archive receipt and small sealed recovery anchor, then removes only
+the approved hot source segment. Active or changed leases are refused. If a
+crash leaves the already archived source beside its new anchor, the same exact
+proposal can finish removal idempotently. Normal discovery reads the small
+anchor, latest receipt, and cold-blob shape; full blob hashing, decompression,
+and event-chain validation occur only during the separate bounded archive audit.
+
 Cache retention is a separate on-demand governor, never part of candidate
 execution. Its inventory is read-only and bounded by entry/file scan limits.
 It classifies only exact sealed cache layouts as temporary captures, measures
@@ -130,10 +142,15 @@ not as a security boundary for malicious code.
   protection, resume-session fencing, checkpoint and terminal release, abrupt
   child-process exit, expiry, recovery, bounded discovery, stale-lease refusal,
   and per-key retention coordination. They add no daemon or polling loop.
-- Persisted retention policies, scheduling, and released/expired lease-ledger
-  curation are missing. Cache and reference roots remain human-owned local
-  state; append-only lease history can eventually reach its explicit scan
-  ceiling until a governed compaction contract exists.
+- Inactive lease-ledger curation: executable and self-tested across dry-run
+  authority, exact approval, active/stale/busy refusal, lossless compression,
+  discovery equivalence, interrupted-apply recovery, repeated archive chains,
+  fresh-process released and expired recovery, bounded full audit, missing-blob
+  holds, and same-size corruption detection.
+- Persisted retention policies and scheduling are missing. Cold archive segments
+  remain append-only and are never automatically deleted; their storage and
+  explicit full-audit cost can still grow until a separate archive-retention or
+  rollup contract exists.
 - Explicit Hand confinement substrate diagnosis: executable and self-tested;
   the current Node 24 observation is `DEGRADED` because network denial failed.
 - Process-hosted production Hands and a malicious-code sandbox: missing.
@@ -165,6 +182,12 @@ not as a security boundary for malicious code.
   protected before reuse or publication. Expired or released leases grant no
   retention protection; digest-bound owners are continuity evidence, not
   authenticated principals.
+- Lease curation is never automatic. Planning deletes nothing; application
+  requires an exact saved proposal, its approval digest, and the same observed
+  cache-root fingerprint, and may remove only the
+  named inactive hot segments while preserving their exact compressed bytes.
+  Cold archives are not deletion candidates. Normal hot discovery does not
+  claim full cold-blob integrity; request the bounded archive audit for that.
 - Retention planning never deletes. Application requires a saved sealed
   proposal, its exact digest as approval, and an unchanged inventory snapshot.
 - Protected keys, unclassified layouts, and active publishers cannot be

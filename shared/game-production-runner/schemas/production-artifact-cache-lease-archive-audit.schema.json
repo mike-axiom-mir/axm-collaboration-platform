@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-lease-archive-audit/v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "observed_at_ms", "cache_root_fingerprint", "scan_budget", "anchors", "holds", "usage", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-lease-archive-audit/v1" },
+    "version": { "const": "0.1.0" },
+    "status": { "enum": ["COMPLETE", "REVIEW_REQUIRED", "LIMIT_EXCEEDED"] },
+    "observed_at_ms": { "type": "integer", "minimum": 0 },
+    "cache_root_fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "scan_budget": { "type": "object" },
+    "anchors": { "type": "array" },
+    "holds": { "type": "array" },
+    "usage": { "type": "object" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

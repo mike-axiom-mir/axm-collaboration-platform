@@ -79,6 +79,23 @@ function protectLeaseInChild(payload) {
   return JSON.parse(child.stdout);
 }
 
+function cycleLeaseInChild(payload) {
+  const source = [
+    "'use strict';",
+    "const payload=JSON.parse(Buffer.from(process.env.AXM_CACHE_LEASE_CYCLE_PAYLOAD,'base64').toString('utf8'));",
+    "const Leases=require(payload.module);",
+    "const session=Leases.acquire(payload.options);",
+    "const acquired=session.event;",
+    "const protectedEvent=session.protect(payload.key,payload.protectAt);",
+    "const released=session.release(payload.releaseAt);",
+    "process.stdout.write(JSON.stringify({acquired,protectedEvent,released}));"
+  ].join('\n');
+  const environment = Object.assign({}, process.env, { AXM_CACHE_LEASE_CYCLE_PAYLOAD: Buffer.from(JSON.stringify(payload), 'utf8').toString('base64') });
+  const child = childProcess.spawnSync(process.execPath, ['-e', source], { encoding: 'utf8', windowsHide: true, env: environment });
+  if (child.status !== 0) throw new Error('cache lease cycle child failed: ' + child.stderr);
+  return JSON.parse(child.stdout);
+}
+
 function resealGraph(spec) {
   spec.graph.nodes = spec.packages.map((pkg) => ({ package_id: pkg.id, package_digest: pkg.digest }));
   spec.graph = Core.canonical.seal(spec.graph);
@@ -394,8 +411,14 @@ async function main() {
     const cacheEntrySchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-entry.schema.json'), 'utf8'));
     const cacheLeaseEventSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-lease-event.schema.json'), 'utf8'));
     const cacheLeaseSetSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-lease-set.schema.json'), 'utf8'));
+    const cacheLeaseArchiveAnchorSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-lease-archive-anchor.schema.json'), 'utf8'));
+    const cacheLeaseArchiveReceiptSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-lease-archive-receipt.schema.json'), 'utf8'));
+    const cacheLeaseArchiveAuditSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-lease-archive-audit.schema.json'), 'utf8'));
+    const cacheLeaseCurationProposalSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-lease-curation-proposal.schema.json'), 'utf8'));
+    const cacheLeaseCurationApplicationSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'production-artifact-cache-lease-curation-application.schema.json'), 'utf8'));
     equal(cacheEntrySchema.$id, Core.artifactCache.ENTRY_SCHEMA, 'tracked artifact cache schema matches the runtime contract');
     equal([cacheLeaseEventSchema.$id, cacheLeaseSetSchema.$id], [Core.cacheLeases.EVENT_SCHEMA, Core.cacheLeases.SET_SCHEMA], 'tracked cache lease schemas match the runtime contracts');
+    equal([cacheLeaseArchiveAnchorSchema.$id, cacheLeaseArchiveReceiptSchema.$id, cacheLeaseArchiveAuditSchema.$id, cacheLeaseCurationProposalSchema.$id, cacheLeaseCurationApplicationSchema.$id], [Core.cacheLeases.ARCHIVE_ANCHOR_SCHEMA, Core.cacheLeases.ARCHIVE_RECEIPT_SCHEMA, Core.cacheLeases.ARCHIVE_AUDIT_SCHEMA, Core.cacheLeaseCuration.PROPOSAL_SCHEMA, Core.cacheLeaseCuration.APPLICATION_SCHEMA], 'tracked cache lease curation and archive schemas match the runtime contracts');
     const cacheRunsRoot = path.join(temporary, 'cache-runs');
     const cacheRoot = path.join(temporary, 'artifact-cache');
     const cachedRegistry = Core.documentRegistry.create();
@@ -438,9 +461,95 @@ async function main() {
     ok(supersedingRelease.event === 'RELEASED' && supersedingRelease.generation === 5, 'superseding session appends an exact release event');
     throws(() => Core.cacheLeases.duration(Core.cacheLeases.MAX_DURATION_MS + 1), /CACHE_LEASE_DURATION_INVALID/, 'lease duration cannot silently exceed its seven-day resource ceiling');
     equal(Core.cacheLeases.durationForPackages([{ id: 'budgeted', resource_budget: { timeout_ms: 1000 }, repair_policy: { max_attempts: 2 } }], { steps: {}, attempts: {} }), 426000, 'lease budget covers cache-hit verification plus executor and verifier fallback for every remaining attempt');
+
+    const releasedLedgerFile = path.join(leaseCrashRoot, 'leases', supersedingLease.leaseId + '.jsonl');
+    const releasedLedgerBytes = fs.readFileSync(releasedLedgerFile);
+    const releasedBeforeCuration = Core.cacheLeases.discover({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 20002004 });
+    const releasedCurationPlan = Core.cacheLeaseCuration.plan(releasedBeforeCuration, { minimum_released_age_ms: 0, minimum_expired_age_ms: 0, max_candidates: 10 });
+    ok(releasedCurationPlan.status === 'READY' && releasedCurationPlan.candidates.length === 1 && releasedCurationPlan.candidates[0].state === 'RELEASED' && !releasedCurationPlan.authority.source_segment_deletion, 'lease curation dry-run selects one exact released segment without deletion authority');
+    const reshapedCurationPlan = Core.canonical.seal(Object.assign({}, releasedCurationPlan, { unexpected_authority: true }));
+    throws(() => Core.cacheLeaseCuration.validateProposal(reshapedCurationPlan), /CACHE_LEASE_CURATION_PROPOSAL_INVALID/, 'lease curation rejects a freshly sealed proposal with undeclared fields');
+    const refusedCuration = Core.cacheLeaseCuration.apply({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, proposal: releasedCurationPlan, approvedDigest: '0'.repeat(64), explicit: true, nowMs: 20002004 });
+    ok(refusedCuration.status === 'APPROVAL_MISMATCH' && fs.existsSync(releasedLedgerFile), 'lease curation refuses a non-matching approval digest without mutation');
+    const copiedCurationRoot = path.join(temporary, 'copied-curation-cache');
+    fs.cpSync(leaseCrashRoot, copiedCurationRoot, { recursive: true });
+    const copiedRootCuration = Core.cacheLeaseCuration.apply({ cacheRoot: copiedCurationRoot, sourceRoot, jobRoot: leaseCrashJobs, proposal: releasedCurationPlan, approvedDigest: releasedCurationPlan.digest, explicit: true, nowMs: 20002004 });
+    ok(copiedRootCuration.status === 'STALE' && fs.existsSync(path.join(copiedCurationRoot, 'leases', supersedingLease.leaseId + '.jsonl')), 'exact approval remains bound to the cache root observed by the proposal');
+    const releasedCuration = Core.cacheLeaseCuration.apply({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, proposal: releasedCurationPlan, approvedDigest: releasedCurationPlan.digest, explicit: true, nowMs: 20002004 });
+    const releasedAfterCuration = Core.cacheLeases.discover({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 20002004 });
+    ok(releasedCuration.status === 'APPLIED' && releasedCuration.outcomes[0].source_removed && !fs.existsSync(releasedLedgerFile) && releasedAfterCuration.usage.events < releasedBeforeCuration.usage.events, 'approved curation replaces the hot released ledger with one compact anchor and records exact source removal');
+    equal(releasedAfterCuration.leases.map((item) => [item.tail_event_digest, item.generation, item.state, item.key_set_digest]), releasedBeforeCuration.leases.map((item) => [item.tail_event_digest, item.generation, item.state, item.key_set_digest]), 'compaction preserves the complete discovery semantics of the released lease tail');
+    fs.writeFileSync(releasedLedgerFile, releasedLedgerBytes, { flag: 'wx' });
+    equal(Core.cacheLeases.discover({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 20002004 }).status, 'REVIEW_REQUIRED', 'a crash window that leaves archived source bytes beside the new anchor holds ordinary discovery');
+    const recoveredCuration = Core.cacheLeaseCuration.apply({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, proposal: releasedCurationPlan, approvedDigest: releasedCurationPlan.digest, explicit: true, nowMs: 20002004 });
+    ok(recoveredCuration.status === 'APPLIED' && recoveredCuration.outcomes[0].status === 'RECOVERED' && !fs.existsSync(releasedLedgerFile), 'reapplying the same exact proposal completes an interrupted source-removal window idempotently');
+    const archivedChildCycle = cycleLeaseInChild({ module: require.resolve('./artifact-cache-lease'), options: Object.assign({}, leaseCrashOptions, { nowMs: 20002005 }), key: 'e'.repeat(64), protectAt: 20002006, releaseAt: 20002007 });
+    ok(archivedChildCycle.acquired.event === 'ACQUIRED' && archivedChildCycle.acquired.generation === 6 && archivedChildCycle.acquired.keys.length === 0 && archivedChildCycle.released.generation === 8, 'a fresh process continues the released archive generation, protects a new key, and appends its release');
+    const secondCurationSet = Core.cacheLeases.discover({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 20002008 });
+    const secondCurationPlan = Core.cacheLeaseCuration.plan(secondCurationSet, { minimum_released_age_ms: 0, minimum_expired_age_ms: 0, max_candidates: 10 });
+    const secondCuration = Core.cacheLeaseCuration.apply({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, proposal: secondCurationPlan, approvedDigest: secondCurationPlan.digest, explicit: true, nowMs: 20002008 });
+    const twoSegmentAudit = Core.cacheLeaseCuration.audit({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 20002008 });
+    ok(secondCuration.status === 'APPLIED' && twoSegmentAudit.status === 'COMPLETE' && twoSegmentAudit.usage.segments === 2 && twoSegmentAudit.usage.history_events === 8, 'full cold audit rehashes, decompresses, and validates two archive segments as one eight-event chain');
+    equal(Core.cacheLeaseCuration.audit({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 20002008, auditMaxSegments: 1 }).status, 'LIMIT_EXCEEDED', 'cold archive audit enforces its independent segment ceiling');
+
+    const expiredArchiveOptions = { cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, runId: 'expired-archive-run', planDigest: 'f'.repeat(64), startedAt: 'expired-archive-start', durationMs: 100, nowMs: 30000000 };
+    const expiredArchiveLease = Core.cacheLeases.acquire(expiredArchiveOptions);
+    const expiredArchiveKey = '1'.repeat(64);
+    expiredArchiveLease.protect(expiredArchiveKey, 30000001);
+    const expiredArchiveSet = Core.cacheLeases.discover({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 30000200 });
+    const expiredCurationPlan = Core.cacheLeaseCuration.plan(expiredArchiveSet, { minimum_released_age_ms: 0, minimum_expired_age_ms: 0, max_candidates: 10 });
+    const expiredCuration = Core.cacheLeaseCuration.apply({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, proposal: expiredCurationPlan, approvedDigest: expiredCurationPlan.digest, explicit: true, nowMs: 30000200 });
+    const expiredAfterCuration = Core.cacheLeases.discover({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 30000200 });
+    const archivedExpiredSummary = expiredAfterCuration.leases.find((item) => item.lease_id === expiredArchiveLease.leaseId);
+    ok(expiredCuration.status === 'APPLIED' && archivedExpiredSummary.state === 'EXPIRED' && archivedExpiredSummary.key_count === 1 && archivedExpiredSummary.protected_keys.length === 0 && archivedExpiredSummary.live_segment_digest === null, 'expired curation preserves recovery keys and audit history without granting stale protection');
+    const expiredRecovery = cycleLeaseInChild({ module: require.resolve('./artifact-cache-lease'), options: Object.assign({}, expiredArchiveOptions, { nowMs: 30000201 }), key: expiredArchiveKey, protectAt: 30000201, releaseAt: 30000202 });
+    ok(expiredRecovery.acquired.event === 'RENEWED' && expiredRecovery.acquired.generation === 3 && expiredRecovery.acquired.keys[0] === expiredArchiveKey && expiredRecovery.released.generation === 4, 'fresh-process recovery resumes an expired archive anchor and restores its prior key set under a new bounded session');
+
+    const activeCurationRoot = path.join(temporary, 'active-curation-cache'), activeCurationJobs = path.join(temporary, 'active-curation-jobs');
+    fs.mkdirSync(activeCurationJobs);
+    Core.artifactCache.open({ cacheRoot: activeCurationRoot, sourceRoot, jobRoot: activeCurationJobs });
+    const activeCurationOptions = { cacheRoot: activeCurationRoot, sourceRoot, jobRoot: activeCurationJobs, runId: 'active-curation-run', planDigest: '2'.repeat(64), startedAt: 'active-curation-start', durationMs: 1000, nowMs: 40000000 };
+    const activeCurationLease = Core.cacheLeases.acquire(activeCurationOptions);
+    activeCurationLease.protect('3'.repeat(64), 40000001);
+    const activeCurationSet = Core.cacheLeases.discover({ cacheRoot: activeCurationRoot, sourceRoot, jobRoot: activeCurationJobs, nowMs: 40000002 });
+    const activeCurationPlan = Core.cacheLeaseCuration.plan(activeCurationSet, { minimum_released_age_ms: 0, minimum_expired_age_ms: 0, max_candidates: 10 });
+    ok(activeCurationPlan.status === 'NO_CHANGES' && activeCurationPlan.active_leases === 1 && activeCurationPlan.candidates.length === 0, 'active lease history is never a curation candidate even under a zero-age policy');
+    activeCurationLease.release(40000003);
+    const staleCurationSet = Core.cacheLeases.discover({ cacheRoot: activeCurationRoot, sourceRoot, jobRoot: activeCurationJobs, nowMs: 40000004 });
+    const staleCurationPlan = Core.cacheLeaseCuration.plan(staleCurationSet, { minimum_released_age_ms: 0, minimum_expired_age_ms: 0, max_candidates: 10 });
+    const busyCuration = Core.cacheLeases.withLeaseLock(activeCurationOptions, activeCurationLease.leaseId, () => Core.cacheLeaseCuration.apply({ cacheRoot: activeCurationRoot, sourceRoot, jobRoot: activeCurationJobs, proposal: staleCurationPlan, approvedDigest: staleCurationPlan.digest, explicit: true, nowMs: 40000004 }));
+    ok(busyCuration.status === 'COORDINATION_BUSY' && fs.existsSync(path.join(activeCurationRoot, 'leases', activeCurationLease.leaseId + '.jsonl')), 'held per-lease coordination prevents curation from racing a runner lifecycle mutation');
+    const staleReacquire = Core.cacheLeases.acquire(Object.assign({}, activeCurationOptions, { nowMs: 40000005 }));
+    const staleCuration = Core.cacheLeaseCuration.apply({ cacheRoot: activeCurationRoot, sourceRoot, jobRoot: activeCurationJobs, proposal: staleCurationPlan, approvedDigest: staleCurationPlan.digest, explicit: true, nowMs: 40000005 });
+    ok(staleCuration.status === 'STALE' && !staleCuration.authority.source_segments_removed, 'a newer runner session invalidates the exact curation candidate before source deletion');
+    staleReacquire.release(40000006);
+
+    const expiredAnchorFile = path.join(leaseCrashRoot, 'leases', expiredArchiveLease.leaseId + '.anchor.json');
+    const expiredAnchor = JSON.parse(fs.readFileSync(expiredAnchorFile, 'utf8'));
+    const expiredArchiveBlob = path.join(leaseCrashRoot, 'lease-archives', expiredArchiveLease.leaseId, expiredAnchor.latest_archive_receipt_digest + '.jsonl.gz');
+    const predecessorTamperRoot = path.join(temporary, 'predecessor-tamper-cache');
+    fs.cpSync(leaseCrashRoot, predecessorTamperRoot, { recursive: true });
+    const twoSegmentAnchorName = fs.readdirSync(path.join(predecessorTamperRoot, 'leases')).find((name) => name.endsWith('.anchor.json') && JSON.parse(fs.readFileSync(path.join(predecessorTamperRoot, 'leases', name), 'utf8')).archived_segment_count === 2);
+    const twoSegmentAnchorFile = path.join(predecessorTamperRoot, 'leases', twoSegmentAnchorName), twoSegmentAnchor = JSON.parse(fs.readFileSync(twoSegmentAnchorFile, 'utf8'));
+    const twoSegmentArchiveRoot = path.join(predecessorTamperRoot, 'lease-archives', twoSegmentAnchor.lease_id), oldLatestReceiptFile = path.join(twoSegmentArchiveRoot, twoSegmentAnchor.latest_archive_receipt_digest + '.json');
+    const oldLatestBlobFile = path.join(twoSegmentArchiveRoot, twoSegmentAnchor.latest_archive_receipt_digest + '.jsonl.gz'), falsePredecessorReceipt = Core.canonical.seal(Object.assign({}, JSON.parse(fs.readFileSync(oldLatestReceiptFile, 'utf8')), { previous_anchor_digest: '0'.repeat(64) }));
+    fs.writeFileSync(path.join(twoSegmentArchiveRoot, falsePredecessorReceipt.digest + '.json'), JSON.stringify(falsePredecessorReceipt) + '\n', { flag: 'wx' });
+    fs.copyFileSync(oldLatestBlobFile, path.join(twoSegmentArchiveRoot, falsePredecessorReceipt.digest + '.jsonl.gz'), fs.constants.COPYFILE_EXCL);
+    fs.writeFileSync(twoSegmentAnchorFile, JSON.stringify(Core.canonical.seal(Object.assign({}, twoSegmentAnchor, { latest_archive_receipt_digest: falsePredecessorReceipt.digest }))) + '\n');
+    equal(Core.cacheLeaseCuration.audit({ cacheRoot: predecessorTamperRoot, sourceRoot, nowMs: 30000203 }).status, 'REVIEW_REQUIRED', 'full archive audit reconstructs and refuses a separately resealed false predecessor-anchor link');
+    const missingArchiveRoot = path.join(temporary, 'missing-archive-cache');
+    fs.cpSync(leaseCrashRoot, missingArchiveRoot, { recursive: true });
+    fs.unlinkSync(path.join(missingArchiveRoot, 'lease-archives', expiredArchiveLease.leaseId, expiredAnchor.latest_archive_receipt_digest + '.jsonl.gz'));
+    equal(Core.cacheLeases.discover({ cacheRoot: missingArchiveRoot, sourceRoot, nowMs: 30000203 }).status, 'REVIEW_REQUIRED', 'ordinary discovery fails closed when the exact cold blob named by an anchor is missing');
+    const tamperedArchiveBytes = fs.readFileSync(expiredArchiveBlob);
+    tamperedArchiveBytes[Math.floor(tamperedArchiveBytes.length / 2)] ^= 1;
+    fs.writeFileSync(expiredArchiveBlob, tamperedArchiveBytes);
+    const tamperedArchiveAudit = Core.cacheLeaseCuration.audit({ cacheRoot: leaseCrashRoot, sourceRoot, jobRoot: leaseCrashJobs, nowMs: 30000203 });
+    ok(tamperedArchiveAudit.status === 'REVIEW_REQUIRED' && !/[A-Za-z]:\\/.test(JSON.stringify(tamperedArchiveAudit)) && !JSON.stringify(tamperedArchiveAudit).includes('expired-archive-run'), 'explicit cold audit detects same-size archive corruption while keeping its derived receipt path- and run-id-private');
+
     const tamperedLeaseRoot = path.join(temporary, 'tampered-lease-cache');
     fs.cpSync(leaseCrashRoot, tamperedLeaseRoot, { recursive: true });
-    const tamperedLeaseFile = path.join(tamperedLeaseRoot, 'leases', fs.readdirSync(path.join(tamperedLeaseRoot, 'leases'))[0]);
+    const tamperedLeaseFile = path.join(tamperedLeaseRoot, 'leases', fs.readdirSync(path.join(tamperedLeaseRoot, 'leases')).find((name) => name.endsWith('.jsonl')));
     const tamperedLeaseLines = lines(tamperedLeaseFile), tamperedLeaseTail = JSON.parse(tamperedLeaseLines[tamperedLeaseLines.length - 1]);
     tamperedLeaseTail.expires_at_ms += 1;
     tamperedLeaseLines[tamperedLeaseLines.length - 1] = JSON.stringify(tamperedLeaseTail);

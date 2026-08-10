@@ -25,6 +25,9 @@ node tools/game-production-runner/cli.js run-document-demo --job-root D:\candida
 node tools/game-production-runner/cli.js invalidate-cache --cache-root D:\candidate\verified-cache --cache-key SHA256 --explicit-invalidate
 node tools/game-production-runner/cli.js discover-cache-references --job-root D:\candidate\runs
 node tools/game-production-runner/cli.js discover-cache-leases --cache-root D:\candidate\verified-cache
+node tools/game-production-runner/cli.js plan-cache-lease-curation --cache-root D:\candidate\verified-cache --minimum-released-age-ms 604800000 --minimum-expired-age-ms 2592000000 --max-curation-candidates 100
+node tools/game-production-runner/cli.js apply-cache-lease-curation --cache-root D:\candidate\verified-cache --proposal D:\candidate\lease-curation-proposal.json --approve-proposal SHA256 --explicit-apply
+node tools/game-production-runner/cli.js audit-cache-lease-archives --cache-root D:\candidate\verified-cache
 node tools/game-production-runner/cli.js inventory-cache --cache-root D:\candidate\verified-cache
 node tools/game-production-runner/cli.js plan-cache-retention --cache-root D:\candidate\verified-cache --reference-job-root D:\candidate\runs --max-cache-entries 500 --max-cache-bytes 10737418240 --max-cache-age-ms 2592000000
 node tools/game-production-runner/cli.js apply-cache-retention --cache-root D:\candidate\verified-cache --reference-job-root D:\candidate\runs --proposal D:\candidate\retention-proposal.json --approve-proposal SHA256 --explicit-apply
@@ -66,6 +69,25 @@ process exits abruptly, the lease remains protective only until expiry; the
 same run can renew it during resume. No daemon, heartbeat, or polling task is
 created. Run output exposes the sealed release event when one was written.
 
+`plan-cache-lease-curation` is a deletion-free dry run. It considers only
+released leases old enough for `--minimum-released-age-ms` and expired leases
+old enough for `--minimum-expired-age-ms`, then selects at most the explicit
+candidate budget. `apply-cache-lease-curation` requires the saved nested
+`proposal`, its exact digest, the same observed cache root, and
+`--explicit-apply`. Under the per-lease lock it
+stores the complete original JSONL bytes as gzip, chains a sealed cold-archive
+receipt, installs a small recovery anchor, and removes only that approved hot
+segment. Active or changed leases hold. Reapplying the same proposal can finish
+the safe crash window after an anchor was written but source removal did not
+finish. Released anchors start a fresh generation; expired anchors preserve the
+prior key set for same-run recovery.
+
+`audit-cache-lease-archives` is the explicit heavy path. It walks each receipt
+chain, rehashes and decompresses every bounded blob, validates every original
+event transition, and emits a path-private audit. Routine
+`discover-cache-leases` deliberately checks only the hot anchor, latest receipt,
+and cold-blob presence and size, so it cannot claim full cold-byte integrity.
+
 `discover-cache-leases` is bounded and read-only. It emits a sealed, path-free
 set whose protection contains only unexpired active leases; released and
 expired ledgers remain auditable but grant no authority. An invalid or
@@ -91,8 +113,8 @@ lease protection. The sealed application receipt includes the fresh reference
 and lease snapshots, each selective invalidation digest, and post-delete usage.
 No discovery, retention policy, lease renewal, or deletion runs in the
 background. Direct `invalidate-cache` remains a distinct explicit human
-override. Released and expired lease ledgers are not yet compacted and can
-eventually reach the bounded discovery ceiling.
+override. Cold lease archives are append-only and never automatically deleted;
+their storage and full-audit cost can still grow.
 
 `probe-hand-confinement` is diagnostic and must be requested explicitly. It
 creates and removes a disposable operating-system temporary root and opens only

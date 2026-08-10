@@ -34,6 +34,12 @@
     "path-private-active-cache-lease-discovery",
     "lease-session-fencing-and-crash-expiry",
     "per-key-runner-retention-coordination",
+    "exact-approved-inactive-lease-ledger-curation",
+    "lossless-compressed-cold-lease-archive",
+    "sealed-hot-lease-archive-anchor",
+    "fresh-process-recovery-from-archive-anchor",
+    "bounded-full-cold-archive-audit",
+    "interrupted-curation-recovery",
     "deterministic-cache-retention-proposal",
     "protected-cache-reference-hold",
     "fresh-cache-reference-snapshot-gate",
@@ -56,8 +62,8 @@
   ],
   "permissions": ["files", "runtime", "network.listen"],
   "handoffs": {
-    "emits": ["axm.game-production-plan/v1", "axm.game-step-receipt/v1", "axm.game-production-run/v1", "axm.production-profile-binding/v1", "axm.production-plan/v1", "axm.production-step-receipt/v1", "axm.production-run-state/v1", "axm.production-run-checkpoint/v1", "axm.production-run/v1", "axm.hand-process-confinement-probe/v1", "axm.production-artifact-cache-entry/v1", "axm.production-artifact-cache-invalidation/v1", "axm.production-artifact-cache-reference-set/v1", "axm.production-artifact-cache-lease-event/v1", "axm.production-artifact-cache-lease-set/v1", "axm.production-artifact-cache-inventory/v1", "axm.production-artifact-cache-retention-proposal/v1", "axm.production-artifact-cache-retention-application/v1"],
-    "accepts": ["human:explicit-run-start", "human:explicit-portable-run-start", "human:explicit-cache-root", "human:explicit-cache-reference-job-root", "human:explicit-cache-invalidation", "human:explicit-cache-retention-policy", "human:explicit-protected-cache-references", "human:exact-cache-retention-proposal-approval", "human:explicit-confinement-probe", "human:cancel", "axm.game-intent-lock/v1", "axm.game-production-graph/v1", "axm.production-intent-lock/v1", "axm.production-graph/v1"]
+    "emits": ["axm.game-production-plan/v1", "axm.game-step-receipt/v1", "axm.game-production-run/v1", "axm.production-profile-binding/v1", "axm.production-plan/v1", "axm.production-step-receipt/v1", "axm.production-run-state/v1", "axm.production-run-checkpoint/v1", "axm.production-run/v1", "axm.hand-process-confinement-probe/v1", "axm.production-artifact-cache-entry/v1", "axm.production-artifact-cache-invalidation/v1", "axm.production-artifact-cache-reference-set/v1", "axm.production-artifact-cache-lease-event/v1", "axm.production-artifact-cache-lease-set/v1", "axm.production-artifact-cache-lease-archive-anchor/v1", "axm.production-artifact-cache-lease-archive-receipt/v1", "axm.production-artifact-cache-lease-archive-audit/v1", "axm.production-artifact-cache-lease-curation-proposal/v1", "axm.production-artifact-cache-lease-curation-application/v1", "axm.production-artifact-cache-inventory/v1", "axm.production-artifact-cache-retention-proposal/v1", "axm.production-artifact-cache-retention-application/v1"],
+    "accepts": ["human:explicit-run-start", "human:explicit-portable-run-start", "human:explicit-cache-root", "human:explicit-cache-reference-job-root", "human:explicit-cache-invalidation", "human:explicit-cache-retention-policy", "human:explicit-protected-cache-references", "human:exact-cache-retention-proposal-approval", "human:explicit-cache-lease-curation-policy", "human:exact-cache-lease-curation-proposal-approval", "human:explicit-cold-lease-archive-audit", "human:explicit-confinement-probe", "human:cancel", "axm.game-intent-lock/v1", "axm.game-production-graph/v1", "axm.production-intent-lock/v1", "axm.production-graph/v1"]
   },
   "boundaries": {
     "writes": ["explicit-external-candidate-job-root-only", "explicit-external-artifact-cache-root-only", "disposable-operating-system-temp-probe-root"],
@@ -98,6 +104,12 @@
       "runner-cache-use-without-active-lease",
       "stale-or-expired-lease-as-permanent-authority",
       "cache-lease-owner-authentication-claim",
+      "automatic-cache-lease-curation",
+      "cache-lease-curation-without-exact-proposal-approval",
+      "cache-lease-curation-of-active-lease",
+      "cache-lease-curation-of-stale-segment",
+      "cache-lease-cold-archive-deletion",
+      "full-cold-archive-integrity-claim-from-hot-discovery",
       "cache-reference-authority-from-uncheckpointed-run",
       "cache-reference-authority-from-stale-checkpoint",
       "cache-reference-authority-from-tampered-or-mixed-ledger",

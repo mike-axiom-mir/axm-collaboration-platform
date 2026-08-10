@@ -21,7 +21,8 @@
     "explicit on-demand cache retention governor with bounded read-only inventory, separate count/logical-byte/filesystem-age budgets, protected exact references, sealed dry-run proposals, exact digest approval, stale-snapshot refusal, and post-delete readback",
     "bounded read-only terminal-ledger cache-reference discovery with complete digest-chain validation, path-private sealed sets, exact key/entry binding, fail-closed aggregate holds, and fresh apply-time reference rescans",
     "append-only graceful-interruption checkpoints with exact step-ledger prefix binding, repeated-checkpoint continuity, legacy resume compatibility, and bounded nonterminal cache-reference discovery",
-    "bounded append-only in-flight cache leases with path-private owner binding, resume-session fencing, exact-key protection before runner cache use, terminal and checkpoint release, crash expiry and recovery, bounded fail-closed discovery, fresh retention rescans, and per-key runner-retention coordination"
+    "bounded append-only in-flight cache leases with path-private owner binding, resume-session fencing, exact-key protection before runner cache use, terminal and checkpoint release, crash expiry and recovery, bounded fail-closed discovery, fresh retention rescans, and per-key runner-retention coordination",
+    "exact-approved inactive lease-ledger curation with lossless compressed cold archives, sealed hot recovery anchors, active and stale refusal, interrupted-apply recovery, fresh-process released and expired continuation, and bounded full archive audit"
   ],
   "gaps": [
     {
@@ -74,11 +75,11 @@
       "next_evidence": "Define a user-owned policy store and scheduling authority that still emits a reviewable proposal or an explicitly pre-authorized policy receipt before deletion."
     },
     {
-      "capability": "cache.production.lease-ledger-curation",
+      "capability": "cache.production.lease-cold-archive-retention",
       "kind": "CONTRACT",
       "state": "MISSING_CONTRACT",
-      "impact": "Released and expired lease ledgers remain append-only audit evidence and grant no protection, but they accumulate until bounded discovery reaches its explicit ledger, event, or byte ceiling and holds retention.",
-      "next_evidence": "Define an exact digest-approved archive or compaction contract that preserves the latest terminal evidence, never removes active leases, records a deletion receipt, and proves recovery plus discovery equivalence before and after curation."
+      "impact": "Hot discovery now stays compact because inactive JSONL segments can move into small recovery anchors, but the lossless cold segments remain append-only and their storage plus explicit full-audit cost can grow until audit ceilings hold.",
+      "next_evidence": "Define a user-owned cold-archive retention or chained rollup contract with exact segment coverage, no active-history loss, explicit deletion authority where applicable, restart recovery, and full-audit equivalence before and after the operation."
     },
     {
       "capability": "ui.game-production-workbench",

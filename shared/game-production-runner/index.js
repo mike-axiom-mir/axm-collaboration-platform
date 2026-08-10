@@ -9,6 +9,7 @@ module.exports = Object.freeze({
   stepReceipts: require('./step-receipt-contract'),
   artifactCache: require('./artifact-cache'),
   cacheLeases: require('./artifact-cache-lease'),
+  cacheLeaseCuration: require('./artifact-cache-lease-curation'),
   cacheReferences: require('./cache-reference-discovery'),
   cacheRetention: require('./artifact-cache-retention'),
   confinement: require('./permission-substrate'),

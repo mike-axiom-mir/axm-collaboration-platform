@@ -1,0 +1,15 @@
+{
+  "schema": "axm.capability-requirements/v1",
+  "subject": "game-production-runner governed inactive lease-ledger curation",
+  "requirements": [
+    { "id": "curation-planning-is-read-only-and-policy-bounded", "capabilities": ["cache.production.lease-curation.plan"], "required": true, "gapType": "AUTHORITY" },
+    { "id": "application-requires-exact-root-bound-approval", "capabilities": ["cache.production.lease-curation.approval"], "required": true, "gapType": "AUTHORITY" },
+    { "id": "active-busy-and-stale-leases-cannot-be-curated", "capabilities": ["cache.production.lease-curation.lifecycle-fence"], "required": true, "gapType": "CONTRACT" },
+    { "id": "original-hot-ledger-bytes-are-preserved-losslessly", "capabilities": ["cache.production.lease-archive.lossless-source"], "required": true, "gapType": "EVIDENCE" },
+    { "id": "routine-discovery-remains-compact-and-semantically-equivalent", "capabilities": ["cache.production.lease-archive.hot-anchor"], "required": true, "gapType": "HAND" },
+    { "id": "interrupted-source-removal-is-recoverable", "capabilities": ["cache.production.lease-archive.interrupted-apply"], "required": true, "gapType": "PERSISTENCE" },
+    { "id": "released-and-expired-anchors-resume-in-a-fresh-process", "capabilities": ["cache.production.lease-archive.restart-continuity"], "required": true, "gapType": "PERSISTENCE" },
+    { "id": "cold-history-has-an-independent-bounded-full-audit", "capabilities": ["cache.production.lease-archive.full-audit"], "required": true, "gapType": "EVIDENCE" },
+    { "id": "receipts-are-path-private-and-cold-deletion-is-outside-authority", "capabilities": ["cache.production.lease-archive.truth-boundary"], "required": true, "gapType": "AUTHORITY" }
+  ]
+}
