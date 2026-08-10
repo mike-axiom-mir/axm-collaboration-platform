@@ -1,0 +1,12 @@
+{
+  "schema":"axm.module-contract/v1",
+  "id":"compute-substrate-lab",
+  "version":"v0.1",
+  "status":"EXPERIMENTAL",
+  "provides":["compute-substrate-package-cli","provisional-1837-root-governance-cli","compute-evidence-ledger-cli","compute-substrate-snapshot-cli"],
+  "consumes":["service:compute-substrate-lab-core","service:deterministic-research-foundry","service:hardware-research-registry-core","axm.compute-substrate-intake/v1","axm.research-observation/v1","axm.compute-hardware-reference/v1"],
+  "permissions":["files"],
+  "handoffs":{"emits":["axm.compute-substrate-package/v1","axm.compute-root-change-proposal/v1","axm.compute-substrate-snapshot/v1","axm.research-evidence-ledger/v1"],"accepts":["axm.compute-substrate-intake/v1","axm.compute-substrate-package/v1","axm.compute-hardware-reference/v1","axm.research-observation/v1","human:exact-working-root-decision"]},
+  "boundaries":{"writes":["explicit-user-selected-external-output-file"],"refuses":["source-tree-write","implicit-output-write","physical-hardware-execution","automatic-benchmark","automatic-deployment","automatic-root-change","locator-only-source-as-historical-proof","compute-claim-as-robot-safety-proof","chip-obsolescence-assumption","non-chip-superiority-assumption","automatic-promotion","automatic-canon"]},
+  "lifecycle":{"state_owner":"filesystem","reload":"resume","disconnect":"graceful-degrade","cleanup":"explicit"}
+}

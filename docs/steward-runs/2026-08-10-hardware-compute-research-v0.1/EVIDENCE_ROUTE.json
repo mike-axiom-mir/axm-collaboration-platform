@@ -1,0 +1,76 @@
+{
+  "schema":"axm.evidence-route/v1",
+  "claims":[
+    {
+      "claim_id":"modules.exist.and.separate",
+      "claim":"Two interoperable modules exist in one family with different default fields and domains.",
+      "kind":"existence",
+      "risk":"low",
+      "pass_condition":"Direct inspection finds separate manifests, contracts, cores, schemas, CLIs, and tests; compiled packages share HARDWARE_COMPUTE_RESEARCH while defaulting to HARDWARE and COMPUTE.",
+      "primary_surface":"file and parsed contract inspection plus discovery seam tests",
+      "counterevidence":"Missing files, shared identity, equal default fields, or an undeclared handoff.",
+      "observed_evidence":"hardware and compute discovery seam suites",
+      "verdict":"PASS"
+    },
+    {
+      "claim_id":"packages.deterministic.and.tamper.evident",
+      "claim":"Equivalent intakes create the same package digest and modified packages fail verification.",
+      "kind":"deterministic behavior",
+      "risk":"medium",
+      "pass_condition":"Repeated known inputs match; content and root-history mutations fail; serialization through a fresh CLI process still verifies.",
+      "primary_surface":"focused core and child-process CLI assertions",
+      "counterevidence":"Digest changes from time or path, or modified content verifies.",
+      "observed_evidence":"hardware core/CLI and compute core/CLI suites",
+      "verdict":"PASS"
+    },
+    {
+      "claim_id":"research.input.remains.inert",
+      "claim":"Research, recipes, candidates, and architectures grant no physical execution, safety, deployment, procurement, promotion, or CANON authority.",
+      "kind":"authorization",
+      "risk":"high",
+      "pass_condition":"Contracts refuse each authority; compiled records carry false authority flags; adversarial promoted states are rejected; CLIs expose no hardware action.",
+      "primary_surface":"contract inspection and denied-state focused execution",
+      "counterevidence":"Any intake field or CLI command can mark a build safe, deploy an architecture, or operate hardware.",
+      "secondary_surface_if_needed":"human review before any future physical adapter is admitted",
+      "observed_evidence":"focused refusal assertions and manifest/contract discovery",
+      "verdict":"PASS",
+      "named_seam":"This proves software refusal behavior, not universal physical safety."
+    },
+    {
+      "claim_id":"root.1837.provisional.and.governed",
+      "claim":"The compute module starts at provisional 1837 and can change only through evidence-bound named-human working-root governance that preserves history.",
+      "kind":"authorization and persistence",
+      "risk":"high",
+      "pass_condition":"1837 loads by default; 1834 remains a candidate; one-surface, machine, stale, tampered, or unreviewed approvals fail; an exact accepted decision preserves 1837 in the root history.",
+      "primary_surface":"adversarial root-governance execution",
+      "counterevidence":"An earlier record auto-selects, a machine accepts, or prior root disappears.",
+      "secondary_surface_if_needed":"fresh-process CLI roundtrip and direct root-history inspection",
+      "observed_evidence":"compute core and CLI suites",
+      "verdict":"PASS",
+      "named_seam":"Historical correctness of 1837 or 1834 remains a research claim, not proven by governance code."
+    },
+    {
+      "claim_id":"external.output.boundary",
+      "claim":"CLI writes require an explicit external output and refuse source-tree writes.",
+      "kind":"authorization",
+      "risk":"medium",
+      "pass_condition":"External temporary outputs succeed and exact source-tree targets fail without a file.",
+      "primary_surface":"child-process positive and denied-path tests",
+      "counterevidence":"A command creates an implicit source-tree output.",
+      "observed_evidence":"both CLI suites",
+      "verdict":"PASS"
+    },
+    {
+      "claim_id":"physical.capability.exists",
+      "claim":"The modules can execute or certify physical hardware and deploy hybrid compute.",
+      "kind":"behavior and resource safety",
+      "risk":"high",
+      "pass_condition":"Named devices operate under bounded authority with telemetry, failure recovery, and qualified safety evidence.",
+      "primary_surface":"live physical observation and hardware telemetry",
+      "counterevidence":"No physical hand, operator authority, device substrate, or live verifier exists.",
+      "observed_evidence":"capability inventory and explicit refusal contracts",
+      "verdict":"FAIL",
+      "named_seam":"Deliberate v0.1 gap; no hardware was operated."
+    }
+  ]
+}

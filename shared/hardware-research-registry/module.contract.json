@@ -1,0 +1,18 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "hardware-research-registry-core",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": ["deterministic-hardware-research-package", "inert-hardware-build-design-registry", "conflict-preserving-hardware-evidence-ledger", "deterministic-hardware-package-merge", "hardware-research-snapshot"],
+  "consumes": ["service:deterministic-research-foundry", "axm.hardware-research-intake/v1", "axm.research-observation/v1"],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.hardware-research-package/v1", "axm.hardware-research-snapshot/v1", "axm.research-evidence-ledger/v1"],
+    "accepts": ["axm.hardware-research-intake/v1", "axm.research-observation/v1", "axm.compute-hardware-reference/v1"]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": ["physical-hardware-execution", "automatic-build", "automatic-procurement", "automatic-safety-approval", "research-source-as-trusted-instruction", "design-record-as-built-evidence", "compute-claim-as-hardware-safety-proof", "contradiction-averaging", "automatic-promotion", "automatic-canon"]
+  },
+  "lifecycle": {"state_owner":"filesystem", "reload":"resume", "disconnect":"graceful-degrade", "cleanup":"explicit"}
+}
