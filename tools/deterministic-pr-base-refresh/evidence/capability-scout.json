@@ -1,0 +1,21 @@
+{
+  "schema": "axm.capability-scout-receipt/v1",
+  "requestedOutcome": "Refresh a checkpointed review branch after main advances without force-push, history rewrite, remote mutation, or repeated ad hoc Git reasoning.",
+  "route": "READY",
+  "satisfiedRequirements": [
+    "git-pr.checkpoint.verify",
+    "git.remote.refs.read-exact",
+    "git.merge-tree.analyze-exact",
+    "git.feature-branch.merge-local-no-rewrite",
+    "git.failed-merge.abort-and-prove",
+    "git.refresh.post-state.verify",
+    "git.remote-write.refuse"
+  ],
+  "degradedCapabilities": [],
+  "missingCapabilities": [],
+  "gapTypesClosed": ["HAND", "CONTRACT", "EVIDENCE"],
+  "routeChosen": "Compose the existing checkpoint verifier and Git runtime through a bounded base-refresh adapter.",
+  "newContracts": ["axm.git-pr-base-refresh-plan/v1", "axm.git-pr-base-refresh-receipt/v1"],
+  "authorityBoundary": "The adapter may create one local feature-branch merge commit after exact confirmation. It has no push, PR-write, main-write, promotion, roots, or CANON authority.",
+  "remainingGate": "Every applied refresh requires new focused/full verification, a new checkpoint, independent review, and bounded publication."
+}

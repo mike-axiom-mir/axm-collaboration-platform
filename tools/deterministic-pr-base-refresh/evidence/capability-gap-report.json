@@ -1,0 +1,120 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "checkpoint-gate",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "git-pr.checkpoint.verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "git-pr.checkpoint.verify": [
+          "exact READY checkpoint plus PASS verification"
+        ]
+      }
+    },
+    {
+      "id": "receiver-read",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "git.remote.refs.read-exact"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "git.remote.refs.read-exact": [
+          "approved remote configured in an isolated worktree"
+        ]
+      }
+    },
+    {
+      "id": "merge-analysis",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "git.merge-tree.analyze-exact"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "git.merge-tree.analyze-exact": [
+          "planning may write immutable unreachable Git objects"
+        ]
+      }
+    },
+    {
+      "id": "bounded-mutation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "git.feature-branch.merge-local-no-rewrite"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "git.feature-branch.merge-local-no-rewrite": [
+          "exact confirmation; codex/ or agent/ branch; clean publish lane"
+        ]
+      }
+    },
+    {
+      "id": "recovery",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "git.failed-merge.abort-and-prove"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "git.failed-merge.abort-and-prove": [
+          "typed RECOVERY_REQUIRED if exact restoration cannot be proved"
+        ]
+      }
+    },
+    {
+      "id": "post-proof",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "git.refresh.post-state.verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "git.refresh.post-state.verify": [
+          "tree, parents, branch, cleanliness, ancestry, and remote refs"
+        ]
+      }
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "git.remote-write.refuse"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "git.remote-write.refuse": [
+          "no push or GitHub write command exists in the adapter"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}
