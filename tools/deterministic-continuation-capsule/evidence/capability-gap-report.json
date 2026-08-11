@@ -1,0 +1,136 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "reference-contracts",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "continuity.reference-contracts.inspect"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "continuity.reference-contracts.inspect": [
+          "garden candidates remain reference-only and non-CANON"
+        ]
+      }
+    },
+    {
+      "id": "source-binding",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "continuity.source.digest-bind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "continuity.source.digest-bind": [
+          "explicit local source root; regular files; 20 MiB each and 50 MiB total"
+        ]
+      }
+    },
+    {
+      "id": "semantic-capsule",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "continuity.semantic-declaration.compile"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "continuity.semantic-declaration.compile": [
+          "explicit public-safe declaration; no semantic inference from raw logs"
+        ]
+      }
+    },
+    {
+      "id": "freshness",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "continuity.external-state.reprobe-preserve"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "continuity.external-state.reprobe-preserve": [
+          "reverification never upgrades stored external facts to fresh"
+        ]
+      }
+    },
+    {
+      "id": "privacy",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "continuity.source-content.non-embedding"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "continuity.source-content.non-embedding": [
+          "capsule stores logical locator, schema, digest, size, class, freshness, and role only"
+        ]
+      }
+    },
+    {
+      "id": "retention",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "continuity.retention-class.refuse-unsafe"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "continuity.retention-class.refuse-unsafe": [
+          "classification is explicit and cannot prove a deceptive declaration truthful"
+        ]
+      }
+    },
+    {
+      "id": "resume-view",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "continuity.resume-card.render-verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "continuity.resume-card.render-verify": [
+          "card remains data and grants no action or memory authority"
+        ]
+      }
+    },
+    {
+      "id": "reverification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "continuity.capsule.source-reverify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "continuity.capsule.source-reverify": [
+          "source file match is separate from live external freshness"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

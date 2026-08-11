@@ -1,0 +1,110 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "claims": [
+    {
+      "claimId": "capsule-deterministic",
+      "claim": "Equivalent semantic declarations and source bytes produce the same capsule digest regardless of input array order, source root, or relative input paths.",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "passCondition": "Independent directory layouts and reordered declarations produce an identical capsule digest.",
+      "primarySurface": "focused execution with two real source directory layouts",
+      "counterevidence": "path or ordering alone changes the digest",
+      "secondarySurfaceIfNeeded": "normalized public-declaration inspection",
+      "observedEvidence": "selftest path-independence and order-independence assertions",
+      "verdict": "PASS",
+      "namedSeam": "logical locator and declared semantics remain intentional digest inputs"
+    },
+    {
+      "claimId": "sources-bound-not-embedded",
+      "claim": "The capsule binds exact source files without embedding their contents or machine paths.",
+      "kind": "static-structure",
+      "risk": "high",
+      "passCondition": "capsule contains source schema, digest, size, class, freshness, role, and logical locator but no inputPath, source root, or fixture payload",
+      "primarySurface": "compiled capsule inspection",
+      "counterevidence": "any linked content or machine input path appears in output",
+      "secondarySurfaceIfNeeded": "source-code inspection and sensitive-pattern tests",
+      "observedEvidence": "selftest output inspection across a 16 KiB linked payload",
+      "verdict": "PASS",
+      "namedSeam": "a digest does not prove a declared source classification truthful, and declaration text still needs privacy review"
+    },
+    {
+      "claimId": "changed-source-held",
+      "claim": "A linked source change invalidates reverification and holds action.",
+      "kind": "persistence",
+      "risk": "high",
+      "passCondition": "modify a real linked file, restart observation, and receive FAIL plus HELD and SOURCE_DIGEST_MISMATCH",
+      "primarySurface": "before/change/re-read focused execution",
+      "counterevidence": "changed bytes still pass reverification",
+      "secondarySurfaceIfNeeded": "capsule/current compilation digest comparison",
+      "observedEvidence": "selftest real file mutation and reverification assertions",
+      "verdict": "PASS",
+      "namedSeam": "source match covers the stored file, not remote state represented by that file"
+    },
+    {
+      "claimId": "external-freshness-honest",
+      "claim": "Matching stored digests never erase REPROBE_REQUIRED for volatile external state.",
+      "kind": "authorization",
+      "risk": "high",
+      "passCondition": "unchanged capsule and source verification passes while actionState remains REPROBE_REQUIRED and the resume card names it",
+      "primarySurface": "runtime verification and rendered card",
+      "counterevidence": "stored digest match yields READY for a volatile source",
+      "secondarySurfaceIfNeeded": "truth-field and source-code inspection",
+      "observedEvidence": "selftest reverify and card assertions",
+      "verdict": "PASS",
+      "namedSeam": "a separate live receiver probe is still required"
+    },
+    {
+      "claimId": "unsafe-retention-classes-refused",
+      "claim": "Declared private/user sources, repetitive telemetry, temporary captures, and unclassified material cannot produce READY.",
+      "kind": "authorization",
+      "risk": "high",
+      "passCondition": "each refused classification produces SOURCE_CLASS_REFUSED",
+      "primarySurface": "focused classification boundary tests",
+      "counterevidence": "any refused class compiles READY",
+      "secondarySurfaceIfNeeded": "contract inspection",
+      "observedEvidence": "selftest covers all four refused source classes",
+      "verdict": "PASS",
+      "namedSeam": "classification honesty remains declarer responsibility"
+    },
+    {
+      "claimId": "resume-card-integrity",
+      "claim": "The compact resume card is digest-bound to one verified READY capsule and preserves goal, first action, decisions, loops, sources, freshness, and boundaries.",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "passCondition": "card verification passes and text carries every required semantic section plus capsule digest",
+      "primarySurface": "card build and verify execution",
+      "counterevidence": "card changes without digest failure or omits freshness/authority sections",
+      "secondarySurfaceIfNeeded": "card schema inspection",
+      "observedEvidence": "selftest card integrity and required-section assertions",
+      "verdict": "PASS",
+      "namedSeam": "the card remains a derived view, not memory authority"
+    },
+    {
+      "claimId": "no-hidden-authority",
+      "claim": "Compilation and cards grant no action, permission, memory.handoff, promotion, roots, or CANON authority.",
+      "kind": "authorization",
+      "risk": "high",
+      "passCondition": "contract refuses these effects, runtime truth keeps them false, and no network/subprocess/repository-write capability exists",
+      "primarySurface": "contract and executable-source inspection",
+      "counterevidence": "any authority flag becomes true or prohibited capability appears",
+      "secondarySurfaceIfNeeded": "runtime truth assertions",
+      "observedEvidence": "selftest contract, dependency, and truth assertions",
+      "verdict": "PASS",
+      "namedSeam": "human and declared steward review seats remain external"
+    },
+    {
+      "claimId": "bounded-first-read-size",
+      "claim": "For the declared real build-state source set, the compact resume text is materially smaller than reading every linked source first.",
+      "kind": "performance",
+      "risk": "medium",
+      "passCondition": "measure UTF-8 resume text bytes and exact linked source bytes for the same compiled capsule; resume text is smaller and both values are preserved",
+      "primarySurface": "runtime byte measurement under the named nine-source build-state declaration",
+      "counterevidence": "resume text is equal to or larger than the linked source total",
+      "secondarySurfaceIfNeeded": "artifact size and capsule metrics inspection",
+      "observedEvidence": "5,366 resume-text bytes versus 28,150 linked-source bytes, an 80.9% reduction for this declared set",
+      "verdict": "PASS",
+      "namedSeam": "byte reduction is not a general token, intelligence, or reasoning-quality claim"
+    }
+  ],
+  "overall": "PASS"
+}
