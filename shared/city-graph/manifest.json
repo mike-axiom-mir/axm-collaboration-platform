@@ -1,0 +1,53 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "machine-capability",
+  "id": "city-graph",
+  "folderAlias": "city-graph",
+  "name": "AXM LEGO City Map Compiler",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "../../scripts/compile-city-graph.js",
+  "contract": "module.contract.json",
+  "type": "machine-capability",
+  "audience": "human-machine",
+  "layer": "foundation",
+  "category": "FOUNDATION",
+  "risk": "LOW",
+  "tags": [
+    "lego-city",
+    "discovery",
+    "deterministic-graph",
+    "read-only",
+    "drift-gate"
+  ],
+  "uses": [
+    "filesystem-read",
+    "local-git-read",
+    "module-manifests",
+    "module-contracts",
+    "json-schemas"
+  ],
+  "permissions": [],
+  "actions": [
+    "compile a deterministic city graph from declared local modules",
+    "render machine and human views from one graph",
+    "detect omitted modules and generated-view drift",
+    "write generated candidate views only under explicit --write"
+  ],
+  "accepts": [
+    "filesystem/explicit-workshop-root",
+    "axm.city-roots/v1"
+  ],
+  "produces": [
+    "axm.city-graph/v1",
+    "axm.block-view/v1",
+    "axm.city-graph-receipt/v1"
+  ],
+  "readiness": [
+    "node-runtime",
+    "local-git-runtime",
+    "readable-declared-roots"
+  ],
+  "summary": "Compile one deterministic, omission-aware LEGO city graph and derive every city view from it without granting runtime or governance authority.",
+  "notes": "EXPERIMENTAL. Classification is provisional unless explicitly declared. Availability is not authorization. Passing checks do not install, execute, promote, merge, change CANON, or alter roots."
+}

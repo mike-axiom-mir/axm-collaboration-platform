@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.city-graph/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "source", "semanticDigest", "summary", "blocks", "capabilities", "schemas", "edges", "unresolved", "truth"],
+  "properties": {
+    "schema": { "const": "axm.city-graph/v1" },
+    "source": { "type": "object" },
+    "semanticDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "summary": { "type": "object" },
+    "blocks": { "type": "array", "items": { "$ref": "axm.block-view/v1" } },
+    "capabilities": { "type": "array" },
+    "schemas": { "type": "array" },
+    "edges": { "type": "array" },
+    "unresolved": { "type": "array" },
+    "truth": {
+      "type": "object",
+      "required": ["automaticInstall", "automaticExecution", "capabilityGrantsAuthority", "automaticPromotion", "automaticCanon"],
+      "properties": {
+        "automaticInstall": { "const": false },
+        "automaticExecution": { "const": false },
+        "capabilityGrantsAuthority": { "const": false },
+        "automaticPromotion": { "const": false },
+        "automaticCanon": { "const": false }
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+name: AXM LEGO City Map Gate
+
+on:
+  pull_request:
+    paths:
+      - "tools/**"
+      - "shared/**"
+      - "worlds/**"
+      - "registry/generated/**"
+      - "docs/generated/LEGO_CITY_MAP.md"
+      - "scripts/compile-city-graph.js"
+      - "tests/city-map-gate-test.js"
+      - ".github/workflows/city-map-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  city-map:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact review source
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run focused negative and boundary tests
+        run: node tests/city-map-gate-test.js
+      - name: Refuse omitted modules and generated-view drift
+        run: node scripts/compile-city-graph.js --check

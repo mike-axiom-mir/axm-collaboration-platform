@@ -226,6 +226,15 @@ try {
   else ok('tools-index.json matches current structural source digest');
 } catch(e) { fail('tool readiness index could not run: '+e.message); }
 
+/* 14 - LEGO CITY MAP: all human and machine city views are derived from one
+   omission-aware graph. This is read-only and grants no runtime authority. */
+try {
+  const cityHost = require('./shared/city-graph/city-map-host');
+  const city = cityHost.checkRepository(ROOT);
+  if (city.state !== 'PASS') city.failures.forEach(item => fail('LEGO city map '+item.code+': '+(item.path || (item.modules || []).join(','))));
+  else ok('LEGO city map exact: '+city.graphDigest+'; no omitted declared module or generated-view drift');
+} catch(e) { fail('LEGO city map gate could not run: '+(e.code ? e.code+': ' : '')+e.message); }
+
 /* ---- report ---- */
 const generatedAt = new Date().toISOString();
 const head = 'AXM VERIFY — '+generatedAt+'\n'+
