@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `b44ea7f440321095bf3b9b71891c9780570b4795f609225efa438e9502599afb`
+Semantic graph digest: `ad1a0ebc85e6b90f0d779d55d285180b4056b07aac6ec8f1a6b11d0018337bce`
 
-Blocks: 231 · Capabilities: 1946 · Schemas: 402 · Unresolved edges: 1514
+Blocks: 233 · Capabilities: 1958 · Schemas: 408 · Unresolved edges: 1519
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -190,11 +190,13 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/artifact-depot | ORGAN (DECLARED) | EXPERIMENTAL | ROOT_CHANGE, WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
 | shared/asset-hands | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 78 | 0 | 35 selftest(s) |
 | shared/audio-sfx-bake | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 0 | 1 | 1 selftest(s) |
+| shared/authority-grid | BRICK (DECLARED) | EXPERIMENTAL | NONE | 4 | 2 | 1 selftest(s) |
 | shared/city-graph | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
 | shared/event-journal | ORGAN (DECLARED) | EXPERIMENTAL | WRITE_CANDIDATE | 3 | 2 | 1 selftest(s) |
 | shared/game-asset-foundation | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 13 | 3 | 1 selftest(s) |
 | shared/game-capability-atlas | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
 | shared/game-fsm | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 0 | 3 | 1 selftest(s) |
+| shared/hands-rail | HAND (DECLARED) | EXPERIMENTAL | EXECUTE_CONFINED, WRITE_CANDIDATE | 4 | 4 | 1 selftest(s) |
 | shared/module-evolution-ledger | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 8 | 4 | 2 selftest(s) |
 | shared/neural-visual | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 4 | 0 | 1 selftest(s) |
 | shared/procedural-animation-blocks | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 3 | 1 | 1 selftest(s) |
@@ -1410,6 +1412,8 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/artifact-depot` → `bytes` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/artifact-depot` → `filesystem:explicit-depot-root` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/audio-sfx-bake` → `axm.audio.sound/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/authority-grid` → `axm.authority-policy/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/authority-grid` → `axm.effect-request/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `axm.module-contract/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `axm.tool-manifest/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `filesystem:explicit-workshop-root` (UNKNOWN)
@@ -1428,6 +1432,9 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/game-fsm` → `axm.game-fsm/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/game-fsm` → `discrete events` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/game-fsm` → `named guard/action registries` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/hands-rail` → `axm.decision/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/hands-rail` → `axm.effect-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/hands-rail` → `axm.executor-declaration/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/module-evolution-ledger` → `axm.module-install-receipt/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/module-evolution-ledger` → `axm.verification-receipt/v2` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/module-evolution-ledger` → `mike-explicit-approval-reference` (UNKNOWN)

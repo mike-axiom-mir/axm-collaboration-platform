@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "hands-rail",
+  "version": "v0.1",
+  "provides": ["city.executor.register", "city.executor.measure-denials", "city.executor.dispatch-authorized", "city.effect.receipt-typed"],
+  "consumes": ["axm.executor-declaration/v1", "axm.effect-request/v1", "axm.decision/v1", "city.authority.validate-fresh"],
+  "permissions": [],
+  "handoffs": { "emits": ["axm.effect-receipt/v1"], "accepts": ["axm.executor-declaration/v1", "axm.effect-request/v1", "axm.decision/v1"] },
+  "lifecycle": { "state_owner": "caller", "reload": "explicit-reregister", "disconnect": "cancel-then-cleanup", "cleanup": "mandatory-callback" },
+  "boundaries": {
+    "writes": [],
+    "refuses": ["bundled-shell-executor", "bundled-network-executor", "sandbox-claim-by-runtime-label", "execution-without-exact-authority", "decision-reuse", "silent-partial-success", "authority-expansion", "promotion", "merge", "canon-change", "root-change"]
+  }
+}

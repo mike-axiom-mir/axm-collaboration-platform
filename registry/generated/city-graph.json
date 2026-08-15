@@ -22022,6 +22022,115 @@
       },
       "boundaries": {
         "refuses": [
+          "ai-self-authorization",
+          "canon-change",
+          "capability-as-authority",
+          "effect-execution",
+          "high-risk-reuse",
+          "implicit-policy",
+          "merge",
+          "promotion",
+          "root-change",
+          "scope-widening",
+          "stale-policy",
+          "target-digest-drift"
+        ],
+        "writes": []
+      },
+      "classification": {
+        "basis": [
+          "manifest.legoBlockKind"
+        ],
+        "kind": "BRICK",
+        "state": "DECLARED"
+      },
+      "effects": {
+        "capable": [
+          "NONE"
+        ],
+        "declarationInputs": [],
+        "measured": false,
+        "note": "Effects are declarations/inferences, not authority or proof that an effect occurred.",
+        "unknownDeclarations": []
+      },
+      "id": "shared/authority-grid",
+      "name": "AXM LEGO City Typed Authority Grid",
+      "proof": {
+        "behaviorProvenByGraph": false,
+        "evidenceLocators": [],
+        "freshness": "UNKNOWN",
+        "selftests": [
+          "shared/authority-grid/selftest.js"
+        ]
+      },
+      "resources": {
+        "readiness": [
+          "explicit-decision-maker",
+          "explicit-policy",
+          "node-runtime"
+        ],
+        "uses": [
+          "caller-supplied-clock",
+          "caller-supplied-policy",
+          "typed-effect-request"
+        ]
+      },
+      "schema": "axm.block-view/v1",
+      "sockets": {
+        "accepts": [
+          "axm.authority-policy/v1",
+          "axm.effect-request/v1"
+        ],
+        "consumes": [
+          "axm.authority-policy/v1",
+          "axm.effect-request/v1"
+        ],
+        "emits": [
+          "axm.decision-consumption/v1",
+          "axm.decision/v1"
+        ],
+        "provides": [
+          "city.authority.consume-once",
+          "city.authority.decide-typed",
+          "city.authority.request-digest",
+          "city.authority.validate-fresh"
+        ]
+      },
+      "source": {
+        "contract": "shared/authority-grid/module.contract.json",
+        "declarationFiles": [
+          "shared/authority-grid/manifest.json",
+          "shared/authority-grid/module.contract.json"
+        ],
+        "declaredId": "authority-grid",
+        "digest": "2fbe7eb7b557511c6b14bfead4f272c3474f617a2572961ae2869abc0c1b5cba",
+        "manifest": "shared/authority-grid/manifest.json",
+        "observedSourceFileCount": 9,
+        "root": "shared/authority-grid"
+      },
+      "status": "EXPERIMENTAL",
+      "surfaces": {
+        "audience": "human-machine",
+        "entry": "authority-grid-core.js",
+        "type": "machine-capability"
+      },
+      "version": "v0.1"
+    },
+    {
+      "authority": {
+        "availableIsAuthorized": false,
+        "canon": false,
+        "declaredPermissions": [],
+        "execute": false,
+        "grants": [],
+        "install": false,
+        "merge": false,
+        "networkWrite": false,
+        "promote": false,
+        "roots": false
+      },
+      "boundaries": {
+        "refuses": [
           "automatic-deletion-of-stale-generated-files",
           "canon-change",
           "merge",
@@ -22545,6 +22654,117 @@
         "type": "UNDECLARED"
       },
       "version": "0.1.0"
+    },
+    {
+      "authority": {
+        "availableIsAuthorized": false,
+        "canon": false,
+        "declaredPermissions": [],
+        "execute": false,
+        "grants": [],
+        "install": false,
+        "merge": false,
+        "networkWrite": false,
+        "promote": false,
+        "roots": false
+      },
+      "boundaries": {
+        "refuses": [
+          "authority-expansion",
+          "bundled-network-executor",
+          "bundled-shell-executor",
+          "canon-change",
+          "decision-reuse",
+          "execution-without-exact-authority",
+          "merge",
+          "promotion",
+          "root-change",
+          "sandbox-claim-by-runtime-label",
+          "silent-partial-success"
+        ],
+        "writes": []
+      },
+      "classification": {
+        "basis": [
+          "manifest.legoBlockKind"
+        ],
+        "kind": "HAND",
+        "state": "DECLARED"
+      },
+      "effects": {
+        "capable": [
+          "EXECUTE_CONFINED",
+          "WRITE_CANDIDATE"
+        ],
+        "declarationInputs": [],
+        "measured": false,
+        "note": "Effects are declarations/inferences, not authority or proof that an effect occurred.",
+        "unknownDeclarations": []
+      },
+      "id": "shared/hands-rail",
+      "name": "AXM LEGO City Hands Rail",
+      "proof": {
+        "behaviorProvenByGraph": false,
+        "evidenceLocators": [],
+        "freshness": "UNKNOWN",
+        "selftests": [
+          "shared/hands-rail/selftest.js"
+        ]
+      },
+      "resources": {
+        "readiness": [
+          "caller-injected-handler",
+          "exact-authority-decision",
+          "node-runtime"
+        ],
+        "uses": [
+          "authority-grid",
+          "caller-injected-handler",
+          "caller-supplied-clock"
+        ]
+      },
+      "schema": "axm.block-view/v1",
+      "sockets": {
+        "accepts": [
+          "axm.decision/v1",
+          "axm.effect-request/v1",
+          "axm.executor-declaration/v1"
+        ],
+        "consumes": [
+          "axm.decision/v1",
+          "axm.effect-request/v1",
+          "axm.executor-declaration/v1",
+          "city.authority.validate-fresh"
+        ],
+        "emits": [
+          "axm.effect-receipt/v1"
+        ],
+        "provides": [
+          "city.effect.receipt-typed",
+          "city.executor.dispatch-authorized",
+          "city.executor.measure-denials",
+          "city.executor.register"
+        ]
+      },
+      "source": {
+        "contract": "shared/hands-rail/module.contract.json",
+        "declarationFiles": [
+          "shared/hands-rail/manifest.json",
+          "shared/hands-rail/module.contract.json"
+        ],
+        "declaredId": "hands-rail",
+        "digest": "4e6b11dd09a1c67084a0c0a11be5392cdf9b6acec8e4bfd9d6b00f418d87a34a",
+        "manifest": "shared/hands-rail/manifest.json",
+        "observedSourceFileCount": 7,
+        "root": "shared/hands-rail"
+      },
+      "status": "EXPERIMENTAL",
+      "surfaces": {
+        "audience": "human-machine",
+        "entry": "hands-rail-core.js",
+        "type": "machine-capability"
+      },
+      "version": "v0.1"
     },
     {
       "authority": {
@@ -29060,6 +29280,13 @@
     },
     {
       "consumers": [
+        "shared/authority-grid"
+      ],
+      "id": "axm.authority-policy/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
         "body-pulse",
         "workshop-direction"
       ],
@@ -29167,6 +29394,13 @@
     },
     {
       "consumers": [
+        "shared/hands-rail"
+      ],
+      "id": "axm.decision/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
         "workshop-packager"
       ],
       "id": "axm.deploy.windows-runtime-manifest.v1",
@@ -29191,6 +29425,14 @@
         "studio"
       ],
       "id": "axm.drawpacket/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/authority-grid",
+        "shared/hands-rail"
+      ],
+      "id": "axm.effect-request/v1",
       "providers": []
     },
     {
@@ -29290,6 +29532,13 @@
         "evidence-chain-inspector"
       ],
       "id": "axm.evidence-retention/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/hands-rail"
+      ],
+      "id": "axm.executor-declaration/v1",
       "providers": []
     },
     {
@@ -31343,9 +31592,46 @@
     },
     {
       "consumers": [],
+      "id": "city.authority.consume-once",
+      "providers": [
+        "shared/authority-grid"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.authority.decide-typed",
+      "providers": [
+        "shared/authority-grid"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.authority.request-digest",
+      "providers": [
+        "shared/authority-grid"
+      ]
+    },
+    {
+      "consumers": [
+        "shared/hands-rail"
+      ],
+      "id": "city.authority.validate-fresh",
+      "providers": [
+        "shared/authority-grid"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "city.deterministic-graph-compile",
       "providers": [
         "shared/city-graph"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.effect.receipt-typed",
+      "providers": [
+        "shared/hands-rail"
       ]
     },
     {
@@ -31367,6 +31653,27 @@
       "id": "city.event.projection-replay",
       "providers": [
         "shared/event-journal"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.executor.dispatch-authorized",
+      "providers": [
+        "shared/hands-rail"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.executor.measure-denials",
+      "providers": [
+        "shared/hands-rail"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.executor.register",
+      "providers": [
+        "shared/hands-rail"
       ]
     },
     {
@@ -42570,6 +42877,12 @@
       "type": "CAPABILITY"
     },
     {
+      "from": "shared/authority-grid",
+      "socket": "city.authority.validate-fresh",
+      "to": "shared/hands-rail",
+      "type": "CAPABILITY"
+    },
+    {
       "from": "workshop-packager",
       "socket": "package-manifest",
       "to": "evidence-chain-recovery-snapshot-placement-foundry",
@@ -42806,6 +43119,11 @@
       "sha256": "cec7ef092e5e52d26345060d80fb97e5d5322761b5b72d677ef00d01ff00f292"
     },
     {
+      "id": "axm.authority-policy/v1",
+      "path": "shared/authority-grid/authority-policy.schema.json",
+      "sha256": "9505ab956aa9a7ff67ec8e439b6ba114bbd49f4770ac4f64eceac0fc71ec9e30"
+    },
+    {
       "id": "axm.blender-capability-matrix-receipt/v1",
       "path": "shared/asset-hands/substrate-pack/blender-capability-matrix-receipt.schema.json",
       "sha256": "a509c36717701274b3676b9c7ccb3242c5602cf23b58b483e806ea621a569d7f"
@@ -42891,9 +43209,29 @@
       "sha256": "bd589366367f8dc8bb3a4097fdcaad999831d6fb5747e8275ec4e5cda635c1d8"
     },
     {
+      "id": "axm.decision-consumption/v1",
+      "path": "shared/authority-grid/decision-consumption.schema.json",
+      "sha256": "20688b844a7df4b431d8c7e169f17bdf53866d66ff3766a2c316d5b4f6611d4b"
+    },
+    {
+      "id": "axm.decision/v1",
+      "path": "shared/authority-grid/decision.schema.json",
+      "sha256": "a5d8d1c0db6714c51fbd4575a1d078b01119b59f9dcd0db592d6ed6186b338cc"
+    },
+    {
       "id": "axm.deterministic-research-report/v1",
       "path": "shared/deterministic-research/schemas/research-report.schema.json",
       "sha256": "df147277f242c117550250b62fd45ae94f0915605f6bd9e5a945e2ae013140a9"
+    },
+    {
+      "id": "axm.effect-receipt/v1",
+      "path": "shared/hands-rail/effect-receipt.schema.json",
+      "sha256": "53d7866f3a2d96a771558e0c68b7352b80b577c234f292f44e40785883478f08"
+    },
+    {
+      "id": "axm.effect-request/v1",
+      "path": "shared/authority-grid/effect-request.schema.json",
+      "sha256": "b8af4fc201369b60bdd9154127f74f875ac8b37c116b7b2d20d398eebb23c4fd"
     },
     {
       "id": "axm.element-composition-receipt/v1",
@@ -42924,6 +43262,11 @@
       "id": "axm.evidence-receipt/v2",
       "path": "tools/evidence-desk/evidence-receipt.schema.json",
       "sha256": "9ab893a9e7713f5bde658bc21995ec2a5fcc9799947a13e85c99949c4c3f8f9b"
+    },
+    {
+      "id": "axm.executor-declaration/v1",
+      "path": "shared/hands-rail/executor-declaration.schema.json",
+      "sha256": "32c0dc146fd422154b5b0933784bae4b4f7e1d9343031aa6e6f3a175c9196115"
     },
     {
       "id": "axm.experiment-intent/v1",
@@ -44601,35 +44944,35 @@
       "sha256": "2effd339ff854a7bd1bdc8bc97710e3a65bf33ac01c5c9f27d7893f5fda0faae"
     }
   ],
-  "semanticDigest": "b44ea7f440321095bf3b9b71891c9780570b4795f609225efa438e9502599afb",
+  "semanticDigest": "ad1a0ebc85e6b90f0d779d55d285180b4056b07aac6ec8f1a6b11d0018337bce",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "97e3c4496dae1252bd77456b0fd9a48ec8c496a12d355ca68294bc53ee782fe6",
+    "declarationDigest": "3c94627d93b6be1989ae09c42e166e1ae07cc272350c753f812af5c29c750b5e",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "97e3c4496dae1252bd77456b0fd9a48ec8c496a12d355ca68294bc53ee782fe6"
+    "snapshotIdentity": "3c94627d93b6be1989ae09c42e166e1ae07cc272350c753f812af5c29c750b5e"
   },
   "summary": {
     "blockKinds": {
-      "BRICK": 2,
+      "BRICK": 3,
       "BRIDGE": 26,
-      "HAND": 127,
+      "HAND": 128,
       "ORGAN": 19,
       "ROOM": 33,
       "ROUTE": 24
     },
-    "blocks": 231,
-    "capabilities": 1946,
-    "declaredContracts": 228,
-    "declaredManifests": 218,
-    "edges": 31,
-    "schemas": 402,
-    "unresolved": 1514
+    "blocks": 233,
+    "capabilities": 1958,
+    "declaredContracts": 230,
+    "declaredManifests": 220,
+    "edges": 32,
+    "schemas": 408,
+    "unresolved": 1519
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -51626,6 +51969,18 @@
       "state": "UNKNOWN"
     },
     {
+      "blockId": "shared/authority-grid",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.authority-policy/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/authority-grid",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.effect-request/v1",
+      "state": "UNKNOWN"
+    },
+    {
       "blockId": "shared/city-graph",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "axm.module-contract/v1",
@@ -51731,6 +52086,24 @@
       "blockId": "shared/game-fsm",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "named guard/action registries",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/hands-rail",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.decision/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/hands-rail",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.effect-request/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/hands-rail",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.executor-declaration/v1",
       "state": "UNKNOWN"
     },
     {

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.effect-request/v1",
+  "type": "object",
+  "required": ["schema", "id", "principal", "action", "resource", "effectClass", "targetDigest", "scope", "requestedAt", "correlationId", "requestDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.effect-request/v1" },
+    "id": { "type": "string" },
+    "principal": { "type": "string" },
+    "action": { "type": "string" },
+    "resource": { "type": "string" },
+    "effectClass": { "type": "string" },
+    "targetDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "scope": { "type": "object" },
+    "requestedAt": { "type": "string", "format": "date-time" },
+    "correlationId": { "type": "string" },
+    "requestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

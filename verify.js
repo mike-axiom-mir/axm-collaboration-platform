@@ -11,7 +11,7 @@
    0 = all pass · 1 = failures found.
    ============================================================ */
 'use strict';
-const fs = require('fs'), path = require('path'), crypto = require('crypto');
+const fs = require('fs'), path = require('path'), crypto = require('crypto'), childProcess = require('child_process');
 const ToolReadiness = require('./shared/readiness/tool-readiness');
 const ROOT = __dirname;
 const out = [], records = []; let fails = 0, warns = 0;
@@ -251,6 +251,14 @@ try {
   const eventAssertions = require('./shared/event-journal/selftest').run();
   ok('city state primitives focused suite: '+(artifactAssertions+eventAssertions)+' assertion(s); no delete, rewrite, or event-as-authority path');
 } catch(e) { fail('city state primitives focused suite failed: '+(e.code ? e.code+': ' : '')+e.message); }
+
+/* 17 - AUTHORITY/HANDS SEAM: run in a child because the injected-handler tests
+   are asynchronous. No real executor is bundled or called. */
+try {
+  const authorityHands = childProcess.spawnSync(process.execPath, ['tests/city-authority-hands-test.js'], { cwd: ROOT, encoding: 'utf8', windowsHide: true });
+  if (authorityHands.status !== 0) fail('city authority/hands focused suite failed: '+String(authorityHands.stderr || authorityHands.stdout || '').trim());
+  else ok('city authority/hands focused suite: 22 assertion(s); external decision-maker verification required; no real executor bundled');
+} catch(e) { fail('city authority/hands focused suite could not run: '+e.message); }
 
 /* ---- report ---- */
 const generatedAt = new Date().toISOString();

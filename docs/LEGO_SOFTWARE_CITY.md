@@ -70,3 +70,18 @@ short-lived exclusive lock. It fails on incomplete tails, invalid JSON,
 sequence/hash drift, or duplicate event IDs. Correlation, causation, authority
 decision references, and evidence references survive deterministic projection
 replay. An event records an occurrence; it grants no authority.
+
+## Phase 3 authority and hands
+
+The Authority Grid compiles pure decision packets bound to an exact principal,
+action, resource, effect class, target digest, structured scope, policy digest,
+expiry, and correlation. Permits additionally require an external
+decision-maker verifier: a `human:` string and an unkeyed digest are not
+authentication. High-risk authority is human-verified and one-use. Capability
+alone never grants authority.
+
+The Hands Rail contains no shell, process, filesystem, browser, or network
+executor. It can invoke only a caller-injected handler after the exact decision
+passes. Executor declarations include budgets, denial probes, known gaps,
+cancellation, and mandatory cleanup. The receipt retains success, partial,
+failure, or cancellation; substrate names never prove confinement.

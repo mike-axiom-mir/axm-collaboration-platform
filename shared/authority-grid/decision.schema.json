@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.decision/v1",
+  "type": "object",
+  "required": ["schema", "id", "requestDigest", "policyId", "policyVersion", "policyDigest", "decision", "decidedBy", "decidedAt", "expiresAt", "oneUse", "reason", "decisionDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.decision/v1" },
+    "id": { "type": "string" },
+    "requestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "policyId": { "type": "string" },
+    "policyVersion": { "type": "string" },
+    "policyDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "decision": { "enum": ["PERMIT", "DENY", "HOLD"] },
+    "decidedBy": { "type": "string" },
+    "decidedAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "oneUse": { "type": "boolean" },
+    "reason": { "type": "string" },
+    "decisionDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

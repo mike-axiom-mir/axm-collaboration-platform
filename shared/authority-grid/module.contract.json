@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "authority-grid",
+  "version": "v0.1",
+  "provides": ["city.authority.request-digest", "city.authority.decide-typed", "city.authority.validate-fresh", "city.authority.consume-once"],
+  "consumes": ["axm.effect-request/v1", "axm.authority-policy/v1"],
+  "permissions": [],
+  "handoffs": { "emits": ["axm.decision/v1", "axm.decision-consumption/v1"], "accepts": ["axm.effect-request/v1", "axm.authority-policy/v1"] },
+  "lifecycle": { "state_owner": "none", "reload": "re-evaluate-from-exact-input", "disconnect": "not-applicable", "cleanup": "not-applicable" },
+  "boundaries": {
+    "writes": [],
+    "refuses": ["ai-self-authorization", "capability-as-authority", "implicit-policy", "stale-policy", "scope-widening", "target-digest-drift", "high-risk-reuse", "effect-execution", "promotion", "merge", "canon-change", "root-change"]
+  }
+}
