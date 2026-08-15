@@ -33,6 +33,7 @@ const MIN_TIER = 1;
 const MAX_TIER = 6;
 const SHARD_METER = 110;
 const INPUT_OWNER_STALE_MS = 220;
+const INPUT_AXIS_DEADZONE = 0.05;
 
 function makeRunSummary(state, opts) {
   const reason = opts && opts.reason ? opts.reason : null;
@@ -46,6 +47,7 @@ function makeRunSummary(state, opts) {
     stamina: Math.max(0, Math.round(state.stamina || 0)),
     seed: state.randomSeed || state.seed || 0,
     runVersion: state.runVersion || state.buildVersion || BUILD_VERSION,
+    reason: state.reason || null,
     diedBy: reason || state.diedBy || null,
     bestScore: Math.max(0, Math.round(state.score || 0))
   };
@@ -72,8 +74,10 @@ function toFloat(value, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
-function normalizeAxis(value) {
-  return clamp(toFloat(value, 0), -1, 1);
+function normalizeAxis(value, options) {
+  const deadzone = clamp(toFloat(options && options.deadzone, INPUT_AXIS_DEADZONE), 0, 1);
+  const normalized = clamp(toFloat(value, 0), -1, 1);
+  return Math.abs(normalized) <= deadzone ? 0 : normalized;
 }
 
 function sanitizeButton(value) {
@@ -95,8 +99,8 @@ function sanitizeInput(raw, options) {
   }
   const owner = raw && (raw.owner || raw.source);
   return {
-    moveX: normalizeAxis(raw && raw.moveX),
-    moveZ: normalizeAxis(raw && raw.moveZ),
+    moveX: normalizeAxis(raw && raw.moveX, { deadzone: INPUT_AXIS_DEADZONE }),
+    moveZ: normalizeAxis(raw && raw.moveZ, { deadzone: INPUT_AXIS_DEADZONE }),
     jump: sanitizeButton(raw && raw.jump),
     pause: sanitizeButton(raw && raw.pause),
     restart: sanitizeButton(raw && raw.restart),
@@ -141,6 +145,9 @@ function pick(arr, random) {
 function event(state, text, now, opts) {
   state.event = text;
   state.eventAt = now;
+  if (opts && Object.prototype.hasOwnProperty.call(opts, 'reasonText')) {
+    state.reason = opts.reasonText;
+  }
   if (opts && opts.reason) {
     state.diedBy = opts.reason;
   }
@@ -280,6 +287,7 @@ function tierFromProgress(progress) {
 function finish(state, won, now, reason) {
   if (state.result) return;
   const dieReason = won ? null : (reason || 'STAMINA_COLLAPSE');
+  const finishReason = won ? 'RUN_COMPLETE' : 'GAME_OVER';
   state.phase = won ? PHASES.won : PHASES.lost;
   state.result = {
     won,
@@ -290,6 +298,7 @@ function finish(state, won, now, reason) {
     durationMs: Math.max(0, now - (state.startedAt || state.startAt)),
     runVersion: state.runVersion || BUILD_VERSION
   };
+  state.reason = finishReason;
   state.runStats = Object.assign({}, state.runStats, {
     distance: Math.round(state.progress),
     shards: state.totalShards,
@@ -320,7 +329,7 @@ function finish(state, won, now, reason) {
   state.endedAt = now;
   state.diedBy = dieReason;
   state.cooldownUntil = now + COOLDOWN_MS;
-  event(state, won ? 'RUN COMPLETE' : 'GAME OVER', now, { reason: dieReason });
+  event(state, won ? 'RUN COMPLETE' : 'GAME OVER', now, { reason: dieReason, reasonText: finishReason });
 }
 
 function create(rawSeats, now = Date.now(), options) {
@@ -345,6 +354,7 @@ function create(rawSeats, now = Date.now(), options) {
     startedAt: 0,
     endedAt: 0,
     cooldownUntil: 0,
+    reason: 'READY',
     players: {},
     result: null,
     event: 'SIGNAL ARRAY WARMING UP',
@@ -406,7 +416,7 @@ function create(rawSeats, now = Date.now(), options) {
 
   state.player.lane = 1;
   const seedName = String(seed);
-  event(state, 'RUN SEAT ' + (state.seat.display_name || 'RUNNER') + ' · RNG #' + seedName, createdAt);
+  event(state, 'RUN SEAT ' + (state.seat.display_name || 'RUNNER') + ' · RNG #' + seedName, createdAt, { reasonText: 'READY' });
 
   for (let i = 0; i < 5; i++) {
     spawnRuins(state);
@@ -651,6 +661,7 @@ function step(state, rawInputs, dt, nowArg) {
   if (state.phase === PHASES.countdown && state.now >= state.startAt) {
     state.phase = PHASES.running;
     state.startedAt = state.now;
+    state.reason = 'RUNNING';
     event(state, 'RUNNER ARMED', state.now);
   }
 
@@ -664,6 +675,7 @@ function step(state, rawInputs, dt, nowArg) {
       state.prevPhase = null;
       state.eventAt = state.now;
       state.event = 'RESUMED';
+      state.reason = 'RUNNING';
     }
     applyCameraDrift(state, dt);
     return publicState(state);
@@ -674,6 +686,7 @@ function step(state, rawInputs, dt, nowArg) {
     state.prevPhase = state.phase;
     state.phase = PHASES.paused;
     state.pauseAt = state.now;
+    state.reason = 'PAUSED';
     state.event = 'PAUSED';
     state.eventAt = state.now;
     return publicState(state);

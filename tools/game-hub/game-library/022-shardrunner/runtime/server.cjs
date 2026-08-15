@@ -97,9 +97,11 @@ function applyStateSettings(state, session) {
   const cloneState = Core.publicState(state);
   cloneState.bestScore = session.bestScore;
   cloneState.lastRun = session.lastRun;
+  cloneState.lastRunSummary = state.runSummary || null;
   cloneState.history = session.runHistory.slice();
   cloneState.buildVersion = state.buildVersion || state.runVersion || BUILD_VERSION;
   cloneState.runVersion = cloneState.buildVersion;
+  cloneState.reason = state.reason || null;
   cloneState.seed = state.randomSeed || state.seed || 0;
   cloneState.attempt = state.attempt || 1;
   cloneState.runId = state.runId;

@@ -150,6 +150,11 @@
       mix-blend-mode:screen;
       opacity:.3;
       z-index:4;
+      animation: dither-shimmer 2.5s linear infinite;
+    }
+    @keyframes dither-shimmer {
+      from { background-position: 0 0, 0 0; }
+      to { background-position: 4px 4px, 3px 3px; }
     }
     .help {
       position:absolute;
@@ -176,6 +181,23 @@
     .owner-indicator.owner-keyboard { color:#8ce7ff; }
     .owner-indicator.owner-touch { color:#7fffb8; }
     .owner-indicator.owner-gamepad { color:#ffa58a; }
+    body.owner-keyboard .events {
+      border-color: rgba(140, 231, 255, 0.32);
+    }
+    body.owner-touch .events {
+      border-color: rgba(127, 255, 184, 0.55);
+    }
+    body.owner-gamepad .events {
+      border-color: rgba(255, 165, 138, 0.55);
+    }
+    .phone-controls .steer.active-owner,
+    .phone-controls .phone-action.active-owner {
+      border-color: rgba(127, 255, 184, 0.88);
+    }
+    body.owner-gamepad .phone-controls .steer.active-owner,
+    body.owner-gamepad .phone-controls .phone-action.active-owner {
+      border-color: rgba(255, 165, 138, 0.88);
+    }
     .phone-controls {
       position:absolute;
       left:12px;
@@ -247,6 +269,14 @@
       transform:scale(0.98);
       background:rgba(95, 216, 255, 0.18);
     }
+    .events.pulse {
+      animation: pulse-edge 0.35s steps(2, end) 1;
+    }
+    @keyframes pulse-edge {
+      0% { filter: brightness(1); }
+      50% { filter: brightness(1.45); }
+      100% { filter: brightness(1); }
+    }
     body.phone .phone-controls { display:flex; }
     body.phone .help { display:none; }
   </style>
@@ -309,6 +339,7 @@
     const INPUT_OWNER_STALE_MS = 260;
     const INPUT_OWNER_PRIORITY = ['keyboard', 'touch', 'gamepad'];
     const RESTART_KEY_DEBOUNCE_MS = 190;
+    const RESUME_KEY_DEBOUNCE_MS = 190;
     const KEY_DEADZONE = 0.08;
     const JOYSTICK_DEADZONE = 0.18;
     const DIRECTION_DEADZONE = 0.1;
@@ -403,6 +434,7 @@
     const touchInput = { moveX: 0, moveZ: 0, jump: false, pause: false, active: false, restartEdge: false };
     const gamepadInput = { moveX: 0, moveZ: 0, jump: false, pause: false, restart: false, restartEdge: false };
     const gamepadPrev = { jump: false, pause: false, restart: false };
+    const activeTouchPointers = new Set();
     const sourceActivity = {
       keyboard: 0,
       touch: 0,
@@ -410,20 +442,21 @@
     };
     let inputOwner = 'keyboard';
     let clearInputsUntil = 0;
-    let inputSource = 'keyboard';
     let sourceAt = {
       keyboard: 0,
       touch: 0,
-      gamepad: 0
-    };
-    let sourceEdge = {
-      restart: 0
+      gamepad: 0,
+      restart: 0,
+      pause: 0
     };
     let restartQueued = false;
     let keyRestartHeld = false;
+    let keyPauseHeld = false;
     let state = null;
     let onboardingSeen = false;
     let gamepadConnected = false;
+    let lastEvent = '';
+    let eventFlash = 0;
     const keys = Object.create(null);
     let frame = null;
 
@@ -656,13 +689,19 @@
       const reducedMotion = state?.settings && state.settings.reduced_motion;
       const lockTilt = state?.settings && state.settings.camera_tilt_lock;
       const pulse = state.cameraPulse || 0;
+      const eventJolt = Math.min(1, eventFlash);
       const ease = reducedMotion ? 0.07 : 0.18;
-      const targetY = 7.9 + (lockTilt ? 0.0 : (p.vx * 0.06)) + (reducedMotion ? 0 : pulse * 1.5);
+      const shimmerX = Math.sin((state.progress || 0) * 0.12 + (state.now || 0) * 0.0017) * 0.13 * eventJolt;
+      const shimmerY = Math.cos((state.progress || 0) * 0.11) * 0.12 * eventJolt;
+      const targetY = 7.9 + (lockTilt ? 0.0 : (p.vx * 0.06)) + (reducedMotion ? 0 : pulse * 1.2) + shimmerY;
       const targetX = p.x + (lockTilt ? 0 : 0.6);
       const camTarget = new THREE.Vector3(p.x, 1.1 + p.y, lockTilt ? 5.6 : 4.5);
-      const camPos = new THREE.Vector3(targetX, targetY, 20.6);
+      const camPos = new THREE.Vector3(targetX + shimmerX, targetY, 20.6);
+      const goalFog = (state.phase === 'running' || state.phase === 'paused') ? 36 : 30;
+      scene.fog.far = THREE.MathUtils.lerp(scene.fog.far || 132, goalFog, reducedMotion ? 0.2 : 0.08);
       camera.position.lerp(camPos, reducedMotion ? 0.08 : ease);
       camera.lookAt(camTarget.x, Math.max(1.1, camTarget.y), lockTilt ? 3.2 : 6 + p.z);
+      eventFlash = Math.max(0, eventFlash - 0.08);
     }
 
     function applyUI() {
@@ -676,7 +715,7 @@
       stateText.remaining.textContent = 'to-go ' + String(remaining).padStart(3, '0');
       stateText.score.textContent = 'score ' + Math.floor(state.score || 0).toString().padStart(4, '0');
       stateText.combo.textContent = 'combo x' + Math.max(1, state.combo || 0);
-      stateText.reason.textContent = 'state: ' + (state.diedBy ? state.diedBy : state.event || 'READY');
+      stateText.reason.textContent = 'state: ' + (state.reason || state.diedBy || state.event || 'READY');
       stateText.stamina.style.width = Math.max(0, Math.min(100, ((state.stamina || 0) / 100) * 100)) + '%';
       if (state.activeLanes) {
         stateText.branches.textContent = 'branch lanes open: ' + state.activeLanes.length + ' [L=' + state.activeLanes.join(',') + ']';
@@ -685,10 +724,15 @@
       if (state.event && state.eventAt) {
         const age = Date.now() - state.eventAt;
         stateText.event.textContent = age < 1200 ? state.event : 'RUN';
+        stateText.event.classList.toggle('pulse', age < 180 && state.event !== 'RUNNER ARMED');
+      } else {
+        stateText.event.classList.remove('pulse');
       }
+      updateEventPulse();
 
       const isOver = state.phase === 'won' || state.phase === 'lost';
-      stateText.overlay.classList.toggle('show', isOver || state.phase === 'countdown');
+      const isPaused = state.phase === 'paused';
+      stateText.overlay.classList.toggle('show', isOver || state.phase === 'countdown' || isPaused);
       if (state.phase === 'countdown') {
         const remain = Math.max(0, Math.ceil((state.startAt - state.now) / 1000));
         stateText.overlayTitle.textContent = onboardingSeen ? ('Warm-up in ' + remain) : 'WELCOME TO SHARDRUNNER';
@@ -696,11 +740,15 @@
         stateText.overlayOnboarding.style.display = onboardingSeen ? 'none' : 'block';
       } else if (state.phase === 'won') {
         stateText.overlayTitle.textContent = 'Run complete';
-        stateText.overlaySubtitle.textContent = `Score ${Math.floor(state.score)} · Best combo ${state.bestCombo} · Distance ${Math.floor(state.progress)}`;
+        stateText.overlaySubtitle.textContent = `${state.reason || 'RUN_COMPLETE'} · Score ${Math.floor(state.score)} · Best combo ${state.bestCombo} · Distance ${Math.floor(state.progress)}`;
         stateText.overlayOnboarding.style.display = 'none';
       } else if (state.phase === 'lost') {
         stateText.overlayTitle.textContent = 'Signal lost';
-        stateText.overlaySubtitle.textContent = `Score ${Math.floor(state.score)} · shards ${state.totalShards || 0} · ${state.diedBy || 'GAME OVER'}`;
+        stateText.overlaySubtitle.textContent = `${state.reason || 'GAME_OVER'} · Score ${Math.floor(state.score)} · shards ${state.totalShards || 0} · ${state.diedBy || 'GAME OVER'}`;
+        stateText.overlayOnboarding.style.display = 'none';
+      } else if (isPaused) {
+        stateText.overlayTitle.textContent = 'Run paused';
+        stateText.overlaySubtitle.textContent = `state: ${state.reason || 'PAUSED'} · press Space, P, or controller pause to resume`;
         stateText.overlayOnboarding.style.display = 'none';
       }
     }
@@ -733,18 +781,6 @@
       if (!payload || !payload.settings) return;
       Object.assign(settings, payload.settings);
       if (state) state.settings = payload.settings;
-    }
-
-    function isKeyboardTouching() {
-      return !!(
-        keys.KeyA || keys.KeyD || keys.KeyW || keys.KeyS ||
-        keys.ArrowLeft || keys.ArrowRight || keys.ArrowUp || keys.ArrowDown ||
-        keys.Space || keys.Enter || keys.KeyP || keys.Escape
-      );
-    }
-
-    function hasKeyboardDrive() {
-      return (keys.KeyA || keys.KeyD || keys.ArrowLeft || keys.ArrowRight || keys.KeyW || keys.ArrowUp || keys.KeyS || keys.ArrowDown);
     }
 
     function hasKeyboardActivity() {
@@ -783,6 +819,28 @@
 
     function isStaleSource(name, now) {
       return now - (sourceActivity[name] || 0) > INPUT_OWNER_STALE_MS;
+    }
+
+    function clearKeyboardState() {
+      for (const key in keys) {
+        keys[key] = false;
+      }
+      markSource('keyboard', false);
+    }
+
+    function registerTouchPointer(id) {
+      if (typeof id === 'number') {
+        activeTouchPointers.add(id);
+      }
+    }
+
+    function unregisterTouchPointer(id) {
+      if (typeof id === 'number') {
+        activeTouchPointers.delete(id);
+      }
+      if (!activeTouchPointers.size) {
+        clearSourceState('touch');
+      }
     }
 
     function clearTouchState() {
@@ -852,6 +910,15 @@
       if (reason && sourceActivity[reason] !== undefined) sourceActivity[reason] = 0;
     }
 
+    function updateEventPulse() {
+      if (!state) return;
+      const currentEvent = state.event || '';
+      if (currentEvent && currentEvent !== lastEvent) {
+        eventFlash = 1;
+        lastEvent = currentEvent;
+      }
+    }
+
     function clearLocalInput() {
       touchInput.moveX = 0;
       touchInput.moveZ = 0;
@@ -885,7 +952,7 @@
       clearInputUntilRestart();
     }
 
-  function pollGamepad() {
+    function pollGamepad() {
       if (!navigator.getGamepads) return;
       const pads = Array.from(navigator.getGamepads()).filter(Boolean);
       const connectedPads = pads.filter(p => p && p.connected);
@@ -923,7 +990,7 @@
       gamepadPrev.jump = gamepadInput.jump;
       gamepadPrev.pause = gamepadInput.pause;
       gamepadPrev.restart = gamepadInput.restart;
-      markSource('gamepad', gamepadConnected);
+      markSource('gamepad', !!(gamepadConnected && hasGamepadActivity()));
       if (gamepadInput.restartEdge) scheduleRestart();
     }
 
@@ -953,11 +1020,14 @@
         if (e && e.pointerId !== activeId) return;
         activeId = null;
         clearTouchState();
+        try { area.releasePointerCapture(e.pointerId); } catch (x) {}
+        unregisterTouchPointer(e && e.pointerId);
       }
       function start(e) {
         e.preventDefault();
         inputOwner = 'touch';
         activeId = e.pointerId;
+        registerTouchPointer(activeId);
         try { area.setPointerCapture(activeId); } catch (x) {}
         move(e);
       }
@@ -977,9 +1047,12 @@
         if (key === 'pause') touchInput.pause = true;
         e.currentTarget.classList.add('held');
         inputOwner = 'touch';
+        registerTouchPointer(e.pointerId);
         markSource('touch', true);
       }
       function up(e) {
+        try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (x) {}
+        unregisterTouchPointer(e.pointerId);
         if (key === 'jump') touchInput.jump = false;
         if (key === 'pause') touchInput.pause = false;
         e.currentTarget.classList.remove('held');
@@ -998,10 +1071,14 @@
       const button = controls.restartBtn;
       function pressed(e) {
         e.preventDefault();
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch (x) {}
+        registerTouchPointer(e.pointerId);
         scheduleRestart();
         button.classList.add('held');
       }
-      function released() {
+      function released(e) {
+        try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (x) {}
+        unregisterTouchPointer(e && e.pointerId);
         button.classList.remove('held');
       }
       button.addEventListener('pointerdown', pressed);
@@ -1023,6 +1100,24 @@
       stateText.ownerIndicator.classList.remove('owner-keyboard', 'owner-touch', 'owner-gamepad');
       stateText.ownerIndicator.classList.add('owner-' + owner);
       stateText.ownerIndicator.textContent = 'owner: ' + owner.toUpperCase();
+      document.body.classList.remove('owner-keyboard', 'owner-touch', 'owner-gamepad', 'active-owner');
+      controls.steerPad.classList.remove('active-owner');
+      controls.jumpBtn.classList.remove('active-owner');
+      controls.pauseBtn.classList.remove('active-owner');
+      controls.restartBtn.classList.remove('active-owner');
+      if (owner === 'touch') {
+        controls.steerPad.classList.add('active-owner');
+        controls.jumpBtn.classList.add('active-owner');
+        controls.pauseBtn.classList.add('active-owner');
+        controls.restartBtn.classList.add('active-owner');
+      }
+      if (owner === 'gamepad') {
+        controls.jumpBtn.classList.add('active-owner');
+        controls.pauseBtn.classList.add('active-owner');
+        controls.restartBtn.classList.add('active-owner');
+      }
+      document.body.classList.add('active-owner');
+      document.body.classList.add('owner-' + owner);
     }
 
     function buildInputs() {
@@ -1108,14 +1203,19 @@
       }
       if (event.code === 'KeyP' || event.code === 'Escape') {
         inputOwner = 'keyboard';
+        if (!keyPauseHeld && performance.now() - sourceAt.pause > RESUME_KEY_DEBOUNCE_MS) {
+          keyPauseHeld = true;
+          sourceAt.pause = performance.now();
+        }
       }
-      if (event.code === 'Space' || event.code === 'ArrowUp' || event.code === 'KeyW') {
+      if (event.code === 'Space' || event.code === 'ArrowUp' || event.code === 'KeyW' || event.code === 'Escape' || event.code === 'KeyP') {
         event.preventDefault();
       }
     });
     addEventListener('keyup', (event) => {
       keys[event.code] = false;
       if (event.code === 'KeyR') keyRestartHeld = false;
+      if (event.code === 'KeyP' || event.code === 'Escape') keyPauseHeld = false;
     });
     addEventListener('gamepadconnected', () => {
       gamepadConnected = true;
@@ -1133,16 +1233,33 @@
     });
     addEventListener('pointerup', (event) => {
       if (!event || event.pointerId === undefined) return;
-      clearSourceState('touch');
+      if (activeTouchPointers.has(event.pointerId)) {
+        unregisterTouchPointer(event.pointerId);
+      }
+    });
+    addEventListener('pointercancel', (event) => {
+      if (!event || event.pointerId === undefined) return;
+      if (activeTouchPointers.has(event.pointerId)) {
+        unregisterTouchPointer(event.pointerId);
+      }
     });
     addEventListener('blur', () => {
       clearInputState('touch');
       clearInputState('gamepad');
+      clearKeyboardState();
+      keyRestartHeld = false;
+      keyPauseHeld = false;
+      sourceAt.restart = 0;
+      sourceAt.pause = 0;
       inputOwner = 'keyboard';
     });
     addEventListener('visibilitychange', () => {
       if (document.hidden) {
         clearInputUntilRestart();
+        keyRestartHeld = false;
+        keyPauseHeld = false;
+        sourceAt.restart = 0;
+        sourceAt.pause = 0;
       }
     });
     stateText.restartBtn.addEventListener('click', scheduleRestart);

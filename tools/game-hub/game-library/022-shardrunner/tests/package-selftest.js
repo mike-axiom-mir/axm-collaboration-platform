@@ -148,6 +148,16 @@ test('input ownership precedence is deterministic in one frame', () => {
   );
 });
 
+test('input ownership resolves stale keyboard correctly in one-frame races', () => {
+  const now = 17_000;
+  const winner = Core.resolveInputOwner({
+    keyboard: { active: true, at: now - 350 },
+    touch: { active: true, at: now },
+    gamepad: { active: true, at: now }
+  }, now, { staleMs: 220, priority: ['touch', 'keyboard', 'gamepad'] });
+  assert.equal(winner, 'touch');
+});
+
 test('input ownership ignores stale source activity', () => {
   const now = 10_000;
   const staleWindow = 180;
@@ -216,6 +226,25 @@ test('touch/gamepad inputs normalize predictably', () => {
   assert.equal(cleared.pause, false);
 });
 
+test('normalized gamepad axis clamps and zeroes tiny joystick jitter', () => {
+  assert.equal(Core.normalizeAxis(0.023), 0);
+  const smallJitter = Core.sanitizeInput({
+    moveX: 0.023,
+    moveZ: -0.022,
+    owner: 'gamepad',
+    source: 'pad'
+  });
+  assert.equal(smallJitter.moveX, 0);
+  assert.equal(smallJitter.moveZ, 0);
+  const wideJitter = Core.sanitizeInput({
+    moveX: 1.9,
+    moveZ: -1.9,
+    owner: 'gamepad'
+  });
+  assert.equal(wideJitter.moveX, 1);
+  assert.equal(wideJitter.moveZ, -1);
+});
+
 test('pause input is edge-based during hold', () => {
   const state = newState(123);
   state.phase = 'running';
@@ -253,6 +282,21 @@ test('pause holds with restart race clears owned input cleanly', () => {
   assert.equal(state.phase, 'paused');
   Core.step(state, { p1: { moveX: 0, pause: true } }, 0.016, 1032);
   assert.equal(state.phase, 'running');
+});
+
+test('pause transition stores user-facing run reason', () => {
+  const state = newState(900);
+  state.phase = 'running';
+  state.startedAt = 1000;
+  state.startAt = 1000;
+  Core.step(state, { p1: { pause: false } }, 0.016, 1008);
+  Core.step(state, { p1: { pause: true } }, 0.016, 1016);
+  assert.equal(state.phase, 'paused');
+  assert.equal(state.reason, 'PAUSED');
+  Core.step(state, { p1: { pause: false } }, 0.016, 1024);
+  Core.step(state, { p1: { pause: true } }, 0.016, 1032);
+  assert.equal(state.phase, 'running');
+  assert.equal(state.reason, 'RUNNING');
 });
 
 test('clear-held-input window suppresses post-restart jump', () => {
@@ -341,6 +385,31 @@ test('collecting shard increases score and combo', () => {
   assert.ok(state.totalShards >= 1);
   assert.ok(state.score > 0);
   assert.equal(state.combo, 1);
+});
+
+test('finish summary carries run reason and metadata', () => {
+  const state = newState(333);
+  state.phase = 'running';
+  state.startedAt = 1000;
+  state.startAt = 1000;
+  state.stamina = 0;
+  state.player.onGround = true;
+  state.player.x = 0;
+  state.result = null;
+  state.obstacles.push({
+    id: 'kill',
+    trackZ: state.progress + 1.2,
+    x: state.player.x,
+    width: 2,
+    depth: 4,
+    radius: 1.7,
+    kind: 'wall',
+    damage: 200
+  });
+  Core.step(state, { p1: { moveX: 0, moveZ: 0, jump: false } }, 0.016, 1060);
+  assert.equal(state.phase, 'lost');
+  assert.equal(state.reason, 'GAME_OVER');
+  assert.equal(state.runSummary.reason, 'GAME_OVER');
 });
 
 test('stumbling against obstacle reduces stamina and can lose', () => {
