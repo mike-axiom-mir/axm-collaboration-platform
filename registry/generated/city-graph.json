@@ -22888,6 +22888,111 @@
         "roots": false
       },
       "boundaries": {
+        "refuses": [
+          "automatic-authority-merge",
+          "automatic-canon-merge",
+          "automatic-root-merge",
+          "canon-change",
+          "conflict-erasure",
+          "implicit-merge-rule",
+          "last-writer-wins",
+          "merge-to-repository",
+          "promotion",
+          "root-change",
+          "state-persistence"
+        ],
+        "writes": []
+      },
+      "classification": {
+        "basis": [
+          "manifest.legoBlockKind"
+        ],
+        "kind": "BRICK",
+        "state": "DECLARED"
+      },
+      "effects": {
+        "capable": [
+          "NONE"
+        ],
+        "declarationInputs": [],
+        "measured": false,
+        "note": "Effects are declarations/inferences, not authority or proof that an effect occurred.",
+        "unknownDeclarations": []
+      },
+      "id": "shared/local-sync",
+      "name": "AXM LEGO City Owner-Defined Local Sync",
+      "proof": {
+        "behaviorProvenByGraph": false,
+        "evidenceLocators": [],
+        "freshness": "UNKNOWN",
+        "selftests": [
+          "shared/local-sync/selftest.js"
+        ]
+      },
+      "resources": {
+        "readiness": [
+          "explicit-merge-rule",
+          "node-runtime"
+        ],
+        "uses": [
+          "owner-defined-merge-rules",
+          "typed-state-snapshots"
+        ]
+      },
+      "schema": "axm.block-view/v1",
+      "sockets": {
+        "accepts": [
+          "axm.merge-rule/v1",
+          "axm.state-snapshot/v1"
+        ],
+        "consumes": [
+          "axm.merge-rule/v1",
+          "axm.state-snapshot/v1"
+        ],
+        "emits": [
+          "axm.merge-result/v1",
+          "axm.reconciliation-request/v1"
+        ],
+        "provides": [
+          "city.state.merge-typed",
+          "city.state.reconciliation-packet",
+          "city.state.snapshot"
+        ]
+      },
+      "source": {
+        "contract": "shared/local-sync/module.contract.json",
+        "declarationFiles": [
+          "shared/local-sync/manifest.json",
+          "shared/local-sync/module.contract.json"
+        ],
+        "declaredId": "local-sync",
+        "digest": "599679e4908e72f6869cfff6bfa410305ca4dfea93ee74f069b106a2f30c25dd",
+        "manifest": "shared/local-sync/manifest.json",
+        "observedSourceFileCount": 9,
+        "root": "shared/local-sync"
+      },
+      "status": "EXPERIMENTAL",
+      "surfaces": {
+        "audience": "human-machine",
+        "entry": "local-sync-core.js",
+        "type": "machine-capability"
+      },
+      "version": "v0.1"
+    },
+    {
+      "authority": {
+        "availableIsAuthorized": false,
+        "canon": false,
+        "declaredPermissions": [],
+        "execute": false,
+        "grants": [],
+        "install": false,
+        "merge": false,
+        "networkWrite": false,
+        "promote": false,
+        "roots": false
+      },
+      "boundaries": {
         "refuses": [],
         "writes": []
       },
@@ -23323,6 +23428,121 @@
         "type": "UNDECLARED"
       },
       "version": "0.6.0"
+    },
+    {
+      "authority": {
+        "availableIsAuthorized": false,
+        "canon": false,
+        "declaredPermissions": [],
+        "execute": false,
+        "grants": [],
+        "install": false,
+        "merge": false,
+        "networkWrite": false,
+        "promote": false,
+        "roots": false
+      },
+      "boundaries": {
+        "refuses": [
+          "authority-grant",
+          "canon-change",
+          "effect-without-machine-packet",
+          "hidden-effect",
+          "independent-human-truth",
+          "merge",
+          "promotion",
+          "root-change",
+          "safe-label-from-absence"
+        ],
+        "writes": [
+          "explicit-generated-beginner-map-under-docs/generated",
+          "explicit-generated-twin-view-under-registry/generated"
+        ]
+      },
+      "classification": {
+        "basis": [
+          "manifest.legoBlockKind"
+        ],
+        "kind": "ORGAN",
+        "state": "DECLARED"
+      },
+      "effects": {
+        "capable": [
+          "WRITE_CANDIDATE"
+        ],
+        "declarationInputs": [
+          "explicit-generated-beginner-map-under-docs/generated",
+          "explicit-generated-twin-view-under-registry/generated"
+        ],
+        "measured": false,
+        "note": "Effects are declarations/inferences, not authority or proof that an effect occurred.",
+        "unknownDeclarations": [
+          "explicit-generated-beginner-map-under-docs/generated",
+          "explicit-generated-twin-view-under-registry/generated"
+        ]
+      },
+      "id": "shared/twin-surfaces",
+      "name": "AXM LEGO City Human/Machine Twin Compiler",
+      "proof": {
+        "behaviorProvenByGraph": false,
+        "evidenceLocators": [],
+        "freshness": "UNKNOWN",
+        "selftests": [
+          "shared/twin-surfaces/selftest.js"
+        ]
+      },
+      "resources": {
+        "readiness": [
+          "current-city-graph",
+          "current-schema-registry",
+          "node-runtime"
+        ],
+        "uses": [
+          "city-graph",
+          "filesystem-read",
+          "schema-registry"
+        ]
+      },
+      "schema": "axm.block-view/v1",
+      "sockets": {
+        "accepts": [
+          "axm.city-graph/v1",
+          "axm.schema-registry/v1"
+        ],
+        "consumes": [
+          "axm.city-graph/v1",
+          "axm.schema-registry/v1"
+        ],
+        "emits": [
+          "axm.twin-surface/v1",
+          "human-beginner-map"
+        ],
+        "provides": [
+          "city.twin.beginner-labels",
+          "city.twin.drift-check",
+          "city.twin.effect-packet-binding",
+          "city.twin.machine-packets"
+        ]
+      },
+      "source": {
+        "contract": "shared/twin-surfaces/module.contract.json",
+        "declarationFiles": [
+          "shared/twin-surfaces/manifest.json",
+          "shared/twin-surfaces/module.contract.json"
+        ],
+        "declaredId": "twin-surfaces",
+        "digest": "0d959b2f53fb643d9fbc52160932e3a4b688dc38ef7a179e8e468391aa8e0682",
+        "manifest": "shared/twin-surfaces/manifest.json",
+        "observedSourceFileCount": 8,
+        "root": "shared/twin-surfaces"
+      },
+      "status": "EXPERIMENTAL",
+      "surfaces": {
+        "audience": "human-machine",
+        "entry": "../../scripts/compile-twin-surfaces.js",
+        "type": "machine-capability"
+      },
+      "version": "v0.1"
     },
     {
       "authority": {
@@ -29546,7 +29766,8 @@
     },
     {
       "consumers": [
-        "shared/schema-registry"
+        "shared/schema-registry",
+        "shared/twin-surfaces"
       ],
       "id": "axm.city-graph/v1",
       "providers": []
@@ -30018,6 +30239,13 @@
     },
     {
       "consumers": [
+        "shared/local-sync"
+      ],
+      "id": "axm.merge-rule/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
         "lod-hlod-impostor-builder"
       ],
       "id": "axm.mesh-optimization/v1",
@@ -30290,6 +30518,13 @@
     },
     {
       "consumers": [
+        "shared/twin-surfaces"
+      ],
+      "id": "axm.schema-registry/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
         "presentation-spine"
       ],
       "id": "axm.screen-contract/v1",
@@ -30357,6 +30592,13 @@
         "asset-fabric"
       ],
       "id": "axm.spatial.project/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/local-sync"
+      ],
+      "id": "axm.state-snapshot/v1",
       "providers": []
     },
     {
@@ -32015,6 +32257,55 @@
       "id": "city.schema.resolve-exact",
       "providers": [
         "shared/schema-registry"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.state.merge-typed",
+      "providers": [
+        "shared/local-sync"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.state.reconciliation-packet",
+      "providers": [
+        "shared/local-sync"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.state.snapshot",
+      "providers": [
+        "shared/local-sync"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.twin.beginner-labels",
+      "providers": [
+        "shared/twin-surfaces"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.twin.drift-check",
+      "providers": [
+        "shared/twin-surfaces"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.twin.effect-packet-binding",
+      "providers": [
+        "shared/twin-surfaces"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.twin.machine-packets",
+      "providers": [
+        "shared/twin-surfaces"
       ]
     },
     {
@@ -43730,6 +44021,16 @@
       "sha256": "68aa1fbef9ebbcc05c5a1746a2f6a6b2aa994505da8ff31940b3853e38edebd8"
     },
     {
+      "id": "axm.merge-result/v1",
+      "path": "shared/local-sync/merge-result.schema.json",
+      "sha256": "6629e39b66a88c413e00d7260fddd0e70931169adf08e558818f90d100ea3a56"
+    },
+    {
+      "id": "axm.merge-rule/v1",
+      "path": "shared/local-sync/merge-rule.schema.json",
+      "sha256": "e7938b8d8e94c20b58d1d94ce53cb385114ae1e2019a5ee95a57f961e5d2c910"
+    },
+    {
       "id": "axm.mirror.actor/v1",
       "path": "shared/mirror-core/schemas/actor.schema.json",
       "sha256": "292a204157b0a2b858159a58b375362c1980ea32c753fa8c8c6565ab78015797"
@@ -44415,6 +44716,11 @@
       "sha256": "290cb92a9c743ebb56f9fb7a4775906242f0ebee0cb74ec2bc20eb095683a76b"
     },
     {
+      "id": "axm.reconciliation-request/v1",
+      "path": "shared/local-sync/reconciliation-request.schema.json",
+      "sha256": "c5f8b79c540fa5677b266661c2cd55bdaff6567f82bd1c8b22a95c4945b20c93"
+    },
+    {
       "id": "axm.repairbuddy.replay-recipe/v1",
       "path": "tools/repairbuddy/replay-recipe.schema.json",
       "sha256": "bdd1ba38e40082759c6b7c7dec9efe1d500d71ab76a600bd36dfc34b2574c8e0"
@@ -44483,6 +44789,11 @@
       "id": "axm.sensorium-receipt/v1",
       "path": "shared/sensorium/schemas/sensorium-receipt.schema.json",
       "sha256": "ae9df16b09e32f3b1187b5783ff7b5371f6bca652528144e9bb9ffdf17c22e8d"
+    },
+    {
+      "id": "axm.state-snapshot/v1",
+      "path": "shared/local-sync/state-snapshot.schema.json",
+      "sha256": "0e6247adef2d96627ca26c94eecdee6b546f13875338e1218e69b478fb0cc639"
     },
     {
       "id": "axm.three-mf-capability-receipt/v1",
@@ -44703,6 +45014,11 @@
       "id": "axm.translation.uncertain_intake_review/v1",
       "path": "tools/adapter-translation-garden/runtime/contracts/uncertain_intake_review.schema.json",
       "sha256": "92c9876459655718e705cd653ca25b8fbdc8e504448d1e6bea09a7e25b91a39e"
+    },
+    {
+      "id": "axm.twin-surface/v1",
+      "path": "shared/twin-surfaces/twin-surface.schema.json",
+      "sha256": "bfcd78c962c2759182f1684aee0d48e49475025048bc13461ff118d7e619b33b"
     },
     {
       "id": "axm.ui-computed-style-measurements/v1",
@@ -45290,36 +45606,36 @@
       "sha256": "2effd339ff854a7bd1bdc8bc97710e3a65bf33ac01c5c9f27d7893f5fda0faae"
     }
   ],
-  "semanticDigest": "81d0602ccd49bbcc16abee4d00f0202efc49f46beedef3736af80726d6f909be",
+  "semanticDigest": "1d8c3c36925df6b1b87d39f90eb649a735a4732c75e5dba5e7d01aecb4650cf1",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "32a03b67b8bead163737e1bebbb760225c16ecb44d51730c56b5243bd9d22fd5",
+    "declarationDigest": "2df81eb50e103986781f34b92293739926d473084272581d90a4360ecb199311",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "32a03b67b8bead163737e1bebbb760225c16ecb44d51730c56b5243bd9d22fd5"
+    "snapshotIdentity": "2df81eb50e103986781f34b92293739926d473084272581d90a4360ecb199311"
   },
   "summary": {
     "blockKinds": {
-      "BRICK": 3,
+      "BRICK": 4,
       "BRIDGE": 26,
       "HAND": 128,
-      "ORGAN": 19,
+      "ORGAN": 20,
       "ROOM": 33,
       "ROUTE": 25,
       "SENSOR": 1
     },
-    "blocks": 235,
-    "capabilities": 1971,
-    "declaredContracts": 232,
-    "declaredManifests": 222,
+    "blocks": 237,
+    "capabilities": 1981,
+    "declaredContracts": 234,
+    "declaredManifests": 224,
     "edges": 32,
-    "schemas": 416,
-    "unresolved": 1523
+    "schemas": 421,
+    "unresolved": 1527
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -52460,6 +52776,18 @@
       "state": "UNKNOWN"
     },
     {
+      "blockId": "shared/local-sync",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.merge-rule/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/local-sync",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.state-snapshot/v1",
+      "state": "UNKNOWN"
+    },
+    {
       "blockId": "shared/module-evolution-ledger",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "axm.module-install-receipt/v1",
@@ -52505,6 +52833,18 @@
       "blockId": "shared/schema-registry",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "filesystem:declared-schema-files",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/twin-surfaces",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.city-graph/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/twin-surfaces",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.schema-registry/v1",
       "state": "UNKNOWN"
     },
     {

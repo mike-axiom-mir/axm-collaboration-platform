@@ -10,11 +10,13 @@ on:
       - "docs/generated/LEGO_CITY_MAP.md"
       - "scripts/compile-city-graph.js"
       - "scripts/compile-schema-registry.js"
+      - "scripts/compile-twin-surfaces.js"
       - "tests/city-map-gate-test.js"
       - "tests/schema-registry-gate-test.js"
       - "tests/city-state-primitives-test.js"
       - "tests/city-authority-hands-test.js"
       - "tests/city-workflow-evidence-test.js"
+      - "tests/city-sync-twins-test.js"
       - ".github/workflows/city-map-gate.yml"
   workflow_dispatch:
 
@@ -43,3 +45,5 @@ jobs:
         run: node tests/city-authority-hands-test.js
       - name: Prove durable route and evidence boundaries
         run: node tests/city-workflow-evidence-test.js
+      - name: Prove local sync and exact human/machine twins
+        run: node tests/city-sync-twins-test.js && node scripts/compile-twin-surfaces.js --check

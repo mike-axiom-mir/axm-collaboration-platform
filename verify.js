@@ -268,6 +268,17 @@ try {
   ok('city workflow/evidence focused suite: '+(workflowAssertions+evidenceAssertions)+' assertion(s); workflow execution remains external');
 } catch(e) { fail('city workflow/evidence focused suite failed: '+(e.code ? e.code+': ' : '')+e.message); }
 
+/* 19 - LOCAL SYNC/TWINS: merge results remain unapplied candidates and both
+   human and machine surfaces byte-match one generated twin. */
+try {
+  const syncAssertions = require('./shared/local-sync/selftest').run();
+  const twinAssertions = require('./shared/twin-surfaces/selftest').run();
+  const twinHost = require('./shared/twin-surfaces/twin-surfaces-host');
+  const twins = twinHost.check(ROOT);
+  if (twins.state !== 'PASS') twins.failures.forEach(item => fail('city twin '+item.code+': '+item.path));
+  else ok('city local-sync/twins focused suite: '+(syncAssertions+twinAssertions)+' assertion(s); '+twins.twin.machinePackets.length+' human/machine packets bind twin '+twins.twin.twinDigest);
+} catch(e) { fail('city local-sync/twins gate failed: '+(e.code ? e.code+': ' : '')+e.message); }
+
 /* ---- report ---- */
 const generatedAt = new Date().toISOString();
 const head = 'AXM VERIFY — '+generatedAt+'\n'+

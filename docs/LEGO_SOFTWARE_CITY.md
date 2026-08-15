@@ -100,3 +100,18 @@ receipts to source snapshots, verifier labels, correlation/causation, freshness,
 and exact payload bytes. Contradictions remain conflicts; unknown, partial, and
 stale states never become pass. Warning baselines bind both source snapshot and
 verifier version, and renewal retains an authority-decision reference.
+
+## Phase 5 local sync and twin surfaces
+
+Local Sync is a pure candidate compiler over owner-selected rules. It supports
+append-only entries and one specifically proven grow-only set, but refuses a
+generic CRDT label. Immutable divergence conflicts, last-writer selection is
+refused, and single-authority divergence waits for its owner. Foundation,
+CANON, root, and authority namespaces always produce a human reconciliation
+packet; no result is automatically applied.
+
+Twin Surfaces produces exact machine packets, non-authorizing effect request
+templates, and beginner labels from the same graph. Every block gets exactly
+one human label; every displayed effect maps to an exact machine template; and
+capabilities, effects, status, and risk must byte-match their machine packet.
+The word “low” is relative declared-effect risk, never a safety claim.
