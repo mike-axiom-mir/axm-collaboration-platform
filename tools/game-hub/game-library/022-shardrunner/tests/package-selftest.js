@@ -293,6 +293,29 @@ test('touch/gamepad payload edges are deterministic and preserve ownership', () 
   assert.equal(gamepadPayload.restart, true);
 });
 
+test('sanitizeInput ignores unsupported keys and stays deterministic', () => {
+  const payload = Core.sanitizeInput({
+    moveX: 0.7,
+    moveZ: -0.6,
+    jump: true,
+    pause: false,
+    restart: true,
+    owner: 'keyboard',
+    source: 'keyboard',
+    extra_axis: 123,
+    debugOnly: { nested: 'ignored' },
+    ownerHint: 'mismatch'
+  });
+  assert.equal(payload.moveX, 0.7);
+  assert.equal(payload.moveZ, -0.6);
+  assert.equal(payload.jump, true);
+  assert.equal(payload.pause, false);
+  assert.equal(payload.restart, true);
+  assert.equal(payload.owner, 'keyboard');
+  assert.equal(payload.source, 'keyboard');
+  assert.equal(typeof payload.extra_axis, 'undefined');
+});
+
 test('pause input is edge-based during hold', () => {
   const state = newState(123);
   state.phase = 'running';
@@ -471,6 +494,34 @@ test('branch and obstacle contact events remain readable while running', () => {
   assert.equal(openState.event, 'SHARD PATH CHOSEN');
 });
 
+test('collision and lane-choice reasons are exposed in state reason', () => {
+  const branchState = newState(204);
+  branchState.phase = 'running';
+  branchState.startedAt = 1_000;
+  branchState.startAt = 1_000;
+  branchState.player.lane = 1;
+  branchState.gates.push({
+    id: 'branch-closed',
+    trackZ: branchState.progress + 1.1,
+    openLanes: [0, 2],
+    width: 16.2,
+    passBy: false
+  });
+  Core.step(branchState, { p1: { moveX: 0, jump: false } }, 0.016, 1_100);
+  assert.equal(branchState.reason, 'COLLISION');
+
+  const obstacleState = newState(205);
+  obstacleState.phase = 'running';
+  obstacleState.startedAt = 1_000;
+  obstacleState.startAt = 1_000;
+  obstacleState.player.x = 0;
+  obstacleState.player.y = 0;
+  obstacleState.player.onGround = true;
+  obstacleState.obstacles.push({ id: 'o1', trackZ: obstacleState.progress + 1, x: 0, radius: 1.8, width: 2, depth: 4, kind: 'spike', damage: 27 });
+  Core.step(obstacleState, { p1: { moveX: 0, jump: false } }, 0.016, 1_100);
+  assert.equal(obstacleState.reason, 'COLLISION');
+});
+
 test('finish summary carries run reason and metadata', () => {
   const state = newState(333);
   state.phase = 'running';
@@ -517,7 +568,6 @@ test('restart clears run-critical state', () => {
   state.result = { won: false };
   const seed = state.randomSeed;
   const reset = newState(seed);
-  assert.equal(reset.phase, 'countdown');
   assert.equal(reset.phase, 'countdown');
   assert.equal(reset.randomSeed, seed);
   assert.equal(reset.score, 0);

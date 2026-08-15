@@ -47,6 +47,7 @@ function emptyInput() {
     jump: false,
     pause: false,
     restart: false,
+    _prevRestart: false,
     owner: 'system',
     source: 'system'
   };
@@ -146,6 +147,19 @@ function createRun(session, options) {
   return Core.create([], now, { seed, attempt: session.attempts });
 }
 
+function resetInputStateForRestart(session, options) {
+  const inputState = getSessionInput(session);
+  Object.assign(inputState, emptyInput(), {
+    owner: 'system',
+    source: 'system'
+  });
+  session.inputClearUntil = Date.now() + INPUT_CLEAR_MS;
+  const game = createRun(session, options);
+  game._inputClearUntil = session.inputClearUntil;
+  session.game = game;
+  return game;
+}
+
 function recordRun(session, state) {
   if (!state || !state.result || state._persisted) return;
   const entry = {
@@ -227,13 +241,25 @@ function tick() {
   for (const session of sessions.values()) {
     const game = getGameForSession(session);
     const input = getSessionInput(session);
-    game._inputClearUntil = Math.max(0, session.inputClearUntil);
-    Core.step(game, input, dt, now);
+
     if (session.inputClearUntil && session.inputClearUntil < now) {
       session.inputClearUntil = 0;
       game._inputClearUntil = 0;
       input.owner = input.source = 'system';
     }
+
+    const restartRequested = !!input.restart;
+    const restartEdge = restartRequested && !input._prevRestart;
+    input._prevRestart = restartRequested;
+
+    if (restartEdge && !session.inputClearUntil) {
+      session.game = resetInputStateForRestart(session);
+      continue;
+    }
+
+    game._inputClearUntil = Math.max(0, session.inputClearUntil);
+    Core.step(game, input, dt, now);
+
     recordRun(session, game);
   }
 }
@@ -356,14 +382,16 @@ const server = http.createServer(async (req, res) => {
     const session = getSession(room, player);
     const payload = await parseInputJson(req).catch(() => ({}));
     const restartSeed = payload && payload.seed;
-    session.game = createRun(session, { seed: restartSeed });
-    const inputState = getSessionInput(session);
-    Object.assign(inputState, emptyInput(), { owner: 'system', source: 'system' });
-    session.inputClearUntil = Date.now() + INPUT_CLEAR_MS;
-    session.game._inputClearUntil = session.inputClearUntil;
+    if (session.inputClearUntil && session.inputClearUntil > Date.now()) {
+      return sendJson(res, 429, {
+        ok: false,
+        error: 'restart-pending'
+      });
+    }
+    const game = resetInputStateForRestart(session, { seed: restartSeed });
     return sendJson(res, 200, {
       ok: true,
-      state: applyStateSettings(session.game, session)
+      state: applyStateSettings(game, session)
     });
   }
 

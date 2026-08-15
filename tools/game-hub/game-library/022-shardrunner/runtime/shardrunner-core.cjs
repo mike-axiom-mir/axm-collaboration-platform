@@ -394,6 +394,7 @@ function create(rawSeats, now = Date.now(), options) {
       stamina: 100,
       combo: 0,
       bestCombo: 0,
+      tier: MIN_TIER,
       attempt: attempt,
       runId: makeRunId(seed, attempt),
       fallReason: null,
@@ -437,6 +438,7 @@ function updateDifficulty(state) {
   const tier = tierFromProgress(state.progress);
   if (tier !== state.difficulty) {
     state.difficulty = tier;
+    state.runStats.tier = tier;
     state.speed = BASE_RUN_SPEED + state.difficulty * 1.5;
     event(state, 'CORRUPTED FIELD INTENSIFIES · LEVEL ' + state.difficulty, state.now);
   }
@@ -557,7 +559,7 @@ function resolveBranch(state) {
       p.stumbleUntil = state.now + 480;
       state.runStats.stamina = Math.max(0, Math.round(state.stamina));
       spawnCameraPulse(state, 0.35);
-      event(state, 'COLLISION', state.now);
+      event(state, 'COLLISION', state.now, { reasonText: 'COLLISION' });
       if (state.stamina <= 0) {
         finish(state, false, state.now, 'WRONG_LANE');
       }
@@ -565,7 +567,7 @@ function resolveBranch(state) {
       state.score += 20;
       state.runStats.shards += 0;
       state.runStats.combo = Math.max(1, state.runStats.combo);
-      event(state, 'SHARD PATH CHOSEN', state.now);
+      event(state, 'SHARD PATH CHOSEN', state.now, { reasonText: 'SHARD PATH CHOSEN' });
     }
     gate.passBy = true;
   }
@@ -629,7 +631,7 @@ function resolveObstacles(state) {
       state.runStats.stamina = Math.max(0, Math.round(state.stamina));
       spawnCameraPulse(state, 0.42);
       const reason = obstacle.kind === 'wall' ? 'HARD_COLLISION' : 'SPIKE_COLLISION';
-      event(state, 'COLLISION', state.now);
+      event(state, 'COLLISION', state.now, { reasonText: 'COLLISION' });
       if (state.stamina <= 0) {
         finish(state, false, state.now, reason);
       }
@@ -763,3 +765,4 @@ module.exports = {
   resolveInputOwner,
   INPUT_OWNER_STALE_MS
 };
+

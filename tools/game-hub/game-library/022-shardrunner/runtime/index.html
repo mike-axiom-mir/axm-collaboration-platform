@@ -430,8 +430,8 @@
       restartBtn: stateText.phoneRestartBtn
     };
 
-    const input = { moveX: 0, moveZ: 0, jump: false, pause: false, owner: 'keyboard', source: 'keyboard' };
-    const touchInput = { moveX: 0, moveZ: 0, jump: false, pause: false, active: false, restartEdge: false };
+    const input = { moveX: 0, moveZ: 0, jump: false, pause: false, restart: false, owner: 'keyboard', source: 'keyboard' };
+    const touchInput = { moveX: 0, moveZ: 0, jump: false, pause: false, restartEdge: false, active: false };
     const gamepadInput = { moveX: 0, moveZ: 0, jump: false, pause: false, restart: false, restartEdge: false };
     const gamepadPrev = { jump: false, pause: false, restart: false };
     const activeTouchPointers = new Set();
@@ -787,11 +787,11 @@
     function hasKeyboardActivity() {
       return keys.KeyA || keys.KeyD || keys.KeyW || keys.KeyS ||
         keys.ArrowLeft || keys.ArrowRight || keys.ArrowUp || keys.ArrowDown ||
-        keys.Space || keys.Enter || keys.KeyP || keys.Escape;
+        keys.Space || keys.Enter || keys.KeyP || keys.Escape || keys.KeyR;
     }
 
     function hasTouchActivity() {
-      return !!(touchInput.active || touchInput.jump || touchInput.pause);
+      return !!(touchInput.active || touchInput.jump || touchInput.pause || touchInput.restartEdge);
     }
 
     function hasGamepadActivity() {
@@ -809,7 +809,8 @@
         moveX: ((keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0)),
         moveZ: ((keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0)),
         jump: !!(keys.Space || keys.Enter),
-        pause: !!(keys.KeyP || keys.Escape)
+        pause: !!(keys.KeyP || keys.Escape),
+        restart: !!keys.KeyR
       };
     }
 
@@ -855,6 +856,7 @@
       touchInput.moveZ = 0;
       touchInput.jump = false;
       touchInput.pause = false;
+      touchInput.restartEdge = false;
       controls.steerKnob.style.transform = 'translate(-50%, -50%)';
     }
 
@@ -904,6 +906,7 @@
       input.moveZ = 0;
       input.jump = false;
       input.pause = false;
+      input.restart = false;
       input.owner = 'system';
       input.source = 'system';
     }
@@ -1063,7 +1066,7 @@
         if (key === 'pause') touchInput.pause = false;
         e.currentTarget.classList.remove('held');
         markSource('touch', hasTouchActivity());
-        if (!touchInput.active && !touchInput.jump && !touchInput.pause) {
+        if (!touchInput.active && !touchInput.jump && !touchInput.pause && !touchInput.restartEdge) {
           markSource('touch', false);
         }
       }
@@ -1079,12 +1082,16 @@
         e.preventDefault();
         try { e.currentTarget.setPointerCapture(e.pointerId); } catch (x) {}
         registerTouchPointer(e.pointerId);
+        touchInput.restartEdge = true;
+        inputOwner = 'touch';
+        markSource('touch', true);
         scheduleRestart();
         button.classList.add('held');
       }
       function released(e) {
         try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (x) {}
         unregisterTouchPointer(e && e.pointerId);
+        touchInput.restartEdge = false;
         button.classList.remove('held');
       }
       button.addEventListener('pointerdown', pressed);
@@ -1162,6 +1169,7 @@
         input.moveZ = clamp(z, -1, 1);
         input.jump = !!jump;
         input.pause = !!pause;
+        input.restart = false;
         input.owner = inputOwner;
         input.source = inputOwner;
       }
