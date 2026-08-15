@@ -235,6 +235,15 @@ try {
   else ok('LEGO city map exact: '+city.graphDigest+'; no omitted declared module or generated-view drift');
 } catch(e) { fail('LEGO city map gate could not run: '+(e.code ? e.code+': ' : '')+e.message); }
 
+/* 15 - CITY SCHEMA REGISTRY: exact identities and conservative compatibility
+   stay derived from the current city graph; no migration is performed. */
+try {
+  const schemaHost = require('./shared/schema-registry/schema-registry-host');
+  const schemas = schemaHost.check(ROOT);
+  if (schemas.state !== 'PASS') fail('city schema registry '+schemas.code);
+  else ok('city schema registry exact: '+schemas.registry.registryDigest+'; '+schemas.registry.entries.length+' schema identities; '+schemas.registry.unresolvedSockets.length+' unresolved socket(s) retained');
+} catch(e) { fail('city schema registry gate could not run: '+(e.code ? e.code+': ' : '')+e.message); }
+
 /* ---- report ---- */
 const generatedAt = new Date().toISOString();
 const head = 'AXM VERIFY — '+generatedAt+'\n'+

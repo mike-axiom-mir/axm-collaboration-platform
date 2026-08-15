@@ -48,3 +48,12 @@ The generated graph never claims that:
 - any block can change CANON or AXM roots.
 
 Mike remains the merge and CANON gate.
+
+## Phase 1 grammar
+
+The Schema Registry compiles every `$id` already discovered by the City Map.
+It resolves exact identities and compares schemas conservatively: exact bytes,
+annotation-free structural equivalence, or an explicit adapter with an explicit
+loss list. Same-major and newer-version labels never prove compatibility.
+Existing modules are observed without migration or rewrite, and unresolved
+schema sockets remain visible in the generated registry.

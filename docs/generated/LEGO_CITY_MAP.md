@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `b3d3cd19d1fa36348a62184820c0c5e03a04b0db56d7a5b098eeac280b4f5e39`
+Semantic graph digest: `592b1bff640ed6c7e1e88d4162e99b6207486cd333806129c93500a0a6b31d3b`
 
-Blocks: 228 · Capabilities: 1929 · Schemas: 395 · Unresolved edges: 1508
+Blocks: 229 · Capabilities: 1935 · Schemas: 397 · Unresolved edges: 1510
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -196,6 +196,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/module-evolution-ledger | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 8 | 4 | 2 selftest(s) |
 | shared/neural-visual | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 4 | 0 | 1 selftest(s) |
 | shared/procedural-animation-blocks | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 3 | 1 | 1 selftest(s) |
+| shared/schema-registry | ROUTE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 4 | 2 | 1 selftest(s) |
 | shared/style-fabric | ORGAN (INFERRED_UNCONFIRMED) | WORKING_TEST | NONE | 0 | 0 | 1 selftest(s) |
 | shared/visual-actions | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 7 | 0 | 1 selftest(s) |
 | shared/visual-fx | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 0 | 1 selftest(s) |
@@ -1427,6 +1428,8 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/module-evolution-ledger` → `recovery-center-snapshot-reference` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/procedural-animation-blocks` → `axm.procedural-motion/v1` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `shared/procedural-animation-blocks` → `axm.procedural-motion-block/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/schema-registry` → `axm.city-graph/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/schema-registry` → `filesystem:declared-schema-files` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shell-guardian` → `grok:pre-tool-hook` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shell-guardian` → `workshop:local-status` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `shell-guardian` → `axm.guardian-trip/v1` (UNKNOWN)

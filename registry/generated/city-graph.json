@@ -22589,6 +22589,120 @@
         "roots": false
       },
       "boundaries": {
+        "refuses": [
+          "adapter-execution",
+          "canon-change",
+          "execution",
+          "installation",
+          "merge",
+          "module-rewrite",
+          "network-write",
+          "promotion",
+          "root-change",
+          "schema-migration",
+          "undeclared-loss",
+          "version-label-as-compatibility-proof"
+        ],
+        "writes": [
+          "explicit-generated-schema-registry-under-registry/generated"
+        ]
+      },
+      "classification": {
+        "basis": [
+          "route/workflow vocabulary"
+        ],
+        "kind": "ROUTE",
+        "state": "INFERRED_UNCONFIRMED"
+      },
+      "effects": {
+        "capable": [
+          "NONE"
+        ],
+        "declarationInputs": [
+          "explicit-generated-schema-registry-under-registry/generated"
+        ],
+        "measured": false,
+        "note": "Effects are declarations/inferences, not authority or proof that an effect occurred.",
+        "unknownDeclarations": [
+          "explicit-generated-schema-registry-under-registry/generated"
+        ]
+      },
+      "id": "shared/schema-registry",
+      "name": "AXM LEGO City Schema Registry",
+      "proof": {
+        "behaviorProvenByGraph": false,
+        "evidenceLocators": [],
+        "freshness": "UNKNOWN",
+        "selftests": [
+          "shared/schema-registry/selftest.js"
+        ]
+      },
+      "resources": {
+        "readiness": [
+          "current-city-graph",
+          "node-runtime"
+        ],
+        "uses": [
+          "city-graph",
+          "filesystem-read",
+          "json-schema-declarations"
+        ]
+      },
+      "schema": "axm.block-view/v1",
+      "sockets": {
+        "accepts": [
+          "axm.city-graph/v1",
+          "json-schema:draft-2020-12"
+        ],
+        "consumes": [
+          "axm.city-graph/v1",
+          "filesystem:declared-schema-files"
+        ],
+        "emits": [
+          "axm.schema-compatibility/v1",
+          "axm.schema-registry/v1"
+        ],
+        "provides": [
+          "city.schema.adapter-route-explicit",
+          "city.schema.compatibility-conservative",
+          "city.schema.registry-drift-check",
+          "city.schema.resolve-exact"
+        ]
+      },
+      "source": {
+        "contract": "shared/schema-registry/module.contract.json",
+        "declarationFiles": [
+          "shared/schema-registry/manifest.json",
+          "shared/schema-registry/module.contract.json"
+        ],
+        "declaredId": "schema-registry",
+        "digest": "23300a4d929378c5067aba1c92927e0345fcedcdecd95ddd4e0fdd31c9a0fa4e",
+        "manifest": "shared/schema-registry/manifest.json",
+        "observedSourceFileCount": 9,
+        "root": "shared/schema-registry"
+      },
+      "status": "EXPERIMENTAL",
+      "surfaces": {
+        "audience": "human-machine",
+        "entry": "../../scripts/compile-schema-registry.js",
+        "type": "machine-capability"
+      },
+      "version": "v0.1"
+    },
+    {
+      "authority": {
+        "availableIsAuthorized": false,
+        "canon": false,
+        "declaredPermissions": [],
+        "execute": false,
+        "grants": [],
+        "install": false,
+        "merge": false,
+        "networkWrite": false,
+        "promote": false,
+        "roots": false
+      },
+      "boundaries": {
         "refuses": [],
         "writes": []
       },
@@ -28756,6 +28870,13 @@
     },
     {
       "consumers": [
+        "shared/schema-registry"
+      ],
+      "id": "axm.city-graph/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
         "workshop-search-provenance"
       ],
       "id": "axm.code-recipe-pack/v1",
@@ -30977,6 +31098,34 @@
       "id": "city.omission-gate",
       "providers": [
         "shared/city-graph"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.schema.adapter-route-explicit",
+      "providers": [
+        "shared/schema-registry"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.schema.compatibility-conservative",
+      "providers": [
+        "shared/schema-registry"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.schema.registry-drift-check",
+      "providers": [
+        "shared/schema-registry"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.schema.resolve-exact",
+      "providers": [
+        "shared/schema-registry"
       ]
     },
     {
@@ -33452,6 +33601,13 @@
         "chroma-studio"
       ],
       "id": "filesystem:assets/inbox/device-handoff",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/schema-registry"
+      ],
+      "id": "filesystem:declared-schema-files",
       "providers": []
     },
     {
@@ -43289,6 +43445,16 @@
       "sha256": "99d14868f9d10448321db62b838352c4ee61969d6a3abb0af4d76a6c14b5b6f1"
     },
     {
+      "id": "axm.schema-compatibility/v1",
+      "path": "shared/schema-registry/schema-compatibility.schema.json",
+      "sha256": "cc8be479605ff9e080aca011a5d8c7b44571967acddb45c783aaa0e6d9fca9f4"
+    },
+    {
+      "id": "axm.schema-registry/v1",
+      "path": "shared/schema-registry/schema-registry.schema.json",
+      "sha256": "1aaa19538d4e92d10220c89c38b47156c8f46353ec9e59be68a606ce5cab99f9"
+    },
+    {
       "id": "axm.screen-contract/v1",
       "path": "shared/presentation-spine/screen-contract.schema.json",
       "sha256": "a9206cdfdcc49dd9af3f4b9e5acfbe47a18806ae44678d43e3c4b3aafc73f9ca"
@@ -44099,18 +44265,18 @@
       "sha256": "2effd339ff854a7bd1bdc8bc97710e3a65bf33ac01c5c9f27d7893f5fda0faae"
     }
   ],
-  "semanticDigest": "b3d3cd19d1fa36348a62184820c0c5e03a04b0db56d7a5b098eeac280b4f5e39",
+  "semanticDigest": "592b1bff640ed6c7e1e88d4162e99b6207486cd333806129c93500a0a6b31d3b",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "62c3898d7dc2b1f6c9138a03b0a88e5f16a2b69c9527445579b1618854b52346",
+    "declarationDigest": "6f0e2637de0897894f948e602546980ff0b3a0d2b354ed1e2589c099f64344fb",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "62c3898d7dc2b1f6c9138a03b0a88e5f16a2b69c9527445579b1618854b52346"
+    "snapshotIdentity": "6f0e2637de0897894f948e602546980ff0b3a0d2b354ed1e2589c099f64344fb"
   },
   "summary": {
     "blockKinds": {
@@ -44119,16 +44285,16 @@
       "HAND": 127,
       "ORGAN": 15,
       "ROOM": 33,
-      "ROUTE": 24,
+      "ROUTE": 25,
       "SENSOR": 1
     },
-    "blocks": 228,
-    "capabilities": 1929,
-    "declaredContracts": 225,
-    "declaredManifests": 215,
+    "blocks": 229,
+    "capabilities": 1935,
+    "declaredContracts": 226,
+    "declaredManifests": 216,
     "edges": 31,
-    "schemas": 395,
-    "unresolved": 1508
+    "schemas": 397,
+    "unresolved": 1510
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -51242,6 +51408,18 @@
       "blockId": "shared/procedural-animation-blocks",
       "code": "UNRESOLVED_SCHEMA",
       "socket": "axm.procedural-motion-block/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/schema-registry",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.city-graph/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/schema-registry",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "filesystem:declared-schema-files",
       "state": "UNKNOWN"
     },
     {

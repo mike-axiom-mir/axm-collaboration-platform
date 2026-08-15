@@ -1,0 +1,30 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "machine-capability",
+  "id": "schema-registry",
+  "folderAlias": "schema-registry",
+  "name": "AXM LEGO City Schema Registry",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "entry": "../../scripts/compile-schema-registry.js",
+  "contract": "module.contract.json",
+  "type": "machine-capability",
+  "audience": "human-machine",
+  "layer": "foundation",
+  "category": "FOUNDATION",
+  "risk": "LOW",
+  "tags": ["lego-city", "schema-registry", "compatibility", "read-only"],
+  "uses": ["city-graph", "json-schema-declarations", "filesystem-read"],
+  "permissions": [],
+  "actions": [
+    "compile a deterministic registry from schemas already discovered by the city graph",
+    "resolve exact schema identifiers and content digests",
+    "classify compatibility conservatively",
+    "route only explicitly declared adapters with declared loss"
+  ],
+  "accepts": ["axm.city-graph/v1", "json-schema:draft-2020-12"],
+  "produces": ["axm.schema-registry/v1", "axm.schema-compatibility/v1"],
+  "readiness": ["node-runtime", "current-city-graph"],
+  "summary": "Resolve city schema identities and compatibility without treating version labels or adapters as proof.",
+  "notes": "EXPERIMENTAL. This registry implements a deliberately small conservative comparison, not the full JSON Schema validation specification."
+}

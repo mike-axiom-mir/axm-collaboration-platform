@@ -9,7 +9,9 @@ on:
       - "registry/generated/**"
       - "docs/generated/LEGO_CITY_MAP.md"
       - "scripts/compile-city-graph.js"
+      - "scripts/compile-schema-registry.js"
       - "tests/city-map-gate-test.js"
+      - "tests/schema-registry-gate-test.js"
       - ".github/workflows/city-map-gate.yml"
   workflow_dispatch:
 
@@ -30,3 +32,5 @@ jobs:
         run: node tests/city-map-gate-test.js
       - name: Refuse omitted modules and generated-view drift
         run: node scripts/compile-city-graph.js --check
+      - name: Refuse schema identity and registry drift
+        run: node tests/schema-registry-gate-test.js && node scripts/compile-schema-registry.js --check
