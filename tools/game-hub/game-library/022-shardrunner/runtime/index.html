@@ -1,0 +1,932 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Shardrunner · AXM Game Hub</title>
+  <style>
+    :root {
+      --bg:#070e24;
+      --ink:#f3fcff;
+      --muted:#8ca6ce;
+      --ui:#07152f;
+      --line:#3b79a9;
+      --accent:#5fd8ff;
+      --danger:#ff5261;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin:0; width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--ink); }
+    body { font-family: 'Courier New', 'Lucida Console', ui-monospace, monospace; }
+    .frame {
+      width:100%;
+      height:100%;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(95, 216, 255, 0.11), transparent 34%),
+        radial-gradient(circle at 84% 84%, rgba(212, 166, 255, 0.08), transparent 28%),
+        linear-gradient(160deg, #020812, #090f25 60%, #020915);
+      padding:10px;
+    }
+    .stage {
+      position:relative;
+      width:min(100%, 1280px);
+      aspect-ratio: 16 / 9;
+      border:1px solid rgba(95, 216, 255, 0.24);
+      box-shadow: inset 0 0 0 2px rgba(212, 166, 255, 0.12), 0 12px 40px rgba(0,0,0,0.5);
+      overflow:hidden;
+    }
+    canvas {
+      width:100%;
+      height:100%;
+      display:block;
+      image-rendering: pixelated;
+      filter: contrast(1.04) saturate(1.1);
+      transform: translateZ(0);
+    }
+    .hud {
+      position:absolute;
+      left:12px;
+      top:12px;
+      right:12px;
+      pointer-events:none;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      font-size:11px;
+      letter-spacing:0.08em;
+      color:var(--muted);
+      text-transform:uppercase;
+    }
+    .hud b { color:var(--accent); font-size:15px; }
+    .panel {
+      background:linear-gradient(180deg, rgba(6,16,33,.88), rgba(8,22,47,.8));
+      border:1px solid rgba(95,216,255,.42);
+      padding:10px 12px;
+      min-width:220px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+    }
+    .meter {
+      margin-top:8px;
+      width:182px;
+      height:9px;
+      border:1px solid rgba(143,169,205,.45);
+      border-radius:999px;
+      overflow:hidden;
+      position:relative;
+      background:#0a1730;
+    }
+    .meter i {
+      position:absolute;
+      inset:0;
+      width:0;
+      background:linear-gradient(90deg, #44d8ff, #ff5d9f 66%, #ffd46a);
+      transition:width .18s linear;
+      box-shadow: 0 0 10px rgba(95,216,255,.35);
+    }
+    .status {
+      margin-top:10px;
+      min-height:16px;
+      color:#ffdcb8;
+    }
+    .overlay {
+      position:absolute;
+      left:50%; top:52%;
+      transform:translate(-50%, -50%);
+      pointer-events:none;
+      text-align:center;
+      border:1px solid rgba(255,214,106,.35);
+      background:rgba(6,14,28,.73);
+      padding:18px 16px;
+      min-width:430px;
+      max-width:80%;
+      color:#d8ecff;
+      display:none;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      backdrop-filter: blur(6px);
+    }
+    .overlay.show { display:block; }
+    .overlay h1 { margin:0 0 6px; font-size:18px; color:#8ff7ff; }
+    .overlay p { margin:0 0 14px; color:#aec7f2; font-size:11px; line-height:1.4; }
+    .overlay .buttons { margin-top:10px; display:flex; justify-content:center; gap:8px; }
+    .overlay button {
+      pointer-events:auto;
+      background:#102349;
+      color:#9de6ff;
+      border:1px solid rgba(95,216,255,.8);
+      padding:8px 12px;
+      font:inherit;
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .overlay button:hover { background:#17385a; }
+    .events {
+      position:absolute;
+      left:50%;
+      bottom:14px;
+      transform:translateX(-50%);
+      padding:7px 10px;
+      border:1px solid rgba(255,214,106,.32);
+      background:rgba(4,11,22,.7);
+      color:#ffe1a4;
+      font-size:10px;
+      letter-spacing:.08em;
+      min-width:330px;
+      text-align:center;
+      text-transform:uppercase;
+    }
+    .dither {
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        linear-gradient(0deg, rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px);
+      background-size: 4px 4px, 3px 3px;
+      mix-blend-mode:screen;
+      opacity:.3;
+      z-index:4;
+    }
+    .help {
+      position:absolute;
+      right:12px;
+      bottom:12px;
+      font-size:10px;
+      color:#8faec6;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+    .phone-controls {
+      position:absolute;
+      left:12px;
+      right:12px;
+      bottom:14px;
+      display:none;
+      align-items:flex-end;
+      justify-content:space-between;
+      pointer-events:auto;
+      gap:12px;
+      z-index:7;
+    }
+    .phone-controls .steer {
+      width:124px;
+      aspect-ratio:1;
+      border:2px solid rgba(95, 216, 255, 0.32);
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(95, 216, 255, 0.12), rgba(4, 14, 31, 0.75) 68%);
+      box-shadow: inset 0 0 26px rgba(95, 216, 255, 0.12), 0 12px 24px rgba(0, 0, 0, 0.35);
+      position:relative;
+      touch-action:none;
+      user-select:none;
+    }
+    .phone-controls .steer::after {
+      content:'STEER';
+      position:absolute;
+      left:50%;
+      bottom:7px;
+      transform:translateX(-50%);
+      font-size:8px;
+      color:#8faec6;
+      letter-spacing:0.1em;
+    }
+    .phone-controls .steer .knob {
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:42%;
+      aspect-ratio:1;
+      border-radius:50%;
+      transform:translate(-50%, -50%);
+      background:rgba(95, 216, 255, 0.9);
+      box-shadow: 0 0 16px rgba(95, 216, 255, 0.52);
+      pointer-events:none;
+    }
+    .phone-actions {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      grid-auto-rows:minmax(46px, auto);
+      gap:7px;
+      max-width:220px;
+    }
+    .phone-action {
+      border:1px solid rgba(95, 216, 255, 0.65);
+      background:rgba(8, 17, 36, 0.9);
+      color:#9de6ff;
+      font:inherit;
+      font-size:9px;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      padding:0 10px;
+      min-height:46px;
+      min-width:82px;
+      touch-action:none;
+      user-select:none;
+    }
+    .phone-action:active,
+    .phone-action.held {
+      transform:scale(0.98);
+      background:rgba(95, 216, 255, 0.18);
+    }
+    body.phone .phone-controls { display:flex; }
+    body.phone .help { display:none; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="stage">
+      <canvas id="gameCanvas" width="640" height="360"></canvas>
+      <div class="dither" aria-hidden="true"></div>
+      <div class="hud">
+        <div class="panel">
+          <div><b>SHARDRUNNER</b> · AXM GAME HUB</div>
+          <div id="distance">distance 000</div>
+          <div id="score">score 0000</div>
+          <div id="combo">combo x1</div>
+          <div class="meter"><i id="stamina"></i></div>
+        </div>
+        <div class="panel" id="branches">branch lanes open: 3</div>
+      </div>
+      <section class="overlay" id="overlay">
+        <h1 id="title">Shardrunner</h1>
+        <p id="subtitle">Boot sequence warming… hold run, jump, branch.</p>
+        <p id="tip">Controls: WASD/Arrows to steer · Space to jump · P to pause · R to restart · gamepad or touch support</p>
+        <div class="buttons" id="actions">
+          <button id="restartBtn">Restart</button>
+        </div>
+      </section>
+      <div class="phone-controls" id="phoneControls">
+        <div class="steer" id="steerPad">
+          <div class="knob" id="steerKnob"></div>
+        </div>
+        <div class="phone-actions">
+          <button class="phone-action" id="phoneJump">JUMP</button>
+          <button class="phone-action" id="phonePause">PAUSE</button>
+          <button class="phone-action" id="phoneRestart">RESTART</button>
+        </div>
+      </div>
+      <div class="events" id="event">READY</div>
+      <div class="help">RUNNER · KEEP TO OPEN LANES · COLLECT BLUE SHARDS</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from './vendor/three.module.js';
+
+    const API = {
+      stateUrl: '/state',
+      inputUrl: '/input',
+      eventsUrl: '/events',
+      restartUrl: '/restart'
+    };
+
+    const canvas = document.getElementById('gameCanvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
+    renderer.setPixelRatio(1);
+    renderer.setSize(640, 360, false);
+    renderer.setClearColor(0x080d1e);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0x0b1229, 26, 132);
+
+    const camera = new THREE.PerspectiveCamera(49, 640 / 360, 0.1, 220);
+    const ambient = new THREE.AmbientLight(0x93c5ff, 0.5);
+    scene.add(ambient);
+    const key = new THREE.DirectionalLight(0xc5f7ff, 1.2);
+    key.position.set(6, 20, 15);
+    key.castShadow = true;
+    key.shadow.mapSize.set(512, 512);
+    key.shadow.camera.top = 22;
+    key.shadow.camera.right = 20;
+    key.shadow.camera.left = -20;
+    key.shadow.camera.bottom = -20;
+    key.shadow.camera.far = 120;
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0xff7fa2, 0.6);
+    rim.position.set(-10, 8, -7);
+    scene.add(rim);
+
+    const floor = new THREE.Mesh(
+      new THREE.PlaneGeometry(220, 500),
+      new THREE.MeshStandardMaterial({ color: 0x0b1834, roughness: 0.93, metalness: 0.08 })
+    );
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    floor.position.z = 140;
+    scene.add(floor);
+
+    const group = new THREE.Group();
+    scene.add(group);
+
+    const playerMesh = makePlayerMesh();
+    scene.add(playerMesh.body);
+    const playerGlow = new THREE.PointLight(0x5fd8ff, 0.5, 16);
+    playerGlow.position.set(0, 2.4, 0);
+    scene.add(playerGlow);
+
+    const stateText = {
+      distance: document.getElementById('distance'),
+      score: document.getElementById('score'),
+      combo: document.getElementById('combo'),
+      branches: document.getElementById('branches'),
+      event: document.getElementById('event'),
+      stamina: document.getElementById('stamina'),
+      overlay: document.getElementById('overlay'),
+      overlayTitle: document.getElementById('title'),
+      overlaySubtitle: document.getElementById('subtitle'),
+      restartBtn: document.getElementById('restartBtn'),
+      phoneJumpBtn: document.getElementById('phoneJump'),
+      phonePauseBtn: document.getElementById('phonePause'),
+      phoneRestartBtn: document.getElementById('phoneRestart')
+    };
+
+    const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    const controls = {
+      steerPad: document.getElementById('steerPad'),
+      steerKnob: document.getElementById('steerKnob'),
+      jumpBtn: stateText.phoneJumpBtn,
+      pauseBtn: stateText.phonePauseBtn,
+      restartBtn: stateText.phoneRestartBtn
+    };
+
+    const input = { moveX: 0, moveZ: 0, jump: false, pause: false };
+    const touchInput = { moveX: 0, moveZ: 0, jump: false, pause: false, active: false, restartEdge: false };
+    const gamepadInput = { moveX: 0, moveZ: 0, jump: false, pause: false, restart: false, restartEdge: false };
+    const gamepadPrev = { jump: false, pause: false, restart: false };
+    let inputOwner = 'keyboard';
+    let clearInputsUntil = 0;
+    let restartQueued = false;
+    let keyRestartHeld = false;
+    let state = null;
+    const keys = Object.create(null);
+    let frame = null;
+
+    function endpoint(name) { return API[name]; }
+
+    const objectPools = {
+      player: { meshes: [] },
+      shards: new Map(),
+      obstacles: new Map(),
+      ruins: new Map(),
+      gates: new Map()
+    };
+
+    function makeCrystal(color, radius, height) {
+      const geom = new THREE.ConeGeometry(radius * 1.06, height, 4);
+      const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.3, metalness: 0.4, emissive: color, emissiveIntensity: 0.2 });
+      return new THREE.Mesh(geom, mat);
+    }
+
+    function makePlayerMesh() {
+      const body = new THREE.Group();
+      const trunk = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.45, 0.9),
+        new THREE.MeshStandardMaterial({ color: 0x4f9fd4, roughness: 0.22, metalness: 0.1 }));
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.7, 0.7),
+        new THREE.MeshStandardMaterial({ color: 0x95fbff, roughness: 0.4, metalness: 0 }));
+      trunk.castShadow = head.castShadow = true;
+      trunk.position.y = 1.6;
+      head.position.set(0, 2.45, 0.04);
+      const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.8, 0.28),
+        new THREE.MeshStandardMaterial({ color: 0x7dd6ff, roughness: 0.6 }));
+      const rightArm = leftArm.clone();
+      leftArm.position.set(-0.78, 1.25, 0.0);
+      rightArm.position.set(0.78, 1.25, 0.0);
+      body.add(trunk, head, leftArm, rightArm);
+      body.castShadow = true;
+      body.userData.type = 'player';
+      return { body, trunk, head, leftArm, rightArm };
+    }
+
+    function relZ(trackZ, stateRef) { return trackZ - stateRef.progress; }
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+    function clearMap(map) {
+      for (const mesh of map.values()) {
+        if (mesh.parent) mesh.parent.remove(mesh);
+        mesh.geometry?.dispose?.();
+        if (mesh.material && !Array.isArray(mesh.material)) mesh.material.dispose?.();
+      }
+      map.clear();
+    }
+
+    function ensureShardMesh(id, color, y = 0.9, radius = 0.8, height = 1.8) {
+      let obj = objectPools.shards.get(id);
+      if (!obj) {
+        const mesh = makeCrystal(color, radius, height);
+        mesh.castShadow = true;
+        obj = mesh;
+        objectPools.shards.set(id, obj);
+        scene.add(obj);
+      }
+      return obj;
+    }
+
+    function ensureObstacleMesh(id, kind) {
+      let obj = objectPools.obstacles.get(id);
+      if (!obj) {
+        const dims = kind === 'spike'
+          ? [2.0, 2.0, 3.6]
+          : [4.4, 2.4, 5.4];
+        const geom = new THREE.BoxGeometry(dims[0], dims[1], dims[2]);
+        const mat = new THREE.MeshStandardMaterial({
+          color: kind === 'spike' ? 0xff3b42 : 0xbb3038,
+          roughness: 0.5,
+          metalness: 0.08,
+          emissive: 0x3d0d10,
+          emissiveIntensity: 0.2
+        });
+        obj = new THREE.Mesh(geom, mat);
+        obj.castShadow = true;
+        obj.receiveShadow = true;
+        objectPools.obstacles.set(id, obj);
+        scene.add(obj);
+      }
+      return obj;
+    }
+
+    function ensureRuinsMesh(id) {
+      let obj = objectPools.ruins.get(id);
+      if (!obj) {
+        obj = new THREE.Mesh(
+          new THREE.BoxGeometry(1, 1, 1),
+          new THREE.MeshStandardMaterial({ color: 0x244a78, roughness: 0.85, metalness: 0.03 })
+        );
+        obj.castShadow = true;
+        obj.receiveShadow = true;
+        objectPools.ruins.set(id, obj);
+        scene.add(obj);
+      }
+      return obj;
+    }
+
+    function ensureGateMesh(id) {
+      let obj = objectPools.gates.get(id);
+      if (!obj) {
+        obj = new THREE.Group();
+        const left = new THREE.Mesh(
+          new THREE.BoxGeometry(4.6, 4.8, 1.2),
+          new THREE.MeshStandardMaterial({ color: 0x461a1f, roughness: 0.35, emissive: 0x4d121d, emissiveIntensity: 0.3 })
+        );
+        left.userData.wall = true;
+        const right = left.clone();
+        const mid = left.clone();
+        obj.add(left);
+        obj.add(right);
+        obj.add(mid);
+        objectPools.gates.set(id, obj);
+        scene.add(obj);
+      }
+      return obj;
+    }
+
+    function updatePlayer() {
+      if (!state || !state.player) return;
+      const p = state.player;
+      const targetY = 1.45 + p.y;
+      const targetX = p.x;
+
+      const runCycle = (Date.now() / 170) % 6;
+      playerMesh.body.position.x = THREE.MathUtils.lerp(playerMesh.body.position.x, targetX, 0.28);
+      playerMesh.body.position.z = THREE.MathUtils.lerp(playerMesh.body.position.z, 1.8, 0.28);
+      playerMesh.body.position.y = THREE.MathUtils.lerp(playerMesh.body.position.y, targetY, 0.24);
+
+      const stomp = Math.sin(runCycle) * 0.12;
+      playerMesh.trunk.rotation.x = 0;
+      playerMesh.leftArm.rotation.z = 0;
+      playerMesh.rightArm.rotation.z = 0;
+      playerMesh.trunk.position.y = 1.2 + (p.y > 0.1 ? 0.2 : 0) + stomp * (p.vx ? 1 : 0);
+
+      if (p.anim === 'jump') {
+        playerMesh.body.rotation.z = -0.2;
+        playerMesh.body.rotation.x = 0.4;
+      } else if (p.anim === 'stumble') {
+        playerMesh.body.rotation.x = 0.35;
+        playerMesh.body.rotation.z = 0.18;
+      } else if (p.anim === 'land') {
+        playerMesh.body.rotation.x = 0;
+        playerMesh.body.rotation.z = -0.14;
+      } else {
+        playerMesh.body.rotation.z = 0;
+        playerMesh.body.rotation.x = 0;
+      }
+      playerGlow.position.set(targetX + 0.1, targetY + 2.5, 1.9);
+    }
+
+    function renderWorld() {
+      group.children.slice().forEach(child => group.remove(child));
+
+      if (!state) return;
+
+      for (const shard of state.shards) {
+        const z = relZ(shard.trackZ, state);
+        if (z < -10 || z > 130) continue;
+        const mesh = ensureShardMesh(shard.id, 0x57bdff);
+        mesh.position.set(shard.x, 1.1, z);
+        mesh.rotation.y = Date.now() * 0.002;
+        mesh.visible = true;
+        group.add(mesh);
+      }
+
+      for (const obstacle of state.obstacles) {
+        const z = relZ(obstacle.trackZ, state);
+        if (z < -8 || z > 140) continue;
+        const mesh = ensureObstacleMesh(obstacle.id, obstacle.kind);
+        const base = obstacle.kind === 'spike' ? 1.8 : 1.3;
+        mesh.scale.set(1, 1, 1);
+        mesh.position.set(obstacle.x, base, z);
+        mesh.rotation.y = (obstacle.id.length + obstacle.kind.length) * 0.11;
+        mesh.visible = true;
+        group.add(mesh);
+      }
+
+      for (const gate of state.gates) {
+        const z = relZ(gate.trackZ, state);
+        if (z < -10 || z > 130) continue;
+        const groupGate = ensureGateMesh(gate.id);
+        groupGate.children[0].position.set(-11.9, 2.4, z);
+        groupGate.children[1].position.set(11.9, 2.4, z);
+        const open = new Set(gate.openLanes);
+        const openCenter = [];
+        const lanes = [-5.5, 0, 5.5];
+        const markers = [];
+        for (let i = 0; i < lanes.length; i++) {
+          markers.push(lanes[i]);
+          if (open.has(i)) continue;
+          const blocker = new THREE.Mesh(
+            new THREE.BoxGeometry(2.8, 4.4, 1.2),
+            new THREE.MeshStandardMaterial({ color: 0x7a1015, roughness: 0.42, emissive: 0x330607, emissiveIntensity: 0.4 })
+          );
+          blocker.position.set(lanes[i], 2.35, z);
+          group.add(blocker);
+        }
+        groupGate.position.z = 0;
+        groupGate.children[2].visible = false;
+        groupGate.visible = true;
+        group.add(groupGate);
+      }
+
+      for (const ruin of state.ruins) {
+        const z = relZ(ruin.trackZ, state);
+        if (z < -14 || z > 160) continue;
+        const ruinMesh = ensureRuinsMesh(ruin.id);
+        ruinMesh.position.set(ruin.x, ruin.height / 2, z);
+        ruinMesh.scale.set(ruin.width, ruin.height, ruin.depth);
+        ruinMesh.material.color.setStyle(ruin.color === 0x5fd8ff ? '#5fd8ff' : '#243d65');
+        ruinMesh.visible = true;
+        group.add(ruinMesh);
+      }
+    }
+
+    function applyCamera() {
+      const p = state?.player;
+      if (!p) return;
+      const camTarget = new THREE.Vector3(p.x, 1.1 + p.y, 4.5);
+      const camPos = new THREE.Vector3(p.x + 0.6, 7.9 + (p.stumbleUntil ? 0.0 : 0.0), 20.6);
+      camera.position.lerp(camPos, 0.18);
+      camera.lookAt(camTarget.x, Math.max(1.1, camTarget.y), 6 + p.z);
+    }
+
+    function applyUI() {
+      if (!state) return;
+      stateText.distance.textContent = 'distance ' + Math.max(0, Math.floor(state.progress || 0)).toString().padStart(4, '0');
+      stateText.score.textContent = 'score ' + Math.floor(state.score || 0).toString().padStart(4, '0');
+      stateText.combo.textContent = 'combo x' + Math.max(1, state.combo || 0);
+      stateText.stamina.style.width = Math.max(0, Math.min(100, ((state.stamina || 0) / 100) * 100)) + '%';
+      if (state.activeLanes) {
+        stateText.branches.textContent = 'branch lanes open: ' + state.activeLanes.length + ' [L=' + state.activeLanes.join(',') + ']';
+      }
+      if (state.event && state.eventAt) {
+        const age = Date.now() - state.eventAt;
+        stateText.event.textContent = age < 1200 ? state.event : 'RUN';
+      }
+
+      const isOver = state.phase === 'won' || state.phase === 'lost';
+      stateText.overlay.classList.toggle('show', isOver || state.phase === 'countdown');
+      if (state.phase === 'countdown') {
+        const remain = Math.max(0, Math.ceil((state.startAt - state.now) / 1000));
+        stateText.overlayTitle.textContent = 'Warm-up in ' + remain;
+        stateText.overlaySubtitle.textContent = 'Choose a path, collect shards, keep moving';
+      } else if (state.phase === 'won') {
+        stateText.overlayTitle.textContent = 'Run complete';
+        stateText.overlaySubtitle.textContent = `Score ${Math.floor(state.score)} · Best combo ${state.bestCombo} · Distance ${Math.floor(state.progress)}`;
+      } else if (state.phase === 'lost') {
+        stateText.overlayTitle.textContent = 'Signal lost';
+        stateText.overlaySubtitle.textContent = `Score ${Math.floor(state.score)} · shards ${state.totalShards || 0}`;
+      }
+    }
+
+    async function post(pathname, body) {
+      try {
+        await fetch(pathname + '?player=p1', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(body || {})
+        });
+      } catch (e) {}
+    }
+
+    async function refreshState() {
+      const response = await fetch(endpoint('stateUrl')).catch(() => null);
+      if (!response || !response.ok) return;
+      state = await response.json();
+    }
+
+    function isKeyboardTouching() {
+      return !!(
+        keys.KeyA || keys.KeyD || keys.KeyW || keys.KeyS ||
+        keys.ArrowLeft || keys.ArrowRight || keys.ArrowUp || keys.ArrowDown ||
+        keys.Space || keys.Enter || keys.KeyP
+      );
+    }
+
+    function hasKeyboardDrive() {
+      return (keys.KeyA || keys.KeyD || keys.ArrowLeft || keys.ArrowRight);
+    }
+
+    function hasTouchActivity() {
+      return touchInput.active || touchInput.jump || touchInput.pause;
+    }
+
+    function hasGamepadActivity() {
+      return Math.abs(gamepadInput.moveX) > 0.06 ||
+        Math.abs(gamepadInput.moveZ) > 0.06 ||
+        gamepadInput.jump ||
+        gamepadInput.pause ||
+        gamepadInput.restartEdge;
+    }
+
+    function readKeyboardMove() {
+      return {
+        moveX: (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
+        moveZ: (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0),
+        jump: !!(keys.Space || keys.Enter),
+        pause: !!keys.KeyP
+      };
+    }
+
+    function clearInputSuppression() {
+      input.moveX = 0;
+      input.moveZ = 0;
+      input.jump = false;
+      input.pause = false;
+    }
+
+    function clearLocalInput() {
+      touchInput.moveX = 0;
+      touchInput.moveZ = 0;
+      touchInput.jump = false;
+      touchInput.pause = false;
+      touchInput.active = false;
+      touchInput.restartEdge = false;
+      gamepadInput.moveX = 0;
+      gamepadInput.moveZ = 0;
+      gamepadInput.jump = false;
+      gamepadInput.pause = false;
+      gamepadInput.restart = false;
+      gamepadInput.restartEdge = false;
+      gamepadPrev.jump = false;
+      gamepadPrev.pause = false;
+      gamepadPrev.restart = false;
+    }
+
+    function clearInputUntilRestart() {
+      clearInputSuppression();
+      clearLocalInput();
+      clearInputsUntil = performance.now() + 320;
+      inputOwner = 'keyboard';
+    }
+
+    function scheduleRestart() {
+      restartQueued = true;
+      clearInputUntilRestart();
+    }
+
+    function pollGamepad() {
+      if (!navigator.getGamepads) return;
+      const pads = Array.from(navigator.getGamepads()).filter(Boolean);
+      if (!pads.length) {
+        gamepadInput.moveX = 0;
+        gamepadInput.moveZ = 0;
+        gamepadInput.jump = false;
+        gamepadInput.pause = false;
+        gamepadInput.restart = false;
+        gamepadInput.restartEdge = false;
+        gamepadPrev.jump = false;
+        gamepadPrev.pause = false;
+        gamepadPrev.restart = false;
+        return;
+      }
+      const pad = pads[0];
+      const dead = 0.18;
+      const x = Math.abs(pad.axes[0] || 0) > dead ? (pad.axes[0] || 0) : 0;
+      const z = Math.abs(pad.axes[1] || 0) > dead ? (pad.axes[1] || 0) : 0;
+      gamepadInput.moveX = clamp(x, -1, 1);
+      gamepadInput.moveZ = clamp(z, -1, 1);
+      gamepadInput.jump = !!(pad.buttons && pad.buttons[0] && pad.buttons[0].pressed);
+      gamepadInput.pause = !!(pad.buttons && pad.buttons[9] && pad.buttons[9].pressed);
+      gamepadInput.restart = !!(pad.buttons && pad.buttons[1] && pad.buttons[1].pressed);
+      gamepadInput.restartEdge = gamepadInput.restart && !gamepadPrev.restart;
+      gamepadPrev.jump = gamepadInput.jump;
+      gamepadPrev.pause = gamepadInput.pause;
+      gamepadPrev.restart = gamepadInput.restart;
+      if (gamepadInput.restartEdge) scheduleRestart();
+      if (hasGamepadActivity()) inputOwner = 'gamepad';
+    }
+
+    function bindSteerPad() {
+      const area = controls.steerPad;
+      const knob = controls.steerKnob;
+      let activeId = null;
+      const dead = 0.1;
+      function move(e) {
+        const rect = area.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = e.clientX - cx;
+        const dy = e.clientY - cy;
+        const max = rect.width * 0.42;
+        const mag = Math.hypot(dx, dy) || 1;
+        const scale = Math.min(1, max / mag);
+        const sx = (dx * scale) / (rect.width / 2);
+        const sy = (dy * scale) / (rect.height / 2);
+        touchInput.active = true;
+        touchInput.moveX = clamp(Math.abs(sx) > dead ? sx : 0, -1, 1);
+        touchInput.moveZ = clamp(Math.abs(sy) > dead ? -sy : 0, -1, 1);
+        knob.style.transform = 'translate(calc(-50% + ' + (sx * (rect.width / 2)) + 'px), calc(-50% + ' + (sy * (rect.height / 2)) + 'px))';
+      }
+      function release(e) {
+        if (e && e.pointerId !== activeId) return;
+        activeId = null;
+        touchInput.active = false;
+        touchInput.moveX = 0;
+        touchInput.moveZ = 0;
+        knob.style.transform = 'translate(-50%, -50%)';
+      }
+      function start(e) {
+        e.preventDefault();
+        inputOwner = 'touch';
+        activeId = e.pointerId;
+        try { area.setPointerCapture(activeId); } catch (x) {}
+        move(e);
+      }
+      function moveHandle(e) { if (e.pointerId === activeId) move(e); }
+      area.addEventListener('pointerdown', start);
+      area.addEventListener('pointermove', moveHandle);
+      area.addEventListener('pointerup', release);
+      area.addEventListener('pointercancel', release);
+      area.addEventListener('lostpointercapture', release);
+    }
+
+    function bindTouchHold(button, key) {
+      function down(e) {
+        e.preventDefault();
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch (x) {}
+        if (key === 'jump') touchInput.jump = true;
+        if (key === 'pause') touchInput.pause = true;
+        e.currentTarget.classList.add('held');
+        inputOwner = 'touch';
+      }
+      function up(e) {
+        if (key === 'jump') touchInput.jump = false;
+        if (key === 'pause') touchInput.pause = false;
+        e.currentTarget.classList.remove('held');
+      }
+      button.addEventListener('pointerdown', down);
+      button.addEventListener('pointerup', up);
+      button.addEventListener('pointercancel', up);
+      button.addEventListener('lostpointercapture', up);
+    }
+
+    function bindTouchRestart() {
+      const button = controls.restartBtn;
+      function pressed(e) {
+        e.preventDefault();
+        scheduleRestart();
+        button.classList.add('held');
+      }
+      function released() {
+        button.classList.remove('held');
+      }
+      button.addEventListener('pointerdown', pressed);
+      button.addEventListener('pointerup', released);
+      button.addEventListener('pointercancel', released);
+      button.addEventListener('lostpointercapture', released);
+    }
+
+    function setViewportControls() {
+      if (isTouchDevice && window.innerWidth > window.innerHeight) {
+        document.body.classList.add('phone');
+      } else {
+        document.body.classList.remove('phone');
+      }
+    }
+
+    function buildInputs() {
+      pollGamepad();
+      if (hasKeyboardDrive() || (isKeyboardTouching() && inputOwner === 'keyboard')) {
+        inputOwner = 'keyboard';
+      } else if (hasTouchActivity()) {
+        inputOwner = 'touch';
+      } else if (hasGamepadActivity()) {
+        inputOwner = 'gamepad';
+      }
+
+      let x = 0;
+      let z = 0;
+      let jump = false;
+      let pause = false;
+      if (inputOwner === 'touch') {
+        x = touchInput.moveX;
+        z = touchInput.moveZ;
+        jump = touchInput.jump;
+        pause = touchInput.pause;
+      } else if (inputOwner === 'gamepad') {
+        x = gamepadInput.moveX;
+        z = gamepadInput.moveZ;
+        jump = gamepadInput.jump;
+        pause = gamepadInput.pause;
+      } else {
+        const k = readKeyboardMove();
+        x = k.moveX;
+        z = k.moveZ;
+        jump = k.jump;
+        pause = k.pause;
+      }
+      if (performance.now() < clearInputsUntil) {
+        clearInputSuppression();
+      } else {
+        input.moveX = clamp(x, -1, 1);
+        input.moveZ = clamp(z, -1, 1);
+        input.jump = !!jump;
+        input.pause = !!pause;
+      }
+      post(endpoint('inputUrl'), input);
+      if (restartQueued) {
+        restartQueued = false;
+        restart();
+      }
+    }
+
+    async function restart() {
+      await fetch(endpoint('restartUrl'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+      await refreshState();
+    }
+
+    async function connect() {
+      const source = new EventSource(endpoint('eventsUrl'));
+      source.onmessage = evt => {
+        try { state = JSON.parse(evt.data); } catch (e) {}
+      };
+      source.onerror = () => {};
+      await refreshState();
+    }
+
+    function animate() {
+      frame = requestAnimationFrame(animate);
+      if (!state) {
+        renderer.render(scene, camera);
+        return;
+      }
+      buildInputs();
+      renderWorld();
+      updatePlayer();
+      applyCamera();
+      applyUI();
+      renderer.render(scene, camera);
+    }
+
+    addEventListener('keydown', (event) => {
+      keys[event.code] = true;
+      if (event.code === 'KeyR' && !keyRestartHeld) {
+        keyRestartHeld = true;
+        scheduleRestart();
+      }
+      if (event.code === 'KeyP') {
+        inputOwner = 'keyboard';
+      }
+      if (event.code === 'Space' || event.code === 'ArrowUp' || event.code === 'KeyW') {
+        event.preventDefault();
+      }
+    });
+    addEventListener('keyup', (event) => {
+      keys[event.code] = false;
+      if (event.code === 'KeyR') keyRestartHeld = false;
+    });
+    stateText.restartBtn.addEventListener('click', scheduleRestart);
+
+    bindSteerPad();
+    bindTouchHold(controls.jumpBtn, 'jump');
+    bindTouchHold(controls.pauseBtn, 'pause');
+    bindTouchRestart();
+    addEventListener('resize', setViewportControls);
+    setViewportControls();
+    connect();
+    animate();
+  </script>
+</body>
+</html>
