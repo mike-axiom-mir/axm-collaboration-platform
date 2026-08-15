@@ -112,6 +112,9 @@
     .overlay h1 { margin:0 0 6px; font-size:18px; color:#8ff7ff; }
     .overlay p { margin:0 0 14px; color:#aec7f2; font-size:11px; line-height:1.4; }
     .overlay .buttons { margin-top:10px; display:flex; justify-content:center; gap:8px; }
+    .overlay.owner-keyboard { border-color: rgba(140, 231, 255, 0.82); }
+    .overlay.owner-touch { border-color: rgba(127, 255, 184, 0.88); box-shadow: 0 0 0 1px rgba(127, 255, 184, 0.35); }
+    .overlay.owner-gamepad { border-color: rgba(255, 165, 138, 0.88); box-shadow: 0 0 0 1px rgba(255, 165, 138, 0.35); }
     .overlay button {
       pointer-events:auto;
       background:#102349;
@@ -455,10 +458,17 @@
     let state = null;
     let onboardingSeen = false;
     let gamepadConnected = false;
+    let gamepadDeviceId = '';
     let lastEvent = '';
     let eventFlash = 0;
     const keys = Object.create(null);
     let frame = null;
+
+    function gamepadId(pad) {
+      const padIndex = pad && pad.index !== undefined && pad.index !== null ? pad.index : 'indexless';
+      const padId = pad && pad.id ? pad.id : 'gamepad';
+      return padId + ':' + String(padIndex);
+    }
 
     function endpoint(name, extra) {
       const base = API[name];
@@ -875,6 +885,9 @@
     function clearSourceState(name) {
       if (name === 'touch') clearTouchState();
       if (name === 'gamepad') clearGamepadState();
+      if (name === 'gamepad') {
+        gamepadDeviceId = '';
+      }
       markSource(name, false);
     }
 
@@ -967,12 +980,18 @@
       const connectedPads = pads.filter(p => p && p.connected);
       if (!connectedPads.length) {
         gamepadConnected = false;
+        gamepadDeviceId = '';
         clearInputState('gamepad');
         inputOwner = 'keyboard';
         return;
       }
       gamepadConnected = true;
       const pad = connectedPads[0];
+      const nextDeviceId = gamepadId(pad);
+      if (gamepadDeviceId !== nextDeviceId) {
+        clearGamepadState();
+        gamepadDeviceId = nextDeviceId;
+      }
       const dead = JOYSTICK_DEADZONE;
       const x = Math.abs(pad.axes[0] || 0) > dead ? (pad.axes[0] || 0) : 0;
       const z = Math.abs(pad.axes[1] || 0) > dead ? (pad.axes[1] || 0) : 0;
@@ -1045,6 +1064,7 @@
       area.addEventListener('pointermove', moveHandle);
       area.addEventListener('pointerup', release);
       area.addEventListener('pointercancel', release);
+      area.addEventListener('pointerleave', release);
       area.addEventListener('lostpointercapture', release);
     }
 
@@ -1073,6 +1093,7 @@
       button.addEventListener('pointerdown', down);
       button.addEventListener('pointerup', up);
       button.addEventListener('pointercancel', up);
+      button.addEventListener('pointerleave', up);
       button.addEventListener('lostpointercapture', up);
     }
 
@@ -1097,6 +1118,7 @@
       button.addEventListener('pointerdown', pressed);
       button.addEventListener('pointerup', released);
       button.addEventListener('pointercancel', released);
+      button.addEventListener('pointerleave', released);
       button.addEventListener('lostpointercapture', released);
     }
 
@@ -1113,6 +1135,8 @@
       stateText.ownerIndicator.classList.remove('owner-keyboard', 'owner-touch', 'owner-gamepad');
       stateText.ownerIndicator.classList.add('owner-' + owner);
       stateText.ownerIndicator.textContent = 'owner: ' + owner.toUpperCase();
+      stateText.overlay.classList.remove('owner-keyboard', 'owner-touch', 'owner-gamepad');
+      stateText.overlay.classList.add('owner-' + owner);
       document.body.classList.remove('owner-keyboard', 'owner-touch', 'owner-gamepad', 'active-owner');
       controls.steerPad.classList.remove('active-owner');
       controls.jumpBtn.classList.remove('active-owner');
@@ -1231,13 +1255,19 @@
       if (event.code === 'KeyR') keyRestartHeld = false;
       if (event.code === 'KeyP' || event.code === 'Escape') keyPauseHeld = false;
     });
-    addEventListener('gamepadconnected', () => {
+    addEventListener('gamepadconnected', (event) => {
       gamepadConnected = true;
+      gamepadDeviceId = gamepadId(event.gamepad);
       sourceAt.gamepad = performance.now();
       sourceActivity.gamepad = performance.now();
+      clearGamepadState();
     });
-    addEventListener('gamepaddisconnected', () => {
+    addEventListener('gamepaddisconnected', (event) => {
       gamepadConnected = false;
+      const pad = event.gamepad;
+      if (!pad || gamepadId(pad) === gamepadDeviceId) {
+        gamepadDeviceId = '';
+      }
       markSource('gamepad', false);
       clearInputState('gamepad');
       gamepadPrev.jump = false;
