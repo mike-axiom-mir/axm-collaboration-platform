@@ -393,6 +393,103 @@ test('server handles repeated restart requests while input remains held', async 
   }
 });
 
+test('server route normalizes touch/gamepad payloads and preserves deterministic ownership', async () => {
+  const proc = startServerForTest(8980);
+  try {
+    await waitForHealth(8980);
+    const touchInput = {
+      moveX: '0.91',
+      moveZ: '-0.94',
+      jump: 'true',
+      pause: 'false',
+      owner: 'touch',
+      source: 'phone'
+    };
+    const touchResp = await requestJson(8980, '/input?room=AXM1&player=p1', {
+      method: 'POST',
+      body: touchInput
+    });
+    assert.equal(touchResp.body.owner, 'touch');
+    assert.equal(touchResp.body.source, 'phone');
+
+    await delay(80);
+    const touchState = await requestJson(8980, '/state?room=AXM1&player=p1');
+    assert.equal(touchState.body.inputSource, 'phone');
+
+    const gamepadInput = {
+      moveX: 1.3,
+      moveZ: -0.7,
+      jump: 1,
+      pause: 0,
+      owner: 'gamepad',
+      source: 'pad-0'
+    };
+    const gamepadResp = await requestJson(8980, '/input?room=AXM1&player=p1', {
+      method: 'POST',
+      body: gamepadInput
+    });
+    assert.equal(gamepadResp.body.owner, 'gamepad');
+    assert.equal(gamepadResp.body.source, 'pad-0');
+
+    await delay(80);
+    const gamepadState = await requestJson(8980, '/state?room=AXM1&player=p1');
+    assert.equal(gamepadState.body.inputSource, 'pad-0');
+  } finally {
+    await stopServer(proc);
+  }
+});
+
+test('server pause input is edge-based and ignores held pause until release', async () => {
+  const proc = startServerForTest(8981);
+  try {
+    await waitForHealth(8981);
+    await requestJson(8981, '/restart?room=AXM1&player=p1', { method: 'POST', body: {} });
+    let runningState = null;
+    const start = Date.now();
+    while (Date.now() - start < 4000 && (!runningState || runningState.body.phase !== 'running')) {
+      const candidate = await requestJson(8981, '/state?room=AXM1&player=p1');
+      runningState = candidate;
+      if (candidate.body.phase === 'running') break;
+      await delay(80);
+    }
+    assert.equal(runningState && runningState.body.phase, 'running');
+
+    await requestJson(8981, '/input?room=AXM1&player=p1', {
+      method: 'POST',
+      body: { pause: true, owner: 'keyboard', source: 'keyboard' }
+    });
+    await delay(140);
+    let pausedState = await requestJson(8981, '/state?room=AXM1&player=p1');
+    assert.equal(pausedState.body.phase, 'paused');
+
+    await requestJson(8981, '/input?room=AXM1&player=p1', {
+      method: 'POST',
+      body: { pause: true, owner: 'keyboard', source: 'keyboard' }
+    });
+    await delay(120);
+    let heldPauseState = await requestJson(8981, '/state?room=AXM1&player=p1');
+    assert.equal(heldPauseState.body.phase, 'paused');
+
+    await requestJson(8981, '/input?room=AXM1&player=p1', {
+      method: 'POST',
+      body: { pause: false, owner: 'keyboard', source: 'keyboard' }
+    });
+    await delay(60);
+    const releaseState = await requestJson(8981, '/state?room=AXM1&player=p1');
+    assert.equal(releaseState.body.phase, 'paused');
+
+    await requestJson(8981, '/input?room=AXM1&player=p1', {
+      method: 'POST',
+      body: { pause: true, owner: 'keyboard', source: 'keyboard' }
+    });
+    await delay(120);
+    const resumedState = await requestJson(8981, '/state?room=AXM1&player=p1');
+    assert.equal(resumedState.body.phase, 'running');
+  } finally {
+    await stopServer(proc);
+  }
+});
+
 test('manifest required paths exist', () => {
   assert.equal(manifest.slot, '022');
   assert.equal(manifest.controls.gamepad, true);

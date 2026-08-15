@@ -86,6 +86,24 @@
       transition:width .18s linear;
       box-shadow: 0 0 10px rgba(95,216,255,.35);
     }
+    .meter.danger {
+      border-color: rgba(255, 130, 150, 0.7);
+      box-shadow: 0 0 0 1px rgba(255, 110, 124, 0.45);
+    }
+    .meter.danger i {
+      background: linear-gradient(90deg, #ff8fb7, #ff6376 72%, #ffd46a);
+    }
+    .metric {
+      margin-top:6px;
+      color:#aec8ff;
+      letter-spacing:0.09em;
+      font-size:10px;
+      min-height:12px;
+      line-height:1.2;
+    }
+    .metric.bad {
+      color:#ffccd5;
+    }
     .status {
       margin-top:10px;
       min-height:16px;
@@ -417,16 +435,17 @@
       <div class="vignette" aria-hidden="true"></div>
       <div class="hud">
         <div class="panel">
-          <div><b>SHARDRUNNER</b> · AXM GAME HUB</div>
-          <div id="distance">distance 000</div>
-          <div id="bestScore">best score 0000</div>
-          <div id="goal">goal 0420m</div>
-          <div id="remaining">to-go 420</div>
-          <div id="score">score 0000</div>
-          <div id="combo">combo x1</div>
-          <div id="reason">state: READY</div>
-          <div id="statusReason" class="status-reason">run status: READY</div>
-          <div id="runMeta">run 0001 · seed 000000</div>
+        <div><b>SHARDRUNNER</b> · AXM GAME HUB</div>
+        <div id="distance">distance 000</div>
+        <div id="bestScore">best score 0000</div>
+        <div id="goal">goal 0420m</div>
+        <div id="remaining">to-go 420</div>
+        <div id="difficulty" class="metric">tier 01</div>
+        <div id="score">score 0000</div>
+        <div id="combo">combo x1</div>
+        <div id="reason">state: READY</div>
+        <div id="statusReason" class="status-reason">run status: READY</div>
+        <div id="runMeta">run 0001 · seed 000000</div>
           <div id="ownerIndicator" class="owner-indicator">owner: KEYBOARD</div>
           <div class="meter"><i id="stamina"></i></div>
         </div>
@@ -472,6 +491,7 @@
     const INPUT_OWNER_STALE_MS = 260;
     const INPUT_OWNER_BLOCK_MS = 320;
     const GAMEPAD_CONNECTION_STALE_MS = 360;
+    const GAMEPAD_DISCONNECT_FLOOD_MS = 500;
     const GAMEPAD_ACTIVITY_DEADZONE = 0.06;
     const INPUT_OWNER_PRIORITY = ['keyboard', 'touch', 'gamepad'];
     const RESTART_KEY_DEBOUNCE_MS = 190;
@@ -575,6 +595,7 @@
       bestScore: document.getElementById('bestScore'),
       goal: document.getElementById('goal'),
       remaining: document.getElementById('remaining'),
+      difficulty: document.getElementById('difficulty'),
       reason: document.getElementById('reason'),
       statusReason: document.getElementById('statusReason'),
       runMeta: document.getElementById('runMeta'),
@@ -637,6 +658,7 @@
     let gamepadConnected = false;
     let gamepadDeviceId = '';
     let gamepadSeenAt = 0;
+    let gamepadDisconnectAt = 0;
     let lastEvent = '';
     let eventFlash = 0;
     let lastCameraPhase = null;
@@ -905,17 +927,19 @@
       const reducedMotion = state?.settings && state.settings.reduced_motion;
       const lockTilt = state?.settings && state.settings.camera_tilt_lock;
       const pulse = state.cameraPulse || 0;
+      const difficulty = Math.max(1, state?.difficulty || 1);
+      const corridorTension = Math.min(1, (difficulty - 1) / 5);
       const eventJolt = Math.min(1, eventFlash);
       const ease = reducedMotion ? 0.07 : 0.18;
       const phase = state.phase || 'running';
       const phaseFog = FOG_COLORS[phase] || FOG_COLORS.running;
-      const shimmerX = Math.sin((state.progress || 0) * 0.12 + (state.now || 0) * 0.0017) * 0.13 * eventJolt;
-      const shimmerY = Math.cos((state.progress || 0) * 0.11) * 0.12 * eventJolt;
-      const targetY = 7.9 + (lockTilt ? 0.0 : (p.vx * 0.06)) + (reducedMotion ? 0 : pulse * 1.2) + shimmerY;
+      const shimmerX = Math.sin((state.progress || 0) * 0.12 + (state.now || 0) * 0.0017) * (0.13 + corridorTension * 0.05) * eventJolt;
+      const shimmerY = Math.cos((state.progress || 0) * 0.11) * (0.12 + corridorTension * 0.04) * eventJolt;
+      const targetY = 7.9 + (lockTilt ? 0.0 : (p.vx * (0.06 + corridorTension * 0.05))) + (reducedMotion ? 0 : pulse * 1.2) + shimmerY;
       const targetX = p.x + (lockTilt ? 0 : 0.6);
       const camTarget = new THREE.Vector3(p.x, 1.1 + p.y, lockTilt ? 5.6 : 4.5);
       const camPos = new THREE.Vector3(targetX + shimmerX, targetY, 20.6);
-      const goalFog = (state.phase === 'running' || state.phase === 'paused') ? 36 : 30;
+      const goalFog = ((state.phase === 'running' || state.phase === 'paused') ? 36 : 30) - corridorTension * 4;
       scene.fog.color.lerp(phaseFog, reducedMotion ? 0.12 : 0.05);
       scene.fog.far = THREE.MathUtils.lerp(scene.fog.far || 132, goalFog, reducedMotion ? 0.2 : 0.08);
       const targetLookZ = lockTilt ? 3.2 : 6 + p.z;
@@ -955,6 +979,9 @@
       const remaining = Math.max(0, goal - Math.floor(state.progress || 0));
       stateText.goal.textContent = 'goal ' + String(goal).padStart(3, '0') + 'm';
       stateText.remaining.textContent = 'to-go ' + String(remaining).padStart(3, '0');
+      const difficulty = Math.max(1, Math.min(6, state.difficulty || state?.runStats?.tier || 1));
+      stateText.difficulty.textContent = 'tier ' + String(difficulty).padStart(2, '0');
+      stateText.difficulty.classList.toggle('bad', difficulty >= 5);
       stateText.score.textContent = 'score ' + Math.floor(state.score || 0).toString().padStart(4, '0');
       const combo = Math.max(0, state.combo || 0);
       const bestCombo = Math.max(0, state.bestCombo || combo || 0);
@@ -967,6 +994,7 @@
       const runVersion = state.runVersion || (state.buildVersion || '');
       stateText.runMeta.textContent = `run ${attemptText} · seed ${seedText} · ${runVersion || 'v0'}`;
       stateText.stamina.style.width = Math.max(0, Math.min(100, ((state.stamina || 0) / 100) * 100)) + '%';
+      stateText.stamina.parentElement?.classList.toggle('danger', (state.stamina || 0) <= 25);
       if (state.activeLanes) {
         stateText.branches.textContent = 'branch lanes open: ' + state.activeLanes.length + ' [L=' + state.activeLanes.join(',') + ']';
       }
@@ -1100,6 +1128,20 @@
 
     function isGamepadConnectedFresh(now) {
       return gamepadConnected && gamepadSeenAt > 0 && (now - gamepadSeenAt) <= GAMEPAD_CONNECTION_STALE_MS;
+    }
+
+    function clearGamepadConnectionNow() {
+      if (!gamepadConnected && !gamepadSeenAt && !gamepadDeviceId) {
+        return;
+      }
+      gamepadDisconnectAt = performance.now();
+      gamepadConnected = false;
+      gamepadDeviceId = '';
+      gamepadSeenAt = 0;
+      clearInputState('gamepad');
+      if (inputOwner === 'gamepad') {
+        inputOwner = 'keyboard';
+      }
     }
 
     function readKeyboardMove() {
@@ -1329,21 +1371,28 @@
 
     function pollGamepad() {
       if (!navigator.getGamepads) return;
+      const now = performance.now();
       const pads = Array.from(navigator.getGamepads()).filter(Boolean);
       const connectedPads = pads.filter(p => p && p.connected);
       if (!connectedPads.length) {
-        gamepadConnected = false;
-        gamepadDeviceId = '';
-        clearInputState('gamepad');
-        inputOwner = 'keyboard';
-        gamepadSeenAt = 0;
+        if (gamepadConnected || gamepadSeenAt || gamepadDeviceId) {
+          gamepadDisconnectAt = now;
+          clearGamepadConnectionNow();
+        }
+        if (now - gamepadDisconnectAt > GAMEPAD_DISCONNECT_FLOOD_MS && gamepadDisconnectAt) {
+          clearGamepadState();
+        }
         return;
       }
+      gamepadDisconnectAt = 0;
       gamepadConnected = true;
       gamepadSeenAt = performance.now();
       const pad = connectedPads[0];
       const nextDeviceId = gamepadId(pad);
       if (gamepadDeviceId !== nextDeviceId) {
+        if (gamepadDeviceId) {
+          blockSourceForRestart('gamepad');
+        }
         clearGamepadState();
         gamepadDeviceId = nextDeviceId;
       }
@@ -1587,8 +1636,22 @@
 
     function queueOverlayPause() {
       if (!state || state.phase !== 'paused') return;
+      if (overlayPauseQueued) return;
       overlayPauseQueued = true;
       overlayPauseNeedsRelease = true;
+    }
+
+    function bindOverlayAction() {
+      stateText.overlayAction.addEventListener('pointerup', queueOverlayPause);
+      stateText.overlayAction.addEventListener('click', queueOverlayPause);
+      stateText.restartBtn.addEventListener('pointerup', () => {
+        queueRestartAction();
+      });
+      stateText.restartBtn.addEventListener('click', queueRestartAction);
+    }
+
+    function queueRestartAction() {
+      scheduleRestart();
     }
 
     async function connect() {
@@ -1641,6 +1704,7 @@
       gamepadConnected = true;
       gamepadDeviceId = gamepadId(event.gamepad);
       gamepadSeenAt = performance.now();
+      gamepadDisconnectAt = 0;
       sourceAt.gamepad = performance.now();
       sourceActivity.gamepad = performance.now();
       clearGamepadState();
@@ -1652,12 +1716,7 @@
         gamepadDeviceId = '';
         gamepadSeenAt = 0;
       }
-      markSource('gamepad', false);
-      clearInputState('gamepad');
-      gamepadPrev.jump = false;
-      gamepadPrev.pause = false;
-      gamepadPrev.restart = false;
-      if (inputOwner === 'gamepad') inputOwner = 'keyboard';
+      clearGamepadConnectionNow();
     });
     addEventListener('pointerup', (event) => {
       if (!event || event.pointerId === undefined) return;
@@ -1682,8 +1741,7 @@
     addEventListener('pagehide', () => {
       handleTransientInputDrop();
     });
-    stateText.restartBtn.addEventListener('click', scheduleRestart);
-    stateText.overlayAction.addEventListener('click', queueOverlayPause);
+    bindOverlayAction();
 
     bindSteerPad();
     bindTouchHold(controls.jumpBtn, 'jump');
