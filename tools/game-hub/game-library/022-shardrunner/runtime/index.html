@@ -155,6 +155,10 @@
       z-index:4;
       animation: dither-shimmer 2.5s linear infinite;
     }
+    .reduced-motion .dither {
+      animation: none;
+      opacity: .16;
+    }
     .scanline {
       position:absolute;
       inset:0;
@@ -170,12 +174,18 @@
       mix-blend-mode: soft-light;
       z-index:5;
     }
+    .reduced-motion .scanline {
+      opacity: 0.16;
+    }
     .vignette {
       position:absolute;
       inset:0;
       pointer-events:none;
       background: radial-gradient(circle at center, transparent 42%, rgba(2, 6, 16, 0.52) 96%);
       z-index:6;
+    }
+    .reduced-motion .vignette {
+      opacity: 0.66;
     }
     @keyframes dither-shimmer {
       from { background-position: 0 0, 0 0; }
@@ -775,11 +785,13 @@
         stateText.overlayOnboarding.style.display = onboardingSeen ? 'none' : 'block';
       } else if (state.phase === 'won') {
         stateText.overlayTitle.textContent = 'Run complete';
-        stateText.overlaySubtitle.textContent = `${state.reason || 'RUN_COMPLETE'} · Score ${Math.floor(state.score)} · Best combo ${state.bestCombo} · Distance ${Math.floor(state.progress)}`;
+        const shortRun = state.runId ? String(state.runId).slice(-6) : '000001';
+        stateText.overlaySubtitle.textContent = `${state.reason || 'RUN_COMPLETE'} · Score ${Math.floor(state.score)} · Combo ${state.bestCombo} · Distance ${Math.floor(state.progress)} · run ${shortRun} · #${state.attempt || 1}`;
         stateText.overlayOnboarding.style.display = 'none';
       } else if (state.phase === 'lost') {
         stateText.overlayTitle.textContent = 'Signal lost';
-        stateText.overlaySubtitle.textContent = `${state.reason || 'GAME_OVER'} · Score ${Math.floor(state.score)} · shards ${state.totalShards || 0} · ${state.diedBy || 'GAME OVER'}`;
+        const shortRun = state.runId ? String(state.runId).slice(-6) : '000001';
+        stateText.overlaySubtitle.textContent = `${state.reason || 'GAME_OVER'} · Score ${Math.floor(state.score)} · shards ${state.totalShards || 0} · ${state.diedBy || 'GAME OVER'} · run ${shortRun} · #${state.attempt || 1}`;
         stateText.overlayOnboarding.style.display = 'none';
       } else if (isPaused) {
         stateText.overlayTitle.textContent = 'Run paused';
@@ -803,6 +815,7 @@
       if (!response || !response.ok) return;
       state = await response.json();
       state.settings = state.settings || settings;
+      applyAccessibilityVisuals();
       if (!onboardingSeen && state.phase === 'running') {
         onboardingSeen = true;
         try { localStorage.setItem('axm-shardrunner-onboarding-seen', '1'); } catch (e) {}
@@ -816,6 +829,15 @@
       if (!payload || !payload.settings) return;
       Object.assign(settings, payload.settings);
       if (state) state.settings = payload.settings;
+      applyAccessibilityVisuals();
+    }
+
+    function applyAccessibilityVisuals() {
+      const userSettings = state && state.settings ? state.settings : settings;
+      const reducedMotion = !!(userSettings && userSettings.reduced_motion);
+      const cameraLock = !!(userSettings && userSettings.camera_tilt_lock);
+      document.body.classList.toggle('reduced-motion', reducedMotion);
+      document.body.classList.toggle('camera-lock', cameraLock);
     }
 
     function hasKeyboardActivity() {
