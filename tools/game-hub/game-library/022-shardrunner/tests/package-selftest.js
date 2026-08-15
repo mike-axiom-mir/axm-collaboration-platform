@@ -149,9 +149,10 @@ test('runtime server returns stable beta state contract and settings input loop'
     const state = stateResp.body;
     assert.equal(stateResp.response.status, 200);
     assert.equal(state.status, 'EXPERIMENTAL');
+    assert.equal(state.version, manifest.version);
     assert.equal(state.phase, 'countdown');
-    assert.equal(state.runVersion, '0.2.0');
-    assert.equal(state.buildVersion, '0.2.0');
+    assert.equal(state.runVersion, manifest.version);
+    assert.equal(state.buildVersion, manifest.version);
     assert.equal(state.attempt, 1);
     assert.equal(state.bestScore, 0);
     assert.equal(state.seed, state.randomSeed);
@@ -228,9 +229,10 @@ test('runtime server returns stable beta state contract and settings input loop'
 
     const postRestartState = await requestJson(SERVER_TEST_PORT, '/state?room=AXM1&player=p1');
     assert.equal(postRestartState.body.attempt, 2);
-    assert.equal(postRestartState.body.runVersion, '0.2.0');
+    assert.equal(postRestartState.body.runVersion, manifest.version);
     assert.equal(postRestartState.body.runSummary.attempt, 2);
     assert.equal(postRestartState.body.runSummary.bestCombo, 0);
+    assert.equal(postRestartState.body.bestScore, 0);
     assert.equal(postRestartState.body.lastRunSummary, null);
     assert.ok(Array.isArray(postRestartState.body.history));
   } finally {
@@ -510,15 +512,17 @@ test('core produces deterministic state for fixed seed', () => {
 test('core run metadata carries deterministic counters and version', () => {
   const state = Core.create([], 1_000, { seed: 901, attempt: 4 });
   assert.equal(state.attempt, 4);
-  assert.equal(state.runVersion, '0.2.0');
+  assert.equal(state.runVersion, manifest.version);
   assert.equal(state.runStats.seed, 901);
-  assert.equal(state.runStats.runVersion, '0.2.0');
+  assert.equal(state.runStats.runVersion, manifest.version);
   assert.equal(state.runStats.distance, 0);
   assert.equal(state.runStats.combo, 0);
   assert.equal(state.runStats.distanceGoal, state.distanceGoal);
   assert.equal(state.runStats.distanceToGoal, state.distanceGoal);
   assert.equal(state.runStats.runState, state.phase);
   assert.equal(state.runId, 'run-385-004');
+  assert.equal(state.bestScore, 0);
+  assert.equal(state.runStats.bestScore, 0);
 });
 
 test('runStats mirror deterministic run state and advance with movement', () => {
@@ -566,6 +570,7 @@ test('run finish publishes deterministic lastRun/summary metadata', () => {
   assert.equal(state.runSummary.runId, state.runId);
   assert.equal(state.runSummary.distanceGoal, state.distanceGoal);
   assert.equal(state.runSummary.runState, 'lost');
+  assert.equal(state.runSummary.bestScore, state.result.bestScore);
 });
 
 test('core keeps deterministic progression under fixed input', () => {
@@ -931,6 +936,24 @@ test('clear-held-input window suppresses post-restart jump', () => {
   assert.equal(state.player.y > 0, true);
 });
 
+test('lane hold is purged and requires release after restart-clear state', () => {
+  const state = newState(888);
+  state.phase = 'running';
+  state.startedAt = 1000;
+  state.startAt = 1000;
+  state._inputClearUntil = 1120;
+  state._moveHold = true;
+  state.player.x = 0;
+  state.player.vx = 0;
+  Core.step(state, { p1: { moveX: 1, moveZ: -1, jump: false } }, 0.016, 1100);
+  assert.equal(state.player.x.toFixed(4), '0.0000');
+  Core.step(state, { p1: { moveX: 0, moveZ: 0, jump: false } }, 0.016, 1140);
+  assert.equal(state._moveHold, false);
+  const beforeMove = state.player.x;
+  Core.step(state, { p1: { moveX: 1, moveZ: 0, jump: false } }, 0.016, 1160);
+  assert.equal(state.player.x > beforeMove, true);
+});
+
 test('restart clear window ignores stuck restart/jump vectors before clear window ends', () => {
   const state = newState(512);
   state.phase = 'running';
@@ -1004,6 +1027,7 @@ test('collecting shard increases score and combo', () => {
   assert.ok(state.totalShards >= 1);
   assert.ok(state.score > 0);
   assert.equal(state.combo, 1);
+  assert.equal(state.bestScore, Math.round(state.score));
 });
 
 test('branch and obstacle contact events remain readable while running', () => {

@@ -385,9 +385,16 @@
       user-select:none;
     }
     .phone-action:active,
-    .phone-action.held {
+    .phone-action.held,
+    .phone-action:disabled,
+    .phone-action.disabled {
       transform:scale(0.98);
       background:rgba(95, 216, 255, 0.18);
+    }
+    .phone-action:disabled {
+      opacity: 0.42;
+      filter: saturate(0.6);
+      pointer-events: none;
     }
     .events.pulse {
       animation: pulse-edge 0.35s steps(2, end) 1;
@@ -674,6 +681,7 @@
       gamepad: 0
     };
     let restartQueued = false;
+    let restartInFlight = false;
     let overlayPauseQueued = false;
     let overlayPauseNeedsRelease = false;
     let keyRestartHeld = false;
@@ -1660,8 +1668,25 @@
     }
 
     async function restart() {
-      await fetch(endpoint('restartUrl'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
-      await refreshState();
+      if (restartInFlight) return;
+      restartInFlight = true;
+      const restartButton = stateText && stateText.restartBtn ? stateText.restartBtn : null;
+      if (restartButton) {
+        restartButton.disabled = true;
+        restartButton.classList.add('disabled');
+        restartButton.textContent = 'RESTARTING…';
+      }
+      try {
+        await fetch(endpoint('restartUrl'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+        await refreshState();
+      } finally {
+        restartInFlight = false;
+        if (restartButton) {
+          restartButton.textContent = 'Restart';
+          restartButton.disabled = false;
+          restartButton.classList.remove('disabled');
+        }
+      }
     }
 
     function queueOverlayPause() {
@@ -1681,6 +1706,8 @@
     }
 
     function queueRestartAction() {
+      if (restartInFlight || restartQueued) return;
+      if (!state || (state.phase !== 'won' && state.phase !== 'lost')) return;
       scheduleRestart();
     }
 

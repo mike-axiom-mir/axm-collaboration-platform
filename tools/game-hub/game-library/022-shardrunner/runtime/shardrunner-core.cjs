@@ -18,7 +18,7 @@ const COLORS = {
   void: '#11214d'
 };
 
-const BUILD_VERSION = '0.2.0';
+const BUILD_VERSION = '0.2.1';
 const BASE_RUN_SPEED = 11.2;
 const BASE_GRAVITY = -34;
 const JUMP_VELOCITY = 14.4;
@@ -74,6 +74,7 @@ function makeRunSummary(state, opts) {
     shards: state.totalShards || 0,
     combo: state.combo || 0,
     bestCombo: state.bestCombo || 0,
+    bestScore: Math.max(0, Math.round(state.bestScore || state.score || 0)),
     stamina: Math.max(0, Math.round(state.stamina || 0)),
     runState: state.phase || state.runState || PHASES.countdown,
     seed: state.randomSeed || state.seed || 0,
@@ -212,6 +213,7 @@ function refreshRunStats(state, overrides) {
     stamina: Math.max(0, Math.round(state.stamina || 0)),
     combo: state.combo || 0,
     bestCombo: state.bestCombo || state.combo || 0,
+    bestScore: Math.max(0, Math.round(state.bestScore || state.score || 0)),
     tier: state.difficulty || MIN_TIER,
     runVersion: state.runVersion || state.buildVersion || BUILD_VERSION,
     seed: state.randomSeed || state.seed || 0,
@@ -354,6 +356,7 @@ function tierFromProgress(progress) {
 
 function finish(state, won, now, reason) {
   if (state.result) return;
+  state.bestScore = Math.max(state.bestScore || 0, Math.round(state.score));
   const dieReason = won ? null : (reason || 'STAMINA_COLLAPSE');
   const finishReason = won ? 'RUN_COMPLETE' : 'GAME_OVER';
   setPhase(state, won ? PHASES.won : PHASES.lost, now, {
@@ -364,6 +367,7 @@ function finish(state, won, now, reason) {
     score: Math.max(0, Math.round(state.score)),
     shards: state.totalShards,
     combo: state.bestCombo,
+    bestScore: Math.max(0, Math.round(state.bestScore || state.score || 0)),
     distance: Math.round(state.progress),
     durationMs: Math.max(0, now - (state.startedAt || state.startAt)),
     runVersion: state.runVersion || BUILD_VERSION
@@ -415,7 +419,7 @@ function create(rawSeats, now = Date.now(), options) {
   const state = {
     schema: 'axm.shardrunner-state/v1',
     gameId: '022-shardrunner',
-    version: '0.1.0',
+    version: BUILD_VERSION,
     status: 'EXPERIMENTAL',
     buildVersion: BUILD_VERSION,
     seed: seed,
@@ -439,9 +443,11 @@ function create(rawSeats, now = Date.now(), options) {
     runVersion: BUILD_VERSION,
     _pauseHeld: false,
     _jumpHeld: false,
+    _moveHold: false,
     inputSource: 'keyboard',
     seat: seats[0],
     score: 0,
+    bestScore: 0,
     bestCombo: 0,
     combo: 0,
     comboExpiresAt: 0,
@@ -463,6 +469,7 @@ function create(rawSeats, now = Date.now(), options) {
       runState: PHASES.countdown,
       stamina: 100,
       combo: 0,
+      bestScore: 0,
       bestCombo: 0,
       tier: MIN_TIER,
       attempt: attempt,
@@ -652,9 +659,10 @@ function resolveBranch(state) {
       if (state.stamina <= 0) {
         finish(state, false, state.now, 'WRONG_LANE');
       }
-    } else {
-      state.score += 20;
-      state.runStats.shards += 0;
+  } else {
+    state.score += 20;
+    state.bestScore = Math.max(state.bestScore || 0, Math.round(state.score));
+    state.runStats.shards += 0;
       state.runStats.combo = Math.max(1, state.runStats.combo);
       refreshRunStats(state, {
         combo: state.runStats.combo,
@@ -695,6 +703,7 @@ function resolveShards(state) {
       state.comboExpiresAt = now + state.comboWindow;
       const gain = 6 + state.combo * 2 + Math.min(16, state.difficulty);
       state.score += gain;
+      state.bestScore = Math.max(state.bestScore || 0, Math.round(state.score));
       state.bestCombo = Math.max(state.bestCombo, state.combo);
       state.runStats.combo = state.combo;
       state.runStats.distance = Math.round(state.progress);
@@ -754,6 +763,7 @@ function applyProgress(state, dt) {
   const advance = runSpeed * dt;
   state.progress += advance;
   state.score += dt * .25;
+  state.bestScore = Math.max(0, Math.round(Math.max(state.bestScore || 0, state.score)));
   refreshRunStats(state, {
     distance: Math.max(0, Math.round(state.progress)),
     stamina: Math.max(0, Math.round(state.stamina || 0)),
@@ -772,6 +782,20 @@ function step(state, rawInputs, dt, nowArg) {
     clear: state._inputClearUntil && state.now < state._inputClearUntil
   });
   state.inputSource = input.source || input.owner || state.inputSource;
+
+  if (state.now < (state._inputClearUntil || 0)) {
+    input.moveX = 0;
+    input.moveZ = 0;
+    state._moveHold = true;
+  } else if (state._moveHold) {
+    const hasMoveInput = Math.abs(input.moveX) > 0 || Math.abs(input.moveZ) > 0;
+    if (hasMoveInput) {
+      input.moveX = 0;
+      input.moveZ = 0;
+    } else {
+      state._moveHold = false;
+    }
+  }
 
   if (state.now >= state._inputClearUntil && state._jumpHeld && !input.jump) {
     state._jumpHeld = false;

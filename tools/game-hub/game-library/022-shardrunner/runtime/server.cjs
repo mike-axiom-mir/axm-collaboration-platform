@@ -22,7 +22,7 @@ const DEFAULT_SETTINGS = {
 const INPUT_CLEAR_MS = 340;
 const RESTART_ENDPOINT_COOLDOWN_MS = 420;
 const MAX_RUN_HISTORY = 20;
-const BUILD_VERSION = '0.2.0';
+const BUILD_VERSION = '0.2.1';
 
 const sessions = new Map();
 const streams = new Set();
@@ -211,7 +211,7 @@ function recordRun(session, state) {
     distanceGoal: state.distanceGoal || 0,
     distanceToGoal: Math.max(0, Math.round((state.distanceGoal || 0) - (state.progress || 0))),
     diedBy: state.diedBy || null,
-    buildVersion: state.buildVersion || state.runVersion || '0.2.0',
+    buildVersion: state.buildVersion || state.runVersion || BUILD_VERSION,
     runVersion: state.buildVersion || state.runVersion || BUILD_VERSION,
     durationMs: state.result.durationMs || 0,
     seed: state.randomSeed || 0,
