@@ -12,6 +12,7 @@ on:
       - "scripts/compile-schema-registry.js"
       - "tests/city-map-gate-test.js"
       - "tests/schema-registry-gate-test.js"
+      - "tests/city-state-primitives-test.js"
       - ".github/workflows/city-map-gate.yml"
   workflow_dispatch:
 
@@ -34,3 +35,5 @@ jobs:
         run: node scripts/compile-city-graph.js --check
       - name: Refuse schema identity and registry drift
         run: node tests/schema-registry-gate-test.js && node scripts/compile-schema-registry.js --check
+      - name: Prove immutable artifact and append-only event boundaries
+        run: node tests/city-state-primitives-test.js

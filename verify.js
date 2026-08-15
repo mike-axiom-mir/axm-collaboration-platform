@@ -244,6 +244,14 @@ try {
   else ok('city schema registry exact: '+schemas.registry.registryDigest+'; '+schemas.registry.entries.length+' schema identities; '+schemas.registry.unresolvedSockets.length+' unresolved socket(s) retained');
 } catch(e) { fail('city schema registry gate could not run: '+(e.code ? e.code+': ' : '')+e.message); }
 
+/* 16 - CITY STATE PRIMITIVES: content-addressed candidate storage and the
+   append-only journal prove their negative boundaries in temporary roots. */
+try {
+  const artifactAssertions = require('./shared/artifact-depot/selftest').run();
+  const eventAssertions = require('./shared/event-journal/selftest').run();
+  ok('city state primitives focused suite: '+(artifactAssertions+eventAssertions)+' assertion(s); no delete, rewrite, or event-as-authority path');
+} catch(e) { fail('city state primitives focused suite failed: '+(e.code ? e.code+': ' : '')+e.message); }
+
 /* ---- report ---- */
 const generatedAt = new Date().toISOString();
 const head = 'AXM VERIFY — '+generatedAt+'\n'+

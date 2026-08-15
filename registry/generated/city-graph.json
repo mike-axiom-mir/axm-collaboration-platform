@@ -21595,6 +21595,124 @@
       "authority": {
         "availableIsAuthorized": false,
         "canon": false,
+        "declaredPermissions": [
+          "write-candidate"
+        ],
+        "execute": false,
+        "grants": [],
+        "install": false,
+        "merge": false,
+        "networkWrite": false,
+        "promote": false,
+        "roots": false
+      },
+      "boundaries": {
+        "refuses": [
+          "artifact-execution",
+          "automatic-deletion",
+          "automatic-garbage-collection",
+          "canon-change",
+          "merge",
+          "network-write",
+          "overwrite-on-digest-conflict",
+          "promotion",
+          "root-change"
+        ],
+        "writes": [
+          "explicit-depot-root/leases",
+          "explicit-depot-root/roots",
+          "explicit-depot-root/sha256"
+        ]
+      },
+      "classification": {
+        "basis": [
+          "manifest.legoBlockKind"
+        ],
+        "kind": "ORGAN",
+        "state": "DECLARED"
+      },
+      "effects": {
+        "capable": [
+          "ROOT_CHANGE",
+          "WRITE_CANDIDATE"
+        ],
+        "declarationInputs": [
+          "explicit-depot-root/leases",
+          "explicit-depot-root/roots",
+          "explicit-depot-root/sha256",
+          "write-candidate"
+        ],
+        "measured": false,
+        "note": "Effects are declarations/inferences, not authority or proof that an effect occurred.",
+        "unknownDeclarations": []
+      },
+      "id": "shared/artifact-depot",
+      "name": "AXM LEGO City Artifact Depot",
+      "proof": {
+        "behaviorProvenByGraph": false,
+        "evidenceLocators": [],
+        "freshness": "UNKNOWN",
+        "selftests": [
+          "shared/artifact-depot/selftest.js"
+        ]
+      },
+      "resources": {
+        "readiness": [
+          "explicit-writable-depot-root",
+          "node-runtime"
+        ],
+        "uses": [
+          "filesystem-read",
+          "filesystem-write-explicit-root",
+          "sha256"
+        ]
+      },
+      "schema": "axm.block-view/v1",
+      "sockets": {
+        "accepts": [
+          "bytes",
+          "filesystem/explicit-depot-root"
+        ],
+        "consumes": [
+          "bytes",
+          "filesystem:explicit-depot-root"
+        ],
+        "emits": [
+          "axm.artifact-export/v1",
+          "axm.artifact-lease/v1",
+          "axm.artifact-ref/v1"
+        ],
+        "provides": [
+          "city.artifact.lease",
+          "city.artifact.offline-export-manifest",
+          "city.artifact.put-atomic",
+          "city.artifact.verify"
+        ]
+      },
+      "source": {
+        "contract": "shared/artifact-depot/module.contract.json",
+        "declarationFiles": [
+          "shared/artifact-depot/manifest.json",
+          "shared/artifact-depot/module.contract.json"
+        ],
+        "declaredId": "artifact-depot",
+        "digest": "9ead94d13c7a9fa9b65adae271aa8432775fa8f11f1d02cf5f723cf5ae7e4cc5",
+        "manifest": "shared/artifact-depot/manifest.json",
+        "observedSourceFileCount": 9,
+        "root": "shared/artifact-depot"
+      },
+      "status": "EXPERIMENTAL",
+      "surfaces": {
+        "audience": "human-machine",
+        "entry": "artifact-depot-host.js",
+        "type": "machine-capability"
+      },
+      "version": "v0.1"
+    },
+    {
+      "authority": {
+        "availableIsAuthorized": false,
+        "canon": false,
         "declaredPermissions": [],
         "execute": false,
         "grants": [],
@@ -21923,10 +22041,10 @@
       },
       "classification": {
         "basis": [
-          "observer/verifier vocabulary"
+          "manifest.legoBlockKind"
         ],
-        "kind": "SENSOR",
-        "state": "INFERRED_UNCONFIRMED"
+        "kind": "ORGAN",
+        "state": "DECLARED"
       },
       "effects": {
         "capable": [
@@ -22000,7 +22118,7 @@
           "shared/city-graph/module.contract.json"
         ],
         "declaredId": "city-graph",
-        "digest": "8a776384bbc748fbcddad5e1f59120026493a1a09c9a1e6cc418f298ab9a4450",
+        "digest": "d1f24002ecadb41c967435b02e07cd1ffd1eea513c3c893cc2bbb7e14b18cc79",
         "manifest": "shared/city-graph/manifest.json",
         "observedSourceFileCount": 12,
         "root": "shared/city-graph"
@@ -22009,6 +22127,122 @@
       "surfaces": {
         "audience": "human-machine",
         "entry": "../../scripts/compile-city-graph.js",
+        "type": "machine-capability"
+      },
+      "version": "v0.1"
+    },
+    {
+      "authority": {
+        "availableIsAuthorized": false,
+        "canon": false,
+        "declaredPermissions": [
+          "write-candidate"
+        ],
+        "execute": false,
+        "grants": [],
+        "install": false,
+        "merge": false,
+        "networkWrite": false,
+        "promote": false,
+        "roots": false
+      },
+      "boundaries": {
+        "refuses": [
+          "automatic-truncation-repair",
+          "canon-change",
+          "event-as-authority",
+          "event-deletion",
+          "event-rewrite",
+          "merge",
+          "network-write",
+          "promotion",
+          "root-change"
+        ],
+        "writes": [
+          "adjacent-short-lived-lock-file",
+          "explicit-journal-file"
+        ]
+      },
+      "classification": {
+        "basis": [
+          "manifest.legoBlockKind"
+        ],
+        "kind": "ORGAN",
+        "state": "DECLARED"
+      },
+      "effects": {
+        "capable": [
+          "WRITE_CANDIDATE"
+        ],
+        "declarationInputs": [
+          "adjacent-short-lived-lock-file",
+          "explicit-journal-file",
+          "write-candidate"
+        ],
+        "measured": false,
+        "note": "Effects are declarations/inferences, not authority or proof that an effect occurred.",
+        "unknownDeclarations": [
+          "adjacent-short-lived-lock-file",
+          "explicit-journal-file"
+        ]
+      },
+      "id": "shared/event-journal",
+      "name": "AXM LEGO City Event Journal",
+      "proof": {
+        "behaviorProvenByGraph": false,
+        "evidenceLocators": [],
+        "freshness": "UNKNOWN",
+        "selftests": [
+          "shared/event-journal/selftest.js"
+        ]
+      },
+      "resources": {
+        "readiness": [
+          "explicit-writable-journal-file",
+          "node-runtime"
+        ],
+        "uses": [
+          "filesystem-read",
+          "filesystem-write-explicit-file",
+          "sha256"
+        ]
+      },
+      "schema": "axm.block-view/v1",
+      "sockets": {
+        "accepts": [
+          "axm.event/v1",
+          "filesystem/explicit-journal-file"
+        ],
+        "consumes": [
+          "axm.event/v1",
+          "filesystem:explicit-journal-file"
+        ],
+        "emits": [
+          "axm.event/v1",
+          "axm.journal-record/v1"
+        ],
+        "provides": [
+          "city.event.append",
+          "city.event.chain-verify",
+          "city.event.projection-replay"
+        ]
+      },
+      "source": {
+        "contract": "shared/event-journal/module.contract.json",
+        "declarationFiles": [
+          "shared/event-journal/manifest.json",
+          "shared/event-journal/module.contract.json"
+        ],
+        "declaredId": "event-journal",
+        "digest": "33030de5c2fbc7b156db198fa62a82ff0be831aa349881e23adcdbd3ea7c9e95",
+        "manifest": "shared/event-journal/manifest.json",
+        "observedSourceFileCount": 8,
+        "root": "shared/event-journal"
+      },
+      "status": "EXPERIMENTAL",
+      "surfaces": {
+        "audience": "human-machine",
+        "entry": "event-journal-host.js",
         "type": "machine-capability"
       },
       "version": "v0.1"
@@ -22609,10 +22843,10 @@
       },
       "classification": {
         "basis": [
-          "route/workflow vocabulary"
+          "manifest.legoBlockKind"
         ],
-        "kind": "ROUTE",
-        "state": "INFERRED_UNCONFIRMED"
+        "kind": "ORGAN",
+        "state": "DECLARED"
       },
       "effects": {
         "capable": [
@@ -22676,7 +22910,7 @@
           "shared/schema-registry/module.contract.json"
         ],
         "declaredId": "schema-registry",
-        "digest": "23300a4d929378c5067aba1c92927e0345fcedcdecd95ddd4e0fdd31c9a0fa4e",
+        "digest": "354525a89431b65132fdfa4e4f2febdf68b20e97e188bb1c1ca0bfdd472877d6",
         "manifest": "shared/schema-registry/manifest.json",
         "observedSourceFileCount": 9,
         "root": "shared/schema-registry"
@@ -28978,6 +29212,13 @@
     },
     {
       "consumers": [
+        "shared/event-journal"
+      ],
+      "id": "axm.event/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
         "evidence-chain-candidate-review-gate",
         "evidence-chain-recovery-foundry"
       ],
@@ -30724,6 +30965,13 @@
       "providers": []
     },
     {
+      "consumers": [
+        "shared/artifact-depot"
+      ],
+      "id": "bytes",
+      "providers": []
+    },
+    {
       "consumers": [],
       "id": "cancellable-local-output-engine",
       "providers": [
@@ -31067,9 +31315,58 @@
     },
     {
       "consumers": [],
+      "id": "city.artifact.lease",
+      "providers": [
+        "shared/artifact-depot"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.artifact.offline-export-manifest",
+      "providers": [
+        "shared/artifact-depot"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.artifact.put-atomic",
+      "providers": [
+        "shared/artifact-depot"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.artifact.verify",
+      "providers": [
+        "shared/artifact-depot"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "city.deterministic-graph-compile",
       "providers": [
         "shared/city-graph"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.event.append",
+      "providers": [
+        "shared/event-journal"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.event.chain-verify",
+      "providers": [
+        "shared/event-journal"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.event.projection-replay",
+      "providers": [
+        "shared/event-journal"
       ]
     },
     {
@@ -33648,6 +33945,13 @@
     },
     {
       "consumers": [
+        "shared/artifact-depot"
+      ],
+      "id": "filesystem:explicit-depot-root",
+      "providers": []
+    },
+    {
+      "consumers": [
         "text-fabric"
       ],
       "id": "filesystem:explicit-input-and-output-only",
@@ -33660,6 +33964,13 @@
         "memory-continuity-garden"
       ],
       "id": "filesystem:explicit-input-only",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/event-journal"
+      ],
+      "id": "filesystem:explicit-journal-file",
       "providers": []
     },
     {
@@ -42440,6 +42751,21 @@
       "sha256": "1c4fd5de7030ac083e71e9b57ccb72608ed467a564ddbfac24fa03f1bed7a2bf"
     },
     {
+      "id": "axm.artifact-export/v1",
+      "path": "shared/artifact-depot/artifact-export.schema.json",
+      "sha256": "79b8b2edffc0da040c3e50bcb0afc681945f1bd4c15b893cb6c6534d97e0ac53"
+    },
+    {
+      "id": "axm.artifact-lease/v1",
+      "path": "shared/artifact-depot/artifact-lease.schema.json",
+      "sha256": "a8bdfcfd881221a2824bfc5e9186eb2cd13ecf134ac086a778cbc55ce8d9a642"
+    },
+    {
+      "id": "axm.artifact-ref/v1",
+      "path": "shared/artifact-depot/artifact-ref.schema.json",
+      "sha256": "3b5ab4479ccdd2eca9d882f23b9769dbb4ec7a6949143c81e43eb20593fe6634"
+    },
+    {
       "id": "axm.asset-artifact/v1",
       "path": "shared/asset-hands/asset-artifact.schema.json",
       "sha256": "14d815bba5f864bd224dd1c10c580f99e3a130fd383c768fa03fd35019385a45"
@@ -42583,6 +42909,11 @@
       "id": "axm.embroidery-capability-receipt/v1",
       "path": "shared/asset-hands/substrate-pack/embroidery-capability-receipt.schema.json",
       "sha256": "1c2be4aba333a970066b83601eb31821ee1388bdd08ee454a8bdd999fadf6fbe"
+    },
+    {
+      "id": "axm.event/v1",
+      "path": "shared/event-journal/event.schema.json",
+      "sha256": "c7eeabc38d68d66e8e265a319cba64ee5600ac1e84bbe8ff4f8a6516dd9b23c2"
     },
     {
       "id": "axm.evidence-fields/v2",
@@ -42738,6 +43069,11 @@
       "id": "axm.holodeck-world/v1",
       "path": "shared/holodeck/schemas/holodeck-world.schema.json",
       "sha256": "1bf1618c4b21d85dc511560b25906181f0bb9780db07f73fa8f0a61354be86ec"
+    },
+    {
+      "id": "axm.journal-record/v1",
+      "path": "shared/event-journal/journal-record.schema.json",
+      "sha256": "68aa1fbef9ebbcc05c5a1746a2f6a6b2aa994505da8ff31940b3853e38edebd8"
     },
     {
       "id": "axm.mirror.actor/v1",
@@ -44265,36 +44601,35 @@
       "sha256": "2effd339ff854a7bd1bdc8bc97710e3a65bf33ac01c5c9f27d7893f5fda0faae"
     }
   ],
-  "semanticDigest": "592b1bff640ed6c7e1e88d4162e99b6207486cd333806129c93500a0a6b31d3b",
+  "semanticDigest": "b44ea7f440321095bf3b9b71891c9780570b4795f609225efa438e9502599afb",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "6f0e2637de0897894f948e602546980ff0b3a0d2b354ed1e2589c099f64344fb",
+    "declarationDigest": "97e3c4496dae1252bd77456b0fd9a48ec8c496a12d355ca68294bc53ee782fe6",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "6f0e2637de0897894f948e602546980ff0b3a0d2b354ed1e2589c099f64344fb"
+    "snapshotIdentity": "97e3c4496dae1252bd77456b0fd9a48ec8c496a12d355ca68294bc53ee782fe6"
   },
   "summary": {
     "blockKinds": {
       "BRICK": 2,
       "BRIDGE": 26,
       "HAND": 127,
-      "ORGAN": 15,
+      "ORGAN": 19,
       "ROOM": 33,
-      "ROUTE": 25,
-      "SENSOR": 1
+      "ROUTE": 24
     },
-    "blocks": 229,
-    "capabilities": 1935,
-    "declaredContracts": 226,
-    "declaredManifests": 216,
+    "blocks": 231,
+    "capabilities": 1946,
+    "declaredContracts": 228,
+    "declaredManifests": 218,
     "edges": 31,
-    "schemas": 397,
-    "unresolved": 1510
+    "schemas": 402,
+    "unresolved": 1514
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -51273,6 +51608,18 @@
       "state": "UNKNOWN"
     },
     {
+      "blockId": "shared/artifact-depot",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "bytes",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/artifact-depot",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "filesystem:explicit-depot-root",
+      "state": "UNKNOWN"
+    },
+    {
       "blockId": "shared/audio-sfx-bake",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "axm.audio.sound/v1",
@@ -51306,6 +51653,18 @@
       "blockId": "shared/city-graph",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "json-schema:draft-2020-12",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/event-journal",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.event/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/event-journal",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "filesystem:explicit-journal-file",
       "state": "UNKNOWN"
     },
     {

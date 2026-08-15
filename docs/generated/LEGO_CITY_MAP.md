@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `592b1bff640ed6c7e1e88d4162e99b6207486cd333806129c93500a0a6b31d3b`
+Semantic graph digest: `b44ea7f440321095bf3b9b71891c9780570b4795f609225efa438e9502599afb`
 
-Blocks: 229 · Capabilities: 1935 · Schemas: 397 · Unresolved edges: 1510
+Blocks: 231 · Capabilities: 1946 · Schemas: 402 · Unresolved edges: 1514
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -187,16 +187,18 @@ This file is generated from the same graph as the machine views. Labels never gr
 | sensorium-lab | ROOM (INFERRED_UNCONFIRMED) | TEST | NONE | 4 | 3 | 1 selftest(s) |
 | shapeable-builder | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 3 | 1 selftest(s) |
 | shared/ai-native-hands | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 6 | 0 | 1 selftest(s) |
+| shared/artifact-depot | ORGAN (DECLARED) | EXPERIMENTAL | ROOT_CHANGE, WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
 | shared/asset-hands | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 78 | 0 | 35 selftest(s) |
 | shared/audio-sfx-bake | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 0 | 1 | 1 selftest(s) |
-| shared/city-graph | SENSOR (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
+| shared/city-graph | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
+| shared/event-journal | ORGAN (DECLARED) | EXPERIMENTAL | WRITE_CANDIDATE | 3 | 2 | 1 selftest(s) |
 | shared/game-asset-foundation | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 13 | 3 | 1 selftest(s) |
 | shared/game-capability-atlas | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
 | shared/game-fsm | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 0 | 3 | 1 selftest(s) |
 | shared/module-evolution-ledger | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 8 | 4 | 2 selftest(s) |
 | shared/neural-visual | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 4 | 0 | 1 selftest(s) |
 | shared/procedural-animation-blocks | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 3 | 1 | 1 selftest(s) |
-| shared/schema-registry | ROUTE (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 4 | 2 | 1 selftest(s) |
+| shared/schema-registry | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 4 | 2 | 1 selftest(s) |
 | shared/style-fabric | ORGAN (INFERRED_UNCONFIRMED) | WORKING_TEST | NONE | 0 | 0 | 1 selftest(s) |
 | shared/visual-actions | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 7 | 0 | 1 selftest(s) |
 | shared/visual-fx | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 0 | 1 selftest(s) |
@@ -1405,12 +1407,16 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shapeable-builder` → `axm.agent.proposal` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shapeable-builder` → `axm.shapeable.block-pack` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shapeable-builder` → `axm.shapeable.project` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/artifact-depot` → `bytes` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/artifact-depot` → `filesystem:explicit-depot-root` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/audio-sfx-bake` → `axm.audio.sound/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `axm.module-contract/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `axm.tool-manifest/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `filesystem:explicit-workshop-root` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `git:local-source-commit` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `json-schema:draft-2020-12` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/event-journal` → `axm.event/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/event-journal` → `filesystem:explicit-journal-file` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/game-asset-foundation` → `axm.asset-brief/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/game-asset-foundation` → `axm.asset-hand-result/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/game-asset-foundation` → `service:asset-hands` (UNKNOWN)

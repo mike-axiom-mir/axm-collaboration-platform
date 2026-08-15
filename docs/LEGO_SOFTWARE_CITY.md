@@ -57,3 +57,16 @@ annotation-free structural equivalence, or an explicit adapter with an explicit
 loss list. Same-major and newer-version labels never prove compatibility.
 Existing modules are observed without migration or rewrite, and unresolved
 schema sockets remain visible in the generated registry.
+
+## Phase 2 state primitives
+
+The Artifact Depot stores candidate bytes under a SHA-256 content address using
+a partial file, fsync, and atomic rename. Existing bytes are reverified rather
+than overwritten. Partial files never become artifacts. Leases and offline
+export manifests are inert data, and v0.1 has no deletion or garbage collector.
+
+The Event Journal appends canonical records to a local JSONL hash chain under a
+short-lived exclusive lock. It fails on incomplete tails, invalid JSON,
+sequence/hash drift, or duplicate event IDs. Correlation, causation, authority
+decision references, and evidence references survive deterministic projection
+replay. An event records an occurrence; it grants no authority.

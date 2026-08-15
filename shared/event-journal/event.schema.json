@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.event/v1",
+  "type": "object",
+  "required": ["schema", "id", "type", "occurredAt", "correlationId", "causationId", "actor", "subject", "authorityDecisionRef", "evidenceRefs", "dataSchema", "data", "grantsAuthority"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.event/v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "type": { "type": "string", "minLength": 1 },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "correlationId": { "type": "string", "minLength": 1 },
+    "causationId": { "type": ["string", "null"] },
+    "actor": { "type": "string", "minLength": 1 },
+    "subject": { "type": "string", "minLength": 1 },
+    "authorityDecisionRef": { "type": ["string", "null"] },
+    "evidenceRefs": { "type": "array", "items": { "type": "string" } },
+    "dataSchema": { "type": "string", "minLength": 1 },
+    "data": {},
+    "grantsAuthority": { "const": false }
+  }
+}
