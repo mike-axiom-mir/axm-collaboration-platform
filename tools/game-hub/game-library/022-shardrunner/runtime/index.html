@@ -453,6 +453,14 @@
     const RENDER_WIDTH = 384;
     const RENDER_HEIGHT = 216;
     const WORLD_ASPECT = 16 / 9;
+    const CAMERA_STATE = {
+      posX: 0,
+      posY: 7.95,
+      posZ: 20.6,
+      lookX: 0,
+      lookY: 1.12,
+      lookZ: 5.5
+    };
     const qs = new URLSearchParams(location.search);
     const room = qs.get('room') || 'AXM1';
     const player = qs.get('player') || 'p1';
@@ -726,13 +734,29 @@
       let obj = objectPools.gates.get(id);
       if (!obj) {
         obj = new THREE.Group();
+        const material = makeFlatMaterial({
+          color: 0x461a1f,
+          roughness: 0.35,
+          emissive: 0x4d121d,
+          emissiveIntensity: 0.28
+        });
         const left = new THREE.Mesh(
-          new THREE.BoxGeometry(4.6, 4.8, 1.2),
+          new THREE.BoxGeometry(2.8, 4.4, 1.2),
           makeFlatMaterial({ color: 0x461a1f, roughness: 0.35, emissive: 0x4d121d, emissiveIntensity: 0.3 })
         );
         left.userData.wall = true;
         const right = left.clone();
-        const mid = left.clone();
+        const mid = new THREE.Mesh(
+          new THREE.BoxGeometry(2.8, 4.4, 1.2),
+          material
+        );
+        mid.visible = false;
+        left.position.set(-11.9, 2.35, 0);
+        right.position.set(11.9, 2.35, 0);
+        obj.userData.blockers = [left, right, mid];
+        left.userData.lane = 0;
+        right.userData.lane = 2;
+        mid.userData.lane = 1;
         obj.add(left);
         obj.add(right);
         obj.add(mid);
@@ -807,21 +831,13 @@
         const z = relZ(gate.trackZ, state);
         if (z < -10 || z > 130) continue;
         const groupGate = ensureGateMesh(gate.id);
-        groupGate.children[0].position.set(-11.9, 2.4, z);
-        groupGate.children[1].position.set(11.9, 2.4, z);
-        const open = new Set(gate.openLanes);
-        const openCenter = [];
-        const lanes = [-5.5, 0, 5.5];
-        const markers = [];
-        for (let i = 0; i < lanes.length; i++) {
-          markers.push(lanes[i]);
-          if (open.has(i)) continue;
-          const blocker = new THREE.Mesh(
-            new THREE.BoxGeometry(2.8, 4.4, 1.2),
-            new THREE.MeshStandardMaterial({ color: 0x7a1015, roughness: 0.42, emissive: 0x330607, emissiveIntensity: 0.4 })
-          );
-          blocker.position.set(lanes[i], 2.35, z);
-          group.add(blocker);
+        const open = new Set(gate.openLanes || []);
+        const blockers = groupGate.userData.blockers || [];
+        for (const blocker of blockers) {
+          blocker.position.x = blocker.userData.lane === 0 ? -11.9 : blocker.userData.lane === 2 ? 11.9 : 0;
+          blocker.position.y = 2.35;
+          blocker.position.z = z;
+          blocker.visible = !open.has(blocker.userData.lane);
         }
         groupGate.position.z = 0;
         groupGate.children[2].visible = false;
@@ -860,8 +876,16 @@
       const goalFog = (state.phase === 'running' || state.phase === 'paused') ? 36 : 30;
       scene.fog.color.lerp(phaseFog, reducedMotion ? 0.12 : 0.05);
       scene.fog.far = THREE.MathUtils.lerp(scene.fog.far || 132, goalFog, reducedMotion ? 0.2 : 0.08);
-      camera.position.lerp(camPos, reducedMotion ? 0.08 : ease);
-      camera.lookAt(camTarget.x, Math.max(1.1, camTarget.y), lockTilt ? 3.2 : 6 + p.z);
+      const targetLookZ = lockTilt ? 3.2 : 6 + p.z;
+      const camEase = state.phase === 'countdown' || state.phase === 'cooldown' ? 0.22 : ease;
+      CAMERA_STATE.posX = THREE.MathUtils.lerp(CAMERA_STATE.posX, camPos.x, reducedMotion ? 0.11 : camEase);
+      CAMERA_STATE.posY = THREE.MathUtils.lerp(CAMERA_STATE.posY, camPos.y, reducedMotion ? 0.11 : camEase);
+      CAMERA_STATE.posZ = THREE.MathUtils.lerp(CAMERA_STATE.posZ, camPos.z, reducedMotion ? 0.11 : camEase);
+      CAMERA_STATE.lookX = THREE.MathUtils.lerp(CAMERA_STATE.lookX, camTarget.x, reducedMotion ? 0.08 : camEase);
+      CAMERA_STATE.lookY = THREE.MathUtils.lerp(CAMERA_STATE.lookY, Math.max(1.1, camTarget.y), reducedMotion ? 0.08 : camEase);
+      CAMERA_STATE.lookZ = THREE.MathUtils.lerp(CAMERA_STATE.lookZ, targetLookZ, reducedMotion ? 0.08 : camEase);
+      camera.position.set(CAMERA_STATE.posX, CAMERA_STATE.posY, CAMERA_STATE.posZ);
+      camera.lookAt(CAMERA_STATE.lookX, CAMERA_STATE.lookY, CAMERA_STATE.lookZ);
       eventFlash = Math.max(0, eventFlash - 0.08);
     }
 
