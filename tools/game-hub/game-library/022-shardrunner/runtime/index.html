@@ -374,8 +374,32 @@
       50% { filter: brightness(1.45); }
       100% { filter: brightness(1); }
     }
+    .phone.phone-landscape .phone-controls {
+      display:flex;
+      left: clamp(8px, 3vw, 16px);
+      right: clamp(8px, 3vw, 16px);
+      bottom: 12px;
+      gap: 10px;
+    }
+    .phone.phone-landscape .phone-actions {
+      max-width: 240px;
+      gap: 8px;
+    }
+    .phone.phone-landscape .phone-action {
+      min-height: 50px;
+      font-size: 9px;
+    }
+    .phone.phone-landscape .phone-controls .steer {
+      width: 122px;
+      height: 122px;
+    }
+    .phone.phone-landscape .phone-controls .steer .knob {
+      width: 44%;
+      height: 44%;
+    }
     body.phone .phone-controls { display:flex; }
     body.phone .help { display:none; }
+    body.phone.portrait { touch-action: pan-y; }
   </style>
 </head>
 <body>
@@ -742,7 +766,7 @@
         });
         const left = new THREE.Mesh(
           new THREE.BoxGeometry(2.8, 4.4, 1.2),
-          makeFlatMaterial({ color: 0x461a1f, roughness: 0.35, emissive: 0x4d121d, emissiveIntensity: 0.3 })
+          material
         );
         left.userData.wall = true;
         const right = left.clone();
@@ -851,7 +875,10 @@
         const ruinMesh = ensureRuinsMesh(ruin.id);
         ruinMesh.position.set(ruin.x, ruin.height / 2, z);
         ruinMesh.scale.set(ruin.width, ruin.height, ruin.depth);
-        ruinMesh.material.color.setStyle(ruin.color === 0x5fd8ff ? '#5fd8ff' : '#243d65');
+        const ruinHex = ruin.color === 0xd4a6ff ? 0xd4a6ff : 0x11214d;
+        if (ruinMesh.material.color.getHex() !== ruinHex) {
+          ruinMesh.material.color.setHex(ruinHex);
+        }
         ruinMesh.visible = true;
         group.add(ruinMesh);
       }
@@ -1425,10 +1452,14 @@
     }
 
     function setViewportControls() {
-      if (isTouchDevice && window.innerWidth > window.innerHeight) {
-        document.body.classList.add('phone');
-      } else {
-        document.body.classList.remove('phone');
+      const isLandscape = isTouchDevice && window.innerWidth > window.innerHeight;
+      const isPortrait = isTouchDevice && !isLandscape;
+      document.body.classList.toggle('phone', isLandscape);
+      document.body.classList.toggle('phone-landscape', isLandscape);
+      document.body.classList.toggle('phone-portrait', isPortrait);
+      document.body.classList.toggle('portrait', isPortrait);
+      if (isPortrait) {
+        clearTouchPointers();
       }
     }
 
@@ -1623,6 +1654,7 @@
     bindTouchHold(controls.jumpBtn, 'jump');
     bindTouchHold(controls.pauseBtn, 'pause');
     bindTouchRestart();
+    addEventListener('orientationchange', setViewportControls);
     addEventListener('resize', setViewportControls);
     setViewportControls();
     try { onboardingSeen = localStorage.getItem('axm-shardrunner-onboarding-seen') === '1'; } catch (e) {}

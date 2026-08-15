@@ -585,6 +585,41 @@ test('touch/gamepad payload edges are deterministic and preserve ownership', () 
   assert.equal(gamepadPayload.restart, true);
 });
 
+test('touch/gamepad payload normalization is deterministic at edge deadzones', () => {
+  const touchPayload = Core.sanitizeInput({
+    moveX: '0.03',
+    moveZ: '-0.91',
+    jump: '',
+    pause: 'true',
+    restart: '0',
+    owner: 'touch',
+    source: 'phone'
+  });
+  assert.equal(touchPayload.moveX, 0);
+  assert.equal(touchPayload.moveZ, -0.91);
+  assert.equal(touchPayload.jump, false);
+  assert.equal(touchPayload.pause, true);
+  assert.equal(touchPayload.restart, false);
+  assert.equal(touchPayload.owner, 'touch');
+  assert.equal(touchPayload.source, 'phone');
+
+  const gamepadPayload = Core.sanitizeInput({
+    moveX: 1.34,
+    moveZ: 0.019,
+    jump: 1,
+    pause: 0,
+    restart: 1,
+    owner: 'gamepad',
+    source: 'pad-1'
+  });
+  assert.equal(gamepadPayload.moveX, 1);
+  assert.equal(gamepadPayload.moveZ, 0);
+  assert.equal(gamepadPayload.jump, true);
+  assert.equal(gamepadPayload.pause, false);
+  assert.equal(gamepadPayload.restart, true);
+  assert.equal(gamepadPayload.source, 'pad-1');
+});
+
 test('sanitizeInput ignores unsupported keys and stays deterministic', () => {
   const payload = Core.sanitizeInput({
     moveX: 0.7,
@@ -631,6 +666,31 @@ test('pause input is edge-based during hold', () => {
 
   Core.step(state, { p1: { moveX: 0, pause: true } }, 0.016, 1032);
   assert.equal(state.phase, 'running');
+});
+
+test('pause edge behavior is deterministic under held pause and lateral input', () => {
+  const state = newState(444);
+  state.phase = 'running';
+  state.startedAt = 1000;
+  state.startAt = 1000;
+  state._pauseHeld = false;
+  state._inputClearUntil = 0;
+
+  Core.step(state, { p1: { moveX: 1, pause: true, jump: true } }, 0.016, 1016);
+  assert.equal(state.phase, 'paused');
+  assert.equal(state._pauseHeld, true);
+
+  Core.step(state, { p1: { moveX: 1, pause: true, jump: true } }, 0.016, 1024);
+  assert.equal(state.phase, 'paused');
+  assert.equal(state._pauseHeld, true);
+
+  Core.step(state, { p1: { moveX: 1, pause: false, jump: true } }, 0.016, 1032);
+  assert.equal(state.phase, 'paused');
+  assert.equal(state._pauseHeld, false);
+
+  Core.step(state, { p1: { moveX: 1, pause: true, jump: false } }, 0.016, 1040);
+  assert.equal(state.phase, 'running');
+  assert.equal(state._pauseHeld, true);
 });
 
 test('pause holds with restart race clears owned input cleanly', () => {
