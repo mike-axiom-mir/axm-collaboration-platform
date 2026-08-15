@@ -207,11 +207,15 @@ function parseInputJson(req) {
       try {
         resolve(JSON.parse(raw));
       } catch (e) {
-        reject(e);
+        resolve(null);
       }
     });
-    req.on('error', reject);
+    req.on('error', () => resolve(null));
   });
+}
+
+function sendBadRequest(res, message) {
+  return sendJson(res, 400, { ok: false, error: message });
 }
 
 function sendJson(res, code, body) {
@@ -352,6 +356,7 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'POST' && url.pathname === '/input') {
     const raw = await parseInputJson(req);
+    if (raw === null) return sendBadRequest(res, 'invalid-json');
     const { room, player } = parseRoomPlayer(url);
     if (player !== 'p1') return sendJson(res, 403, { ok: false, error: 'single-seat experiment' });
     const session = getSession(room, player);
@@ -380,7 +385,8 @@ const server = http.createServer(async (req, res) => {
     const { room, player } = parseRoomPlayer(url);
     if (player !== 'p1') return sendJson(res, 403, { ok: false, error: 'single-seat experiment' });
     const session = getSession(room, player);
-    const payload = await parseInputJson(req).catch(() => ({}));
+    const payload = await parseInputJson(req);
+    if (payload === null) return sendBadRequest(res, 'invalid-json');
     const restartSeed = payload && payload.seed;
     if (session.inputClearUntil && session.inputClearUntil > Date.now()) {
       return sendJson(res, 429, {
@@ -399,6 +405,7 @@ const server = http.createServer(async (req, res) => {
     const { room, player } = parseRoomPlayer(url);
     const session = getSession(room, player);
     const raw = await parseInputJson(req);
+    if (raw === null) return sendBadRequest(res, 'invalid-json');
     session.settings = sanitizeSettings(raw);
     return sendJson(res, 200, { ok: true, settings: session.settings });
   }

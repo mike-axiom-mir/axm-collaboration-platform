@@ -155,6 +155,28 @@
       z-index:4;
       animation: dither-shimmer 2.5s linear infinite;
     }
+    .scanline {
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background: repeating-linear-gradient(
+        transparent 0px,
+        rgba(255, 255, 255, 0.055) 1px,
+        rgba(0, 0, 0, 0.16) 2px,
+        transparent 3px
+      );
+      background-size: 100% 4px;
+      opacity: 0.34;
+      mix-blend-mode: soft-light;
+      z-index:5;
+    }
+    .vignette {
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background: radial-gradient(circle at center, transparent 42%, rgba(2, 6, 16, 0.52) 96%);
+      z-index:6;
+    }
     @keyframes dither-shimmer {
       from { background-position: 0 0, 0 0; }
       to { background-position: 4px 4px, 3px 3px; }
@@ -289,6 +311,8 @@
     <div class="stage">
       <canvas id="gameCanvas" width="640" height="360"></canvas>
       <div class="dither" aria-hidden="true"></div>
+      <div class="scanline" aria-hidden="true"></div>
+      <div class="vignette" aria-hidden="true"></div>
       <div class="hud">
         <div class="panel">
           <div><b>SHARDRUNNER</b> · AXM GAME HUB</div>
@@ -887,6 +911,9 @@
       if (name === 'gamepad') clearGamepadState();
       if (name === 'gamepad') {
         gamepadDeviceId = '';
+      }
+      if (name === 'touch') {
+        activeTouchPointers.clear();
       }
       markSource(name, false);
     }
