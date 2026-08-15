@@ -14,6 +14,51 @@ function newState(seed) {
   return Core.create([], 1_000, { seed: seed });
 }
 
+function simulateRun(seed, frames) {
+  const state = newState(seed);
+  state.phase = 'running';
+  state.startedAt = 1_000;
+  state.startAt = 1_000;
+  state.nextShardAt = 9_999_999;
+  state.nextObstacleAt = 9_999_999;
+  state.nextGateAt = 9_999_999;
+  const tiers = [];
+  const score = [];
+  let lastTier = state.difficulty;
+  for (let i = 0; i < frames; i++) {
+    if (i % 10 === 0) {
+      state.shards.push({
+        id: 's-' + i,
+        trackZ: state.progress + 1.2,
+        x: state.player.x,
+        radius: 1.05,
+        kind: 'shard'
+      });
+    }
+    Core.step(state, { p1: { moveX: 0, moveZ: 0, jump: false } }, 1 / 60, 1_000 + i * 16);
+    if (state.difficulty !== lastTier) {
+      tiers.push({ atFrame: i, tier: state.difficulty, progress: Math.round(state.progress) });
+      lastTier = state.difficulty;
+      if (tiers.length >= 3) break;
+    }
+    if (i % 30 === 0) {
+      score.push({
+        frame: i,
+        progress: Math.round(state.progress),
+        score: Math.round(state.score),
+        combo: state.bestCombo,
+        tier: state.difficulty
+      });
+    }
+    if (state.phase === 'won' || state.phase === 'lost') break;
+  }
+  return {
+    state,
+    tiers,
+    score
+  };
+}
+
 test('manifest required paths exist', () => {
   assert.equal(manifest.slot, '022');
   for (const rel of manifest.package.required_paths) {
@@ -30,6 +75,45 @@ test('core produces deterministic state for fixed seed', () => {
   assert.equal(a.progress, b.progress);
 });
 
+test('core run metadata carries deterministic counters and version', () => {
+  const state = Core.create([], 1_000, { seed: 901, attempt: 4 });
+  assert.equal(state.attempt, 4);
+  assert.equal(state.runVersion, '0.2.0');
+  assert.equal(state.runStats.seed, 901);
+  assert.equal(state.runStats.runVersion, '0.2.0');
+  assert.equal(state.runStats.distance, 0);
+  assert.equal(state.runStats.combo, 0);
+  assert.equal(state.runId, 'run-385-004');
+});
+
+test('run finish publishes deterministic lastRun/summary metadata', () => {
+  const state = newState(777);
+  state.phase = 'running';
+  state.startedAt = 1_000;
+  state.startAt = 1_000;
+  state.stamina = 24;
+  state.player.onGround = true;
+  state.bestCombo = 7;
+  state.combo = 7;
+  state.obstacles.push({
+    id: 'finish-kill',
+    trackZ: state.progress + 1.2,
+    x: state.player.x,
+    width: 2,
+    depth: 4,
+    radius: 1.7,
+    kind: 'wall',
+    damage: 120
+  });
+  Core.step(state, { p1: { moveX: 0, moveZ: 0, jump: false } }, 0.016, 1_100);
+  assert.equal(state.phase, 'lost');
+  assert.equal(state.lastRun.attempt, 1);
+  assert.equal(state.lastRun.bestCombo, 7);
+  assert.equal(state.runSummary.attempt, 1);
+  assert.equal(state.runSummary.bestCombo, 7);
+  assert.equal(state.runSummary.runId, state.runId);
+});
+
 test('core keeps deterministic progression under fixed input', () => {
   const left = newState(456);
   const right = newState(456);
@@ -44,6 +128,55 @@ test('core keeps deterministic progression under fixed input', () => {
   assert.equal(aState.player.x.toFixed(4), bState.player.x.toFixed(4));
 });
 
+test('input ownership precedence is deterministic in one frame', () => {
+  const now = 10_000;
+  assert.equal(
+    Core.resolveInputOwner(
+      { keyboard: { active: true, at: now }, touch: { active: true, at: now }, gamepad: { active: true, at: now } },
+      now
+    ),
+    'keyboard'
+  );
+
+  assert.equal(
+    Core.resolveInputOwner(
+      { keyboard: { active: true, at: now }, touch: { active: true, at: now }, gamepad: { active: true, at: now } },
+      now,
+      { priority: ['touch', 'keyboard', 'gamepad'] }
+    ),
+    'touch'
+  );
+});
+
+test('input ownership ignores stale source activity', () => {
+  const now = 10_000;
+  const staleWindow = 180;
+  assert.equal(
+    Core.resolveInputOwner(
+      {
+        keyboard: { active: true, at: now },
+        touch: { active: true, at: now - 600 },
+        gamepad: { active: true, at: now - 800 }
+      },
+      now,
+      { staleMs: staleWindow, priority: ['keyboard', 'touch', 'gamepad'] }
+    ),
+    'keyboard'
+  );
+  assert.equal(
+    Core.resolveInputOwner(
+      {
+        keyboard: { active: false, at: 0 },
+        touch: { active: true, at: now - 600 },
+        gamepad: { active: true, at: now - 10 }
+      },
+      now,
+      { staleMs: staleWindow, priority: ['keyboard', 'touch', 'gamepad'] }
+    ),
+    'gamepad'
+  );
+});
+
 test('touch/gamepad inputs normalize predictably', () => {
   assert.equal(Core.normalizeAxis(1.4), 1);
   assert.equal(Core.normalizeAxis(-1.8), -1);
@@ -54,21 +187,27 @@ test('touch/gamepad inputs normalize predictably', () => {
     moveX: -1.6,
     moveZ: 0.12,
     jump: 1,
-    pause: 0
+    pause: 0,
+    owner: 'gamepad-left'
   });
   assert.equal(gamepadLike.moveX, -1);
   assert.equal(gamepadLike.moveZ, 0.12);
   assert.equal(gamepadLike.jump, true);
   assert.equal(gamepadLike.pause, false);
+  assert.equal(gamepadLike.owner, 'gamepad-left');
+  assert.equal(gamepadLike.source, 'gamepad-left');
 
   const touchLike = Core.sanitizeInput({
     moveX: 0.0,
     moveZ: 0.8,
     jump: {},
-    pause: {}
+    pause: {},
+    source: 'phone'
   });
   assert.equal(touchLike.moveZ, 0.8);
   assert.equal(touchLike.jump, true);
+  assert.equal(touchLike.owner, 'phone');
+  assert.equal(touchLike.source, 'phone');
 
   const cleared = Core.sanitizeInput({ moveX: 1, moveZ: 1, jump: true, pause: true }, { clear: true });
   assert.equal(cleared.moveX, 0);
@@ -98,6 +237,24 @@ test('pause input is edge-based during hold', () => {
   assert.equal(state.phase, 'running');
 });
 
+test('pause holds with restart race clears owned input cleanly', () => {
+  const state = newState(555);
+  state.phase = 'running';
+  state.startedAt = 1000;
+  state.startAt = 1000;
+  state._pauseHeld = false;
+  state._inputClearUntil = 0;
+  Core.step(state, { p1: { moveX: 0, pause: true } }, 0.016, 1008);
+  assert.equal(state.phase, 'paused');
+  state._inputClearUntil = 1_008;
+  Core.step(state, { p1: { moveX: 1, jump: true, pause: true } }, 0.016, 1016);
+  assert.equal(state.phase, 'paused');
+  Core.step(state, { p1: { moveX: 0, pause: false } }, 0.016, 1024);
+  assert.equal(state.phase, 'paused');
+  Core.step(state, { p1: { moveX: 0, pause: true } }, 0.016, 1032);
+  assert.equal(state.phase, 'running');
+});
+
 test('clear-held-input window suppresses post-restart jump', () => {
   const state = newState(321);
   state.phase = 'running';
@@ -109,6 +266,64 @@ test('clear-held-input window suppresses post-restart jump', () => {
   assert.equal(state.player.x.toFixed(4), beforeX.toFixed(4));
   Core.step(state, { p1: { moveX: 1, jump: true } }, 0.016, 1060);
   assert.equal(state.player.y > 0, true);
+});
+
+test('restart clear window ignores stuck restart/jump vectors before clear window ends', () => {
+  const state = newState(512);
+  state.phase = 'running';
+  state.startedAt = 1000;
+  state.startAt = 1000;
+  state._inputClearUntil = 1100;
+  state.player.x = 0;
+  Core.step(state, { p1: { moveX: 1, jump: true, pause: true } }, 0.016, 1060);
+  assert.equal(state.player.x.toFixed(4), '0.0000');
+  assert.equal(state.player.y, 0);
+  assert.equal(state._pauseHeld, false);
+});
+
+test('input source/owner are preserved through sanitize and stale clears', () => {
+  const seeded = Core.sanitizeInput({
+    moveX: 0.7,
+    moveZ: 0.4,
+    jump: true,
+    pause: false,
+    owner: 'keyboard',
+    source: 'keyboard'
+  });
+  assert.equal(seeded.owner, 'keyboard');
+  assert.equal(seeded.source, 'keyboard');
+  const held = Core.sanitizeInput({ moveX: 1, jump: true, pause: true, owner: 'touch' }, { clear: true });
+  assert.equal(held.moveX, 0);
+  assert.equal(held.jump, false);
+  assert.equal(held.pause, false);
+  assert.equal(held.owner, 'touch');
+  assert.equal(held.source, 'touch');
+});
+
+test('restart window clears movement and jump even when phase is paused', () => {
+  const state = newState(700);
+  state.phase = 'running';
+  state.startedAt = 1000;
+  state.startAt = 1000;
+  state._inputClearUntil = 1080;
+  const beforeX = state.player.x;
+  Core.step(state, { p1: { moveX: 1, jump: true, pause: true } }, 0.016, 1060);
+  assert.equal(state.player.x.toFixed(4), beforeX.toFixed(4));
+  assert.equal(state.player.y, 0);
+  assert.equal(state._pauseHeld || false, false);
+});
+
+test('deterministic seeded run keeps score/combo through first 3 tiers', () => {
+  const runA = simulateRun(777, 2400);
+  const runB = simulateRun(777, 2400);
+  assert.equal(runA.state.runVersion, runB.state.runVersion);
+  assert.deepEqual(runA.tiers, runB.tiers);
+  assert.ok(runA.tiers.length >= 3);
+  for (let i = 0; i < runA.score.length; i++) {
+    assert.equal(runA.score[i].score, runB.score[i].score);
+    assert.equal(runA.score[i].combo, runB.score[i].combo);
+  }
+  assert.ok(runA.state.bestCombo > 0);
 });
 
 test('collecting shard increases score and combo', () => {

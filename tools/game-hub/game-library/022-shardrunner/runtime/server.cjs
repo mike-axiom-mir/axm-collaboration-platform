@@ -12,20 +12,172 @@ const ROOT = __dirname;
 const CLIENT_FILE = path.join(ROOT, 'index.html');
 const TICK_MS = 1000 / 30;
 const STREAM_MS = 45;
+const BASE_SEED = Number(process.env.GAME_SEED || 0x6a09e667) >>> 0;
+const DEFAULT_SETTINGS = {
+  audio: true,
+  reduced_motion: false,
+  haptics_hint: false,
+  camera_tilt_lock: false
+};
+const INPUT_CLEAR_MS = 340;
+const MAX_RUN_HISTORY = 20;
+const BUILD_VERSION = '0.2.0';
 
-function loadSeats() {
-  try {
-    const raw = JSON.parse(process.env.AXM_PLAYERS_JSON || '[]');
-    if (Array.isArray(raw) && raw.length) return raw;
-  } catch (e) {}
-  return [{ display_name: 'Player 1', type: 'human' }];
+const sessions = new Map();
+const streams = new Set();
+let last = Date.now();
+
+function toBool(value, fallback) {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+  }
+  return fallback;
 }
 
-let game = Core.create(loadSeats(), Date.now(), { seed: Number(process.env.GAME_SEED || 0x6a09e667) });
-let last = Date.now();
-const inputs = { p1: { moveX: 0, moveZ: 0, jump: false, pause: false } };
-const streams = new Set();
-let inputClearUntil = 0;
+function sessionKey(room, player) {
+  return room + '|' + player;
+}
+
+function emptyInput() {
+  return {
+    moveX: 0,
+    moveZ: 0,
+    jump: false,
+    pause: false,
+    restart: false,
+    owner: 'system',
+    source: 'system'
+  };
+}
+
+function createDefaults() {
+  return {
+    room: null,
+    player: null,
+    attempts: 0,
+    bestScore: 0,
+    lastRun: null,
+    runHistory: [],
+    settings: { ...DEFAULT_SETTINGS },
+    inputClearUntil: 0,
+    game: null,
+    inputs: Object.create(null)
+  };
+}
+
+function getSession(room, player) {
+  const key = sessionKey(room, player);
+  if (!sessions.has(key)) {
+    const session = createDefaults();
+    session.room = room;
+    session.player = player;
+    session.inputs[player] = emptyInput();
+    sessions.set(key, session);
+  }
+  return sessions.get(key);
+}
+
+function getSessionInput(session) {
+  if (!session.inputs[session.player]) {
+    session.inputs[session.player] = emptyInput();
+  }
+  return session.inputs[session.player];
+}
+
+function getGameForSession(session) {
+  if (!session.game) {
+    session.game = createRun(session);
+  }
+  return session.game;
+}
+
+function applyStateSettings(state, session) {
+  const cloneState = Core.publicState(state);
+  cloneState.bestScore = session.bestScore;
+  cloneState.lastRun = session.lastRun;
+  cloneState.history = session.runHistory.slice();
+  cloneState.buildVersion = state.buildVersion || state.runVersion || BUILD_VERSION;
+  cloneState.runVersion = cloneState.buildVersion;
+  cloneState.seed = state.randomSeed || state.seed || 0;
+  cloneState.attempt = state.attempt || 1;
+  cloneState.runId = state.runId;
+  cloneState.runStats = cloneState.runStats || {};
+  cloneState.runStats.fallReason = cloneState.runStats.fallReason || cloneState.diedBy || null;
+  cloneState.runSummary = {
+    runId: state.runId,
+    attempt: state.attempt || 1,
+    distance: Math.round(state.progress || 0),
+    shards: state.totalShards || 0,
+    combo: state.bestCombo || state.combo || 0,
+    bestCombo: state.bestCombo || state.combo || 0,
+    stamina: Math.max(0, Math.round(state.stamina || 0)),
+    seed: state.randomSeed || state.seed || 0,
+    runVersion: cloneState.buildVersion,
+    bestScore: session.bestScore || 0
+  };
+  return cloneState;
+}
+
+function sanitizeSettings(raw) {
+  const next = { ...DEFAULT_SETTINGS };
+  if (!raw || typeof raw !== 'object') return next;
+  if (Object.prototype.hasOwnProperty.call(raw, 'audio')) next.audio = toBool(raw.audio, next.audio);
+  if (Object.prototype.hasOwnProperty.call(raw, 'reduced_motion')) next.reduced_motion = toBool(raw.reduced_motion, next.reduced_motion);
+  if (Object.prototype.hasOwnProperty.call(raw, 'haptics_hint')) next.haptics_hint = toBool(raw.haptics_hint, next.haptics_hint);
+  if (Object.prototype.hasOwnProperty.call(raw, 'camera_tilt_lock')) next.camera_tilt_lock = toBool(raw.camera_tilt_lock, next.camera_tilt_lock);
+  return next;
+}
+
+function normalizeSeed(raw) {
+  const seed = Number(raw);
+  if (!Number.isFinite(seed)) return null;
+  return seed >>> 0;
+}
+
+function createRun(session, options) {
+  const now = Date.now();
+  const requestedSeed = normalizeSeed(options && options.seed);
+  const seed = requestedSeed || (BASE_SEED + (session.attempts * 0x9e3779b9) + (now & 0xffff)) >>> 0;
+  session.attempts += 1;
+  return Core.create([], now, { seed, attempt: session.attempts });
+}
+
+function recordRun(session, state) {
+  if (!state || !state.result || state._persisted) return;
+  const entry = {
+    runId: state.runId,
+    attempt: state.attempt,
+    won: !!state.result.won,
+    score: state.result.score,
+    shards: state.result.shards,
+    combo: state.combo || state.bestCombo || 0,
+    bestCombo: state.bestCombo || 0,
+    dieReason: state.diedBy || null,
+    distance: state.result.distance,
+    diedBy: state.diedBy || null,
+    buildVersion: state.buildVersion || state.runVersion || '0.2.0',
+    runVersion: state.buildVersion || state.runVersion || BUILD_VERSION,
+    durationMs: state.result.durationMs || 0,
+    seed: state.randomSeed || 0,
+    at: Date.now()
+  };
+  session.lastRun = entry;
+  session.bestScore = Math.max(session.bestScore, entry.score);
+  session.runHistory.push(entry);
+  if (session.runHistory.length > MAX_RUN_HISTORY) {
+    session.runHistory = session.runHistory.slice(-MAX_RUN_HISTORY);
+  }
+  state._persisted = true;
+}
+
+function parseRoomPlayer(url) {
+  return {
+    room: url.searchParams.get('room') || 'AXM1',
+    player: url.searchParams.get('player') || 'p1'
+  };
+}
 
 function parseInputJson(req) {
   return new Promise((resolve, reject) => {
@@ -36,7 +188,11 @@ function parseInputJson(req) {
     });
     req.on('end', () => {
       if (!raw.length) return resolve({});
-      try { resolve(JSON.parse(raw)); } catch (e) { reject(e); }
+      try {
+        resolve(JSON.parse(raw));
+      } catch (e) {
+        reject(e);
+      }
     });
     req.on('error', reject);
   });
@@ -53,7 +209,7 @@ function sendJson(res, code, body) {
   res.end(data);
 }
 
-function serveFile(file, res, type) {
+function sendFile(file, res, type) {
   res.writeHead(200, {
     'content-type': type,
     'cache-control': 'no-store',
@@ -62,25 +218,30 @@ function serveFile(file, res, type) {
   fs.createReadStream(file).pipe(res);
 }
 
-function assetPath(urlPath) {
-  if (urlPath === '/index.html' || urlPath === '/') return CLIENT_FILE;
-  const safe = path.join(ROOT, '..', '..', '..', urlPath.replace(/^\//, '')); // preserve as-is
-  if (!safe.startsWith(ROOT) || !safe.startsWith(path.resolve(ROOT))) return null;
-  return null;
-}
-
 function tick() {
   const now = Date.now();
   const dt = Math.min((now - last) / 1000, 0.08);
   last = now;
-  Core.step(game, inputs, dt, now);
+  for (const session of sessions.values()) {
+    const game = getGameForSession(session);
+    const input = getSessionInput(session);
+    game._inputClearUntil = Math.max(0, session.inputClearUntil);
+    Core.step(game, input, dt, now);
+    if (session.inputClearUntil && session.inputClearUntil < now) {
+      session.inputClearUntil = 0;
+      game._inputClearUntil = 0;
+      input.owner = input.source = 'system';
+    }
+    recordRun(session, game);
+  }
 }
 
 function stream() {
-  const snapshot = 'data: ' + JSON.stringify(Core.publicState(game)) + '\n\n';
   for (const client of streams) {
+    const session = getSession(client.room, client.player);
+    const game = getGameForSession(session);
     try {
-      client.write(snapshot);
+      client.res.write('data: ' + JSON.stringify(applyStateSettings(game, session)) + '\n\n');
     } catch (e) {
       streams.delete(client);
     }
@@ -89,6 +250,7 @@ function stream() {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://127.0.0.1');
+
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
       'access-control-allow-origin': '*',
@@ -99,18 +261,43 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
-    return serveFile(CLIENT_FILE, res, 'text/html; charset=utf-8');
+    return sendFile(CLIENT_FILE, res, 'text/html; charset=utf-8');
   }
 
   if (req.method === 'GET' && url.pathname === '/health') {
-    return sendJson(res, 200, { ok: true, phase: game.phase, seat: game.seat && game.seat.id });
+    const { room, player } = parseRoomPlayer(url);
+    const session = getSession(room, player);
+    const game = getGameForSession(session);
+    return sendJson(res, 200, {
+      ok: true,
+      phase: game.phase,
+      seat: game.seat && game.seat.id,
+      version: game.buildVersion,
+      room,
+      player
+    });
   }
 
   if (req.method === 'GET' && url.pathname === '/state') {
-    return sendJson(res, 200, Core.publicState(game));
+    const { room, player } = parseRoomPlayer(url);
+    const session = getSession(room, player);
+    const game = getGameForSession(session);
+    return sendJson(res, 200, applyStateSettings(game, session));
+  }
+
+  if (req.method === 'GET' && url.pathname === '/settings') {
+    const { room, player } = parseRoomPlayer(url);
+    const session = getSession(room, player);
+    return sendJson(res, 200, { ok: true, settings: session.settings });
   }
 
   if (req.method === 'GET' && url.pathname === '/events') {
+    const { room, player } = parseRoomPlayer(url);
+    const session = getSession(room, player);
+    const game = getGameForSession(session);
+    const entry = { room, player, res };
+    streams.add(entry);
+    req.on('close', () => streams.delete(entry));
     res.writeHead(200, {
       'content-type': 'text/event-stream',
       'cache-control': 'no-cache',
@@ -118,39 +305,76 @@ const server = http.createServer(async (req, res) => {
       'access-control-allow-origin': '*'
     });
     res.write('retry: 700\n\n');
-    streams.add(res);
-    req.on('close', () => streams.delete(res));
+    res.write('data: ' + JSON.stringify(applyStateSettings(game, session)) + '\n\n');
     return;
   }
 
   if (req.method === 'GET' && url.pathname.startsWith('/vendor/')) {
     const file = path.resolve(ROOT, url.pathname.slice(1));
-    if (!file.startsWith(ROOT) || !fs.existsSync(file)) return sendJson(res, 404, { ok: false });
+    if (!file.startsWith(ROOT) || !fs.existsSync(file)) {
+      return sendJson(res, 404, { ok: false });
+    }
     const ext = path.extname(file).toLowerCase();
-    const map = { '.js': 'application/javascript; charset=utf-8', '.wasm': 'application/octet-stream' };
-    return serveFile(file, res, map[ext] || 'application/octet-stream');
+    const map = {
+      '.js': 'application/javascript; charset=utf-8',
+      '.wasm': 'application/octet-stream'
+    };
+    return sendFile(file, res, map[ext] || 'application/octet-stream');
   }
 
   if (req.method === 'POST' && url.pathname === '/input') {
     const raw = await parseInputJson(req);
-    const player = url.searchParams.get('player');
+    const { room, player } = parseRoomPlayer(url);
     if (player !== 'p1') return sendJson(res, 403, { ok: false, error: 'single-seat experiment' });
+    const session = getSession(room, player);
     const now = Date.now();
-    inputs.p1 = Core.sanitizeInput(raw, { clear: now < inputClearUntil });
-    return sendJson(res, 200, { ok: true });
+    const sanitized = Core.sanitizeInput(raw, { clear: now < session.inputClearUntil });
+    const owner = sanitized.owner || 'system';
+    const target = getSessionInput(session);
+    target.moveX = Number(sanitized.moveX) || 0;
+    target.moveZ = Number(sanitized.moveZ) || 0;
+    target.jump = !!sanitized.jump;
+    target.pause = !!sanitized.pause;
+    target.restart = !!sanitized.restart;
+    target.owner = owner;
+    target.source = sanitized.source || owner;
+    if (session.inputClearUntil) {
+      target.jump = false;
+      target.pause = false;
+      target.moveX = 0;
+      target.moveZ = 0;
+      target.restart = false;
+    }
+    return sendJson(res, 200, { ok: true, owner });
   }
 
   if (req.method === 'POST' && url.pathname === '/restart') {
-    game = Core.create(loadSeats(), Date.now(), { seed: Date.now() ^ 0x9e3779b9 });
-    inputs.p1 = { moveX: 0, moveZ: 0, jump: false, pause: false };
-    last = Date.now();
-    inputClearUntil = Date.now() + 300;
-    return sendJson(res, 200, { ok: true, state: Core.publicState(game) });
+    const { room, player } = parseRoomPlayer(url);
+    if (player !== 'p1') return sendJson(res, 403, { ok: false, error: 'single-seat experiment' });
+    const session = getSession(room, player);
+    const payload = await parseInputJson(req).catch(() => ({}));
+    const restartSeed = payload && payload.seed;
+    session.game = createRun(session, { seed: restartSeed });
+    const inputState = getSessionInput(session);
+    Object.assign(inputState, emptyInput(), { owner: 'system', source: 'system' });
+    session.inputClearUntil = Date.now() + INPUT_CLEAR_MS;
+    session.game._inputClearUntil = session.inputClearUntil;
+    return sendJson(res, 200, {
+      ok: true,
+      state: applyStateSettings(session.game, session)
+    });
+  }
+
+  if (req.method === 'POST' && url.pathname === '/settings') {
+    const { room, player } = parseRoomPlayer(url);
+    const session = getSession(room, player);
+    const raw = await parseInputJson(req);
+    session.settings = sanitizeSettings(raw);
+    return sendJson(res, 200, { ok: true, settings: session.settings });
   }
 
   return sendJson(res, 404, { ok: false, error: 'not found' });
 });
-
 
 server.listen(PORT, HOST, () => {
   console.log('Shardrunner 022 listening on http://127.0.0.1:' + PORT + '/?room=AXM1&player=p1');

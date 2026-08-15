@@ -160,6 +160,22 @@
       text-transform:uppercase;
       letter-spacing:.08em;
     }
+    .status-reason {
+      margin-top:8px;
+      color:#ffe1a4;
+      min-height:14px;
+      line-height:1.25;
+      font-size:10px;
+    }
+    .owner-indicator {
+      margin-top:6px;
+      color:#8ff7ff;
+      letter-spacing:.12em;
+      font-size:10px;
+    }
+    .owner-indicator.owner-keyboard { color:#8ce7ff; }
+    .owner-indicator.owner-touch { color:#7fffb8; }
+    .owner-indicator.owner-gamepad { color:#ffa58a; }
     .phone-controls {
       position:absolute;
       left:12px;
@@ -244,8 +260,13 @@
         <div class="panel">
           <div><b>SHARDRUNNER</b> · AXM GAME HUB</div>
           <div id="distance">distance 000</div>
+          <div id="bestScore">best score 0000</div>
+          <div id="goal">goal 0420m</div>
+          <div id="remaining">to-go 420</div>
           <div id="score">score 0000</div>
           <div id="combo">combo x1</div>
+          <div id="reason">state: READY</div>
+          <div id="ownerIndicator" class="owner-indicator">owner: KEYBOARD</div>
           <div class="meter"><i id="stamina"></i></div>
         </div>
         <div class="panel" id="branches">branch lanes open: 3</div>
@@ -253,7 +274,8 @@
       <section class="overlay" id="overlay">
         <h1 id="title">Shardrunner</h1>
         <p id="subtitle">Boot sequence warming… hold run, jump, branch.</p>
-        <p id="tip">Controls: WASD/Arrows to steer · Space to jump · P to pause · R to restart · gamepad or touch support</p>
+        <p id="tip">Controls: WASD/Arrows to steer · Space to jump · P or ⎋ to pause · R / Restart button to restart · gamepad or touch support</p>
+        <p id="onboardingText">Stay in open lanes, collect blue shards, avoid red geometry, and beat the fog lane shifts.</p>
         <div class="buttons" id="actions">
           <button id="restartBtn">Restart</button>
         </div>
@@ -280,7 +302,24 @@
       stateUrl: '/state',
       inputUrl: '/input',
       eventsUrl: '/events',
-      restartUrl: '/restart'
+      restartUrl: '/restart',
+      settingsUrl: '/settings'
+    };
+    const INPUT_CLEAR_MS = 320;
+    const INPUT_OWNER_STALE_MS = 260;
+    const INPUT_OWNER_PRIORITY = ['keyboard', 'touch', 'gamepad'];
+    const RESTART_KEY_DEBOUNCE_MS = 190;
+    const KEY_DEADZONE = 0.08;
+    const JOYSTICK_DEADZONE = 0.18;
+    const DIRECTION_DEADZONE = 0.1;
+    const qs = new URLSearchParams(location.search);
+    const room = qs.get('room') || 'AXM1';
+    const player = qs.get('player') || 'p1';
+    const settings = {
+      audio: true,
+      reduced_motion: false,
+      haptics_hint: false,
+      camera_tilt_lock: false
     };
 
     const canvas = document.getElementById('gameCanvas');
@@ -333,12 +372,18 @@
       distance: document.getElementById('distance'),
       score: document.getElementById('score'),
       combo: document.getElementById('combo'),
+      bestScore: document.getElementById('bestScore'),
+      goal: document.getElementById('goal'),
+      remaining: document.getElementById('remaining'),
+      reason: document.getElementById('reason'),
+      ownerIndicator: document.getElementById('ownerIndicator'),
       branches: document.getElementById('branches'),
       event: document.getElementById('event'),
       stamina: document.getElementById('stamina'),
       overlay: document.getElementById('overlay'),
       overlayTitle: document.getElementById('title'),
       overlaySubtitle: document.getElementById('subtitle'),
+      overlayOnboarding: document.getElementById('onboardingText'),
       restartBtn: document.getElementById('restartBtn'),
       phoneJumpBtn: document.getElementById('phoneJump'),
       phonePauseBtn: document.getElementById('phonePause'),
@@ -354,19 +399,42 @@
       restartBtn: stateText.phoneRestartBtn
     };
 
-    const input = { moveX: 0, moveZ: 0, jump: false, pause: false };
+    const input = { moveX: 0, moveZ: 0, jump: false, pause: false, owner: 'keyboard', source: 'keyboard' };
     const touchInput = { moveX: 0, moveZ: 0, jump: false, pause: false, active: false, restartEdge: false };
     const gamepadInput = { moveX: 0, moveZ: 0, jump: false, pause: false, restart: false, restartEdge: false };
     const gamepadPrev = { jump: false, pause: false, restart: false };
+    const sourceActivity = {
+      keyboard: 0,
+      touch: 0,
+      gamepad: 0
+    };
     let inputOwner = 'keyboard';
     let clearInputsUntil = 0;
+    let inputSource = 'keyboard';
+    let sourceAt = {
+      keyboard: 0,
+      touch: 0,
+      gamepad: 0
+    };
+    let sourceEdge = {
+      restart: 0
+    };
     let restartQueued = false;
     let keyRestartHeld = false;
     let state = null;
+    let onboardingSeen = false;
+    let gamepadConnected = false;
     const keys = Object.create(null);
     let frame = null;
 
-    function endpoint(name) { return API[name]; }
+    function endpoint(name, extra) {
+      const base = API[name];
+      const params = new URLSearchParams(Object.assign({}, extra || {}, {
+        room,
+        player
+      }));
+      return base + '?' + params.toString();
+    }
 
     const objectPools = {
       player: { meshes: [] },
@@ -585,21 +653,35 @@
     function applyCamera() {
       const p = state?.player;
       if (!p) return;
-      const camTarget = new THREE.Vector3(p.x, 1.1 + p.y, 4.5);
-      const camPos = new THREE.Vector3(p.x + 0.6, 7.9 + (p.stumbleUntil ? 0.0 : 0.0), 20.6);
-      camera.position.lerp(camPos, 0.18);
-      camera.lookAt(camTarget.x, Math.max(1.1, camTarget.y), 6 + p.z);
+      const reducedMotion = state?.settings && state.settings.reduced_motion;
+      const lockTilt = state?.settings && state.settings.camera_tilt_lock;
+      const pulse = state.cameraPulse || 0;
+      const ease = reducedMotion ? 0.07 : 0.18;
+      const targetY = 7.9 + (lockTilt ? 0.0 : (p.vx * 0.06)) + (reducedMotion ? 0 : pulse * 1.5);
+      const targetX = p.x + (lockTilt ? 0 : 0.6);
+      const camTarget = new THREE.Vector3(p.x, 1.1 + p.y, lockTilt ? 5.6 : 4.5);
+      const camPos = new THREE.Vector3(targetX, targetY, 20.6);
+      camera.position.lerp(camPos, reducedMotion ? 0.08 : ease);
+      camera.lookAt(camTarget.x, Math.max(1.1, camTarget.y), lockTilt ? 3.2 : 6 + p.z);
     }
 
     function applyUI() {
       if (!state) return;
       stateText.distance.textContent = 'distance ' + Math.max(0, Math.floor(state.progress || 0)).toString().padStart(4, '0');
+      const bestScore = state.bestScore || 0;
+      stateText.bestScore.textContent = 'best score ' + Math.floor(bestScore).toString().padStart(4, '0');
+      const goal = state.distanceGoal || 420;
+      const remaining = Math.max(0, goal - Math.floor(state.progress || 0));
+      stateText.goal.textContent = 'goal ' + String(goal).padStart(3, '0') + 'm';
+      stateText.remaining.textContent = 'to-go ' + String(remaining).padStart(3, '0');
       stateText.score.textContent = 'score ' + Math.floor(state.score || 0).toString().padStart(4, '0');
       stateText.combo.textContent = 'combo x' + Math.max(1, state.combo || 0);
+      stateText.reason.textContent = 'state: ' + (state.diedBy ? state.diedBy : state.event || 'READY');
       stateText.stamina.style.width = Math.max(0, Math.min(100, ((state.stamina || 0) / 100) * 100)) + '%';
       if (state.activeLanes) {
         stateText.branches.textContent = 'branch lanes open: ' + state.activeLanes.length + ' [L=' + state.activeLanes.join(',') + ']';
       }
+      applyOwnerVisual();
       if (state.event && state.eventAt) {
         const age = Date.now() - state.eventAt;
         stateText.event.textContent = age < 1200 ? state.event : 'RUN';
@@ -609,20 +691,23 @@
       stateText.overlay.classList.toggle('show', isOver || state.phase === 'countdown');
       if (state.phase === 'countdown') {
         const remain = Math.max(0, Math.ceil((state.startAt - state.now) / 1000));
-        stateText.overlayTitle.textContent = 'Warm-up in ' + remain;
-        stateText.overlaySubtitle.textContent = 'Choose a path, collect shards, keep moving';
+        stateText.overlayTitle.textContent = onboardingSeen ? ('Warm-up in ' + remain) : 'WELCOME TO SHARDRUNNER';
+        stateText.overlaySubtitle.textContent = onboardingSeen ? ('Start in ' + remain + ' seconds') : 'ONE-SCREEN ONBOARDING: keep to open lanes, collect shards, avoid red geometry';
+        stateText.overlayOnboarding.style.display = onboardingSeen ? 'none' : 'block';
       } else if (state.phase === 'won') {
         stateText.overlayTitle.textContent = 'Run complete';
         stateText.overlaySubtitle.textContent = `Score ${Math.floor(state.score)} · Best combo ${state.bestCombo} · Distance ${Math.floor(state.progress)}`;
+        stateText.overlayOnboarding.style.display = 'none';
       } else if (state.phase === 'lost') {
         stateText.overlayTitle.textContent = 'Signal lost';
-        stateText.overlaySubtitle.textContent = `Score ${Math.floor(state.score)} · shards ${state.totalShards || 0}`;
+        stateText.overlaySubtitle.textContent = `Score ${Math.floor(state.score)} · shards ${state.totalShards || 0} · ${state.diedBy || 'GAME OVER'}`;
+        stateText.overlayOnboarding.style.display = 'none';
       }
     }
 
     async function post(pathname, body) {
       try {
-        await fetch(pathname + '?player=p1', {
+        await fetch(endpoint(pathname), {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify(body || {})
@@ -634,39 +719,120 @@
       const response = await fetch(endpoint('stateUrl')).catch(() => null);
       if (!response || !response.ok) return;
       state = await response.json();
+      state.settings = state.settings || settings;
+      if (!onboardingSeen && state.phase === 'running') {
+        onboardingSeen = true;
+        try { localStorage.setItem('axm-shardrunner-onboarding-seen', '1'); } catch (e) {}
+      }
+    }
+
+    async function refreshSettings() {
+      const response = await fetch(endpoint('settingsUrl')).catch(() => null);
+      if (!response || !response.ok) return;
+      const payload = await response.json().catch(() => null);
+      if (!payload || !payload.settings) return;
+      Object.assign(settings, payload.settings);
+      if (state) state.settings = payload.settings;
     }
 
     function isKeyboardTouching() {
       return !!(
         keys.KeyA || keys.KeyD || keys.KeyW || keys.KeyS ||
         keys.ArrowLeft || keys.ArrowRight || keys.ArrowUp || keys.ArrowDown ||
-        keys.Space || keys.Enter || keys.KeyP
+        keys.Space || keys.Enter || keys.KeyP || keys.Escape
       );
     }
 
     function hasKeyboardDrive() {
-      return (keys.KeyA || keys.KeyD || keys.ArrowLeft || keys.ArrowRight);
+      return (keys.KeyA || keys.KeyD || keys.ArrowLeft || keys.ArrowRight || keys.KeyW || keys.ArrowUp || keys.KeyS || keys.ArrowDown);
+    }
+
+    function hasKeyboardActivity() {
+      return keys.KeyA || keys.KeyD || keys.KeyW || keys.KeyS ||
+        keys.ArrowLeft || keys.ArrowRight || keys.ArrowUp || keys.ArrowDown ||
+        keys.Space || keys.Enter || keys.KeyP || keys.Escape;
     }
 
     function hasTouchActivity() {
-      return touchInput.active || touchInput.jump || touchInput.pause;
+      return !!(touchInput.active || touchInput.jump || touchInput.pause);
     }
 
     function hasGamepadActivity() {
-      return Math.abs(gamepadInput.moveX) > 0.06 ||
+      return !!(
+        Math.abs(gamepadInput.moveX) > 0.06 ||
         Math.abs(gamepadInput.moveZ) > 0.06 ||
         gamepadInput.jump ||
         gamepadInput.pause ||
-        gamepadInput.restartEdge;
+        gamepadInput.restartEdge
+      );
     }
 
     function readKeyboardMove() {
       return {
-        moveX: (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0),
-        moveZ: (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0),
+        moveX: ((keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0)),
+        moveZ: ((keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0)),
         jump: !!(keys.Space || keys.Enter),
-        pause: !!keys.KeyP
+        pause: !!(keys.KeyP || keys.Escape)
       };
+    }
+
+    function markSource(name, active) {
+      sourceActivity[name] = active ? performance.now() : 0;
+      if (name in sourceAt) sourceAt[name] = sourceActivity[name];
+    }
+
+    function isStaleSource(name, now) {
+      return now - (sourceActivity[name] || 0) > INPUT_OWNER_STALE_MS;
+    }
+
+    function clearTouchState() {
+      touchInput.active = false;
+      touchInput.moveX = 0;
+      touchInput.moveZ = 0;
+      touchInput.jump = false;
+      touchInput.pause = false;
+      controls.steerKnob.style.transform = 'translate(-50%, -50%)';
+    }
+
+    function clearGamepadState() {
+      gamepadInput.moveX = 0;
+      gamepadInput.moveZ = 0;
+      gamepadInput.jump = false;
+      gamepadInput.pause = false;
+      gamepadInput.restart = false;
+      gamepadInput.restartEdge = false;
+      gamepadPrev.jump = false;
+      gamepadPrev.pause = false;
+      gamepadPrev.restart = false;
+    }
+
+    function clearSourceState(name) {
+      if (name === 'touch') clearTouchState();
+      if (name === 'gamepad') clearGamepadState();
+      markSource(name, false);
+    }
+
+    function resolveSourceOwner() {
+      const now = performance.now();
+      if (!hasTouchActivity() && isStaleSource('touch', now)) {
+        clearSourceState('touch');
+      }
+      if (!hasGamepadActivity() && isStaleSource('gamepad', now)) {
+        clearSourceState('gamepad');
+      }
+
+      const candidates = [];
+      if (hasKeyboardActivity() && !isStaleSource('keyboard', now)) candidates.push('keyboard');
+      if (hasTouchActivity() && !isStaleSource('touch', now)) candidates.push('touch');
+      if (hasGamepadActivity() && !isStaleSource('gamepad', now)) candidates.push('gamepad');
+
+      for (const owner of INPUT_OWNER_PRIORITY) {
+        if (candidates.includes(owner)) return owner;
+      }
+      if (inputOwner === 'gamepad' && hasGamepadActivity() && !isStaleSource('gamepad', now)) return 'gamepad';
+      if (inputOwner === 'touch' && hasTouchActivity() && !isStaleSource('touch', now)) return 'touch';
+      if (inputOwner === 'keyboard' && hasKeyboardActivity() && !isStaleSource('keyboard', now)) return 'keyboard';
+      return 'keyboard';
     }
 
     function clearInputSuppression() {
@@ -674,6 +840,16 @@
       input.moveZ = 0;
       input.jump = false;
       input.pause = false;
+      input.owner = 'system';
+      input.source = 'system';
+    }
+
+    function clearInputState(reason) {
+      clearLocalInput();
+      clearInputSuppression();
+      if (reason) clearSourceState(reason);
+      if (reason && sourceAt[reason] !== undefined) sourceAt[reason] = 0;
+      if (reason && sourceActivity[reason] !== undefined) sourceActivity[reason] = 0;
     }
 
     function clearLocalInput() {
@@ -697,7 +873,10 @@
     function clearInputUntilRestart() {
       clearInputSuppression();
       clearLocalInput();
-      clearInputsUntil = performance.now() + 320;
+      clearInputsUntil = performance.now() + INPUT_CLEAR_MS;
+      clearInputState('keyboard');
+      clearInputState('touch');
+      clearInputState('gamepad');
       inputOwner = 'keyboard';
     }
 
@@ -706,36 +885,46 @@
       clearInputUntilRestart();
     }
 
-    function pollGamepad() {
+  function pollGamepad() {
       if (!navigator.getGamepads) return;
       const pads = Array.from(navigator.getGamepads()).filter(Boolean);
-      if (!pads.length) {
-        gamepadInput.moveX = 0;
-        gamepadInput.moveZ = 0;
-        gamepadInput.jump = false;
-        gamepadInput.pause = false;
-        gamepadInput.restart = false;
-        gamepadInput.restartEdge = false;
-        gamepadPrev.jump = false;
-        gamepadPrev.pause = false;
-        gamepadPrev.restart = false;
+      const connectedPads = pads.filter(p => p && p.connected);
+      if (!connectedPads.length) {
+        gamepadConnected = false;
+        clearInputState('gamepad');
+        inputOwner = 'keyboard';
         return;
       }
-      const pad = pads[0];
-      const dead = 0.18;
+      gamepadConnected = true;
+      const pad = connectedPads[0];
+      const dead = JOYSTICK_DEADZONE;
       const x = Math.abs(pad.axes[0] || 0) > dead ? (pad.axes[0] || 0) : 0;
       const z = Math.abs(pad.axes[1] || 0) > dead ? (pad.axes[1] || 0) : 0;
-      gamepadInput.moveX = clamp(x, -1, 1);
-      gamepadInput.moveZ = clamp(z, -1, 1);
-      gamepadInput.jump = !!(pad.buttons && pad.buttons[0] && pad.buttons[0].pressed);
-      gamepadInput.pause = !!(pad.buttons && pad.buttons[9] && pad.buttons[9].pressed);
-      gamepadInput.restart = !!(pad.buttons && pad.buttons[1] && pad.buttons[1].pressed);
+      const dpadX = ((pad.buttons && pad.buttons[15] && pad.buttons[15].pressed) ? 1 : 0) - ((pad.buttons && pad.buttons[14] && pad.buttons[14].pressed) ? 1 : 0);
+      const dpadZ = ((pad.buttons && pad.buttons[13] && pad.buttons[13].pressed) ? 1 : 0) - ((pad.buttons && pad.buttons[12] && pad.buttons[12].pressed) ? 1 : 0);
+      const dpadMoveX = Math.abs(dpadX) > DIRECTION_DEADZONE ? dpadX : 0;
+      const dpadMoveZ = Math.abs(dpadZ) > DIRECTION_DEADZONE ? dpadZ : 0;
+      gamepadInput.moveX = clamp(Math.abs(x) > 0 ? x : dpadMoveX, -1, 1);
+      gamepadInput.moveZ = clamp(Math.abs(z) > 0 ? z : dpadMoveZ, -1, 1);
+      gamepadInput.jump = !!(
+        (pad.buttons && pad.buttons[0] && pad.buttons[0].pressed) ||
+        (pad.buttons && pad.buttons[7] && pad.buttons[7].pressed)
+      );
+      gamepadInput.pause = !!(
+        (pad.buttons && pad.buttons[9] && pad.buttons[9].pressed) ||
+        (pad.buttons && pad.buttons[16] && pad.buttons[16].pressed)
+      );
+      gamepadInput.restart = !!(
+        (pad.buttons && pad.buttons[1] && pad.buttons[1].pressed) ||
+        (pad.buttons && pad.buttons[8] && pad.buttons[8].pressed) ||
+        (pad.buttons && pad.buttons[3] && pad.buttons[3].pressed)
+      );
       gamepadInput.restartEdge = gamepadInput.restart && !gamepadPrev.restart;
       gamepadPrev.jump = gamepadInput.jump;
       gamepadPrev.pause = gamepadInput.pause;
       gamepadPrev.restart = gamepadInput.restart;
+      markSource('gamepad', gamepadConnected);
       if (gamepadInput.restartEdge) scheduleRestart();
-      if (hasGamepadActivity()) inputOwner = 'gamepad';
     }
 
     function bindSteerPad() {
@@ -757,15 +946,13 @@
         touchInput.active = true;
         touchInput.moveX = clamp(Math.abs(sx) > dead ? sx : 0, -1, 1);
         touchInput.moveZ = clamp(Math.abs(sy) > dead ? -sy : 0, -1, 1);
+        markSource('touch', true);
         knob.style.transform = 'translate(calc(-50% + ' + (sx * (rect.width / 2)) + 'px), calc(-50% + ' + (sy * (rect.height / 2)) + 'px))';
       }
       function release(e) {
         if (e && e.pointerId !== activeId) return;
         activeId = null;
-        touchInput.active = false;
-        touchInput.moveX = 0;
-        touchInput.moveZ = 0;
-        knob.style.transform = 'translate(-50%, -50%)';
+        clearTouchState();
       }
       function start(e) {
         e.preventDefault();
@@ -790,11 +977,16 @@
         if (key === 'pause') touchInput.pause = true;
         e.currentTarget.classList.add('held');
         inputOwner = 'touch';
+        markSource('touch', true);
       }
       function up(e) {
         if (key === 'jump') touchInput.jump = false;
         if (key === 'pause') touchInput.pause = false;
         e.currentTarget.classList.remove('held');
+        markSource('touch', hasTouchActivity());
+        if (!touchInput.active && !touchInput.jump && !touchInput.pause) {
+          markSource('touch', false);
+        }
       }
       button.addEventListener('pointerdown', down);
       button.addEventListener('pointerup', up);
@@ -826,15 +1018,20 @@
       }
     }
 
+    function applyOwnerVisual() {
+      const owner = inputOwner || 'keyboard';
+      stateText.ownerIndicator.classList.remove('owner-keyboard', 'owner-touch', 'owner-gamepad');
+      stateText.ownerIndicator.classList.add('owner-' + owner);
+      stateText.ownerIndicator.textContent = 'owner: ' + owner.toUpperCase();
+    }
+
     function buildInputs() {
+      const now = performance.now();
       pollGamepad();
-      if (hasKeyboardDrive() || (isKeyboardTouching() && inputOwner === 'keyboard')) {
-        inputOwner = 'keyboard';
-      } else if (hasTouchActivity()) {
-        inputOwner = 'touch';
-      } else if (hasGamepadActivity()) {
-        inputOwner = 'gamepad';
-      }
+      markSource('keyboard', hasKeyboardActivity());
+      markSource('touch', hasTouchActivity());
+      markSource('gamepad', hasGamepadActivity() && gamepadConnected);
+      inputOwner = resolveSourceOwner();
 
       let x = 0;
       let z = 0;
@@ -857,15 +1054,17 @@
         jump = k.jump;
         pause = k.pause;
       }
-      if (performance.now() < clearInputsUntil) {
+      if (now < clearInputsUntil) {
         clearInputSuppression();
       } else {
         input.moveX = clamp(x, -1, 1);
         input.moveZ = clamp(z, -1, 1);
         input.jump = !!jump;
         input.pause = !!pause;
+        input.owner = inputOwner;
+        input.source = inputOwner;
       }
-      post(endpoint('inputUrl'), input);
+      post('inputUrl', input);
       if (restartQueued) {
         restartQueued = false;
         restart();
@@ -902,11 +1101,12 @@
 
     addEventListener('keydown', (event) => {
       keys[event.code] = true;
-      if (event.code === 'KeyR' && !keyRestartHeld) {
+      if (event.code === 'KeyR' && !keyRestartHeld && performance.now() - sourceAt.restart > RESTART_KEY_DEBOUNCE_MS) {
         keyRestartHeld = true;
+        sourceAt.restart = performance.now();
         scheduleRestart();
       }
-      if (event.code === 'KeyP') {
+      if (event.code === 'KeyP' || event.code === 'Escape') {
         inputOwner = 'keyboard';
       }
       if (event.code === 'Space' || event.code === 'ArrowUp' || event.code === 'KeyW') {
@@ -917,6 +1117,34 @@
       keys[event.code] = false;
       if (event.code === 'KeyR') keyRestartHeld = false;
     });
+    addEventListener('gamepadconnected', () => {
+      gamepadConnected = true;
+      sourceAt.gamepad = performance.now();
+      sourceActivity.gamepad = performance.now();
+    });
+    addEventListener('gamepaddisconnected', () => {
+      gamepadConnected = false;
+      markSource('gamepad', false);
+      clearInputState('gamepad');
+      gamepadPrev.jump = false;
+      gamepadPrev.pause = false;
+      gamepadPrev.restart = false;
+      if (inputOwner === 'gamepad') inputOwner = 'keyboard';
+    });
+    addEventListener('pointerup', (event) => {
+      if (!event || event.pointerId === undefined) return;
+      clearSourceState('touch');
+    });
+    addEventListener('blur', () => {
+      clearInputState('touch');
+      clearInputState('gamepad');
+      inputOwner = 'keyboard';
+    });
+    addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        clearInputUntilRestart();
+      }
+    });
     stateText.restartBtn.addEventListener('click', scheduleRestart);
 
     bindSteerPad();
@@ -925,6 +1153,8 @@
     bindTouchRestart();
     addEventListener('resize', setViewportControls);
     setViewportControls();
+    try { onboardingSeen = localStorage.getItem('axm-shardrunner-onboarding-seen') === '1'; } catch (e) {}
+    refreshSettings();
     connect();
     animate();
   </script>

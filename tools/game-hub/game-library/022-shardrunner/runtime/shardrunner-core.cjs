@@ -1,7 +1,14 @@
 'use strict';
 
 const LANES_X = [-5.5, 0, 5.5];
-const PHASES = {countdown: 'countdown', running: 'running', paused: 'paused', won: 'won', lost: 'lost'};
+const PHASES = {
+  countdown: 'countdown',
+  running: 'running',
+  paused: 'paused',
+  won: 'won',
+  lost: 'lost',
+  cooldown: 'cooldown'
+};
 const COLORS = {
   player: '#5fd8ff',
   shard: '#58b9ff',
@@ -11,6 +18,7 @@ const COLORS = {
   void: '#11214d'
 };
 
+const BUILD_VERSION = '0.2.0';
 const BASE_RUN_SPEED = 11.2;
 const BASE_GRAVITY = -34;
 const JUMP_VELOCITY = 14.4;
@@ -19,6 +27,29 @@ const PLAYER_HALF_HEIGHT = 1.2;
 const COUNTDOWN_MS = 2400;
 const WORLD_AHEAD = 125;
 const WIN_DISTANCE = 420;
+const COOLDOWN_MS = 900;
+const JUMP_STEADY_COOLDOWN_MS = 185;
+const MIN_TIER = 1;
+const MAX_TIER = 6;
+const SHARD_METER = 110;
+const INPUT_OWNER_STALE_MS = 220;
+
+function makeRunSummary(state, opts) {
+  const reason = opts && opts.reason ? opts.reason : null;
+  return {
+    runId: state.runId,
+    attempt: state.attempt || 1,
+    distance: Math.round(state.progress || 0),
+    shards: state.totalShards || 0,
+    combo: state.combo || 0,
+    bestCombo: state.bestCombo || 0,
+    stamina: Math.max(0, Math.round(state.stamina || 0)),
+    seed: state.randomSeed || state.seed || 0,
+    runVersion: state.runVersion || state.buildVersion || BUILD_VERSION,
+    diedBy: reason || state.diedBy || null,
+    bestScore: Math.max(0, Math.round(state.score || 0))
+  };
+}
 
 function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 function toMs(value, fallback) {
@@ -32,6 +63,9 @@ function makeRng(seed) {
     s = (Math.imul(16598013, s) + 1013904223) >>> 0;
     return (s >>> 8) / 0x01000000;
   };
+}
+function makeRunId(seed, attempt) {
+  return `run-${seed.toString(16)}-${String(attempt).padStart(3, '0')}`;
 }
 function toFloat(value, fallback = 0) {
   const n = Number(value);
@@ -49,15 +83,46 @@ function sanitizeButton(value) {
 function sanitizeInput(raw, options) {
   const clearInputs = !!(options && options.clear);
   if (clearInputs) {
-    return { moveX: 0, moveZ: 0, jump: false, pause: false };
+    return {
+      moveX: 0,
+      moveZ: 0,
+      jump: false,
+      pause: false,
+      restart: false,
+      owner: raw && (raw.owner || raw.source) ? String(raw.owner || raw.source) : 'system',
+      source: raw && (raw.source || raw.owner) ? String(raw.source || raw.owner) : 'system'
+    };
   }
+  const owner = raw && (raw.owner || raw.source);
   return {
     moveX: normalizeAxis(raw && raw.moveX),
     moveZ: normalizeAxis(raw && raw.moveZ),
     jump: sanitizeButton(raw && raw.jump),
-    pause: sanitizeButton(raw && raw.pause)
+    pause: sanitizeButton(raw && raw.pause),
+    restart: sanitizeButton(raw && raw.restart),
+    owner: owner ? String(owner) : 'unknown',
+    source: raw && (raw.source || raw.owner) ? String(raw.source || raw.owner) : owner ? String(owner) : 'unknown'
   };
 }
+
+function resolveInputOwner(samples, nowArg, options) {
+  const now = toMs(nowArg, Date.now());
+  const fallback = options && options.fallback ? String(options.fallback) : 'keyboard';
+  const staleMs = Math.max(1, toMs(options && options.staleMs, INPUT_OWNER_STALE_MS));
+  const priority = (options && options.priority) || ['keyboard', 'touch', 'gamepad'];
+  const hasKeyboard = !!(samples && samples.keyboard && samples.keyboard.active) && (now - toMs(samples.keyboard.at, 0)) <= staleMs;
+  const hasTouch = !!(samples && samples.touch && samples.touch.active) && (now - toMs(samples.touch.at, 0)) <= staleMs;
+  const hasGamepad = !!(samples && samples.gamepad && samples.gamepad.active) && (now - toMs(samples.gamepad.at, 0)) <= staleMs;
+  const candidates = new Set();
+  if (hasKeyboard) candidates.add('keyboard');
+  if (hasTouch) candidates.add('touch');
+  if (hasGamepad) candidates.add('gamepad');
+  for (const c of priority) {
+    if (candidates.has(c)) return c;
+  }
+  return fallback;
+}
+
 function nearestLane(x) {
   let idx = 0;
   let best = Infinity;
@@ -73,9 +138,12 @@ function nearestLane(x) {
 function pick(arr, random) {
   return arr[(random() * arr.length) | 0];
 }
-function event(state, text, now) {
+function event(state, text, now, opts) {
   state.event = text;
   state.eventAt = now;
+  if (opts && opts.reason) {
+    state.diedBy = opts.reason;
+  }
 }
 
 function createPlayer() {
@@ -107,10 +175,6 @@ function createSeatList(rawSeats) {
   }));
 }
 
-function makePlayerState() {
-  return createPlayer();
-}
-
 function createSeededRandomState(seed) {
   return {
     seed,
@@ -125,9 +189,13 @@ function shuffleOpenLanes(state) {
   return [a, b].sort((x, y) => x - y);
 }
 
+function microVariance(state) {
+  return (state.random() - .5) * 2;
+}
+
 function spawnShard(state) {
   const lane = pick(state.activeLanes, state.random);
-  const jitter = (state.random() - .5) * 2;
+  const jitter = microVariance(state) * 0.25;
   state.shards.push({
     id: 'sh-' + (state._nextShardId++),
     kind: 'shard',
@@ -144,10 +212,12 @@ function spawnObstacle(state) {
   const width = kind === 'spike' ? 1.9 : 4.7;
   const height = kind === 'spike' ? 4.0 : 2.8;
   const depth = kind === 'spike' ? 3.8 : 5.8;
+  const jitter = microVariance(state) * 0.15;
+  const bonus = (state.difficulty - 1) * 0.65;
   state.obstacles.push({
     id: 'ob-' + (state._nextObstacleId++),
     kind,
-    x: LANES_X[lane],
+    x: LANES_X[lane] + jitter,
     lane,
     trackZ: state.progress + WORLD_AHEAD - 6 + state.random() * 18,
     width,
@@ -155,7 +225,7 @@ function spawnObstacle(state) {
     depth,
     radius: Math.max(width, depth) * .55,
     color: COLORS.obstacle,
-    damage: kind === 'wall' ? 35 : 28
+    damage: kind === 'wall' ? Math.max(26, 34 - state.difficulty + 0.5 * (state.random() * 8 - 4)) : Math.max(18, 27 - state.difficulty * 0.4)
   });
 }
 
@@ -200,11 +270,16 @@ function removePassed(state) {
 }
 
 function seedForDistance(state) {
-  return state.randomSeed;
+  return state.randomSeed ^ (state.spawnCursor || 0);
 }
 
-function finish(state, won, now) {
+function tierFromProgress(progress) {
+  return clamp( MIN_TIER + Math.floor(Math.max(0, progress) / SHARD_METER), MIN_TIER, MAX_TIER );
+}
+
+function finish(state, won, now, reason) {
   if (state.result) return;
+  const dieReason = won ? null : (reason || 'STAMINA_COLLAPSE');
   state.phase = won ? PHASES.won : PHASES.lost;
   state.result = {
     won,
@@ -212,23 +287,55 @@ function finish(state, won, now) {
     shards: state.totalShards,
     combo: state.bestCombo,
     distance: Math.round(state.progress),
-    durationMs: Math.max(0, now - (state.startedAt || state.startAt))
+    durationMs: Math.max(0, now - (state.startedAt || state.startAt)),
+    runVersion: state.runVersion || BUILD_VERSION
+  };
+  state.runStats = Object.assign({}, state.runStats, {
+    distance: Math.round(state.progress),
+    shards: state.totalShards,
+    stamina: Math.max(0, Math.round(state.stamina)),
+    combo: state.bestCombo,
+    bestCombo: state.bestCombo,
+    attempt: state.attempt || 1,
+    runId: state.runId,
+    seed: state.randomSeed || state.seed || 0,
+    diedBy: dieReason,
+    fallReason: dieReason,
+    dieReason
+  });
+  state.lastRunMetadata = makeRunSummary(state, { reason: dieReason });
+  state.runSummary = makeRunSummary(state, { reason: dieReason });
+  state.lastRun = {
+    runId: state.runId,
+    attempt: state.attempt,
+    score: Math.max(0, Math.round(state.score)),
+    distance: state.result.distance,
+    shards: state.result.shards,
+    combo: state.combo,
+    bestCombo: state.bestCombo,
+    diedBy: dieReason,
+    seed: state.randomSeed,
+    buildVersion: state.runVersion || BUILD_VERSION
   };
   state.endedAt = now;
-  event(state, won ? 'AURORA SIGNAL LOCK COMPLETE' : 'SHARD ARRAY COLLAPSED', now);
+  state.diedBy = dieReason;
+  state.cooldownUntil = now + COOLDOWN_MS;
+  event(state, won ? 'RUN COMPLETE' : 'GAME OVER', now, { reason: dieReason });
 }
 
 function create(rawSeats, now = Date.now(), options) {
   const createdAt = toMs(now, Date.now());
   const seats = createSeatList(rawSeats);
   const seed = toMs(options && options.seed, 0x2a) >>> 0;
+  const attempt = Math.max(1, toMs(options && options.attempt, 1) | 0);
   const randomState = createSeededRandomState(seed);
-
   const state = {
     schema: 'axm.shardrunner-state/v1',
     gameId: '022-shardrunner',
     version: '0.1.0',
     status: 'EXPERIMENTAL',
+    buildVersion: BUILD_VERSION,
+    seed: seed,
     createdAt,
     now: createdAt,
     phase: PHASES.countdown,
@@ -237,10 +344,17 @@ function create(rawSeats, now = Date.now(), options) {
     pauseAt: 0,
     startedAt: 0,
     endedAt: 0,
+    cooldownUntil: 0,
     players: {},
     result: null,
     event: 'SIGNAL ARRAY WARMING UP',
     eventAt: createdAt,
+    runId: makeRunId(seed, attempt),
+    attempt,
+    runVersion: BUILD_VERSION,
+    _pauseHeld: false,
+    _jumpHeld: false,
+    inputSource: 'keyboard',
     seat: seats[0],
     score: 0,
     bestCombo: 0,
@@ -253,7 +367,22 @@ function create(rawSeats, now = Date.now(), options) {
     speed: BASE_RUN_SPEED,
     difficulty: 1,
     stamina: 100,
-    player: makePlayerState(),
+    diedBy: null,
+    pressure: 1,
+    runStats: {
+      distance: 0,
+      shards: 0,
+      stamina: 100,
+      combo: 0,
+      bestCombo: 0,
+      attempt: attempt,
+      runId: makeRunId(seed, attempt),
+      fallReason: null,
+      dieReason: null,
+      seed,
+      runVersion: BUILD_VERSION
+    },
+    player: createPlayer(),
     randomSeed: seed,
     random: randomState.random,
     nextShardAt: createdAt + 420,
@@ -261,6 +390,8 @@ function create(rawSeats, now = Date.now(), options) {
     nextGateAt: createdAt + 1700,
     spawnCursor: 24,
     laneWander: 0,
+    tier: 1,
+    cameraPulse: 0,
     activeLanes: [0, 1, 2],
     _nextShardId: 1,
     _nextObstacleId: 1,
@@ -274,46 +405,71 @@ function create(rawSeats, now = Date.now(), options) {
   };
 
   state.player.lane = 1;
-  state.randomState = randomState;
   const seedName = String(seed);
   event(state, 'RUN SEAT ' + (state.seat.display_name || 'RUNNER') + ' · RNG #' + seedName, createdAt);
 
-  for (let i = 0; i < 5; i++) spawnRuins(state);
+  for (let i = 0; i < 5; i++) {
+    spawnRuins(state);
+  }
   return state;
+}
+
+function updateDifficulty(state) {
+  const tier = tierFromProgress(state.progress);
+  if (tier !== state.difficulty) {
+    state.difficulty = tier;
+    state.speed = BASE_RUN_SPEED + state.difficulty * 1.5;
+    event(state, 'CORRUPTED FIELD INTENSIFIES · LEVEL ' + state.difficulty, state.now);
+  }
+  state.pressure = Math.max(1, Math.min(2.1, (state.difficulty * 0.34) + (state.laneWander * 0.02)));
+  state.laneWander = (state.random() - .5) * Math.min(2.7, state.difficulty * 0.38);
+  if (state.progress > 260 && state.distanceGoal < 520) {
+    state.distanceGoal = 520;
+  }
 }
 
 function spawnByTempo(state) {
   const now = state.now;
+  const difficulty = state.difficulty;
+  const pressure = state.pressure || 1;
   if (now >= state.nextShardAt) {
     spawnShard(state);
-    state.nextShardAt = now + 420 - (state.difficulty * 15) + (state.random() * 180);
+    const base = 390 - (difficulty * 16) + (state.random() * 140) + microVariance(state) * 5;
+    const jitter = microVariance(state);
+    state.nextShardAt = now + Math.max(180, base / pressure * (1 + jitter * 0.2));
   }
   if (now >= state.nextObstacleAt) {
-    spawnObstacle(state);
-    const base = 980 - Math.min(500, state.difficulty * 70);
-    state.nextObstacleAt = now + base + state.random() * 260;
+    const obstacleChance = Math.min(0.92, 0.34 + (difficulty * 0.06) * pressure);
+    if (state.random() < obstacleChance) {
+      spawnObstacle(state);
+    }
+    const base = 790 - Math.min(300, difficulty * 58) + state.random() * 290;
+    state.nextObstacleAt = now + Math.max(420, (base + (difficulty * 12)) / pressure);
   }
   if (now >= state.nextGateAt) {
     spawnGate(state);
-    state.nextGateAt = now + 4500 + state.random() * 2200 - Math.min(2200, state.difficulty * 280);
+    const base = 3600 + state.random() * 1800 - Math.min(1800, (difficulty - 1) * 260);
+    state.nextGateAt = now + Math.max(1500, base);
   }
 }
 
-function updateDifficulty(state, now) {
-  const elapsed = now - state.startedAt;
-  const next = 1 + Math.floor(elapsed / 7000);
-  if (next !== state.difficulty) {
-    state.difficulty = next;
-    state.speed = BASE_RUN_SPEED + state.difficulty * 1.5;
-    event(state, 'CORRUPTED FIELD INTENSIFIES · LEVEL ' + state.difficulty, now);
-  }
-  const drift = (state.random() - .5) * 4.0;
-  state.laneWander = drift;
+function spawnCameraPulse(state, amount) {
+  state.cameraPulse = Math.max(0, Math.min(1.2, (state.cameraPulse || 0) + amount));
+}
+
+function applyCameraDrift(state, dt) {
+  state.cameraPulse = Math.max(0, (state.cameraPulse || 0) - dt * 1.9);
 }
 
 function handleMovement(state, input, dt) {
   const p = state.player;
   const canMove = state.phase === PHASES.running;
+  const jumpRequest = !!input.jump && !state._jumpHeld;
+
+  if (!input.jump) {
+    state._jumpHeld = false;
+  }
+
   if (!canMove || state.now < p.stumbleUntil) {
     p.vx = 0;
   } else {
@@ -326,12 +482,14 @@ function handleMovement(state, input, dt) {
 
   p.lane = nearestLane(p.x);
 
-  if (input.jump && p.onGround && state.now - p.lastJumpAt > 180) {
+  if (jumpRequest && p.onGround && state.now - p.lastJumpAt > JUMP_STEADY_COOLDOWN_MS) {
+    state._jumpHeld = true;
     p.vy = JUMP_VELOCITY;
     p.onGround = false;
     p.lastJumpAt = state.now;
     p.jumpAt = state.now;
     p.anim = 'jump';
+    spawnCameraPulse(state, 0.08);
   }
 
   if (!p.onGround) {
@@ -344,6 +502,7 @@ function handleMovement(state, input, dt) {
         p.onGround = true;
         p.landAt = state.now;
         p.anim = 'land';
+        spawnCameraPulse(state, 0.13);
       }
     }
   } else if (state.now >= p.stumbleUntil) {
@@ -357,6 +516,10 @@ function handleMovement(state, input, dt) {
   if (state.now < p.stumbleUntil) {
     p.anim = 'stumble';
   }
+
+  if (state.now >= state.runStats.dieAt && state.runStats.dieAt) {
+    state.runStats.dieAt = 0;
+  }
 }
 
 function resolveBranch(state) {
@@ -368,18 +531,22 @@ function resolveBranch(state) {
     const lane = nearestLane(p.x);
     if (!gate.openLanes.includes(lane)) {
       p.stumbleUntil = Math.max(p.stumbleUntil, state.now + 500);
-      state.stamina -= 30;
+      state.stamina = Math.max(0, state.stamina - 30);
       p.vy = 1.4;
       p.onGround = true;
       p.anim = 'stumble';
       p.stumbleUntil = state.now + 480;
-      event(state, 'INCORRECT SPLIT — RED CORRUPTION', state.now);
+      state.runStats.stamina = Math.max(0, Math.round(state.stamina));
+      spawnCameraPulse(state, 0.35);
+      event(state, 'COLLISION', state.now);
       if (state.stamina <= 0) {
-        finish(state, false, state.now);
+        finish(state, false, state.now, 'WRONG_LANE');
       }
     } else {
       state.score += 20;
-      event(state, 'BRANCH SELECTED · ROUTE SECURE', state.now);
+      state.runStats.shards += 0;
+      state.runStats.combo = Math.max(1, state.runStats.combo);
+      event(state, 'SHARD PATH CHOSEN', state.now);
     }
     gate.passBy = true;
   }
@@ -403,6 +570,7 @@ function resolveShards(state) {
     if (hit && !aerial) {
       state.shards.splice(i, 1);
       state.totalShards += 1;
+      state.runStats.shards += 1;
       if (now - state.comboExpiresAt > state.comboWindow) {
         state.combo = 1;
       } else {
@@ -412,6 +580,10 @@ function resolveShards(state) {
       const gain = 6 + state.combo * 2 + Math.min(16, state.difficulty);
       state.score += gain;
       state.bestCombo = Math.max(state.bestCombo, state.combo);
+      state.runStats.combo = state.combo;
+      state.runStats.distance = Math.round(state.progress);
+      state.runStats.stamina = Math.max(0, Math.round(state.stamina));
+      spawnCameraPulse(state, 0.09);
       event(state, 'SINGLE SHARD PICKED · COMBO ' + state.combo, now);
     }
   }
@@ -435,9 +607,12 @@ function resolveObstacles(state) {
       p.vx *= -0.35;
       p.vy = Math.max(p.vy, 1.8);
       p.anim = 'stumble';
-      event(state, 'CORRUPTED GEOMETRY COLLISION', state.now);
+      state.runStats.stamina = Math.max(0, Math.round(state.stamina));
+      spawnCameraPulse(state, 0.42);
+      const reason = obstacle.kind === 'wall' ? 'HARD_COLLISION' : 'SPIKE_COLLISION';
+      event(state, 'COLLISION', state.now);
       if (state.stamina <= 0) {
-        finish(state, false, state.now);
+        finish(state, false, state.now, reason);
       }
       return;
     }
@@ -448,7 +623,9 @@ function applyProgress(state, dt) {
   const runSpeed = state.speed + state.difficulty * 0.45;
   const advance = runSpeed * dt;
   state.progress += advance;
+  state.runStats.distance = Math.round(state.progress);
   state.score += dt * .25;
+  state.runStats.stamina = Math.max(0, Math.round(state.stamina));
 }
 
 function step(state, rawInputs, dt, nowArg) {
@@ -458,14 +635,23 @@ function step(state, rawInputs, dt, nowArg) {
   const input = sanitizeInput(rawInputs && rawInputs[state.seat.id] || rawInputs || {}, {
     clear: state._inputClearUntil && state.now < state._inputClearUntil
   });
+  state.inputSource = input.source || input.owner || state.inputSource;
 
-  if (state.phase === PHASES.countdown) {
-    if (state.now >= state.startAt) {
-      state.phase = PHASES.running;
-      state.startedAt = state.now;
-      event(state, 'RUNNER ARMED', state.now);
-    }
-    state.player.anim = 'idle';
+  if (state.now >= state._inputClearUntil && state._jumpHeld && !input.jump) {
+    state._jumpHeld = false;
+  }
+
+  if (state.now < state._inputClearUntil) {
+    input.jump = false;
+    input.pause = false;
+    state._pauseHeld = false;
+    state._jumpHeld = false;
+  }
+
+  if (state.phase === PHASES.countdown && state.now >= state.startAt) {
+    state.phase = PHASES.running;
+    state.startedAt = state.now;
+    event(state, 'RUNNER ARMED', state.now);
   }
 
   if (state.phase === PHASES.paused) {
@@ -479,6 +665,7 @@ function step(state, rawInputs, dt, nowArg) {
       state.eventAt = state.now;
       state.event = 'RESUMED';
     }
+    applyCameraDrift(state, dt);
     return publicState(state);
   }
 
@@ -496,25 +683,42 @@ function step(state, rawInputs, dt, nowArg) {
     state._pauseHeld = false;
   }
 
+  if (state.phase === PHASES.won || state.phase === PHASES.lost) {
+    if (!state.cooldownUntil) {
+      state.cooldownUntil = state.now + COOLDOWN_MS;
+    }
+    if (state.now >= state.cooldownUntil) {
+      state.phase = PHASES.cooldown;
+    }
+    return publicState(state);
+  }
+
+  if (state.phase === PHASES.cooldown) {
+    applyCameraDrift(state, dt);
+    return publicState(state);
+  }
+
   if (state.phase !== PHASES.running) {
     return publicState(state);
   }
 
   if (state.comboExpiresAt && state.now - state.comboExpiresAt > state.comboWindow) {
     state.combo = 0;
+    state.runStats.combo = 0;
   }
 
-  updateDifficulty(state, state.now);
+  updateDifficulty(state);
   handleMovement(state, input, dt);
   applyProgress(state, dt);
   spawnByTempo(state);
   resolveBranch(state);
   resolveShards(state);
   resolveObstacles(state);
+  applyCameraDrift(state, dt);
   removePassed(state);
 
   if (state.progress >= state.distanceGoal) {
-    finish(state, true, state.now);
+    finish(state, true, state.now, 'OBJECTIVE_COMPLETE');
   }
 
   return state;
@@ -533,5 +737,7 @@ module.exports = {
   sanitizeButton,
   toFloat,
   LAND: COLORS,
-  PHASES
+  PHASES,
+  resolveInputOwner,
+  INPUT_OWNER_STALE_MS
 };
