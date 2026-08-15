@@ -115,3 +115,28 @@ templates, and beginner labels from the same graph. Every block gets exactly
 one human label; every displayed effect maps to an exact machine template; and
 capabilities, effects, status, and risk must byte-match their machine packet.
 The word “low” is relative declared-effect risk, never a safety claim.
+
+## Phase 6 intake and external gates
+
+Intake Harbor implements the full fifteen-step evidence route from quarantine
+through rollback receipt. It advances only ordered digest-bound receipts from
+separately authorized tools and humans. The Harbor performs no unpack, scan,
+test, install, promotion, rejection effect, or rollback itself. Imported bytes
+remain quarantined, untrusted, uninstalled, and unpromoted; a positive decision
+ends with an external action still required.
+
+City Gates registers MCP, A2A, GitHub draft, OCI/ORAS, and public attestation as
+external protocol boundaries. Every committed adapter is disabled, no network
+transport is bundled, inbound bytes go to quarantine, and private local work
+has no public dependency. The GitHub receiver proof now requires final
+`draft === true` as well as exact head/base/title/body, open, and unmerged state.
+Artifact exports can be independently verified from local bytes.
+
+## Whole-city boundary
+
+The infrastructure registry names all twelve blueprint blocks in dependency
+order. Their focused implementations are **EXPERIMENTAL** material: passing
+tests does not install, promote, merge, or canonize them. The City currently
+provides bounded local primitives and generated truth surfaces—not an automatic
+operating system, universal kernel, authenticated identity provider, proven OS
+sandbox, distributed consensus layer, or enabled public service.

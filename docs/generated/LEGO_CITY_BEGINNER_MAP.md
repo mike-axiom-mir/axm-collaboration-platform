@@ -2,7 +2,7 @@
 
 Status: **EXPERIMENTAL generated view**
 
-Twin digest: `0c3f51c98a9c8beb9d9f2020d0675a43a44143f7d4ceb42636399d37cee27628`
+Twin digest: `0adcb6d32f19d25f619a6a74fcef45f2f3e0fe0306420cfc4ad0783acf0d08ec`
 
 Every row is derived from an exact machine packet. “Low” is relative declared-effect risk, not a safety claim. No row grants authority.
 
@@ -187,13 +187,15 @@ Every row is derived from an exact machine packet. “Low” is relative declare
 | shared/asset-hands | ORGAN | EXPERIMENTAL | 78 | NONE | LOW | `c3524a8b7740896c…` |
 | shared/audio-sfx-bake | ORGAN | EXPERIMENTAL | 0 | NONE | LOW | `19624a5c348f72a2…` |
 | shared/authority-grid | BRICK | EXPERIMENTAL | 4 | NONE | LOW | `13c645c797db787b…` |
-| shared/city-graph | ORGAN | EXPERIMENTAL | 5 | NONE | UNKNOWN | `ee7cdcfe402fc595…` |
+| shared/city-gates | BRIDGE | EXPERIMENTAL | 5 | NETWORK_WRITE, PUBLIC_RELEASE | HIGH | `80831a1116ef8216…` |
+| shared/city-graph | ORGAN | EXPERIMENTAL | 5 | NONE | UNKNOWN | `a1c481486b694ed5…` |
 | shared/event-journal | ORGAN | EXPERIMENTAL | 3 | WRITE_CANDIDATE | UNKNOWN | `50f70d4749dc628d…` |
 | shared/evidence-grid | SENSOR | EXPERIMENTAL | 4 | OBSERVE_LOCAL | LOW | `7c6cb1abf8d16976…` |
 | shared/game-asset-foundation | ORGAN | EXPERIMENTAL | 13 | NONE | UNKNOWN | `456c13324dabcd13…` |
 | shared/game-capability-atlas | HAND | EXPERIMENTAL | 4 | WRITE_CANDIDATE | UNKNOWN | `033a0c374407801a…` |
 | shared/game-fsm | ORGAN | EXPERIMENTAL | 0 | NONE | LOW | `35c58c436b2d812c…` |
 | shared/hands-rail | HAND | EXPERIMENTAL | 4 | EXECUTE_CONFINED, WRITE_CANDIDATE | MEDIUM | `e5a021e1983e91c0…` |
+| shared/intake-harbor | ORGAN | EXPERIMENTAL | 4 | NONE | LOW | `53bdc534834fa7b8…` |
 | shared/local-sync | BRICK | EXPERIMENTAL | 3 | NONE | LOW | `4c19fefb969055e2…` |
 | shared/module-evolution-ledger | ORGAN | EXPERIMENTAL | 8 | NONE | LOW | `b3e7eebe543568ed…` |
 | shared/neural-visual | ORGAN | EXPERIMENTAL | 4 | NONE | LOW | `7e007e10db7b4d19…` |

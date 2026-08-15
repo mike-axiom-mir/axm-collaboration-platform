@@ -279,6 +279,15 @@ try {
   else ok('city local-sync/twins focused suite: '+(syncAssertions+twinAssertions)+' assertion(s); '+twins.twin.machinePackets.length+' human/machine packets bind twin '+twins.twin.twinDigest);
 } catch(e) { fail('city local-sync/twins gate failed: '+(e.code ? e.code+': ' : '')+e.message); }
 
+/* 20 - INTAKE/GATES/BLUEPRINT: imports remain inert, committed external gates
+   stay disabled, and all twelve infrastructure blocks remain represented. */
+try {
+  const intakeAssertions = require('./shared/intake-harbor/selftest').run();
+  const gateAssertions = require('./shared/city-gates/selftest').run();
+  const blueprintAssertions = require('./tests/lego-city-blueprint-conformance-test').run();
+  ok('city intake/gates/blueprint focused suite: '+(intakeAssertions+gateAssertions+blueprintAssertions)+' assertion(s); all external transports disabled');
+} catch(e) { fail('city intake/gates/blueprint gate failed: '+(e.code ? e.code+': ' : '')+e.message); }
+
 /* ---- report ---- */
 const generatedAt = new Date().toISOString();
 const head = 'AXM VERIFY — '+generatedAt+'\n'+

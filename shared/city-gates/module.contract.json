@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "city-gates",
+  "version": "v0.1",
+  "provides": ["city.gate.registry-disabled", "city.gate.outbound-plan", "city.gate.inbound-quarantine", "city.gate.github-draft-readback", "city.gate.package-local-verify"],
+  "consumes": ["axm.effect-request/v1", "axm.decision/v1", "axm.artifact-export/v1"],
+  "permissions": [],
+  "handoffs": { "emits": ["axm.gate-plan/v1", "axm.gate-import/v1", "axm.gate-receiver-receipt/v1"], "accepts": ["axm.effect-request/v1", "axm.decision/v1", "external-payload"] },
+  "lifecycle": { "state_owner": "caller", "reload": "explicit-runtime-registration", "disconnect": "no-bundled-connection", "cleanup": "external-adapter-responsibility" },
+  "boundaries": {
+    "writes": [],
+    "refuses": ["enabled-committed-adapter", "bundled-network-client", "external-protocol-as-internal-canon", "external-message-as-authority", "inbound-trust", "non-draft-github-plan", "github-merge", "github-ready", "github-close", "github-delete", "force-push", "public-dependency-for-private-operation", "promotion", "canon-change", "root-change"]
+  }
+}

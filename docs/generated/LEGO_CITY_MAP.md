@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `1d8c3c36925df6b1b87d39f90eb649a735a4732c75e5dba5e7d01aecb4650cf1`
+Semantic graph digest: `9ade59d2008f9f124b151be71fd16e7d79014ceb1bc0558c7f161e5348ceb1c7`
 
-Blocks: 237 · Capabilities: 1981 · Schemas: 421 · Unresolved edges: 1527
+Blocks: 239 · Capabilities: 1993 · Schemas: 427 · Unresolved edges: 1532
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -191,6 +191,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/asset-hands | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 78 | 0 | 35 selftest(s) |
 | shared/audio-sfx-bake | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 0 | 1 | 1 selftest(s) |
 | shared/authority-grid | BRICK (DECLARED) | EXPERIMENTAL | NONE | 4 | 2 | 1 selftest(s) |
+| shared/city-gates | BRIDGE (DECLARED) | EXPERIMENTAL | NETWORK_WRITE, PUBLIC_RELEASE | 5 | 3 | 1 selftest(s) |
 | shared/city-graph | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
 | shared/event-journal | ORGAN (DECLARED) | EXPERIMENTAL | WRITE_CANDIDATE | 3 | 2 | 1 selftest(s) |
 | shared/evidence-grid | SENSOR (DECLARED) | EXPERIMENTAL | OBSERVE_LOCAL | 4 | 2 | 1 selftest(s) |
@@ -198,6 +199,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/game-capability-atlas | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
 | shared/game-fsm | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 0 | 3 | 1 selftest(s) |
 | shared/hands-rail | HAND (DECLARED) | EXPERIMENTAL | EXECUTE_CONFINED, WRITE_CANDIDATE | 4 | 4 | 1 selftest(s) |
+| shared/intake-harbor | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 4 | 2 | 1 selftest(s) |
 | shared/local-sync | BRICK (DECLARED) | EXPERIMENTAL | NONE | 3 | 2 | 1 selftest(s) |
 | shared/module-evolution-ledger | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 8 | 4 | 2 selftest(s) |
 | shared/neural-visual | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 4 | 0 | 1 selftest(s) |
@@ -1417,6 +1419,9 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/audio-sfx-bake` → `axm.audio.sound/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/authority-grid` → `axm.authority-policy/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/authority-grid` → `axm.effect-request/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/city-gates` → `axm.artifact-export/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/city-gates` → `axm.decision/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/city-gates` → `axm.effect-request/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `axm.module-contract/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `axm.tool-manifest/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `filesystem:explicit-workshop-root` (UNKNOWN)
@@ -1440,6 +1445,8 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/hands-rail` → `axm.decision/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/hands-rail` → `axm.effect-request/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/hands-rail` → `axm.executor-declaration/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/intake-harbor` → `axm.artifact-ref/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/intake-harbor` → `axm.intake-step-receipt/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/local-sync` → `axm.merge-rule/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/local-sync` → `axm.state-snapshot/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/module-evolution-ledger` → `axm.module-install-receipt/v1` (UNKNOWN)

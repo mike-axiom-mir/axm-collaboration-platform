@@ -1,7 +1,7 @@
 {
   "schema": "axm.twin-surface/v1",
-  "graphDigest": "1d8c3c36925df6b1b87d39f90eb649a735a4732c75e5dba5e7d01aecb4650cf1",
-  "schemaRegistryDigest": "d58fc36213e6dd23eef36766e6af5b89282e4b3216b9470e1c9098f3a567801b",
+  "graphDigest": "9ade59d2008f9f124b151be71fd16e7d79014ceb1bc0558c7f161e5348ceb1c7",
+  "schemaRegistryDigest": "ba28514737f1ecb7a8df2a4af2dd5682d9ef5f0545dbd0dcfedbef13fe5ba4a0",
   "machinePackets": [
     {
       "schema": "axm.machine-capability-packet/v1",
@@ -5594,8 +5594,36 @@
     },
     {
       "schema": "axm.machine-capability-packet/v1",
+      "blockId": "shared/city-gates",
+      "blockDigest": "e7d2e733c5d4739ddf3fc14c8191e8e1c608fc2bd298070362aef4d956131e58",
+      "kind": "BRIDGE",
+      "classificationState": "DECLARED",
+      "status": "EXPERIMENTAL",
+      "capabilities": [
+        "city.gate.github-draft-readback",
+        "city.gate.inbound-quarantine",
+        "city.gate.outbound-plan",
+        "city.gate.package-local-verify",
+        "city.gate.registry-disabled"
+      ],
+      "consumes": [
+        "axm.artifact-export/v1",
+        "axm.decision/v1",
+        "axm.effect-request/v1"
+      ],
+      "effects": [
+        "NETWORK_WRITE",
+        "PUBLIC_RELEASE"
+      ],
+      "unknownEffectDeclarations": [],
+      "authorityGrants": [],
+      "risk": "HIGH",
+      "packetDigest": "80831a1116ef8216738611799f689eaec249c776c26c6aaa7f49190af5d60f8e"
+    },
+    {
+      "schema": "axm.machine-capability-packet/v1",
       "blockId": "shared/city-graph",
-      "blockDigest": "d1f24002ecadb41c967435b02e07cd1ffd1eea513c3c893cc2bbb7e14b18cc79",
+      "blockDigest": "2e5ce8246af88312037a077661b4c968b78371b06551a593c46cf142157005b3",
       "kind": "ORGAN",
       "classificationState": "DECLARED",
       "status": "EXPERIMENTAL",
@@ -5622,7 +5650,7 @@
       ],
       "authorityGrants": [],
       "risk": "UNKNOWN",
-      "packetDigest": "ee7cdcfe402fc5952084303bb9ba37d4e4a18db09d1b63130d2b7eea4eec3c99"
+      "packetDigest": "a1c481486b694ed5c49dc67b145457514bf18a5406dc02c4bd424a333f7f7c79"
     },
     {
       "schema": "axm.machine-capability-packet/v1",
@@ -5789,6 +5817,31 @@
       "authorityGrants": [],
       "risk": "MEDIUM",
       "packetDigest": "e5a021e1983e91c06c23d85dd9e0786343c356f796d35f623044de5356943d78"
+    },
+    {
+      "schema": "axm.machine-capability-packet/v1",
+      "blockId": "shared/intake-harbor",
+      "blockDigest": "1eaefa7a62b8fcc78e43ef23d146c9ee4e30d529f67eaa60cd8a6c67c87c4df8",
+      "kind": "ORGAN",
+      "classificationState": "DECLARED",
+      "status": "EXPERIMENTAL",
+      "capabilities": [
+        "city.intake.fifteen-step-route",
+        "city.intake.promotion-boundary",
+        "city.intake.quarantine-record",
+        "city.intake.receipt-chain"
+      ],
+      "consumes": [
+        "axm.artifact-ref/v1",
+        "axm.intake-step-receipt/v1"
+      ],
+      "effects": [
+        "NONE"
+      ],
+      "unknownEffectDeclarations": [],
+      "authorityGrants": [],
+      "risk": "LOW",
+      "packetDigest": "53bdc534834fa7b86fe27dbc45a1eca5b821c2aeaae06cbe4d1556e7cb36d079"
     },
     {
       "schema": "axm.machine-capability-packet/v1",
@@ -9629,15 +9682,39 @@
     },
     {
       "schema": "axm.effect-request-template/v1",
+      "blockId": "shared/city-gates",
+      "blockDigest": "e7d2e733c5d4739ddf3fc14c8191e8e1c608fc2bd298070362aef4d956131e58",
+      "capabilityPacketDigest": "80831a1116ef8216738611799f689eaec249c776c26c6aaa7f49190af5d60f8e",
+      "effectClass": "NETWORK_WRITE",
+      "requiresExactTargetDigest": true,
+      "requiresExactScope": true,
+      "requiresAuthorityDecision": true,
+      "grantsAuthority": false,
+      "packetDigest": "37768a57f0606faacfee9116ccedd816c54a7e12dd6953467b8f366e1fab904b"
+    },
+    {
+      "schema": "axm.effect-request-template/v1",
+      "blockId": "shared/city-gates",
+      "blockDigest": "e7d2e733c5d4739ddf3fc14c8191e8e1c608fc2bd298070362aef4d956131e58",
+      "capabilityPacketDigest": "80831a1116ef8216738611799f689eaec249c776c26c6aaa7f49190af5d60f8e",
+      "effectClass": "PUBLIC_RELEASE",
+      "requiresExactTargetDigest": true,
+      "requiresExactScope": true,
+      "requiresAuthorityDecision": true,
+      "grantsAuthority": false,
+      "packetDigest": "c752034284ae3a3bfffb1fde604a7a5a7ba35f746249683fe29e4926ddefa605"
+    },
+    {
+      "schema": "axm.effect-request-template/v1",
       "blockId": "shared/city-graph",
-      "blockDigest": "d1f24002ecadb41c967435b02e07cd1ffd1eea513c3c893cc2bbb7e14b18cc79",
-      "capabilityPacketDigest": "ee7cdcfe402fc5952084303bb9ba37d4e4a18db09d1b63130d2b7eea4eec3c99",
+      "blockDigest": "2e5ce8246af88312037a077661b4c968b78371b06551a593c46cf142157005b3",
+      "capabilityPacketDigest": "a1c481486b694ed5c49dc67b145457514bf18a5406dc02c4bd424a333f7f7c79",
       "effectClass": "NONE",
       "requiresExactTargetDigest": true,
       "requiresExactScope": true,
       "requiresAuthorityDecision": false,
       "grantsAuthority": false,
-      "packetDigest": "eea7622043ac63088a9c3053400a6678f0e9a15d426e77aae9fbe6bef2bd9bb8"
+      "packetDigest": "db6f718e09f761004d2407dcb75dd824e8ff120ac6545bbff65b21602f419ca1"
     },
     {
       "schema": "axm.effect-request-template/v1",
@@ -9722,6 +9799,18 @@
       "requiresAuthorityDecision": true,
       "grantsAuthority": false,
       "packetDigest": "5ea9cae98a80006d5820ea2486576279a823c50cf7dd3c830071f30b2993b001"
+    },
+    {
+      "schema": "axm.effect-request-template/v1",
+      "blockId": "shared/intake-harbor",
+      "blockDigest": "1eaefa7a62b8fcc78e43ef23d146c9ee4e30d529f67eaa60cd8a6c67c87c4df8",
+      "capabilityPacketDigest": "53bdc534834fa7b86fe27dbc45a1eca5b821c2aeaae06cbe4d1556e7cb36d079",
+      "effectClass": "NONE",
+      "requiresExactTargetDigest": true,
+      "requiresExactScope": true,
+      "requiresAuthorityDecision": false,
+      "grantsAuthority": false,
+      "packetDigest": "bc52e2c44eb4ec74880e38bfd21d46d358b35682b90d2c219530ca995784fbe7"
     },
     {
       "schema": "axm.effect-request-template/v1",
@@ -15002,6 +15091,32 @@
       "grantsAuthority": false
     },
     {
+      "blockId": "shared/city-gates",
+      "name": "AXM LEGO City Disabled External Gates",
+      "status": "EXPERIMENTAL",
+      "kind": "BRIDGE",
+      "beginnerSummary": "5 declared capability(s); 2 effect class(es); risk HIGH",
+      "capabilities": [
+        "city.gate.github-draft-readback",
+        "city.gate.inbound-quarantine",
+        "city.gate.outbound-plan",
+        "city.gate.package-local-verify",
+        "city.gate.registry-disabled"
+      ],
+      "effects": [
+        "NETWORK_WRITE",
+        "PUBLIC_RELEASE"
+      ],
+      "risk": "HIGH",
+      "machinePacketDigest": "80831a1116ef8216738611799f689eaec249c776c26c6aaa7f49190af5d60f8e",
+      "effectPacketDigests": [
+        "37768a57f0606faacfee9116ccedd816c54a7e12dd6953467b8f366e1fab904b",
+        "c752034284ae3a3bfffb1fde604a7a5a7ba35f746249683fe29e4926ddefa605"
+      ],
+      "safe": null,
+      "grantsAuthority": false
+    },
+    {
       "blockId": "shared/city-graph",
       "name": "AXM LEGO City Map Compiler",
       "status": "EXPERIMENTAL",
@@ -15018,9 +15133,9 @@
         "NONE"
       ],
       "risk": "UNKNOWN",
-      "machinePacketDigest": "ee7cdcfe402fc5952084303bb9ba37d4e4a18db09d1b63130d2b7eea4eec3c99",
+      "machinePacketDigest": "a1c481486b694ed5c49dc67b145457514bf18a5406dc02c4bd424a333f7f7c79",
       "effectPacketDigests": [
-        "eea7622043ac63088a9c3053400a6678f0e9a15d426e77aae9fbe6bef2bd9bb8"
+        "db6f718e09f761004d2407dcb75dd824e8ff120ac6545bbff65b21602f419ca1"
       ],
       "safe": null,
       "grantsAuthority": false
@@ -15164,6 +15279,29 @@
       "effectPacketDigests": [
         "e411369d44eee796480f0f6b848526840ced963da79ab499e0252b692ddf3983",
         "5ea9cae98a80006d5820ea2486576279a823c50cf7dd3c830071f30b2993b001"
+      ],
+      "safe": null,
+      "grantsAuthority": false
+    },
+    {
+      "blockId": "shared/intake-harbor",
+      "name": "AXM LEGO City Quarantined Intake Harbor",
+      "status": "EXPERIMENTAL",
+      "kind": "ORGAN",
+      "beginnerSummary": "4 declared capability(s); 1 effect class(es); risk LOW",
+      "capabilities": [
+        "city.intake.fifteen-step-route",
+        "city.intake.promotion-boundary",
+        "city.intake.quarantine-record",
+        "city.intake.receipt-chain"
+      ],
+      "effects": [
+        "NONE"
+      ],
+      "risk": "LOW",
+      "machinePacketDigest": "53bdc534834fa7b86fe27dbc45a1eca5b821c2aeaae06cbe4d1556e7cb36d079",
+      "effectPacketDigests": [
+        "bc52e2c44eb4ec74880e38bfd21d46d358b35682b90d2c219530ca995784fbe7"
       ],
       "safe": null,
       "grantsAuthority": false
@@ -16493,5 +16631,5 @@
     "beginnerViewPreservesCapabilities": true,
     "beginnerViewPreservesRisk": true
   },
-  "twinDigest": "0c3f51c98a9c8beb9d9f2020d0675a43a44143f7d4ceb42636399d37cee27628"
+  "twinDigest": "0adcb6d32f19d25f619a6a74fcef45f2f3e0fe0306420cfc4ad0783acf0d08ec"
 }

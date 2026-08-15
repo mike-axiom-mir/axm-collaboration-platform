@@ -17,6 +17,8 @@ on:
       - "tests/city-authority-hands-test.js"
       - "tests/city-workflow-evidence-test.js"
       - "tests/city-sync-twins-test.js"
+      - "tests/city-intake-gates-test.js"
+      - "tests/lego-city-blueprint-conformance-test.js"
       - ".github/workflows/city-map-gate.yml"
   workflow_dispatch:
 
@@ -47,3 +49,5 @@ jobs:
         run: node tests/city-workflow-evidence-test.js
       - name: Prove local sync and exact human/machine twins
         run: node tests/city-sync-twins-test.js && node scripts/compile-twin-surfaces.js --check
+      - name: Prove quarantine, disabled gates, and twelve-block coverage
+        run: node tests/city-intake-gates-test.js && node tests/lego-city-blueprint-conformance-test.js
