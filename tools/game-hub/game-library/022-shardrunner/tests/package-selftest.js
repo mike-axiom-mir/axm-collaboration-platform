@@ -219,11 +219,25 @@ test('touch/gamepad inputs normalize predictably', () => {
   assert.equal(touchLike.owner, 'phone');
   assert.equal(touchLike.source, 'phone');
 
+  const boolLike = Core.sanitizeInput({
+    moveX: '0.4',
+    moveZ: '-0.6',
+    jump: '1',
+    pause: '0',
+    restart: '0',
+    owner: 'touch',
+    source: 'touch'
+  });
+  assert.equal(boolLike.jump, true);
+  assert.equal(boolLike.pause, false);
+  assert.equal(boolLike.restart, false);
+
   const cleared = Core.sanitizeInput({ moveX: 1, moveZ: 1, jump: true, pause: true }, { clear: true });
   assert.equal(cleared.moveX, 0);
   assert.equal(cleared.moveZ, 0);
   assert.equal(cleared.jump, false);
   assert.equal(cleared.pause, false);
+  assert.equal(cleared.restart, false);
 });
 
 test('normalized gamepad axis clamps and zeroes tiny joystick jitter', () => {
@@ -245,6 +259,40 @@ test('normalized gamepad axis clamps and zeroes tiny joystick jitter', () => {
   assert.equal(wideJitter.moveZ, -1);
 });
 
+test('touch/gamepad payload edges are deterministic and preserve ownership', () => {
+  const touchPayload = Core.sanitizeInput({
+    moveX: 0.91,
+    moveZ: -0.89,
+    jump: 'true',
+    pause: 'false',
+    restart: 'true',
+    owner: 'touch',
+    source: 'phone'
+  });
+  const gamepadPayload = Core.sanitizeInput({
+    moveX: -0.95,
+    moveZ: 0.66,
+    jump: 1,
+    pause: 0,
+    restart: 1,
+    owner: 'gamepad',
+    source: 'pad'
+  });
+  assert.equal(touchPayload.moveX, 0.91);
+  assert.equal(touchPayload.moveZ, -0.89);
+  assert.equal(touchPayload.jump, true);
+  assert.equal(touchPayload.pause, false);
+  assert.equal(touchPayload.restart, true);
+  assert.equal(touchPayload.owner, 'touch');
+  assert.equal(gamepadPayload.owner, 'gamepad');
+  assert.equal(gamepadPayload.source, 'pad');
+  assert.equal(gamepadPayload.moveX, -0.95);
+  assert.equal(gamepadPayload.moveZ, 0.66);
+  assert.equal(gamepadPayload.jump, true);
+  assert.equal(gamepadPayload.pause, false);
+  assert.equal(gamepadPayload.restart, true);
+});
+
 test('pause input is edge-based during hold', () => {
   const state = newState(123);
   state.phase = 'running';
@@ -252,12 +300,16 @@ test('pause input is edge-based during hold', () => {
   state.startAt = 1000;
   state._pauseHeld = false;
   state._inputClearUntil = 0;
+  state.player.x = 0.75;
 
   Core.step(state, { p1: { moveX: 0, pause: true } }, 0.016, 1008);
   assert.equal(state.phase, 'paused');
+  const xWhilePaused = state.player.x;
 
   Core.step(state, { p1: { moveX: 0, pause: true } }, 0.016, 1016);
   assert.equal(state.phase, 'paused');
+  Core.step(state, { p1: { moveX: 1, pause: true } }, 0.016, 1020);
+  assert.equal(state.player.x, xWhilePaused);
 
   Core.step(state, { p1: { moveX: 0, pause: false } }, 0.016, 1024);
   assert.equal(state.phase, 'paused');
@@ -385,6 +437,38 @@ test('collecting shard increases score and combo', () => {
   assert.ok(state.totalShards >= 1);
   assert.ok(state.score > 0);
   assert.equal(state.combo, 1);
+});
+
+test('branch and obstacle contact events remain readable while running', () => {
+  const branchState = newState(202);
+  branchState.phase = 'running';
+  branchState.startedAt = 1_000;
+  branchState.startAt = 1_000;
+  branchState.gates.push({
+    id: 'branch-closed',
+    trackZ: branchState.progress + 1.1,
+    openLanes: [0, 2],
+    width: 16.2,
+    passBy: false
+  });
+
+  Core.step(branchState, { p1: { moveX: 0, jump: false } }, 0.016, 1_100);
+  assert.equal(branchState.event, 'COLLISION');
+
+  const openState = newState(203);
+  openState.phase = 'running';
+  openState.startedAt = 1_000;
+  openState.startAt = 1_000;
+  openState.player.lane = 1;
+  openState.gates.push({
+    id: 'branch-open',
+    trackZ: openState.progress + 1.1,
+    openLanes: [0, 1],
+    width: 16.2,
+    passBy: false
+  });
+  Core.step(openState, { p1: { moveX: 0, jump: false } }, 0.016, 1_100);
+  assert.equal(openState.event, 'SHARD PATH CHOSEN');
 });
 
 test('finish summary carries run reason and metadata', () => {

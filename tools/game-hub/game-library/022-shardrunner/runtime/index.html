@@ -304,8 +304,8 @@
       <section class="overlay" id="overlay">
         <h1 id="title">Shardrunner</h1>
         <p id="subtitle">Boot sequence warming… hold run, jump, branch.</p>
-        <p id="tip">Controls: WASD/Arrows to steer · Space to jump · P or ⎋ to pause · R / Restart button to restart · gamepad or touch support</p>
-        <p id="onboardingText">Stay in open lanes, collect blue shards, avoid red geometry, and beat the fog lane shifts.</p>
+        <p id="tip">Controls: WASD/Arrows to steer · Space to jump · P or ⎋ to pause · R / pause controls to restart · gamepad or touch support</p>
+        <p id="onboardingText">CONTROL LEGEND: steer lanes with A/D or ←/→, jump with W/↑/Space or B/J on gamepad, pause with P/⎋ or shoulder button. Stay in open lanes, collect blue shards, avoid red geometry.</p>
         <div class="buttons" id="actions">
           <button id="restartBtn">Restart</button>
         </div>
@@ -715,7 +715,8 @@
       stateText.remaining.textContent = 'to-go ' + String(remaining).padStart(3, '0');
       stateText.score.textContent = 'score ' + Math.floor(state.score || 0).toString().padStart(4, '0');
       stateText.combo.textContent = 'combo x' + Math.max(1, state.combo || 0);
-      stateText.reason.textContent = 'state: ' + (state.reason || state.diedBy || state.event || 'READY');
+      const reasonText = state.reason === 'RUNNING' && state.event ? state.event : (state.reason || state.diedBy || state.event || 'READY');
+      stateText.reason.textContent = 'state: ' + reasonText;
       stateText.stamina.style.width = Math.max(0, Math.min(100, ((state.stamina || 0) / 100) * 100)) + '%';
       if (state.activeLanes) {
         stateText.branches.textContent = 'branch lanes open: ' + state.activeLanes.length + ' [L=' + state.activeLanes.join(',') + ']';
@@ -841,6 +842,11 @@
       if (!activeTouchPointers.size) {
         clearSourceState('touch');
       }
+    }
+
+    function clearTouchPointers() {
+      activeTouchPointers.clear();
+      clearSourceState('touch');
     }
 
     function clearTouchState() {
@@ -1247,6 +1253,7 @@
       clearInputState('touch');
       clearInputState('gamepad');
       clearKeyboardState();
+      clearTouchPointers();
       keyRestartHeld = false;
       keyPauseHeld = false;
       sourceAt.restart = 0;
@@ -1256,6 +1263,7 @@
     addEventListener('visibilitychange', () => {
       if (document.hidden) {
         clearInputUntilRestart();
+        clearTouchPointers();
         keyRestartHeld = false;
         keyPauseHeld = false;
         sourceAt.restart = 0;

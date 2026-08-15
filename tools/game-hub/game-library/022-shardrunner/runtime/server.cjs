@@ -96,7 +96,7 @@ function getGameForSession(session) {
 function applyStateSettings(state, session) {
   const cloneState = Core.publicState(state);
   cloneState.bestScore = session.bestScore;
-  cloneState.lastRun = session.lastRun;
+  cloneState.lastRun = session.lastRun || state.lastRun || null;
   cloneState.lastRunSummary = state.runSummary || null;
   cloneState.history = session.runHistory.slice();
   cloneState.buildVersion = state.buildVersion || state.runVersion || BUILD_VERSION;
@@ -347,7 +347,7 @@ const server = http.createServer(async (req, res) => {
       target.moveZ = 0;
       target.restart = false;
     }
-    return sendJson(res, 200, { ok: true, owner });
+    return sendJson(res, 200, { ok: true, owner, source: target.source || owner });
   }
 
   if (req.method === 'POST' && url.pathname === '/restart') {

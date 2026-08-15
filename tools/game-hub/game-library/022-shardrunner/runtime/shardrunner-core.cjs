@@ -81,6 +81,15 @@ function normalizeAxis(value, options) {
 }
 
 function sanitizeButton(value) {
+  if (typeof value === 'boolean') return value;
+  if (value === null || value === undefined) return false;
+  if (typeof value === 'number') return value !== 0;
+  if (typeof value === 'string') {
+    const text = value.trim().toLowerCase();
+    if (text === '') return false;
+    if (text === 'true' || text === '1' || text === 'on' || text === 'yes') return true;
+    if (text === 'false' || text === '0' || text === 'off' || text === 'no') return false;
+  }
   return !!value;
 }
 
