@@ -187,6 +187,12 @@
     .reduced-motion .vignette {
       opacity: 0.66;
     }
+    .camera-lock .scanline {
+      opacity: 0.22;
+    }
+    .camera-lock .events {
+      border-color: rgba(95, 216, 255, 0.65);
+    }
     @keyframes dither-shimmer {
       from { background-position: 0 0, 0 0; }
       to { background-position: 4px 4px, 3px 3px; }
@@ -383,9 +389,10 @@
     const qs = new URLSearchParams(location.search);
     const room = qs.get('room') || 'AXM1';
     const player = qs.get('player') || 'p1';
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const settings = {
       audio: true,
-      reduced_motion: false,
+      reduced_motion: prefersReducedMotion.matches,
       haptics_hint: false,
       camera_tilt_lock: false
     };
@@ -838,6 +845,20 @@
       const cameraLock = !!(userSettings && userSettings.camera_tilt_lock);
       document.body.classList.toggle('reduced-motion', reducedMotion);
       document.body.classList.toggle('camera-lock', cameraLock);
+    }
+
+    function initAccessibilitySync() {
+      applyAccessibilityVisuals();
+      const handler = () => {
+        settings.reduced_motion = prefersReducedMotion.matches;
+        applyAccessibilityVisuals();
+        post('settingsUrl', { reduced_motion: settings.reduced_motion, camera_tilt_lock: settings.camera_tilt_lock, audio: settings.audio, haptics_hint: settings.haptics_hint });
+      };
+      if (prefersReducedMotion.addEventListener) {
+        prefersReducedMotion.addEventListener('change', handler);
+      } else if (prefersReducedMotion.addListener) {
+        prefersReducedMotion.addListener(handler);
+      }
     }
 
     function hasKeyboardActivity() {
@@ -1366,6 +1387,7 @@
     addEventListener('resize', setViewportControls);
     setViewportControls();
     try { onboardingSeen = localStorage.getItem('axm-shardrunner-onboarding-seen') === '1'; } catch (e) {}
+    initAccessibilitySync();
     refreshSettings();
     connect();
     animate();
