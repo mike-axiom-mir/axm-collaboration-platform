@@ -423,6 +423,30 @@
     body.phone .phone-controls { display:flex; }
     body.phone .help { display:none; }
     body.phone.portrait { touch-action: pan-y; }
+    .portrait-lock {
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%, -50%);
+      z-index:7;
+      display:none;
+      max-width: 78%;
+      text-align:center;
+      border:1px solid rgba(255, 214, 106, 0.45);
+      background:rgba(5, 14, 28, 0.92);
+      color:#ffde9a;
+      padding:10px 14px;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      font-size:11px;
+      box-shadow:0 0 0 1px rgba(95, 216, 255, 0.12);
+    }
+    body.phone.portrait .portrait-lock {
+      display:block;
+    }
+    body.phone.portrait .phone-controls {
+      display:none;
+    }
   </style>
 </head>
 <body>
@@ -473,6 +497,7 @@
         </div>
       </div>
       <div class="events" id="event">READY</div>
+      <div class="portrait-lock">rotate your device to landscape for full on-screen controls</div>
       <div class="help">RUNNER · KEEP TO OPEN LANES · COLLECT BLUE SHARDS</div>
     </div>
   </div>
@@ -655,6 +680,7 @@
     let keyPauseHeld = false;
     let state = null;
     let onboardingSeen = false;
+    let wasLandscape = false;
     let gamepadConnected = false;
     let gamepadDeviceId = '';
     let gamepadSeenAt = 0;
@@ -1527,13 +1553,17 @@
     function setViewportControls() {
       const isLandscape = isTouchDevice && window.innerWidth > window.innerHeight;
       const isPortrait = isTouchDevice && !isLandscape;
-      document.body.classList.toggle('phone', isLandscape);
+      document.body.classList.toggle('phone', isLandscape || isPortrait);
       document.body.classList.toggle('phone-landscape', isLandscape);
       document.body.classList.toggle('phone-portrait', isPortrait);
       document.body.classList.toggle('portrait', isPortrait);
       if (isPortrait) {
+        if (wasLandscape) {
+          handleTransientInputDrop();
+        }
         clearTouchPointers();
       }
+      wasLandscape = !!isLandscape;
     }
 
     function applyOwnerVisual() {
