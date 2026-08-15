@@ -61,11 +61,19 @@ function createDefaults() {
     bestScore: 0,
     lastRun: null,
     runHistory: [],
+    seedCursor: BASE_SEED,
     settings: { ...DEFAULT_SETTINGS },
     inputClearUntil: 0,
     game: null,
     inputs: Object.create(null)
   };
+}
+
+function nextSessionSeed(session) {
+  const base = Number.isFinite(session.seedCursor) ? session.seedCursor >>> 0 : BASE_SEED;
+  session.seedCursor = Math.imul(base, 1664525) + 1013904223;
+  session.seedCursor >>>= 0;
+  return base;
 }
 
 function getSession(room, player) {
@@ -144,7 +152,10 @@ function normalizeSeed(raw) {
 function createRun(session, options) {
   const now = Date.now();
   const requestedSeed = normalizeSeed(options && options.seed);
-  const seed = requestedSeed || (BASE_SEED + (session.attempts * 0x9e3779b9) + (now & 0xffff)) >>> 0;
+  const seed = requestedSeed !== null ? requestedSeed : nextSessionSeed(session);
+  if (requestedSeed !== null) {
+    session.seedCursor = requestedSeed >>> 0;
+  }
   session.attempts += 1;
   return Core.create([], now, { seed, attempt: session.attempts });
 }

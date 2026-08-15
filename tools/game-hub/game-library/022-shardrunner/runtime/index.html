@@ -392,6 +392,7 @@
     };
     const INPUT_CLEAR_MS = 320;
     const INPUT_OWNER_STALE_MS = 260;
+    const GAMEPAD_CONNECTION_STALE_MS = 360;
     const INPUT_OWNER_PRIORITY = ['keyboard', 'touch', 'gamepad'];
     const RESTART_KEY_DEBOUNCE_MS = 190;
     const RESUME_KEY_DEBOUNCE_MS = 190;
@@ -523,6 +524,7 @@
     let onboardingSeen = false;
     let gamepadConnected = false;
     let gamepadDeviceId = '';
+    let gamepadSeenAt = 0;
     let lastEvent = '';
     let eventFlash = 0;
     const keys = Object.create(null);
@@ -913,6 +915,10 @@
       );
     }
 
+    function isGamepadConnectedFresh(now) {
+      return gamepadConnected && gamepadSeenAt > 0 && (now - gamepadSeenAt) <= GAMEPAD_CONNECTION_STALE_MS;
+    }
+
     function readKeyboardMove() {
       return {
         moveX: ((keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0)),
@@ -986,6 +992,7 @@
       if (name === 'gamepad') clearGamepadState();
       if (name === 'gamepad') {
         gamepadDeviceId = '';
+        gamepadSeenAt = 0;
       }
       if (name === 'touch') {
         activeTouchPointers.clear();
@@ -998,14 +1005,14 @@
       if (!hasTouchActivity() && isStaleSource('touch', now)) {
         clearSourceState('touch');
       }
-      if (!hasGamepadActivity() && isStaleSource('gamepad', now)) {
+      if (!isGamepadConnectedFresh(now) && isStaleSource('gamepad', now)) {
         clearSourceState('gamepad');
       }
 
       const candidates = [];
       if (hasKeyboardActivity() && !isStaleSource('keyboard', now)) candidates.push('keyboard');
       if (hasTouchActivity() && !isStaleSource('touch', now)) candidates.push('touch');
-      if (hasGamepadActivity() && !isStaleSource('gamepad', now)) candidates.push('gamepad');
+      if (isGamepadConnectedFresh(now) && !isStaleSource('gamepad', now)) candidates.push('gamepad');
 
       for (const owner of INPUT_OWNER_PRIORITY) {
         if (candidates.includes(owner)) return owner;
@@ -1086,9 +1093,11 @@
         gamepadDeviceId = '';
         clearInputState('gamepad');
         inputOwner = 'keyboard';
+        gamepadSeenAt = 0;
         return;
       }
       gamepadConnected = true;
+      gamepadSeenAt = performance.now();
       const pad = connectedPads[0];
       const nextDeviceId = gamepadId(pad);
       if (gamepadDeviceId !== nextDeviceId) {
@@ -1121,7 +1130,7 @@
       gamepadPrev.jump = gamepadInput.jump;
       gamepadPrev.pause = gamepadInput.pause;
       gamepadPrev.restart = gamepadInput.restart;
-      markSource('gamepad', !!(gamepadConnected && hasGamepadActivity()));
+      markSource('gamepad', !!gamepadSeenAt);
       if (gamepadInput.restartEdge) scheduleRestart();
     }
 
@@ -1265,7 +1274,7 @@
       pollGamepad();
       markSource('keyboard', hasKeyboardActivity());
       markSource('touch', hasTouchActivity());
-      markSource('gamepad', hasGamepadActivity() && gamepadConnected);
+      markSource('gamepad', !!gamepadSeenAt);
       inputOwner = resolveSourceOwner();
 
       let x = 0;
@@ -1370,6 +1379,7 @@
     addEventListener('gamepadconnected', (event) => {
       gamepadConnected = true;
       gamepadDeviceId = gamepadId(event.gamepad);
+      gamepadSeenAt = performance.now();
       sourceAt.gamepad = performance.now();
       sourceActivity.gamepad = performance.now();
       clearGamepadState();
@@ -1379,6 +1389,7 @@
       const pad = event.gamepad;
       if (!pad || gamepadId(pad) === gamepadDeviceId) {
         gamepadDeviceId = '';
+        gamepadSeenAt = 0;
       }
       markSource('gamepad', false);
       clearInputState('gamepad');

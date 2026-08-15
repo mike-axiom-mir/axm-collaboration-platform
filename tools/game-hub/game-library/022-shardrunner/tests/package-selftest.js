@@ -49,9 +49,13 @@ async function waitForHealth(port) {
   throw last || new Error('Server did not become healthy');
 }
 
-function startServerForTest(port) {
+function startServerForTest(port, seed) {
+  const env = Object.assign({}, process.env, { PORT: String(port) });
+  if (seed !== undefined && seed !== null) {
+    env.GAME_SEED = String(seed >>> 0);
+  }
   const proc = cp.spawn(process.execPath, [path.join(root, 'runtime', 'server.cjs')], {
-    env: Object.assign({}, process.env, { PORT: String(port) }),
+    env,
     stdio: ['ignore', 'ignore', 'ignore']
   });
   proc.__testPort = port;
@@ -66,6 +70,18 @@ async function stopServer(proc) {
     proc.kill('SIGTERM');
     setTimeout(done, 250);
   });
+}
+
+async function collectSeedSequence(port, runs) {
+  const seeds = [];
+  const firstState = await requestJson(port, '/state?room=AXM1&player=p1');
+  seeds.push(firstState.body.seed);
+  for (let i = 1; i < runs; i++) {
+    await requestJson(port, '/restart?room=AXM1&player=p1', { method: 'POST', body: {} });
+    const nextState = await requestJson(port, '/state?room=AXM1&player=p1');
+    seeds.push(nextState.body.seed);
+  }
+  return seeds;
 }
 
 function newState(seed) {
@@ -206,6 +222,23 @@ test('runtime server returns stable beta state contract and settings input loop'
     assert.equal(postRestartState.body.runSummary.bestCombo, 0);
   } finally {
     await stopServer(proc);
+  }
+});
+
+test('server seed sequences are deterministic across identical seeded sessions', async () => {
+  const seedSeed = 0x5a5a5a;
+  const firstPort = 8966;
+  const secondPort = 8967;
+  const procA = startServerForTest(firstPort, seedSeed);
+  const procB = startServerForTest(secondPort, seedSeed);
+  try {
+    await Promise.all([waitForHealth(firstPort), waitForHealth(secondPort)]);
+    const firstSequence = await collectSeedSequence(firstPort, 4);
+    const secondSequence = await collectSeedSequence(secondPort, 4);
+    assert.deepEqual(firstSequence, secondSequence);
+  } finally {
+    await stopServer(procA);
+    await stopServer(procB);
   }
 });
 
