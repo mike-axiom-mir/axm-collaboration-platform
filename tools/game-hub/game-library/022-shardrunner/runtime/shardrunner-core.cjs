@@ -41,10 +41,13 @@ function makeRunSummary(state, opts) {
     runId: state.runId,
     attempt: state.attempt || 1,
     distance: Math.round(state.progress || 0),
+    distanceGoal: Math.max(0, Math.round(state.distanceGoal || WIN_DISTANCE)),
+    distanceToGoal: Math.max(0, Math.round((state.distanceGoal || WIN_DISTANCE) - (state.progress || 0))),
     shards: state.totalShards || 0,
     combo: state.combo || 0,
     bestCombo: state.bestCombo || 0,
     stamina: Math.max(0, Math.round(state.stamina || 0)),
+    runState: state.phase || state.runState || PHASES.countdown,
     seed: state.randomSeed || state.seed || 0,
     runVersion: state.runVersion || state.buildVersion || BUILD_VERSION,
     reason: state.reason || null,
@@ -175,6 +178,8 @@ function refreshRunStats(state, overrides) {
     runId: state.runId,
     attempt: state.attempt || 1,
     distance: Math.max(0, Math.round(state.progress || 0)),
+    distanceGoal: Math.max(0, Math.round(state.distanceGoal || WIN_DISTANCE)),
+    distanceToGoal: Math.max(0, Math.round((state.distanceGoal || WIN_DISTANCE) - (state.progress || 0))),
     shards: state.totalShards || 0,
     stamina: Math.max(0, Math.round(state.stamina || 0)),
     combo: state.combo || 0,
@@ -183,7 +188,8 @@ function refreshRunStats(state, overrides) {
     runVersion: state.runVersion || state.buildVersion || BUILD_VERSION,
     seed: state.randomSeed || state.seed || 0,
     fallReason: state.diedBy || null,
-    dieReason: state.diedBy || null
+    dieReason: state.diedBy || null,
+    runState: state.phase || state.runState || PHASES.countdown
   }, overrides || {});
 }
 
@@ -421,7 +427,10 @@ function create(rawSeats, now = Date.now(), options) {
     pressure: 1,
     runStats: {
       distance: 0,
+      distanceGoal: WIN_DISTANCE,
+      distanceToGoal: WIN_DISTANCE,
       shards: 0,
+      runState: PHASES.countdown,
       stamina: 100,
       combo: 0,
       bestCombo: 0,
@@ -726,12 +735,13 @@ function step(state, rawInputs, dt, nowArg) {
   if (state.now >= state._inputClearUntil && state._jumpHeld && !input.jump) {
     state._jumpHeld = false;
   }
+  if (state.now >= state._inputClearUntil && state._pauseHeld && !input.pause) {
+    state._pauseHeld = false;
+  }
 
   if (state.now < state._inputClearUntil) {
     input.jump = false;
     input.pause = false;
-    state._pauseHeld = false;
-    state._jumpHeld = false;
   }
 
   if (state.phase === PHASES.countdown && state.now >= state.startAt) {

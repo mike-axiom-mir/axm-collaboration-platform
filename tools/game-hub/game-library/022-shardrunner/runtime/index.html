@@ -262,6 +262,11 @@
       text-transform:uppercase;
       letter-spacing:.08em;
     }
+    .owner-hint {
+      opacity:0.9;
+      margin-top:4px;
+      font-size:9px;
+    }
     .status-reason {
       margin-top:8px;
       color:#ffe1a4;
@@ -432,6 +437,7 @@
         <p id="subtitle">Boot sequence warming… hold run, jump, branch.</p>
         <p id="tip">Controls: WASD/Arrows to steer · Space to jump · P or ⎋ to pause · R / pause controls to restart · gamepad or touch support</p>
         <p id="onboardingText">CONTROL LEGEND: steer lanes with A/D or ←/→, jump with W/↑/Space or B/J on gamepad, pause with P/⎋ or shoulder button. Stay in open lanes, collect blue shards, avoid red geometry.</p>
+        <p class="owner-hint" id="ownerHint"></p>
         <div class="buttons" id="actions">
           <button id="overlayAction" class="hidden">Continue</button>
           <button id="restartBtn">Restart</button>
@@ -477,7 +483,7 @@
     const RENDER_WIDTH = 384;
     const RENDER_HEIGHT = 216;
     const WORLD_ASPECT = 16 / 9;
-    const CAMERA_STATE = {
+    const CAMERA_BASE_STATE = {
       posX: 0,
       posY: 7.95,
       posZ: 20.6,
@@ -485,6 +491,7 @@
       lookY: 1.12,
       lookZ: 5.5
     };
+    const CAMERA_STATE = Object.assign({}, CAMERA_BASE_STATE);
     const qs = new URLSearchParams(location.search);
     const room = qs.get('room') || 'AXM1';
     const player = qs.get('player') || 'p1';
@@ -572,6 +579,7 @@
       statusReason: document.getElementById('statusReason'),
       runMeta: document.getElementById('runMeta'),
       ownerIndicator: document.getElementById('ownerIndicator'),
+      ownerHint: document.getElementById('ownerHint'),
       branches: document.getElementById('branches'),
       event: document.getElementById('event'),
       stamina: document.getElementById('stamina'),
@@ -630,6 +638,7 @@
     let gamepadSeenAt = 0;
     let lastEvent = '';
     let eventFlash = 0;
+    let lastCameraPhase = null;
     const keys = Object.create(null);
     let frame = null;
 
@@ -637,6 +646,11 @@
       const padIndex = pad && pad.index !== undefined && pad.index !== null ? pad.index : 'indexless';
       const padId = pad && pad.id ? pad.id : 'gamepad';
       return padId + ':' + String(padIndex);
+    }
+
+    function resetCameraState() {
+      Object.assign(CAMERA_STATE, CAMERA_BASE_STATE);
+      eventFlash = 1;
     }
 
     function endpoint(name, extra) {
@@ -941,7 +955,7 @@
       stateText.goal.textContent = 'goal ' + String(goal).padStart(3, '0') + 'm';
       stateText.remaining.textContent = 'to-go ' + String(remaining).padStart(3, '0');
       stateText.score.textContent = 'score ' + Math.floor(state.score || 0).toString().padStart(4, '0');
-      stateText.combo.textContent = 'combo x' + Math.max(1, state.combo || 0);
+      stateText.combo.textContent = 'combo x' + Math.max(0, state.combo || 0);
       const reasonText = state.reason === 'RUNNING' && state.event ? state.event : (state.reason || state.diedBy || state.event || 'READY');
       stateText.reason.textContent = 'state: ' + reasonText;
       stateText.statusReason.textContent = 'phase ' + (state.phase || 'running') + ' · ' + reasonText;
@@ -1009,6 +1023,12 @@
       if (!response || !response.ok) return;
       state = await response.json();
       state.settings = state.settings || settings;
+      if (state.phase === 'countdown' && lastCameraPhase !== 'countdown') {
+        resetCameraState();
+      }
+      if (state.phase) {
+        lastCameraPhase = state.phase;
+      }
       applyAccessibilityVisuals();
       if (!onboardingSeen && state.phase === 'running') {
         onboardingSeen = true;
@@ -1468,6 +1488,7 @@
       stateText.ownerIndicator.classList.remove('owner-keyboard', 'owner-touch', 'owner-gamepad');
       stateText.ownerIndicator.classList.add('owner-' + owner);
       stateText.ownerIndicator.textContent = 'owner: ' + owner.toUpperCase();
+      stateText.ownerHint.textContent = 'input owner: ' + owner.toUpperCase();
       stateText.overlay.classList.remove('owner-keyboard', 'owner-touch', 'owner-gamepad');
       stateText.overlay.classList.add('owner-' + owner);
       document.body.classList.remove('owner-keyboard', 'owner-touch', 'owner-gamepad', 'active-owner');

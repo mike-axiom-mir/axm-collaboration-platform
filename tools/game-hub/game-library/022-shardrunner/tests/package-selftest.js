@@ -10,6 +10,8 @@ const root = path.resolve(__dirname, '..');
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'game.manifest.json'), 'utf8'));
 const Core = require(path.join(root, 'runtime', 'shardrunner-core.cjs'));
 const SERVER_TEST_PORT = 8965;
+const RESTART_REPEAT_PORT = 8976;
+const RESTART_REPEAT_MS = 460;
 
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -156,9 +158,15 @@ test('runtime server returns stable beta state contract and settings input loop'
     assert.ok(state.runStats);
     assert.equal(typeof state.runStats.distance, 'number');
     assert.equal(typeof state.runStats.shards, 'number');
+    assert.equal(typeof state.runStats.distanceGoal, 'number');
+    assert.equal(typeof state.runStats.distanceToGoal, 'number');
     assert.equal(typeof state.runStats.stamina, 'number');
     assert.equal(typeof state.runStats.combo, 'number');
+    assert.equal(state.runStats.distanceGoal, state.distanceGoal);
+    assert.equal(state.runStats.runState, 'countdown');
     assert.equal(state.runStats.bestScore, 0);
+    assert.equal(typeof state.distanceGoal, 'number');
+    assert.equal(typeof state.distanceToGoal, 'number');
     assert.ok('fallReason' in state.runStats);
 
     const settingsPost = {
@@ -214,6 +222,9 @@ test('runtime server returns stable beta state contract and settings input loop'
     assert.equal(restartResp.body.state.seed, restartSeed);
     assert.equal(restartResp.body.state.attempt, 2);
     assert.equal(restartResp.body.state.phase, 'countdown');
+    assert.equal(restartResp.body.state.distanceGoal, restartResp.body.state.runStats.distanceGoal);
+    assert.equal(restartResp.body.state.distanceToGoal, restartResp.body.state.runStats.distanceToGoal);
+    assert.equal(restartResp.body.state.runStats.runState, 'countdown');
 
     const postRestartState = await requestJson(SERVER_TEST_PORT, '/state?room=AXM1&player=p1');
     assert.equal(postRestartState.body.attempt, 2);
@@ -304,8 +315,87 @@ test('server restart endpoint enforces source debounce under immediate reretry',
   }
 });
 
+test('server restart neutralizes held jump input until it is explicitly released', async () => {
+  const proc = startServerForTest(8972);
+  try {
+    await waitForHealth(8972);
+    const restartResp = await requestJson(8972, '/restart?room=AXM1&player=p1', {
+      method: 'POST',
+      body: {}
+    });
+    assert.equal(restartResp.response.status, 200);
+    assert.equal(restartResp.body.state.phase, 'countdown');
+    await requestJson(8972, '/input?room=AXM1&player=p1', {
+      method: 'POST',
+      body: { jump: true, owner: 'keyboard', source: 'keyboard' }
+    });
+
+    let state = null;
+    for (let i = 0; i < 30; i++) {
+      await delay(120);
+      const nextState = await requestJson(8972, '/state?room=AXM1&player=p1');
+      state = nextState.body;
+      if (state.phase === 'running') break;
+    }
+    assert.ok(state, 'run did not reach running phase');
+    assert.equal(state.phase, 'running');
+    assert.equal(state.player.y, 0);
+    assert.equal(state.player.vy, 0);
+  } finally {
+    await stopServer(proc);
+  }
+});
+
+test('server handles repeated restart requests while input remains held', async () => {
+  const proc = startServerForTest(RESTART_REPEAT_PORT);
+  try {
+    await waitForHealth(RESTART_REPEAT_PORT);
+    for (let i = 0; i < 20; i++) {
+      await requestJson(RESTART_REPEAT_PORT, '/input?room=AXM1&player=p1', {
+        method: 'POST',
+        body: {
+          moveX: 1,
+          moveZ: -1,
+          jump: true,
+          pause: true,
+          restart: true,
+          owner: 'keyboard',
+          source: 'keyboard'
+        }
+      });
+      let restart = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        restart = await requestJson(RESTART_REPEAT_PORT, '/restart?room=AXM1&player=p1', {
+          method: 'POST',
+          body: {}
+        });
+        if (restart.response.status === 200) {
+          break;
+        }
+        if (restart.response.status === 429) {
+          await delay(RESTART_REPEAT_MS);
+          continue;
+        }
+        break;
+      }
+      assert.equal(restart.response.status, 200);
+      assert.equal(restart.body.ok, true);
+      assert.equal(restart.body.state.phase, 'countdown');
+      assert.equal(restart.body.state.player.x, 0);
+      assert.equal(restart.body.state.player.y, 0);
+      assert.equal(restart.body.state.player.vy, 0);
+      if (i < 19) {
+        await delay(RESTART_REPEAT_MS);
+      }
+    }
+  } finally {
+    await stopServer(proc);
+  }
+});
+
 test('manifest required paths exist', () => {
   assert.equal(manifest.slot, '022');
+  assert.equal(manifest.controls.gamepad, true);
   for (const rel of manifest.package.required_paths) {
     const absolute = path.join(root, rel);
     assert.ok(fs.existsSync(absolute), 'missing path: ' + rel);
@@ -328,6 +418,9 @@ test('core run metadata carries deterministic counters and version', () => {
   assert.equal(state.runStats.runVersion, '0.2.0');
   assert.equal(state.runStats.distance, 0);
   assert.equal(state.runStats.combo, 0);
+  assert.equal(state.runStats.distanceGoal, state.distanceGoal);
+  assert.equal(state.runStats.distanceToGoal, state.distanceGoal);
+  assert.equal(state.runStats.runState, state.phase);
   assert.equal(state.runId, 'run-385-004');
 });
 
@@ -374,6 +467,8 @@ test('run finish publishes deterministic lastRun/summary metadata', () => {
   assert.equal(state.runSummary.attempt, 1);
   assert.equal(state.runSummary.bestCombo, 7);
   assert.equal(state.runSummary.runId, state.runId);
+  assert.equal(state.runSummary.distanceGoal, state.distanceGoal);
+  assert.equal(state.runSummary.runState, 'lost');
 });
 
 test('core keeps deterministic progression under fixed input', () => {

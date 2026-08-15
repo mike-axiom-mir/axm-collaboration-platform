@@ -20,6 +20,7 @@ const DEFAULT_SETTINGS = {
   camera_tilt_lock: false
 };
 const INPUT_CLEAR_MS = 340;
+const RESTART_ENDPOINT_COOLDOWN_MS = 420;
 const MAX_RUN_HISTORY = 20;
 const BUILD_VERSION = '0.2.0';
 
@@ -64,6 +65,7 @@ function createDefaults() {
     seedCursor: BASE_SEED,
     settings: { ...DEFAULT_SETTINGS },
     inputClearUntil: 0,
+    restartCooldownUntil: 0,
     game: null,
     inputs: Object.create(null)
   };
@@ -107,9 +109,12 @@ function makeRunStateSummary(state) {
     runId: state.runId,
     attempt: state.attempt || 1,
     distance: Math.round(state.progress || 0),
+    distanceGoal: Math.max(0, Math.round(state.distanceGoal || 420)),
+    distanceToGoal: Math.max(0, Math.round((state.distanceGoal || 420) - (state.progress || 0))),
     shards: state.totalShards || 0,
     combo: state.combo || 0,
     bestCombo: state.bestCombo || 0,
+    runState: state.phase || state.runState || 'countdown',
     stamina: Math.max(0, Math.round(state.stamina || 0)),
     seed: state.randomSeed || state.seed || 0,
     runVersion: state.runVersion || state.buildVersion || BUILD_VERSION,
@@ -126,6 +131,8 @@ function applyStateSettings(state, session) {
   cloneState.history = session.runHistory.slice();
   cloneState.buildVersion = state.buildVersion || state.runVersion || BUILD_VERSION;
   cloneState.runVersion = cloneState.buildVersion;
+  cloneState.distanceGoal = state.distanceGoal || 0;
+  cloneState.distanceToGoal = Math.max(0, Math.round((state.distanceGoal || 0) - (state.progress || 0)));
   cloneState.reason = state.reason || null;
   cloneState.seed = state.randomSeed || state.seed || 0;
   cloneState.attempt = state.attempt || 1;
@@ -173,13 +180,18 @@ function createRun(session, options) {
 
 function resetInputStateForRestart(session, options) {
   const inputState = getSessionInput(session);
+  const prevRestart = !!inputState._prevRestart;
   Object.assign(inputState, emptyInput(), {
     owner: 'system',
-    source: 'system'
+    source: 'system',
+    _prevRestart: prevRestart
   });
   session.inputClearUntil = Date.now() + INPUT_CLEAR_MS;
   const game = createRun(session, options);
   game._inputClearUntil = session.inputClearUntil;
+  game._jumpHeld = true;
+  game._pauseHeld = true;
+  session.restartCooldownUntil = Date.now() + RESTART_ENDPOINT_COOLDOWN_MS;
   session.game = game;
   return game;
 }
@@ -196,6 +208,8 @@ function recordRun(session, state) {
     bestCombo: state.bestCombo || 0,
     dieReason: state.diedBy || null,
     distance: state.result.distance,
+    distanceGoal: state.distanceGoal || 0,
+    distanceToGoal: Math.max(0, Math.round((state.distanceGoal || 0) - (state.progress || 0))),
     diedBy: state.diedBy || null,
     buildVersion: state.buildVersion || state.runVersion || '0.2.0',
     runVersion: state.buildVersion || state.runVersion || BUILD_VERSION,
@@ -281,7 +295,8 @@ function tick() {
     const restartEdge = restartRequested && !input._prevRestart;
     input._prevRestart = restartRequested;
 
-    if (restartEdge && !session.inputClearUntil) {
+    const canRestart = !session.restartCooldownUntil || session.restartCooldownUntil <= now;
+    if (restartEdge && canRestart && !session.inputClearUntil) {
       session.game = resetInputStateForRestart(session);
       continue;
     }
@@ -413,7 +428,8 @@ const server = http.createServer(async (req, res) => {
     const payload = await parseInputJson(req);
     if (payload === null) return sendBadRequest(res, 'invalid-json');
     const restartSeed = payload && payload.seed;
-    if (session.inputClearUntil && session.inputClearUntil > Date.now()) {
+    const now = Date.now();
+    if (session.restartCooldownUntil && session.restartCooldownUntil > now) {
       return sendJson(res, 429, {
         ok: false,
         error: 'restart-pending'
