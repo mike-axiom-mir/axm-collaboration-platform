@@ -95,7 +95,7 @@
       position:absolute;
       left:50%; top:52%;
       transform:translate(-50%, -50%);
-      pointer-events:none;
+      pointer-events:auto;
       text-align:center;
       border:1px solid rgba(255,214,106,.35);
       background:rgba(6,14,28,.73);
@@ -127,6 +127,7 @@
       letter-spacing:.08em;
     }
     .overlay button:hover { background:#17385a; }
+    .overlay button.hidden { display:none; }
     .events {
       position:absolute;
       left:50%;
@@ -350,6 +351,7 @@
         <p id="tip">Controls: WASD/Arrows to steer · Space to jump · P or ⎋ to pause · R / pause controls to restart · gamepad or touch support</p>
         <p id="onboardingText">CONTROL LEGEND: steer lanes with A/D or ←/→, jump with W/↑/Space or B/J on gamepad, pause with P/⎋ or shoulder button. Stay in open lanes, collect blue shards, avoid red geometry.</p>
         <div class="buttons" id="actions">
+          <button id="overlayAction">Continue</button>
           <button id="restartBtn">Restart</button>
         </div>
       </section>
@@ -459,6 +461,7 @@
       overlayTitle: document.getElementById('title'),
       overlaySubtitle: document.getElementById('subtitle'),
       overlayOnboarding: document.getElementById('onboardingText'),
+      overlayAction: document.getElementById('overlayAction'),
       restartBtn: document.getElementById('restartBtn'),
       phoneJumpBtn: document.getElementById('phoneJump'),
       phonePauseBtn: document.getElementById('phonePause'),
@@ -494,6 +497,7 @@
       pause: 0
     };
     let restartQueued = false;
+    let overlayPauseQueued = false;
     let keyRestartHeld = false;
     let keyPauseHeld = false;
     let state = null;
@@ -785,6 +789,8 @@
       const isOver = state.phase === 'won' || state.phase === 'lost';
       const isPaused = state.phase === 'paused';
       stateText.overlay.classList.toggle('show', isOver || state.phase === 'countdown' || isPaused);
+      stateText.overlayAction.classList.toggle('hidden', !isPaused);
+      stateText.restartBtn.classList.toggle('hidden', !isOver);
       if (state.phase === 'countdown') {
         const remain = Math.max(0, Math.ceil((state.startAt - state.now) / 1000));
         stateText.overlayTitle.textContent = onboardingSeen ? ('Warm-up in ' + remain) : 'WELCOME TO SHARDRUNNER';
@@ -803,6 +809,7 @@
       } else if (isPaused) {
         stateText.overlayTitle.textContent = 'Run paused';
         stateText.overlaySubtitle.textContent = `state: ${state.reason || 'PAUSED'} · press Space, P, or controller pause to resume`;
+        stateText.overlayAction.textContent = 'Resume run';
         stateText.overlayOnboarding.style.display = 'none';
       }
     }
@@ -1036,6 +1043,7 @@
       clearInputState('keyboard');
       clearInputState('touch');
       clearInputState('gamepad');
+      overlayPauseQueued = false;
       inputOwner = 'keyboard';
     }
 
@@ -1259,10 +1267,14 @@
       if (now < clearInputsUntil) {
         clearInputSuppression();
       } else {
+        if (overlayPauseQueued) {
+          input.pause = true;
+          overlayPauseQueued = false;
+        }
         input.moveX = clamp(x, -1, 1);
         input.moveZ = clamp(z, -1, 1);
         input.jump = !!jump;
-        input.pause = !!pause;
+        input.pause = input.pause || !!pause;
         input.restart = false;
         input.owner = inputOwner;
         input.source = inputOwner;
@@ -1277,6 +1289,11 @@
     async function restart() {
       await fetch(endpoint('restartUrl'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
       await refreshState();
+    }
+
+    function queueOverlayPause() {
+      if (!state || state.phase !== 'paused') return;
+      overlayPauseQueued = true;
     }
 
     async function connect() {
@@ -1379,6 +1396,7 @@
       }
     });
     stateText.restartBtn.addEventListener('click', scheduleRestart);
+    stateText.overlayAction.addEventListener('click', queueOverlayPause);
 
     bindSteerPad();
     bindTouchHold(controls.jumpBtn, 'jump');
