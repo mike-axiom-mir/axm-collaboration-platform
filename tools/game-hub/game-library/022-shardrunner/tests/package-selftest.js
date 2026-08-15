@@ -220,6 +220,39 @@ test('runtime server returns stable beta state contract and settings input loop'
     assert.equal(postRestartState.body.runVersion, '0.2.0');
     assert.equal(postRestartState.body.runSummary.attempt, 2);
     assert.equal(postRestartState.body.runSummary.bestCombo, 0);
+    assert.equal(postRestartState.body.lastRunSummary, null);
+    assert.ok(Array.isArray(postRestartState.body.history));
+  } finally {
+    await stopServer(proc);
+  }
+});
+
+test('server state keeps run metadata continuity and last-run summary snapshot', async () => {
+  const proc = startServerForTest(8968);
+  try {
+    await waitForHealth(8968);
+    const firstState = await requestJson(8968, '/state?room=AXM1&player=p1');
+    assert.equal(firstState.body.phase, 'countdown');
+    assert.equal(firstState.body.runStats.seed, firstState.body.seed);
+    assert.equal(firstState.body.runStats.dieReason, null);
+    assert.ok(firstState.body.runStats.runVersion);
+
+    const restartSeed = 0x00ab12;
+    const restartResp = await requestJson(8968, '/restart?room=AXM1&player=p1', {
+      method: 'POST',
+      body: { seed: restartSeed }
+    });
+    assert.equal(restartResp.body.state.seed, restartSeed);
+    assert.equal(restartResp.body.state.attempt, 2);
+    await delay(40);
+
+    const secondState = await requestJson(8968, '/state?room=AXM1&player=p1');
+    assert.equal(secondState.body.attempt, 2);
+    assert.equal(secondState.body.seed, restartSeed);
+    assert.equal(secondState.body.runId, secondState.body.runStats.runId);
+    assert.equal(secondState.body.runState, 'countdown');
+    assert.equal(secondState.body.bestScore, 0);
+    assert.ok(Array.isArray(secondState.body.history));
   } finally {
     await stopServer(proc);
   }
@@ -239,6 +272,35 @@ test('server seed sequences are deterministic across identical seeded sessions',
   } finally {
     await stopServer(procA);
     await stopServer(procB);
+  }
+});
+
+test('server restart endpoint enforces source debounce under immediate reretry', async () => {
+  const proc = startServerForTest(8970);
+  try {
+    await waitForHealth(8970);
+    const firstRestart = await requestJson(8970, '/restart?room=AXM1&player=p1', {
+      method: 'POST',
+      body: {}
+    });
+    assert.equal(firstRestart.response.status, 200);
+    assert.equal(firstRestart.body.ok, true);
+    const secondRestart = await requestJson(8970, '/restart?room=AXM1&player=p1', {
+      method: 'POST',
+      body: {}
+    });
+    assert.equal(secondRestart.response.status, 429);
+    assert.equal(secondRestart.body.ok, false);
+    assert.equal(secondRestart.body.error, 'restart-pending');
+    await delay(420);
+    const thirdRestart = await requestJson(8970, '/restart?room=AXM1&player=p1', {
+      method: 'POST',
+      body: {}
+    });
+    assert.equal(thirdRestart.response.status, 200);
+    assert.equal(thirdRestart.body.ok, true);
+  } finally {
+    await stopServer(proc);
   }
 });
 
@@ -267,6 +329,23 @@ test('core run metadata carries deterministic counters and version', () => {
   assert.equal(state.runStats.distance, 0);
   assert.equal(state.runStats.combo, 0);
   assert.equal(state.runId, 'run-385-004');
+});
+
+test('runStats mirror deterministic run state and advance with movement', () => {
+  const state = newState(902);
+  assert.equal(state.runState, 'countdown');
+  state.phase = 'running';
+  state.startedAt = 1_000;
+  state.startAt = 1_000;
+  state.nextShardAt = 9_999_999;
+  state.nextObstacleAt = 9_999_999;
+  state.nextGateAt = 9_999_999;
+  Core.step(state, { p1: { moveX: 0, moveZ: 0, jump: false } }, 1 / 60, 1_010);
+  assert.equal(state.runState, 'running');
+  assert.equal(state.runStats.attempt, state.attempt);
+  assert.equal(state.runStats.runId, state.runId);
+  assert.equal(state.runStats.seed, state.randomSeed);
+  assert.equal(state.runStats.tier, state.difficulty);
 });
 
 test('run finish publishes deterministic lastRun/summary metadata', () => {
@@ -367,6 +446,36 @@ test('input ownership ignores stale source activity', () => {
       { staleMs: staleWindow, priority: ['keyboard', 'touch', 'gamepad'] }
     ),
     'gamepad'
+  );
+});
+
+test('input ownership honors source block windows', () => {
+  const now = 22_000;
+  const winner = Core.resolveInputOwner({
+    keyboard: { active: true, at: now },
+    touch: { active: true, at: now },
+    gamepad: { active: true, at: now }
+  }, now, {
+    staleMs: 240,
+    priority: ['keyboard', 'touch', 'gamepad'],
+    blockedUntil: { keyboard: now + 400, touch: now - 2, gamepad: now - 2 }
+  });
+  assert.equal(winner, 'touch');
+});
+
+test('input ownership falls back when all active sources are blocked', () => {
+  const now = 24_000;
+  assert.equal(
+    Core.resolveInputOwner({
+      keyboard: { active: true, at: now },
+      touch: { active: true, at: now },
+      gamepad: { active: true, at: now }
+    }, now, {
+      staleMs: 240,
+      priority: ['keyboard', 'touch', 'gamepad'],
+      blockedUntil: { keyboard: now + 300, touch: now + 260, gamepad: now + 280 }
+    }),
+    'keyboard'
   );
 });
 

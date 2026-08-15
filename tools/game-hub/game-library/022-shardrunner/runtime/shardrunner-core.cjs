@@ -123,9 +123,17 @@ function resolveInputOwner(samples, nowArg, options) {
   const fallback = options && options.fallback ? String(options.fallback) : 'keyboard';
   const staleMs = Math.max(1, toMs(options && options.staleMs, INPUT_OWNER_STALE_MS));
   const priority = (options && options.priority) || ['keyboard', 'touch', 'gamepad'];
-  const hasKeyboard = !!(samples && samples.keyboard && samples.keyboard.active) && (now - toMs(samples.keyboard.at, 0)) <= staleMs;
-  const hasTouch = !!(samples && samples.touch && samples.touch.active) && (now - toMs(samples.touch.at, 0)) <= staleMs;
-  const hasGamepad = !!(samples && samples.gamepad && samples.gamepad.active) && (now - toMs(samples.gamepad.at, 0)) <= staleMs;
+  const blockedUntil = (options && options.blockedUntil) || Object.create(null);
+  const isBlocked = name => toMs(blockedUntil && blockedUntil[name], 0) > now;
+  const hasKeyboard = !!(samples && samples.keyboard && samples.keyboard.active) &&
+    (now - toMs(samples.keyboard.at, 0)) <= staleMs &&
+    !isBlocked('keyboard');
+  const hasTouch = !!(samples && samples.touch && samples.touch.active) &&
+    (now - toMs(samples.touch.at, 0)) <= staleMs &&
+    !isBlocked('touch');
+  const hasGamepad = !!(samples && samples.gamepad && samples.gamepad.active) &&
+    (now - toMs(samples.gamepad.at, 0)) <= staleMs &&
+    !isBlocked('gamepad');
   const candidates = new Set();
   if (hasKeyboard) candidates.add('keyboard');
   if (hasTouch) candidates.add('touch');
@@ -160,6 +168,23 @@ function event(state, text, now, opts) {
   if (opts && opts.reason) {
     state.diedBy = opts.reason;
   }
+}
+
+function refreshRunStats(state, overrides) {
+  state.runStats = Object.assign({}, state.runStats || {}, {
+    runId: state.runId,
+    attempt: state.attempt || 1,
+    distance: Math.max(0, Math.round(state.progress || 0)),
+    shards: state.totalShards || 0,
+    stamina: Math.max(0, Math.round(state.stamina || 0)),
+    combo: state.combo || 0,
+    bestCombo: state.bestCombo || state.combo || 0,
+    tier: state.difficulty || MIN_TIER,
+    runVersion: state.runVersion || state.buildVersion || BUILD_VERSION,
+    seed: state.randomSeed || state.seed || 0,
+    fallReason: state.diedBy || null,
+    dieReason: state.diedBy || null
+  }, overrides || {});
 }
 
 function createPlayer() {
@@ -321,8 +346,13 @@ function finish(state, won, now, reason) {
     fallReason: dieReason,
     dieReason
   });
+  refreshRunStats(state, {
+    fallReason: dieReason,
+    dieReason
+  });
   state.lastRunMetadata = makeRunSummary(state, { reason: dieReason });
   state.runSummary = makeRunSummary(state, { reason: dieReason });
+  state.runState = won ? PHASES.won : PHASES.lost;
   state.lastRun = {
     runId: state.runId,
     attempt: state.attempt,
@@ -356,6 +386,7 @@ function create(rawSeats, now = Date.now(), options) {
     seed: seed,
     createdAt,
     now: createdAt,
+    runState: PHASES.countdown,
     phase: PHASES.countdown,
     startAt: createdAt + COUNTDOWN_MS,
     _inputClearUntil: 0,
@@ -442,6 +473,7 @@ function updateDifficulty(state) {
     state.speed = BASE_RUN_SPEED + state.difficulty * 1.5;
     event(state, 'CORRUPTED FIELD INTENSIFIES · LEVEL ' + state.difficulty, state.now);
   }
+  refreshRunStats(state, { tier: state.difficulty });
   state.pressure = Math.max(1, Math.min(2.1, (state.difficulty * 0.34) + (state.laneWander * 0.02)));
   state.laneWander = (state.random() - .5) * Math.min(2.7, state.difficulty * 0.38);
   if (state.progress > 260 && state.distanceGoal < 520) {
@@ -558,6 +590,13 @@ function resolveBranch(state) {
       p.anim = 'stumble';
       p.stumbleUntil = state.now + 480;
       state.runStats.stamina = Math.max(0, Math.round(state.stamina));
+      refreshRunStats(state, {
+        stamina: Math.max(0, Math.round(state.stamina)),
+        combo: state.combo || 0,
+        bestCombo: state.bestCombo || state.combo || 0,
+        distance: Math.round(state.progress || 0),
+        tier: state.difficulty || MIN_TIER
+      });
       spawnCameraPulse(state, 0.35);
       event(state, 'COLLISION', state.now, { reasonText: 'COLLISION' });
       if (state.stamina <= 0) {
@@ -567,6 +606,12 @@ function resolveBranch(state) {
       state.score += 20;
       state.runStats.shards += 0;
       state.runStats.combo = Math.max(1, state.runStats.combo);
+      refreshRunStats(state, {
+        combo: state.runStats.combo,
+        bestCombo: state.bestCombo || state.runStats.combo,
+        distance: Math.round(state.progress || 0),
+        tier: state.difficulty || MIN_TIER
+      });
       event(state, 'SHARD PATH CHOSEN', state.now, { reasonText: 'SHARD PATH CHOSEN' });
     }
     gate.passBy = true;
@@ -604,6 +649,13 @@ function resolveShards(state) {
       state.runStats.combo = state.combo;
       state.runStats.distance = Math.round(state.progress);
       state.runStats.stamina = Math.max(0, Math.round(state.stamina));
+      refreshRunStats(state, {
+        shards: state.totalShards,
+        combo: state.combo,
+        bestCombo: state.bestCombo,
+        distance: Math.round(state.progress || 0),
+        tier: state.difficulty || MIN_TIER
+      });
       spawnCameraPulse(state, 0.09);
       event(state, 'SINGLE SHARD PICKED · COMBO ' + state.combo, now);
     }
@@ -629,6 +681,13 @@ function resolveObstacles(state) {
       p.vy = Math.max(p.vy, 1.8);
       p.anim = 'stumble';
       state.runStats.stamina = Math.max(0, Math.round(state.stamina));
+      refreshRunStats(state, {
+        stamina: Math.max(0, Math.round(state.stamina)),
+        combo: state.combo || 0,
+        bestCombo: state.bestCombo || state.combo || 0,
+        distance: Math.round(state.progress || 0),
+        tier: state.difficulty || MIN_TIER
+      });
       spawnCameraPulse(state, 0.42);
       const reason = obstacle.kind === 'wall' ? 'HARD_COLLISION' : 'SPIKE_COLLISION';
       event(state, 'COLLISION', state.now, { reasonText: 'COLLISION' });
@@ -644,14 +703,20 @@ function applyProgress(state, dt) {
   const runSpeed = state.speed + state.difficulty * 0.45;
   const advance = runSpeed * dt;
   state.progress += advance;
-  state.runStats.distance = Math.round(state.progress);
   state.score += dt * .25;
-  state.runStats.stamina = Math.max(0, Math.round(state.stamina));
+  refreshRunStats(state, {
+    distance: Math.max(0, Math.round(state.progress)),
+    stamina: Math.max(0, Math.round(state.stamina || 0)),
+    tier: state.difficulty || MIN_TIER
+  });
 }
 
 function step(state, rawInputs, dt, nowArg) {
   state.now = toMs(nowArg, Date.now());
   dt = clamp(Number(dt) || 0, 0, .08);
+  if (!state.runState || state.runState !== state.phase) {
+    state.runState = state.phase;
+  }
 
   const input = sanitizeInput(rawInputs && rawInputs[state.seat.id] || rawInputs || {}, {
     clear: state._inputClearUntil && state.now < state._inputClearUntil
@@ -671,6 +736,7 @@ function step(state, rawInputs, dt, nowArg) {
 
   if (state.phase === PHASES.countdown && state.now >= state.startAt) {
     state.phase = PHASES.running;
+    state.runState = PHASES.running;
     state.startedAt = state.now;
     state.reason = 'RUNNING';
     event(state, 'RUNNER ARMED', state.now);
@@ -683,6 +749,7 @@ function step(state, rawInputs, dt, nowArg) {
     if (input.pause && !state._pauseHeld) {
       state._pauseHeld = true;
       state.phase = state.prevPhase || PHASES.running;
+      state.runState = state.phase;
       state.prevPhase = null;
       state.eventAt = state.now;
       state.event = 'RESUMED';
@@ -696,6 +763,7 @@ function step(state, rawInputs, dt, nowArg) {
     state._pauseHeld = true;
     state.prevPhase = state.phase;
     state.phase = PHASES.paused;
+    state.runState = PHASES.paused;
     state.pauseAt = state.now;
     state.reason = 'PAUSED';
     state.event = 'PAUSED';
@@ -713,6 +781,7 @@ function step(state, rawInputs, dt, nowArg) {
     }
     if (state.now >= state.cooldownUntil) {
       state.phase = PHASES.cooldown;
+      state.runState = PHASES.cooldown;
     }
     return publicState(state);
   }
@@ -729,6 +798,13 @@ function step(state, rawInputs, dt, nowArg) {
   if (state.comboExpiresAt && state.now - state.comboExpiresAt > state.comboWindow) {
     state.combo = 0;
     state.runStats.combo = 0;
+    refreshRunStats(state, {
+      combo: 0,
+      bestCombo: state.bestCombo || state.combo || 0,
+      distance: Math.max(0, Math.round(state.progress || 0)),
+      stamina: Math.max(0, Math.round(state.stamina || 0)),
+      tier: state.difficulty || MIN_TIER
+    });
   }
 
   updateDifficulty(state);

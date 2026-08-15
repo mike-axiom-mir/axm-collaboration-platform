@@ -102,12 +102,27 @@ function getGameForSession(session) {
   return session.game;
 }
 
+function makeRunStateSummary(state) {
+  return {
+    runId: state.runId,
+    attempt: state.attempt || 1,
+    distance: Math.round(state.progress || 0),
+    shards: state.totalShards || 0,
+    combo: state.combo || 0,
+    bestCombo: state.bestCombo || 0,
+    stamina: Math.max(0, Math.round(state.stamina || 0)),
+    seed: state.randomSeed || state.seed || 0,
+    runVersion: state.runVersion || state.buildVersion || BUILD_VERSION,
+    diedBy: state.diedBy || null
+  };
+}
+
 function applyStateSettings(state, session) {
   const cloneState = Core.publicState(state);
   cloneState.settings = Object.assign({}, session.settings);
   cloneState.bestScore = session.bestScore;
   cloneState.lastRun = session.lastRun || state.lastRun || null;
-  cloneState.lastRunSummary = state.runSummary || null;
+  cloneState.lastRunSummary = session.lastRunSummary || state.runSummary || null;
   cloneState.history = session.runHistory.slice();
   cloneState.buildVersion = state.buildVersion || state.runVersion || BUILD_VERSION;
   cloneState.runVersion = cloneState.buildVersion;
@@ -117,19 +132,15 @@ function applyStateSettings(state, session) {
   cloneState.runId = state.runId;
   cloneState.runStats = cloneState.runStats || {};
   cloneState.runStats.bestScore = cloneState.bestScore;
-  cloneState.runStats.fallReason = cloneState.runStats.fallReason || cloneState.diedBy || null;
-  cloneState.runSummary = {
+  cloneState.runStats.fallReason = cloneState.runStats.fallReason || state.diedBy || cloneState.runStats.dieReason || null;
+  cloneState.runStats.dieReason = cloneState.runStats.dieReason || state.diedBy || cloneState.runStats.dieReason || null;
+  cloneState.runSummary = Object.assign({}, makeRunStateSummary(state), {
     runId: state.runId,
     attempt: state.attempt || 1,
-    distance: Math.round(state.progress || 0),
-    shards: state.totalShards || 0,
     combo: state.bestCombo || state.combo || 0,
     bestCombo: state.bestCombo || state.combo || 0,
-    stamina: Math.max(0, Math.round(state.stamina || 0)),
-    seed: state.randomSeed || state.seed || 0,
-    runVersion: cloneState.buildVersion,
     bestScore: session.bestScore || 0
-  };
+  });
   return cloneState;
 }
 
@@ -193,6 +204,7 @@ function recordRun(session, state) {
     at: Date.now()
   };
   session.lastRun = entry;
+  session.lastRunSummary = state.runSummary || makeRunStateSummary(state);
   session.bestScore = Math.max(session.bestScore, entry.score);
   session.runHistory.push(entry);
   if (session.runHistory.length > MAX_RUN_HISTORY) {

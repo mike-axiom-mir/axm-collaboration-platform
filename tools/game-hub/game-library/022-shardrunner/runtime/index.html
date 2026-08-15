@@ -157,8 +157,8 @@
       inset:0;
       pointer-events:none;
       background-image:
-        linear-gradient(0deg, rgba(255,255,255,.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px);
+        linear-gradient(0deg, rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,.08) 1px, transparent 1px);
       background-size: 4px 4px, 3px 3px;
       mix-blend-mode:screen;
       opacity:.3;
@@ -187,6 +187,33 @@
     .reduced-motion .scanline {
       opacity: 0.16;
     }
+    body.phase-lost .scanline,
+    body.phase-cooldown .scanline,
+    body.phase-won .scanline {
+      opacity: 0.44;
+    }
+    .grain {
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        radial-gradient(rgba(255,255,255,.06) 15%, transparent 15%),
+        radial-gradient(rgba(0,0,0,.05) 15%, transparent 15%);
+      background-size: 2px 2px, 3px 3px;
+      opacity:0.12;
+      mix-blend-mode: overlay;
+      z-index:3;
+      animation: grain 0.18s steps(2, end) infinite;
+    }
+    .reduced-motion .grain {
+      animation-duration: 1.2s;
+      opacity: 0.07;
+    }
+    body.phase-lost .grain,
+    body.phase-won .grain,
+    body.phase-cooldown .grain {
+      opacity: 0.2;
+    }
     .vignette {
       position:absolute;
       inset:0;
@@ -202,6 +229,25 @@
     }
     .camera-lock .events {
       border-color: rgba(95, 216, 255, 0.65);
+    }
+    body.phase-countdown .dither { opacity: 0.2; }
+    body.phase-paused .dither { opacity: 0.22; }
+    body.phase-running .dither { opacity: 0.34; }
+    body.phase-won .dither,
+    body.phase-lost .dither,
+    body.phase-cooldown .dither {
+      opacity: 0.26;
+    }
+    body.phase-running .grain { opacity: 0.08; }
+    body.phase-countdown .grain,
+    body.phase-paused .grain { opacity: 0.06; }
+    @keyframes grain {
+      0% { transform: translate(0,0); }
+      10% { transform: translate(-3%, 1%); }
+      25% { transform: translate(2%, -2%); }
+      45% { transform: translate(-2%, 2%); }
+      60% { transform: translate(3%, -1%); }
+      100% { transform: translate(0, 0); }
     }
     @keyframes dither-shimmer {
       from { background-position: 0 0, 0 0; }
@@ -333,9 +379,10 @@
   </style>
 </head>
 <body>
-  <div class="frame">
+    <div class="frame">
     <div class="stage">
       <canvas id="gameCanvas" width="640" height="360"></canvas>
+      <div class="grain" aria-hidden="true"></div>
       <div class="dither" aria-hidden="true"></div>
       <div class="scanline" aria-hidden="true"></div>
       <div class="vignette" aria-hidden="true"></div>
@@ -350,6 +397,7 @@
           <div id="combo">combo x1</div>
           <div id="reason">state: READY</div>
           <div id="statusReason" class="status-reason">run status: READY</div>
+          <div id="runMeta">run 0001 · seed 000000</div>
           <div id="ownerIndicator" class="owner-indicator">owner: KEYBOARD</div>
           <div class="meter"><i id="stamina"></i></div>
         </div>
@@ -392,13 +440,19 @@
     };
     const INPUT_CLEAR_MS = 320;
     const INPUT_OWNER_STALE_MS = 260;
+    const INPUT_OWNER_BLOCK_MS = 320;
     const GAMEPAD_CONNECTION_STALE_MS = 360;
+    const GAMEPAD_ACTIVITY_DEADZONE = 0.06;
     const INPUT_OWNER_PRIORITY = ['keyboard', 'touch', 'gamepad'];
     const RESTART_KEY_DEBOUNCE_MS = 190;
     const RESUME_KEY_DEBOUNCE_MS = 190;
+    const RESTART_SOURCE_COOLDOWN_MS = 220;
     const KEY_DEADZONE = 0.08;
     const JOYSTICK_DEADZONE = 0.18;
     const DIRECTION_DEADZONE = 0.1;
+    const RENDER_WIDTH = 384;
+    const RENDER_HEIGHT = 216;
+    const WORLD_ASPECT = 16 / 9;
     const qs = new URLSearchParams(location.search);
     const room = qs.get('room') || 'AXM1';
     const player = qs.get('player') || 'p1';
@@ -413,15 +467,21 @@
     const canvas = document.getElementById('gameCanvas');
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
     renderer.setPixelRatio(1);
-    renderer.setSize(640, 360, false);
+    renderer.setSize(RENDER_WIDTH, RENDER_HEIGHT, false);
     renderer.setClearColor(0x080d1e);
+    if ('outputColorSpace' in renderer && THREE.SRGBColorSpace) {
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+    } else if ('outputEncoding' in renderer) {
+      renderer.outputEncoding = THREE.sRGBEncoding;
+    }
+    renderer.toneMapping = THREE.NoToneMapping;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     const scene = new THREE.Scene();
     scene.fog = new THREE.Fog(0x0b1229, 26, 132);
 
-    const camera = new THREE.PerspectiveCamera(49, 640 / 360, 0.1, 220);
+    const camera = new THREE.PerspectiveCamera(49, WORLD_ASPECT, 0.1, 220);
     const ambient = new THREE.AmbientLight(0x93c5ff, 0.5);
     scene.add(ambient);
     const key = new THREE.DirectionalLight(0xc5f7ff, 1.2);
@@ -440,7 +500,12 @@
 
     const floor = new THREE.Mesh(
       new THREE.PlaneGeometry(220, 500),
-      new THREE.MeshStandardMaterial({ color: 0x0b1834, roughness: 0.93, metalness: 0.08 })
+      new THREE.MeshStandardMaterial({
+        color: 0x0b1834,
+        roughness: 0.93,
+        metalness: 0,
+        flatShading: true
+      })
     );
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
@@ -473,6 +538,7 @@
       remaining: document.getElementById('remaining'),
       reason: document.getElementById('reason'),
       statusReason: document.getElementById('statusReason'),
+      runMeta: document.getElementById('runMeta'),
       ownerIndicator: document.getElementById('ownerIndicator'),
       branches: document.getElementById('branches'),
       event: document.getElementById('event'),
@@ -516,6 +582,11 @@
       restart: 0,
       pause: 0
     };
+    const sourceBlockUntil = {
+      keyboard: 0,
+      touch: 0,
+      gamepad: 0
+    };
     let restartQueued = false;
     let overlayPauseQueued = false;
     let keyRestartHeld = false;
@@ -553,23 +624,33 @@
       gates: new Map()
     };
 
+    function makeFlatMaterial(overrides) {
+      return new THREE.MeshStandardMaterial(
+        Object.assign({
+          flatShading: true,
+          roughness: 0.85,
+          metalness: 0
+        }, overrides || {})
+      );
+    }
+
     function makeCrystal(color, radius, height) {
       const geom = new THREE.ConeGeometry(radius * 1.06, height, 4);
-      const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.3, metalness: 0.4, emissive: color, emissiveIntensity: 0.2 });
+      const mat = makeFlatMaterial({ color, roughness: 0.3, metalness: 0.2, emissive: color, emissiveIntensity: 0.2 });
       return new THREE.Mesh(geom, mat);
     }
 
     function makePlayerMesh() {
       const body = new THREE.Group();
       const trunk = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.45, 0.9),
-        new THREE.MeshStandardMaterial({ color: 0x4f9fd4, roughness: 0.22, metalness: 0.1 }));
+        makeFlatMaterial({ color: 0x4f9fd4, roughness: 0.22, metalness: 0.1 }));
       const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.7, 0.7),
-        new THREE.MeshStandardMaterial({ color: 0x95fbff, roughness: 0.4, metalness: 0 }));
+        makeFlatMaterial({ color: 0x95fbff, roughness: 0.4, metalness: 0 }));
       trunk.castShadow = head.castShadow = true;
       trunk.position.y = 1.6;
       head.position.set(0, 2.45, 0.04);
       const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.8, 0.28),
-        new THREE.MeshStandardMaterial({ color: 0x7dd6ff, roughness: 0.6 }));
+        makeFlatMaterial({ color: 0x7dd6ff, roughness: 0.6 }));
       const rightArm = leftArm.clone();
       leftArm.position.set(-0.78, 1.25, 0.0);
       rightArm.position.set(0.78, 1.25, 0.0);
@@ -610,7 +691,7 @@
           ? [2.0, 2.0, 3.6]
           : [4.4, 2.4, 5.4];
         const geom = new THREE.BoxGeometry(dims[0], dims[1], dims[2]);
-        const mat = new THREE.MeshStandardMaterial({
+        const mat = makeFlatMaterial({
           color: kind === 'spike' ? 0xff3b42 : 0xbb3038,
           roughness: 0.5,
           metalness: 0.08,
@@ -631,7 +712,7 @@
       if (!obj) {
         obj = new THREE.Mesh(
           new THREE.BoxGeometry(1, 1, 1),
-          new THREE.MeshStandardMaterial({ color: 0x244a78, roughness: 0.85, metalness: 0.03 })
+          makeFlatMaterial({ color: 0x244a78, roughness: 0.85, metalness: 0.03 })
         );
         obj.castShadow = true;
         obj.receiveShadow = true;
@@ -647,7 +728,7 @@
         obj = new THREE.Group();
         const left = new THREE.Mesh(
           new THREE.BoxGeometry(4.6, 4.8, 1.2),
-          new THREE.MeshStandardMaterial({ color: 0x461a1f, roughness: 0.35, emissive: 0x4d121d, emissiveIntensity: 0.3 })
+          makeFlatMaterial({ color: 0x461a1f, roughness: 0.35, emissive: 0x4d121d, emissiveIntensity: 0.3 })
         );
         left.userData.wall = true;
         const right = left.clone();
@@ -699,12 +780,13 @@
 
       if (!state) return;
 
+      const now = state?.now || performance.now();
       for (const shard of state.shards) {
         const z = relZ(shard.trackZ, state);
         if (z < -10 || z > 130) continue;
         const mesh = ensureShardMesh(shard.id, 0x57bdff);
         mesh.position.set(shard.x, 1.1, z);
-        mesh.rotation.y = Date.now() * 0.002;
+        mesh.rotation.y = now * 0.0012;
         mesh.visible = true;
         group.add(mesh);
       }
@@ -783,6 +865,21 @@
       eventFlash = Math.max(0, eventFlash - 0.08);
     }
 
+    const PHASE_VISUALS = ['countdown', 'running', 'paused', 'won', 'lost', 'cooldown'];
+
+    function setPhaseVisuals(phaseRaw) {
+      const phase = (phaseRaw && PHASE_VISUALS.includes(phaseRaw)) ? phaseRaw : 'running';
+      document.body.classList.remove(
+        'phase-countdown',
+        'phase-running',
+        'phase-paused',
+        'phase-won',
+        'phase-lost',
+        'phase-cooldown'
+      );
+      document.body.classList.add('phase-' + phase);
+    }
+
     function applyUI() {
       if (!state) return;
       stateText.distance.textContent = 'distance ' + Math.max(0, Math.floor(state.progress || 0)).toString().padStart(4, '0');
@@ -797,10 +894,15 @@
       const reasonText = state.reason === 'RUNNING' && state.event ? state.event : (state.reason || state.diedBy || state.event || 'READY');
       stateText.reason.textContent = 'state: ' + reasonText;
       stateText.statusReason.textContent = 'phase ' + (state.phase || 'running') + ' · ' + reasonText;
+      const seedText = state.seed === undefined ? 0 : state.seed;
+      const attemptText = state.attempt || 1;
+      const runVersion = state.runVersion || (state.buildVersion || '');
+      stateText.runMeta.textContent = `run ${attemptText} · seed ${seedText} · ${runVersion || 'v0'}`;
       stateText.stamina.style.width = Math.max(0, Math.min(100, ((state.stamina || 0) / 100) * 100)) + '%';
       if (state.activeLanes) {
         stateText.branches.textContent = 'branch lanes open: ' + state.activeLanes.length + ' [L=' + state.activeLanes.join(',') + ']';
       }
+      setPhaseVisuals(state.phase);
       applyOwnerVisual();
       stateText.event.classList.remove('phase-countdown', 'phase-running', 'phase-paused', 'phase-won', 'phase-lost', 'phase-cooldown');
       stateText.event.classList.add('phase-' + (state.phase || 'running'));
@@ -901,14 +1003,21 @@
         keys.Space || keys.Enter || keys.KeyP || keys.Escape || keys.KeyR;
     }
 
+    function normalizeAxisValue(value, deadZone) {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric)) return 0;
+      const amount = Math.abs(numeric) <= deadZone ? 0 : numeric;
+      return clamp(amount, -1, 1);
+    }
+
     function hasTouchActivity() {
       return !!(touchInput.active || touchInput.jump || touchInput.pause || touchInput.restartEdge);
     }
 
     function hasGamepadActivity() {
       return !!(
-        Math.abs(gamepadInput.moveX) > 0.06 ||
-        Math.abs(gamepadInput.moveZ) > 0.06 ||
+        Math.abs(gamepadInput.moveX) > GAMEPAD_ACTIVITY_DEADZONE ||
+        Math.abs(gamepadInput.moveZ) > GAMEPAD_ACTIVITY_DEADZONE ||
         gamepadInput.jump ||
         gamepadInput.pause ||
         gamepadInput.restartEdge
@@ -933,12 +1042,30 @@
       sourceActivity[name] = active ? performance.now() : 0;
       if (name in sourceAt) sourceAt[name] = sourceActivity[name];
     }
+    function isSourceBlocked(name, now) {
+      const nowTime = Number.isFinite(now) ? now : performance.now();
+      return !!(name in sourceBlockUntil && nowTime < (sourceBlockUntil[name] || 0));
+    }
+    function blockSourceUntil(name, until) {
+      if (!(name in sourceBlockUntil)) return;
+      sourceBlockUntil[name] = Math.max(sourceBlockUntil[name], until || 0);
+    }
+    function releaseSourceBlock(name) {
+      if (name in sourceBlockUntil) sourceBlockUntil[name] = 0;
+    }
+    function blockSourceForRestart(name) {
+      if (!(name in sourceBlockUntil)) return;
+      const until = performance.now() + INPUT_OWNER_BLOCK_MS;
+      blockSourceUntil(name, until);
+    }
 
     function isStaleSource(name, now) {
       return now - (sourceActivity[name] || 0) > INPUT_OWNER_STALE_MS;
     }
 
     function clearKeyboardState() {
+      keyPauseHeld = false;
+      keyRestartHeld = false;
       for (const key in keys) {
         keys[key] = false;
       }
@@ -965,6 +1092,12 @@
       clearSourceState('touch');
     }
 
+    function clearTouchButtonHolds() {
+      controls.jumpBtn.classList.remove('held');
+      controls.pauseBtn.classList.remove('held');
+      controls.restartBtn.classList.remove('held');
+    }
+
     function clearTouchState() {
       touchInput.active = false;
       touchInput.moveX = 0;
@@ -973,6 +1106,7 @@
       touchInput.pause = false;
       touchInput.restartEdge = false;
       controls.steerKnob.style.transform = 'translate(-50%, -50%)';
+      clearTouchButtonHolds();
     }
 
     function clearGamepadState() {
@@ -988,15 +1122,20 @@
     }
 
     function clearSourceState(name) {
+      if (name === 'keyboard') {
+        clearKeyboardState();
+      }
       if (name === 'touch') clearTouchState();
       if (name === 'gamepad') clearGamepadState();
       if (name === 'gamepad') {
+        gamepadConnected = false;
         gamepadDeviceId = '';
         gamepadSeenAt = 0;
       }
       if (name === 'touch') {
         activeTouchPointers.clear();
       }
+      releaseSourceBlock(name);
       markSource(name, false);
     }
 
@@ -1008,19 +1147,24 @@
       if (!isGamepadConnectedFresh(now) && isStaleSource('gamepad', now)) {
         clearSourceState('gamepad');
       }
+      if (!isSourceBlocked('keyboard', now) && !hasKeyboardActivity()) releaseSourceBlock('keyboard');
+      if (!isSourceBlocked('touch', now) && !hasTouchActivity()) releaseSourceBlock('touch');
+      if (!isSourceBlocked('gamepad', now) && !hasGamepadActivity()) releaseSourceBlock('gamepad');
 
       const candidates = [];
-      if (hasKeyboardActivity() && !isStaleSource('keyboard', now)) candidates.push('keyboard');
-      if (hasTouchActivity() && !isStaleSource('touch', now)) candidates.push('touch');
-      if (isGamepadConnectedFresh(now) && !isStaleSource('gamepad', now)) candidates.push('gamepad');
+      if (hasKeyboardActivity() && !isStaleSource('keyboard', now) && !isSourceBlocked('keyboard', now)) candidates.push('keyboard');
+      if (hasTouchActivity() && !isStaleSource('touch', now) && !isSourceBlocked('touch', now)) candidates.push('touch');
+      if (isGamepadConnectedFresh(now) && hasGamepadActivity() && !isStaleSource('gamepad', now) && !isSourceBlocked('gamepad', now)) candidates.push('gamepad');
 
       for (const owner of INPUT_OWNER_PRIORITY) {
         if (candidates.includes(owner)) return owner;
       }
-      if (inputOwner === 'gamepad' && hasGamepadActivity() && !isStaleSource('gamepad', now)) return 'gamepad';
-      if (inputOwner === 'touch' && hasTouchActivity() && !isStaleSource('touch', now)) return 'touch';
-      if (inputOwner === 'keyboard' && hasKeyboardActivity() && !isStaleSource('keyboard', now)) return 'keyboard';
-      return 'keyboard';
+      if (inputOwner === 'gamepad' && hasGamepadActivity() && !isStaleSource('gamepad', now) && !isSourceBlocked('gamepad', now)) return 'gamepad';
+      if (inputOwner === 'touch' && hasTouchActivity() && !isStaleSource('touch', now) && !isSourceBlocked('touch', now)) return 'touch';
+      if (inputOwner === 'keyboard' && hasKeyboardActivity() && !isStaleSource('keyboard', now) && !isSourceBlocked('keyboard', now)) return 'keyboard';
+      const anyActive = hasKeyboardActivity() || hasTouchActivity() || hasGamepadActivity();
+      if (!anyActive) return 'keyboard';
+      return 'system';
     }
 
     function clearInputSuppression() {
@@ -1069,14 +1213,38 @@
     }
 
     function clearInputUntilRestart() {
+      const now = performance.now();
+      const hadKeyboard = hasKeyboardActivity();
+      const hadTouch = hasTouchActivity() || activeTouchPointers.size > 0;
+      const hadGamepad = hasGamepadActivity() || isGamepadConnectedFresh(now);
       clearInputSuppression();
       clearLocalInput();
-      clearInputsUntil = performance.now() + INPUT_CLEAR_MS;
+      clearInputsUntil = now + INPUT_CLEAR_MS;
       clearInputState('keyboard');
       clearInputState('touch');
       clearInputState('gamepad');
+      if (hadKeyboard) blockSourceForRestart('keyboard');
+      if (hadTouch) blockSourceForRestart('touch');
+      if (hadGamepad) blockSourceForRestart('gamepad');
       overlayPauseQueued = false;
       inputOwner = 'keyboard';
+    }
+
+    function handleTransientInputDrop() {
+      clearInputUntilRestart();
+      clearTouchPointers();
+      sourceAt.restart = 0;
+      sourceAt.pause = 0;
+    }
+
+    function requestRestart(source) {
+      const now = performance.now();
+      if (now - sourceAt.restart < RESTART_SOURCE_COOLDOWN_MS) return;
+      sourceAt.restart = now;
+      if (source && inputOwner !== source) {
+        inputOwner = source;
+      }
+      scheduleRestart();
     }
 
     function scheduleRestart() {
@@ -1105,8 +1273,8 @@
         gamepadDeviceId = nextDeviceId;
       }
       const dead = JOYSTICK_DEADZONE;
-      const x = Math.abs(pad.axes[0] || 0) > dead ? (pad.axes[0] || 0) : 0;
-      const z = Math.abs(pad.axes[1] || 0) > dead ? (pad.axes[1] || 0) : 0;
+      const x = normalizeAxisValue(pad.axes && pad.axes[0], dead);
+      const z = normalizeAxisValue(pad.axes && pad.axes[1], dead);
       const dpadX = ((pad.buttons && pad.buttons[15] && pad.buttons[15].pressed) ? 1 : 0) - ((pad.buttons && pad.buttons[14] && pad.buttons[14].pressed) ? 1 : 0);
       const dpadZ = ((pad.buttons && pad.buttons[13] && pad.buttons[13].pressed) ? 1 : 0) - ((pad.buttons && pad.buttons[12] && pad.buttons[12].pressed) ? 1 : 0);
       const dpadMoveX = Math.abs(dpadX) > DIRECTION_DEADZONE ? dpadX : 0;
@@ -1131,7 +1299,7 @@
       gamepadPrev.pause = gamepadInput.pause;
       gamepadPrev.restart = gamepadInput.restart;
       markSource('gamepad', !!gamepadSeenAt);
-      if (gamepadInput.restartEdge) scheduleRestart();
+      if (gamepadInput.restartEdge) requestRestart('gamepad');
     }
 
     function bindSteerPad() {
@@ -1216,9 +1384,7 @@
         try { e.currentTarget.setPointerCapture(e.pointerId); } catch (x) {}
         registerTouchPointer(e.pointerId);
         touchInput.restartEdge = true;
-        inputOwner = 'touch';
-        markSource('touch', true);
-        scheduleRestart();
+        requestRestart('touch');
         button.classList.add('held');
       }
       function released(e) {
@@ -1291,6 +1457,11 @@
         z = gamepadInput.moveZ;
         jump = gamepadInput.jump;
         pause = gamepadInput.pause;
+      } else if (inputOwner === 'system') {
+        x = 0;
+        z = 0;
+        jump = false;
+        pause = false;
       } else {
         const k = readKeyboardMove();
         x = k.moveX;
@@ -1358,7 +1529,7 @@
       if (event.code === 'KeyR' && !keyRestartHeld && performance.now() - sourceAt.restart > RESTART_KEY_DEBOUNCE_MS) {
         keyRestartHeld = true;
         sourceAt.restart = performance.now();
-        scheduleRestart();
+        requestRestart('keyboard');
       }
       if (event.code === 'KeyP' || event.code === 'Escape') {
         inputOwner = 'keyboard';
@@ -1411,25 +1582,15 @@
       }
     });
     addEventListener('blur', () => {
-      clearInputState('touch');
-      clearInputState('gamepad');
-      clearKeyboardState();
-      clearTouchPointers();
-      keyRestartHeld = false;
-      keyPauseHeld = false;
-      sourceAt.restart = 0;
-      sourceAt.pause = 0;
-      inputOwner = 'keyboard';
+      handleTransientInputDrop();
     });
     addEventListener('visibilitychange', () => {
       if (document.hidden) {
-        clearInputUntilRestart();
-        clearTouchPointers();
-        keyRestartHeld = false;
-        keyPauseHeld = false;
-        sourceAt.restart = 0;
-        sourceAt.pause = 0;
+        handleTransientInputDrop();
       }
+    });
+    addEventListener('pagehide', () => {
+      handleTransientInputDrop();
     });
     stateText.restartBtn.addEventListener('click', scheduleRestart);
     stateText.overlayAction.addEventListener('click', queueOverlayPause);
