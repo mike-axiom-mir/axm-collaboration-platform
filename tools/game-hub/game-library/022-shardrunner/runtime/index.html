@@ -435,8 +435,8 @@
       <section class="overlay" id="overlay">
         <h1 id="title">Shardrunner</h1>
         <p id="subtitle">Boot sequence warming… hold run, jump, branch.</p>
-        <p id="tip">Controls: WASD/Arrows to steer · Space to jump · P or ⎋ to pause · R / pause controls to restart · gamepad or touch support</p>
-        <p id="onboardingText">CONTROL LEGEND: steer lanes with A/D or ←/→, jump with W/↑/Space or B/J on gamepad, pause with P/⎋ or shoulder button. Stay in open lanes, collect blue shards, avoid red geometry.</p>
+        <p id="tip">Controls: WASD/Arrows to steer · Space/W/↑ jump · P or ⎋ pause · R restart · gamepad support</p>
+        <p id="onboardingText">CONTROL LEGEND: steer lanes with A/D or ←/→, jump with W/↑/Space or gamepad face button, pause with P/⎋ or Start/Options, restart with R or gamepad restart button. Stay in open lanes, collect blue shards, avoid red geometry.</p>
         <p class="owner-hint" id="ownerHint"></p>
         <div class="buttons" id="actions">
           <button id="overlayAction" class="hidden">Continue</button>
@@ -629,6 +629,7 @@
     };
     let restartQueued = false;
     let overlayPauseQueued = false;
+    let overlayPauseNeedsRelease = false;
     let keyRestartHeld = false;
     let keyPauseHeld = false;
     let state = null;
@@ -955,7 +956,9 @@
       stateText.goal.textContent = 'goal ' + String(goal).padStart(3, '0') + 'm';
       stateText.remaining.textContent = 'to-go ' + String(remaining).padStart(3, '0');
       stateText.score.textContent = 'score ' + Math.floor(state.score || 0).toString().padStart(4, '0');
-      stateText.combo.textContent = 'combo x' + Math.max(0, state.combo || 0);
+      const combo = Math.max(0, state.combo || 0);
+      const bestCombo = Math.max(0, state.bestCombo || combo || 0);
+      stateText.combo.textContent = 'combo x' + combo + ' · best ' + bestCombo;
       const reasonText = state.reason === 'RUNNING' && state.event ? state.event : (state.reason || state.diedBy || state.event || 'READY');
       stateText.reason.textContent = 'state: ' + reasonText;
       stateText.statusReason.textContent = 'phase ' + (state.phase || 'running') + ' · ' + reasonText;
@@ -1298,6 +1301,7 @@
       if (hadTouch) blockSourceForRestart('touch');
       if (hadGamepad) blockSourceForRestart('gamepad');
       overlayPauseQueued = false;
+      overlayPauseNeedsRelease = false;
       inputOwner = 'keyboard';
     }
 
@@ -1518,6 +1522,10 @@
       markSource('touch', hasTouchActivity());
       markSource('gamepad', !!gamepadSeenAt);
       inputOwner = resolveSourceOwner();
+      if (!state || state.phase !== 'paused') {
+        overlayPauseQueued = false;
+        overlayPauseNeedsRelease = false;
+      }
 
       let x = 0;
       let z = 0;
@@ -1549,8 +1557,13 @@
         clearInputSuppression();
       } else {
         if (overlayPauseQueued) {
-          input.pause = true;
-          overlayPauseQueued = false;
+          if (overlayPauseNeedsRelease) {
+            input.pause = false;
+            overlayPauseNeedsRelease = false;
+          } else {
+            input.pause = true;
+            overlayPauseQueued = false;
+          }
         }
         input.moveX = clamp(x, -1, 1);
         input.moveZ = clamp(z, -1, 1);
@@ -1575,6 +1588,7 @@
     function queueOverlayPause() {
       if (!state || state.phase !== 'paused') return;
       overlayPauseQueued = true;
+      overlayPauseNeedsRelease = true;
     }
 
     async function connect() {

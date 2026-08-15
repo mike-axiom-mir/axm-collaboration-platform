@@ -32,8 +32,36 @@ const JUMP_STEADY_COOLDOWN_MS = 185;
 const MIN_TIER = 1;
 const MAX_TIER = 6;
 const SHARD_METER = 110;
+const DIFFICULTY_PROFILE = {
+  1: { shardBaseMs: 410, shardRangeMs: 150, obstacleChance: 0.34, obstacleBaseMs: 790, obstacleRangeMs: 290, gateGapBaseMs: 3600, gateGapRangeMs: 1800, lanePressureBoost: 0.02 },
+  2: { shardBaseMs: 392, shardRangeMs: 148, obstacleChance: 0.39, obstacleBaseMs: 742, obstacleRangeMs: 276, gateGapBaseMs: 3470, gateGapRangeMs: 1760, lanePressureBoost: 0.05 },
+  3: { shardBaseMs: 372, shardRangeMs: 145, obstacleChance: 0.44, obstacleBaseMs: 690, obstacleRangeMs: 267, gateGapBaseMs: 3360, gateGapRangeMs: 1720, lanePressureBoost: 0.08 },
+  4: { shardBaseMs: 356, shardRangeMs: 140, obstacleChance: 0.50, obstacleBaseMs: 646, obstacleRangeMs: 256, gateGapBaseMs: 3260, gateGapRangeMs: 1660, lanePressureBoost: 0.11 },
+  5: { shardBaseMs: 338, shardRangeMs: 136, obstacleChance: 0.56, obstacleBaseMs: 610, obstacleRangeMs: 248, gateGapBaseMs: 3140, gateGapRangeMs: 1600, lanePressureBoost: 0.15 },
+  6: { shardBaseMs: 322, shardRangeMs: 132, obstacleChance: 0.62, obstacleBaseMs: 586, obstacleRangeMs: 238, gateGapBaseMs: 3060, gateGapRangeMs: 1530, lanePressureBoost: 0.17 }
+};
 const INPUT_OWNER_STALE_MS = 220;
 const INPUT_AXIS_DEADZONE = 0.05;
+
+function difficultyProfile(tier) {
+  const key = clamp(tier, MIN_TIER, MAX_TIER);
+  return DIFFICULTY_PROFILE[key] || DIFFICULTY_PROFILE[MIN_TIER];
+}
+
+function setPhase(state, nextPhase, now, options) {
+  if (!state || state.phase === nextPhase) return;
+  state.phase = nextPhase;
+  state.runState = nextPhase;
+  if (options && Object.prototype.hasOwnProperty.call(options, 'reason')) {
+    state.reason = options.reason;
+  }
+  if (options && options.eventText) {
+    event(state, options.eventText, now, {
+      reason: state.reason || options.reason,
+      reasonText: state.reason || options.reason || options.eventText
+    });
+  }
+}
 
 function makeRunSummary(state, opts) {
   const reason = opts && opts.reason ? opts.reason : null;
@@ -328,7 +356,9 @@ function finish(state, won, now, reason) {
   if (state.result) return;
   const dieReason = won ? null : (reason || 'STAMINA_COLLAPSE');
   const finishReason = won ? 'RUN_COMPLETE' : 'GAME_OVER';
-  state.phase = won ? PHASES.won : PHASES.lost;
+  setPhase(state, won ? PHASES.won : PHASES.lost, now, {
+    reason: finishReason
+  });
   state.result = {
     won,
     score: Math.max(0, Math.round(state.score)),
@@ -358,7 +388,6 @@ function finish(state, won, now, reason) {
   });
   state.lastRunMetadata = makeRunSummary(state, { reason: dieReason });
   state.runSummary = makeRunSummary(state, { reason: dieReason });
-  state.runState = won ? PHASES.won : PHASES.lost;
   state.lastRun = {
     runId: state.runId,
     attempt: state.attempt,
@@ -425,6 +454,7 @@ function create(rawSeats, now = Date.now(), options) {
     stamina: 100,
     diedBy: null,
     pressure: 1,
+    _difficultyTransitions: 0,
     runStats: {
       distance: 0,
       distanceGoal: WIN_DISTANCE,
@@ -478,12 +508,16 @@ function updateDifficulty(state) {
   const tier = tierFromProgress(state.progress);
   if (tier !== state.difficulty) {
     state.difficulty = tier;
+    state.tier = tier;
+    state._difficultyTransitions = (state._difficultyTransitions || 0) + 1;
     state.runStats.tier = tier;
     state.speed = BASE_RUN_SPEED + state.difficulty * 1.5;
     event(state, 'CORRUPTED FIELD INTENSIFIES · LEVEL ' + state.difficulty, state.now);
   }
   refreshRunStats(state, { tier: state.difficulty });
-  state.pressure = Math.max(1, Math.min(2.1, (state.difficulty * 0.34) + (state.laneWander * 0.02)));
+  const profile = difficultyProfile(state.difficulty);
+  const pressureTarget = 1.04 + (state.difficulty - 1) * 0.2 + (state.laneWander * 0.02) + (profile ? profile.lanePressureBoost : 0);
+  state.pressure = Math.max(1, Math.min(2.2, pressureTarget));
   state.laneWander = (state.random() - .5) * Math.min(2.7, state.difficulty * 0.38);
   if (state.progress > 260 && state.distanceGoal < 520) {
     state.distanceGoal = 520;
@@ -493,24 +527,31 @@ function updateDifficulty(state) {
 function spawnByTempo(state) {
   const now = state.now;
   const difficulty = state.difficulty;
+  const profile = difficultyProfile(difficulty);
   const pressure = state.pressure || 1;
   if (now >= state.nextShardAt) {
     spawnShard(state);
-    const base = 390 - (difficulty * 16) + (state.random() * 140) + microVariance(state) * 5;
+    const shardBase = Math.max(180, (profile ? profile.shardBaseMs : 390) + microVariance(state) * 5);
+    const shardRange = Math.max(80, profile ? profile.shardRangeMs : 140);
+    const base = shardBase + (state.random() * shardRange);
     const jitter = microVariance(state);
     state.nextShardAt = now + Math.max(180, base / pressure * (1 + jitter * 0.2));
   }
   if (now >= state.nextObstacleAt) {
-    const obstacleChance = Math.min(0.92, 0.34 + (difficulty * 0.06) * pressure);
+    const obstacleChance = Math.min(0.98, (profile ? profile.obstacleChance : 0.34) * pressure);
     if (state.random() < obstacleChance) {
       spawnObstacle(state);
     }
-    const base = 790 - Math.min(300, difficulty * 58) + state.random() * 290;
+    const obstacleBase = Math.max(360, profile ? profile.obstacleBaseMs : 790);
+    const obstacleRange = Math.max(150, profile ? profile.obstacleRangeMs : 290);
+    const base = obstacleBase + state.random() * obstacleRange;
     state.nextObstacleAt = now + Math.max(420, (base + (difficulty * 12)) / pressure);
   }
   if (now >= state.nextGateAt) {
     spawnGate(state);
-    const base = 3600 + state.random() * 1800 - Math.min(1800, (difficulty - 1) * 260);
+    const gateBase = Math.max(1500, profile ? profile.gateGapBaseMs : 3600);
+    const gateRange = Math.max(840, profile ? profile.gateGapRangeMs : 1800);
+    const base = gateBase + state.random() * gateRange;
     state.nextGateAt = now + Math.max(1500, base);
   }
 }
@@ -745,11 +786,12 @@ function step(state, rawInputs, dt, nowArg) {
   }
 
   if (state.phase === PHASES.countdown && state.now >= state.startAt) {
-    state.phase = PHASES.running;
-    state.runState = PHASES.running;
+    setPhase(state, PHASES.running, state.now, {
+      reason: 'RUNNING',
+      eventText: 'RUNNER ARMED'
+    });
     state.startedAt = state.now;
     state.reason = 'RUNNING';
-    event(state, 'RUNNER ARMED', state.now);
   }
 
   if (state.phase === PHASES.paused) {
@@ -758,12 +800,13 @@ function step(state, rawInputs, dt, nowArg) {
     }
     if (input.pause && !state._pauseHeld) {
       state._pauseHeld = true;
-      state.phase = state.prevPhase || PHASES.running;
-      state.runState = state.phase;
+      const nextPhase = state.prevPhase || PHASES.running;
       state.prevPhase = null;
+      setPhase(state, nextPhase, state.now, {
+        reason: 'RUNNING',
+        eventText: 'RESUMED'
+      });
       state.eventAt = state.now;
-      state.event = 'RESUMED';
-      state.reason = 'RUNNING';
     }
     applyCameraDrift(state, dt);
     return publicState(state);
@@ -772,12 +815,12 @@ function step(state, rawInputs, dt, nowArg) {
   if (input.pause && !state._pauseHeld) {
     state._pauseHeld = true;
     state.prevPhase = state.phase;
-    state.phase = PHASES.paused;
-    state.runState = PHASES.paused;
+    setPhase(state, PHASES.paused, state.now, {
+      reason: 'PAUSED',
+      eventText: 'PAUSED'
+    });
     state.pauseAt = state.now;
-    state.reason = 'PAUSED';
     state.event = 'PAUSED';
-    state.eventAt = state.now;
     return publicState(state);
   }
 
@@ -790,8 +833,7 @@ function step(state, rawInputs, dt, nowArg) {
       state.cooldownUntil = state.now + COOLDOWN_MS;
     }
     if (state.now >= state.cooldownUntil) {
-      state.phase = PHASES.cooldown;
-      state.runState = PHASES.cooldown;
+      setPhase(state, PHASES.cooldown, state.now);
     }
     return publicState(state);
   }
