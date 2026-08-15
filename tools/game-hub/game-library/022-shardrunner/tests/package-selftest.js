@@ -9,6 +9,64 @@ const cp = require('child_process');
 const root = path.resolve(__dirname, '..');
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'game.manifest.json'), 'utf8'));
 const Core = require(path.join(root, 'runtime', 'shardrunner-core.cjs'));
+const SERVER_TEST_PORT = 8965;
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function request(port, pathName, options = {}) {
+  const requestOptions = {
+    method: options.method || 'GET',
+    headers: Object.assign({}, options.headers || {})
+  };
+  if (options.body !== undefined) {
+    requestOptions.body = JSON.stringify(options.body);
+    requestOptions.headers['content-type'] = 'application/json';
+  }
+  return fetch(`http://127.0.0.1:${port}${pathName}`, requestOptions);
+}
+
+async function requestJson(port, pathName, options = {}) {
+  const response = await request(port, pathName, options);
+  const body = await response.json();
+  return { response, body };
+}
+
+async function waitForHealth(port) {
+  const deadline = Date.now() + 4000;
+  let last;
+  while (Date.now() < deadline) {
+    try {
+      const response = await request(port, '/health');
+      if (response.ok) return response;
+      last = new Error('health status ' + response.status);
+    } catch (error) {
+      last = error;
+    }
+    await delay(50);
+  }
+  throw last || new Error('Server did not become healthy');
+}
+
+function startServerForTest(port) {
+  const proc = cp.spawn(process.execPath, [path.join(root, 'runtime', 'server.cjs')], {
+    env: Object.assign({}, process.env, { PORT: String(port) }),
+    stdio: ['ignore', 'ignore', 'ignore']
+  });
+  proc.__testPort = port;
+  return proc;
+}
+
+async function stopServer(proc) {
+  if (!proc || proc.killed) return;
+  await new Promise((resolve) => {
+    const done = () => resolve();
+    proc.once('exit', done);
+    proc.kill('SIGTERM');
+    setTimeout(done, 250);
+  });
+}
 
 function newState(seed) {
   return Core.create([], 1_000, { seed: seed });
@@ -58,6 +116,97 @@ function simulateRun(seed, frames) {
     score
   };
 }
+
+test('runtime server returns stable beta state contract and settings input loop', async () => {
+  const proc = startServerForTest(SERVER_TEST_PORT);
+  try {
+    await waitForHealth(SERVER_TEST_PORT);
+
+    const settingsBeforeResp = await requestJson(SERVER_TEST_PORT, '/settings?room=AXM1&player=p1');
+    assert.equal(settingsBeforeResp.response.status, 200);
+    assert.equal(settingsBeforeResp.body.ok, true);
+    const defaultSettings = settingsBeforeResp.body.settings;
+
+    const stateResp = await requestJson(SERVER_TEST_PORT, '/state?room=AXM1&player=p1');
+    const state = stateResp.body;
+    assert.equal(stateResp.response.status, 200);
+    assert.equal(state.status, 'EXPERIMENTAL');
+    assert.equal(state.phase, 'countdown');
+    assert.equal(state.runVersion, '0.2.0');
+    assert.equal(state.buildVersion, '0.2.0');
+    assert.equal(state.attempt, 1);
+    assert.equal(state.bestScore, 0);
+    assert.equal(state.seed, state.randomSeed);
+    assert.ok(state.runStats);
+    assert.equal(typeof state.runStats.distance, 'number');
+    assert.equal(typeof state.runStats.shards, 'number');
+    assert.equal(typeof state.runStats.stamina, 'number');
+    assert.equal(typeof state.runStats.combo, 'number');
+    assert.ok('fallReason' in state.runStats);
+
+    const settingsPost = {
+      reduced_motion: true,
+      camera_tilt_lock: true,
+      haptics_hint: false,
+      extraSignal: 11
+    };
+    const settingsPostResp = await requestJson(SERVER_TEST_PORT, '/settings?room=AXM1&player=p1', {
+      method: 'POST',
+      body: settingsPost
+    });
+    assert.equal(settingsPostResp.response.status, 200);
+    assert.equal(settingsPostResp.body.ok, true);
+
+    const stateAfterSettings = await requestJson(SERVER_TEST_PORT, '/state?room=AXM1&player=p1');
+    assert.equal(stateAfterSettings.body.settings.reduced_motion, true);
+    assert.equal(stateAfterSettings.body.settings.camera_tilt_lock, true);
+    assert.equal(stateAfterSettings.body.settings.haptics_hint, false);
+    assert.equal(stateAfterSettings.body.settings.audio, defaultSettings.audio);
+
+    const inputBody = {
+      moveX: '0.72',
+      moveZ: '-0.39',
+      jump: true,
+      pause: false,
+      owner: 'gamepad',
+      source: 'pad-0',
+      restart: false,
+      debugOnly: 'ignore'
+    };
+    const inputResp = await requestJson(SERVER_TEST_PORT, '/input?room=AXM1&player=p1', {
+      method: 'POST',
+      body: inputBody
+    });
+    assert.equal(inputResp.response.status, 200);
+    assert.equal(inputResp.body.ok, true);
+    assert.equal(inputResp.body.owner, 'gamepad');
+    assert.equal(inputResp.body.source, 'pad-0');
+
+    await delay(80);
+    const activeAfterInput = await requestJson(SERVER_TEST_PORT, '/state?room=AXM1&player=p1');
+    assert.equal(activeAfterInput.body.inputSource, 'pad-0');
+    assert.equal(activeAfterInput.body.attempt, 1);
+
+    const restartSeed = 0x8f1d;
+    const restartResp = await requestJson(SERVER_TEST_PORT, '/restart?room=AXM1&player=p1', {
+      method: 'POST',
+      body: { seed: restartSeed }
+    });
+    assert.equal(restartResp.response.status, 200);
+    assert.equal(restartResp.body.ok, true);
+    assert.equal(restartResp.body.state.seed, restartSeed);
+    assert.equal(restartResp.body.state.attempt, 2);
+    assert.equal(restartResp.body.state.phase, 'countdown');
+
+    const postRestartState = await requestJson(SERVER_TEST_PORT, '/state?room=AXM1&player=p1');
+    assert.equal(postRestartState.body.attempt, 2);
+    assert.equal(postRestartState.body.runVersion, '0.2.0');
+    assert.equal(postRestartState.body.runSummary.attempt, 2);
+    assert.equal(postRestartState.body.runSummary.bestCombo, 0);
+  } finally {
+    await stopServer(proc);
+  }
+});
 
 test('manifest required paths exist', () => {
   assert.equal(manifest.slot, '022');

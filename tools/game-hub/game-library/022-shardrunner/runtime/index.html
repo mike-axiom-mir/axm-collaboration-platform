@@ -96,6 +96,7 @@
       left:50%; top:52%;
       transform:translate(-50%, -50%);
       pointer-events:auto;
+      touch-action: none;
       text-align:center;
       border:1px solid rgba(255,214,106,.35);
       background:rgba(6,14,28,.73);
@@ -107,6 +108,7 @@
       text-transform:uppercase;
       letter-spacing:0.08em;
       backdrop-filter: blur(6px);
+      z-index: 10;
     }
     .overlay.show { display:block; }
     .overlay h1 { margin:0 0 6px; font-size:18px; color:#8ff7ff; }
@@ -125,6 +127,7 @@
       font-size:10px;
       text-transform:uppercase;
       letter-spacing:.08em;
+      touch-action: manipulation;
     }
     .overlay button:hover { background:#17385a; }
     .overlay button.hidden { display:none; }
@@ -351,7 +354,7 @@
         <p id="tip">Controls: WASD/Arrows to steer · Space to jump · P or ⎋ to pause · R / pause controls to restart · gamepad or touch support</p>
         <p id="onboardingText">CONTROL LEGEND: steer lanes with A/D or ←/→, jump with W/↑/Space or B/J on gamepad, pause with P/⎋ or shoulder button. Stay in open lanes, collect blue shards, avoid red geometry.</p>
         <div class="buttons" id="actions">
-          <button id="overlayAction">Continue</button>
+          <button id="overlayAction" class="hidden">Continue</button>
           <button id="restartBtn">Restart</button>
         </div>
       </section>

@@ -96,6 +96,7 @@ function getGameForSession(session) {
 
 function applyStateSettings(state, session) {
   const cloneState = Core.publicState(state);
+  cloneState.settings = Object.assign({}, session.settings);
   cloneState.bestScore = session.bestScore;
   cloneState.lastRun = session.lastRun || state.lastRun || null;
   cloneState.lastRunSummary = state.runSummary || null;
