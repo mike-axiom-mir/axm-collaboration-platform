@@ -85,3 +85,18 @@ executor. It can invoke only a caller-injected handler after the exact decision
 passes. Executor declarations include budgets, denial probes, known gaps,
 cancellation, and mandatory cleanup. The receipt retains success, partial,
 failure, or cancellation; substrate names never prove confinement.
+
+## Phase 4 workflow and evidence
+
+Workflow Transit compiles inert `axm.route/v1` data into a deterministic plan.
+It never executes a step. Profiles can remove steps and lower attempt budgets,
+but cannot add steps, remove a required dependency while retaining its
+consumer, increase budgets, or change effects. Only a `SUCCESS` effect paired
+with `PASS` verification becomes `VERIFIED`; other outcomes block resume or
+enter an explicit retry bounded by the locked attempt budget.
+
+Evidence Grid wraps domain payloads without flattening their schemas. It binds
+receipts to source snapshots, verifier labels, correlation/causation, freshness,
+and exact payload bytes. Contradictions remain conflicts; unknown, partial, and
+stale states never become pass. Warning baselines bind both source snapshot and
+verifier version, and renewal retains an authority-decision reference.

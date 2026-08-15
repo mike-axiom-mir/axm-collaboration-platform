@@ -22360,6 +22360,114 @@
       "authority": {
         "availableIsAuthorized": false,
         "canon": false,
+        "declaredPermissions": [],
+        "execute": false,
+        "grants": [],
+        "install": false,
+        "merge": false,
+        "networkWrite": false,
+        "promote": false,
+        "roots": false
+      },
+      "boundaries": {
+        "refuses": [
+          "baseline-renewal-without-authority-reference",
+          "canon-change",
+          "digest-as-correctness-proof",
+          "hidden-conflict",
+          "merge",
+          "promotion",
+          "receipt-presence-as-truth",
+          "root-change",
+          "stale-baseline-as-current",
+          "unknown-to-pass"
+        ],
+        "writes": []
+      },
+      "classification": {
+        "basis": [
+          "manifest.legoBlockKind"
+        ],
+        "kind": "SENSOR",
+        "state": "DECLARED"
+      },
+      "effects": {
+        "capable": [
+          "OBSERVE_LOCAL"
+        ],
+        "declarationInputs": [],
+        "measured": false,
+        "note": "Effects are declarations/inferences, not authority or proof that an effect occurred.",
+        "unknownDeclarations": []
+      },
+      "id": "shared/evidence-grid",
+      "name": "AXM LEGO City Evidence Grid",
+      "proof": {
+        "behaviorProvenByGraph": false,
+        "evidenceLocators": [],
+        "freshness": "UNKNOWN",
+        "selftests": [
+          "shared/evidence-grid/selftest.js"
+        ]
+      },
+      "resources": {
+        "readiness": [
+          "explicit-verifier",
+          "named-source-snapshot",
+          "node-runtime"
+        ],
+        "uses": [
+          "caller-supplied-clock",
+          "domain-receipts",
+          "named-source-snapshot"
+        ]
+      },
+      "schema": "axm.block-view/v1",
+      "sockets": {
+        "accepts": [
+          "axm.warning-baseline/v1",
+          "domain-receipt"
+        ],
+        "consumes": [
+          "domain-receipt",
+          "named-source-snapshot"
+        ],
+        "emits": [
+          "axm.evidence-summary/v1",
+          "axm.receipt/v1",
+          "axm.warning-delta/v1"
+        ],
+        "provides": [
+          "city.evidence.conflict",
+          "city.evidence.envelope",
+          "city.evidence.freshness",
+          "city.warning.delta-source-bound"
+        ]
+      },
+      "source": {
+        "contract": "shared/evidence-grid/module.contract.json",
+        "declarationFiles": [
+          "shared/evidence-grid/manifest.json",
+          "shared/evidence-grid/module.contract.json"
+        ],
+        "declaredId": "evidence-grid",
+        "digest": "dec205b3bdb03977b4fb5297d8b969579ed033f3cda1e95019ae3317aaa56f70",
+        "manifest": "shared/evidence-grid/manifest.json",
+        "observedSourceFileCount": 9,
+        "root": "shared/evidence-grid"
+      },
+      "status": "EXPERIMENTAL",
+      "surfaces": {
+        "audience": "human-machine",
+        "entry": "evidence-grid-core.js",
+        "type": "machine-capability"
+      },
+      "version": "v0.1"
+    },
+    {
+      "authority": {
+        "availableIsAuthorized": false,
+        "canon": false,
         "declaredPermissions": [
           "explicit-local-output-directory"
         ],
@@ -23562,6 +23670,113 @@
         "type": "UNDECLARED"
       },
       "version": "1.0.0"
+    },
+    {
+      "authority": {
+        "availableIsAuthorized": false,
+        "canon": false,
+        "declaredPermissions": [],
+        "execute": false,
+        "grants": [],
+        "install": false,
+        "merge": false,
+        "networkWrite": false,
+        "promote": false,
+        "roots": false
+      },
+      "boundaries": {
+        "refuses": [
+          "canon-change",
+          "domain-profile-authority-expansion",
+          "implicit-start",
+          "merge",
+          "promotion",
+          "root-change",
+          "route-mutation-after-lock",
+          "skip-unverified-step",
+          "step-execution"
+        ],
+        "writes": []
+      },
+      "classification": {
+        "basis": [
+          "manifest.legoBlockKind"
+        ],
+        "kind": "ROUTE",
+        "state": "DECLARED"
+      },
+      "effects": {
+        "capable": [
+          "NONE"
+        ],
+        "declarationInputs": [],
+        "measured": false,
+        "note": "Effects are declarations/inferences, not authority or proof that an effect occurred.",
+        "unknownDeclarations": []
+      },
+      "id": "shared/workflow-transit",
+      "name": "AXM LEGO City Workflow Transit",
+      "proof": {
+        "behaviorProvenByGraph": false,
+        "evidenceLocators": [],
+        "freshness": "UNKNOWN",
+        "selftests": [
+          "shared/workflow-transit/selftest.js"
+        ]
+      },
+      "resources": {
+        "readiness": [
+          "locked-route",
+          "node-runtime",
+          "verified-step-receipts"
+        ],
+        "uses": [
+          "effect-receipts",
+          "evidence-receipts",
+          "typed-route-data"
+        ]
+      },
+      "schema": "axm.block-view/v1",
+      "sockets": {
+        "accepts": [
+          "axm.route-profile/v1",
+          "axm.route-step-receipt/v1",
+          "axm.route/v1"
+        ],
+        "consumes": [
+          "axm.route-profile/v1",
+          "axm.route-step-receipt/v1",
+          "axm.route/v1"
+        ],
+        "emits": [
+          "axm.route-instance/v1"
+        ],
+        "provides": [
+          "city.route.checkpoint",
+          "city.route.compile-locked",
+          "city.route.profile-narrow",
+          "city.route.resume-verified"
+        ]
+      },
+      "source": {
+        "contract": "shared/workflow-transit/module.contract.json",
+        "declarationFiles": [
+          "shared/workflow-transit/manifest.json",
+          "shared/workflow-transit/module.contract.json"
+        ],
+        "declaredId": "workflow-transit",
+        "digest": "c4c2bec046b79d44bc1a59f662331d786f736859fad09fe795a4f7bf02bd055d",
+        "manifest": "shared/workflow-transit/manifest.json",
+        "observedSourceFileCount": 9,
+        "root": "shared/workflow-transit"
+      },
+      "status": "EXPERIMENTAL",
+      "surfaces": {
+        "audience": "human-machine",
+        "entry": "workflow-transit-core.js",
+        "type": "machine-capability"
+      },
+      "version": "v0.1"
     },
     {
       "authority": {
@@ -30040,6 +30255,27 @@
     },
     {
       "consumers": [
+        "shared/workflow-transit"
+      ],
+      "id": "axm.route-profile/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/workflow-transit"
+      ],
+      "id": "axm.route-step-receipt/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
+        "shared/workflow-transit"
+      ],
+      "id": "axm.route/v1",
+      "providers": []
+    },
+    {
+      "consumers": [
         "universal-object-fabric"
       ],
       "id": "axm.runtime-capsule/v0.7",
@@ -31657,6 +31893,27 @@
     },
     {
       "consumers": [],
+      "id": "city.evidence.conflict",
+      "providers": [
+        "shared/evidence-grid"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.evidence.envelope",
+      "providers": [
+        "shared/evidence-grid"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.evidence.freshness",
+      "providers": [
+        "shared/evidence-grid"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "city.executor.dispatch-authorized",
       "providers": [
         "shared/hands-rail"
@@ -31706,6 +31963,34 @@
     },
     {
       "consumers": [],
+      "id": "city.route.checkpoint",
+      "providers": [
+        "shared/workflow-transit"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.route.compile-locked",
+      "providers": [
+        "shared/workflow-transit"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.route.profile-narrow",
+      "providers": [
+        "shared/workflow-transit"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.route.resume-verified",
+      "providers": [
+        "shared/workflow-transit"
+      ]
+    },
+    {
+      "consumers": [],
       "id": "city.schema.adapter-route-explicit",
       "providers": [
         "shared/schema-registry"
@@ -31730,6 +32015,13 @@
       "id": "city.schema.resolve-exact",
       "providers": [
         "shared/schema-registry"
+      ]
+    },
+    {
+      "consumers": [],
+      "id": "city.warning.delta-source-bound",
+      "providers": [
+        "shared/evidence-grid"
       ]
     },
     {
@@ -32992,6 +33284,13 @@
       "providers": [
         "studio"
       ]
+    },
+    {
+      "consumers": [
+        "shared/evidence-grid"
+      ],
+      "id": "domain-receipt",
+      "providers": []
     },
     {
       "consumers": [],
@@ -37291,6 +37590,13 @@
       "providers": [
         "prehub"
       ]
+    },
+    {
+      "consumers": [
+        "shared/evidence-grid"
+      ],
+      "id": "named-source-snapshot",
+      "providers": []
     },
     {
       "consumers": [],
@@ -43264,6 +43570,11 @@
       "sha256": "9ab893a9e7713f5bde658bc21995ec2a5fcc9799947a13e85c99949c4c3f8f9b"
     },
     {
+      "id": "axm.evidence-summary/v1",
+      "path": "shared/evidence-grid/evidence-summary.schema.json",
+      "sha256": "0fe945e6927d7a233745d1292c01ba4c8b7f6cd0f7540bffbee7b97641cf440d"
+    },
+    {
       "id": "axm.executor-declaration/v1",
       "path": "shared/hands-rail/executor-declaration.schema.json",
       "sha256": "32c0dc146fd422154b5b0933784bae4b4f7e1d9343031aa6e6f3a175c9196115"
@@ -44099,6 +44410,11 @@
       "sha256": "f41923aae693fcb8286afc45db82c9a82010db03159e89b749169837aa16541e"
     },
     {
+      "id": "axm.receipt/v1",
+      "path": "shared/evidence-grid/receipt.schema.json",
+      "sha256": "290cb92a9c743ebb56f9fb7a4775906242f0ebee0cb74ec2bc20eb095683a76b"
+    },
+    {
       "id": "axm.repairbuddy.replay-recipe/v1",
       "path": "tools/repairbuddy/replay-recipe.schema.json",
       "sha256": "bdd1ba38e40082759c6b7c7dec9efe1d500d71ab76a600bd36dfc34b2574c8e0"
@@ -44122,6 +44438,26 @@
       "id": "axm.research-observation/v1",
       "path": "shared/deterministic-research/schemas/research-observation.schema.json",
       "sha256": "99d14868f9d10448321db62b838352c4ee61969d6a3abb0af4d76a6c14b5b6f1"
+    },
+    {
+      "id": "axm.route-instance/v1",
+      "path": "shared/workflow-transit/route-instance.schema.json",
+      "sha256": "6a01e28da5ee2d2d8fa331591e16cbe6691897a466ea5d5343cab6bb9295d313"
+    },
+    {
+      "id": "axm.route-profile/v1",
+      "path": "shared/workflow-transit/route-profile.schema.json",
+      "sha256": "572540ec7d8743f568311d660dacb393ea914eee05b493044dd0083faa2f8615"
+    },
+    {
+      "id": "axm.route-step-receipt/v1",
+      "path": "shared/workflow-transit/route-step-receipt.schema.json",
+      "sha256": "cfe646951788f2f73c7b737f107996a665bc30ac317d940279bb08234d44c390"
+    },
+    {
+      "id": "axm.route/v1",
+      "path": "shared/workflow-transit/route.schema.json",
+      "sha256": "8e691b380febb0bb3853bd23affd533ebaa93b1ceb74e443408bdc19d687b945"
     },
     {
       "id": "axm.schema-compatibility/v1",
@@ -44407,6 +44743,16 @@
       "id": "axm.visual-stack-draft/v1",
       "path": "shared/neural-visual/visual-stack-draft.schema.json",
       "sha256": "720ff358c6f04a57725711ac99d2074f49b29fd626a8667588c0a543058c3b98"
+    },
+    {
+      "id": "axm.warning-baseline/v1",
+      "path": "shared/evidence-grid/warning-baseline.schema.json",
+      "sha256": "c33de244085516dd620fc82b062675a47fc3450d1d9cd38a7fddd15956fa196b"
+    },
+    {
+      "id": "axm.warning-delta/v1",
+      "path": "shared/evidence-grid/warning-delta.schema.json",
+      "sha256": "f61ae135eb64a4e2724ca133046d00ec8529350132878ddfb7309ef5b28c745b"
     },
     {
       "id": "axm.workshop-update-manifest/v1",
@@ -44944,18 +45290,18 @@
       "sha256": "2effd339ff854a7bd1bdc8bc97710e3a65bf33ac01c5c9f27d7893f5fda0faae"
     }
   ],
-  "semanticDigest": "ad1a0ebc85e6b90f0d779d55d285180b4056b07aac6ec8f1a6b11d0018337bce",
+  "semanticDigest": "81d0602ccd49bbcc16abee4d00f0202efc49f46beedef3736af80726d6f909be",
   "source": {
     "commit": null,
     "commitBinding": "UNBOUND_SELF_REFERENTIAL_OUTPUT",
-    "declarationDigest": "3c94627d93b6be1989ae09c42e166e1ae07cc272350c753f812af5c29c750b5e",
+    "declarationDigest": "32a03b67b8bead163737e1bebbb760225c16ecb44d51730c56b5243bd9d22fd5",
     "pathForm": "repository-relative-posix",
     "roots": [
       "shared",
       "tools",
       "worlds"
     ],
-    "snapshotIdentity": "3c94627d93b6be1989ae09c42e166e1ae07cc272350c753f812af5c29c750b5e"
+    "snapshotIdentity": "32a03b67b8bead163737e1bebbb760225c16ecb44d51730c56b5243bd9d22fd5"
   },
   "summary": {
     "blockKinds": {
@@ -44964,15 +45310,16 @@
       "HAND": 128,
       "ORGAN": 19,
       "ROOM": 33,
-      "ROUTE": 24
+      "ROUTE": 25,
+      "SENSOR": 1
     },
-    "blocks": 233,
-    "capabilities": 1958,
-    "declaredContracts": 230,
-    "declaredManifests": 220,
+    "blocks": 235,
+    "capabilities": 1971,
+    "declaredContracts": 232,
+    "declaredManifests": 222,
     "edges": 32,
-    "schemas": 408,
-    "unresolved": 1519
+    "schemas": 416,
+    "unresolved": 1523
   },
   "truth": {
     "absenceIsSafetyProof": false,
@@ -51651,12 +51998,6 @@
       "state": "UNKNOWN"
     },
     {
-      "blockId": "route",
-      "code": "UNRESOLVED_SCHEMA",
-      "socket": "axm.route/v1",
-      "state": "UNKNOWN"
-    },
-    {
       "blockId": "runner",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "browser:blob-download",
@@ -52023,6 +52364,18 @@
       "state": "UNKNOWN"
     },
     {
+      "blockId": "shared/evidence-grid",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "domain-receipt",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/evidence-grid",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "named-source-snapshot",
+      "state": "UNKNOWN"
+    },
+    {
       "blockId": "shared/game-asset-foundation",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "axm.asset-brief/v1",
@@ -52152,6 +52505,24 @@
       "blockId": "shared/schema-registry",
       "code": "UNRESOLVED_CAPABILITY",
       "socket": "filesystem:declared-schema-files",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/workflow-transit",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.route-profile/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/workflow-transit",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.route-step-receipt/v1",
+      "state": "UNKNOWN"
+    },
+    {
+      "blockId": "shared/workflow-transit",
+      "code": "UNRESOLVED_CAPABILITY",
+      "socket": "axm.route/v1",
       "state": "UNKNOWN"
     },
     {

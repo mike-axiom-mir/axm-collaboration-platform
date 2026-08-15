@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.route-step-receipt/v1",
+  "type": "object",
+  "required": ["schema", "stepId", "stepDigest", "state", "verificationState", "effectReceiptDigest", "evidenceRefs", "completedAt", "receiptDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.route-step-receipt/v1" },
+    "stepId": { "type": "string" },
+    "stepDigest": { "type": "string" },
+    "state": { "enum": ["SUCCESS", "PARTIAL", "FAILURE", "CANCELLED"] },
+    "verificationState": { "enum": ["PASS", "FAIL", "UNKNOWN", "STALE"] },
+    "effectReceiptDigest": { "type": ["string", "null"] },
+    "evidenceRefs": { "type": "array" },
+    "completedAt": { "type": "string" },
+    "receiptDigest": { "type": "string" }
+  }
+}

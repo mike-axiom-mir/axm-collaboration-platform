@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "workflow-transit",
+  "version": "v0.1",
+  "provides": ["city.route.compile-locked", "city.route.profile-narrow", "city.route.checkpoint", "city.route.resume-verified"],
+  "consumes": ["axm.route/v1", "axm.route-profile/v1", "axm.route-step-receipt/v1"],
+  "permissions": [],
+  "handoffs": { "emits": ["axm.route-instance/v1"], "accepts": ["axm.route/v1", "axm.route-profile/v1", "axm.route-step-receipt/v1"] },
+  "lifecycle": { "state_owner": "caller", "reload": "resume-from-verified-checkpoint", "disconnect": "leave-explicit-checkpoint", "cleanup": "not-applicable" },
+  "boundaries": {
+    "writes": [],
+    "refuses": ["step-execution", "implicit-start", "skip-unverified-step", "domain-profile-authority-expansion", "route-mutation-after-lock", "promotion", "merge", "canon-change", "root-change"]
+  }
+}

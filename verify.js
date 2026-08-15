@@ -260,6 +260,14 @@ try {
   else ok('city authority/hands focused suite: 22 assertion(s); external decision-maker verification required; no real executor bundled');
 } catch(e) { fail('city authority/hands focused suite could not run: '+e.message); }
 
+/* 18 - WORKFLOW/EVIDENCE: route state cannot skip unverified work and proof
+   summaries preserve stale, partial, unknown, and conflicting evidence. */
+try {
+  const workflowAssertions = require('./shared/workflow-transit/selftest').run();
+  const evidenceAssertions = require('./shared/evidence-grid/selftest').run();
+  ok('city workflow/evidence focused suite: '+(workflowAssertions+evidenceAssertions)+' assertion(s); workflow execution remains external');
+} catch(e) { fail('city workflow/evidence focused suite failed: '+(e.code ? e.code+': ' : '')+e.message); }
+
 /* ---- report ---- */
 const generatedAt = new Date().toISOString();
 const head = 'AXM VERIFY — '+generatedAt+'\n'+

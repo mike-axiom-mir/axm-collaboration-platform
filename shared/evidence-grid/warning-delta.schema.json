@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.warning-delta/v1",
+  "type": "object",
+  "required": ["schema", "state", "baselineSourceSnapshot", "currentSourceSnapshot", "verifierVersion", "added", "resolved", "unchanged", "renewalAuthorityDecisionRef", "deltaDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "axm.warning-delta/v1" },
+    "state": { "enum": ["CURRENT", "STALE"] },
+    "baselineSourceSnapshot": { "type": "string" },
+    "currentSourceSnapshot": { "type": "string" },
+    "verifierVersion": { "type": "string" },
+    "added": { "type": "array" },
+    "resolved": { "type": "array" },
+    "unchanged": { "type": "array" },
+    "renewalAuthorityDecisionRef": { "type": ["string", "null"] },
+    "deltaDigest": { "type": "string" }
+  }
+}

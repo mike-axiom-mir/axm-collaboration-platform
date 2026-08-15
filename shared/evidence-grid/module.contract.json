@@ -1,0 +1,14 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "evidence-grid",
+  "version": "v0.1",
+  "provides": ["city.evidence.envelope", "city.evidence.freshness", "city.evidence.conflict", "city.warning.delta-source-bound"],
+  "consumes": ["domain-receipt", "named-source-snapshot"],
+  "permissions": [],
+  "handoffs": { "emits": ["axm.receipt/v1", "axm.evidence-summary/v1", "axm.warning-delta/v1"], "accepts": ["domain-receipt", "axm.warning-baseline/v1"] },
+  "lifecycle": { "state_owner": "none", "reload": "recompile-from-receipts", "disconnect": "not-applicable", "cleanup": "not-applicable" },
+  "boundaries": {
+    "writes": [],
+    "refuses": ["receipt-presence-as-truth", "digest-as-correctness-proof", "hidden-conflict", "unknown-to-pass", "stale-baseline-as-current", "baseline-renewal-without-authority-reference", "promotion", "merge", "canon-change", "root-change"]
+  }
+}

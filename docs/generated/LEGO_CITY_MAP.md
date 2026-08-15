@@ -4,9 +4,9 @@ Status: **EXPERIMENTAL generated view**
 
 Source commit: `UNBOUND (see declaration digest and live command receipt)`
 
-Semantic graph digest: `ad1a0ebc85e6b90f0d779d55d285180b4056b07aac6ec8f1a6b11d0018337bce`
+Semantic graph digest: `81d0602ccd49bbcc16abee4d00f0202efc49f46beedef3736af80726d6f909be`
 
-Blocks: 233 · Capabilities: 1958 · Schemas: 408 · Unresolved edges: 1519
+Blocks: 235 · Capabilities: 1971 · Schemas: 416 · Unresolved edges: 1523
 
 This file is generated from the same graph as the machine views. Labels never grant installation, execution, network, promotion, merge, CANON, or root authority.
 
@@ -193,6 +193,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/authority-grid | BRICK (DECLARED) | EXPERIMENTAL | NONE | 4 | 2 | 1 selftest(s) |
 | shared/city-graph | ORGAN (DECLARED) | EXPERIMENTAL | NONE | 5 | 5 | 1 selftest(s) |
 | shared/event-journal | ORGAN (DECLARED) | EXPERIMENTAL | WRITE_CANDIDATE | 3 | 2 | 1 selftest(s) |
+| shared/evidence-grid | SENSOR (DECLARED) | EXPERIMENTAL | OBSERVE_LOCAL | 4 | 2 | 1 selftest(s) |
 | shared/game-asset-foundation | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 13 | 3 | 1 selftest(s) |
 | shared/game-capability-atlas | HAND (INFERRED_UNCONFIRMED) | EXPERIMENTAL | WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
 | shared/game-fsm | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 0 | 3 | 1 selftest(s) |
@@ -206,6 +207,7 @@ This file is generated from the same graph as the machine views. Labels never gr
 | shared/visual-fx | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 0 | 1 selftest(s) |
 | shared/visual-kernel | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 0 | 1 selftest(s) |
 | shared/visual-proof | ORGAN (INFERRED_UNCONFIRMED) | EXPERIMENTAL | NONE | 5 | 0 | 1 selftest(s) |
+| shared/workflow-transit | ROUTE (DECLARED) | EXPERIMENTAL | NONE | 4 | 3 | 1 selftest(s) |
 | shell-guardian | HAND (INFERRED_UNCONFIRMED) | TEST | EXECUTE_TRUSTED, WRITE_CANDIDATE | 4 | 2 | 1 selftest(s) |
 | skinner | HAND (INFERRED_UNCONFIRMED) | TEST | WRITE_CANDIDATE | 9 | 4 | 2 selftest(s) |
 | source-connector-hub | BRIDGE (INFERRED_UNCONFIRMED) | TEST | NETWORK_READ | 5 | 2 | 1 selftest(s) |
@@ -1359,7 +1361,6 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `route` → `browser:blob-download` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `route` → `hub:module-runtime` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `route` → `hub:route-core` (UNKNOWN)
-- `UNRESOLVED_SCHEMA` — `route` → `axm.route/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `runner` → `browser:blob-download` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `runner` → `hub:module-bridge/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `runner` → `human:explicit-review-and-terminal-run` (UNKNOWN)
@@ -1421,6 +1422,8 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_CAPABILITY` — `shared/city-graph` → `json-schema:draft-2020-12` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/event-journal` → `axm.event/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/event-journal` → `filesystem:explicit-journal-file` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/evidence-grid` → `domain-receipt` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/evidence-grid` → `named-source-snapshot` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/game-asset-foundation` → `axm.asset-brief/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/game-asset-foundation` → `axm.asset-hand-result/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/game-asset-foundation` → `service:asset-hands` (UNKNOWN)
@@ -1443,6 +1446,9 @@ This file is generated from the same graph as the machine views. Labels never gr
 - `UNRESOLVED_SCHEMA` — `shared/procedural-animation-blocks` → `axm.procedural-motion-block/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/schema-registry` → `axm.city-graph/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shared/schema-registry` → `filesystem:declared-schema-files` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/workflow-transit` → `axm.route-profile/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/workflow-transit` → `axm.route-step-receipt/v1` (UNKNOWN)
+- `UNRESOLVED_CAPABILITY` — `shared/workflow-transit` → `axm.route/v1` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shell-guardian` → `grok:pre-tool-hook` (UNKNOWN)
 - `UNRESOLVED_CAPABILITY` — `shell-guardian` → `workshop:local-status` (UNKNOWN)
 - `UNRESOLVED_SCHEMA` — `shell-guardian` → `axm.guardian-trip/v1` (UNKNOWN)
