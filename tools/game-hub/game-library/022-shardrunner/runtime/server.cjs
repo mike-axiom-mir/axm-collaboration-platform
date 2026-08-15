@@ -108,6 +108,7 @@ function applyStateSettings(state, session) {
   cloneState.attempt = state.attempt || 1;
   cloneState.runId = state.runId;
   cloneState.runStats = cloneState.runStats || {};
+  cloneState.runStats.bestScore = cloneState.bestScore;
   cloneState.runStats.fallReason = cloneState.runStats.fallReason || cloneState.diedBy || null;
   cloneState.runSummary = {
     runId: state.runId,

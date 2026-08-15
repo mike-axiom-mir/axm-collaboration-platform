@@ -142,6 +142,7 @@ test('runtime server returns stable beta state contract and settings input loop'
     assert.equal(typeof state.runStats.shards, 'number');
     assert.equal(typeof state.runStats.stamina, 'number');
     assert.equal(typeof state.runStats.combo, 'number');
+    assert.equal(state.runStats.bestScore, 0);
     assert.ok('fallReason' in state.runStats);
 
     const settingsPost = {

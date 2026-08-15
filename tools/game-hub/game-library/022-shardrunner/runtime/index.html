@@ -146,6 +146,12 @@
       text-align:center;
       text-transform:uppercase;
     }
+    .events.phase-countdown { border-color: rgba(95, 216, 255, 0.42); }
+    .events.phase-running { border-color: rgba(143, 202, 255, 0.34); }
+    .events.phase-paused { border-color: rgba(255, 214, 106, 0.4); }
+    .events.phase-won { border-color: rgba(143, 255, 188, 0.42); }
+    .events.phase-lost { border-color: rgba(255, 110, 124, 0.42); }
+    .events.phase-cooldown { border-color: rgba(150, 150, 150, 0.34); }
     .dither {
       position:absolute;
       inset:0;
@@ -343,6 +349,7 @@
           <div id="score">score 0000</div>
           <div id="combo">combo x1</div>
           <div id="reason">state: READY</div>
+          <div id="statusReason" class="status-reason">run status: READY</div>
           <div id="ownerIndicator" class="owner-indicator">owner: KEYBOARD</div>
           <div class="meter"><i id="stamina"></i></div>
         </div>
@@ -447,6 +454,14 @@
     const playerGlow = new THREE.PointLight(0x5fd8ff, 0.5, 16);
     playerGlow.position.set(0, 2.4, 0);
     scene.add(playerGlow);
+    const FOG_COLORS = {
+      countdown: new THREE.Color(0x0a1128),
+      running: new THREE.Color(0x0b1229),
+      paused: new THREE.Color(0x151f38),
+      won: new THREE.Color(0x173022),
+      lost: new THREE.Color(0x28080f),
+      cooldown: new THREE.Color(0x0f0f14)
+    };
 
     const stateText = {
       distance: document.getElementById('distance'),
@@ -456,6 +471,7 @@
       goal: document.getElementById('goal'),
       remaining: document.getElementById('remaining'),
       reason: document.getElementById('reason'),
+      statusReason: document.getElementById('statusReason'),
       ownerIndicator: document.getElementById('ownerIndicator'),
       branches: document.getElementById('branches'),
       event: document.getElementById('event'),
@@ -749,6 +765,8 @@
       const pulse = state.cameraPulse || 0;
       const eventJolt = Math.min(1, eventFlash);
       const ease = reducedMotion ? 0.07 : 0.18;
+      const phase = state.phase || 'running';
+      const phaseFog = FOG_COLORS[phase] || FOG_COLORS.running;
       const shimmerX = Math.sin((state.progress || 0) * 0.12 + (state.now || 0) * 0.0017) * 0.13 * eventJolt;
       const shimmerY = Math.cos((state.progress || 0) * 0.11) * 0.12 * eventJolt;
       const targetY = 7.9 + (lockTilt ? 0.0 : (p.vx * 0.06)) + (reducedMotion ? 0 : pulse * 1.2) + shimmerY;
@@ -756,6 +774,7 @@
       const camTarget = new THREE.Vector3(p.x, 1.1 + p.y, lockTilt ? 5.6 : 4.5);
       const camPos = new THREE.Vector3(targetX + shimmerX, targetY, 20.6);
       const goalFog = (state.phase === 'running' || state.phase === 'paused') ? 36 : 30;
+      scene.fog.color.lerp(phaseFog, reducedMotion ? 0.12 : 0.05);
       scene.fog.far = THREE.MathUtils.lerp(scene.fog.far || 132, goalFog, reducedMotion ? 0.2 : 0.08);
       camera.position.lerp(camPos, reducedMotion ? 0.08 : ease);
       camera.lookAt(camTarget.x, Math.max(1.1, camTarget.y), lockTilt ? 3.2 : 6 + p.z);
@@ -775,11 +794,14 @@
       stateText.combo.textContent = 'combo x' + Math.max(1, state.combo || 0);
       const reasonText = state.reason === 'RUNNING' && state.event ? state.event : (state.reason || state.diedBy || state.event || 'READY');
       stateText.reason.textContent = 'state: ' + reasonText;
+      stateText.statusReason.textContent = 'phase ' + (state.phase || 'running') + ' · ' + reasonText;
       stateText.stamina.style.width = Math.max(0, Math.min(100, ((state.stamina || 0) / 100) * 100)) + '%';
       if (state.activeLanes) {
         stateText.branches.textContent = 'branch lanes open: ' + state.activeLanes.length + ' [L=' + state.activeLanes.join(',') + ']';
       }
       applyOwnerVisual();
+      stateText.event.classList.remove('phase-countdown', 'phase-running', 'phase-paused', 'phase-won', 'phase-lost', 'phase-cooldown');
+      stateText.event.classList.add('phase-' + (state.phase || 'running'));
       if (state.event && state.eventAt) {
         const age = Date.now() - state.eventAt;
         stateText.event.textContent = age < 1200 ? state.event : 'RUN';
