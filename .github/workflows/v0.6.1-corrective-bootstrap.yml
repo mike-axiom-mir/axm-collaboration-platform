@@ -68,6 +68,18 @@ jobs:
             [ -z "$file" ] || node --check "$file"
           done < <(git diff --name-only --diff-filter=ACM -- '*.js' '*.cjs' '*.mjs')
 
+      - name: Add exact compute replay diagnostic to the temporary test
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('tools/compute-substrate-lab/post-release-hardening-selftest.js')
+          text = path.read_text()
+          old = "ok(Compute.verify(accepted).pass && accepted.root.selected.year === 1834, 'legitimate human decision replays to the selected root');"
+          new = "const acceptedVerification = Compute.verify(accepted);\nok(acceptedVerification.pass && accepted.root.selected.year === 1834, 'legitimate human decision replays to the selected root; reason=' + acceptedVerification.reason);"
+          if text.count(old) != 1:
+              raise SystemExit('expected one compute replay assertion')
+          path.write_text(text.replace(old, new))
+
       - name: Run focused adversarial hardening tests
         run: node tests/v0.6.1-corrective-hardening-selftest.js
 
