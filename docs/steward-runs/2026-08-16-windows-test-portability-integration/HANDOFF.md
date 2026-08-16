@@ -52,6 +52,8 @@ Both failures are exactly explained by Git's Windows checkout newline transform:
 
 Git reports both files as `i/lf w/crlf`. For each file, the repository blob digest and the CRLF-to-LF canonical digest equal the stored provenance digest exactly. No substantive artifact drift was observed.
 
+The current live checkout happens to retain LF working-tree bytes for both artifacts, so its raw hashes already match the stored provenance values. However, `git check-attr` reports no explicit `text` or `eol` policy for either path, while the fresh isolated checkout produced CRLF. The raw-byte result therefore depends on checkout state and configuration; the live LF copies are evidence of the intended bytes, not evidence that remote main enforces them portably.
+
 ## Next contract decision
 
 The next repair must preserve the meaning of provenance rather than merely make the test green. Review and choose one explicit text-artifact contract:
