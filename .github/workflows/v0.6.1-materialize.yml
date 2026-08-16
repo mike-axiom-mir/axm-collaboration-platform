@@ -41,6 +41,12 @@ jobs:
       - name: Materialize the reviewed corrective patch
         run: node tools/release-hardening/apply-v0.6.1.js
 
+      - name: Remove transport-only applicator
+        shell: bash
+        run: |
+          rm -f tools/release-hardening/apply-v0.6.1.js
+          rmdir tools/release-hardening 2>/dev/null || true
+
       - name: Regenerate deterministic discovery surfaces
         run: |
           npm run index:tools
@@ -65,7 +71,6 @@ jobs:
           git diff --check
           node --check shared/game-production-runner/plain-file-io.js
           node --check tests/v0.6.1-hardening-selftest.js
-          node --check tools/release-hardening/apply-v0.6.1.js
 
       - name: Commit the deterministic materialization
         shell: bash
