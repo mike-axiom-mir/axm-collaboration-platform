@@ -191,4 +191,5 @@ if ($Verdict -ne 'PASS') {
   Write-Host (Get-Content -Raw -LiteralPath $ReceiptPath)
   throw "Windows clean launch smoke failed: $Failure (receipt: $ReceiptPath)"
 }
+$global:LASTEXITCODE = 0
 Write-Output "Windows clean launch smoke: PASS (receipt: $ReceiptPath)"
