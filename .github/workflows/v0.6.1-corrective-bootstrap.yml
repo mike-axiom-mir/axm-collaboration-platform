@@ -1,0 +1,86 @@
+name: Bootstrap AXM v0.6.1 corrective branch
+
+on:
+  push:
+    branches:
+      - agent/post-v0.6.0-audit-v0.6.1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-v061-corrective
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Check out exact corrective branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: agent/post-v0.6.0-audit-v0.6.1
+
+      - name: Use supported Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.17.0
+          cache: npm
+
+      - name: Install pinned dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+
+      - name: Reconstruct and apply exact corrective migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat scripts/.v061-patch/part-*.txt | tr -d '\r\n' > /tmp/axm-v061-patch.b64
+          echo "0c4b7c06a1610eae8a270a1a30d6ec18651c1dec403bc9b56ed765d5da967481  /tmp/axm-v061-patch.b64" | sha256sum --check -
+          base64 --decode /tmp/axm-v061-patch.b64 > /tmp/axm-v061-patch.js.gz
+          gzip --decompress --stdout /tmp/axm-v061-patch.js.gz > scripts/apply-v0.6.1-corrective-patch.js
+          echo "e3acb97b2beee58cccd24f58b042df394e1db3ef84330082cda9c0e8849a533b  scripts/apply-v0.6.1-corrective-patch.js" | sha256sum --check -
+          node --check scripts/apply-v0.6.1-corrective-patch.js
+          node scripts/apply-v0.6.1-corrective-patch.js
+
+      - name: Regenerate deterministic indexes and public discovery
+        run: |
+          node scripts/generate-tools-index.js
+          node scripts/generate-public-discovery.js
+
+      - name: Syntax-check every changed JavaScript file
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r file; do
+            [ -z "$file" ] || node --check "$file"
+          done < <(git diff --name-only --diff-filter=ACM -- '*.js' '*.cjs' '*.mjs')
+
+      - name: Run focused adversarial hardening tests
+        run: node tests/v0.6.1-corrective-hardening-selftest.js
+
+      - name: Verify regenerated discovery
+        run: npm run discovery:verify
+
+      - name: Run root verifier and strict live warning delta
+        run: |
+          node verify.js
+          node tools/repairbuddy/repairbuddy-cli.js warning-delta --strict --json
+
+      - name: Verify public GitHub and Pages surfaces
+        run: npm run test:public-surface
+
+      - name: Commit only the verified corrective result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'AXM corrective gate'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Corrective migration produced no staged changes.' >&2
+            exit 1
+          fi
+          git commit -m 'fix: harden v0.6.1 corrective release'
+          git push origin HEAD:agent/post-v0.6.0-audit-v0.6.1
