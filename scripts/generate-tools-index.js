@@ -10,7 +10,7 @@ const Readiness = require('../shared/readiness/tool-readiness');
 const ROOT = path.resolve(__dirname, '..');
 const outputFile = path.join(ROOT, 'tools-index.json');
 const receiptFile = path.join(ROOT, 'state', 'tool-readiness', 'latest-selftests.json');
-const RECEIPT_SCHEMA = 'axm.tool-selftest-results/v1';
+const RECEIPT_SCHEMA = Readiness.SELFTEST_RESULTS_SCHEMA;
 
 function boundedNumber(args, prefix, fallback, minimum, maximum) {
   const value = args.find(item => item.startsWith(prefix));
@@ -130,20 +130,11 @@ function readExistingReceipt(file) {
 }
 
 function receiptFromIndex(index) {
-  const checked = Readiness.validateIndex(index);
-  if (!checked.pass) throw new Error('checked-in tools index cannot preserve prior evidence: ' + checked.errors.join('; '));
-  const results = [];
-  index.tools.forEach(tool => {
-    const result = tool && tool.selftest && tool.selftest.result;
-    if (!result) return;
-    if (result.id !== tool.id) throw new Error('checked-in tools index result id does not match tool: ' + tool.id);
-    results.push(result);
-  });
-  return validateReceipt({
-    schema: RECEIPT_SCHEMA,
-    generatedAt: index.generatedAt,
-    results
-  }, 'checked-in tools index evidence');
+  try {
+    return validateReceipt(Readiness.verificationResultsFromIndex(index), 'checked-in tools index evidence');
+  } catch (error) {
+    throw new Error('checked-in tools index cannot preserve prior evidence: ' + error.message);
+  }
 }
 
 function readExistingEvidence(localReceiptFile, indexFile) {

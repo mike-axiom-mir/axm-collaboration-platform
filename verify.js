@@ -199,7 +199,10 @@ try {
 /* 13 - TOOL READINESS INDEX: promotion evidence and missing declarations stay
    visible without automatically promoting, archiving, or granting authority. */
 try {
-  const verificationResults = JSON.parse(read('state/tool-readiness/latest-selftests.json')||'null');
+  const localVerificationResults = JSON.parse(read('state/tool-readiness/latest-selftests.json')||'null');
+  const stored = JSON.parse(read('tools-index.json')||'null');
+  const storedCheck = ToolReadiness.validateIndex(stored);
+  const verificationResults = localVerificationResults || (storedCheck.pass ? ToolReadiness.verificationResultsFromIndex(stored) : null);
   const liveIndex = ToolReadiness.buildIndex(ROOT, { verificationResults });
   const checked = ToolReadiness.validateIndex(liveIndex);
   if(!checked.pass) checked.errors.forEach(error => fail('tools index: '+error));
@@ -219,8 +222,6 @@ try {
   if(missingKinds.length) warn('manifest kind migration backlog: '+missingKinds.length+' tool(s) remain legacy UNDECLARED');
   else ok('all tool manifests declare kind');
   liveIndex.promotionQueue.claimsNeedingReverification.forEach(item => warn('promotion claim needs reverification: '+item.id+' · '+item.blockers.join('; ')));
-  const stored = JSON.parse(read('tools-index.json')||'null');
-  const storedCheck = ToolReadiness.validateIndex(stored);
   if(!storedCheck.pass) warn('tools-index.json missing or invalid; run npm run index:tools');
   else if(stored.sourceDigest !== liveIndex.sourceDigest) warn('tools-index.json is stale for current manifests/contracts/selftests; run npm run index:tools');
   else ok('tools-index.json matches current structural source digest');

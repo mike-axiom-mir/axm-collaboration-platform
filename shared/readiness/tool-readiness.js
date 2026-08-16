@@ -7,6 +7,7 @@ const ContractVerifier = require('../../hub/module-contract-verifier');
 
 const INDEX_SCHEMA = 'axm.tools-index/v1';
 const MANIFEST_SCHEMA = 'axm.tool-manifest/v1';
+const SELFTEST_RESULTS_SCHEMA = 'axm.tool-selftest-results/v1';
 const STATUSES = new Set(['EXPERIMENTAL', 'TEST', 'WORKING', 'CANON', 'SHELL', 'BROKEN']);
 const KINDS = new Set(['product', 'service', 'scaffold', 'adapter', 'machine-capability']);
 const VERIFICATION_STATUSES = new Set(['TEST', 'WORKING', 'CANON']);
@@ -245,4 +246,21 @@ function validateIndex(index) {
   return { pass: errors.length === 0, errors };
 }
 
-module.exports = { INDEX_SCHEMA, MANIFEST_SCHEMA, STATUSES, KINDS, buildIndex, validateIndex, validateTargetManifest, digestFile, isVerificationTarget };
+function verificationResultsFromIndex(index) {
+  const checked = validateIndex(index);
+  if (!checked.pass) throw new Error('tools index cannot provide verification evidence: ' + checked.errors.join('; '));
+  const results = [];
+  index.tools.forEach(tool => {
+    const result = tool && tool.selftest && tool.selftest.result;
+    if (!result) return;
+    if (result.id !== tool.id) throw new Error('tools index result id does not match tool: ' + tool.id);
+    results.push(result);
+  });
+  return {
+    schema: SELFTEST_RESULTS_SCHEMA,
+    generatedAt: index.generatedAt,
+    results
+  };
+}
+
+module.exports = { INDEX_SCHEMA, MANIFEST_SCHEMA, SELFTEST_RESULTS_SCHEMA, STATUSES, KINDS, buildIndex, validateIndex, verificationResultsFromIndex, validateTargetManifest, digestFile, isVerificationTarget };
