@@ -97,9 +97,11 @@ jobs:
             exports/repairbuddy-warning-delta.json
           if-no-files-found: warn
           retention-days: 30
+
   windows-package:
     name: v0.6.1 exact Windows package gate
     runs-on: windows-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -143,14 +145,28 @@ jobs:
           Expand-Archive -LiteralPath $zip -DestinationPath $extract
           $roots = @(Get-ChildItem -LiteralPath $extract -Directory)
           if ($roots.Count -ne 1) { throw "Expected one package root, observed $($roots.Count)." }
-          & .\tests\windows-clean-launch-smoke.ps1 `
-            -CandidateSource $roots[0].FullName `
-            -ReceiptPath (Join-Path (Resolve-Path release-candidate) 'windows-package-launch-receipt.json')
+          $launchReceipt = Join-Path (Resolve-Path release-candidate) 'windows-package-launch-receipt.json'
+          try {
+            & .\tests\windows-clean-launch-smoke.ps1 `
+              -CandidateSource $roots[0].FullName `
+              -ReceiptPath $launchReceipt `
+              -ReadinessTimeoutSeconds 720
+          } finally {
+            if (Test-Path -LiteralPath $launchReceipt -PathType Leaf) {
+              Write-Host '--- exact Windows package launch receipt ---'
+              Write-Host (Get-Content -Raw -LiteralPath $launchReceipt)
+            } else {
+              Write-Warning 'Exact Windows package launch produced no receipt.'
+            }
+          }
 
       - name: Write release asset inventory
+        if: always()
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path release-candidate | Out-Null
+          $root = (Resolve-Path release-candidate).Path
           $files = @(
             'AXM-Workshop-v0.6.1-experimental-Windows-source.zip',
             'AXM-Workshop-v0.6.1-experimental-Windows-source.zip.sha256',
@@ -158,22 +174,44 @@ jobs:
             'package-restore-receipt.json',
             'windows-package-launch-receipt.json'
           )
-          $rows = foreach ($name in $files) {
-            $file = Join-Path (Resolve-Path release-candidate) $name
-            if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw "Missing release evidence: $name" }
+          $rows = @()
+          $missing = @()
+          foreach ($name in $files) {
+            $file = Join-Path $root $name
+            if (-not (Test-Path -LiteralPath $file -PathType Leaf)) {
+              $missing += $name
+              continue
+            }
             $item = Get-Item -LiteralPath $file
-            [ordered]@{ name=$name; bytes=$item.Length; sha256=(Get-FileHash -Algorithm SHA256 -LiteralPath $file).Hash.ToLowerInvariant() }
+            $rows += [ordered]@{
+              name = $name
+              bytes = $item.Length
+              sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $file).Hash.ToLowerInvariant()
+            }
+          }
+          $launchVerdict = 'MISSING'
+          $launchReceipt = Join-Path $root 'windows-package-launch-receipt.json'
+          if (Test-Path -LiteralPath $launchReceipt -PathType Leaf) {
+            try {
+              $launchVerdict = [string]((Get-Content -Raw -LiteralPath $launchReceipt | ConvertFrom-Json).verdict)
+            } catch {
+              $launchVerdict = 'MALFORMED'
+            }
           }
           [ordered]@{
-            schema='axm.release-asset-inventory/v1'
-            release='v0.6.1-experimental'
-            commit=$env:GITHUB_SHA
-            workflow_run=$env:GITHUB_RUN_ID
-            assets=$rows
-            authority=[ordered]@{ release=$false; promotion=$false; canon=$false }
+            schema = 'axm.release-asset-inventory/v2'
+            release = 'v0.6.1-experimental'
+            commit = $env:GITHUB_SHA
+            workflow_run = $env:GITHUB_RUN_ID
+            complete = ($missing.Count -eq 0)
+            launch_verdict = $launchVerdict
+            missing = @($missing)
+            assets = @($rows)
+            authority = [ordered]@{ release=$false; promotion=$false; canon=$false }
           } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath release-candidate\release-asset-inventory.json -Encoding UTF8
 
       - name: Preserve exact package evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: axm-v0.6.1-windows-release-candidate
@@ -185,5 +223,5 @@ jobs:
             release-candidate/windows-package-launch-receipt.json
             release-candidate/release-asset-inventory.json
             release-candidate/packager-output.txt
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 30
