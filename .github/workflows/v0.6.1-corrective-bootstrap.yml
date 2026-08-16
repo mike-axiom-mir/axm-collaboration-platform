@@ -41,6 +41,17 @@ jobs:
           base64 --decode /tmp/axm-v061-patch.b64 > /tmp/axm-v061-patch.js.gz
           gzip --decompress --stdout /tmp/axm-v061-patch.js.gz > scripts/apply-v0.6.1-corrective-patch.js
           echo "e3acb97b2beee58cccd24f58b042df394e1db3ef84330082cda9c0e8849a533b  scripts/apply-v0.6.1-corrective-patch.js" | sha256sum --check -
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/apply-v0.6.1-corrective-patch.js')
+          text = path.read_text()
+          old = "portableSource.includes('refuseExisting: true')"
+          new = r"/refuseExisting\\s*:\\s*true/.test(portableSource)"
+          if text.count(old) != 1:
+              raise SystemExit('expected one portable receipt assertion to repair')
+          path.write_text(text.replace(old, new))
+          PY
+          echo "7af227aaf26cb01ff44bf5f95c2a5387c58ccb03aa27d1ae0619f0724827b836  scripts/apply-v0.6.1-corrective-patch.js" | sha256sum --check -
           node --check scripts/apply-v0.6.1-corrective-patch.js
           node scripts/apply-v0.6.1-corrective-patch.js
 
