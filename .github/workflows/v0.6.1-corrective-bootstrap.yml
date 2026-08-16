@@ -52,6 +52,17 @@ jobs:
           path.write_text(text.replace(old, new))
           PY
           echo "7af227aaf26cb01ff44bf5f95c2a5387c58ccb03aa27d1ae0619f0724827b836  scripts/apply-v0.6.1-corrective-patch.js" | sha256sum --check -
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/apply-v0.6.1-corrective-patch.js')
+          text = path.read_text()
+          old = "Core.stable(Object.keys(ref).sort()) === Core.stable(['surface','locator','digest'])"
+          new = "Core.stable(Object.keys(ref).sort()) === Core.stable(['surface','locator','digest'].sort())"
+          if text.count(old) != 1:
+              raise SystemExit('expected one compute evidence-key assertion to repair')
+          path.write_text(text.replace(old, new))
+          PY
+          echo "01648502e3f967a09e7c2948143a30ac19abc53294e9f5c5e34d8e86d1cf155c  scripts/apply-v0.6.1-corrective-patch.js" | sha256sum --check -
           node --check scripts/apply-v0.6.1-corrective-patch.js
           node scripts/apply-v0.6.1-corrective-patch.js
 
@@ -67,18 +78,6 @@ jobs:
           while IFS= read -r file; do
             [ -z "$file" ] || node --check "$file"
           done < <(git diff --name-only --diff-filter=ACM -- '*.js' '*.cjs' '*.mjs')
-
-      - name: Add exact compute replay diagnostic to the temporary test
-        shell: python
-        run: |
-          from pathlib import Path
-          path = Path('tools/compute-substrate-lab/post-release-hardening-selftest.js')
-          text = path.read_text()
-          old = "ok(Compute.verify(accepted).pass && accepted.root.selected.year === 1834, 'legitimate human decision replays to the selected root');"
-          new = "const acceptedVerification = Compute.verify(accepted);\nok(acceptedVerification.pass && accepted.root.selected.year === 1834, 'legitimate human decision replays to the selected root; reason=' + acceptedVerification.reason);"
-          if text.count(old) != 1:
-              raise SystemExit('expected one compute replay assertion')
-          path.write_text(text.replace(old, new))
 
       - name: Run focused adversarial hardening tests
         run: node tests/v0.6.1-corrective-hardening-selftest.js
