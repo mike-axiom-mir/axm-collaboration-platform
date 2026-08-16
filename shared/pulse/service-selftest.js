@@ -4,7 +4,19 @@
 const assert = require('assert');
 const Service = require('./axm-body-pulse-service');
 let stored = null;
-const service = Service.create({ read: () => stored, write: value => { stored = value; } });
+const service = Service.create({
+  read: () => stored,
+  write: value => { stored = value; },
+  measure: () => ({
+    cpuUsedRatio: 0.1,
+    memoryUsedRatio: 0.1,
+    gpuUsedRatio: null,
+    gpuTemperatureC: null,
+    cpuTemperatureC: null,
+    batteryPercent: null,
+    onBattery: null
+  })
+});
 const status = service.status();
 assert.equal(status.mode, 'STOPPED');
 assert(status.modules.some(module => module.moduleId === 'asset-fabric'));
