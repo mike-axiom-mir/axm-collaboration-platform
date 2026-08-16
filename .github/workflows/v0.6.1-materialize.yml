@@ -1,0 +1,78 @@
+name: Materialize AXM v0.6.1 corrective branch
+
+on:
+  push:
+    branches:
+      - codex/v0.6.1-release-hardening
+
+permissions:
+  contents: write
+
+concurrency:
+  group: axm-v061-materialize
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the exact branch head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: codex/v0.6.1-release-hardening
+
+      - name: Use the declared Node.js line
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Expand the reviewed bootstrap bundle
+        shell: bash
+        run: |
+          if [ -f tools/release-hardening/bootstrap-v0.6.1.js ]; then
+            node tools/release-hardening/bootstrap-v0.6.1.js
+          fi
+
+      - name: Install declared dependencies
+        run: npm ci
+
+      - name: Materialize the reviewed corrective patch
+        run: node tools/release-hardening/apply-v0.6.1.js
+
+      - name: Regenerate deterministic discovery surfaces
+        run: |
+          npm run index:tools
+          npm run discovery:generate
+
+      - name: Run focused adversarial and module tests
+        run: |
+          node tests/v0.6.1-hardening-selftest.js
+          node tools/game-production-runner/selftest.js
+          node tools/hardware-research-registry/selftest.js
+          node tools/compute-substrate-lab/selftest.js
+          node tools/deterministic-pr-publisher/selftest.js
+          node tools/repairbuddy/complete-warning-delta-selftest.js
+          node tools/repairbuddy/repairbuddy-cli.js warning-delta --strict
+
+      - name: Refuse malformed generated changes
+        run: |
+          git diff --check
+          node --check shared/game-production-runner/plain-file-io.js
+          node --check tests/v0.6.1-hardening-selftest.js
+          node --check tools/release-hardening/apply-v0.6.1.js
+
+      - name: Commit the deterministic materialization
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Corrective branch was already materialized."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix: materialize v0.6.1 release hardening"
+          git push origin HEAD:codex/v0.6.1-release-hardening
