@@ -51,7 +51,7 @@
 4. Double-click **`OPEN_AXM_WORKSHOP.cmd`**.
 5. Keep the small server window open while using AXM.
 
-If GitHub shows code instead of opening AXM, nothing broke. GitHub previews files
+If GitHub shows its code instead of opening AXM, nothing broke. GitHub previews files
 but cannot run a local application; download and extract the complete folder
 first.
 
