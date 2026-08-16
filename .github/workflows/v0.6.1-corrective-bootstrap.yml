@@ -63,6 +63,39 @@ jobs:
           path.write_text(text.replace(old, new))
           PY
           echo "01648502e3f967a09e7c2948143a30ac19abc53294e9f5c5e34d8e86d1cf155c  scripts/apply-v0.6.1-corrective-patch.js" | sha256sum --check -
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/apply-v0.6.1-corrective-patch.js')
+          text = path.read_text()
+          replacements = [
+              (
+                  "const computeVerify = `function verify(pkg) {\\n  try {\\n    Core.assert(pkg && pkg.schema === PACKAGE_SCHEMA, 'compute package schema is unsupported');\\n    const copy = Core.clone(pkg), digest = copy.packageDigest; delete copy.packageDigest;\\n    Core.assert(/^[a-f0-9]{64}$/.test(String(digest || '')) && Core.digest(copy) === digest, 'compute package digest mismatch');\\n",
+                  "const computeVerify = `function verify(pkg, trustedAnchors) {\\n  try {\\n    Core.assert(pkg && pkg.schema === PACKAGE_SCHEMA, 'compute package schema is unsupported');\\n    const copy = Core.clone(pkg), digest = copy.packageDigest; delete copy.packageDigest;\\n    Core.assert(/^[a-f0-9]{64}$/.test(String(digest || '')) && Core.digest(copy) === digest, 'compute package digest mismatch');\\n    const anchors = trustedAnchors && typeof trustedAnchors === 'object' && !Array.isArray(trustedAnchors) ? trustedAnchors : {};\\n    Core.assert(Object.keys(anchors).every(key => ['expectedPackageDigest','expectedRootStateDigest'].includes(key)), 'unsupported trusted compute anchor');\\n    let anchorState = 'UNANCHORED';\\n    if (anchors.expectedPackageDigest !== undefined) {\\n      Core.assert(/^[a-f0-9]{64}$/.test(String(anchors.expectedPackageDigest || '')), 'trusted expected package digest is invalid');\\n      Core.assert(digest === anchors.expectedPackageDigest, 'trusted package digest anchor mismatch');\\n      anchorState = 'PACKAGE_DIGEST_MATCH';\\n    }\\n",
+              ),
+              (
+                  "    Core.assert(Core.digest({ selected:pkg.root.selected, history:pkg.root.history }) === pkg.root.rootStateDigest, 'root state digest mismatch');\\n    Core.assert((pkg.architectures || []).every(item => item.state === 'PROPOSED' && item.deploymentAuthority === false), 'architecture authority boundary changed');\\n",
+                  "    Core.assert(Core.digest({ selected:pkg.root.selected, history:pkg.root.history }) === pkg.root.rootStateDigest, 'root state digest mismatch');\\n    if (anchors.expectedRootStateDigest !== undefined) {\\n      Core.assert(/^[a-f0-9]{64}$/.test(String(anchors.expectedRootStateDigest || '')), 'trusted expected root-state digest is invalid');\\n      Core.assert(pkg.root.rootStateDigest === anchors.expectedRootStateDigest, 'trusted root-state digest anchor mismatch');\\n      anchorState = anchorState === 'PACKAGE_DIGEST_MATCH' ? 'PACKAGE_AND_ROOT_MATCH' : 'ROOT_STATE_DIGEST_MATCH';\\n    }\\n    Core.assert((pkg.architectures || []).every(item => item.state === 'PROPOSED' && item.deploymentAuthority === false), 'architecture authority boundary changed');\\n",
+              ),
+              (
+                  "    return {pass:true,reason:null,digest};\\n  } catch (error) { return {pass:false,reason:error.message}; }\\n}",
+                  "    return {pass:true,reason:null,digest,anchorState};\\n  } catch (error) { return {pass:false,reason:error.message,anchorState:'FAILED'}; }\\n}"
+              ),
+              (
+                  "ok(Compute.verify(accepted).pass && accepted.root.selected.year === 1834, 'legitimate human decision replays to the selected root');",
+                  "const acceptedVerification = Compute.verify(accepted, { expectedPackageDigest:accepted.packageDigest, expectedRootStateDigest:accepted.root.rootStateDigest });\\nok(acceptedVerification.pass && acceptedVerification.anchorState === 'PACKAGE_AND_ROOT_MATCH' && accepted.root.selected.year === 1834, 'legitimate human decision replays to the externally anchored selected root');",
+              ),
+              (
+                  "ok(!Compute.verify(resealEvent(changedProposal, 0)).pass, 're-sealed event cannot substitute a different proposal after the decision');",
+                  "const substitutedProposalPackage = resealEvent(changedProposal, 0);\\nconst unanchoredSubstitution = Compute.verify(substitutedProposalPackage);\\nok(unanchoredSubstitution.pass && unanchoredSubstitution.anchorState === 'UNANCHORED', 'self-contained replay labels a fully re-sealed alternate proposal as unanchored rather than authenticated');\\nok(!Compute.verify(substitutedProposalPackage, { expectedPackageDigest:accepted.packageDigest, expectedRootStateDigest:accepted.root.rootStateDigest }).pass, 'trusted external digests reject a re-sealed proposal substitution');",
+              ),
+          ]
+          for old, new in replacements:
+              if text.count(old) != 1:
+                  raise SystemExit('expected one trusted-anchor patch target: ' + old[:100])
+              text = text.replace(old, new)
+          path.write_text(text)
+          PY
+          echo "698206e6bd65e927f37fca127cd1c8a2a85db34d16e6bda39a305f72cd8b1e83  scripts/apply-v0.6.1-corrective-patch.js" | sha256sum --check -
           node --check scripts/apply-v0.6.1-corrective-patch.js
           node scripts/apply-v0.6.1-corrective-patch.js
 
