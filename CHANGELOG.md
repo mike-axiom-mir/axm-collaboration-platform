@@ -3,6 +3,45 @@
 Notable public AXM Workshop changes are recorded here. Historical workbench
 reports remain available under [`docs/history/`](docs/history/).
 
+## v0.6.0-experimental — 2026-08-16
+
+### Reviewed public integrations
+
+- Added the AI-native game production runner with external-root confinement,
+  explicit promotion and release refusal, link-aware path checks, exact cache
+  retention approvals, and honest trusted-executor labeling.
+- Added hardware research and compute-substrate modules as `DESIGN_ONLY` and
+  `PROPOSED` records. They do not gain physical execution, deployment,
+  procurement, safety-certification, promotion, roots, or CANON authority.
+- Added deterministic complete-warning delta reporting. All 43 known RepairBuddy
+  warnings remain open; none are acknowledged, suppressed, or automatically
+  repaired by this release.
+- Added the deterministic PR publisher as an `EXPERIMENTAL` / `HIGH`-risk
+  adapter. Its maximum effect is one ordinary feature-branch push and one draft
+  pull-request create or update after exact one-use confirmation. It cannot
+  stage, commit, force-push, merge, close, delete, promote, alter roots, or
+  change CANON.
+
+### Combined release evidence
+
+- Reviewed and merged pull requests #29, #30, #32, and #33 with their exact head
+  commits pinned at merge time.
+- Verified the combined `main` state with the public discovery/static gates.
+- Verified a clean Windows launch from a fresh path with no Node.js initially on
+  `PATH`.
+- Re-ran the release-facing discovery and public-surface checks before creating
+  the GitHub prerelease.
+
+### Known boundaries
+
+- This remains an experimental technical checkpoint, not production
+  certification, safety certification, promotion, or CANON.
+- The PR publisher remains a deliberately narrow high-risk adapter and requires
+  host authentication plus explicit human authorization.
+- Clean macOS/Linux first-launch proof and independent beginner comprehension
+  remain outside this cutoff.
+- No broad open-source license has been granted; see `LICENSE_STATUS.md`.
+
 ## v0.5.0-experimental - 2026-08-04
 
 ### Public capability truth

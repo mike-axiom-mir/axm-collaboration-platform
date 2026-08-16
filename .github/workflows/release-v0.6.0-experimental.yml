@@ -1,0 +1,131 @@
+name: Publish AXM v0.6.0 experimental release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/release-requests/v0.6.0-experimental.md
+
+permissions:
+  contents: write
+
+concurrency:
+  group: axm-v0.6.0-experimental-release
+  cancel-in-progress: false
+
+jobs:
+  verify-and-publish:
+    if: github.repository == 'mike-axiom-mir/axm-collaboration-platform'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: v0.6.0-experimental
+      TITLE: AXM Workshop v0.6.0 Experimental
+      NOTES_FILE: .github/release-requests/v0.6.0-experimental.md
+
+    steps:
+      - name: Check out the reviewed release commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use the declared Node.js line
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate the exact release request
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          command -v gh >/dev/null
+
+          node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+
+          const expected = '0.6.0-experimental';
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+          const notes = fs.readFileSync(process.env.NOTES_FILE, 'utf8');
+          const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
+
+          const checks = [
+            [pkg.version === expected, 'package.json version mismatch'],
+            [lock.version === expected, 'package-lock.json root version mismatch'],
+            [lock.packages && lock.packages[''] && lock.packages[''].version === expected,
+              'package-lock.json package version mismatch'],
+            [notes.startsWith('# AXM Workshop v0.6.0 Experimental\n'),
+              'release notes title mismatch'],
+            [notes.includes('Reviewed integration base: `ce47b43b4fa5883a8fe4b9ee7330f75a54e1693f`.'),
+              'reviewed integration base missing'],
+            [changelog.includes('## v0.6.0-experimental — 2026-08-16'),
+              'changelog entry missing'],
+            [!notes.includes('TBD') && !notes.includes('TODO'),
+              'release notes contain a placeholder']
+          ];
+
+          for (const [pass, message] of checks) {
+            if (!pass) throw new Error(message);
+          }
+          NODE
+
+      - name: Re-run release-facing public gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run discovery:verify
+          npm run test:public-surface
+
+      - name: Refuse an existing tag or release
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "::error::Tag ${TAG} already exists; refusing to retarget it."
+            exit 1
+          fi
+          if gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" >/dev/null 2>&1; then
+            echo "::error::Release ${TAG} already exists; refusing a duplicate."
+            exit 1
+          fi
+
+      - name: Create the exact prerelease
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "${TAG}" \
+            --target "${GITHUB_SHA}" \
+            --title "${TITLE}" \
+            --notes-file "${NOTES_FILE}" \
+            --prerelease
+
+      - name: Verify the published receiver state
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt="${RUNNER_TEMP}/release.json"
+          gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" > "${receipt}"
+
+          node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const release = JSON.parse(
+            fs.readFileSync(path.join(process.env.RUNNER_TEMP, 'release.json'), 'utf8')
+          );
+
+          const expected = {
+            tag: process.env.TAG,
+            target: process.env.GITHUB_SHA,
+            title: process.env.TITLE
+          };
+
+          if (release.tag_name !== expected.tag) throw new Error('published tag mismatch');
+          if (release.target_commitish !== expected.target) throw new Error('published target mismatch');
+          if (release.name !== expected.title) throw new Error('published title mismatch');
+          if (release.draft !== false) throw new Error('release unexpectedly remained a draft');
+          if (release.prerelease !== true) throw new Error('release was not marked prerelease');
+          NODE
