@@ -1,7 +1,9 @@
 [CmdletBinding()]
 param(
   [string]$ReceiptPath = '',
-  [string]$CandidateSource = ''
+  [string]$CandidateSource = '',
+  [ValidateRange(60, 1800)]
+  [int]$ReadinessTimeoutSeconds = 720
 )
 
 $ErrorActionPreference = 'Stop'
@@ -15,6 +17,10 @@ $StartedAt = (Get-Date).ToUniversalTime()
 $Verdict = 'FAIL'
 $Failure = $null
 $Health = $null
+$LastHealthError = $null
+$LauncherExited = $false
+$LauncherExitCode = $null
+$RuntimeObservedAt = $null
 
 if (-not $ReceiptPath) {
   $ReceiptPath = Join-Path $Root 'state\public-release\latest-windows-clean-launch.json'
@@ -28,7 +34,7 @@ function Get-FreePort {
   finally { $listener.Stop() }
 }
 
-function Get-Tail([string]$Path, [int]$Lines = 30) {
+function Get-Tail([string]$Path, [int]$Lines = 120) {
   if (-not (Test-Path -LiteralPath $Path)) { return @() }
   return @(Get-Content -LiteralPath $Path -Tail $Lines -ErrorAction SilentlyContinue | ForEach-Object { [string]$_ })
 }
@@ -80,20 +86,35 @@ try {
     $env:AXM_NONINTERACTIVE = $Previous.AXM_NONINTERACTIVE
   }
 
-  $Deadline = (Get-Date).AddMinutes(3)
+  $RuntimeNode = Join-Path $Candidate 'runtime\node\node.exe'
+  $Deadline = (Get-Date).AddSeconds($ReadinessTimeoutSeconds)
   do {
+    if ($Process.HasExited) {
+      $LauncherExited = $true
+      $LauncherExitCode = $Process.ExitCode
+      throw "Launcher exited with code $LauncherExitCode before the Hub health route became ready."
+    }
+    if (-not $RuntimeObservedAt -and (Test-Path -LiteralPath $RuntimeNode -PathType Leaf)) {
+      $RuntimeObservedAt = (Get-Date).ToUniversalTime().ToString('o')
+    }
     try {
       $Health = Invoke-RestMethod -UseBasicParsing -Uri "http://127.0.0.1:$Port/api/health" -TimeoutSec 2
+      $LastHealthError = $null
       if ($Health.ok -eq $true) { break }
-    } catch {}
+    } catch {
+      $LastHealthError = $_.Exception.Message
+    }
     Start-Sleep -Milliseconds 500
   } while ((Get-Date) -lt $Deadline)
 
-  if (-not $Health -or $Health.ok -ne $true) { throw 'Hub health route did not become ready within three minutes.' }
+  if (-not $Health -or $Health.ok -ne $true) {
+    $RuntimeState = if (Test-Path -LiteralPath $RuntimeNode -PathType Leaf) { 'present' } else { 'not-yet-present' }
+    $ProcessState = if ($Process.HasExited) { 'exited' } else { 'still-running' }
+    throw "Hub health route did not become ready within $ReadinessTimeoutSeconds seconds; launcher=$ProcessState; runtime-node=$RuntimeState."
+  }
   $Hub = Invoke-WebRequest -UseBasicParsing -Uri "http://127.0.0.1:$Port/hub/index.html" -TimeoutSec 10
   if ($Hub.StatusCode -ne 200 -or $Hub.Content -notmatch 'AXM') { throw 'Hub page did not return an AXM document.' }
 
-  $RuntimeNode = Join-Path $Candidate 'runtime\node\node.exe'
   if (-not (Test-Path -LiteralPath $RuntimeNode -PathType Leaf)) { throw 'Launcher reached health without the expected bootstrapped private runtime.' }
   $RuntimeVersion = (& $RuntimeNode --version | Select-Object -First 1)
   if ($RuntimeVersion -ne 'v24.17.0') { throw "Bootstrapped runtime reported $RuntimeVersion instead of v24.17.0." }
@@ -105,6 +126,14 @@ try {
 } catch {
   $Failure = $_.Exception.Message
 } finally {
+  if ($Process) {
+    try {
+      if ($Process.HasExited) {
+        $LauncherExited = $true
+        $LauncherExitCode = $Process.ExitCode
+      }
+    } catch {}
+  }
   if ($Process -and -not $Process.HasExited) {
     Stop-ProcessTree $Process.Id
   }
@@ -115,17 +144,26 @@ try {
   foreach ($CandidateProcess in $CandidateProcesses) {
     Stop-ProcessTree ([int]$CandidateProcess.ProcessId)
   }
+  $FinishedAt = (Get-Date).ToUniversalTime()
   $Receipt = [ordered]@{
-    schema = 'axm.windows-clean-launch-smoke/v1'
+    schema = 'axm.windows-clean-launch-smoke/v2'
     verdict = $Verdict
     started_at = $StartedAt.ToString('o')
-    finished_at = (Get-Date).ToUniversalTime().ToString('o')
+    finished_at = $FinishedAt.ToString('o')
+    elapsed_seconds = [math]::Round(($FinishedAt - $StartedAt).TotalSeconds, 3)
+    readiness_timeout_seconds = $ReadinessTimeoutSeconds
     candidate_shape = if ($CandidateSource) { 'exact extracted public release package copied to a fresh path containing spaces; no system Node.js on PATH; no bundled runtime before launch' } else { 'fresh public-policy staging in a path containing spaces; no system Node.js on PATH; no bundled runtime before launch' }
     runtime_bootstrap = 'pinned Node.js 24.17.0 archive from nodejs.org with SHA-256 verification'
+    runtime_node_present = [bool](Test-Path -LiteralPath (Join-Path $Candidate 'runtime\node\node.exe') -PathType Leaf)
+    runtime_observed_at = $RuntimeObservedAt
+    launcher_exited = $LauncherExited
+    launcher_exit_code = $LauncherExitCode
     health_ok = [bool]($Health -and $Health.ok -eq $true)
+    last_health_error = $LastHealthError
     failure = $Failure
-    stdout_tail = @(Get-Tail $Stdout)
-    stderr_tail = @(Get-Tail $Stderr)
+    start_report = @(Get-Tail (Join-Path $Candidate 'AXM_START_REPORT.txt') 60)
+    stdout_tail = @(Get-Tail $Stdout 120)
+    stderr_tail = @(Get-Tail $Stderr 120)
   }
   New-Item -ItemType Directory -Force -Path (Split-Path -Parent $ReceiptPath) | Out-Null
   $Receipt | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $ReceiptPath -Encoding UTF8
@@ -148,5 +186,9 @@ try {
   }
 }
 
-if ($Verdict -ne 'PASS') { throw "Windows clean launch smoke failed: $Failure (receipt: $ReceiptPath)" }
+if ($Verdict -ne 'PASS') {
+  Write-Host '--- AXM Windows clean-launch failure receipt ---'
+  Write-Host (Get-Content -Raw -LiteralPath $ReceiptPath)
+  throw "Windows clean launch smoke failed: $Failure (receipt: $ReceiptPath)"
+}
 Write-Output "Windows clean launch smoke: PASS (receipt: $ReceiptPath)"
