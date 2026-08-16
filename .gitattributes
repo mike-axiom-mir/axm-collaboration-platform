@@ -18,6 +18,13 @@ museum/first-mirror/original/mirror.html -text
 # already-published baseline exactly instead of allowing Windows CRLF smudging.
 shared/mirror-core/** -text
 
+# These tool selftests compare bundled runtime and generated-catalog source
+# bytes against canonical SHA-256 values. Keep their text trees LF-stable on
+# Windows so a fresh checkout preserves the verified byte contract.
+tools/adapter-translation-garden/runtime/** text eol=lf
+tools/memory-continuity-garden/runtime/** text eol=lf
+tools/repair-resilience-library/components/** text eol=lf
+
 # Markdown uses intentional two-space hard line breaks, while generated module
 # skeletons and third-party source may retain harmless terminal blank lines.
 *.md whitespace=-trailing-space,-blank-at-eof
