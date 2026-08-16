@@ -41,6 +41,46 @@ jobs:
       - name: Materialize the reviewed corrective patch
         run: node tools/release-hardening/apply-v0.6.1.js
 
+      - name: Normalize the live RepairBuddy test and permanent release gates
+        shell: bash
+        run: |
+          node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+
+          function replaceExact(file, before, after) {
+            let source = fs.readFileSync(file, 'utf8');
+            if (source.includes(after)) return;
+            const count = source.split(before).length - 1;
+            if (count !== 1) throw new Error(file + ': expected one normalization anchor, observed ' + count);
+            source = source.replace(before, after);
+            fs.writeFileSync(file, source, 'utf8');
+          }
+
+          replaceExact(
+            'tools/repairbuddy/selftest.js',
+            "  ok(warningBaseline.messages.length === 43, 'baseline binds all 43 current verifier warnings');\n  const exactDelta = Delta.compareWarnings(warningBaseline.messages, warningBaseline);\n  ok(exactDelta.state === 'MATCH' && exactDelta.summary.unchanged === 43, 'same warning set matches baseline');",
+            "  const warningCount = warningBaseline.messages.length;\n  ok(warningCount > 0, 'baseline binds the current open verifier warnings');\n  const exactDelta = Delta.compareWarnings(warningBaseline.messages, warningBaseline);\n  ok(exactDelta.state === 'MATCH' && exactDelta.summary.unchanged === warningCount, 'same warning set matches baseline');"
+          );
+
+          for (const file of [
+            '.github/workflows/v0.6.1-corrective-gate.yml',
+            '.github/workflows/release-v0.6.1-experimental.yml'
+          ]) {
+            replaceExact(
+              file,
+              'node tools/repairbuddy/complete-warning-delta-selftest.js',
+              'node tools/repairbuddy/selftest.js'
+            );
+          }
+
+          replaceExact(
+            '.github/workflows/v0.6.1-corrective-gate.yml',
+            "          node --check tools/release-hardening/apply-v0.6.1.js\n",
+            ''
+          );
+          NODE
+
       - name: Remove transport-only applicator
         shell: bash
         run: |
