@@ -446,3 +446,29 @@ edited by this lane.
 No browser render/click test was run because this leaf has no browser surface.
 Nothing was committed, registered, installed, promoted, pushed, merged, or made
 CANON.
+
+## Reviewable branch checkpoint
+
+The mature seven-file leaf was copied byte-for-byte from the isolated
+development worktree into a dedicated clean worktree and committed on
+`codex/workspace-activity-observer-v0.1`. The branch is based directly on
+`origin/main` at `a4f99fbfc05268173458bf3fb8f3fe616919e376`; it does not carry
+the unpublished deterministic sequencer stack. The initial local review commit
+is `bdb4df77` (`feat: add experimental workspace activity observer`) and contains
+exactly these seven additions: this handoff, the leaf README, two runtime files,
+the CLI, and the two focused selftests.
+
+Focused verification on that base passed 62 classifier checks and 37 producer
+checks. The full ten-command Workshop suite also exited zero: `verify.js`
+reported 0 failures and 43 existing warnings; the HTML script syntax test
+reported 55 passes and 0 failures; Agent Tool Forge reported 17 passes and 0
+failures; and Evidence Desk reported 36 passes and 0 failures. No tracked test
+residue remained. The staged diff passed `git diff --cached --check`, and a
+bounded audit of the seven files found no machine-specific path or
+credential-shaped match.
+
+This checkpoint changes the latest process state, not the historical statements
+above: the leaf is now locally committed and reviewable. It remains
+`EXPERIMENTAL`, unregistered, uninstalled, unpromoted, unpushed, unmerged, and
+non-CANON. No browser render/click test was run because the leaf has no browser
+surface. Mike Tobi remains the review and merge gate.
