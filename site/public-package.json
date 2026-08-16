@@ -1,25 +1,45 @@
 {
-  "schema": "axm.public-release-pointer/v2",
+  "schema": "axm.public-release-pointer/v3",
   "status": "EXPERIMENTAL",
-  "name": "AXM Workshop v0.3.0 Experimental",
-  "release_tag": "v0.3.0-experimental",
-  "release_url": "https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.3.0-experimental",
-  "source_ref": "refs/tags/v0.3.0-experimental",
-  "archive": {
-    "name": "AXM-Workshop-v0.3.0-experimental-Windows-source.zip",
-    "url": "https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.3.0-experimental/AXM-Workshop-v0.3.0-experimental-Windows-source.zip",
-    "sha256_url": "https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.3.0-experimental/AXM-Workshop-v0.3.0-experimental-Windows-source.zip.sha256"
+  "latest_source": {
+    "name": "AXM Workshop v0.6.0 Experimental",
+    "release_tag": "v0.6.0-experimental",
+    "release_url": "https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.6.0-experimental",
+    "source_ref": "refs/tags/v0.6.0-experimental",
+    "target_commit": "22ec2abb09e9c17088133c0518da74a12fcce8be",
+    "archive": {
+      "name": "v0.6.0 tagged source ZIP",
+      "url": "https://github.com/mike-axiom-mir/axm-collaboration-platform/archive/refs/tags/v0.6.0-experimental.zip",
+      "provider": "github-generated",
+      "separate_axm_checksum": false
+    }
+  },
+  "packaged_windows": {
+    "status": "OLDER_PACKAGED_BUILD",
+    "name": "AXM Workshop v0.3.0 Experimental Windows source package",
+    "release_tag": "v0.3.0-experimental",
+    "release_url": "https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/tag/v0.3.0-experimental",
+    "recommended_for_latest_source": false,
+    "archive": {
+      "name": "AXM-Workshop-v0.3.0-experimental-Windows-source.zip",
+      "url": "https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.3.0-experimental/AXM-Workshop-v0.3.0-experimental-Windows-source.zip",
+      "sha256_url": "https://github.com/mike-axiom-mir/axm-collaboration-platform/releases/download/v0.3.0-experimental/AXM-Workshop-v0.3.0-experimental-Windows-source.zip.sha256"
+    }
   },
   "evidence": {
     "workflow": "https://github.com/mike-axiom-mir/axm-collaboration-platform/actions/workflows/public-launch.yml",
+    "release_receiver": "verified",
     "secret_scan": "required-per-publication",
     "beginner_launcher": "tested",
-    "clean_windows_launch": "tested",
-    "warnings_remain_visible": true
+    "latest_source_clean_windows_launch": "tested",
+    "warnings_remain_visible": true,
+    "open_repairbuddy_warning_count": 43
   },
   "boundaries": [
     "Public experimental test; not production certified.",
-    "The archive does not bundle Node.js.",
+    "The latest source archive does not bundle Node.js.",
+    "The latest source release has no separate AXM package or checksum asset.",
+    "The separately packaged v0.3.0 Windows build is older than the latest source.",
     "First Windows bootstrap needs internet when compatible Node.js is absent.",
     "Capability declarations are not blanket runtime proof.",
     "No broad open-source license has been granted yet."

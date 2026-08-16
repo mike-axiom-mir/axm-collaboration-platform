@@ -10,6 +10,17 @@
     node.textContent = String(config.sessionMinutes || 30);
   });
 
+  [
+    ['[data-latest-source-link]', config.latestSourceArchiveUrl],
+    ['[data-latest-release-link]', config.latestSourceReleaseUrl],
+    ['[data-packaged-windows-link]', config.packagedWindowsUrl]
+  ].forEach(function (route) {
+    if (!route[1]) return;
+    document.querySelectorAll(route[0]).forEach(function (node) {
+      node.setAttribute('href', route[1]);
+    });
+  });
+
   function closeNavigation() {
     if (!navToggle || !nav) return;
     navToggle.setAttribute('aria-expanded', 'false');
