@@ -472,3 +472,22 @@ above: the leaf is now locally committed and reviewable. It remains
 `EXPERIMENTAL`, unregistered, uninstalled, unpromoted, unpushed, unmerged, and
 non-CANON. No browser render/click test was run because the leaf has no browser
 surface. Mike Tobi remains the review and merge gate.
+
+### Final branch and live reconciliation
+
+After the local commits, the dedicated review worktree completed a coherent
+observation at `2026-08-16T11:12:28.017Z`: both metadata and Git brackets
+matched across two 13,274-file passes, Git status contained zero paths, the
+configured-filter policy had zero issues, and the worktree remained clean. Its
+`MOVEMENT_OBSERVED / SCOPED` result reflects the timestamps of a freshly
+created checkout and does not contradict the clean Git state.
+
+The live checkout then completed a coherent observation from
+`2026-08-16T11:12:46.251Z` through `2026-08-16T11:12:52.041Z`. Both 58,641-file
+metadata passes and both Git brackets matched, with zero scan, integrity, or Git
+policy issues. Git status contained 12,146 paths: 3,603 tracked and 8,543
+untracked. One active foreign shared seam remained at
+`tools/game-hub/game-library/005-briarfront/game.manifest.json`, and 95
+future-dated imports were excluded from activity counts. The result remained
+`MOVEMENT_OBSERVED / QUALIFIED`. This lane did not edit or assign ownership to
+that foreign path, and neither observation proves file-content stability.
