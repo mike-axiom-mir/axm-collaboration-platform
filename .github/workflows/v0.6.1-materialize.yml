@@ -46,6 +46,10 @@ jobs:
           npm run index:tools
           npm run discovery:generate
 
+      - name: Migrate the warning baseline to normalized identities
+        run: |
+          node -e "const fs=require('node:fs'); const p='tools/repairbuddy/verifier-warning-baseline.json'; const D=require('./tools/repairbuddy/verifier-warning-delta'); const old=JSON.parse(fs.readFileSync(p,'utf8')); const next=D.buildBaseline(old.id,old.messages,old.source); fs.writeFileSync(p,JSON.stringify(next,null,2)+'\n','utf8');"
+
       - name: Run focused adversarial and module tests
         run: |
           node tests/v0.6.1-hardening-selftest.js
