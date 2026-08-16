@@ -2,6 +2,8 @@
 'use strict';
 
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const Generator = require('./generate-tools-index');
 
 let checks = 0;
@@ -159,6 +161,16 @@ check('a valid checked-in index can seed digest-bound fallback evidence', () => 
 
 check('checked-in fallback evidence fails closed when its index contract is invalid', () => {
   assert.throws(() => Generator.receiptFromIndex({ schema: 'wrong', tools: [] }), /cannot preserve prior evidence/);
+});
+
+check('digest-bound source and promotion selftest trees are LF-stable', () => {
+  const attributes = fs.readFileSync(path.join(__dirname, '..', '.gitattributes'), 'utf8');
+  [
+    'tools/adapter-translation-garden/runtime/** text eol=lf',
+    'tools/memory-continuity-garden/runtime/** text eol=lf',
+    'tools/repair-resilience-library/components/** text eol=lf',
+    'tools/*/selftest.js text eol=lf'
+  ].forEach(rule => assert(attributes.includes(rule), 'missing attribute rule: ' + rule));
 });
 
 process.stdout.write('generate-tools-index scoped refresh selftest: PASS (' + checks + ' checks)\n');
