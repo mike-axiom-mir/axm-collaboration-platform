@@ -150,7 +150,7 @@ function fakeRunner(repositoryRoot, data, options) {
     }
     if (command === 'gh' && args[0] === 'pr' && args[1] === 'view') {
       return result(0, JSON.stringify({
-        number:state.pr.number, url:state.pr.url, state:'OPEN', isDraft:state.pr.isDraft,
+        number:state.pr.number, url:state.pr.url, state:'OPEN', isDraft:options.receiverNonDraft ? false : state.pr.isDraft,
         headRefOid:state.remoteBranch, baseRefOid:data.base, headRefName:'codex/demo', baseRefName:'main',
         title:state.pr.title, body:state.pr.body, mergedAt:null
       }));
@@ -246,7 +246,15 @@ function fakeRunner(repositoryRoot, data, options) {
     equal(receipt.transport.remoteHeadCommit, data.head, 'receipt binds remote receiver head');
     equal(receipt.transport.pullRequestHeadCommit, data.head, 'receipt binds PR receiver head');
     equal(Core.verifyReceipt(receipt).state, 'PASS', 'transport receipt verifies');
+    ok(receipt.checks.some(row => row.id === 'pull-request-draft' && row.pass), 'receiver receipt proves the PR stayed draft');
     ok(fake.state.pr && fake.state.pr.isDraft, 'created PR remains draft');
+
+    const raceFake = fakeRunner(repositoryRoot, data, { receiverNonDraft:true });
+    const raceFacts = Host.inspectHost({ repositoryRoot, publishRoot, checkpoint:data.checkpoint, runner:raceFake.runner });
+    const racePlan = Core.buildPlan({ checkpoint:data.checkpoint, verification:data.verification, review:data.review, facts:raceFacts });
+    const raceReceipt = Host.publishExact({ repositoryRoot, publishRoot, checkpoint:data.checkpoint, verification:data.verification, review:data.review, plan:racePlan, confirmation:Core.CONFIRMATION, runner:raceFake.runner });
+    equal(raceReceipt.state, 'FAIL', 'receiver-side draft loss fails the transport receipt');
+    ok(raceReceipt.checks.some(row => row.id === 'pull-request-draft' && !row.pass), 'receiver-side draft loss is typed');
     ok(!fake.state.commands.some(row => row.includes('merge') || row.includes('ready') || row.includes('close')), 'executed command trace contains no merge ready or close');
     ok(!fake.state.commands.some(row => row.some(value => /^--force/.test(value))), 'executed command trace contains no force push');
     ok(!fake.state.commands.some(row => row[0] === 'git' && ['add','commit','reset','checkout'].includes(row[3])), 'executed command trace contains no stage commit reset or checkout');
@@ -261,7 +269,7 @@ function fakeRunner(repositoryRoot, data, options) {
     equal(fake.state.commands.filter(row => row.includes('push')).length, pushesBefore, 'idempotent update executes no extra push');
 
     const refused = Host.publishExact({ repositoryRoot, publishRoot, checkpoint:data.checkpoint, verification:data.verification, review:data.review, plan:updatePlan, confirmation:'wrong', runner:fake.runner });
-    equal(refused.state, 'REFUSED', 'wrong one-use confirmation is refused');
+    equal(refused.state, 'REFUSED', 'wrong static confirmation phrase is refused');
     ok(Object.values(refused.authority).every(value => value === false), 'refusal grants no authority');
     const failureSecret = 'ghp_' + 'Z'.repeat(30), failurePath = 'C:' + '\\Users\\private\\receipt.txt';
     const redacted = Host.failureReceipt(updatePlan, 'REFUSED', new Error(failureSecret + ' ' + failurePath), 'NOT_ATTEMPTED');

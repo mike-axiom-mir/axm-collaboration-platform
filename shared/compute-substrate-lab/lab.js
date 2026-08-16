@@ -148,20 +148,78 @@ function compile(raw) {
   return result;
 }
 
+function exactKeys(value, expected, label) {
+  object(value, label);
+  Core.assert(Core.stable(Object.keys(value).sort()) === Core.stable(expected.slice().sort()), label + ' keys changed');
+}
+
+function replayRootHistory(pkg) {
+  let selected = Core.clone(knownStart.selectedRoot);
+  let previousHistoryDigest = null;
+  const replayedHistory = [];
+  const events = Array.isArray(pkg.root && pkg.root.history) ? pkg.root.history : [];
+
+  for (let index = 0; index < events.length; index += 1) {
+    const event = events[index];
+    exactKeys(event, [
+      'type','proposal','proposalDigest','outcome','previousHistoryDigest','previousRoot','candidateRoot',
+      'steward','decidedAt','scope','canon','evidenceVerdict','independentReview','eventDigest'
+    ], 'root history event');
+    const eventCopy = Core.clone(event), eventDigest = eventCopy.eventDigest; delete eventCopy.eventDigest;
+    Core.assert(event.type === 'ROOT_CHANGE_DECIDED', 'root history event type changed');
+    Core.assert(event.previousHistoryDigest === previousHistoryDigest, 'root history predecessor mismatch');
+    Core.assert(Core.digest(eventCopy) === eventDigest, 'root history event digest mismatch');
+    Core.assert(Core.stable(event.previousRoot) === Core.stable(selected), 'root history previous root mismatch');
+
+    const proposal = event.proposal;
+    exactKeys(proposal, [
+      'schema','basePackageDigest','currentRootDigest','candidateMilestoneId','candidateYear','reason',
+      'evidenceRefs','status','automatic','canonAuthority','proposalDigest'
+    ], 'root history proposal');
+    const proposalCopy = Core.clone(proposal), proposalDigest = proposalCopy.proposalDigest; delete proposalCopy.proposalDigest;
+    Core.assert(proposal.schema === ROOT_PROPOSAL_SCHEMA && Core.digest(proposalCopy) === proposalDigest, 'root history proposal digest mismatch');
+    Core.assert(proposalDigest === event.proposalDigest, 'root history proposal binding mismatch');
+    Core.assert(proposal.status === 'PROPOSED' && proposal.automatic === false && proposal.canonAuthority === false, 'root proposal authority changed');
+    Core.assert(proposal.currentRootDigest === Core.digest(selected), 'root proposal current-root binding mismatch');
+    Core.assert(Core.text(proposal.reason, 4000), 'root proposal reason is required');
+    Core.assert(Core.stable(normalizeEvidenceRefs(proposal.evidenceRefs)) === Core.stable(proposal.evidenceRefs), 'root proposal evidence order or shape changed');
+
+    const reconstructed = Core.clone(pkg);
+    delete reconstructed.packageDigest;
+    reconstructed.root = rootState(selected, replayedHistory);
+    Core.assert(proposal.basePackageDigest === Core.digest(reconstructed), 'root proposal base-package binding mismatch');
+
+    const candidate = (pkg.milestones || []).find(item => item.id === proposal.candidateMilestoneId);
+    Core.assert(candidate, 'root history candidate is missing');
+    Core.assert(candidate.year === proposal.candidateYear && candidate.year < selected.year, 'root history candidate chronology mismatch');
+    Core.assert(Core.stable(event.candidateRoot) === Core.stable(candidate), 'root history candidate snapshot mismatch');
+
+    Core.assert(['ACCEPT','REJECT'].includes(event.outcome), 'root history outcome is invalid');
+    exactKeys(event.steward, ['id','kind'], 'root history steward');
+    Core.assert(event.steward.id && event.steward.kind === 'HUMAN', 'root history needs a named human steward');
+    Core.assert(Core.text(event.decidedAt, 80), 'root history decision time is required');
+    Core.assert(event.scope === 'WORKING_ROOT_ONLY' && event.canon === false, 'root history scope or CANON boundary changed');
+    if (event.outcome === 'ACCEPT') {
+      Core.assert(event.evidenceVerdict === 'PASS' && event.independentReview === true, 'accepted root history event lacks PASS evidence and independent review');
+      selected = { ...Core.clone(candidate), status:'REVIEWED_WORKING_ROOT', selectedByDecision:event.eventDigest };
+    }
+    replayedHistory.push(Core.clone(event));
+    previousHistoryDigest = event.eventDigest;
+  }
+
+  return { selected, history:replayedHistory, previousHistoryDigest };
+}
+
 function verify(pkg) {
   try {
     Core.assert(pkg && pkg.schema === PACKAGE_SCHEMA, 'compute package schema is unsupported');
     const copy = Core.clone(pkg), digest = copy.packageDigest; delete copy.packageDigest;
     Core.assert(Core.digest(copy) === digest, 'compute package digest mismatch');
     Core.assert(pkg.knownStartPolicyDigest === Core.digest(knownStart), 'known-start policy digest mismatch');
-    let previous = null;
-    for (const event of pkg.root.history || []) {
-      const eventCopy = Core.clone(event), eventDigest = eventCopy.eventDigest; delete eventCopy.eventDigest;
-      Core.assert(eventCopy.previousHistoryDigest === previous && Core.digest(eventCopy) === eventDigest, 'root history chain mismatch');
-      previous = eventDigest;
-    }
+    const replay = replayRootHistory(pkg);
+    Core.assert(Core.stable(pkg.root.selected) === Core.stable(replay.selected), 'selected root does not match deterministic history replay');
     Core.assert(Core.digest({selected:pkg.root.selected,history:pkg.root.history}) === pkg.root.rootStateDigest, 'root state digest mismatch');
-    Core.assert(pkg.boundaries && pkg.boundaries.physicalExecution === false && pkg.boundaries.automaticRootChange === false, 'compute authority boundary changed');
+    Core.assert(pkg.boundaries && pkg.boundaries.physicalExecution === false && pkg.boundaries.automaticRootChange === false && pkg.boundaries.automaticCanon === false, 'compute authority boundary changed');
     Core.assert((pkg.architectures || []).every(item => item.state === 'PROPOSED' && item.deploymentAuthority === false), 'architecture authority boundary changed');
     return {pass:true,reason:null,digest};
   } catch (error) { return {pass:false,reason:error.message}; }
@@ -211,7 +269,7 @@ function applyRootDecision(pkg, proposal, rawDecision) {
   const candidate = next.milestones.find(item => item.id === proposal.candidateMilestoneId);
   const previousHistoryDigest = next.root.history.length ? next.root.history[next.root.history.length - 1].eventDigest : null;
   const event = {
-    type:'ROOT_CHANGE_DECIDED', proposalDigest:proposal.proposalDigest, outcome, previousHistoryDigest,
+    type:'ROOT_CHANGE_DECIDED', proposal:Core.clone(proposal), proposalDigest:proposal.proposalDigest, outcome, previousHistoryDigest,
     previousRoot:Core.clone(next.root.selected), candidateRoot:Core.clone(candidate), steward,
     decidedAt:Core.text(decision.decidedAt,80), scope:'WORKING_ROOT_ONLY', canon:false,
     evidenceVerdict:Core.text(decision.evidenceVerdict,20).toUpperCase() || 'UNKNOWN', independentReview:decision.independentReview === true

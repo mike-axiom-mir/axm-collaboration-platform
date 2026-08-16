@@ -60,12 +60,32 @@ const ROOT = path.resolve(__dirname, '..', '..');
     const Delta = require('./verifier-warning-delta');
     const reportFile = path.join(ROOT, 'exports', 'verify-report.json');
     const baselineFile = path.join(__dirname, 'verifier-warning-baseline.json');
-    if (!fs.existsSync(reportFile)) throw new Error('verify report is missing; run node verify.js first');
+    const outputFile = path.join(ROOT, 'exports', 'repairbuddy-warning-delta.json');
+    const startedAt = Date.now();
+    const verification = childProcess.spawnSync(process.execPath, [path.join(ROOT, 'verify.js')], {
+      cwd:ROOT,
+      encoding:'utf8',
+      shell:false,
+      windowsHide:true,
+      timeout:180000,
+      maxBuffer:32 * 1024 * 1024
+    });
+    if (verification.error || verification.status !== 0) {
+      throw new Error('fresh root verification failed: ' + String(verification.stderr || verification.stdout || verification.error).slice(-1200));
+    }
+    if (!fs.existsSync(reportFile)) throw new Error('fresh verifier produced no report');
+    const stat = fs.statSync(reportFile);
+    if (stat.mtimeMs + 2000 < startedAt) throw new Error('verify report is not bound to the current warning-delta run');
     const report = JSON.parse(fs.readFileSync(reportFile, 'utf8'));
     const baseline = JSON.parse(fs.readFileSync(baselineFile, 'utf8'));
     const delta = Delta.compareWarnings(Delta.messagesFromVerifyReport(report), baseline);
+    delta.verification = { invokedFresh:true, reportMtime:new Date(stat.mtimeMs).toISOString(), verifier:'node verify.js' };
+    const body = JSON.parse(JSON.stringify(delta)); delete body.deltaDigest;
+    delta.deltaDigest = Delta.canonicalDigest(body);
     const checked = Delta.validateDelta(delta);
     if (!checked.pass) throw new Error('warning delta is invalid: ' + checked.errors.join('; '));
+    fs.mkdirSync(path.dirname(outputFile), { recursive:true });
+    fs.writeFileSync(outputFile, JSON.stringify(delta, null, 2) + '\n', 'utf8');
     return delta;
   }
 

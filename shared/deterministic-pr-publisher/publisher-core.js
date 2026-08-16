@@ -5,8 +5,9 @@ const Checkpoint = require('../deterministic-pr-checkpoint/checkpoint-core');
 
 const PLAN_SCHEMA = 'axm.git-pr-publish-plan/v1';
 const RECEIPT_SCHEMA = 'axm.git-pr-publish-receipt/v1';
-const POLICY_VERSION = 'axm-deterministic-pr-publisher-policy/0.1';
+const POLICY_VERSION = 'axm-deterministic-pr-publisher-policy/0.2';
 const CONFIRMATION = 'PUBLISH EXACT CHECKPOINTED PR HANDOFF';
+const CONFIRMATION_SEMANTICS = 'STATIC_EXACT_PHRASE_NOT_NONCE';
 const ZERO_SHA = '0'.repeat(40);
 
 const SENSITIVE_PATTERNS = [
@@ -275,6 +276,7 @@ function buildReceipt(input) {
     { id:'pull-request-title-exact', pass:transport.pullRequestTitle === plan.pullRequest.title },
     { id:'pull-request-body-exact', pass:sha256(Buffer.from(String(transport.pullRequestBody || ''), 'utf8')) === plan.pullRequest.bodySha256 },
     { id:'pull-request-open', pass:transport.pullRequestState === 'OPEN' },
+    { id:'pull-request-draft', pass:transport.pullRequestDraft === true },
     { id:'merge-not-performed', pass:transport.merged === false }
   ];
   const stable = {
@@ -298,6 +300,7 @@ function buildReceipt(input) {
     },
     checks,
     routing:{ preparedBy:'Keel/local AXM', independentMergeReviewer:'platform Axiom/Mir' },
+    confirmation:{ semantics:CONFIRMATION_SEMANTICS, consumedNonce:false },
     authority:{ merge:false, branchDeletion:false, promotion:false, canon:false, roots:false }
   };
   return Object.assign({}, stable, { receiptDigest:digest(stable) });
@@ -328,6 +331,7 @@ module.exports = {
   RECEIPT_SCHEMA,
   POLICY_VERSION,
   CONFIRMATION,
+  CONFIRMATION_SEMANTICS,
   ZERO_SHA,
   digest,
   sha256,

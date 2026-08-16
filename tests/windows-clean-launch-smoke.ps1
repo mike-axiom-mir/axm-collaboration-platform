@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-  [string]$ReceiptPath = ''
+  [string]$ReceiptPath = '',
+  [string]$CandidateSource = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -40,9 +41,17 @@ function Stop-ProcessTree([int]$ProcessId) {
 
 New-Item -ItemType Directory -Path $RunRoot | Out-Null
 try {
-  $StagingNode = (Get-Command node.exe -ErrorAction Stop).Source
-  & $StagingNode (Join-Path $Root 'scripts\stage-public-candidate.js') --root $Root --destination $Candidate
-  if ($LASTEXITCODE -ne 0) { throw "Public-policy candidate staging failed with code $LASTEXITCODE" }
+  if ($CandidateSource) {
+    $CandidateSource = [System.IO.Path]::GetFullPath($CandidateSource)
+    if (-not (Test-Path -LiteralPath $CandidateSource -PathType Container)) { throw 'CandidateSource must be an extracted package folder.' }
+    New-Item -ItemType Directory -Path $Candidate | Out-Null
+    & robocopy $CandidateSource $Candidate /E /COPY:DAT /DCOPY:DAT /R:1 /W:1 /NFL /NDL /NJH /NJS /NP | Out-Null
+    if ($LASTEXITCODE -gt 7) { throw "Package candidate copy failed with robocopy code $LASTEXITCODE" }
+  } else {
+    $StagingNode = (Get-Command node.exe -ErrorAction Stop).Source
+    & $StagingNode (Join-Path $Root 'scripts\stage-public-candidate.js') --root $Root --destination $Candidate
+    if ($LASTEXITCODE -ne 0) { throw "Public-policy candidate staging failed with code $LASTEXITCODE" }
+  }
 
   if (Test-Path -LiteralPath (Join-Path $Candidate 'runtime')) {
     throw 'Clean candidate unexpectedly contains a runtime before first launch.'
@@ -111,7 +120,7 @@ try {
     verdict = $Verdict
     started_at = $StartedAt.ToString('o')
     finished_at = (Get-Date).ToUniversalTime().ToString('o')
-    candidate_shape = 'fresh public-policy staging in a path containing spaces; no system Node.js on PATH; no bundled runtime before launch'
+    candidate_shape = if ($CandidateSource) { 'exact extracted public release package copied to a fresh path containing spaces; no system Node.js on PATH; no bundled runtime before launch' } else { 'fresh public-policy staging in a path containing spaces; no system Node.js on PATH; no bundled runtime before launch' }
     runtime_bootstrap = 'pinned Node.js 24.17.0 archive from nodejs.org with SHA-256 verification'
     health_ok = [bool]($Health -and $Health.ok -eq $true)
     failure = $Failure

@@ -3,6 +3,33 @@
 Notable public AXM Workshop changes are recorded here. Historical workbench
 reports remain available under [`docs/history/`](docs/history/).
 
+## v0.6.1-experimental — 2026-08-16
+
+### Corrective integrity release
+
+- Added no-follow, regular-file-checked atomic I/O for resumable runner state,
+  ledgers, checkpoints, and portable receipts.
+- Closed re-digested hardware-authority expansion by enforcing exact package,
+  record, boundary, and authority ceilings.
+- Added deterministic replay of every compute-root decision from the protected
+  known start, including exact proposal, evidence, steward, chronology, and
+  selected-root bindings.
+- Made RepairBuddy strict warning deltas invoke a fresh root verification and
+  stabilized warning identities around structured subjects and normalized codes.
+- Corrected PR-publisher confirmation language: the phrase is static, not a
+  consumed nonce. The bounded push disables repository-local Git hooks, and the
+  receiver receipt now requires the PR to remain draft.
+- Added a full aggregate release gate and an AXM-named Windows source package
+  with checksum, package receipt, exact-package launch receipt, and receiver
+  verification.
+
+### Boundaries
+
+- This remains experimental and does not grant production, safety, promotion,
+  roots, CANON, procurement, deployment, or broad reuse authority.
+- GitHub repository settings such as branch rules and template state require
+  repository-administration authority and are verified separately from source.
+
 ## v0.6.0-experimental — 2026-08-16
 
 ### Reviewed public integrations
@@ -18,7 +45,7 @@ reports remain available under [`docs/history/`](docs/history/).
   repaired by this release.
 - Added the deterministic PR publisher as an `EXPERIMENTAL` / `HIGH`-risk
   adapter. Its maximum effect is one ordinary feature-branch push and one draft
-  pull-request create or update after exact one-use confirmation. It cannot
+  pull-request create or update after an exact static confirmation phrase. The original v0.6.0 “one-use” wording was an overclaim corrected by v0.6.1. It cannot
   stage, commit, force-push, merge, close, delete, promote, alter roots, or
   change CANON.
 

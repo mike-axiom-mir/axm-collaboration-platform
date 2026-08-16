@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const PlainFiles = require('./plain-file-io');
 const Codec = require('./canonical');
 const GameContracts = require('./contracts');
 const GameCompiler = require('./compiler');
@@ -162,14 +163,13 @@ function portableReceipt(result, plan, binding) {
 function preservePortableReceipt(runDir, receipt) {
   if (!receipt) return null;
   const file = path.join(runDir, 'portable-run-receipt.json');
-  if (fs.existsSync(file)) {
-    const existing = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const existingBytes = PlainFiles.read(file, { allowMissing:true, maxBytes:16 * 1024 * 1024 });
+  if (existingBytes !== null) {
+    const existing = JSON.parse(existingBytes.toString('utf8'));
     if (!Codec.validDigest(existing) || Codec.canonical(existing) !== Codec.canonical(receipt)) throw new Error('portable run receipt drift blocks resume');
     return file;
   }
-  const temporary = file + '.next';
-  fs.writeFileSync(temporary, JSON.stringify(receipt, null, 2) + '\n', { flag: 'wx' });
-  fs.renameSync(temporary, file);
+  PlainFiles.writeAtomic(file, Buffer.from(JSON.stringify(receipt, null, 2) + '\n', 'utf8'), { maxBytes:16 * 1024 * 1024 });
   return file;
 }
 

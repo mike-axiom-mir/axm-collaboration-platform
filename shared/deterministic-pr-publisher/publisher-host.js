@@ -13,7 +13,8 @@ function defaultRunner(command, args, options) {
     windowsHide:true,
     shell:false,
     timeout:options && options.timeout || 120000,
-    maxBuffer:8 * 1024 * 1024
+    maxBuffer:8 * 1024 * 1024,
+    env:options && options.env ? options.env : process.env
   });
   return {
     status:result.error ? -1 : result.status,
@@ -210,6 +211,26 @@ function failureReceipt(plan, state, error, pushAction) {
   return Object.assign({}, stable, { receiptDigest:Core.digest(stable) });
 }
 
+function pushExactBranch(runner, repositoryRoot, remoteName, branch) {
+  const emptyHooks = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-pr-publisher-hooks-'));
+  const env = Object.assign({}, process.env, {
+    GIT_CONFIG_COUNT:'1',
+    GIT_CONFIG_KEY_0:'core.hooksPath',
+    GIT_CONFIG_VALUE_0:emptyHooks
+  });
+  try {
+    return checked(
+      runner,
+      'git',
+      ['-C', repositoryRoot, 'push', '--porcelain', remoteName, 'HEAD:refs/heads/' + branch],
+      'exact review-branch push',
+      { timeout:5 * 60 * 1000, env }
+    );
+  } finally {
+    try { fs.rmSync(emptyHooks, { recursive:true, force:true }); } catch (_) {}
+  }
+}
+
 function publishExact(options) {
   const runner = options.runner || defaultRunner;
   const plan = options.plan;
@@ -224,7 +245,7 @@ function publishExact(options) {
     if (current.planDigest !== plan.planDigest) throw new Error('publish plan is stale; rebuild after the current local and remote state is observed');
     const repo = fs.realpathSync(path.resolve(options.repositoryRoot));
     if (facts.remoteBranchCommit !== plan.repository.headCommit) {
-      checked(runner, 'git', ['-C', repo, 'push', '--porcelain', plan.repository.remoteName, 'HEAD:refs/heads/' + plan.repository.branch], 'exact review-branch push', { timeout:5 * 60 * 1000 });
+      pushExactBranch(runner, repo, plan.repository.remoteName, plan.repository.branch);
       pushAction = facts.remoteBranchCommit ? 'FAST_FORWARD_PUSHED' : 'CREATED_REMOTE_BRANCH';
     } else pushAction = 'REMOTE_HEAD_ALREADY_EXACT';
     const afterPush = inspectHost(options);
@@ -266,5 +287,6 @@ module.exports = {
   publishExact,
   viewPullRequest,
   failureReceipt,
-  publicError
+  publicError,
+  pushExactBranch
 };
