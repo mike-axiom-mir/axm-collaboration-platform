@@ -169,6 +169,8 @@ check('digest-bound source and promotion selftest trees are LF-stable', () => {
     'tools/adapter-translation-garden/runtime/** text eol=lf',
     'tools/memory-continuity-garden/runtime/** text eol=lf',
     'tools/repair-resilience-library/components/** text eol=lf',
+    'tools/*/manifest.json text eol=lf',
+    'tools/*/module.contract.json text eol=lf',
     'tools/*/selftest.js text eol=lf'
   ].forEach(rule => assert(attributes.includes(rule), 'missing attribute rule: ' + rule));
 });

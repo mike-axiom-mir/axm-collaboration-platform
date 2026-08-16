@@ -25,8 +25,10 @@ tools/adapter-translation-garden/runtime/** text eol=lf
 tools/memory-continuity-garden/runtime/** text eol=lf
 tools/repair-resilience-library/components/** text eol=lf
 
-# Tool readiness binds promotion evidence to each top-level selftest digest.
-# Keep that exact evidence seam stable across Windows and POSIX checkouts.
+# Tool readiness fingerprints each tool's manifest, contract and top-level
+# selftest. Keep that exact evidence seam stable across Windows and POSIX.
+tools/*/manifest.json text eol=lf
+tools/*/module.contract.json text eol=lf
 tools/*/selftest.js text eol=lf
 
 # Markdown uses intentional two-space hard line breaks, while generated module
