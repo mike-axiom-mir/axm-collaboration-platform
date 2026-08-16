@@ -1,0 +1,19 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"axm.hardware-research-package/v1",
+  "type":"object",
+  "required":["schema","id","title","objective","family","domain","defaultField","authority","sources","candidates","builds","claims","boundaries","packageDigest"],
+  "properties":{
+    "schema":{"const":"axm.hardware-research-package/v1"},
+    "family":{"const":"HARDWARE_COMPUTE_RESEARCH"},
+    "domain":{"const":"ROBOTICA_AND_PHYSICAL_SYSTEMS"},
+    "defaultField":{"const":"HARDWARE"},
+    "authority":{"const":"RECOMMENDATION_ONLY"},
+    "packageDigest":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "sources":{"type":"array"},
+    "candidates":{"type":"array"},
+    "builds":{"type":"array","items":{"type":"object","required":["state","executionAuthority","safetyApproval"],"properties":{"state":{"const":"DESIGN_ONLY"},"executionAuthority":{"const":false},"safetyApproval":{"const":false}}}},
+    "claims":{"type":"array"},
+    "boundaries":{"type":"object"}
+  }
+}
