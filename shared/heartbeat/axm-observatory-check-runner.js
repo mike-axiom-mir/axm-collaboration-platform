@@ -32,7 +32,7 @@ try {
   if (result.stderr) process.stderr.write(result.stderr);
   if (result.error) throw result.error;
   if (result.status !== 0) throw new Error('Observatory selftest exited ' + result.status);
-  process.stdout.write('PASS reviewed observatory execution surface ' + moduleId + ' ' + inspection.measuredDigest + '\n');
+  process.stdout.write('PASS reviewed observatory execution surface ' + moduleId + ' ' + inspection.digestContract + ' ' + inspection.measuredDigest + '\n');
 } catch (error) {
   process.stderr.write('HELD ' + error.message + '\n');
   process.exitCode = 1;

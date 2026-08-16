@@ -68,7 +68,10 @@ The reviewed observatory adapter adds the eighteen integrated intake modules to
 the rotating deck. Each candidate is a fixed Node command over one module
 `selftest.js`; arbitrary shell synthesis is impossible. Before execution, the
 adapter verifies the module's `TEST` status and a reviewed SHA-256 digest over
-its JavaScript and JSON execution surface. Unknown modules, changed digests,
+its JavaScript and JSON execution surface. The
+`sha256-canonical-text-lf-v1` contract normalizes only CRLF checkout bytes to
+LF before hashing, matching Git's canonical text form on Windows and Unix;
+all other bytes remain digest-significant. Unknown modules, changed digests,
 missing selftests, symlinks or junctions, and non-`TEST` status fail closed.
 Joining the deck adds verification evidence only: repair, permission, network,
 promotion, publishing, and CANON authority remain absent.
