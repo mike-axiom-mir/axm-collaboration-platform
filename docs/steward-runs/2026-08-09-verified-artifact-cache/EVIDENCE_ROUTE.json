@@ -1,0 +1,106 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "subject": "game-production-runner verified deterministic artifact cache",
+  "status": "EXPERIMENTAL",
+  "claims": [
+    {
+      "claim_id": "cache.production.key.exact",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "pass_condition": "A cache key changes when the exact package, dependency package/path/digest/bytes, executor, verifier, or seed changes and remains stable otherwise.",
+      "primary_surface": "Canonical key-contract execution with exact fixtures",
+      "counterevidence": "A bound field changes without changing the key, or equivalent bindings produce different keys.",
+      "secondary_surface_if_needed": "Sealed entry manifest binds the complete key record and recomputes to the same key.",
+      "observed_evidence": "The runtime key is the canonical digest of the complete binding; entry readback recomputes and compares both the key digest and canonical binding.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.cross-run.verified",
+      "kind": "persistence",
+      "risk": "high",
+      "pass_condition": "A cold run stores immutable verified entries and a distinct later run reuses the same artifact digests without invoking eligible executors.",
+      "primary_surface": "Two complete three-package runs using separate run IDs and one external cache root",
+      "counterevidence": "The second run invokes an executor, changes an artifact digest, or succeeds without a cache receipt.",
+      "secondary_surface_if_needed": "Separate CLI process cold and warm runs with on-disk ledger inspection",
+      "observed_evidence": "The cold run invoked three executors and emitted three MISS_STORED receipts; the warm run invoked zero executors and emitted three HIT receipts with identical output digests. Separate CLI processes reproduced the route.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.hit.current-verifier",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "Every hit runs the currently appointed verifier against copied cache bytes and declared dependency inputs before candidate acceptance.",
+      "primary_surface": "Verifier invocation counters and fresh verification receipts on a zero-executor warm run",
+      "counterevidence": "A hit reaches VERIFIED with no current verifier call or only stored testimony.",
+      "secondary_surface_if_needed": "A same-identity verifier that rejects the first cached candidate forces fresh execution and a second verification.",
+      "observed_evidence": "Three warm hits caused three current-verifier calls. A deliberate current-verifier rejection produced REJECTED, one fresh executor call, a second current verification, and only then CANDIDATE_READY.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.tamper.fallback",
+      "kind": "persistence",
+      "risk": "high",
+      "pass_condition": "Changed manifest or artifact bytes cannot become a hit; the affected package executes and verifies freshly while unaffected entries remain reusable.",
+      "primary_surface": "On-disk cached artifact mutation followed by a new run",
+      "counterevidence": "Tampered bytes are copied into a candidate, reported HIT, or silently replace the entry.",
+      "secondary_surface_if_needed": "Stable rejection code and exact output digest comparison",
+      "observed_evidence": "A changed artifact produced CACHE_ARTIFACT_INTEGRITY_MISMATCH, REJECTED, one fresh execution, three verifier calls, and an exact valid candidate; two unaffected packages remained hits.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.publish.atomic",
+      "kind": "persistence",
+      "risk": "high",
+      "pass_condition": "Two separate processes publishing the same key converge on one complete entry with no partial or temporary residue.",
+      "primary_surface": "Concurrent child-process publishers into one new cache root",
+      "counterevidence": "Both overwrite, entry readback fails, artifact bytes are partial, or a .next directory remains.",
+      "secondary_surface_if_needed": "Post-race manifest and artifact digest readback",
+      "observed_evidence": "The publishers returned STORED and EXISTS; the entry read back as HIT with exact integrity and no temporary directory remained.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.invalidate.explicit",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "No invalidation occurs without explicit authority; an explicit exact-key request removes only that entry and returns a sealed receipt.",
+      "primary_surface": "Refused and explicit API calls plus separate CLI process calls",
+      "counterevidence": "An unrequested call creates or removes state, a different key disappears, or no readback confirms removal.",
+      "secondary_surface_if_needed": "Filesystem existence checks for selected and unrelated entries",
+      "observed_evidence": "The unrequested CLI route created no directory and returned NOT_REQUESTED. Explicit invalidation returned REMOVED, selected-entry readback was absent, and unrelated entries remained hits.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.conflict.preserve",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "pass_condition": "A different result for an existing exact key is reported as counterevidence and never overwrites the first complete entry.",
+      "primary_surface": "Second publication with the same binding and different bytes",
+      "counterevidence": "The original entry changes or the second result is reported as a valid hit/store.",
+      "secondary_surface_if_needed": "Original entry digest and byte readback after conflict",
+      "observed_evidence": "The second publication returned CONFLICT with CACHE_SAME_KEY_DIFFERENT_RESULT and the original entry remained readable.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "cache.production.performance-improvement",
+      "kind": "performance",
+      "risk": "medium",
+      "pass_condition": "Representative production workloads show lower wall time and compute use across repeated controlled runs without reducing verification coverage.",
+      "primary_surface": "Named workload telemetry with cold/warm repetitions and verifier counts",
+      "counterevidence": "Cache overhead outweighs saved work or verification coverage decreases.",
+      "observed_evidence": "Executor call elimination is proven, but no representative native production workload or timing telemetry exists yet.",
+      "verdict": "UNKNOWN",
+      "named_seam": "ZERO_EXECUTOR_CALLS_IS_NOT_A_GENERAL_PERFORMANCE_BENCHMARK"
+    },
+    {
+      "claim_id": "cache.production.retention-bounded",
+      "kind": "resource-safety",
+      "risk": "high",
+      "pass_condition": "A declared quota and retention policy bound storage, propose reference-aware cleanup, require authority, and verify reclaimed bytes.",
+      "primary_surface": "Long-running cache inventory plus governed retention receipts",
+      "counterevidence": "Entries grow without bound or automatic deletion removes reachable evidence.",
+      "observed_evidence": "Entries persist until exact explicit invalidation; there is no automatic quota, eviction, reachability scan, or garbage collector.",
+      "verdict": "UNKNOWN",
+      "named_seam": "VERIFIED_REUSE_DOES_NOT_PROVE_BOUNDED_LONG_TERM_STORAGE"
+    }
+  ]
+}

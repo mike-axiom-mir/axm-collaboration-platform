@@ -1,0 +1,23 @@
+{
+  "schema": "axm.capability-comparison/v1",
+  "subject": "game-production-runner terminal-ledger cache-reference discovery",
+  "status": "READY",
+  "required_missing": [],
+  "comparisons": [
+    { "requirement": "reference-scan-is-read-only-and-external", "available": ["cache.production.reference.scan.readonly"], "missing": [] },
+    { "requirement": "reference-scan-work-is-bounded", "available": ["cache.production.reference.scan.bounded"], "missing": [] },
+    { "requirement": "only-terminal-receipts-can-authorize", "available": ["cache.production.reference.terminal-only"], "missing": [] },
+    { "requirement": "whole-ledger-is-validated", "available": ["cache.production.reference.ledger-complete"], "missing": [] },
+    { "requirement": "derived-view-is-path-private", "available": ["cache.production.reference.path-private"], "missing": [] },
+    { "requirement": "one-unsafe-run-holds-aggregate", "available": ["cache.production.reference.aggregate-hold"], "missing": [] },
+    { "requirement": "protection-binds-exact-entry", "available": ["cache.production.reference.entry-binding"], "missing": [] },
+    { "requirement": "application-rescans-references", "available": ["cache.production.reference.apply-freshness"], "missing": [] }
+  ],
+  "out_of_scope_gaps": [
+    "authoritative nonterminal reference checkpoints",
+    "project-state reachability outside runner ledgers",
+    "persisted retention policy and scheduler",
+    "cache leases",
+    "automatic garbage collection"
+  ]
+}

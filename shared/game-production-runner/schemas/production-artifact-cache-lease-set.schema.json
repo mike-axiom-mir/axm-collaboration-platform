@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-lease-set/v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "observed_at_ms", "cache_root_fingerprint", "root_exists", "lease_root_exists", "scan_budget", "leases", "protected_keys", "holds", "ignored_files", "usage", "snapshot_digest", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-lease-set/v1" },
+    "version": { "const": "0.1.0" },
+    "status": { "enum": ["COMPLETE", "REVIEW_REQUIRED", "LIMIT_EXCEEDED"] },
+    "observed_at_ms": { "type": "integer", "minimum": 0 },
+    "cache_root_fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "root_exists": { "type": "boolean" },
+    "lease_root_exists": { "type": "boolean" },
+    "scan_budget": { "type": "object" },
+    "leases": { "type": "array" },
+    "protected_keys": { "type": "array", "items": { "type": "string", "pattern": "^[a-f0-9]{64}$" }, "uniqueItems": true },
+    "holds": { "type": "array" },
+    "ignored_files": { "type": "integer", "minimum": 0 },
+    "usage": { "type": "object" },
+    "snapshot_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

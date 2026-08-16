@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-lease-curation-proposal/v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "observed_at_ms", "cache_root_fingerprint", "lease_set_digest", "lease_set_snapshot_digest", "scan_budget", "policy", "active_leases", "eligible_count", "deferred_count", "candidates", "selected_live_records", "selected_live_bytes", "application_allowed", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-lease-curation-proposal/v1" },
+    "version": { "const": "0.1.0" },
+    "status": { "enum": ["READY", "READY_WITH_LIMITS", "NO_CHANGES", "HELD"] },
+    "observed_at_ms": { "type": "integer", "minimum": 0 },
+    "cache_root_fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "lease_set_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "lease_set_snapshot_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "scan_budget": { "type": "object" },
+    "policy": { "type": "object" },
+    "active_leases": { "type": "integer", "minimum": 0 },
+    "eligible_count": { "type": "integer", "minimum": 0 },
+    "deferred_count": { "type": "integer", "minimum": 0 },
+    "candidates": { "type": "array" },
+    "selected_live_records": { "type": "integer", "minimum": 0 },
+    "selected_live_bytes": { "type": "integer", "minimum": 0 },
+    "application_allowed": { "type": "boolean" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

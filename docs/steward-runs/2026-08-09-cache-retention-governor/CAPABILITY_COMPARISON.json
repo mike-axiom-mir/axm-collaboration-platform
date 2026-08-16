@@ -1,0 +1,88 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "inventory-is-read-only",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.retention.inventory.readonly"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": { "cache.production.retention.inventory.readonly": ["explicit external cache root", "absent cache is not created", "no candidate-run integration"] }
+    },
+    {
+      "id": "inventory-work-is-bounded",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.retention.scan.bounded"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": { "cache.production.retention.scan.bounded": ["maximum 100000 entries and 1000000 files", "logical bytes from lstat", "artifact contents are not hashed during inventory"] }
+    },
+    {
+      "id": "budgets-are-independent",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.retention.policy.separate"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": { "cache.production.retention.policy.separate": ["entry count", "logical file bytes", "observed filesystem modification age"] }
+    },
+    {
+      "id": "live-references-can-be-protected",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.retention.reference.protect"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": { "cache.production.retention.reference.protect": ["caller supplies exact digest keys", "automatic run-ledger discovery remains missing"] }
+    },
+    {
+      "id": "proposal-is-sealed-dry-run",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.retention.proposal.sealed"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": { "cache.production.retention.proposal.sealed": ["canonical SHA-256 receipt", "planning performs no deletion", "oldest-first deterministic ordering"] }
+    },
+    {
+      "id": "application-needs-exact-authority",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.retention.apply.authorized"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": { "cache.production.retention.apply.authorized": ["explicit apply flag", "exact proposal digest", "saved proposal is a plain JSON file no larger than 2 MiB"] }
+    },
+    {
+      "id": "stale-proposals-delete-nothing",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.retention.apply.stale-refuse"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": { "cache.production.retention.apply.stale-refuse": ["root fingerprint and inventory snapshot digest", "new, removed, or changed entries invalidate application"] }
+    },
+    {
+      "id": "deletion-is-exact-and-selective",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.retention.delete.selective"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": { "cache.production.retention.delete.selective": ["only proposal candidate keys", "existing exact invalidation boundary", "links are refused"] }
+    },
+    {
+      "id": "deletion-has-readback",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.retention.readback"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": { "cache.production.retention.readback": ["fresh inventory after deletion", "each invalidation receipt digest retained", "policy satisfaction recomputed"] }
+    },
+    {
+      "id": "unknown-layouts-fail-closed",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.retention.unclassified-hold"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": { "cache.production.retention.unclassified-hold": ["undeclared files or directories", "links or special files", "active publishers", "scan limit exhaustion"] }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

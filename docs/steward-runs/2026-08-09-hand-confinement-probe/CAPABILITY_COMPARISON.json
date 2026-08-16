@@ -1,0 +1,62 @@
+{
+  "schema": "axm.capability-gap-report/v1",
+  "capability": "capability.compare.requirements/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "explicit-confinement-diagnosis-exists",
+      "required": true,
+      "status": "READY",
+      "available": ["probe.hand-process.confinement"],
+      "degraded": [],
+      "unknown": [],
+      "missing": []
+    },
+    {
+      "id": "trusted-process-hand-is-confined",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "confinement.filesystem-read.deny",
+        "confinement.filesystem-write.deny",
+        "confinement.child-process.deny",
+        "confinement.worker-thread.deny"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["confinement.network.deny"]
+    },
+    {
+      "id": "untrusted-process-hand-is-sandboxed",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["sandbox.hand-process.malicious-code"]
+    }
+  ],
+  "missingCapabilities": [
+    "confinement.network.deny",
+    "sandbox.hand-process.malicious-code"
+  ],
+  "proposedContracts": [
+    {
+      "capabilityId": "confinement.network.deny",
+      "gapType": "SUBSTRATE",
+      "requiredBy": ["trusted-process-hand-is-confined"],
+      "contractState": "SPEC_REQUIRED",
+      "requiredFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "sandbox.hand-process.malicious-code",
+      "gapType": "SUBSTRATE",
+      "requiredBy": ["untrusted-process-hand-is-sandboxed"],
+      "contractState": "SPEC_REQUIRED",
+      "requiredFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    }
+  ],
+  "automaticInstall": false,
+  "automaticPermission": false,
+  "automaticQualityReduction": false
+}

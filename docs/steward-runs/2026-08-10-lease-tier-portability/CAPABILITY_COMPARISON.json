@@ -1,0 +1,126 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "tier-planning-is-read-only-and-bounded",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.lease-tier.bounded-plan"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-tier.bounded-plan": [
+          "explicit plan starts from COMPLETE lease discovery and COMPLETE deep archive audit",
+          "only inactive owners with no unarchived live segment are considered",
+          "separate age, minimum-history, per-package, aggregate-byte, and candidate ceilings",
+          "planning creates no tier root and has no tier-write or deletion authority"
+        ]
+      }
+    },
+    {
+      "id": "export-requires-exact-root-bound-approval",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.lease-tier.export-approval"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-tier.export-approval": [
+          "proposal binds source-cache and tier-root fingerprints plus exact lease and archive snapshots",
+          "application requires explicit authority and the structurally validated proposal digest",
+          "changed source history, copied source root, overlap, or changed payload bytes fail before tier writes"
+        ]
+      }
+    },
+    {
+      "id": "export-preserves-source-history",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.lease-tier.source-preservation"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-tier.source-preservation": [
+          "export copies the exact sealed anchor and every current archive file",
+          "application receipt fixes source_files_removed at zero",
+          "source deep-audit summary is unchanged before and after export",
+          "no semantic deletion function or CLI route is exposed"
+        ]
+      }
+    },
+    {
+      "id": "packages-are-content-addressed-and-recoverable",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.lease-tier.content-addressed-package"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-tier.content-addressed-package": [
+          "package directory is named by the sealed manifest digest",
+          "manifest binds sorted relative path, byte count, and content digest descriptors",
+          "payload files are exact-written before the manifest",
+          "exact partial export is resumable and conflicting or unclassified content is never overwritten"
+        ]
+      }
+    },
+    {
+      "id": "package-audit-detects-mutation",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.lease-tier.package-audit"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-tier.package-audit": [
+          "read-only audit validates package directory shape, manifest seal, every payload byte, and snapshot digest",
+          "same-size corruption, missing payload, links, and extra content become path-private REVIEW_REQUIRED holds",
+          "audit does not claim remote durability, immutability, or authenticity"
+        ]
+      }
+    },
+    {
+      "id": "restore-requires-exact-package-and-fresh-target",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.lease-tier.restore-approval"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-tier.restore-approval": [
+          "restore requires explicit authority and exact package-digest approval",
+          "target must be absent, fresh, or contain only exact partial package paths",
+          "archive payload is written before the recovery anchor",
+          "corrupt packages, overlap, and unclassified target content fail before authoritative restore"
+        ]
+      }
+    },
+    {
+      "id": "restore-reproduces-deep-audit-summary",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.lease-tier.restore-equivalence"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-tier.restore-equivalence": [
+          "target full audit must reproduce the source anchor, tail, segment, event, rollup, file, byte, and storage-snapshot summary",
+          "target lease discovery must reproduce lease id, anchor digest, and history generation",
+          "fresh child process independently reopens the package and deep-audits the restored cache",
+          "proof is for the named bounded fixture and exact package only"
+        ]
+      }
+    },
+    {
+      "id": "tiering-grants-no-immutability-or-retention-claim",
+      "required": true,
+      "status": "READY",
+      "available": ["cache.production.lease-tier.truth-boundary"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "cache.production.lease-tier.truth-boundary": [
+          "local content-addressed storage is tamper-evident but external_immutability remains false",
+          "export and restore never run automatically",
+          "tier package existence grants no semantic-retention or source-deletion authority",
+          "off-device durability, receiver acceptance, scheduling, authentication, promotion, and CANON remain outside this capability"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

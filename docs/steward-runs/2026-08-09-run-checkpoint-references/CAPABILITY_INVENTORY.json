@@ -1,0 +1,13 @@
+{
+  "schema": "axm.capability-inventory/v1",
+  "capabilities": [
+    { "id": "run.production.checkpoint.sealed", "status": "available", "constraints": ["graceful INTERRUPTED boundary only", "terminal receipt remains separate", "mutable run state grants no authority"] },
+    { "id": "run.production.checkpoint.chain", "status": "available", "constraints": ["append-only run-checkpoints.jsonl", "previous checkpoint digest", "maximum 10000 checkpoints and 16 MiB per run checkpoint ledger"] },
+    { "id": "run.production.checkpoint.ledger-prefix", "status": "available", "constraints": ["each checkpoint binds exact ledger count and tail", "each verified receipt list equals its actual step-ledger prefix", "rollback and binding drift refused"] },
+    { "id": "run.production.checkpoint.legacy-resume", "status": "available", "constraints": ["pre-checkpoint interrupted run can resume", "legacy state alone cannot authorize cache protection"] },
+    { "id": "cache.production.reference.checkpoint", "status": "available", "constraints": ["latest checkpoint must equal current complete step ledger", "terminal receipt takes precedence when present", "game and portable step schemas"] },
+    { "id": "cache.production.reference.checkpoint-hold", "status": "available", "constraints": ["uncheckpointed receipt, tamper, truncation, rollback, schema drift, stale tail, and invalid terminal receipt hold aggregate authority", "no fallback to older checkpoint"] },
+    { "id": "cache.production.reference.checkpoint-bounded-private", "status": "available", "constraints": ["aggregate maximum 100000 checkpoints and 64 MiB checkpoint-ledger bytes", "path-free and run-id-free derived view", "explicit read-only scan only"] },
+    { "id": "cache.production.retention.checkpoint-binding", "status": "available", "constraints": ["exact key and cache-entry digest", "fresh apply-time rediscovery", "no automatic deletion"] }
+  ]
+}

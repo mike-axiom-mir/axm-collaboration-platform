@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-artifact-cache-lease-event/v1",
+  "type": "object",
+  "required": ["schema", "version", "lease_id", "owner", "event", "session_digest", "generation", "observed_at_ms", "expires_at_ms", "keys", "previous_event_digest", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-artifact-cache-lease-event/v1" },
+    "version": { "const": "0.1.0" },
+    "lease_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "owner": { "type": "object" },
+    "event": { "enum": ["ACQUIRED", "RENEWED", "PROTECTED", "RELEASED"] },
+    "session_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "generation": { "type": "integer", "minimum": 1 },
+    "observed_at_ms": { "type": "integer", "minimum": 0 },
+    "expires_at_ms": { "type": "integer", "minimum": 0 },
+    "keys": { "type": "array", "items": { "type": "string", "pattern": "^[a-f0-9]{64}$" }, "uniqueItems": true },
+    "previous_event_digest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

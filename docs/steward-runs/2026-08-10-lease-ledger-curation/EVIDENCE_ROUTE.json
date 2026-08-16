@@ -1,0 +1,87 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "subject": "game-production-runner governed inactive lease-ledger curation",
+  "claims": [
+    {
+      "claim_id": "cache.production.lease-curation.plan-approval",
+      "claim_type": "authorization",
+      "pass_condition": "Planning removes nothing, and application requires an exact, structurally valid, root-bound proposal plus explicit authority.",
+      "primary_surface": "artifact-cache-lease-curation runtime and shared self-test",
+      "counterevidence": "Planning mutates storage, wrong approval applies, an undeclared sealed field is accepted, or the proposal applies to a copied cache root.",
+      "observed_evidence": "Dry-run, wrong-digest, exact-shape, copied-root, and exact-approval adversaries pass.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-curation.lifecycle-fence",
+      "claim_type": "concurrency",
+      "pass_condition": "Only an unchanged inactive live segment may be archived while its lease lifecycle lock is held.",
+      "primary_surface": "archiveCandidate plus active, busy, and post-plan reacquire fixtures",
+      "counterevidence": "An active lease becomes eligible, a held lifecycle lock is bypassed, or a newer session loses source history.",
+      "observed_evidence": "ACTIVE produces NO_CHANGES; held lock produces COORDINATION_BUSY; newer session produces STALE; all retain the hot segment.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-archive.lossless-source",
+      "claim_type": "persistence",
+      "pass_condition": "The complete original live JSONL byte segment is recoverable from a digest-bound cold blob before its hot source is removed.",
+      "primary_surface": "archive publication order, archive receipt, and full audit",
+      "counterevidence": "Only a summary is retained, compression changes bytes, or source is removed before blob, receipt, and anchor publication.",
+      "observed_evidence": "Two archived segments decompress to one valid eight-event chain with exact raw hashes and generations.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-archive.hot-equivalence",
+      "claim_type": "behavioral",
+      "pass_condition": "Curation reduces routine hot records without changing the lease tail, generation, state, or key-set semantics.",
+      "primary_surface": "pre/post discovery comparison in shared self-test",
+      "counterevidence": "Discovery semantics change, active protection is invented, or routine discovery must decompress all history.",
+      "observed_evidence": "Stored hot records decrease while exact tail digest, generation, released state, and key-set digest remain equal.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-archive.interrupted-apply",
+      "claim_type": "persistence",
+      "pass_condition": "The only source-removal crash window is visible and the same exact proposal completes it idempotently.",
+      "primary_surface": "restored-source crash-window adversary",
+      "counterevidence": "Discovery silently accepts duplicate archived source or retry creates a contradictory history.",
+      "observed_evidence": "Anchor plus exact source returns REVIEW_REQUIRED; exact reapplication returns RECOVERED and removes that source.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-archive.restart-continuity",
+      "claim_type": "persistence",
+      "pass_condition": "A new process can continue both released and expired archived owner histories without raw hot history.",
+      "primary_surface": "fresh Node child-process lease cycles",
+      "counterevidence": "Released generation restarts, expired keys disappear, or archived owners cannot append new events.",
+      "observed_evidence": "Released anchor continues at generations six through eight; expired anchor renews at generation three with its key and releases at four.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-archive.full-audit",
+      "claim_type": "integrity",
+      "pass_condition": "Explicit bounded audit validates every cold byte and the complete receipt, predecessor-anchor, and event chains.",
+      "primary_surface": "auditArchives and missing, tamper, predecessor, and budget fixtures",
+      "counterevidence": "Missing or same-size-corrupt blobs pass, a resealed false predecessor passes, or the audit exceeds its ceiling.",
+      "observed_evidence": "Valid two-segment history passes; segment ceiling returns LIMIT_EXCEEDED; missing, same-size corruption, and false predecessor return REVIEW_REQUIRED.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-archive.privacy-load-truth",
+      "claim_type": "privacy",
+      "pass_condition": "Derived receipts remain path-private and distinguish lightweight hot discovery from explicit full archive verification without an unsupported performance claim.",
+      "primary_surface": "serialized receipt assertions, contracts, and READMEs",
+      "counterevidence": "A machine path or raw run id leaks, cold integrity is claimed from hot discovery, or curation runs in the background.",
+      "observed_evidence": "Tamper audit output is path- and run-id-private; contracts refuse automatic curation and full-cold-integrity claims from hot discovery.",
+      "decision": "PASS"
+    },
+    {
+      "claim_id": "cache.production.lease-curation.transport",
+      "claim_type": "transport",
+      "pass_condition": "CLI exposes separate plan, exact apply, and full audit commands while preserving the same authority boundaries.",
+      "primary_surface": "tools/game-production-runner self-test and discovery seam review",
+      "counterevidence": "CLI applies without explicit authority, hides deferred candidates, or lacks the full audit route.",
+      "observed_evidence": "108 CLI checks and 47 discovery-seam checks pass, including candidate deferral, wrong approval, exact three-segment application, and thirteen-event audit.",
+      "decision": "PASS"
+    }
+  ]
+}

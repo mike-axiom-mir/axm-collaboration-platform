@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.production-profile-binding/v1",
+  "type": "object",
+  "required": ["schema", "adapter", "domain", "portable", "internal", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.production-profile-binding/v1" },
+    "adapter": { "type": "object" },
+    "domain": { "type": "string", "minLength": 1 },
+    "portable": { "type": "object" },
+    "internal": { "type": "object" },
+    "internal_plan_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "additionalProperties": false
+}

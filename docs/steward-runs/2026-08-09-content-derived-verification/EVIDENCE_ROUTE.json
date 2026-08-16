@@ -1,0 +1,72 @@
+{
+  "schema": "axm.evidence-route/v1",
+  "subject": "game-production-runner content-derived verification seam",
+  "status": "EXPERIMENTAL",
+  "claims": [
+    {
+      "claim_id": "verifier.output-bytes.declared-only",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "The appointed verifier can read a copy of each declared produced artifact and cannot read an undeclared output.",
+      "primary_surface": "Allowed and denied runtime reader calls",
+      "counterevidence": "An undeclared path returns bytes or verifier mutation changes the runner-owned artifact.",
+      "secondary_surface_if_needed": "Written output digest equals the independently inspected descriptor digest.",
+      "observed_evidence": "The documentation verifier read all declared outputs; an escaping verifier was refused, verifier-buffer mutation left runner-owned bytes unchanged, and the denied read failed closed.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "verifier.input-bytes.direct-dependencies-only",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "The appointed verifier can independently read bytes only from artifacts belonging to declared direct dependencies.",
+      "primary_surface": "Content verifier reads the source brief and draft through the runner dependency reader",
+      "counterevidence": "The verifier must trust executor facts or can read an unrelated package artifact.",
+      "secondary_surface_if_needed": "Package graph and input artifact index bind each read to a verified dependency receipt.",
+      "observed_evidence": "Draft and comparison verification recomputed results from direct verified inputs; an adversarial verifier requesting a non-dependency input was rejected and the run failed.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "executor-testimony.not-authority",
+      "kind": "deterministic-behavior",
+      "risk": "high",
+      "pass_condition": "Malformed produced bytes fail even when the executor reports every claim as true.",
+      "primary_surface": "Adversarial lying-executor run",
+      "counterevidence": "Executor facts cause malformed bytes to receive PASS or be written as verified output.",
+      "secondary_surface_if_needed": "Step receipts retain FAIL evidence from the separately identified content verifier.",
+      "observed_evidence": "A replacement executor returned malformed JSON plus all-true claim facts; both bounded attempts failed and no claim passed.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "documentation.hand.content-correct",
+      "kind": "deterministic-behavior",
+      "risk": "medium",
+      "pass_condition": "The Hand renders an exact release note from a locked brief and the verifier recomputes draft and intent bindings from bytes.",
+      "primary_surface": "Three-package external candidate run plus exact output comparison",
+      "counterevidence": "A brief field is omitted, a heading differs, the draft digest differs, or publication is reported.",
+      "observed_evidence": "The candidate reached CANDIDATE_READY; written markdown matched the deterministic rendering, a distinct verifier parser rejected semantically altered content, and every claim cited artifact-content inspection.",
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "documentation.editorial-quality",
+      "kind": "quality",
+      "risk": "high",
+      "pass_condition": "A human or appointed documentation reviewer accepts clarity, usefulness, tone, and completeness for a representative real release.",
+      "primary_surface": "Human review of representative release notes",
+      "counterevidence": "Structurally correct output is confusing, misleading, or unsuitable for its audience.",
+      "observed_evidence": "No human editorial review was requested or performed.",
+      "verdict": "UNKNOWN",
+      "named_seam": "STRUCTURE_DOES_NOT_PROVE_EDITORIAL_QUALITY"
+    },
+    {
+      "claim_id": "hands.operating-system-sandboxed",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "An untrusted Hand or verifier cannot access filesystem, process, or network resources outside its declared capability envelope.",
+      "primary_surface": "Host-level denied-capability tests in an isolated process sandbox",
+      "counterevidence": "In-process code directly imports Node APIs or accesses undeclared host resources.",
+      "observed_evidence": "v0.1 uses a trusted in-process registry; only the provided readers are bounded.",
+      "verdict": "UNKNOWN",
+      "named_seam": "TRUSTED_IN_PROCESS_IS_NOT_OS_SANDBOX"
+    }
+  ]
+}
