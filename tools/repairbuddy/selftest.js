@@ -5,12 +5,47 @@ const fs = require('fs'), path = require('path');
   const K = await import('./repairbuddy-kernel.mjs');
   const A = await import('./warning-action-packet.mjs');
   const Router = require('./verifier-warning-router');
+  const Delta = require('./verifier-warning-delta');
+  const ContractVerifier = require('../../hub/module-contract-verifier');
   let checks = 0;
   const ok = (v, m) => { if (!v) throw new Error(m); checks++; };
   const ui = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
   ok(ui.includes("loadJson('/api/workshop/technical-glasses')"), 'browser uses the live Technical Glasses API instead of a blocked state path');
   ok(ui.includes('../../exports/repairbuddy-warning-queue.json'), 'browser exposes the generated warning queue');
   ok(ui.includes('Human + AI action desk') && ui.includes('buildWarningActionPacket'), 'browser exposes separate human and AI warning controls');
+  const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
+  const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
+  ok(manifest.version === 'v0.5' && contract.version === manifest.version, 'manifest and contract declare RepairBuddy v0.5 together');
+  ok(ContractVerifier.validateContract(contract, manifest).pass, 'RepairBuddy module contract validates');
+
+  // 0 — the complete warning baseline is deterministic and never suppresses truth
+  const warningBaseline = JSON.parse(fs.readFileSync(path.join(__dirname, 'verifier-warning-baseline.json'), 'utf8'));
+  ok(Delta.validateBaseline(warningBaseline).pass, 'known-open warning baseline validates');
+  ok(warningBaseline.messages.length === 43, 'baseline binds all 43 current verifier warnings');
+  const exactDelta = Delta.compareWarnings(warningBaseline.messages, warningBaseline);
+  ok(exactDelta.state === 'MATCH' && exactDelta.summary.unchanged === 43, 'same warning set matches baseline');
+  ok(Delta.validateDelta(exactDelta).pass, 'warning delta validates');
+  const inconsistentDelta = JSON.parse(JSON.stringify(exactDelta));
+  inconsistentDelta.summary.added = 1;
+  delete inconsistentDelta.deltaDigest;
+  inconsistentDelta.deltaDigest = Delta.canonicalDigest(inconsistentDelta);
+  ok(!Delta.validateDelta(inconsistentDelta).pass, 'self-consistent digest cannot hide inconsistent delta counts');
+  const reorderedDelta = Delta.compareWarnings(warningBaseline.messages.slice().reverse(), warningBaseline);
+  ok(reorderedDelta.deltaDigest === exactDelta.deltaDigest, 'warning delta ignores observation order');
+  const addedDelta = Delta.compareWarnings(warningBaseline.messages.concat(['new bounded warning']), warningBaseline);
+  ok(addedDelta.state === 'DRIFT' && addedDelta.summary.added === 1, 'new warning is explicit drift');
+  const resolvedDelta = Delta.compareWarnings(warningBaseline.messages.slice(1), warningBaseline);
+  ok(resolvedDelta.state === 'DRIFT' && resolvedDelta.summary.resolved === 1, 'resolved warning is preserved in the delta');
+  const changedMessages = warningBaseline.messages.map(message => message.startsWith('manifest kind migration backlog:') ? 'manifest kind migration backlog: 59 tool(s) remain legacy UNDECLARED' : message);
+  const changedDelta = Delta.compareWarnings(changedMessages, warningBaseline);
+  ok(changedDelta.summary.changed === 1 && changedDelta.summary.added === 0 && changedDelta.summary.resolved === 0, 'structured warning detail changes do not masquerade as add plus resolve');
+  ok(exactDelta.truth.warningsOpen && exactDelta.truth.warningsAcknowledged === 0 && exactDelta.truth.warningsSuppressed === 0, 'delta preserves every warning as open and unsuppressed');
+  const extracted = Delta.extractWarningMessages('  PASS  example\n  warn  first warning\n  warn  second warning\n');
+  ok(extracted.join('|') === 'first warning|second warning', 'core verifier text extraction is bounded to warning lines');
+  ok(Delta.messagesFromVerifyReport({ checks:[{ verdict:'PASS', message:'not warning' }, { verdict:'WARN', message:'report warning' }] }).join() === 'report warning', 'structured verify report extraction keeps only WARN records');
+  const tamperedBaseline = JSON.parse(JSON.stringify(warningBaseline));
+  tamperedBaseline.messages[0] += ' changed';
+  ok(!Delta.validateBaseline(tamperedBaseline).pass, 'baseline tampering is detected');
 
   // 1 — every stored pattern passes the gate
   const dir = path.join(__dirname, 'patterns');

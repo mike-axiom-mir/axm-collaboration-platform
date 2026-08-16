@@ -12,12 +12,24 @@ const { execSync } = require('child_process');
 const fs = require('fs'), path = require('path');
 const Checks = require('./verify-checks.js');
 const VerificationRunner = require('../shared/verification-spine/workspace-runner.js');
+const WarningDelta = require('../tools/repairbuddy/verifier-warning-delta.js');
 const ROOT = path.join(__dirname, '..');
 
 /* ---- 1. core gate: run the real verify.js, capture output + exit ---- */
 let coreOut = '', coreFail = false;
 try { coreOut = execSync('node verify.js', { cwd: ROOT, encoding: 'utf8' }); }
 catch (e) { coreOut = (e.stdout || '') + (e.stderr || ''); coreFail = true; }
+
+/* ---- 1b. compare every warning with the explicit known-open baseline.
+   This is orientation only: it never acknowledges, suppresses, retires, or
+   converts a warning into a pass. */
+let warningDelta = null, warningDeltaError = null;
+try {
+  const baseline = JSON.parse(fs.readFileSync(path.join(ROOT, 'tools', 'repairbuddy', 'verifier-warning-baseline.json'), 'utf8'));
+  warningDelta = WarningDelta.compareWarnings(WarningDelta.extractWarningMessages(coreOut), baseline);
+  const checked = WarningDelta.validateDelta(warningDelta);
+  if (!checked.pass) throw new Error(checked.errors.join('; '));
+} catch (error) { warningDeltaError = error; }
 
 /* ---- 2. load the user's config (optional) ---- */
 let config = { userChecks: [], acknowledgedWarnings: [] };
@@ -82,6 +94,21 @@ results.forEach(r => out += '  ' + (r.ok ? 'PASS' : 'FAIL') + '  ' + r.label + '
 out += '\n' + (effectiveCoreFail ? 'CORE FAILED (' + ret.effectiveFails + ' unretired)' : 'core ok')
      + ' · ' + userFail + ' of ' + results.length + ' your-checks failed'
      + (ret.hits.length ? ' · ' + ret.hits.length + ' retired' : '') + '\n';
+out += '\n=== COMPLETE WARNING DELTA ===\n';
+if (warningDeltaError) {
+  out += '  HELD  warning delta unavailable - ' + warningDeltaError.message + '\n';
+} else {
+  out += '  ' + warningDelta.state + '  ' + warningDelta.current.warnings + ' current known-open warning(s)'
+      + ' - added ' + warningDelta.summary.added
+      + ', resolved ' + warningDelta.summary.resolved
+      + ', changed ' + warningDelta.summary.changed
+      + ', unchanged ' + warningDelta.summary.unchanged + '\n';
+  out += '  baseline: ' + warningDelta.baseline.id + ' - ' + warningDelta.baseline.digest + '\n';
+  warningDelta.added.forEach(function (item) { out += '  ADDED     ' + item.message + '\n'; });
+  warningDelta.resolved.forEach(function (item) { out += '  RESOLVED  ' + item.message + '\n'; });
+  warningDelta.changed.forEach(function (item) { out += '  CHANGED   ' + item.before + ' -> ' + item.after + '\n'; });
+  out += '  Known-open means tracked, not acknowledged, suppressed, retired, or passed.\n';
+}
 out += '\n=== VERIFICATION SPINE V2 ===\n';
 if (spineError) {
   out += '  HELD  spine could not produce a trustworthy report - ' + spineError.message + '\n';

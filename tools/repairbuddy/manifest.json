@@ -1,7 +1,7 @@
 {
   "id": "repairbuddy",
   "name": "RepairBuddy — Mirror Coder Experiment",
-  "version": "v0.3",
+  "version": "v0.5",
   "status": "EXPERIMENTAL",
   "entry": "index.html",
   "contract": "module.contract.json",
@@ -19,16 +19,21 @@
     "shadow-only",
     "pattern-memory",
     "no-learned-weights",
-    "local-first"
+    "local-first",
+    "complete-warning-delta",
+    "known-open-not-suppressed"
   ],
   "uses": [
-    "local-cpu"
+    "local-cpu",
+    "deterministic-json-core",
+    "axm.verify-report/v1"
   ],
   "permissions": [],
   "actions": [
     "scan the latest Technical Glasses seams against stored repair patterns",
     "run a live verifier-linked scan from the CLI: node tools/repairbuddy/repairbuddy-cli.js scan",
     "route verifier warnings by frozen replay, evidence collection, or repair design: node tools/repairbuddy/repairbuddy-cli.js warnings",
+    "compare every verifier warning with an explicit digest-bound known-open baseline: node tools/repairbuddy/repairbuddy-cli.js warning-delta",
     "select one warning and prepare separate human and AI-native action packets without automatic open or apply",
     "look underneath a module's files and code: node tools/repairbuddy/repairbuddy-cli.js eyes <moduleId>",
     "propose repairs from lineage-bound patterns without write authority",
@@ -39,11 +44,14 @@
   "accepts": [
     "technical-glasses-snapshot",
     "platform-authored-pattern-draft",
-    "human-review"
+    "human-review",
+    "axm.verify-report/v1",
+    "axm.repairbuddy.warning-baseline/v1"
   ],
   "produces": [
     "axm.repairbuddy.report/v1",
     "axm.repairbuddy.warning-queue/v1",
+    "axm.repairbuddy.warning-delta/v1",
     "axm.module-lifecycle-repair-request/v1",
     "axm.qa-evidence-request/v1",
     "axm.playtest-evidence-request/v1",
@@ -57,6 +65,6 @@
     "machine-readable-evidence",
     "human-review"
   ],
-  "summary": "Deterministic repair memory distilled from verified Workshop repairs. Patterns can propose; only frozen copy-only replay recipes can write after an explicit human preview gate. Unknown or changed cases stop and escalate.",
-  "notes": "Pure Mirror at C:\\AXM_MIRROR_LOCAL is untouched. RepairBuddy has no learned weights and no language organ. It cannot create code or adapt a repair. Its only write authority is an explicit, verifier-bound replay of fixed values from a lineage-backed recipe, with rollback."
+  "summary": "Deterministic repair memory and complete warning-delta support. Known warnings stay open; new, resolved, or changed warnings become explicit without suppression. Only frozen copy-only replay recipes can write after an explicit human preview gate.",
+  "notes": "The configured pure Mirror source is untouched. RepairBuddy has no learned weights and no language organ. It cannot create code, acknowledge warnings, rewrite its baseline automatically, or adapt a repair. Its only write authority is an explicit, verifier-bound replay of fixed values from a lineage-backed recipe, with rollback."
 }

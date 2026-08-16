@@ -1,0 +1,40 @@
+{
+  "schema": "axm.git-pr-scope-policy/v1",
+  "id": "deterministic-warning-delta-v0.1",
+  "baseRef": "origin/main",
+  "remoteName": "origin",
+  "allowedRemoteHosts": ["github.com"],
+  "allowedBranchPrefixes": ["codex/"],
+  "refusedBranches": ["main", "master"],
+  "allowedPrefixes": ["tools/repairbuddy/"],
+  "allowedExactPaths": ["hub/verify-plus.js"],
+  "requiredPrefixes": ["tools/repairbuddy/"],
+  "requiredPaths": [
+    "hub/verify-plus.js",
+    "tools/repairbuddy/verifier-warning-baseline.json",
+    "tools/repairbuddy/verifier-warning-delta.js",
+    "tools/repairbuddy/warning-baseline.schema.json",
+    "tools/repairbuddy/warning-delta.schema.json",
+    "tools/repairbuddy/repairbuddy-cli.js",
+    "tools/repairbuddy/selftest.js",
+    "tools/repairbuddy/manifest.json",
+    "tools/repairbuddy/module.contract.json"
+  ],
+  "forbiddenPrefixes": ["state/", "logs/"],
+  "forbiddenExactPaths": [
+    "bridge/bridge-token.txt",
+    "bridge/bridge.log",
+    "logs/workshop.log"
+  ],
+  "requiredEvidenceClaims": [
+    "warning-delta-focused",
+    "warning-delta-workshop"
+  ],
+  "allowDeletions": false,
+  "allowRenames": false,
+  "allowCopies": false,
+  "scanSecrets": true,
+  "maxFiles": 20,
+  "maxChangedBytes": 524288,
+  "maxCommits": 10
+}
