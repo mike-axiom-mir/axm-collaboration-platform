@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-publish-plan/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "policyVersion", "state", "checkpointDigest", "verificationDigest", "reviewPacketDigest", "repository", "pullRequest", "effectsIfExplicitlyAuthorized", "blockers", "planDigest"],
+  "properties": {
+    "schema": { "const": "axm.git-pr-publish-plan/v1" },
+    "policyVersion": { "const": "axm-deterministic-pr-publisher-policy/0.1" },
+    "state": { "enum": ["READY", "HELD"] },
+    "checkpointDigest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "verificationDigest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "reviewPacketDigest": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "repository": { "type": ["object", "null"] },
+    "pullRequest": { "type": ["object", "null"] },
+    "effectsIfExplicitlyAuthorized": { "type": "object" },
+    "blockers": { "type": "array", "items": { "type": "object", "required": ["code"] } },
+    "planDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

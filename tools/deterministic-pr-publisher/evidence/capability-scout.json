@@ -1,0 +1,54 @@
+{
+  "schema": "axm.capability-gap-scout-receipt/v1",
+  "requestedOutcome": "Let local Keel publish exact public-safe feature work as a deterministic pull-request handoff so platform Axiom/Mir can independently review and merge without spending local reasoning supply on merge transport.",
+  "initialRoute": "BLOCKED",
+  "satisfied": [
+    "git.pr.checkpoint.verify",
+    "github.merge.refuse"
+  ],
+  "degraded": [
+    "git.branch.push.exact-fast-forward"
+  ],
+  "missing": [
+    {
+      "capabilityId": "github.pr.create-or-update",
+      "gapType": "HAND"
+    },
+    {
+      "capabilityId": "github.pr.transport.receipt",
+      "gapType": "EVIDENCE"
+    }
+  ],
+  "cheapestHonestRoute": "Compose the merged read-only checkpoint, existing publish-lane pre-push guard, host git, and host-authenticated GitHub CLI through one bounded adapter.",
+  "newHand": {
+    "capability_id": "git.pr.checkpointed.publish-handoff",
+    "purpose": "Push one exact clean feature branch and create or update one draft PR without merge authority.",
+    "inputs_and_schemas": [
+      "axm.git-pr-checkpoint/v1",
+      "axm.git-pr-checkpoint-verification/v1",
+      "axm.git-pr-review-packet/v1",
+      "filesystem/explicit-clean-publish-lane-worktree",
+      "host/github-cli-authenticated-session"
+    ],
+    "outputs_and_schemas": [
+      "axm.git-pr-publish-plan/v1",
+      "axm.git-pr-publish-receipt/v1",
+      "github/draft-pull-request"
+    ],
+    "side_effects": [
+      "ordinary non-force feature-branch push",
+      "draft PR create or title/body update",
+      "external create-new receipt"
+    ],
+    "permissions_and_consent": [
+      "explicit publish-root",
+      "host-authenticated gh session",
+      "exact one-use confirmation"
+    ],
+    "resource_budget": "One remote-ref query, one PR query, at most one branch push, one PR create or edit, and one receiver readback.",
+    "failure_and_recovery": "Refuse before side effects when stale. If branch push succeeds but PR confirmation fails, preserve a typed partial receipt and never auto-delete or rewind remote state.",
+    "compatibility_version_contract": "Consumes deterministic-pr-checkpoint v0.1 packets and GitHub CLI JSON fields; emits publisher v0.1 packets.",
+    "verification_contract": "Pure deterministic plan tests, denied-boundary tests, mocked sender/receiver transport, real read-only GitHub plan, and one live self-publication receipt.",
+    "promotion_gate": "Remain EXPERIMENTAL; technical merge does not change roots or CANON."
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "checkpoint-input",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "git.pr.checkpoint.verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "git.pr.checkpoint.verify": [
+          "read-only deterministic checkpoint merged in PR 31"
+        ]
+      }
+    },
+    {
+      "id": "exact-push",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "git.branch.push.exact-fast-forward"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "git.branch.push.exact-fast-forward": [
+          "pre-push hook guards the lane but no checkpoint-consuming publisher composes it"
+        ]
+      }
+    },
+    {
+      "id": "pr-upsert",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "github.pr.create-or-update"
+      ],
+      "declaredConstraints": {
+        "github.pr.create-or-update": [
+          "existing GitHub sync emits a PR candidate but explicitly does not create a PR"
+        ]
+      }
+    },
+    {
+      "id": "transport-receipt",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "github.pr.transport.receipt"
+      ],
+      "declaredConstraints": {
+        "github.pr.transport.receipt": [
+          "no sender and GitHub receiver receipt is bound to the checkpoint digest"
+        ]
+      }
+    },
+    {
+      "id": "merge-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "github.merge.refuse"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "github.merge.refuse": [
+          "checkpoint and GitHub sync both explicitly deny merge and CANON authority"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "github.pr.create-or-update",
+    "github.pr.transport.receipt"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "github.pr.create-or-update",
+      "requiredBy": [
+        "pr-upsert"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "github.pr.transport.receipt",
+      "requiredBy": [
+        "transport-receipt"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}
