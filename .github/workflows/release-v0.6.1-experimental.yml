@@ -7,9 +7,7 @@ on:
     paths:
       - .github/release-requests/v0.6.1-experimental.md
 
-permissions:
-  contents: write
-  issues: write
+permissions: {}
 
 concurrency:
   group: axm-v0.6.1-experimental-release
@@ -26,10 +24,13 @@ jobs:
     name: Exact merged source gates
     if: github.repository == 'mike-axiom-mir/axm-collaboration-platform'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
@@ -107,10 +108,13 @@ jobs:
     name: Exact merged Windows package
     if: github.repository == 'mike-axiom-mir/axm-collaboration-platform'
     runs-on: windows-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
@@ -201,12 +205,15 @@ jobs:
     needs: [source-gates, windows-package]
     if: github.repository == 'mike-axiom-mir/axm-collaboration-platform'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - uses: actions/download-artifact@v4
         with:
@@ -348,10 +355,16 @@ jobs:
     name: Repository protection attempt and receipt
     needs: [publish]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
     env:
       GH_TOKEN: ${{ secrets.AXM_REPO_ADMIN_TOKEN }}
-      FALLBACK_TOKEN: ${{ github.token }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
       - name: Attempt exact repository administration only with an explicit admin token
         id: admin
         shell: bash
@@ -360,18 +373,39 @@ jobs:
           mkdir -p admin-evidence
           state="HOLD"
           reason="AXM_REPO_ADMIN_TOKEN is not configured; source/release authority cannot silently become repository-administration authority."
-          if [ -n "${GH_TOKEN:-}" ]; then
-            set -euo pipefail
-            gh api --method PATCH "repos/${GITHUB_REPOSITORY}" -f is_template=false >/dev/null
-            cat > "${RUNNER_TEMP}/branch-protection.json" <<'JSON'
+          safety='.github/repository-safety/v0.6.1.json'
+          ownership_state=$(jq -r '.review_ownership.state // "HOLD"' "$safety")
+          repository_owner=$(jq -r '.review_ownership.repository_owner // ""' "$safety")
+          independent_owner=$(jq -r '.review_ownership.independent_code_owner // ""' "$safety")
+
+          if [ "$ownership_state" != "READY" ] || [ -z "$independent_owner" ]; then
+            reason="Repository protection is held until Mike explicitly names an independent CODEOWNER or explicitly disables the CODEOWNER-review requirement."
+          elif ! [[ "$independent_owner" =~ ^[A-Za-z0-9-]{1,39}$ ]]; then
+            reason="The declared independent CODEOWNER login is malformed; no repository setting was changed."
+          elif [ "$independent_owner" = "$repository_owner" ]; then
+            reason="The declared independent CODEOWNER is the repository owner and cannot independently approve the owner's pull request; no repository setting was changed."
+          elif ! awk -v owner="@${independent_owner}" '
+            /^[[:space:]]*(#|$)/ { next }
+            { found=0; for (i=2; i<=NF; i++) if ($i == owner) found=1; if (!found) missing=1 }
+            END { exit missing ? 1 : 0 }
+          ' .github/CODEOWNERS; then
+            reason="The declared independent CODEOWNER is not assigned to every protected CODEOWNERS rule; no repository setting was changed."
+          elif [ -z "${GH_TOKEN:-}" ]; then
+            reason="AXM_REPO_ADMIN_TOKEN is not configured; source/release authority cannot silently become repository-administration authority."
+          else
+            permission=$(gh api "repos/${GITHUB_REPOSITORY}/collaborators/${independent_owner}/permission" --jq '.permission' 2>/dev/null || true)
+            if ! [[ "$permission" =~ ^(admin|maintain|write)$ ]]; then
+              reason="The declared independent CODEOWNER does not have verified write-level repository permission; no repository setting was changed."
+            else
+              cat > "${RUNNER_TEMP}/branch-protection.json" <<'JSON'
           {
             "required_status_checks": {
               "strict": true,
               "contexts": [
                 "v0.6.1 corrective source gates",
                 "v0.6.1 exact Windows package gate",
-                "static-public-contract",
-                "clean-windows-launch"
+                "discovery-and-static-gates",
+                "windows-clean-launch"
               ]
             },
             "enforce_admins": true,
@@ -390,8 +424,7 @@ jobs:
             "allow_fork_syncing": true
           }
           JSON
-            gh api --method PUT "repos/${GITHUB_REPOSITORY}/branches/main/protection" --input "${RUNNER_TEMP}/branch-protection.json" >/dev/null
-            cat > "${RUNNER_TEMP}/tag-ruleset.json" <<'JSON'
+              cat > "${RUNNER_TEMP}/tag-ruleset.json" <<'JSON'
           {
             "name": "Protect AXM release tags",
             "target": "tag",
@@ -404,14 +437,65 @@ jobs:
             "bypass_actors": []
           }
           JSON
-            existing=$(gh api "repos/${GITHUB_REPOSITORY}/rulesets" --jq '.[] | select(.name == "Protect AXM release tags") | .id' | head -n 1)
-            if [ -n "$existing" ]; then
-              gh api --method PUT "repos/${GITHUB_REPOSITORY}/rulesets/${existing}" --input "${RUNNER_TEMP}/tag-ruleset.json" >/dev/null
-            else
-              gh api --method POST "repos/${GITHUB_REPOSITORY}/rulesets" --input "${RUNNER_TEMP}/tag-ruleset.json" >/dev/null
+
+              apply_administration() {
+                gh api --method PATCH "repos/${GITHUB_REPOSITORY}" -F is_template=false >/dev/null || return 1
+                gh api --method PUT "repos/${GITHUB_REPOSITORY}/branches/main/protection" --input "${RUNNER_TEMP}/branch-protection.json" >/dev/null || return 1
+                rulesets_json=$(gh api "repos/${GITHUB_REPOSITORY}/rulesets") || return 1
+                existing=$(printf '%s' "$rulesets_json" | jq -r '.[] | select(.name == "Protect AXM release tags") | .id' | head -n 1) || return 1
+                if [ -n "$existing" ]; then
+                  gh api --method PUT "repos/${GITHUB_REPOSITORY}/rulesets/${existing}" --input "${RUNNER_TEMP}/tag-ruleset.json" >/dev/null || return 1
+                else
+                  gh api --method POST "repos/${GITHUB_REPOSITORY}/rulesets" --input "${RUNNER_TEMP}/tag-ruleset.json" >/dev/null || return 1
+                fi
+              }
+
+              verify_administration() {
+                gh api "repos/${GITHUB_REPOSITORY}" > "${RUNNER_TEMP}/repository-after.json" || return 1
+                gh api "repos/${GITHUB_REPOSITORY}/branches/main/protection" > "${RUNNER_TEMP}/protection-after.json" || return 1
+                rulesets_json=$(gh api "repos/${GITHUB_REPOSITORY}/rulesets") || return 1
+                ruleset_id=$(printf '%s' "$rulesets_json" | jq -r '.[] | select(.name == "Protect AXM release tags") | .id' | head -n 1) || return 1
+                [ -n "$ruleset_id" ] || return 1
+                gh api "repos/${GITHUB_REPOSITORY}/rulesets/${ruleset_id}" > "${RUNNER_TEMP}/ruleset-after.json" || return 1
+                node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+          const root = process.env.RUNNER_TEMP;
+          const repository = JSON.parse(fs.readFileSync(root + '/repository-after.json', 'utf8'));
+          const protection = JSON.parse(fs.readFileSync(root + '/protection-after.json', 'utf8'));
+          const releaseRules = JSON.parse(fs.readFileSync(root + '/ruleset-after.json', 'utf8'));
+          const expectedChecks = [
+            'discovery-and-static-gates',
+            'v0.6.1 corrective source gates',
+            'v0.6.1 exact Windows package gate',
+            'windows-clean-launch'
+          ];
+          const observedChecks = [...(protection.required_status_checks && protection.required_status_checks.contexts || [])].sort();
+          const releaseRuleTypes = new Set(releaseRules && releaseRules.rules ? releaseRules.rules.map(row => row.type) : []);
+          const include = releaseRules && releaseRules.conditions && releaseRules.conditions.ref_name && releaseRules.conditions.ref_name.include || [];
+          const reviews = protection.required_pull_request_reviews || {};
+          const pass = repository.is_template === false &&
+            protection.required_status_checks && protection.required_status_checks.strict === true &&
+            JSON.stringify(observedChecks) === JSON.stringify(expectedChecks) &&
+            protection.enforce_admins && protection.enforce_admins.enabled === true &&
+            reviews.dismiss_stale_reviews === true && reviews.require_code_owner_reviews === true && reviews.required_approving_review_count === 1 &&
+            protection.required_conversation_resolution && protection.required_conversation_resolution.enabled === true &&
+            protection.allow_force_pushes && protection.allow_force_pushes.enabled === false &&
+            protection.allow_deletions && protection.allow_deletions.enabled === false &&
+            releaseRules && releaseRules.name === 'Protect AXM release tags' && releaseRules.target === 'tag' &&
+            releaseRules.enforcement === 'active' && include.includes('refs/tags/v*') &&
+            releaseRuleTypes.has('deletion') && releaseRuleTypes.has('non_fast_forward');
+          if (!pass) throw new Error('live repository administration does not match the exact reviewed policy');
+          NODE
+              }
+
+              if apply_administration && verify_administration; then
+                state="PASS"
+                reason="Template state, main protection, and v* tag rules were applied and independently re-read with explicit repository-admin authority."
+              else
+                reason="Repository administration did not verify after the bounded attempt. External state may be partial; inspect the live API before retrying."
+              fi
             fi
-            state="PASS"
-            reason="Template state, main protection, and v* tag rules were applied with explicit repository-admin authority."
           fi
           printf '{"schema":"axm.repository-administration-receipt/v1","state":"%s","reason":%s,"workflow_run":"%s","source_release_succeeded":true}\n' \
             "$state" "$(jq -Rn --arg v "$reason" '$v')" "$GITHUB_RUN_ID" > admin-evidence/repository-administration-receipt.json
@@ -429,6 +513,7 @@ jobs:
           The v0.6.1 source and release gates completed, but repository-administration authority is intentionally separate.
 
           Required exact settings:
+          - Explicitly name an authorized independent CODEOWNER, or explicitly choose not to require CODEOWNER review. The repository owner cannot approve their own pull request.
           - Disable **Template repository**.
           - Protect `main` against direct/force pushes and deletion.
           - Require the current source/public/Windows launch checks before merge.

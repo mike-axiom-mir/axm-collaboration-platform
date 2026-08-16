@@ -42,6 +42,33 @@ function run(command, args, cwd) {
 
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-v061-hardening-'));
 try {
+  const releaseWorkflow = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'release-v0.6.1-experimental.yml'), 'utf8').replace(/\r\n/g, '\n');
+  const publicLaunchWorkflow = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'public-launch.yml'), 'utf8').replace(/\r\n/g, '\n');
+  const correctiveWorkflow = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'v0.6.1-corrective-gate.yml'), 'utf8').replace(/\r\n/g, '\n');
+  const repositorySafety = JSON.parse(fs.readFileSync(path.join(ROOT, '.github', 'repository-safety', 'v0.6.1.json'), 'utf8'));
+  const codeOwners = fs.readFileSync(path.join(ROOT, '.github', 'CODEOWNERS'), 'utf8');
+  const expectedChecks = [
+    'discovery-and-static-gates',
+    'v0.6.1 corrective source gates',
+    'v0.6.1 exact Windows package gate',
+    'windows-clean-launch'
+  ].sort();
+  equal(JSON.stringify(repositorySafety.main.required_checks.slice().sort()), JSON.stringify(expectedChecks), 'repository safety requires the exact emitted check names');
+  ok(publicLaunchWorkflow.includes('\n  discovery-and-static-gates:\n') && publicLaunchWorkflow.includes('\n  windows-clean-launch:\n'), 'public launch workflow emits both required public check names');
+  ok(correctiveWorkflow.includes('name: v0.6.1 corrective source gates') && correctiveWorkflow.includes('name: v0.6.1 exact Windows package gate'), 'corrective workflow emits both required corrective check names');
+  ok(!releaseWorkflow.includes('static-public-contract') && !releaseWorkflow.includes('clean-windows-launch'), 'release administration contains no stale required-check contexts');
+  ok(releaseWorkflow.includes('-F is_template=false') && !releaseWorkflow.includes('-f is_template=false'), 'template administration uses a typed Boolean API field');
+  equal((releaseWorkflow.match(/persist-credentials: false/g) || []).length, 4, 'every release-workflow checkout refuses persisted Git credentials');
+  ok(releaseWorkflow.includes('permissions: {}') && releaseWorkflow.includes('contents: read') && releaseWorkflow.includes('contents: write') && releaseWorkflow.includes('issues: write'), 'release jobs declare bounded permissions instead of one workflow-wide write token');
+  ok(releaseWorkflow.indexOf('ownership_state=') < releaseWorkflow.indexOf('gh api --method PATCH "repos/${GITHUB_REPOSITORY}" -F is_template=false'), 'review-ownership HOLD is evaluated before the repository-settings mutation');
+  ok(releaseWorkflow.includes('[ "$independent_owner" = "$repository_owner" ]') && releaseWorkflow.includes('not assigned to every protected CODEOWNERS rule'), 'review ownership refuses self-review and incomplete CODEOWNERS coverage');
+  ok(releaseWorkflow.includes('verify_administration()') && releaseWorkflow.includes('live repository administration does not match the exact reviewed policy'), 'repository administration is re-read before PASS');
+  equal(repositorySafety.review_ownership.state, 'HOLD', 'independent CODEOWNER decision remains explicitly held');
+  equal(repositorySafety.review_ownership.independent_code_owner, null, 'no independent CODEOWNER is invented');
+  equal(repositorySafety.truth.independent_code_owner_authority_resolved, false, 'repository safety truth exposes unresolved review authority');
+  const declaredOwners = [...new Set([...codeOwners.matchAll(/@([A-Za-z0-9-]+)/g)].map(match => match[1]))];
+  equal(JSON.stringify(declaredOwners), JSON.stringify(['mike-axiom-mir']), 'current CODEOWNERS truthfully contains only the repository owner');
+
   const plainRoot = path.join(temp, 'plain-files');
   fs.mkdirSync(plainRoot);
   const normal = path.join(plainRoot, 'state.json');
