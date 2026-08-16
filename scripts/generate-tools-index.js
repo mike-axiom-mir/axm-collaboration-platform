@@ -129,6 +129,33 @@ function readExistingReceipt(file) {
   return validateReceipt(parsed, 'existing self-test receipt');
 }
 
+function receiptFromIndex(index) {
+  const checked = Readiness.validateIndex(index);
+  if (!checked.pass) throw new Error('checked-in tools index cannot preserve prior evidence: ' + checked.errors.join('; '));
+  const results = [];
+  index.tools.forEach(tool => {
+    const result = tool && tool.selftest && tool.selftest.result;
+    if (!result) return;
+    if (result.id !== tool.id) throw new Error('checked-in tools index result id does not match tool: ' + tool.id);
+    results.push(result);
+  });
+  return validateReceipt({
+    schema: RECEIPT_SCHEMA,
+    generatedAt: index.generatedAt,
+    results
+  }, 'checked-in tools index evidence');
+}
+
+function readExistingEvidence(localReceiptFile, indexFile) {
+  const local = readExistingReceipt(localReceiptFile);
+  if (local) return local;
+  if (!fs.existsSync(indexFile)) return null;
+  let index;
+  try { index = JSON.parse(fs.readFileSync(indexFile, 'utf8')); }
+  catch (error) { throw new Error('checked-in tools index is not valid JSON: ' + error.message); }
+  return receiptFromIndex(index);
+}
+
 function buildVerificationReceipt(options) {
   const selectedToolIds = options.selectedToolIds.slice();
   const latestResults = options.latestResults.slice();
@@ -189,7 +216,7 @@ async function main(argv) {
   let latestResults = [];
   if (options.verify) {
     const targets = verificationTargets(preliminary, options.selectedToolIds);
-    const existingReceipt = options.selectedToolIds.length ? readExistingReceipt(receiptFile) : null;
+    const existingReceipt = options.selectedToolIds.length ? readExistingEvidence(receiptFile, outputFile) : null;
     latestResults = await runBounded(targets, { root: ROOT, workers: options.workers, timeoutMs: options.timeoutMs });
     verificationResults = buildVerificationReceipt({
       preliminary,
@@ -226,6 +253,8 @@ module.exports = {
   verificationTargets,
   validateReceipt,
   readExistingReceipt,
+  receiptFromIndex,
+  readExistingEvidence,
   buildVerificationReceipt,
   runBounded,
   main

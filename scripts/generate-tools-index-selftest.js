@@ -142,4 +142,23 @@ check('receipt validation rejects incompatible schemas and duplicate ids', () =>
   assert.throws(() => Generator.validateReceipt({ schema: Generator.RECEIPT_SCHEMA, results: [{ id: 'alpha' }, { id: 'alpha' }] }), /duplicate/);
 });
 
+check('a valid checked-in index can seed digest-bound fallback evidence', () => {
+  const result = { id: 'alpha', selftestSha256: 'sha-alpha', verdict: 'PASS' };
+  const receipt = Generator.receiptFromIndex({
+    schema: 'axm.tools-index/v1',
+    generatedAt: '2026-08-01T00:00:00.000Z',
+    sourceDigest: 'a'.repeat(64),
+    promotionQueue: {},
+    capabilities: [],
+    tools: [{ id: 'alpha', status: 'TEST', selftest: { result }, promotion: { state: 'BLOCKED' } }],
+    truth: { automaticPromotion: false }
+  });
+  assert.equal(receipt.schema, Generator.RECEIPT_SCHEMA);
+  assert.deepEqual(receipt.results, [result]);
+});
+
+check('checked-in fallback evidence fails closed when its index contract is invalid', () => {
+  assert.throws(() => Generator.receiptFromIndex({ schema: 'wrong', tools: [] }), /cannot preserve prior evidence/);
+});
+
 process.stdout.write('generate-tools-index scoped refresh selftest: PASS (' + checks + ' checks)\n');
