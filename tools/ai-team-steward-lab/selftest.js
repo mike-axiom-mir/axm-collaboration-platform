@@ -10,6 +10,32 @@ const OperationRuntime = require('../../shared/ai-team-steward/operation-runtime
 const CapabilityGap = require('../../shared/ai-native-hands/capability-gap-hand');
 
 const ROOT = path.resolve(__dirname, '..', '..');
+const INTAKE_ROOT = path.join(ROOT, 'intakes', 'ai-team-collaboration-runs-01-101-v1');
+const INTAKE_SELFTEST = path.join(INTAKE_ROOT, 'intake-selftest.js');
+const INTAKE_REGISTRY = path.join(INTAKE_ROOT, 'proof-harness-v7', 'registry', 'seed_registry_v7.json');
+if (!fs.existsSync(INTAKE_SELFTEST) || !fs.existsSync(INTAKE_REGISTRY)) {
+  const heldManifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
+  const heldContract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
+  const heldHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+  const heldApp = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
+  const heldServer = fs.readFileSync(path.join(ROOT, 'server.js'), 'utf8');
+  assert.equal(heldManifest.status, 'TEST');
+  assert(heldContract.consumes.includes('filesystem:intakes/ai-team-collaboration-runs-01-101-v1'));
+  assert(heldHtml.includes('Nothing here starts an agent'));
+  assert(heldApp.includes('/api/ai-team-steward/catalog'));
+  assert(heldServer.includes('/api/ai-team-steward/catalog'));
+  console.log('AI Team Steward Lab selftest: PASS WITH TEST_HOLD (local-only 100-seed intake absent; static authority boundaries passed)');
+  process.exit(0);
+}
+
+const intakeCheck = childProcess.spawnSync(process.execPath, [INTAKE_SELFTEST], {
+  cwd: INTAKE_ROOT,
+  encoding: 'utf8',
+  maxBuffer: 8 * 1024 * 1024
+});
+if (intakeCheck.error) throw intakeCheck.error;
+assert.equal(intakeCheck.status, 0, intakeCheck.stderr || intakeCheck.stdout);
+
 const service = Service.create({ root: ROOT });
 const catalog = service.catalog();
 

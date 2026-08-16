@@ -9,9 +9,9 @@ const Examples = require('../../shared/game-organism/examples');
 const Cartoon3D = require('../../shared/game-organism/cartoon-3d-evidence');
 const AudioMusic = require('../../shared/game-organism/audio-music-evidence');
 const SimLiving = require('../../shared/game-organism/sim-living-evidence');
-const SimLivingGameWiring = require('../../intakes/sim-living-run102/game-wiring');
 
 const root = __dirname;
+const workshopRoot = path.resolve(root, '..', '..');
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
 const contract = JSON.parse(fs.readFileSync(path.join(root, 'module.contract.json'), 'utf8'));
 assert.equal(ContractVerifier.validateContract(contract, manifest).pass, true, 'module contract must validate');
@@ -34,6 +34,18 @@ assert.equal(receipt.truth.executionStarted, false);
 assert.equal(receipt.truth.canonicalGameChanged, false);
 assert.equal(receipt.truth.humanReleaseRequired, true);
 
+const retainedEvidencePaths = [
+  path.join(workshopRoot, 'intakes', 'cartoon-3d-run100', 'evidence', 'organ-registry.json'),
+  path.join(workshopRoot, 'intakes', 'audio-music-live-run106', 'evidence', 'module-registry.json'),
+  path.join(workshopRoot, 'intakes', 'sim-living-run102', 'evidence', 'module-registry.json'),
+  path.join(workshopRoot, 'intakes', 'sim-living-run102', 'game-wiring.js')
+];
+if (retainedEvidencePaths.some(file => !fs.existsSync(file))) {
+  console.log('game-organism-lab selftest: PASS WITH TEST_HOLD · core candidate plan passed · retained local evidence intakes absent · human release preserved');
+  process.exit(0);
+}
+
+const SimLivingGameWiring = require('../../intakes/sim-living-run102/game-wiring');
 const toonEvidence = Cartoon3D.createToonGameEvidenceExample();
 assert.equal(toonEvidence.receipt.verdict, 'CANDIDATE_READY');
 assert.equal(toonEvidence.evidenceOrgan.verification.automatic_checks.length, 100);

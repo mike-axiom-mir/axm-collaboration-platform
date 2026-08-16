@@ -1,0 +1,189 @@
+name: AXM v0.6.1 corrective gate
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: axm-v061-corrective-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-integrity:
+    name: v0.6.1 corrective source gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install declared dependencies
+        run: npm ci
+
+      - name: Run adversarial hardening tests
+        run: |
+          node tests/v0.6.1-hardening-selftest.js
+          node tools/game-production-runner/selftest.js
+          node tools/hardware-research-registry/selftest.js
+          node tools/compute-substrate-lab/selftest.js
+          node tools/deterministic-pr-publisher/selftest.js
+          node tools/repairbuddy/selftest.js
+
+      - name: Run current verification and strict warning delta
+        run: |
+          node verify.js
+          node tools/repairbuddy/repairbuddy-cli.js warning-delta --strict
+
+      - name: Run full aggregate and public gates
+        run: |
+          npm run discovery:verify
+          npm test
+          npm run test:public-surface
+
+      - name: Refuse generated drift or malformed source
+        run: |
+          git diff --check
+          git diff --exit-code -- registry tools-index.json AXM_DISCOVERY_ROOT.md AXM_CAPABILITY_MAP.md
+          node --check shared/game-production-runner/plain-file-io.js
+          node --check tests/v0.6.1-hardening-selftest.js
+
+      - name: Write source-gate receipt
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p release-evidence
+          conclusion="${{ job.status }}"
+          cat > release-evidence/source-gates-receipt.json <<JSON
+          {
+            "schema": "axm.release-source-gates/v1",
+            "release": "v0.6.1-experimental",
+            "commit": "${GITHUB_SHA}",
+            "workflow_run": "${GITHUB_RUN_ID}",
+            "conclusion": "${conclusion}",
+            "gates": [
+              "v0.6.1 adversarial hardening",
+              "focused module selftests",
+              "fresh root verification",
+              "strict RepairBuddy warning delta",
+              "discovery verification",
+              "aggregate npm test",
+              "public surface static contract"
+            ],
+            "authority": {
+              "release": false,
+              "promotion": false,
+              "canon": false
+            }
+          }
+          JSON
+
+      - name: Preserve source-gate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: axm-v0.6.1-source-gates
+          path: |
+            release-evidence/source-gates-receipt.json
+            exports/verify-report.json
+            exports/repairbuddy-warning-delta.json
+          if-no-files-found: warn
+          retention-days: 30
+  windows-package:
+    name: v0.6.1 exact Windows package gate
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install declared dependencies
+        run: npm ci
+
+      - name: Build the public Windows source package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path release-candidate | Out-Null
+          $output = @(& .\tools\workshop-packager\package-workshop.ps1 -Mode public -KeepCopy false 2>&1)
+          $output | Set-Content -LiteralPath release-candidate\packager-output.txt -Encoding UTF8
+          $jsonLine = $output | Where-Object { ([string]$_).Trim().StartsWith('{') } | Select-Object -Last 1
+          if (-not $jsonLine) { throw 'Packager returned no JSON receipt.' }
+          $receipt = $jsonLine | ConvertFrom-Json
+          if ($receipt.ok -ne $true -or $receipt.secret_scan -ne 'pass' -or $receipt.restore_test -ne 'pass') {
+            throw 'Public packager receipt did not pass all required gates.'
+          }
+          $name = 'AXM-Workshop-v0.6.1-experimental-Windows-source.zip'
+          $zip = Join-Path (Resolve-Path release-candidate) $name
+          Copy-Item -LiteralPath $receipt.zip_path -Destination $zip
+          $receipt | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath release-candidate\package-receipt.json -Encoding UTF8
+          $restore = Join-Path (Split-Path -Parent $receipt.zip_path) ([string]$receipt.restore_report)
+          Copy-Item -LiteralPath $restore -Destination release-candidate\package-restore-receipt.json
+          $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $zip).Hash.ToLowerInvariant()
+          "$hash  $name" | Set-Content -NoNewline -LiteralPath ("$zip.sha256") -Encoding ascii
+
+      - name: Launch the exact extracted package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $zip = Resolve-Path release-candidate\AXM-Workshop-v0.6.1-experimental-Windows-source.zip
+          $extract = Join-Path (Resolve-Path release-candidate) extracted
+          Expand-Archive -LiteralPath $zip -DestinationPath $extract
+          $roots = @(Get-ChildItem -LiteralPath $extract -Directory)
+          if ($roots.Count -ne 1) { throw "Expected one package root, observed $($roots.Count)." }
+          & .\tests\windows-clean-launch-smoke.ps1 `
+            -CandidateSource $roots[0].FullName `
+            -ReceiptPath (Join-Path (Resolve-Path release-candidate) 'windows-package-launch-receipt.json')
+
+      - name: Write release asset inventory
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $files = @(
+            'AXM-Workshop-v0.6.1-experimental-Windows-source.zip',
+            'AXM-Workshop-v0.6.1-experimental-Windows-source.zip.sha256',
+            'package-receipt.json',
+            'package-restore-receipt.json',
+            'windows-package-launch-receipt.json'
+          )
+          $rows = foreach ($name in $files) {
+            $file = Join-Path (Resolve-Path release-candidate) $name
+            if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { throw "Missing release evidence: $name" }
+            $item = Get-Item -LiteralPath $file
+            [ordered]@{ name=$name; bytes=$item.Length; sha256=(Get-FileHash -Algorithm SHA256 -LiteralPath $file).Hash.ToLowerInvariant() }
+          }
+          [ordered]@{
+            schema='axm.release-asset-inventory/v1'
+            release='v0.6.1-experimental'
+            commit=$env:GITHUB_SHA
+            workflow_run=$env:GITHUB_RUN_ID
+            assets=$rows
+            authority=[ordered]@{ release=$false; promotion=$false; canon=$false }
+          } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath release-candidate\release-asset-inventory.json -Encoding UTF8
+
+      - name: Preserve exact package evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: axm-v0.6.1-windows-release-candidate
+          path: |
+            release-candidate/AXM-Workshop-v0.6.1-experimental-Windows-source.zip
+            release-candidate/AXM-Workshop-v0.6.1-experimental-Windows-source.zip.sha256
+            release-candidate/package-receipt.json
+            release-candidate/package-restore-receipt.json
+            release-candidate/windows-package-launch-receipt.json
+            release-candidate/release-asset-inventory.json
+            release-candidate/packager-output.txt
+          if-no-files-found: error
+          retention-days: 30

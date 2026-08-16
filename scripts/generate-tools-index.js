@@ -21,6 +21,21 @@ function digest(value) {
   return crypto.createHash('sha256').update(String(value || '')).digest('hex');
 }
 
+function preserveGeneratedAt(index) {
+  let previous;
+  try { previous = JSON.parse(fs.readFileSync(outputFile, 'utf8')); }
+  catch (error) { return index; }
+  if (!previous || previous.schema !== index.schema || !previous.generatedAt) return index;
+  const previousSemantic = Object.assign({}, previous);
+  const nextSemantic = Object.assign({}, index);
+  delete previousSemantic.generatedAt;
+  delete nextSemantic.generatedAt;
+  if (JSON.stringify(previousSemantic) === JSON.stringify(nextSemantic)) {
+    index.generatedAt = previous.generatedAt;
+  }
+  return index;
+}
+
 function runOne(tool) {
   return new Promise(resolve => {
     const started = Date.now();
@@ -88,7 +103,7 @@ async function main() {
     try { verificationResults = JSON.parse(fs.readFileSync(receiptFile, 'utf8')); }
     catch (error) { verificationResults = null; }
   }
-  const index = Readiness.buildIndex(ROOT, { verificationResults });
+  const index = preserveGeneratedAt(Readiness.buildIndex(ROOT, { verificationResults }));
   const checked = Readiness.validateIndex(index);
   if (!checked.pass) throw new Error(checked.errors.join('; '));
   fs.writeFileSync(outputFile, JSON.stringify(index, null, 2) + '\n');

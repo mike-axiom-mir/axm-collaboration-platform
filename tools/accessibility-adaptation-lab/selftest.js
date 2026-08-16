@@ -17,6 +17,20 @@ const server = fs.readFileSync(path.join(root, 'server.js'), 'utf8');
 assert.equal(manifest.id, contract.id);
 assert.equal(manifest.version, contract.version);
 assert.deepEqual(manifest.permissions, contract.permissions);
+const intakeRoot = path.join(root, 'intakes', 'accessibility-adaptive-interfaces-100-v1');
+if (!fs.existsSync(path.join(intakeRoot, 'PACKET_INDEX.json'))) {
+  assert.throws(() => service.catalog(), error => error && error.code === 'ENOENT');
+  assert.equal(manifest.status, 'TEST');
+  assert(contract.consumes.includes('filesystem:intakes/accessibility-adaptive-interfaces-100-v1'));
+  assert(html.includes('class="skip-link"'));
+  assert(html.includes('aria-live="polite"'));
+  assert(css.includes('prefers-reduced-motion:reduce'));
+  assert(server.includes('/api/accessibility-adaptation/catalog'));
+  assert(server.includes('/api/accessibility-adaptation/plan'));
+  console.log('accessibility adaptation lab selftest: PASS WITH TEST_HOLD (local-only 100-packet intake absent; static boundaries and refusal path passed)');
+  process.exit(0);
+}
+
 const catalog = service.catalog();
 assert.equal(catalog.moduleCount, 100);
 assert.equal(catalog.familyCount, 10);

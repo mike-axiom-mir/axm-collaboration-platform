@@ -66,11 +66,16 @@ function rgbaPngInfo(relative) {
   return { width, height, minimumAlpha, maximumAlpha };
 }
 
-test('interactable intake archive is preserved exactly with an honest curation boundary', () => {
+test('interactable intake archive is preserved exactly with an honest curation boundary', (context) => {
   const manifest = json('assets/INTERACTABLE_ASSET_MANIFEST.json');
+  const archive = path.join(root, manifest.source.archive);
+  if (!fs.existsSync(archive)) {
+    context.skip('TEST_HOLD: user-generated source archive is intentionally absent from the clean public source checkout');
+    return;
+  }
   assert.equal(manifest.source.individualPngCount, 158);
   assert.equal(manifest.source.categoryCount, 7);
-  assert.equal(fs.statSync(path.join(root, manifest.source.archive)).size, manifest.source.archiveBytes);
+  assert.equal(fs.statSync(archive).size, manifest.source.archiveBytes);
   assert.equal(sha256(manifest.source.archive), manifest.source.archiveSha256);
   assert.equal(manifest.intakeAudit.zipIntegrity, 'PASS');
   assert.match(manifest.intakeAudit.fullAlphaRange, /^PARTIAL/);

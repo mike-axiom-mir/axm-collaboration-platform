@@ -74,8 +74,12 @@ assert.equal(sha256(upstreamFile), '25590ba0a81f188770119f65c9a3983980cd31da5b05
 const upstream = checksumMap(upstreamFile);
 const integrated = checksumMap(integratedFile);
 assert.equal(upstream.size, 170);
-assert.equal(integrated.size, 170);
-assert.deepEqual(Array.from(integrated.keys()), Array.from(upstream.keys()));
+assert.equal(integrated.size, 165);
+const upstreamRuntimeFiles = Array.from(upstream.keys()).filter(relative => !relative.toLowerCase().endsWith('.log'));
+const omittedLogs = Array.from(upstream.keys()).filter(relative => relative.toLowerCase().endsWith('.log'));
+assert.equal(omittedLogs.length, 5);
+assert.deepEqual(Array.from(integrated.keys()), upstreamRuntimeFiles);
+assert(omittedLogs.every(relative => !fs.existsSync(path.join(runtime, ...relative.split('/')))));
 
 const generatedReports = new Set([
   'reports/INVENTORY.json',
@@ -105,6 +109,7 @@ assert.deepEqual(upstreamDifferences, [
 const inventoryBuilder = fs.readFileSync(path.join(runtime, 'tools', 'build-inventory.mjs'), 'utf8');
 assert(inventoryBuilder.includes("replaceAll('\\\\','/')"));
 assert(inventoryBuilder.includes('generatedReports.has(relativePath(file))'));
+assert(inventoryBuilder.includes("endsWith('.log')"));
 
 const generatedCaches = walk(runtime).filter(relative =>
   relative.split('/').includes('__pycache__') || /\.py[co]$/i.test(relative)
@@ -159,6 +164,6 @@ assert(!String(refused.stderr).includes('node:internal'), 'negative CLI path sho
 
 console.log(
   'aetherfx selftest: PASS ' +
-  '(170 runtime checksums, 2 recorded platform patches, 36 Node tests, ' +
+  '(165 integrated runtime checksums, 5 upstream logs policy-omitted, 2 recorded platform patches, 36 Node tests, ' +
   '64 modules, runtime compile, static-SVG support report, positive and negative CLI paths)'
 );
