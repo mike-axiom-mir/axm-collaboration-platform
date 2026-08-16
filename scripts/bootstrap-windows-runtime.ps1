@@ -49,6 +49,21 @@ function Assert-Under([string]$Child, [string]$Parent) {
   }
 }
 
+function Get-Sha256([string]$Path) {
+  $Stream = [System.IO.File]::OpenRead($Path)
+  try {
+    $Hasher = [System.Security.Cryptography.SHA256]::Create()
+    try {
+      $Digest = $Hasher.ComputeHash($Stream)
+      return ([System.BitConverter]::ToString($Digest)).Replace('-', '').ToLowerInvariant()
+    } finally {
+      $Hasher.Dispose()
+    }
+  } finally {
+    $Stream.Dispose()
+  }
+}
+
 Assert-Under $RuntimeRoot $WorkshopRoot
 Assert-Under $NodeRoot $RuntimeRoot
 Assert-Under $TempRoot $TempParent
@@ -71,7 +86,7 @@ try {
   Write-Output "Downloading pinned Node.js $NodeVersion LTS for $Architecture from nodejs.org..."
   Invoke-WebRequest -UseBasicParsing -Uri $DownloadUrl -OutFile $ArchivePath
 
-  $ActualSha256 = (Get-FileHash -LiteralPath $ArchivePath -Algorithm SHA256).Hash.ToLowerInvariant()
+  $ActualSha256 = Get-Sha256 $ArchivePath
   if ($ActualSha256 -ne $ExpectedSha256) {
     throw "Node.js archive SHA-256 mismatch. Expected $ExpectedSha256; received $ActualSha256."
   }

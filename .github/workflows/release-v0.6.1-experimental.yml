@@ -92,7 +92,9 @@ jobs:
           }
           JSON
 
-      - uses: actions/upload-artifact@v4
+      - name: Preserve source gate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: axm-v0.6.1-source-release-evidence
           path: |
@@ -178,7 +180,9 @@ jobs:
             authority=[ordered]@{ release=$false; promotion=$false; canon=$false }
           } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath release-assets\release-asset-inventory.json -Encoding UTF8
 
-      - uses: actions/upload-artifact@v4
+      - name: Preserve exact Windows release evidence
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: axm-v0.6.1-windows-release-assets
           path: |
