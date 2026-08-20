@@ -4,6 +4,7 @@
   var O = AXMOps;
   var notice = document.getElementById('notice');
   var started = Date.now();
+  var latestPhoneEvidenceId = null;
   var observationFields = [
     ['physicalPhonePresent', 'phonePresent'],
     ['controllerJoined', 'controllerJoined'],
@@ -16,6 +17,10 @@
   function load() {
     O.get('/api/qa-lab').then(function (state) {
       var latestPhone = state.deviceEvidence.find(function (item) { return item.phoneObservation; }) || null;
+      var handoff = state.latestPhoneReviewHandoff || null;
+      latestPhoneEvidenceId = latestPhone ? latestPhone.id : null;
+      document.getElementById('openPhoneReview').disabled = !latestPhoneEvidenceId;
+      document.getElementById('reviewInbox').hidden = !(handoff && handoff.reviewItem);
       document.getElementById('facts').innerHTML =
         '<span>' + state.profiles.length + ' profiles</span>' +
         '<span>' + state.journeys.length + ' journeys</span>' +
@@ -30,7 +35,8 @@
           gameId: latestPhone.phoneObservation.gameId,
           complete: latestPhone.phoneObservation.complete,
           reviewState: latestPhone.phoneObservation.reviewState
-        }
+        },
+        latestPhoneReviewHandoff: handoff
       });
     }).catch(function (error) { O.notice(notice, error.message, 'bad'); });
   }
@@ -126,6 +132,22 @@
       O.notice(notice, error.message, 'bad');
       return Promise.resolve();
     }
+  };
+
+  document.getElementById('openPhoneReview').onclick = function () {
+    if (!latestPhoneEvidenceId) {
+      O.notice(notice, 'Capture a phone observation candidate before opening review.', 'bad');
+      return Promise.resolve();
+    }
+    return O.post('/api/qa-lab/phone-review/open', {
+      evidenceId: latestPhoneEvidenceId,
+      confirmation: 'OPEN EXACT PHONE CANDIDATE REVIEW'
+    }, { 'x-axm-qa': 'explicit-phone-review-open' }).then(function (handoff) {
+      O.notice(notice, 'Exact candidate sent to the Review Inbox. No warning was cleared.', 'ok');
+      document.getElementById('reviewInbox').hidden = false;
+      load();
+      return handoff;
+    }).catch(function (error) { O.notice(notice, error.message, 'bad'); });
   };
 
   document.getElementById('refresh').onclick = load;

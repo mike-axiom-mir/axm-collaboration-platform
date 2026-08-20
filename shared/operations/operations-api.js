@@ -51,7 +51,7 @@ function create(options) {
   const modularIntake = ModularIntakeService.create(Object.assign({}, options, { reviewService: review, installerService: installer }));
   const needsObservatory = NeedsObservatoryService.create(Object.assign({}, options, { modularIntakeService: modularIntake }));
   const readinessObserver = ReadinessObserver.create({ root: options.root, stateRoot: options.stateRoot, humanGate: 'Mike' });
-  const qa = QaLabService.create(options);
+  const qa = QaLabService.create(Object.assign({}, options, { reviewService: review }));
   const templates = TemplateRuntimeService.create(options);
   const sources = SourceConnectorService.create(Object.assign({}, options, { reviewService: review }));
   const media = MediaRenderService.create(Object.assign({}, options, { reviewService: review }));
@@ -174,6 +174,8 @@ function create(options) {
     if (url === '/api/qa-lab' && req.method === 'GET') { reply(res, qa.status()); return true; }
     if (url === '/api/qa-lab/run' && req.method === 'POST') { reply(res, body(req, 100000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-qa', 'explicit-run'); requirePermission('browser-lan-hardware-qa-lab','qa.run'); return qa.run(Object.assign({}, parsed, { originPort: typeof options.getPort === 'function' ? options.getPort() : options.port })); }), 202); return true; }
     if (url === '/api/qa-lab/evidence' && req.method === 'POST') { reply(res, body(req, 100000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-qa', 'device-evidence'); return qa.recordDeviceEvidence(parsed); })); return true; }
+    if (url === '/api/qa-lab/phone-review/open' && req.method === 'POST') { reply(res, body(req, 30000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-qa', 'explicit-phone-review-open'); if (parsed.confirmation !== 'OPEN EXACT PHONE CANDIDATE REVIEW') throw new Error('exact phone candidate review confirmation is required'); return qa.openPhoneReview({ evidenceId: parsed.evidenceId }); })); return true; }
+    if (url === '/api/qa-lab/phone-review' && req.method === 'GET') { const q=query(req); reply(res, qa.phoneReviewHandoff({ evidenceId:q.get('evidenceId'), reviewId:q.get('reviewId') || null })); return true; }
 
     if (url === '/api/template-runtime' && req.method === 'GET') { reply(res, templates.status()); return true; }
     if (url === '/api/template-runtime/pack' && req.method === 'POST') { reply(res, body(req, 500000).then(parsed => { mutationAllowed(); explicit(req, 'x-axm-template', 'explicit-save'); return templates.savePack(parsed, actor(req, parsed)); })); return true; }

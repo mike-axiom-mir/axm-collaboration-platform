@@ -63,7 +63,7 @@ function seamReport(warning, checkedAt = seamAt) {
 
 const qaManifest = {
   id: 'browser-lan-hardware-qa-lab',
-  version: 'v0.2',
+  version: 'v0.3',
   status: 'TEST',
   entry: 'index.html',
   contract: 'module.contract.json',
@@ -77,7 +77,7 @@ const qaContract = {
   version: qaManifest.version,
   permissions: ['qa.run'],
   boundaries: {
-    writes: ['state/browser-lan-hardware-qa'],
+    writes: ['state/browser-lan-hardware-qa', 'state/review-inbox'],
     refuses: ['self-attested-physical-proof', 'manifest-warning-mutation']
   }
 };

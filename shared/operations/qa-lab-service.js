@@ -7,6 +7,9 @@ const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const SCHEMA = 'axm.qa-lab-state/v1';
 const PHONE_OBSERVATION_SCHEMA = 'axm.qa-phone-observation/v1';
+const PHONE_REVIEW_HANDOFF_SCHEMA = 'axm.qa-phone-review-handoff/v1';
+const PHONE_REVIEW_ACTION_SCHEMA = 'axm.qa-phone-review-action/v1';
+const PHONE_REVIEW_KIND = 'phone-qa-observation-candidate';
 const PHONE_OBSERVATION_KEYS = [
   'physicalPhonePresent',
   'controllerJoined',
@@ -73,6 +76,7 @@ function normalizePhoneObservation(input) {
 function create(options) {
   const stateFile = path.join(options.stateRoot, 'browser-lan-hardware-qa', 'results.json');
   const auditFile = path.join(options.stateRoot, 'browser-lan-hardware-qa', 'audit.jsonl');
+  const reviewService = options.reviewService || null;
   function read() { return U.loadJson(stateFile, { schema: SCHEMA, version: 1, journeys: [], deviceEvidence: [] }); }
   function write(state) { state.updatedAt = U.now(); U.atomicJson(stateFile, state); }
   function audit(event) { U.appendJsonl(auditFile, Object.assign({ at: U.now() }, event)); }
@@ -140,8 +144,174 @@ function create(options) {
     audit({ type: phoneObservation ? 'phone-observation-candidate' : 'device-evidence', id: receipt.id, gameId: phoneObservation ? phoneObservation.gameId : null, complete: phoneObservation ? phoneObservation.complete : null, gamepads: gamepads.length, digest: receipt.digest });
     return receipt;
   }
-  function status() { const state = read(); return { schema: SCHEMA, profiles: Object.keys(PROFILE_STEPS), journeys: state.journeys, deviceEvidence: state.deviceEvidence, latestJourney: state.journeys[0] || null, latestDeviceEvidence: state.deviceEvidence[0] || null, arbitraryUrlTesting: false, hardwarePermissionAuthority: false }; }
-  return { status, run, recordDeviceEvidence, normalizeSteps, inspectHtml, stateFile, auditFile };
+
+  function requireReviewService() {
+    if (!reviewService || typeof reviewService.submit !== 'function' || typeof reviewService.list !== 'function') {
+      throw new Error('phone candidate review requires the shared Review Inbox service');
+    }
+  }
+
+  function boundedId(value, label) {
+    const id = String(value || '').trim();
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,179}$/.test(id)) throw new Error(label + ' must be a bounded identifier');
+    return id;
+  }
+
+  function phoneReceipt(evidenceId) {
+    const id = boundedId(evidenceId, 'device evidence id');
+    const receipt = read().deviceEvidence.find(item => item.id === id);
+    if (!receipt) throw new Error('device evidence receipt not found');
+    if (!receipt.phoneObservation || receipt.phoneObservation.schema !== PHONE_OBSERVATION_SCHEMA) {
+      throw new Error('device evidence is not a phone observation candidate');
+    }
+    const digest = String(receipt.digest || '').toLowerCase();
+    if (!/^[a-f0-9]{64}$/.test(digest)) throw new Error('phone candidate digest is invalid');
+    const payload = {};
+    Object.keys(receipt).forEach(key => { if (key !== 'digest') payload[key] = receipt[key]; });
+    if (U.sha256(JSON.stringify(payload)) !== digest) throw new Error('phone candidate native digest does not match its receipt');
+    return receipt;
+  }
+
+  function phoneReviewSource(receipt) {
+    return 'qa-device-evidence:' + receipt.id;
+  }
+
+  function phoneReviewAction(receipt) {
+    const observation = receipt.phoneObservation;
+    return {
+      schema: PHONE_REVIEW_ACTION_SCHEMA,
+      deviceEvidenceId: receipt.id,
+      gameId: observation.gameId,
+      slot: observation.slot,
+      candidateDigest: 'sha256:' + receipt.digest,
+      candidateComplete: observation.complete === true,
+      physicalHardwareProven: false,
+      warningClosureAuthorized: false,
+      manifestMutationAuthorized: false
+    };
+  }
+
+  function reviewReference(item) {
+    return item ? {
+      schema: 'axm.review-item/v1',
+      id: item.id,
+      kind: item.kind,
+      state: item.state,
+      artifactDigest: 'sha256:' + item.artifactDigest,
+      sourceRef: item.sourceRef,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt
+    } : null;
+  }
+
+  function assertReviewBinding(item, receipt) {
+    if (!item || item.kind !== PHONE_REVIEW_KIND) throw new Error('review item kind does not match a phone QA candidate');
+    if (item.sourceRef !== phoneReviewSource(receipt) || item.artifactDigest !== receipt.digest) {
+      throw new Error('review item does not bind the exact phone candidate receipt');
+    }
+    if (item.requiredSeats !== 1) throw new Error('phone candidate review must require exactly one attributed seat');
+    const expected = phoneReviewAction(receipt);
+    exactObjectKeys(item.action, Object.keys(expected), 'phone review action');
+    if (DeterministicJson.canonicalJson(item.action) !== DeterministicJson.canonicalJson(expected)) {
+      throw new Error('phone review action does not match the exact candidate boundary');
+    }
+  }
+
+  function baseHandoff(receipt, item, state, candidateReview) {
+    return {
+      schema: PHONE_REVIEW_HANDOFF_SCHEMA,
+      state,
+      deviceEvidence: {
+        id: receipt.id,
+        digest: 'sha256:' + receipt.digest,
+        gameId: receipt.phoneObservation.gameId,
+        slot: receipt.phoneObservation.slot,
+        complete: receipt.phoneObservation.complete === true
+      },
+      reviewItem: reviewReference(item),
+      candidateReview: candidateReview || null,
+      truth: {
+        voluntaryHumanDecisionRequired: true,
+        humanIdentityAuthenticated: false,
+        physicalHardwareProven: false,
+        humanUsefulnessEstablished: false,
+        warningCleared: false,
+        manifestMutationAuthorized: false,
+        rawReviewNotesIncluded: false,
+        campaignWritePerformed: false
+      }
+    };
+  }
+
+  function openPhoneReview(input) {
+    requireReviewService();
+    exactObjectKeys(input, ['evidenceId'], 'phone review open input');
+    const receipt = phoneReceipt(input.evidenceId);
+    const observation = receipt.phoneObservation;
+    const item = reviewService.submit({
+      kind: PHONE_REVIEW_KIND,
+      sourceRef: phoneReviewSource(receipt),
+      artifactDigest: receipt.digest,
+      title: 'Phone QA candidate · ' + observation.gameId,
+      summary: (observation.complete ? 'Complete' : 'Incomplete') + ' structured observation candidate. Review the exact digest; this decision cannot prove hardware or clear a warning.',
+      requiredSeats: 1,
+      action: phoneReviewAction(receipt)
+    });
+    assertReviewBinding(item, receipt);
+    audit({ type: 'phone-review-opened', evidenceId: receipt.id, reviewId: item.id, gameId: observation.gameId, digest: receipt.digest });
+    return baseHandoff(receipt, item, 'PENDING_HUMAN_REVIEW', null);
+  }
+
+  function findPhoneReview(receipt, reviewId) {
+    requireReviewService();
+    const id = reviewId == null || reviewId === '' ? null : boundedId(reviewId, 'review id');
+    const candidates = reviewService.list().filter(item => item.kind === PHONE_REVIEW_KIND && item.sourceRef === phoneReviewSource(receipt) && item.artifactDigest === receipt.digest);
+    const item = id ? candidates.find(entry => entry.id === id) : candidates[0];
+    if (id && !item) throw new Error('review item was not found for the exact phone candidate');
+    return item || null;
+  }
+
+  function phoneReviewHandoff(input) {
+    exactObjectKeys(input, ['evidenceId', 'reviewId'], 'phone review handoff input');
+    const receipt = phoneReceipt(input.evidenceId);
+    const item = findPhoneReview(receipt, input.reviewId);
+    if (!item) return baseHandoff(receipt, null, 'REVIEW_NOT_OPENED', null);
+    assertReviewBinding(item, receipt);
+    if (['SUPERSEDED', 'REPAIR', 'CANCELLED', 'EXPIRED'].includes(item.state)) {
+      return baseHandoff(receipt, item, 'REVIEW_NOT_EXPORTABLE', null);
+    }
+    const votes = Array.isArray(item.votes) ? item.votes : [];
+    const latest = votes.length ? votes[votes.length - 1] : null;
+    if (!latest) return baseHandoff(receipt, item, 'PENDING_HUMAN_REVIEW', null);
+    if (latest.actorKind !== 'human' || latest.artifactDigest !== receipt.digest) {
+      return baseHandoff(receipt, item, 'LATEST_DECISION_IS_NOT_A_HUMAN_EXACT_DIGEST_REVIEW', null);
+    }
+    let decision;
+    if (latest.verdict === 'REJECT') decision = 'REJECT';
+    else if (latest.verdict === 'HOLD' || receipt.phoneObservation.complete !== true) decision = 'INCOMPLETE';
+    else if (latest.verdict === 'APPROVE') decision = 'ACCEPT_FOR_SEPARATE_GAME_REVIEW';
+    else throw new Error('phone review verdict is unsupported');
+    const candidateReview = {
+      gameId: receipt.phoneObservation.gameId,
+      candidateDigest: 'sha256:' + receipt.digest,
+      decision,
+      reviewedAt: latest.at,
+      voluntaryHumanReview: true
+    };
+    return baseHandoff(receipt, item, 'READY_FOR_VOLUNTARY_PHONE_QA_CAMPAIGN_INPUT', candidateReview);
+  }
+
+  function status() {
+    const state = read();
+    const latestPhone = state.deviceEvidence.find(item => item.phoneObservation) || null;
+    let latestPhoneReviewHandoff = null;
+    if (latestPhone && reviewService) {
+      try { latestPhoneReviewHandoff = phoneReviewHandoff({ evidenceId: latestPhone.id, reviewId: null }); }
+      catch (error) { latestPhoneReviewHandoff = { schema: PHONE_REVIEW_HANDOFF_SCHEMA, state: 'REVIEW_HANDOFF_INVALID', error: error.message }; }
+    }
+    return { schema: SCHEMA, profiles: Object.keys(PROFILE_STEPS), journeys: state.journeys, deviceEvidence: state.deviceEvidence, latestJourney: state.journeys[0] || null, latestDeviceEvidence: state.deviceEvidence[0] || null, latestPhoneReviewHandoff, arbitraryUrlTesting: false, hardwarePermissionAuthority: false };
+  }
+  return { status, run, recordDeviceEvidence, openPhoneReview, phoneReviewHandoff, normalizeSteps, inspectHtml, stateFile, auditFile };
 }
 
-module.exports = { SCHEMA, PROFILE_STEPS, PHONE_OBSERVATION_SCHEMA, PHONE_OBSERVATION_KEYS, normalizePhoneObservation, create };
+module.exports = { SCHEMA, PROFILE_STEPS, PHONE_OBSERVATION_SCHEMA, PHONE_OBSERVATION_KEYS, PHONE_REVIEW_HANDOFF_SCHEMA, PHONE_REVIEW_ACTION_SCHEMA, PHONE_REVIEW_KIND, normalizePhoneObservation, create };

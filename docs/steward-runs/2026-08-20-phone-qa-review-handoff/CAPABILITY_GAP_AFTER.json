@@ -1,0 +1,172 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "candidate-to-review-inbox",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "qa.phone-review.exact-native-digest-binding",
+        "qa.phone-review.shared-inbox-reuse",
+        "qa.phone-review.idempotent-open"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-review.exact-native-digest-binding": [
+          "The adapter recomputes the native receipt digest and binds item source, digest, game, slot, completeness, and authority flags exactly."
+        ],
+        "qa.phone-review.shared-inbox-reuse": [
+          "QA Lab receives the existing durable ReviewService; no parallel review store was added."
+        ],
+        "qa.phone-review.idempotent-open": [
+          "Repeated opens of the same source and digest return the same open Review Inbox item."
+        ]
+      }
+    },
+    {
+      "id": "review-to-campaign-input",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "qa.phone-review.latest-human-decision",
+        "qa.phone-review.five-field-campaign-input",
+        "qa.phone-review.note-redaction",
+        "qa.phone-review.incomplete-cannot-accept"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-review.latest-human-decision": [
+          "Only the latest exact-digest vote with actorKind human can produce campaign input; identity remains unauthenticated."
+        ],
+        "qa.phone-review.five-field-campaign-input": [
+          "The handoff derives exactly gameId, candidateDigest, decision, reviewedAt, and voluntaryHumanReview for the existing campaign builder."
+        ],
+        "qa.phone-review.note-redaction": [
+          "Review notes remain in ReviewService and are absent from the QA handoff and campaign input."
+        ],
+        "qa.phone-review.incomplete-cannot-accept": [
+          "An approve vote on an incomplete checklist deterministically maps to INCOMPLETE."
+        ]
+      }
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "qa.phone-review.nonhuman-export-refusal",
+        "qa.phone-review.proof-authority.none",
+        "qa.phone-review.warning-authority.none",
+        "qa.phone-review.human-usefulness-authority.none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-review.nonhuman-export-refusal": [
+          "Machine, collective, and unknown latest decisions remain non-exportable."
+        ],
+        "qa.phone-review.proof-authority.none": [
+          "Action and handoff truth keep physicalHardwareProven false."
+        ],
+        "qa.phone-review.warning-authority.none": [
+          "Action and handoff truth keep warning closure and manifest mutation authority false."
+        ],
+        "qa.phone-review.human-usefulness-authority.none": [
+          "The handoff keeps humanUsefulnessEstablished false and leaves the independent two-key route unchanged."
+        ]
+      }
+    },
+    {
+      "id": "durable-handoff",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "qa.phone-review.service-reload",
+        "qa.phone-review.read-route"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-review.service-reload": [
+          "Isolated selftests recreate both QA and Review services and recover the exact candidate review input."
+        ],
+        "qa.phone-review.read-route": [
+          "A bounded GET route returns only digest-bound handoff state; opening remains a separately confirmed POST."
+        ]
+      }
+    },
+    {
+      "id": "visible-voluntary-route",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "qa.phone-review.desktop-live-route"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-review.desktop-live-route": [
+          "At 1280x720, a real local render showed the disabled-to-enabled transition, explicit open result, inbox item, and false authority flags without horizontal overflow."
+        ]
+      }
+    },
+    {
+      "id": "actual-human-review",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "qa.phone-review.real-human-decision"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-review.real-human-decision": [
+          "No actual person reviewed a phone candidate; deterministic votes are fixtures only."
+        ]
+      }
+    },
+    {
+      "id": "physical-phone-evidence",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-observation.physical-session"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-observation.physical-session": [
+          "The live route used an all-false incomplete fixture; no physical-phone behavior was claimed."
+        ]
+      }
+    },
+    {
+      "id": "human-usefulness",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-observation.human-usefulness"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-observation.human-usefulness": [
+          "No voluntary human-usefulness outcome was supplied."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}
