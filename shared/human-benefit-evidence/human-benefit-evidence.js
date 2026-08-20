@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const PROTOCOL_SCHEMA = 'axm.human-benefit-protocol/v1';
 const SESSION_SCHEMA = 'axm.human-benefit-session-receipt/v1';
@@ -27,13 +28,11 @@ const LIVE_ATTESTATION = 'I reviewed this exact evaluation and entered this judg
 const SYNTHETIC_ATTESTATION = 'Synthetic fixture only; no human judgment occurred.';
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(DeterministicJson.canonicalJson(value));
 }
 
 function stableStringify(value) {
-  if (value === null || typeof value !== 'object') return JSON.stringify(value);
-  if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
-  return '{' + Object.keys(value).sort().map((key) => JSON.stringify(key) + ':' + stableStringify(value[key])).join(',') + '}';
+  return DeterministicJson.canonicalJson(value);
 }
 
 function sha256(value) {

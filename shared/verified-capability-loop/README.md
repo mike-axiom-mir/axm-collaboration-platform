@@ -2,6 +2,10 @@
 
 Status: `TEST`
 
+Representation boundary: v0.2 uses the shared strict deterministic JSON core.
+Safe JSON keeps the existing canonical bytes; unsupported, cyclic, sparse, or
+otherwise non-JSON state is refused instead of being dropped or rewritten.
+
 This is the small connector beneath AXM's human-directed capability cycle:
 
 ```text

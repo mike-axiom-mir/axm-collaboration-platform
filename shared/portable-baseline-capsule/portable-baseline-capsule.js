@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const CAPSULE_SCHEMA = 'axm.portable-baseline-capsule/v1';
 const COMPARISON_SCHEMA = 'axm.portable-baseline-comparison/v1';
@@ -17,13 +18,11 @@ const EVIDENCE_CEILINGS = [
 ];
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(DeterministicJson.canonicalJson(value));
 }
 
 function stableStringify(value) {
-  if (value === null || typeof value !== 'object') return JSON.stringify(value);
-  if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
-  return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + stableStringify(value[key])).join(',') + '}';
+  return DeterministicJson.canonicalJson(value);
 }
 
 function sha256(value) {

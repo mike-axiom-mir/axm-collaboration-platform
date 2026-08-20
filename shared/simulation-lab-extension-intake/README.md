@@ -2,6 +2,10 @@
 
 Status: `TEST`
 
+Representation boundary: v0.2 uses the shared strict deterministic JSON core.
+Safe JSON keeps the existing canonical bytes; unsupported, cyclic, sparse, or
+otherwise non-JSON state is refused instead of being dropped or rewritten.
+
 This permissionless leaf prepares AXM to receive a simulation-lab capability
 from a branch without creating another baseline root.
 
@@ -36,4 +40,3 @@ Run:
 ```powershell
 node shared/simulation-lab-extension-intake/selftest.js
 ```
-

@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const Capsule = require('../portable-baseline-capsule/portable-baseline-capsule');
 const Loop = require('../verified-capability-loop/verified-capability-loop');
 const Evidence = require('../../tools/evidence-desk/evidence-core');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const RUN_SCHEMA = 'axm.baseline-simulation-lab-run/v1';
 const VERSION = '0.1.0';
@@ -54,13 +55,11 @@ const HOLD_STATES = [
 ];
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(DeterministicJson.canonicalJson(value));
 }
 
 function stableStringify(value) {
-  if (value === null || typeof value !== 'object') return JSON.stringify(value);
-  if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
-  return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + stableStringify(value[key])).join(',') + '}';
+  return DeterministicJson.canonicalJson(value);
 }
 
 function sha256(value) {

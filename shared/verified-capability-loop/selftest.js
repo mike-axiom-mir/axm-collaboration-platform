@@ -29,6 +29,11 @@ check([
   'root-mutation',
   'model-weight-training-claim'
 ].every((boundary) => contract.boundaries.refuses.includes(boundary)), 'module contract records the authority ceiling');
+check(contract.version === 'v0.2' && contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'v0.2 contract declares strict representation closure');
+check(Loop.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
+assert.throws(() => Loop.stableStringify({ lost: undefined }), /unsupported undefined/i);
+checks += 1;
+console.log('PASS unsafe canonical state is refused');
 const baseline = {
   kind: 'git-and-worktree',
   identity: 'public baseline plus explicitly observed local branch state',
