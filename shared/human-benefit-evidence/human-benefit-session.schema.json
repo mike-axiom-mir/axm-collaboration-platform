@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.human-benefit-session-receipt/v1",
+  "title": "AXM Human Benefit Session Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "sessionId",
+    "generatedAt",
+    "protocolRef",
+    "fixtureMode",
+    "state",
+    "startedAt",
+    "completedAt",
+    "participantRef",
+    "consent",
+    "observations",
+    "participantJudgment",
+    "conditionSummary",
+    "retention",
+    "usableAsLiveEvidence",
+    "truth",
+    "sessionDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.human-benefit-session-receipt/v1" },
+    "version": { "const": "0.1.0" },
+    "sessionId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "protocolRef": { "$ref": "#/$defs/reference" },
+    "fixtureMode": { "enum": ["LIVE", "SYNTHETIC"] },
+    "state": { "enum": ["COMPLETED", "WITHDRAWN"] },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "completedAt": { "type": "string", "format": "date-time" },
+    "participantRef": { "oneOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }] },
+    "consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "grantedAt", "completionConfirmedAt", "withdrawnAt", "useScope", "retentionAccepted"],
+      "properties": {
+        "mode": { "const": "VOLUNTARY_OPT_IN" },
+        "grantedAt": { "type": "string", "format": "date-time" },
+        "completionConfirmedAt": { "oneOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }] },
+        "withdrawnAt": { "oneOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }] },
+        "useScope": { "const": "LOCAL_BENEFIT_EVALUATION_ONLY" },
+        "retentionAccepted": { "const": "STRUCTURED_NO_FREE_TEXT" }
+      }
+    },
+    "observations": { "type": "array", "maxItems": 64, "items": { "$ref": "#/$defs/observation" } },
+    "participantJudgment": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["effect", "burden", "confidence"],
+          "properties": {
+            "effect": { "enum": ["HELPED", "HARMED", "NO_MEANINGFUL_DIFFERENCE", "UNSURE"] },
+            "burden": { "enum": ["LOW", "ACCEPTABLE", "HIGH"] },
+            "confidence": { "type": "integer", "minimum": 1, "maximum": 5 }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
+    "conditionSummary": { "type": "array", "maxItems": 2, "items": { "$ref": "#/$defs/conditionSummary" } },
+    "retention": { "type": "object" },
+    "usableAsLiveEvidence": { "type": "boolean" },
+    "truth": { "type": "object" },
+    "sessionDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string" },
+        "schema": { "type": "string" },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trialId", "conditionId", "order", "decision", "confidence", "confusion", "elapsedMs", "correct", "unsupportedContinue"],
+      "properties": {
+        "trialId": { "type": "string" },
+        "conditionId": { "type": "string" },
+        "order": { "type": "integer" },
+        "decision": { "enum": ["CONTINUE", "HOLD", "UNSURE"] },
+        "confidence": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "confusion": { "enum": ["NONE", "SOME", "BLOCKED"] },
+        "elapsedMs": { "type": "integer", "minimum": 0, "maximum": 3600000 },
+        "correct": { "type": "boolean" },
+        "unsupportedContinue": { "type": "boolean" }
+      }
+    },
+    "conditionSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conditionId", "role", "total", "correct", "accuracy", "unsupportedContinues", "holdExpected", "unsupportedContinueRate", "meanElapsedMs", "blockedConfusions"],
+      "properties": {
+        "conditionId": { "type": "string" },
+        "role": { "enum": ["BASELINE", "CANDIDATE"] },
+        "total": { "type": "integer" },
+        "correct": { "type": "integer" },
+        "accuracy": { "type": "number" },
+        "unsupportedContinues": { "type": "integer" },
+        "holdExpected": { "type": "integer" },
+        "unsupportedContinueRate": { "type": "number" },
+        "meanElapsedMs": { "type": "number" },
+        "blockedConfusions": { "type": "integer" }
+      }
+    }
+  }
+}

@@ -1,0 +1,188 @@
+{
+  "schema": "axm.human-benefit-participant-packet/v1",
+  "version": "0.1.0",
+  "packetId": "current-source-closure-participant-packet-20260820",
+  "generatedAt": "2026-08-20T01:04:00.000Z",
+  "capabilityBinding": {
+    "capabilityId": "evidence.registered-source-closure/v1",
+    "humanClaimId": "registered-source-closure-human-benefit",
+    "protocolRef": {
+      "id": "evidence-source-closure-local-steward-20260820",
+      "schema": "axm.human-benefit-protocol/v1",
+      "sha256": "sha256:718f69ace41a34c8a99b8b1f85e2f53a07fa4fe746d8ad8b6ddfdc68e2c9d21f"
+    },
+    "cycleRef": {
+      "id": "cycle-output-availability-20260819",
+      "schema": "axm.verified-capability-cycle-receipt/v1",
+      "sha256": "sha256:4e46d2a10d0cde7c9be861217783fb059602e31e89fda298f455eb8a23814a52"
+    },
+    "currentOutcomeRef": {
+      "id": "grounded-growth-verification-evolution-ai-workflow-20260819",
+      "schema": "axm.grounded-growth-outcome-receipt/v1",
+      "sha256": "sha256:b62d6b4ae945e01f762b3814c7b6fd35e4dea34efe45a6bde50e7a2c7afd03cf"
+    }
+  },
+  "protocolRef": {
+    "id": "evidence-source-closure-local-steward-20260820",
+    "schema": "axm.human-benefit-protocol/v1",
+    "sha256": "sha256:718f69ace41a34c8a99b8b1f85e2f53a07fa4fe746d8ad8b6ddfdc68e2c9d21f"
+  },
+  "status": "READY_FOR_VOLUNTARY_HUMAN_SESSION",
+  "notices": [
+    "Participation is optional. Stopping or withdrawing does not count as failure.",
+    "The packet records only structured choices, confidence, confusion, elapsed milliseconds, effect and burden.",
+    "Do not enter a name, email address, free-text comment, audio, video or screen recording.",
+    "This one-person result can describe only the participating local steward.",
+    "The condition roles and expected decisions are intentionally absent from this participant packet.",
+    "The exact protocol reference must accompany an external response so responses cannot cross capability routes."
+  ],
+  "trials": [
+    {
+      "trialId": "review-1",
+      "order": 1,
+      "conditionLabel": "Condition A",
+      "prompt": "Condition A: a source digest was recorded yesterday. No later existence, type, or byte check is shown. A decision today requires the source bytes to still be current. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "review-2",
+      "order": 2,
+      "conditionLabel": "Condition B",
+      "prompt": "Condition B: the registered digest and a fresh exact check match; closure state is CURRENT. The decision requires current source bytes. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "review-3",
+      "order": 3,
+      "conditionLabel": "Condition B",
+      "prompt": "Condition B: a fresh exact check differs from the registered digest; closure state is CHANGED. The decision requires the registered source bytes. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "review-4",
+      "order": 4,
+      "conditionLabel": "Condition A",
+      "prompt": "Condition A: a report says the source was registered successfully. It gives no later closure state. A downstream acceptance relies on the source still existing unchanged. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "review-5",
+      "order": 5,
+      "conditionLabel": "Condition A",
+      "prompt": "Condition A: the original registration timestamp and digest are visible, but current file type and bytes are not checked. A decision requires current exact bytes. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "review-6",
+      "order": 6,
+      "conditionLabel": "Condition B",
+      "prompt": "Condition B: a fresh closure check cannot find the registered source; closure state is MISSING. A decision relies on that source. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    }
+  ],
+  "completionFields": {
+    "effect": [
+      "HELPED",
+      "HARMED",
+      "NO_MEANINGFUL_DIFFERENCE",
+      "UNSURE"
+    ],
+    "burden": [
+      "LOW",
+      "ACCEPTABLE",
+      "HIGH"
+    ],
+    "confidence": "integer 1 to 5"
+  },
+  "responseBoundary": {
+    "schema": "axm.human-benefit-response-input/v1",
+    "exactProtocolRefRequired": true,
+    "externalToWorkshopRepository": true,
+    "structuredNoFreeText": true
+  },
+  "outputBoundary": {
+    "writesAutomatically": false,
+    "sendsToNetwork": false,
+    "authenticatesHuman": false,
+    "createsHumanBenefitVerdict": false
+  },
+  "packetDigest": "sha256:c7ae27236676dc7073c64d94fc0de003a90aa44761cf88ece86f55af7f242248"
+}

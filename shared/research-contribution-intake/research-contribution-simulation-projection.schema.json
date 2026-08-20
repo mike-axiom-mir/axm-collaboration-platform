@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.research-contribution-simulation-projection/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "baselineRef", "newInformationRefs", "evidenceSourceRefs", "seats", "signals", "truth"],
+  "properties": {
+    "schema": {"const": "axm.research-contribution-simulation-projection/v1"},
+    "baselineRef": {"type": "object"},
+    "newInformationRefs": {"type": "array", "minItems": 1, "items": {"type": "object"}},
+    "evidenceSourceRefs": {"type": "array", "items": {"type": "object"}},
+    "seats": {"type": "array", "minItems": 1, "items": {"type": "object"}},
+    "signals": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "statement", "evidenceStage", "sourceRefs", "seatIds", "cheapestTest", "uncertainty", "solutionAlternatives", "contradictions", "wildcard", "truthWeight"],
+        "properties": {
+          "evidenceStage": {"enum": ["OBSERVED", "SIMULATED", "INFERENCE", "UNKNOWN"]},
+          "truthWeight": {"const": "NONE"}
+        }
+      }
+    },
+    "truth": {
+      "type": "object",
+      "required": ["baselineRunBuilt", "evidenceReceiptBuilt", "sourceExecuted", "modelInvoked", "agreementIsProof", "readyToExecute", "automaticAction"],
+      "properties": {
+        "baselineRunBuilt": {"const": false},
+        "evidenceReceiptBuilt": {"const": false},
+        "sourceExecuted": {"const": false},
+        "modelInvoked": {"const": false},
+        "agreementIsProof": {"const": false},
+        "readyToExecute": {"const": false},
+        "automaticAction": {"const": false}
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.verification-candidate-evolution-bridge/v1",
+  "title": "AXM Verification Candidate Evolution Bridge",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "bridgeId", "builtAt", "status", "scope",
+    "target", "candidate", "decision", "truth", "bridgeDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.verification-candidate-evolution-bridge/v1" },
+    "version": { "const": "0.1.0" },
+    "bridgeId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "builtAt": { "type": "string", "format": "date-time" },
+    "status": { "const": "TEST" },
+    "scope": { "const": "TARGET_ATTESTATION_TO_FULLY_ROUTED_CANDIDATE_SCOPE_EVOLUTION" },
+    "target": { "type": "object" },
+    "candidate": { "type": "object" },
+    "decision": { "type": "object" },
+    "truth": { "type": "object" },
+    "bridgeDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

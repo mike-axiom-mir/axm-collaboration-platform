@@ -1,0 +1,62 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "grounded-growth-human-bridge",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "growth.human-evidence.native-verify",
+    "growth.human-evidence.live-only",
+    "growth.human-evidence.scope-bind",
+    "growth.human-evidence.closure-bind",
+    "growth.human-evidence.synthetic-hold",
+    "growth.human-evidence.grounded-map",
+    "growth.human-evidence.authority.none",
+    "axm.grounded-growth-human-bridge-receipt/v1",
+    "axm.grounded-growth-human-bridge-bundle/v1",
+    "axm.grounded-growth-human-closure-receipt/v1"
+  ],
+  "consumes": [
+    "axm.verified-capability-cycle-receipt/v1",
+    "axm.human-benefit-evaluation-receipt/v1",
+    "axm.human-benefit-judgment-receipt/v1",
+    "axm.grounded-growth-human-closure-receipt/v1",
+    "claim-scoped external source-trust reference"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.grounded-growth-human-bridge-receipt/v1",
+      "axm.grounded-growth-human-bridge-bundle/v1",
+      "axm.grounded-growth-human-closure-receipt/v1",
+      "axm.grounded-growth-outcome-receipt/v1"
+    ],
+    "accepts": [
+      "exact native cycle, protocol, evaluation and judgment receipts with scope-matched source trust and current closure"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "synthetic-fixture-as-human-benefit",
+      "invalid-native-receipt-as-human-benefit",
+      "claim-capability-binding-mismatch",
+      "candidate-surface-link-mismatch",
+      "scope-expansion",
+      "source-authentication-claim",
+      "missing-or-held-evidence-closure",
+      "automatic-execution",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-promotion",
+      "automatic-canon",
+      "root-mutation",
+      "model-weight-training-claim"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}

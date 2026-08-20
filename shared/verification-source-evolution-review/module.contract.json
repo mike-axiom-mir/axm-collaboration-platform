@@ -1,0 +1,65 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "verification-source-evolution-review",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "verification.evolution.later-receipt-digest-attestation",
+    "verification.evolution.candidate-currentness-cross-bind",
+    "verification.evolution.transitive-candidate-scope-route",
+    "verification.evolution.legacy-current-external-anchor",
+    "verification.evolution.generated-view-semantic-bridge",
+    "verification.evolution.unattested-drift-visible",
+    "verification.evolution.intent-correctness-non-inference",
+    "verification.evolution.history-no-rewrite",
+    "verification.evolution.authority.none",
+    "axm.verification-source-evolution-review/v1",
+    "axm.verification-legacy-external-anchor/v1",
+    "axm.verification-candidate-evolution-bridge/v1"
+  ],
+  "consumes": [
+    "axm.verification-snapshot-continuity-receipt/v1",
+    "historical and candidate verification receipts as data",
+    "current candidate continuity receipts as data",
+    "optional exact generated-view evidence as data"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.verification-source-evolution-review/v1",
+      "axm.verification-legacy-external-anchor/v1",
+      "axm.verification-candidate-evolution-bridge/v1"
+    ],
+    "accepts": [
+      "one digest-valid continuity receipt with tracked-source drift",
+      "one exact candidate receipt inventory supplied by a caller-owned adapter"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "later-attestation-as-original-intent",
+      "later-attestation-as-correctness",
+      "later-attestation-as-regression-absence",
+      "later-attestation-as-human-benefit",
+      "transitive-route-as-candidate-byte-currentness",
+      "external-anchor-as-pre-anchor-integrity",
+      "semantic-snapshot-as-historical-byte-match",
+      "historical-receipt-rewrite",
+      "source-mutation",
+      "automatic-write",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "rebuild from exact caller inputs",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}

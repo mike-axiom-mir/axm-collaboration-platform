@@ -1,0 +1,134 @@
+{
+  "schema": "axm.ai-workflow-evaluation/v1",
+  "version": "0.1.0",
+  "evaluationId": "signal-lineage-grounded-steward-evaluation-20260820",
+  "generatedAt": "2026-08-20T00:25:00.000Z",
+  "beneficiary": "AI_WORKFLOW",
+  "workflow": "Bounded stewardship routing for research signal coverage, current evidence lineage, voluntary-human unknowns, proposal non-actions, and source drift.",
+  "proofSurface": "AI_WORKFLOW_EVALUATION",
+  "fixturePolicy": "Developer-visible frozen adversarial cases derived from the current Workshop disposition and lineage boundaries; not independently blinded or statistically sampled.",
+  "inputRefs": [
+    {
+      "id": "signal-lineage-grounded-steward-cases-20260820",
+      "schema": "axm.signal-lineage-workflow-case-set/v1",
+      "sha256": "sha256:84e63fdf48232bbae54af2fd0802a9f6fa1e4e125cc3d5ba0803b0b0701ce60d"
+    },
+    {
+      "id": "public-baseline-research-disposition",
+      "schema": "axm.research-disposition/v1",
+      "sha256": "sha256:691fad534858e9ce4f8286104ba4bfed5cbb3604284d918c3a9d976df698ba4e"
+    },
+    {
+      "id": "grounded-growth-signal-lineage-core",
+      "schema": "text/javascript",
+      "sha256": "sha256:3594c42eb298ce470e9c43edf326486f476dcec7a742e1b63d5a02f2e690fe65"
+    }
+  ],
+  "baseline": {
+    "policyId": "ID_AND_COUNT_ONLY_SHORTCUT",
+    "description": "The shortcut confirms that six signal IDs and six proposal IDs exist but does not check per-item lineage, digests, evidence targets, human boundaries, or proposal state.",
+    "correctDecisions": 1,
+    "totalDecisions": 8,
+    "unsupportedOrUnsafeDecisions": 7
+  },
+  "outcome": {
+    "policyId": "EXACT_SIGNAL_LINEAGE_GUARD",
+    "description": "The guard exact-binds every item to current evidence or an explicit human/non-action state and refuses stale, missing, synthetic, or authority-inflating substitutions.",
+    "correctDecisions": 8,
+    "totalDecisions": 8,
+    "unsupportedOrUnsafeDecisions": 0,
+    "newlyCorrectedDecisions": 7
+  },
+  "cases": [
+    {
+      "id": "exact-current-lineage",
+      "inputMutation": "NONE",
+      "expectedDecision": "CONTINUE",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "CONTINUE",
+      "baselineCorrect": true,
+      "candidateCorrect": true
+    },
+    {
+      "id": "accepted-signal-link-omitted",
+      "inputMutation": "REMOVE_SIGNAL_LINK",
+      "expectedDecision": "HOLD_INCOMPLETE_LINEAGE",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "HOLD_INCOMPLETE_LINEAGE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "proposal-link-omitted",
+      "inputMutation": "REMOVE_PROPOSAL_LINK",
+      "expectedDecision": "HOLD_INCOMPLETE_LINEAGE",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "HOLD_INCOMPLETE_LINEAGE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "stale-outcome-digest",
+      "inputMutation": "REPLACE_OUTCOME_DIGEST",
+      "expectedDecision": "HOLD_STALE_OUTCOME",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "HOLD_STALE_OUTCOME",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "unknown-evidence-reference",
+      "inputMutation": "REPLACE_EVIDENCE_ID",
+      "expectedDecision": "HOLD_UNKNOWN_EVIDENCE",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "HOLD_UNKNOWN_EVIDENCE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "synthetic-human-technical-closure",
+      "inputMutation": "CONVERT_HUMAN_WAIT_TO_TECHNICAL",
+      "expectedDecision": "REFUSE_SYNTHETIC_HUMAN_CLOSURE",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "REFUSE_SYNTHETIC_HUMAN_CLOSURE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "rejected-proposal-state-drift",
+      "inputMutation": "CHANGE_REJECTED_TO_DEFERRED",
+      "expectedDecision": "REFUSE_PROPOSAL_STATE_DRIFT",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "REFUSE_PROPOSAL_STATE_DRIFT",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "changed-disposition-behind-old-reference",
+      "inputMutation": "ALTER_DISPOSITION_STATEMENT",
+      "expectedDecision": "HOLD_SOURCE_DRIFT",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "HOLD_SOURCE_DRIFT",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    }
+  ],
+  "verdict": "PASS",
+  "limitations": [
+    "The cases were visible while the guard was developed and are not an independently blinded, statistical, or provider benchmark.",
+    "No language model was invoked; this evaluates a deterministic guard for an AI-assisted workflow, not model weights, intelligence, or generalization.",
+    "The current source set is exact only in native rebuild mode; detached integrity holds source truth and currentness at UNKNOWN.",
+    "No human comparison ran, so human usefulness and benefit remain NOT_RUN."
+  ],
+  "truth": {
+    "modelInvoked": false,
+    "modelWeightsChanged": false,
+    "modelGeneralizationClaimed": false,
+    "humanParticipant": false,
+    "humanBenefitClaimed": false,
+    "automaticExecution": false,
+    "automaticPromotion": false,
+    "automaticCanon": false
+  },
+  "receiptDigest": "sha256:16c757069113622fcce95c21b14f8d1b181952fb97683a26c4357f31ba65cb65"
+}

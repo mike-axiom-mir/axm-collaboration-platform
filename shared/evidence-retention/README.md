@@ -14,6 +14,7 @@ Its rule is:
 - The first occurrence of a durable error or failure remains exact. Unchanged repeats become one persistent rollup, with an exact reminder checkpoint no more than once per 24 hours. Changed failures are new exact evidence.
 - Modules with volatile request identifiers may declare `retention.repeatable: true` and a stable `retention.repeatKey`; consequential non-failure events are never deduplicated by default.
 - Existing JSONL files are registered with their byte size, line count and SHA-256 digest. They are not rewritten or deleted.
+- Callers can explicitly verify one registered source or a bounded source set against those original identities. Removed, changed/corrupted and summary-replaced raw outputs produce a hold instead of inheriting the old registration.
 - Closing the server seals the current segment and writes a summary manifest with the segment SHA-256 and last event-chain hash.
 - Interrupted open segments are verified and sealed as recovered evidence at the next start.
 - Technical Glasses reads the retained-evidence state so a new AI task can see what evidence exists without crawling every historical line.
@@ -38,4 +39,4 @@ Run:
 node shared/evidence-retention/selftest.js
 ```
 
-The selftest proves legacy preservation, telemetry and durable-repeat rollups, changed-failure and resolution retention, restart persistence, session sealing, hash evidence, machine-readable tails and non-destructive package planning.
+The selftest proves legacy preservation, registered-source output closure, telemetry and durable-repeat rollups, changed-failure and resolution retention, restart persistence, session sealing, hash evidence, machine-readable tails and non-destructive package planning.

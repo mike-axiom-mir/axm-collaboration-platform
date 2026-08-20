@@ -1,0 +1,58 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "grounded-growth-outcomes",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "growth.outcome.digest-receipt",
+    "growth.outcome.evidence-route",
+    "growth.outcome.human.verify",
+    "growth.outcome.ai-workflow.verify",
+    "growth.outcome.refresh",
+    "grounded-growth-outcome-receipt/v1",
+    "grounded-growth-portfolio/v1"
+  ],
+  "consumes": [
+    "axm.verified-capability-cycle-receipt/v1",
+    "axm.gei.intervention-reference/v1",
+    "axm.evidence-closure-receipt/v1",
+    "human-native-outcome-evidence",
+    "held-out-ai-workflow-evaluation"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.grounded-growth-outcome-receipt/v1",
+      "axm.grounded-growth-portfolio/v1"
+    ],
+    "accepts": [
+      "digest-bound capability cycle, intervention, evidence closure, baseline, outcome, and beneficiary evidence references"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "capability-availability-as-growth",
+      "system-effect-as-human-benefit",
+      "system-effect-as-ai-workflow-benefit",
+      "visual-claim-without-live-visual-evidence",
+      "human-benefit-without-human-native-evidence",
+      "ai-workflow-benefit-without-held-out-or-workflow-evidence",
+      "missing-or-held-evidence-closure",
+      "automatic-execution",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-promotion",
+      "automatic-canon",
+      "root-mutation",
+      "model-weight-training-claim",
+      "broken-outcome-ancestry"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

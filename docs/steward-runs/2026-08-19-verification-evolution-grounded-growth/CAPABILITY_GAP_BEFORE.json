@@ -1,0 +1,167 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "verification-evolution-workflow-evaluation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "workflow.verification-evolution.evaluate",
+        "workflow.verification-evolution.verify"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "current-source-evolution-evidence",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "verification.evolution.receipt.verify",
+        "verification.evolution.portfolio.bind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "verification.evolution.receipt.verify": [
+          "The source-evolution verification receipt rebuilds exactly against its stable recorded sources."
+        ],
+        "verification.evolution.portfolio.bind": [
+          "The TEST portfolio records 19 drift rows, one transitive bridge, one generated-view route, and two legacy holds."
+        ]
+      }
+    },
+    {
+      "id": "grounded-growth-ancestry",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.outcome.ancestry-link",
+        "growth.portfolio.rebuild",
+        "evidence.closure.bind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.outcome.ancestry-link": [
+          "Existing Grounded Growth receipts support exact previous-outcome ancestry."
+        ],
+        "growth.portfolio.rebuild": [
+          "Existing portfolio builder verifies all receipt chains and rejects broken ancestry."
+        ],
+        "evidence.closure.bind": [
+          "Claim closure requires exact coverage of baseline, outcome, and evidence digests."
+        ]
+      }
+    },
+    {
+      "id": "authority-preservation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "authority.human-steward.preserve"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "authority.human-steward.preserve": [
+          "No availability, promotion, merge, Foundation, or CANON authority is granted."
+        ]
+      }
+    },
+    {
+      "id": "independent-model-effectiveness",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "workflow.model.independent-eval"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "workflow.model.independent-eval": [
+          "No provider runtime or independent exact-model evaluation is available in this lane."
+        ]
+      }
+    },
+    {
+      "id": "human-beneficiary-outcome",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "growth.human-evidence.live"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.human-evidence.live": [
+          "A voluntary route exists, but no person opted in and no live judgment exists."
+        ]
+      }
+    },
+    {
+      "id": "governed-availability",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "capability.governed-availability"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "capability.governed-availability": [
+          "Mike remains the review and merge gate; current outcomes are candidates only."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "workflow.verification-evolution.evaluate",
+    "workflow.verification-evolution.verify"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "workflow.verification-evolution.evaluate",
+      "requiredBy": [
+        "verification-evolution-workflow-evaluation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "workflow.verification-evolution.verify",
+      "requiredBy": [
+        "verification-evolution-workflow-evaluation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

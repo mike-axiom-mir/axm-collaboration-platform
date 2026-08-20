@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-human-bridge-receipt/v2",
+  "title": "AXM Grounded Growth Human Bridge Receipt v2",
+  "type": "object",
+  "required": [
+    "schema", "version", "bridgeId", "generatedAt", "capabilityId", "claimId",
+    "targetScope", "capabilityAncestry", "binding", "interventionLinkReceipt",
+    "sourceRefs", "evidenceClosureReceipt", "evidenceClosure", "nativeVerification",
+    "admission", "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-human-bridge-receipt/v2" },
+    "version": { "const": "0.2.0" },
+    "targetScope": { "enum": ["NAMED_LOCAL_STEWARD", "DECLARED_COHORT"] },
+    "capabilityAncestry": {
+      "type": "object",
+      "required": ["valid", "mode", "relation", "capabilitySurfaceRef", "reasonCodes"],
+      "properties": {
+        "mode": { "enum": ["CANDIDATE", "REUSE_EXISTING", "UNKNOWN"] }
+      },
+      "additionalProperties": true
+    },
+    "receiptDigest": { "pattern": "^sha256:[0-9a-f]{64}$" }
+  },
+  "additionalProperties": true
+}
+

@@ -1,0 +1,97 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "current-state-compose",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["growth.current-state.compose"],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "portfolio-extension-verify",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["growth.current-state.portfolio-extension-verify"],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "participation-preserve-or-hold",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["growth.current-state.participation-preserve", "growth.current-state.rebind-hold"],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "current-state-digest",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": ["growth.current-state.digest"],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "native-human-benefit",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": ["human.outcome.live.native"],
+      "missing": [],
+      "declaredConstraints": {
+        "human.outcome.live.native": ["requires a new independent voluntary human event"]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "growth.current-state.compose",
+    "growth.current-state.digest",
+    "growth.current-state.participation-preserve",
+    "growth.current-state.portfolio-extension-verify",
+    "growth.current-state.rebind-hold"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "growth.current-state.compose",
+      "requiredBy": ["current-state-compose"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "growth.current-state.digest",
+      "requiredBy": ["current-state-digest"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "growth.current-state.participation-preserve",
+      "requiredBy": ["participation-preserve-or-hold"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "growth.current-state.portfolio-extension-verify",
+      "requiredBy": ["portfolio-extension-verify"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    },
+    {
+      "capabilityId": "growth.current-state.rebind-hold",
+      "requiredBy": ["participation-preserve-or-hold"],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": ["inputs", "outputs", "sideEffects", "permissions", "resourceBudget", "failureRecovery", "compatibility", "verification"]
+    }
+  ]
+}

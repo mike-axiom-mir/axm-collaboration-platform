@@ -1,0 +1,71 @@
+{
+  "schema": "axm.steward-verification-receipt/v1",
+  "observedAt": "2026-08-19T09:19:27.149Z",
+  "status": "PASS_WITH_RETAINED_TEMP_RESIDUE",
+  "change": {
+    "file": "tests/tool-forge-package-test.js",
+    "beforeSha256": "sha256:26b5440bd2bb96cf0bd6f00df181779a2065b0c4329240ceb8ff8917b7dd95c9",
+    "afterSha256": "sha256:250046ca9c8fdf0b094a13929b40b29019581020e747383bce5fb75b0df6b6bb",
+    "routeBefore": "HOST_OS_TEMP_PERSISTENT",
+    "routeAfter": "WORKSPACE_LOCAL_TRANSIENT",
+    "workspaceDriveObserved": "D:\\",
+    "cleanupBeforeReturn": true
+  },
+  "focusedVerification": {
+    "command": "node docs/steward-runs/2026-08-19-workspace-local-package-proof/selftest.js",
+    "exitCode": 0,
+    "checksPassed": 21,
+    "selftestSha256": "sha256:96f023011f12ab1c3419d3971714fe5e65788efc22ac44de87c1d05256f38e35",
+    "adversarialConditions": [
+      "child working directory set to Windows OS temp",
+      "TEMP pointed to Windows OS temp",
+      "TMP pointed to Windows OS temp"
+    ],
+    "newOsTempProofZips": 0,
+    "remainingWorkspaceScratchRunDirectories": 0
+  },
+  "repositoryChecks": [
+    {"command": "node verify.js", "exitCode": 0},
+    {"command": "node hub/hub-selftest.js", "exitCode": 0},
+    {"command": "node hub/route-selftest.js", "exitCode": 0},
+    {"command": "node hub/graft-selftest.js", "exitCode": 0},
+    {"command": "node hub/skin-selftest.js", "exitCode": 0},
+    {"command": "node hub/verify-plus.js", "exitCode": 0},
+    {"command": "node tests/html-script-syntax-test.js", "exitCode": 0},
+    {"command": "node tests/tool-forge-package-test.js", "exitCode": 0},
+    {"command": "node tools/agent-tool-forge/selftest.js", "exitCode": 0},
+    {"command": "node tools/evidence-desk/selftest.js", "exitCode": 0}
+  ],
+  "gateObservation": {
+    "osTempProofZipsBefore": 174,
+    "osTempProofZipsAfter": 174,
+    "newOsTempProofZips": 0,
+    "remainingWorkspaceScratchRunDirectories": 0
+  },
+  "retainedDiagnosticReproduction": {
+    "class": "TEMPORARY_CAPTURE",
+    "name": "mike.package-proof-EXPERIMENTAL-10568-1787130719801.zip",
+    "bytes": 98389,
+    "sha256": "sha256:1de73f7e170457b362e5d8455c90896a9ec64a907633443169b48b3cfba94aa4",
+    "exists": true,
+    "deletionState": "REFUSED_BY_EXECUTION_POLICY",
+    "canon": false,
+    "installed": false
+  },
+  "scope": {
+    "covered": "Repository-required Node Tool Forge package proof",
+    "notCovered": "User-initiated browser or application downloads, whose destination remains controlled by the user's download settings",
+    "browserVerification": "NOT_APPLICABLE"
+  },
+  "truth": {
+    "productPackageBuilderChanged": false,
+    "generatedPackageExecuted": false,
+    "generatedPackageInstalled": false,
+    "historicalTempFilesDeleted": false,
+    "commitCreated": false,
+    "pushPerformed": false,
+    "mergePerformed": false,
+    "canonAssigned": false
+  }
+}
+

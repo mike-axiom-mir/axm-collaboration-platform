@@ -1,0 +1,55 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "verification-snapshot-continuity",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "verification.continuity.historical-receipt-digest-verify",
+    "verification.continuity.tracked-source-current-compare",
+    "verification.continuity.mutable-derived-view-distinguish",
+    "verification.continuity.missing-source-hold",
+    "verification.continuity.unrecognized-derived-hold",
+    "verification.continuity.tracked-source-drift-not-pass",
+    "verification.continuity.history-no-rewrite",
+    "verification.continuity.authority.none",
+    "axm.verification-snapshot-continuity-receipt/v1"
+  ],
+  "consumes": [
+    "historical verification receipt as data",
+    "current exact source digests from a caller-owned adapter",
+    "axm.verification-spine-report/v2 metadata as data"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.verification-snapshot-continuity-receipt/v1"],
+    "accepts": [
+      "one historical receipt plus its caller-computed raw file digest",
+      "one exact current source set and current mutable derived-view metadata"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "mutable-derived-drift-as-product-pass",
+      "tracked-source-drift-as-harmless",
+      "missing-source-as-match",
+      "unrecognized-derived-view-as-mutable",
+      "historical-receipt-rewrite",
+      "current-broad-verification-claim",
+      "automatic-write",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "rebuild from exact caller inputs",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}
+

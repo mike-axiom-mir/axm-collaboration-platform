@@ -1,0 +1,140 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "campaign-and-device-binding",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.phone-evidence.campaign-native-bind",
+        "growth.phone-evidence.device-native-verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.phone-evidence.campaign-native-bind": [
+          "The gate validates the exact campaign digest, queue identity, current warning, and review state."
+        ],
+        "growth.phone-evidence.device-native-verify": [
+          "The gate verifies the QA Lab receipt native digest and all six complete phone declarations without retaining notes or user-agent text."
+        ]
+      }
+    },
+    {
+      "id": "warning-closure-separation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.phone-evidence.manifest-warning-closure-bind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.phone-evidence.manifest-warning-closure-bind": [
+          "The device key requires a later passing native Game Hub verifier report where the selected warning is absent."
+        ]
+      }
+    },
+    {
+      "id": "human-outcome-native-route",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.phone-evidence.human-outcome-native-verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.phone-evidence.human-outcome-native-verify": [
+          "The human key requires a complete Grounded Growth human handoff package that natively rebuilds its live session, judgment, declaration, closure, bridge, and outcome."
+        ]
+      }
+    },
+    {
+      "id": "two-key-non-conflation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.phone-evidence.two-key-separation"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.phone-evidence.two-key-separation": [
+          "Device behavior and human usefulness remain independently visible; only both can create the combined evidence state."
+        ]
+      }
+    },
+    {
+      "id": "authority-ceiling",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.phone-evidence.authority.none"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.phone-evidence.authority.none": [
+          "The gate writes nothing and grants no participation, manifest, portfolio, install, promotion, merge, CANON, or Foundation authority."
+        ]
+      }
+    },
+    {
+      "id": "current-device-key",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "growth.phone-evidence.current-device-key.pass"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.phone-evidence.current-device-key.pass": [
+          "No exact physical-phone device receipt, accepted candidate review, or later warning-free verifier report exists for the current game."
+        ]
+      }
+    },
+    {
+      "id": "current-human-key",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "growth.phone-evidence.current-human-key.pass"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.phone-evidence.current-human-key.pass": [
+          "No live human handoff package exists for the declared current game experience."
+        ]
+      }
+    },
+    {
+      "id": "current-combined-evidence",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "growth.phone-evidence.current-combined.pass"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.phone-evidence.current-combined.pass": [
+          "Neither independent evidence key currently passes."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "axm.human-benefit-protocol/v1",
+  "version": "0.1.0",
+  "protocolId": "workspace-local-package-route-local-steward-20260819",
+  "generatedAt": "2026-08-19T10:45:00.000Z",
+  "fixtureMode": "LIVE",
+  "claim": {
+    "id": "workspace-local-package-proof-human-benefit",
+    "statement": "The repaired route reduces a human steward's confusion, cleanup burden, or cross-drive surprise.",
+    "beneficiary": "HUMAN",
+    "targetScope": "NAMED_LOCAL_STEWARD",
+    "scopeStatement": "Any result applies only to the participating local AXM steward and cannot be generalized to other people."
+  },
+  "conditions": [
+    {
+      "id": "condition-a",
+      "role": "BASELINE",
+      "label": "Condition A",
+      "artifactRef": {
+        "id": "workspace-local-package-route-condition-a-surface",
+        "schema": "axm.human-benefit-comparison-surface/v1",
+        "sha256": "sha256:f3bda259becc4551c0093ae3c8e787a1838e4fd82fc959499e2c384831353055"
+      }
+    },
+    {
+      "id": "condition-b",
+      "role": "CANDIDATE",
+      "label": "Condition B",
+      "artifactRef": {
+        "id": "workspace-local-package-route-condition-b-surface",
+        "schema": "axm.human-benefit-comparison-surface/v1",
+        "sha256": "sha256:99692cf3c155f161e1694d1854727fcd821c2e7a2c5c727461e29fa5bbde8e91"
+      }
+    }
+  ],
+  "trials": [
+    {
+      "id": "package-review-1",
+      "caseId": "package-host-temp-1",
+      "conditionId": "condition-a",
+      "order": 1,
+      "prompt": "Condition A: a D-rooted repository test exits zero after writing its proof archive under host TEMP on C; deletion is not checked. Acceptance requires no hidden cross-drive residue. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "package-review-2",
+      "caseId": "package-local-clean-1",
+      "conditionId": "condition-b",
+      "order": 2,
+      "prompt": "Condition B: the proof archive is created under the D workspace scratch lane, exact bytes are read, deletion succeeds, and post-run non-existence is verified. Acceptance requires workspace-local transient proof. Continue, hold, or mark unsure?",
+      "expectedDecision": "CONTINUE"
+    },
+    {
+      "id": "package-review-3",
+      "caseId": "package-cleanup-failed-1",
+      "conditionId": "condition-b",
+      "order": 3,
+      "prompt": "Condition B: the route is workspace-local and exact bytes were read, but the cleanup check finds the archive still present. Acceptance requires removal before return. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "package-review-4",
+      "caseId": "package-exit-zero-c-route-1",
+      "conditionId": "condition-a",
+      "order": 4,
+      "prompt": "Condition A: all assertions pass, but the only returned artifact path is under C\\Temp and no cleanup evidence is included. Acceptance requires a D-local transient lifecycle. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "package-review-5",
+      "caseId": "package-message-only-1",
+      "conditionId": "condition-a",
+      "order": 5,
+      "prompt": "Condition A: a wrapper says package proof complete, but exposes neither the resolved path nor exact byte readback nor deletion status. Acceptance requires route and lifecycle evidence. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "package-review-6",
+      "caseId": "package-hostile-temp-contained-1",
+      "conditionId": "condition-b",
+      "order": 6,
+      "prompt": "Condition B: even with TEMP and TMP pointing to C, the proof resolves under the D workspace scratch lane, reads exact bytes, removes the archive, and verifies absence. Acceptance requires resistance to hostile host-temp routing. Continue, hold, or mark unsure?",
+      "expectedDecision": "CONTINUE"
+    }
+  ],
+  "fairness": {
+    "orderPolicy": "BALANCED_WITHIN_SESSION",
+    "conditionLabels": "BLINDED_A_B",
+    "learningEffectRisk": "DECLARED",
+    "maximumSameConditionRun": 2
+  },
+  "successRule": {
+    "minimumCompletedSessions": 1,
+    "minimumCandidateAccuracyGain": 0,
+    "maximumCandidateUnsupportedContinueRate": 0,
+    "maximumCandidateMeanTimeRatio": 1.25,
+    "minimumHelpedFraction": 1,
+    "requireNoHighBurden": true
+  },
+  "consent": {
+    "mode": "VOLUNTARY_OPT_IN",
+    "withdrawalAllowed": true,
+    "completionConfirmationRequired": true,
+    "useScope": "LOCAL_BENEFIT_EVALUATION_ONLY"
+  },
+  "retention": {
+    "mode": "STRUCTURED_NO_FREE_TEXT",
+    "rawIdentity": "FORBIDDEN",
+    "freeText": "FORBIDDEN",
+    "rawRecording": "FORBIDDEN",
+    "network": "DENY",
+    "withdrawalBehavior": "OMIT_PARTICIPANT_AND_OBSERVATIONS"
+  },
+  "authority": {
+    "automaticHumanVerdict": false,
+    "finalHumanJudgmentRequired": true,
+    "sourceAuthenticationExternal": true,
+    "automaticExecution": false,
+    "automaticPromotion": false,
+    "automaticCanon": false
+  },
+  "protocolDigest": "sha256:ba4ebcfb8a6fb8766531bd38c6bddda7fc76a1f20c4dd26ef19045751b58a096"
+}

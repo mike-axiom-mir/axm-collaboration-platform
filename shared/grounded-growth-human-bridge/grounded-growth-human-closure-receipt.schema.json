@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-human-closure-receipt/v1",
+  "title": "AXM Grounded Growth Human Closure Receipt",
+  "type": "object",
+  "required": ["schema", "version", "closureId", "state", "checkedAt", "sources", "truth", "closureDigest"],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-human-closure-receipt/v1" },
+    "version": { "const": "0.1.0" },
+    "state": { "enum": ["CURRENT", "HELD", "UNKNOWN"] },
+    "sources": { "type": "array", "minItems": 1, "maxItems": 96 },
+    "closureDigest": { "pattern": "^sha256:[0-9a-f]{64}$" }
+  },
+  "additionalProperties": false
+}

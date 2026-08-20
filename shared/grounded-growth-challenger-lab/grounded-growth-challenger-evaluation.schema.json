@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-challenger-evaluation/v1",
+  "title": "AXM Grounded Growth Challenger Evaluation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "evaluationId", "generatedAt", "status", "plan", "shadowReceipt", "results", "summary", "disposition", "adoptionState", "nextGate", "truth", "evaluationDigest"],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-challenger-evaluation/v1" },
+    "version": { "const": "0.1.0" },
+    "evaluationId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "status": { "const": "TEST" },
+    "plan": { "type": "object" },
+    "shadowReceipt": { "type": "object" },
+    "results": { "type": "array", "items": { "type": "object" } },
+    "summary": { "type": "object" },
+    "disposition": { "enum": ["EVIDENCE_HOLD", "CHALLENGER_REJECT_CANDIDATE", "NO_MEASURED_GAIN", "TECHNICAL_AI_REVIEW_CANDIDATE"] },
+    "adoptionState": { "const": "NOT_AUTHORIZED" },
+    "nextGate": { "type": "string" },
+    "truth": { "type": "object" },
+    "evaluationDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}
+

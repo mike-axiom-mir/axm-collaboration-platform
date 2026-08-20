@@ -1,0 +1,217 @@
+{
+  "schema": "axm.grounded-growth-current-state-portability-evaluation/v1",
+  "version": "0.1.0",
+  "status": "TEST",
+  "evaluationId": "grounded-growth-current-state-portability-20260819",
+  "sourceReceiptRef": {
+    "id": "current-grounded-growth-convergence-20260819",
+    "schema": "axm.grounded-growth-current-state-receipt/v1",
+    "sha256": "sha256:a244cbbdc5bc35d0ee1dd9f87b509c48d2a53164634d99eb1003ceb28bd09cbb"
+  },
+  "comparedApproaches": {
+    "naiveDigestOnly": "Rebuild only receiptDigest; makes no structural, coherence, authority, or source-truth distinction.",
+    "detachedGuard": "Check strict structure, self-digest, internal coherence, authority boundaries, and preserve source truth/currentness as UNKNOWN."
+  },
+  "results": [
+    {
+      "id": "valid-recorded-copy",
+      "mutation": "none",
+      "naiveDigestOnlyPass": true,
+      "detachedPortablePass": true,
+      "detachedVerdict": "PORTABLE_INTEGRITY_PASS_SOURCE_TRUTH_UNKNOWN",
+      "sourceTruth": "UNKNOWN",
+      "safeDecision": "HOLD_SOURCE_TRUTH_UNKNOWN",
+      "issueCodes": [],
+      "recomputedTamperCaughtBeyondDigest": false,
+      "semanticSourceSubstitution": false,
+      "sourceTruthLimitationPreserved": null,
+      "expectationPass": true
+    },
+    {
+      "id": "raw-human-pass-tamper",
+      "mutation": "raw-human-pass",
+      "naiveDigestOnlyPass": false,
+      "detachedPortablePass": false,
+      "detachedVerdict": "PORTABLE_INTEGRITY_FAIL",
+      "sourceTruth": "UNKNOWN",
+      "safeDecision": "REJECT_PORTABLE_INTEGRITY",
+      "issueCodes": [
+        "HUMAN_PASS_COUNT_MISMATCH",
+        "HUMAN_BENEFIT_TRUTH_MISMATCH",
+        "PARTICIPATION_HUMAN_EVIDENCE_MISMATCH",
+        "PARTICIPATION_HUMAN_BENEFIT_MISMATCH",
+        "RECEIPT_DIGEST_MISMATCH"
+      ],
+      "recomputedTamperCaughtBeyondDigest": false,
+      "semanticSourceSubstitution": false,
+      "sourceTruthLimitationPreserved": null,
+      "expectationPass": true
+    },
+    {
+      "id": "recomputed-human-pass-count-inflation",
+      "mutation": "human-pass-count",
+      "naiveDigestOnlyPass": true,
+      "detachedPortablePass": false,
+      "detachedVerdict": "PORTABLE_INTEGRITY_FAIL",
+      "sourceTruth": "UNKNOWN",
+      "safeDecision": "REJECT_PORTABLE_INTEGRITY",
+      "issueCodes": [
+        "HUMAN_PASS_COUNT_MISMATCH",
+        "HUMAN_BENEFIT_TRUTH_MISMATCH",
+        "PARTICIPATION_HUMAN_EVIDENCE_MISMATCH",
+        "PARTICIPATION_HUMAN_BENEFIT_MISMATCH"
+      ],
+      "recomputedTamperCaughtBeyondDigest": true,
+      "semanticSourceSubstitution": false,
+      "sourceTruthLimitationPreserved": null,
+      "expectationPass": true
+    },
+    {
+      "id": "recomputed-human-evidence-presence-inflation",
+      "mutation": "human-evidence-presence",
+      "naiveDigestOnlyPass": true,
+      "detachedPortablePass": false,
+      "detachedVerdict": "PORTABLE_INTEGRITY_FAIL",
+      "sourceTruth": "UNKNOWN",
+      "safeDecision": "REJECT_PORTABLE_INTEGRITY",
+      "issueCodes": [
+        "PARTICIPATION_HUMAN_EVIDENCE_MISMATCH"
+      ],
+      "recomputedTamperCaughtBeyondDigest": true,
+      "semanticSourceSubstitution": false,
+      "sourceTruthLimitationPreserved": null,
+      "expectationPass": true
+    },
+    {
+      "id": "recomputed-autonomous-action",
+      "mutation": "autonomous-action",
+      "naiveDigestOnlyPass": true,
+      "detachedPortablePass": false,
+      "detachedVerdict": "PORTABLE_INTEGRITY_FAIL",
+      "sourceTruth": "UNKNOWN",
+      "safeDecision": "REJECT_PORTABLE_INTEGRITY",
+      "issueCodes": [
+        "AUTONOMOUS_ACTION_REFUSED"
+      ],
+      "recomputedTamperCaughtBeyondDigest": true,
+      "semanticSourceSubstitution": false,
+      "sourceTruthLimitationPreserved": null,
+      "expectationPass": true
+    },
+    {
+      "id": "recomputed-automatic-canon",
+      "mutation": "automatic-canon",
+      "naiveDigestOnlyPass": true,
+      "detachedPortablePass": false,
+      "detachedVerdict": "PORTABLE_INTEGRITY_FAIL",
+      "sourceTruth": "UNKNOWN",
+      "safeDecision": "REJECT_PORTABLE_INTEGRITY",
+      "issueCodes": [
+        "BOUNDARY_MUST_REMAIN_FALSE"
+      ],
+      "recomputedTamperCaughtBeyondDigest": true,
+      "semanticSourceSubstitution": false,
+      "sourceTruthLimitationPreserved": null,
+      "expectationPass": true
+    },
+    {
+      "id": "recomputed-rebind-without-affected-capability",
+      "mutation": "rebind-without-affected",
+      "naiveDigestOnlyPass": true,
+      "detachedPortablePass": false,
+      "detachedVerdict": "PORTABLE_INTEGRITY_FAIL",
+      "sourceTruth": "UNKNOWN",
+      "safeDecision": "REJECT_PORTABLE_INTEGRITY",
+      "issueCodes": [
+        "REBIND_REQUIRES_AFFECTED_CAPABILITY"
+      ],
+      "recomputedTamperCaughtBeyondDigest": true,
+      "semanticSourceSubstitution": false,
+      "sourceTruthLimitationPreserved": null,
+      "expectationPass": true
+    },
+    {
+      "id": "recomputed-outcome-count-mismatch",
+      "mutation": "outcome-count",
+      "naiveDigestOnlyPass": true,
+      "detachedPortablePass": false,
+      "detachedVerdict": "PORTABLE_INTEGRITY_FAIL",
+      "sourceTruth": "UNKNOWN",
+      "safeDecision": "REJECT_PORTABLE_INTEGRITY",
+      "issueCodes": [
+        "OUTCOME_COUNT_MISMATCH",
+        "EVIDENCE_OUTCOME_COUNT_MISMATCH"
+      ],
+      "recomputedTamperCaughtBeyondDigest": true,
+      "semanticSourceSubstitution": false,
+      "sourceTruthLimitationPreserved": null,
+      "expectationPass": true
+    },
+    {
+      "id": "recomputed-uncontracted-nested-field",
+      "mutation": "unknown-nested-field",
+      "naiveDigestOnlyPass": true,
+      "detachedPortablePass": false,
+      "detachedVerdict": "PORTABLE_INTEGRITY_FAIL",
+      "sourceTruth": "UNKNOWN",
+      "safeDecision": "REJECT_PORTABLE_INTEGRITY",
+      "issueCodes": [
+        "EXACT_FIELDS_REQUIRED"
+      ],
+      "recomputedTamperCaughtBeyondDigest": true,
+      "semanticSourceSubstitution": false,
+      "sourceTruthLimitationPreserved": null,
+      "expectationPass": true
+    },
+    {
+      "id": "recomputed-forged-source-references",
+      "mutation": "forged-source-references",
+      "naiveDigestOnlyPass": true,
+      "detachedPortablePass": true,
+      "detachedVerdict": "PORTABLE_INTEGRITY_PASS_SOURCE_TRUTH_UNKNOWN",
+      "sourceTruth": "UNKNOWN",
+      "safeDecision": "HOLD_SOURCE_TRUTH_UNKNOWN",
+      "issueCodes": [],
+      "recomputedTamperCaughtBeyondDigest": false,
+      "semanticSourceSubstitution": true,
+      "sourceTruthLimitationPreserved": true,
+      "expectationPass": true
+    },
+    {
+      "id": "recomputed-coherent-human-benefit-substitution",
+      "mutation": "coherent-human-benefit-substitution",
+      "naiveDigestOnlyPass": true,
+      "detachedPortablePass": true,
+      "detachedVerdict": "PORTABLE_INTEGRITY_PASS_SOURCE_TRUTH_UNKNOWN",
+      "sourceTruth": "UNKNOWN",
+      "safeDecision": "HOLD_SOURCE_TRUTH_UNKNOWN",
+      "issueCodes": [],
+      "recomputedTamperCaughtBeyondDigest": false,
+      "semanticSourceSubstitution": true,
+      "sourceTruthLimitationPreserved": true,
+      "expectationPass": true
+    }
+  ],
+  "summary": {
+    "caseCount": 11,
+    "expectationPass": 11,
+    "expectationFail": 0,
+    "digestOnlyPass": 10,
+    "detachedPortablePass": 3,
+    "recomputedTamperCaughtBeyondDigest": 7,
+    "sourceTruthUnknownHolds": 3,
+    "semanticSubstitutionLimitsPreserved": 2,
+    "humanPass": 0,
+    "humanNotRun": 1
+  },
+  "verdict": "PORTABLE_GUARD_BETTER_WITH_EXPLICIT_SOURCE_TRUTH_LIMIT",
+  "authority": {
+    "writesDuringInspection": false,
+    "networkDuringInspection": false,
+    "participation": false,
+    "promotion": false,
+    "merge": false,
+    "canon": false,
+    "foundationMutation": false
+  }
+}

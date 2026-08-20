@@ -1,0 +1,136 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "native-current-source-validation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.frontier.portfolio-native-verify",
+        "growth.frontier.direction-native-verify",
+        "growth.frontier.exact-source-bind"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.frontier.portfolio-native-verify": [
+          "The current portfolio is accepted only through its native verifier."
+        ],
+        "growth.frontier.direction-native-verify": [
+          "The current direction handoff is accepted only through its native verifier."
+        ],
+        "growth.frontier.exact-source-bind": [
+          "The direction handoff must embed the exact supplied current portfolio."
+        ]
+      }
+    },
+    {
+      "id": "readiness-receipt-validation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.frontier.human-readiness-digest-verify",
+        "growth.frontier.extension-readiness-digest-verify"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.frontier.human-readiness-digest-verify": [
+          "The voluntary human-readiness receipt must pass exact self-digest and ancestry checks."
+        ],
+        "growth.frontier.extension-readiness-digest-verify": [
+          "The extension readiness must pass exact self-digest and host-profile binding checks."
+        ]
+      }
+    },
+    {
+      "id": "agency-preserving-separation",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.frontier.readiness-not-consent",
+        "growth.frontier.example-not-candidate"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.frontier.readiness-not-consent": [
+          "Technical route readiness cannot become opt-in, participation, or human benefit."
+        ],
+        "growth.frontier.example-not-candidate": [
+          "An example declaration cannot become a received candidate or runtime evidence."
+        ]
+      }
+    },
+    {
+      "id": "scoped-current-action-decision",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "growth.frontier.no-autonomous-action"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.frontier.no-autonomous-action": [
+          "The exact current frontier always grants zero autonomous action and no lifecycle authority."
+        ]
+      }
+    },
+    {
+      "id": "live-voluntary-human-evidence",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "growth.human-evidence.live"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.human-evidence.live": [
+          "No independent voluntary human participation or live usefulness outcome has occurred."
+        ]
+      }
+    },
+    {
+      "id": "experimental-extension-candidate",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "simulation.extension.candidate-package.received"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "simulation.extension.candidate-package.received": [
+          "The Platform example is declaration guidance only; no candidate package has been supplied."
+        ]
+      }
+    },
+    {
+      "id": "new-non-wait-direction",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "growth.direction.non-wait.current"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.direction.non-wait.current": [
+          "All four current directions are WAIT_FOR_EVIDENCE with zero execution steps."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

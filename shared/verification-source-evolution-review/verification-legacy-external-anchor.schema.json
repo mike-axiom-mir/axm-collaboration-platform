@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.verification-legacy-external-anchor/v1",
+  "title": "AXM Verification Legacy External Anchor",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "anchorId", "anchoredAt", "status", "scope",
+    "historicalReceipt", "generatedViewReview", "decision", "truth", "anchorDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.verification-legacy-external-anchor/v1" },
+    "version": { "const": "0.1.0" },
+    "anchorId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "anchoredAt": { "type": "string", "format": "date-time" },
+    "status": { "const": "TEST" },
+    "scope": { "const": "CURRENT_EXTERNAL_ANCHOR_FOR_LEGACY_RECEIPT_WITHOUT_SELF_DIGEST" },
+    "historicalReceipt": { "type": "object" },
+    "generatedViewReview": { "type": ["object", "null"] },
+    "decision": { "type": "object" },
+    "truth": { "type": "object" },
+    "anchorDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}
+

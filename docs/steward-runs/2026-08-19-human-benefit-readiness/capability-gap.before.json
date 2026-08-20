@@ -1,0 +1,114 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "consent-bound-human-outcome-observation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [
+        "human.outcome.protocol.predeclared",
+        "human.outcome.consent.bound",
+        "human.outcome.observation.structured"
+      ],
+      "unknown": [],
+      "missing": [
+        "human.outcome.retention.minimal"
+      ],
+      "declaredConstraints": {
+        "human.outcome.protocol.predeclared": [
+          "Challenge Arena has a review-authority protocol, but it does not define a beneficiary outcome comparison."
+        ],
+        "human.outcome.consent.bound": [
+          "The public proof intake names consent state, but its human-observation packet is explicitly synthetic-only and cannot activate live intake."
+        ],
+        "human.outcome.observation.structured": [
+          "Platform usability work preserves visual and deterministic observations, not a voluntary human beneficiary session."
+        ]
+      }
+    },
+    {
+      "id": "reconstructable-human-benefit-decision",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "human.outcome.synthetic.separated"
+      ],
+      "degraded": [
+        "human.outcome.digest.receipts"
+      ],
+      "unknown": [],
+      "missing": [
+        "human.outcome.evaluation.deterministic",
+        "human.outcome.judgment.explicit"
+      ],
+      "declaredConstraints": {
+        "human.outcome.synthetic.separated": [
+          "The public proof intake already marks synthetic fixtures as non-live and non-authoritative."
+        ],
+        "human.outcome.digest.receipts": [
+          "Grounded Growth Outcomes can link exact human evidence references, but no native human-session or evaluation receipt exists."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "human.outcome.evaluation.deterministic",
+    "human.outcome.judgment.explicit",
+    "human.outcome.retention.minimal"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "human.outcome.evaluation.deterministic",
+      "requiredBy": [
+        "reconstructable-human-benefit-decision"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "human.outcome.judgment.explicit",
+      "requiredBy": [
+        "reconstructable-human-benefit-decision"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "human.outcome.retention.minimal",
+      "requiredBy": [
+        "consent-bound-human-outcome-observation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

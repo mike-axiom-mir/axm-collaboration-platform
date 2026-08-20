@@ -1,0 +1,71 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "simulation-lab-extension-intake",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "simulation.extension.host-profile-native-verify",
+    "simulation.extension.branch-package-native-verify",
+    "simulation.extension.root-identity-collision-refuse",
+    "simulation.extension.truth-rule-preservation",
+    "simulation.extension.subject-mapping-verify",
+    "simulation.extension.permission-expansion-refuse",
+    "simulation.extension.evaluation-requirements-route",
+    "simulation.extension.human-value-separate",
+    "simulation.extension.adoption.none",
+    "axm.simulation-lab-host-profile/v1",
+    "axm.simulation-lab-extension/v1",
+    "axm.simulation-lab-extension-assessment/v1"
+  ],
+  "consumes": [
+    "axm.branch-return-receipt/v1",
+    "axm.modular-piece-package/v1",
+    "axm.module-contract/v1 host roots",
+    "caller-supplied simulation extension declaration"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.simulation-lab-host-profile/v1",
+      "axm.simulation-lab-extension-assessment/v1",
+      "NOT_RUN evaluation requirements for later steward decision"
+    ],
+    "accepts": [
+      "one inert Branch Module Return Gate package and exact receipt",
+      "one axm.simulation-lab-extension/v1 inside that package",
+      "exact TEST host contracts for portable baseline, run envelope and challenger evaluation"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "candidate-code-execution",
+      "package-extraction-to-workshop",
+      "root-module-id-collision",
+      "root-replacement",
+      "truth-rule-change",
+      "unsupported-field-discard",
+      "native-schema-identity-claim",
+      "permission-expansion",
+      "static-integrity-as-runtime-proof",
+      "runtime-proof-as-human-value",
+      "automatic-evaluation-run",
+      "automatic-graft",
+      "automatic-execution",
+      "automatic-write",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation",
+      "model-weight-training-claim"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "rebuild from exact caller inputs",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}

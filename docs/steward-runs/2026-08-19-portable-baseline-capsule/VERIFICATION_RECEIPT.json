@@ -1,0 +1,66 @@
+{
+  "schema": "axm.steward-verification-receipt/v1",
+  "receiptId": "portable-baseline-capsule:verification:2026-08-19",
+  "recordedAt": "2026-08-19T07:20:00.000Z",
+  "status": "VERIFIED_WITH_LIMITS",
+  "subject": {
+    "id": "shared/portable-baseline-capsule",
+    "status": "TEST",
+    "implementationDigest": "sha256:b3d9486643d64c0fd8feb0030174d0b872941544bbde2d9beb5b17f44fbcf588",
+    "contractDigest": "sha256:cff3916c323426b0edc031bd0b9c3152557d8d033c85fa16a5424d24b2e0c1ac",
+    "liveCapsuleFileDigest": "sha256:529012872ae99ad124fcf28c036c2841f70f4333c3e7ad4a5890f4c4ccb85e51",
+    "liveCapsuleDigest": "sha256:6ddc094c8585273a6c53694ea0ac66badf239e61845f92a1825f71fe334800c8"
+  },
+  "focusedChecks": [
+    {
+      "command": "node shared/portable-baseline-capsule/selftest.js",
+      "exitCode": 0,
+      "pass": 34,
+      "fail": 0
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-portable-baseline-capsule/selftest.js",
+      "exitCode": 0,
+      "pass": 28,
+      "fail": 0
+    }
+  ],
+  "requiredChecks": [
+    {"command": "node verify.js", "exitCode": 0, "result": "0 FAIL; 17 warn"},
+    {"command": "node hub/hub-selftest.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node hub/route-selftest.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node hub/graft-selftest.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node hub/skin-selftest.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node hub/verify-plus.js", "exitCode": 0, "result": "VERIFIED_WITH_LIMITS; 6 receipts; 9 atomic claims"},
+    {"command": "node tests/html-script-syntax-test.js", "exitCode": 0, "result": "55 PASS; 0 FAIL"},
+    {"command": "node tests/tool-forge-package-test.js", "exitCode": 0, "result": "PASS; EXPERIMENTAL; installed false; OS-temp output remains"},
+    {"command": "node tools/agent-tool-forge/selftest.js", "exitCode": 0, "result": "17 PASS; 0 FAIL"},
+    {"command": "node tools/evidence-desk/selftest.js", "exitCode": 0, "result": "36 PASS; 0 FAIL"}
+  ],
+  "warnings": {
+    "verifyWarningCount": 17,
+    "warningRoute": "EVIDENCE",
+    "replayable": 0,
+    "repairDesign": 0,
+    "newFailureCount": 0
+  },
+  "limits": [
+    "Live baseline evidence covers the declared six-file leaf, not the whole dirty Workshop.",
+    "Mirror private live state and host-model runtime behavior were not run.",
+    "No prior live capsule exists yet for a temporal live comparison.",
+    "The required tool-forge package test used the Windows OS temporary directory and left an EXPERIMENTAL proof ZIP.",
+    "Human acceptance, merge, promotion, and CANON are not claimed."
+  ],
+  "browser": {
+    "status": "NOT_APPLICABLE",
+    "reason": "The increment exposes no browser surface."
+  },
+  "authority": {
+    "installed": false,
+    "promoted": false,
+    "merged": false,
+    "canon": false,
+    "foundationChanged": false,
+    "modelWeightsChanged": false
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "grounded-growth-participation-frontier",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "growth.participation-frontier.knowledge-exact-rebuild",
+    "growth.participation-frontier.research-outcome-cross-bind",
+    "growth.participation-frontier.protocol-native-verify",
+    "growth.participation-frontier.participant-packet-exact-rebuild",
+    "growth.participation-frontier.intervention-link-native-verify",
+    "growth.participation-frontier.readiness-route-cross-bind",
+    "growth.participation-frontier.review-not-participation",
+    "growth.participation-frontier.ai-human-evidence-separate",
+    "growth.participation-frontier.authority.none",
+    "axm.grounded-growth-participation-frontier-receipt/v1"
+  ],
+  "consumes": [
+    "axm.grounded-growth-knowledge-frontier-receipt/v1",
+    "axm.grounded-growth-human-handoff-readiness/v1",
+    "axm.grounded-growth-outcome-receipt/v1",
+    "axm.human-benefit-protocol/v1",
+    "axm.human-benefit-participant-packet/v1",
+    "axm.capability-intervention-link/v2"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.grounded-growth-participation-frontier-receipt/v1"],
+    "accepts": [
+      "one exact-rebuild verified knowledge frontier and its full input",
+      "one digest-valid readiness receipt plus the exact native-verifiable protocol, packet, link, cycle and outcome chain"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "packet-readiness-as-participation",
+      "packet-readiness-as-human-evidence",
+      "review-candidate-as-human-benefit",
+      "ai-workflow-evidence-as-human-benefit",
+      "answer-or-condition-role-leakage",
+      "cross-capability-session-input",
+      "automatic-participation",
+      "automatic-execution",
+      "automatic-write",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation",
+      "model-weight-training-claim"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "rebuild from exact caller inputs",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}
+

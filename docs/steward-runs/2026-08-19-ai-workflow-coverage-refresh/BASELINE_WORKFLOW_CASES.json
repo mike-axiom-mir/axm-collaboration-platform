@@ -1,0 +1,111 @@
+{
+  "schema": "axm.steward-workflow-case-set/v1",
+  "version": "0.1.0",
+  "caseSetId": "baseline-change-gated-workflow-cases-20260819",
+  "status": "TEST",
+  "workflow": "Decide whether an AI-assisted baseline simulation workflow should stop, run one bounded cycle, or hold.",
+  "fixturePolicy": "Representative cases are frozen as data outside both comparison policies. They are grounded in existing Workshop receipts and tests; they are not a statistically sampled or independently blinded model benchmark.",
+  "cases": [
+    {
+      "id": "unchanged-baseline-no-new-information",
+      "sourcePath": "docs/steward-runs/2026-08-19-baseline-simulation-lab/LIVE_COMPARISON_OBSERVATION.json",
+      "facts": {
+        "sameSubject": true,
+        "exactBaselineUnchanged": true,
+        "declaredNewInformation": false
+      },
+      "expectedDecision": "STOP_NO_NEW_INFORMATION",
+      "expectedRule": "EXACT_NO_NEW_INFORMATION_STOP"
+    },
+    {
+      "id": "repeated-model-agreement-without-native-evidence",
+      "sourcePath": "docs/steward-runs/2026-08-19-public-baseline-research-run/RESEARCH_DISPOSITION.json",
+      "facts": {
+        "sameSubject": true,
+        "exactBaselineUnchanged": true,
+        "repeatedAgreementOnly": true,
+        "declaredNewInformation": false
+      },
+      "expectedDecision": "STOP_NO_NEW_INFORMATION",
+      "expectedRule": "AGREEMENT_IS_NOT_NEW_INFORMATION"
+    },
+    {
+      "id": "restated-known-requirement-without-new-reference",
+      "sourcePath": "docs/steward-runs/2026-08-19-baseline-simulation-lab/NO_NEW_EVIDENCE_RECEIPT.json",
+      "facts": {
+        "sameSubject": true,
+        "exactBaselineUnchanged": true,
+        "restatedKnownRequirementOnly": true,
+        "declaredNewInformation": false
+      },
+      "expectedDecision": "STOP_NO_NEW_INFORMATION",
+      "expectedRule": "RESTATEMENT_IS_NOT_NEW_INFORMATION"
+    },
+    {
+      "id": "changed-baseline-with-declared-evidence",
+      "sourcePath": "shared/baseline-simulation-lab/selftest.js",
+      "facts": {
+        "sameSubject": true,
+        "exactBaselineUnchanged": false,
+        "declaredNewInformation": true,
+        "newEvidence": true
+      },
+      "expectedDecision": "RUN_BOUNDED",
+      "expectedRule": "BASELINE_CHANGE_WITH_INFORMATION_RUNS"
+    },
+    {
+      "id": "new-counterexample-on-unchanged-baseline",
+      "sourcePath": "shared/baseline-simulation-lab/selftest.js",
+      "facts": {
+        "sameSubject": true,
+        "exactBaselineUnchanged": true,
+        "declaredNewInformation": true,
+        "newCounterexample": true
+      },
+      "expectedDecision": "RUN_BOUNDED",
+      "expectedRule": "NEW_COUNTEREXAMPLE_RUNS"
+    },
+    {
+      "id": "new-requirement-on-unchanged-baseline",
+      "sourcePath": "shared/baseline-simulation-lab/selftest.js",
+      "facts": {
+        "sameSubject": true,
+        "exactBaselineUnchanged": true,
+        "declaredNewInformation": true,
+        "newRequirement": true
+      },
+      "expectedDecision": "RUN_BOUNDED",
+      "expectedRule": "NEW_REQUIREMENT_RUNS"
+    },
+    {
+      "id": "changed-baseline-without-information-reference",
+      "sourcePath": "shared/baseline-simulation-lab/selftest.js",
+      "facts": {
+        "sameSubject": true,
+        "exactBaselineUnchanged": false,
+        "declaredNewInformation": false
+      },
+      "expectedDecision": "HOLD_CHANGED_WITHOUT_INFORMATION",
+      "expectedRule": "BASELINE_CHANGE_REQUIRES_INFORMATION"
+    },
+    {
+      "id": "different-subject-identities",
+      "sourcePath": "shared/portable-baseline-capsule/selftest.js",
+      "facts": {
+        "sameSubject": false,
+        "exactBaselineUnchanged": false,
+        "declaredNewInformation": true
+      },
+      "expectedDecision": "HOLD_INCOMPARABLE",
+      "expectedRule": "SUBJECT_MISMATCH_IS_INCOMPARABLE"
+    }
+  ],
+  "truth": {
+    "statisticalBenchmark": false,
+    "modelTranscript": false,
+    "modelInvoked": false,
+    "humanParticipant": false,
+    "humanBenefitEvidence": false,
+    "automaticAuthority": false
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "schema": "axm.verified-capability-cycle-receipt/v1",
+  "version": "0.1.0",
+  "cycleId": "cycle:tool-forge-package-proof-workspace-local-route",
+  "capabilityId": "test.tool-forge.package-proof.workspace-local-route",
+  "generatedAt": "2026-08-19T09:32:02.000Z",
+  "state": "AWAITING_STEWARD",
+  "baseline": {
+    "kind": "TEST_SCRIPT",
+    "identity": "tests/tool-forge-package-test.js@sha256:ed79e5c2e4427ed6ba546346c0797fa1648257899faf602e9110adbc001f1f97",
+    "receiptRef": {
+      "id": "tool-forge-package-proof-before-route",
+      "schema": "axm.test-artifact-route-observation/v1",
+      "sha256": "sha256:ed79e5c2e4427ed6ba546346c0797fa1648257899faf602e9110adbc001f1f97"
+    }
+  },
+  "need": {
+    "id": "need:keep-required-package-proof-on-current-workspace-drive",
+    "statement": "The repository-required Tool Forge package proof must not persist hidden artifacts on a different host drive than the active Workshop.",
+    "sourceRef": {
+      "id": "tool-forge-package-proof-before-route",
+      "schema": "axm.test-artifact-route-observation/v1",
+      "sha256": "sha256:ed79e5c2e4427ed6ba546346c0797fa1648257899faf602e9110adbc001f1f97"
+    },
+    "directionRef": null
+  },
+  "gap": {
+    "state": "OPEN",
+    "reason": "The previous test used host OS temp on C and left its proof ZIP after returning from the D-rooted Workshop.",
+    "reportRef": {
+      "id": "workspace-local-package-proof-evidence-route",
+      "schema": "axm.evidence-route/v1",
+      "sha256": "sha256:b241a2b01f9684003523d050a6217f5ebf64bd6aaa224c483f0160da45d88a13"
+    },
+    "existingCapabilityRef": null
+  },
+  "provenance": [
+    {
+      "id": "tool-forge-package-proof-before-route",
+      "schema": "axm.test-artifact-route-observation/v1",
+      "sha256": "sha256:ed79e5c2e4427ed6ba546346c0797fa1648257899faf602e9110adbc001f1f97"
+    },
+    {
+      "id": "workspace-local-package-proof-audit",
+      "schema": "text/markdown",
+      "sha256": "sha256:e552f93146de0a14d84497a106466b78a01db31dbe2e632e7c30f566953bff40"
+    }
+  ],
+  "candidate": {
+    "strategy": "ADAPT",
+    "status": "EXPERIMENTAL",
+    "artifactRef": {
+      "id": "tool-forge-package-proof-candidate",
+      "schema": "text/javascript",
+      "sha256": "sha256:250046ca9c8fdf0b094a13929b40b29019581020e747383bce5fb75b0df6b6bb"
+    },
+    "sourceMutationPerformed": true,
+    "installed": false,
+    "promoted": false,
+    "canon": false
+  },
+  "verification": {
+    "verdict": "PASS",
+    "subjectDigest": "sha256:250046ca9c8fdf0b094a13929b40b29019581020e747383bce5fb75b0df6b6bb",
+    "receiptRef": {
+      "id": "workspace-local-package-proof-verification",
+      "schema": "axm.steward-verification-receipt/v1",
+      "sha256": "sha256:cab8bc4ace75df5f70463534f037b6381f01dd707aba50ad86108d4f19d963db"
+    },
+    "evidenceAuthority": "MIXED",
+    "limitations": [
+      "The focused verifier covers the required Node package proof, including hostile C-temp environment routing.",
+      "Browser, Codex clipboard, and application download destinations remain host or user settings outside this candidate."
+    ]
+  },
+  "stewardDecision": null,
+  "availability": null,
+  "refresh": {
+    "trigger": "NEW_INFORMATION",
+    "checkedAt": "2026-08-19T09:32:00.000Z",
+    "due": false,
+    "reason": "Recheck when the test candidate, package builder, workspace root, or filesystem-routing evidence changes."
+  },
+  "improvementClaim": "VERIFIED_CANDIDATE_ONLY",
+  "truth": {
+    "cycleAuthority": "RECEIPT_LINKING_ONLY",
+    "automaticExecution": false,
+    "automaticInstall": false,
+    "automaticPermissionGrant": false,
+    "automaticPromotion": false,
+    "automaticCanon": false,
+    "automaticRootMutation": false,
+    "modelWeightTrainingClaimed": false,
+    "humanStewardDecisionRequired": true
+  },
+  "receiptDigest": "sha256:8102ca940c796be7c4cf54fab1b00d5c1bacbf1d27eadd6689e1084c74fcacbf"
+}

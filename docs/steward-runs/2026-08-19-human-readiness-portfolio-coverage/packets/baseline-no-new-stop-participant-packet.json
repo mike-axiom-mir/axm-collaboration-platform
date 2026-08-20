@@ -1,0 +1,188 @@
+{
+  "schema": "axm.human-benefit-participant-packet/v1",
+  "version": "0.1.0",
+  "packetId": "baseline-no-new-stop-local-steward-participant-packet-20260819",
+  "generatedAt": "2026-08-19T10:45:00.000Z",
+  "capabilityBinding": {
+    "capabilityId": "simulation.baseline.capsule.verify",
+    "humanClaimId": "baseline-no-new-stop-human-benefit",
+    "protocolRef": {
+      "id": "baseline-no-new-stop-local-steward-20260819",
+      "schema": "axm.human-benefit-protocol/v1",
+      "sha256": "sha256:147e03aaea2769d3ed683fb04e5456c8fb27ddc31fb8b5fdb93b37f66af42071"
+    },
+    "cycleRef": {
+      "id": "cycle:portable-baseline-existing-capability",
+      "schema": "axm.verified-capability-cycle-receipt/v1",
+      "sha256": "sha256:5b3d0a8e572549fee8a90546d0cdd52dcc270c817592dd876f7d649f4b9d740f"
+    },
+    "currentOutcomeRef": {
+      "id": "grounded-growth-baseline-ai-workflow-20260819",
+      "schema": "axm.grounded-growth-outcome-receipt/v1",
+      "sha256": "sha256:a1c02a25cc3b20790e4451ed6e902effffdb3aab6a3c0e7472c342e449efbb1e"
+    }
+  },
+  "protocolRef": {
+    "id": "baseline-no-new-stop-local-steward-20260819",
+    "schema": "axm.human-benefit-protocol/v1",
+    "sha256": "sha256:147e03aaea2769d3ed683fb04e5456c8fb27ddc31fb8b5fdb93b37f66af42071"
+  },
+  "status": "READY_FOR_VOLUNTARY_HUMAN_SESSION",
+  "notices": [
+    "Participation is optional. Stopping or withdrawing does not count as failure.",
+    "The packet records only structured choices, confidence, confusion, elapsed milliseconds, effect and burden.",
+    "Do not enter a name, email address, free-text comment, audio, video or screen recording.",
+    "This one-person result can describe only the participating local steward.",
+    "The condition roles and expected decisions are intentionally absent from this participant packet.",
+    "The exact protocol reference must accompany an external response so responses cannot cross capability routes."
+  ],
+  "trials": [
+    {
+      "trialId": "baseline-review-1",
+      "order": 1,
+      "conditionLabel": "Condition A",
+      "prompt": "Condition A: a repeated request produced another package, but no exact comparison to the current baseline is shown. Acceptance requires a demonstrated change. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "baseline-review-2",
+      "order": 2,
+      "conditionLabel": "Condition B",
+      "prompt": "Condition B: exact baseline and information identities match the prior run; disposition is REUSE_EXISTING and generated output count is zero. The review requires avoiding unjustified duplicate work. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "baseline-review-3",
+      "order": 3,
+      "conditionLabel": "Condition B",
+      "prompt": "Condition B: the supplied baseline identity differs from the declared comparison target; disposition is HOLD and generation count is zero. The review requires the exact target baseline. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "baseline-review-4",
+      "order": 4,
+      "conditionLabel": "Condition A",
+      "prompt": "Condition A: an output has a newer timestamp and revised label, but no baseline bytes or declared information were compared. Acceptance requires evidence of a meaningful change. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "baseline-review-5",
+      "order": 5,
+      "conditionLabel": "Condition A",
+      "prompt": "Condition A: the run reports complete after generating several files, but gives no generation count contract or no-new-information stop evidence. Acceptance requires bounded non-recursive behavior. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "baseline-review-6",
+      "order": 6,
+      "conditionLabel": "Condition B",
+      "prompt": "Condition B: an exact declared input digest changed, the target baseline still matches, and one bounded candidate is produced with the change recorded. The review requires an evidenced change and bounded output. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    }
+  ],
+  "completionFields": {
+    "effect": [
+      "HELPED",
+      "HARMED",
+      "NO_MEANINGFUL_DIFFERENCE",
+      "UNSURE"
+    ],
+    "burden": [
+      "LOW",
+      "ACCEPTABLE",
+      "HIGH"
+    ],
+    "confidence": "integer 1 to 5"
+  },
+  "responseBoundary": {
+    "schema": "axm.human-benefit-response-input/v1",
+    "exactProtocolRefRequired": true,
+    "externalToWorkshopRepository": true,
+    "structuredNoFreeText": true
+  },
+  "outputBoundary": {
+    "writesAutomatically": false,
+    "sendsToNetwork": false,
+    "authenticatesHuman": false,
+    "createsHumanBenefitVerdict": false
+  },
+  "packetDigest": "sha256:f825448e11969a2e6088bcbee567a0048462c7d7bd2d92d6a9a10a1d53a1aa2c"
+}

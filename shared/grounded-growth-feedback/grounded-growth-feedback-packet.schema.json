@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-feedback-packet/v1",
+  "title": "AXM Grounded Growth Feedback Packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "packetId",
+    "generatedAt",
+    "status",
+    "source",
+    "routeStates",
+    "existingNeeds",
+    "coverageLinks",
+    "evidenceRecords",
+    "candidateNeeds",
+    "suppressed",
+    "conflicts",
+    "summary",
+    "truth",
+    "packetDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-feedback-packet/v1" },
+    "version": { "const": "0.1.0" },
+    "packetId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "status": { "const": "TEST" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "receipt"],
+      "properties": {
+        "kind": { "enum": ["OUTCOME", "PORTFOLIO"] },
+        "receipt": { "type": "object" }
+      }
+    },
+    "routeStates": { "type": "array", "items": { "type": "object" } },
+    "existingNeeds": { "type": "array", "items": { "type": "object" } },
+    "coverageLinks": { "type": "array", "items": { "type": "object" } },
+    "evidenceRecords": { "type": "array", "items": { "type": "object" } },
+    "candidateNeeds": { "type": "array", "items": { "type": "object" } },
+    "suppressed": { "type": "array", "items": { "type": "object" } },
+    "conflicts": { "type": "array", "items": { "type": "object" } },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effectiveOutcomeCount", "evidenceRecordCount", "candidateNeedCount", "suppressedCount", "conflictCount", "directionCount"],
+      "properties": {
+        "effectiveOutcomeCount": { "type": "integer", "minimum": 0 },
+        "evidenceRecordCount": { "type": "integer", "minimum": 0 },
+        "candidateNeedCount": { "type": "integer", "minimum": 0 },
+        "suppressedCount": { "type": "integer", "minimum": 0 },
+        "conflictCount": { "type": "integer", "minimum": 0 },
+        "directionCount": { "const": 0 }
+      }
+    },
+    "truth": { "type": "object" },
+    "packetDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

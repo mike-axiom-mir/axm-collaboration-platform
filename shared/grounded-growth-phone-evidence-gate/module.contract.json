@@ -1,0 +1,59 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "grounded-growth-phone-evidence-gate",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "growth.phone-evidence.campaign-native-bind",
+    "growth.phone-evidence.device-native-verify",
+    "growth.phone-evidence.manifest-warning-closure-bind",
+    "growth.phone-evidence.human-outcome-native-verify",
+    "growth.phone-evidence.two-key-separation",
+    "growth.phone-evidence.authority.none",
+    "axm.grounded-growth-phone-evidence-gate/v1"
+  ],
+  "consumes": [
+    "axm.voluntary-phone-qa-campaign/v1",
+    "current game manifest surface",
+    "optional axm.device-qa-evidence/v1",
+    "optional later axm.game-package-verification/v1",
+    "optional axm.grounded-growth-human-handoff-package/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.grounded-growth-phone-evidence-gate/v1"],
+    "accepts": [
+      "one campaign game, its current manifest, optional exact reviewed device receipt, optional later warning-free verifier report, and optional natively verified human handoff package"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "device-behavior-as-human-usefulness",
+      "candidate-review-as-warning-closure",
+      "warning-closure-as-human-benefit",
+      "unbound-human-outcome",
+      "standalone-human-outcome-without-native-handoff",
+      "source-authentication-claim",
+      "machine-proof-of-physical-hardware-claim",
+      "game-manifest-mutation",
+      "portfolio-mutation",
+      "automatic-participation",
+      "automatic-execution",
+      "automatic-write",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation",
+      "model-weight-training-claim"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "rebuild from exact caller inputs",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}

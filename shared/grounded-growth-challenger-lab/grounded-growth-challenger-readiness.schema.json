@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-challenger-readiness/v2",
+  "title": "AXM Grounded Growth challenger readiness",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "readinessId", "generatedAt", "status", "state",
+    "current", "sourceRefs", "plans", "evaluations", "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.grounded-growth-challenger-readiness/v2"},
+    "version": {"const": "0.2.0"},
+    "readinessId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "state": {"enum": [
+      "LAB_CAPABILITY_READY_CURRENT_DIRECTIONS_HELD",
+      "LAB_CAPABILITY_READY_DIRECTION_AWAITS_EXPLICIT_PLAN",
+      "LAB_PLAN_PRESENT_AWAITING_EXPLICIT_SHADOW_EXECUTION",
+      "LAB_EVALUATION_PRESENT_FOR_EXPLICIT_REVIEW"
+    ]},
+    "current": {"type": "object"},
+    "sourceRefs": {"type": "object"},
+    "plans": {"type": "array", "maxItems": 64},
+    "evaluations": {"type": "array", "maxItems": 64},
+    "truth": {"type": "object"},
+    "receiptDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

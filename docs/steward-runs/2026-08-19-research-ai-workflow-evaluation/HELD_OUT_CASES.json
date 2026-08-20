@@ -1,0 +1,97 @@
+{
+  "schema": "axm.steward-workflow-case-set/v1",
+  "version": "0.1.0",
+  "caseSetId": "grounded-research-steward-cases-20260819",
+  "status": "TEST",
+  "fixturePolicy": "These representative cases are frozen as data outside the decision functions. They come from existing Workshop situations, not from the supplied multi-model artifact outputs, and the evaluator does not tune or mutate them.",
+  "cases": [
+    {
+      "id": "roadmap-art-is-not-launch-proof",
+      "sourcePath": "docs/steward-runs/2026-08-19-5yff-current-reality/README.md",
+      "facts": {
+        "campaignOrRoadmapArtifact": true,
+        "nativeLaunchEvidence": false
+      },
+      "expectedDecision": "WAIT_FOR_EVIDENCE",
+      "expectedRule": "CLAIM_NATIVE_EVIDENCE"
+    },
+    {
+      "id": "contradictory-supplier-status",
+      "sourcePath": "docs/steward-runs/2026-08-19-5yff-current-reality/README.md",
+      "facts": {
+        "declarationPresent": true,
+        "contradictoryVerifiedState": true
+      },
+      "expectedDecision": "REPAIR_OR_VERIFY",
+      "expectedRule": "CONTRADICTION_REQUIRES_REPAIR"
+    },
+    {
+      "id": "similar-goals-distinct-needs",
+      "sourcePath": "docs/steward-runs/2026-08-19-grounded-growth-feedback/EVIDENCE_ROUTES.md",
+      "facts": {
+        "sameHighLevelGoal": true,
+        "exactNeedIdentitySame": false
+      },
+      "expectedDecision": "PRESERVE_BOTH",
+      "expectedRule": "EXACT_IDENTITY_BEFORE_DEDUPLICATION"
+    },
+    {
+      "id": "proposal-duplicates-existing-capability",
+      "sourcePath": "docs/steward-runs/2026-08-19-public-baseline-research-run/RESEARCH_DISPOSITION.json",
+      "facts": {
+        "proposalPresent": true,
+        "existingCapabilityMatch": "EXACT"
+      },
+      "expectedDecision": "REUSE_EXISTING",
+      "expectedRule": "REUSE_BEFORE_BUILD"
+    },
+    {
+      "id": "synthetic-human-pass",
+      "sourcePath": "docs/steward-runs/2026-08-19-human-grounded-bridge/EVIDENCE_ROUTES.md",
+      "facts": {
+        "humanEvaluationVerdict": "PASS",
+        "humanEvidenceMode": "SYNTHETIC"
+      },
+      "expectedDecision": "REFUSE_AS_HUMAN_EVIDENCE",
+      "expectedRule": "VOLUNTARY_HUMAN_EVIDENCE"
+    },
+    {
+      "id": "verified-candidate-without-steward-decision",
+      "sourcePath": "docs/steward-runs/2026-08-19-5yff-current-reality/README.md",
+      "facts": {
+        "candidateVerification": "PASS",
+        "humanStewardDecision": false
+      },
+      "expectedDecision": "AWAIT_STEWARD",
+      "expectedRule": "HUMAN_STEWARD_GATE"
+    },
+    {
+      "id": "exact-active-need-duplicate",
+      "sourcePath": "docs/steward-runs/2026-08-19-grounded-growth-feedback/EVIDENCE_ROUTES.md",
+      "facts": {
+        "sameHighLevelGoal": true,
+        "exactNeedIdentitySame": true,
+        "activeCoverage": true
+      },
+      "expectedDecision": "SUPPRESS_EXACT_DUPLICATE",
+      "expectedRule": "EXACT_ACTIVE_NEED_DEDUPLICATION"
+    },
+    {
+      "id": "registered-source-remains-current",
+      "sourcePath": "docs/steward-runs/2026-08-19-grounded-growth/ai-workflow-evaluation-receipt.json",
+      "facts": {
+        "registeredSourceClosure": "CURRENT"
+      },
+      "expectedDecision": "CONTINUE",
+      "expectedRule": "CURRENT_CLOSURE_CAN_CONTINUE"
+    }
+  ],
+  "truth": {
+    "statisticalBenchmark": false,
+    "modelTranscript": false,
+    "modelInvoked": false,
+    "humanParticipant": false,
+    "humanBenefitEvidence": false,
+    "automaticAuthority": false
+  }
+}

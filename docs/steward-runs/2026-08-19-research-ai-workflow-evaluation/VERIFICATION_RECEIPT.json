@@ -1,0 +1,150 @@
+{
+  "schema": "axm.steward-verification-receipt/v1",
+  "version": "0.1.0",
+  "verificationId": "research-ai-workflow-evaluation-20260819",
+  "generatedAt": "2026-08-19T10:07:00.000Z",
+  "subject": "Grounded research AI-workflow evaluation and current portfolio refresh",
+  "status": "TEST",
+  "verdict": "PASS_WITH_LIMITS",
+  "artifactRefs": [
+    {
+      "id": "grounded-research-steward-guard-20260819",
+      "schema": "axm.ai-workflow-evaluation/v1",
+      "sha256": "sha256:72a00d02153a211cb83492464cec32f3f777105ef9f8fbd977661945646ba96e"
+    },
+    {
+      "id": "grounded-growth-public-research-ai-workflow-20260819",
+      "schema": "axm.grounded-growth-outcome-receipt/v1",
+      "sha256": "sha256:3f97a6141a868d34a373d943d44b9b9cc3dd2141b6bda7e2d4a2910fa3385089"
+    },
+    {
+      "id": "axm-grounded-growth-current-ai-workflow-refresh-20260819",
+      "schema": "axm.grounded-growth-portfolio/v1",
+      "sha256": "sha256:3937f89e9cc409f1e4909fbac9e0626b962b04ab1c30e9179467bb0962987118"
+    },
+    {
+      "id": "research-ai-workflow-evaluator",
+      "schema": "text/javascript",
+      "sha256": "sha256:00e6b14f88821ca369f0d2b4019655d68f8a6420c4bbc74b91c220c5a7c5281f"
+    }
+  ],
+  "focusedChecks": [
+    {
+      "command": "node docs/steward-runs/2026-08-19-research-ai-workflow-evaluation/selftest.js",
+      "verdict": "PASS",
+      "detail": "49 checks; exact rebuild, 2/8 to 8/8 workflow comparison, proof routing, ancestry, closure, human-boundary and authority attacks all pass."
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-research-ai-workflow-evaluation/build-research-ai-workflow.js --check-recorded",
+      "verdict": "PASS",
+      "detail": "Recorded evaluation, linked outcome, five-outcome portfolio and summary equal a fresh read-only rebuild."
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-grounded-growth-current-refresh/selftest.js",
+      "verdict": "PASS",
+      "detail": "44 checks preserve the prior four-outcome portfolio."
+    },
+    {
+      "command": "node shared/grounded-growth-outcomes/selftest.js",
+      "verdict": "PASS",
+      "detail": "31 native outcome and portfolio contract checks."
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-public-baseline-research-run/selftest.js",
+      "verdict": "PASS",
+      "detail": "45 exact public-baseline research replay checks."
+    },
+    {
+      "command": "python compare_capabilities.py --self-test",
+      "verdict": "PASS",
+      "detail": "Bundled deterministic capability comparator self-test passes; current comparison has all required groups READY and optional gaps visible."
+    }
+  ],
+  "requiredChecks": [
+    {
+      "command": "node verify.js",
+      "exitCode": 0,
+      "detail": "0 FAIL, 17 warnings; Verification Spine VERIFIED_WITH_LIMITS."
+    },
+    {
+      "command": "node hub/hub-selftest.js",
+      "exitCode": 0,
+      "detail": "Hub gates, workflow layout, upgrade and machine-layer checks pass."
+    },
+    {
+      "command": "node hub/route-selftest.js",
+      "exitCode": 0,
+      "detail": "Route truth, provenance, disagreement, resume, merge and no-fake-done checks pass."
+    },
+    {
+      "command": "node hub/graft-selftest.js",
+      "exitCode": 0,
+      "detail": "0 FAIL; state, conflict, order, staleness and data-not-code checks pass."
+    },
+    {
+      "command": "node hub/skin-selftest.js",
+      "exitCode": 0,
+      "detail": "Skin provenance, Aetherglass, web asset, production-sheet and readability checks pass."
+    },
+    {
+      "command": "node hub/verify-plus.js",
+      "exitCode": 0,
+      "detail": "Core and declared module lifecycle checks pass; Verification Spine remains VERIFIED_WITH_LIMITS."
+    },
+    {
+      "command": "node tests/html-script-syntax-test.js",
+      "exitCode": 0,
+      "detail": "55 PASS, 0 FAIL."
+    },
+    {
+      "command": "node tests/tool-forge-package-test.js",
+      "exitCode": 0,
+      "detail": "Workspace-local D-drive transient proof verifies and returns CLEANED; no scratch child remains."
+    },
+    {
+      "command": "node tools/agent-tool-forge/selftest.js",
+      "exitCode": 0,
+      "detail": "17 PASS, 0 FAIL."
+    },
+    {
+      "command": "node tools/evidence-desk/selftest.js",
+      "exitCode": 0,
+      "detail": "36 PASS, 0 FAIL."
+    }
+  ],
+  "capabilityRoute": {
+    "overall": "DEGRADED",
+    "requiredGroups": {
+      "READY": 3
+    },
+    "optional": {
+      "OPTIONAL_UNKNOWN": 2,
+      "DEGRADED": 1
+    },
+    "missingCapabilities": []
+  },
+  "browserCheck": {
+    "verdict": "NOT_RUN",
+    "reason": "No browser UI or interaction surface changed in this audit leaf."
+  },
+  "limitations": [
+    "The workflow cases are representative and frozen, but not a statistical or independently blinded benchmark.",
+    "No language model, provider runtime or model weights were evaluated or changed.",
+    "No human participated; human benefit remains NOT_RUN and zero human PASS claims are admitted.",
+    "The broad verifier's 17 existing warnings remain visible; Verification Spine is VERIFIED_WITH_LIMITS, not an unrestricted proof.",
+    "All outcomes remain CANDIDATE_ONLY and no governed availability, promotion, merge or CANON decision occurred."
+  ],
+  "truth": {
+    "packageSourceExecuted": false,
+    "modelInvoked": false,
+    "modelWeightsChanged": false,
+    "humanParticipant": false,
+    "browserClaimed": false,
+    "automaticExecution": false,
+    "automaticInstall": false,
+    "automaticPromotion": false,
+    "automaticCanon": false,
+    "foundationMutation": false
+  },
+  "receiptDigest": "sha256:0f8013fbfe19a66548e43bb3f82f5f7cdedb742f3cde67e4b4ff01242f4fe2ff"
+}

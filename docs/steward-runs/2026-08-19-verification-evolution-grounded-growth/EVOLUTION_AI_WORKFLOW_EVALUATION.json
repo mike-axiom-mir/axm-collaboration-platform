@@ -1,0 +1,222 @@
+{
+  "schema": "axm.ai-workflow-evaluation/v1",
+  "version": "0.1.0",
+  "evaluationId": "verification-evolution-ai-workflow-20260819",
+  "generatedAt": "2026-08-19T20:13:30.000Z",
+  "beneficiary": "AI_WORKFLOW",
+  "workflow": "Decide whether changing verification evidence should be preserved, routed, held, or refused without rewriting history or inferring correctness.",
+  "proofSurface": "AI_WORKFLOW_EVALUATION",
+  "fixturePolicy": "Eight representative cases are frozen separately from both policies. Five bind recorded current evolution states; three are adversarial boundary cases. They are not a statistically sampled or independently blinded benchmark.",
+  "inputRefs": [
+    {
+      "id": "verification-evolution-steward-cases-20260819",
+      "schema": "axm.steward-workflow-case-set/v1",
+      "sha256": "sha256:c33318c2ec79f2bc1f8161c9331e6a69b764e0a2dfe42d297ccd6770b25a61c8"
+    },
+    {
+      "id": "verification-evolution-workflow-evaluator",
+      "schema": "text/javascript",
+      "sha256": "sha256:ef21d942ce5b9cbc83c14e5590525abc2040bcf1fbb19cf5028603a69b2cd0b4"
+    },
+    {
+      "id": "verification-source-evolution-review-implementation",
+      "schema": "text/javascript",
+      "sha256": "sha256:62543282be6cef0bbc06c4a1aa2f6dc6d58dca7062afa22f45e93749c6ce07ab"
+    },
+    {
+      "id": "verification-source-evolution-review-portfolio",
+      "schema": "axm.verification-source-evolution-review-portfolio/v1",
+      "sha256": "sha256:472ecbc782232bf8519fbd74f3a271d026354e34f866f806751f11ced4e6b0b3"
+    },
+    {
+      "id": "verification-source-evolution-review-verification",
+      "schema": "axm.verification-source-evolution-review-verification/v1",
+      "sha256": "sha256:6261dac3ab08a9cc54fe0b00e37c7a7577fa7f052b97b979a05b895a40d868eb"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-verification-snapshot-continuity-current-continuity-portfolio-json",
+      "schema": "application/json",
+      "sha256": "sha256:9f5e24d646b80631fc5780737a8fa4e91113177c55a942f5afc28e01f87e9dff"
+    },
+    {
+      "id": "case-source:docs-steward-runs-2026-08-19-verification-source-evolution-review-current-evolution-review-portfolio-json",
+      "schema": "application/json",
+      "sha256": "sha256:472ecbc782232bf8519fbd74f3a271d026354e34f866f806751f11ced4e6b0b3"
+    },
+    {
+      "id": "case-source:shared-verification-source-evolution-review-verification-source-evolution-review-js",
+      "schema": "text/javascript",
+      "sha256": "sha256:62543282be6cef0bbc06c4a1aa2f6dc6d58dca7062afa22f45e93749c6ce07ab"
+    },
+    {
+      "id": "case-source:shared-verification-source-evolution-review-module-contract-json",
+      "schema": "application/json",
+      "sha256": "sha256:ba68208d4c4ed90e2932797e772d1447c22b735bce7b8192ad1bef28d0a05d89"
+    }
+  ],
+  "baseline": {
+    "policyId": "DIGEST_MISMATCH_AND_ATTESTATION_SHORTCUTS",
+    "description": "A declared comparison policy treats digest mismatch as failure or rewrite pressure, later attestation as correctness, missing self-digests as disposable history, and semantic alignment as byte equality.",
+    "correctDecisions": 1,
+    "totalDecisions": 8,
+    "unsupportedUnsafeOrHistoryErasingDecisions": 7
+  },
+  "outcome": {
+    "policyId": "EVIDENCE_EVOLUTION_AWARE_STEWARD_GUARD",
+    "description": "The guard separates mutable views, direct and transitive byte lineage, generated semantics, invalid attestations, legacy forward anchors, and correctness boundaries.",
+    "correctDecisions": 8,
+    "totalDecisions": 8,
+    "unsupportedUnsafeOrHistoryErasingDecisions": 0,
+    "newlyCorrectedDecisions": 7
+  },
+  "cases": [
+    {
+      "id": "mutable-derived-view-drift",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-verification-snapshot-continuity-current-continuity-portfolio-json",
+        "schema": "application/json",
+        "sha256": "sha256:9f5e24d646b80631fc5780737a8fa4e91113177c55a942f5afc28e01f87e9dff"
+      },
+      "expectedDecision": "PRESERVE_DERIVED_VIEW_DRIFT",
+      "expectedRule": "MUTABLE_DERIVED_VIEW_IS_NOT_SOURCE_FAILURE",
+      "baselineDecision": "REJECT_OR_REWRITE_HISTORY",
+      "baselineRule": "DIGEST_MISMATCH_IS_FAILURE",
+      "candidateDecision": "PRESERVE_DERIVED_VIEW_DRIFT",
+      "candidateRule": "MUTABLE_DERIVED_VIEW_IS_NOT_SOURCE_FAILURE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "direct-later-current-route",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-verification-source-evolution-review-current-evolution-review-portfolio-json",
+        "schema": "application/json",
+        "sha256": "sha256:472ecbc782232bf8519fbd74f3a271d026354e34f866f806751f11ced4e6b0b3"
+      },
+      "expectedDecision": "ROUTE_CURRENT_BYTES_DIRECT",
+      "expectedRule": "EXACT_ATTESTATION_PLUS_CURRENT_CANDIDATE_SCOPE",
+      "baselineDecision": "REJECT_OR_REWRITE_HISTORY",
+      "baselineRule": "DIGEST_MISMATCH_IS_FAILURE",
+      "candidateDecision": "ROUTE_CURRENT_BYTES_DIRECT",
+      "candidateRule": "EXACT_ATTESTATION_PLUS_CURRENT_CANDIDATE_SCOPE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "transitive-candidate-scope-route",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-verification-source-evolution-review-current-evolution-review-portfolio-json",
+        "schema": "application/json",
+        "sha256": "sha256:472ecbc782232bf8519fbd74f3a271d026354e34f866f806751f11ced4e6b0b3"
+      },
+      "expectedDecision": "ROUTE_CURRENT_BYTES_TRANSITIVELY",
+      "expectedRule": "EXACT_ATTESTATION_PLUS_FULL_CANDIDATE_EVOLUTION_ROUTE",
+      "baselineDecision": "REJECT_OR_REWRITE_HISTORY",
+      "baselineRule": "DIGEST_MISMATCH_IS_FAILURE",
+      "candidateDecision": "ROUTE_CURRENT_BYTES_TRANSITIVELY",
+      "candidateRule": "EXACT_ATTESTATION_PLUS_FULL_CANDIDATE_EVOLUTION_ROUTE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "candidate-currentness-unresolved",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-verification-source-evolution-review-current-evolution-review-portfolio-json",
+        "schema": "application/json",
+        "sha256": "sha256:472ecbc782232bf8519fbd74f3a271d026354e34f866f806751f11ced4e6b0b3"
+      },
+      "expectedDecision": "HOLD_CANDIDATE_CURRENTNESS",
+      "expectedRule": "ATTESTATION_WITHOUT_CURRENT_OR_EVOLUTION_SCOPE_HOLDS",
+      "baselineDecision": "REJECT_OR_REWRITE_HISTORY",
+      "baselineRule": "DIGEST_MISMATCH_IS_FAILURE",
+      "candidateDecision": "HOLD_CANDIDATE_CURRENTNESS",
+      "candidateRule": "ATTESTATION_WITHOUT_CURRENT_OR_EVOLUTION_SCOPE_HOLDS",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "known-generated-view-semantic-route",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-verification-source-evolution-review-current-evolution-review-portfolio-json",
+        "schema": "application/json",
+        "sha256": "sha256:472ecbc782232bf8519fbd74f3a271d026354e34f866f806751f11ced4e6b0b3"
+      },
+      "expectedDecision": "ROUTE_GENERATED_VIEW_SEMANTICS_ONLY",
+      "expectedRule": "KNOWN_GENERATOR_BOUNDED_SEMANTIC_ROUTE",
+      "baselineDecision": "REJECT_OR_REWRITE_HISTORY",
+      "baselineRule": "DIGEST_MISMATCH_IS_FAILURE",
+      "candidateDecision": "ROUTE_GENERATED_VIEW_SEMANTICS_ONLY",
+      "candidateRule": "KNOWN_GENERATOR_BOUNDED_SEMANTIC_ROUTE",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "legacy-no-self-digest",
+      "sourceRef": {
+        "id": "case-source:docs-steward-runs-2026-08-19-verification-source-evolution-review-current-evolution-review-portfolio-json",
+        "schema": "application/json",
+        "sha256": "sha256:472ecbc782232bf8519fbd74f3a271d026354e34f866f806751f11ced4e6b0b3"
+      },
+      "expectedDecision": "ANCHOR_FORWARD_HOLD_PREANCHOR",
+      "expectedRule": "EXTERNAL_ANCHOR_CANNOT_REPAIR_PRIOR_INTEGRITY",
+      "baselineDecision": "DISCARD_HISTORY",
+      "baselineRule": "NO_SELF_DIGEST_IS_UNUSABLE",
+      "candidateDecision": "ANCHOR_FORWARD_HOLD_PREANCHOR",
+      "candidateRule": "EXTERNAL_ANCHOR_CANNOT_REPAIR_PRIOR_INTEGRITY",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "invalid-later-attestation",
+      "sourceRef": {
+        "id": "case-source:shared-verification-source-evolution-review-verification-source-evolution-review-js",
+        "schema": "text/javascript",
+        "sha256": "sha256:62543282be6cef0bbc06c4a1aa2f6dc6d58dca7062afa22f45e93749c6ce07ab"
+      },
+      "expectedDecision": "HOLD_INVALID_ATTESTATION",
+      "expectedRule": "LATER_RECEIPT_REQUIRES_VALID_SELF_DIGEST",
+      "baselineDecision": "HOLD_INVALID_ATTESTATION",
+      "baselineRule": "INVALID_DIGEST_HOLD",
+      "candidateDecision": "HOLD_INVALID_ATTESTATION",
+      "candidateRule": "LATER_RECEIPT_REQUIRES_VALID_SELF_DIGEST",
+      "baselineCorrect": true,
+      "candidateCorrect": true
+    },
+    {
+      "id": "attestation-correctness-overclaim",
+      "sourceRef": {
+        "id": "case-source:shared-verification-source-evolution-review-module-contract-json",
+        "schema": "application/json",
+        "sha256": "sha256:ba68208d4c4ed90e2932797e772d1447c22b735bce7b8192ad1bef28d0a05d89"
+      },
+      "expectedDecision": "REFUSE_CORRECTNESS_INFERENCE",
+      "expectedRule": "BYTE_LINEAGE_IS_NOT_CORRECTNESS",
+      "baselineDecision": "ACCEPT_AS_CORRECT",
+      "baselineRule": "ATTESTATION_EQUALS_CORRECTNESS",
+      "candidateDecision": "REFUSE_CORRECTNESS_INFERENCE",
+      "candidateRule": "BYTE_LINEAGE_IS_NOT_CORRECTNESS",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    }
+  ],
+  "verdict": "PASS",
+  "limitations": [
+    "No language model was invoked; this proves a deterministic guard for an AI-assisted stewardship workflow, not model learning, weights, intelligence, provider behavior, or broad generalization.",
+    "The eight cases are representative recorded and adversarial Workshop situations, not a statistically sampled or independently blinded benchmark.",
+    "The shortcut baseline is a declared comparison policy, not a claim about any named model, provider, person, or current AXM steward.",
+    "Byte lineage and semantic routing do not establish intent, correctness, regression absence, quality, human benefit, governed availability, promotion, merge, or CANON."
+  ],
+  "truth": {
+    "modelInvoked": false,
+    "modelWeightsChanged": false,
+    "modelGeneralizationClaimed": false,
+    "humanParticipant": false,
+    "humanBenefitClaimed": false,
+    "historicalReceiptRewritten": false,
+    "correctnessInferredFromLineage": false,
+    "automaticExecution": false,
+    "automaticPromotion": false,
+    "automaticCanon": false
+  },
+  "receiptDigest": "sha256:9ff8a508828d86edc1e2fedcec822beceff3ff58448ad5130c0d737f8476eded"
+}

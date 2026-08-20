@@ -1,0 +1,54 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "verified-capability-loop",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "verified-capability-cycle-receipt/v1",
+    "need-to-gap-to-candidate-digest-linking",
+    "verification-and-human-decision-binding",
+    "governed-intake-readiness-state",
+    "capability-reuse-and-refresh-state"
+  ],
+  "consumes": [
+    "axm.workshop-need/v1",
+    "axm.capability-gap-report/v1",
+    "source-provenance-receipt",
+    "candidate-artifact-digest",
+    "verification-receipt",
+    "axm.review-decision/v1",
+    "availability-receipt",
+    "refresh-signal"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.verified-capability-cycle-receipt/v1"],
+    "accepts": [
+      "digest-bound need gap provenance candidate verification decision availability and refresh references"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "source-execution",
+      "candidate-execution",
+      "automatic-build",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-review-vote",
+      "automatic-promotion",
+      "automatic-canon",
+      "root-mutation",
+      "model-weight-training-claim",
+      "operator-declaration-as-independent-runtime-proof",
+      "digest-mismatched-handoff",
+      "availability-without-verification-and-human-continue"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

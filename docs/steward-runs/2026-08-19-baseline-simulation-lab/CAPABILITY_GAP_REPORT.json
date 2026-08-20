@@ -1,0 +1,120 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "READY",
+  "requirements": [
+    {
+      "id": "bounded-run-envelope",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "simulation.run-envelope.verify",
+        "simulation.run-envelope.budget-hold",
+        "simulation.run-envelope.no-new-information-stop"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "simulation.run-envelope.verify": ["TEST leaf", "pure caller-supplied validation"],
+        "simulation.run-envelope.budget-hold": ["declared usage and receipts; no hardware telemetry claim"],
+        "simulation.run-envelope.no-new-information-stop": ["exact capsule comparison and empty declared information set"]
+      }
+    },
+    {
+      "id": "truth-and-closure",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "simulation.run-envelope.native-evidence-routing",
+        "simulation.run-envelope.output-closure",
+        "simulation.run-envelope.transport-receipts",
+        "simulation.run-envelope.permission-attempts"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "simulation.run-envelope.native-evidence-routing": ["Evidence Desk receipt plus digest-bound proof route"],
+        "simulation.run-envelope.output-closure": ["local identity and caller-supplied closure receipts"],
+        "simulation.run-envelope.transport-receipts": ["sender and receiver digests must match the payload"],
+        "simulation.run-envelope.permission-attempts": ["allowed and denied attempt receipts are caller-supplied"]
+      }
+    },
+    {
+      "id": "separate-ancestry",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "simulation.run-envelope.artifact-ancestry",
+        "simulation.run-envelope.idea-evidence-ancestry"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "simulation.run-envelope.artifact-ancestry": ["exact linear parent chain with bounded depth"],
+        "simulation.run-envelope.idea-evidence-ancestry": ["separate derived/reuse graph; no semantic similarity claim"]
+      }
+    },
+    {
+      "id": "authority-boundary",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "simulation.run-envelope.human-authority-gate",
+        "simulation.run-envelope.forbidden-attempt-hold"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "simulation.run-envelope.human-authority-gate": ["Mike remains the external merge and CANON gate"],
+        "simulation.run-envelope.forbidden-attempt-hold": ["explicit authority-attempt ledger; no enforcement beyond this receipt"]
+      }
+    },
+    {
+      "id": "software-adapter",
+      "required": true,
+      "status": "READY",
+      "available": ["simulation.adapter.software.contract"],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "simulation.adapter.software.contract": ["synthetic fixtures plus one scoped live no-new-information run"]
+      }
+    },
+    {
+      "id": "mirror-adapter-live-effectiveness",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": ["simulation.adapter.mirror.live"],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "simulation.adapter.mirror.live": [
+          "contract and synthetic Portable Capsule checks pass",
+          "private live Mirror state was not supplied"
+        ]
+      }
+    },
+    {
+      "id": "specialist-adapter-live-effectiveness",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": ["simulation.adapter.specialist.live"],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "simulation.adapter.specialist.live": [
+          "contract and synthetic Portable Capsule checks pass",
+          "host-model runtime observation was not supplied"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

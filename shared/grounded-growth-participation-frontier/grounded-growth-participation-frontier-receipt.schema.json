@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-participation-frontier-receipt/v1",
+  "title": "AXM Grounded Growth Participation Frontier Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "participationFrontierId", "generatedAt", "status", "scope",
+    "sourceRefs", "counts", "lanes", "participationBinding", "balance", "decision",
+    "truth", "participationFrontierDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-participation-frontier-receipt/v1" },
+    "version": { "const": "0.1.0" },
+    "participationFrontierId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "status": { "const": "TEST" },
+    "scope": { "const": "CURRENT_RESEARCH_KNOWLEDGE_AND_VOLUNTARY_HUMAN_HANDOFF" },
+    "sourceRefs": { "type": "object" },
+    "counts": { "type": "object" },
+    "lanes": { "type": "array", "minItems": 7 },
+    "participationBinding": { "type": "object" },
+    "balance": { "type": "object" },
+    "decision": { "type": "object" },
+    "truth": { "type": "object" },
+    "participationFrontierDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}
+
