@@ -21,6 +21,11 @@ const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contrac
 check(schema.$id === Growth.OUTCOME_SCHEMA, 'outcome schema identity matches the implementation');
 check(portfolioSchema.$id === Growth.PORTFOLIO_SCHEMA, 'portfolio schema identity matches the implementation');
 check(contract.status === 'TEST' && contract.permissions.length === 0 && contract.boundaries.writes.length === 0, 'module contract stays TEST with no permissions or writes');
+check(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'module contract declares strict representation closure');
+check(Growth.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
+assert.throws(() => Growth.stableStringify({ lost: undefined }), /unsupported undefined/i);
+checks += 1;
+console.log('PASS unsafe canonical state is refused');
 
 function availableCycle(refreshDue) {
   const candidateRef = Loop.reference({ candidate: 'beneficiary outcome adapter' }, { id: 'candidate', schema: 'text/javascript' });
@@ -129,6 +134,12 @@ function outcome(extra) {
     refresh: { checkedAt: at, due: false, reason: 'Fixture evidence is current.' }
   }, extra || {}));
 }
+
+const unsafeCycle = availableCycle(false);
+unsafeCycle.lost = undefined;
+assert.throws(() => outcome({ cycleReceipt: unsafeCycle }), /unsupported undefined/i);
+checks += 1;
+console.log('PASS unsafe cycle state is refused before cloning');
 
 const unknown = outcome();
 check(unknown.state === 'AVAILABLE_EFFECT_UNKNOWN', 'an available capability is not automatically a growth outcome');

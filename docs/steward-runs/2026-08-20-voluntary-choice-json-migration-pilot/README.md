@@ -2,6 +2,12 @@
 
 Status: `TEST`
 
+> Descendant-branch evolution note (`codex/grounded-growth-json-root-cohort-v0.3`):
+> this directory is the sealed one-consumer before state. The current
+> post-cohort exposure and verification live in
+> `../2026-08-20-grounded-growth-json-root-cohort/`; these artifacts are not
+> rewritten when later cohorts advance.
+
 This lane migrates exactly one permissionless Grounded Growth leaf from a
 legacy canonicalizer to the existing `deterministic-json-core`. Candidate
 selection was based on the secured tree: the voluntary-choice frontier has
