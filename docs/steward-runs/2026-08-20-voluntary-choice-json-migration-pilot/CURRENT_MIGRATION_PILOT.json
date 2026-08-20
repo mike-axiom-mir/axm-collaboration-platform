@@ -1,0 +1,162 @@
+{
+  "schema": "axm.receipt-serialization-migration-pilot/v1",
+  "version": "0.1.0",
+  "generatedAt": "2026-08-20T03:40:00.000Z",
+  "status": "TEST",
+  "state": "ONE_CONSUMER_MIGRATED_ON_REVIEW_BRANCH",
+  "consumer": {
+    "id": "grounded-growth-voluntary-choice-frontier",
+    "path": "shared/grounded-growth-voluntary-choice-frontier/grounded-growth-voluntary-choice-frontier.js",
+    "selectionReason": "ZERO_EXTERNAL_CODE_REFERENCES_IN_SECURED_SOURCE_TREE",
+    "permissionlessLeaf": true,
+    "receiptSchemaChanged": false,
+    "before": {
+      "sourceSha256": "sha256:8fa6cb9100cfed9d156187ed30161640327259bba2da38ea2dc4e8a15dcd96cc",
+      "behavior": "INVALID_CANONICAL_TEXT",
+      "output": "{\"lost\":undefined,\"safe\":1}"
+    },
+    "after": {
+      "sourceSha256": "sha256:7e413b533210fb5c0f30ea0688079a1a9fddb7ff50f998ed32052e5f3e82b457",
+      "behavior": "REFUSED_UNSAFE_VALUE",
+      "output": null,
+      "error": "TypeError: unsupported undefined at $.lost"
+    }
+  },
+  "exposure": {
+    "consumers": 15,
+    "remainingInvalidCanonicalText": 9,
+    "remainingSilentFieldLoss": 5,
+    "strictUnsafeRefusal": 1,
+    "migrationCompleteForAllConsumers": false
+  },
+  "historicalCompatibility": {
+    "recordedFrontierDigest": "sha256:a919c4e1731a4d1d0d1bfe98c0ffd291f42b1b18580484603e647fee6f3ddc1a",
+    "rebuiltFrontierDigest": "sha256:a919c4e1731a4d1d0d1bfe98c0ffd291f42b1b18580484603e647fee6f3ddc1a",
+    "expectedFrontierDigest": "sha256:a919c4e1731a4d1d0d1bfe98c0ffd291f42b1b18580484603e647fee6f3ddc1a",
+    "canonicalTextExact": true,
+    "payloadDigestExact": true
+  },
+  "unsafeFixtures": [
+    {
+      "id": "root-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $"
+    },
+    {
+      "id": "object-property-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $.lost"
+    },
+    {
+      "id": "nested-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $.nested.lost"
+    },
+    {
+      "id": "array-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $[1]"
+    },
+    {
+      "id": "sparse-array",
+      "state": "REFUSED",
+      "error": "TypeError: sparse array at $[0]"
+    },
+    {
+      "id": "nan",
+      "state": "REFUSED",
+      "error": "TypeError: non-finite number at $.number"
+    },
+    {
+      "id": "positive-infinity",
+      "state": "REFUSED",
+      "error": "TypeError: non-finite number at $.number"
+    },
+    {
+      "id": "negative-infinity",
+      "state": "REFUSED",
+      "error": "TypeError: non-finite number at $.number"
+    },
+    {
+      "id": "bigint",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported bigint at $.number"
+    },
+    {
+      "id": "symbol",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported symbol at $.value"
+    },
+    {
+      "id": "function",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported function at $.value"
+    },
+    {
+      "id": "date",
+      "state": "REFUSED",
+      "error": "TypeError: non-plain object at $.value"
+    },
+    {
+      "id": "cycle",
+      "state": "REFUSED",
+      "error": "TypeError: cycle at $.self"
+    }
+  ],
+  "persistence": {
+    "parsedBeforeWrite": true,
+    "writeCompleted": true,
+    "readCompleted": true,
+    "parsedAfterRead": true,
+    "canonicalExactAfterRead": true,
+    "canonicalDigestBound": true,
+    "payloadDigestBound": true,
+    "temporaryFileRetained": false
+  },
+  "requirements": [
+    {
+      "id": "canonicalize-before-digest-or-persistence",
+      "verdict": "PASS"
+    },
+    {
+      "id": "parse-canonical-text-before-persistence",
+      "verdict": "PASS"
+    },
+    {
+      "id": "bind-digests-to-canonical-payload",
+      "verdict": "PASS"
+    },
+    {
+      "id": "write-read-recanonicalize-exact",
+      "verdict": "PASS"
+    },
+    {
+      "id": "native-verifier-and-historical-replay",
+      "verdict": "PASS"
+    },
+    {
+      "id": "clean-checkout-full-verification",
+      "verdict": "NOT_RUN"
+    }
+  ],
+  "limits": {
+    "representationClosureOnly": true,
+    "schemaValidityProved": false,
+    "semanticCorrectnessBeyondHistoricalCompatibilityProved": false,
+    "browserParityTested": false,
+    "humanReviewRun": false,
+    "humanBenefitEstablished": false,
+    "modelReasoningEquivalenceProved": false,
+    "shadowCloneCandidateEvaluated": false
+  },
+  "authority": {
+    "branchOnly": true,
+    "installed": false,
+    "promoted": false,
+    "merged": false,
+    "canonized": false,
+    "foundationMutation": false,
+    "otherConsumersEdited": 0
+  },
+  "pilotDigest": "sha256:7388ff96bbfdba8400566d3d739fe41314c6a9d3a422879c89e82c9cea49517b"
+}
