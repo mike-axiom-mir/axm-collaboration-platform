@@ -1,0 +1,540 @@
+{
+  "schema": "axm.research-contribution-assessment/v1",
+  "version": "0.1.0",
+  "assessmentId": "shadow-specialist-package-intake-assessment-2026-08-20",
+  "generatedAt": "2026-08-20T14:00:00.000Z",
+  "state": "READY_FOR_BASELINE_SIMULATION_PLANNING",
+  "bundle": {
+    "schema": "axm.research-contribution-bundle/v1",
+    "version": "0.1.0",
+    "bundleId": "shadow-specialist-package-research-2026-08-20",
+    "baselineRef": {
+      "id": "baseline-declaration",
+      "schema": "axm.shadow-specialist-intake-baseline/v1",
+      "sha256": "sha256:6ec8732cc657e659b3783b67a2f7fadd079e7a02f10a56243f3c297165d990df"
+    },
+    "sourceHandling": "DATA_ONLY_NO_PACKAGE_CODE_EXECUTION",
+    "artifacts": [
+      {
+        "id": "axm-mirror-shadow-specialist-v0.1.0-experimental",
+        "label": "0.1.0-experimental",
+        "mediaType": "application/zip",
+        "bytes": 124129,
+        "sha256": "sha256:651365155355b913b562dd95e9c95241498a01e0b60a4dddca8b888b1918dd9f",
+        "reportedSeatIds": [
+          "platform-max-reasoning-seat"
+        ]
+      },
+      {
+        "id": "axm-mirror-shadow-specialist-v0.2.0-experimental",
+        "label": "0.2.0-experimental",
+        "mediaType": "application/zip",
+        "bytes": 208558,
+        "sha256": "sha256:a34fe2c976da735dd554a4b3b0f5e32700c740762e6ca6adadcb5c3238978a19",
+        "reportedSeatIds": [
+          "platform-max-reasoning-seat"
+        ]
+      },
+      {
+        "id": "shadow-specialist-local-intake-note",
+        "label": "0.2.0-associated-note",
+        "mediaType": "text/plain",
+        "bytes": 6603,
+        "sha256": "sha256:ecf2081f22ce24f64c2c2b95a288b12309fd67b203c85db40ae030becae69345",
+        "reportedSeatIds": [
+          "platform-max-reasoning-seat"
+        ]
+      }
+    ],
+    "seats": [
+      {
+        "id": "platform-max-reasoning-seat",
+        "kind": "MODEL",
+        "role": "experimental shadow specialist architecture and reference implementation builder",
+        "providerFamily": "openai-platform",
+        "modelId": null,
+        "identityDisclosure": "PARTIAL",
+        "priorOutputExposure": "FULL",
+        "provenanceRef": {
+          "id": "source-declaration",
+          "schema": "axm.shadow-specialist-source-declaration/v1",
+          "sha256": "sha256:51bc0137417277246d58c15ed0752594928b7675a186440380596ae715a05107"
+        },
+        "proofAuthority": "NONE"
+      }
+    ],
+    "evidenceSources": [
+      {
+        "id": "archive-structure-inspection",
+        "ref": {
+          "id": "static-archive-receipt",
+          "schema": "axm.shadow-specialist-static-archive-receipt/v1",
+          "sha256": "sha256:b4f78d194224fd6a011f40e12283edaebdb4b2e82a4f2ee109b28387364583c0"
+        },
+        "surface": "file-inspection",
+        "claimKinds": [
+          "archive structure",
+          "input digest",
+          "source execution boundary"
+        ]
+      },
+      {
+        "id": "manifest-byte-verification",
+        "ref": {
+          "id": "manifest-verification-receipt",
+          "schema": "axm.shadow-specialist-manifest-verification-receipt/v1",
+          "sha256": "sha256:0c1db8ed9f380d5f3c8083440d41ca8f0181f023903eb9860b11d37d8afe7f2b"
+        },
+        "surface": "schema-validation",
+        "claimKinds": [
+          "manifest integrity",
+          "predecessor lineage",
+          "syntax parsing"
+        ]
+      },
+      {
+        "id": "static-code-and-contract-review",
+        "ref": {
+          "id": "static-review-findings",
+          "schema": "axm.shadow-specialist-static-review-findings/v1",
+          "sha256": "sha256:5d157a10c4ec8227884b3608e02255d35015b744b7431f07ecb97c6ab6208a12"
+        },
+        "surface": "file-inspection",
+        "claimKinds": [
+          "backend install hold",
+          "integration gaps",
+          "useful patterns"
+        ]
+      }
+    ],
+    "signals": [
+      {
+        "id": "backend-install-readiness-is-not-established",
+        "statement": "The supplied runtime is not ready for authorized backend installation because exact file-set intake, sensitive-trace enforcement, evidence authentication, resource bounds, and live compatibility remain open.",
+        "evidenceStage": "OBSERVED",
+        "artifactIds": [
+          "axm-mirror-shadow-specialist-v0.2.0-experimental",
+          "shadow-specialist-local-intake-note"
+        ],
+        "evidenceSourceIds": [
+          "static-code-and-contract-review"
+        ],
+        "seatIds": [
+          "platform-max-reasoning-seat"
+        ],
+        "cheapestTest": "Close the static holds first, then use one owner-controlled disposable application and stop before any promotion or persistent backend deployment.",
+        "uncertainty": "A later repaired version may become experiment-ready; this assessment is limited to the supplied exact bytes.",
+        "solutionAlternatives": [
+          "Keep the package quarantined and accept only digest-bound research signals.",
+          "Prepare a separate repaired candidate through the existing governed Branch Module Return Gate."
+        ],
+        "contradictions": [
+          "The package self-label says READY_FOR_AUTHORIZED_BACKEND_INSTALL, while its own declared holds and static gaps do not support that state."
+        ],
+        "wildcard": false
+      },
+      {
+        "id": "declared-package-integrity-reproduces",
+        "statement": "The supplied v0.1 and v0.2 archives reproduce every declared manifest-scope byte and the v0.2 predecessor link.",
+        "evidenceStage": "OBSERVED",
+        "artifactIds": [
+          "axm-mirror-shadow-specialist-v0.1.0-experimental",
+          "axm-mirror-shadow-specialist-v0.2.0-experimental"
+        ],
+        "evidenceSourceIds": [
+          "archive-structure-inspection",
+          "manifest-byte-verification"
+        ],
+        "seatIds": [
+          "platform-max-reasoning-seat"
+        ],
+        "cheapestTest": "Repeat archive and manifest hashing from the original ZIP bytes and compare the exact receipt digests.",
+        "uncertainty": "This proves supplied-byte integrity, not author identity, source-repository fidelity, test execution, runtime safety, or provider compatibility.",
+        "solutionAlternatives": [
+          "Preserve the digests as detached provenance.",
+          "Request an independently signed source/build attestation later."
+        ],
+        "contradictions": [],
+        "wildcard": false
+      },
+      {
+        "id": "native-intake-and-lab-already-cover-the-safe-route",
+        "statement": "AXM already has a stricter inert Branch Module Return Gate, Research Contribution Intake, Model Shadow Continuity, and Grounded Growth Challenger Lab, so a second baseline lab or direct runtime transplant would be redundant.",
+        "evidenceStage": "INFERENCE",
+        "artifactIds": [
+          "axm-mirror-shadow-specialist-v0.2.0-experimental"
+        ],
+        "evidenceSourceIds": [
+          "static-code-and-contract-review"
+        ],
+        "seatIds": [
+          "platform-max-reasoning-seat"
+        ],
+        "cheapestTest": "Build this exact research bundle with the native intake and verify the resulting planning projection by exact rebuild.",
+        "uncertainty": "A future observer-specific capability gap may justify one new bounded adapter after stronger evidence.",
+        "solutionAlternatives": [
+          "Defer any persistent observer until the prerequisite list is closed.",
+          "Reuse the native research-to-lab projection now."
+        ],
+        "contradictions": [],
+        "wildcard": false
+      },
+      {
+        "id": "shadow-architecture-has-reusable-patterns",
+        "statement": "Fresh epochs, evidence-kind separation, explicit observation-loss holds, source intake before stewardship, common-mode lineage fields, and an external promotion gate are useful design patterns.",
+        "evidenceStage": "INFERENCE",
+        "artifactIds": [
+          "axm-mirror-shadow-specialist-v0.2.0-experimental"
+        ],
+        "evidenceSourceIds": [
+          "static-code-and-contract-review"
+        ],
+        "seatIds": [
+          "platform-max-reasoning-seat"
+        ],
+        "cheapestTest": "Map each pattern to an existing native AXM contract and add only a held-out regression where a real capability gap remains.",
+        "uncertainty": "A useful pattern does not establish that this implementation is safe to install or that learning will improve.",
+        "solutionAlternatives": [
+          "Reimplement only a missing bounded rule after a capability-gap check.",
+          "Reuse existing native Research Contribution Intake and Model Shadow contracts."
+        ],
+        "contradictions": [],
+        "wildcard": false
+      }
+    ],
+    "proposals": [
+      {
+        "id": "copy-shadow-runtime-into-workshop",
+        "statement": "Copy the package runtime modules directly into the Workshop.",
+        "disposition": "REJECTED_AS_REDUNDANT",
+        "reason": "Native AXM intake, model-shadow, challenger, and governance contracts already cover the safe route; direct copying would duplicate weaker implementations.",
+        "artifactIds": [
+          "axm-mirror-shadow-specialist-v0.2.0-experimental"
+        ],
+        "evidenceSourceIds": [
+          "static-code-and-contract-review"
+        ],
+        "seatIds": [
+          "platform-max-reasoning-seat"
+        ]
+      },
+      {
+        "id": "future-disposable-observer-challenge",
+        "statement": "After repairing the static holds, evaluate one bounded observer candidate in an owner-controlled disposable application.",
+        "disposition": "DEFERRED",
+        "reason": "A future experiment may be useful, but no live provider/backend execution is authorized or technically ready now.",
+        "artifactIds": [
+          "axm-mirror-shadow-specialist-v0.2.0-experimental"
+        ],
+        "evidenceSourceIds": [
+          "static-code-and-contract-review"
+        ],
+        "seatIds": [
+          "platform-max-reasoning-seat"
+        ]
+      },
+      {
+        "id": "install-supplied-runtime",
+        "statement": "Install the supplied v0.2 observer and learning runtime into a working backend.",
+        "disposition": "REJECTED",
+        "reason": "Exact-file-set, privacy enforcement, evidence authentication, resource, compatibility, and license gates remain open.",
+        "artifactIds": [
+          "axm-mirror-shadow-specialist-v0.2.0-experimental"
+        ],
+        "evidenceSourceIds": [
+          "static-code-and-contract-review"
+        ],
+        "seatIds": [
+          "platform-max-reasoning-seat"
+        ]
+      },
+      {
+        "id": "reuse-package-as-research-contribution",
+        "statement": "Preserve the useful patterns and explicit holds as an inert native research contribution.",
+        "disposition": "REUSE_EXISTING",
+        "reason": "Research Contribution Intake already provides the exact data-only path and Baseline Simulation planning projection.",
+        "artifactIds": [
+          "axm-mirror-shadow-specialist-v0.1.0-experimental",
+          "axm-mirror-shadow-specialist-v0.2.0-experimental",
+          "shadow-specialist-local-intake-note"
+        ],
+        "evidenceSourceIds": [
+          "archive-structure-inspection",
+          "manifest-byte-verification",
+          "static-code-and-contract-review"
+        ],
+        "seatIds": [
+          "platform-max-reasoning-seat"
+        ]
+      }
+    ],
+    "truth": {
+      "artifactBytesEmbedded": false,
+      "packageCodeExecuted": false,
+      "modelInvoked": false,
+      "crossModelAgreementIsProof": false,
+      "automaticAcceptance": false,
+      "automaticBuild": false,
+      "automaticPromotion": false,
+      "automaticCanon": false
+    }
+  },
+  "counts": {
+    "artifacts": 3,
+    "seats": 1,
+    "modelSeats": 1,
+    "evidenceSources": 3,
+    "retainedSignals": 4,
+    "proposals": 4,
+    "holds": 0,
+    "warnings": 3
+  },
+  "attributionAssessment": {
+    "artifactToSeatMappingEstablished": true,
+    "exactModelIdentityEstablished": false,
+    "priorOutputIsolationEstablished": false,
+    "crossModelIndependenceEstablished": false,
+    "unassignedArtifactIds": [],
+    "modelSeatsWithoutArtifacts": [],
+    "modelAgreementIsProof": false
+  },
+  "holds": [],
+  "warnings": [
+    {
+      "code": "CROSS_MODEL_INDEPENDENCE_NOT_ESTABLISHED"
+    },
+    {
+      "code": "MODEL_IDENTITY_DISCLOSURE_GAP",
+      "seatIds": [
+        "platform-max-reasoning-seat"
+      ]
+    },
+    {
+      "code": "PRIOR_OUTPUT_EXPOSURE_NOT_EXCLUDED",
+      "seatIds": [
+        "platform-max-reasoning-seat"
+      ]
+    }
+  ],
+  "projection": {
+    "schema": "axm.research-contribution-simulation-projection/v1",
+    "baselineRef": {
+      "id": "baseline-declaration",
+      "schema": "axm.shadow-specialist-intake-baseline/v1",
+      "sha256": "sha256:6ec8732cc657e659b3783b67a2f7fadd079e7a02f10a56243f3c297165d990df"
+    },
+    "newInformationRefs": [
+      {
+        "id": "axm-mirror-shadow-specialist-v0.1.0-experimental",
+        "schema": "application/zip",
+        "sha256": "sha256:651365155355b913b562dd95e9c95241498a01e0b60a4dddca8b888b1918dd9f"
+      },
+      {
+        "id": "axm-mirror-shadow-specialist-v0.2.0-experimental",
+        "schema": "application/zip",
+        "sha256": "sha256:a34fe2c976da735dd554a4b3b0f5e32700c740762e6ca6adadcb5c3238978a19"
+      },
+      {
+        "id": "shadow-specialist-local-intake-note",
+        "schema": "text/plain",
+        "sha256": "sha256:ecf2081f22ce24f64c2c2b95a288b12309fd67b203c85db40ae030becae69345"
+      }
+    ],
+    "evidenceSourceRefs": [
+      {
+        "id": "static-archive-receipt",
+        "schema": "axm.shadow-specialist-static-archive-receipt/v1",
+        "sha256": "sha256:b4f78d194224fd6a011f40e12283edaebdb4b2e82a4f2ee109b28387364583c0"
+      },
+      {
+        "id": "manifest-verification-receipt",
+        "schema": "axm.shadow-specialist-manifest-verification-receipt/v1",
+        "sha256": "sha256:0c1db8ed9f380d5f3c8083440d41ca8f0181f023903eb9860b11d37d8afe7f2b"
+      },
+      {
+        "id": "static-review-findings",
+        "schema": "axm.shadow-specialist-static-review-findings/v1",
+        "sha256": "sha256:5d157a10c4ec8227884b3608e02255d35015b744b7431f07ecb97c6ab6208a12"
+      }
+    ],
+    "seats": [
+      {
+        "id": "platform-max-reasoning-seat",
+        "kind": "MODEL",
+        "role": "experimental shadow specialist architecture and reference implementation builder",
+        "providerFamily": "openai-platform",
+        "modelId": null,
+        "identityDisclosure": "PARTIAL",
+        "priorOutputExposure": "FULL",
+        "provenanceRef": {
+          "id": "source-declaration",
+          "schema": "axm.shadow-specialist-source-declaration/v1",
+          "sha256": "sha256:51bc0137417277246d58c15ed0752594928b7675a186440380596ae715a05107"
+        },
+        "proofAuthority": "NONE"
+      }
+    ],
+    "signals": [
+      {
+        "id": "backend-install-readiness-is-not-established",
+        "statement": "The supplied runtime is not ready for authorized backend installation because exact file-set intake, sensitive-trace enforcement, evidence authentication, resource bounds, and live compatibility remain open.",
+        "evidenceStage": "OBSERVED",
+        "sourceRefs": [
+          {
+            "id": "axm-mirror-shadow-specialist-v0.2.0-experimental",
+            "schema": "application/zip",
+            "sha256": "sha256:a34fe2c976da735dd554a4b3b0f5e32700c740762e6ca6adadcb5c3238978a19"
+          },
+          {
+            "id": "shadow-specialist-local-intake-note",
+            "schema": "text/plain",
+            "sha256": "sha256:ecf2081f22ce24f64c2c2b95a288b12309fd67b203c85db40ae030becae69345"
+          },
+          {
+            "id": "static-review-findings",
+            "schema": "axm.shadow-specialist-static-review-findings/v1",
+            "sha256": "sha256:5d157a10c4ec8227884b3608e02255d35015b744b7431f07ecb97c6ab6208a12"
+          }
+        ],
+        "seatIds": [
+          "platform-max-reasoning-seat"
+        ],
+        "cheapestTest": "Close the static holds first, then use one owner-controlled disposable application and stop before any promotion or persistent backend deployment.",
+        "uncertainty": "A later repaired version may become experiment-ready; this assessment is limited to the supplied exact bytes.",
+        "solutionAlternatives": [
+          "Keep the package quarantined and accept only digest-bound research signals.",
+          "Prepare a separate repaired candidate through the existing governed Branch Module Return Gate."
+        ],
+        "contradictions": [
+          "The package self-label says READY_FOR_AUTHORIZED_BACKEND_INSTALL, while its own declared holds and static gaps do not support that state."
+        ],
+        "wildcard": false,
+        "truthWeight": "NONE"
+      },
+      {
+        "id": "declared-package-integrity-reproduces",
+        "statement": "The supplied v0.1 and v0.2 archives reproduce every declared manifest-scope byte and the v0.2 predecessor link.",
+        "evidenceStage": "OBSERVED",
+        "sourceRefs": [
+          {
+            "id": "axm-mirror-shadow-specialist-v0.1.0-experimental",
+            "schema": "application/zip",
+            "sha256": "sha256:651365155355b913b562dd95e9c95241498a01e0b60a4dddca8b888b1918dd9f"
+          },
+          {
+            "id": "axm-mirror-shadow-specialist-v0.2.0-experimental",
+            "schema": "application/zip",
+            "sha256": "sha256:a34fe2c976da735dd554a4b3b0f5e32700c740762e6ca6adadcb5c3238978a19"
+          },
+          {
+            "id": "static-archive-receipt",
+            "schema": "axm.shadow-specialist-static-archive-receipt/v1",
+            "sha256": "sha256:b4f78d194224fd6a011f40e12283edaebdb4b2e82a4f2ee109b28387364583c0"
+          },
+          {
+            "id": "manifest-verification-receipt",
+            "schema": "axm.shadow-specialist-manifest-verification-receipt/v1",
+            "sha256": "sha256:0c1db8ed9f380d5f3c8083440d41ca8f0181f023903eb9860b11d37d8afe7f2b"
+          }
+        ],
+        "seatIds": [
+          "platform-max-reasoning-seat"
+        ],
+        "cheapestTest": "Repeat archive and manifest hashing from the original ZIP bytes and compare the exact receipt digests.",
+        "uncertainty": "This proves supplied-byte integrity, not author identity, source-repository fidelity, test execution, runtime safety, or provider compatibility.",
+        "solutionAlternatives": [
+          "Preserve the digests as detached provenance.",
+          "Request an independently signed source/build attestation later."
+        ],
+        "contradictions": [],
+        "wildcard": false,
+        "truthWeight": "NONE"
+      },
+      {
+        "id": "native-intake-and-lab-already-cover-the-safe-route",
+        "statement": "AXM already has a stricter inert Branch Module Return Gate, Research Contribution Intake, Model Shadow Continuity, and Grounded Growth Challenger Lab, so a second baseline lab or direct runtime transplant would be redundant.",
+        "evidenceStage": "INFERENCE",
+        "sourceRefs": [
+          {
+            "id": "axm-mirror-shadow-specialist-v0.2.0-experimental",
+            "schema": "application/zip",
+            "sha256": "sha256:a34fe2c976da735dd554a4b3b0f5e32700c740762e6ca6adadcb5c3238978a19"
+          },
+          {
+            "id": "static-review-findings",
+            "schema": "axm.shadow-specialist-static-review-findings/v1",
+            "sha256": "sha256:5d157a10c4ec8227884b3608e02255d35015b744b7431f07ecb97c6ab6208a12"
+          }
+        ],
+        "seatIds": [
+          "platform-max-reasoning-seat"
+        ],
+        "cheapestTest": "Build this exact research bundle with the native intake and verify the resulting planning projection by exact rebuild.",
+        "uncertainty": "A future observer-specific capability gap may justify one new bounded adapter after stronger evidence.",
+        "solutionAlternatives": [
+          "Defer any persistent observer until the prerequisite list is closed.",
+          "Reuse the native research-to-lab projection now."
+        ],
+        "contradictions": [],
+        "wildcard": false,
+        "truthWeight": "NONE"
+      },
+      {
+        "id": "shadow-architecture-has-reusable-patterns",
+        "statement": "Fresh epochs, evidence-kind separation, explicit observation-loss holds, source intake before stewardship, common-mode lineage fields, and an external promotion gate are useful design patterns.",
+        "evidenceStage": "INFERENCE",
+        "sourceRefs": [
+          {
+            "id": "axm-mirror-shadow-specialist-v0.2.0-experimental",
+            "schema": "application/zip",
+            "sha256": "sha256:a34fe2c976da735dd554a4b3b0f5e32700c740762e6ca6adadcb5c3238978a19"
+          },
+          {
+            "id": "static-review-findings",
+            "schema": "axm.shadow-specialist-static-review-findings/v1",
+            "sha256": "sha256:5d157a10c4ec8227884b3608e02255d35015b744b7431f07ecb97c6ab6208a12"
+          }
+        ],
+        "seatIds": [
+          "platform-max-reasoning-seat"
+        ],
+        "cheapestTest": "Map each pattern to an existing native AXM contract and add only a held-out regression where a real capability gap remains.",
+        "uncertainty": "A useful pattern does not establish that this implementation is safe to install or that learning will improve.",
+        "solutionAlternatives": [
+          "Reimplement only a missing bounded rule after a capability-gap check.",
+          "Reuse existing native Research Contribution Intake and Model Shadow contracts."
+        ],
+        "contradictions": [],
+        "wildcard": false,
+        "truthWeight": "NONE"
+      }
+    ],
+    "truth": {
+      "baselineRunBuilt": false,
+      "evidenceReceiptBuilt": false,
+      "sourceExecuted": false,
+      "modelInvoked": false,
+      "agreementIsProof": false,
+      "readyToExecute": false,
+      "automaticAction": false
+    }
+  },
+  "truth": {
+    "staticIntegrityOnly": true,
+    "signalStagesPreservedNotPromoted": true,
+    "disagreementsPreserved": true,
+    "proposalDispositionPreserved": true,
+    "sourceExecuted": false,
+    "modelInvoked": false,
+    "baselineRunBuilt": false,
+    "runtimeBehaviorProven": false,
+    "learningImprovementProven": false,
+    "humanBenefitProven": false,
+    "automaticExecution": false,
+    "automaticAcceptance": false,
+    "automaticBuild": false,
+    "automaticPromotion": false,
+    "automaticCanon": false
+  },
+  "receiptDigest": "sha256:ef08c854ceb640fd52ff2dbd123d782952f820f49885779316a30fbb79716a3d"
+}
