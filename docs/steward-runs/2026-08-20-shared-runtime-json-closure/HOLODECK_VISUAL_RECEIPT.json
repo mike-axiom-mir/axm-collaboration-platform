@@ -1,0 +1,57 @@
+{
+  "schema": "axm.live-visual-verification-receipt/v1",
+  "version": "0.1.0",
+  "status": "TEST",
+  "checkedAt": "2026-08-20T07:27:00.000Z",
+  "visualBackend": "BROWSER_PRIMARY",
+  "browser": "Codex in-app browser",
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "devicePixelRatio": 1.25
+  },
+  "captureMode": "REPEATED_SCREENSHOTS_WITH_DOM_STATE",
+  "rollingBufferCapability": "UNKNOWN_NOT_CLAIMED",
+  "claims": [
+    {
+      "id": "holodeck-composer-browser-dependency-and-human-intent",
+      "route": "tools/holodeck-composer/",
+      "baseline": "Echo Atrium compiled preview visible; canvas client size 770x470; no browser warnings or errors.",
+      "action": "Select Sun forge, then click Move forward once in Preview movement controls.",
+      "expectedVisibleChange": "Preset colors and digest change; player position advances and revision increments.",
+      "typedObservation": "Sun forge produced digest b46c07933a98; viewport frame remained composed; POS 0.0 / 4.2, REV 1, and COMPILED were visible.",
+      "verdict": "PASS",
+      "namedSeam": null
+    },
+    {
+      "id": "holodeck-screen-deck-browser-dependency-and-machine-intent",
+      "route": "tools/holodeck-screen-deck/",
+      "baseline": "Echo Atrium Screen Deck visible; canvas client size 787x568; revision 0; no browser warnings or errors.",
+      "action": "Click Run machine step once.",
+      "expectedVisibleChange": "The shared machine intent applies and revision increments without blanking the deck.",
+      "typedObservation": "Machine TURN applied; HEAD 015 degrees, revision 1, tick 1, and the visible machine-intent receipt appeared while the canvas stayed rendered.",
+      "verdict": "PASS",
+      "namedSeam": null
+    }
+  ],
+  "retention": {
+    "rawFramesRetained": false,
+    "selectedProofFramesRetained": false,
+    "temporaryPaths": [],
+    "tabsClosed": true,
+    "localServerStopped": true,
+    "cleanupComplete": true
+  },
+  "limits": [
+    "Only the two named routes were observed.",
+    "No phone, tablet, VR, controller, reconnect, persistence, or long-duration motion claim is made.",
+    "A full-page screenshot renderer briefly displayed a misleading narrow composite; DOM bounds and the subsequent viewport screenshot showed the live layout remained 1217 pixels wide, so that frame was not retained as proof."
+  ],
+  "authority": {
+    "write": false,
+    "install": false,
+    "promotion": false,
+    "merge": false,
+    "canon": false
+  }
+}

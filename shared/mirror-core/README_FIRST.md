@@ -67,3 +67,9 @@ Incoming Game Hub shared controls are not reimplemented here. Mirror Core includ
 ## GitHub boundary
 
 The AXM Foundation repository and PR 13 were inspected read-only at commit 33a87549259d8b4a7ce4753ee1fab49e0ee8091d. This package was created separately. No branch, commit, push, PR change, or repository working-tree change was made.
+# Deterministic JSON boundary
+
+Mirror Core routes canonical serialization, cloning, and atomic JSON writes
+through `tools/deterministic-json-core`. Unsupported or lossy state is refused
+before persistence. Store mutators may still return no value; that is handled as
+control flow rather than serialized JSON.

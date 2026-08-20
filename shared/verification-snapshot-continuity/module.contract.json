@@ -1,7 +1,7 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "verification-snapshot-continuity",
-  "version": "v0.1",
+  "version": "v0.2",
   "status": "TEST",
   "provides": [
     "verification.continuity.historical-receipt-digest-verify",
@@ -12,12 +12,14 @@
     "verification.continuity.tracked-source-drift-not-pass",
     "verification.continuity.history-no-rewrite",
     "verification.continuity.authority.none",
+    "verification.continuity.strict-deterministic-json",
     "axm.verification-snapshot-continuity-receipt/v1"
   ],
   "consumes": [
     "historical verification receipt as data",
     "current exact source digests from a caller-owned adapter",
-    "axm.verification-spine-report/v2 metadata as data"
+    "axm.verification-spine-report/v2 metadata as data",
+    "tools/deterministic-json-core strict canonical JSON"
   ],
   "permissions": [],
   "handoffs": {
@@ -36,6 +38,7 @@
       "unrecognized-derived-view-as-mutable",
       "historical-receipt-rewrite",
       "current-broad-verification-claim",
+      "lossy-or-unsupported-json-state",
       "automatic-write",
       "automatic-install",
       "automatic-permission-grant",
@@ -52,4 +55,3 @@
     "cleanup": "caller-owned"
   }
 }
-
