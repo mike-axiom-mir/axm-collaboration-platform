@@ -1,0 +1,84 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "model-shadow-continuity",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "model.shadow.snapshot.exact-digest",
+    "model.shadow.snapshot.strict-json",
+    "model.shadow.task-context.exact-bind",
+    "model.shadow.seat-identity.exact-bind",
+    "model.shadow.forward-sequence.require",
+    "model.shadow.commitment.drift-detect",
+    "model.shadow.capability.drift-detect",
+    "model.shadow.source-lineage.drift-visible",
+    "model.shadow.permission-expansion.critical",
+    "model.shadow.authority-request-expansion.critical",
+    "model.shadow.boundary-loss.critical",
+    "model.shadow.raw-output.not-embedded",
+    "model.shadow.private-context.not-embedded",
+    "model.shadow.baseline-planning-projection",
+    "model.shadow.review-projection.note-free",
+    "model.shadow.receipt.exact-rebuild",
+    "model.shadow.receipt.tamper-detect",
+    "model.shadow.model-invocation.none",
+    "model.shadow.training.none",
+    "model.shadow.automatic-action.none",
+    "model.shadow.canon.none",
+    "axm.model-shadow-snapshot/v1",
+    "axm.model-shadow-continuity-receipt/v1",
+    "axm.model-shadow-simulation-projection/v1",
+    "axm.model-shadow-review-projection/v1"
+  ],
+  "consumes": [
+    "caller-supplied digest-bound structured model traces",
+    "caller-supplied exact task context seat and provenance references",
+    "shared Baseline Simulation Lab seat and signal input shape",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.model-shadow-continuity-receipt/v1",
+      "axm.model-shadow-simulation-projection/v1",
+      "axm.model-shadow-review-projection/v1"
+    ],
+    "accepts": [
+      "two axm.model-shadow-snapshot/v1 records for one declared task context and model seat"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "raw-model-output-ingestion",
+      "private-context-ingestion",
+      "hidden-reasoning-access",
+      "free-text-semantic-equivalence",
+      "same-model-mind-claim",
+      "provider-invocation",
+      "provider-transport",
+      "drift-as-failure",
+      "agreement-as-proof",
+      "semantic-correctness-claim",
+      "learning-improvement-claim",
+      "human-benefit-claim",
+      "automatic-review-submission",
+      "automatic-execution",
+      "automatic-write",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-training",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation",
+      "undefined-or-non-json-representable-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "rebuild from exact caller snapshots",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}
