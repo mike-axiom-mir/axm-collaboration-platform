@@ -1,1 +1,82 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Browser, LAN & Hardware QA Lab</title><link rel="stylesheet" href="../../shared/operations/operations-ui.css"></head><body><header><a href="../../hub/index.html">&larr; Hub</a><div><span class="eyebrow">JOURNEY -> VIEWPORT -> LATENCY -> GAMEPAD -> RECEIPT</span><h1>Browser, LAN & Hardware QA Lab</h1><p>Repeatable loopback journeys plus evidence captured by the browser you are actually using.</p></div></header><main><div id="notice" class="notice hidden"></div><section class="grid"><article class="panel"><h2>Bounded journey</h2><label>Profile<select id="profile"><option>hub-smoke</option><option>operations-smoke</option><option>game-night-smoke</option></select></label><button id="run">Run profile</button><p class="truth">Requires <code>qa.run</code>. No arbitrary URL or network scan.</p></article><article class="panel"><h2>This device</h2><p>Records viewport, contrast preferences, three loopback latency samples and browser-exposed gamepad metadata.</p><button id="capture">Capture device evidence</button></article></section><section class="panel"><div class="toolbar"><h2>Evidence</h2><button id="refresh" class="secondary">Refresh</button></div><div id="facts" class="facts"></div><pre id="out" class="code">Loading...</pre></section></main><script src="../../shared/operations/operations-client.js"></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Browser, LAN &amp; Hardware QA Lab</title>
+  <link rel="stylesheet" href="../../shared/operations/operations-ui.css">
+  <style>
+    .phone-checklist { margin: 16px 0; padding: 14px; border: 1px solid var(--line); border-radius: 12px; }
+    .phone-checklist legend { padding: 0 8px; color: var(--text); font-weight: 750; }
+    .phone-checklist label, .phone-confirm { display: flex; align-items: flex-start; gap: 10px; }
+    .phone-checklist input[type="checkbox"], .phone-confirm input[type="checkbox"] {
+      width: auto;
+      flex: 0 0 auto;
+      margin: 3px 0 0;
+      padding: 0;
+      accent-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="../../hub/index.html">&larr; Hub</a>
+    <div>
+      <span class="eyebrow">JOURNEY -&gt; VIEWPORT -&gt; LATENCY -&gt; GAMEPAD -&gt; RECEIPT</span>
+      <h1>Browser, LAN &amp; Hardware QA Lab</h1>
+      <p>Repeatable loopback journeys plus evidence captured by the browser you are actually using.</p>
+    </div>
+  </header>
+  <main>
+    <div id="notice" class="notice hidden"></div>
+    <section class="grid">
+      <article class="panel">
+        <h2>Bounded journey</h2>
+        <label>Profile
+          <select id="profile">
+            <option>hub-smoke</option>
+            <option>operations-smoke</option>
+            <option>game-night-smoke</option>
+          </select>
+        </label>
+        <button id="run">Run profile</button>
+        <p class="truth">Requires <code>qa.run</code>. No arbitrary URL or network scan.</p>
+      </article>
+      <article class="panel">
+        <h2>This device</h2>
+        <p>Records viewport, contrast preferences, three loopback latency samples and browser-exposed gamepad metadata.</p>
+        <button id="capture">Capture device evidence</button>
+      </article>
+    </section>
+    <section class="panel" aria-labelledby="phoneCandidateTitle">
+      <h2 id="phoneCandidateTitle">Optional physical-phone observation candidate</h2>
+      <p>Use this only while visibly observing a separate phone on the selected game's real controller route. These declarations create a review candidate—not proof and not warning closure.</p>
+      <label>Campaign game id (checked against the warning queue during review)
+        <input id="phoneGame" value="002-robo-pong" inputmode="text" pattern="[0-9]{3}-[a-z0-9-]+" autocomplete="off">
+      </label>
+      <fieldset class="phone-checklist">
+        <legend>Observed during this session</legend>
+        <label><input id="phonePresent" type="checkbox"> A separate physical phone was visibly present.</label>
+        <label><input id="controllerJoined" type="checkbox"> The phone controller joined the selected game.</label>
+        <label><input id="seatMatched" type="checkbox"> The visible seat identity matched the intended seat.</label>
+        <label><input id="actionObserved" type="checkbox"> A phone action visibly changed the shared game screen.</label>
+        <label><input id="disconnectObserved" type="checkbox"> A deliberate link interruption was observed.</label>
+        <label><input id="recoveredObserved" type="checkbox"> The same controller recovered after interruption.</label>
+      </fieldset>
+      <label class="phone-confirm"><input id="phoneVoluntary" type="checkbox"> I voluntarily choose to save this bounded observation candidate.</label>
+      <button id="capturePhone">Capture phone candidate</button>
+      <p class="truth">Unchecked observations remain incomplete. Stopping or retrying is allowed. A separate human review and game-manifest evidence gate are still required.</p>
+    </section>
+    <section class="panel">
+      <div class="toolbar">
+        <h2>Evidence</h2>
+        <button id="refresh" class="secondary">Refresh</button>
+      </div>
+      <div id="facts" class="facts"></div>
+      <pre id="out" class="code">Loading...</pre>
+    </section>
+  </main>
+  <script src="../../shared/operations/operations-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

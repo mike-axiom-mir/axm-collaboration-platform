@@ -1,0 +1,148 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "UNKNOWN",
+  "requirements": [
+    {
+      "id": "phone-campaign-representation",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-campaign.strict-deterministic-json"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-campaign.strict-deterministic-json": [
+          "The exported serializer transformed or accepted eleven of thirteen unsafe JSON fixtures."
+        ]
+      }
+    },
+    {
+      "id": "phone-candidate-contract",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-observation.contract-declared",
+        "qa.phone-observation.runtime-normalized"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-observation.contract-declared": [
+          "The QA Lab persisted generic device receipts but did not emit the device schema or declare the phone-candidate action and refusals."
+        ],
+        "qa.phone-observation.runtime-normalized": [
+          "The QA service dropped phone-observation fields instead of constructing a bounded candidate."
+        ]
+      }
+    },
+    {
+      "id": "phone-candidate-persistence",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-observation.digest-bound",
+        "qa.phone-observation.reload-verified"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-observation.digest-bound": [
+          "No service-produced phone candidate existed to bind to the native receipt digest."
+        ],
+        "qa.phone-observation.reload-verified": [
+          "No service-produced phone candidate existed to reload."
+        ]
+      }
+    },
+    {
+      "id": "agency-and-authority-boundary",
+      "required": true,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-observation.voluntary-consent",
+        "qa.phone-observation.proof-authority.none"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-observation.voluntary-consent": [
+          "The browser surface had no explicit voluntary phone-observation control."
+        ],
+        "qa.phone-observation.proof-authority.none": [
+          "The intended refusal existed in a downstream gate but was missing from the capture hand contract."
+        ]
+      }
+    },
+    {
+      "id": "desktop-browser-refusal-journey",
+      "required": true,
+      "status": "UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "qa.phone-observation.desktop-live-refusal"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-observation.desktop-live-refusal": [
+          "The missing browser controls had no live refusal journey."
+        ]
+      }
+    },
+    {
+      "id": "physical-phone-session",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-observation.physical-session"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-observation.physical-session": [
+          "No separate physical-phone session was run."
+        ]
+      }
+    },
+    {
+      "id": "human-usefulness",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-observation.human-usefulness"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-observation.human-usefulness": [
+          "No voluntary human-benefit handoff was supplied."
+        ]
+      }
+    },
+    {
+      "id": "mobile-viewport-visual-proof",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "qa.phone-observation.mobile-viewport-live"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-observation.mobile-viewport-live": [
+          "No controlled mobile viewport was observed in this run."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

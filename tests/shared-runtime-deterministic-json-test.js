@@ -15,7 +15,8 @@ const modules = [
   ['mirror-core', require('../shared/mirror-core/core/utils')],
   ['sensorium', require('../shared/sensorium/core')],
   ['verification-snapshot-continuity', require('../shared/verification-snapshot-continuity/verification-snapshot-continuity')],
-  ['verification-source-evolution-review', require('../shared/verification-source-evolution-review/verification-source-evolution-review')]
+  ['verification-source-evolution-review', require('../shared/verification-source-evolution-review/verification-source-evolution-review')],
+  ['voluntary-phone-qa-campaign', require('../shared/voluntary-phone-qa-campaign/voluntary-phone-qa-campaign')]
 ];
 
 function safeFixtures() {

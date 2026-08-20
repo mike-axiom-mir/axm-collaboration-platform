@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const CAMPAIGN_SCHEMA = 'axm.voluntary-phone-qa-campaign/v1';
 const VERSION = '0.1.0';
@@ -19,18 +20,8 @@ const CHECKLIST = [
   { id: 'SAME_CONTROLLER_RECOVERED', claim: 'The same controller recovered after the interruption.' }
 ];
 
-function stableValue(value) {
-  if (Array.isArray(value)) return value.map(stableValue);
-  if (value && typeof value === 'object') {
-    const result = {};
-    Object.keys(value).sort().forEach((key) => { result[key] = stableValue(value[key]); });
-    return result;
-  }
-  return value;
-}
-
 function stableStringify(value) {
-  return JSON.stringify(stableValue(value));
+  return DeterministicJson.canonicalJson(value);
 }
 
 function sha256(value) {
@@ -39,7 +30,7 @@ function sha256(value) {
 }
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(stableStringify(value));
 }
 
 function exactKeys(value, allowed, label) {
@@ -292,4 +283,3 @@ module.exports = {
   buildCampaign,
   verifyCampaign
 };
-

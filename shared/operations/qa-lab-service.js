@@ -3,8 +3,23 @@
 const http = require('http');
 const path = require('path');
 const U = require('./operations-utils');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const SCHEMA = 'axm.qa-lab-state/v1';
+const PHONE_OBSERVATION_SCHEMA = 'axm.qa-phone-observation/v1';
+const PHONE_OBSERVATION_KEYS = [
+  'physicalPhonePresent',
+  'controllerJoined',
+  'seatIdentityMatched',
+  'actionObservedOnSharedScreen',
+  'disconnectObserved',
+  'recoveredAfterDisconnect'
+];
+const PHONE_OBSERVATION_LIMITATIONS = [
+  'Checkboxes are human declarations, not machine proof of physical hardware.',
+  'This candidate does not alter a game manifest or clear a verifier warning.',
+  'Mike Tobi or an explicitly authorized steward must review the observed device and game behavior.'
+];
 const PROFILE_STEPS = {
   'hub-smoke': [
     { route: '/api/health', expectStatus: 200 },
@@ -21,6 +36,39 @@ const PROFILE_STEPS = {
     { route: '/tools/game-hub/lobby-controller.html', expectStatus: 200, inspectHtml: true }
   ]
 };
+
+function exactObjectKeys(value, allowed, label) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(label + ' must be an object');
+  const extras = Object.keys(value).filter(key => !allowed.includes(key));
+  if (extras.length) throw new Error(label + ' has unknown fields: ' + extras.sort().join(', '));
+}
+
+function normalizePhoneObservation(input) {
+  if (input == null) return null;
+  exactObjectKeys(input, ['gameId', 'slot', 'voluntaryHumanObservation', 'observations'], 'phone observation');
+  if (input.voluntaryHumanObservation !== true) throw new Error('phone observation requires explicit voluntary human confirmation');
+  const gameId = String(input.gameId || '').trim().toLowerCase();
+  const slot = String(input.slot || '').trim();
+  if (!/^\d{3}-[a-z0-9][a-z0-9-]{0,95}$/.test(gameId)) throw new Error('phone observation game id must be a bounded slot/game id');
+  if (!/^\d{3}$/.test(slot) || gameId.slice(0, 3) !== slot) throw new Error('phone observation slot must match the game id');
+  exactObjectKeys(input.observations, PHONE_OBSERVATION_KEYS, 'phone observation values');
+  const observations = {};
+  PHONE_OBSERVATION_KEYS.forEach(key => {
+    if (typeof input.observations[key] !== 'boolean') throw new Error('phone observation ' + key + ' must be boolean');
+    observations[key] = input.observations[key];
+  });
+  const complete = PHONE_OBSERVATION_KEYS.every(key => observations[key] === true);
+  return {
+    schema: PHONE_OBSERVATION_SCHEMA,
+    gameId,
+    slot,
+    observations,
+    voluntaryHumanObservation: true,
+    complete,
+    reviewState: complete ? 'CANDIDATE_REQUIRES_HUMAN_REVIEW' : 'INCOMPLETE_CANDIDATE_REQUIRES_HUMAN_REVIEW',
+    limitations: PHONE_OBSERVATION_LIMITATIONS.slice()
+  };
+}
 
 function create(options) {
   const stateFile = path.join(options.stateRoot, 'browser-lan-hardware-qa', 'results.json');
@@ -79,11 +127,21 @@ function create(options) {
     if (!Number.isFinite(Number(viewport.width)) || !Number.isFinite(Number(viewport.height))) throw new Error('device evidence needs viewport width and height');
     const gamepads = (Array.isArray(body.gamepads) ? body.gamepads : []).slice(0, 8).map(item => ({ index: Number(item.index), id: String(item.id || 'unnamed').slice(0, 160), mapping: String(item.mapping || '').slice(0, 40), axes: Math.max(0, Math.min(32, Number(item.axes) || 0)), buttons: Math.max(0, Math.min(64, Number(item.buttons) || 0)) }));
     const sorted = samples.slice().sort((a,b) => a-b), p95 = sorted.length ? sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * .95))] : null;
-    const receipt = { schema: 'axm.device-qa-evidence/v1', id: U.uid('device-qa'), capturedAt: U.now(), actor: String(body.actor || 'local-user').slice(0, 120), userAgent: String(body.userAgent || '').slice(0, 400), viewport: { width: Number(viewport.width), height: Number(viewport.height), devicePixelRatio: Number(viewport.devicePixelRatio) || 1 }, accessibility: { reducedMotion: !!body.reducedMotion, highContrast: !!body.highContrast }, gamepads, network: { samples, medianMs: sorted.length ? sorted[Math.floor(sorted.length / 2)] : null, p95Ms: p95, disconnectObserved: body.disconnectObserved === true, recoveredAfterDisconnect: body.recoveredAfterDisconnect === true }, longSession: { durationMs: Math.max(0, Math.min(24 * 60 * 60 * 1000, Number(body.sessionDurationMs) || 0)), errors: (Array.isArray(body.errors) ? body.errors : []).slice(0, 50).map(x => String(x).slice(0, 300)) }, truth: { hardwareEnumeratedByBrowser: true, rawInputStored: false, automaticPermissionChange: false } };
-    receipt.digest = U.sha256(JSON.stringify(receipt)); const state = read(); state.deviceEvidence.unshift(receipt); state.deviceEvidence = state.deviceEvidence.slice(0, 100); write(state); audit({ type: 'device-evidence', id: receipt.id, gamepads: gamepads.length, digest: receipt.digest }); return receipt;
+    const phoneObservation = normalizePhoneObservation(body.phoneObservation);
+    const receipt = { schema: 'axm.device-qa-evidence/v1', id: U.uid('device-qa'), capturedAt: U.now(), actor: String(body.actor || 'local-user').slice(0, 120), userAgent: String(body.userAgent || '').slice(0, 400), viewport: { width: Number(viewport.width), height: Number(viewport.height), devicePixelRatio: Number(viewport.devicePixelRatio) || 1 }, accessibility: { reducedMotion: !!body.reducedMotion, highContrast: !!body.highContrast }, gamepads, network: { samples, medianMs: sorted.length ? sorted[Math.floor(sorted.length / 2)] : null, p95Ms: p95, disconnectObserved: body.disconnectObserved === true, recoveredAfterDisconnect: body.recoveredAfterDisconnect === true }, longSession: { durationMs: Math.max(0, Math.min(24 * 60 * 60 * 1000, Number(body.sessionDurationMs) || 0)), errors: (Array.isArray(body.errors) ? body.errors : []).slice(0, 50).map(x => String(x).slice(0, 300)) }, truth: { hardwareEnumeratedByBrowser: true, rawInputStored: false, automaticPermissionChange: false, physicalHardwareProven: false, manifestMutated: false, externalReviewRequired: phoneObservation !== null } };
+    if (phoneObservation) receipt.phoneObservation = phoneObservation;
+    DeterministicJson.canonicalJson(receipt);
+    receipt.digest = U.sha256(JSON.stringify(receipt));
+    const state = read();
+    state.deviceEvidence.unshift(receipt);
+    state.deviceEvidence = state.deviceEvidence.slice(0, 100);
+    DeterministicJson.canonicalJson(state);
+    write(state);
+    audit({ type: phoneObservation ? 'phone-observation-candidate' : 'device-evidence', id: receipt.id, gameId: phoneObservation ? phoneObservation.gameId : null, complete: phoneObservation ? phoneObservation.complete : null, gamepads: gamepads.length, digest: receipt.digest });
+    return receipt;
   }
   function status() { const state = read(); return { schema: SCHEMA, profiles: Object.keys(PROFILE_STEPS), journeys: state.journeys, deviceEvidence: state.deviceEvidence, latestJourney: state.journeys[0] || null, latestDeviceEvidence: state.deviceEvidence[0] || null, arbitraryUrlTesting: false, hardwarePermissionAuthority: false }; }
   return { status, run, recordDeviceEvidence, normalizeSteps, inspectHtml, stateFile, auditFile };
 }
 
-module.exports = { SCHEMA, PROFILE_STEPS, create };
+module.exports = { SCHEMA, PROFILE_STEPS, PHONE_OBSERVATION_SCHEMA, PHONE_OBSERVATION_KEYS, normalizePhoneObservation, create };
