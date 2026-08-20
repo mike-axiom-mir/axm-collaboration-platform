@@ -3,6 +3,7 @@
 const CapabilityLoop = require('../verified-capability-loop/verified-capability-loop');
 const Human = require('../human-benefit-evidence/human-benefit-evidence');
 const Bridge = require('../grounded-growth-human-bridge-v2/grounded-growth-human-bridge-v2');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const SOURCE_DECLARATION_SCHEMA = 'axm.local-steward-source-declaration/v1';
 const HANDOFF_SCHEMA = 'axm.grounded-growth-human-handoff-package/v1';
@@ -14,15 +15,15 @@ const LIVE_SOURCE_ATTESTATION = 'I declare that I personally supplied the refere
 const SYNTHETIC_SOURCE_ATTESTATION = 'Synthetic fixture only; no person supplied this source declaration.';
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(stableStringify(value));
 }
 
 function stableStringify(value) {
-  return Human.stableStringify(value);
+  return DeterministicJson.canonicalJson(value);
 }
 
 function sha256(value) {
-  return Human.sha256(value);
+  return Bridge.sha256(value);
 }
 
 function requiredText(value, label, maximum) {

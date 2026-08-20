@@ -747,6 +747,22 @@ function recorded() {
   };
 }
 
+function loadRecordedCurrentRoute() {
+  const current = recorded();
+  const currentStateInput = {
+    receiptId: 'current-grounded-growth-signal-lineage-20260820',
+    generatedAt: CURRENT_AT,
+    participationFrontierReceipt: readJson(PARTICIPATION_RECEIPT),
+    participationFrontierInput: Participation.currentInput(),
+    latestPortfolio: current.portfolio
+  };
+  const check = Current.verify(current.currentState, currentStateInput);
+  if (!check.pass) {
+    throw new Error('recorded signal-lineage current route is invalid: ' + check.errors.join('; '));
+  }
+  return { ...current, currentStateInput };
+}
+
 function checkRecorded() {
   const current = build();
   const expected = {
@@ -841,6 +857,7 @@ module.exports = {
   buildPortfolio,
   build,
   recorded,
+  loadRecordedCurrentRoute,
   checkRecorded,
   write
 };

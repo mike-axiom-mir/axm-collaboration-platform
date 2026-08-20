@@ -19,8 +19,8 @@ function clone(value) {
 }
 
 function sources() {
-  const signal = SignalBuilder.checkRecorded();
-  const routes = RouteBuilder.checkRecorded();
+  const signal = SignalBuilder.loadRecordedCurrentRoute();
+  const routes = RouteBuilder.loadRecordedCoverageRoute();
   return {
     frontierId: 'fixture-current-voluntary-choice-frontier',
     generatedAt: '2026-08-20T01:20:00.000Z',

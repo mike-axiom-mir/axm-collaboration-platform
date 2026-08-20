@@ -2,6 +2,8 @@
 'use strict';
 
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const Cycle = require('../verified-capability-loop/verified-capability-loop');
 const Growth = require('../grounded-growth-outcomes/grounded-growth-outcomes');
 const Lineage = require('./grounded-growth-signal-lineage');
@@ -11,6 +13,13 @@ function check(condition, message) {
   assert.ok(condition, message);
   checks += 1;
 }
+
+const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
+check(contract.status === 'TEST' && contract.permissions.length === 0 && contract.boundaries.writes.length === 0, 'module remains permissionless TEST with no writes');
+check(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'contract declares strict representation closure');
+check(Lineage.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
+assert.throws(() => Lineage.stableStringify({ lost: undefined }), /unsupported undefined/i);
+checks += 1;
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));

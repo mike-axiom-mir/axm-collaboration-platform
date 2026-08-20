@@ -5,6 +5,7 @@ const Human = require('../human-benefit-evidence/human-benefit-evidence');
 const Bridge = require('../grounded-growth-human-bridge-v2/grounded-growth-human-bridge-v2');
 const Growth = require('../grounded-growth-outcomes/grounded-growth-outcomes');
 const Loop = require('../verified-capability-loop/verified-capability-loop');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const RECEIPT_SCHEMA = 'axm.grounded-growth-human-route-coverage-receipt/v1';
 const VERSION = '0.1.0';
@@ -18,13 +19,11 @@ const HOLD_REASONS = new Set([
 ]);
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(stableStringify(value));
 }
 
 function stableStringify(value) {
-  if (value === null || typeof value !== 'object') return JSON.stringify(value);
-  if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
-  return '{' + Object.keys(value).sort().map((key) => JSON.stringify(key) + ':' + stableStringify(value[key])).join(',') + '}';
+  return DeterministicJson.canonicalJson(value);
 }
 
 function sha256(value) {

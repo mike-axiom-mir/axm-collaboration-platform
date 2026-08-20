@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const CapabilityLoop = require('../verified-capability-loop/verified-capability-loop');
 const Growth = require('../grounded-growth-outcomes/grounded-growth-outcomes');
 const Human = require('../human-benefit-evidence/human-benefit-evidence');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const RECEIPT_SCHEMA = 'axm.grounded-growth-human-bridge-receipt/v1';
 const BUNDLE_SCHEMA = 'axm.grounded-growth-human-bridge-bundle/v1';
@@ -14,13 +15,11 @@ const TARGET_SCOPES = ['NAMED_LOCAL_STEWARD', 'DECLARED_COHORT'];
 const TRUST_MODES = ['NAMED_LOCAL_STEWARD_DECLARATION', 'EXTERNAL_COHORT_AUTHENTICATION'];
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(stableStringify(value));
 }
 
 function stableStringify(value) {
-  if (value === null || typeof value !== 'object') return JSON.stringify(value);
-  if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
-  return '{' + Object.keys(value).sort().map((key) => JSON.stringify(key) + ':' + stableStringify(value[key])).join(',') + '}';
+  return DeterministicJson.canonicalJson(value);
 }
 
 function sha256(value) {

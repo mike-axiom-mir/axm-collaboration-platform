@@ -2,6 +2,11 @@
 
 Status: `TEST`
 
+Internal clone, canonical comparison, and digest paths use the shared strict
+`deterministic-json-core`. The external device receipt's declared native-order
+digest is preserved only after strict JSON validation, so compatibility does
+not reopen silent field loss.
+
 This dependency-free, read-only adapter connects the voluntary physical-phone
 campaign to Grounded Growth without turning device behavior into a human-value
 claim.

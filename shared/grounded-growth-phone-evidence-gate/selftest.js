@@ -32,6 +32,11 @@ check([
   'automatic-canon',
   'foundation-mutation'
 ].every((item) => contract.boundaries.refuses.includes(item)), 'contract records the two-key and authority boundaries');
+check(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'contract declares strict representation closure');
+check(Gate.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
+assert.throws(() => Gate.stableStringify({ lost: undefined }), /unsupported undefined/i);
+checks += 1;
+console.log('PASS unsafe canonical state is refused');
 
 const seamAt = '2026-08-19T10:00:00.000Z';
 const capturedAt = '2026-08-19T10:04:00.000Z';

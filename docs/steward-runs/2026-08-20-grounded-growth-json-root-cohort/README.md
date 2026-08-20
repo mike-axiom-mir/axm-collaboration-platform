@@ -2,6 +2,11 @@
 
 Status: `TEST`
 
+> Descendant-branch evolution note
+> (`codex/grounded-growth-json-full-closure-v0.4`): this directory remains the
+> sealed three-consumer checkpoint. The completed fifteen-consumer scoped
+> rollout is recorded in `../2026-08-20-grounded-growth-json-full-closure/`.
+
 This lane advances the serialization rollout from one permissionless leaf to
 the first dependency-root cohort:
 

@@ -509,6 +509,56 @@ function checkRecorded() {
   return recorded();
 }
 
+function loadRecordedCoverageRoute() {
+  const portfolio = readJson(PORTFOLIO_PATH);
+  const coverage = readJson(LANE + '/CURRENT_HUMAN_ROUTE_COVERAGE.json');
+  const catalog = readJson(LANE + '/CURRENT_HUMAN_ROUTE_CATALOG.json');
+  const recordedRows = new Map(coverage.routes.map((route) => [route.capabilityId, route]));
+  const priorRoutes = PriorRoutes.loadRecordedRoutes();
+  const readyRoutes = priorRoutes.map((route) => {
+    const capabilityId = route.definition.capabilityId;
+    const row = recordedRows.get(capabilityId);
+    if (!row) throw new Error('recorded coverage lacks ready route ' + capabilityId);
+    const sourceClosure = capabilityId === 'evidence.registered-source-closure/v1';
+    const protocol = sourceClosure
+      ? readJson(LANE + '/protocols/source-closure-current-claim-protocol.json')
+      : route.protocol;
+    const interventionLink = sourceClosure
+      ? readJson(LANE + '/links/source-closure-current-claim-intervention-link.json')
+      : route.link;
+    return {
+      capabilityId,
+      protocol,
+      packet: readJson(LANE + '/packets/' + route.definition.slug + '-participant-packet.json'),
+      interventionLink,
+      runnerRef: row.runnerRef
+    };
+  });
+  const detachedRow = recordedRows.get(DETACHED.capabilityId);
+  if (!detachedRow) throw new Error('recorded coverage lacks detached current-state route');
+  readyRoutes.push({
+    capabilityId: DETACHED.capabilityId,
+    protocol: readJson(LANE + '/protocols/' + DETACHED.slug + '-protocol.json'),
+    packet: readJson(LANE + '/packets/' + DETACHED.slug + '-participant-packet.json'),
+    interventionLink: readJson(LANE + '/links/' + DETACHED.slug + '-intervention-link.json'),
+    runnerRef: detachedRow.runnerRef
+  });
+  const heldRoutes = coverage.holds.map((hold) => ({
+    capabilityId: hold.capabilityId,
+    reasonCode: hold.reasonCode,
+    proposalId: hold.proposalId,
+    evidenceRefs: hold.evidenceRefs
+  }));
+  const check = Coverage.verify(coverage, {
+    portfolio,
+    readyRoutes,
+    heldRoutes,
+    sourceRefs: coverage.sourceRefs
+  });
+  if (!check.pass) throw new Error('recorded human-route coverage invalid: ' + check.errors.join('; '));
+  return { portfolio, readyRoutes, heldRoutes, coverage, catalog };
+}
+
 if (require.main === module) {
   try {
     const result = process.argv.includes('--write') ? writeAll() : checkRecorded();
@@ -549,5 +599,6 @@ module.exports = {
   outputFiles,
   writeAll,
   recorded,
-  checkRecorded
+  checkRecorded,
+  loadRecordedCoverageRoute
 };

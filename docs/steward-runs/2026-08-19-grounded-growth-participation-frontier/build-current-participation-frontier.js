@@ -5,29 +5,28 @@ const fs = require('fs');
 const path = require('path');
 const Participation = require('../../../shared/grounded-growth-participation-frontier/grounded-growth-participation-frontier');
 const KnowledgeCurrent = require('../2026-08-19-grounded-growth-knowledge-frontier/build-current-knowledge-frontier');
-const HandoffCurrent = require('../2026-08-19-human-handoff-operational-readiness/build-current-handoff-readiness');
 const PortfolioHuman = require('../2026-08-19-human-readiness-portfolio-coverage/build-portfolio-readiness');
-const BridgeCurrent = require('../2026-08-19-reuse-existing-human-bridge-ancestry/build-current-readiness');
-
-function oneRoute(routes, capabilityId) {
-  const matches = routes.filter(route => route.definition.capabilityId === capabilityId);
-  if (matches.length !== 1) throw new Error('expected exactly one current route for ' + capabilityId);
-  return matches[0];
-}
 
 function currentInput() {
   const capabilityId = 'simulation.run-envelope.verify';
-  const portfolioRoute = oneRoute(PortfolioHuman.verifyRecorded().routes, capabilityId);
-  const bridgeRoute = oneRoute(BridgeCurrent.verifyRecorded().routes, capabilityId);
+  const portfolioRoute = PortfolioHuman.loadRecordedRoute(capabilityId);
+  const interventionLink = JSON.parse(fs.readFileSync(path.join(
+    __dirname,
+    '../2026-08-19-reuse-existing-human-bridge-ancestry/links/research-grounded-disposition-intervention-link.json'
+  ), 'utf8'));
+  const humanHandoffReadiness = JSON.parse(fs.readFileSync(path.join(
+    __dirname,
+    '../2026-08-19-human-handoff-operational-readiness/CURRENT_HANDOFF_READINESS.json'
+  ), 'utf8'));
   return {
     participationFrontierId: 'current-grounded-growth-participation-frontier-20260819',
     generatedAt: '2026-08-19T18:25:00.000Z',
     knowledgeFrontierReceipt: KnowledgeCurrent.current(),
     knowledgeFrontierInput: KnowledgeCurrent.currentInput(),
-    humanHandoffReadiness: HandoffCurrent.verifyRecorded().readiness,
+    humanHandoffReadiness,
     protocol: portfolioRoute.protocol,
     participantPacket: portfolioRoute.packet,
-    interventionLink: bridgeRoute.link
+    interventionLink
   };
 }
 
@@ -104,4 +103,3 @@ if (require.main === module) {
     digest: receipt.participationFrontierDigest
   }, null, 2) + '\n');
 }
-

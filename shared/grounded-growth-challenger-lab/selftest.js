@@ -39,7 +39,12 @@ const diagnosticContract = JSON.parse(fs.readFileSync(path.resolve(__dirname, '.
 check(planSchema.$id === Lab.PLAN_SCHEMA && evaluationSchema.$id === Lab.EVALUATION_SCHEMA && readinessSchema.$id === Lab.READINESS_SCHEMA, 'plan, evaluation and readiness schema identities match implementation');
 check(contract.status === 'TEST' && contract.permissions.length === 0 && contract.boundaries.writes.length === 0, 'module contract stays TEST with no permissions or writes');
 check(contract.boundaries.refuses.includes('test-win-as-adoption') && contract.boundaries.refuses.includes('ai-workflow-win-as-human-benefit'), 'module contract refuses adoption and human-benefit substitution');
-check(contract.version === 'v0.2' && contract.provides.includes(Lab.READINESS_SCHEMA), 'v0.2 contract advertises native challenger readiness');
+check(contract.version === 'v0.3' && contract.provides.includes(Lab.READINESS_SCHEMA), 'v0.3 contract advertises native challenger readiness');
+check(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'contract declares strict representation closure');
+check(Lab.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
+assert.throws(() => Lab.stableStringify({ lost: undefined }), /unsupported undefined/i);
+checks += 1;
+console.log('PASS unsafe canonical state is refused');
 
 function ref(id, value, schemaName) {
   return Growth.reference(value, { id, schema: schemaName || 'axm.test-evidence/v1' });

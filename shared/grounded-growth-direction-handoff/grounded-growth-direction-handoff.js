@@ -3,6 +3,7 @@
 
 const crypto = require('crypto');
 const Feedback = require('../grounded-growth-feedback/grounded-growth-feedback');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const HANDOFF_SCHEMA = 'axm.grounded-growth-direction-handoff/v1';
 const VERSION = '0.1.0';
@@ -40,15 +41,11 @@ const RISK = {
 };
 
 function clone(value) {
-  return JSON.parse(JSON.stringify(value));
+  return JSON.parse(stableStringify(value));
 }
 
 function stableStringify(value) {
-  if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
-  if (value && typeof value === 'object') {
-    return '{' + Object.keys(value).sort().map((key) => JSON.stringify(key) + ':' + stableStringify(value[key])).join(',') + '}';
-  }
-  return JSON.stringify(value);
+  return DeterministicJson.canonicalJson(value);
 }
 
 function sha256(value) {
@@ -366,4 +363,3 @@ module.exports = {
   buildHandoff,
   verifyHandoff
 };
-

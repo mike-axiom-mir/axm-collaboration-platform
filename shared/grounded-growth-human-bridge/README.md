@@ -2,6 +2,10 @@
 
 Status: `TEST`
 
+Clone, canonical comparison, and digest preparation use the shared strict
+`deterministic-json-core`. Existing JSON-safe bridge bytes remain unchanged;
+unsupported JSON state is refused before evidence mapping.
+
 This leaf adapter closes the boundary between native Human Benefit Evidence and
 Grounded Growth Outcomes. A human verdict is mapped only when the capability
 cycle, evaluation and judgment all verify natively; the evidence is declared

@@ -253,6 +253,9 @@ ok(contract.boundaries.writes.length === 0, 'handoff leaf declares no automatic 
 ok(contract.boundaries.refuses.includes('judgment-derived-from-numeric-signal'), 'contract refuses automatic judgment from evaluation signal');
 ok(contract.boundaries.refuses.includes('source-declaration-as-identity-authentication'), 'contract refuses identity authentication claims');
 ok(contract.boundaries.refuses.includes('synthetic-fixture-as-human-benefit'), 'contract refuses synthetic fixtures as human benefit');
+ok(contract.consumes.includes('strict-deterministic-canonical-json') && contract.boundaries.refuses.includes('undefined-or-non-json-representable-state'), 'contract declares strict representation closure');
+ok(Handoff.stableStringify({ z: 1, a: [true, null] }) === '{"a":[true,null],"z":1}', 'safe canonical bytes remain exact');
+throws(() => Handoff.stableStringify({ lost: undefined }), /unsupported undefined/i, 'unsafe canonical state is refused');
 
 ok(Human.verifyEvaluation(candidate.evaluation).pass, 'candidate evaluation verifies natively');
 ok(Human.verifyEvaluation(reuse.evaluation).pass, 'reuse evaluation verifies natively');
