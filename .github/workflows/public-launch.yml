@@ -2,9 +2,11 @@ name: Verify AXM public launch
 
 on:
   pull_request:
-  push:
-    branches: [main]
   workflow_dispatch:
+
+concurrency:
+  group: axm-public-launch-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
