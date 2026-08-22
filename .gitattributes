@@ -15,10 +15,23 @@ docs/generated/*.md text eol=lf
 
 # Museum originals are immutable byte evidence; never rewrite their line endings.
 museum/first-mirror/original/mirror.html -text
+museum/records/** text eol=lf
 
 # The public Mirror Core build manifest hashes every package byte. Preserve the
 # already-published baseline exactly instead of allowing Windows CRLF smudging.
 shared/mirror-core/** -text
+
+# Basis Universal provenance binds these three text payloads by exact size and
+# SHA-256; keep the accompanying WASM binary untouched.
+shared/asset-hands/vendor/basis-universal/basis_encoder.js text eol=lf
+shared/asset-hands/vendor/basis-universal/LICENSE text eol=lf
+shared/asset-hands/vendor/basis-universal/NOTICE text eol=lf
+shared/asset-hands/vendor/wasm-vips/vips.js text eol=lf
+shared/asset-hands/vendor/harfbuzz/index.mjs text eol=lf
+shared/asset-hands/vendor/harfbuzz/harfbuzz.js text eol=lf
+shared/asset-hands/vendor/harfbuzz/LICENSE text eol=lf
+shared/asset-hands/vendor/harfbuzz/README.md text eol=lf
+shared/asset-hands/vendor/fonts/noto/OFL.txt text eol=lf
 
 # These tool selftests compare bundled runtime and generated-catalog source
 # bytes against canonical SHA-256 values. Keep their text trees LF-stable on
@@ -64,7 +77,31 @@ tools/branch-module-return-gate/return-gate-core.js text eol=lf
 tools/game-hub/game-library/002-robo-pong/game.manifest.json text eol=lf
 tools/game-hub/game-library/002-robo-pong/runtime/seat-interface.cjs text eol=lf
 tools/game-hub/game-library/002-robo-pong/runtime/neon-pong-duet-depth.js text eol=lf
+tools/game-hub/game-library/007-casino/lux-5-prototype/client/vendor/LICENSE text eol=lf
 tools/repair-resilience-library/components/common.js text eol=lf
+
+# Anim Kit selftests regenerate these checked-in outputs. Keep the generated
+# artifacts byte-stable so a Windows run does not look like content drift.
+tools/anim-kit/out/** text eol=lf
+
+# This curated intake retains 395 SHA-bound text artifacts. Their provenance
+# selftest hashes the source bytes, so Windows checkout normalization must not
+# rewrite the recorded LF representation.
+intakes/ai-team-collaboration-runs-01-101-v1/** text eol=lf
+
+# Text Fabric retains a mixed text/binary 281-file runtime with its own exact
+# checksum ledger. Disable Git text conversion for the whole sealed runtime.
+tools/text-fabric/runtime/** -text
+
+# AetherFX preserves a sealed mixed runtime plus the upstream checksum ledger.
+# These files verify their own raw bytes, so Git must not translate them.
+tools/aetherfx/UPSTREAM_SHA256SUMS.txt -text
+tools/aetherfx/runtime/** -text whitespace=-trailing-space
+
+# The authored District Party city is sealed by one digest across map.json and
+# 96 chunk files. Keep its generated JSON byte-identical on Windows checkouts.
+tools/game-hub/game-library/008-district-party/data/maps/tilburg-authored-city-alpha/map.json text eol=lf
+tools/game-hub/game-library/008-district-party/data/maps/tilburg-authored-city-alpha/map-chunks/** text eol=lf
 
 # Markdown uses intentional two-space hard line breaks, while generated module
 # skeletons and third-party source may retain harmless terminal blank lines.
