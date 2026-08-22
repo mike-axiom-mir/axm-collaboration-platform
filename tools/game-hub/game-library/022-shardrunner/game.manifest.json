@@ -1,0 +1,75 @@
+{
+  "slot": "022",
+  "game_id": "022-shardrunner",
+  "name": "Shardrunner",
+  "status": "EXPERIMENTAL",
+  "description": "A compact third-person 3D run through floating low-poly ruins, collecting blue signal shards, dodging corrupted geometry, and choosing branching routes under rising pressure.",
+  "version": "0.2.1",
+  "min_players": 1,
+  "max_players": 1,
+  "allowed_seat_types": ["human"],
+  "launch": {
+    "server_entry": "runtime/server.cjs",
+    "client_entry": "/games/022/?room=AXM1&player=p1",
+    "spectator_client_entry": "/games/022/?room=AXM1&player=screen",
+    "ready_path": "/state",
+    "port": 8820,
+    "start_command": "managed-by-game-hub",
+    "local_only_default": true
+  },
+  "join": {
+    "supports_qr": false,
+    "supports_lan_link": true,
+    "supports_room_code_later": false
+  },
+  "controls": {
+    "phone_controller": true,
+    "keyboard": true,
+    "mouse": false,
+    "gamepad": true,
+    "touch": true,
+    "shared_screen": true
+  },
+  "session": {
+    "passes_seat_map": true,
+    "returns_result_summary": true,
+    "drop_in_out_later": false,
+    "target_minutes": 2
+  },
+  "rules": {
+    "no_hidden_players": true,
+    "host_launch_required": true,
+    "game_does_not_override_hub_seats": true,
+    "runtime_internet_required": false,
+    "loss_condition": "stamina depleted through repeated stumbles",
+    "win_condition": "complete the shard run goal",
+    "score_basis": "shards collected + combo multiplier"
+  },
+  "verification": {
+    "game_night": {
+      "schema": "axm.game-night-seams/v1",
+      "controller_delivery": "shared-runtime",
+      "controller_evidence": ["runtime/index.html"],
+      "state_authority": "server",
+      "host_reload_recovery": "game-hub-active-launch",
+      "shared_screen_occupies_seat": false,
+      "disconnect_recovery": "pending",
+      "blocking_overlay_escape": "pending",
+      "physical_phone_qa": "pending",
+      "adapter_state_interface": "not-applicable"
+    }
+  },
+  "package": {
+    "source_status": "local-3d-prototype",
+    "installed": false,
+    "promoted": false,
+    "required_paths": [
+      "game.manifest.json",
+      "runtime/server.cjs",
+      "runtime/index.html",
+      "runtime/shardrunner-core.cjs",
+      "runtime/vendor/three.module.js",
+      "tests/package-selftest.js"
+    ]
+  }
+}
