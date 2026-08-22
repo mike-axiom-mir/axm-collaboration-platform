@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  var $ = function (id) { return document.getElementById(id); }, data = null, activeYear = '', activeMonth = '';
+  var $ = function (id) { return document.getElementById(id); }, data = null, observatoryData = null, activeYear = '', activeMonth = '', activeOpportunityFilter = 'ALL', observatoryPoll = null;
   function fmt(n) { return Number(n || 0).toLocaleString(); }
   function bytes(n) { n = Number(n || 0); if (n < 1024) return n + ' B'; if (n < 1048576) return (n / 1024).toFixed(1) + ' KB'; if (n < 1073741824) return (n / 1048576).toFixed(1) + ' MB'; return (n / 1073741824).toFixed(2) + ' GB'; }
   function delta(n) { n = Number(n || 0); return (n > 0 ? '+' : '') + fmt(n); }
@@ -9,6 +9,8 @@
   function component(value, label, note) { return '<div class="growth-component"><b>' + fmt(value) + '</b><span>' + label + '</span><small>' + note + '</small></div>'; }
   function capability(value, label, note, tone) { return '<article class="growth-capability ' + tone + '"><span>' + label + '</span><b>' + fmt(value) + '</b><small>' + note + '</small></article>'; }
   function deltaRow(label, value, note) { var unavailable = value == null; return '<div class="growth-delta"><span>' + label + (note ? '<small>' + note + '</small>' : '') + '</span><b class="' + (unavailable || Number(value) === 0 ? 'zero' : '') + '">' + (unavailable ? '—' : delta(value)) + '</b></div>'; }
+  function percent(value, total) { return total ? Math.round(Number(value || 0) / Number(total) * 100) : 0; }
+  function coverage(value, total, label, note, tone) { return '<article class="growth-coverage ' + (tone || '') + '"><div><b>' + fmt(value) + '</b><span>' + (total == null ? '' : ' / ' + fmt(total)) + '</span></div><strong>' + label + '</strong><small>' + note + (total == null ? '' : ' · ' + percent(value, total) + '% coverage') + '</small></article>'; }
 
   function attr(value) { return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function yearKey(value) { var date = new Date(value); return Number.isNaN(date.getTime()) ? '' : String(date.getFullYear()); }
@@ -51,6 +53,46 @@
     deltas.innerHTML = ready ? deltaRow('Installed footprint', md.bytes, 'body + state + substrates + history') + deltaRow('Owned body / source', md.bodyBytes) + deltaRow('Living state', md.stateBytes) + deltaRow('Installed substrates', md.substrateBytes) + deltaRow('Repository history', md.historyBytes) + deltaRow('Specializations', md.specializationCount) + deltaRow('Specialists added', change.ready ? (change.added || []).length : null) + deltaRow('Specialists updated', change.ready ? (change.updated || []).length : null) : '<div class="growth-empty">Mirror baseline begins with the next saved snapshot.</div>';
   }
 
+  function renderMilestones(rows) {
+    rows = Array.isArray(rows) ? rows.slice().reverse() : [];
+    $('growthMilestones').innerHTML = rows.length ? rows.slice(0, 20).map(function (row) {
+      var evidence = row.evidence || {}, truth = row.truth || {};
+      return '<article class="growth-milestone"><div><span>' + new Date(row.recordedAt).toLocaleString() + '</span><h4>' + attr(row.label) + '</h4>' + (row.note ? '<p>' + attr(row.note) + '</p>' : '') + '</div><div class="growth-milestone-evidence"><b>' + fmt(evidence.tools) + ' tools</b><b>' + fmt(evidence.validContracts) + ' valid contracts</b><b>' + fmt(evidence.connectedCapabilities) + ' connected seams</b><small>' + (truth.automaticallyProven === false ? 'human-recorded · not automatically proven' : 'legacy truth boundary unavailable') + '</small></div></article>';
+    }).join('') : '<div class="growth-empty">No explicit milestones recorded yet. Ordinary snapshots remain in the timeline above.</div>';
+  }
+
+  function renderOpportunities(rows) {
+    rows = Array.isArray(rows) ? rows : [];
+    var visible = activeOpportunityFilter === 'ALL' ? rows : rows.filter(function (row) { return row.severity === activeOpportunityFilter; });
+    $('growthOpportunities').innerHTML = visible.length ? visible.map(function (row) {
+      var samplesText = row.sampleIds && row.sampleIds.length ? '<small class="growth-opportunity-samples">Examples: ' + row.sampleIds.map(attr).join(', ') + '</small>' : '';
+      return '<article class="growth-opportunity ' + attr(String(row.severity || '').toLowerCase()) + '"><div class="growth-opportunity-title"><span>' + attr(row.severity) + ' · ' + attr(row.category) + '</span><b>' + fmt(row.count) + ' ' + attr(row.unit) + '</b></div><h4>' + attr(row.title) + '</h4><p>' + attr(row.detail) + '</p><strong>Next: ' + attr(row.action) + '</strong>' + samplesText + '<small class="growth-opportunity-evidence">Evidence: ' + attr(row.evidence) + '</small></article>';
+    }).join('') : '<div class="growth-empty">No ' + attr(activeOpportunityFilter === 'ALL' ? '' : activeOpportunityFilter.toLowerCase() + ' ') + 'signals in the current measurement.</div>';
+  }
+
+  function renderObservatory() {
+    var response = observatoryData || {}, o = response.observatory, freshness = response.freshness || {};
+    renderMilestones(response.milestones || []);
+    $('growthDefinitions').innerHTML = '<p><b>Scale</b> counts active source while excluding state, logs, exports, backups, dependencies and caches. <b>Lifecycle</b> is the status declared in each live tool manifest; TEST, WORKING and CANON are not converted into a pass count. <b>Structural coverage</b> checks present and valid contracts, top-level selftests and current verification receipts. <b>Capability seams</b> compare exact contract identifiers only; no semantic compatibility is guessed. <b>Improvement signals</b> are deterministic navigation cues, not a score or an automatic work queue. <b>Milestones</b> are explicit human records with a compact evidence attachment; they do not automatically prove success or promote anything.</p>';
+    if (!o) {
+      $('growthObservatoryFreshness').textContent = freshness.state || 'MEASURING';
+      $('growthObservatoryLifecycle').innerHTML = '<div class="growth-empty">Reading live lifecycle declarations…</div>';
+      $('growthObservatoryEvidence').innerHTML = '<div class="growth-empty">Checking contracts and evidence…</div>';
+      $('growthObservatoryConnections').innerHTML = '<div class="growth-empty">Mapping exact capability seams…</div>';
+      $('growthOpportunities').innerHTML = '<div class="growth-empty">Typed improvement signals will appear when the isolated scan completes.</div>';
+      $('growthObservatoryNote').textContent = response.error ? 'Observatory unavailable · ' + response.error : 'Measuring outside the page thread; the existing growth view remains usable.';
+      return;
+    }
+    var lifecycle = o.lifecycle || {}, statuses = lifecycle.statuses || {}, structure = o.structure || {}, contracts = structure.contracts || {}, selftests = structure.selftests || {}, evidence = o.evidence || {}, verification = evidence.currentVerification || {}, verdicts = verification.verdicts || {}, connections = o.connections || {};
+    $('growthObservatoryFreshness').textContent = (freshness.state || 'CURRENT') + (freshness.ageMs == null ? '' : ' · ' + Math.max(0, Math.round(freshness.ageMs / 60000)) + 'm');
+    $('growthObservatoryLifecycle').innerHTML = ['CANON','WORKING','TEST','EXPERIMENTAL','SHELL','BROKEN','UNKNOWN'].map(function (status) { return '<div class="growth-status-row status-' + status.toLowerCase() + '"><span>' + status + '</span><b>' + fmt(statuses[status]) + '</b></div>'; }).join('');
+    $('growthObservatoryEvidence').innerHTML = coverage(contracts.valid, structure.tools, 'valid contracts', 'structure only; not runtime proof', 'teal') + coverage(selftests.topLevel, structure.tools, 'top-level selftests', 'deterministic entrypoints present', 'blue') + coverage(verdicts.PASS, verification.currentResults, 'current PASS receipts', verification.receiptAvailable ? 'digest-matched local results' : 'no local verification receipt available', 'green') + coverage(evidence.documentedProofClaims, null, 'documented public proof claims', 'claims stay bounded by their does-not-prove fields', 'gold');
+    $('growthObservatoryConnections').innerHTML = coverage(connections.connected, connections.exactContractCapabilities, 'connected identifiers', 'one or more exact providers and consumers', 'green') + coverage(connections.consumerOnly, connections.exactContractCapabilities, 'consumer-only', 'attention: no exact provider declared', 'red') + coverage(connections.providerOnly, connections.exactContractCapabilities, 'provider-only', 'reuse candidate or intentional public output', 'gold');
+    renderOpportunities(o.opportunities || []);
+    var status = response.scanStatus || {}, registry = evidence.registry || {};
+    $('growthObservatoryNote').textContent = 'Measured ' + new Date(o.measuredAt).toLocaleString() + (status.durationMs == null ? '' : ' · isolated scan ' + (status.durationMs / 1000).toFixed(1) + 's') + ' · evidence registry ' + String(registry.state || 'UNKNOWN').toLowerCase().replace(/_/g, ' ') + ' · no quality score produced.';
+  }
+
   function render() {
     if (!data) return;
     var c = data.current, d = data.deltaFromPrevious || {}, h = data.history || [], schedule = data.schedule || {}, total = Math.max(1, c.totalFiles), textPct = Math.round(c.textFiles / total * 100), componentReady = data.componentDeltaReady === true, worldReady = data.worldDeltaReady === true, capabilityReady = data.capabilityDeltaReady === true, changes = data.moduleChanges || {}, worldChanges = data.worldChanges || {};
@@ -73,17 +115,23 @@
   }
 
   function setStatus(message, isError) { var inline = $('growthActionStatus'), detail = $('growthStatus'); inline.textContent = message || ''; inline.classList.toggle('error', !!isError); detail.textContent = message || ''; detail.style.color = isError ? '#ff8190' : ''; }
-  function refresh() { return fetch('/api/workshop-growth', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { if (!j.ok) throw Error(j.error || 'growth unavailable'); data = j; render(); }).catch(function (e) { setStatus(e.message, true); }); }
+  function refreshGrowth() { return fetch('/api/workshop-growth', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { if (!j.ok) throw Error(j.error || 'growth unavailable'); data = j; render(); }).catch(function (e) { setStatus('Growth unavailable · ' + e.message, true); }); }
+  function refreshObservatory() { return fetch('/api/workshop-observatory', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { if (!j.ok) throw Error(j.error || 'Observatory unavailable'); observatoryData = j; renderObservatory(); if ((!j.ready || j.freshness && j.freshness.stale) && !observatoryPoll) { observatoryPoll = window.setTimeout(function () { observatoryPoll = null; refreshObservatory(); }, 1800); } }).catch(function (e) { observatoryData = { ready:false, error:e.message, milestones:observatoryData && observatoryData.milestones || [] }; renderObservatory(); }); }
+  function refresh() { return Promise.all([refreshGrowth(), refreshObservatory()]); }
   function open() { $('growthScreen').classList.add('show'); setStatus('', false); refresh(); }
   function close() { $('growthScreen').classList.remove('show'); }
   function capture() { var label = $('growthLabel').value.trim() || 'Workshop snapshot', button = $('growthCapture'); button.disabled = true; button.textContent = 'Saving…'; setStatus('Measuring the active workshop…', false); fetch('/api/workshop-growth/capture', { method: 'POST', headers: { 'content-type': 'application/json', 'x-axm-growth': 'explicit-local-snapshot' }, body: JSON.stringify({ label: label, actor: 'local-human' }) }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw Error(j.error || 'snapshot failed'); return j; }); }).then(function (j) { setStatus(j.duplicate ? 'Already saved · nothing changed.' : 'Snapshot saved.', false); return refresh(); }).catch(function (e) { setStatus('Save failed · ' + e.message, true); }).then(function () { button.disabled = false; button.textContent = 'Save snapshot'; }); }
   function saveSchedule() { var button = $('growthScheduleSave'); button.disabled = true; setStatus('Saving daily schedule…', false); fetch('/api/workshop-growth/schedule', { method: 'POST', headers: { 'content-type': 'application/json', 'x-axm-growth': 'explicit-local-schedule' }, body: JSON.stringify({ enabled: $('growthAutoEnabled').checked, localTime: $('growthAutoTime').value || '05:00', actor: 'local-human' }) }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw Error(j.error || 'schedule failed'); return j; }); }).then(function () { setStatus($('growthAutoEnabled').checked ? 'Daily snapshots enabled.' : 'Daily snapshots paused.', false); return refresh(); }).catch(function (e) { setStatus('Schedule failed · ' + e.message, true); }).then(function () { button.disabled = false; }); }
+  function recordMilestone() { var button = $('growthMilestoneSave'), label = $('growthMilestoneLabel').value.trim(), note = $('growthMilestoneNote').value.trim(); if (!label) { setStatus('Milestone title is required.', true); $('growthMilestoneLabel').focus(); return; } button.disabled = true; button.textContent = 'Recording…'; fetch('/api/workshop-observatory/milestones', { method:'POST', headers:{ 'content-type':'application/json', 'x-axm-observatory':'explicit-local-milestone' }, body:JSON.stringify({ label:label, note:note, actor:'local-human' }) }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw Error(j.error || 'milestone failed'); return j; }); }).then(function (j) { $('growthMilestoneLabel').value = ''; $('growthMilestoneNote').value = ''; setStatus(j.duplicate ? 'That milestone is already attached to this evidence snapshot.' : 'Milestone recorded · human importance preserved without automatic proof.', false); return refreshObservatory(); }).catch(function (e) { setStatus('Milestone failed · ' + e.message, true); }).then(function () { button.disabled = false; button.textContent = 'Record milestone'; }); }
+  function refreshAll() { setStatus('Refreshing scale and starting a fresh Observatory measurement…', false); fetch('/api/workshop-observatory/refresh', { method:'POST', headers:{ 'x-axm-observatory':'explicit-local-refresh' } }).catch(function () {}); return refresh().then(function () { setStatus('Current scale refreshed · deeper evidence refresh continues outside the page thread.', false); }); }
 
   $('growthClose').onclick = close;
   $('growthScreen').onclick = function (event) { if (event.target === $('growthScreen')) close(); };
   $('growthCapture').onclick = capture;
-  $('growthRefresh').onclick = function () { setStatus('Refreshing current workshop totals…', false); refresh().then(function () { setStatus('Current totals refreshed.', false); }); };
+  $('growthRefresh').onclick = refreshAll;
   $('growthScheduleSave').onclick = saveSchedule;
+  $('growthMilestoneSave').onclick = recordMilestone;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-growth-filter]'), function (button) { button.onclick = function () { activeOpportunityFilter = button.getAttribute('data-growth-filter') || 'ALL'; Array.prototype.forEach.call(document.querySelectorAll('[data-growth-filter]'), function (item) { item.classList.toggle('active', item === button); }); renderOpportunities(observatoryData && observatoryData.observatory && observatoryData.observatory.opportunities || []); }; });
   $('growthYear').onchange = function () { activeYear = $('growthYear').value; activeMonth = ''; render(); };
   $('growthMonth').onchange = function () { activeMonth = $('growthMonth').value; render(); };
   window.AXMWorkshopGrowth = { open: open, refresh: refresh };
