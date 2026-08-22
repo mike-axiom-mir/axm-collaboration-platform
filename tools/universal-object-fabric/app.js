@@ -1,7 +1,7 @@
 'use strict';
 
 (() => {
-  const STAGE_BASE = '../../intakes/universal-object-fabric-v0.7.0-2026-07-28/game-stage/';
+  const STAGE_BASE = '../../shared/universal-object-fabric/source-stage-v0.7/game-stage/';
   const state = { assets: [], selected: null, query: '' };
   const list = document.getElementById('assetList');
   const detail = document.getElementById('detail');
@@ -44,7 +44,7 @@
     return {
       schema: 'axm.uof.exact-resolution/v0.7',
       identity: asset.identity,
-      stage_root: 'intakes/universal-object-fabric-v0.7.0-2026-07-28/game-stage',
+      stage_root: 'shared/universal-object-fabric/source-stage-v0.7/game-stage',
       runtime_manifest: asset.runtime_manifest,
       universal_manifest: asset.universal_manifest,
       runtime_capsule: asset.runtime_capsule,

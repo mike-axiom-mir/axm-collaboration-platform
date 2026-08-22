@@ -48,5 +48,5 @@ assert.match(three, /selectLOD/);
 assert.match(godot, /class_name AXMUniversalObject/);
 assert.match(godot, /select_lod/);
 
-assert.ok(fs.existsSync(path.join(root, 'intakes', 'universal-object-fabric-v0.7.0-2026-07-28', 'INTAKE_RECEIPT.json')));
+assert.ok(fs.existsSync(path.join(Service.INTAKE_ROOT, 'INTAKE_RECEIPT.json')));
 console.log('Universal Object Fabric self-test passed: 10 exact identities, 668 checksums, source hash preserved, declared WARN visible');

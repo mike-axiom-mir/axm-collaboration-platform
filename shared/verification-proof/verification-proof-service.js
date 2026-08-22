@@ -23,7 +23,7 @@ function pythonCommand() {
 
 function create(options) {
   const root = path.resolve(options && options.root || path.join(__dirname, '..', '..'));
-  const intakeRoot = path.resolve(options && options.intakeRoot || path.join(root, 'intakes', 'verification-proof-99-v0.1'));
+  const intakeRoot = path.resolve(options && options.intakeRoot || path.join(root, 'shared', 'verification-proof', 'source-catalog-v1'));
   const modulesRoot = path.join(intakeRoot, 'modules');
   const cliPath = path.resolve(options && options.cliPath || path.join(root, 'tools', 'verification-proof-lab', 'verification-cli.py'));
   const publicProofBatch1 = PublicProofBatch1.create({ root });
@@ -61,8 +61,8 @@ function create(options) {
             : requiresInProcessAdapter
               ? 'CALLABLE_INPUT_REQUIRES_IN_PROCESS_ADAPTER'
               : null,
-          contractUrl: '/intakes/verification-proof-99-v0.1/modules/' + encodeURIComponent(entry.name) + '/module.contract.json',
-          intakeUrl: '/intakes/verification-proof-99-v0.1/modules/' + encodeURIComponent(entry.name) + '/INTAKE.md'
+          contractUrl: '/shared/verification-proof/source-catalog-v1/modules/' + encodeURIComponent(entry.name) + '/module.contract.json',
+          intakeUrl: '/shared/verification-proof/source-catalog-v1/modules/' + encodeURIComponent(entry.name) + '/INTAKE.md'
         };
       })
       .sort((left, right) => left.seed - right.seed);

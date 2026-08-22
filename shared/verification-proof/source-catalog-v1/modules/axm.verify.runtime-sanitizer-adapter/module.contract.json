@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.runtime-sanitizer-adapter",
+  "purpose": "Convert runtime sanitizer observations into typed bounded evidence receipts.",
+  "inputs": {
+    "tool metadata and execution facts": "sanitizer name/version, enabled, completed, exit code",
+    "report_text": "caller-supplied sanitizer output"
+  },
+  "outputs": {
+    "sanitizer_receipt": "typed findings, raw digest, execution state, bounded verdict, and limitations"
+  },
+  "refusals": [
+    "unsupported tool metadata",
+    "invalid execution flags",
+    "non-string report",
+    "invalid exit code"
+  ],
+  "non_authority": [
+    "does_not_run_sanitizer",
+    "absence_of_finding_only_applies_to_supplied_run",
+    "integrity_not_truth",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

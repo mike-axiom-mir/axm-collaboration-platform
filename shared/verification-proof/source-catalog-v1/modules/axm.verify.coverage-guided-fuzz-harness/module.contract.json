@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.coverage-guided-fuzz-harness",
+  "purpose": "Perform bounded deterministic coverage-guided byte mutation and retain a first failure reproducer.",
+  "inputs": {
+    "seed_corpus": "non-empty byte inputs",
+    "target": "in-process callable returning coverage tokens and optional violation",
+    "limits": "seed, maximum cases, maximum input bytes"
+  },
+  "outputs": {
+    "fuzz_receipt": "cases, coverage growth, corpus size, first failure, minimized input, bounded verdict"
+  },
+  "refusals": [
+    "empty corpus",
+    "oversized seed",
+    "invalid target result",
+    "invalid limits",
+    "non-byte seed"
+  ],
+  "non_authority": [
+    "bounded_campaign_only",
+    "coverage_tokens_are_caller_declared",
+    "does_not_execute_external_commands",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

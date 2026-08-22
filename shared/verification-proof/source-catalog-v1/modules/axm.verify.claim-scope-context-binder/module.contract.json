@@ -1,0 +1,38 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.claim-scope-context-binder",
+  "purpose": "Bind a typed claim to exact declared context without inventing or verifying context facts.",
+  "inputs": {
+    "claim": "object containing claim_id and subject",
+    "context": "structured scope context",
+    "required_dimensions": "explicit profile requirement list"
+  },
+  "outputs": {
+    "scope_binding": "deterministic binding receipt",
+    "missing_required_dimensions": "explicit list"
+  },
+  "supported_dimensions": [
+    "artifact_versions",
+    "environments",
+    "devices",
+    "datasets",
+    "configurations",
+    "time_window",
+    "excluded_conditions",
+    "extensions"
+  ],
+  "refusals": [
+    "unknown_dimension",
+    "invalid_dimension_shape",
+    "duplicate_identity_within_dimension",
+    "empty_claim_id",
+    "empty_subject"
+  ],
+  "non_authority": [
+    "does_not_observe_context",
+    "does_not_verify_context_truth",
+    "does_not_mark_claim_pass",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

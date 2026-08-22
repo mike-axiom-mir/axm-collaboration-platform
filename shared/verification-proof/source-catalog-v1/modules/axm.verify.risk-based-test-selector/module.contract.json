@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.risk-based-test-selector",
+  "purpose": "Select bounded tests using explicit risk dimensions, weights, costs, and mandatory constraints.",
+  "inputs": {
+    "tests": "unique test ids with 0-5 risk dimensions, cost, and optional mandatory status",
+    "ceilings": "maximum tests and optional maximum cost",
+    "weights": "optional explicit non-negative weights"
+  },
+  "outputs": {
+    "selection": "ranked selected tests, exclusions with reasons, weights, and bounded cost"
+  },
+  "refusals": [
+    "empty tests",
+    "duplicate test id",
+    "invalid risk value",
+    "invalid ceilings",
+    "mandatory tests exceed ceilings"
+  ],
+  "non_authority": [
+    "does_not_execute_tests",
+    "selection_is_not_approval",
+    "weights_are_policy_not_truth",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

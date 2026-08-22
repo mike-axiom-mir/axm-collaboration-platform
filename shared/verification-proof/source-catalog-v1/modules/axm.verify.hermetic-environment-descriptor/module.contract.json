@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.hermetic-environment-descriptor",
+  "purpose": "Describe and compare exact test environments without claiming that a description itself makes execution hermetic.",
+  "inputs": {
+    "descriptor": "exact environment facts",
+    "observed_descriptor": "optional second descriptor for comparison"
+  },
+  "outputs": {
+    "environment_receipt": "canonical descriptor digest or exact mismatch receipt"
+  },
+  "refusals": [
+    "unsupported_network_state",
+    "duplicate_dependency_or_tool",
+    "invalid_resource_limit",
+    "descriptor_id_missing"
+  ],
+  "non_authority": [
+    "does_not_create_sandbox",
+    "does_not_prove_execution_occurred",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.redacted-replay-fixture-builder",
+  "purpose": "Transform bounded incident or session events into privacy-reduced replay fixtures through explicit keep, drop, mask, hash, generalize, and relative-time rules.",
+  "inputs": {
+    "events": "ordered JSON-safe event mappings",
+    "redaction_policy": "explicit field actions and salt for hashes"
+  },
+  "outputs": {
+    "replay_fixture": "redacted events plus transformation and residual-risk receipt"
+  },
+  "refusals": [
+    "keep_sensitive_field",
+    "hash_without_salt",
+    "unsupported_action",
+    "non_json_safe_event",
+    "empty_event_list"
+  ],
+  "non_authority": [
+    "cannot_guarantee_deidentification",
+    "free_text_requires_human_review",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

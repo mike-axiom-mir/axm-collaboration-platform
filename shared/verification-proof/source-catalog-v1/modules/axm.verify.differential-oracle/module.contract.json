@@ -1,0 +1,30 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.differential-oracle",
+  "purpose": "Cluster outputs from multiple named implementations to expose agreement, disagreement, and missing observations without selecting a winner.",
+  "inputs": {
+    "implementations": "two or more unique implementation identities",
+    "cases": "case outputs keyed by implementation"
+  },
+  "outputs": {
+    "differential_receipt": "AGREEMENT, DISAGREEMENT, or UNKNOWN with output clusters"
+  },
+  "states": [
+    "AGREEMENT",
+    "DISAGREEMENT",
+    "UNKNOWN"
+  ],
+  "refusals": [
+    "fewer_than_two_implementations",
+    "duplicate_implementation",
+    "duplicate_case_id",
+    "non_json_output"
+  ],
+  "non_authority": [
+    "does_not_choose_winner",
+    "majority_is_not_truth",
+    "does_not_execute_implementations",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

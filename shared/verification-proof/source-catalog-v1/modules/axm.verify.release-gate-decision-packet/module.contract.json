@@ -1,0 +1,24 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.release-gate-decision-packet",
+  "purpose": "Assemble exact artifact identity, required receipts, unresolved conflicts, failures, limitations, approvals, and rollback readiness into a bounded packet for Merge Gate review.",
+  "inputs": {
+    "request": "artifact and gate evidence inputs"
+  },
+  "outputs": {
+    "packet": "blocking reasons, review readiness, exact evidence, and non-release flags"
+  },
+  "refusals": [
+    "missing artifact identity",
+    "duplicate receipt id",
+    "invalid receipt verdict",
+    "invalid approval or rollback structure"
+  ],
+  "non_authority": [
+    "does_not release artifacts",
+    "does_not decide Merge Gate",
+    "does_not hide blockers",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

@@ -64,17 +64,17 @@ const livingCandidate = SimLiving.createSimLivingGameEvidenceExample();
 ```
 
 The same intake now has a tested static bridge at
-`intakes/sim-living-run102/game-wiring.js`. It maps every source module into
+`shared/game-organism/source-evidence/sim-living-run102/game-wiring.js`. It maps every source module into
 Game Capability Atlas planning leads, a directly importable DRAFT Game Forge
 project, a frozen Experiment World checkpoint, receiver-normalized (but never
 applied) living-world operation previews, and Verification Spine receipts. The
 generated Game Forge project is
-`intakes/sim-living-run102/evidence/game-forge-project.json`; use Game Forge's
+`shared/game-organism/source-evidence/sim-living-run102/evidence/game-forge-project.json`; use Game Forge's
 explicit **Import project** action to inspect it. Importing the document does
 not implement or execute the source systems.
 
 ```javascript
-const SimLivingGameWiring = require('../../intakes/sim-living-run102/game-wiring');
+const SimLivingGameWiring = require('../../shared/game-organism/source-evidence/sim-living-run102/game-wiring');
 const wiring = SimLivingGameWiring.buildArtifacts();
 ```
 

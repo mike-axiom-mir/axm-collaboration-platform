@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.motion-sequence-proof",
+  "purpose": "Verify frame order, monotonic timing, continuity declarations, duration and gap ceilings, and native playback evidence.",
+  "inputs": {
+    "frames": "ordered frame records with index, timestamp_ms, and digest",
+    "timing_contract": "explicit maximum gap and optional duration ceilings",
+    "playback_evidence": "optional native playback observation state"
+  },
+  "outputs": {
+    "motion_proof": "violations, timing summary, playback state, and bounded verdict"
+  },
+  "refusals": [
+    "fewer than two frames",
+    "invalid or duplicate frame indices",
+    "non-numeric timestamps",
+    "invalid timing contract or playback state"
+  ],
+  "non_authority": [
+    "frames_are_caller_supplied",
+    "aesthetic_quality_not_judged",
+    "does_not_play_media",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

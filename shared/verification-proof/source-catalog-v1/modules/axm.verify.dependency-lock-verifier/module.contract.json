@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.dependency-lock-verifier",
+  "purpose": "Compare resolved dependency identity, version, source, digest, and transitive relationships against an explicitly reviewed lock.",
+  "inputs": {
+    "reviewed_lock": "reviewed dependency entries",
+    "resolved_dependencies": "observed dependency entries"
+  },
+  "outputs": {
+    "lock_receipt": "PASS or FAIL with exact missing, unexpected, and field mismatches"
+  },
+  "refusals": [
+    "duplicate_dependency_identity",
+    "invalid_sha256",
+    "missing_version_or_source",
+    "self_dependency"
+  ],
+  "non_authority": [
+    "does_not_scan_vulnerabilities",
+    "does_not_prove_dependency_safety",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

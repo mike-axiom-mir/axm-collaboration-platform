@@ -1,0 +1,34 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.exact-output-oracle",
+  "purpose": "Compare deterministic outputs by an explicit exact representation and emit bounded mismatch evidence.",
+  "inputs": {
+    "case_id": "exact test case identity",
+    "expected": "declared expected output",
+    "actual": "observed output",
+    "mode": "explicit representation"
+  },
+  "outputs": {
+    "oracle_receipt": "PASS or FAIL with bounded mismatch detail"
+  },
+  "modes": [
+    "SCALAR",
+    "TEXT",
+    "CANONICAL_JSON",
+    "BYTES_BASE64",
+    "STATE_TRANSITION"
+  ],
+  "refusals": [
+    "unsupported_mode",
+    "invalid_base64",
+    "wrong_representation",
+    "non_json_value"
+  ],
+  "non_authority": [
+    "exact_match_is_not_general_correctness",
+    "does_not_execute_target",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

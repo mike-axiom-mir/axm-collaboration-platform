@@ -1,0 +1,202 @@
+{
+  "schema": "axm.academy.grounded-knowledge-object/v0.1-candidate",
+  "id": "execution-outcome-verification",
+  "version": "0.1.0",
+  "status": "TEST",
+  "installed": false,
+  "promoted": false,
+  "canon": false,
+  "title": "Execution success and observable outcome success are different claims",
+  "claims": [
+    {
+      "id": "execution-receipt-is-bounded",
+      "statement": "A successful execution, compilation, or HTTP receipt establishes only the condition that its named check actually observed.",
+      "epistemic_status": "SOURCE_BACKED",
+      "verification_status": "LOCALLY_CORROBORATED",
+      "scope": "Workshop builds and checks with separately observable visual or behavioral outcomes.",
+      "conditions": [
+        "The execution receipt names its input, version, check, and pass condition.",
+        "No broader outcome is inferred without a channel that can observe it."
+      ],
+      "evidence_refs": [
+        "packet-master",
+        "workshop-contributor-rules"
+      ],
+      "contradiction_refs": [],
+      "uncertainty": "The exact additional verifier depends on the claim; not every task is visual or interactive.",
+      "boundary": "This does not make execution receipts weak or useless. It prevents them from silently certifying claims outside their observation surface."
+    },
+    {
+      "id": "outcome-needs-observation",
+      "statement": "When a visible or behavioral outcome matters, an attributable observation of that outcome can reveal failures that execution-only checks cannot see.",
+      "epistemic_status": "SOURCE_BACKED",
+      "verification_status": "LOCALLY_CORROBORATED",
+      "scope": "Visual interfaces, games, animation, rendered documents, simulations, and other outputs whose intended result can be independently observed.",
+      "conditions": [
+        "The target and observation channel are exact and attributable.",
+        "The observation remains evidence rather than automatic judgment or repair authority.",
+        "A changed build is re-observed after repair."
+      ],
+      "evidence_refs": [
+        "packet-master",
+        "sensorium-runtime-boundary",
+        "sensorium-coordinator"
+      ],
+      "contradiction_refs": [],
+      "uncertainty": "A screenshot or typed observation may still be incomplete, stale, mis-scoped, or unable to establish cause.",
+      "boundary": "Observation does not prove aesthetics, usability, safety, fun, correctness, or intent by itself; those claims need their own evidence and judgment gate."
+    },
+    {
+      "id": "repair-remains-separate",
+      "statement": "Observation, judgment, repair authority, repair execution, and post-repair verification remain separate steps even when they form one feedback loop.",
+      "epistemic_status": "SOURCE_BACKED",
+      "verification_status": "LOCALLY_CORROBORATED",
+      "scope": "Current Workshop Sensorium coordination and approved-repair routing.",
+      "conditions": [
+        "Authority is current and explicitly injected.",
+        "Novel failures hold rather than trigger an invented automatic repair.",
+        "The repaired outcome is rechecked through the relevant evidence route."
+      ],
+      "evidence_refs": [
+        "sensorium-coordinator",
+        "sensorium-repair-router"
+      ],
+      "contradiction_refs": [],
+      "uncertainty": "The current local route does not implement the packet's proposed code-screenshot-to-source trace.",
+      "boundary": "This fixture grants no permission to capture, edit, replay a repair, or claim that RepairBuddy visual/code tracing exists."
+    }
+  ],
+  "relationships": [
+    {
+      "from": "outcome-needs-observation",
+      "type": "DEPENDS_ON",
+      "to": "execution-receipt-is-bounded",
+      "status": "SOURCE_BACKED"
+    },
+    {
+      "from": "repair-remains-separate",
+      "type": "NARROWS",
+      "to": "outcome-needs-observation",
+      "status": "SOURCE_BACKED"
+    }
+  ],
+  "sources": [
+    {
+      "id": "packet-master",
+      "kind": "DIRECTED_INTAKE",
+      "path": "source/expanded/AXM_ACADEMY_CONTINUITY_SENSORY_LOCAL_INTAKE_v0_1/AXM_ACADEMY_CONTINUITY_SENSORY_MASTER_LOG_v0_1.txt",
+      "sha256": "1384e8397bdfc35f32a3d3bde462d4b54657a6c22e5bf9682eef05bde7f066bf",
+      "supports": [
+        "execution-receipt-is-bounded",
+        "outcome-needs-observation"
+      ],
+      "limitations": "Continuity reconstruction based partly on user corrections and reported behavior; not independent domain validation or automatic CANON."
+    },
+    {
+      "id": "workshop-contributor-rules",
+      "kind": "LOCAL_CONTRACT",
+      "path": "AGENTS.md",
+      "sha256": "3bfcbe5c75a48b158172cfc8b140fbeb91500aa4f5a16edb562840a60bb97ca0",
+      "supports": [
+        "execution-receipt-is-bounded"
+      ],
+      "limitations": "Repository contribution and claim boundary; it is not a general theory of verification."
+    },
+    {
+      "id": "sensorium-runtime-boundary",
+      "kind": "LOCAL_CONTRACT",
+      "path": "shared/sensorium/README.md",
+      "sha256": "0f2e9d43ad1508371330c1699c5112bb77ba34ce2948e11e79c56fc9936cd753",
+      "supports": [
+        "outcome-needs-observation"
+      ],
+      "limitations": "Describes current bounded Sensorium adapters; does not prove live coverage for every sensory target."
+    },
+    {
+      "id": "sensorium-coordinator",
+      "kind": "LOCAL_IMPLEMENTATION",
+      "path": "shared/sensorium/coordinator.js",
+      "sha256": "2e5181d6833e056a53806360cb2d59231b4afa4314597dec843c4700213ac235",
+      "supports": [
+        "outcome-needs-observation",
+        "repair-remains-separate"
+      ],
+      "limitations": "Routes bounded evidence and a recommended verdict; it does not appoint itself the judgment seat or grant authority."
+    },
+    {
+      "id": "sensorium-repair-router",
+      "kind": "LOCAL_IMPLEMENTATION",
+      "path": "shared/sensorium/known-repair-router.js",
+      "sha256": "0a49f27d28287a392845e94de7ca789a210e1fa5b0e03eb1629e426a42e51c6f",
+      "supports": [
+        "repair-remains-separate"
+      ],
+      "limitations": "Routes exact approved repair recipes only; no code screenshot binding or novel automatic repair is implemented."
+    }
+  ],
+  "representations": [
+    {
+      "id": "human-plain-language",
+      "kind": "human_text",
+      "claim_refs": [
+        "execution-receipt-is-bounded",
+        "outcome-needs-observation",
+        "repair-remains-separate"
+      ],
+      "content": "A build can compile and still look or behave wrong. Name what each check actually observed. When the outcome is visual or behavioral, inspect that outcome through an exact evidence channel. Keep the observation, decision, permission to repair, repair itself, and the retest visible as separate steps.",
+      "losses": [
+        "Omits individual source hashes and detailed uncertainty; the claim records remain authoritative for this candidate."
+      ]
+    },
+    {
+      "id": "machine-feedback-loop",
+      "kind": "ai_structured",
+      "claim_refs": [
+        "execution-receipt-is-bounded",
+        "outcome-needs-observation",
+        "repair-remains-separate"
+      ],
+      "content": {
+        "sequence": [
+          "execute",
+          "capture-attributable-outcome-evidence",
+          "compare-evidence-with-intent",
+          "route-judgment",
+          "request-current-repair-authority",
+          "apply-bounded-approved-repair",
+          "re-execute",
+          "re-observe"
+        ],
+        "hard_separations": [
+          "execution-receipt:outcome-verdict",
+          "observation:judgment",
+          "judgment:authority",
+          "authority:repair",
+          "repair:post-repair-proof"
+        ]
+      },
+      "losses": [
+        "Does not select a concrete sensor, verifier, repair recipe, or success threshold."
+      ]
+    }
+  ],
+  "representation_gaps": [
+    "visual",
+    "interactive",
+    "simulation",
+    "evaluation"
+  ],
+  "authority": {
+    "automatic_admission": false,
+    "automatic_install": false,
+    "automatic_promotion": false,
+    "canon_change": false,
+    "human_review_required": true
+  },
+  "lineage": {
+    "source_candidate": "continuity-candidate.json",
+    "source_zip_sha256": "b2c5bc0dac0ae10abd93b8980dde3bf95e3755d8eb6ffe878836ddea14c9ba87",
+    "supersedes": [],
+    "change_note": "First disconnected TEST fixture. It does not resolve Academy OQ-10 because visual, interactive, simulation, and cross-representation evaluation proof remain missing."
+  }
+}

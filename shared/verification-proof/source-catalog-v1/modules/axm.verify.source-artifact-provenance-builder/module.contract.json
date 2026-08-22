@@ -1,0 +1,30 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.source-artifact-provenance-builder",
+  "purpose": "Build a deterministic source-to-artifact provenance statement from explicit subjects, materials, builder, configuration, environment, and activity.",
+  "inputs": {
+    "subjects": "unique named artifact identities",
+    "materials": "unique named input identities",
+    "builder": "declared builder facts",
+    "configuration": "declared build configuration",
+    "environment": "declared environment facts",
+    "activity": "declared producing activity"
+  },
+  "outputs": {
+    "provenance_statement": "deterministic provenance statement with statement identity"
+  },
+  "refusals": [
+    "no subjects",
+    "duplicate names",
+    "missing digest",
+    "missing builder id",
+    "missing activity type"
+  ],
+  "non_authority": [
+    "caller_declarations_not_authenticated",
+    "activity_occurrence_not_proven",
+    "builder_identity_not_authenticated",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

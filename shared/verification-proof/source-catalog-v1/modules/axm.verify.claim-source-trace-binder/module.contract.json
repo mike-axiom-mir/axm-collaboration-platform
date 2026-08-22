@@ -1,0 +1,30 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.claim-source-trace-binder",
+  "purpose": "Bind claims to exact source locations and local evidence-copy state without judging support.",
+  "inputs": {
+    "claim_id": "typed claim identity",
+    "source": "exact source trace object"
+  },
+  "outputs": {
+    "source_trace": "deterministic claim-to-source binding"
+  },
+  "local_copy_states": [
+    "CAPTURED",
+    "NOT_CAPTURED"
+  ],
+  "refusals": [
+    "missing_source_version",
+    "missing_location",
+    "empty_excerpt",
+    "captured_copy_without_digest",
+    "uncaptured_copy_without_reason"
+  ],
+  "non_authority": [
+    "does_not_fetch_source",
+    "does_not_check_support",
+    "does_not_check_quote_fidelity",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

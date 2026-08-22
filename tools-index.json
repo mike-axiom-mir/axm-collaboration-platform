@@ -1,7 +1,7 @@
 {
   "schema": "axm.tools-index/v1",
-  "generatedAt": "2026-08-22T19:38:23.493Z",
-  "sourceDigest": "2aa9015ffdce70f8ef8bad83b08eeb9a77e778e5de11c319f782835f6fcb8f4c",
+  "generatedAt": "2026-08-22T21:07:08.731Z",
+  "sourceDigest": "6dc6f21750198c008b9c9bc9f67324e1bbfc7ae8e556b28fbb0debcaf95cbd11",
   "promotionLadder": "shared/readiness/promotion-ladder.json",
   "summary": {
     "tools": 224,
@@ -29,7 +29,6 @@
       "ai-habitat",
       "ai-task-talk",
       "ai-team",
-      "ai-team-steward-lab",
       "archive-intake-cartographer",
       "asset-filesystem-service",
       "asset-pack-lab",
@@ -136,7 +135,6 @@
       "text-fabric",
       "ui-fx",
       "ui-ux-builder",
-      "universal-object-fabric",
       "verification-entry-observatory",
       "verification-proof-lab",
       "verifier",
@@ -144,7 +142,6 @@
       "visual-mold-foundry",
       "workshop-census-observatory",
       "workshop-command-center",
-      "workshop-packager",
       "workshop-search-provenance",
       "workshop-updater",
       "world-tile-foundry"
@@ -156,7 +153,26 @@
       "asset-spatial-sensory-workbench",
       "asset-ui-sensory-workbench"
     ],
-    "blocked": [],
+    "blocked": [
+      {
+        "id": "ai-team-steward-lab",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
+      },
+      {
+        "id": "universal-object-fabric",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
+      },
+      {
+        "id": "workshop-packager",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
+      }
+    ],
     "shellDecisionRequired": [
       "main-hub"
     ],
@@ -6148,21 +6164,21 @@
       ]
     },
     {
-      "id": "filesystem:intakes/accessibility-adaptive-interfaces-100-v1",
+      "id": "filesystem:shared/accessibility-adaptation/source-catalog-v1",
       "providers": [],
       "consumers": [
         "accessibility-adaptation-lab"
       ]
     },
     {
-      "id": "filesystem:intakes/ai-team-collaboration-runs-01-101-v1",
+      "id": "filesystem:shared/ai-team-steward/source-intake-v1",
       "providers": [],
       "consumers": [
         "ai-team-steward-lab"
       ]
     },
     {
-      "id": "filesystem:intakes/verification-proof-99-v0.1",
+      "id": "filesystem:shared/verification-proof/source-catalog-v1",
       "providers": [],
       "consumers": [
         "verification-proof-lab"
@@ -14455,7 +14471,7 @@
           "accessibility.noncanonical-plan"
         ],
         "consumes": [
-          "filesystem:intakes/accessibility-adaptive-interfaces-100-v1",
+          "filesystem:shared/accessibility-adaptation/source-catalog-v1",
           "browser:local-storage",
           "axm.accessibility-adaptation-request/v1"
         ]
@@ -14561,7 +14577,7 @@
       "verifiedAt": "2026-07-27T20:47:31.6393762Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 25
+        "ageDays": 26
       },
       "promotion": {
         "state": "CURRENT",
@@ -15100,7 +15116,7 @@
           "ai-team.existing-runtime-handoff"
         ],
         "consumes": [
-          "filesystem:intakes/ai-team-collaboration-runs-01-101-v1",
+          "filesystem:shared/ai-team-steward/source-intake-v1",
           "validator:retained-ai-team-proof-fixtures",
           "service:ai-team",
           "axm.ai-team-steward-request/v1"
@@ -15111,19 +15127,9 @@
           "tools/ai-team-steward-lab/selftest.js"
         ],
         "promotionPath": "tools/ai-team-steward-lab/selftest.js",
-        "sha256": "64eaffd0f70318fd5db360cd1eed6139781c469b7e178cb25752040b5d88ff29",
+        "sha256": "b8c7c9c2decb22aeb201bd9c5d8b8da878207623c734647c89b621099f2fe285",
         "digestScope": "all-discovered-selftests/v1",
-        "result": {
-          "id": "ai-team-steward-lab",
-          "path": "tools/ai-team-steward-lab/selftest.js",
-          "selftestSha256": "64eaffd0f70318fd5db360cd1eed6139781c469b7e178cb25752040b5d88ff29",
-          "selftestDigestScope": "all-discovered-selftests/v1",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 440,
-          "outputSha256": "7af109bef7c648852ac7364fdf22697846e22c485198e491859ab9461c950370",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -15133,8 +15139,10 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
-        "blockers": []
+        "state": "BLOCKED",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
       }
     },
     {
@@ -17537,7 +17545,7 @@
       "verifiedAt": "2026-07-24T20:12:25.359Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 28
+        "ageDays": 29
       },
       "promotion": {
         "state": "READY_FOR_HUMAN_REVIEW",
@@ -20936,7 +20944,7 @@
           "tools/game-organism-lab/selftest.js"
         ],
         "promotionPath": "tools/game-organism-lab/selftest.js",
-        "sha256": "a6f5e3e170669029ddd380c1166dcbd2fc134826abcfe1db6ad9c1d9a423f7c2",
+        "sha256": "f7a1358c31b2c7b5a428f6b299af54b659943e8c1df882db004a544bd8d072a7",
         "digestScope": "all-discovered-selftests/v1",
         "result": null
       },
@@ -28786,7 +28794,7 @@
       "audience": "human-machine",
       "manifest": {
         "path": "tools/universal-object-fabric/manifest.json",
-        "sha256": "796fba01bd2a97396b0e9993cea7a7ad8feaeb8dfbe21cd9c66a8c472de8eded",
+        "sha256": "72eb3fe2253c775d47cb280d856fa215bdbee32b40d4b4db36e16afbe0fdb44f",
         "valid": true,
         "errors": []
       },
@@ -28823,19 +28831,9 @@
           "tools/universal-object-fabric/selftest.js"
         ],
         "promotionPath": "tools/universal-object-fabric/selftest.js",
-        "sha256": "4963827219a598affd68531bb3353fd0280755eb6f7538ae04749338ac50de65",
+        "sha256": "377cd74eb2849038901439376bbbd053bbed2088ac53dc7ae899b18875c4bd9a",
         "digestScope": "all-discovered-selftests/v1",
-        "result": {
-          "id": "universal-object-fabric",
-          "path": "tools/universal-object-fabric/selftest.js",
-          "selftestSha256": "4963827219a598affd68531bb3353fd0280755eb6f7538ae04749338ac50de65",
-          "selftestDigestScope": "all-discovered-selftests/v1",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 1299,
-          "outputSha256": "ab8124029cd512582ebde4ac1c82f21851acd867e18550ea45d76668fe5320d0",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -28845,8 +28843,10 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
-        "blockers": []
+        "state": "BLOCKED",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
       }
     },
     {
@@ -29087,7 +29087,7 @@
           "verification.public-proof-metadata-overlap-routing"
         ],
         "consumes": [
-          "filesystem:intakes/verification-proof-99-v0.1",
+          "filesystem:shared/verification-proof/source-catalog-v1",
           "python:standard-library",
           "axm.verification-proof-call/v1",
           "shared:verification-proof/public-proof-batch1",
@@ -29951,19 +29951,9 @@
           "tools/workshop-packager/selftest.js"
         ],
         "promotionPath": "tools/workshop-packager/selftest.js",
-        "sha256": "21bb86c7ff7137d4344e05e62a3947f2b5522f7430dd099fbf23642a84903797",
+        "sha256": "dedec3ba358d0d01d1a82564707a25fd302521db2691d4738832b218c3387a13",
         "digestScope": "all-discovered-selftests/v1",
-        "result": {
-          "id": "workshop-packager",
-          "path": "tools/workshop-packager/selftest.js",
-          "selftestSha256": "21bb86c7ff7137d4344e05e62a3947f2b5522f7430dd099fbf23642a84903797",
-          "selftestDigestScope": "all-discovered-selftests/v1",
-          "verdict": "PASS",
-          "exitCode": 0,
-          "durationMs": 587,
-          "outputSha256": "8bde8a38a17eb491c855afec527074e9b32c1426ac5c8926dd9de881fb5e9773",
-          "failureTail": null
-        }
+        "result": null
       },
       "readme": true,
       "discoveryReview": false,
@@ -29973,8 +29963,10 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
-        "blockers": []
+        "state": "BLOCKED",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
       }
     },
     {
@@ -30046,7 +30038,7 @@
       "verifiedAt": "2026-07-24T20:12:25.359Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 28
+        "ageDays": 29
       },
       "promotion": {
         "state": "READY_FOR_HUMAN_REVIEW",

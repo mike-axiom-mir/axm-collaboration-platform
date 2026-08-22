@@ -1,31 +1,32 @@
 {
   "schema": "axm.public-modules/v1",
-  "generated_at": "2026-08-16T07:23:28.253Z",
+  "generated_at": "2026-08-22T21:07:08.731Z",
   "source": {
     "path": "tools-index.json",
-    "digest": "aacaf2f1684b33971bd387502d653c91d17ee6de0c1abb8e562b4021f23f64a0"
+    "digest": "6dc6f21750198c008b9c9bc9f67324e1bbfc7ae8e556b28fbb0debcaf95cbd11"
   },
   "summary": {
-    "tools": 218,
+    "tools": 224,
     "statuses": {
-      "TEST": 126,
+      "TEST": 131,
       "WORKING": 4,
-      "EXPERIMENTAL": 87,
+      "EXPERIMENTAL": 88,
       "SHELL": 1
     },
-    "contractsPresent": 218,
-    "contractsValid": 218,
-    "topLevelSelftests": 216,
-    "anySelftests": 218,
-    "permissionsDeclared": 218,
-    "kindsDeclared": 157,
-    "readmes": 131,
-    "capabilities": 1907
+    "contractsPresent": 224,
+    "contractsValid": 224,
+    "topLevelSelftests": 224,
+    "anySelftests": 224,
+    "permissionsDeclared": 224,
+    "kindsDeclared": 224,
+    "readmes": 138,
+    "capabilities": 1959
   },
   "truth": {
     "automaticPromotion": false,
     "structuralEligibilityIsRuntimeProof": false,
     "selftestPassIsHumanApproval": false,
+    "selftestReceiptBindsDiscoveredSuite": true,
     "capabilityCatalogGrantsAuthority": false,
     "missingValuesRemainVisible": true
   },
@@ -55,7 +56,7 @@
           "accessibility.noncanonical-plan"
         ],
         "consumes": [
-          "filesystem:intakes/accessibility-adaptive-interfaces-100-v1",
+          "filesystem:shared/accessibility-adaptation/source-catalog-v1",
           "browser:local-storage",
           "axm.accessibility-adaptation-request/v1"
         ],
@@ -118,7 +119,7 @@
       "verified_at": "2026-07-27T20:47:31.6393762Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 19
+        "ageDays": 26
       },
       "promotion": {
         "state": "CURRENT",
@@ -330,7 +331,7 @@
       "verified_at": "2026-07-28T19:13:44Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 18
+        "ageDays": 25
       },
       "promotion": {
         "state": "READY_FOR_HUMAN_REVIEW",
@@ -492,7 +493,7 @@
           "ai-team.existing-runtime-handoff"
         ],
         "consumes": [
-          "filesystem:intakes/ai-team-collaboration-runs-01-101-v1",
+          "filesystem:shared/ai-team-steward/source-intake-v1",
           "validator:retained-ai-team-proof-fixtures",
           "service:ai-team",
           "axm.ai-team-steward-request/v1"
@@ -508,8 +509,10 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
-        "blockers": []
+        "state": "BLOCKED",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
       }
     },
     {
@@ -645,6 +648,53 @@
       }
     },
     {
+      "id": "asset-audio-sensory-workbench",
+      "name": "AXM Asset Audio Sensory Workbench",
+      "status": "TEST",
+      "kind": "product",
+      "audience": "human-machine",
+      "source_path": "tools/asset-audio-sensory-workbench",
+      "entry_path": "tools/asset-audio-sensory-workbench/index.html",
+      "manifest": {
+        "path": "tools/asset-audio-sensory-workbench/manifest.json",
+        "sha256": "b9597c75e049aeaab96444874effc6b344968dfcda3e689fe5de219ef147b51d",
+        "valid": true,
+        "errors": []
+      },
+      "contract": {
+        "path": "tools/asset-audio-sensory-workbench/module.contract.json",
+        "present": true,
+        "valid": true,
+        "provides": [
+          "asset.audio.waveform.inspect",
+          "asset.audio.playback.user-gesture",
+          "asset.audio.edit.host-bridged",
+          "asset.listener-state.digest",
+          "asset.audio-review.receipt.nonpromoting"
+        ],
+        "consumes": [
+          "axm.asset-hand-result/v1",
+          "axm.deterministic-audio-recipe/v1",
+          "axm.deterministic-audio-analysis/v1",
+          "axm.deterministic-audio-verification/v1"
+        ],
+        "errors": []
+      },
+      "tests": [
+        "tools/asset-audio-sensory-workbench/selftest.js",
+        "tools/asset-audio-sensory-workbench/server-selftest.js"
+      ],
+      "verified_at": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NEEDS_SELFTEST_RUN",
+        "blockers": []
+      }
+    },
+    {
       "id": "asset-engine-roundtrip-bridge",
       "name": "Asset ↔ Engine Round-trip Bridge",
       "status": "EXPERIMENTAL",
@@ -696,13 +746,13 @@
       "id": "asset-fabric",
       "name": "AXM Asset Fabric",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/asset-fabric",
       "entry_path": "tools/asset-fabric/index.html",
       "manifest": {
         "path": "tools/asset-fabric/manifest.json",
-        "sha256": "5d7c7e61df689d73de60640cb12105bdc66c1175a5c05f97232d80a5c1a171e5",
+        "sha256": "63cbea2061d34151f99782d47b1a255435879976c6bd1dacb5fae214eba408c9",
         "valid": true,
         "errors": []
       },
@@ -815,9 +865,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -863,6 +911,53 @@
       },
       "promotion": {
         "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
+      }
+    },
+    {
+      "id": "asset-material-sensory-workbench",
+      "name": "AXM Asset Material Sensory Workbench",
+      "status": "TEST",
+      "kind": "product",
+      "audience": "human-machine",
+      "source_path": "tools/asset-material-sensory-workbench",
+      "entry_path": "tools/asset-material-sensory-workbench/index.html",
+      "manifest": {
+        "path": "tools/asset-material-sensory-workbench/manifest.json",
+        "sha256": "da16a1bd3cf8c54ef16c1353351fb78315d6cc56561741ece89f563b08b27b14",
+        "valid": true,
+        "errors": []
+      },
+      "contract": {
+        "path": "tools/asset-material-sensory-workbench/module.contract.json",
+        "present": true,
+        "valid": true,
+        "provides": [
+          "asset.material.lookdev.webgl2",
+          "asset.material.channels.inspect",
+          "asset.material.edit.host-bridged",
+          "asset.material.viewer-state.digest",
+          "asset.material-review.receipt.nonpromoting"
+        ],
+        "consumes": [
+          "axm.asset-hand-result/v1",
+          "axm.deterministic-material-handoff/v1",
+          "axm.pbr-material-recipe/v1",
+          "axm.pbr-material-bake-receipt/v1"
+        ],
+        "errors": []
+      },
+      "tests": [
+        "tools/asset-material-sensory-workbench/selftest.js",
+        "tools/asset-material-sensory-workbench/server-selftest.js"
+      ],
+      "verified_at": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -913,6 +1008,150 @@
       },
       "promotion": {
         "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
+      }
+    },
+    {
+      "id": "asset-sensory-workbench",
+      "name": "AXM Asset Sensory Workbench",
+      "status": "TEST",
+      "kind": "product",
+      "audience": "human-machine",
+      "source_path": "tools/asset-sensory-workbench",
+      "entry_path": "tools/asset-sensory-workbench/index.html",
+      "manifest": {
+        "path": "tools/asset-sensory-workbench/manifest.json",
+        "sha256": "899d41c00119326c93200372e42b79ff2e2bca01be769d57825eb141ae5a0aec",
+        "valid": true,
+        "errors": []
+      },
+      "contract": {
+        "path": "tools/asset-sensory-workbench/module.contract.json",
+        "present": true,
+        "valid": true,
+        "provides": [
+          "asset.visual-motion.player.bounded",
+          "asset.visual-motion.scrub.deterministic",
+          "asset.human-control.to-digest-bound-edit",
+          "asset.machine-edit.apply.allowlisted",
+          "asset.viewer.reduced-motion.adapt",
+          "asset.sensory-review.receipt.nonpromoting",
+          "asset.artifact-schema.bridge.checked"
+        ],
+        "consumes": [
+          "axm.asset-hand-result/v1",
+          "axm.deterministic-animation-composition/v1",
+          "axm.deterministic-animation-recipe/v1",
+          "axm.deterministic-animation-bake/v1"
+        ],
+        "errors": []
+      },
+      "tests": [
+        "tools/asset-sensory-workbench/selftest.js"
+      ],
+      "verified_at": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NEEDS_SELFTEST_RUN",
+        "blockers": []
+      }
+    },
+    {
+      "id": "asset-spatial-sensory-workbench",
+      "name": "AXM Asset Spatial Sensory Workbench",
+      "status": "TEST",
+      "kind": "product",
+      "audience": "human-machine",
+      "source_path": "tools/asset-spatial-sensory-workbench",
+      "entry_path": "tools/asset-spatial-sensory-workbench/index.html",
+      "manifest": {
+        "path": "tools/asset-spatial-sensory-workbench/manifest.json",
+        "sha256": "b8d01adb9db3ed09195f5f8079772e82e76d18d6ddbc0ca5538c2c97eb71e8ec",
+        "valid": true,
+        "errors": []
+      },
+      "contract": {
+        "path": "tools/asset-spatial-sensory-workbench/module.contract.json",
+        "present": true,
+        "valid": true,
+        "provides": [
+          "asset.spatial.glb.webgl2-review",
+          "asset.spatial.multi-angle-observation",
+          "asset.spatial.edit.host-bridged",
+          "asset.spatial.viewer-state.digest",
+          "asset.spatial-review.receipt.nonpromoting"
+        ],
+        "consumes": [
+          "axm.asset-hand-result/v1",
+          "axm.deterministic-spatial-handoff/v1",
+          "axm.spatial.project/v1",
+          "glTF.2.0"
+        ],
+        "errors": []
+      },
+      "tests": [
+        "tools/asset-spatial-sensory-workbench/selftest.js",
+        "tools/asset-spatial-sensory-workbench/server-selftest.js"
+      ],
+      "verified_at": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NEEDS_SELFTEST_RUN",
+        "blockers": []
+      }
+    },
+    {
+      "id": "asset-ui-sensory-workbench",
+      "name": "Asset UI Sensory Workbench",
+      "status": "TEST",
+      "kind": "product",
+      "audience": "human-machine",
+      "source_path": "tools/asset-ui-sensory-workbench",
+      "entry_path": "tools/asset-ui-sensory-workbench/index.html",
+      "manifest": {
+        "path": "tools/asset-ui-sensory-workbench/manifest.json",
+        "sha256": "f689de2cc0b9cf3b2df48cefe481c3ecc5a3b1f3fbb21bf0e41c69caca1dac2a",
+        "valid": true,
+        "errors": []
+      },
+      "contract": {
+        "path": "tools/asset-ui-sensory-workbench/module.contract.json",
+        "present": true,
+        "valid": true,
+        "provides": [
+          "ui.component.human-sensory-review",
+          "ui.stateful.browser-wrapper",
+          "ui.nine-slice.browser-observation",
+          "ui.recipe.human-edit",
+          "ui.viewer-state.digest",
+          "ui.human-review.receipt"
+        ],
+        "consumes": [
+          "ui-component/1.2.0",
+          "deterministic-ui-fabric/1.0.0",
+          "axm.asset-hand-result/v1",
+          "axm.deterministic-ui-handoff/v1",
+          "human:explicit-review"
+        ],
+        "errors": []
+      },
+      "tests": [
+        "tools/asset-ui-sensory-workbench/selftest.js",
+        "tools/asset-ui-sensory-workbench/server-selftest.js"
+      ],
+      "verified_at": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NEEDS_SELFTEST_RUN",
         "blockers": []
       }
     },
@@ -1121,13 +1360,13 @@
       "id": "automated-playtester-scenario-agent",
       "name": "Automated Playtester & Scenario Agent",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/automated-playtester-scenario-agent",
       "entry_path": "tools/automated-playtester-scenario-agent/index.html",
       "manifest": {
         "path": "tools/automated-playtester-scenario-agent/manifest.json",
-        "sha256": "b78ffbcdff04a03e62318a399cf2c66339743f8d3b6f66943efc6b2f284be6db",
+        "sha256": "fc03db2a02dca98ccaf910f581263636558094dddd3be3a57524ceb387014c67",
         "valid": true,
         "errors": []
       },
@@ -1159,9 +1398,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -1442,13 +1679,13 @@
       "id": "browser-lan-hardware-qa-lab",
       "name": "Browser, LAN & Hardware QA Lab",
       "status": "TEST",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/browser-lan-hardware-qa-lab",
       "entry_path": "tools/browser-lan-hardware-qa-lab/index.html",
       "manifest": {
         "path": "tools/browser-lan-hardware-qa-lab/manifest.json",
-        "sha256": "9cf27beba05495e95922b2bd8c2cda64d3a05996a483e283cb7783241fc6de9d",
+        "sha256": "f9a5c77d6619b1189721a95cbfb9420828b9bb9838b7ff67f8ab5cb1e26fb606",
         "valid": true,
         "errors": []
       },
@@ -1478,10 +1715,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -1619,7 +1854,7 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "NEEDS_SELFTEST_RUN",
+        "state": "READY_FOR_HUMAN_REVIEW",
         "blockers": []
       }
     },
@@ -1759,13 +1994,13 @@
       "id": "choice-first-visual-lab",
       "name": "AXM Choice-First Visual & Simulation Lab",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/choice-first-visual-lab",
       "entry_path": "tools/choice-first-visual-lab/index.html",
       "manifest": {
         "path": "tools/choice-first-visual-lab/manifest.json",
-        "sha256": "a661d8135f13ef899c1bb985600bf2b0f685eb132ce5686dc4e53e29808453f4",
+        "sha256": "15b7c69a9d97a14a458757206d0b975cad3e10ffdaed82a848bcd4db66b56c80",
         "valid": true,
         "errors": []
       },
@@ -1836,9 +2071,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -1984,7 +2217,7 @@
       "verified_at": "2026-07-24T20:12:25.359Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 22
+        "ageDays": 29
       },
       "promotion": {
         "state": "READY_FOR_HUMAN_REVIEW",
@@ -2305,13 +2538,13 @@
       "id": "dedicated-session-orchestrator",
       "name": "Dedicated Session Orchestrator",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/dedicated-session-orchestrator",
       "entry_path": "tools/dedicated-session-orchestrator/index.html",
       "manifest": {
         "path": "tools/dedicated-session-orchestrator/manifest.json",
-        "sha256": "2f093b9a44a64269d7aa81e20d502f6ef6d2d9d9e130d9a4e3ccb42675022f64",
+        "sha256": "2023f4a7540cbb224df9f92ea5a504e0a76f3ccc0fd3ea140f748a257fc1d569",
         "valid": true,
         "errors": []
       },
@@ -2342,9 +2575,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -2395,13 +2626,13 @@
       "id": "design-lineage-lab",
       "name": "Design Lineage Lab",
       "status": "TEST",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/design-lineage-lab",
       "entry_path": "tools/design-lineage-lab/index.html",
       "manifest": {
         "path": "tools/design-lineage-lab/manifest.json",
-        "sha256": "073af2acbf719eaff9323f375388d4c38448a15469758afb2cb2cfe4c5aca2eb",
+        "sha256": "821a85b80f53671e23748af65d21656cd0a305e47517dba7fea74fe025dd888c",
         "valid": true,
         "errors": []
       },
@@ -2429,10 +2660,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -2485,13 +2714,13 @@
       "id": "deterministic-build-cook-patch-pipeline",
       "name": "Deterministic Build, Cook & Patch Pipeline",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/deterministic-build-cook-patch-pipeline",
       "entry_path": "tools/deterministic-build-cook-patch-pipeline/index.html",
       "manifest": {
         "path": "tools/deterministic-build-cook-patch-pipeline/manifest.json",
-        "sha256": "b0507ce4c007dccdbeeda99adfe9d17281e0488965e0ce4c4c28b22c7e0e91d5",
+        "sha256": "a413c98a79349fa05f94715d8b77a31dd26dbfccf337fc482cd1ccb8114c7ca3",
         "valid": true,
         "errors": []
       },
@@ -2522,22 +2751,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "deterministic-job-cache-scheduler",
       "name": "Deterministic Job Queue & Artifact Cache",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/deterministic-job-cache-scheduler",
       "entry_path": "tools/deterministic-job-cache-scheduler/index.html",
       "manifest": {
         "path": "tools/deterministic-job-cache-scheduler/manifest.json",
-        "sha256": "f6bcbba3b7811bcbc0b1c130e61f9dafd7635acaa011653911696601204c1ccf",
+        "sha256": "ee9c4a6a5609fb68129f3c79a6903ad929dc78a854adab4812718be53e334653",
         "valid": true,
         "errors": []
       },
@@ -2568,9 +2795,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -2604,6 +2829,61 @@
       },
       "tests": [
         "tools/deterministic-json-core/selftest.js"
+      ],
+      "verified_at": null,
+      "freshness": {
+        "state": "MISSING",
+        "ageDays": null
+      },
+      "promotion": {
+        "state": "NOT_APPLICABLE",
+        "blockers": [
+          "kind is unsupported",
+          "kind is undeclared"
+        ]
+      }
+    },
+    {
+      "id": "deterministic-pr-checkpoint",
+      "name": "AXM Deterministic PR Checkpoint",
+      "status": "EXPERIMENTAL",
+      "kind": "gate",
+      "audience": "human-machine",
+      "source_path": "tools/deterministic-pr-checkpoint",
+      "entry_path": "tools/deterministic-pr-checkpoint/pr-checkpoint-cli.js",
+      "manifest": {
+        "path": "tools/deterministic-pr-checkpoint/manifest.json",
+        "sha256": "80ac013f52b48526ca9eced23ef2a547fa38c4a3c03e0f2e9ff83a95a6bf8a31",
+        "valid": false,
+        "errors": [
+          "kind is unsupported"
+        ]
+      },
+      "contract": {
+        "path": "tools/deterministic-pr-checkpoint/module.contract.json",
+        "present": true,
+        "valid": true,
+        "provides": [
+          "git-pr.read-only-local-checkpoint",
+          "git-pr.explicit-scope-policy-gate",
+          "git-pr.path-independent-semantic-digest",
+          "git-pr.changed-blob-digest-binding",
+          "git-pr.declared-evidence-binding",
+          "git-pr.deterministic-review-packet",
+          "git-pr.authority-preservation"
+        ],
+        "consumes": [
+          "filesystem:explicit-clean-git-working-copy",
+          "local-git-runtime",
+          "deterministic-json-core",
+          "axm.git-pr-scope-policy/v1",
+          "axm.git-pr-evidence-input/v1",
+          "axm.git-pr-review-metadata/v1"
+        ],
+        "errors": []
+      },
+      "tests": [
+        "tools/deterministic-pr-checkpoint/selftest.js"
       ],
       "verified_at": null,
       "freshness": {
@@ -2821,13 +3101,13 @@
       "id": "documentation-tutorial-capture-studio",
       "name": "Documentation, Tutorial & Capture Studio",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/documentation-tutorial-capture-studio",
       "entry_path": "tools/documentation-tutorial-capture-studio/index.html",
       "manifest": {
         "path": "tools/documentation-tutorial-capture-studio/manifest.json",
-        "sha256": "05853dc7c5d6fcd37af445eeb168b9847bd212522faa142c359dc6152a7d3741",
+        "sha256": "25d1fcff7590b7c58effbd4d00d10aaa2112afb7352187e6de5176f37d41e0d5",
         "valid": true,
         "errors": []
       },
@@ -2858,9 +3138,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -3680,13 +3958,13 @@
       "id": "fabrication-readiness-lab",
       "name": "Fabrication Readiness Lab",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/fabrication-readiness-lab",
       "entry_path": "tools/fabrication-readiness-lab/index.html",
       "manifest": {
         "path": "tools/fabrication-readiness-lab/manifest.json",
-        "sha256": "a76a36d594b89ae2cfe3d8e9590ea0b1bc508b120aa40c2f2bc4e132a320eda2",
+        "sha256": "f917d07c1cd4dd6734fd8b7c6b68bf42fd3af6bf4c6004af1af220ec345d0c87",
         "valid": true,
         "errors": []
       },
@@ -3715,9 +3993,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -4198,8 +4474,11 @@
         "tools/game-hub/game-experience-recovery-selftest.js",
         "tools/game-hub/game-library/002-robo-pong/neon-duet-selftest.cjs",
         "tools/game-hub/game-library/003-robo-pong-cross/neon-cross-selftest.cjs",
+        "tools/game-hub/game-library/005-briarfront/briarfront-selftest.cjs",
+        "tools/game-hub/game-library/006-lumenwake/adapter-seat-selftest.cjs",
         "tools/game-hub/game-library/006-lumenwake/balance-selftest.js",
         "tools/game-hub/game-library/006-lumenwake/selftest.js",
+        "tools/game-hub/game-library/007-casino/alpha/tests/adapter-seat-selftest.js",
         "tools/game-hub/game-library/007-casino/alpha/tests/core-selftest.js",
         "tools/game-hub/game-library/007-casino/alpha/tests/game-hub-integration-selftest.js",
         "tools/game-hub/game-library/007-casino/alpha/tests/package-selftest.js",
@@ -4223,10 +4502,12 @@
         "tools/game-hub/game-library/017-small-odds/tests/package-selftest.js",
         "tools/game-hub/game-library/018-last-stop-nebula/tests/package-selftest.cjs",
         "tools/game-hub/game-library/019-brace-room/tests/brace-room-selftest.js",
+        "tools/game-hub/game-library/021-hearthgate-two-sides/tests/hearthgate-3d-selftest.js",
         "tools/game-hub/game-library/021-hearthgate-two-sides/tests/hearthgate-selftest.js",
         "tools/game-hub/game-night-selftest.js",
         "tools/game-hub/game-package-verifier-selftest.js",
         "tools/game-hub/game-runtime-port-selftest.js",
+        "tools/game-hub/selftest.js",
         "tools/game-hub/steam/steam-art-draft-selftest.js",
         "tools/game-hub/steam/steam-depot-selftest.js",
         "tools/game-hub/steam/steam-readiness-selftest.js",
@@ -4241,10 +4522,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "top-level executable selftest is missing"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -4481,13 +4760,13 @@
       "id": "graft",
       "name": "Graft",
       "status": "TEST",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human",
       "source_path": "tools/graft",
       "entry_path": "tools/graft/index.html",
       "manifest": {
         "path": "tools/graft/manifest.json",
-        "sha256": "bfc016baacb3612690f5816566e4ba157b822fa40b9a9d833cb35a9df2795bb6",
+        "sha256": "9180fb2480e6d3759ebd0ae1e5b736ebd37b7d36e838d5b7590b0962d9218081",
         "valid": true,
         "errors": []
       },
@@ -4521,10 +4800,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -4811,13 +5088,13 @@
       "id": "holodeck-composer",
       "name": "Holodeck · Composer",
       "status": "TEST",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human",
       "source_path": "tools/holodeck-composer",
       "entry_path": "tools/holodeck-composer/index.html",
       "manifest": {
         "path": "tools/holodeck-composer/manifest.json",
-        "sha256": "7ef7c87de04832793fabc77f8edad3ff8b0c1f154afcdad3fdd9cd64aea18f2e",
+        "sha256": "6dd590a0931454e9b665de4731e83e013a6cbb803a8b73cdbf2639b01b858cd9",
         "valid": true,
         "errors": []
       },
@@ -4849,23 +5126,21 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
       "id": "holodeck-screen-deck",
       "name": "Holodeck · Screen Deck",
       "status": "TEST",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/holodeck-screen-deck",
       "entry_path": "tools/holodeck-screen-deck/index.html",
       "manifest": {
         "path": "tools/holodeck-screen-deck/manifest.json",
-        "sha256": "f80cf3ea06d0d786eeded5503daa8f9eef3bec1ba6f569de0a2e5de389777a3e",
+        "sha256": "90fd7f5d54f5809d9699fadd90e4f61f686afc51df62cb9191858f5f084ad1ed",
         "valid": true,
         "errors": []
       },
@@ -4900,10 +5175,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -5479,13 +5752,13 @@
       "id": "license-rights-attribution-auditor",
       "name": "License, Rights & Attribution Auditor",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/license-rights-attribution-auditor",
       "entry_path": "tools/license-rights-attribution-auditor/index.html",
       "manifest": {
         "path": "tools/license-rights-attribution-auditor/manifest.json",
-        "sha256": "461ed4f3699a5e493adcfc1be134e7c52c8f86bd959e8602328280f20e54c0dc",
+        "sha256": "5fb3e5abc941d8d84cb832311426bdd584f7df1ed1d467eadd37cfeb42cf0623",
         "valid": true,
         "errors": []
       },
@@ -5516,22 +5789,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "lighting-probe-baker",
       "name": "Lighting, Probe & Lightmap Baker",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/lighting-probe-baker",
       "entry_path": "tools/lighting-probe-baker/index.html",
       "manifest": {
         "path": "tools/lighting-probe-baker/manifest.json",
-        "sha256": "cf8c313d0a448ce349249b6e24da65a7393a52ba583a4009075a9a9b9d5010a1",
+        "sha256": "ac14455b457b5343dc8191bd2c72de9ba4bfb395739866b4ca3d18d3829e65f9",
         "valid": true,
         "errors": []
       },
@@ -5562,22 +5833,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "living-world-ruleset-physics-adapter-kit",
       "name": "Living World Ruleset & Physics Adapter Kit",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "adapter",
       "audience": "human-machine",
       "source_path": "tools/living-world-ruleset-physics-adapter-kit",
       "entry_path": "tools/living-world-ruleset-physics-adapter-kit/index.html",
       "manifest": {
         "path": "tools/living-world-ruleset-physics-adapter-kit/manifest.json",
-        "sha256": "e769d0297e27974466e26d113e04dee3a830257059ba8cb0e98315efcd3d74e4",
+        "sha256": "d33d611967813bc3e8e6dd6a39fad57ec7a5789a355e46cd6e83fdb6d28fd3ab",
         "valid": true,
         "errors": []
       },
@@ -5606,22 +5875,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "living-world-state-server",
       "name": "Authoritative Living World State Server",
       "status": "TEST",
-      "kind": "UNDECLARED",
+      "kind": "service",
       "audience": "human-machine",
       "source_path": "tools/living-world-state-server",
       "entry_path": "tools/living-world-state-server/index.html",
       "manifest": {
         "path": "tools/living-world-state-server/manifest.json",
-        "sha256": "c5a5fc7a9d4795603413d45a6233ce47f37461af04eb279b3b13ae086b8135f0",
+        "sha256": "a16005f769683b10447ce24c436f94d4ada30854ba93651c15df47b015e321bf",
         "valid": true,
         "errors": []
       },
@@ -5652,23 +5919,21 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
       "id": "local-3d-game-runtime",
       "name": "Local 3D Game Runtime",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/local-3d-game-runtime",
       "entry_path": "tools/local-3d-game-runtime/index.html",
       "manifest": {
         "path": "tools/local-3d-game-runtime/manifest.json",
-        "sha256": "6722871ace25a1d51a687a28e9e21fb3f9e4c631d137c8ee3b29f643e9811602",
+        "sha256": "9087f25bcaa56ce67458bc5842508c4e086c167741558f895cbc696d7a030f4d",
         "valid": true,
         "errors": []
       },
@@ -5706,22 +5971,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "localization-release-pipeline",
       "name": "Localization, Subtitle & Store-metadata Release Pipeline",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/localization-release-pipeline",
       "entry_path": "tools/localization-release-pipeline/index.html",
       "manifest": {
         "path": "tools/localization-release-pipeline/manifest.json",
-        "sha256": "279a122853698cab34666140935b8795625a854699132bcf3bf4e360b3177ea3",
+        "sha256": "93829c958fa25fd1c7576f5b115a7f93a252da245b241f75d34c2781fb7601c8",
         "valid": true,
         "errors": []
       },
@@ -5752,22 +6015,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "lod-hlod-impostor-builder",
       "name": "LOD, HLOD & Impostor Builder",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/lod-hlod-impostor-builder",
       "entry_path": "tools/lod-hlod-impostor-builder/index.html",
       "manifest": {
         "path": "tools/lod-hlod-impostor-builder/manifest.json",
-        "sha256": "695f9925916395d48f72f9465fefc33eefc245aa90ce009920c935b6fc8ca20a",
+        "sha256": "146e711a0f9798765e5aa3579fd9e90463aa93fc3c88d7e5736f71da388feda2",
         "valid": true,
         "errors": []
       },
@@ -5801,9 +6062,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -5904,13 +6163,13 @@
       "id": "marketplace-compatibility-certifier",
       "name": "Marketplace Compatibility & Sandbox Certifier",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/marketplace-compatibility-certifier",
       "entry_path": "tools/marketplace-compatibility-certifier/index.html",
       "manifest": {
         "path": "tools/marketplace-compatibility-certifier/manifest.json",
-        "sha256": "74aff583dd4d97ce7dc13db2f9eb700f675b6822b765fe09fb34475bd9bec52a",
+        "sha256": "101992892fa8f4cc17c43a95aca1de35c434b2cd566ee59c7e57a746d2181b1f",
         "valid": true,
         "errors": []
       },
@@ -5941,9 +6200,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -6003,13 +6260,13 @@
       "id": "media-render-transcode-service",
       "name": "Media Render & Transcode Service",
       "status": "TEST",
-      "kind": "UNDECLARED",
+      "kind": "service",
       "audience": "human-machine",
       "source_path": "tools/media-render-transcode-service",
       "entry_path": "tools/media-render-transcode-service/index.html",
       "manifest": {
         "path": "tools/media-render-transcode-service/manifest.json",
-        "sha256": "753ff72e597a6e4e40b153d85d12a5d2b28c15c3ca5fdd8491456f4d484feafc",
+        "sha256": "b1a6c0d8b2aa792e733bf44cbe31c123b84c0fa2fbd7c49c78b690bdaf04a319",
         "valid": true,
         "errors": []
       },
@@ -6042,10 +6299,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -6086,7 +6341,7 @@
       "verified_at": "2026-07-27T21:25:31.6648828Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 19
+        "ageDays": 25
       },
       "promotion": {
         "state": "CURRENT",
@@ -6097,13 +6352,13 @@
       "id": "mesh-retopology-optimizer",
       "name": "Mesh Retopology & Optimizer",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/mesh-retopology-optimizer",
       "entry_path": "tools/mesh-retopology-optimizer/index.html",
       "manifest": {
         "path": "tools/mesh-retopology-optimizer/manifest.json",
-        "sha256": "e5c9c06ef7449f17cdcdbc4c9555b77a86546ec77a31a196061bee41aa2e9ada",
+        "sha256": "faa516f7b1520640471a2b8db3f53c6cde5226e0ec3fbb89e443da1680f0bb24",
         "valid": true,
         "errors": []
       },
@@ -6138,26 +6393,22 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "mirror-code-clone",
       "name": "Mirror Code Clone",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "machine-capability",
       "audience": "human-machine",
       "source_path": "tools/mirror-code-clone",
       "entry_path": "tools/mirror-code-clone/index.html",
       "manifest": {
         "path": "tools/mirror-code-clone/manifest.json",
-        "sha256": "b3cb24f0ebc698607bd26eae92423c46274ef11096da4ca318c576d0b5bc79b1",
-        "valid": false,
-        "errors": [
-          "kind is unsupported"
-        ]
+        "sha256": "c7824b0fafc20b60351e793764c9f517280bc22081c507f33906614f87340f0c",
+        "valid": true,
+        "errors": []
       },
       "contract": {
         "path": "tools/mirror-code-clone/module.contract.json",
@@ -6187,10 +6438,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is unsupported",
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -6331,13 +6579,13 @@
       "id": "model-lab",
       "name": "Model Lab — EXPERIMENTAL",
       "status": "TEST",
-      "kind": "UNDECLARED",
+      "kind": "machine-capability",
       "audience": "machine",
       "source_path": "tools/model-lab",
       "entry_path": "tools/model-lab/index.html",
       "manifest": {
         "path": "tools/model-lab/manifest.json",
-        "sha256": "5efa577665f1a8e39af8358e6c90a0f642b63e2039a181b80c2998f55eabf06e",
+        "sha256": "f9d0bc28696a8aad594037104a06f9cc691105fd4b0e316845e6880c4cde0cf2",
         "valid": true,
         "errors": []
       },
@@ -6372,23 +6620,21 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
       "id": "modern-asset-forge",
       "name": "Modern 3D Asset Forge",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/modern-asset-forge",
       "entry_path": "tools/modern-asset-forge/index.html",
       "manifest": {
         "path": "tools/modern-asset-forge/manifest.json",
-        "sha256": "db20958fe2df59ba40e42d59be308fb1ed9a1a279771ad3202f4d195911d4f54",
+        "sha256": "d23b8c747753ce21780951f7d5c870c9cd5647079794ab25f9dd1194e364dfbf",
         "valid": true,
         "errors": []
       },
@@ -6431,9 +6677,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -6487,13 +6731,13 @@
       "id": "modular-intake-gate",
       "name": "Neutral Modular Intake Gate",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "adapter",
       "audience": "human-machine",
       "source_path": "tools/modular-intake-gate",
       "entry_path": "tools/modular-intake-gate/index.html",
       "manifest": {
         "path": "tools/modular-intake-gate/manifest.json",
-        "sha256": "6b82681bb33f19b98b0f2fd54556522251d4c0e17b232309afa1478e20d0c679",
+        "sha256": "8de58b1def570b2c762f5129c3eb8142e423635ce246f4c14c44707dfb8a7a0a",
         "valid": true,
         "errors": []
       },
@@ -6527,9 +6771,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -6786,13 +7028,13 @@
       "id": "multiplayer-controller-transport",
       "name": "Multiplayer & Controller Transport",
       "status": "TEST",
-      "kind": "UNDECLARED",
+      "kind": "service",
       "audience": "human-machine",
       "source_path": "tools/multiplayer-controller-transport",
       "entry_path": "tools/multiplayer-controller-transport/index.html",
       "manifest": {
         "path": "tools/multiplayer-controller-transport/manifest.json",
-        "sha256": "9525ff047b7f8454dc85c0335230e6a09cef33363e85c302e1b4b072fc006ca9",
+        "sha256": "2d322078566f859eaa2c6d90616dc1741117d6640d1b24932bda3ef2f4053437",
         "valid": true,
         "errors": []
       },
@@ -6823,23 +7065,21 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
       "id": "native-dependency-foundry",
       "name": "Native Dependency Foundry",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/native-dependency-foundry",
       "entry_path": "tools/native-dependency-foundry/index.html",
       "manifest": {
         "path": "tools/native-dependency-foundry/manifest.json",
-        "sha256": "63eae5797e17f3154a54e6c70a8c9c8be65e7eb300a6d8e2dbc0ef253b5f2747",
+        "sha256": "0b17a66adeb82d801c1d7b6b510819b17aa48000f492b7a293d920455207a629",
         "valid": true,
         "errors": []
       },
@@ -6870,22 +7110,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "navigation-crowd-behavior-studio",
       "name": "Navigation, Crowd & Behavior Studio",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/navigation-crowd-behavior-studio",
       "entry_path": "tools/navigation-crowd-behavior-studio/index.html",
       "manifest": {
         "path": "tools/navigation-crowd-behavior-studio/manifest.json",
-        "sha256": "0d2273fb312109d729645c7e6fbd5ac9399da2889a9ada51488d33b6342432da",
+        "sha256": "d575920a1ff6def7b34979a65714070b9881ec927b3d8b6054831407024da148",
         "valid": true,
         "errors": []
       },
@@ -6916,22 +7154,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "network-replication-prediction-lab",
       "name": "Network Replication & Prediction Lab",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/network-replication-prediction-lab",
       "entry_path": "tools/network-replication-prediction-lab/index.html",
       "manifest": {
         "path": "tools/network-replication-prediction-lab/manifest.json",
-        "sha256": "42c619cb09e7a70270f4f5d715aec19f226b432eebc39342a1c27646e330ac59",
+        "sha256": "a982fb4c935c1960197d2a36567283898c24cc76f772daf6ec5982621cacbe40",
         "valid": true,
         "errors": []
       },
@@ -6962,22 +7198,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "neural-room",
       "name": "Neural Room",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/neural-room",
       "entry_path": "tools/neural-room/index.html",
       "manifest": {
         "path": "tools/neural-room/manifest.json",
-        "sha256": "4772913a1df212aa88e3238b3e1a73a5415db6716621ec7ca24bbd87a9c6adb7",
+        "sha256": "f53ea8035e5d4ec2cb2206c53ef46ccad3410d6f3d6b1ef1652102adebebe489",
         "valid": true,
         "errors": []
       },
@@ -7007,22 +7241,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "novelty-diversity-engine",
       "name": "Novelty & Diversity Engine",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/novelty-diversity-engine",
       "entry_path": "tools/novelty-diversity-engine/index.html",
       "manifest": {
         "path": "tools/novelty-diversity-engine/manifest.json",
-        "sha256": "7fbc62a2ff53d950e2f2488ddeec22952e1da99b2d10097ae9b94aa5c7cd25af",
+        "sha256": "348621264d7729dded302a5c1964723faeee842df176e2c88fdabf1b4ded5b2d",
         "valid": true,
         "errors": []
       },
@@ -7051,22 +7283,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "p1-production-foundation",
       "name": "P1 Production Foundation",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "scaffold",
       "audience": "human-machine",
       "source_path": "tools/p1-production-foundation",
       "entry_path": "tools/p1-production-foundation/index.html",
       "manifest": {
         "path": "tools/p1-production-foundation/manifest.json",
-        "sha256": "8518b1748a6f7648f02bbb28868ffad86ec27e15132934bdd93bcd6d32e2ba51",
+        "sha256": "475d16838d796a896b03b16c97c3ebaf7e1cbebfe0259f4a5671576caf579df0",
         "valid": true,
         "errors": []
       },
@@ -7096,22 +7326,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "p2-experience-foundation",
       "name": "P2 Experience Foundation",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "scaffold",
       "audience": "human-machine",
       "source_path": "tools/p2-experience-foundation",
       "entry_path": "tools/p2-experience-foundation/index.html",
       "manifest": {
         "path": "tools/p2-experience-foundation/manifest.json",
-        "sha256": "02d2d5a411e6d310ecac750deda42b9e17d5ac7115d2e3494b681703d31971cd",
+        "sha256": "820192f89175a47c8b90649bab6a12326fc3bce4de5a1b6310a4af91b033bb78",
         "valid": true,
         "errors": []
       },
@@ -7141,22 +7369,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "p34-release-foundation",
       "name": "P3/P4 Release Foundation",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "scaffold",
       "audience": "human-machine",
       "source_path": "tools/p34-release-foundation",
       "entry_path": "tools/p34-release-foundation/index.html",
       "manifest": {
         "path": "tools/p34-release-foundation/manifest.json",
-        "sha256": "b242453fdb89fefe467e8d7c8e3a8b35930d9d8c21eb79c393306d25a6ba2c99",
+        "sha256": "5ee99c7213d9e8a7bc046fab40a961e5386b66fece764018a34243016a16ab99",
         "valid": true,
         "errors": []
       },
@@ -7186,22 +7412,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "pbr-material-baker",
       "name": "PBR Material Baker",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/pbr-material-baker",
       "entry_path": "tools/pbr-material-baker/index.html",
       "manifest": {
         "path": "tools/pbr-material-baker/manifest.json",
-        "sha256": "447507b5411047b2d7efe9b03db3018fdf3e6c6bf2aa36a35cfe6ca614a08b9a",
+        "sha256": "abfe9377f51676b0d1891a17f76321f04e310d18cbb1f3245efd6cf30bc73584",
         "valid": true,
         "errors": []
       },
@@ -7236,9 +7460,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -7293,13 +7515,13 @@
       "id": "physics-destruction-ragdoll-runtime",
       "name": "Physics, Destruction & Ragdoll Runtime",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/physics-destruction-ragdoll-runtime",
       "entry_path": "tools/physics-destruction-ragdoll-runtime/index.html",
       "manifest": {
         "path": "tools/physics-destruction-ragdoll-runtime/manifest.json",
-        "sha256": "edd15ddc389144f96f455b0fd3a917885f6bc22ba77d3dc455ac020a5a5fd8e4",
+        "sha256": "b80cfaf3d96c3f048545c6ed0b8b22a39bf9d0bd1cf960b39a125bf89fe381ea",
         "valid": true,
         "errors": []
       },
@@ -7330,9 +7552,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -7369,7 +7589,7 @@
       "verified_at": "2026-07-28T19:01:43.329Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 18
+        "ageDays": 25
       },
       "promotion": {
         "state": "CURRENT",
@@ -7429,13 +7649,13 @@
       "id": "procedural-city-interior-studio",
       "name": "Procedural City & Interior Studio",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/procedural-city-interior-studio",
       "entry_path": "tools/procedural-city-interior-studio/index.html",
       "manifest": {
         "path": "tools/procedural-city-interior-studio/manifest.json",
-        "sha256": "5f1332ddb21148ded88e6bc32a2711fc8488ab95cca13403d55f8cc08c1d3574",
+        "sha256": "6f20a6018b25da4a594e0ef5eff96dbed87c69d6669d29a19120f05c22b98f57",
         "valid": true,
         "errors": []
       },
@@ -7466,9 +7686,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -7621,13 +7839,13 @@
       "id": "ps2-asset-forge",
       "name": "PS2 Asset Forge",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/ps2-asset-forge",
       "entry_path": "tools/ps2-asset-forge/index.html",
       "manifest": {
         "path": "tools/ps2-asset-forge/manifest.json",
-        "sha256": "59f8c968961c93e31a6c9ce1dba0f67903815818ddab6db158222d50a616d8ce",
+        "sha256": "317e3b2f5d9af87fbee47eaa26076e39efea289ecdecf13efd53732ca22b512a",
         "valid": true,
         "errors": []
       },
@@ -7666,9 +7884,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -7772,13 +7988,13 @@
       "id": "quest-dialogue-narrative-runtime",
       "name": "Quest, Dialogue & Narrative Runtime",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/quest-dialogue-narrative-runtime",
       "entry_path": "tools/quest-dialogue-narrative-runtime/index.html",
       "manifest": {
         "path": "tools/quest-dialogue-narrative-runtime/manifest.json",
-        "sha256": "883197709765dd7eb5efcdac7440f296d390a3a20a0b6ac98ae3c5ca6dc3a65a",
+        "sha256": "34b4cfa9d4bbb7d99fb49961dc160c5a0819fc4f0f777feefb10af90afa5daa1",
         "valid": true,
         "errors": []
       },
@@ -7809,22 +8025,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "read-only-mirror-world-adapter",
       "name": "Read-only Mirror World Adapter",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "adapter",
       "audience": "human-machine",
       "source_path": "tools/read-only-mirror-world-adapter",
       "entry_path": "tools/read-only-mirror-world-adapter/index.html",
       "manifest": {
         "path": "tools/read-only-mirror-world-adapter/manifest.json",
-        "sha256": "5f9d51195a1d4e27f6cc6847a659aa080fd64de20f13008db10560fe5dbce17e",
+        "sha256": "624c825ceac79ab00f9fb31a5299a2575a6d06b5284568bc18ee520b93cd84d8",
         "valid": true,
         "errors": []
       },
@@ -7854,9 +8068,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -7967,13 +8179,13 @@
       "id": "reference-to-3d-reconstruction-lab",
       "name": "Reference-to-3D Reconstruction Lab",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/reference-to-3d-reconstruction-lab",
       "entry_path": "tools/reference-to-3d-reconstruction-lab/index.html",
       "manifest": {
         "path": "tools/reference-to-3d-reconstruction-lab/manifest.json",
-        "sha256": "5e0dff113354b18552f6e5a97c50802febfc034fb418c1ae533e50de0852c343",
+        "sha256": "5a30e14cb2a4f81947a6c2a8060c633bf1ad489148d7c5a9a457baf84d38cff3",
         "valid": true,
         "errors": []
       },
@@ -8004,22 +8216,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "release-size-delta-patch-optimizer",
       "name": "Release Size, Compression & Delta Patch Optimizer",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/release-size-delta-patch-optimizer",
       "entry_path": "tools/release-size-delta-patch-optimizer/index.html",
       "manifest": {
         "path": "tools/release-size-delta-patch-optimizer/manifest.json",
-        "sha256": "b925f68913702aaa683f96fe6d0310aac587869de929856941d9fc50b5131bc8",
+        "sha256": "706957ffb7c69b510bea84913a3020e6632fcbea35a9f1fb5dedda499080bdad",
         "valid": true,
         "errors": []
       },
@@ -8050,9 +8260,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -8196,7 +8404,7 @@
       "verified_at": "2026-07-27T22:14:01.8589096Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 19
+        "ageDays": 25
       },
       "promotion": {
         "state": "CURRENT",
@@ -8207,13 +8415,13 @@
       "id": "repairbuddy",
       "name": "RepairBuddy — Mirror Coder Experiment",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/repairbuddy",
       "entry_path": "tools/repairbuddy/index.html",
       "manifest": {
         "path": "tools/repairbuddy/manifest.json",
-        "sha256": "0f70ad5c0691a4ef5ce383ed1365546e9fb0627e541f3e48de97e1f10257600b",
+        "sha256": "5ec255252b603392986607e5538b91baf23eb3bb97f5363904934c9958fabfe1",
         "valid": true,
         "errors": []
       },
@@ -8253,22 +8461,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "reproducible-build-sbom-generator",
       "name": "Reproducible Build, SBOM & Provenance Generator",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/reproducible-build-sbom-generator",
       "entry_path": "tools/reproducible-build-sbom-generator/index.html",
       "manifest": {
         "path": "tools/reproducible-build-sbom-generator/manifest.json",
-        "sha256": "a3f211a9593b1b0b088371f183ad2f4f48f646ec1e1a79e94f1ee0793de31bee",
+        "sha256": "62d3d482c195bb3d047be8b377de7b8e72798312722dab83688d6d067a5f9ded",
         "valid": true,
         "errors": []
       },
@@ -8299,9 +8505,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -8460,13 +8664,13 @@
       "id": "route",
       "name": "Route",
       "status": "TEST",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human",
       "source_path": "tools/route",
       "entry_path": "tools/route/index.html",
       "manifest": {
         "path": "tools/route/manifest.json",
-        "sha256": "45493c7f80465387b75cc454c223c2f73633b62af6c8b44985a0e21a126deca9",
+        "sha256": "e51b6b9f1c0163181b0376685ee40c6964d96643f17085264a50bbd280bf2721",
         "valid": true,
         "errors": []
       },
@@ -8500,10 +8704,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -8644,13 +8846,13 @@
       "id": "save-migration-replay-service",
       "name": "Save, Migration & Replay Service",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "service",
       "audience": "human-machine",
       "source_path": "tools/save-migration-replay-service",
       "entry_path": "tools/save-migration-replay-service/index.html",
       "manifest": {
         "path": "tools/save-migration-replay-service/manifest.json",
-        "sha256": "a06d6a9023a0e0ce1c7f653c382341da17d30c6e38e78a6c88d121dc67451362",
+        "sha256": "77e1d9090df1126ccc5e590fd66e49d5ecb42ee49747380646527711a55196bc",
         "valid": true,
         "errors": []
       },
@@ -8681,22 +8883,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "schema-contract-migration-registry",
       "name": "Schema, Contract & Migration Registry",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "service",
       "audience": "human-machine",
       "source_path": "tools/schema-contract-migration-registry",
       "entry_path": "tools/schema-contract-migration-registry/index.html",
       "manifest": {
         "path": "tools/schema-contract-migration-registry/manifest.json",
-        "sha256": "f48a4b686e1b4f9bdfd98a9dc33f9c70282e25826d67a950bff6c24d1a47d305",
+        "sha256": "4de4c5754d5c74b3869da0ca33505df0f20c2cbab30382a6f6710d155a2347b6",
         "valid": true,
         "errors": []
       },
@@ -8727,9 +8927,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -8827,13 +9025,13 @@
       "id": "security-fuzz-supply-chain-lab",
       "name": "Security, Fuzz & Supply-chain Lab",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/security-fuzz-supply-chain-lab",
       "entry_path": "tools/security-fuzz-supply-chain-lab/index.html",
       "manifest": {
         "path": "tools/security-fuzz-supply-chain-lab/manifest.json",
-        "sha256": "6c2aef55164b171c51c605edcdd282956c5c100108589a3a61d1ee588444fc06",
+        "sha256": "4eab5f121aa7d92434a218e3b486023341eea1ad689ae09f2cfed4b670f323e4",
         "valid": true,
         "errors": []
       },
@@ -8864,9 +9062,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -8988,7 +9184,8 @@
         "errors": []
       },
       "tests": [
-        "tools/shell-guardian/guardian-selftest.js"
+        "tools/shell-guardian/guardian-selftest.js",
+        "tools/shell-guardian/selftest.js"
       ],
       "verified_at": null,
       "freshness": {
@@ -8996,10 +9193,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "top-level executable selftest is missing"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -9057,13 +9252,13 @@
       "id": "source-connector-hub",
       "name": "Source Connector Hub",
       "status": "TEST",
-      "kind": "UNDECLARED",
+      "kind": "adapter",
       "audience": "human-machine",
       "source_path": "tools/source-connector-hub",
       "entry_path": "tools/source-connector-hub/index.html",
       "manifest": {
         "path": "tools/source-connector-hub/manifest.json",
-        "sha256": "db7e6c865e7af9b637893aa07626cb2dc24eec4e6037b57ee79e4f526d096387",
+        "sha256": "09c795c528da786f046e59c0505e1481af343a7a9d4899d4042d187b0041cfb5",
         "valid": true,
         "errors": []
       },
@@ -9093,10 +9288,8 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
@@ -9149,7 +9342,7 @@
       "verified_at": "2026-07-24T15:30:00.000Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 22
+        "ageDays": 29
       },
       "promotion": {
         "state": "READY_FOR_HUMAN_REVIEW",
@@ -9499,13 +9692,13 @@
       "id": "template-runtime-pack-engine",
       "name": "Template Runtime & Pack Engine",
       "status": "TEST",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/template-runtime-pack-engine",
       "entry_path": "tools/template-runtime-pack-engine/index.html",
       "manifest": {
         "path": "tools/template-runtime-pack-engine/manifest.json",
-        "sha256": "9f5f2f18a3a65a4fb6dbb7dfb1bf545682b37bf739e9fde5d1f5437996f0c96d",
+        "sha256": "a82e456ba4f00bf7c38e6a56660725541f5bc917c4354660fa75f6f6297752ce",
         "valid": true,
         "errors": []
       },
@@ -9534,23 +9727,21 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "BLOCKED",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "state": "READY_FOR_HUMAN_REVIEW",
+        "blockers": []
       }
     },
     {
       "id": "terrain-biome-studio",
       "name": "Terrain, Foliage & Biome Studio",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/terrain-biome-studio",
       "entry_path": "tools/terrain-biome-studio/index.html",
       "manifest": {
         "path": "tools/terrain-biome-studio/manifest.json",
-        "sha256": "9c43959885307c7e1ba09c9e7aea2059cf12d15ccaeaccea8f92ede3b5f44e85",
+        "sha256": "85954ed48d7183f9e70f7d51d00d613f34e8674dd1025c762420d674ed08ba1c",
         "valid": true,
         "errors": []
       },
@@ -9581,9 +9772,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -9645,13 +9834,13 @@
       "id": "texture-trimsheet-decal-studio",
       "name": "Texture, Trim-sheet & Decal Studio",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/texture-trimsheet-decal-studio",
       "entry_path": "tools/texture-trimsheet-decal-studio/index.html",
       "manifest": {
         "path": "tools/texture-trimsheet-decal-studio/manifest.json",
-        "sha256": "d29c71752daa31577f25915ead37ca95b54bab6e85e2b0da6f7af77e5b7946ef",
+        "sha256": "e872fb6821dc62bf57f18dbabe081033839652cfdb43a978b9b59f7d180e055c",
         "valid": true,
         "errors": []
       },
@@ -9682,9 +9871,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -9782,7 +9969,7 @@
       "entry_path": "tools/universal-object-fabric/index.html",
       "manifest": {
         "path": "tools/universal-object-fabric/manifest.json",
-        "sha256": "796fba01bd2a97396b0e9993cea7a7ad8feaeb8dfbe21cd9c66a8c472de8eded",
+        "sha256": "72eb3fe2253c775d47cb280d856fa215bdbee32b40d4b4db36e16afbe0fdb44f",
         "valid": true,
         "errors": []
       },
@@ -9816,21 +10003,23 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
-        "blockers": []
+        "state": "BLOCKED",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
       }
     },
     {
       "id": "uv-lightmap-studio",
       "name": "UV & Lightmap Studio",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/uv-lightmap-studio",
       "entry_path": "tools/uv-lightmap-studio/index.html",
       "manifest": {
         "path": "tools/uv-lightmap-studio/manifest.json",
-        "sha256": "bb3595805051b86cdee28dd8153558a12a9f3d3af5bb01c1f1fca7ec0cdf1d89",
+        "sha256": "e0356adf6b4c147f76f545e7f88ef91893553208f1526cd40c371220741d4c62",
         "valid": true,
         "errors": []
       },
@@ -9864,22 +10053,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "vehicle-assembly-damage-studio",
       "name": "Vehicle Assembly & Damage Studio",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/vehicle-assembly-damage-studio",
       "entry_path": "tools/vehicle-assembly-damage-studio/index.html",
       "manifest": {
         "path": "tools/vehicle-assembly-damage-studio/manifest.json",
-        "sha256": "8430f518912c272b8ea7db5ba81ec300e8e12a8d645040d9374621c2eb76cf6b",
+        "sha256": "76957c9da75f20ea3e9b021086d6d6f851cbcb0fd34110ac62d2085b4d3c5cd2",
         "valid": true,
         "errors": []
       },
@@ -9910,9 +10097,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -9995,7 +10180,7 @@
           "verification.public-proof-metadata-overlap-routing"
         ],
         "consumes": [
-          "filesystem:intakes/verification-proof-99-v0.1",
+          "filesystem:shared/verification-proof/source-catalog-v1",
           "python:standard-library",
           "axm.verification-proof-call/v1",
           "shared:verification-proof/public-proof-batch1",
@@ -10074,13 +10259,13 @@
       "id": "vfx-particle-shader-studio",
       "name": "VFX, Particle & Shader Graph Studio",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/vfx-particle-shader-studio",
       "entry_path": "tools/vfx-particle-shader-studio/index.html",
       "manifest": {
         "path": "tools/vfx-particle-shader-studio/manifest.json",
-        "sha256": "6af34249a0ec2bdf4376515dd1e8db61ca1df744d7873f0053a402692a436c2a",
+        "sha256": "01fc45f49e06374a9c6dcb219f172a1e4c25b190132255fe63e26eb65b69ebff",
         "valid": true,
         "errors": []
       },
@@ -10111,22 +10296,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "visual-art-director-lab",
       "name": "Visual Art Director & Perceptual QA Lab",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/visual-art-director-lab",
       "entry_path": "tools/visual-art-director-lab/index.html",
       "manifest": {
         "path": "tools/visual-art-director-lab/manifest.json",
-        "sha256": "2f1f365cdcf7d8a061fb846c4263aa34c07697886773b92b3c93d5d116b1abff",
+        "sha256": "f4e9adaf54fb74a06723d4eef8ac6f047141ce37732a2178ac3eba89a1eef255",
         "valid": true,
         "errors": []
       },
@@ -10157,22 +10340,20 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
       "id": "visual-draft-room",
       "name": "Visual Draft Room",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/visual-draft-room",
       "entry_path": "tools/visual-draft-room/index.html",
       "manifest": {
         "path": "tools/visual-draft-room/manifest.json",
-        "sha256": "81cfb989207ede6eddede66396df3b2543a444f308bfb7bf82f6a2836037e01b",
+        "sha256": "9d5d92cec2a669de170c409f564b50ac7151bc6070c92ed012f5c053b66e4988",
         "valid": true,
         "errors": []
       },
@@ -10204,9 +10385,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -10313,13 +10492,13 @@
       "id": "vram-memory-streaming-analyzer",
       "name": "VRAM, Memory & Streaming Budget Analyzer",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/vram-memory-streaming-analyzer",
       "entry_path": "tools/vram-memory-streaming-analyzer/index.html",
       "manifest": {
         "path": "tools/vram-memory-streaming-analyzer/manifest.json",
-        "sha256": "d9d8124145404c943113ceba6664e6d7acecd22fc09a012aadc6c1e309dc6041",
+        "sha256": "9269e0d56b3ce76373a6aa4047d00a559c2305c028af0d8da3460c7609ec0ae3",
         "valid": true,
         "errors": []
       },
@@ -10350,9 +10529,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {
@@ -10620,8 +10797,10 @@
         "ageDays": null
       },
       "promotion": {
-        "state": "READY_FOR_HUMAN_REVIEW",
-        "blockers": []
+        "state": "BLOCKED",
+        "blockers": [
+          "selftest result is stale for the current selftest digest"
+        ]
       }
     },
     {
@@ -10667,7 +10846,7 @@
       "verified_at": "2026-07-24T20:12:25.359Z",
       "freshness": {
         "state": "FRESH",
-        "ageDays": 22
+        "ageDays": 29
       },
       "promotion": {
         "state": "READY_FOR_HUMAN_REVIEW",
@@ -10729,13 +10908,13 @@
       "id": "world-partition-streaming-compiler",
       "name": "World Partition & Streaming Compiler",
       "status": "EXPERIMENTAL",
-      "kind": "UNDECLARED",
+      "kind": "product",
       "audience": "human-machine",
       "source_path": "tools/world-partition-streaming-compiler",
       "entry_path": "tools/world-partition-streaming-compiler/index.html",
       "manifest": {
         "path": "tools/world-partition-streaming-compiler/manifest.json",
-        "sha256": "142a076208a7b62e343bc1601c66824c771fb8f15757faa3a6b3d11cf67e321c",
+        "sha256": "280d38df3f57f97938affff654b51880261013080a92a0c8013b55c6cc1622ff",
         "valid": true,
         "errors": []
       },
@@ -10766,9 +10945,7 @@
       },
       "promotion": {
         "state": "NOT_APPLICABLE",
-        "blockers": [
-          "kind is undeclared"
-        ]
+        "blockers": []
       }
     },
     {

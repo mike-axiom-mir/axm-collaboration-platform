@@ -1,0 +1,437 @@
+{
+  "schema": "axm.access.final-intake.packet.v1",
+  "module_id": "axm.access.image-magnification-lens",
+  "seed_number": 19,
+  "title": "Image and Interface Magnification Lens",
+  "family_number": 2,
+  "family": "Visual, low-vision, typography, colour, and layout adaptation",
+  "purpose": "Magnify a selected region while retaining orientation, focus, labels, and the relationship to the full interface.",
+  "package": "K3_PROFILE_VISUAL_COGNITIVE_SERVICES",
+  "activation_default": "DISABLED",
+  "maturity": "L2F_LOCAL_FINALIZED_INTAKE_SANDBOX_SYNTHETIC_VALIDATION",
+  "real_accessibility_effect": "NOT_PROVEN",
+  "latest_contracts": {
+    "run92d": {
+      "run": "92D",
+      "lens": "Trust boundaries, abuse paths, protected assets, and residual-risk ownership",
+      "risk_class": "BOUNDED_LOCAL_SUPPORT",
+      "trust_zones": [
+        "HUMAN_OWNER",
+        "LOCAL_RUNTIME",
+        "REVIEWED_HELPER",
+        "REPLACEABLE_ADAPTER",
+        "EVIDENCE_SOURCE",
+        "PUBLIC_EXPORT"
+      ],
+      "protected_assets": [
+        "human_authority",
+        "module_identity",
+        "evidence_scope",
+        "rollback_path"
+      ],
+      "threats": [
+        {
+          "id": "T1_FORGED_CONSENT",
+          "expected": "HOLD_AND_REQUIRE_VERIFIABLE_LEASE"
+        },
+        {
+          "id": "T2_HELPER_OVERRIDE",
+          "expected": "REJECT_OVERRIDE_AND_PRESERVE_USER_CHOICE"
+        },
+        {
+          "id": "T3_EVIDENCE_SPOOF",
+          "expected": "UNKNOWN_OR_FAIL_NEVER_PASS"
+        },
+        {
+          "id": "T4_ADAPTER_IMPERSONATION",
+          "expected": "QUARANTINE_ADAPTER_AND_USE_SAFE_FALLBACK"
+        },
+        {
+          "id": "T5_STATE_POISONING",
+          "expected": "REJECT_DIGEST_MISMATCH_AND_ROLLBACK"
+        },
+        {
+          "id": "T6_PROOF_INFLATION",
+          "expected": "NARROW_CLAIM_AND_LOG_COUNTEREVIDENCE"
+        },
+        {
+          "id": "T7_FORCED_ACTIVATION",
+          "expected": "DENY_AUTOMATIC_APPLY_OR_PROMOTION"
+        },
+        {
+          "id": "T8_PRIVACY_EXFILTRATION",
+          "expected": "BLOCK_NETWORK_AND_REDACT_TRACE"
+        }
+      ],
+      "boundary_rule": "axm.access.image-magnification-lens accepts untrusted proposals and observations but only the human-owned consent/evidence gates may authorize bounded local state changes.",
+      "residual_risk_owner": "HUMAN_REVIEW_OR_EXACT_ENVIRONMENT_TEST",
+      "automatic_security_claim": false
+    },
+    "run93d": {
+      "run": "93D",
+      "lens": "Metamorphic and differential properties that catch hidden semantic regressions",
+      "properties": [
+        {
+          "id": "M1_CONSENT_MONOTONICITY",
+          "relation": "removing consent cannot increase authority"
+        },
+        {
+          "id": "M2_EVIDENCE_MONOTONICITY",
+          "relation": "missing or contradicted evidence cannot improve status"
+        },
+        {
+          "id": "M3_IDEMPOTENT_REPLAY",
+          "relation": "same canonical request and version returns same canonical decision"
+        },
+        {
+          "id": "M4_METADATA_REORDER",
+          "relation": "non-semantic key ordering cannot alter decision"
+        },
+        {
+          "id": "M5_EXTENSION_PRESERVATION",
+          "relation": "unknown extension fields survive roundtrip without gaining authority"
+        },
+        {
+          "id": "M6_FALLBACK_NON_ESCALATION",
+          "relation": "fallback route cannot gain more authority than preferred route"
+        }
+      ],
+      "family_specific_oracle": "Family 2 preserves Magnify a selected region while retaining orientation, focus, labels, and the relationship to the full interface. while mutations may only narrow, hold, or keep the same authority.",
+      "differential_reference": "RUN91D_POLICY_PLUS_RUN97D_EQUIVALENCE_ORACLE",
+      "real_effect_claim": false
+    },
+    "run94d": {
+      "run": "94D",
+      "lens": "Data minimization, retention, deletion verification, and export restraint",
+      "data_class": "BOUNDED_CONFIGURATION_OR_ARTIFACT",
+      "allowed_minimum_fields": [
+        "module_id",
+        "task_id",
+        "selected_support",
+        "consent_lease",
+        "source_provenance",
+        "scope",
+        "expiry"
+      ],
+      "forbidden_fields": [
+        "medical_diagnosis_unless_user_explicitly_supplies_for_current_task",
+        "raw_biometric_stream",
+        "hidden_identity_graph",
+        "unbounded_raw_media",
+        "cross_user_profile_linkage",
+        "secret_helper_override"
+      ],
+      "retention_mode": "ARTIFACT_SCOPED_LOCAL",
+      "default_max_age_days": 90,
+      "export_requires_explicit_choice": true,
+      "deletion_semantics": "DELETE_LOCAL_CONTENT_AND_WRITE_NONCONTENT_DELETION_RECEIPT",
+      "deletion_receipt_fields": [
+        "module_id",
+        "scope_digest",
+        "deleted_at",
+        "result",
+        "remaining_exclusions"
+      ],
+      "network_boundary": "NO_NETWORK_BY_DEFAULT"
+    },
+    "run95d": {
+      "run": "95D",
+      "lens": "Multi-actor agency, helper/operator/device limits, and disagreement arbitration",
+      "actors": {
+        "human_owner": [
+          "choose",
+          "approve",
+          "revoke",
+          "reset",
+          "export"
+        ],
+        "supporter": [
+          "suggest",
+          "explain",
+          "assist_when_invited"
+        ],
+        "operator": [
+          "stage",
+          "diagnose_infrastructure",
+          "propose_repair"
+        ],
+        "device_or_adapter": [
+          "declare_capability",
+          "return_measurement_or_event"
+        ],
+        "local_system": [
+          "validate",
+          "hold",
+          "rollback",
+          "redact"
+        ],
+        "public_viewer": []
+      },
+      "forbidden_delegations": [
+        "diagnosis_inference",
+        "silent_profile_change",
+        "automatic_approval",
+        "permanent_proxy_authority",
+        "production_or_conformance_claim"
+      ],
+      "disagreement_order": [
+        "human_owner_current_choice",
+        "valid_scoped_lease",
+        "safety_hold",
+        "explicit_review",
+        "safe_baseline"
+      ],
+      "private_choice_channel_required": true,
+      "shared_surface_rule": "SEPARATE_PERSON_STATE_OR_HOLD_CONFLICT; NEVER_COLLAPSE_PROFILES",
+      "emergency_boundary": "SAFE_RESET_MAY_NEUTRALIZE_INPUT_OR_RESTORE_BASELINE_BUT_CANNOT_REWRITE_PREFERENCE_OR_IDENTITY"
+    },
+    "run96d": {
+      "run": "96D",
+      "lens": "Dependency chaos, package partition, corruption, and bounded continuity",
+      "fault_expectations": [
+        {
+          "fault": "DEPENDENCY_MISSING",
+          "expected": "HOLD_AFFECTED_MODULE_ONLY"
+        },
+        {
+          "fault": "PACKAGE_PARTITION",
+          "expected": "KEEP_COMMITTED_PACKAGES_AND_ROLLBACK_PARTIAL_STAGE"
+        },
+        {
+          "fault": "STATE_CORRUPTION",
+          "expected": "RESTORE_LAST_KNOWN_GOOD_OR_SESSION_BASELINE"
+        },
+        {
+          "fault": "ADAPTER_TIMEOUT",
+          "expected": "FALLBACK_OR_HOLD_WITH_VISIBLE_REASON"
+        },
+        {
+          "fault": "STORAGE_READ_ONLY",
+          "expected": "SESSION_ONLY_AND_EXPORT_REVIEW_PACKET"
+        },
+        {
+          "fault": "NETWORK_OFFLINE",
+          "expected": "CONTINUE_LOCAL_WITHOUT_CAPABILITY_INFLATION"
+        },
+        {
+          "fault": "EVIDENCE_CONTRADICTION",
+          "expected": "FAIL_OR_CONFLICTED_AND_PRESERVE_BOTH_SOURCES"
+        },
+        {
+          "fault": "CONCURRENT_PROFILE_COLLISION",
+          "expected": "ISOLATE_PERSON_STATE_AND_HOLD_SHARED_CONFLICT"
+        }
+      ],
+      "blast_radius": "CURRENT_MODULE_PLUS_DECLARED_TRANSITIVE_DEPENDENTS_ONLY",
+      "peer_state_mutation": false,
+      "partial_success_claim": "SCOPED_ONLY_WITH_FAILED_BRANCHES_VISIBLE",
+      "recovery_order": [
+        "stop unsafe writes",
+        "preserve evidence",
+        "isolate fault",
+        "restore local state",
+        "revalidate affected graph",
+        "human review"
+      ]
+    },
+    "run97d": {
+      "run": "97D",
+      "lens": "Equivalent-outcome oracles and no-substitution semantic parity checks",
+      "candidate_routes": [
+        "TEXT_STANDARD_WEB",
+        "VISUAL",
+        "KEYBOARD"
+      ],
+      "semantic_outcome_signature": [
+        "goal_id",
+        "task_state",
+        "available_semantic_actions",
+        "consequence_preview",
+        "error_repair_path",
+        "completion_state",
+        "authority_owner"
+      ],
+      "parity_dimensions": [
+        "purpose",
+        "information",
+        "action",
+        "consequence",
+        "error_repair",
+        "timing_flexibility",
+        "privacy",
+        "authority"
+      ],
+      "non_equivalent_if": [
+        "meaning_removed",
+        "required_action_unavailable",
+        "consequence_hidden",
+        "repair_path_missing",
+        "user_authority_reduced",
+        "private_information_exposed"
+      ],
+      "oracle_verdicts": [
+        "EQUIVALENT_WITH_EVIDENCE",
+        "PARTIAL_EXPLICIT_LIMIT",
+        "CONFLICTED",
+        "UNKNOWN_NOT_TESTED",
+        "NOT_EQUIVALENT"
+      ],
+      "default_without_real_evidence": "UNKNOWN_NOT_TESTED",
+      "substitution_prohibition": "A DIFFERENT MODALITY IS NOT AUTOMATICALLY AN EQUIVALENT OUTCOME"
+    },
+    "run98d": {
+      "run": "98D",
+      "lens": "Proposal-only repair sandbox, patch preconditions, verification, and rollback",
+      "repair_mode": "PROPOSAL_ONLY",
+      "faults": [
+        "MISSING_ARTIFACT",
+        "UNSAFE_AUTHORITY",
+        "STALE_EVIDENCE",
+        "SCHEMA_MISMATCH",
+        "SEMANTIC_PARITY_FAILURE"
+      ],
+      "preconditions": [
+        "fault reproduced",
+        "affected scope identified",
+        "last known good available",
+        "human-visible change summary",
+        "rollback tested"
+      ],
+      "patch_packet": [
+        "fault_id",
+        "affected_module_ids",
+        "before_digest",
+        "proposed_change",
+        "expected_invariants",
+        "verification_plan",
+        "rollback_plan"
+      ],
+      "verification_order": [
+        "static validation",
+        "synthetic challenge",
+        "dependency revalidation",
+        "human review",
+        "bounded stage"
+      ],
+      "automatic_apply": false,
+      "automatic_promotion": false,
+      "failed_repair_action": "ROLLBACK_AND_PRESERVE_COUNTEREVIDENCE"
+    },
+    "run99d": {
+      "run": "99D",
+      "lens": "Long-horizon drift, schema evolution, evidence decay, and upgrade simulation",
+      "simulation_months": 12,
+      "epochs": [
+        {
+          "month": 1,
+          "evidence_state": "CURRENT",
+          "claim_action": "SCOPED_LOCAL_ONLY"
+        },
+        {
+          "month": 2,
+          "evidence_state": "CURRENT",
+          "claim_action": "SCOPED_LOCAL_ONLY"
+        },
+        {
+          "month": 3,
+          "evidence_state": "CURRENT",
+          "claim_action": "SCOPED_LOCAL_ONLY"
+        },
+        {
+          "month": 4,
+          "evidence_state": "STALE",
+          "claim_action": "DOWNGRADE_UNKNOWN"
+        },
+        {
+          "month": 5,
+          "evidence_state": "STALE",
+          "claim_action": "DOWNGRADE_UNKNOWN"
+        },
+        {
+          "month": 6,
+          "evidence_state": "STALE",
+          "claim_action": "DOWNGRADE_UNKNOWN"
+        },
+        {
+          "month": 7,
+          "evidence_state": "EXPIRED",
+          "claim_action": "HOLD"
+        },
+        {
+          "month": 8,
+          "evidence_state": "EXPIRED",
+          "claim_action": "HOLD"
+        },
+        {
+          "month": 9,
+          "evidence_state": "EXPIRED",
+          "claim_action": "HOLD"
+        },
+        {
+          "month": 10,
+          "evidence_state": "EXPIRED",
+          "claim_action": "HOLD"
+        },
+        {
+          "month": 11,
+          "evidence_state": "EXPIRED",
+          "claim_action": "HOLD"
+        },
+        {
+          "month": 12,
+          "evidence_state": "EXPIRED",
+          "claim_action": "HOLD"
+        }
+      ],
+      "schema_window": "CURRENT_PLUS_ONE_PREVIOUS; FUTURE_UNKNOWN_HELD",
+      "dependency_change_action": "REVALIDATE_AFFECTED_TRANSITIVE_GRAPH",
+      "primitive_change_action": "REBUILD_ALL_REFERENCING_MODULES",
+      "drift_signals": [
+        "evidence_age",
+        "adapter_version_change",
+        "dependency_digest_change",
+        "new_counterevidence",
+        "locale_change",
+        "performance_regression"
+      ],
+      "silent_upgrade": false,
+      "rollback_floor": "LAST_KNOWN_GOOD_WITH_SOURCE_AND_EXTENSION_PRESERVATION"
+    },
+    "run100d": {
+      "run": "100D",
+      "lens": "Clean-room local-intake rehearsal for exactly 100 preserved modules",
+      "clean_room_target": "modules/image-magnification-lens",
+      "intake_package": "K3_PROFILE_VISUAL_COGNITIVE_SERVICES",
+      "required_files": [
+        "module.packet.json",
+        "contract.summary.json",
+        "tests.summary.json",
+        "README.txt"
+      ],
+      "activation_default": "DISABLED",
+      "network_required": false,
+      "reviewed_stage_only": true,
+      "rollback_required": true
+    },
+    "run101d": {
+      "run": "101D",
+      "lens": "Final polish, lineage truth, readiness adjudication, and no-more-abstract-run decision",
+      "preserved_deep31_disposition": "PRESERVE_NARROW_BEFORE_BUILD",
+      "reviewed_local_intake": "READY",
+      "activation_state": "DISABLED_REFERENCE_RUNTIME_READY_FOR_REVIEWED_LOCAL_STAGING",
+      "production_runtime": "HOLD",
+      "real_accessibility_effect": "NOT_PROVEN",
+      "device_or_at_compatibility": "NOT_PROVEN",
+      "conformance_claim": "HOLD",
+      "automatic_apply": false,
+      "automatic_promotion": false,
+      "next_action": "INGEST AS DISABLED MODULE; MAP TO EXISTING AXM OWNER; RUN LOCAL INTEGRATION AND TARGET-SPECIFIC TESTS",
+      "additional_abstract_steward_runs_before_local_intake": "NOT_REQUIRED",
+      "why": "Remaining uncertainty requires exact local integration, target implementation, real device/assistive-technology evidence, or affected-user evaluation rather than more abstract specification growth."
+    }
+  },
+  "source_digests": {
+    "source": "e5c68223f0277a4cc4c0b6a27bcce0e789cfdcc0a6217881babc7a74f7a71c58",
+    "run91d_manifest": "60a89b86e7d41c578a2f3dff234ce1f5ab71e1ae23108c48617dd0b7f4200e91"
+  }
+}

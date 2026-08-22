@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.formal-model-checker-adapter",
+  "purpose": "Bridge bounded formal models to external model checkers through explicit requests and typed result receipts.",
+  "inputs": {
+    "model and properties": "text model plus property identifiers",
+    "assumptions and bounds": "declared proof scope",
+    "tool identity and raw result": "caller-supplied checker metadata and result"
+  },
+  "outputs": {
+    "request and result receipt": "sealed request, normalized verdict, counterexample, raw digest, and limitations"
+  },
+  "refusals": [
+    "empty model",
+    "missing properties",
+    "invalid bounds",
+    "unsupported result status",
+    "counterexample status without trace"
+  ],
+  "non_authority": [
+    "does_not_run_model_checker",
+    "caller_supplied_result",
+    "bounded_verification_only",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

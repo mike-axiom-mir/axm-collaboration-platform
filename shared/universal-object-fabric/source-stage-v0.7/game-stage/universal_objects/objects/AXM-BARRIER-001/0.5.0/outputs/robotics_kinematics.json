@@ -1,0 +1,85 @@
+{
+  "schema_version": "0.5",
+  "asset_id": "AXM-BARRIER-001",
+  "asset_version": "0.4.0",
+  "coordinate_contract": {
+    "linear_unit": "meter",
+    "angle_unit": "radian",
+    "up": "+Y",
+    "forward": "+Z"
+  },
+  "root_link": "root",
+  "links": [
+    {
+      "link_id": "root",
+      "member_nodes": [
+        "foot__l00",
+        "foot__l01",
+        "post__l00",
+        "post__l01",
+        "light__l00",
+        "light__l01"
+      ],
+      "pivot_m": [
+        -0.7,
+        0.0,
+        0.0
+      ],
+      "game_effective_mass_share_kg": 82.622053,
+      "visual_source": "AXM-BARRIER-001.glb",
+      "collision_source": "collision/AXM-BARRIER-001_COLLISION.glb"
+    },
+    {
+      "link_id": "arm",
+      "member_nodes": [
+        "beam",
+        "beam_insert"
+      ],
+      "pivot_m": [
+        -0.7,
+        0.78,
+        0.0
+      ],
+      "game_effective_mass_share_kg": 37.377947,
+      "visual_source": "AXM-BARRIER-001.glb",
+      "collision_source": "collision/AXM-BARRIER-001_COLLISION.glb"
+    }
+  ],
+  "joints": [
+    {
+      "joint_id": "arm_lift",
+      "type": "revolute",
+      "parent_link": "root",
+      "child_link": "arm",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "pivot_m": [
+        -0.7,
+        0.78,
+        0.0
+      ],
+      "limits_si": {
+        "lower": 0.0,
+        "upper": 1.5707963267948966,
+        "unit": "radian"
+      },
+      "drive_intent": {
+        "mode": "position",
+        "speed": 65
+      },
+      "actuator": null,
+      "controller": null
+    }
+  ],
+  "authority": {
+    "automatic_physical_control": false,
+    "actuator_mapping": "UNASSIGNED",
+    "controller_mapping": "UNASSIGNED",
+    "emergency_stop": "NOT_IMPLEMENTED",
+    "human_engineering_review_required": true
+  },
+  "scope_limit": "Kinematic translation proof only. It is not a robot design, controller, safety case, dynamic model, wiring plan, or authorization to move physical hardware."
+}

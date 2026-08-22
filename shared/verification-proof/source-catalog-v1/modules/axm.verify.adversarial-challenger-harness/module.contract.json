@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.adversarial-challenger-harness",
+  "purpose": "Generate a bounded deterministic challenge plan containing counterexamples, hostile-input probes, alternative explanations, and falsification questions before approval.",
+  "inputs": {
+    "claim": "statement, assumptions, and input dimensions",
+    "boundaries": "declared values per dimension",
+    "alternative_explanations": "bounded alternatives",
+    "max_challenges": "hard ceiling"
+  },
+  "outputs": {
+    "plan": "ordered unexecuted challenges and limitation flags"
+  },
+  "refusals": [
+    "missing claim identity or statement",
+    "invalid boundaries or alternatives",
+    "ceiling outside 1..100"
+  ],
+  "non_authority": [
+    "does_not execute hostile inputs",
+    "does_not falsify claims by itself",
+    "does_not approve artifacts",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

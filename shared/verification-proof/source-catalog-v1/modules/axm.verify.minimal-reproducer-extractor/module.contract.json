@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.minimal-reproducer-extractor",
+  "purpose": "Shrink failing sequences, mappings, or bytes under a bounded predicate budget while preserving the failure and reporting only tested one-minimality.",
+  "inputs": {
+    "failing_value": "sequence, mapping, or bytes already known to satisfy a failure predicate",
+    "predicate": "in-process callable returning whether failure persists",
+    "max_evaluations": "hard execution ceiling"
+  },
+  "outputs": {
+    "reproducer_receipt": "best preserved failure, size reduction, evaluations, and bounded minimality statement"
+  },
+  "refusals": [
+    "initial_input_does_not_fail",
+    "predicate_non_boolean",
+    "unsupported_value_type",
+    "invalid_budget"
+  ],
+  "non_authority": [
+    "not_global_minimum_proof",
+    "does_not_execute_external_commands",
+    "predicate_truth_is_caller_supplied",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

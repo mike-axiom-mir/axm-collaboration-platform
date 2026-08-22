@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.sbom-license-verifier",
+  "purpose": "Validate bounded SBOM component identities, relationships, hashes, licenses, required components, and completeness declarations.",
+  "inputs": {
+    "bom": "bounded components, relationships, hashes, licenses, and completeness declaration",
+    "policy": "denied licenses, required component names, and hash requirement"
+  },
+  "outputs": {
+    "sbom_report": "findings, uncertainty, counts, and bounded verdict"
+  },
+  "refusals": [
+    "duplicate or malformed component",
+    "invalid hashes or licenses",
+    "relationship to unknown component",
+    "malformed policy"
+  ],
+  "non_authority": [
+    "not_legal_advice",
+    "does_not_resolve_packages",
+    "completeness_not_proven",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

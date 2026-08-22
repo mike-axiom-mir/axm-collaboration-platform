@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.resource-thermal-battery-proof",
+  "purpose": "Record and evaluate bounded CPU, GPU, memory, disk, battery, and thermal behavior on named hardware.",
+  "inputs": {
+    "hardware": "named hardware identity",
+    "workload": "workload identity and required duration",
+    "thresholds": "metric aggregation and direction contracts",
+    "samples": "ordered caller-supplied timestamped metrics"
+  },
+  "outputs": {
+    "resource_proof": "coverage, derived metrics, threshold results, and bounded verdict"
+  },
+  "refusals": [
+    "missing hardware or workload identity",
+    "non-positive duration",
+    "unordered timestamps",
+    "invalid thresholds or metric values"
+  ],
+  "non_authority": [
+    "does_not_read_sensors",
+    "samples_are_caller_supplied",
+    "hardware_identity_not_attested",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

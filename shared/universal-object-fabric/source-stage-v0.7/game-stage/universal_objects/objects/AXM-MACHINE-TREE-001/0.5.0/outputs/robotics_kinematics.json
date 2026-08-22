@@ -1,0 +1,88 @@
+{
+  "schema_version": "0.5",
+  "asset_id": "AXM-MACHINE-TREE-001",
+  "asset_version": "0.4.0",
+  "coordinate_contract": {
+    "linear_unit": "meter",
+    "angle_unit": "radian",
+    "up": "+Y",
+    "forward": "+Z"
+  },
+  "root_link": "root",
+  "links": [
+    {
+      "link_id": "root",
+      "member_nodes": [
+        "root",
+        "trunk",
+        "branch__r00",
+        "branch__r01",
+        "branch__r02",
+        "branch__r03",
+        "branch__r04",
+        "branch__r05",
+        "crown__r00",
+        "crown__r01",
+        "crown__r02",
+        "crown__r03",
+        "crown__r04",
+        "crown__r05"
+      ],
+      "pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "game_effective_mass_share_kg": 257.224281,
+      "visual_source": "AXM-MACHINE-TREE-001.glb",
+      "collision_source": "collision/AXM-MACHINE-TREE-001_COLLISION.glb"
+    },
+    {
+      "link_id": "heart",
+      "member_nodes": [
+        "heart"
+      ],
+      "pivot_m": [
+        0,
+        1.82,
+        0
+      ],
+      "game_effective_mass_share_kg": 2.775719,
+      "visual_source": "AXM-MACHINE-TREE-001.glb",
+      "collision_source": "collision/AXM-MACHINE-TREE-001_COLLISION.glb"
+    }
+  ],
+  "joints": [
+    {
+      "joint_id": "heart_spin",
+      "type": "continuous",
+      "parent_link": "root",
+      "child_link": "heart",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pivot_m": [
+        0,
+        1.82,
+        0
+      ],
+      "limits_si": null,
+      "drive_intent": {
+        "mode": "velocity",
+        "speed_deg_s": 14
+      },
+      "actuator": null,
+      "controller": null
+    }
+  ],
+  "authority": {
+    "automatic_physical_control": false,
+    "actuator_mapping": "UNASSIGNED",
+    "controller_mapping": "UNASSIGNED",
+    "emergency_stop": "NOT_IMPLEMENTED",
+    "human_engineering_review_required": true
+  },
+  "scope_limit": "Kinematic translation proof only. It is not a robot design, controller, safety case, dynamic model, wiring plan, or authorization to move physical hardware."
+}

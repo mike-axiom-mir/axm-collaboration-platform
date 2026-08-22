@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.artifact-identity-hasher",
+  "purpose": "Create deterministic SHA-256 content and scoped identities for bounded artifact payloads.",
+  "inputs": {
+    "payload": "bytes, text, or JSON-compatible bounded value",
+    "artifact_type": "declared artifact class",
+    "scope": "declared canonical identity scope"
+  },
+  "outputs": {
+    "identity_receipt": "content digest, scoped identity digest, canonicalization, and size"
+  },
+  "refusals": [
+    "empty type or scope",
+    "unsupported payload type",
+    "non-string mapping key",
+    "non-finite number"
+  ],
+  "non_authority": [
+    "hash_integrity_is_not_artifact_truth",
+    "semantic_equivalence_not_proven",
+    "scope_must_be_reviewed",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

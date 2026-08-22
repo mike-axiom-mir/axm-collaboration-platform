@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.game-physics-determinism-proof",
+  "purpose": "Compare supplied fixed-step simulation runs for deterministic agreement within a declared scope.",
+  "inputs": {
+    "runs": "two or more run receipts with configuration, input identity, checkpoint checksums, collisions, and authority decisions"
+  },
+  "outputs": {
+    "determinism_report": "configuration mismatches, state divergences, event divergences, uncertainty, and bounded verdict"
+  },
+  "refusals": [
+    "fewer than two runs",
+    "duplicate run ids",
+    "invalid status or fixed step",
+    "duplicate checkpoint ticks"
+  ],
+  "non_authority": [
+    "does_not_run_simulation",
+    "receipts_are_caller_supplied",
+    "determinism_scope_is_bounded",
+    "correctness_not_proven",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

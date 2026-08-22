@@ -1,0 +1,34 @@
+{
+  "goal": {
+    "goal_id": "goal.demo",
+    "claim_id": "claim.demo",
+    "human_goal": "The local controller reconnects without losing the player seat."
+  },
+  "criteria": [
+    {
+      "criterion_id": "criterion.reconnect.1",
+      "statement": "The original seat is restored within the declared time budget.",
+      "check_type": "COMPOSITE",
+      "proof_surface": "interaction-flow-replay",
+      "machine_check": {
+        "operation": "measure_reconnect",
+        "max_ms": 2000
+      },
+      "human_check": {
+        "surface": "native-screen",
+        "question": "Was the same seat visibly restored?"
+      },
+      "tolerance": {
+        "max_ms": 2000
+      },
+      "evidence_requirements": [
+        "interaction receipt",
+        "native observation"
+      ],
+      "refusal_conditions": [
+        "seat identity changed",
+        "reconnect not observed"
+      ]
+    }
+  ]
+}

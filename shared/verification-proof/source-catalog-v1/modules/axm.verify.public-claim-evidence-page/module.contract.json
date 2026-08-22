@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.public-claim-evidence-page",
+  "purpose": "Produce a readable public claim-to-proof page that keeps passed, failed, unknown, stale, limitations, source references, withheld private evidence, and reproducible steps visibly separate.",
+  "inputs": {
+    "claim": "public-safe claim and scope",
+    "evidence": "typed public/private evidence",
+    "limitations": "public limitations",
+    "reproducible_steps": "bounded public steps"
+  },
+  "outputs": {
+    "page": "structured public evidence state plus Markdown"
+  },
+  "refusals": [
+    "non-public claim",
+    "invalid evidence verdict",
+    "missing public evidence summary",
+    "invalid steps or limitations"
+  ],
+  "non_authority": [
+    "does_not publish content",
+    "does_not expose private evidence",
+    "does_not convert UNKNOWN to PASS",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

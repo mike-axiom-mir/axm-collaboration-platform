@@ -1,0 +1,24 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.structural-coverage-collector",
+  "purpose": "Collect multiple structural coverage types without collapsing them into correctness.",
+  "inputs": {
+    "coverage": "per-kind declared and exercised identifiers with optional thresholds"
+  },
+  "outputs": {
+    "coverage_report": "separate counts, ratios, unknown observations, gaps, and threshold states"
+  },
+  "refusals": [
+    "empty coverage",
+    "unsupported kind",
+    "invalid identifier sequence",
+    "invalid threshold"
+  ],
+  "non_authority": [
+    "coverage_is_navigation_not_correctness",
+    "does_not_execute_instrumentation",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

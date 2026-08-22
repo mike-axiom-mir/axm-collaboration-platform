@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.interaction-flow-replay-proof",
+  "purpose": "Verify supplied interaction replay observations against ordered state, output, error, and recovery expectations.",
+  "inputs": {
+    "flow_id": "non-empty flow identity",
+    "steps": "bounded ordered step records",
+    "max_steps": "positive execution ceiling"
+  },
+  "outputs": {
+    "interaction_replay_proof": "sequence digest, mismatches, uncertain steps, and bounded verdict"
+  },
+  "refusals": [
+    "empty flow or steps",
+    "too many steps",
+    "duplicate or non-contiguous indices",
+    "unsupported step status"
+  ],
+  "non_authority": [
+    "does_not_execute_interactions",
+    "observations_are_caller_supplied",
+    "host_state_not_independently_observed",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

@@ -1,0 +1,272 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "static-sim-living-intake",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "sim.intake.archive-integrity",
+        "sim.blueprint.static-validate",
+        "sim.dependency.graph-validate"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "sim.intake.archive-integrity": [
+          "local supplied ZIP only",
+          "no source mutation",
+          "CRC, extracted-tree, and 30625 manifest-digest verification"
+        ],
+        "sim.blueprint.static-validate": [
+          "contracts, schemas, profiles, overlays, fixtures, and truth boundaries only",
+          "not behavioral execution"
+        ],
+        "sim.dependency.graph-validate": [
+          "100 declared providers",
+          "366 required edges",
+          "128 optional hooks",
+          "static interface identity only"
+        ]
+      }
+    },
+    {
+      "id": "game-design-evidence-composition",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.sim-living.evidence.compose"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.sim-living.evidence.compose": [
+          "candidate-only game evidence organ",
+          "no module execution or world mutation"
+        ]
+      }
+    },
+    {
+      "id": "static-game-system-wiring",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.sim-living.atlas-plan",
+        "game.sim-living.forge-project",
+        "game.sim-living.experiment-checkpoint",
+        "game.sim-living.world-patch-preview",
+        "game.sim-living.verification-receipts"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.sim-living.atlas-plan": [
+          "100 source modules mapped to bounded Atlas planning leads",
+          "term matches and family-category fallbacks are not semantic equivalence proof"
+        ],
+        "game.sim-living.forge-project": [
+          "100 proposed static systems in a DRAFT Game Forge project",
+          "runtime remains disabled and implementation remains absent"
+        ],
+        "game.sim-living.experiment-checkpoint": [
+          "100 evidence-bearing candidate artifacts in a restorable frozen checkpoint",
+          "no arbitrary code, network, canonical write, or promotion"
+        ],
+        "game.sim-living.world-patch-preview": [
+          "100 operations pass the live multiworld receiver normalizer in two bounded batches",
+          "world ID, revision, owner and semantic mapping absent; apply is never called"
+        ],
+        "game.sim-living.verification-receipts": [
+          "100 static transport claims pass and 100 runtime claims remain MISSING_VALIDATOR",
+          "aggregate Verification Spine verdict remains HELD"
+        ]
+      }
+    },
+    {
+      "id": "source-module-runtime",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "sim.module.runtime.execute",
+        "sim.behavior.fixture.execute",
+        "sim.performance.measure.representative"
+      ],
+      "declaredConstraints": {
+        "sim.module.runtime.execute": [
+          "source explicitly contains no module implementation code"
+        ],
+        "sim.behavior.fixture.execute": [
+          "source fixtures are static planned/refusal data; no source runtime exists"
+        ],
+        "sim.performance.measure.representative": [
+          "requires implemented modules and a declared representative workload/device"
+        ]
+      }
+    },
+    {
+      "id": "authoritative-and-human-acceptance",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "sim.world.authoritative.integrate",
+        "sim.scientific-safety.validate",
+        "game.sim-living.human-review",
+        "game.release.human-approval"
+      ],
+      "declaredConstraints": {
+        "sim.world.authoritative.integrate": [
+          "requires named state owner, semantic/unit mapping, migration, rollback, and human approval"
+        ],
+        "sim.scientific-safety.validate": [
+          "requires domain-specific external validation and appointed human authority"
+        ],
+        "game.sim-living.human-review": [
+          "requires representative gameplay, fairness, accessibility, and agency review"
+        ],
+        "game.release.human-approval": [
+          "Mike remains the integration, publication, CANON, and release gate"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "game.release.human-approval",
+    "game.sim-living.human-review",
+    "sim.behavior.fixture.execute",
+    "sim.module.runtime.execute",
+    "sim.performance.measure.representative",
+    "sim.scientific-safety.validate",
+    "sim.world.authoritative.integrate"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "game.release.human-approval",
+      "requiredBy": [
+        "authoritative-and-human-acceptance"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "game.sim-living.human-review",
+      "requiredBy": [
+        "authoritative-and-human-acceptance"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sim.behavior.fixture.execute",
+      "requiredBy": [
+        "source-module-runtime"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sim.module.runtime.execute",
+      "requiredBy": [
+        "source-module-runtime"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sim.performance.measure.representative",
+      "requiredBy": [
+        "source-module-runtime"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sim.scientific-safety.validate",
+      "requiredBy": [
+        "authoritative-and-human-acceptance"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sim.world.authoritative.integrate",
+      "requiredBy": [
+        "authoritative-and-human-acceptance"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

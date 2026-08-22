@@ -1,0 +1,31 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.claim-proof-surface-router",
+  "purpose": "Route declared proof surfaces to explicit specialist verifier registrations.",
+  "inputs": {
+    "claim": "typed claim",
+    "surface_registry": "explicit verifier registry",
+    "scope_binding": "optional exact scope receipt"
+  },
+  "outputs": {
+    "route_packet": "per-surface routed or unrouted entries"
+  },
+  "route_states": [
+    "ROUTED",
+    "PARTIAL",
+    "UNROUTED"
+  ],
+  "refusals": [
+    "empty_surface_registry_entry",
+    "invalid_claim_surface_list",
+    "duplicate_declared_surface",
+    "invalid_default_mapping"
+  ],
+  "non_authority": [
+    "does_not_execute_verifier",
+    "does_not_accept_evidence",
+    "does_not_decide_sufficiency",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

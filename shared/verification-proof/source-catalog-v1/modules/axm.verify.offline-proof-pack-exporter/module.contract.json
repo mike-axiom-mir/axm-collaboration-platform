@@ -1,0 +1,29 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.offline-proof-pack-exporter",
+  "purpose": "Create deterministic portable ZIP bytes containing a manifest and supplied proof files under explicit public or private disclosure rules.",
+  "inputs": {
+    "entries": "safe relative paths, exact bytes, roles, and privacy states",
+    "mode": "PUBLIC or PRIVATE disclosure profile",
+    "metadata": "deterministic JSON pack metadata",
+    "max_total_bytes": "non-negative logical content ceiling"
+  },
+  "outputs": {
+    "export_report": "deterministic ZIP bytes, archive digest, manifest, privacy uncertainty, and proof boundaries"
+  },
+  "refusals": [
+    "empty entries",
+    "unsafe or duplicate path",
+    "non-byte content",
+    "privacy failure",
+    "non-PASS public privacy state",
+    "byte bound overflow"
+  ],
+  "non_authority": [
+    "does_not_write_to_disk",
+    "does_not_encrypt_or_sign",
+    "does_not_prove_public_safety_beyond_receipts",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

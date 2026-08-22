@@ -1,0 +1,81 @@
+{
+  "schema": "axm.verification-proof-curated-intake/v1",
+  "id": "verification-proof-99-v0.1",
+  "measured_at": "2026-07-27",
+  "status": "TEST_HOLD",
+  "integration": "DETACHED_REFERENCE",
+  "canon": false,
+  "authority": "NONE",
+  "source": {
+    "archive_name": "AXM_VERIFICATION_PROOF_COMPLETE_100_ORGANS_FINAL_ALL_IN_ONE_2026-07-27.zip",
+    "archive_sha256": "3fc041e3454a55406a8b6765c7b67717f60642500b0af6d88112c4e7e19b29ce",
+    "archive_entries": 1505,
+    "archive_uncompressed_bytes": 11202370,
+    "bundle_manifest_declared_files": 1504,
+    "bundle_manifest_missing_files": 0,
+    "bundle_manifest_hash_mismatches": 0,
+    "seed_source_sha256": "8acb74f6a436b227878c6d5c684b5bbd87e545e868454b14d7ed69bd5745eff2"
+  },
+  "accepted": {
+    "module_count": 99,
+    "module_file_count": 792,
+    "module_bytes": 1005628,
+    "unique_content_hashes": 792,
+    "duplicate_content_groups": 0,
+    "test_file_count": 99,
+    "reference_test_count": 990,
+    "reference_test_verdict": "PASS"
+  },
+  "held": [
+    {
+      "module_id": "axm.verify.clock-timezone-locale-controller",
+      "verdict": "HOLD_UNDECLARED_PORTABILITY_DEPENDENCY",
+      "observed_host": "Windows with Python 3.14",
+      "observed_failure": "zoneinfo could not load Europe/Amsterdam because no IANA timezone database or tzdata package was available",
+      "contract_conflict": "module declares Python standard library only",
+      "reference_tests_not_accepted": 10
+    }
+  ],
+  "excluded": {
+    "packaged_python_bytecode_files": 200,
+    "packaged_python_bytecode_bytes": 1257498,
+    "nested_checkpoint_zip_files": 10,
+    "nested_checkpoint_zip_bytes": 6339344,
+    "branch_history_files": 349,
+    "branch_history_bytes": 1417864,
+    "repeated_version_files": 100,
+    "repeated_version_bytes": 600,
+    "source_exact_duplicate_groups": 22,
+    "source_redundant_copies": 129,
+    "source_exact_duplicate_bytes": 36724
+  },
+  "verification": {
+    "safe_archive_paths": "PASS",
+    "archive_manifest_hashes": "PASS_1504_OF_1504",
+    "python_syntax": "PASS_200_FILES",
+    "module_contracts": "PASS_100_OF_100",
+    "intake_interfaces": "PASS_100_OF_100",
+    "registry_alignment": "PASS_100_OF_100_TEST_HOLD",
+    "branch_audit": "PASS_ZERO_FAILURES",
+    "final_intake_audit": "PASS_ZERO_FAILURES",
+    "complete_runtime_suite": "FAIL_1_OF_100_MODULES",
+    "accepted_runtime_subset": "PASS_99_FILES_990_TESTS"
+  },
+  "runtime_adapter": {
+    "tool_id": "verification-proof-lab",
+    "integration": "EXPLICIT_BOUNDED_REFERENCE_EXECUTION",
+    "catalogued_organs": 99,
+    "json_callable_memory_only_organs": 91,
+    "guarded_organs": 8,
+    "surfaces": ["browser", "local-api", "cli"],
+    "result_canon": false,
+    "result_authority": "NONE"
+  },
+  "truth": {
+    "runtime_fitness_for_all_source_organs_proven": false,
+    "accepted_organs_are_platform_native": false,
+    "reference_tests_are_native_or_human_proof": false,
+    "promotion_approved": false,
+    "source_archive_modified_or_deleted": false
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.continuous-recertification-scheduler",
+  "purpose": "Plan rechecks only for proofs that are due, already stale, or invalidated by exact code, dependency, data, environment, hardware, policy, or standards changes.",
+  "inputs": {
+    "proofs": "expiry and dependency bindings",
+    "change_events": "typed changed subjects",
+    "now": "explicit ISO timestamp"
+  },
+  "outputs": {
+    "plan": "due proof ids, exact reasons, next expiry, and non-execution flags"
+  },
+  "refusals": [
+    "invalid timestamp",
+    "unknown dependency category",
+    "duplicate proof id",
+    "invalid dependency lists"
+  ],
+  "non_authority": [
+    "does_not schedule jobs",
+    "does_not execute verification",
+    "does_not mark proof PASS",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

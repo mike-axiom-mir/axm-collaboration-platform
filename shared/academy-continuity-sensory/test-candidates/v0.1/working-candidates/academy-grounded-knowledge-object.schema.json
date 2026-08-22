@@ -1,0 +1,395 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.academy.grounded-knowledge-object.candidate.schema.json",
+  "title": "AXM Academy Grounded Knowledge Object Candidate",
+  "description": "TEST candidate only. Separates grounded claims and epistemic state from replaceable representation skins.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "id",
+    "version",
+    "status",
+    "installed",
+    "promoted",
+    "canon",
+    "title",
+    "claims",
+    "relationships",
+    "sources",
+    "representations",
+    "representation_gaps",
+    "authority",
+    "lineage"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.academy.grounded-knowledge-object/v0.1-candidate"
+    },
+    "id": {
+      "$ref": "#/$defs/id"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^0\\.[0-9]+\\.[0-9]+$"
+    },
+    "status": {
+      "const": "TEST"
+    },
+    "installed": {
+      "const": false
+    },
+    "promoted": {
+      "const": false
+    },
+    "canon": {
+      "const": false
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": {
+        "$ref": "#/$defs/claim"
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "$ref": "#/$defs/relationship"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "representations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "$ref": "#/$defs/representation"
+      }
+    },
+    "representation_gaps": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "human_text",
+          "visual",
+          "interactive",
+          "simulation",
+          "ai_structured",
+          "evaluation"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "automatic_admission",
+        "automatic_install",
+        "automatic_promotion",
+        "canon_change",
+        "human_review_required"
+      ],
+      "properties": {
+        "automatic_admission": {
+          "const": false
+        },
+        "automatic_install": {
+          "const": false
+        },
+        "automatic_promotion": {
+          "const": false
+        },
+        "canon_change": {
+          "const": false
+        },
+        "human_review_required": {
+          "const": true
+        }
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_candidate",
+        "source_zip_sha256",
+        "supersedes",
+        "change_note"
+      ],
+      "properties": {
+        "source_candidate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 260
+        },
+        "source_zip_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "supersedes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "uniqueItems": true
+        },
+        "change_note": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 1000
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$",
+      "maxLength": 120
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "statement",
+        "epistemic_status",
+        "verification_status",
+        "scope",
+        "conditions",
+        "evidence_refs",
+        "contradiction_refs",
+        "uncertainty",
+        "boundary"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 1000
+        },
+        "epistemic_status": {
+          "enum": [
+            "OBSERVATION",
+            "SOURCE_BACKED",
+            "INFERENCE",
+            "PROPOSAL",
+            "OPEN",
+            "DISPUTED"
+          ]
+        },
+        "verification_status": {
+          "enum": [
+            "UNVERIFIED",
+            "SOURCE_LIMITED",
+            "LOCALLY_CORROBORATED",
+            "TESTED_WITHIN_SCOPE",
+            "INDEPENDENTLY_CHECKED",
+            "FAILED",
+            "DISPUTED"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 600
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "maxItems": 32
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        },
+        "contradiction_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "maxItems": 32,
+          "uniqueItems": true
+        },
+        "uncertainty": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 600
+        },
+        "boundary": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 800
+        }
+      }
+    },
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "type",
+        "to",
+        "status"
+      ],
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "enum": [
+            "SUPPORTS",
+            "NARROWS",
+            "CONTRADICTS",
+            "DEPENDS_ON",
+            "EXEMPLIFIES"
+          ]
+        },
+        "to": {
+          "$ref": "#/$defs/id"
+        },
+        "status": {
+          "enum": [
+            "SOURCE_BACKED",
+            "INFERRED",
+            "OPEN",
+            "DISPUTED"
+          ]
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "path",
+        "sha256",
+        "supports",
+        "limitations"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "enum": [
+            "DIRECTED_INTAKE",
+            "LOCAL_CONTRACT",
+            "LOCAL_IMPLEMENTATION",
+            "LOCAL_TEST",
+            "EXTERNAL_EVIDENCE"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "supports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "limitations": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 800
+        }
+      }
+    },
+    "representation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "claim_refs",
+        "content",
+        "losses"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "enum": [
+            "human_text",
+            "visual",
+            "interactive",
+            "simulation",
+            "ai_structured",
+            "evaluation"
+          ]
+        },
+        "claim_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "content": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            {
+              "type": "object"
+            }
+          ]
+        },
+        "losses": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+          },
+          "maxItems": 32
+        }
+      }
+    }
+  }
+}

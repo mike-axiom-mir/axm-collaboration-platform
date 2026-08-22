@@ -1,0 +1,479 @@
+{
+  "schema": "axm.lego-city-blueprint/v0.1",
+  "id": "axm-lego-city-grounded-buildmap",
+  "version": "0.1.0",
+  "status": "PROPOSED",
+  "date": "2026-08-15",
+  "authority": {
+    "final_decision_maker": "Mike",
+    "automatic_canon": false,
+    "automatic_promotion": false,
+    "automatic_merge": false,
+    "preserve_existing_direction": true,
+    "silent_rewrite": false
+  },
+  "scope": {
+    "primary_repository": "mike-axiom-mir/axm-collaboration-platform",
+    "primary_main_commit": "a4f99fbfc05268173458bf3fb8f3fe616919e376",
+    "adjacent_districts_not_merged": [
+      "mike-axiom-mir/axm-local-game-hub",
+      "mike-axiom-mir/axm-factual-space-simulator",
+      "mike-axiom-mir/axm-many-race-rts-current"
+    ],
+    "external_scan": "bounded high-signal official standards scan"
+  },
+  "thesis": "Compile one city graph; render many human and machine realities.",
+  "source_precedence": [
+    "committed live source tree",
+    "module contracts and manifests",
+    "schema and evidence source files",
+    "compiled city graph",
+    "generated registries and maps",
+    "generated human documentation",
+    "narrative descriptions"
+  ],
+  "block_kinds": [
+    {
+      "id": "BRICK",
+      "definition": "pure deterministic transformer",
+      "effects_allowed": [
+        "NONE"
+      ]
+    },
+    {
+      "id": "SENSOR",
+      "definition": "read-only bounded observer",
+      "effects_allowed": [
+        "OBSERVE_LOCAL",
+        "READ_PRIVATE",
+        "NETWORK_READ"
+      ]
+    },
+    {
+      "id": "ORGAN",
+      "definition": "bounded stateful service",
+      "effects_allowed": [
+        "OBSERVE_LOCAL",
+        "READ_PRIVATE",
+        "WRITE_CANDIDATE"
+      ]
+    },
+    {
+      "id": "HAND",
+      "definition": "effectful executor requiring exact authority",
+      "effects_allowed": [
+        "WRITE_CANDIDATE",
+        "EXECUTE_CONFINED",
+        "EXECUTE_TRUSTED",
+        "NETWORK_WRITE",
+        "PUBLIC_RELEASE",
+        "PHYSICAL_ACTUATION"
+      ]
+    },
+    {
+      "id": "ROOM",
+      "definition": "human-facing surface over blocks",
+      "effects_allowed": [
+        "NONE",
+        "OBSERVE_LOCAL"
+      ]
+    },
+    {
+      "id": "BRIDGE",
+      "definition": "protocol or representation adapter",
+      "effects_allowed": [
+        "OBSERVE_LOCAL",
+        "NETWORK_READ",
+        "NETWORK_WRITE"
+      ]
+    },
+    {
+      "id": "ROUTE",
+      "definition": "declared workflow graph; data until started",
+      "effects_allowed": [
+        "NONE"
+      ]
+    },
+    {
+      "id": "DISTRICT",
+      "definition": "domain composition of civic and domain blocks",
+      "effects_allowed": [
+        "NONE"
+      ]
+    }
+  ],
+  "effect_classes": [
+    "NONE",
+    "OBSERVE_LOCAL",
+    "READ_PRIVATE",
+    "WRITE_CANDIDATE",
+    "EXECUTE_CONFINED",
+    "EXECUTE_TRUSTED",
+    "NETWORK_READ",
+    "NETWORK_WRITE",
+    "PUBLIC_RELEASE",
+    "PHYSICAL_ACTUATION",
+    "PROMOTION",
+    "CANON_CHANGE",
+    "ROOT_CHANGE"
+  ],
+  "core_schemas": [
+    {
+      "id": "axm.block-view/v1",
+      "purpose": "compiled block discovery, compatibility, effects, authority and proof view",
+      "source_of_truth": false
+    },
+    {
+      "id": "axm.city-graph/v1",
+      "purpose": "complete deterministic graph for a named source snapshot",
+      "source_of_truth": false
+    },
+    {
+      "id": "axm.artifact-ref/v1",
+      "purpose": "immutable byte and semantic artifact reference",
+      "source_of_truth": true
+    },
+    {
+      "id": "axm.event/v1",
+      "purpose": "common occurrence envelope with correlation, causation, authority and evidence",
+      "source_of_truth": true
+    },
+    {
+      "id": "axm.decision/v1",
+      "purpose": "typed authority decision bound to exact effect scope",
+      "source_of_truth": true
+    },
+    {
+      "id": "axm.receipt/v1",
+      "purpose": "common outer evidence envelope retaining domain payload schemas",
+      "source_of_truth": true
+    },
+    {
+      "id": "axm.route/v1",
+      "purpose": "durable workflow declaration",
+      "source_of_truth": true
+    }
+  ],
+  "infrastructure": [
+    {
+      "id": "live-city-map",
+      "name": "Live City Map / Cadastral Compiler",
+      "priority": 0,
+      "provides": [
+        "live-filesystem-discovery",
+        "deterministic-city-graph",
+        "generated-view-drift-detection",
+        "graph-delta-receipts"
+      ],
+      "refuses": [
+        "promotion",
+        "installation",
+        "runtime-authority",
+        "safety-claim-from-absence"
+      ]
+    },
+    {
+      "id": "schema-registry",
+      "name": "Schema Registry and Compatibility Resolver",
+      "priority": 1,
+      "provides": [
+        "schema-resolution",
+        "version-compatibility",
+        "adapter-routing",
+        "loss-declaration"
+      ]
+    },
+    {
+      "id": "artifact-depot",
+      "name": "Content-Addressed Artifact Depot",
+      "priority": 2,
+      "provides": [
+        "immutable-artifact-storage",
+        "dependency-manifests",
+        "leases-and-roots",
+        "offline-export"
+      ],
+      "refuses": [
+        "automatic-garbage-collection"
+      ]
+    },
+    {
+      "id": "event-journal",
+      "name": "Event Streets and Journal",
+      "priority": 2,
+      "provides": [
+        "append-only-events",
+        "correlation-and-causation",
+        "replayable-projections"
+      ]
+    },
+    {
+      "id": "authority-grid",
+      "name": "Typed Authority Grid",
+      "priority": 3,
+      "provides": [
+        "principal-action-resource-decisions",
+        "one-use-high-risk-authority",
+        "permit-deny-hold-receipts"
+      ],
+      "refuses": [
+        "ai-self-authorization",
+        "capability-as-authority"
+      ]
+    },
+    {
+      "id": "hands-rail",
+      "name": "Hands Rail and Executor Registry",
+      "priority": 3,
+      "provides": [
+        "measured-execution-substrates",
+        "resource-budgets",
+        "cancellation",
+        "effect-receipts"
+      ],
+      "refuses": [
+        "sandbox-claim-by-runtime-label"
+      ]
+    },
+    {
+      "id": "workflow-transit",
+      "name": "Durable Workflow Transit",
+      "priority": 4,
+      "provides": [
+        "locked-intent",
+        "graph-plan-step-receipt",
+        "checkpoint-resume",
+        "domain-profiles"
+      ]
+    },
+    {
+      "id": "evidence-grid",
+      "name": "Evidence and Observability Grid",
+      "priority": 4,
+      "provides": [
+        "common-receipt-envelope",
+        "trace-correlation",
+        "warning-delta",
+        "proof-freshness",
+        "partial-and-unknown-state"
+      ]
+    },
+    {
+      "id": "local-sync",
+      "name": "Local State and Owner-Defined Sync",
+      "priority": 5,
+      "provides": [
+        "local-first-state",
+        "typed-merge-semantics",
+        "human-reconciliation"
+      ],
+      "refuses": [
+        "automatic-root-merge",
+        "automatic-authority-merge"
+      ]
+    },
+    {
+      "id": "twin-surfaces",
+      "name": "Human/Machine Twin Surfaces",
+      "priority": 5,
+      "provides": [
+        "human-city-map",
+        "machine-capability-resolver",
+        "shared-truth-surface"
+      ]
+    },
+    {
+      "id": "intake-harbor",
+      "name": "Quarantined Intake Harbor",
+      "priority": 6,
+      "provides": [
+        "package-inventory",
+        "permission-effect-diff",
+        "temporary-test-install",
+        "promotion-proposal"
+      ]
+    },
+    {
+      "id": "city-gates",
+      "name": "External City Gates",
+      "priority": 6,
+      "provides": [
+        "mcp-adapter",
+        "a2a-adapter",
+        "github-adapter",
+        "oci-export",
+        "optional-public-attestation"
+      ],
+      "refuses": [
+        "external-protocol-as-internal-canon"
+      ]
+    }
+  ],
+  "merge_semantics": [
+    "CRDT_MERGEABLE",
+    "APPEND_ONLY",
+    "LAST_WRITER_NOT_ALLOWED",
+    "HUMAN_RECONCILIATION_REQUIRED",
+    "SINGLE_AUTHORITY",
+    "IMMUTABLE"
+  ],
+  "open_pr_review": [
+    {
+      "number": 32,
+      "title": "deterministic complete-warning delta",
+      "verdict": "MERGE_EARLY_AFTER_LIFECYCLE_CHECK",
+      "position": [
+        "evidence-grid",
+        "live-city-map"
+      ],
+      "required_changes": [
+        "bind baseline to source commit and verifier version",
+        "define exact baseline renewal authority and delta receipt",
+        "report stale baseline as STALE"
+      ]
+    },
+    {
+      "number": 30,
+      "title": "hardware and compute research modules",
+      "verdict": "REBASE_RECOMPILE_AND_MERGE_AS_DISTRICT",
+      "position": [
+        "hardware-research-district",
+        "compute-substrate-district"
+      ],
+      "required_changes": [
+        "rebase against current main",
+        "regenerate city graph",
+        "declare domain-profile relationship to deterministic research"
+      ]
+    },
+    {
+      "number": 29,
+      "title": "AI-native game production runner",
+      "verdict": "STRUCTURAL_HOLD_NOT_REJECTION",
+      "position": [
+        "workflow-transit",
+        "artifact-depot",
+        "hands-rail",
+        "game-production-district"
+      ],
+      "required_changes": [
+        "rebase against current main",
+        "declare DOMAIN_INCUBATOR",
+        "add generic-versus-domain extraction map",
+        "prevent other domains depending on internal generic organs",
+        "extract with compatibility adapters"
+      ]
+    },
+    {
+      "number": 33,
+      "title": "deterministic PR publisher",
+      "verdict": "REPAIR_THREAT_TEST_MERGE_LAST_DISABLED_BY_DEFAULT",
+      "position": [
+        "city-gates",
+        "network-writing-hand"
+      ],
+      "required_changes": [
+        "require final receiver pullRequestDraft true",
+        "add plan-to-readback draft-race negative test"
+      ]
+    }
+  ],
+  "phases": [
+    {
+      "id": 0,
+      "name": "Truthful map",
+      "exit_gates": [
+        "no live manifest or contract can be silently unindexed",
+        "generated views byte-match clean regeneration",
+        "semantic digest excludes timestamps and machine-local paths"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Grammar without migration",
+      "exit_gates": [
+        "existing modules compile without rewrite",
+        "duplicate IDs fail",
+        "incompatible sockets are explicit"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Artifact Depot and Event Streets",
+      "exit_gates": [
+        "interrupted writes cannot produce valid artifacts",
+        "event replay reproduces derived projection",
+        "no automatic deletion"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Authority Grid and Hands Rail",
+      "exit_gates": [
+        "capability does not grant authority",
+        "stale decisions fail",
+        "effect target matches exact digest and scope",
+        "partial failure is typed"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Durable Workflow Transit",
+      "exit_gates": [
+        "same locked route reproduces plan digest",
+        "resume cannot skip unverified work",
+        "domain profile cannot expand authority"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Twin Surfaces",
+      "exit_gates": [
+        "human labels never exceed machine truth",
+        "every human effect maps to an exact packet",
+        "beginner view preserves capability and risk"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "City Gates and distribution",
+      "exit_gates": [
+        "private local operation works with external gates disabled",
+        "adapters cannot become internal authority",
+        "public package can be independently verified"
+      ]
+    }
+  ],
+  "next_build": {
+    "id": "axm-city-map-gate-v0.1",
+    "goal": "Make omission of a real declared module from the machine map a CI failure.",
+    "mode": "read-only deterministic compiler and verifier",
+    "required_negative_tests": [
+      "UNINDEXED_MODULE",
+      "CITY_GRAPH_DRIFT",
+      "DUPLICATE_BLOCK_ID",
+      "UNRESOLVED_SCHEMA",
+      "EFFECT_PERMISSION_DRIFT",
+      "AUTHORITY_MAP_STALE",
+      "HUMAN_VIEW_DRIFT"
+    ],
+    "explicit_non_authority": [
+      "install",
+      "execute",
+      "network-write",
+      "promote",
+      "merge",
+      "canon",
+      "roots"
+    ]
+  },
+  "non_goals": [
+    "one giant AXM kernel",
+    "turn every block into an AI agent",
+    "replace current modules",
+    "make MCP or A2A internal truth",
+    "automatic promotion",
+    "automatic canon",
+    "public dependency for private local operation"
+  ]
+}

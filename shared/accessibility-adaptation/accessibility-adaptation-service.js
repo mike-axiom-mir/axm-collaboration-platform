@@ -55,7 +55,7 @@ function tokenize(value) {
 
 function create(options) {
   const root = path.resolve(options && options.root || path.join(__dirname, '..', '..'));
-  const intakeRoot = path.resolve(options && options.intakeRoot || path.join(root, 'intakes', 'accessibility-adaptive-interfaces-100-v1'));
+  const intakeRoot = path.resolve(options && options.intakeRoot || path.join(root, 'shared', 'accessibility-adaptation', 'source-catalog-v1'));
   const modulesRoot = path.join(intakeRoot, 'modules');
 
   function modules() {
@@ -80,8 +80,8 @@ function create(options) {
         activation: packet.activation_default,
         realEvidence: tests.real_evidence,
         realAccessibilityEffect: packet.real_accessibility_effect,
-        packetUrl: '/intakes/accessibility-adaptive-interfaces-100-v1/' + entry.path.replace(/\\/g, '/') + '/module.packet.json',
-        contractUrl: '/intakes/accessibility-adaptive-interfaces-100-v1/' + entry.path.replace(/\\/g, '/') + '/contract.summary.json'
+        packetUrl: '/shared/accessibility-adaptation/source-catalog-v1/' + entry.path.replace(/\\/g, '/') + '/module.packet.json',
+        contractUrl: '/shared/accessibility-adaptation/source-catalog-v1/' + entry.path.replace(/\\/g, '/') + '/contract.summary.json'
       };
     }).sort((left, right) => left.seed - right.seed);
   }

@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.evidence-chain-of-custody-ledger",
+  "purpose": "Create and verify an append-only hash-linked ledger of evidence custody events while preserving actor, action, time, object, details, and claimed authority scope.",
+  "inputs": {
+    "event": "object, actor, actor type, action, ISO timestamp, details, and optional claimed authority scope"
+  },
+  "outputs": {
+    "custody_entry": "hash-linked immutable-shaped event receipt",
+    "verification_report": "chain, sequence, timestamp, and digest failures"
+  },
+  "refusals": [
+    "missing identity or event fields",
+    "unsupported action",
+    "invalid timestamp",
+    "timestamp regression",
+    "non-JSON-compatible details"
+  ],
+  "non_authority": [
+    "does_not_authenticate_actor_identity",
+    "does_not_validate_claimed_authority",
+    "does_not_persist_or_publish_ledger",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

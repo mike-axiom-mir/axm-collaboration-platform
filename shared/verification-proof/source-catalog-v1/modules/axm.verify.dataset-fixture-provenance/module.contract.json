@@ -1,0 +1,22 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.dataset-fixture-provenance",
+  "purpose": "Check supplied dataset identity, origin, transformations, permissions, splits, checksums, representativeness declarations, and limitations.",
+  "inputs": {
+    "record": "declared provenance facts",
+    "expected_checksums": "optional independently expected digests"
+  },
+  "outputs": {
+    "verification_report": "PASS, FAIL, or UNKNOWN with exact findings and unresolved fields"
+  },
+  "refusals": [
+    "non-mapping record"
+  ],
+  "non_authority": [
+    "does_not_fetch_dataset",
+    "does_not_prove_legal_permission",
+    "does_not_prove_representativeness",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

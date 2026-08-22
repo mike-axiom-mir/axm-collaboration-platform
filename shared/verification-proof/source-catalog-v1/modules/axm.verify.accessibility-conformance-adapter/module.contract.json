@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.accessibility-conformance-adapter",
+  "purpose": "Resolve required accessibility evidence types per claim while preserving specialist and human authority boundaries.",
+  "inputs": {
+    "claims": "unique claims with required evidence types",
+    "evidence": "caller-supplied typed evidence records with independent status"
+  },
+  "outputs": {
+    "accessibility_report": "per-claim evidence matrix, missing evidence, failures, and non-collapsed verdict"
+  },
+  "refusals": [
+    "empty or duplicate claim ids",
+    "unsupported evidence type or status",
+    "unknown claim references",
+    "duplicate evidence seat per claim"
+  ],
+  "non_authority": [
+    "not_a_certification",
+    "evidence_truth_not_reverified",
+    "human_evidence_not_replaced",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

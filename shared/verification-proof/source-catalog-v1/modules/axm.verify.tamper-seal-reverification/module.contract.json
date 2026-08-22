@@ -1,0 +1,28 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.tamper-seal-reverification",
+  "purpose": "Recompute exact subject digests, reference existence, and supplied signature-verification states instead of trusting stored verdict fields.",
+  "inputs": {
+    "subjects": "mapping of exact bytes or deterministic JSON subjects",
+    "seals": "one or more SHA-256 seal records",
+    "references": "optional from/to subject relationships",
+    "signature_receipts": "optional caller-supplied native signature states"
+  },
+  "outputs": {
+    "reverification_report": "recomputed digests, reference failures, signature uncertainty, and bounded verdict"
+  },
+  "refusals": [
+    "empty seal set",
+    "invalid digest or algorithm",
+    "non-deterministic subject",
+    "malformed reference",
+    "invalid signature state"
+  ],
+  "non_authority": [
+    "does_not_trust_stored_verdicts",
+    "does_not_perform_signature_cryptography",
+    "does_not_authenticate_identity",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

@@ -56,9 +56,8 @@ try {
   fs.mkdirSync(path.join(plannerRoot, 'tools', 'demo', 'runtime'), { recursive: true });
   fs.mkdirSync(path.join(plannerRoot, 'tools', 'demo', 'rollback'), { recursive: true });
   fs.mkdirSync(path.join(plannerRoot, 'state'), { recursive: true });
-  fs.mkdirSync(path.join(plannerRoot, 'intakes', 'ai-team-collaboration-runs-01-101-v1'), { recursive: true });
-  fs.mkdirSync(path.join(plannerRoot, 'intakes', 'universal-object-fabric-v0.7.0-2026-07-28', 'game-stage'), { recursive: true });
-  fs.mkdirSync(path.join(plannerRoot, 'intakes', 'universal-object-fabric-v0.7.0-2026-07-28', 'source'), { recursive: true });
+  fs.mkdirSync(path.join(plannerRoot, 'shared', 'ai-team-steward', 'source-intake-v1'), { recursive: true });
+  fs.mkdirSync(path.join(plannerRoot, 'shared', 'universal-object-fabric', 'source-stage-v0.7', 'game-stage'), { recursive: true });
   fs.mkdirSync(path.join(plannerRoot, 'intakes', 'unreviewed-candidate'), { recursive: true });
   fs.mkdirSync(path.join(plannerRoot, 'distributions', 'demo', 'build'), { recursive: true });
   fs.mkdirSync(path.join(plannerRoot, 'AXM_EXAMPLE_v0_1_WORKING'), { recursive: true });
@@ -69,9 +68,8 @@ try {
   fs.writeFileSync(path.join(plannerRoot, 'tools', 'demo', 'runtime', 'game.js'), 'game\n');
   fs.writeFileSync(path.join(plannerRoot, 'tools', 'demo', 'rollback', 'old.zip'), 'archive\n');
   fs.writeFileSync(path.join(plannerRoot, 'state', 'private.json'), '{}\n');
-  fs.writeFileSync(path.join(plannerRoot, 'intakes', 'ai-team-collaboration-runs-01-101-v1', 'reviewed.json'), '{}\n');
-  fs.writeFileSync(path.join(plannerRoot, 'intakes', 'universal-object-fabric-v0.7.0-2026-07-28', 'game-stage', 'stage.json'), '{}\n');
-  fs.writeFileSync(path.join(plannerRoot, 'intakes', 'universal-object-fabric-v0.7.0-2026-07-28', 'source', 'AXM_UNIVERSAL_OBJECT_FABRIC_COMPLETE_INTAKE_v0_7_0_2026-07-28.zip'), 'redundant source archive\n');
+  fs.writeFileSync(path.join(plannerRoot, 'shared', 'ai-team-steward', 'source-intake-v1', 'reviewed.json'), '{}\n');
+  fs.writeFileSync(path.join(plannerRoot, 'shared', 'universal-object-fabric', 'source-stage-v0.7', 'game-stage', 'stage.json'), '{}\n');
   fs.writeFileSync(path.join(plannerRoot, 'intakes', 'unreviewed-candidate', 'private.json'), '{}\n');
   fs.writeFileSync(path.join(plannerRoot, 'distributions', 'demo', 'build', 'demo.zip'), 'derived\n');
   fs.writeFileSync(path.join(plannerRoot, 'AXM_EXAMPLE_v0_1_WORKING', 'candidate.js'), 'candidate\n');
@@ -87,9 +85,8 @@ try {
   check(!publicPlanned.files.has('distributions/demo/build/demo.zip'), 'public planner excludes generated distributions');
   check(!publicPlanned.files.has('AXM_EXAMPLE_v0_1_WORKING/candidate.js'), 'public planner excludes root working handoffs');
   check(!publicPlanned.files.has('_archive_review_example/review.txt'), 'public planner excludes archive-review workspaces');
-  check(publicPlanned.files.has('intakes/ai-team-collaboration-runs-01-101-v1/reviewed.json'), 'public planner includes the exact reviewed AI Team Steward intake dependency');
-  check(publicPlanned.files.has('intakes/universal-object-fabric-v0.7.0-2026-07-28/game-stage/stage.json'), 'public planner includes the exact reviewed Universal Object game stage');
-  check(!publicPlanned.files.has('intakes/universal-object-fabric-v0.7.0-2026-07-28/source/AXM_UNIVERSAL_OBJECT_FABRIC_COMPLETE_INTAKE_v0_7_0_2026-07-28.zip'), 'public planner omits the redundant Universal Object source archive');
+  check(publicPlanned.files.has('shared/ai-team-steward/source-intake-v1/reviewed.json'), 'public planner includes the reviewed AI Team Steward source dependency');
+  check(publicPlanned.files.has('shared/universal-object-fabric/source-stage-v0.7/game-stage/stage.json'), 'public planner includes the reviewed Universal Object game stage');
   check(!publicPlanned.files.has('intakes/unreviewed-candidate/private.json'), 'public planner keeps every unreviewed intake private');
   check(Planner.gitBlobSha(path.join(plannerRoot, 'tools', 'demo', 'index.js')) === 'ce013625030ba8dba906f756967f9e9ca394464a', 'GitHub delta uses canonical Git blob hashing');
   const syntheticDelta = Planner.diffAgainstTree(planned.files, [

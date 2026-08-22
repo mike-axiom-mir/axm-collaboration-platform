@@ -1,0 +1,56 @@
+#usda 1.0
+(
+    defaultPrim = "AXM_TURRET_001"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "AXM_TURRET_001"
+{
+    custom string axmAssetId = "AXM-TURRET-001"
+    custom string axmAssetVersion = "0.4.0"
+    custom string axmUniversalContract = "0.5.0"
+    custom string axmSourceGlb = "AXM-TURRET-001.glb"
+
+    def Xform "AssemblyGroups"
+    {
+        def Xform "root"
+        {
+            custom string axmMembersJson = "[\"base\", \"stabilizer__r00\", \"stabilizer__r01\", \"stabilizer__r02\", \"stabilizer__r03\"]"
+            custom double3 axmPivotM = (0.0, 0.0, 0.0)
+        }
+        def Xform "yaw_body"
+        {
+            custom string axmMembersJson = "[\"rotation_ring\", \"body\"]"
+            custom double3 axmPivotM = (0.0, 0.245, 0.0)
+        }
+        def Xform "pitch_head"
+        {
+            custom string axmMembersJson = "[\"head\", \"barrel\", \"muzzle\"]"
+            custom double3 axmPivotM = (0.0, 0.98, 0.0)
+        }
+    }
+
+    def Xform "Joints"
+    {
+        def Xform "yaw"
+        {
+            custom string axmJointType = "continuous"
+            custom string axmParentGroup = "root"
+            custom string axmChildGroup = "yaw_body"
+            custom double3 axmAxis = (0.0, 1.0, 0.0)
+            custom double3 axmPivotM = (0.0, 0.245, 0.0)
+        }
+        def Xform "pitch"
+        {
+            custom string axmJointType = "revolute"
+            custom string axmParentGroup = "yaw_body"
+            custom string axmChildGroup = "pitch_head"
+            custom double3 axmAxis = (1.0, 0.0, 0.0)
+            custom double3 axmPivotM = (0.0, 0.98, 0.0)
+        }
+    }
+}
+
+# Preview interchange only. Geometry remains in the referenced GLB;
+# physics schemas are intentionally not claimed without usdchecker validation.

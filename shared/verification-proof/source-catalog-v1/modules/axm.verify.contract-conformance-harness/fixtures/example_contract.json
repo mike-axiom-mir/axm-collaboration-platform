@@ -1,0 +1,30 @@
+{
+  "required_fields": {
+    "name": "string",
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "optional_fields": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "SAFE",
+        "FAST"
+      ]
+    }
+  },
+  "allow_additional": false,
+  "operations": {
+    "start": {
+      "allowed_from": [
+        "IDLE"
+      ],
+      "next_state": "RUNNING"
+    }
+  },
+  "refusal_states": [
+    "REFUSED"
+  ]
+}

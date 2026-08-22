@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.summary-source-binding",
+  "purpose": "Bind compact summary claims to exact supplied source identities, digests, locators, and availability states without treating the summary as authoritative.",
+  "inputs": {
+    "summary": "summary id, text, and claim-level exact source references",
+    "sources": "source id to digest, locator, and availability state catalog"
+  },
+  "outputs": {
+    "binding_report": "claim/source bindings, exact identity failures, availability uncertainty, and digest"
+  },
+  "refusals": [
+    "missing summary identity",
+    "invalid or duplicate claims",
+    "malformed digest",
+    "invalid source state",
+    "malformed source reference"
+  ],
+  "non_authority": [
+    "does_not_prove_semantic_support",
+    "does_not_make_summary_authoritative",
+    "does_not_fetch_sources",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

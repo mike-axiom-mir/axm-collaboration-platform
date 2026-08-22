@@ -1,0 +1,24 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.slsa-expectation-verifier",
+  "purpose": "Compare a supplied provenance record against explicit builder, source, build-type, parameter, dependency, and completeness expectations.",
+  "inputs": {
+    "provenance": "caller-supplied normalized provenance facts and verification status",
+    "expectations": "explicit builder, source, build type, parameter, dependency, and completeness policy"
+  },
+  "outputs": {
+    "expectation_report": "mismatches, provenance status, and bounded verdict"
+  },
+  "refusals": [
+    "invalid verification status",
+    "malformed allow list",
+    "non-mapping parameters or dependencies"
+  ],
+  "non_authority": [
+    "does_not_assign_slsa_level",
+    "does_not_authenticate_provenance",
+    "provenance_truth_not_proven",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

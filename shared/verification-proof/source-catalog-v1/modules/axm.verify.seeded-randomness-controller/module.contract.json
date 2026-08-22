@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.seeded-randomness-controller",
+  "purpose": "Provide isolated replayable pseudo-random operations with exact seed, generator identity, transcript, state digest, and declared nondeterministic exceptions.",
+  "inputs": {
+    "seed": "portable integer or string seed",
+    "operations": "bounded random, integer, choice, sample, and copy-shuffle operations"
+  },
+  "outputs": {
+    "randomness_receipt": "seed, generator identity, transcript, state digest, and exceptions"
+  },
+  "refusals": [
+    "unsupported_seed_type",
+    "empty_choice_population",
+    "invalid_sample_size",
+    "invalid_integer_range"
+  ],
+  "non_authority": [
+    "not_cryptographic_randomness",
+    "does_not_control_external_nondeterminism",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

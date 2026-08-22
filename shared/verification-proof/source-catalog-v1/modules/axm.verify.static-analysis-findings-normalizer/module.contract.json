@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.static-analysis-findings-normalizer",
+  "purpose": "Combine static-analysis diagnostics into typed non-duplicated evidence without collapsing suppressions or tool identities.",
+  "inputs": {
+    "tool_runs": "tool identity, completion state, and findings",
+    "fail_severities": "explicit policy threshold"
+  },
+  "outputs": {
+    "analysis_receipt": "normalized findings, source tools, suppressions, policy verdict, incomplete tools, and limitations"
+  },
+  "refusals": [
+    "invalid tool run",
+    "unsupported severity",
+    "missing finding identity fields",
+    "invalid fail-severity policy"
+  ],
+  "non_authority": [
+    "does_not_run_analyzers",
+    "tool_agreement_is_not_truth",
+    "policy_pass_is_not_correctness",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

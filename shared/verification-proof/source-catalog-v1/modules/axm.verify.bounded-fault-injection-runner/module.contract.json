@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.bounded-fault-injection-runner",
+  "purpose": "Execute bounded declarative fault cases through a caller-supplied executor while preserving recovery and uncertainty.",
+  "inputs": {
+    "faults": "unique declarative process, network, storage, resource, clock, or dependency fault cases",
+    "executor": "caller-supplied callable returning bounded outcome observations",
+    "limits": "case and consecutive-failure ceilings"
+  },
+  "outputs": {
+    "campaign": "per-case outcomes, recovery observations, counts, abort/truncation state, and bounded verdict"
+  },
+  "refusals": [
+    "empty campaign",
+    "duplicate fault id",
+    "unsupported fault type",
+    "invalid ceilings"
+  ],
+  "non_authority": [
+    "does_not_modify_host_fault_state",
+    "does_not_prove_resilience_beyond_executed_cases",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

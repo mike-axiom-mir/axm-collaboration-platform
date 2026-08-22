@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.evidence-redaction-privacy-filter",
+  "purpose": "Apply an explicit path policy to JSON-compatible evidence using keep, drop, mask, hash, or generalize actions under a safe default.",
+  "inputs": {
+    "evidence": "JSON-compatible evidence object",
+    "rules": "ordered slash-path keep/drop/mask/hash/generalize rules",
+    "default_action": "fallback leaf action",
+    "required_paths": "minimum fields that must remain"
+  },
+  "outputs": {
+    "redaction_report": "transformed evidence, path-level audit, and explicit proof limits"
+  },
+  "refusals": [
+    "non-JSON evidence",
+    "invalid rule path or action",
+    "required field removed",
+    "unsupported default action"
+  ],
+  "non_authority": [
+    "does_not_detect_secrets_automatically",
+    "does_not_prove_privacy_sufficiency",
+    "does_not_authorize_disclosure",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

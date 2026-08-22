@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.statistical-confidence-reporter",
+  "purpose": "Report repetitions, missingness, central tendency, sample variance, normal-approximation intervals, flagged outliers, and effect sizes without false precision.",
+  "inputs": {
+    "candidate_samples": "finite observations with optional None missing entries",
+    "baseline_samples": "optional comparison observations",
+    "z_value": "declared normal-approximation multiplier"
+  },
+  "outputs": {
+    "uncertainty_report": "sample counts, missingness, variance, interval, outlier flags, effect sizes, and assumptions"
+  },
+  "refusals": [
+    "non-sequence samples",
+    "non-finite or boolean observations",
+    "non-positive or non-finite z value"
+  ],
+  "non_authority": [
+    "does_not_prove_independence",
+    "does_not_remove_outliers",
+    "does_not_claim exact small-sample coverage",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

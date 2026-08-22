@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.layout-responsive-proof",
+  "purpose": "Check declared layout observations across explicit viewports against bounded responsive policies.",
+  "inputs": {
+    "viewports": "unique viewport profiles",
+    "observations": "one optional observation per viewport",
+    "policy": "touch, overflow, and scale limits"
+  },
+  "outputs": {
+    "layout_report": "per-viewport issues, missing observations, and bounded verdict"
+  },
+  "refusals": [
+    "empty or duplicate viewport ids",
+    "non-positive viewport dimensions",
+    "unknown or duplicate observation references",
+    "invalid policy"
+  ],
+  "non_authority": [
+    "does_not_render",
+    "observations_are_caller_supplied",
+    "visual_quality_not_approved",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

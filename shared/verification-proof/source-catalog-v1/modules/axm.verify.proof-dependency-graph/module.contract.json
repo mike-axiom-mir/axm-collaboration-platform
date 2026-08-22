@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.proof-dependency-graph",
+  "purpose": "Represent typed proof dependencies across claims, artifacts, environments, sources, receipts, and human judgments while exposing missing nodes and cycles.",
+  "inputs": {
+    "nodes": "typed proof objects",
+    "edges": "typed directed relationships"
+  },
+  "outputs": {
+    "graph": "normalized nodes, edges, roots, cycles, and review state"
+  },
+  "refusals": [
+    "duplicate node id",
+    "missing edge endpoint",
+    "unknown node or relation type",
+    "invalid self dependency"
+  ],
+  "non_authority": [
+    "does_not resolve cycles",
+    "does_not infer evidence truth",
+    "does_not approve claims",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

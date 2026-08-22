@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.benchmark-environment-normalizer",
+  "purpose": "Normalize and fingerprint supplied benchmark hardware, software, load, temperature, cache, network, randomness, and warm-up facts.",
+  "inputs": {
+    "profile": "supplied environment facts",
+    "required_fields": "facts that must be present",
+    "secret_keys": "keys to redact"
+  },
+  "outputs": {
+    "environment_report": "canonical profile, digest, missing or unknown facts, and non-control boundary"
+  },
+  "refusals": [
+    "non-mapping profile",
+    "invalid required field declaration",
+    "non-finite number",
+    "non-string key",
+    "non-JSON value"
+  ],
+  "non_authority": [
+    "does_not_change_host_environment",
+    "does_not_guarantee_conditions_were_controlled",
+    "does_not_collect_hidden facts",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

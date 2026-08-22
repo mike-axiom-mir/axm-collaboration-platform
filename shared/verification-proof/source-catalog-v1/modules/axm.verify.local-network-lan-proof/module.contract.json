@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.local-network-lan-proof",
+  "purpose": "Verify declared LAN behaviors and constraints from bounded native observations.",
+  "inputs": {
+    "network_profile": "network identity, authority, isolation, offline, and latency expectations",
+    "required_scenarios": "unique scenario names",
+    "observations": "one caller-supplied observation per scenario"
+  },
+  "outputs": {
+    "lan_proof": "scenario issues, missing observations, and bounded verdict"
+  },
+  "refusals": [
+    "missing network or authority identity",
+    "unsupported or duplicate scenario",
+    "unknown observation reference",
+    "unsupported observation state"
+  ],
+  "non_authority": [
+    "does_not_open_sockets",
+    "observations_are_caller_supplied",
+    "network_isolation_not_independently_measured",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

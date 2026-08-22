@@ -1,0 +1,33 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.bounded-verification-orchestrator",
+  "purpose": "Coordinate claim routing, supplied verification evidence, conflict holding, human-review requirements, release-gate preparation, and proof-export references without acquiring decision authority.",
+  "inputs": {
+    "claims": "typed claim identifiers with subject and scope references",
+    "profile": "explicit claim-type requirements, proof surfaces, verifier identifiers, and review conditions",
+    "available_organs": "locally available verifier identifiers",
+    "receipts": "supplied typed specialist receipts",
+    "conflicts": "supplied conflict records",
+    "human_reviews": "supplied bounded human-review receipts",
+    "release_context": "artifact identity, rollback reference, and proof-export reference"
+  },
+  "outputs": {
+    "coordination_packet": "deterministic per-claim readiness, selected organs, unresolved seams, and external-gate preparation state"
+  },
+  "refusals": [
+    "missing or duplicate claim identifiers",
+    "invalid profile or requirement flags",
+    "unknown claim references",
+    "invalid verdict states",
+    "non-boolean freshness, independence, conflict, or authority flags"
+  ],
+  "non_authority": [
+    "does_not_execute_tests",
+    "does_not_create_or_authenticate_receipts",
+    "does_not_resolve_conflicts",
+    "does_not_approve_release",
+    "does_not_publish_evidence",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

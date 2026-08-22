@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.dependency-provenance-recursor",
+  "purpose": "Traverse a caller-supplied dependency graph and expose missing, circular, failed, unverifiable, or policy-violating provenance links under a hard node bound.",
+  "inputs": {
+    "graph": "caller-supplied component records and dependency edges",
+    "roots": "one or more starting component ids",
+    "max_nodes": "positive traversal ceiling"
+  },
+  "outputs": {
+    "recursion_report": "visited nodes, edges, cycles, failures, uncertainty, and bounded verdict"
+  },
+  "refusals": [
+    "invalid graph or roots",
+    "invalid status values",
+    "invalid dependency lists",
+    "non-positive node bound"
+  ],
+  "non_authority": [
+    "does_not_fetch_remote_provenance",
+    "does_not_authenticate_attestations",
+    "does_not_grant_supply_chain approval",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

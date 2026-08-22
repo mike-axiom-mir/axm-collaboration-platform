@@ -1,0 +1,37 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.verdict-state-normalizer",
+  "purpose": "Normalize explicit external verdict labels while preserving raw state and refusing false certainty.",
+  "inputs": {
+    "raw_state": "non-empty string",
+    "source": "non-empty string",
+    "profile_mapping": "optional explicit map"
+  },
+  "outputs": {
+    "verdict_receipt": "canonical verdict plus raw state and normalization reason"
+  },
+  "canonical_verdicts": [
+    "PASS",
+    "FAIL",
+    "UNKNOWN",
+    "NOT_RUN",
+    "CONFLICTED",
+    "STALE",
+    "HUMAN_REVIEW"
+  ],
+  "default_unmapped_behavior": "UNKNOWN with requires_review=true",
+  "refusals": [
+    "empty_raw_state",
+    "empty_source",
+    "invalid_profile_mapping",
+    "percentage_or_boolean_collapse"
+  ],
+  "non_authority": [
+    "does_not_average",
+    "does_not_rank",
+    "does_not_decide_sufficiency",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

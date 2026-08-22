@@ -6,7 +6,7 @@ const GameOrganism = require('./game-organism');
 const Examples = require('./examples');
 
 const REGISTRY_SCHEMA = 'axm.audio-music-run106-game-evidence-registry/v1';
-const DEFAULT_REGISTRY = path.resolve(__dirname, '..', '..', 'intakes', 'audio-music-live-run106', 'evidence', 'module-registry.json');
+const DEFAULT_REGISTRY = path.resolve(__dirname, 'source-evidence', 'audio-music-run106', 'module-registry.json');
 const EXPECTED_STATUS = 'WORKING_CANDIDATE_NOT_CANON_NOT_INTEGRATED';
 
 function clone(value) {
@@ -106,7 +106,7 @@ function createEvidenceOrgan(registry) {
     },
     implementation: {
       kind: 'existing-runtime-reference',
-      reference: 'intakes/audio-music-live-run106/evidence/module-registry.json',
+      reference: 'shared/game-organism/source-evidence/audio-music-run106/module-registry.json',
       status: 'AVAILABLE'
     }
   });

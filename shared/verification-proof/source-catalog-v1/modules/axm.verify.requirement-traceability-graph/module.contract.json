@@ -1,0 +1,51 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.requirement-traceability-graph",
+  "purpose": "Maintain append-only trace links across goals, requirements, implementation, tests, evidence, failures, and decisions.",
+  "inputs": {
+    "node": "typed trace node",
+    "edge": "typed relation between existing nodes"
+  },
+  "outputs": {
+    "snapshot": "deterministic graph",
+    "trace": "bounded neighbor traversal",
+    "unlinked_requirements": "explicit gap list"
+  },
+  "node_types": [
+    "GOAL",
+    "REQUIREMENT",
+    "DESIGN",
+    "CHANGED_PATH",
+    "TEST",
+    "EVIDENCE",
+    "FAILURE",
+    "APPROVAL",
+    "RELEASE_DECISION"
+  ],
+  "relations": [
+    "DERIVES",
+    "IMPLEMENTS",
+    "CHANGES",
+    "TESTS",
+    "PRODUCES_EVIDENCE_FOR",
+    "EXPOSES_FAILURE_IN",
+    "APPROVES",
+    "INFORMS_RELEASE",
+    "DEPENDS_ON",
+    "REFUTES"
+  ],
+  "refusals": [
+    "duplicate_node_id",
+    "duplicate_edge_id",
+    "missing_endpoint",
+    "invalid_node_type",
+    "invalid_relation"
+  ],
+  "non_authority": [
+    "connectivity_is_not_correctness",
+    "approval_node_is_not_approval_authority",
+    "does_not_decide_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

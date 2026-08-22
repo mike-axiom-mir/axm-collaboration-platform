@@ -7,7 +7,7 @@ const Examples = require('./examples');
 
 const REGISTRY_SCHEMA = 'axm.sim-living-run102-game-evidence-registry/v1';
 const EXPECTED_STATE = 'STATIC_WORKING_CANDIDATE_NOT_RUNTIME_NOT_CANON';
-const DEFAULT_REGISTRY = path.resolve(__dirname, '..', '..', 'intakes', 'sim-living-run102', 'evidence', 'module-registry.json');
+const DEFAULT_REGISTRY = path.resolve(__dirname, 'source-evidence', 'sim-living-run102', 'evidence', 'module-registry.json');
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -127,7 +127,7 @@ function createEvidenceOrgan(registry) {
     },
     implementation: {
       kind: 'existing-runtime-reference',
-      reference: 'intakes/sim-living-run102/evidence/module-registry.json',
+      reference: 'shared/game-organism/source-evidence/sim-living-run102/evidence/module-registry.json',
       status: 'AVAILABLE'
     }
   });

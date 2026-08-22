@@ -1,0 +1,31 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.falsification-condition-recorder",
+  "purpose": "Record predeclared falsification and weakening observations before testing begins.",
+  "inputs": {
+    "condition": "typed falsification condition",
+    "storage_path": "append-only JSONL"
+  },
+  "outputs": {
+    "record": "normalized condition",
+    "snapshot": "deterministic condition inventory"
+  },
+  "effects": [
+    "DISPROVE",
+    "WEAKEN"
+  ],
+  "refusals": [
+    "post_test_recording",
+    "duplicate_condition_id",
+    "empty_scope",
+    "invalid_effect",
+    "empty_observation"
+  ],
+  "non_authority": [
+    "does_not_observe_condition",
+    "does_not_change_claim_verdict",
+    "does_not_decide_sufficiency",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

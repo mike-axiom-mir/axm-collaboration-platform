@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.stateful-model-based-runner",
+  "purpose": "Generate bounded state-machine paths and compare implementation observations with model transitions.",
+  "inputs": {
+    "initial_model_state and transitions": "deterministic finite state model",
+    "implementation_initial_state and implementation_step": "caller-supplied in-process implementation adapter",
+    "bounds": "maximum depth and sequence count"
+  },
+  "outputs": {
+    "stateful_receipt": "explored sequences, transitions, first mismatch or exception, and bounded verdict"
+  },
+  "refusals": [
+    "ambiguous transition",
+    "invalid transition",
+    "invalid bounds",
+    "non-callable implementation step"
+  ],
+  "non_authority": [
+    "bounded_paths_only",
+    "implementation_adapter_is_caller_supplied",
+    "does_not_execute_external_commands",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

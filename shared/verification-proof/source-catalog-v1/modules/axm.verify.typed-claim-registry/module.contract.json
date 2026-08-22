@@ -1,0 +1,46 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.typed-claim-registry",
+  "purpose": "Store typed claims without silent overwrite or approval authority.",
+  "inputs": {
+    "claim": "AXM typed claim object"
+  },
+  "outputs": {
+    "append_event": "REGISTER_CLAIM event",
+    "snapshot": "deterministic claim list"
+  },
+  "required_fields": [
+    "claim_id",
+    "claim_type",
+    "subject",
+    "scope",
+    "risk",
+    "owner",
+    "status",
+    "required_proof_surfaces"
+  ],
+  "canonical_verdicts": [
+    "PASS",
+    "FAIL",
+    "UNKNOWN",
+    "NOT_RUN",
+    "CONFLICTED",
+    "STALE",
+    "HUMAN_REVIEW"
+  ],
+  "refusals": [
+    "missing_or_empty_field",
+    "invalid_verdict",
+    "duplicate_claim_id",
+    "invalid_scope",
+    "empty_proof_surface_list"
+  ],
+  "non_authority": [
+    "does_not_verify_claim",
+    "does_not_approve_release",
+    "does_not_promote_canon",
+    "does_not_overwrite_existing_claim"
+  ],
+  "storage": "append-only JSONL",
+  "dependencies": "Python standard library only"
+}

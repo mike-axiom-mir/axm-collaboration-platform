@@ -1,0 +1,31 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.build-environment-capture",
+  "purpose": "Normalize and seal explicit build-environment facts while redacting declared secret variables.",
+  "inputs": {
+    "runtime": "declared runtime identity",
+    "os_info": "declared operating-system identity",
+    "architecture": "declared architecture",
+    "tools": "unique named tool versions",
+    "dependencies": "unique named dependency versions",
+    "variables": "environment variables with explicit secret-key list",
+    "locale": "declared locale facts",
+    "path_facts": "declared path facts"
+  },
+  "outputs": {
+    "environment_receipt": "normalized facts, digest, and redaction record"
+  },
+  "refusals": [
+    "missing runtime, os, or architecture",
+    "duplicate tool or dependency",
+    "invalid secret key",
+    "non-string variable name"
+  ],
+  "non_authority": [
+    "does_not_inspect_host",
+    "completeness_not_proven",
+    "secret_values_not_retained",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

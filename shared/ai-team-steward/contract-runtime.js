@@ -152,7 +152,7 @@ function validateFixture(fixture, entry) {
 
 function create(options = {}) {
   const root = path.resolve(options.root || path.join(__dirname, '..', '..'));
-  const harnessRoot = path.join(root, 'intakes', 'ai-team-collaboration-runs-01-101-v1', 'proof-harness-v7');
+  const harnessRoot = path.join(root, 'shared', 'ai-team-steward', 'source-intake-v1', 'proof-harness-v7');
   const registryPath = path.join(harnessRoot, 'registry', 'seed_registry.json');
   const latestRegistryPath = path.join(harnessRoot, 'registry', 'seed_registry_v7.json');
   const fixtureRoot = path.join(harnessRoot, 'fixtures');

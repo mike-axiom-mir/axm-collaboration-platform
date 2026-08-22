@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.golden-fixture-registry",
+  "purpose": "Register immutable reviewed fixtures with category, exact digest, provenance, expected claims, reviewer, and review receipt.",
+  "inputs": {
+    "fixture_payload": "exact bytes",
+    "metadata": "category, provenance, expected claim IDs, reviewer, and review receipt"
+  },
+  "outputs": {
+    "fixture_record_or_manifest": "immutable fixture identity and verification receipts"
+  },
+  "refusals": [
+    "duplicate_fixture_id",
+    "unsupported_category",
+    "missing_review_receipt",
+    "empty_expected_claims",
+    "payload_not_bytes"
+  ],
+  "non_authority": [
+    "review_does_not_prove_all_claims",
+    "fixture_is_not_general_truth",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.reproducible-build-verifier",
+  "purpose": "Compare two or more supplied build receipts for bit-identical specified outputs under the same declared source, environment, and instructions.",
+  "inputs": {
+    "builds": "two or more build receipts with context and output digests",
+    "specified_outputs": "optional unique output paths that define the comparison scope"
+  },
+  "outputs": {
+    "reproducibility_report": "context and output mismatches, uncertainty, and bounded verdict"
+  },
+  "refusals": [
+    "fewer than two builds",
+    "duplicate build id",
+    "missing context digest",
+    "invalid output map",
+    "empty or duplicate specified output"
+  ],
+  "non_authority": [
+    "does_not_execute_builds",
+    "reproducibility_is_not_correctness",
+    "reproducibility_is_not_safety",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

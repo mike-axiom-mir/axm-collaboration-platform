@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
-HARNESS = ROOT / 'intakes' / 'ai-team-collaboration-runs-01-101-v1' / 'proof-harness-v7'
+HARNESS = ROOT / 'shared' / 'ai-team-steward' / 'source-intake-v1' / 'proof-harness-v7'
 sys.path.insert(0, str(HARNESS))
 
 from axm_team_harness.authority_v3 import Lease, delegate

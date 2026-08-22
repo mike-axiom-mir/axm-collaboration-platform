@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.evidence-pointer-resolver",
+  "purpose": "Resolve typed evidence pointers only against an explicit offline catalog and report resolved, stale, or broken state without network or filesystem traversal.",
+  "inputs": {
+    "pointer": "typed relative, content, archive, source-line, receipt, or native-surface pointer",
+    "catalog": "explicit offline indexes and ACTIVE or STALE records"
+  },
+  "outputs": {
+    "resolution_report": "resolved, stale, or broken state with target and bounded verdict"
+  },
+  "refusals": [
+    "unsupported pointer type",
+    "unsafe relative or archive path",
+    "invalid digest",
+    "invalid source-line range",
+    "invalid catalog status"
+  ],
+  "non_authority": [
+    "does_not_access_network",
+    "does_not_traverse_filesystem",
+    "does_not_refresh_stale_targets",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.test-run-receipt-builder",
+  "purpose": "Create and reverify canonical receipts for one bounded test run.",
+  "inputs": {
+    "run facts": "run identity, subjects, environment, declared operations, JSON-safe inputs and outputs, timing, verdict, limitations, artifact digests"
+  },
+  "outputs": {
+    "sealed_receipt": "canonical receipt with SHA-256 content seal and explicit non-authority boundaries"
+  },
+  "refusals": [
+    "empty identifiers",
+    "invalid verdict state",
+    "invalid timestamp order",
+    "invalid artifact digest",
+    "non-JSON-safe receipt content"
+  ],
+  "non_authority": [
+    "does_not_execute_declared_operations",
+    "seal_proves_integrity_not_truth",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

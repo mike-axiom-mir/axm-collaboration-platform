@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.property-based-test-generator",
+  "purpose": "Generate bounded edge-oriented examples and shrink the first property counterexample.",
+  "inputs": {
+    "strategy": "integer, text, or list strategy",
+    "property": "caller-supplied in-process boolean callable",
+    "seed and example_count": "deterministic generation controls"
+  },
+  "outputs": {
+    "property_receipt": "sample count, first counterexample, shrink result, exception details, and bounded verdict"
+  },
+  "refusals": [
+    "unsupported strategy",
+    "invalid bounds",
+    "non-boolean property result",
+    "invalid example budget"
+  ],
+  "non_authority": [
+    "not_exhaustive_proof",
+    "property_truth_is_caller_supplied",
+    "does_not_execute_external_commands",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

@@ -1,0 +1,32 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.acceptance-criterion-compiler",
+  "purpose": "Compile explicit acceptance criteria without interpreting freeform goals as proof requirements.",
+  "inputs": {
+    "goal": "goal_id, claim_id, human_goal",
+    "criteria": "explicit criterion objects"
+  },
+  "outputs": {
+    "acceptance_contract": "deterministic non-executed contract"
+  },
+  "check_types": [
+    "MACHINE",
+    "HUMAN",
+    "COMPOSITE"
+  ],
+  "refusals": [
+    "freeform_goal_without_criteria",
+    "duplicate_criterion_id",
+    "missing_machine_check",
+    "missing_human_check",
+    "empty_evidence_requirements",
+    "empty_refusal_conditions"
+  ],
+  "non_authority": [
+    "does_not_execute_checks",
+    "does_not_decide_acceptance",
+    "does_not_rewrite_goal",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

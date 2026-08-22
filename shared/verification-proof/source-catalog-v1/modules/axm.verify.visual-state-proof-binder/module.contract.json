@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.visual-state-proof-binder",
+  "purpose": "Bind artifact identity and technical receipts to native visual evidence and separate human approval.",
+  "inputs": {
+    "artifact": "artifact_id and cryptographic digest",
+    "technical_receipts": "typed receipts bound to the artifact digest",
+    "native_observation": "optional native screenshot or rendered observation",
+    "human_review": "optional explicit review decision"
+  },
+  "outputs": {
+    "visual_proof_binding": "identity checks, technical states, native observation state, human review state, and bounded verdict"
+  },
+  "refusals": [
+    "missing artifact identity or digest",
+    "duplicate receipt ids",
+    "unsupported receipt, observation, or review states"
+  ],
+  "non_authority": [
+    "pixels_are_not_approval",
+    "receipt_truth_not_reverified",
+    "does_not_render_or_capture",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.failure-memory-regression-selector",
+  "purpose": "Select regression checks from verified failure memory while holding unreviewed, flaky, and rejected memories outside automatic use.",
+  "inputs": {
+    "failures": "unique historical failure ids, review status, and regression keys",
+    "tests": "test ids with covered failures or regression keys",
+    "max_tests": "hard selection ceiling"
+  },
+  "outputs": {
+    "selection": "selected tests, uncovered verified failures, held-out memories, and bounded coverage verdict"
+  },
+  "refusals": [
+    "duplicate identifiers",
+    "unsupported failure status",
+    "malformed coverage sequence",
+    "invalid ceiling"
+  ],
+  "non_authority": [
+    "only_verified_failures_are_auto_eligible",
+    "does_not_execute_tests",
+    "does_not_promote_failure_lessons_to_canon",
+    "does_not_approve_release"
+  ],
+  "dependencies": "Python standard library only"
+}

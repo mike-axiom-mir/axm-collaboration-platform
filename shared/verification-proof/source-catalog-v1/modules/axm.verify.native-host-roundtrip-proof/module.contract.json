@@ -1,0 +1,24 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.native-host-roundtrip-proof",
+  "purpose": "Verify a supplied native host save, reopen, inspect, and optional rollback round trip against exact artifact identities.",
+  "inputs": {
+    "receipt": "native host receipt with exact artifact digests, host identity, inspection state, and optional rollback evidence"
+  },
+  "outputs": {
+    "roundtrip_report": "stage mismatches, uncertainty, rollback result, and bounded verdict"
+  },
+  "refusals": [
+    "missing receipt or host identity",
+    "unsupported state",
+    "missing required digests",
+    "incomplete rollback evidence"
+  ],
+  "non_authority": [
+    "does_not_launch_native_host",
+    "caller_receipt_truth_not_proven",
+    "visual_approval_not_implied",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

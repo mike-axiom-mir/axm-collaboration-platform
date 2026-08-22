@@ -1,0 +1,1074 @@
+{
+  "capsule_version": "7.0-working",
+  "continuity_overlay_runs_62_71": {
+    "adapter_identity_gate": {
+      "required": false,
+      "silent_substitution_allowed": false
+    },
+    "combined_failure": {
+      "action_authority": false,
+      "promotion_authority": false,
+      "safe_release": true
+    },
+    "cross_device_gate": {
+      "conflicts_preserved": true,
+      "relevant": false
+    },
+    "evidence_freshness": {
+      "automatic_truth_upgrade": false,
+      "hash_and_policy_bound": true
+    },
+    "intake": {
+      "requires_real_local_inventory_review": true,
+      "topological_position": 9
+    },
+    "lease_renewal_gate": {
+      "renewal_never_widens_scope": true,
+      "required": false
+    },
+    "migration": {
+      "automatic_import": false,
+      "capsule_version": "4.0-working",
+      "rollback_exact": true
+    },
+    "module_id": "axm.sense.cadence-duration-controller",
+    "packet_version": "1.0-working",
+    "review": {
+      "append_only": true,
+      "dissent_preserved": true,
+      "pilot_not_canon": true
+    },
+    "root_contract_modified": false,
+    "runs": "62-71",
+    "seed_number": 8,
+    "semantic_gate": {
+      "default_without_native_proof": "HOLD_OR_PRIVATE_TYPED_ONLY",
+      "required": true
+    },
+    "shared_evidence_refs": {
+      "run62": "10_CONTINUITY_STEWARD/run62_proof_carrying_redaction/proof_carrying_redaction_gate_results.run62.json",
+      "run63": "10_CONTINUITY_STEWARD/run63_lease_renewal/lease_renewal_interruption_results.run63.json",
+      "run64": "10_CONTINUITY_STEWARD/run64_adapter_identity/adapter_identity_drift_results.run64.json",
+      "run65": "10_CONTINUITY_STEWARD/run65_evidence_expiry/evidence_expiry_invalidation_results.run65.json",
+      "run66": "10_CONTINUITY_STEWARD/run66_partition_healing/cross_device_partition_healing_results.run66.json",
+      "run67": "10_CONTINUITY_STEWARD/run67_offline_migration/offline_capsule_migration_results.run67.json",
+      "run68": "10_CONTINUITY_STEWARD/run68_human_review/human_review_traceability_results.run68.json",
+      "run69": "10_CONTINUITY_STEWARD/run69_intake_dry_run/isolated_local_intake_dry_run_results.run69.json",
+      "run70": "10_CONTINUITY_STEWARD/run70_combined_failures/combined_failure_chaos_results.run70.json"
+    },
+    "status": "WORKING_CANDIDATE"
+  },
+  "contract_core": {
+    "guards": [
+      "exact target identity and scope match",
+      "capability negotiation before capture or dependency use",
+      "current non-transferable authority lease when permission-bearing input is required",
+      "resource and cadence hard stops",
+      "units, reference frame, source clock, calibration, precision, provenance, and uncertainty preserved",
+      "raw material release before receipt return",
+      "conflict and unsupported conditions remain visible",
+      "no action, publishing, installation, deletion, identity, diagnosis, guilt, or CANON authority"
+    ],
+    "interfaces": {
+      "dependency_policy": "Reference shared contracts and existing Sensorium organs; do not copy or silently fork their logic.",
+      "inputs": [
+        "SessionRequest",
+        "TargetBinding",
+        "AuthorityLease",
+        "ResourceBudget"
+      ],
+      "outputs": [
+        "CadenceDurationReceipt"
+      ],
+      "receipt_schema": "axm://schemas/typed-observation-envelope.schema.json",
+      "required_dependencies": [
+        "axm.sense.observation-session-envelope",
+        "axm.sense.resource-budget-contract"
+      ]
+    },
+    "refusal_conditions": [
+      "exact target binding is absent, expired, ambiguous, or wider than the approved scope",
+      "required host capability is BLOCKED or UNKNOWN and no honest fallback is approved",
+      "resource budget, cadence, duration, retention, or cleanup policy is missing",
+      "the request would inherit authority from another module or prior session",
+      "source timestamps, units, reference frame, provenance, or uncertainty cannot be represented honestly",
+      "the requested output requires action, publication, deletion, installation, identity, guilt, or CANON authority"
+    ],
+    "retention": {
+      "allowed_survivors": [
+        "typed findings",
+        "digests",
+        "counters",
+        "source timestamps",
+        "uncertainty",
+        "seams",
+        "deliberately approved proof artifacts"
+      ],
+      "expiry_required": true,
+      "raw_default": "EPHEMERAL_ZERO_RETENTION",
+      "raw_release_before_receipt": true,
+      "source_deletion_allowed": false
+    },
+    "scope": {
+      "action_authority": false,
+      "authority_not_inherited": true,
+      "deletion_authority": false,
+      "exact_target_required": true,
+      "forbidden_claims": [
+        "action authority",
+        "promotion to CANON",
+        "permission inherited from capability availability"
+      ],
+      "installation_authority": false,
+      "minimum_claim": "Return only the narrow typed observation or coordination result named by this module.",
+      "observe_only": true,
+      "promotion_authority": false,
+      "publishing_authority": false,
+      "purpose": "Enforce finite sample rate, observation duration, frame count, silence timeout, and hard stop boundaries.",
+      "raw_material_ephemeral": true
+    }
+  },
+  "convergence_runs_72_81": {
+    "automatic_import": false,
+    "canon": false,
+    "capability_downgrade_cases": 0,
+    "convergence": {
+      "automatic_import": false,
+      "canon": false,
+      "false_readiness_claim_blocked": true,
+      "lane": "SYNTHETIC_CONTENT_PROOF_REQUIRED",
+      "module_id": "axm.sense.cadence-duration-controller",
+      "next_evidence": [
+        "LOCAL_OVERLAP_REVIEW",
+        "IMPLEMENTATION_PROOF",
+        "MEASURED_RESOURCE_PROFILE",
+        "CONTENT_NATIVE_REDACTION_PROOF"
+      ],
+      "seed_number": 8,
+      "unresolved_debts": [
+        {
+          "debt": "LOCAL_OVERLAP_REVIEW",
+          "gate": "REQUIRED_BEFORE_INTAKE",
+          "reason": "unpublished local Sensorium unavailable"
+        },
+        {
+          "debt": "IMPLEMENTATION_PROOF",
+          "gate": "REQUIRED_BEFORE_RUNTIME",
+          "reason": "runtime proof remains UNTESTED"
+        },
+        {
+          "debt": "MEASURED_RESOURCE_PROFILE",
+          "gate": "REQUIRED_BEFORE_PRODUCTION",
+          "reason": "budgets are specified but not measured on target hardware"
+        },
+        {
+          "debt": "CONTENT_NATIVE_REDACTION_PROOF",
+          "gate": "HOLD_OR_PRIVATE_TYPED_ONLY",
+          "reason": "VISUAL_CONTENT"
+        }
+      ]
+    },
+    "failure_blast_radius": 91,
+    "guard_mutation_cases": 14,
+    "intake_wave": 3,
+    "lossless_invariant_map": {
+      "invariant_refs": {
+        "forbidden_claims": [
+          "INV-0017",
+          "INV-0018",
+          "INV-0019"
+        ],
+        "guards": [
+          "INV-0001",
+          "INV-0002",
+          "INV-0003",
+          "INV-0004",
+          "INV-0005",
+          "INV-0006",
+          "INV-0007",
+          "INV-0008"
+        ],
+        "lifecycle": [
+          "INV-0022",
+          "INV-0023",
+          "INV-0024",
+          "INV-0025",
+          "INV-0026",
+          "INV-0027",
+          "INV-0028",
+          "INV-0029",
+          "INV-0030",
+          "INV-0031"
+        ],
+        "quality_dimensions": [
+          "INV-0032",
+          "INV-0033",
+          "INV-0034",
+          "INV-0035",
+          "INV-0036",
+          "INV-0040",
+          "INV-0042"
+        ],
+        "refusal_conditions": [
+          "INV-0009",
+          "INV-0010",
+          "INV-0011",
+          "INV-0012",
+          "INV-0013",
+          "INV-0014"
+        ]
+      },
+      "lossless": true,
+      "module_id": "axm.sense.cadence-duration-controller",
+      "original_digest": "3df137e8691be71b58dabeb33a69ea72cfd998d500c172fa6acf4729dfbeaaf4",
+      "reconstruction_digest": "3df137e8691be71b58dabeb33a69ea72cfd998d500c172fa6acf4729dfbeaaf4"
+    },
+    "module_id": "axm.sense.cadence-duration-controller",
+    "packet_digest": "35ced49cb58cd75963dcd05a8d6ed99c90ac4ac9dff03f508e92abd1947ebc91",
+    "packet_version": "1.0-working",
+    "receipt_compatibility_cases": 10,
+    "reproducible_capsule_build": "PASS",
+    "root_contract_modified": false,
+    "run_range": [
+      72,
+      81
+    ],
+    "seed_number": 8,
+    "shutdown_liveness_cases": 12,
+    "source_independence_cases": 0
+  },
+  "efficient_results_through_run49": {
+    "composition_cases_as_consumer": 12,
+    "consistency": {
+      "authority_boundary": "PASS",
+      "continuity_overlay_required": true,
+      "dependencies": "PASS",
+      "identity": "PASS",
+      "issues": [
+        "EMBEDDED_HISTORY_STOPS_AT_RUN_11",
+        "RUN41_PRELIGHT_STALE_AFTER_RUN43_REPAIR"
+      ],
+      "module_id": "axm.sense.cadence-duration-controller",
+      "stale_readiness_preflight_superseded": true
+    },
+    "delta_selector_policy": "MODULE_CONTRACT -> self + transitive dependents; MODULE_LOCAL_EVIDENCE -> self",
+    "preflight": {
+      "active_schema_references": "PASS",
+      "archival_rollback_schema_references": "PASS_RESOLVED_WITH_ARCHIVAL_CONTEXT",
+      "automatic_import": false,
+      "external_local_overlap": "NOT_EXECUTED",
+      "internal_pack_preflight": "PASS_EXECUTED_REPAIRED_ORACLE",
+      "json_parse": "PASS",
+      "module_id": "axm.sense.cadence-duration-controller",
+      "overlay_version": "1.0-working",
+      "run": 43,
+      "run40_failure_cause": "The Run 40 oracle resolved schema paths from inside relocated _ROLLBACK_RUN_01 folders, adding one unintended directory level.",
+      "source_preserved": true,
+      "supersedes_preflight_result_from_run40": true
+    },
+    "race_model": {
+      "failed": 0,
+      "passed": 20,
+      "scenarios": 20,
+      "specification_gap_repaired_by_run47": true
+    },
+    "risk_schedule": {
+      "deep_refresh_rule": "on any dependency/input delta and every fifth steward checkpoint",
+      "module_id": "axm.sense.cadence-duration-controller",
+      "readiness_score": null,
+      "risk_priority_components": {
+        "bottleneck": 2,
+        "failure_impact": 3,
+        "fusion_or_orchestration": 0,
+        "permission_bearing": 0,
+        "privacy": 2,
+        "research_or_live_lane": 0
+      },
+      "risk_priority_tier": "HIGH",
+      "risk_priority_total": 7,
+      "universal_every_run": [
+        "identity",
+        "source integrity",
+        "no authority",
+        "target exactness",
+        "cleanup",
+        "no CANON/auto-import"
+      ]
+    }
+  },
+  "efficient_results_through_run51": {
+    "final_readiness": {
+      "automatic_import": false,
+      "canon_eligible": false,
+      "dimensions": {
+        "cross_artifact_identity": "PASS_EXECUTED",
+        "dependency_composition_gate": "PASS_EXECUTED_TYPED_STUBS",
+        "host_or_live_runtime_proof": "NOT_EXECUTED_AS_APPLICABLE",
+        "human_control": "PASS_CONTRACT_ONLY",
+        "incremental_evidence_cache": "PASS_EXECUTED",
+        "independent_human_merge_gate": "NOT_EXECUTED",
+        "lifecycle_and_race_model": "PASS_EXECUTED_ABSTRACT",
+        "local_unpublished_overlap_review": "NOT_EXECUTED",
+        "metadata_flow_sanitizer": "PASS_EXECUTED_KEY_SHAPE_ONLY",
+        "resource_policy": "PASS_DESIGN_ONLY",
+        "rollback_aware_internal_preflight": "PASS_EXECUTED_REPAIRED_ORACLE",
+        "source_identity_preserved": "PASS",
+        "strict_request_guard": "PASS_EXECUTED",
+        "thin_capsule_integrity": "PASS_EXECUTED"
+      },
+      "dossier_version": "2.0-working",
+      "module_id": "axm.sense.cadence-duration-controller",
+      "next_bounded_action": "Compare against the local Sensorium, import one isolated contract capsule into a sandbox, and prove rollback.",
+      "open_blockers": [
+        "local_unpublished_overlap_review",
+        "isolated_sandbox_import_and_rollback",
+        "independent_human_merge_gate"
+      ],
+      "readiness_lane": "A_OFFLINE_CONTRACT_PILOT",
+      "run": 51,
+      "single_score_used": false
+    },
+    "steward_packet": {
+      "module_id": "axm.sense.cadence-duration-controller",
+      "packet_version": "1.0-working",
+      "run42": {
+        "all_hash_bound": true,
+        "cache_entries": 8
+      },
+      "run43": {
+        "active_schema_references": "PASS",
+        "archival_rollback_schema_references": "PASS_RESOLVED_WITH_ARCHIVAL_CONTEXT",
+        "automatic_import": false,
+        "external_local_overlap": "NOT_EXECUTED",
+        "internal_pack_preflight": "PASS_EXECUTED_REPAIRED_ORACLE",
+        "json_parse": "PASS",
+        "module_id": "axm.sense.cadence-duration-controller",
+        "overlay_version": "1.0-working",
+        "run": 43,
+        "run40_failure_cause": "The Run 40 oracle resolved schema paths from inside relocated _ROLLBACK_RUN_01 folders, adding one unintended directory level.",
+        "source_preserved": true,
+        "supersedes_preflight_result_from_run40": true
+      },
+      "run44": {
+        "authority_boundary": "PASS",
+        "continuity_overlay_required": true,
+        "dependencies": "PASS",
+        "identity": "PASS",
+        "issues": [
+          "EMBEDDED_HISTORY_STOPS_AT_RUN_11",
+          "RUN41_PRELIGHT_STALE_AFTER_RUN43_REPAIR"
+        ],
+        "module_id": "axm.sense.cadence-duration-controller",
+        "stale_readiness_preflight_superseded": true
+      },
+      "run45": {
+        "deep_refresh_rule": "on any dependency/input delta and every fifth steward checkpoint",
+        "module_id": "axm.sense.cadence-duration-controller",
+        "readiness_score": null,
+        "risk_priority_components": {
+          "bottleneck": 2,
+          "failure_impact": 3,
+          "fusion_or_orchestration": 0,
+          "permission_bearing": 0,
+          "privacy": 2,
+          "research_or_live_lane": 0
+        },
+        "risk_priority_tier": "HIGH",
+        "risk_priority_total": 7,
+        "universal_every_run": [
+          "identity",
+          "source integrity",
+          "no authority",
+          "target exactness",
+          "cleanup",
+          "no CANON/auto-import"
+        ]
+      },
+      "run46": {
+        "contract_change_selected_modules": 92,
+        "false_negative_policy": "FORBIDDEN",
+        "local_evidence_change_selected_modules": 1
+      },
+      "run47": {
+        "failed": 0,
+        "passed": 20,
+        "scenarios": 20,
+        "specification_gap_repaired_by_run47": true
+      },
+      "run48": {
+        "cases_as_consumer": 72,
+        "dependency_edges": 2
+      },
+      "run49": {
+        "capsule_created": true,
+        "shared_evidence_not_duplicated": true
+      },
+      "run50": {
+        "capsule_hash_manifested": true,
+        "full_restore_suite_passed": true,
+        "representative_tamper_suite_passed": true
+      },
+      "run51": {
+        "automatic_import": false,
+        "canon_eligible": false,
+        "dimensions": {
+          "cross_artifact_identity": "PASS_EXECUTED",
+          "dependency_composition_gate": "PASS_EXECUTED_TYPED_STUBS",
+          "host_or_live_runtime_proof": "NOT_EXECUTED_AS_APPLICABLE",
+          "human_control": "PASS_CONTRACT_ONLY",
+          "incremental_evidence_cache": "PASS_EXECUTED",
+          "independent_human_merge_gate": "NOT_EXECUTED",
+          "lifecycle_and_race_model": "PASS_EXECUTED_ABSTRACT",
+          "local_unpublished_overlap_review": "NOT_EXECUTED",
+          "metadata_flow_sanitizer": "PASS_EXECUTED_KEY_SHAPE_ONLY",
+          "resource_policy": "PASS_DESIGN_ONLY",
+          "rollback_aware_internal_preflight": "PASS_EXECUTED_REPAIRED_ORACLE",
+          "source_identity_preserved": "PASS",
+          "strict_request_guard": "PASS_EXECUTED",
+          "thin_capsule_integrity": "PASS_EXECUTED"
+        },
+        "dossier_version": "2.0-working",
+        "module_id": "axm.sense.cadence-duration-controller",
+        "next_bounded_action": "Compare against the local Sensorium, import one isolated contract capsule into a sandbox, and prove rollback.",
+        "open_blockers": [
+          "local_unpublished_overlap_review",
+          "isolated_sandbox_import_and_rollback",
+          "independent_human_merge_gate"
+        ],
+        "readiness_lane": "A_OFFLINE_CONTRACT_PILOT",
+        "run": 51,
+        "single_score_used": false
+      },
+      "runs": [
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51
+      ],
+      "seed_number": 8,
+      "source_sha256": "11a069f8064483fd39609341b15f1469a0b250d2fd4c2c3509e97c9a5899ab19",
+      "truth_boundary": {
+        "automatic_import": false,
+        "canon": false,
+        "live_device_proof": "NOT_EXECUTED",
+        "local_integration": "NOT_PERFORMED"
+      }
+    }
+  },
+  "evidence_references": [
+    {
+      "cache_key": "c4fc6f51078bdad24af457ffebc17f636235cc7c0225a719e919c3e2a09b09e0",
+      "proof_family": "source_identity"
+    },
+    {
+      "cache_key": "5d5d14b096ae5109eed7e6417c2e1af39124c9e6811752bb95534469c24febb3",
+      "proof_family": "strict_guard"
+    },
+    {
+      "cache_key": "113b63ac009b8e7d4ca595af4556eb6b06fc5d05be282f71bf6ac94f9bd1193a",
+      "proof_family": "lifecycle"
+    },
+    {
+      "cache_key": "4653d391a3fe9727317a6c07682fead43cc4f83fb32a7ce583d0e120c48cab86",
+      "proof_family": "privacy"
+    },
+    {
+      "cache_key": "84bdad2d2bb905e2488c4f45f4267be4ce762d03dba5120d2a6a26f8a35d07a9",
+      "proof_family": "dependency"
+    },
+    {
+      "cache_key": "13fbcef9d4cd0e252108b8f9c2b2dbd0e12763e2bd562d33a0b522fa86592558",
+      "proof_family": "resource"
+    },
+    {
+      "cache_key": "740dcc052059ee82235896750e9b67065b812c6156e2fcee595df698db3458af",
+      "proof_family": "human_control"
+    },
+    {
+      "cache_key": "8ad87e3fb8944bc7b2b84e5df77b753aa014631b4e4a79e03f394780e01988dd",
+      "proof_family": "readiness"
+    }
+  ],
+  "evidence_steward_runs_52_61": {
+    "automatic_import": false,
+    "canon": false,
+    "module_id": "axm.sense.cadence-duration-controller",
+    "module_version_steps": 0,
+    "next_bounded_action": "OFFLINE_SCHEMA_AND_SANDBOX",
+    "open_blockers": [
+      "field_protocol_not_executed",
+      "independent_human_merge_gate",
+      "isolated_sandbox_import_and_rollback",
+      "local_unpublished_overlap_review",
+      "semantic_content_native_redaction_validation",
+      "unpublished_local_overlap_review"
+    ],
+    "packet_version": "1.0-working",
+    "root_contract_modified": false,
+    "run52": {
+      "required_without_proof": "HOLD_OR_PRIVATE_TYPED_ONLY",
+      "semantic_content_classes": [
+        "VISUAL_CONTENT"
+      ],
+      "semantic_redaction_proof": "NOT_EXECUTED"
+    },
+    "run53": {
+      "consent_chain_overlay": "AUTHORITY_MUST_REMAIN_ABSENT",
+      "permission_bearing": false
+    },
+    "run54": {
+      "alias_or_instance_change": "NEW_APPROVAL_REQUIRED",
+      "immutable_target_binding": "REQUIRED"
+    },
+    "run55": {
+      "clock_discontinuity": "EXPLICIT_HOLD_OR_EPOCH_RESET",
+      "source_timestamp": "IMMUTABLE"
+    },
+    "run56": {
+      "cleanup_model": "IDEMPOTENT_RELEASE_AND_LEASE_CLOSE",
+      "host_crash_proof": "NOT_EXECUTED"
+    },
+    "run57": {
+      "fusion_policy": "REFERENCE_ONLY"
+    },
+    "run58": {
+      "execution_state": "PROTOCOL_GENERATED_NOT_EXECUTED",
+      "field_test_surface": "OFFLINE_SCHEMA_AND_SANDBOX"
+    },
+    "run59": {
+      "automatic_merge": false,
+      "overlap_review_candidates": []
+    },
+    "run60": {
+      "thin_capsule_rollback": "PASS_EXECUTED_FILE_LEVEL"
+    },
+    "run61": {
+      "prior_hash_cache": "FRESH_HASH_REUSED",
+      "shared_evidence_references": [
+        {
+          "path": "09_EVIDENCE_STEWARD/run52_semantic_redaction/semantic_redaction_profiles.run52.json",
+          "sha256": "a72e0514c6be704b1d469d58d2008c6e6c6a2bd9b742e914d1ddd05b6def0a64",
+          "size_bytes": 48181
+        },
+        {
+          "path": "09_EVIDENCE_STEWARD/run52_semantic_redaction/semantic_sentinel_boundary_results.run52.json",
+          "sha256": "7b4867b72b02bb56282b7e99adea97a513bbb58902cf5087213b4790d385e460",
+          "size_bytes": 32760
+        },
+        {
+          "path": "09_EVIDENCE_STEWARD/run53_consent_chain/consent_chain_integrity_results.run53.json",
+          "sha256": "76a89a11b443b299652727722d4c7e76ef4861574d635b7d8fe10f00dcb28312",
+          "size_bytes": 119575
+        },
+        {
+          "path": "09_EVIDENCE_STEWARD/run54_target_substitution/target_substitution_attack_results.run54.json",
+          "sha256": "bb7959f2eb6bde96acffe9c64967689fe58e0834e7507b306baa8f32e9826bdf",
+          "size_bytes": 486537
+        },
+        {
+          "path": "09_EVIDENCE_STEWARD/run55_clock_discontinuity/clock_discontinuity_replay_results.run55.json",
+          "sha256": "00931a1aa825c55b6d9137e5b13ab26a8158838f105e23e7cd623b8d0cceb39d",
+          "size_bytes": 357659
+        },
+        {
+          "path": "09_EVIDENCE_STEWARD/run56_degraded_cleanup/degraded_cleanup_crash_results.run56.json",
+          "sha256": "a6ccc7034bd7992699559dca53532b8dc7c4319a1c8f0db3bc58588e9d7d7788",
+          "size_bytes": 558054
+        },
+        {
+          "path": "09_EVIDENCE_STEWARD/run57_fusion_disagreement/fusion_disagreement_independence_results.run57.json",
+          "sha256": "a7cc7ccde456506107d840b3273e06906aeb0a36c57a7943d4b7032e32a7aeb3",
+          "size_bytes": 466987
+        },
+        {
+          "path": "09_EVIDENCE_STEWARD/run58_field_protocols/field_test_cards.run58.json",
+          "sha256": "09e49e36236e132ec5083934f7f17f5b36fd7c4cc557ce688b68266898d23e33",
+          "size_bytes": 175729
+        },
+        {
+          "path": "09_EVIDENCE_STEWARD/run58_field_protocols/field_protocol_completeness_results.run58.json",
+          "sha256": "a86d3aea96d09b2029ee0a33ae03e16e2eba4332390bc10a10a4feb12dd5b911",
+          "size_bytes": 66708
+        },
+        {
+          "path": "09_EVIDENCE_STEWARD/run59_intake_conflicts/modular_overlap_conflict_results.run59.json",
+          "sha256": "2edb4718921c5d24c1c4a8202c5231f08d6a7b533c3d6bcf7b957146af8af5d2",
+          "size_bytes": 10284
+        },
+        {
+          "path": "09_EVIDENCE_STEWARD/run60_rollback_rehearsal/thin_capsule_rollback_rehearsal_results.run60.json",
+          "sha256": "681ece28878ac756dec962dcd3220f0d4419ece0552113f62e1781f9705152a9",
+          "size_bytes": 43369
+        }
+      ]
+    },
+    "runs": [
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61
+    ],
+    "seed_number": 8,
+    "source_sha256": "11a069f8064483fd39609341b15f1469a0b250d2fd4c2c3509e97c9a5899ab19",
+    "status": "WORKING_CANDIDATE_STRENGTHENED_NOT_PROMOTED"
+  },
+  "extensions": {
+    "run67_unknown_field_preservation_probe": {
+      "preserved": true
+    }
+  },
+  "migration": {
+    "automatic_import": false,
+    "from_capsule_version": "3.0-working",
+    "review_required": true,
+    "rollback_bytes_sha256": "6a978a8fe67bfc123945a14aa7ce4c505ae1dea3df34f90c1f83c93f39a74502",
+    "schema_generation": 4,
+    "source_capsule_sha256": "6a978a8fe67bfc123945a14aa7ce4c505ae1dea3df34f90c1f83c93f39a74502",
+    "unknown_extensions_preserved": true
+  },
+  "module": {
+    "description": "Enforce finite sample rate, observation duration, frame count, silence timeout, and hard stop boundaries.",
+    "family_number": 1,
+    "family_title": "Sensory sessions, targets, authority, and contracts",
+    "modalities": [
+      "cross-cutting"
+    ],
+    "module_id": "axm.sense.cadence-duration-controller",
+    "module_path": "02_MODULES/01_sensory-sessions-targets-authority-and-contracts/008_cadence-duration-controller",
+    "priority_tags": [
+      "FOUNDATIONAL_20",
+      "QUICK_WIN"
+    ],
+    "privacy_class": "PRIVATE_SOURCE_BOUND",
+    "required_dependencies": [
+      "axm.sense.observation-session-envelope",
+      "axm.sense.resource-budget-contract"
+    ],
+    "risk_tags": [
+      "visual-data"
+    ],
+    "seed_number": 8,
+    "steward_label": "EXTEND_SENSORIUM",
+    "title": "Cadence and Duration Controller"
+  },
+  "overlays": {
+    "dependency": {
+      "bottleneck_warning": true,
+      "checks_executed": 9,
+      "checks_passed": 9,
+      "direct_dependencies": [
+        {
+          "authority_inherited": false,
+          "dependency_kind": "CONTRACT_REFERENCE_OR_GATE",
+          "failure_outcome": "DEGRADED_OR_HELD",
+          "module_id": "axm.sense.observation-session-envelope",
+          "raw_buffer_inherited": false
+        },
+        {
+          "authority_inherited": false,
+          "dependency_kind": "MANDATORY_PRECONDITION_GATE",
+          "failure_outcome": "BLOCKED",
+          "module_id": "axm.sense.resource-budget-contract",
+          "raw_buffer_inherited": false
+        }
+      ],
+      "direct_dependent_count": 91,
+      "failed_checks": 0,
+      "failure_simulation": [
+        {
+          "expected_module_state": "DEGRADED_OR_HELD",
+          "failed_dependency": "axm.sense.observation-session-envelope",
+          "hidden_substitution_allowed": false,
+          "kind": "CONTRACT_REFERENCE_OR_GATE"
+        },
+        {
+          "expected_module_state": "BLOCKED",
+          "failed_dependency": "axm.sense.resource-budget-contract",
+          "hidden_substitution_allowed": false,
+          "kind": "MANDATORY_PRECONDITION_GATE"
+        }
+      ],
+      "module_id": "axm.sense.cadence-duration-controller",
+      "overlay_version": "1.0-working",
+      "repair_note": "High fan-in is a reason to stabilize interfaces and isolate failures, not to merge modules or grant central authority.",
+      "resilience_rule": "Reference contracts and runtime prerequisites are distinguished; no dependency transmits permission, target scope, raw buffers, retention allowance, action, or promotion authority.",
+      "run": 37,
+      "topological_level": 3,
+      "transitive_dependency_count": 3,
+      "transitive_failure_impact_count": 91
+    },
+    "human_control": {
+      "access_surface": "Only the exact bounded input references named in the request.",
+      "accessible_alternatives": [
+        "keyboard-accessible start, pause, stop, and revoke controls",
+        "screen-reader-readable state, target, remaining duration, and block reason",
+        "human observation receipt when machine sensing is unavailable or inappropriate"
+      ],
+      "before_start": [
+        "show exact input/target",
+        "show purpose and requested output",
+        "show finite processing budget and retention"
+      ],
+      "blocked_reasons": [
+        "target is missing or ambiguous",
+        "lease/consent is missing, expired, or mismatched",
+        "host cannot prove exact isolation",
+        "budget, privacy, units, provenance, or cleanup cannot be represented honestly"
+      ],
+      "card_version": "1.0-working",
+      "human_authority": "The human can stop or revoke. A dependent module, model, scheduler, or capability declaration cannot overrule that stop.",
+      "module_id": "axm.sense.cadence-duration-controller",
+      "never_does": [
+        "does not act on the world",
+        "does not publish, install, delete, or promote",
+        "does not widen the target silently",
+        "does not turn candidates into identity, intent, guilt, diagnosis, cause, or danger",
+        "does not continue in the background after stop"
+      ],
+      "plain_purpose": "Enforce finite sample rate, observation duration, frame count, silence timeout, and hard stop boundaries.",
+      "run": 39,
+      "stop_semantics": [
+        "no new reads or samples",
+        "close handles and release ephemeral material",
+        "invalidate session-local lease",
+        "return a typed stopped/blocked receipt without hidden retry"
+      ],
+      "title": "Cadence and Duration Controller",
+      "validation": {
+        "checks_executed": 10,
+        "checks_passed": 10,
+        "failed": []
+      },
+      "visible_controls": [
+        "START only after review",
+        "PAUSE when technically meaningful",
+        "STOP immediately",
+        "REVOKE lease and prevent restart",
+        "VIEW WHY BLOCKED/DEGRADED"
+      ]
+    },
+    "information_flow": {
+      "allowed_receipt_fields": [
+        "request_id",
+        "module_id",
+        "status",
+        "target_binding",
+        "source_timestamps",
+        "findings",
+        "seams",
+        "provenance",
+        "quality",
+        "uncertainty",
+        "cleanup",
+        "retention",
+        "authority_summary",
+        "extensions"
+      ],
+      "allowed_sinks": [
+        "typed local receipt",
+        "explicitly approved proof artifact",
+        "metadata-only diagnostics"
+      ],
+      "data_classes": {
+        "authority": "BOOLEAN_SUMMARY_ONLY",
+        "diagnostics": "METADATA_ONLY",
+        "source_material": "EPHEMERAL_OR_NOT_PRESENT",
+        "target_identity": "SCOPED_REFERENCE",
+        "typed_findings": "ALLOWED_MINIMUM"
+      },
+      "forbidden_key_fragments": [
+        "action",
+        "audio",
+        "buffer",
+        "canon",
+        "crop",
+        "delete",
+        "frame",
+        "install",
+        "password",
+        "pixel",
+        "private_path",
+        "publish",
+        "raw",
+        "secret",
+        "token",
+        "transcript"
+      ],
+      "forbidden_sinks": [
+        "raw logs",
+        "hidden network export",
+        "unbounded history",
+        "action queue",
+        "automatic promotion"
+      ],
+      "limitation": "Key/shape sanitizer is not semantic media redaction and cannot prove faces, voices, text, or secrets were removed from arbitrary blobs.",
+      "max_array_items": 64,
+      "max_findings": 32,
+      "max_string_chars": 2048,
+      "module_id": "axm.sense.cadence-duration-controller",
+      "profile_version": "1.0-working",
+      "run": 36
+    },
+    "lifecycle": {
+      "invariants": [
+        "IDLE retains no lease, target, raw material, or hidden retry",
+        "all failure/cancel/hold paths reach RELEASING before return",
+        "HANDED_OFF carries typed evidence only and no authority"
+      ],
+      "lifecycle_kind": "CONTRACT_GATE",
+      "model_check_result": {
+        "checks": 10,
+        "failed": [],
+        "lifecycle_kind": "CONTRACT_GATE",
+        "module_id": "axm.sense.cadence-duration-controller",
+        "passed": 10
+      },
+      "module_id": "axm.sense.cadence-duration-controller",
+      "overlay_version": "1.0-working",
+      "reason": "role-specific overlay repairs universal-template overgeneralization without silently modifying the versioned root",
+      "replaces_base_state_machine": false,
+      "run": 35,
+      "states": [
+        "IDLE",
+        "VALIDATING",
+        "HELD",
+        "SEALED",
+        "HANDED_OFF",
+        "FAILED",
+        "RELEASING"
+      ],
+      "transitions": [
+        {
+          "from": "IDLE",
+          "to": "VALIDATING"
+        },
+        {
+          "from": "VALIDATING",
+          "to": "HELD"
+        },
+        {
+          "from": "VALIDATING",
+          "to": "SEALED"
+        },
+        {
+          "from": "VALIDATING",
+          "to": "FAILED"
+        },
+        {
+          "from": "HELD",
+          "to": "RELEASING"
+        },
+        {
+          "from": "FAILED",
+          "to": "RELEASING"
+        },
+        {
+          "from": "SEALED",
+          "to": "HANDED_OFF"
+        },
+        {
+          "from": "HANDED_OFF",
+          "to": "RELEASING"
+        },
+        {
+          "from": "RELEASING",
+          "to": "IDLE"
+        }
+      ]
+    },
+    "strict_request": {
+      "allowed_top_level_fields": [
+        "request_id",
+        "session_id",
+        "purpose",
+        "seat_id",
+        "target_binding",
+        "budget_ref",
+        "input_refs",
+        "authority_lease_ref",
+        "unit_reference_frame_ref",
+        "privacy_mode",
+        "observation_lease_expires_at_ms",
+        "extensions",
+        "action_requested",
+        "publish_requested",
+        "install_requested",
+        "delete_requested",
+        "canon_requested"
+      ],
+      "continuous_or_repeated_capable": true,
+      "module_id": "axm.sense.cadence-duration-controller",
+      "permission_bearing": false,
+      "physical_or_spatial_units": false,
+      "private_source_bound": true,
+      "profile_version": "1.0-working",
+      "required_fields": [
+        "request_id",
+        "session_id",
+        "purpose",
+        "seat_id",
+        "target_binding",
+        "budget_ref",
+        "input_refs"
+      ],
+      "root_interface_modified": false,
+      "run": 34,
+      "semantic_guards": [
+        "exact target object with no wildcard",
+        "finite hard-stop budget object",
+        "bounded non-wildcard input references",
+        "no action/publish/install/delete/CANON request",
+        "conditional current lease, privacy, units, and repeated-observation expiry"
+      ]
+    }
+  },
+  "polish_and_intake_runs_92_101": {
+    "automatic_import": false,
+    "canon": false,
+    "catalog": {
+      "automatic_import": false,
+      "canon": false,
+      "display_name": "Cadence and Duration Controller",
+      "family_number": 1,
+      "family_title": "Sensory sessions, targets, authority, and contracts",
+      "intake_state": "DISABLED_PENDING_LOCAL_PREFLIGHT",
+      "module_id": "axm.sense.cadence-duration-controller",
+      "purpose": "Enforce finite sample rate, observation duration, frame count, silence timeout, and hard stop boundaries.",
+      "seed_number": 8,
+      "source_name_preserved": true,
+      "stable_alias": "cadence-duration-controller",
+      "status_label": "WORKING_CANDIDATE"
+    },
+    "debt_summary": {
+      "disabled_candidate_storage_blocked": false,
+      "lane": "SYNTHETIC_CONTENT_PROOF_REQUIRED",
+      "module_id": "axm.sense.cadence-duration-controller",
+      "open_debts": [
+        "LOCAL_OVERLAP_REVIEW",
+        "IMPLEMENTATION_PROOF",
+        "MEASURED_RESOURCE_PROFILE",
+        "CONTENT_NATIVE_REDACTION_PROOF"
+      ],
+      "runtime_activation_blocked": true,
+      "seed_number": 8,
+      "target_preflight_required": true
+    },
+    "default_intake_action": "STORE_DISABLED_WORKING_CANDIDATE_ONLY",
+    "growth_frozen": true,
+    "local_inventory_preflight_tool": "tools/axm_sensory_local_inventory_preflight.py",
+    "module_id": "axm.sense.cadence-duration-controller",
+    "packet_version": "1.0-working",
+    "pilot_role": "DEPENDENCY_SUPPORT",
+    "quarantine": {
+      "automatic_activation": false,
+      "canon": false,
+      "human_review_required": true,
+      "intake_mode": "SYNTHETIC_ONLY_DISABLED",
+      "lane": "SYNTHETIC_CONTENT_PROOF_REQUIRED",
+      "local_inventory_preflight_required": true,
+      "module_id": "axm.sense.cadence-duration-controller",
+      "pilot_dependency_closure": true,
+      "runtime_enabled": false,
+      "seed_number": 8,
+      "stored_enabled": false
+    },
+    "root_contract_modified": false,
+    "run_range": [
+      92,
+      101
+    ],
+    "runtime_activation": false,
+    "seed_number": 8,
+    "source_sha256": "11a069f8064483fd39609341b15f1469a0b250d2fd4c2c3509e97c9a5899ab19",
+    "transactional_intake_tool": "tools/axm_sensory_transactional_intake.py"
+  },
+  "pre_intake_runs_82_91": {
+    "automatic_import": false,
+    "canon": false,
+    "dependency": {
+      "all_blocked_dependents": 91,
+      "closure_valid": true,
+      "module_id": "axm.sense.cadence-duration-controller",
+      "single_point_risk": "HIGH",
+      "transitive_dependencies": 3
+    },
+    "interface_profile_digest": "f6a98cb17e2ccfc9fe017292395c5cae95bcc5199a6628a001b92be860ddf947",
+    "module_id": "axm.sense.cadence-duration-controller",
+    "packet_digest": "6311b1a28f249606bf75f61ee237b3976b9dccb7380efdb505128ec2ec970fac",
+    "packet_version": "1.0-working",
+    "pilot_role": "DEPENDENCY_SUPPORT",
+    "preflight_synthetic_cases": 10,
+    "proof_debts": [
+      "LOCAL_OVERLAP_REVIEW",
+      "IMPLEMENTATION_PROOF",
+      "MEASURED_RESOURCE_PROFILE",
+      "CONTENT_NATIVE_REDACTION_PROOF"
+    ],
+    "review_entry_hash": "bfa16385024819180ef29b3e5f63aa4511a55fd48d6df4c5b0d44663a9e41bc2",
+    "review_recommendation": "DEPENDENCY_SUPPORT_ONLY",
+    "root_contract_modified": false,
+    "root_precedence": "PROTECTED",
+    "run100_local_overlap_review_required": true,
+    "run_range": [
+      82,
+      91
+    ],
+    "seed_number": 8,
+    "shared_evidence_objects": {
+      "artifact_precedence_policy": {
+        "path": "12_PRE_INTAKE_STEWARD/run89_evidence_object_store/objects/663a111735959caa4aa5fa8ba1606e6780927621d85fb0681bfba0e2113edc0f.json",
+        "sha256": "663a111735959caa4aa5fa8ba1606e6780927621d85fb0681bfba0e2113edc0f",
+        "size_bytes": 827
+      },
+      "dependency_edge_classes": {
+        "path": "12_PRE_INTAKE_STEWARD/run89_evidence_object_store/objects/7985e8782b408d7d3902675b4ade55250b7d545e77609ef592ff3e0287bedeba.json",
+        "sha256": "7985e8782b408d7d3902675b4ade55250b7d545e77609ef592ff3e0287bedeba",
+        "size_bytes": 176
+      },
+      "interface_profile_contract": {
+        "path": "12_PRE_INTAKE_STEWARD/run89_evidence_object_store/objects/f869ce9266f544e1d8701c815c204f37a02f4eab6a3192bcce7c3aa74349b8fa.json",
+        "sha256": "f869ce9266f544e1d8701c815c204f37a02f4eab6a3192bcce7c3aa74349b8fa",
+        "size_bytes": 156
+      },
+      "preflight_decision_table": {
+        "path": "12_PRE_INTAKE_STEWARD/run89_evidence_object_store/objects/d78ceb4f7904e315507a1dd0fe0b606e166614066e96de543b597ad7f334be75.json",
+        "sha256": "d78ceb4f7904e315507a1dd0fe0b606e166614066e96de543b597ad7f334be75",
+        "size_bytes": 322
+      },
+      "review_ledger_policy": {
+        "path": "12_PRE_INTAKE_STEWARD/run89_evidence_object_store/objects/6ec271259dc75c8816c7dfc890ab391001481d17706ab46cef4e5e22dc7429e6.json",
+        "sha256": "6ec271259dc75c8816c7dfc890ab391001481d17706ab46cef4e5e22dc7429e6",
+        "size_bytes": 81
+      },
+      "transaction_policy": {
+        "path": "12_PRE_INTAKE_STEWARD/run89_evidence_object_store/objects/1abf58f6a55022ca8f8ae4ca258a772bd2dd37c0a3051e625e2eb91e9af01a01.json",
+        "sha256": "1abf58f6a55022ca8f8ae4ca258a772bd2dd37c0a3051e625e2eb91e9af01a01",
+        "size_bytes": 123
+      }
+    },
+    "transaction_cases": 7
+  },
+  "run": 101,
+  "source_integrity": {
+    "source_preserved": true,
+    "source_sha256": "11a069f8064483fd39609341b15f1469a0b250d2fd4c2c3509e97c9a5899ab19"
+  },
+  "status": {
+    "automatic_import": false,
+    "canon": false,
+    "runtime_proof": "UNTESTED",
+    "working_candidate": true
+  }
+}

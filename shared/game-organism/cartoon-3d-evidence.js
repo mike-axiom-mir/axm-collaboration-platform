@@ -6,7 +6,7 @@ const GameOrganism = require('./game-organism');
 const Examples = require('./examples');
 
 const REGISTRY_SCHEMA = 'axm.cartoon-3d-game-evidence-registry/v1';
-const DEFAULT_REGISTRY = path.resolve(__dirname, '..', '..', 'intakes', 'cartoon-3d-run100', 'evidence', 'organ-registry.json');
+const DEFAULT_REGISTRY = path.resolve(__dirname, 'source-evidence', 'cartoon-3d-run100', 'organ-registry.json');
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -78,7 +78,7 @@ function createEvidenceOrgan(registry) {
     },
     implementation: {
       kind: 'existing-runtime-reference',
-      reference: 'intakes/cartoon-3d-run100/evidence/organ-registry.json',
+      reference: 'shared/game-organism/source-evidence/cartoon-3d-run100/organ-registry.json',
       status: 'EXPERIMENTAL'
     }
   });

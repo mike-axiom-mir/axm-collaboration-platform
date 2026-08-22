@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.combinatorial-interaction-matrix",
+  "purpose": "Generate bounded deterministic interaction-covering cases without brute-force explosion or false completeness.",
+  "inputs": {
+    "factors": "named factors with unique JSON-serializable values",
+    "strength": "interaction strength from 2 through factor count",
+    "ceilings": "maximum output cases and maximum cartesian candidate size"
+  },
+  "outputs": {
+    "matrix": "selected cases, interaction counts, ratio, completeness, and uncovered interactions"
+  },
+  "refusals": [
+    "fewer than two factors",
+    "empty or duplicate factor values",
+    "invalid strength",
+    "cartesian product exceeds ceiling"
+  ],
+  "non_authority": [
+    "does_not_execute_target",
+    "incomplete_matrix_remains_visible",
+    "coverage_is_not_correctness",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

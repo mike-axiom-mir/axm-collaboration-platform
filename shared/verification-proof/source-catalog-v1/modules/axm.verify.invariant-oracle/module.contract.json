@@ -1,0 +1,35 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.invariant-oracle",
+  "purpose": "Evaluate a bounded declarative invariant set over observed JSON-compatible state without executing arbitrary expressions.",
+  "inputs": {
+    "state": "observed JSON-compatible state",
+    "invariants": "declarative invariant records using JSON Pointer paths"
+  },
+  "outputs": {
+    "oracle_receipt": "per-invariant and aggregate PASS, FAIL, or UNKNOWN"
+  },
+  "operators": [
+    "EXISTS",
+    "EQUALS",
+    "TYPE_IS",
+    "MIN",
+    "MAX",
+    "NONEMPTY",
+    "UNIQUE",
+    "CONTAINS"
+  ],
+  "refusals": [
+    "unsupported_operator",
+    "duplicate_invariant_id",
+    "invalid_json_pointer",
+    "invalid_expected_type"
+  ],
+  "non_authority": [
+    "does_not_execute_expressions",
+    "does_not_prove_unobserved_states",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.contract-conformance-harness",
+  "purpose": "Check exact schema, operation, lifecycle, and refusal-state conformance without executing the target system.",
+  "inputs": {
+    "contract": "required/optional field specifications, additional-field policy, lifecycle operations, refusal states",
+    "observation": "payload and optional operation/state observation"
+  },
+  "outputs": {
+    "conformance_receipt": "typed findings, contract digest, bounded verdict, and limitations"
+  },
+  "refusals": [
+    "invalid contract shape",
+    "unknown field type",
+    "ambiguous lifecycle transition",
+    "non-mapping payload"
+  ],
+  "non_authority": [
+    "does_not_execute_target",
+    "contract_may_be_incomplete",
+    "conformance_is_not_general_correctness",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

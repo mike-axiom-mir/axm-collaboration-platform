@@ -1,0 +1,30 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.evidence-sufficiency-policy",
+  "purpose": "Evaluate whether distinct evidence dimensions meet an explicit threshold without averaging or granting approval.",
+  "inputs": {
+    "policy": "minimum count, surfaces, independence, and required evidence states",
+    "receipts": "typed evidence receipts for one claim"
+  },
+  "outputs": {
+    "sufficiency_receipt": "SUFFICIENT, INSUFFICIENT, or UNKNOWN with deficits and exclusions"
+  },
+  "sufficiency_states": [
+    "SUFFICIENT",
+    "INSUFFICIENT",
+    "UNKNOWN"
+  ],
+  "refusals": [
+    "duplicate_receipt_id",
+    "invalid_threshold",
+    "invalid_receipt",
+    "empty_accepted_verdicts"
+  ],
+  "non_authority": [
+    "sufficient_is_not_pass",
+    "does_not_average_evidence",
+    "does_not_resolve_conflicts",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

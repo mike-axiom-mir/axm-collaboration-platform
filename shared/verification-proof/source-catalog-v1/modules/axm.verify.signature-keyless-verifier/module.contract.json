@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.signature-keyless-verifier",
+  "purpose": "Evaluate caller-supplied signature, certificate, identity, trust-root, validity, revocation, and transparency evidence against explicit policy.",
+  "inputs": {
+    "evidence": "native signature/certificate verification receipt",
+    "policy": "allowed identities, issuers, roots, and transparency requirement",
+    "now": "timezone-aware ISO evaluation time"
+  },
+  "outputs": {
+    "signature_policy_report": "failures, uncertainty, identity facts, and bounded verdict"
+  },
+  "refusals": [
+    "invalid verification state",
+    "missing certificate field",
+    "invalid or reversed validity window",
+    "malformed policy allow list"
+  ],
+  "non_authority": [
+    "does_not_perform_cryptography",
+    "native_verification_receipt_required",
+    "identity_ownership_not_proven",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

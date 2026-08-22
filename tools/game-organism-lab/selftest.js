@@ -9,7 +9,7 @@ const Examples = require('../../shared/game-organism/examples');
 const Cartoon3D = require('../../shared/game-organism/cartoon-3d-evidence');
 const AudioMusic = require('../../shared/game-organism/audio-music-evidence');
 const SimLiving = require('../../shared/game-organism/sim-living-evidence');
-const SimLivingGameWiring = require('../../intakes/sim-living-run102/game-wiring');
+const SimLivingGameWiring = require('../../shared/game-organism/source-evidence/sim-living-run102/game-wiring');
 
 const root = __dirname;
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));

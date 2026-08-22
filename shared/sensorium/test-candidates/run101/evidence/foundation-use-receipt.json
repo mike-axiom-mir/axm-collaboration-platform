@@ -1,0 +1,121 @@
+{
+  "schema": "axm.sensorium-foundation-use-receipt/v1",
+  "sealed_at": "2026-07-27T21:24:07.433Z",
+  "source_run": 101,
+  "decision": "FOUNDATION_PREFLIGHT_INTEGRATED",
+  "implementation": {
+    "module": "shared/sensorium/foundation-contracts.js",
+    "module_sha256": "f1baa5a7c899e1e24d62208251057a652bab303cd0d62e36b5be35e7a0fd9bbe",
+    "selftest": "shared/sensorium/foundation-contracts-selftest.js",
+    "selftest_sha256": "d57abbbaaf0fabb23fa9f4928c8672b27496f30f5965208a929da88b005c46d3",
+    "public_export": "require('./shared/sensorium').foundation",
+    "package_test": "npm run test:sensorium"
+  },
+  "candidate_mappings": [
+    {
+      "module_id": "axm.sense.observation-session-envelope",
+      "implementation_symbols": ["validateRequest", "preflight"],
+      "working_behavior": "Validates a strict effect-free observation request and composes one deterministic preflight receipt."
+    },
+    {
+      "module_id": "axm.sense.target-identity-binder",
+      "implementation_symbols": ["bindTarget"],
+      "working_behavior": "Requires one exact opaque target with proven isolation; rejects wildcards, inference, and person sources."
+    },
+    {
+      "module_id": "axm.sense.capability-descriptor-registry",
+      "implementation_symbols": ["descriptorsFromSensorium", "createCapabilityRegistry"],
+      "working_behavior": "Builds and resolves bounded deterministic descriptors for all 13 current Sensorium senses."
+    },
+    {
+      "module_id": "axm.sense.host-adapter-negotiator",
+      "implementation_symbols": ["negotiate"],
+      "working_behavior": "Reuses the existing host-adapter contract, reports READY, DEGRADED, BLOCKED, or UNKNOWN, and never installs dependencies."
+    },
+    {
+      "module_id": "axm.sense.resource-budget-contract",
+      "implementation_symbols": ["validateResourceBudget"],
+      "working_behavior": "Enforces explicit finite hard stops for bytes, items, time, compute, memory, battery, thermal load, and network use."
+    },
+    {
+      "module_id": "axm.sense.cadence-duration-controller",
+      "implementation_symbols": ["validateCadence"],
+      "working_behavior": "Allows one-shot work by default and requires a finite unexpired observation window for repeated work."
+    },
+    {
+      "module_id": "axm.sense.unit-reference-frame-contract",
+      "implementation_symbols": ["validateReferenceFrame"],
+      "working_behavior": "Validates bounded units, axes, origin, orientation, timestamp basis, calibration state, and conversion rules."
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "foundation-module-exists-and-is-exported",
+      "kind": "existence",
+      "risk": "medium",
+      "pass_condition": "The implementation loads through the Sensorium public index and exposes the exact seven source module IDs.",
+      "evidence": [
+        "shared/sensorium/index.js",
+        "shared/sensorium/foundation-contracts-selftest.js"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "seven-contracts-have-bounded-working-behavior",
+      "kind": "behavioral",
+      "risk": "medium",
+      "pass_condition": "Focused tests cover valid and invalid target, budget, cadence, frame, negotiation, session, privacy, and effect-request paths.",
+      "evidence": [
+        "shared/sensorium/foundation-contracts-selftest.js",
+        "npm run test:sensorium"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "authority-is-not-inferred-or-forged",
+      "kind": "authorization",
+      "risk": "high",
+      "pass_condition": "A supplied lease reference cannot authorize a permission-bearing adapter, the reference is not echoed, and implementation inspection shows no authority validator or I/O dependency.",
+      "evidence": [
+        "shared/sensorium/foundation-contracts-selftest.js#authorityBlocked",
+        "shared/sensorium/foundation-contracts.js#negotiate"
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "claim_id": "live-device-capture-works",
+      "kind": "live-runtime",
+      "risk": "high",
+      "pass_condition": "At least one permission-bearing live device route has authority validation, capture implementation, and live proof.",
+      "evidence": [
+        "intakes/sensory-multimodal-run101/evidence/foundation-use-capability-gap-report.json"
+      ],
+      "verdict": "NOT_CLAIMED",
+      "reason": "Authority validation, device capture, and live-device proof are unavailable."
+    }
+  ],
+  "capability_route": {
+    "report": "intakes/sensory-multimodal-run101/evidence/foundation-use-capability-gap-report.json",
+    "overall": "DEGRADED",
+    "required_foundation_preflight": "READY",
+    "optional_permission_bearing_runtime": "OPTIONAL_GAP"
+  },
+  "verification": {
+    "node shared/sensorium/foundation-contracts-selftest.js": "PASS",
+    "npm run test:sensorium": "PASS",
+    "npm run test:modular-intake": "PASS",
+    "node scripts/package-script-path-selftest.js": "PASS - 233 file references",
+    "node intakes/sensory-multimodal-run101/intake-selftest.js": "PASS",
+    "intake_json_parse": "PASS - 32 JSON files",
+    "node verify.js": "UNRELATED CONCURRENT GAP - memory-continuity-garden declares unsupported lifecycle.reload"
+  },
+  "side_effect_boundary": {
+    "captures_devices": false,
+    "performs_io": false,
+    "installs_dependencies": false,
+    "publishes": false,
+    "promotes_to_canon": false,
+    "grants_permissions": [],
+    "retained_raw_bytes": 0
+  }
+}

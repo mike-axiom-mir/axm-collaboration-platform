@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.behavioral-capability-coverage",
+  "purpose": "Map declared capabilities and behaviors to passing scenarios and proof surfaces.",
+  "inputs": {
+    "capabilities": "unique capability ids and required behaviors",
+    "scenarios": "scenario ids, covered capabilities, observed behaviors, proof surfaces, and verdicts"
+  },
+  "outputs": {
+    "coverage_map": "covered, partial, and uncovered capabilities with missing behaviors and proof surfaces"
+  },
+  "refusals": [
+    "empty capability list",
+    "duplicate ids",
+    "unknown capability references",
+    "malformed scenario sequences"
+  ],
+  "non_authority": [
+    "coverage_does_not_prove_behavioral_correctness",
+    "does_not_execute_scenarios",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

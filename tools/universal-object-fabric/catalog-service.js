@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const WORKSPACE_ROOT = path.resolve(__dirname, '..', '..');
-const INTAKE_RELATIVE = 'intakes/universal-object-fabric-v0.7.0-2026-07-28';
+const INTAKE_RELATIVE = 'shared/universal-object-fabric/source-stage-v0.7';
 const INTAKE_ROOT = path.join(WORKSPACE_ROOT, ...INTAKE_RELATIVE.split('/'));
 const STAGE_ROOT = path.join(INTAKE_ROOT, 'game-stage');
 const SOURCE_ROOT = path.join(INTAKE_ROOT, 'source');

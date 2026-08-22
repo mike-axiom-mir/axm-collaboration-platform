@@ -37,13 +37,13 @@ function summarize(row) {
     proofSliceId: row.proof_slice_id,
     canonStatus: row.canon_status,
     runtimeStatus: row.runtime_status,
-    sourceUrl: '/intakes/ai-team-collaboration-runs-01-101-v1/proof-harness-v7/registry/seed_registry_v7.json'
+    sourceUrl: '/shared/ai-team-steward/source-intake-v1/proof-harness-v7/registry/seed_registry_v7.json'
   };
 }
 
 function create(options = {}) {
   const root = path.resolve(options.root || path.join(__dirname, '..', '..'));
-  const registryPath = path.join(root, 'intakes', 'ai-team-collaboration-runs-01-101-v1', 'proof-harness-v7', 'registry', 'seed_registry_v7.json');
+  const registryPath = path.join(root, 'shared', 'ai-team-steward', 'source-intake-v1', 'proof-harness-v7', 'registry', 'seed_registry_v7.json');
   const runtime = ContractRuntime.create({ root });
   const operations = OperationRuntime.create();
 

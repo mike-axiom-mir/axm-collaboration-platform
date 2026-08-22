@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.in-toto-attestation-adapter",
+  "purpose": "Normalize an in-toto Statement-shaped attestation and bind its subjects to explicit expected identities and caller-supplied envelope verification status.",
+  "inputs": {
+    "statement": "in-toto Statement v1 or v0.1 shaped mapping",
+    "expected_subjects": "optional exact subject identities",
+    "envelope": "optional caller-supplied signature verification receipt"
+  },
+  "outputs": {
+    "attestation_receipt": "normalized subject binding, predicate type, envelope status, and bounded verdict"
+  },
+  "refusals": [
+    "unsupported statement type",
+    "invalid or duplicate subject",
+    "missing predicate type or predicate",
+    "unsupported envelope status"
+  ],
+  "non_authority": [
+    "does_not_perform_cryptographic_verification",
+    "predicate_truth_not_proven",
+    "caller_envelope_status_not_authenticated",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

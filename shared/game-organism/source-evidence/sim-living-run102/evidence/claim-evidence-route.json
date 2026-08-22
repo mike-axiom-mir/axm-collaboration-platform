@@ -1,0 +1,76 @@
+{
+  "schema": "axm.claim-evidence-route/v1",
+  "subject": "simulation-living-systems-runs-03-102-local-intake",
+  "routes": [
+    {
+      "claim": "The supplied upload-safe archive is intact and its extracted content matches its root manifest.",
+      "claim_type": "factual",
+      "risk": "medium",
+      "pass_condition": "Archive digest, safe paths, unique entries, CRCs, extracted-tree parity, sizes, and every listed digest pass.",
+      "primary_surface": "intakes/sim-living-run102/integration-driver.js",
+      "observed_evidence": ["SHA-256 a604c05251dbb385e763f77a63c59635c2043742fb2b16bc64d52e5188c905ae", "30626 ZIP entries", "30625 manifest digests", "CRC PASS", "0 unsafe or duplicate paths"],
+      "counterevidence": "Any digest, CRC, path, size, or extracted-tree mismatch.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The package contains a coherent static 100-module living-systems blueprint graph.",
+      "claim_type": "static_structure",
+      "risk": "medium",
+      "pass_condition": "All structured records parse; module identities, provider interfaces, family counts, operations, and graph topology validate.",
+      "primary_surface": "intakes/sim-living-run102/integration-driver.js",
+      "observed_evidence": ["30372 JSON documents", "5000 JSONL records", "100 modules", "10 families", "400 operations", "366 acyclic required edges", "128 optional hooks"],
+      "counterevidence": "Parse failure, missing provider, interface mismatch, duplicate identity, or dependency cycle.",
+      "verdict": "PASS_WITH_LEGACY_INDEX_HOLDS"
+    },
+    {
+      "claim": "The source modules execute and exhibit the planned living-systems behavior.",
+      "claim_type": "behavioral",
+      "risk": "high",
+      "pass_condition": "Implemented modules execute positive, refusal, replay, recovery, and cross-module scenarios under declared workloads.",
+      "primary_surface": "missing source module runtime",
+      "observed_evidence": ["Source truth scores: implemented=0, runtime_tested=0", "Run 99 skeleton status: NOT_GENERATED_NOT_IMPLEMENTED"],
+      "counterevidence": "Static documents alone cannot prove runtime behavior.",
+      "verdict": "NOT_PROVEN"
+    },
+    {
+      "claim": "The static blueprint library can contribute evidence to a game candidate without changing authority.",
+      "claim_type": "authorization",
+      "risk": "medium",
+      "pass_condition": "Game-organism compilation is candidate-only and reports no execution, canonical write, or automatic promotion.",
+      "primary_surface": "shared/game-organism/sim-living-evidence-selftest.js",
+      "observed_evidence": ["CANDIDATE_READY", "executionStarted=false", "canonicalGameChanged=false", "automaticPromotion=false", "humanReleaseRequired=true"],
+      "counterevidence": "Any execution, mutation, promotion, CANON, or release side effect.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "All 100 source blueprints can cross the Workshop's compatible static game-system seams.",
+      "claim_type": "transport_and_contract",
+      "risk": "medium",
+      "pass_condition": "Every source module is represented in the Atlas mapping, Game Forge draft, frozen Experiment World checkpoint, receiver-normalized world preview, Verification Spine receipts, and Game Organism receipt; generated artifacts rebuild deterministically.",
+      "primary_surface": "intakes/sim-living-run102/game-wiring-selftest.js",
+      "observed_evidence": ["100 Atlas mappings", "100 Game Forge proposed systems", "100 restorable frozen Experiment World artifacts", "100 world operations accepted by the receiver normalizer in two 50-operation batches", "200 Verification Spine claims with static transport PASS and runtime HELD", "Game Organism CANDIDATE_READY"],
+      "counterevidence": "Missing module coverage, rejected receiver shape, non-restorable checkpoint, nondeterministic output, live apply call, or widened authority.",
+      "verdict": "PASS_STATIC_HANDOFFS_ONLY"
+    },
+    {
+      "claim": "The source is compatible with authoritative Workshop world state.",
+      "claim_type": "transport_and_authorization",
+      "risk": "high",
+      "pass_condition": "Named owner, schema/unit mapping, migration, rollback, sender/receiver receipts, and human approval exist.",
+      "primary_surface": "authoritative living-world integration review",
+      "observed_evidence": ["0 exact live module IDs", "0 exact live operation IDs", "100 upsert operation shapes pass the live receiver normalizer", "applyCalled=false", "worldId=null", "expectedRevision=null", "source auto-merge and world migration are false"],
+      "counterevidence": "Receiver shape acceptance, name similarity, or static interface plans do not prove semantic compatibility or authorize state application.",
+      "verdict": "NOT_AUTHORIZED"
+    },
+    {
+      "claim": "The designs are scientifically valid, safe, performant, fair, accessible, fun, or release-ready.",
+      "claim_type": "quality",
+      "risk": "high",
+      "pass_condition": "Native domain validation, implemented workload telemetry, representative gameplay, and appointed human judgments pass.",
+      "primary_surface": "missing domain, performance, gameplay, accessibility, and release review",
+      "observed_evidence": [],
+      "counterevidence": "The source explicitly denies scientific, safety, runtime, integration, release, and CANON proof.",
+      "verdict": "NOT_PROVEN"
+    }
+  ]
+}

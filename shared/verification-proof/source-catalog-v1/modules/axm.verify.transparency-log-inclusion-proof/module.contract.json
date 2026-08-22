@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.transparency-log-inclusion-proof",
+  "purpose": "Recompute a domain-separated Merkle inclusion root from an entry and explicit sibling path, then compare it with a supplied signed-root receipt.",
+  "inputs": {
+    "entry": "exact entry bytes",
+    "proof": "leaf index, tree size, and ordered left/right sibling path",
+    "signed_root": "root hash, log id, and caller-supplied signature status"
+  },
+  "outputs": {
+    "inclusion_report": "computed root, binding result, signature uncertainty, and bounded verdict"
+  },
+  "refusals": [
+    "non-byte entry",
+    "invalid leaf index or tree size",
+    "invalid path position or hash",
+    "invalid signed-root receipt"
+  ],
+  "non_authority": [
+    "does_not_authenticate_log_operator",
+    "tree_consistency_not_proven",
+    "append_only_behavior_not_proven",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

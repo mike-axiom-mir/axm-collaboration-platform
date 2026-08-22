@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.conflicting-evidence-holder",
+  "purpose": "Hold contradictory valid receipts by exact claim profile and scope without averaging, deleting, or automatically resolving them.",
+  "inputs": {
+    "receipts": "typed receipts with exact claim, profile, scope, assertion, and verdict"
+  },
+  "outputs": {
+    "conflict_snapshot": "immutable receipt copies and held conflict groups"
+  },
+  "held_verdicts": [
+    "PASS",
+    "FAIL"
+  ],
+  "refusals": [
+    "duplicate_receipt_id",
+    "invalid_verdict",
+    "invalid_review_note"
+  ],
+  "non_authority": [
+    "does_not_average",
+    "does_not_choose_winner",
+    "does_not_delete_conflict",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

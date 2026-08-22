@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.independent-verifier-seat-router",
+  "purpose": "Route an evidence-review request only to available specialist seats that satisfy capabilities, exclusions, conflict domains, and declared independence requirements.",
+  "inputs": {
+    "request": "capability and independence constraints",
+    "seats": "candidate verifier records"
+  },
+  "outputs": {
+    "route": "eligible seats, exclusion reasons, deterministic recommendation, and non-assignment flags"
+  },
+  "refusals": [
+    "invalid seat records",
+    "negative load",
+    "missing capabilities",
+    "non-list independence fields"
+  ],
+  "non_authority": [
+    "does_not assign work",
+    "does_not relax independence",
+    "does_not verify evidence",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

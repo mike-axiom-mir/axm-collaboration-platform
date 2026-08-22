@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.baseline-reference-comparator",
+  "purpose": "Compare candidate measurements against a named, versioned baseline while retaining configurations, ranges, uncertainty, direction, and practical thresholds.",
+  "inputs": {
+    "candidate": "named versioned result samples",
+    "baseline": "named versioned comparison samples",
+    "direction": "HIGHER_BETTER or LOWER_BETTER",
+    "practical_threshold": "minimum meaningful signed difference"
+  },
+  "outputs": {
+    "comparison_report": "means, ranges, differences, practical significance, uncertainty, and scoped verdict"
+  },
+  "refusals": [
+    "missing identities",
+    "empty or non-finite samples",
+    "invalid direction",
+    "negative or non-finite threshold"
+  ],
+  "non_authority": [
+    "does_not_establish_universal_superiority",
+    "does_not_hide_ranges",
+    "does_not_run_benchmark",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.filesystem-environment-variance-matrix",
+  "purpose": "Compile deterministic bounded filesystem and process-environment variance scenarios without directly mutating the host filesystem or environment.",
+  "inputs": {
+    "dimensions": "named finite dimensions of filesystem and environment values",
+    "strategy": "FULL_CARTESIAN or BOUNDARY_COVERAGE",
+    "max_cases": "hard scenario ceiling"
+  },
+  "outputs": {
+    "variance_matrix": "stable scenario identifiers and coverage receipt"
+  },
+  "refusals": [
+    "empty_dimension",
+    "duplicate_dimension_value",
+    "matrix_exceeds_cap",
+    "unknown_strategy"
+  ],
+  "non_authority": [
+    "does_not_mutate_filesystem",
+    "does_not_mutate_environment",
+    "does_not_execute_cases",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

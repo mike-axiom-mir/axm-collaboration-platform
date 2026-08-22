@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.cross-version-platform-parity-matrix",
+  "purpose": "Compare supplied behavior observations across explicit platform and version profiles.",
+  "inputs": {
+    "profiles": "unique profile ids with version, OS, architecture, browser, engine, or device facts",
+    "behaviors": "unique behavior ids",
+    "observations": "one status and output or equivalence key per profile/behavior cell"
+  },
+  "outputs": {
+    "parity_matrix": "cells, missing observations, errors, failures, divergences, and bounded verdict"
+  },
+  "refusals": [
+    "empty profiles or behaviors",
+    "duplicate identifiers",
+    "unknown references",
+    "unsupported status",
+    "duplicate matrix cell"
+  ],
+  "non_authority": [
+    "observations_are_caller_supplied",
+    "parity_is_not_general_correctness",
+    "does_not_execute_platforms",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

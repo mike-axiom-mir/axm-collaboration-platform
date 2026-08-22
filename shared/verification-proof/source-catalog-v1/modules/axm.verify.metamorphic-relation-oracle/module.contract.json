@@ -1,0 +1,34 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.metamorphic-relation-oracle",
+  "purpose": "Evaluate declared relationships between base and transformed observations when no single exact expected output is available.",
+  "inputs": {
+    "cases": "base output, transformed output, and a declared relation"
+  },
+  "outputs": {
+    "metamorphic_receipt": "per-case and aggregate PASS or FAIL"
+  },
+  "relations": [
+    "EQUAL",
+    "NOT_EQUAL",
+    "MONOTONIC_NON_DECREASING",
+    "MONOTONIC_NON_INCREASING",
+    "SCALE_BY",
+    "PERMUTATION_INVARIANT",
+    "SUBSET",
+    "LENGTH_DELTA"
+  ],
+  "refusals": [
+    "unsupported_relation",
+    "duplicate_case_id",
+    "invalid_numeric_relation",
+    "invalid_collection_relation"
+  ],
+  "non_authority": [
+    "does_not_execute_transformation",
+    "does_not_invent_relation",
+    "does_not_prove_general_correctness",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

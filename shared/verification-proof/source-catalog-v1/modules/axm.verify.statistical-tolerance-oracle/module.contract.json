@@ -1,0 +1,32 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.statistical-tolerance-oracle",
+  "purpose": "Evaluate finite numeric observations against explicit tolerance, sample-size, and proportion policies while reporting uncertainty.",
+  "inputs": {
+    "observations": "finite numeric sample",
+    "target": "declared target",
+    "tolerances": "absolute and/or relative",
+    "mode": "ALL_WITHIN, MEAN_WITHIN, or PROPORTION_WITHIN"
+  },
+  "outputs": {
+    "statistical_receipt": "PASS, FAIL, or UNKNOWN with sample metrics and uncertainty"
+  },
+  "modes": [
+    "ALL_WITHIN",
+    "MEAN_WITHIN",
+    "PROPORTION_WITHIN"
+  ],
+  "refusals": [
+    "no_tolerance",
+    "invalid_observation",
+    "invalid_sample_threshold",
+    "invalid_required_proportion"
+  ],
+  "non_authority": [
+    "normal_interval_is_approximate",
+    "does_not_infer_population_representativeness",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

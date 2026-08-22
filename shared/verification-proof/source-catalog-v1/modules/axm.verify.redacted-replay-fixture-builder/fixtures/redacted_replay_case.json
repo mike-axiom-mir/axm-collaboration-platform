@@ -1,0 +1,40 @@
+{
+  "builder_id": "replay.incident.demo",
+  "policy": {
+    "keep_fields": [
+      "event_type",
+      "state"
+    ],
+    "mask_fields": [
+      "display_name"
+    ],
+    "hash_fields": [
+      "user_id"
+    ],
+    "generalize_fields": {
+      "message": "LENGTH"
+    },
+    "drop_fields": [
+      "auth_token"
+    ],
+    "timestamp_field": "timestamp",
+    "salt": "local-test-salt"
+  },
+  "events": [
+    {
+      "timestamp": "2026-07-27T16:00:00Z",
+      "event_type": "JOIN",
+      "user_id": "real-user-1",
+      "display_name": "Mike",
+      "auth_token": "secret",
+      "state": "lobby",
+      "message": "hello there"
+    },
+    {
+      "timestamp": "2026-07-27T16:00:02Z",
+      "event_type": "READY",
+      "user_id": "real-user-1",
+      "state": "ready"
+    }
+  ]
+}

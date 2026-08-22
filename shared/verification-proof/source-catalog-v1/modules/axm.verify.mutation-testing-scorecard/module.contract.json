@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.mutation-testing-scorecard",
+  "purpose": "Measure whether supplied tests detect controlled mutations without hiding unresolved or potentially equivalent mutants.",
+  "inputs": {
+    "mutants": "unique mutant identifiers and KILLED, SURVIVED, TIMEOUT, ERROR, NOT_RUN, or EQUIVALENT_CANDIDATE status",
+    "threshold": "declared score threshold from 0 to 1"
+  },
+  "outputs": {
+    "mutation_scorecard": "counts, score denominator, survivors, unresolved items, equivalent candidates, and bounded verdict"
+  },
+  "refusals": [
+    "duplicate mutant id",
+    "unsupported status",
+    "invalid threshold",
+    "empty mutant list"
+  ],
+  "non_authority": [
+    "does_not_generate_or_execute_mutants",
+    "equivalent_candidates_require_review",
+    "mutation_score_is_not_correctness",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

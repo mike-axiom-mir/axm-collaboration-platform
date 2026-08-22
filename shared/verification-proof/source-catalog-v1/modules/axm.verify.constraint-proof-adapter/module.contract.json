@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.constraint-proof-adapter",
+  "purpose": "Bridge bounded constraint obligations to SAT/SMT-style solvers without executing them or overstating solver evidence.",
+  "inputs": {
+    "obligation": "logic, constraints, assumptions, expected SAT or UNSAT, solver identity",
+    "raw_result": "SAT, UNSAT, UNKNOWN, or ERROR plus optional model or unsat core"
+  },
+  "outputs": {
+    "constraint_receipt": "sealed obligation, matched expectation verdict, model/core, raw digest, and boundaries"
+  },
+  "refusals": [
+    "empty constraints",
+    "unsupported expectation",
+    "unsupported result",
+    "SAT result without model when model required",
+    "invalid solver identity"
+  ],
+  "non_authority": [
+    "does_not_run_solver",
+    "caller_supplied_result",
+    "matching_expectation_is_not_system_approval",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

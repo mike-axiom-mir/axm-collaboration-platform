@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.test-gap-blindspot-detector",
+  "purpose": "Identify untested requirements, missing proof kinds, uncovered risk boundaries, stale fixtures, missing native evidence, and circular proof dependencies.",
+  "inputs": {
+    "requirements": "unique requirement records with required evidence kinds, risk boundaries, and native-evidence flags",
+    "evidence": "typed caller-supplied evidence records",
+    "fixtures": "fixture freshness records",
+    "proof_dependencies": "directed claim dependency edges"
+  },
+  "outputs": {
+    "gap_report": "per-requirement gaps, stale fixtures, circular dependencies, and bounded verdict"
+  },
+  "refusals": [
+    "duplicate or empty requirement ids",
+    "unknown requirement references",
+    "unsupported evidence or fixture status",
+    "malformed dependency edge"
+  ],
+  "non_authority": [
+    "input_completeness_not_proven",
+    "evidence_truth_not_proven",
+    "gap_free_is_not_correctness",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

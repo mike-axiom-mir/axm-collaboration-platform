@@ -1,0 +1,32 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.proof-freshness-expiry-policy",
+  "purpose": "Evaluate proof relevance against declared age and context invalidators.",
+  "inputs": {
+    "policy": "required dimensions and optional max age",
+    "proof_receipt": "issued_at plus bound context",
+    "current_context": "comparison context",
+    "as_of": "explicit evaluation time"
+  },
+  "outputs": {
+    "freshness_receipt": "FRESH, STALE, or UNKNOWN with reasons"
+  },
+  "freshness_states": [
+    "FRESH",
+    "STALE",
+    "UNKNOWN"
+  ],
+  "refusals": [
+    "invalid_timestamp",
+    "negative_max_age",
+    "duplicate_dimension",
+    "unsupported_empty_dimension"
+  ],
+  "non_authority": [
+    "fresh_is_not_pass",
+    "does_not_rerun_proof",
+    "does_not_accept_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

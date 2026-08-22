@@ -1,0 +1,222 @@
+{
+  "schema": "axm.claim-evidence-matrix/v1",
+  "status": "DRAFT_INTAKE",
+  "generatedFrom": {
+    "markdown": {
+      "locator": "payload/AXM_LEGO_CITY_GROUNDED_BUILDMAP_v0_1.md",
+      "sha256": "9678b56f1e1078261d986c7b9f0a8a97c16b899d5afe85b667f227257d26d8e5",
+      "artifactClass": "PRIVATE_OR_USER_SOURCE"
+    },
+    "blueprint": {
+      "locator": "payload/axm-lego-city-blueprint.v0.1.json",
+      "sha256": "27c59494429b30466c6cdfee5835c85a442609476204040968f0ea55ccbeebbb",
+      "schema": "axm.lego-city-blueprint/v0.1",
+      "artifactClass": "PRIVATE_OR_USER_SOURCE"
+    },
+    "mirrorLibrary": {
+      "locator": "mirror://exports/ai-organ-library/CURRENT.json",
+      "pointerSchema": "axm.mirror.portable-ai-organ-library-pointer/v1",
+      "exportId": "03f3d0cf0802a95bb5eccc8d42fc6c4422b85a1e5d3dc0373b4f3a3c6c13ab2a",
+      "catalogDigest": "83438d8bb2fa2c16012c8ef8b0b97e8a816cf47a978cc1354595c00e79b5d6a2",
+      "status": "TEST",
+      "organCount": 115,
+      "artifactClass": "DERIVED_VIEW"
+    }
+  },
+  "verdictMeaning": {
+    "PASS": "The bounded pass condition was observed on the named evidence surface.",
+    "FAIL": "Counterevidence was observed.",
+    "UNKNOWN": "The available surface cannot establish the claim.",
+    "PROPOSAL": "Normative recommendation retained as a proposal, not a factual proof."
+  },
+  "claims": [
+    {
+      "id": "C01-source-integrity",
+      "kind": "persistence",
+      "risk": "medium",
+      "claim": "The canonical Markdown and machine blueprint used for intake are stable named bytes.",
+      "passCondition": "Both hashes match the intake receipt and the JSON parses.",
+      "primarySurface": "local byte hashes and JSON parser",
+      "counterevidence": "digest mismatch or parse failure",
+      "verdict": "PASS",
+      "observed": {
+        "markdown": {
+          "locator": "payload/AXM_LEGO_CITY_GROUNDED_BUILDMAP_v0_1.md",
+          "sha256": "9678b56f1e1078261d986c7b9f0a8a97c16b899d5afe85b667f227257d26d8e5",
+          "artifactClass": "PRIVATE_OR_USER_SOURCE"
+        },
+        "blueprint": {
+          "locator": "payload/axm-lego-city-blueprint.v0.1.json",
+          "sha256": "27c59494429b30466c6cdfee5835c85a442609476204040968f0ea55ccbeebbb",
+          "schema": "axm.lego-city-blueprint/v0.1",
+          "artifactClass": "PRIVATE_OR_USER_SOURCE"
+        },
+        "mirrorLibrary": {
+          "locator": "mirror://exports/ai-organ-library/CURRENT.json",
+          "pointerSchema": "axm.mirror.portable-ai-organ-library-pointer/v1",
+          "exportId": "03f3d0cf0802a95bb5eccc8d42fc6c4422b85a1e5d3dc0373b4f3a3c6c13ab2a",
+          "catalogDigest": "83438d8bb2fa2c16012c8ef8b0b97e8a816cf47a978cc1354595c00e79b5d6a2",
+          "status": "TEST",
+          "organCount": 115,
+          "artifactClass": "DERIVED_VIEW"
+        }
+      }
+    },
+    {
+      "id": "C02-proposal-authority",
+      "kind": "authorization",
+      "risk": "high",
+      "claim": "The intake does not grant automatic merge, promotion, install, runtime, CANON, or root authority.",
+      "passCondition": "Source authority fields are false and local intake performs no such effect.",
+      "primarySurface": "blueprint authority and intake file diff",
+      "counterevidence": "any authority-changing side effect",
+      "verdict": "PASS",
+      "observed": {
+        "final_decision_maker": "Mike",
+        "automatic_canon": false,
+        "automatic_promotion": false,
+        "automatic_merge": false,
+        "preserve_existing_direction": true,
+        "silent_rewrite": false
+      }
+    },
+    {
+      "id": "C03-main-snapshot",
+      "kind": "persistence",
+      "risk": "medium",
+      "claim": "The inspected platform main snapshot is a4f99fbfc05268173458bf3fb8f3fe616919e376.",
+      "passCondition": "Local commit object exists and GitHub main resolves to the same SHA during intake.",
+      "primarySurface": "git object database and GitHub repository receiver",
+      "counterevidence": "missing object or differing main SHA",
+      "verdict": "PASS",
+      "observed": "Both surfaces matched during 2026-08-15 intake."
+    },
+    {
+      "id": "C04-index-counts",
+      "kind": "persistence",
+      "risk": "medium",
+      "claim": "The named tools index reports 210 tools, 1769 capabilities, and 210 present/valid contracts.",
+      "passCondition": "Parse exact tools-index.json at the named commit and compare summary to array counts.",
+      "primarySurface": "git show <commit>:tools-index.json",
+      "counterevidence": "count mismatch or invalid JSON",
+      "verdict": "PASS",
+      "observed": {
+        "tools": 210,
+        "capabilities": 1769,
+        "contractsPresent": 210,
+        "contractsValid": 210
+      }
+    },
+    {
+      "id": "C05-unindexed-checkpoint",
+      "kind": "persistence",
+      "risk": "high",
+      "claim": "A declared deterministic-pr-checkpoint module exists at the named commit but is omitted from generated discovery maps.",
+      "passCondition": "Manifest/contract paths exist while their module ID is absent from tools-index and capabilities JSONL.",
+      "primarySurface": "git tree plus exact generated files",
+      "counterevidence": "module present in either generated discovery view",
+      "verdict": "PASS",
+      "observed": "Module paths present; text absent from both generated files."
+    },
+    {
+      "id": "C06-authority-map-coverage",
+      "kind": "persistence",
+      "risk": "high",
+      "claim": "The authority observatory covers fewer modules than the public tools index at the same commit.",
+      "passCondition": "Parse both exact files and compare counts.",
+      "primarySurface": "tools/authority-surface-observatory/current-authority-map.json and tools-index.json",
+      "counterevidence": "equal complete source sets",
+      "verdict": "PASS",
+      "observed": {
+        "authorityModules": 81,
+        "indexedTools": 210,
+        "difference": 129
+      }
+    },
+    {
+      "id": "C07-pr29-structures",
+      "kind": "persistence",
+      "risk": "medium",
+      "claim": "PR 29 contains workflow, checkpoint, cache, lease, retention/archive, portability, and confinement structures.",
+      "passCondition": "GitHub PR file list contains implementations/schemas for every named family.",
+      "primarySurface": "GitHub PR 29 changed-file list",
+      "counterevidence": "one or more named families absent",
+      "verdict": "PASS",
+      "observed": "100 changed files across shared/game-production-runner and evidence receipts."
+    },
+    {
+      "id": "C08-pr29-generic-reuse",
+      "kind": "quality",
+      "risk": "medium",
+      "claim": "PR 29 generic-looking structures can safely serve other AXM districts.",
+      "passCondition": "Independent contracts and cross-domain fixtures prove compatibility without importing game internals.",
+      "primarySurface": "future extracted contracts and cross-domain tests",
+      "counterevidence": "domain leakage or incompatible assumptions",
+      "verdict": "UNKNOWN",
+      "observed": "Names and structure suggest reuse; compatibility has not been proven."
+    },
+    {
+      "id": "C09-pr33-draft-receiver",
+      "kind": "behavioral",
+      "risk": "high",
+      "claim": "PR 33 can emit a passing final receipt even when final receiver pullRequestDraft is false.",
+      "passCondition": "Source inspection shows draft state is recorded but absent from receipt checks.",
+      "primarySurface": "PR 33 publisher-core.js diff",
+      "counterevidence": "a required final draft check exists",
+      "verdict": "PASS",
+      "observed": "buildReceipt checks open and unmerged state but not draft state."
+    },
+    {
+      "id": "C10-mirror-count",
+      "kind": "persistence",
+      "risk": "medium",
+      "claim": "The current portable Mirror library exposes 115 archived organs.",
+      "passCondition": "Pointer resolves, catalog digest is named, and library entries count is 115.",
+      "primarySurface": "Mirror CURRENT.json and resolved library.json",
+      "counterevidence": "pointer/digest/count mismatch",
+      "verdict": "PASS",
+      "observed": {
+        "locator": "mirror://exports/ai-organ-library/CURRENT.json",
+        "pointerSchema": "axm.mirror.portable-ai-organ-library-pointer/v1",
+        "exportId": "03f3d0cf0802a95bb5eccc8d42fc6c4422b85a1e5d3dc0373b4f3a3c6c13ab2a",
+        "catalogDigest": "83438d8bb2fa2c16012c8ef8b0b97e8a816cf47a978cc1354595c00e79b5d6a2",
+        "status": "TEST",
+        "organCount": 115,
+        "artifactClass": "DERIVED_VIEW"
+      }
+    },
+    {
+      "id": "C11-mirror-city-compatibility",
+      "kind": "behavioral",
+      "risk": "high",
+      "claim": "Mirror organs are directly compatible with LEGO city sockets.",
+      "passCondition": "Exact schema compatibility, effect classification, authority, and behavior receipts exist for each connection.",
+      "primarySurface": "future city compiler and direct compatibility tests",
+      "counterevidence": "missing/unknown schema or unmeasured effect",
+      "verdict": "UNKNOWN",
+      "observed": "The present mapping is deterministic metadata inference only; no runtime or compatibility authority is granted."
+    },
+    {
+      "id": "C12-standard-patterns",
+      "kind": "quality",
+      "risk": "medium",
+      "claim": "The cited standards are valid sources of patterns, not wholesale implementation requirements.",
+      "passCondition": "Official sources describe the borrowed primitive and AXM retains its own bounded contract.",
+      "primarySurface": "official specifications plus future AXM contract review",
+      "counterevidence": "external protocol becomes AXM internal authority",
+      "verdict": "PROPOSAL",
+      "observed": "Official sources verified for JSON Schema, CloudEvents, OpenTelemetry, in-toto/SLSA, OPA/Cedar, OCI/ORAS, Automerge, MCP, A2A, LSP, WASI, and the WebAssembly Component Model."
+    },
+    {
+      "id": "C13-city-map-implementation",
+      "kind": "behavioral",
+      "risk": "high",
+      "claim": "A complete axm.city-graph/v1 compiler and omission gate already exist locally.",
+      "passCondition": "Exact schema/compiler/gate and all required negative tests are present and pass.",
+      "primarySurface": "bounded local identifier/file search and focused execution",
+      "counterevidence": "missing compiler/schema/test",
+      "verdict": "FAIL",
+      "observed": "No exact axm.city-graph, axm.block-view, axm-city-map-gate, or required failure-code implementation was found before this build began."
+    }
+  ]
+}

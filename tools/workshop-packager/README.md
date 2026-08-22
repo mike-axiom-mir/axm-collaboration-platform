@@ -23,8 +23,8 @@ Local relay credentials such as `bridge-token.txt` and `bridge_token.txt` are
 always excluded even when they sit beside a packageable nested runtime.
 
 Only exact reviewed intake dependencies are included in a public snapshot:
-`intakes/ai-team-collaboration-runs-01-101-v1` supplies AI Team Steward's
-100-seed harness, while `intakes/universal-object-fabric-v0.7.0-2026-07-28`
+`shared/ai-team-steward/source-intake-v1` supplies AI Team Steward's
+100-seed harness, while `shared/universal-object-fabric/source-stage-v0.7`
 supplies the hash-bound game stage used by Universal Object Fabric. The latter's
 redundant 29 MB source ZIP is omitted while its acceptance receipt and staged
 files remain. Sibling intakes stay local, and normal secret/private-folder rules

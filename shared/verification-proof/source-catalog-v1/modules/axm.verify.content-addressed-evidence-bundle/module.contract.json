@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.content-addressed-evidence-bundle",
+  "purpose": "Package caller-supplied evidence objects under exact SHA-256 identities and a deterministic bounded manifest without writing or publishing an archive.",
+  "inputs": {
+    "objects": "named byte objects with role and media type",
+    "max_objects": "positive logical-object bound",
+    "max_total_bytes": "non-negative aggregate byte bound"
+  },
+  "outputs": {
+    "bundle_report": "deterministic manifest, content-addressed byte store, counts, and bundle id"
+  },
+  "refusals": [
+    "empty object list",
+    "unsafe or duplicate logical names",
+    "non-byte content",
+    "missing metadata",
+    "bound overflow"
+  ],
+  "non_authority": [
+    "does_not_write_archive",
+    "does_not_publish_bundle",
+    "does_not_encrypt_or_sign",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

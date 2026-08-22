@@ -1,0 +1,28 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.raw-evidence-retention-policy",
+  "purpose": "Select a declared retention action for supplied evidence metadata and expose authorization, legal-hold, requested-action, and no-match conditions without deleting anything.",
+  "inputs": {
+    "evidence": "category, sensitivity, age, seal state, and legal-hold metadata",
+    "rules": "ordered explicit match, action, and authorized-role rules",
+    "actor_role": "claimed role requesting the decision",
+    "requested_action": "optional action to compare with policy"
+  },
+  "outputs": {
+    "retention_decision": "policy action, authorization state, overrides, and non-execution boundary"
+  },
+  "refusals": [
+    "missing evidence metadata",
+    "negative age",
+    "invalid boolean state",
+    "invalid rule or action",
+    "missing actor role"
+  ],
+  "non_authority": [
+    "does_not_execute_retention_action",
+    "does_not_authenticate_actor_role",
+    "does_not_override_legal_or_regulatory_requirements",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

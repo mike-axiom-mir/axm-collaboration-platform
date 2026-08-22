@@ -1,0 +1,32 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.reference-implementation-oracle",
+  "purpose": "Compare candidate observations against named reference observations across explicit cases and comparison profiles.",
+  "inputs": {
+    "reference_identity": "named versioned reference identity",
+    "candidate_identity": "candidate identity",
+    "scope_id": "declared comparison scope",
+    "cases": "paired observations"
+  },
+  "outputs": {
+    "comparison_receipt": "per-case and aggregate PASS or FAIL"
+  },
+  "profiles": [
+    "EXACT",
+    "CANONICAL_JSON",
+    "NUMERIC_TOLERANCE"
+  ],
+  "refusals": [
+    "same_identity",
+    "duplicate_case_id",
+    "invalid_tolerance",
+    "wrong_profile_value"
+  ],
+  "non_authority": [
+    "reference_trust_is_declared_not_proven",
+    "does_not_execute_implementations",
+    "does_not_establish_general_correctness",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

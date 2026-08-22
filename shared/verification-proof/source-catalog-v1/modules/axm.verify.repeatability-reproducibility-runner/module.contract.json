@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.repeatability-reproducibility-runner",
+  "purpose": "Assess supplied repeated results within setups and across setups under one explicit tolerance.",
+  "inputs": {
+    "runs": "bounded supplied result receipts grouped by setup",
+    "tolerance": "maximum accepted within- or between-setup spread"
+  },
+  "outputs": {
+    "repeatability_report": "per-setup repeatability, between-setup reproducibility, failures, and unresolved states"
+  },
+  "refusals": [
+    "empty run set",
+    "malformed or duplicate run identity",
+    "invalid setup or status",
+    "non-finite PASS value",
+    "negative or non-finite tolerance"
+  ],
+  "non_authority": [
+    "does_not_execute_evaluation",
+    "does_not_prove setup independence",
+    "does_not average failed runs away",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

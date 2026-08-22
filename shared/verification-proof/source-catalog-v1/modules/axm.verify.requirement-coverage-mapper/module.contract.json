@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.requirement-coverage-mapper",
+  "purpose": "Show requirement evidence coverage by proof category without hiding missing or uncertain evidence.",
+  "inputs": {
+    "requirements": "unique requirement ids and required evidence categories",
+    "evidence": "typed evidence ids with category and distinct verdict state"
+  },
+  "outputs": {
+    "coverage_map": "per-category and per-requirement states plus overall bounded coverage verdict"
+  },
+  "refusals": [
+    "empty requirements",
+    "duplicate identifiers",
+    "unknown requirement reference",
+    "unsupported category or verdict"
+  ],
+  "non_authority": [
+    "coverage_does_not_prove_requirement_correctness",
+    "does_not_execute_tests",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

@@ -1,0 +1,27 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.change-impact-regression-selector",
+  "purpose": "Select regression tests from a bounded caller-supplied change-impact graph.",
+  "inputs": {
+    "changed": "changed node identifiers",
+    "edges": "directed source-to-affected-target links",
+    "tests": "test ids and covered nodes",
+    "limits": "maximum traversal depth and node count"
+  },
+  "outputs": {
+    "selection": "impacted closure with distance, selected tests, uncovered nodes, and truncation state"
+  },
+  "refusals": [
+    "empty changed set",
+    "malformed edge",
+    "duplicate test id",
+    "invalid traversal ceiling"
+  ],
+  "non_authority": [
+    "graph_is_caller_supplied",
+    "does_not_execute_tests",
+    "selection_does_not_prove_impact_completeness",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

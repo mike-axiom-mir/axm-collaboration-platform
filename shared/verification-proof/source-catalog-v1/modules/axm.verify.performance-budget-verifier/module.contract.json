@@ -1,0 +1,25 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.performance-budget-verifier",
+  "purpose": "Evaluate latency, throughput, frame time, startup, memory, storage, and compute samples against explicit workload budgets.",
+  "inputs": {
+    "budgets": "unique workload/metric budget records",
+    "observations": "caller-supplied sample sets with units and status"
+  },
+  "outputs": {
+    "performance_report": "aggregated measurements, violations, missing observations, and bounded verdict"
+  },
+  "refusals": [
+    "empty or duplicate budgets",
+    "invalid direction or aggregation",
+    "non-numeric thresholds or samples",
+    "duplicate observations"
+  ],
+  "non_authority": [
+    "does_not_generate_load",
+    "samples_are_caller_supplied",
+    "environment_control_not_proven",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}

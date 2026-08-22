@@ -1,0 +1,116 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "controlled-disabled-candidate-integration",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "archive.integrity.validate",
+        "inventory.local.compare",
+        "candidate.disabled.store",
+        "transaction.rollback.journal"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "archive.integrity.validate": [
+          "118 source entries checked with SHA-256 and size"
+        ],
+        "inventory.local.compare": [
+          "exact IDs and aliases from live registries and contracts"
+        ],
+        "candidate.disabled.store": [
+          "7 dependency-complete capsules only; runtime remains disabled"
+        ],
+        "transaction.rollback.journal": [
+          "included transactional tool; local intake leaf only"
+        ]
+      }
+    },
+    {
+      "id": "runtime-sensorium-activation",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "sensor.adapter.implementation",
+        "sensor.live-device.proof",
+        "human.control.usability.review"
+      ],
+      "declaredConstraints": {
+        "sensor.adapter.implementation": [
+          "the source archive contains contracts, not implementations"
+        ],
+        "sensor.live-device.proof": [
+          "source declares zero live-device tests"
+        ],
+        "human.control.usability.review": [
+          "source explicitly leaves this review open"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "human.control.usability.review",
+    "sensor.adapter.implementation",
+    "sensor.live-device.proof"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "human.control.usability.review",
+      "requiredBy": [
+        "runtime-sensorium-activation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sensor.adapter.implementation",
+      "requiredBy": [
+        "runtime-sensorium-activation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sensor.live-device.proof",
+      "requiredBy": [
+        "runtime-sensorium-activation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

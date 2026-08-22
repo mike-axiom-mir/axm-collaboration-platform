@@ -1,0 +1,26 @@
+{
+  "contract_version": "0.1.0",
+  "module_id": "axm.verify.synthetic-fixture-generator",
+  "purpose": "Generate deterministic privacy-safe structured fixtures from a bounded schema subset and explicit synthetic domain kinds.",
+  "inputs": {
+    "schema": "bounded AXM schema subset",
+    "seed": "integer or string deterministic seed"
+  },
+  "outputs": {
+    "synthetic_fixture_receipt": "generated value with schema digest and synthetic marker"
+  },
+  "refusals": [
+    "unsupported_schema_type",
+    "source_values_present",
+    "invalid_bounds",
+    "excessive_depth",
+    "real_data_flag"
+  ],
+  "non_authority": [
+    "generated_data_not_representative",
+    "does_not_use_real_personal_data",
+    "does_not_approve_release",
+    "does_not_promote_canon"
+  ],
+  "dependencies": "Python standard library only"
+}
