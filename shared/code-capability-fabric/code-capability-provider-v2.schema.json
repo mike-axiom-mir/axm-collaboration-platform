@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-capability-provider/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "version", "status", "routes", "authority", "resources", "requiresWorkspaceBoundary", "requiredAssuranceSchemas", "executionBoundary", "evidenceCeiling", "lineage"],
+  "properties": {
+    "schema": {"const": "axm.code-capability-provider/v2"},
+    "id": {"$ref": "#/$defs/id"},
+    "version": {"$ref": "#/$defs/version"},
+    "status": {"enum": ["EXPERIMENTAL", "TEST", "WORKING"]},
+    "routes": {"type": "array", "minItems": 1, "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/route"}},
+    "authority": {"$ref": "#/$defs/authority"},
+    "resources": {"$ref": "#/$defs/resources"},
+    "requiresWorkspaceBoundary": {"type": "boolean"},
+    "requiredAssuranceSchemas": {"$ref": "#/$defs/contracts"},
+    "executionBoundary": {"$ref": "#/$defs/id"},
+    "evidenceCeiling": {"type": "string", "minLength": 1, "maxLength": 600},
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parents"],
+      "properties": {
+        "parents": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/$defs/providerSelector"}}
+      }
+    }
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "contract": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "contracts": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/contract"}},
+    "ids": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "version": {"type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$"},
+    "providerSelector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "descriptorSha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "version": {"$ref": "#/$defs/version"},
+        "descriptorSha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability", "inputSchema", "outputSchema", "minimumInputArtifacts"],
+      "properties": {
+        "capability": {"$ref": "#/$defs/id"},
+        "inputSchema": {"$ref": "#/$defs/contract"},
+        "outputSchema": {"$ref": "#/$defs/contract"},
+        "minimumInputArtifacts": {"type": "integer", "minimum": 0, "maximum": 32}
+      }
+    },
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "domains"],
+      "properties": {
+        "mode": {"enum": ["disabled", "allowlist"]},
+        "domains": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["permissions", "network", "mutability", "sourceUse"],
+      "properties": {
+        "permissions": {"$ref": "#/$defs/ids"},
+        "network": {"$ref": "#/$defs/network"},
+        "mutability": {"enum": ["read-only", "candidate-only", "process-observation"]},
+        "sourceUse": {"enum": ["inspect-only", "derive-concepts", "transform-bytes", "copy-bytes"]}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxInputBytes", "maxOutputBytes", "maxMemoryBytes", "maxDurationMs", "maxProcesses"],
+      "properties": {
+        "maxInputBytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxOutputBytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxMemoryBytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxDurationMs": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxProcesses": {"type": "integer", "minimum": 1, "maximum": 1024}
+      }
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema": "axm.code-capability-fabric-hardening-verification/v1",
+  "testedCommit": "356a37dacac4d8522fc81fcd4c89292df4f6dd2a",
+  "completedAt": "2026-08-21T23:26:33.860Z",
+  "status": "PASS_WITH_EXISTING_WARNINGS",
+  "requiredChecks": [
+    {"command": "node verify.js", "status": "PASS", "observedWarnings": 41},
+    {"command": "node hub/hub-selftest.js", "status": "PASS"},
+    {"command": "node hub/route-selftest.js", "status": "PASS"},
+    {"command": "node hub/graft-selftest.js", "status": "PASS"},
+    {"command": "node hub/skin-selftest.js", "status": "PASS"},
+    {"command": "node hub/verify-plus.js", "status": "PASS", "observedWarnings": 41},
+    {"command": "node tests/html-script-syntax-test.js", "status": "PASS", "checksPassed": 55},
+    {"command": "node tests/tool-forge-package-test.js", "status": "PASS"},
+    {"command": "node tools/agent-tool-forge/selftest.js", "status": "PASS", "checksPassed": 17},
+    {"command": "node tools/evidence-desk/selftest.js", "status": "PASS", "checksPassed": 36}
+  ],
+  "focusedChecks": [
+    {"command": "node tools/deterministic-json-core/selftest.js", "status": "PASS"},
+    {"command": "node shared/code-capability-fabric/selftest.js", "status": "PASS", "checksPassed": 18},
+    {"command": "node shared/code-capability-fabric/selftest-v2.js", "status": "PASS", "checksPassed": 74},
+    {"command": "node docs/steward-runs/2026-08-22-code-capability-fabric-intake/selftest.js", "status": "PASS"},
+    {"command": "node tools/detached-candidate-nursery/selftest.js", "status": "PASS", "checksPassed": 19},
+    {"command": "git diff --check", "status": "PASS"},
+    {"command": "forbidden local-path and secret-pattern scan over v2 files", "status": "PASS"}
+  ],
+  "summary": {
+    "requiredCommandSuitesPassed": 10,
+    "focusedCommandSuitesPassed": 5,
+    "commandSuitesFailed": 0,
+    "warningBaseline": 41,
+    "warningObserved": 41,
+    "warningDelta": 0
+  },
+  "warningBoundary": "The 41 Workshop warnings match the intake baseline and remain visible. No warning was suppressed or relabeled as a pass.",
+  "browser": {
+    "applicable": false,
+    "status": "NOT_RUN",
+    "reason": "No browser, visual, or interactive surface changed."
+  },
+  "unrun": [
+    "Supplied v0.1 and v0.2 experimental runtimes and their package selftests.",
+    "Any provider or executor runtime.",
+    "Live filesystem, symlink, junction, existing-destination, or sandbox boundary verification.",
+    "Measured runtime resource enforcement.",
+    "Third-party JSON Schema validator; no validator dependency was available or installed. Runtime normalizers and schema-reference checks passed."
+  ],
+  "truth": {
+    "testedSyntheticPlannerOnly": true,
+    "suppliedPackageCodeExecuted": false,
+    "liveProviderExecuted": false,
+    "browserClaimed": false,
+    "installed": false,
+    "promoted": false,
+    "canonChanged": false
+  }
+}

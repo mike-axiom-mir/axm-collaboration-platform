@@ -1,0 +1,134 @@
+{
+  "schema": "axm.fabric-blueprint-acceptance-matrix/v1",
+  "version": "0.1.0",
+  "status": "TEST_PLAN_ONLY",
+  "blueprintRef": {
+    "id": "bounded-code-change-proposal",
+    "schema": "axm.fabric-declarative-capability-blueprint/v1",
+    "sha256": "sha256:89dec506c5d2e65994b599baa42b618340348202538ca715e8e0dae88e849c39"
+  },
+  "interfaceSchemaRefs": [
+    {
+      "id": "bounded-code-change-proposal-input-schema",
+      "schema": "urn:axm:fabric:bounded-code-change-proposal:input:v1",
+      "sha256": "sha256:fe0c4f81984ca9ae6e8bc8e5b7a943c741f26606662982a669d7905461528298"
+    },
+    {
+      "id": "bounded-code-change-proposal-output-schema",
+      "schema": "urn:axm:fabric:bounded-code-change-proposal:output:v1",
+      "sha256": "sha256:7031634f4ebfae955b1770cdd7e5c09f70f966263ab8917278be1311ce85816d"
+    }
+  ],
+  "cases": [
+    {
+      "id": "composition-graph-resolves",
+      "claim": "Every declared step reads an available token, produces a unique token, and contributes to an output.",
+      "sourceStatus": "COMPOSER_VALIDATED",
+      "evidenceRequired": "STRICT_COMPOSER_VALIDATION",
+      "evidenceKind": "STATIC_BLUEPRINT_PROVENANCE",
+      "evidenceArtifactRefs": [],
+      "verdict": "UNRUN"
+    },
+    {
+      "id": "declared-input-contract-holds",
+      "claim": "A future implementation accepts only the declared input fields and types.",
+      "sourceStatus": "PLANNED",
+      "evidenceRequired": "HELD_OUT_SCHEMA_AND_BOUNDARY_TESTS",
+      "evidenceKind": "HELD_OUT_INPUT_SCHEMA_VALIDATION",
+      "evidenceArtifactRefs": [
+        {
+          "id": "bounded-code-change-proposal-input-schema",
+          "schema": "urn:axm:fabric:bounded-code-change-proposal:input:v1",
+          "sha256": "sha256:fe0c4f81984ca9ae6e8bc8e5b7a943c741f26606662982a669d7905461528298"
+        }
+      ],
+      "verdict": "UNRUN"
+    },
+    {
+      "id": "declared-output-contract-holds",
+      "claim": "A future implementation emits every declared output field with its declared type.",
+      "sourceStatus": "PLANNED",
+      "evidenceRequired": "HELD_OUT_OUTPUT_VALIDATION",
+      "evidenceKind": "HELD_OUT_OUTPUT_SCHEMA_VALIDATION",
+      "evidenceArtifactRefs": [
+        {
+          "id": "bounded-code-change-proposal-output-schema",
+          "schema": "urn:axm:fabric:bounded-code-change-proposal:output:v1",
+          "sha256": "sha256:7031634f4ebfae955b1770cdd7e5c09f70f966263ab8917278be1311ce85816d"
+        }
+      ],
+      "verdict": "UNRUN"
+    },
+    {
+      "id": "deterministic-replay-holds",
+      "claim": "A future implementation emits byte-identical output for the same normalized input and version.",
+      "sourceStatus": "PLANNED",
+      "evidenceRequired": "REPEAT_EXECUTION_WITH_EXACT_DIGEST_COMPARISON",
+      "evidenceKind": "REPEAT_RUNTIME_EXECUTION",
+      "evidenceArtifactRefs": [],
+      "verdict": "UNRUN"
+    },
+    {
+      "id": "runtime-resource-ceilings-hold",
+      "claim": "A future implementation stays inside the declared duration, memory, input, output, and operation ceilings.",
+      "sourceStatus": "PLANNED",
+      "evidenceRequired": "MEASURED_RUNTIME_TELEMETRY_UNDER_DECLARED_WORKLOAD",
+      "evidenceKind": "MEASURED_RUNTIME_TELEMETRY",
+      "evidenceArtifactRefs": [],
+      "verdict": "UNRUN"
+    },
+    {
+      "id": "authority-boundary-holds",
+      "claim": "A future implementation cannot use network, filesystem, child-process, install, promote, or CANON authority.",
+      "sourceStatus": "PLANNED",
+      "evidenceRequired": "ALLOWED_AND_DENIED_AUTHORIZATION_BOUNDARY_TESTS",
+      "evidenceKind": "ALLOWED_AND_DENIED_AUTHORIZATION_TESTS",
+      "evidenceArtifactRefs": [],
+      "verdict": "UNRUN"
+    },
+    {
+      "id": "human-quality-review-holds",
+      "claim": "The declared quality outcomes are useful and meaningful for the intended human purpose.",
+      "sourceStatus": "PLANNED",
+      "evidenceRequired": "MIKE_OR_APPOINTED_HUMAN_REVIEW",
+      "evidenceKind": "MIKE_OR_APPOINTED_HUMAN_REVIEW",
+      "evidenceArtifactRefs": [],
+      "verdict": "UNRUN"
+    }
+  ],
+  "desiredOutcomeReviews": [
+    {
+      "claim": "The proposal identifies verification before implementation.",
+      "sourceStatus": "UNPROVEN",
+      "reviewStatus": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "claim": "The proposal preserves all four AXM roots and leaves merge authority with Mike.",
+      "sourceStatus": "UNPROVEN",
+      "reviewStatus": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "claim": "The proposal preserves unresolved failures instead of hiding them.",
+      "sourceStatus": "UNPROVEN",
+      "reviewStatus": "HUMAN_REVIEW_REQUIRED"
+    }
+  ],
+  "rootsGate": [
+    "truth",
+    "agency-non-domination",
+    "continuity",
+    "wisdom-over-speed"
+  ],
+  "truth": {
+    "blueprintLineageVerified": true,
+    "inputSchemaGenerated": true,
+    "outputSchemaGenerated": true,
+    "acceptanceCasesRouted": true,
+    "anyAcceptanceCaseExecuted": false,
+    "semanticBehaviorImplemented": false,
+    "runtimeQualityProven": false,
+    "humanQualityApproved": false
+  },
+  "authority": "NONE",
+  "matrixDigest": "sha256:aad58ba7963b6e280487c4917272323e99acc10ae54d0ebc330d61b03233d5ce"
+}

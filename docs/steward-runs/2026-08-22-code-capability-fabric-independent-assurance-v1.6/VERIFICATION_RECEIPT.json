@@ -1,0 +1,84 @@
+{
+  "schema": "axm.code-capability-fabric-independent-assurance-verification/v1",
+  "testedCommit": "ba5af784b5322284d0f6da8a5f272648745053f9",
+  "completedAt": "2026-08-22T00:29:54.996Z",
+  "status": "PASS_WITH_EXISTING_WARNINGS",
+  "requiredChecks": [
+    {"command": "node verify.js", "status": "PASS", "observedWarnings": 41, "failures": 0},
+    {"command": "node hub/hub-selftest.js", "status": "PASS"},
+    {"command": "node hub/route-selftest.js", "status": "PASS"},
+    {"command": "node hub/graft-selftest.js", "status": "PASS"},
+    {"command": "node hub/skin-selftest.js", "status": "PASS"},
+    {"command": "node hub/verify-plus.js", "status": "PASS", "observedWarnings": 41},
+    {"command": "node tests/html-script-syntax-test.js", "status": "PASS", "checksPassed": 55},
+    {"command": "node tests/tool-forge-package-test.js", "status": "PASS"},
+    {"command": "node tools/agent-tool-forge/selftest.js", "status": "PASS", "checksPassed": 17},
+    {"command": "node tools/evidence-desk/selftest.js", "status": "PASS", "checksPassed": 36}
+  ],
+  "focusedChecks": [
+    {"command": "node shared/code-capability-fabric/selftest.js", "status": "PASS", "checksPassed": 18},
+    {"command": "node shared/code-capability-fabric/selftest-v2.js", "status": "PASS", "checksPassed": 74},
+    {"command": "node shared/code-capability-fabric/selftest-readiness-v1.js", "status": "PASS", "checksPassed": 46},
+    {"command": "node shared/code-capability-fabric/selftest-independent-assurance-v1.js", "status": "PASS", "checksPassed": 46},
+    {"command": "node docs/steward-runs/2026-08-22-code-capability-fabric-intake/selftest.js", "status": "PASS"},
+    {"command": "node docs/steward-runs/2026-08-22-code-capability-fabric-hardening-v1.4/selftest.js", "status": "PASS"},
+    {"command": "node docs/steward-runs/2026-08-22-code-capability-fabric-readiness-v1.5/selftest.js", "status": "PASS"},
+    {"command": "node tools/deterministic-json-core/selftest.js", "status": "PASS"},
+    {"command": "node shared/workshop-updater/selftest.js", "status": "PASS"}
+  ],
+  "staticChecks": [
+    {"check": "node syntax checks for implementation and selftest", "status": "PASS"},
+    {"check": "git diff --check over bounded implementation", "status": "PASS"},
+    {"check": "secret, private-key, token, authorization-header, and absolute-machine-path scan", "status": "PASS"},
+    {"check": "older v1, v2, and readiness implementation byte-continuity against base", "status": "PASS"}
+  ],
+  "developmentFailuresPreserved": [
+    {
+      "failure": "Three initially assumed focused entrypoint filenames returned MODULE_NOT_FOUND.",
+      "resolution": "Repository files were enumerated and the actual selftest.js, selftest-v2.js, and tools/deterministic-json-core/selftest.js entrypoints passed."
+    },
+    {
+      "failure": "The first key-alias hardening patch assumed observerKeys was an array and raised a TypeError.",
+      "resolution": "The exact readiness contract was inspected, the singular observerKey interface was used, and all 46 cases passed."
+    },
+    {
+      "failure": "The initial component-index edit changed the original README and failed the intake receipt byte-count assertion.",
+      "resolution": "The original README was restored byte-for-byte; additive discovery moved to the new TEST README and all prior receipts passed."
+    }
+  ],
+  "summary": {
+    "requiredCommandSuitesPassed": 10,
+    "focusedCommandSuitesPassed": 9,
+    "staticFocusedChecksPassed": 4,
+    "finalCommandSuitesFailed": 0,
+    "warningBaseline": 41,
+    "warningObserved": 41,
+    "warningDelta": 0
+  },
+  "warningBoundary": "The 41 Workshop warnings match the intake, hardening, and readiness baseline. No warning was suppressed, repaired incidentally, or relabeled as a pass.",
+  "browser": {
+    "applicable": false,
+    "status": "NOT_RUN",
+    "reason": "No browser, visual, or interactive surface changed. No browser pass is claimed."
+  },
+  "unrun": [
+    "Supplied v0.1 and v0.2 experimental runtimes and their package selftests.",
+    "Any provider or executor runtime.",
+    "Any real verifier organization, promoted trust root, or persistent private signing key.",
+    "Organizational independence, verifier competence, and absence of collusion.",
+    "Live filesystem, symlink, junction, destination-absence, or sandbox boundary verification.",
+    "Measured runtime resource enforcement, private evidence retention, and executed output lineage.",
+    "Third-party JSON Schema validation; strict runtime normalizers and schema-reference checks passed."
+  ],
+  "truth": {
+    "syntheticEphemeralTestKeysOnly": true,
+    "suppliedPackageCodeExecuted": false,
+    "liveProviderExecuted": false,
+    "organizationalIndependenceProven": false,
+    "browserClaimed": false,
+    "mergePerformed": false,
+    "installed": false,
+    "promoted": false,
+    "canonChanged": false
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-assurance-trust-policy/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "evaluatedAt", "validFrom", "expiresAt", "rules", "observerMayCount", "authority", "policyDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-assurance-trust-policy/v1"},
+    "id": {"$ref": "#/$defs/id"},
+    "evaluatedAt": {"type": "string", "format": "date-time"},
+    "validFrom": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "rules": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"$ref": "#/$defs/rule"}},
+    "observerMayCount": {"const": false},
+    "authority": {"const": "REVIEW_ONLY"},
+    "policyDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "contract": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "schema": {"$ref": "#/$defs/contract"}, "sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assuranceSchema", "trustedVerifierRefs", "minimumSignatures"],
+      "properties": {
+        "assuranceSchema": {"$ref": "#/$defs/contract"},
+        "trustedVerifierRefs": {"type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/$defs/reference"}},
+        "minimumSignatures": {"type": "integer", "minimum": 1, "maximum": 8}
+      }
+    }
+  }
+}

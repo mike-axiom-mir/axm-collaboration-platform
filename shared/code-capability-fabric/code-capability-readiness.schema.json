@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-capability-readiness/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "planDigest", "readinessSubjectDigest", "verifiedObserverRef", "verifiedAssuranceRefs", "holds", "nextGate", "truth", "authority", "readinessDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-capability-readiness/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"enum": ["PLAN_INVALID", "ROUTE_NOT_PLANNED", "OBSERVER_KEY_HOLD", "OBSERVATION_ATTESTATION_HOLD", "ASSURANCE_RECORD_HOLD", "ASSURANCE_VERDICT_HOLD", "AUTHORIZATION_REQUIRED"]},
+    "planDigest": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "readinessSubjectDigest": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+    "verifiedObserverRef": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/reference"}]},
+    "verifiedAssuranceRefs": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/reference"}},
+    "holds": {"type": "array", "maxItems": 64, "items": {"type": "string", "minLength": 1, "maxLength": 500}},
+    "nextGate": {"enum": ["MIKE_DECISION_AND_REPAIRED_DISPOSABLE_SANDBOX_EXECUTOR", "REPAIR_EVIDENCE_THEN_REASSESS"]},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "readinessDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "contract": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "schema": {"$ref": "#/$defs/contract"}, "sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["routePlanVerified", "routePlanned", "hostObserverKeyBound", "hostObservationSignatureVerified", "assuranceRecordIntegrityVerified", "assuranceScopeVerified", "assurancePassVerdictsAccepted", "resourceEnforcementObserved", "executorAuthorized", "providerCodeLoaded", "providerCodeExecuted", "workspaceContentRead", "permissionGranted", "networkUsed", "outputWritten", "installed", "promoted", "canonChanged"],
+      "properties": {
+        "routePlanVerified": {"type": "boolean"},
+        "routePlanned": {"type": "boolean"},
+        "hostObserverKeyBound": {"type": "boolean"},
+        "hostObservationSignatureVerified": {"type": "boolean"},
+        "assuranceRecordIntegrityVerified": {"type": "boolean"},
+        "assuranceScopeVerified": {"type": "boolean"},
+        "assurancePassVerdictsAccepted": {"type": "boolean"},
+        "resourceEnforcementObserved": {"const": false},
+        "executorAuthorized": {"const": false},
+        "providerCodeLoaded": {"const": false},
+        "providerCodeExecuted": {"const": false},
+        "workspaceContentRead": {"const": false},
+        "permissionGranted": {"const": false},
+        "networkUsed": {"const": false},
+        "outputWritten": {"const": false},
+        "installed": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false}
+      }
+    }
+  }
+}

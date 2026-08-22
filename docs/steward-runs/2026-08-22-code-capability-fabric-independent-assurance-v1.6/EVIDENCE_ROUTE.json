@@ -1,0 +1,110 @@
+{
+  "schema": "axm.claim-evidence-route/v1",
+  "implementationCommit": "ba5af784b5322284d0f6da8a5f272648745053f9",
+  "claims": [
+    {
+      "id": "four-roots-are-ordered-technical-gate",
+      "claimType": "CONTRACT",
+      "result": "PASS",
+      "evidence": [
+        "module-independent-assurance-v1.contract.json rootsGate exact order",
+        "independent assurance selftest contract assertion",
+        "strict truth and authority ceilings"
+      ],
+      "counterevidence": []
+    },
+    {
+      "id": "provider-neutral-pure-review",
+      "claimType": "AUTHORITY+BEHAVIOR",
+      "result": "PASS_WITH_SCOPE",
+      "evidence": [
+        "static import selftest excludes filesystem, process, worker, and network capabilities",
+        "module contract permissions and writes are empty",
+        "terminal authority is NONE"
+      ],
+      "counterevidence": [
+        "No live provider or executor behavior was tested."
+      ]
+    },
+    {
+      "id": "independent-key-material-quorum",
+      "claimType": "CRYPTOGRAPHIC+BEHAVIOR",
+      "result": "PASS_WITH_SCOPE",
+      "evidence": [
+        "46-case synthetic independent assurance selftest",
+        "observer reference and observer public-key alias rejection",
+        "duplicate public-key material rejection",
+        "valid Ed25519 signatures over exact policy/readiness/record/key/time payloads"
+      ],
+      "counterevidence": [
+        "Distinct keys do not prove distinct organizations, competence, or absence of collusion."
+      ]
+    },
+    {
+      "id": "deterministic-strict-review",
+      "claimType": "STRUCTURAL+DETERMINISTIC",
+      "result": "PASS",
+      "evidence": [
+        "order-invariance selftest",
+        "strict nested-field rejection",
+        "standalone normalization and deterministic rebuild verification",
+        "digest drift and replay adversarial cases"
+      ],
+      "counterevidence": []
+    },
+    {
+      "id": "historical-continuity",
+      "claimType": "CONTINUITY",
+      "result": "PASS_AFTER_REPAIR",
+      "evidence": [
+        "v1 18 PASS",
+        "v2 74 PASS",
+        "readiness v1 46 PASS",
+        "three earlier receipt selftests PASS",
+        "older implementation paths unchanged against base"
+      ],
+      "counterevidence": [
+        "An initial original-README edit failed the intake receipt byte-count assertion and was removed before final commit."
+      ]
+    },
+    {
+      "id": "requester-accepted-trust-policy",
+      "claimType": "AUTHORIZATION",
+      "result": "UNKNOWN_NOT_BOUND",
+      "evidence": [
+        "review preserves TRUST_POLICY_NOT_BOUND_BY_V2_REQUEST limitation",
+        "successful quorum status is HUMAN_POLICY_ACCEPTANCE_REQUIRED"
+      ],
+      "counterevidence": [
+        "The v2 request has no trust-policy digest field."
+      ]
+    },
+    {
+      "id": "actual-sandboxed-execution",
+      "claimType": "RUNTIME+SECURITY",
+      "result": "UNKNOWN_NOT_RUN",
+      "evidence": [],
+      "counterevidence": [
+        "Supplied runtimes remained data and no repaired executor was authorized."
+      ]
+    },
+    {
+      "id": "live-resource-enforcement-and-output-lineage",
+      "claimType": "RUNTIME+PERFORMANCE+LINEAGE",
+      "result": "UNKNOWN_NOT_RUN",
+      "evidence": [],
+      "counterevidence": [
+        "No provider, executor, output bytes, or enforcement trace existed in this run."
+      ]
+    },
+    {
+      "id": "browser-behavior",
+      "claimType": "VISUAL+INTERACTIVE",
+      "result": "NOT_APPLICABLE_NOT_RUN",
+      "evidence": [],
+      "counterevidence": [
+        "No browser or visual surface changed."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "schema": "axm.claim-evidence-route/v1",
+  "implementationCommit": "3579073aaa5854fba7bbf1e985b5a23d0f98ac1a",
+  "risk": "HIGH",
+  "claims": [
+    {
+      "id": "additive-contract-exists",
+      "claim": "The readiness gate is an additive TEST contract beside byte-identical v1 and v2 files.",
+      "kind": "existence+static-structure",
+      "proof": ["implementation commit path inventory", "closed JSON schemas", "module-readiness-v1.contract.json", "byte-identity Git comparison"],
+      "counterevidenceChecked": ["unexpected changed paths", "v1 or v2 byte drift"],
+      "result": "PASS"
+    },
+    {
+      "id": "deterministic-readiness",
+      "claim": "The same route and evidence set emits identical canonical readiness bytes independent of assurance input order.",
+      "kind": "deterministic-behavior",
+      "proof": ["46-check readiness selftest", "exact deterministic rebuild verification", "reversed assurance-order fixture"],
+      "counterevidenceChecked": ["forged plan", "input byte-length drift", "output digest tampering"],
+      "result": "PASS"
+    },
+    {
+      "id": "observer-authenticity",
+      "claim": "The gate verifies a canonical Ed25519 public-key binding and signature over the exact host-observation digest and time.",
+      "kind": "cryptographic-behavior",
+      "proof": ["synthetic ephemeral Ed25519 readiness fixtures", "established Workshop Updater Ed25519 selftest as independent repository pattern"],
+      "counterevidenceChecked": ["wrong key", "wrong signer", "tampered signature", "digest drift", "future and expired signature times", "unknown unsigned fields"],
+      "result": "PASS_WITH_SYNTHETIC_KEYS"
+    },
+    {
+      "id": "assurance-record-integrity",
+      "claim": "Every signed assurance reference resolves to exactly one strict record with matching digest, subject, verifier, freshness, evidence-byte references, and explicit verdict.",
+      "kind": "static-structure+deterministic-behavior",
+      "proof": ["record normalizer and self-digest", "signed observation transitive digest binding", "adversarial readiness fixtures"],
+      "counterevidenceChecked": ["missing and duplicate records", "duplicate IDs", "digest drift", "scope mismatch", "wrong verifier", "stale, future, and post-signature dates", "FAIL and UNKNOWN verdicts", "zero or duplicate evidence references", "private stdout extra field"],
+      "result": "PASS"
+    },
+    {
+      "id": "authority-ceiling",
+      "claim": "Passing readiness grants no execution, permission, network, write, install, promotion, or CANON authority.",
+      "kind": "authorization+static-boundary",
+      "proof": ["permissionless module contract", "static import scan", "strict output truth ceiling", "recomputed-digest lie rejection"],
+      "counterevidenceChecked": ["top-level execute field", "assurance EXECUTE authority", "mutated readiness authority", "providerCodeExecuted truth escalation"],
+      "result": "PASS_FOR_THIS_PURE_MODULE"
+    },
+    {
+      "id": "actual-sandboxed-execution",
+      "claim": "A provider can execute safely with measured resources and proven output lineage.",
+      "kind": "runtime+authorization+resource-safety",
+      "proof": [],
+      "counterevidenceChecked": ["no executor was authorized", "no provider ran", "no live resources or output were observed"],
+      "result": "UNKNOWN_NOT_RUN"
+    },
+    {
+      "id": "browser-behavior",
+      "claim": "A browser surface renders and responds correctly.",
+      "kind": "visual+interaction",
+      "proof": [],
+      "counterevidenceChecked": ["no visual or browser surface changed"],
+      "result": "NOT_APPLICABLE_NOT_RUN"
+    }
+  ],
+  "humanGate": "Mike Tobi decides merge, direct-reuse rights, and any future disposable-sandbox executor authorization."
+}

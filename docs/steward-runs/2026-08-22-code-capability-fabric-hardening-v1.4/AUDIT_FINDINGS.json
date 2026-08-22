@@ -1,0 +1,111 @@
+{
+  "schema": "axm.code-capability-fabric-hardening-audit/v1",
+  "recordedAt": "2026-08-21T23:26:33.860Z",
+  "implementationCommit": "356a37dacac4d8522fc81fcd4c89292df4f6dd2a",
+  "status": "TEST",
+  "disposition": "ADDITIVE_V2_PLANNER_READY_FOR_MIKE_REVIEW_EXECUTION_HELD",
+  "findings": [
+    {
+      "code": "CAPABILITY_ROUTE_CARTESIAN_MATCH",
+      "risk": "HIGH",
+      "v1Observation": "Separate capability, input, and output arrays can match a tuple the provider never declared.",
+      "v2Disposition": "CLOSED_IN_PLANNER_CONTRACT",
+      "control": "Each provider declares unique capability/input/output route tuples with minimum input-artifact counts."
+    },
+    {
+      "code": "MALFORMED_VALUE_COERCION",
+      "risk": "MEDIUM",
+      "v1Observation": "Several scalar validators coerce non-string values before checking them.",
+      "v2Disposition": "CLOSED_IN_PLANNER_CONTRACT",
+      "control": "v2 requires exact scalar types, strict semantic versions, canonical UTC timestamps, safe integers, and lowercase digests."
+    },
+    {
+      "code": "AVOIDABLE_LOCALE_SORT_DEPENDENCE",
+      "risk": "MEDIUM",
+      "v1Observation": "Provider and reference ordering uses localeCompare.",
+      "v2Disposition": "CLOSED_IN_PLANNER_CONTRACT",
+      "control": "v2 uses explicit code-unit lexical comparison and deterministic-json-core."
+    },
+    {
+      "code": "PROVIDER_VERSION_AMBIGUITY",
+      "risk": "HIGH",
+      "v1Observation": "A catalog cannot represent two versions of one provider id and a preference cannot bind descriptor bytes.",
+      "v2Disposition": "CLOSED_IN_PLANNER_CONTRACT",
+      "control": "Multiple versions remain visible; exact id, version, and descriptor digest selection is required when ambiguous."
+    },
+    {
+      "code": "HOST_OBSERVATION_DRIFT_AND_FORGERY",
+      "risk": "HIGH",
+      "v1Observation": "Observations have no expiry, explicit evaluation time, record digest, or observer trust intersection.",
+      "v2Disposition": "PLANNING_CONTROLS_ADDED_AUTHENTICITY_PROOF_OPEN",
+      "control": "v2 adds canonical times, maximum age, expiry, self-digest, exact observation selection, and explicit trusted observer references.",
+      "openSeam": "A copied or fabricated trusted observer reference cannot be authenticated by this pure planner; external signature or host-attestation verification remains required."
+    },
+    {
+      "code": "OVERBROAD_EXECUTOR_AUTHORITY",
+      "risk": "HIGH",
+      "v1Observation": "A satisfying host observation may carry permissions beyond provider needs.",
+      "v2Disposition": "PLANNING_CONTROL_ADDED_EXECUTOR_REMAINS_UNAUTHORIZED",
+      "control": "v2 refuses missing or overbroad host permission, network, mutability, and source-use envelopes.",
+      "openSeam": "No executor exists here and no confinement behavior was tested."
+    },
+    {
+      "code": "DECLARED_RESOURCE_BUDGET_NOT_ENFORCEMENT",
+      "risk": "HIGH",
+      "v1Observation": "The planner carries no bounded-resource model.",
+      "v2Disposition": "PLANNING_CONTROL_ADDED_MEASURED_ENFORCEMENT_OPEN",
+      "control": "Provider needs, request ceilings, exact host envelopes, and a resource-enforcement verification reference are mandatory.",
+      "openSeam": "References are not dereferenced and no runtime resource measurement or enforcement occurred."
+    },
+    {
+      "code": "SOURCE_OUTPUT_EVIDENCE_PATH_ALIAS",
+      "risk": "HIGH",
+      "v1Observation": "The planner has no portable boundary preflight.",
+      "v2Disposition": "PURE_PREFLIGHT_ADDED_LIVE_HOST_PROOF_OPEN",
+      "control": "A path-minimizing boundary reference rejects drive, UNC, ADS, traversal, device, trailing-dot/space, normalization, case-fold, nested, and source/output/evidence overlaps.",
+      "openSeam": "The pure validator performs no filesystem, symlink, junction, or destination-existence observation."
+    },
+    {
+      "code": "DURABLE_PRIVATE_CONTENT_RETENTION",
+      "risk": "HIGH",
+      "v1Observation": "Free evidence-ceiling text is copied into the route plan and no explicit content-retention truth fields exist.",
+      "v2Disposition": "CLOSED_FOR_PLANNER_OUTPUT_EXECUTOR_EVIDENCE_OPEN",
+      "control": "v2 route output carries opaque references, artifact sizes/digests, and an evidence-policy digest; it states that content and machine paths were not retained.",
+      "openSeam": "No future executor or evidence writer is implemented or authorized."
+    },
+    {
+      "code": "PARTIAL_EMITTED_RECORD_VALIDATION",
+      "risk": "MEDIUM",
+      "v1Observation": "Verification primarily compares a rebuild and does not expose strict standalone plan normalization.",
+      "v2Disposition": "CLOSED_IN_PLANNER_CONTRACT",
+      "control": "Closed recursive schemas, strict runtime normalizers, self-digests, cross-field checks, and deterministic rebuild verification reject malformed output."
+    },
+    {
+      "code": "LINEAGE_NOT_BYTE_BOUND",
+      "risk": "MEDIUM",
+      "v1Observation": "Provider evolution and request inputs lack explicit parent and artifact byte references.",
+      "v2Disposition": "REFERENCE_BINDING_ADDED_LEDGER_AUTHORITY_PRESERVED",
+      "control": "Provider parents bind exact canonical descriptor digests and input artifacts bind declared byte digests and lengths.",
+      "openSeam": "The planner does not read artifact bytes or replace Module Evolution Ledger ancestry authority."
+    },
+    {
+      "code": "DIRECT_REUSE_RIGHTS_ABSENT",
+      "risk": "HIGH",
+      "v1Observation": "The planner cannot distinguish research-only inspection from direct byte reuse.",
+      "v2Disposition": "DEFAULT_HOLD_ADDED_MIKE_DECISION_OPEN",
+      "control": "Transform/copy providers receive REUSE_RIGHTS_HOLD unless an exact declared authority reference is supplied.",
+      "openSeam": "A reference is not a legal sufficiency finding; Mike's reuse-rights decision remains deferred."
+    }
+  ],
+  "truth": {
+    "suppliedRuntimeExecuted": false,
+    "providerRuntimeExecuted": false,
+    "executorImplemented": false,
+    "workspaceContentReadByPlanner": false,
+    "installed": false,
+    "promoted": false,
+    "canonChanged": false,
+    "consciousnessClaimed": false
+  },
+  "authority": "NONE"
+}

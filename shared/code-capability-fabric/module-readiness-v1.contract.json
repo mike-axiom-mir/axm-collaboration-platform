@@ -1,0 +1,61 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-capability-readiness-gate",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "axm.code-trust-key/v1",
+    "axm.code-host-observation-attestation/v1",
+    "axm.code-external-assurance-record/v1",
+    "axm.code-capability-readiness-subject/v1",
+    "axm.code-capability-readiness/v1",
+    "code.capability.readiness.assess",
+    "code.capability.readiness.verify"
+  ],
+  "consumes": [
+    "axm.code-capability-route-plan/v2",
+    "exact v2 route input",
+    "Ed25519 SPKI public trust-key records",
+    "signed host-observation attestations",
+    "digest-bound external-assurance records",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.code-capability-readiness/v1"],
+    "accepts": [
+      "axm.code-capability-route-plan/v2",
+      "axm.code-trust-key/v1",
+      "axm.code-host-observation-attestation/v1",
+      "axm.code-external-assurance-record/v1"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "private-key-storage",
+      "trust-key-promotion",
+      "provider-code-loading",
+      "provider-code-execution",
+      "experimental-runtime-execution",
+      "workspace-content-reading",
+      "filesystem-inspection",
+      "process-execution",
+      "network-use",
+      "permission-grant",
+      "executor-authorization",
+      "assurance-evidence-byte-dereference",
+      "assurance-verdict-as-direct-runtime-observation",
+      "resource-verdict-as-live-resource-measurement",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

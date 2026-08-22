@@ -1,0 +1,118 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "independent-assurance-review",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "code.fabric.readiness.verify",
+        "code.fabric.assurance-policy.bind",
+        "code.fabric.verifier-key-material.distinguish",
+        "code.fabric.assurance-attestation.verify",
+        "code.fabric.assurance-quorum.evaluate",
+        "code.fabric.independent-review.verify"
+      ],
+      "degraded": [],
+      "unknown": [
+        "code.fabric.organizational-independence.prove",
+        "code.fabric.verifier-competence.prove"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "code.fabric.assurance-policy.bind": [
+          "policy self-digest and attestation binding only",
+          "v2 request does not bind policy digest"
+        ],
+        "code.fabric.verifier-key-material.distinguish": [
+          "proves distinct Ed25519 public-key bytes only",
+          "does not prove distinct social actors or organizations"
+        ],
+        "code.fabric.assurance-quorum.evaluate": [
+          "complete quorum stops at HUMAN_POLICY_ACCEPTANCE_REQUIRED",
+          "authority NONE"
+        ]
+      }
+    },
+    {
+      "id": "historical-continuity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "code.fabric.v1.selftest",
+        "code.fabric.v2.selftest",
+        "code.fabric.readiness-v1.selftest",
+        "code.fabric.prior-receipts.selftest"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "code.fabric.prior-receipts.selftest": [
+          "original README edit was removed after byte-drift detection",
+          "new discovery documentation is additive"
+        ]
+      }
+    },
+    {
+      "id": "authorized-provider-execution",
+      "required": false,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "code.fabric.request-bound-assurance-policy",
+        "code.fabric.sandbox-executor.repaired",
+        "code.fabric.human-authorization.consume",
+        "code.fabric.resource-enforcement.observe",
+        "code.fabric.output-lineage.prove",
+        "code.fabric.private-evidence-retention.enforce"
+      ],
+      "declaredConstraints": {
+        "code.fabric.sandbox-executor.repaired": [
+          "supplied runtimes remain data",
+          "future disposable-sandbox execution is not authorized"
+        ]
+      }
+    },
+    {
+      "id": "generated-source-direct-reuse",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "code.fabric.generated-source-rights.decide"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "code.fabric.generated-source-rights.decide": [
+          "Mike decision intentionally deferred",
+          "default research-only and direct-reuse hold"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "code.fabric.human-authorization.consume",
+    "code.fabric.output-lineage.prove",
+    "code.fabric.private-evidence-retention.enforce",
+    "code.fabric.request-bound-assurance-policy",
+    "code.fabric.resource-enforcement.observe",
+    "code.fabric.sandbox-executor.repaired"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "code.fabric.request-bound-assurance-policy",
+      "contractStatus": "SPEC_REQUIRED",
+      "boundary": "A future request version may bind an exact policy digest, but must not self-authorize execution."
+    },
+    {
+      "capabilityId": "code.fabric.sandbox-executor.repaired",
+      "contractStatus": "DECISION_AND_SPEC_REQUIRED",
+      "boundary": "Requires Mike's explicit authorization, disposable isolation, real enforcement, private-evidence minimization, and byte-bound output lineage."
+    }
+  ]
+}
