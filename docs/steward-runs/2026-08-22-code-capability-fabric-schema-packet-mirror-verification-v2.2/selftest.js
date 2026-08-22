@@ -122,6 +122,25 @@ assert.ok(handoff.exactImplementationIntegrationCommandAfterCleanTargetAndAncest
 assert.ok(handoff.safeIntegrationConditions.some((item) => item.includes('Mike decide')));
 assert.ok(handoff.safeIntegrationConditions.some((item) => item.includes('Do not push')));
 
+const postDrift = readJson('POST_COMMIT_TARGET_DRIFT_RECHECK.json');
+assert.equal(postDrift.source.reviewedContentCommit, '3bc1dc816ee0acb0783e6d820971d87b2067e65d');
+assert.equal(postDrift.source.clean, true);
+assert.equal(postDrift.target.headChanged, false);
+assert.equal(postDrift.target.busyStatusChanged, true);
+assert.equal(postDrift.target.untrackedEntryDelta, 18);
+assert.equal(postDrift.target.taskRelevantOverlapObserved, false);
+assert.equal(postDrift.authority.canonicalCheckoutModified, false);
+
+const postHandoff = readJson('POST_COMMIT_INTEGRATION_HANDOFF.json');
+assert.equal(postHandoff.source.reviewedContentCommit, postDrift.source.reviewedContentCommit);
+assert.equal(postHandoff.source.networkPushRequiredForLocalReview, false);
+assert.equal(postHandoff.latestTargetObservation.busyStatusChanged, true);
+assert.equal(postHandoff.latestTargetObservation.taskRelevantStatusEntries, 0);
+assert.equal(postHandoff.authority.pushPerformed, false);
+assert.equal(postHandoff.authority.mergePerformed, false);
+assert.ok(postHandoff.exactIntegrationCommandOnlyAfterCleanTargetAndAncestryChecks.includes('--no-commit'));
+assert.ok(postHandoff.stopConditions.some((item) => item.includes('Do not push')));
+
 const afterInventory = readJson('SCOUT_INVENTORY_AFTER.json');
 assert.equal(afterInventory.workspaceStatus, 'ONLY_BOUNDED_STEWARD_EVIDENCE_UNCOMMITTED');
 assert.equal(afterInventory.activeRelevantSharedSeams, 0);
@@ -148,6 +167,20 @@ assert.equal(curation.truth.privateContentCommitted, false);
 assert.equal(curation.truth.machinePathsCommitted, false);
 assert.equal(curation.truth.unfinishedMirrorCloneExecuted, false);
 assert.equal(curation.truth.pushPerformed, false);
+
+const postEventLines = fs.readFileSync(path.join(runRoot, 'POST_COMMIT_EVENTS.jsonl'), 'utf8').trim().split(/\r?\n/);
+assert.equal(postEventLines.length, 1);
+assert.equal(JSON.parse(postEventLines[0]).event, 'post-commit-target-drift');
+const postSeal = readJson('POST_COMMIT_SESSION_SEAL.json');
+assert.equal(postSeal.source, 'code-capability-fabric-schema-packet-mirror-verification-v2.2-post-commit');
+assert.equal(postSeal.sha256, '3526b8c3e02291ea57a435bc984364badb77d21ef20ded9722bf6768f9f36e6c');
+assert.equal(postSeal.eventLines, 1);
+assert.equal(postSeal.invalidJsonLines, 0);
+const postCuration = readJson('POST_COMMIT_CURATION_ADDENDUM.json');
+assert.equal(postCuration.sessionSeal.sha256, postSeal.sha256);
+assert.equal(postCuration.truth.targetConcurrentActivityPreserved, true);
+assert.equal(postCuration.truth.priorSealedSegmentModified, false);
+assert.equal(postCuration.truth.mergePerformed, false);
 
 const allEvidenceText = fs.readdirSync(runRoot, { withFileTypes: true })
   .filter((entry) => entry.isFile() && entry.name !== 'selftest.js')
