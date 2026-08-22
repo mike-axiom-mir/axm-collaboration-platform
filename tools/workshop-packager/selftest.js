@@ -39,8 +39,15 @@ assert(html.includes("version:'v0.4'"));
 assert(packager.includes("'offline-windows'"));
 assert(packager.includes('bundled_runtime_before_first_launch'));
 assert(packager.includes("$Mode -in @('public','offline-windows')"));
-assert(packager.includes("$cityCompiler \"--root=$CopyPath\" '--write'"));
-assert(packager.includes('Public package City view refresh failed'));
+assert(packager.includes("'scripts\\compile-city-graph.js'") &&
+  packager.includes("'scripts\\compile-schema-registry.js'") &&
+  packager.includes("'scripts\\compile-twin-surfaces.js'"));
+assert(packager.indexOf("'scripts\\compile-city-graph.js'") <
+  packager.indexOf("'scripts\\compile-schema-registry.js'") &&
+  packager.indexOf("'scripts\\compile-schema-registry.js'") <
+  packager.indexOf("'scripts\\compile-twin-surfaces.js'"));
+assert(packager.includes('$cityNode $cityCompiler "--root=$CopyPath" \'--write\''));
+assert(packager.includes('Public package City dependency refresh failed'));
 assert(runtimeTool.includes('RUNTIME_LICENSE_COMPANION_MISSING'));
 assert(runtimeTool.includes('clean-device-test-matrix.v1'));
 assert(launcher.includes('AXM_OFFLINE_FIRST.json'));
