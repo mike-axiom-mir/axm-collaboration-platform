@@ -76,3 +76,20 @@ and run:
 node shared/code-capability-fabric/selftest-deterministic-game-candidate-generator-v1.js
 node tools/sandbox/selftest-disposable-candidate-sandbox-v1.js
 ```
+
+## First installed adventure content release
+
+The following `TEST` rung preserves the exact first-game packet as a rollback
+ancestor and deterministically seals one five-zone adventure content release.
+It emits a non-writing installation plan for a separate trusted Game Hub shell;
+it still runs no provider, runtime, generated source, network, or lifecycle
+action. Mike's explicit internal-`TEST` direction is recorded without claiming
+cryptographic identity proof or resolving public reuse rights.
+
+See [README-deterministic-adventure-content-generator-v1.md](README-deterministic-adventure-content-generator-v1.md)
+and run:
+
+```powershell
+node shared/code-capability-fabric/selftest-deterministic-adventure-content-generator-v1.js
+node tools/game-hub/game-library/020-four-roots-adventure/tests/package-selftest.js
+```

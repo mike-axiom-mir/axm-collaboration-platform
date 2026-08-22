@@ -1,0 +1,96 @@
+'use strict';
+
+const assert = require('assert');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { createServer, safeStaticFile } = require('../runtime/server');
+
+async function call(base, pathname, init) {
+  const response = await fetch(base + pathname, init);
+  const type = response.headers.get('content-type') || '';
+  const value = type.includes('application/json') ? await response.json() : await response.text();
+  return { response, value };
+}
+
+async function main() {
+  const dataRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-four-roots-http-'));
+  const server = createServer({ dataRoot });
+  await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
+  const base = 'http://127.0.0.1:' + server.address().port;
+  try {
+    let result = await call(base, '/health');
+    assert.strictEqual(result.response.status, 200);
+    assert.strictEqual(result.value.gameId, '020-four-roots-adventure');
+    assert.strictEqual(result.value.stateAuthority, 'server');
+    assert.strictEqual(result.value.persistence, 'server-file');
+    assert.strictEqual(result.value.outboundNetwork, false);
+    assert.match(result.value.contentDigest, /^sha256:[0-9a-f]{64}$/);
+
+    result = await call(base, '/games/020/');
+    assert.strictEqual(result.response.status, 200);
+    assert.ok(result.value.includes('Four Roots'));
+    assert.match(result.response.headers.get('content-security-policy'), /connect-src 'self'/);
+    assert.strictEqual(result.response.headers.get('x-content-type-options'), 'nosniff');
+
+    for (const asset of ['/styles.css', '/app.js']) {
+      result = await call(base, asset); assert.strictEqual(result.response.status, 200, asset);
+    }
+    for (const blocked of ['/%2e%2e/game.manifest.json', '/C:/Windows/win.ini', '/content/adventure-content.v0.2.json', '/missing.js']) {
+      result = await call(base, blocked); assert.strictEqual(result.response.status, 404, blocked);
+    }
+    assert.strictEqual(safeStaticFile('/%2e%2e/game.manifest.json'), null);
+    assert.strictEqual(safeStaticFile('//host/share/file.js'), null);
+
+    result = await call(base, '/api/bootstrap');
+    assert.strictEqual(result.response.status, 200);
+    assert.strictEqual(result.value.schema, 'axm.four-roots-adventure-view/v1');
+    assert.strictEqual(result.value.zone.id, 'crossroads');
+    assert.strictEqual(result.value.revision, 0);
+    assert.strictEqual(result.value.persistence.restart, 'RESUME');
+    assert.strictEqual(result.value.authority.runtimeCanUseOutboundNetwork, false);
+    assert.strictEqual(result.value.authority.runtimeCanModifyFoundation, false);
+
+    result = await call(base, '/api/action', { method: 'POST', body: '{}' });
+    assert.strictEqual(result.response.status, 415);
+
+    result = await call(base, '/api/action', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{broken' });
+    assert.strictEqual(result.response.status, 400);
+
+    result = await call(base, '/api/action', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'move', direction: 'up', expectedRevision: 0, injectedAuthority: true }) });
+    assert.strictEqual(result.response.status, 400);
+
+    result = await call(base, '/api/action', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'move', direction: 'up', expectedRevision: 0 }) });
+    assert.strictEqual(result.response.status, 200);
+    assert.strictEqual(result.value.player.y, 4);
+    assert.strictEqual(result.value.revision, 1);
+    assert.strictEqual(result.value.interaction.actorId, 'archivist-luma');
+    assert.ok(fs.existsSync(server.runtime.stateFile));
+
+    result = await call(base, '/api/action', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'interact', expectedRevision: 0 }) });
+    assert.strictEqual(result.response.status, 409);
+    assert.strictEqual(result.value.error, 'stale revision');
+    assert.strictEqual(result.value.view.revision, 1);
+
+    result = await call(base, '/api/action', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'interact', expectedRevision: 1 }) });
+    assert.strictEqual(result.response.status, 200);
+    assert.strictEqual(result.value.revision, 2);
+    assert.strictEqual(result.value.progress.quests[0].complete, true);
+
+    result = await call(base, '/api/reset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ confirm: false, expectedRevision: 2 }) });
+    assert.strictEqual(result.response.status, 400);
+    result = await call(base, '/api/reset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ confirm: true, expectedRevision: 2 }) });
+    assert.strictEqual(result.response.status, 200);
+    assert.strictEqual(result.value.revision, 3);
+    assert.strictEqual(result.value.progress.roots.filter((root) => root.acquired).length, 0);
+
+    result = await call(base, '/api/unknown');
+    assert.strictEqual(result.response.status, 404);
+    console.log('PASS Four Roots Adventure HTTP boundary (43 assertions)');
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+    fs.rmSync(dataRoot, { recursive: true, force: true });
+  }
+}
+
+main().catch((error) => { console.error(error.stack || error); process.exit(1); });

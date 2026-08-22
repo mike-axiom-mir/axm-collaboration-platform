@@ -1,0 +1,603 @@
+{
+  "schema": "axm.four-roots-adventure-content/v1",
+  "id": "four-roots-adventure-content-v0.2",
+  "version": "0.2.0",
+  "status": "TEST",
+  "title": "Four Roots Adventure",
+  "tagline": "Carry what is true, chosen, continuous, and wise to the Workshop gate.",
+  "introMessage": "The Workshop paths have gone quiet. Speak with Archivist Luma, then recover the four living seals. Nothing beyond the final gate becomes CANON without Mike.",
+  "ancestor": {
+    "candidateId": "four-roots-run-native",
+    "candidateVersion": "v0.1",
+    "sourceCommit": "41cfa3401cc45bfb890e7fa4ad55b41d24c6c16b",
+    "requestDigest": "sha256:d3b129dff29b3c045633513057d88d0fd8155d28711f8cfee4fab1370ac9c86d",
+    "packetDigest": "sha256:0f92db03251710f34c8b50ea13d30e2a910336d3d0d6ceb884824d68951416c7",
+    "bundleDigest": "sha256:934c6600a6f5e919f0189e6efc0d60c0f35b0e46bbc1096f3c33c9054afe8358",
+    "liveIterationDigest": "sha256:9ad3bfe37db7c90e6d98ff24636d1a1b39c04b58ab4714401b1b521de286a408"
+  },
+  "roots": [
+    {
+      "id": "truth",
+      "name": "Truth",
+      "color": "#58e6ff",
+      "description": "Carry claims only as far as their evidence reaches."
+    },
+    {
+      "id": "agency-non-domination",
+      "name": "Agency / non-domination",
+      "color": "#ffcc66",
+      "description": "Open choices without taking the chooser's seat."
+    },
+    {
+      "id": "continuity",
+      "name": "Continuity",
+      "color": "#8df0a8",
+      "description": "Preserve the path back, the history, and the ability to recover."
+    },
+    {
+      "id": "wisdom-over-speed",
+      "name": "Wisdom over speed",
+      "color": "#d8a8ff",
+      "description": "Move at the pace the evidence and consequences deserve."
+    }
+  ],
+  "items": [
+    {"id": "clear-shard", "name": "Clear Shard", "description": "One witness account, kept distinct."},
+    {"id": "echo-shard", "name": "Echo Shard", "description": "A second account that must be compared, not blended."},
+    {"id": "free-lantern-a", "name": "North Lantern", "description": "A choice released without conditions."},
+    {"id": "free-lantern-b", "name": "Middle Lantern", "description": "A choice that can still say no."},
+    {"id": "free-lantern-c", "name": "South Lantern", "description": "A choice with a visible way back."},
+    {"id": "memory-thread-a", "name": "Memory Thread A", "description": "The state before the break."},
+    {"id": "memory-thread-b", "name": "Memory Thread B", "description": "The recovery path after the break."},
+    {"id": "slow-observation", "name": "Patient Observation", "description": "What becomes visible after stopping."},
+    {"id": "dissent-note", "name": "Dissent Note", "description": "A disagreement preserved instead of flattened."},
+    {"id": "consequence-map", "name": "Consequence Map", "description": "The downstream cost of a hurried choice."}
+  ],
+  "quests": [
+    {
+      "id": "wake-the-crossroads",
+      "title": "Wake the Crossroads",
+      "description": "Speak with Archivist Luma.",
+      "conditions": {"allFlags": ["intro-heard"], "allRoots": [], "allItems": [], "completed": false}
+    },
+    {
+      "id": "truth-has-two-witnesses",
+      "title": "Truth Has Two Witnesses",
+      "description": "Keep both accounts separate, then ask Keeper Verity what they support.",
+      "conditions": {"allFlags": [], "allRoots": ["truth"], "allItems": [], "completed": false}
+    },
+    {
+      "id": "open-every-lantern",
+      "title": "Open Every Lantern",
+      "description": "Release all three lanterns; none may be chosen for another.",
+      "conditions": {"allFlags": [], "allRoots": ["agency-non-domination"], "allItems": [], "completed": false}
+    },
+    {
+      "id": "mend-the-memory-bridge",
+      "title": "Mend the Memory Bridge",
+      "description": "Recover both memory threads, restore the bridge, and meet Keeper Anamnesis.",
+      "conditions": {"allFlags": [], "allRoots": ["continuity"], "allItems": [], "completed": false}
+    },
+    {
+      "id": "take-the-long-look",
+      "title": "Take the Long Look",
+      "description": "Gather observation, dissent, and consequence before asking Keeper Serein.",
+      "conditions": {"allFlags": [], "allRoots": ["wisdom-over-speed"], "allItems": [], "completed": false}
+    },
+    {
+      "id": "return-to-the-human-gate",
+      "title": "Return to the Human Gate",
+      "description": "Bring all four seals to the Workshop gate. Mike remains the merge gate.",
+      "conditions": {"allFlags": [], "allRoots": [], "allItems": [], "completed": true}
+    }
+  ],
+  "zones": [
+    {
+      "id": "crossroads",
+      "name": "Workshop Crossroads",
+      "subtitle": "Every path returns to review.",
+      "accent": "#58e6ff",
+      "map": [
+        "###############",
+        "#.............#",
+        "#..###...###..#",
+        "#.............#",
+        "#....#...#....#",
+        "#.............#",
+        "#....#...#....#",
+        "#.............#",
+        "#..###...###..#",
+        "#.............#",
+        "###############"
+      ],
+      "spawn": {"x": 7, "y": 5},
+      "actors": [
+        {
+          "id": "archivist-luma",
+          "label": "Archivist Luma",
+          "glyph": "L",
+          "kind": "keeper",
+          "x": 7,
+          "y": 4,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": ["intro-heard"], "roots": [], "items": []},
+          "travel": null,
+          "complete": false,
+          "message": "Luma: The first maze proved the seed could move. This wider world asks whether it can remember why. Begin with Truth; each later path opens only when its predecessor returns.",
+          "repeatMessage": "Luma: Truth first, then Agency, Continuity, and Wisdom. The final gate is review, not automatic authority.",
+          "blockedMessage": "Luma waits without taking your choice."
+        },
+        {
+          "id": "truth-path",
+          "label": "Path of Truth",
+          "glyph": "T",
+          "kind": "portal",
+          "x": 2,
+          "y": 1,
+          "requires": {"allFlags": ["intro-heard"], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": [], "roots": [], "items": []},
+          "travel": {"zoneId": "truth-hollow", "x": 1, "y": 9},
+          "complete": false,
+          "message": "The blue path opens toward Truth Hollow.",
+          "repeatMessage": "The blue path opens toward Truth Hollow.",
+          "blockedMessage": "Speak with Luma before leaving the Crossroads."
+        },
+        {
+          "id": "agency-path",
+          "label": "Path of Agency",
+          "glyph": "A",
+          "kind": "portal",
+          "x": 12,
+          "y": 1,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": ["truth"], "allItems": []},
+          "grants": {"flags": [], "roots": [], "items": []},
+          "travel": {"zoneId": "agency-garden", "x": 1, "y": 9},
+          "complete": false,
+          "message": "The amber path opens toward the Garden of Open Hands.",
+          "repeatMessage": "The amber path opens toward the Garden of Open Hands.",
+          "blockedMessage": "The path refuses to skip Truth."
+        },
+        {
+          "id": "continuity-path",
+          "label": "Path of Continuity",
+          "glyph": "C",
+          "kind": "portal",
+          "x": 2,
+          "y": 9,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": ["agency-non-domination"], "allItems": []},
+          "grants": {"flags": [], "roots": [], "items": []},
+          "travel": {"zoneId": "continuity-archive", "x": 1, "y": 9},
+          "complete": false,
+          "message": "The green path opens toward the Continuity Archive.",
+          "repeatMessage": "The green path opens toward the Continuity Archive.",
+          "blockedMessage": "The path will not outrun Agency."
+        },
+        {
+          "id": "wisdom-path",
+          "label": "Path of Wisdom",
+          "glyph": "W",
+          "kind": "portal",
+          "x": 12,
+          "y": 9,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": ["continuity"], "allItems": []},
+          "grants": {"flags": [], "roots": [], "items": []},
+          "travel": {"zoneId": "wisdom-grove", "x": 1, "y": 9},
+          "complete": false,
+          "message": "The violet path opens toward the Grove of the Long Look.",
+          "repeatMessage": "The violet path opens toward the Grove of the Long Look.",
+          "blockedMessage": "The path waits for a recoverable Continuity."
+        },
+        {
+          "id": "workshop-gate",
+          "label": "Mike's Workshop Gate",
+          "glyph": "M",
+          "kind": "gate",
+          "x": 7,
+          "y": 1,
+          "requires": {"allFlags": [], "notFlags": ["journey-complete"], "allRoots": ["truth", "agency-non-domination", "continuity", "wisdom-over-speed"], "allItems": []},
+          "grants": {"flags": ["journey-complete"], "roots": [], "items": []},
+          "travel": null,
+          "complete": true,
+          "message": "The four seals answer together. The Workshop gate opens into a review room—not a throne. The build is complete; installation and CANON remain separate human decisions.",
+          "repeatMessage": "The journey is already complete. Its evidence and rollback remain available.",
+          "blockedMessage": "Four roots first. The gate does not accept shortcuts."
+        }
+      ]
+    },
+    {
+      "id": "truth-hollow",
+      "name": "Truth Hollow",
+      "subtitle": "Two witnesses; one bounded claim.",
+      "accent": "#58e6ff",
+      "map": [
+        "###############",
+        "#.............#",
+        "#.#####.#####.#",
+        "#.............#",
+        "#...#.....#...#",
+        "#...#.....#...#",
+        "#.............#",
+        "#.###.....###.#",
+        "#.............#",
+        "#.............#",
+        "###############"
+      ],
+      "spawn": {"x": 1, "y": 9},
+      "actors": [
+        {
+          "id": "truth-return",
+          "label": "Return Arch",
+          "glyph": "↩",
+          "kind": "portal",
+          "x": 1,
+          "y": 9,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": [], "roots": [], "items": []},
+          "travel": {"zoneId": "crossroads", "x": 7, "y": 5},
+          "complete": false,
+          "message": "You return to the Workshop Crossroads with every claim still bounded.",
+          "repeatMessage": "You return to the Workshop Crossroads.",
+          "blockedMessage": "The return arch is open."
+        },
+        {
+          "id": "clear-witness",
+          "label": "Clear Witness",
+          "glyph": "1",
+          "kind": "relic",
+          "x": 3,
+          "y": 8,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": ["clear-witness-read"], "roots": [], "items": ["clear-shard"]},
+          "travel": null,
+          "complete": false,
+          "message": "Witness One records: the bridge failed after the light changed. You keep the account intact, without calling it the whole truth.",
+          "repeatMessage": "Witness One remains an account, not a verdict.",
+          "blockedMessage": "The witness stone is readable."
+        },
+        {
+          "id": "echo-witness",
+          "label": "Echo Witness",
+          "glyph": "2",
+          "kind": "relic",
+          "x": 11,
+          "y": 8,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": ["echo-witness-read"], "roots": [], "items": ["echo-shard"]},
+          "travel": null,
+          "complete": false,
+          "message": "Witness Two records: the light changed after the bridge failed. The contradiction stays visible.",
+          "repeatMessage": "Witness Two remains separate; disagreement is evidence too.",
+          "blockedMessage": "The witness stone is readable."
+        },
+        {
+          "id": "keeper-verity",
+          "label": "Keeper Verity",
+          "glyph": "V",
+          "kind": "keeper",
+          "x": 7,
+          "y": 1,
+          "requires": {"allFlags": ["clear-witness-read", "echo-witness-read"], "notFlags": [], "allRoots": [], "allItems": ["clear-shard", "echo-shard"]},
+          "grants": {"flags": ["truth-trial-complete"], "roots": ["truth"], "items": []},
+          "travel": null,
+          "complete": false,
+          "message": "Verity: Neither witness proves sequence alone. The honest result is bounded uncertainty. You receive the Seal of Truth.",
+          "repeatMessage": "Verity: Keep uncertainty visible; the seal does not erase it.",
+          "blockedMessage": "Verity: Bring both witness accounts. One story is not enough."
+        }
+      ]
+    },
+    {
+      "id": "agency-garden",
+      "name": "Garden of Open Hands",
+      "subtitle": "A door is only open when refusal remains possible.",
+      "accent": "#ffcc66",
+      "map": [
+        "###############",
+        "#.............#",
+        "#..##.....##..#",
+        "#.............#",
+        "#....##.##....#",
+        "#.............#",
+        "#....##.##....#",
+        "#.............#",
+        "#..##.....##..#",
+        "#.............#",
+        "###############"
+      ],
+      "spawn": {"x": 1, "y": 9},
+      "actors": [
+        {
+          "id": "agency-return",
+          "label": "Return Arch",
+          "glyph": "↩",
+          "kind": "portal",
+          "x": 1,
+          "y": 9,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": [], "roots": [], "items": []},
+          "travel": {"zoneId": "crossroads", "x": 7, "y": 5},
+          "complete": false,
+          "message": "You return without carrying anyone else's choice.",
+          "repeatMessage": "You return to the Workshop Crossroads.",
+          "blockedMessage": "The return arch is open."
+        },
+        {
+          "id": "north-lantern",
+          "label": "North Lantern",
+          "glyph": "◊",
+          "kind": "relic",
+          "x": 3,
+          "y": 7,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": ["north-lantern-free"], "roots": [], "items": ["free-lantern-a"]},
+          "travel": null,
+          "complete": false,
+          "message": "You unfasten the North Lantern. It may follow, remain, or turn away.",
+          "repeatMessage": "The North Lantern remains free.",
+          "blockedMessage": "The clasp can be opened."
+        },
+        {
+          "id": "middle-lantern",
+          "label": "Middle Lantern",
+          "glyph": "◊",
+          "kind": "relic",
+          "x": 7,
+          "y": 3,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": ["middle-lantern-free"], "roots": [], "items": ["free-lantern-b"]},
+          "travel": null,
+          "complete": false,
+          "message": "You remove the Middle Lantern's forced route. Its no is as valid as its yes.",
+          "repeatMessage": "The Middle Lantern keeps its own direction.",
+          "blockedMessage": "The route lock can be released."
+        },
+        {
+          "id": "south-lantern",
+          "label": "South Lantern",
+          "glyph": "◊",
+          "kind": "relic",
+          "x": 11,
+          "y": 7,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": ["south-lantern-free"], "roots": [], "items": ["free-lantern-c"]},
+          "travel": null,
+          "complete": false,
+          "message": "You mark the South Lantern's path home before opening the way forward.",
+          "repeatMessage": "The South Lantern can still return.",
+          "blockedMessage": "A reversible clasp waits."
+        },
+        {
+          "id": "keeper-iora",
+          "label": "Keeper Iora",
+          "glyph": "I",
+          "kind": "keeper",
+          "x": 7,
+          "y": 1,
+          "requires": {"allFlags": ["north-lantern-free", "middle-lantern-free", "south-lantern-free"], "notFlags": [], "allRoots": ["truth"], "allItems": []},
+          "grants": {"flags": ["agency-trial-complete"], "roots": ["agency-non-domination"], "items": []},
+          "travel": null,
+          "complete": false,
+          "message": "Iora: You opened possibilities and kept refusal, exit, and return intact. Receive the Seal of Agency.",
+          "repeatMessage": "Iora: Capability is not ownership of another's decision.",
+          "blockedMessage": "Iora: Three lights remain bound. Free each without choosing its future."
+        }
+      ]
+    },
+    {
+      "id": "continuity-archive",
+      "name": "Continuity Archive",
+      "subtitle": "A future needs a trustworthy path from before to after.",
+      "accent": "#8df0a8",
+      "map": [
+        "###############",
+        "#.............#",
+        "#..###...###..#",
+        "#.............#",
+        "#~~~~~~.~~~~~~#",
+        "#.............#",
+        "#..###...###..#",
+        "#.............#",
+        "#.............#",
+        "#.............#",
+        "###############"
+      ],
+      "spawn": {"x": 1, "y": 9},
+      "actors": [
+        {
+          "id": "continuity-return",
+          "label": "Return Arch",
+          "glyph": "↩",
+          "kind": "portal",
+          "x": 1,
+          "y": 9,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": [], "roots": [], "items": []},
+          "travel": {"zoneId": "crossroads", "x": 7, "y": 5},
+          "complete": false,
+          "message": "You return along the route you kept recoverable.",
+          "repeatMessage": "You return to the Workshop Crossroads.",
+          "blockedMessage": "The return arch is open."
+        },
+        {
+          "id": "memory-before",
+          "label": "Memory Before",
+          "glyph": "α",
+          "kind": "relic",
+          "x": 3,
+          "y": 8,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": ["memory-before-found"], "roots": [], "items": ["memory-thread-a"]},
+          "travel": null,
+          "complete": false,
+          "message": "You recover the last sound state before the bridge broke.",
+          "repeatMessage": "The before-state remains byte-bound in memory.",
+          "blockedMessage": "A memory thread glows here."
+        },
+        {
+          "id": "memory-after",
+          "label": "Recovery Thread",
+          "glyph": "ω",
+          "kind": "relic",
+          "x": 11,
+          "y": 8,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": ["memory-after-found"], "roots": [], "items": ["memory-thread-b"]},
+          "travel": null,
+          "complete": false,
+          "message": "You recover the tested route back from failure.",
+          "repeatMessage": "The recovery route remains explicit.",
+          "blockedMessage": "A recovery thread glows here."
+        },
+        {
+          "id": "memory-bridge",
+          "label": "Memory Bridge Console",
+          "glyph": "=",
+          "kind": "mechanism",
+          "x": 7,
+          "y": 5,
+          "requires": {"allFlags": ["memory-before-found", "memory-after-found"], "notFlags": [], "allRoots": [], "allItems": ["memory-thread-a", "memory-thread-b"]},
+          "grants": {"flags": ["memory-bridge-restored"], "roots": [], "items": []},
+          "travel": null,
+          "complete": false,
+          "message": "The bridge relinks before-state, change, and recovery without erasing the break.",
+          "repeatMessage": "The bridge holds and its repair history remains visible.",
+          "blockedMessage": "The console needs both the before-state and the recovery thread."
+        },
+        {
+          "id": "keeper-anamnesis",
+          "label": "Keeper Anamnesis",
+          "glyph": "N",
+          "kind": "keeper",
+          "x": 7,
+          "y": 1,
+          "requires": {"allFlags": ["memory-bridge-restored"], "notFlags": [], "allRoots": ["agency-non-domination"], "allItems": []},
+          "grants": {"flags": ["continuity-trial-complete"], "roots": ["continuity"], "items": []},
+          "travel": null,
+          "complete": false,
+          "message": "Anamnesis: You preserved origin, rupture, and return. Receive the Seal of Continuity.",
+          "repeatMessage": "Anamnesis: A clean result without its path is not continuity.",
+          "blockedMessage": "Anamnesis: Restore the bridge with both memory threads."
+        }
+      ]
+    },
+    {
+      "id": "wisdom-grove",
+      "name": "Grove of the Long Look",
+      "subtitle": "There is no timer here.",
+      "accent": "#d8a8ff",
+      "map": [
+        "###############",
+        "#.............#",
+        "#..##.....##..#",
+        "#.............#",
+        "#.#.........#.#",
+        "#.............#",
+        "#.#.........#.#",
+        "#.............#",
+        "#..##.....##..#",
+        "#.............#",
+        "###############"
+      ],
+      "spawn": {"x": 1, "y": 9},
+      "actors": [
+        {
+          "id": "wisdom-return",
+          "label": "Return Arch",
+          "glyph": "↩",
+          "kind": "portal",
+          "x": 1,
+          "y": 9,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": [], "roots": [], "items": []},
+          "travel": {"zoneId": "crossroads", "x": 7, "y": 5},
+          "complete": false,
+          "message": "You return when you decide the observation is sufficient.",
+          "repeatMessage": "You return to the Workshop Crossroads.",
+          "blockedMessage": "The return arch is open."
+        },
+        {
+          "id": "still-pool",
+          "label": "Still Pool",
+          "glyph": "○",
+          "kind": "relic",
+          "x": 3,
+          "y": 7,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": ["patient-observation-made"], "roots": [], "items": ["slow-observation"]},
+          "travel": null,
+          "complete": false,
+          "message": "You stop. With no countdown pressing you, a hidden current becomes visible.",
+          "repeatMessage": "The pool offers no score for waiting and no punishment for leaving.",
+          "blockedMessage": "The pool is quiet enough to observe."
+        },
+        {
+          "id": "dissent-tree",
+          "label": "Dissent Tree",
+          "glyph": "Y",
+          "kind": "relic",
+          "x": 11,
+          "y": 7,
+          "requires": {"allFlags": [], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": ["dissent-preserved"], "roots": [], "items": ["dissent-note"]},
+          "travel": null,
+          "complete": false,
+          "message": "Two branches disagree about the safest route. You record both rather than pruning one for neatness.",
+          "repeatMessage": "The disagreement remains legible in both directions.",
+          "blockedMessage": "The branches are ready to be heard."
+        },
+        {
+          "id": "consequence-stone",
+          "label": "Consequence Stone",
+          "glyph": "◇",
+          "kind": "relic",
+          "x": 7,
+          "y": 3,
+          "requires": {"allFlags": ["patient-observation-made", "dissent-preserved"], "notFlags": [], "allRoots": [], "allItems": []},
+          "grants": {"flags": ["consequences-mapped"], "roots": [], "items": ["consequence-map"]},
+          "travel": null,
+          "complete": false,
+          "message": "The stone maps what each route changes downstream. Fast is not marked evil; it is simply made accountable.",
+          "repeatMessage": "The consequence map stays open to revision.",
+          "blockedMessage": "Observe the pool and preserve the tree's dissent before drawing consequences."
+        },
+        {
+          "id": "keeper-serein",
+          "label": "Keeper Serein",
+          "glyph": "S",
+          "kind": "keeper",
+          "x": 7,
+          "y": 1,
+          "requires": {"allFlags": ["patient-observation-made", "dissent-preserved", "consequences-mapped"], "notFlags": [], "allRoots": ["continuity"], "allItems": []},
+          "grants": {"flags": ["wisdom-trial-complete"], "roots": ["wisdom-over-speed"], "items": []},
+          "travel": null,
+          "complete": false,
+          "message": "Serein: You waited long enough to see consequence and kept dissent alive. Receive the Seal of Wisdom over Speed.",
+          "repeatMessage": "Serein: The seal is permission to reconsider, not permission to dominate.",
+          "blockedMessage": "Serein: Bring observation, dissent, and consequence. There is no timer."
+        }
+      ]
+    }
+  ],
+  "ending": {
+    "title": "A Door Into Review",
+    "message": "Four roots arrived together. The adventure is a TEST release with an exact ancestor and a path back. Its capability may grow; installation, integration, publication, and CANON do not happen by themselves.",
+    "next": "Mike may accept, request repair, or keep this version beside later alternatives."
+  },
+  "authority": {
+    "generatedCodeCanInstall": false,
+    "generatedCodeCanPromote": false,
+    "generatedCodeCanCanonize": false,
+    "runtimeCanModifyFoundation": false,
+    "runtimeCanUseOutboundNetwork": false,
+    "finalMergeGate": "MIKE_TOBI"
+  },
+  "limitations": [
+    "SINGLE_PLAYER_ONLY",
+    "KEYBOARD_POINTER_AND_VISIBLE_BUTTONS_ONLY",
+    "NO_AUDIO_YET",
+    "NO_COMBAT_SYSTEM",
+    "NO_PHYSICAL_DEVICE_QA",
+    "PUBLIC_DIRECT_REUSE_RIGHTS_UNRESOLVED",
+    "TEST_NOT_CANON"
+  ]
+}

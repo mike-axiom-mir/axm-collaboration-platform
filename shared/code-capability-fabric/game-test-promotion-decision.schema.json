@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.game-test-promotion-decision/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "decisionId", "decidedBy", "decisionSource", "authenticatedIdentityProven", "scope", "source", "target", "authorizes", "refuses", "publicReuseRights", "statementDigest", "authority", "decisionDigest"],
+  "properties": {
+    "schema": {"const": "axm.game-test-promotion-decision/v1"},
+    "decisionId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "decidedBy": {"const": "MIKE_TOBI"},
+    "decisionSource": {"const": "EXPLICIT_IN_THREAD_DIRECTION"},
+    "authenticatedIdentityProven": {"const": false},
+    "scope": {"const": "INTERNAL_WORKSHOP_TEST"},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidateId", "candidateVersion", "sourceCommit", "requestDigest", "packetDigest", "bundleDigest", "liveIterationDigest"],
+      "properties": {
+        "candidateId": {"const": "four-roots-run-native"}, "candidateVersion": {"const": "v0.1"},
+        "sourceCommit": {"const": "41cfa3401cc45bfb890e7fa4ad55b41d24c6c16b"},
+        "requestDigest": {"const": "sha256:d3b129dff29b3c045633513057d88d0fd8155d28711f8cfee4fab1370ac9c86d"},
+        "packetDigest": {"const": "sha256:0f92db03251710f34c8b50ea13d30e2a910336d3d0d6ceb884824d68951416c7"},
+        "bundleDigest": {"const": "sha256:934c6600a6f5e919f0189e6efc0d60c0f35b0e46bbc1096f3c33c9054afe8358"},
+        "liveIterationDigest": {"const": "sha256:9ad3bfe37db7c90e6d98ff24636d1a1b39c04b58ab4714401b1b521de286a408"}
+      }
+    },
+    "target": {
+      "type": "object", "additionalProperties": false, "required": ["slot", "gameId", "relativePath", "status"],
+      "properties": {"slot": {"const": "020"}, "gameId": {"const": "020-four-roots-adventure"}, "relativePath": {"const": "tools/game-hub/game-library/020-four-roots-adventure"}, "status": {"const": "TEST"}}
+    },
+    "authorizes": {
+      "type": "object", "additionalProperties": false,
+      "required": ["installExactAncestorReference", "installTrustedAdventureShell", "materializeExactGeneratedContent", "preserveRollback"],
+      "properties": {"installExactAncestorReference": {"const": true}, "installTrustedAdventureShell": {"const": true}, "materializeExactGeneratedContent": {"const": true}, "preserveRollback": {"const": true}}
+    },
+    "refuses": {
+      "type": "object", "additionalProperties": false,
+      "required": ["canonicalCheckoutOverwrite", "canon", "foundationMutation", "publicRelease", "selfPromotion"],
+      "properties": {"canonicalCheckoutOverwrite": {"const": true}, "canon": {"const": true}, "foundationMutation": {"const": true}, "publicRelease": {"const": true}, "selfPromotion": {"const": true}}
+    },
+    "publicReuseRights": {
+      "type": "object", "additionalProperties": false, "required": ["state", "directPublicReuseAllowed"],
+      "properties": {"state": {"const": "HOLD"}, "directPublicReuseAllowed": {"const": false}}
+    },
+    "statementDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "authority": {"const": "RECORDED_HUMAN_DIRECTION"},
+    "decisionDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
