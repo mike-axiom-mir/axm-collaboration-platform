@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.fabric-creation-pilot-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "intentRef", "consentEvaluationRef", "instructionRef", "emitterProfileRef", "candidate", "candidateFiles", "nurseryRecordDigest", "nurseryStatus", "resourceObservation", "limitations", "nextImprovementGaps", "truth", "authority", "receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.fabric-creation-pilot-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"const": "CANDIDATE_EMITTED_FOR_REVIEW"},
+    "intentRef": {"$ref": "#/$defs/reference"},
+    "consentEvaluationRef": {"$ref": "#/$defs/reference"},
+    "instructionRef": {"$ref": "#/$defs/reference"},
+    "emitterProfileRef": {"$ref": "#/$defs/reference"},
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "status"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,79}$"},
+        "version": {"const": "v0.1"},
+        "status": {"const": "EXPERIMENTAL"}
+      }
+    },
+    "candidateFiles": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "prefixItems": [
+        {"allOf": [{"$ref": "#/$defs/fileReference"}, {"properties": {"path": {"const": "README.md"}}}]},
+        {"allOf": [{"$ref": "#/$defs/fileReference"}, {"properties": {"path": {"const": "candidate.receipt.json"}}}]},
+        {"allOf": [{"$ref": "#/$defs/fileReference"}, {"properties": {"path": {"const": "index.html"}}}]},
+        {"allOf": [{"$ref": "#/$defs/fileReference"}, {"properties": {"path": {"const": "manifest.json"}}}]},
+        {"allOf": [{"$ref": "#/$defs/fileReference"}, {"properties": {"path": {"const": "module-bundle.json"}}}]},
+        {"allOf": [{"$ref": "#/$defs/fileReference"}, {"properties": {"path": {"const": "module.contract.json"}}}]}
+      ],
+      "items": false
+    },
+    "nurseryRecordDigest": {"$ref": "#/$defs/digest"},
+    "nurseryStatus": {"const": "READY_FOR_LATER_INTAKE"},
+    "resourceObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidateFileCount", "candidateBytes", "fileCountEnforced", "byteCeilingEnforced", "durationEnforced", "memoryEnforced"],
+      "properties": {
+        "candidateFileCount": {"const": 6},
+        "candidateBytes": {"type": "integer", "minimum": 0, "maximum": 65536},
+        "fileCountEnforced": {"const": true},
+        "byteCeilingEnforced": {"const": true},
+        "durationEnforced": {"const": false},
+        "memoryEnforced": {"const": false}
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "INTERACTIVE_DECLARATION_NOT_CRYPTOGRAPHIC_IDENTITY_PROOF"},
+        {"const": "INTERACTIVE_DECLARATION_REPLAY_NOT_PREVENTED"},
+        {"const": "PREDECISION_EVIDENCE_CONTENT_NOT_VERIFIED_BY_EMITTER"},
+        {"const": "TRUSTED_CLOCK_NOT_OBSERVED"},
+        {"const": "LIVE_REVOCATION_NOT_CHECKED"},
+        {"const": "MACHINE_HOST_DEFAULT_NOT_ACTIVATED"},
+        {"const": "STATIC_TEMPLATE_ONLY"},
+        {"const": "RUNTIME_QUALITY_NOT_PROVEN"},
+        {"const": "RESOURCE_ENFORCEMENT_LIMITED_TO_FILE_COUNT_AND_BYTES"},
+        {"const": "PERSISTENT_LEARNING_NOT_ADMITTED"}
+      ],
+      "items": false,
+      "minItems": 10,
+      "maxItems": 10
+    },
+    "nextImprovementGaps": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "consent.human-decision.authenticate"},
+        {"const": "consent.declaration.replay-prevent"},
+        {"const": "consent.revocation.observe-live"},
+        {"const": "consent.trusted-clock.observe"},
+        {"const": "machine-host.fabric-create.fixed-action"},
+        {"const": "creation.semantic-candidate.generate"},
+        {"const": "creation.runtime-quality.verify"},
+        {"const": "learning.admission.decide"}
+      ],
+      "items": false,
+      "minItems": 8,
+      "maxItems": 8
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fabricFirstGateApplied", "interactiveDeclarationSupplied", "interactiveDeclarationReplayPrevented", "cryptographicHumanAuthenticationVerified", "predecisionEvidenceContentVerified", "trustedClockObserved", "liveRevocationChecked", "emitterWriteAuthorityUsed", "fabricGrantedAuthority", "candidateFilesWritten", "candidateFilesReadBack", "candidateStructureInspected", "sourceContentRead", "networkUsed", "childProcessSpawned", "candidateCodeExecuted", "runtimeQualityProven", "visualApprovalProven", "machineDefaultActivated", "persistentLearningAdmitted", "installed", "registered", "staged", "promoted", "canonChanged", "filesRetained"],
+      "properties": {
+        "fabricFirstGateApplied": {"const": true},
+        "interactiveDeclarationSupplied": {"const": true},
+        "interactiveDeclarationReplayPrevented": {"const": false},
+        "cryptographicHumanAuthenticationVerified": {"const": false},
+        "predecisionEvidenceContentVerified": {"const": false},
+        "trustedClockObserved": {"const": false},
+        "liveRevocationChecked": {"const": false},
+        "emitterWriteAuthorityUsed": {"const": true},
+        "fabricGrantedAuthority": {"const": false},
+        "candidateFilesWritten": {"const": true},
+        "candidateFilesReadBack": {"const": true},
+        "candidateStructureInspected": {"const": true},
+        "sourceContentRead": {"const": false},
+        "networkUsed": {"const": false},
+        "childProcessSpawned": {"const": false},
+        "candidateCodeExecuted": {"const": false},
+        "runtimeQualityProven": {"const": false},
+        "visualApprovalProven": {"const": false},
+        "machineDefaultActivated": {"const": false},
+        "persistentLearningAdmitted": {"const": false},
+        "installed": {"const": false},
+        "registered": {"const": false},
+        "staged": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false},
+        "filesRetained": {"const": true}
+      }
+    },
+    "authority": {"const": "DISPOSABLE_CANDIDATE_WRITE_ONLY_USED"},
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]{1,127}$"},
+    "contract": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "schema": {"$ref": "#/$defs/contract"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "fileReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "byteLength"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]{0,239}$"},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "byteLength": {"type": "integer", "minimum": 0, "maximum": 65536}
+      }
+    }
+  }
+}
