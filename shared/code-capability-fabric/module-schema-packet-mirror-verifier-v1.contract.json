@@ -1,0 +1,51 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-capability-fabric-schema-packet-mirror-verifier",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "axm.fabric-schema-packet-mirror-verification-request/v1",
+    "axm.fabric-schema-packet-mirror-verification-receipt/v1",
+    "code.verify-schema-packet-mirror"
+  ],
+  "consumes": [
+    "strict-deterministic-canonical-json",
+    "grounded-consent-scope",
+    "code-capability-fabric-blueprint-schema-compiler",
+    "module-lineage-comparator-safe-path-boundary"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["MATCH or typed DRIFT receipt with paths, digests, and byte lengths only"],
+    "accepts": ["one byte-exact verified Fabric schema packet", "one inert host-supplied copied packet", "verified axm.grounded-consent-evaluation/v1", "one exact interactive session declaration"]
+  },
+  "rootsGate": ["truth", "agency-non-domination", "continuity", "wisdom-over-speed"],
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "filesystem-reading",
+      "filesystem-writing",
+      "git-command-execution",
+      "network-use",
+      "child-process-execution",
+      "packet-code-execution",
+      "workspace-mutation",
+      "semantic-equivalence-inference",
+      "full-clone-reliability-claim",
+      "permission-grant",
+      "automatic-merge",
+      "automatic-install",
+      "automatic-publish",
+      "automatic-promotion",
+      "automatic-canon",
+      "machine-wide-default-activation",
+      "persistent-learning-admission"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "calling host",
+    "reload": "both packet byte sets and a new exact consent-bound declaration are required",
+    "disconnect": "pure comparison returns with no background work",
+    "cleanup": "no module-owned files or processes exist"
+  }
+}

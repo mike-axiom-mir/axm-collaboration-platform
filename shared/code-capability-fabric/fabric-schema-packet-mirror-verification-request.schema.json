@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.fabric-schema-packet-mirror-verification-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "status", "comparisonScope", "sourcePacketRef", "mirrorPacketRef", "rootsGate", "authority", "requestDigest"],
+  "properties": {
+    "schema": {"const": "axm.fabric-schema-packet-mirror-verification-request/v1"},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,99}$"},
+    "status": {"const": "TEST"},
+    "comparisonScope": {"const": "EXACT_FOUR_FILE_SCHEMA_PACKET_BYTES"},
+    "sourcePacketRef": {"$ref": "#/$defs/packetReference"},
+    "mirrorPacketRef": {"$ref": "#/$defs/packetReference"},
+    "rootsGate": {"const": ["truth", "agency-non-domination", "continuity", "wisdom-over-speed"]},
+    "authority": {"const": "NONE"},
+    "requestDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "packetReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"const": "axm.fabric-schema-packet-byte-set/v1"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}
