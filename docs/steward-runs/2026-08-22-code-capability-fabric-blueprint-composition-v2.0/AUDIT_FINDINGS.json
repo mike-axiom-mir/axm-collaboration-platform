@@ -1,0 +1,55 @@
+{
+  "schema": "axm.code-capability-fabric-blueprint-audit/v1",
+  "implementationCommit": "e22723eaa37762743fdb9af7ecd6fb614e4fd768",
+  "findings": [
+    {
+      "id": "object-digest-is-not-file-digest",
+      "severity": "HIGH",
+      "status": "FIXED",
+      "finding": "The initial receipt check incorrectly treated the canonical blueprint object digest as identical to the pretty-printed artifact byte digest.",
+      "resolution": "Preserve both digests and verify intent-to-object plus object-to-exact-file lineage through verifyReceiptArtifacts()."
+    },
+    {
+      "id": "recursive-cleanup-too-broad",
+      "severity": "MEDIUM",
+      "status": "FIXED",
+      "finding": "Generic recursive cleanup was broader than the composer's exact two-file ownership model.",
+      "resolution": "Cleanup now refuses unexpected entries, unlinks only the two owned filenames, and removes only the validated new root."
+    },
+    {
+      "id": "declared-public-content-not-verified",
+      "severity": "MEDIUM",
+      "status": "PRESERVED_LIMITATION",
+      "finding": "The consent envelope declares public instruction data, but the composer cannot determine whether human-entered text is actually public.",
+      "resolution": "Receipt truth keeps declaredDataClassContentVerified false and documentation requires the trusted host to exclude private material."
+    },
+    {
+      "id": "cli-import-side-effect",
+      "severity": "LOW",
+      "status": "FIXED",
+      "finding": "The first CLI draft ran immediately when required, complicating safe static reuse and parser tests.",
+      "resolution": "Execution is now guarded by require.main and parsing/run functions are exported."
+    },
+    {
+      "id": "resource-model-split",
+      "severity": "MEDIUM",
+      "status": "HONESTLY_BOUNDED",
+      "finding": "Composer input bytes, output files, output bytes, and operation count can be enforced; future candidate duration and memory cannot be enforced without a runtime.",
+      "resolution": "The receipt separates enforced composer observations from false durationEnforced and memoryEnforced claims."
+    },
+    {
+      "id": "semantic-capability-absent",
+      "severity": "HIGH",
+      "status": "OPEN_GAP",
+      "finding": "The composer validates and derives a specification, but it does not implement the declared transformation or generate executable code.",
+      "resolution": "Keep desired outcomes UNPROVEN and type creation.blueprint-to-code.provider as missing."
+    },
+    {
+      "id": "interactive-consent-not-authenticated",
+      "severity": "HIGH",
+      "status": "OPEN_GAP",
+      "finding": "The exact acknowledgement is replayable and proves neither identity nor informed understanding, trusted time, or live revocation.",
+      "resolution": "Keep all corresponding receipt truth fields false and require a later authenticated host decision contract."
+    }
+  ]
+}
