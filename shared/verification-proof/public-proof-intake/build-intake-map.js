@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..', '..', '..');
-const REGISTRY = path.join(ROOT, 'intakes', 'public-proof-runs-01-39-v0.40.0-handoff', 'AXM_PUBLIC_PROOF_SIMPLE_LOCAL_INTAKE_HANDOFF_2026-07-28', '03_REFERENCE', '01_FINAL_REGISTRY_v0_40_0.json');
+const REGISTRY = path.join(__dirname, 'source-registry-v0.40.0.json');
 const TOOLS_INDEX = path.join(ROOT, 'tools-index.json');
 const BATCH1_MAP = path.join(ROOT, 'shared', 'verification-proof', 'public-proof-batch1', 'integration-map.json');
 const OUTPUT = path.join(__dirname, 'intake-map.json');

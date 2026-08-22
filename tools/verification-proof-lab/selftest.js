@@ -66,7 +66,7 @@ assert(server.includes('/api/verification-proof/catalog'));
 assert(server.includes('/api/verification-proof/run'));
 
 function pycCount() {
-  const start = path.join(root, 'intakes', 'verification-proof-99-v0.1');
+  const start = path.join(root, 'shared', 'verification-proof', 'source-catalog-v1');
   const scan = directory => fs.readdirSync(directory, { withFileTypes: true }).reduce((count, entry) => {
     const full = path.join(directory, entry.name);
     return count + (entry.isDirectory() ? scan(full) : entry.name.endsWith('.pyc') ? 1 : 0);

@@ -69,3 +69,39 @@ The following trusted Workshop checks passed against the installed component-own
 - curated Academy, Sensorium, and LEGO JSON parse check
 
 The post-clear full AGENTS.md gate results are appended below after execution.
+
+## Post-clear repair append — 2026-08-22
+
+The first post-clear focused run exposed two active verification paths that still depended on cleared intake carriers:
+
+- `tools/verification-proof-lab/selftest.js` scanned the old verification intake for `.pyc` files.
+- `tools/verification-proof-lab/verification-cli.py` loaded modules from the old verification intake.
+
+Both now use `shared/verification-proof/source-catalog-v1`. The public-proof map builder also depended on the archived handoff registry, so the digest-identical registry was installed as `shared/verification-proof/public-proof-intake/source-registry-v0.40.0.json` and the builder now uses that component-owned source. Registry SHA-256: `6d7d60425f164eb500337ccd13d57354562f1491df0ba80384fc08507e4ec3fe`.
+
+The public-proof map was regenerated with its source pointer changed to the component-owned registry. Counts remained 100 seeds, 52 eligible, and 48 held. A focused active-code search found no remaining dependency on any cleared catalog/carrier root.
+
+The installed simulation wiring and assembly selftests deterministically refreshed two evidence digests to bind the component-owned source paths. Their capability status remains candidate-only with automatic promotion false and human release required.
+
+## Post-clear verification append — 2026-08-22
+
+All required AGENTS.md commands passed in the final run:
+
+1. `node verify.js`
+2. `node hub/hub-selftest.js`
+3. `node hub/route-selftest.js`
+4. `node hub/graft-selftest.js`
+5. `node hub/skin-selftest.js`
+6. `node hub/verify-plus.js`
+7. `node tests/html-script-syntax-test.js`
+8. `node tests/tool-forge-package-test.js`
+9. `node tools/agent-tool-forge/selftest.js`
+10. `node tools/evidence-desk/selftest.js`
+
+One earlier full-gate run produced 499 unique route IDs from 500 calls. The intake integration changed no hub route file; five immediate isolated repeats passed, and the final full-gate run passed. This is recorded as a pre-existing stochastic route-ID-test warning, not hidden as a clean first-pass result.
+
+The focused post-clear suite is current at 15/15 passing: accessibility catalog and lab, verification catalog and lab, AI catalog/lab/source harness, Universal Object Fabric, mobile packager, shared Game Organism plus audio/cartoon/simulation evidence and wiring, and the Game Organism lab.
+
+Browser render/click verification: **N/A**. This lane changed source catalogs, adapters, generators, and TEST data; no browser behavior claim is made.
+
+No network push, promotion, CANON decision, supplied runtime execution, or experimental mirror-code-clone execution occurred.

@@ -14,7 +14,7 @@ from typing import Any
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[2]
-MODULES = ROOT / "intakes" / "verification-proof-99-v0.1" / "modules"
+MODULES = ROOT / "shared" / "verification-proof" / "source-catalog-v1" / "modules"
 CALLABLE_WORDS = ("callable", "predicate", "executor", "implementation_step")
 
 
@@ -175,4 +175,3 @@ if __name__ == "__main__":
             "error_type": type(error).__name__,
         }), file=sys.stderr)
         raise SystemExit(1)
-
