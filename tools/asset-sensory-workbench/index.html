@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>AXM Asset Sensory Workbench</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#workbench">Skip to workbench</a>
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">AXM · HUMAN + MACHINE ASSET LANE</p>
+        <h1>Asset Sensory Workbench</h1>
+        <p class="lede">
+          Experience a deterministic visual-motion candidate, edit its exact source, and keep
+          human perception separate from technical proof.
+        </p>
+      </div>
+      <div class="status-stack" aria-label="Workbench status">
+        <span class="status test">TEST</span>
+        <span class="status boundary">candidate only</span>
+      </div>
+    </header>
+
+    <aside class="truth-banner" aria-label="Authority boundary">
+      <strong>Nothing here installs, promotes, canonizes, publishes, or auto-approves an asset.</strong>
+      The source is deterministic. Human judgment remains human.
+    </aside>
+
+    <main id="workbench" class="workbench" tabindex="-1">
+      <section class="panel stage-panel" aria-labelledby="stageTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">HUMAN SENSORY VIEW</p>
+            <h2 id="stageTitle">Live bounded motion</h2>
+          </div>
+          <div class="proof-labels">
+            <span id="liveState" class="chip live">LIVE PLAYER · TEST</span>
+            <span class="chip warn">FRAME PACING · UNVERIFIED</span>
+          </div>
+        </div>
+
+        <div id="visualStage" class="visual-stage">
+          <svg
+            id="previewSvg"
+            viewBox="0 0 640 360"
+            role="img"
+            aria-labelledby="previewTitle previewDescription"
+          >
+            <title id="previewTitle">Deterministic motion candidate</title>
+            <desc id="previewDescription">A geometric asset moving on a dark stage.</desc>
+            <rect id="stageBackground" width="640" height="360" rx="24" />
+            <path class="stage-grid" d="M0 180H640M320 0V360" />
+            <g id="assetMark" transform="translate(320 180)">
+              <path id="assetShape" d="M0 -48 L48 0 L0 48 L-48 0 Z" />
+              <circle class="origin-dot" cx="0" cy="0" r="4" />
+            </g>
+          </svg>
+          <div class="stage-readout" aria-hidden="true">
+            <span id="tickReadout">tick 0</span>
+            <span id="sampleReadout">x 0 · y 0 · scale 1 · turn 0°</span>
+          </div>
+        </div>
+
+        <div class="transport" aria-label="Playback controls">
+          <button id="stepBack" type="button" aria-label="Previous exact frame">◀|</button>
+          <button id="playPause" class="primary" type="button" aria-pressed="true">Pause</button>
+          <button id="stepForward" type="button" aria-label="Next exact frame">|▶</button>
+          <label class="speed-control" for="playbackRate">
+            Speed
+            <select id="playbackRate">
+              <option value="0.25">0.25×</option>
+              <option value="0.5">0.5×</option>
+              <option value="1" selected>1×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2">2×</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="scrubber" for="timelineScrub">
+          <span>Exact timeline position</span>
+          <output id="timelineValue" for="timelineScrub">0.000 s</output>
+          <input id="timelineScrub" type="range" min="0" max="24000" value="0" step="1" />
+        </label>
+
+        <div class="adaptation-row" aria-label="Viewer-only adaptations">
+          <label><input id="reducedMotion" type="checkbox" /> Reduced motion</label>
+          <label><input id="highContrast" type="checkbox" /> High contrast</label>
+          <label for="viewerZoom">
+            Viewer zoom
+            <input id="viewerZoom" type="range" min="0.5" max="2" value="1" step="0.1" />
+            <output id="zoomValue" for="viewerZoom">1.0×</output>
+          </label>
+        </div>
+        <p class="boundary-note">
+          Viewer adaptations change what this reviewer receives. They do not silently rewrite the
+          deterministic asset source.
+        </p>
+      </section>
+
+      <section class="panel edit-panel" aria-labelledby="editTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">SHARED EDIT SOURCE</p>
+            <h2 id="editTitle">Human controls, machine precision</h2>
+          </div>
+          <button id="resetCandidate" type="button">Reset candidate</button>
+        </div>
+
+        <div class="control-grid">
+          <label for="horizontalAmplitude">
+            <span>Horizontal reach</span>
+            <output id="horizontalAmplitudeValue" for="horizontalAmplitude">0 px</output>
+            <input
+              id="horizontalAmplitude"
+              data-field="motion.horizontal_amplitude"
+              type="range"
+              min="0"
+              max="48"
+              step="0.5"
+            />
+          </label>
+          <label for="verticalAmplitude">
+            <span>Vertical lift</span>
+            <output id="verticalAmplitudeValue" for="verticalAmplitude">0 px</output>
+            <input
+              id="verticalAmplitude"
+              data-field="motion.vertical_amplitude"
+              type="range"
+              min="0"
+              max="32"
+              step="0.5"
+            />
+          </label>
+          <label for="cycleTicks">
+            <span>Motion cycle</span>
+            <output id="cycleTicksValue" for="cycleTicks">0 ticks</output>
+            <input
+              id="cycleTicks"
+              data-field="motion.cycle_ticks"
+              type="range"
+              min="1000"
+              max="96000"
+              step="1000"
+            />
+          </label>
+          <label for="rotationDegrees">
+            <span>Rotation range</span>
+            <output id="rotationDegreesValue" for="rotationDegrees">0°</output>
+            <input
+              id="rotationDegrees"
+              data-field="motion.rotation_degrees"
+              type="range"
+              min="0"
+              max="45"
+              step="0.5"
+            />
+          </label>
+          <label class="colour-control" for="assetColour">
+            <span>Asset colour</span>
+            <input id="assetColour" data-field="presentation.fill" type="color" />
+          </label>
+          <label class="colour-control" for="stageColour">
+            <span>Stage colour</span>
+            <input id="stageColour" data-field="presentation.background" type="color" />
+          </label>
+          <label class="colour-control" for="edgeColour">
+            <span>Edge colour</span>
+            <input id="edgeColour" data-field="presentation.stroke" type="color" />
+          </label>
+        </div>
+
+        <div class="edit-truth">
+          <span class="chip good">ALLOWLISTED FIELDS ONLY</span>
+          <p>
+            Each committed control creates a parent-digest-bound edit, regenerates the bake, CSS,
+            atlas, filmstrip, and technical receipt, then refuses any mismatch.
+          </p>
+        </div>
+      </section>
+
+      <section class="panel truth-panel" aria-labelledby="truthTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">MACHINE TRUTH</p>
+            <h2 id="truthTitle">Current bindings</h2>
+          </div>
+          <span id="technicalState" class="chip good">READY + PASS</span>
+        </div>
+        <dl class="truth-list">
+          <div><dt>Hand</dt><dd id="handBinding">loading…</dd></div>
+          <div><dt>Result</dt><dd id="resultDigest">loading…</dd></div>
+          <div><dt>Composition</dt><dd id="compositionDigest">loading…</dd></div>
+          <div><dt>Bake</dt><dd id="bakeDigest">loading…</dd></div>
+          <div><dt>Static preview</dt><dd id="staticPreviewTruth">loading…</dd></div>
+          <div><dt>Derived set</dt><dd id="derivedCount">loading…</dd></div>
+        </dl>
+        <div class="button-row">
+          <button id="downloadPatch" type="button">Download machine patch</button>
+          <button id="showExactJson" type="button">Show exact JSON</button>
+        </div>
+        <details id="jsonDetails">
+          <summary>Exact machine-readable state</summary>
+          <pre id="machineJson"></pre>
+        </details>
+      </section>
+
+      <section class="panel review-panel" aria-labelledby="reviewTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">HUMAN EVIDENCE</p>
+            <h2 id="reviewTitle">Record what you actually perceive</h2>
+          </div>
+          <span class="chip boundary">not an automatic score</span>
+        </div>
+        <div class="review-fields">
+          <label for="reviewVerdict">
+            Candidate decision
+            <select id="reviewVerdict">
+              <option value="ACCEPT_FOR_TEST">Accept for test</option>
+              <option value="REVISE" selected>Revise</option>
+              <option value="REJECT">Reject</option>
+            </select>
+          </label>
+          <label for="reviewImpression">
+            Strongest impression
+            <select id="reviewImpression">
+              <option value="CLEAR">Clear</option>
+              <option value="TOO_FAST">Too fast</option>
+              <option value="TOO_SLOW">Too slow</option>
+              <option value="TOO_BUSY">Too busy</option>
+              <option value="LOW_CONTRAST">Low contrast</option>
+              <option value="UNCOMFORTABLE">Uncomfortable</option>
+              <option value="UNCERTAIN" selected>Uncertain</option>
+            </select>
+          </label>
+          <label class="review-note" for="reviewNote">
+            Observation
+            <textarea
+              id="reviewNote"
+              maxlength="1200"
+              rows="4"
+              placeholder="Describe timing, weight, rhythm, legibility, comfort, or intended-use fit."
+            ></textarea>
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="recordReview" class="primary" type="button">Record sensory receipt</button>
+          <button id="downloadReview" type="button" disabled>Download receipt</button>
+        </div>
+        <p id="reviewState" class="review-state">No human sensory receipt recorded for this digest.</p>
+      </section>
+
+      <section class="panel gap-panel" aria-labelledby="gapTitle">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">HONEST GAPS</p>
+            <h2 id="gapTitle">What this hand still cannot prove</h2>
+          </div>
+          <span class="chip warn">DEGRADED · VISUAL MOTION ONLY</span>
+        </div>
+        <ul class="gap-list">
+          <li><strong>EVIDENCE-FRAME-PACING-001</strong> — real scheduler cadence and dropped frames remain unverified.</li>
+          <li><strong>EVIDENCE-ACCESSIBILITY-001</strong> — keyboard and reduced-motion checks do not equal assistive-technology conformance.</li>
+          <li><strong>EVIDENCE-AESTHETIC-001</strong> — only a human reviewer can judge motion taste and fit.</li>
+          <li><strong>HAND-AUDIO-SENSORY-001</strong> — no waveform generation or audible validation in this workbench.</li>
+          <li><strong>HAND-SPATIAL-3D-SENSORY-001</strong> — no spatial, camera, depth, or renderer-parity review.</li>
+        </ul>
+      </section>
+    </main>
+
+    <p id="announcer" class="sr-only" aria-live="polite"></p>
+
+    <script src="../../shared/asset-hands/target-canvas.js"></script>
+    <script src="../../shared/asset-hands/artifact-schema-catalog.js"></script>
+    <script src="../../shared/asset-hands/asset-hand-core.js"></script>
+    <script src="../../shared/asset-hands/missing-hands-catalog.js"></script>
+    <script src="../../shared/deterministic-animation-fabric/index.js"></script>
+    <script src="../../shared/asset-hands/hands/deterministic-animation-fabric.js"></script>
+    <script src="../../shared/asset-hands/asset-hands.js"></script>
+    <script src="core.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

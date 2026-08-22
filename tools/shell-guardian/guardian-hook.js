@@ -57,17 +57,19 @@ function classify(event) {
   return { decision: 'allow', severity: 'normal', reason: 'no severe trigger', toolName, text };
 }
 
-function readStatus() {
-  try { return JSON.parse(fs.readFileSync(STATUS_FILE, 'utf8')); }
+function readStatus(statusFile) {
+  try { return JSON.parse(fs.readFileSync(statusFile || STATUS_FILE, 'utf8')); }
   catch (_) { return { schema: 'axm.shell-guardian-status/v1', tripped: false, tripCount: 0, resetCount: 0 }; }
 }
-function writeStatus(status) {
-  fs.mkdirSync(STATE_DIR, { recursive: true });
-  fs.writeFileSync(STATUS_FILE, JSON.stringify(status, null, 2) + '\n');
+function writeStatus(status, statusFile) {
+  const target = statusFile || STATUS_FILE;
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  fs.writeFileSync(target, JSON.stringify(status, null, 2) + '\n');
 }
-function appendEvent(entry) {
-  fs.mkdirSync(STATE_DIR, { recursive: true });
-  fs.appendFileSync(EVENT_FILE, JSON.stringify(entry) + '\n');
+function appendEvent(entry, eventFile) {
+  const target = eventFile || EVENT_FILE;
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  fs.appendFileSync(target, JSON.stringify(entry) + '\n');
 }
 function scheduleGrokKill() {
   const script = "Start-Sleep -Milliseconds 450; Get-CimInstance Win32_Process | Where-Object { $_.Name -in @('grok.exe','agent.exe') } | ForEach-Object { try { taskkill.exe /PID $_.ProcessId /T /F | Out-Null } catch {} }";
@@ -79,6 +81,8 @@ function scheduleGrokKill() {
 
 function handle(event, options) {
   options = options || {};
+  const statusFile = options.statusFile || STATUS_FILE;
+  const eventFile = options.eventFile || EVENT_FILE;
   const result = classify(event);
   const at = new Date().toISOString();
   const entry = {
@@ -92,8 +96,8 @@ function handle(event, options) {
     reason: result.reason,
     preview: result.text.slice(0, 1200)
   };
-  appendEvent(entry);
-  const status = readStatus();
+  appendEvent(entry, eventFile);
+  const status = readStatus(statusFile);
   status.schema = 'axm.shell-guardian-status/v1';
   status.lastEvent = entry;
   status.updatedAt = at;
@@ -103,11 +107,11 @@ function handle(event, options) {
     status.tripCount = Number(status.tripCount || 0) + 1;
     status.reason = result.reason;
     status.connectionAction = 'grok process tree termination scheduled';
-    writeStatus(status);
-    if (!options.noKill) scheduleGrokKill();
+    writeStatus(status, statusFile);
+    if (!options.noKill) (options.scheduleKill || scheduleGrokKill)();
     return { result, hookOutput: { decision: 'deny', reason: 'AXM SHELL GUARDIAN TRIPPED: ' + result.reason } };
   }
-  writeStatus(status);
+  writeStatus(status, statusFile);
   return { result, hookOutput: null };
 }
 
@@ -136,5 +140,5 @@ function main() {
   }
 }
 
-module.exports = { classify, handle, flattenInput, STATUS_FILE, EVENT_FILE };
+module.exports = { classify, handle, flattenInput, readStatus, STATUS_FILE, EVENT_FILE };
 if (require.main === module) main();

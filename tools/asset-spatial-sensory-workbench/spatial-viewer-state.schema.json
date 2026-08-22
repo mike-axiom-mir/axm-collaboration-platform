@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.spatial-sensory-viewer-state/v1",
+  "title": "AXM source-neutral spatial viewer state",
+  "type": "object",
+  "required": ["schema", "version", "yaw_deg", "pitch_deg", "distance", "target", "projection", "background", "view_mode", "normal_policy", "show_grid", "show_axes", "show_bounds", "comparison_source"],
+  "properties": {
+    "schema": { "const": "axm.spatial-sensory-viewer-state/v1" },
+    "version": { "const": "1.0.0" },
+    "projection": { "enum": ["perspective", "orthographic"] },
+    "view_mode": { "enum": ["shaded", "wireframe", "normals"] },
+    "normal_policy": { "enum": ["as-delivered", "face-repair-diagnostic"] },
+    "comparison_source": { "enum": ["original", "current"] }
+  },
+  "additionalProperties": true
+}

@@ -25,6 +25,15 @@ The system classifies evidence, not intent. A trip means "this action crossed a 
 ```powershell
 node "C:\axm workshop\tools\shell-guardian\guardian-control.js" status
 node "C:\axm workshop\tools\shell-guardian\guardian-control.js" reset
+node "C:\axm workshop\tools\shell-guardian\selftest.js"
+```
+
+The top-level selftest is the bounded promotion entrypoint. It exercises the
+focused policy suite plus denial, isolated audit/state persistence, and process
+termination scheduling without killing a real process. To run only the policy
+classification assertions:
+
+```powershell
 node "C:\axm workshop\tools\shell-guardian\guardian-selftest.js"
 ```
 

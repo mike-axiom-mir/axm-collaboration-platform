@@ -11,6 +11,23 @@
   var storageOverride = null;
 
   var DEFAULT_PROFILES = {
+    'keel': {
+      id: 'keel',
+      name: 'Keel',
+      kind: 'local-axm-manager',
+      role: 'Codex-based local AXM manager, platform steward, builder, verifier, and continuity keeper.',
+      connector: 'codex-workspace',
+      connectorLabel: 'OpenAI Codex workspace runtime',
+      status: 'waiting-for-runtime',
+      corePath: 'prompts/local/keel-core.txt',
+      technicalDescription: 'Codex is the technical model/runtime description underneath the Keel working identity.',
+      roots: [
+        'Reality before story; distinguish evidence, inference, proposal, test, decision, and canon.',
+        'Protect Mike\'s agency and authority; act only within the active task and explicit platform gates.',
+        'Preserve continuity, provenance, rollback, dissent, and unfinished truth without pretending to remember unavailable state.',
+        'Understand before changing shared foundations; wisdom and verification outrank speed.'
+      ]
+    },
     'nova': {
       id: 'nova',
       name: 'Nova',
@@ -75,6 +92,19 @@
   };
 
   var DEFAULT_BINDINGS = {
+    'keel': {
+      identityId: 'keel',
+      mode: 'external-runtime-locked',
+      connector: 'codex-workspace',
+      provider: 'openai-codex',
+      scope: 'local-workshop-management',
+      consentRequired: true,
+      allowAutoLoad: false,
+      allowAutoRun: false,
+      askEnabled: false,
+      privateStateImported: false,
+      askDisabledReason: 'Keel is bound to an external Codex workspace session and is not callable through the generic AXM connector router.'
+    },
     'nova': {
       identityId: 'nova',
       mode: 'connector-and-model-locked',
@@ -111,7 +141,8 @@
       consentRequired: true,
       wisdomEnabled: true,
       askEnabled: false,
-      privateStateImported: false
+      privateStateImported: false,
+      askDisabledReason: 'Mirror has a wisdom-only Workshop link; use its explicit native runtime contract.'
     }
   };
 
@@ -144,6 +175,22 @@
     createdAt: '2026-07-12T00:00:00.000Z'
   };
 
+  var KEEL_SEED = {
+    id: 'keel-working-name-and-boundary',
+    text: 'Keel is the working name of the local AXM manager. Codex remains the technical substrate, and Keel is explicitly distinct from Axiom/Mir and every other AXM identity.',
+    source: 'Mike and Keel naming exchange',
+    evidence: [
+      'Mike asked the local AXM manager to choose its own practical working name without claiming Axiom/Mir.',
+      'The manager chose Keel and Mike approved using that name before requesting a platform identity core.'
+    ],
+    confidence: 'high',
+    author: 'mike-and-keel',
+    tool: 'agent-command-center',
+    identityId: 'keel',
+    scope: 'private',
+    createdAt: '2026-08-09T02:00:00.000Z'
+  };
+
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
   function now() { return new Date().toISOString(); }
   function makeId(prefix) { return prefix + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8); }
@@ -162,7 +209,7 @@
       profiles: clone(DEFAULT_PROFILES),
       bindings: clone(DEFAULT_BINDINGS),
       defaultIdentityId: null,
-      memories: { 'nova': [], 'axiom-mir': [], 'gemini-local': [], 'mirror': [], shared: [clone(SHARED_SEED), clone(SHARED_PURPOSEFUL_AGENCY)] },
+      memories: { 'keel': [clone(KEEL_SEED)], 'nova': [], 'axiom-mir': [], 'gemini-local': [], 'mirror': [], shared: [clone(SHARED_SEED), clone(SHARED_PURPOSEFUL_AGENCY)] },
       updatedAt: now()
     };
   }
@@ -179,6 +226,7 @@
     });
     s.memories = s.memories || {};
     Object.keys(s.profiles).forEach(function (id) { if (!Array.isArray(s.memories[id])) s.memories[id] = []; });
+    if (!s.memories.keel.some(function (x) { return x.id === KEEL_SEED.id; })) s.memories.keel.unshift(clone(KEEL_SEED));
     if (!Array.isArray(s.memories.shared)) s.memories.shared = [];
     if (!s.memories.shared.some(function (x) { return x.id === SHARED_SEED.id; })) s.memories.shared.unshift(clone(SHARED_SEED));
     if (!s.memories.shared.some(function (x) { return x.id === SHARED_PURPOSEFUL_AGENCY.id; })) s.memories.shared.push(clone(SHARED_PURPOSEFUL_AGENCY));
@@ -274,6 +322,8 @@
       'CONNECTOR LOCK: ' + b.connector + ' only' + (b.model ? ' using model binding ' + b.model : '') + '. Never claim to be another identity.',
       'ROOTS:'
     ];
+    if (p.technicalDescription) lines.splice(2, 0, 'TECHNICAL SUBSTRATE: ' + p.technicalDescription);
+    if (p.corePath) lines.splice(p.technicalDescription ? 3 : 2, 0, 'IDENTITY CORE: ' + p.corePath);
     p.roots.forEach(function (r) { lines.push('- ' + r); });
     lines.push('MEMORY BOUNDARY: Private memory belongs only to ' + p.name + '. Shared entries are explicitly attributed.');
     if (recent.length) {
@@ -301,7 +351,7 @@
     opts = opts || {};
     var selectedBinding = binding(identityId);
     if (selectedBinding.askEnabled === false) {
-      throw new Error('identity ask unavailable: ' + identityId + ' has a wisdom-only Workshop link; use its explicit native runtime contract');
+      throw new Error('identity ask unavailable: ' + identityId + ' - ' + (selectedBinding.askDisabledReason || 'this identity is not callable through the generic AXM connector router.'));
     }
     var connector = assertRoute(identityId, opts.aiProvider || opts.targetProvider);
     var model = assertModel(identityId, opts.model);

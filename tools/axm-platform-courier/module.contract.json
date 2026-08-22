@@ -1,0 +1,16 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm-platform-courier",
+  "version": "v0.4",
+  "entryPoints": ["index.html", "index.js", "GRANT_PLATFORM_ACCESS.cmd", "REVOKE_PLATFORM_ACCESS.cmd", "GRANT_CLAUDE_AXM_ACCESS.cmd", "REVOKE_CLAUDE_AXM_ACCESS.cmd"],
+  "provides": ["platform-connect-settings", "platform-connect-status", "platform-connect-consent", "platform-connect-session-metadata", "command-centre-platform-connect-seam", "sandbox-file-courier", "module-capability-discovery", "deterministic-hand-routing", "deterministic-hand-invocation", "bounded-heartbeat-observation", "bounded-holodeck-session", "structured-holodeck-observation", "state-bound-holodeck-pixel-capture", "deterministic-holodeck-intent", "hash-bound-holodeck-snapshot", "bounded-local-api-read", "bounded-preview-api-call", "hashed-operation-receipt"],
+  "consumes": ["registry/modules.json", "shared/asset-hands/asset-hands.js", "shared/holodeck/index.js", "holodeck-screen-deck", "local-headless-edge", "world.holodeck.echo-atrium", "axm.platform-heartbeat.status/v1", "workshop-search-service", "evidence-retention-service", "filesystem:state/axm-platform-courier/inbox"],
+  "permissions": ["platform.read", "platform.hands.invoke"],
+  "reads": ["registry/modules.json", "state/axm-platform-courier/settings.json", "state/axm-platform-courier/consent.json", "state/axm-platform-courier/connections.json", "state/axm-platform-courier/inbox/*.json"],
+  "writes": ["state/axm-platform-courier/settings.json", "state/axm-platform-courier/consent.json", "state/axm-platform-courier/connections.json", "state/axm-platform-courier/status.json", "state/axm-platform-courier/outbox/*.response.json", "state/axm-platform-courier/artifacts/**", "state/axm-platform-courier/holodeck-sessions/*.json", "state/axm-platform-courier/holodeck-captures/*.png", "state/axm-platform-courier/holodeck-visual-browser/**"],
+  "network": ["current AXM server's exact 127.0.0.1 port"],
+  "handoffs": {"emits": ["axm.platform-courier.response/v1", "axm.platform-connect.snapshot/v1", "filesystem:state/axm-platform-courier/artifacts"], "accepts": ["axm.platform-courier.request/v1", "axm.platform-connect.settings/v1", "explicit-local-consent"]},
+  "boundaries": {"writes": ["state/axm-platform-courier"], "refuses": ["public-listener", "remote-url", "arbitrary-capture-url", "arbitrary-browser-profile", "arbitrary-shell-command", "arbitrary-filesystem-path", "credential-discovery", "platform-mutation-api", "heartbeat-reconfiguration-by-connected-platform", "arbitrary-holodeck-world-import", "holodeck-actor-authority-escalation", "physical-world-manipulation", "automatic-authority-expansion"]},
+  "lifecycle": {"state_owner": "service", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "automatic"},
+  "verification": ["selftest.js", "../../shared/operations/roadmap-selftest.js", "../../verify.js"]
+}

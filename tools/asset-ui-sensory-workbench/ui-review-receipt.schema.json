@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/ui-sensory-review-receipt-v1.schema.json",
+  "title": "AXM UI Sensory Review Receipt v1",
+  "type": "object",
+  "required": ["schema", "version", "id", "candidate", "viewer", "viewer_state_digest", "journey", "human_judgment", "claims", "authority", "truth", "digest"],
+  "properties": {
+    "schema": { "const": "axm.ui-sensory-review-receipt/v1" },
+    "version": { "const": "0.1.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "candidate": { "type": "object", "required": ["result_digest", "recipe_digest", "artifact_sha256", "artifact_transport_digests"] },
+    "viewer": { "$ref": "ui-viewer-state.schema.json" },
+    "viewer_state_digest": { "type": "string", "minLength": 1 },
+    "journey": { "type": "object", "required": ["readiness", "events"] },
+    "human_judgment": { "type": "object", "required": ["reviewer", "decision", "notes", "result_digest", "recipe_digest", "viewer_state_digest", "readiness", "authority"], "properties": { "decision": { "enum": ["hold", "accept-candidate", "reject-candidate"] } } },
+    "claims": { "type": "object" },
+    "authority": { "type": "object", "required": ["candidate_only", "installed", "promoted", "canonical", "publishes"] },
+    "truth": { "type": "string", "minLength": 1 },
+    "digest": { "type": "string", "minLength": 1 }
+  }
+}

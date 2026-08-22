@@ -1,0 +1,17 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "asset-ui-sensory-workbench",
+  "version": "0.1.0",
+  "status": "TEST",
+  "provides": ["ui.component.human-sensory-review", "ui.stateful.browser-wrapper", "ui.nine-slice.browser-observation", "ui.recipe.human-edit", "ui.viewer-state.digest", "ui.human-review.receipt"],
+  "consumes": ["ui-component/1.2.0", "deterministic-ui-fabric/1.0.0", "axm.asset-hand-result/v1", "axm.deterministic-ui-handoff/v1", "human:explicit-review"],
+  "permissions": ["export"],
+  "lifecycle": { "state_owner": "browser", "reload": "reset", "disconnect": "graceful-degrade", "cleanup": "automatic" },
+  "handoffs": { "emits": ["axm.ui-sensory-review-receipt/v1", "axm.ui-machine-patch/v1"], "accepts": ["axm.asset-hand-result/v1", "axm.deterministic-ui-handoff/v1"] },
+  "budgets": { "request_body_max_bytes": 262144, "response_body_max_bytes": 2097152 },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": ["user-download:candidate-review-json"],
+    "refuses": ["svg-dom-injection", "static-svg-as-interactive-proof", "failed-result-candidate-replacement", "automatic-human-approval", "physical-device-proof-from-simulation", "assistive-technology-proof-without-native-evidence", "target-runtime-parity-claim", "automatic-installation", "automatic-promotion", "automatic-canonization"]
+  }
+}

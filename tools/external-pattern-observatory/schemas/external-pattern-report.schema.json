@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/external-pattern-observatory-report.v1.schema.json",
+  "title": "AXM External Pattern Observatory Report v1",
+  "type": "object",
+  "required": ["schema", "version", "status", "input", "summary", "cards", "truth", "reportDigest"],
+  "properties": {
+    "schema": { "const": "axm.external-pattern-observatory-report/v1" },
+    "version": { "const": "0.1.0" },
+    "status": { "const": "EXPERIMENTAL" },
+    "input": { "type": "object" },
+    "summary": { "type": "object" },
+    "cards": {
+      "type": "array",
+      "items": { "$ref": "external-pattern-card.schema.json" }
+    },
+    "truth": { "type": "object" },
+    "reportDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.spatial-sensory-review-receipt/v1",
+  "title": "AXM bounded human spatial sensory review receipt",
+  "type": "object",
+  "required": ["schema", "version", "status", "decision", "notes", "candidate", "viewer_state_digest", "journey_digest", "journey", "renderer", "dynamic_view_gate", "claims", "authority", "created_at"],
+  "properties": {
+    "schema": { "const": "axm.spatial-sensory-review-receipt/v1" },
+    "version": { "const": "1.0.0" },
+    "status": { "const": "HUMAN_REVIEWED" },
+    "decision": { "enum": ["ACCEPT_FOR_TEST", "NEEDS_CHANGES", "REJECT"] },
+    "candidate": { "type": "object", "required": ["result_digest", "project_digest", "glb_sha256", "obj_sha256"] },
+    "viewer_state_digest": { "type": "string", "pattern": "^fnv1a32:[0-9a-f]{8}$" },
+    "dynamic_view_gate": { "type": "object", "required": ["pass", "missing"] },
+    "claims": { "type": "object", "properties": { "target_renderer_parity": { "const": false }, "physical_scale_verified": { "const": false }, "controller_or_xr_verified": { "const": false }, "assistive_technology_verified": { "const": false }, "external_gltf_conformance": { "const": false } } },
+    "authority": { "type": "object", "required": ["candidate_only", "installed", "promoted", "canonical", "publishes"], "properties": { "candidate_only": { "const": true }, "installed": { "const": false }, "promoted": { "const": false }, "canonical": { "const": false }, "publishes": { "const": false } } }
+  },
+  "additionalProperties": true
+}

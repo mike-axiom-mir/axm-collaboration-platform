@@ -6,6 +6,7 @@ var Compiler = window.AXMHolodeckWorldCompiler;
 var controller = null;
 var toastTimer = null;
 var MACHINE_ACTOR = { id: 'screen-deck-ai', kind: 'machine', name: 'Screen Deck AI' };
+var captureContext = null;
 
 function element(id) { return document.getElementById(id); }
 
@@ -23,6 +24,22 @@ function nearbyAction(frame) {
     if (frame.nearby[index].availableActions.length) return { entity: frame.nearby[index], action: frame.nearby[index].availableActions[0] };
   }
   return null;
+}
+
+function readCaptureContext() {
+  var query = new URLSearchParams(window.location.search);
+  if (query.get('mode') !== 'courier-capture') return null;
+  var sessionId = String(query.get('session') || 'platform-echo-atrium');
+  var encoded = String(query.get('state') || '');
+  if (!/^[A-Za-z0-9_-]+$/.test(encoded) || encoded.length > 90000) throw new Error('Courier capture state encoding is invalid or too large.');
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,119}$/.test(sessionId)) throw new Error('Courier capture session id is invalid.');
+  var base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+  while (base64.length % 4) base64 += '=';
+  var binary = window.atob(base64);
+  var bytes = Uint8Array.from(binary, function (character) { return character.charCodeAt(0); });
+  var text = new TextDecoder().decode(bytes);
+  if (bytes.length > 65536) throw new Error('Courier capture state exceeds 64 KiB.');
+  return { sessionId: sessionId, state: JSON.parse(text) };
 }
 
 function renderUpdate(update) {
@@ -121,6 +138,8 @@ async function start() {
     element('loading-detail').textContent = 'Compiling renderer-neutral deck plan…';
     var plan = Compiler.compile(world);
     controller = new ScreenDeckController(plan, element('deck-canvas'), renderUpdate);
+    captureContext = readCaptureContext();
+    if (captureContext) controller.loadExternalState(captureContext.state);
     element('world-version').textContent = world.version + ' · ' + world.schema;
     element('world-title').textContent = plan.worldTitle;
     element('world-description').textContent = plan.worldDescription;
@@ -135,14 +154,29 @@ async function start() {
     element('deck-canvas').focus();
     element('save-status').textContent = controller.hasSnapshot() ? 'An explicit snapshot exists. It will not restore until requested.' : 'Nothing is saved or restored automatically.';
     window.AXMHolodeckDeck = Object.freeze({
-      version: '0.1.0',
+      version: '0.2.0',
       getPlan: function () { return controller.getPlan(); },
       getState: function () { return controller.getState(); },
       observe: function (actor) { return controller.observe(actor); },
       dispatch: function (intent) { return controller.dispatch(Core.clone(intent)); },
-      truth: Object.freeze({ screenSimulation: true, vr: false, hologramHardware: false, physicalManipulator: false, extraMachineAuthority: false })
+      captureProof: function () {
+        var state = controller.getState();
+        return {
+          schema: 'axm.holodeck-screen-capture-proof/v1',
+          source: captureContext ? 'platform-courier-session' : 'local-screen-deck',
+          sessionId: captureContext ? captureContext.sessionId : null,
+          worldId: state.worldId,
+          planDigest: plan.planDigest,
+          revision: state.revision,
+          tick: state.tick,
+          stateDigest: state.stateDigest,
+          renderer: controller.getRendererMetrics()
+        };
+      },
+      truth: Object.freeze({ screenSimulation: true, actualBrowserPixelCaptureAvailable: true, vr: false, hologramHardware: false, physicalManipulator: false, extraMachineAuthority: false })
     });
     document.documentElement.dataset.deckApi = 'ready';
+    document.documentElement.dataset.courierCapture = captureContext ? 'ready' : 'inactive';
   } catch (error) {
     element('loading-detail').textContent = error.message;
     element('deck-status').textContent = 'FAILED';

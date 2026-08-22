@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Asset Audio Sensory Workbench</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#audioStage">Skip to listening stage</a>
+  <main id="workbench" tabindex="-1">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AXM ASSET FACTORY · HUMAN / MACHINE AUDIO SEAM</p>
+        <h1>Hear the candidate.<br><span>Edit the machine truth.</span></h1>
+        <p class="lede">A bounded listening surface for deterministic game-audio candidates. The WAV, recipe, technical evidence, listening conditions and human judgment remain separate—and digest bound.</p>
+      </div>
+      <div class="status-stack" aria-label="Workbench status">
+        <div class="status-row"><span>Loopback host</span><strong id="hostStatus" data-state="checking">CHECKING</strong></div>
+        <div class="status-row"><span>Audio hand</span><strong id="handStatus" data-state="checking">UNKNOWN</strong></div>
+        <div class="status-row"><span>Authority</span><strong data-state="candidate">CANDIDATE ONLY</strong></div>
+      </div>
+    </header>
+
+    <section id="connectionBanner" class="banner" role="status">
+      <div>
+        <strong id="connectionTitle">Connecting to the bounded host…</strong>
+        <span id="connectionDetail">No network or filesystem-write authority is requested.</span>
+      </div>
+      <label class="file-button">Load serialized result
+        <input id="loadResult" type="file" accept="application/json,.json">
+      </label>
+    </section>
+
+    <section class="workspace-grid">
+      <article class="panel listening-panel" id="audioStage">
+        <div class="panel-heading">
+          <div>
+            <p class="kicker">Human sensory surface</p>
+            <h2>Listening stage</h2>
+          </div>
+          <span class="truth-chip">Browser transport ≠ physical audibility</span>
+        </div>
+
+        <div class="ab-strip" role="group" aria-label="A B candidate selection">
+          <button id="selectBaseline" class="ab-button" type="button" data-side="baseline"><span>A</span> Original</button>
+          <button id="selectCurrent" class="ab-button is-active" type="button" data-side="current"><span>B</span> Current</button>
+          <div class="ab-delta"><span>Result delta</span><strong id="resultDelta">WAITING</strong></div>
+        </div>
+
+        <div class="wave-shell" id="waveShell">
+          <svg id="waveform" viewBox="0 0 960 280" preserveAspectRatio="none" role="img" aria-label="PCM waveform envelope for the selected WAV candidate">
+            <line class="wave-zero" x1="0" y1="140" x2="960" y2="140"></line>
+            <g id="waveBars"></g>
+            <line id="playhead" class="playhead" x1="0" y1="0" x2="0" y2="280"></line>
+          </svg>
+          <div class="wave-empty" id="waveEmpty">Waiting for an exact WAV payload</div>
+          <div class="wave-badges">
+            <span id="selectedSide">B · CURRENT</span>
+            <span id="waveFacts">— Hz · — ch · — s</span>
+          </div>
+        </div>
+
+        <audio id="baselineAudio" preload="metadata"></audio>
+        <audio id="currentAudio" preload="metadata"></audio>
+
+        <div class="transport" role="group" aria-label="Audio playback controls">
+          <button id="playPause" class="primary-control" type="button" disabled><span id="playIcon" aria-hidden="true">▶</span><span id="playLabel">Play current</span></button>
+          <button id="restartAudio" class="icon-control" type="button" aria-label="Restart selected audio" disabled>↺</button>
+          <div class="scrub-wrap">
+            <input id="audioScrub" type="range" min="0" max="1" step="0.001" value="0" aria-label="Audio position" disabled>
+            <div class="time-row"><span id="currentTime">0:00.000</span><span id="durationTime">0:00.000</span></div>
+          </div>
+        </div>
+
+        <fieldset class="listener-controls">
+          <legend>Listening conditions <span id="listenerDigest">—</span></legend>
+          <label>Volume <output id="volumeValue">75%</output><input id="volume" type="range" min="0" max="1" step="0.01" value="0.75" aria-label="Listener volume"></label>
+          <label>Playback speed
+            <select id="playbackRate">
+              <option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option>
+            </select>
+          </label>
+          <label>Waveform zoom <output id="zoomValue">1×</output><input id="waveformZoom" type="range" min="1" max="8" step="1" value="1" aria-label="Waveform zoom"></label>
+          <label class="check"><input id="loopPlayback" type="checkbox"> Loop</label>
+          <label class="check"><input id="mutePlayback" type="checkbox"> Mute</label>
+          <label class="check"><input id="highContrast" type="checkbox"> High contrast</label>
+        </fieldset>
+
+        <p class="evidence-note"><strong>Evidence ceiling:</strong> the page can observe user gestures and media-element events. It cannot identify the exact output device, microphone-confirm sound, measure room acoustics, or prove that a person heard anything.</p>
+      </article>
+
+      <article class="panel editor-panel">
+        <div class="panel-heading">
+          <div><p class="kicker">Shared machine source</p><h2>Deterministic recipe</h2></div>
+          <span id="editMode" class="truth-chip">HOST REQUIRED</span>
+        </div>
+        <div id="editFields" class="edit-fields" aria-live="polite">
+          <p class="empty-copy">Editable controls appear after the Asset Hand returns a canonical source recipe.</p>
+        </div>
+        <div class="editor-actions">
+          <button id="resetCandidate" type="button" disabled>Reset to original</button>
+          <button id="downloadWav" type="button" disabled>Download current WAV</button>
+        </div>
+        <div id="regenerationStatus" class="regeneration-status" role="status">No candidate loaded.</div>
+
+        <div class="technical-card">
+          <div class="technical-heading"><h3>Machine truth</h3><button id="toggleExactJson" type="button" disabled>Show exact JSON</button></div>
+          <dl class="facts">
+            <div><dt>Result</dt><dd id="resultDigest">—</dd></div>
+            <div><dt>Recipe</dt><dd id="recipeDigest">—</dd></div>
+            <div><dt>WAV</dt><dd id="wavDigest">—</dd></div>
+            <div><dt>Technical</dt><dd id="technicalStatus">—</dd></div>
+            <div><dt>Human listened</dt><dd>FALSE UNTIL ASSERTED</dd></div>
+            <div><dt>Promoted / canon</dt><dd>FALSE / FALSE</dd></div>
+          </dl>
+          <pre id="exactJson" hidden tabindex="0"></pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel review-panel">
+      <div class="panel-heading">
+        <div><p class="kicker">Bound judgment, preserved dissent</p><h2>Human listening review</h2></div>
+        <span id="reviewState" class="truth-chip">NO CURRENT REVIEW</span>
+      </div>
+      <div class="review-grid">
+        <label>Reviewer<input id="reviewer" type="text" maxlength="100" value="local-human-reviewer"></label>
+        <label>Verdict<select id="verdict"><option value="ACCEPT_FOR_TEST">Accept for TEST</option><option value="REVISE">Revise</option><option value="REJECT">Reject</option></select></label>
+        <label>Listening impression<select id="impression"><option value="BALANCED">Balanced</option><option value="TOO_LOUD">Too loud</option><option value="TOO_QUIET">Too quiet</option><option value="HARSH">Harsh</option><option value="DULL">Dull</option><option value="TOO_LONG">Too long</option><option value="TOO_SHORT">Too short</option><option value="INAUDIBLE">Inaudible</option><option value="DEVICE_PROBLEM">Device problem</option><option value="UNCERTAIN">Uncertain</option></select></label>
+        <label class="heard-check"><input id="heardAsPresented" type="checkbox"> I personally heard this exact WAV with the displayed listening settings.</label>
+        <label class="review-notes">Notes<textarea id="reviewNotes" rows="4" maxlength="2000" placeholder="What should another human or machine preserve, change, or question?"></textarea></label>
+      </div>
+      <div class="review-actions">
+        <button id="recordReview" class="primary-action" type="button" disabled>Bind review to current digests</button>
+        <button id="downloadReview" type="button" disabled>Download current receipt</button>
+        <span id="staleCount">0 stale judgments preserved</span>
+      </div>
+    </section>
+
+    <section class="bottom-grid">
+      <article class="panel compact-panel">
+        <p class="kicker">Machine handoff</p><h2>Round-trip patch</h2>
+        <p>Exact source, edit operations, current delivery digest and stale human history—without listener preferences mutating the recipe.</p>
+        <div class="editor-actions"><button id="downloadPatch" type="button" disabled>Download machine patch</button><button id="downloadResult" type="button" disabled>Download serialized result</button></div>
+      </article>
+      <article class="panel compact-panel gap-panel">
+        <p class="kicker">Typed limits</p><h2>Still not proven</h2>
+        <ul>
+          <li><strong>EVIDENCE-PHYSICAL-AUDIBILITY-001</strong> — no acoustic capture or device proof.</li>
+          <li><strong>EVIDENCE-OUTPUT-DEVICE-001</strong> — browser-default route is not an identified speaker/headset.</li>
+          <li><strong>EVIDENCE-AUDIO-ACCESSIBILITY-001</strong> — keyboard checks do not prove assistive-technology conformance.</li>
+          <li><strong>EVIDENCE-AUDIO-AESTHETIC-001</strong> — only a human can make the current taste judgment.</li>
+        </ul>
+      </article>
+    </section>
+
+    <footer><span>TEST material only · installed: false · promoted: false · canonical: false</span><span id="sessionId">No session</span></footer>
+    <div id="announcer" class="sr-only" aria-live="polite"></div>
+  </main>
+  <script src="core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

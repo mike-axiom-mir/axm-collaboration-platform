@@ -2,17 +2,20 @@
 'use strict';
 
 const assert = require('assert');
+const crypto = require('crypto');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const vm = require('vm');
 const ContractVerifier = require('../../hub/module-contract-verifier');
+const OperationsApi = require('../../shared/operations/operations-api');
+const QaLabService = require('../../shared/operations/qa-lab-service');
 
 const root = __dirname;
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
 const contract = JSON.parse(fs.readFileSync(path.join(root, 'module.contract.json'), 'utf8'));
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const source = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
-const operationsApi = fs.readFileSync(path.join(root, '../../shared/operations/operations-api.js'), 'utf8');
 
 let assertions = 0;
 function check(message, test) {
@@ -37,66 +40,59 @@ async function main() {
     assert.deepEqual(contract.permissions, manifest.permissions);
     assert.deepEqual(contract.handoffs.accepts, manifest.accepts);
     assert.deepEqual(contract.handoffs.emits, manifest.produces);
+    assert.deepEqual(manifest.accepts, ['axm.qa-evidence-request/v1']);
+    assert.deepEqual(manifest.produces, ['axm.qa-journey-receipt/v1', 'axm.device-qa-evidence/v1']);
   });
   check('contract keeps the safety refusals explicit', () => {
-    for (const refusal of ['arbitrary-url-testing', 'silent-hardware-access', 'whole-network-scan', 'unbounded-load-test', 'self-attested-physical-proof', 'manifest-warning-mutation', 'automatic-human-participation', 'raw-phone-note-retention', 'non-human-review-as-campaign-input', 'review-decision-as-physical-proof', 'review-decision-as-human-usefulness', 'review-note-export']) {
+    for (const refusal of ['arbitrary-url-testing', 'silent-hardware-access', 'whole-network-scan', 'unbounded-load-test', 'self-attested-physical-proof', 'manifest-warning-mutation']) {
       assert(contract.boundaries.refuses.includes(refusal), `missing refusal: ${refusal}`);
     }
   });
-  check('device and phone candidate handoffs are declared without proof authority', () => {
-    assert(manifest.actions.includes('record physical-phone observation candidates'));
-    assert(manifest.produces.includes('axm.device-qa-evidence/v1'));
-    assert(manifest.produces.includes('axm.review-item/v1'));
-    assert(manifest.produces.includes('axm.qa-phone-review-handoff/v1'));
-    assert(contract.provides.includes('physical-phone-observation-candidates'));
-    assert(contract.provides.includes('exact-phone-candidate-review-handoff'));
-  });
   check('browser surface contains the declared controls and local scripts', () => {
-    for (const id of ['notice', 'profile', 'run', 'capture', 'phoneGame', 'phonePresent', 'controllerJoined', 'seatMatched', 'actionObserved', 'disconnectObserved', 'recoveredObserved', 'phoneVoluntary', 'capturePhone', 'openPhoneReview', 'reviewInbox', 'refresh', 'facts', 'out']) {
+    for (const id of ['notice', 'profile', 'run', 'capture', 'game', 'phone-present', 'controller-joined', 'seat-matched', 'action-observed', 'disconnect-observed', 'recovery-observed', 'observation-notes', 'capture-phone', 'queue', 'refresh', 'facts', 'out']) {
       assert(html.includes(`id="${id}"`), `missing browser control: ${id}`);
     }
     assert(html.includes('../../shared/operations/operations-client.js'));
+    assert(html.includes('href="style.css"'));
     assert(html.includes('src="app.js"'));
     assert(!/https?:\/\//i.test(html), 'tool surface must not load a remote resource');
   });
   check('client source is valid JavaScript', () => new vm.Script(source, { filename: 'app.js' }));
   check('client source uses only the fixed QA and loopback health routes', () => {
     const routes = Array.from(source.matchAll(/(?:get|post|fetch)\('([^']+)'/g), match => match[1]);
-    assert.deepEqual(Array.from(new Set(routes)).sort(), ['/api/health', '/api/qa-lab', '/api/qa-lab/evidence', '/api/qa-lab/phone-review/open', '/api/qa-lab/run']);
+    assert.deepEqual(Array.from(new Set(routes)).sort(), ['/api/health', '/api/qa-lab', '/api/qa-lab/evidence', '/api/qa-lab/run', '/exports/game-night-seam-report.json']);
     assert(!/https?:\/\//i.test(source), 'client must not contain an arbitrary remote URL');
   });
-  check('operations API injects the shared inbox and keeps open/read routes distinct', () => {
-    assert(operationsApi.includes("QaLabService.create(Object.assign({}, options, { reviewService: review }))"));
-    assert(operationsApi.includes("url === '/api/qa-lab/phone-review/open' && req.method === 'POST'"));
-    assert(operationsApi.includes("explicit(req, 'x-axm-qa', 'explicit-phone-review-open')"));
-    assert(operationsApi.includes("parsed.confirmation !== 'OPEN EXACT PHONE CANDIDATE REVIEW'"));
-    assert(operationsApi.includes("url === '/api/qa-lab/phone-review' && req.method === 'GET'"));
-  });
 
+  const elementIds = ['notice', 'profile', 'run', 'capture', 'game', 'phone-present', 'controller-joined', 'seat-matched', 'action-observed', 'disconnect-observed', 'recovery-observed', 'observation-notes', 'capture-phone', 'queue', 'refresh', 'facts', 'out'];
   const elements = Object.fromEntries(
-    ['notice', 'profile', 'run', 'capture', 'phoneGame', 'phonePresent', 'controllerJoined', 'seatMatched', 'actionObserved', 'disconnectObserved', 'recoveredObserved', 'phoneVoluntary', 'capturePhone', 'openPhoneReview', 'reviewInbox', 'refresh', 'facts', 'out'].map(id => [id, {
+    elementIds.map(id => [id, {
       id,
-      value: id === 'profile' ? 'hub-smoke' : id === 'phoneGame' ? '002-robo-pong' : '',
+      value: id === 'profile' ? 'hub-smoke' : '',
       checked: false,
+      disabled: false,
       innerHTML: '',
       textContent: '',
       onclick: null,
-      disabled: id === 'openPhoneReview',
-      hidden: id === 'reviewInbox'
+      options: id === 'game' ? [{ value: '', textContent: 'Choose a pending game' }] : [],
+      attributes: {},
+      appendChild(child) { this.options.push(child); },
+      setAttribute(name, value) { this.attributes[name] = String(value); }
     }])
   );
   const requests = [];
-  const healthFetches = [];
+  const fetches = [];
   const notices = [];
-  const latencyTicks = [1, 3, 10, 14, 20, 25, 30, 33, 40, 44, 50, 55];
+  const latencyTicks = [1, 3, 10, 14, 20, 25, 30, 32, 40, 44, 50, 55];
   const state = {
     profiles: ['hub-smoke', 'operations-smoke'],
     journeys: [{ id: 'journey-1' }],
     deviceEvidence: [],
+    phoneObservationCandidates: 0,
     arbitraryUrlTesting: 'refused',
     latestJourney: { id: 'journey-1', pass: true },
     latestDeviceEvidence: null,
-    latestPhoneReviewHandoff: null
+    latestPhoneObservation: null
   };
   const AXMOps = {
     get(route) {
@@ -105,44 +101,35 @@ async function main() {
     },
     post(route, body, headers) {
       requests.push({ method: 'POST', route, body, headers });
-      if (route === '/api/qa-lab/run') return Promise.resolve({ pass: true });
-      if (route === '/api/qa-lab/phone-review/open') {
-        const handoff = {
-          schema: 'axm.qa-phone-review-handoff/v1',
-          state: 'PENDING_HUMAN_REVIEW',
-          reviewItem: { id: 'review-phone-1', artifactDigest: 'sha256:' + 'a'.repeat(64) },
-          candidateReview: null,
-          truth: { warningCleared: false }
-        };
-        state.latestPhoneReviewHandoff = handoff;
-        return Promise.resolve(handoff);
-      }
-      if (body.phoneObservation) {
-        const receipt = {
-          id: 'device-qa-phone-1',
-          digest: 'a'.repeat(64),
-          phoneObservation: {
-            gameId: body.phoneObservation.gameId,
-            complete: Object.values(body.phoneObservation.observations).every(Boolean),
-            reviewState: 'CANDIDATE_REQUIRES_HUMAN_REVIEW'
-          }
-        };
-        state.deviceEvidence.unshift(receipt);
-        state.latestDeviceEvidence = receipt;
-        return Promise.resolve(receipt);
-      }
-      return Promise.resolve({ ok: true });
+      return Promise.resolve(route === '/api/qa-lab/run' ? { pass: true } : { ok: true });
     },
     pretty(value) { return JSON.stringify(value, null, 2); },
     notice(element, message, tone) { notices.push({ element: element.id, message, tone }); }
   };
   const context = vm.createContext({
     AXMOps,
-    document: { getElementById(id) { return elements[id]; } },
+    document: {
+      getElementById(id) { return elements[id]; },
+      createElement(tagName) { return { tagName, value: '', textContent: '' }; }
+    },
     performance: { now() { return latencyTicks.shift(); } },
     fetch(route, options) {
-      healthFetches.push({ route, options });
-      return Promise.resolve({ ok: true });
+      fetches.push({ route, options });
+      if (route === '/exports/game-night-seam-report.json') {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json() {
+            return Promise.resolve({
+              games: [
+                { game: '008-district-party', slot: '008', warnings: ['physical phone qa is pending'] },
+                { game: '010-living-globe-tycoon', slot: '010', warnings: [] }
+              ]
+            });
+          }
+        });
+      }
+      return Promise.resolve({ ok: true, status: 200 });
     },
     navigator: {
       userAgent: 'AXM Selftest Browser',
@@ -162,19 +149,25 @@ async function main() {
 
   new vm.Script(source, { filename: 'app.js' }).runInContext(context);
   await settle();
+  await settle();
 
   check('initial load reads the bounded QA status route', () => {
     assert.deepEqual(requests[0], { method: 'GET', route: '/api/qa-lab' });
     assert(elements.facts.innerHTML.includes('2 profiles'));
     assert(elements.facts.innerHTML.includes('1 journeys'));
+    assert(elements.facts.innerHTML.includes('1 phone gaps'));
     assert(elements.facts.innerHTML.includes('arbitrary URL refused'));
     assert(elements.out.textContent.includes('journey-1'));
   });
-  check('all five explicit controls are wired', () => {
+  check('pending phone gaps come only from the fixed verifier report', () => {
+    assert.equal(elements.game.options.length, 2);
+    assert.equal(elements.game.options[1].value, '008-district-party');
+    assert(elements.queue.textContent.includes('1 verifier-confirmed phone gap'));
+  });
+  check('all four explicit controls are wired', () => {
     assert.equal(typeof elements.run.onclick, 'function');
     assert.equal(typeof elements.capture.onclick, 'function');
-    assert.equal(typeof elements.capturePhone.onclick, 'function');
-    assert.equal(typeof elements.openPhoneReview.onclick, 'function');
+    assert.equal(typeof elements['capture-phone'].onclick, 'function');
     assert.equal(typeof elements.refresh.onclick, 'function');
   });
 
@@ -199,8 +192,8 @@ async function main() {
   await settle();
   const evidence = requests.find(request => request.route === '/api/qa-lab/evidence');
   check('device capture performs exactly three loopback health samples', () => {
+    const healthFetches = fetches.filter(item => item.route === '/api/health');
     assert.equal(healthFetches.length, 3);
-    assert(healthFetches.every(item => item.route === '/api/health'));
     assert(healthFetches.every(item => item.options.cache === 'no-store'));
     assert.deepEqual(evidence.body.latencyMs, [2, 4, 5]);
   });
@@ -221,54 +214,114 @@ async function main() {
     assert(notices.some(item => item.message === 'Device evidence captured.' && item.tone === 'ok'));
   });
 
-  const phonePostsBeforeConsent = requests.filter(request => request.route === '/api/qa-lab/evidence').length;
-  await elements.capturePhone.onclick();
+  elements.game.value = '008-district-party';
+  for (const id of ['phone-present', 'controller-joined', 'seat-matched', 'action-observed', 'disconnect-observed', 'recovery-observed']) elements[id].checked = true;
+  elements['observation-notes'].value = 'P2 joined by QR; shared-screen action and link recovery were visibly observed.';
+  await elements['capture-phone'].onclick();
   await settle();
-  check('phone candidate capture requires explicit voluntary confirmation', () => {
-    assert.equal(requests.filter(request => request.route === '/api/qa-lab/evidence').length, phonePostsBeforeConsent);
-    assert(notices.some(item => /voluntary/i.test(item.message) && item.tone === 'bad'));
+  const candidate = requests.filter(request => request.route === '/api/qa-lab/evidence').find(request => request.body.phoneObservation);
+  check('phone capture binds all human declarations to one pending game', () => {
+    assert.equal(candidate.body.phoneObservation.gameId, '008-district-party');
+    assert.equal(candidate.body.phoneObservation.slot, '008');
+    assert.equal(candidate.body.phoneObservation.physicalPhonePresent, true);
+    assert.equal(candidate.body.phoneObservation.controllerJoined, true);
+    assert.equal(candidate.body.phoneObservation.seatIdentityMatched, true);
+    assert.equal(candidate.body.phoneObservation.actionObservedOnSharedScreen, true);
+    assert.equal(candidate.body.phoneObservation.disconnectObserved, true);
+    assert.equal(candidate.body.phoneObservation.recoveredAfterDisconnect, true);
+    assert.equal(candidate.body.disconnectObserved, true);
+    assert.equal(candidate.body.recoveredAfterDisconnect, true);
+  });
+  check('candidate capture keeps external review visible', () => {
+    assert(notices.some(item => item.message.includes('External review is still required.') && item.tone === 'ok'));
   });
 
-  elements.phoneVoluntary.checked = true;
-  for (const id of ['phonePresent', 'controllerJoined', 'seatMatched', 'actionObserved', 'disconnectObserved', 'recoveredObserved']) elements[id].checked = true;
-  await elements.capturePhone.onclick();
-  await settle();
-  const evidencePosts = requests.filter(request => request.route === '/api/qa-lab/evidence');
-  const phoneEvidence = evidencePosts.at(-1);
-  check('phone candidate binds one game and all six structured observations', () => {
-    assert.equal(phoneEvidence.body.phoneObservation.gameId, '002-robo-pong');
-    assert.equal(phoneEvidence.body.phoneObservation.slot, '002');
-    assert.equal(phoneEvidence.body.phoneObservation.voluntaryHumanObservation, true);
-    assert.deepEqual(Object.keys(phoneEvidence.body.phoneObservation.observations).sort(), [
-      'actionObservedOnSharedScreen', 'controllerJoined', 'disconnectObserved', 'physicalPhonePresent', 'recoveredAfterDisconnect', 'seatIdentityMatched'
-    ]);
-    assert(Object.values(phoneEvidence.body.phoneObservation.observations).every(value => value === true));
-  });
-  check('phone candidate capture remains the bounded device-evidence handoff', () => {
-    assert.equal(phoneEvidence.headers['x-axm-qa'], 'device-evidence');
-    assert.equal(healthFetches.length, 6);
-    assert(notices.some(item => item.message === 'Phone observation candidate captured for separate review.' && item.tone === 'ok'));
-    assert.equal(elements.openPhoneReview.disabled, false);
-  });
-
-  await elements.openPhoneReview.onclick();
-  await settle();
-  const reviewOpen = requests.find(request => request.route === '/api/qa-lab/phone-review/open');
-  check('review opening binds the latest evidence id and exact explicit authority', () => {
-    assert.deepEqual(reviewOpen, {
-      method: 'POST',
-      route: '/api/qa-lab/phone-review/open',
-      body: { evidenceId: 'device-qa-phone-1', confirmation: 'OPEN EXACT PHONE CANDIDATE REVIEW' },
-      headers: { 'x-axm-qa': 'explicit-phone-review-open' }
+  const gameManifestFile = path.join(root, '..', 'game-hub', 'game-library', '008-district-party', 'game.manifest.json');
+  const gameReportFile = path.join(root, '..', '..', 'exports', 'game-night-seam-report.json');
+  const gameManifestBefore = fs.readFileSync(gameManifestFile);
+  const tempStateRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-qa-phone-observation-'));
+  try {
+    const qa = QaLabService.create({ stateRoot: tempStateRoot });
+    const receipt = qa.recordDeviceEvidence({
+      viewport: { width: 390, height: 844, devicePixelRatio: 3 },
+      latencyMs: [12, 18, 14],
+      phoneObservation: candidate.body.phoneObservation
     });
-    assert.equal(elements.reviewInbox.hidden, false);
-    assert(notices.some(item => item.message === 'Exact candidate sent to the Review Inbox. No warning was cleared.' && item.tone === 'ok'));
-  });
-  check('QA status renders only the note-free review handoff', () => {
-    assert(elements.out.textContent.includes('review-phone-1'));
-    assert(elements.out.textContent.includes('warningCleared'));
-    assert(!elements.out.textContent.includes('review note'));
-  });
+    check('service seals a complete candidate without claiming physical proof', () => {
+      assert.equal(receipt.phoneObservation.schema, 'axm.qa-phone-observation/v1');
+      assert.equal(receipt.phoneObservation.gameId, '008-district-party');
+      assert.equal(receipt.phoneObservation.complete, true);
+      assert.equal(receipt.phoneObservation.reviewState, 'CANDIDATE_REQUIRES_HUMAN_REVIEW');
+      assert.equal(receipt.truth.physicalHardwareProven, false);
+      assert.equal(receipt.truth.manifestMutated, false);
+      assert.equal(receipt.truth.externalReviewRequired, true);
+      const receiptWithoutDigest = { ...receipt };
+      delete receiptWithoutDigest.digest;
+      assert.equal(receipt.digest, crypto.createHash('sha256').update(JSON.stringify(receiptWithoutDigest)).digest('hex'));
+    });
+    check('service exposes candidate count while refusing forged game identifiers', () => {
+      assert.equal(qa.status().phoneObservationCandidates, 1);
+      assert.throws(() => qa.recordDeviceEvidence({ viewport: { width: 390, height: 844 }, phoneObservation: { gameId: '../../008-district-party' } }), /bounded game id/);
+      assert.throws(() => qa.recordDeviceEvidence({ viewport: { width: 390, height: 844 }, phoneObservation: { gameId: '008-district-party', slot: '007' } }), /slot must match/);
+    });
+    check('candidate capture leaves the game manifest and source warning unchanged', () => {
+      assert(gameManifestBefore.equals(fs.readFileSync(gameManifestFile)));
+      const report = JSON.parse(fs.readFileSync(gameReportFile, 'utf8'));
+      const game = report.games.find(item => item.game === '008-district-party');
+      assert(game && game.warnings.includes('physical phone qa is pending'));
+    });
+  } finally {
+    fs.rmSync(tempStateRoot, { recursive: true, force: true });
+  }
+
+  const tempApiRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-qa-authority-'));
+  let operationsApi = null;
+  try {
+    const stateRoot = path.join(tempApiRoot, 'state');
+    const exportRoot = path.join(tempApiRoot, 'exports');
+    const logRoot = path.join(tempApiRoot, 'logs');
+    for (const directory of [stateRoot, exportRoot, logRoot]) fs.mkdirSync(directory, { recursive: true });
+    operationsApi = OperationsApi.create({
+      root: path.join(root, '..', '..'),
+      stateRoot,
+      exportRoot,
+      logRoot,
+      isProductionSession: false,
+      port: 9999,
+      getPort: () => 9999,
+      readJsonBody(request, _maxBytes, callback) { callback(null, request.payload || {}); },
+      send(response, status, payload) { response.resolve({ status, payload }); }
+    });
+    const callEvidenceApi = payload => new Promise((resolve, reject) => {
+      const request = { method: 'POST', url: '/api/qa-lab/evidence', headers: { 'x-axm-qa': 'device-evidence' }, payload };
+      const response = { resolve };
+      if (!operationsApi.handle(request, response, { url: request.url, rawUrl: request.url })) reject(new Error('QA evidence route was not handled'));
+    });
+    const denied = await callEvidenceApi({ viewport: { width: 390, height: 844 } });
+    check('default-deny permission blocks evidence before QA state mutation', () => {
+      assert(denied.status >= 400);
+      assert.equal(denied.payload.ok, false);
+      assert.match(denied.payload.error, /explicit qa\.run grant/);
+      assert.equal(fs.existsSync(operationsApi.services.qa.stateFile), false);
+    });
+    operationsApi.services.permissions.setGrant({
+      moduleId: 'browser-lan-hardware-qa-lab',
+      permission: 'qa.run',
+      allowed: true,
+      reason: 'bounded QA authority selftest',
+      actor: 'selftest'
+    });
+    const allowed = await callEvidenceApi({ viewport: { width: 390, height: 844 } });
+    check('explicit qa.run grant permits one bounded device evidence receipt', () => {
+      assert.equal(allowed.status, 200);
+      assert.equal(allowed.payload.ok, true);
+      assert.equal(allowed.payload.result.schema, 'axm.device-qa-evidence/v1');
+      assert.equal(fs.existsSync(operationsApi.services.qa.stateFile), true);
+    });
+  } finally {
+    if (operationsApi) operationsApi.stop();
+    fs.rmSync(tempApiRoot, { recursive: true, force: true });
+  }
 
   const readsBeforeRefresh = requests.filter(request => request.method === 'GET').length;
   elements.refresh.onclick();

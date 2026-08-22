@@ -1,0 +1,50 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "asset-audio-sensory-workbench",
+  "version": "0.1.0",
+  "provides": [
+    "asset.audio.waveform.inspect",
+    "asset.audio.playback.user-gesture",
+    "asset.audio.edit.host-bridged",
+    "asset.listener-state.digest",
+    "asset.audio-review.receipt.nonpromoting"
+  ],
+  "consumes": [
+    "axm.asset-hand-result/v1",
+    "axm.deterministic-audio-recipe/v1",
+    "axm.deterministic-audio-analysis/v1",
+    "axm.deterministic-audio-verification/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.asset-audio-sensory-machine-patch/v1", "axm.asset-human-audio-sensory-review-receipt/v1"],
+    "accepts": ["axm.asset-hand-result/v1", "axm.deterministic-audio-recipe/v1"]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  },
+  "boundaries": {
+    "writes": ["user-triggered-download-only"],
+    "refuses": [
+      "automatic-runtime-installation",
+      "automatic-asset-promotion",
+      "automatic-canonization",
+      "technical-pass-as-human-approval",
+      "browser-transport-as-physical-audibility-proof",
+      "implicit-output-device-identification",
+      "unallowlisted-source-mutation",
+      "network-listen-beyond-loopback",
+      "filesystem-write-through-host-bridge"
+    ]
+  },
+  "known_gaps": [
+    { "id": "EVIDENCE-PHYSICAL-AUDIBILITY-001", "type": "EVIDENCE", "status": "HUMAN_REQUIRED" },
+    { "id": "EVIDENCE-OUTPUT-DEVICE-001", "type": "EVIDENCE", "status": "UNKNOWN" },
+    { "id": "EVIDENCE-AUDIO-ACCESSIBILITY-001", "type": "EVIDENCE", "status": "UNKNOWN" },
+    { "id": "EVIDENCE-AUDIO-AESTHETIC-001", "type": "EVIDENCE", "status": "HUMAN_REQUIRED" }
+  ],
+  "authority": { "installed": false, "promoted": false, "canonical": false }
+}

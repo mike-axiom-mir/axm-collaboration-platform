@@ -119,6 +119,7 @@ The live Command Center now uses `identity-registry.js` as a routing layer above
 
 Current profiles:
 
+- `keel` -> external Codex workspace runtime; local AXM manager identity with an inspectable core at `../../prompts/local/keel-core.txt`, isolated private memory, and no generic connector ask route. Keel is explicitly not Axiom/Mir.
 - `nova` -> local bridge connector; private Nova memory.
 - `axiom-mir` -> cloud ChatGPT bridge connector; private Axiom/Mir memory.
 - `gemini-local` -> local bridge connector plus the fixed `gemini-local` model identifier; private Google Gemma memory.

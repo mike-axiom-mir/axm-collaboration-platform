@@ -1,0 +1,53 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "asset-material-sensory-workbench",
+  "version": "0.1.0",
+  "provides": [
+    "asset.material.lookdev.webgl2",
+    "asset.material.channels.inspect",
+    "asset.material.edit.host-bridged",
+    "asset.material.viewer-state.digest",
+    "asset.material-review.receipt.nonpromoting"
+  ],
+  "consumes": [
+    "axm.asset-hand-result/v1",
+    "axm.deterministic-material-handoff/v1",
+    "axm.pbr-material-recipe/v1",
+    "axm.pbr-material-bake-receipt/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.material-machine-patch/v1", "axm.material-sensory-review-receipt/v1"],
+    "accepts": ["axm.asset-hand-result/v1", "axm.deterministic-material-handoff/v1", "axm.pbr-material-recipe/v1"]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  },
+  "boundaries": {
+    "writes": ["user-triggered-download-only"],
+    "refuses": [
+      "automatic-runtime-installation",
+      "automatic-asset-promotion",
+      "automatic-canonization",
+      "technical-pass-as-human-approval",
+      "reference-lookdev-as-target-renderer-parity",
+      "screen-render-as-physical-surface-proof",
+      "unallowlisted-source-mutation",
+      "binding-materials-to-glb-or-game-assets",
+      "network-listen-beyond-loopback",
+      "filesystem-write-through-host-bridge"
+    ]
+  },
+  "known_gaps": [
+    { "id": "EVIDENCE-PBR-SENSORY-001", "type": "EVIDENCE", "status": "HUMAN_REQUIRED" },
+    { "id": "EVIDENCE-PBR-RENDERER-PARITY-001", "type": "EVIDENCE", "status": "UNKNOWN" },
+    { "id": "EVIDENCE-PBR-DEVICE-001", "type": "EVIDENCE", "status": "UNKNOWN" },
+    { "id": "EVIDENCE-PBR-ACCESSIBILITY-001", "type": "EVIDENCE", "status": "UNKNOWN" },
+    { "id": "EVIDENCE-PBR-CONFORMANCE-001", "type": "EVIDENCE", "status": "UNKNOWN" },
+    { "id": "EVIDENCE-PBR-PHYSICAL-SURFACE-001", "type": "EVIDENCE", "status": "UNKNOWN" }
+  ],
+  "authority": { "installed": false, "promoted": false, "canonical": false }
+}

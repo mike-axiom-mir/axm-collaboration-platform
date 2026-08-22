@@ -36,6 +36,9 @@ function run() {
   check(html.indexOf('core.js') < html.indexOf('world-validator.js') && html.indexOf('persistence.js') < html.indexOf('app.js'), 'browser dependencies load in declared order');
   check(html.includes('SCREEN SIMULATION') && html.includes('No VR or hologram claim'), 'visible UI states the current substrate boundary');
   check(app.includes('window.AXMHolodeckDeck') && app.includes('dispatch: function'), 'machine-facing observation and intent API is exposed');
+  check(app.includes('captureProof: function') && app.includes("dataset.courierCapture = captureContext ? 'ready' : 'inactive'"), 'courier capture exposes a state-bound readiness proof');
+  check(app.includes("query.get('mode') !== 'courier-capture'") && app.includes("query.get('state')"), 'capture intake is restricted to one explicit local query mode');
+  check(controller.includes('loadExternalState(state)') && controller.includes('State.verify(this.plan, state)'), 'external capture state must pass the canonical Holodeck verifier');
   check(html.includes('id="machine-step"') && app.includes("kind: 'machine'") && app.includes("kind: 'TURN'"), 'visible machine probe uses the shared typed intent path');
   check(!renderer.includes('requestAnimationFrame'), 'static world renders only on state or viewport changes');
   check(!/https?:\/\//.test(app + renderer + controller), 'runtime has no external network dependency');

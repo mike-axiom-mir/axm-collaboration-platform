@@ -1,4 +1,4 @@
-# AXM Asset Fabric v0.12
+# AXM Asset Fabric v0.15
 
 Asset Fabric is an independent experimental creation line for recurring asset
 needs. It does not live inside Studio and does not continuously call an image
@@ -10,9 +10,10 @@ budgets and intended use. It also declares quality requirements, required
 outputs and editable recipe formats. The shared registry matches the complete
 request to a capable hand before creation.
 
-Thirty-four modular local creation providers cover screen/vector work, native
-game and screen raster textures, ETC1S/BasisLZ KTX2 texture delivery, UI,
-pixel/sprite families, compositions, print, fabric repeats, physical engraving,
+The runtime registry's modular local creation providers cover screen/vector
+work, native game and screen raster textures, ETC1S/BasisLZ KTX2 texture
+delivery, UI, source-preserving pixel transforms, engine-neutral 8-bit/16-bit
+pixel animation workflows, compositions, print, fabric repeats, physical engraving,
 cut layouts, Visual Kernel themes, responsive layouts, read-only inspection,
 DeviceCMYK PDF, animation and video, bounded OBJ/GLB/OpenUSD geometry,
 MaterialX materials, accessibility/localization, MIDI/MusicXML, spatial
@@ -20,6 +21,22 @@ navigation and permission-gated native application handoffs. The registry and
 runtime diagnostics remain authoritative if that count changes.
 `UNSUPPORTED_CANVAS` and `MISSING_HAND` are visible results; when the registry is
 present they never trigger the legacy SVG fallback.
+
+The Identity-Bound Pixel 3D Representation Hand adds an exact
+`pixel-8bit-3d` / `pixel-16bit-3d` route for the four pilot identities. It emits
+real animated GLB 2.0 models, editable scene recipes, persistent identity and
+profile contracts, representation sets, and deterministic validation receipts.
+The GLBs preserve footprint, pivots, sockets, and semantic animation state.
+High-detail and cinematic requests remain typed missing representations, and
+four pilot models are explicitly not a complete whole-game walkable-3D pack.
+
+The Game Visual Pack Selection Hand adds a game-wide seam over those asset
+representations. It checks complete semantic slot coverage, exact pack and game
+contract digests, declared hardware requirements, installed inventory, and the
+bundled old-machine baseline. It can recommend a compatible pack, but only an
+explicit player choice can produce a selection receipt. Missing, incompatible,
+or contract-mismatched packs are refused without changing saves, simulation, or
+the currently active layer.
 
 The compatibility panel consumes `axm.asset-hand-gap-report/v1`. When no route
 exists it shows the missing kind, target medium and required output so a future

@@ -51,6 +51,16 @@ export class ScreenDeckController {
     return Sensor.observe(this.plan, this.state, actor || { id: 'screen-observer', kind: 'machine', name: 'Screen observer' });
   }
 
+  loadExternalState(state) {
+    var verification = State.verify(this.plan, state);
+    if (!verification.ok) throw new Error('External Screen Deck state failed verification: ' + verification.errors.join('; '));
+    this.state = Core.clone(state);
+    this.renderer.sync(this.state);
+    var observation = this.observe();
+    this.onChange({ state: this.getState(), frame: observation, receipt: null, renderer: this.renderer.metrics() });
+    return this.getState();
+  }
+
   save() {
     var snapshot = Persistence.create(this.plan, this.state, 'Explicit Screen Deck snapshot');
     window.localStorage.setItem(this.storageKey, JSON.stringify(snapshot));
@@ -78,5 +88,6 @@ export class ScreenDeckController {
   hasSnapshot() { return window.localStorage.getItem(this.storageKey) != null; }
   getPlan() { return Core.clone(this.plan); }
   getState() { return Core.clone(this.state); }
+  getRendererMetrics() { return Core.clone(this.renderer.metrics()); }
   destroy() { this.renderer.destroy(); }
 }

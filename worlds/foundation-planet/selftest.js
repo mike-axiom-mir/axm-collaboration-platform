@@ -580,13 +580,13 @@ async function run() {
   assert.equal(manifest.seams.deep_ocean,
     'PERSISTENT_DISSOLVED_ALKALINITY_PARTICLE_REMINERALIZATION_AND_SEAFLOOR_BURIAL_RECEIPT_V2');
   assert.equal(manifest.seams.atmosphere_biogeochemistry,
-    'PERSISTENT_EIGHT_LEVEL_CARBON_OXYGEN_NITROGEN_SURFACE_VERTICAL_AND_HORIZONTAL_LINEAGE_V3');
+    'PERSISTENT_EIGHT_LEVEL_CARBON_OXYGEN_NITROGEN_SCALE_AWARE_FLOODPLAIN_GAS_OWNER_SURFACE_VERTICAL_AND_HORIZONTAL_LINEAGE_V4');
   assert.equal(manifest.seams.atmosphere_biogeochemistry_vertical,
     'SEVEN_NATIVE_ADJACENT_INTERFACE_CARBON_OXYGEN_NITROGEN_RECEIPTS_V1');
   assert.equal(manifest.seams.atmosphere_biogeochemistry_transport,
     'PAIRED_NATIVE_LAYER_DRY_AIR_ROUTE_CARBON_OXYGEN_NITROGEN_RECEIPTS_V2');
   assert.equal(manifest.seams.system_audit,
-    'READ_ONLY_SCHEMA_CONSERVATION_PHASE_THERMAL_ENVELOPE_SCALE_AWARE_LAND_FLOODPLAIN_PLANT_MATTER_RESOURCE_DETRITAL_RETURN_AND_REACTION_RECEIVER_MASS_CARBONATE_AIR_SEA_CARBON_OWNERSHIP_AND_TRUTH_BOUNDARY_AUDIT_V11');
+    'READ_ONLY_SCHEMA_CONSERVATION_PHASE_THERMAL_ENVELOPE_SCALE_AWARE_LAND_FLOODPLAIN_PLANT_MATTER_RESOURCE_DETRITAL_RETURN_REACTION_AND_ATMOSPHERE_GAS_RECEIVER_MASS_CARBONATE_AIR_SEA_CARBON_OWNERSHIP_AND_TRUTH_BOUNDARY_AUDIT_V12');
   assert.equal(manifest.seams.land_ecology,
     'PERSISTENT_LOCAL_CARBON_NITROGEN_CANOPY_ROOT_TRANSPIRATION_AND_SCALE_AWARE_SUBGRID_MASS_CLOSURE_RECEIPT_V2');
   assert.equal(manifest.seams.river_chemistry,
@@ -614,9 +614,9 @@ async function run() {
   assert.equal(manifest.seams.floodplain_nitrification,
     'PAIRED_SURFACE_TEMPERATURE_RESPONSIVE_OXYGEN_AND_ALKALINITY_GATED_LOCAL_FLOODPLAIN_AMMONIUM_TO_NITRATE_RECEIPTS_V2');
   assert.equal(manifest.seams.floodplain_gas_exchange,
-    'PAIRED_BIDIRECTIONAL_FLOODPLAIN_AND_NATIVE_SURFACE_ATMOSPHERE_CARBON_GRADIENT_AND_OXYGEN_EXCHANGE_RECEIPTS_V2');
+    'PAIRED_BIDIRECTIONAL_SCALE_AWARE_FLOODPLAIN_AND_NATIVE_SURFACE_ATMOSPHERE_CARBON_GRADIENT_AND_OXYGEN_EXCHANGE_RECEIPTS_V3');
   assert.equal(manifest.seams.basin_routing,
-    'PERSISTENT_CANONICAL_WATER_CHEMISTRY_NITRATE_AMMONIUM_ALKALINITY_FLOODPLAIN_EVENT_HISTORY_HABITAT_SUCCESSION_SCALE_AWARE_PLANT_MATTER_RESOURCE_DETRITAL_RETURN_AND_REACTION_RECEIVER_CLOSURE_DECOMPOSITION_RESPIRATION_NITRIFICATION_DENITRIFICATION_GAS_EXCHANGE_ESTUARY_ATMOSPHERE_AND_GRAIN_SEDIMENT_ROUTING_V26');
+    'PERSISTENT_CANONICAL_WATER_CHEMISTRY_NITRATE_AMMONIUM_ALKALINITY_FLOODPLAIN_EVENT_HISTORY_HABITAT_SUCCESSION_SCALE_AWARE_PLANT_MATTER_RESOURCE_DETRITAL_RETURN_REACTION_AND_ATMOSPHERE_GAS_RECEIVER_CLOSURE_DECOMPOSITION_RESPIRATION_NITRIFICATION_DENITRIFICATION_GAS_EXCHANGE_ESTUARY_ATMOSPHERE_AND_GRAIN_SEDIMENT_ROUTING_V27');
   assert.equal(manifest.seams.estuary_reactor,
     'PERSISTENT_SEDIMENT_OXYGEN_LIMITED_CNP_AND_ALKALINITY_REACTION_RECEIPT_V2');
   assert.equal(manifest.truth.persistent_estuary_sediment_reservoirs, true);
@@ -966,7 +966,7 @@ async function run() {
     app.includes('SAVE FAILED'),
   'the live API exposes the restored-clock checkpoint and honest browser-save status read-only');
   assert.ok(app.includes("AXMFoundationPlanet/v58") && app.includes('plantMatterMaximumResidualKg') && app.includes('plantMatterMaximumToleranceKg') && app.includes('floodplainPlantMatterMassClosurePolicy') && app.includes('plantSenderMaximumResidualKg') && app.includes('plantSenderMaximumToleranceKg') && app.includes('floodplainPlantResourceMaximumResidualKg') && app.includes('floodplainPlantResourceMaximumToleranceKg') && app.includes('floodplainPlantResourceMassClosurePolicy') && app.includes('landEcologyMassClosurePolicy') && app.includes('boundaryNativeEnvelopeReconciliationJm2') && app.includes('lastBoundaryEnergyReceipt') && app.includes('thermalEnvelopeLimitCount') && app.includes('maximumThermallyRejectedRequestMm') && app.includes('auditFoundationSystem') && app.includes('currentSystemAudit') && app.includes('atmosphereGasProfile') && app.includes('atmosphereGasTransport') && app.includes('lastPressureColumnDynamicsReceipt') && app.includes('verticalInterfaces') && app.includes('adjacentExchangeReceipts') && app.includes('surfaceRainfallMm') && app.includes('surfaceSnowfallMm') && app.includes('cloudIceMm') && app.includes('lastPressureColumnHorizontalTransportReceipt') && app.includes('nativePressureTransportReceipt') && app.includes('lastPressureColumnSyncReceipt') && app.includes('modelTopHeightM') && app.includes('lastVerticalExchangeReceipt') && app.includes('buoyancyWorkJm2') && app.includes('atmosphereGeopotentialEnergyResidualJ') && app.includes('lastBasinRoutingReceipt') && app.includes('basinRoutingDescription') && app.includes('floodplainDescription') && app.includes('floodplainHabitatDescription') && app.includes('floodEventHistoryDescription') && app.includes('floodplainSuccessionDescription') && app.includes('floodplainPlantMatterDescription') && app.includes('floodplainPlantResourcesDescription') && app.includes('floodplainDecompositionDescription') && app.includes('floodplainRespirationDescription') && app.includes('floodplainDenitrificationDescription') && app.includes('floodplainNitrificationDescription') && app.includes('floodplainGasExchangeDescription') && app.includes('floodplainStorage') && app.includes('floodplainHabitat') && app.includes('floodEvents') && app.includes('floodplainSuccession') && app.includes('floodplainPlantMatter') && app.includes('floodplainPlantResources') && app.includes('floodplainDecomposition') && app.includes('floodplainRespiration') && app.includes('floodplainDenitrification') && app.includes('floodplainNitrification') && app.includes('floodplainGasExchange') && app.includes('activeProfileStoredNitrogenSpecies') && app.includes('riverFloodplainNitrateAmmonium') && app.includes('alkalinityKgCaCO3Eq') && app.includes('alkalinityGeneratedKgCaCO3Eq') && app.includes('alkalinityLimitedReachCount') && app.includes('radiationBudget') && app.includes('co2RadiativeFeedback') && app.includes('atmosphereCo2RadiativeCoupling') && app.includes('cryospherePhase') && app.includes('atmosphereBiogeochemistry') && app.includes('canopyPhysiology') && app.includes('carbonFlux') && app.includes('carbonPools') && app.includes('nitrogenCycle') && app.includes('marineProductivity') && app.includes('marineCarbon') && app.includes('marineNutrients') && app.includes('marineCarbonate') && app.includes('marineAirSeaCarbon') && app.includes('mixedLayerCarbonate') && app.includes('airSeaCarbonExchange') && app.includes('marineOxygen') && app.includes('marineDeepOcean') && app.includes('alkalinitySurfaceToDeepKgCaCO3Eqm2') && app.includes('channelChemistry') && app.includes('estuaryStorage') && app.includes('runoffBiogeochemistry') && app.includes('mineralSediment') && app.includes('effectiveSoilDepthM') && app.includes('geomorphicSedimentDescription') && app.includes('createExperienceSectorCapsule') && app.includes('openExperienceLease') && app.includes('dispatchExperienceIntent') && app.includes('auditExperienceProtocol'), 'established systems remain exposed through the current API');
-  assert.ok(app.includes("AXMFoundationPlanet/v56") &&
+  assert.ok(app.includes("AXMFoundationPlanet/v58") &&
     app.includes('detritalReturnMaximumResidualKg') &&
     app.includes('detritalReturnMaximumToleranceKg') &&
     app.includes('floodplainDetritalReturnMassClosurePolicy'),
@@ -3422,6 +3422,18 @@ async function run() {
   assert.equal(floodplain.PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
     'axm.foundation-planet.floodplain-gas-exchange-receipt/v2');
   assert.equal(atmosphereBiogeochemistry
+    .ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA,
+  'axm.foundation-planet.atmosphere-biogeochemistry-state/v4');
+  assert.equal(atmosphereBiogeochemistry
+    .PREVIOUS_ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA,
+  'axm.foundation-planet.atmosphere-biogeochemistry-state/v3');
+  assert.equal(atmosphereBiogeochemistry
+    .LEGACY_ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA,
+  'axm.foundation-planet.atmosphere-biogeochemistry-state/v2');
+  assert.equal(atmosphereBiogeochemistry
+    .OLDEST_ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA,
+  'axm.foundation-planet.atmosphere-biogeochemistry-state/v1');
+  assert.equal(atmosphereBiogeochemistry
     .ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
   'axm.foundation-planet.atmosphere-floodplain-gas-exchange-receipt/v3');
   assert.equal(atmosphereBiogeochemistry
@@ -3470,6 +3482,15 @@ async function run() {
   const gasAtmosphereOwner = atmosphereBiogeochemistry
     .applyAtmosphereFloodplainGasExchange(
       gasAtmosphere, gasPlan.exchange, 1e6, gasContext);
+  assert.ok(gasAtmosphereOwner.receipt.conservation.policy.schema ===
+      atmosphereBiogeochemistry
+        .ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA &&
+    gasAtmosphereOwner.receipt.truth.scaleAwareFloatingPointClosure ===
+      true &&
+    gasAtmosphereOwner.receipt.truth.perIdentityNumericBounds === true &&
+    gasAtmosphereOwner.receipt.truth.measuredResidualsPreserved === true &&
+    gasAtmosphereOwner.receipt.truth.fixedAbsoluteToleranceOnly === false,
+  'the atmosphere owner records its operands, measured residuals and derived per-identity bounds');
   const gasTransition = floodplainGasExchange
     .advanceFloodplainGasExchange(gasProcessState, gasPlan,
       gasFloodplainOwner.receipt, gasAtmosphereOwner.receipt, gasContext);
@@ -3587,7 +3608,7 @@ async function run() {
   'an unloaded atmosphere retains explicit process memory but moves no material and emits no owner receipt');
   const legacyGasState = floodplainGasExchange.emptyFloodplainGasExchangeState();
   legacyGasState.schema = floodplainGasExchange
-    .PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA;
+    .LEGACY_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA;
   legacyGasState.observedExchangeDays = 2;
   legacyGasState.cumulativeExchange = {
     carbonToAtmosphereKgC: 3,
@@ -3604,6 +3625,37 @@ async function run() {
     normalizedLegacyGasState.cumulativeExchange.oxygenToFloodplainKgO2 ===
       4,
   'v1 gas-exchange memory migrates without erasing observed history or inventing reverse carbon transfer');
+  const previousGasState = JSON.parse(JSON.stringify(gasTransition.state));
+  previousGasState.schema = floodplainGasExchange
+    .PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA;
+  previousGasState.lastTransitionReceipt.schema = floodplainGasExchange
+    .PREVIOUS_FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA;
+  const previousGasMaterial = {
+    observedExchangeDays: previousGasState.observedExchangeDays,
+    inactiveDays: previousGasState.inactiveDays,
+    atmosphereUnavailableDays: previousGasState.atmosphereUnavailableDays,
+    cumulativeExchange: JSON.parse(JSON.stringify(
+      previousGasState.cumulativeExchange)),
+    lastFloodplainReceiptDigest: previousGasState.lastFloodplainReceiptDigest,
+    lastAtmosphereReceiptDigest: previousGasState.lastAtmosphereReceiptDigest
+  };
+  const migratedPreviousGasState = floodplainGasExchange
+    .normalizeFloodplainGasExchangeState(previousGasState);
+  assert.deepEqual({
+    observedExchangeDays: migratedPreviousGasState.observedExchangeDays,
+    inactiveDays: migratedPreviousGasState.inactiveDays,
+    atmosphereUnavailableDays:
+      migratedPreviousGasState.atmosphereUnavailableDays,
+    cumulativeExchange: migratedPreviousGasState.cumulativeExchange,
+    lastFloodplainReceiptDigest:
+      migratedPreviousGasState.lastFloodplainReceiptDigest,
+    lastAtmosphereReceiptDigest:
+      migratedPreviousGasState.lastAtmosphereReceiptDigest
+  }, previousGasMaterial,
+  'v2-to-v3 gas-process migration preserves clocks, cumulative exchange and owner digests');
+  assert.ok(migratedPreviousGasState.migrationCheckpoint === true &&
+    migratedPreviousGasState.lastTransitionReceipt === null,
+  'v2-to-v3 gas-process migration drops the old receipt instead of relabeling R62 evidence');
   const migratedGasState = floodplainGasExchange
     .emptyFloodplainGasExchangeState({ migrationCheckpoint: true });
   const migratedGasPlan = floodplainGasExchange.floodplainGasExchangePlan(
@@ -3640,6 +3692,33 @@ async function run() {
     Object.values(migratedGas.state.cumulativeExchange)
       .every(value => value === 0),
   'v15 migration clears its checkpoint without inventing exchange history or moving C/O2');
+  const previousAtmosphereGasState = JSON.parse(JSON.stringify(
+    gasAtmosphereOwner.state));
+  previousAtmosphereGasState.schema = atmosphereBiogeochemistry
+    .PREVIOUS_ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA;
+  previousAtmosphereGasState.lastFloodplainGasExchangeReceipt.schema =
+    atmosphereBiogeochemistry
+      .PREVIOUS_ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA;
+  const previousAtmosphereLayers = JSON.parse(JSON.stringify(
+    previousAtmosphereGasState.layers));
+  const previousAtmosphereCumulative = JSON.parse(JSON.stringify(
+    previousAtmosphereGasState.cumulative));
+  const migratedAtmosphereGasState = atmosphereBiogeochemistry
+    .normalizeAtmosphereBiogeochemistry(previousAtmosphereGasState);
+  assert.ok(migratedAtmosphereGasState.schema ===
+      atmosphereBiogeochemistry.ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA &&
+    migratedAtmosphereGasState.migrationCheckpoint === true &&
+    migratedAtmosphereGasState.migrationSourceSchema ===
+      atmosphereBiogeochemistry
+        .PREVIOUS_ATMOSPHERE_BIOGEOCHEMISTRY_STATE_SCHEMA &&
+    migratedAtmosphereGasState.lastFloodplainGasExchangeReceipt === null,
+  'v3-to-v4 atmosphere migration drops old gas-exchange evidence instead of relabeling it');
+  assert.deepEqual(migratedAtmosphereGasState.layers,
+    previousAtmosphereLayers,
+  'v3-to-v4 atmosphere migration preserves all eight material layers');
+  assert.deepEqual(migratedAtmosphereGasState.cumulative,
+    previousAtmosphereCumulative,
+  'v3-to-v4 atmosphere migration preserves cumulative gas movement');
   const reactionScalesKg = [1e5, 1e6, 1e7, 1e8, 5e8, 1e9,
     5e9, 1e10, 5e10, 1e11, 5e11, 1e12];
   const reactionFractions = [.1, 1 / 3, .5, .9, .999999];
@@ -3783,6 +3862,91 @@ async function run() {
       heldAerobicCounterexample.closure.numericToleranceKg
         .dissolvedOxygenDebitResidualKgO2,
   'the held 500-million-kilogram aerobic counterexample retains its nonzero oxygen residue instead of rounding it away');
+  const atmosphereOwnerAreasM2 = [1e6, 1e8, 1e10, 1e12, 1e14,
+    1e16, 1e18];
+  const atmosphereOwnerFractions = [.1, 1 / 3, .5, .9, .999999];
+  const atmosphereOwnerKinds = [
+    'carbonToAtmosphereKgC',
+    'carbonToFloodplainKgC',
+    'oxygenToFloodplainKgO2'
+  ];
+  const atmosphereOldFixedFailureCounts = Object.fromEntries(
+    atmosphereOwnerKinds.map(kind => [kind, 0]));
+  let atmosphereOwnerCaseCount = 0;
+  let atmosphereOwnerMaximumResidualKg = 0;
+  let atmosphereOwnerMaximumToleranceUtilization = 0;
+  let heldAtmosphereOwnerCounterexample = null;
+  for (const areaM2 of atmosphereOwnerAreasM2) {
+    for (const fraction of atmosphereOwnerFractions) {
+      for (const kind of atmosphereOwnerKinds) {
+        const atmosphereState = atmosphereBiogeochemistry
+          .createAtmosphereBiogeochemistry();
+        const perAreaMaterial = kind === 'carbonToAtmosphereKgC'
+          ? atmosphereState.carbonDioxideCarbonKgCm2
+          : kind === 'carbonToFloodplainKgC'
+            ? atmosphereState.layers[0].carbonDioxideCarbonKgCm2
+            : atmosphereState.layers[0].oxygenKgO2m2;
+        const exchange = {
+          carbonToAtmosphereKgC: 0,
+          carbonToFloodplainKgC: 0,
+          oxygenToFloodplainKgO2: 0,
+          [kind]: perAreaMaterial * areaM2 * fraction
+        };
+        const receipt = atmosphereBiogeochemistry
+          .applyAtmosphereFloodplainGasExchange(atmosphereState, exchange,
+            areaM2, {
+              exchangeId: `test:r62:${kind}:${areaM2}:${fraction}`,
+              reachId: 'test:r62:reach',
+              atmosphereCellId: 'test:r62:air'
+            }).receipt;
+        const numericKeys = Object.keys(
+          receipt.conservation.numericToleranceKg);
+        const oldFixedFailure = numericKeys.some(key =>
+          Math.abs(receipt.conservation[key]) >= 1e-3);
+        if (oldFixedFailure) {
+          atmosphereOldFixedFailureCounts[kind] += 1;
+          heldAtmosphereOwnerCounterexample ||= receipt;
+        }
+        atmosphereOwnerCaseCount += 1;
+        assert.ok(numericKeys.length === 2 && numericKeys.every(key =>
+          Math.abs(receipt.conservation[key]) <=
+            receipt.conservation.numericToleranceKg[key]) &&
+          receipt.conservation.policy.schema ===
+            atmosphereBiogeochemistry
+              .ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_MASS_CLOSURE_POLICY_SCHEMA &&
+          receipt.conservation.policy.arbitraryToleranceAuthority === false &&
+          receipt.truth.scaleAwareFloatingPointClosure === true &&
+          receipt.truth.perIdentityNumericBounds === true &&
+          receipt.truth.measuredResidualsPreserved === true &&
+          receipt.truth.fixedAbsoluteToleranceOnly === false,
+        `${kind} atmosphere-owner receipt closes at ${areaM2} m2 and fraction ${fraction}`);
+        atmosphereOwnerMaximumResidualKg = Math.max(
+          atmosphereOwnerMaximumResidualKg,
+          receipt.conservation.maximumResidualKg);
+        atmosphereOwnerMaximumToleranceUtilization = Math.max(
+          atmosphereOwnerMaximumToleranceUtilization,
+          receipt.conservation.maximumToleranceUtilization);
+      }
+    }
+  }
+  assert.deepEqual(atmosphereOldFixedFailureCounts, {
+    carbonToAtmosphereKgC: 11,
+    carbonToFloodplainKgC: 8,
+    oxygenToFloodplainKgO2: 4
+  }, 'the held atmosphere-owner sweep preserves 23 former fixed-floor false failures as counterevidence');
+  assert.ok(atmosphereOwnerCaseCount === 105 &&
+    atmosphereOwnerMaximumResidualKg === 262144 &&
+    atmosphereOwnerMaximumToleranceUtilization > 0 &&
+    atmosphereOwnerMaximumToleranceUtilization < .13,
+  'all 105 atmosphere-owner cases close with retained residual extrema and bounded tolerance utilization');
+  assert.ok(Object.keys(heldAtmosphereOwnerCounterexample.conservation
+      .numericToleranceKg).some(key =>
+        Math.abs(heldAtmosphereOwnerCounterexample.conservation[key]) >=
+          1e-3 &&
+        Math.abs(heldAtmosphereOwnerCounterexample.conservation[key]) <=
+          heldAtmosphereOwnerCounterexample.conservation
+            .numericToleranceKg[key]),
+  'the held atmosphere-owner counterexample retains its nonzero residual inside the derived operand-scale bound');
   assert.equal(earthSystem.EARTH_SYSTEM_ENGINE_SCHEMA, 'axm.foundation-planet.earth-system-engine/v31', 'engine schema records boundary-energy-aware native atmosphere lineage');
   assert.equal(earthSystem.EARTH_SYSTEM_FLUX_SCHEMA,
     'axm.foundation-planet.earth-system-flux/v4');
@@ -7064,11 +7228,13 @@ async function run() {
   };
   const basinEngine = new basinRouting.BasinRoutingEngine({ maximumReachStates: 64 });
   assert.equal(basinRouting.BASIN_ROUTING_ENGINE_SCHEMA,
-    'axm.foundation-planet.basin-routing-engine/v27');
+    'axm.foundation-planet.basin-routing-engine/v28');
   assert.equal(basinRouting.BASIN_ROUTING_STEP_SCHEMA,
-    'axm.foundation-planet.basin-routing-step/v26');
+    'axm.foundation-planet.basin-routing-step/v27');
   assert.equal(basinRouting.PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA,
-    'axm.foundation-planet.basin-routing-engine/v26');
+    'axm.foundation-planet.basin-routing-engine/v27');
+  assert.equal(basinRouting.PREVIOUS_BASIN_ROUTING_STEP_SCHEMA,
+    'axm.foundation-planet.basin-routing-step/v26');
   assert.equal(basinRouting.BASIN_CLOCK_ALIGNMENT_CHECKPOINT_SCHEMA,
     'axm.foundation-planet.basin-clock-alignment-checkpoint/v1');
   const emptyBasinDescriptor = basinEngine.descriptor('temperate');
@@ -7907,6 +8073,23 @@ async function run() {
     item.id === 'floodplain-atmosphere-gas-exchange-receipts').status,
   'FAIL',
   'a wrong owner digest or false surface-oxygen debit fails the independent gas-exchange audit');
+  const inflatedAtmosphereGasToleranceReceipt = JSON.parse(JSON.stringify(
+    basinStepThree.receipt));
+  inflatedAtmosphereGasToleranceReceipt
+    .atmosphereFloodplainGasExchangeReceipts[0].conservation
+    .numericToleranceKg.carbonResidualKgC *= 10;
+  const inflatedAtmosphereGasToleranceAudit = systemAudit
+    .auditFoundationSystem({
+      column: basinStepThree.columns[0],
+      basinRoutingReceipt: inflatedAtmosphereGasToleranceReceipt
+    });
+  const inflatedAtmosphereGasToleranceCheck =
+    inflatedAtmosphereGasToleranceAudit.checks.find(item =>
+      item.id === 'floodplain-atmosphere-gas-exchange-receipts');
+  assert.ok(inflatedAtmosphereGasToleranceCheck.status === 'FAIL' &&
+    inflatedAtmosphereGasToleranceCheck.evidence.criteria
+      .atmosphereOwnerNumericFailures.length > 0,
+  'the independent audit rejects an atmosphere-owner receipt that inflates a per-identity numeric tolerance');
   const floatingPointBasinReceipt = JSON.parse(JSON.stringify(
     basinStepThree.receipt));
   floatingPointBasinReceipt.conservation.coupledOxygenResidualKgO2 =
@@ -8112,9 +8295,9 @@ async function run() {
   });
   assert.deepEqual(migratedNumericReceiptBasin.snapshot().profiles,
     previousNumericReceiptProfiles,
-  'v26-to-v27 migration preserves every reach owner and clock');
+  'v27-to-v28 migration preserves every reach owner and clock');
   assert.equal(migratedNumericReceiptBasin.status('temperate').receipt, null,
-    'v26-to-v27 migration discards v25 receipts rather than inventing the R61 scale-aware reaction receiver policy');
+    'v27-to-v28 migration discards v26 receipts rather than inventing the R62 atmosphere-owner closure policy');
 
   const mismatchedRestoredClockSave = JSON.parse(JSON.stringify(basinSave));
   mismatchedRestoredClockSave.schema =
@@ -8132,7 +8315,7 @@ async function run() {
     .status('temperate').lastDay;
   const committedEarthTransportDay = basinDayBeforeAlignment + .5;
   assert.ok(mismatchedRestoredClockEngine.status('temperate').receipt,
-    'a current v26 routing receipt is preserved across a state-only v26-to-v27 engine migration');
+    'a current v27 routing receipt is preserved across a state-only v27-to-v28 engine migration');
   const restoredClockAlignment = mismatchedRestoredClockEngine
     .reconcileRestoredClock('temperate', committedEarthTransportDay);
   assert.equal(restoredClockAlignment.status, 'REBASED');

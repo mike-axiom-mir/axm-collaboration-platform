@@ -1,0 +1,53 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "organ",
+  "id": "external-pattern-observatory",
+  "name": "AXM External Pattern Observatory",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "installed": false,
+  "promoted": false,
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "executionProfile": "execution.profile.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "category": "RESEARCH",
+  "layer": "build",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "external-patterns",
+    "source-reported",
+    "license-gate",
+    "deterministic",
+    "review-only"
+  ],
+  "uses": [
+    "deterministic-json-core",
+    "runtime:sha256"
+  ],
+  "permissions": [],
+  "actions": [
+    "compile an inert external pattern matrix into deterministic review cards",
+    "compare two compiled snapshots without fetching or executing upstream material",
+    "surface source, freshness, conflict, and license blocks for human review"
+  ],
+  "accepts": [
+    "axm.external-repo-pattern-matrix/v1",
+    "axm.external-source-assertion-set/v1"
+  ],
+  "produces": [
+    "axm.external-pattern-observatory-report/v1",
+    "axm.external-pattern-snapshot-diff/v1",
+    "axm.external-assertion-resolution/v1"
+  ],
+  "readiness": [
+    "dependency-free-node-runtime",
+    "local-browser-over-loopback",
+    "deterministic-json-core",
+    "sha256-runtime"
+  ],
+  "summary": "A bounded review bridge from source-reported external repository research to inert, digest-bound pattern cards with default-blocked reuse.",
+  "notes": "All bundled repository and license statements are unverified research claims. This module grants no clone, install, execution, reuse, promotion, publication, or CANON authority."
+}

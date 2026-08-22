@@ -1,0 +1,55 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "errol-core-return-lab",
+  "version": "0.1.0",
+  "provides": [
+    "epistemic.observation.commit/v1",
+    "epistemic.claim.assess/v1",
+    "epistemic.attention.project/v1",
+    "emergence.triad.hypothesis.evaluate/v1"
+  ],
+  "consumes": [
+    "human:bounded-source-description",
+    "evidence:external-reference",
+    "model:explicit-snapshot",
+    "measurement:externally-supplied-triad-results"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.epistemic-observation/v1",
+      "axm.epistemic-claim-assessment/v1",
+      "axm.expression-projection/v1",
+      "axm.emergence-hypothesis/v1"
+    ],
+    "accepts": [
+      "bounded observation input",
+      "typed claim plus declared lineage",
+      "model snapshot plus temporary attention frame",
+      "triad members, relations, pair baselines, joint measurement, and provenance"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "raw-private-payload-retention",
+      "observation-to-model-auto-learning",
+      "attention-frame-model-mutation",
+      "generated-center-as-evidence",
+      "self-generated-measurement",
+      "hypothesis-to-fact-promotion",
+      "automatic-execution",
+      "automatic-installation",
+      "automatic-permission-expansion",
+      "automatic-merge",
+      "automatic-root-change",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.asset-human-audio-sensory-review-receipt/v1",
+  "title": "AXM bounded human audio sensory review receipt",
+  "type": "object",
+  "required": ["schema", "id", "digest", "session_id", "modality", "source", "candidate", "listener", "listener_state_digest", "playback_observation", "human_judgment", "runtime", "authority", "truth"],
+  "properties": {
+    "schema": { "const": "axm.asset-human-audio-sensory-review-receipt/v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "digest": { "type": "string", "pattern": "^fnv1a32:[0-9a-f]{8}$" },
+    "session_id": { "type": "string", "minLength": 1 },
+    "modality": { "const": "audio" },
+    "source": { "type": "object" },
+    "candidate": { "type": "object", "required": ["result_digest", "recipe_digest", "wav_digest", "wav_sha256", "analysis_digest", "verification_digest"] },
+    "listener": { "type": "object" },
+    "listener_state_digest": { "type": "string", "pattern": "^fnv1a32:[0-9a-f]{8}$" },
+    "playback_observation": {
+      "type": "object",
+      "required": ["event_count", "saw_playing_event", "browser_transport_observed", "physical_device_verified", "physical_audibility_verified", "events"],
+      "properties": {
+        "browser_transport_observed": { "const": true },
+        "physical_device_verified": { "const": false },
+        "physical_audibility_verified": { "const": false }
+      }
+    },
+    "human_judgment": {
+      "type": "object",
+      "required": ["reviewer", "verdict", "impression", "heard_as_presented", "result_digest", "recipe_digest", "wav_digest", "wav_sha256", "listener_state_digest"],
+      "properties": {
+        "verdict": { "enum": ["ACCEPT_FOR_TEST", "REVISE", "REJECT"] },
+        "impression": { "enum": ["BALANCED", "TOO_LOUD", "TOO_QUIET", "HARSH", "DULL", "TOO_LONG", "TOO_SHORT", "INAUDIBLE", "DEVICE_PROBLEM", "UNCERTAIN"] },
+        "heard_as_presented": { "type": "boolean" }
+      }
+    },
+    "runtime": { "type": "object" },
+    "authority": {
+      "type": "object",
+      "required": ["installed", "promoted", "canonical", "publishes"],
+      "properties": {
+        "installed": { "const": false },
+        "promoted": { "const": false },
+        "canonical": { "const": false },
+        "publishes": { "const": false }
+      }
+    },
+    "truth": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true
+}

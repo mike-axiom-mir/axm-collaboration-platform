@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/ui-machine-patch-v1.schema.json",
+  "title": "AXM UI Machine Patch v1",
+  "type": "object",
+  "required": ["schema", "version", "source_result_digest", "current_result_digest", "current_recipe_digest", "draft_recipe_digest", "source_artifact", "viewer_state_digest", "viewer_state_is_source_neutral", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.ui-machine-patch/v1" },
+    "version": { "const": "0.1.0" },
+    "source_result_digest": { "type": "string", "minLength": 1 },
+    "current_result_digest": { "type": "string", "minLength": 1 },
+    "current_recipe_digest": { "type": "string", "minLength": 1 },
+    "draft_recipe_digest": { "type": "string", "minLength": 1 },
+    "source_artifact": { "type": "object", "required": ["id", "role", "mime", "format", "content_schema", "text", "metadata"] },
+    "viewer_state_digest": { "type": "string", "minLength": 1 },
+    "viewer_state_is_source_neutral": { "const": true },
+    "authority": { "type": "object" },
+    "digest": { "type": "string", "minLength": 1 }
+  }
+}

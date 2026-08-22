@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Local consent and connection settings for AXM Platform Connect.">
+  <title>AXM Platform Connect</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-module-id="axm-platform-courier">
+  <main class="shell">
+    <header class="hero">
+      <div class="mark" aria-hidden="true">AXM</div>
+      <div>
+        <p class="eyebrow">AI-NATIVE FOUNDATION MODULE</p>
+        <h1>Platform Connect</h1>
+        <p class="lede">Let a sandboxed AI use selected AXM capabilities through a typed local courier—without giving it your shell, secrets, or unrestricted files.</p>
+      </div>
+      <div class="live" id="liveState"><span></span><strong>Checking</strong></div>
+    </header>
+
+    <section class="grid" aria-label="Platform Connect settings">
+      <article class="panel settings">
+        <div class="panel-head">
+          <div><p class="eyebrow">LOCAL CONTROL</p><h2>Connection settings</h2></div>
+          <button class="quiet" id="refreshButton" type="button">Refresh</button>
+        </div>
+
+        <label class="field">
+          <span>Platform profile</span>
+          <select id="providerProfile"></select>
+          <small id="providerSummary">Profiles describe compatibility; they do not store platform credentials.</small>
+        </label>
+
+        <div class="transport">
+          <span>Connection route</span>
+          <strong>Shared-folder mailbox</strong>
+          <small>AXM watches a bounded inbox inside its own state folder. No public port or tunnel.</small>
+        </div>
+
+        <fieldset>
+          <legend>Capabilities this connection may request</legend>
+          <label class="switch"><span><strong>Read AXM</strong><small>Discovery, Workshop Search, hand catalogs and local read APIs.</small></span><input id="allowRead" type="checkbox"></label>
+          <label class="switch"><span><strong>Invoke deterministic hands</strong><small>Create bounded artifacts with validation receipts.</small></span><input id="allowHands" type="checkbox"></label>
+          <label class="switch"><span><strong>Run safe previews</strong><small>Allowlisted calculations only; no production mutations.</small></span><input id="allowPreviews" type="checkbox"></label>
+          <label class="switch"><span><strong>Observe Platform Heartbeat</strong><small>Read live rhythm, next beat and organ-bridge status; cannot change the schedule.</small></span><input id="allowHeartbeat" type="checkbox"></label>
+          <label class="switch"><span><strong>Enter the Holodeck</strong><small>Use bounded Echo Atrium sessions through structured senses, deterministic intents, and on-request state-bound WebGL captures.</small></span><input id="allowHolodeck" type="checkbox"></label>
+        </fieldset>
+
+        <div class="row">
+          <label class="field compact"><span>Receipt retention</span><input id="receiptRetention" type="number" min="50" max="500" step="50"><small>Newest 50–500 operation receipts.</small></label>
+          <label class="switch master"><span><strong>Platform Connect enabled</strong><small>Pause the typed door without stopping AXM.</small></span><input id="enabled" type="checkbox"></label>
+        </div>
+
+        <div class="actions">
+          <button class="secondary" id="saveButton" type="button">Save settings</button>
+          <button class="primary" id="grantButton" type="button">Grant selected access</button>
+          <button class="danger" id="revokeButton" type="button">Revoke access</button>
+        </div>
+        <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+      </article>
+
+      <aside class="stack">
+        <article class="panel consent">
+          <p class="eyebrow">CURRENT AUTHORITY</p>
+          <div class="consent-state"><span id="consentDot"></span><strong id="consentState">Checking consent</strong></div>
+          <p id="consentDetail">No platform gains access until a local user grants exact scopes.</p>
+          <div class="scope-list" id="scopeList"></div>
+        </article>
+
+        <article class="panel boundaries">
+          <p class="eyebrow">STRUCTURAL BOUNDARIES</p>
+          <h2>The door stays narrow</h2>
+          <ul>
+            <li><span>✓</span> Typed requests and hashed receipts</li>
+            <li><span>✓</span> Artifacts stay inside courier state</li>
+            <li><span>×</span> No arbitrary shell commands</li>
+            <li><span>×</span> No secrets or credential discovery</li>
+            <li><span>×</span> No remote URLs or public listener</li>
+            <li><span>×</span> No automatic authority expansion</li>
+          </ul>
+        </article>
+      </aside>
+    </section>
+
+    <section class="panel connections">
+      <div class="panel-head"><div><p class="eyebrow">RECENT CONNECTIONS</p><h2>Minimal session evidence</h2></div><p>Metadata only—never prompts or payload contents.</p></div>
+      <div id="connections" class="connection-list"><p class="empty">No courier requests recorded yet.</p></div>
+    </section>
+
+    <footer>
+      <span>Mailbox: <code id="mailboxPath">state/axm-platform-courier/inbox</code></span>
+      <span>Future Command Centre surfaces can use the same <code>/api/platform-connect</code> seam.</span>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

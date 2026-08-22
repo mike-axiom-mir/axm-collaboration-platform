@@ -1,0 +1,163 @@
+{
+  "schema": "axm.execution-profile/v1",
+  "moduleId": "external-pattern-observatory",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "executionClass": [
+    "PURE",
+    "HUMAN_GATE"
+  ],
+  "determinism": {
+    "level": "D3_BYTE_STABLE",
+    "semanticDigestScope": [
+      "normalized project identifiers",
+      "source-reported pattern semantics",
+      "source-reported integration and license classifications"
+    ],
+    "semanticDigestExcludes": [
+      "observation timestamps",
+      "local filesystem paths",
+      "archive container metadata",
+      "input array ordering"
+    ],
+    "replayMode": "RECOMPUTE",
+    "notes": "Stable SHA-256 digests describe normalized review data, not upstream truth or authorization."
+  },
+  "authority": {
+    "requested": [
+      "OBSERVE"
+    ],
+    "neverGrantedByProfile": [
+      "CANON",
+      "PROMOTE",
+      "PUBLISH",
+      "UNBOUNDED_WRITE",
+      "CHANGE_PERMISSIONS"
+    ],
+    "leaseRequired": false,
+    "leaseScope": [],
+    "humanDecisionRequired": true
+  },
+  "sideEffects": [
+    {
+      "kind": "NONE",
+      "target": "pure in-memory review compilation",
+      "reversible": true,
+      "rollbackNote": "Discard the computed report."
+    }
+  ],
+  "schemas": {
+    "input": "axm.external-repo-pattern-matrix/v1",
+    "output": "axm.external-pattern-observatory-report/v1",
+    "events": [],
+    "receipts": [
+      "axm.external-pattern-intake-receipt/v1"
+    ]
+  },
+  "resources": {
+    "maxConcurrent": 1,
+    "timeoutMs": 5000,
+    "maxAttempts": 1,
+    "networkBytes": 0,
+    "writeBytes": 0,
+    "outputBytes": 1000000,
+    "memoryMbSoft": 64,
+    "cpuSecondsSoft": 2
+  },
+  "reliability": {
+    "idempotency": {
+      "mode": "INPUT_DIGEST",
+      "keyField": null
+    },
+    "retry": {
+      "strategy": "NONE",
+      "maxAttempts": 1,
+      "delayMs": 0
+    },
+    "cancellation": "NOT_APPLICABLE",
+    "fallback": "NONE"
+  },
+  "provenance": {
+    "sourceRecords": [
+      {
+        "sourceId": "external-pattern-research-pack-v0.1",
+        "ref": null,
+        "contentDigest": "sha256:5960f537fbc0def1d5014ca8ea4b1813c03e36141a3a20207794aec8c3be630f"
+      }
+    ],
+    "receiptSchema": "axm.external-pattern-intake-receipt/v1",
+    "rawExternalOutputPolicy": "DIGEST_ONLY",
+    "sourceCoordinatesRequired": true
+  },
+  "license": {
+    "class": "UNKNOWN",
+    "reuseMode": "BLOCKED_PENDING_LICENSE",
+    "recordDigest": "sha256:5960f537fbc0def1d5014ca8ea4b1813c03e36141a3a20207794aec8c3be630f",
+    "reviewState": "BLOCKED",
+    "notes": "The pack supplies research hints, not pinned-source license evidence. Pattern review is allowed locally; code and metadata reuse remain separate decisions."
+  },
+  "compatibility": {
+    "moduleContract": "axm.module-contract/v1",
+    "runtime": [
+      "Node.js with crypto",
+      "modern browser with Web Crypto and TextEncoder"
+    ],
+    "versionPins": [
+      "deterministic-json-core:v0.1"
+    ],
+    "contractTests": [
+      "node tools/external-pattern-observatory/selftest.js"
+    ]
+  },
+  "health": {
+    "probe": "selftest exits zero and reports focused assertions",
+    "healthyStates": [
+      "PASS"
+    ],
+    "failureStates": [
+      "FAIL",
+      "missing deterministic JSON dependency",
+      "missing SHA-256 runtime"
+    ],
+    "freshnessSeconds": null
+  },
+  "rollback": {
+    "mode": "DELETE_CANDIDATE",
+    "proofRequired": true,
+    "procedure": [
+      "remove only tools/external-pattern-observatory after confirming the exact leaf path",
+      "rerun Workshop verification to prove no shared seam was required"
+    ]
+  },
+  "gates": [
+    {
+      "id": "deterministic-contract-tests",
+      "required": true,
+      "decisionOwner": "DETERMINISTIC_VALIDATOR",
+      "evidence": [
+        "selftest output"
+      ]
+    },
+    {
+      "id": "external-source-license-review",
+      "required": true,
+      "decisionOwner": "HUMAN_STEWARD",
+      "evidence": [
+        "pinned source coordinates",
+        "license file digest",
+        "reuse decision"
+      ]
+    },
+    {
+      "id": "promotion",
+      "required": true,
+      "decisionOwner": "MIKE_PROMOTION_GATE",
+      "evidence": [
+        "reviewable diff",
+        "focused test receipt",
+        "required Workshop checks"
+      ]
+    }
+  ],
+  "notes": "This draft sidecar is additive only. It cannot override the module contract or grant authority."
+}

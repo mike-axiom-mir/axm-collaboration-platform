@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.spatial-sensory-edit/v1",
+  "title": "AXM bounded spatial sensory edit",
+  "type": "object",
+  "required": ["schema", "version", "source_result_digest", "source_project_digest", "before_digest", "after_digest", "controls", "primitive_control_mode", "authority"],
+  "properties": {
+    "schema": { "const": "axm.spatial-sensory-edit/v1" },
+    "version": { "const": "1.0.0" },
+    "primitive_control_mode": { "const": "brief-semantic-inference" },
+    "controls": { "type": "object", "required": ["primitive", "dimensions", "max_polygon_count", "position", "rotation", "inflate", "twist", "baseColor", "metallic", "roughness", "opacity", "doubleSided", "seed"] },
+    "authority": { "type": "object", "required": ["candidate_only", "installed", "promoted", "canonical", "publishes"], "properties": { "candidate_only": { "const": true }, "installed": { "const": false }, "promoted": { "const": false }, "canonical": { "const": false }, "publishes": { "const": false } } }
+  },
+  "additionalProperties": true
+}

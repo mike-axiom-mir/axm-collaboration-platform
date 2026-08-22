@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.platform-courier.response/v1",
+  "type": "object",
+  "required": ["schema", "id", "action", "ok", "requestSha256", "receiptSha256", "startedAt", "completedAt"],
+  "properties": {
+    "schema": { "const": "axm.platform-courier.response/v1" },
+    "id": { "type": "string" },
+    "action": { "type": ["string", "null"] },
+    "ok": { "type": "boolean" },
+    "requestSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "receiptSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "startedAt": { "type": "string" },
+    "completedAt": { "type": "string" },
+    "result": {},
+    "error": { "type": ["string", "null"] },
+    "boundaries": { "type": "object" }
+  },
+  "additionalProperties": true
+}

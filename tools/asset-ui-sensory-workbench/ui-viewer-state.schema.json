@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/ui-sensory-viewer-state-v1.schema.json",
+  "title": "AXM UI Sensory Viewer State v1",
+  "type": "object",
+  "required": ["schema", "render_mode", "component_state", "stretch_width", "stretch_height", "zoom_percent", "background", "contrast_mode", "safe_area", "focus_visible", "input_journey", "reduced_motion_preference", "comparison_source"],
+  "properties": {
+    "schema": { "const": "axm.ui-sensory-viewer-state/v1" },
+    "render_mode": { "enum": ["raw", "nine-slice"] },
+    "component_state": { "enum": ["default", "hover", "active", "disabled"] },
+    "stretch_width": { "type": "number", "minimum": 1, "maximum": 8192 },
+    "stretch_height": { "type": "number", "minimum": 1, "maximum": 8192 },
+    "zoom_percent": { "type": "number", "minimum": 25, "maximum": 400 },
+    "background": { "enum": ["dark", "light", "checker", "game"] },
+    "contrast_mode": { "enum": ["normal", "high"] },
+    "safe_area": { "enum": ["none", "mobile", "tv"] },
+    "focus_visible": { "type": "boolean" },
+    "input_journey": { "enum": ["none", "pointer", "keyboard", "simulated-gamepad"] },
+    "reduced_motion_preference": { "type": "boolean" },
+    "comparison_source": { "enum": ["original", "current"] }
+  },
+  "additionalProperties": false
+}

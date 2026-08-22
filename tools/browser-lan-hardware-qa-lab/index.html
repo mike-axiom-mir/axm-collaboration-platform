@@ -3,32 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Browser, LAN &amp; Hardware QA Lab</title>
+  <title>Browser, LAN & Hardware QA Lab</title>
   <link rel="stylesheet" href="../../shared/operations/operations-ui.css">
-  <style>
-    .phone-checklist { margin: 16px 0; padding: 14px; border: 1px solid var(--line); border-radius: 12px; }
-    .phone-checklist legend { padding: 0 8px; color: var(--text); font-weight: 750; }
-    .phone-checklist label, .phone-confirm { display: flex; align-items: flex-start; gap: 10px; }
-    .phone-checklist input[type="checkbox"], .phone-confirm input[type="checkbox"] {
-      width: auto;
-      flex: 0 0 auto;
-      margin: 3px 0 0;
-      padding: 0;
-      accent-color: var(--accent);
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
     <a href="../../hub/index.html">&larr; Hub</a>
     <div>
       <span class="eyebrow">JOURNEY -&gt; VIEWPORT -&gt; LATENCY -&gt; GAMEPAD -&gt; RECEIPT</span>
-      <h1>Browser, LAN &amp; Hardware QA Lab</h1>
+      <h1>Browser, LAN & Hardware QA Lab</h1>
       <p>Repeatable loopback journeys plus evidence captured by the browser you are actually using.</p>
     </div>
   </header>
   <main>
-    <div id="notice" class="notice hidden"></div>
+    <div id="notice" class="notice hidden" role="status" aria-live="polite"></div>
     <section class="grid">
       <article class="panel">
         <h2>Bounded journey</h2>
@@ -39,42 +28,42 @@
             <option>game-night-smoke</option>
           </select>
         </label>
-        <button id="run">Run profile</button>
+        <button id="run" type="button">Run profile</button>
         <p class="truth">Requires <code>qa.run</code>. No arbitrary URL or network scan.</p>
       </article>
       <article class="panel">
         <h2>This device</h2>
         <p>Records viewport, contrast preferences, three loopback latency samples and browser-exposed gamepad metadata.</p>
-        <button id="capture">Capture device evidence</button>
+        <button id="capture" type="button">Capture device evidence</button>
       </article>
-    </section>
-    <section class="panel" aria-labelledby="phoneCandidateTitle">
-      <h2 id="phoneCandidateTitle">Optional physical-phone observation candidate</h2>
-      <p>Use this only while visibly observing a separate phone on the selected game's real controller route. These declarations create a review candidate—not proof and not warning closure.</p>
-      <label>Campaign game id (checked against the warning queue during review)
-        <input id="phoneGame" value="002-robo-pong" inputmode="text" pattern="[0-9]{3}-[a-z0-9-]+" autocomplete="off">
-      </label>
-      <fieldset class="phone-checklist">
-        <legend>Observed during this session</legend>
-        <label><input id="phonePresent" type="checkbox"> A separate physical phone was visibly present.</label>
-        <label><input id="controllerJoined" type="checkbox"> The phone controller joined the selected game.</label>
-        <label><input id="seatMatched" type="checkbox"> The visible seat identity matched the intended seat.</label>
-        <label><input id="actionObserved" type="checkbox"> A phone action visibly changed the shared game screen.</label>
-        <label><input id="disconnectObserved" type="checkbox"> A deliberate link interruption was observed.</label>
-        <label><input id="recoveredObserved" type="checkbox"> The same controller recovered after interruption.</label>
-      </fieldset>
-      <label class="phone-confirm"><input id="phoneVoluntary" type="checkbox"> I voluntarily choose to save this bounded observation candidate.</label>
-      <button id="capturePhone">Capture phone candidate</button>
-      <div class="toolbar">
-        <button id="openPhoneReview" class="secondary" disabled>Send latest candidate to Review Inbox</button>
-        <a id="reviewInbox" href="../review-inbox/index.html" hidden>Open Review Inbox &rarr;</a>
-      </div>
-      <p class="truth">Unchecked observations remain incomplete. Stopping or retrying is allowed. The inbox binds review to the exact receipt digest; it still cannot prove hardware, clear a warning, or replace the separate human-usefulness route.</p>
+      <article class="panel phone-panel" aria-labelledby="phone-title">
+        <h2 id="phone-title">Physical phone observation</h2>
+        <p class="truth" id="phone-boundary">Candidate evidence only. Nothing here proves hardware, clears a warning, or changes a game manifest.</p>
+        <label>Pending game
+          <select id="game" aria-describedby="queue phone-boundary">
+            <option value="">Choose a pending game</option>
+          </select>
+        </label>
+        <fieldset>
+          <legend>Human-observed checklist</legend>
+          <label><input id="phone-present" type="checkbox"> A separate physical phone is visibly present</label>
+          <label><input id="controller-joined" type="checkbox"> Its controller joined the selected game</label>
+          <label><input id="seat-matched" type="checkbox"> The visible seat identity matched</label>
+          <label><input id="action-observed" type="checkbox"> A phone action changed the shared game screen</label>
+          <label><input id="disconnect-observed" type="checkbox"> A deliberate link interruption was observed</label>
+          <label><input id="recovery-observed" type="checkbox"> The same controller recovered afterward</label>
+        </fieldset>
+        <label>Review notes
+          <textarea id="observation-notes" maxlength="1000" rows="4" placeholder="Device, seat, action, interruption, and anything that failed."></textarea>
+        </label>
+        <button id="capture-phone" type="button">Capture candidate receipt</button>
+        <p id="queue" class="truth">Loading the verifier's pending-game queue...</p>
+      </article>
     </section>
     <section class="panel">
       <div class="toolbar">
         <h2>Evidence</h2>
-        <button id="refresh" class="secondary">Refresh</button>
+        <button id="refresh" class="secondary" type="button">Refresh</button>
       </div>
       <div id="facts" class="facts"></div>
       <pre id="out" class="code">Loading...</pre>

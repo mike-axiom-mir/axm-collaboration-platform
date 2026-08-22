@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.material-sensory-review-receipt/v1",
+  "title": "AXM bounded human material sensory review receipt",
+  "type": "object",
+  "required": ["schema", "version", "id", "digest", "session_id", "modality", "source", "candidate", "viewer", "viewer_state_digest", "render_observation", "human_judgment", "runtime", "authority", "truth"],
+  "properties": {
+    "schema": { "const": "axm.material-sensory-review-receipt/v1" },
+    "version": { "const": "0.1.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "digest": { "type": "string", "pattern": "^fnv1a32:[0-9a-f]{8}$" },
+    "session_id": { "type": "string", "minLength": 1 },
+    "modality": { "const": "visual-material" },
+    "source": { "type": "object", "required": ["result_digest", "recipe_digest"] },
+    "candidate": { "type": "object", "required": ["result_digest", "recipe_digest", "recipe_artifact_digest", "receipt_artifact_digest", "artifact_transport_digests", "png_sha256", "sampling_contract_digest"] },
+    "viewer": { "type": "object" },
+    "viewer_state_digest": { "type": "string", "pattern": "^fnv1a32:[0-9a-f]{8}$" },
+    "render_observation": {
+      "type": "object",
+      "required": ["dynamic_webgl2_observed", "event_count", "events", "target_renderer_parity_verified", "physical_surface_verified", "representative_gpu_verified"],
+      "properties": {
+        "dynamic_webgl2_observed": { "type": "boolean" },
+        "target_renderer_parity_verified": { "const": false },
+        "physical_surface_verified": { "const": false },
+        "representative_gpu_verified": { "const": false }
+      }
+    },
+    "human_judgment": {
+      "type": "object",
+      "required": ["reviewer", "verdict", "dynamic_view_observed", "observations", "result_digest", "recipe_digest", "png_sha256", "sampling_contract_digest", "viewer_state_digest", "comparison_source", "authority"],
+      "properties": {
+        "verdict": { "enum": ["ACCEPT_FOR_TEST", "REVISE", "REJECT"] },
+        "dynamic_view_observed": { "type": "boolean" },
+        "authority": { "const": "human-report-only" }
+      }
+    },
+    "runtime": { "type": "object" },
+    "authority": {
+      "type": "object",
+      "required": ["candidate_only", "installed", "promoted", "canonical", "publishes"],
+      "properties": {
+        "candidate_only": { "const": true },
+        "installed": { "const": false },
+        "promoted": { "const": false },
+        "canonical": { "const": false },
+        "publishes": { "const": false }
+      }
+    },
+    "truth": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true
+}

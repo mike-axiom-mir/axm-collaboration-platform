@@ -1,0 +1,132 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "compile-inert-review-cards",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "strict-deterministic-canonical-json",
+        "runtime:sha256",
+        "external-pattern.card.compile/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "strict-deterministic-canonical-json": [
+          "representation equality only; not schema or truth proof"
+        ],
+        "external-pattern.card.compile/v1": [
+          "source-reported data only; no upstream verification"
+        ]
+      }
+    },
+    {
+      "id": "compare-and-preserve-disagreement",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "external-pattern.snapshot.diff/v1",
+        "external-pattern.assertion.resolve/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "external-pattern.assertion.resolve/v1": [
+          "agreement remains UNVERIFIED"
+        ]
+      }
+    },
+    {
+      "id": "review-without-authority",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "external-pattern.review.observe/v1"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "external-pattern.review.observe/v1": [
+          "local review UI; no persistence or export"
+        ]
+      }
+    },
+    {
+      "id": "verify-current-upstream-license",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "external-source.license.verify-pinned/v1"
+      ],
+      "declaredConstraints": {
+        "external-source.license.verify-pinned/v1": [
+          "requires exact pinned source, license evidence, and human/rights review"
+        ]
+      }
+    },
+    {
+      "id": "validate-draft-execution-profile-schema",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "json-schema.draft-2020-12.validate/v1"
+      ],
+      "declaredConstraints": {
+        "json-schema.draft-2020-12.validate/v1": [
+          "Python jsonschema and Node AJV are not present in the current Workshop runtime"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "external-source.license.verify-pinned/v1",
+    "json-schema.draft-2020-12.validate/v1"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "external-source.license.verify-pinned/v1",
+      "requiredBy": [
+        "verify-current-upstream-license"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "json-schema.draft-2020-12.validate/v1",
+      "requiredBy": [
+        "validate-draft-execution-profile-schema"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

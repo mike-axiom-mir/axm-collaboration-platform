@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.asset-human-sensory-review-receipt/v1",
+  "title": "AXM bounded human sensory review receipt",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "digest",
+    "session_id",
+    "modality",
+    "source",
+    "draft",
+    "viewer",
+    "viewer_state_digest",
+    "human_judgment",
+    "runtime",
+    "authority",
+    "truth"
+  ],
+  "properties": {
+    "schema": { "const": "axm.asset-human-sensory-review-receipt/v1" },
+    "id": { "type": "string", "minLength": 1 },
+    "digest": { "type": "string", "pattern": "^fnv1a32:[0-9a-f]{8}$" },
+    "session_id": { "type": "string", "minLength": 1 },
+    "modality": { "const": "visual-motion" },
+    "source": {
+      "type": "object",
+      "required": ["schema", "id", "digest"]
+    },
+    "draft": {
+      "type": "object",
+      "required": ["schema", "id", "digest"]
+    },
+    "edits": { "type": "array" },
+    "viewer": { "type": "object" },
+    "viewer_state_digest": { "type": "string", "pattern": "^fnv1a32:[0-9a-f]{8}$" },
+    "human_judgment": {
+      "type": "object",
+      "required": ["reviewer", "verdict", "impression", "source_digest", "draft_digest", "viewer_state_digest"],
+      "properties": {
+        "verdict": { "enum": ["ACCEPT_FOR_TEST", "REVISE", "REJECT"] },
+        "impression": {
+          "enum": ["CLEAR", "TOO_FAST", "TOO_SLOW", "TOO_BUSY", "LOW_CONTRAST", "UNCOMFORTABLE", "UNCERTAIN"]
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["id", "version", "surface", "scheduler", "frame_pacing_verified", "rolling_buffer_capability"],
+      "properties": {
+        "id": { "const": "asset-sensory-workbench" },
+        "surface": { "const": "local-browser" },
+        "frame_pacing_verified": { "const": false },
+        "rolling_buffer_capability": { "const": false }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "required": ["installed", "promoted", "canonical", "publishes"],
+      "properties": {
+        "installed": { "const": false },
+        "promoted": { "const": false },
+        "canonical": { "const": false },
+        "publishes": { "const": false }
+      }
+    },
+    "truth": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": true
+}

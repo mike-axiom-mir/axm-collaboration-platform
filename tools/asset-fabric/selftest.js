@@ -807,6 +807,14 @@ test("UI loads target canvas, interchange codecs, contract-v2 providers and miss
   assert(html.includes("target-canvas.js"));
   assert(html.includes("physical-mark.js"));
   assert(html.includes("raster-codec.js"));
+  assert(html.includes("raster-operations-core.js"));
+  assert(html.includes("pixel-animation-core.js"));
+  assert(html.includes("pixel-asset-workshop.js"));
+  assert(html.includes("pixel-animation-workshop.js"));
+  assert(html.includes("visual-capability-catalog.generated.js"));
+  assert(html.includes("visual-treatment-core.js"));
+  assert(html.includes("visual-treatment-composer.js"));
+  assert(html.includes("pbr-material-bake.js"));
   assert(html.includes("ktx2-codec.js"));
   assert(html.includes("basis_encoder.js"));
   assert(html.includes("pdf-codec.js"));
@@ -831,6 +839,13 @@ test("UI loads target canvas, interchange codecs, contract-v2 providers and miss
   assert(
     html.indexOf("gltf-codec.js") < html.indexOf("rigged-gltf-codec.js"),
     "glTF codec must load before the rigged codec that consumes it",
+  );
+  assert(
+    html.indexOf("raster-operations-core.js") <
+      html.indexOf("pixel-animation-core.js") &&
+      html.indexOf("pixel-animation-core.js") <
+        html.indexOf("pixel-animation-workshop.js"),
+    "pixel animation dependencies must load before the browser hand",
   );
   assert(html.includes("native-dcc-bridge.js"));
   assert(app.includes("Composer.directedVariation"));

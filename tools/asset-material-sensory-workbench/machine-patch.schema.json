@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.material-machine-patch/v1",
+  "title": "AXM candidate-only deterministic material edit packet",
+  "type": "object",
+  "required": ["schema", "version", "session_id", "source_result_digest", "current_result_digest", "source_recipe_digest", "current_recipe_digest", "draft_recipe_digest", "source_artifact", "target_canvas_patch", "edits", "pending_edit", "viewer_state_digest", "viewer_state_is_source_neutral", "stale_review_history", "authority", "truth", "digest"],
+  "properties": {
+    "schema": { "const": "axm.material-machine-patch/v1" },
+    "version": { "const": "0.1.0" },
+    "digest": { "type": "string", "pattern": "^fnv1a32:[0-9a-f]{8}$" },
+    "source_artifact": {
+      "type": "object",
+      "required": ["schema", "content_schema", "editable", "text", "metadata"],
+      "properties": {
+        "schema": { "const": "axm.asset-source-artifact/v1" },
+        "content_schema": { "const": "axm.pbr-material-recipe/v1" },
+        "editable": { "const": true }
+      }
+    },
+    "target_canvas_patch": { "type": "object" },
+    "viewer_state_is_source_neutral": { "const": true },
+    "authority": {
+      "type": "object",
+      "required": ["candidate_only", "installed", "promoted", "canonical", "publishes"],
+      "properties": {
+        "candidate_only": { "const": true },
+        "installed": { "const": false },
+        "promoted": { "const": false },
+        "canonical": { "const": false },
+        "publishes": { "const": false }
+      }
+    }
+  },
+  "additionalProperties": true
+}

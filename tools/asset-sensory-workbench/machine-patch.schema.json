@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.asset-sensory-machine-patch/v1",
+  "title": "AXM digest-bound asset sensory machine patch",
+  "type": "object",
+  "required": ["schema", "source", "result", "operations", "draft_source", "roundtrip_source_artifact", "authority", "digest"],
+  "properties": {
+    "schema": { "const": "axm.asset-sensory-machine-patch/v1" },
+    "source": { "type": "object", "required": ["schema", "id", "digest"] },
+    "result": { "type": "object", "required": ["schema", "id", "digest"] },
+    "operations": { "type": "array" },
+    "draft_source": { "type": "object" },
+    "roundtrip_source_artifact": { "type": "object" },
+    "authority": {
+      "type": "object",
+      "properties": {
+        "installed": { "const": false },
+        "promoted": { "const": false },
+        "canonical": { "const": false },
+        "publishes": { "const": false }
+      }
+    },
+    "digest": { "type": "string", "pattern": "^fnv1a32:[0-9a-f]{8}$" }
+  },
+  "additionalProperties": true
+}

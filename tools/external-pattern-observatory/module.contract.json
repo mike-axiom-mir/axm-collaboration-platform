@@ -1,0 +1,53 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "external-pattern-observatory",
+  "version": "v0.1",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "external-pattern.matrix.normalize/v1",
+    "external-pattern.card.compile/v1",
+    "external-pattern.snapshot.diff/v1",
+    "external-pattern.assertion.resolve/v1",
+    "external-pattern.review.observe/v1"
+  ],
+  "consumes": [
+    "strict-deterministic-canonical-json",
+    "runtime:sha256",
+    "axm.external-repo-pattern-matrix/v1",
+    "human:review"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.external-pattern-observatory-report/v1",
+      "axm.external-pattern-snapshot-diff/v1",
+      "axm.external-assertion-resolution/v1"
+    ],
+    "accepts": [
+      "axm.external-repo-pattern-matrix/v1",
+      "axm.external-source-assertion-set/v1"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "embedded-instruction-execution",
+      "network-fetch",
+      "repository-clone",
+      "package-install",
+      "foreign-code-execution",
+      "license-hint-as-verified-license",
+      "pattern-card-as-runtime-proof",
+      "automatic-reuse-approval",
+      "automatic-promotion",
+      "automatic-publication",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

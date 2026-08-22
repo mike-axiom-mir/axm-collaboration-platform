@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/external-pattern-card.v1.schema.json",
+  "title": "AXM External Pattern Card v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "id",
+    "sourceId",
+    "family",
+    "priority",
+    "integrationMode",
+    "summary",
+    "axmUse",
+    "warnings",
+    "source",
+    "license",
+    "instructionTreatment",
+    "semanticDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.external-pattern-card/v1" },
+    "id": { "type": "string", "pattern": "^pattern:[a-z0-9._-]+$" },
+    "sourceId": { "type": "string", "pattern": "^external-repo:[a-z0-9._-]+$" },
+    "family": { "type": "string", "minLength": 1 },
+    "priority": { "type": "string", "minLength": 1 },
+    "integrationMode": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string", "minLength": 1 },
+    "axmUse": { "type": "array", "items": { "type": "string" } },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assertionState", "coordinates", "pinnedContentDigest", "freshness", "stale"],
+      "properties": {
+        "assertionState": { "const": "SOURCE_REPORTED_UNVERIFIED" },
+        "coordinates": { "type": "null" },
+        "pinnedContentDigest": { "type": "null" },
+        "freshness": { "const": "UNKNOWN" },
+        "stale": { "const": true }
+      }
+    },
+    "license": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reportedHint", "reportedClass", "verification", "reuseDecision"],
+      "properties": {
+        "reportedHint": { "type": "string" },
+        "reportedClass": { "type": "string" },
+        "verification": { "const": "UNVERIFIED" },
+        "reuseDecision": { "const": "BLOCKED_PENDING_PINNED_SOURCE_LICENSE" }
+      }
+    },
+    "instructionTreatment": { "const": "INERT_DATA" },
+    "semanticDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

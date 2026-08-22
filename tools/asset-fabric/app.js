@@ -273,7 +273,13 @@
       )
     )
       return candidate.preview.dataUrl;
-    var artifact = candidateArtifact(candidate);
+    var artifact =
+      candidate.handResult && candidate.preview
+        ? candidate.handResult.artifacts.find(function (item) {
+            return item.id === candidate.preview.artifactId;
+          })
+        : null;
+    artifact = artifact || candidateArtifact(candidate);
     if (
       artifact &&
       artifact.mime === "image/svg+xml" &&
@@ -352,6 +358,7 @@
                 Hands.RESULT_SCHEMA,
                 "image/svg+xml",
                 "image/png",
+                "image/apng",
                 "image/ktx2",
                 "image/jpeg",
                 "image/webp",
@@ -1077,6 +1084,19 @@
         behaviour: "animated",
         outputs: "image/apng",
         recipes: "axm.animated-raster-recipe/v1",
+        editable: true,
+      };
+    if (kind === "procedural-animation")
+      profile = {
+        use: "procedural-animation",
+        medium: "game-world",
+        width: 96,
+        height: 96,
+        unit: "px",
+        colour: "srgb",
+        behaviour: "animated",
+        outputs: "application/json, text/css, image/svg+xml, axm.sprite-atlas/v1",
+        recipes: "axm.deterministic-animation-recipe/v1, axm.deterministic-animation-composition/v1",
         editable: true,
       };
     if (["device-ui", "midi-map", "notation", "score"].indexOf(kind) >= 0)

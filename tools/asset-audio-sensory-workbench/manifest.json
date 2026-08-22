@@ -1,0 +1,30 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "asset-audio-sensory-workbench",
+  "name": "AXM Asset Audio Sensory Workbench",
+  "version": "v0.1.0",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "category": "ASSET_CREATION",
+  "layer": "experience",
+  "audience": "human-machine",
+  "risk": "MEDIUM",
+  "tags": ["assets", "audio", "listening-review", "deterministic-editing", "local-first"],
+  "uses": ["filesystem-read", "browser-dom", "loopback-http", "explicit-download"],
+  "permissions": [],
+  "actions": [
+    "inspect and play an exact deterministic WAV candidate",
+    "apply allowlisted edits through a bounded loopback Asset Hand host",
+    "change listener preferences without mutating the audio recipe",
+    "export digest-bound machine patches and human listening receipts"
+  ],
+  "accepts": ["axm.asset-hand-result/v1", "axm.deterministic-audio-recipe/v1"],
+  "produces": ["axm.asset-audio-sensory-machine-patch/v1", "axm.asset-human-audio-sensory-review-receipt/v1"],
+  "readiness": ["bounded-loopback-host", "candidate-only", "audio-modality", "degraded-read-only-fallback"],
+  "summary": "A bounded human listening and machine-editing surface for deterministic audio Asset Hand candidates.",
+  "notes": "TEST after focused core/host integration and live browser journeys. No installation, promotion, canon, physical-audibility, output-device, acoustic, accessibility or aesthetic authority."
+}

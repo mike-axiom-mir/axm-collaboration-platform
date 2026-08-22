@@ -1,0 +1,118 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "private-local-experimental-intake",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "archive.source.preserve",
+        "archive.content-ledger.verify.current",
+        "integration.epistemic.orientation",
+        "integration.emergence.triad",
+        "authority.no-self-promotion",
+        "verification.deterministic",
+        "verification.visual"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "archive.source.preserve": [
+          "Original ZIP remained unchanged in Downloads; extraction used a temporary quarantine copy."
+        ],
+        "archive.content-ledger.verify.current": [
+          "One-off independent verification of this archive's 91 declared file digests and exact coverage; no archive code executed."
+        ],
+        "integration.epistemic.orientation": [
+          "Private-local EXPERIMENTAL adapter only; no raw payload retention or automatic model mutation."
+        ],
+        "integration.emergence.triad": [
+          "Externally supplied evidence and provisional thresholds; output remains a hypothesis."
+        ],
+        "authority.no-self-promotion": [
+          "installed=false, promoted=false, no execution, root, permanent-merge, or CANON authority."
+        ],
+        "verification.deterministic": [
+          "Focused Node self-test passes 72 assertions."
+        ],
+        "verification.visual": [
+          "Desktop click journeys and 390x844 responsive layout observed in the Codex in-app browser."
+        ]
+      }
+    },
+    {
+      "id": "generalized-deep-archive-verification",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "archive.content-ledger.verify.general"
+      ],
+      "declaredConstraints": {
+        "archive.content-ledger.verify.general": [
+          "Archive Intake Cartographer intentionally stops at central-directory evidence."
+        ]
+      }
+    },
+    {
+      "id": "commercial-or-public-release",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "authority.errol.commercial-rights.confirmed"
+      ],
+      "declaredConstraints": {
+        "authority.errol.commercial-rights.confirmed": [
+          "The delivered package says public redistribution and commercial-use permission are not established."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "archive.content-ledger.verify.general",
+    "authority.errol.commercial-rights.confirmed"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "archive.content-ledger.verify.general",
+      "requiredBy": [
+        "generalized-deep-archive-verification"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "authority.errol.commercial-rights.confirmed",
+      "requiredBy": [
+        "commercial-or-public-release"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

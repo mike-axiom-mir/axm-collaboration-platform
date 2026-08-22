@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.platform-connect.settings/v1",
+  "type": "object",
+  "required": ["schema", "enabled", "connectionMode", "providerProfile", "allowRead", "allowHandInvocation", "allowSafePreviews", "allowHeartbeatStatus", "allowHolodeck", "receiptRetention"],
+  "properties": {
+    "schema": { "const": "axm.platform-connect.settings/v1" },
+    "enabled": { "type": "boolean" },
+    "connectionMode": { "const": "shared-folder-mailbox" },
+    "providerProfile": { "enum": ["anthropic-platform", "generic-sandbox", "local-agent"] },
+    "allowRead": { "type": "boolean" },
+    "allowHandInvocation": { "type": "boolean" },
+    "allowSafePreviews": { "type": "boolean" },
+    "allowHeartbeatStatus": { "type": "boolean" },
+    "allowHolodeck": { "type": "boolean" },
+    "receiptRetention": { "type": "integer", "minimum": 50, "maximum": 500 },
+    "updatedAt": { "type": ["string", "null"] },
+    "updatedBy": { "type": ["string", "null"], "maxLength": 120 }
+  },
+  "additionalProperties": false
+}

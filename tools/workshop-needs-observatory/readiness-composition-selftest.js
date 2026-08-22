@@ -55,7 +55,7 @@ try {
   const verificationResults = {
     schema: 'axm.tool-selftest-results/v1',
     generatedAt: new Date().toISOString(),
-    results: [{ id: manifest.id, path: indexedTool.selftest.promotionPath, selftestSha256: indexedTool.selftest.sha256, verdict: 'PASS', exitCode: 0, durationMs: 1 }]
+    results: [{ id: manifest.id, path: indexedTool.selftest.promotionPath, selftestSha256: indexedTool.selftest.sha256, selftestDigestScope: indexedTool.selftest.digestScope, verdict: 'PASS', exitCode: 0, durationMs: 1 }]
   };
   writeJson(receiptFile, verificationResults);
   writeJson(indexFile, Readiness.buildIndex(root, { verificationResults }));
@@ -68,6 +68,7 @@ try {
   assert.deepEqual(status.readiness.reviewCandidates.map(item => item.id), ['review-candidate']);
   assert.equal(status.readiness.reviewCandidates[0].humanDecisionRequired, true);
   assert.equal(status.readiness.truth.selftestPassIsHumanApproval, false);
+  assert.equal(status.readiness.truth.selftestReceiptBindsDiscoveredSuite, true);
   assert.ok(status.readiness.authority.reviewCandidateDoesNotMean.includes('need-satisfied'));
   assert.equal(status.needs.find(item => item.id === need.id).state, 'OPEN');
   assert.equal(status.needs.find(item => item.id === need.id).computedState, undefined);

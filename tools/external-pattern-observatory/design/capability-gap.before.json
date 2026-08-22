@@ -1,0 +1,190 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "compile-inert-review-cards",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "strict-deterministic-canonical-json",
+        "runtime:sha256"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "external-pattern.card.compile/v1"
+      ],
+      "declaredConstraints": {
+        "strict-deterministic-canonical-json": [
+          "representation equality only; not schema or truth proof"
+        ]
+      }
+    },
+    {
+      "id": "compare-and-preserve-disagreement",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "external-pattern.snapshot.diff/v1",
+        "external-pattern.assertion.resolve/v1"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "review-without-authority",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "external-pattern.review.observe/v1"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "verify-current-upstream-license",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "external-source.license.verify-pinned/v1"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "validate-draft-execution-profile-schema",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "json-schema.draft-2020-12.validate/v1"
+      ],
+      "declaredConstraints": {
+        "json-schema.draft-2020-12.validate/v1": [
+          "Python jsonschema and Node AJV are not present in the current Workshop runtime"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "external-pattern.assertion.resolve/v1",
+    "external-pattern.card.compile/v1",
+    "external-pattern.review.observe/v1",
+    "external-pattern.snapshot.diff/v1",
+    "external-source.license.verify-pinned/v1",
+    "json-schema.draft-2020-12.validate/v1"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "external-pattern.assertion.resolve/v1",
+      "requiredBy": [
+        "compare-and-preserve-disagreement"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "external-pattern.card.compile/v1",
+      "requiredBy": [
+        "compile-inert-review-cards"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "external-pattern.review.observe/v1",
+      "requiredBy": [
+        "review-without-authority"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "external-pattern.snapshot.diff/v1",
+      "requiredBy": [
+        "compare-and-preserve-disagreement"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "external-source.license.verify-pinned/v1",
+      "requiredBy": [
+        "verify-current-upstream-license"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "json-schema.draft-2020-12.validate/v1",
+      "requiredBy": [
+        "validate-draft-execution-profile-schema"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

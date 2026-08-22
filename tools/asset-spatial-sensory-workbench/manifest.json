@@ -1,0 +1,31 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "asset-spatial-sensory-workbench",
+  "name": "AXM Asset Spatial Sensory Workbench",
+  "version": "v0.1.0",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "category": "ASSET_CREATION",
+  "layer": "experience",
+  "audience": "human-machine",
+  "risk": "MEDIUM",
+  "tags": ["assets", "spatial", "3d", "glb", "visual-review", "deterministic-editing", "webgl2", "local-first"],
+  "uses": ["filesystem-read", "browser-dom", "webgl2", "loopback-http", "explicit-download"],
+  "permissions": [],
+  "actions": [
+    "inspect exact deterministic one-object GLB candidates through a bounded WebGL2 renderer",
+    "orbit, zoom, use multi-angle presets, and inspect shaded, wireframe, normals, axes, grid, and bounds",
+    "apply allowlisted Spatial project and brief-driven edits through a bounded loopback Asset Hand host",
+    "change viewer state without mutating deterministic project or delivery digests",
+    "record digest-bound non-promoting human spatial review receipts"
+  ],
+  "accepts": ["axm.asset-hand-result/v1", "axm.deterministic-spatial-handoff/v1", "axm.spatial.project/v1"],
+  "produces": ["axm.spatial-sensory-edit/v1", "axm.spatial-sensory-viewer-state/v1", "axm.spatial-sensory-review-receipt/v1"],
+  "readiness": ["bounded-loopback-host", "candidate-only", "dynamic-spatial-modality", "serialized-read-only-fallback"],
+  "summary": "A bounded human spatial-review and machine-editing surface for deterministic parametric GLB Asset Hand candidates.",
+  "notes": "TEST only after focused core/host checks and live browser journeys. No installation, promotion, canon, target-renderer parity, physical-scale, representative-device, controller/XR, assistive-technology, conformance, or aesthetic authority."
+}

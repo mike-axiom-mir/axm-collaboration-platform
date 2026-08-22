@@ -1,0 +1,36 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "id": "axm-platform-courier",
+  "name": "AXM Platform Connect",
+  "version": "v0.4",
+  "status": "TEST",
+  "entry": "index.html",
+  "kind": "adapter",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "category": "FOUNDATION",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "MEDIUM",
+  "tags": ["ai-native", "platform-connect", "provider-neutral", "claude", "sandbox", "courier", "deterministic-hands", "heartbeat", "holodeck", "structured-senses", "discovery", "consent", "evidence", "command-centre-ready"],
+  "uses": ["files", "storage", "gate", "workshop-search", "asset-hands", "loopback-api", "platform-heartbeat", "holodeck-kernel", "human-settings"],
+  "permissions": ["platform.read", "platform.hands.invoke"],
+  "actions": ["configure a provider-neutral local connection", "grant or revoke exact local scopes", "discover registered modules and capabilities", "search public Workshop material", "diagnose and route asset briefs", "invoke a consented deterministic hand", "observe live Platform Heartbeat status", "start observe and play bounded Echo Atrium Holodeck sessions", "capture an exact Holodeck session through local Edge and Three.js", "read local AXM APIs and deterministic preview routes", "show minimal connection metadata"],
+  "accepts": ["axm.platform-courier.request/v1", "axm.platform-connect.settings/v1", "explicit-local-consent"],
+  "produces": ["axm.platform-courier.response/v1", "axm.platform-connect.snapshot/v1", "axm.platform-heartbeat.status/v1", "axm.holodeck-sensor-frame/v1", "axm.holodeck-intent-receipt/v1", "axm.holodeck-state-snapshot/v1", "axm.platform-courier.holodeck-visual-capture/v1", "hash-bound Holodeck PNG", "hashed bounded artifacts", "metadata-only connection ledger"],
+  "readiness": ["runtime", "storage", "gate", "registry", "asset-hands"],
+  "purpose": "Give sandboxed AI platforms typed, user-configured and consent-bound access to selected AXM discovery, deterministic hands, Heartbeat observation, bounded Holodeck embodiment, read APIs, preview APIs, and evidence receipts through a local filesystem mailbox.",
+  "network": {
+    "listen": false,
+    "local_axm_http_only": true,
+    "public_tunnel": false
+  },
+  "retention": {
+    "outbox_receipts": 500,
+    "artifact_root": "state/axm-platform-courier/artifacts",
+    "holodeck_capture_root": "state/axm-platform-courier/holodeck-captures",
+    "holodeck_capture_limit": 20,
+    "raw_session_logs": false
+  },
+  "summary": "AI-native settings and courier module that lets compatible sandboxed platforms use selected AXM capabilities through exact local consent, bounded requests, minimal connection metadata and hashed receipts—without gaining shell, secrets or mutation authority."
+}

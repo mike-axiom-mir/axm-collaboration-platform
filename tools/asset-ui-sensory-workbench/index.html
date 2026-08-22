@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Asset UI Sensory Workbench · AXM</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="mobile-containment.css">
+</head>
+<body data-module="asset-ui-sensory-workbench">
+  <header class="topbar">
+    <div><span class="eyebrow">ASSET FACTORY · HUMAN SENSORY LANE</span><h1>UI sensory workbench</h1><p>Deterministic component editing with inert SVG decode, stateful browser wrapping, nine-slice inspection and human-only review.</p></div>
+    <div class="status-stack"><span id="host-status" class="pill hold">CONNECTING</span><span class="truth">TEST · candidate-only · no auto-apply</span></div>
+  </header>
+
+  <main>
+    <section class="notice" id="connection-note">Checking the loopback machine hand and deterministic UI gate.</section>
+    <div class="workspace">
+      <aside class="panel controls" aria-label="UI component source controls">
+        <div class="panel-head"><div><span class="eyebrow">MACHINE SOURCE</span><h2>Create and edit</h2></div><span id="edit-mode" class="pill">CREATE DEFAULTS</span></div>
+        <div class="form-grid">
+          <label class="wide">Title<input id="title" value="Platform HUD control" maxlength="120"></label>
+          <label>Kind<select id="kind"><option>button</option><option>panel</option><option>hud</option><option>ui-component</option></select></label>
+          <label>Medium<select id="medium"><option value="game-world">game-world</option><option>ui</option><option>screen</option></select></label>
+          <label>Width<input id="width" type="number" min="1" max="8192" value="480"></label>
+          <label>Height<input id="height" type="number" min="1" max="8192" value="240"></label>
+          <label>Transparency<select id="transparency"><option>allowed</option><option>required</option><option>opaque</option></select></label>
+          <label>Direction<select id="direction"><option>ltr</option><option>rtl</option><option>auto</option></select></label>
+          <label>Min contrast<input id="contrast" type="number" min="1" max="21" step="0.1" value="4.5"></label>
+          <label>Min target px<input id="min-target" type="number" min="1" max="1000" value="44"></label>
+        </div>
+        <fieldset><legend>Input and accessibility declarations</legend><div class="checks"><label><input id="mod-pointer" type="checkbox" checked>Pointer</label><label><input id="mod-keyboard" type="checkbox" checked>Keyboard</label><label><input id="mod-touch" type="checkbox">Touch</label><label><input id="mod-gamepad" type="checkbox" checked>Gamepad</label><label><input id="reduced-motion" type="checkbox">Reduced motion</label><label><input id="alt-text" type="checkbox" checked>Alternative text</label><label><input id="focus-visible-source" type="checkbox" checked>Focus visible</label></div></fieldset>
+        <fieldset><legend>Requested palette</legend><div class="form-grid colours"><label>Surface<input id="surface" type="color" value="#101828"></label><label>Accent<input id="accent" type="color" value="#2e90fa"></label><label>Foreground<input id="foreground" type="color" value="#f9fafb"></label><label>Attention<input id="attention" type="color" value="#f79009"></label></div></fieldset>
+        <fieldset id="recipe-controls" disabled><legend>Bound recipe geometry and behavior</legend>
+          <div class="form-grid"><label>Inset<input id="inset" type="number" min="0" max="8192"></label><label>Radius<input id="radius" type="number" min="0" max="4096"></label><label>Slice left<input id="slice-left" type="number" min="0"></label><label>Slice top<input id="slice-top" type="number" min="0"></label><label>Slice right<input id="slice-right" type="number" min="0"></label><label>Slice bottom<input id="slice-bottom" type="number" min="0"></label><label>Focus colour<input id="focus-colour" type="color"></label><label>Focus width<input id="focus-width" type="number" min="1" max="16"></label></div>
+          <div class="state-table"><span>State</span><span>Opacity</span><span>Scale</span><b>Default</b><input id="default-opacity" type="number" min="0" max="1" step="0.01"><input id="default-scale" type="number" min="0.85" max="1.15" step="0.01"><b>Hover</b><input id="hover-opacity" type="number" min="0" max="1" step="0.01"><input id="hover-scale" type="number" min="0.85" max="1.15" step="0.01"><b>Active</b><input id="active-opacity" type="number" min="0" max="1" step="0.01"><input id="active-scale" type="number" min="0.85" max="1.15" step="0.01"><b>Disabled</b><input id="disabled-opacity" type="number" min="0" max="1" step="0.01"><input id="disabled-scale" type="number" min="0.85" max="1.15" step="0.01"></div>
+          <p class="hint">Focus style is derived on create, then becomes recipe-authoritative on edit. Reduced motion requires every scale to equal 1.</p>
+        </fieldset>
+        <div class="actions"><button id="create-btn" class="primary">Create candidate</button><button id="edit-btn" disabled>Regenerate edit</button><button id="cancel-btn" disabled>Reset draft</button></div>
+      </aside>
+
+      <section class="panel stage-panel">
+        <div class="panel-head"><div><span class="eyebrow">INERT IMAGE + TRUSTED WRAPPER</span><h2>Human observation stage</h2></div><code id="current-digest">no candidate</code></div>
+        <div class="viewer-controls">
+          <label>Mode<select id="render-mode"><option value="raw">Raw SVG image</option><option value="nine-slice">Nine-slice</option></select></label>
+          <label>Stretch W<input id="stretch-width" type="number" min="1" max="8192" value="480"></label>
+          <label>Stretch H<input id="stretch-height" type="number" min="1" max="8192" value="240"></label>
+          <label>Zoom<select id="zoom"><option value="100">100%</option><option value="200">200%</option><option value="50">50%</option><option value="300">300%</option></select></label>
+          <label>Background<select id="background"><option value="dark">Dark</option><option value="light">Light</option><option value="checker">Checker</option><option value="game">Game grid</option></select></label>
+          <label>Contrast<select id="contrast-mode"><option value="normal">Normal</option><option value="high">High</option></select></label>
+          <label>Safe area<select id="safe-area"><option value="none">None</option><option value="mobile">Mobile</option><option value="tv">TV</option></select></label>
+          <label class="toggle"><input id="viewer-focus" type="checkbox">Focus ring</label><label class="toggle"><input id="viewer-reduced" type="checkbox">Reduced-motion preference</label>
+        </div>
+        <div class="state-buttons" role="group" aria-label="Component states"><button data-state="default" class="selected">Default</button><button data-state="hover">Hover</button><button data-state="active">Active</button><button data-state="disabled">Disabled</button></div>
+        <div class="canvases"><figure><figcaption>Current candidate</figcaption><canvas id="current-canvas" aria-label="Current UI component rendered through inert image and trusted wrapper"></canvas></figure><figure><figcaption>Original A/B source</figcaption><canvas id="original-canvas" aria-label="Original UI component comparison"></canvas></figure></div>
+        <div class="journey-actions"><button id="pointer-btn">Observe pointer</button><button id="keyboard-btn">Observe keyboard focus</button><button id="gamepad-btn">Simulate gamepad</button><button id="observe-btn" class="primary">Record current view</button></div>
+        <div class="readiness"><span id="journey-status" class="pill hold">JOURNEY 0/12</span><div id="journey-checks"></div></div>
+      </section>
+    </div>
+
+    <div class="lower-grid">
+      <section class="panel"><div class="panel-head"><div><span class="eyebrow">HUMAN AUTHORITY</span><h2>Review receipt</h2></div></div><div class="form-grid"><label>Reviewer<input id="reviewer" placeholder="Human reviewer name"></label><label>Decision<select id="decision"><option value="hold">Hold</option><option value="accept-candidate">Accept for TEST</option><option value="reject-candidate">Reject candidate</option></select></label><label class="wide">Notes<textarea id="notes" rows="4" placeholder="What works, what does not, and why"></textarea></label></div><div class="actions"><button id="review-btn" disabled>Record explicit review</button><button id="download-btn" disabled>Download receipt JSON</button></div><p class="hint">Automation can exercise the machinery. Only an explicit human can occupy the aesthetic/usefulness seat.</p></section>
+      <section class="panel"><div class="panel-head"><div><span class="eyebrow">TRANSACTION LOG</span><h2>Diagnostics and truth</h2></div></div><pre id="diagnostics">No machine candidate bound.</pre></section>
+    </div>
+  </main>
+  <script src="core.js"></script>
+  <script src="renderer.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

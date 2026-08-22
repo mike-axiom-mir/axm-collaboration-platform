@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AXM Asset Material Sensory Workbench</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#lookdevCanvas">Skip to material viewer</a>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">AXM ASSET FACTORY · HUMAN MATERIAL SEAT</p>
+      <h1>Asset Material Sensory Workbench</h1>
+      <p class="lede">Inspect exact deterministic PBR maps under changeable light. Machine PASS is technical; your eyes still decide usefulness.</p>
+    </div>
+    <div class="badge-row" aria-label="Workbench status">
+      <span class="badge" id="hostBadge">HOST CHECKING</span>
+      <span class="badge" id="handBadge">HAND CHECKING</span>
+      <span class="badge" id="gateBadge">GATE WAITING</span>
+      <span class="badge" id="renderBadge">RENDER WAITING</span>
+      <span class="badge authority">CANDIDATE ONLY</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="truth-banner" aria-label="Truth boundary">
+      <strong>Local lookdev, not engine parity.</strong>
+      <span>The dynamic sphere and plane use a bounded direct-light WebGL2 shader. Height remains raw evidence; nothing here binds a GLB, proves a physical surface, installs, promotes, or canonizes.</span>
+    </section>
+
+    <div class="workspace-grid">
+      <section class="panel stage-panel" aria-labelledby="viewerHeading">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">LIVE MATERIAL RESPONSE</p>
+            <h2 id="viewerHeading">Lookdev viewer</h2>
+          </div>
+          <div class="segmented" aria-label="Comparison source">
+            <button type="button" id="compareOriginal" aria-pressed="false">A · Original</button>
+            <button type="button" id="compareCurrent" aria-pressed="true">B · Current</button>
+          </div>
+        </div>
+
+        <div class="stage-toolbar" aria-label="Viewer geometry and reset">
+          <button type="button" id="shapeSphere" aria-pressed="true">Sphere</button>
+          <button type="button" id="shapePlane" aria-pressed="false">Plane</button>
+          <button type="button" id="resetView">Reset view</button>
+          <span id="candidateLabel">No candidate bound</span>
+        </div>
+
+        <div class="canvas-shell" id="canvasShell">
+          <canvas id="lookdevCanvas" width="960" height="640" tabindex="0" aria-label="Interactive WebGL2 PBR material viewer. Drag to orbit, use the wheel to zoom, and use arrow keys to rotate."></canvas>
+          <div class="canvas-overlay" id="canvasOverlay" role="status">Waiting for a gated material candidate.</div>
+          <div class="axis-hint" aria-hidden="true"><span class="axis-x">X</span><span class="axis-y">Y</span><span class="axis-z">Z</span></div>
+        </div>
+        <div class="viewer-readout" id="viewerReadout">No dynamic frames observed.</div>
+        <p class="microcopy">Drag or use ← → ↑ ↓ to orbit. Wheel or +/− zooms. Viewer settings never mutate the recipe or PNG digests.</p>
+      </section>
+
+      <aside class="panel controls-panel" aria-labelledby="controlsHeading">
+        <div class="panel-heading compact">
+          <div><p class="eyebrow">SENSORY CONTROLS</p><h2 id="controlsHeading">View, then edit</h2></div>
+        </div>
+
+        <fieldset>
+          <legend>Presentation only</legend>
+          <label>View mode
+            <select id="viewMode">
+              <option value="lookdev">PBR lookdev</option>
+              <option value="albedo">Raw albedo</option>
+              <option value="normal">Raw normal</option>
+              <option value="ao">ORM · AO (R)</option>
+              <option value="roughness">ORM · Roughness (G)</option>
+              <option value="metalness">ORM · Metalness (B)</option>
+              <option value="emissive">Raw emissive</option>
+              <option value="height">Raw height</option>
+            </select>
+          </label>
+          <label>UV tiling <output id="tilingOutput">2.00×</output>
+            <input id="uvTiling" type="range" min="0.25" max="16" step="0.25" value="2">
+          </label>
+          <label>Light azimuth <output id="lightAzimuthOutput">42°</output>
+            <input id="lightAzimuth" type="range" min="-180" max="180" step="1" value="42">
+          </label>
+          <label>Light elevation <output id="lightElevationOutput">38°</output>
+            <input id="lightElevation" type="range" min="-10" max="90" step="1" value="38">
+          </label>
+          <label>Key intensity <output id="lightIntensityOutput">1.35</output>
+            <input id="lightIntensity" type="range" min="0" max="4" step="0.05" value="1.35">
+          </label>
+          <label>Ambient <output id="ambientOutput">0.22</output>
+            <input id="ambientIntensity" type="range" min="0" max="2" step="0.02" value="0.22">
+          </label>
+          <label>Fill <output id="fillOutput">0.18</output>
+            <input id="fillIntensity" type="range" min="0" max="2" step="0.02" value="0.18">
+          </label>
+          <label>Exposure <output id="exposureOutput">1.00</output>
+            <input id="exposure" type="range" min="0.25" max="4" step="0.05" value="1">
+          </label>
+          <label>Background
+            <select id="background">
+              <option value="studio-dark">Studio dark</option>
+              <option value="neutral-gray">Neutral gray</option>
+              <option value="studio-light">Studio light</option>
+              <option value="black">Black</option>
+            </select>
+          </label>
+          <div class="check-grid">
+            <label><input id="mapAlbedo" type="checkbox" checked> Albedo</label>
+            <label><input id="mapNormal" type="checkbox" checked> Normal</label>
+            <label><input id="mapOrm" type="checkbox" checked> ORM</label>
+            <label><input id="mapEmissive" type="checkbox" checked> Emissive</label>
+          </div>
+          <div class="check-grid">
+            <label><input id="highContrast" type="checkbox"> High contrast UI</label>
+            <label><input id="reducedMotion" type="checkbox"> Reduced motion</label>
+          </div>
+        </fieldset>
+
+        <fieldset id="recipeFieldset" disabled>
+          <legend>Machine recipe · staged until regenerate</legend>
+          <label>Recipe id <input id="recipeId" maxlength="120" autocomplete="off"></label>
+          <label>Family
+            <select id="recipeFamily">
+              <option value="brick">Weathered brick</option>
+              <option value="asphalt">Road asphalt</option>
+              <option value="painted-metal">Painted metal</option>
+              <option value="glass">Architectural glass</option>
+              <option value="skin">Character skin</option>
+              <option value="vehicle-paint">Vehicle paint</option>
+            </select>
+          </label>
+          <label>Seed <input id="recipeSeed" maxlength="120" autocomplete="off"></label>
+          <label>Map size
+            <select id="recipeSize">
+              <option value="32">32 × 32</option>
+              <option value="64">64 × 64</option>
+              <option value="128">128 × 128</option>
+              <option value="256">256 × 256</option>
+              <option value="512">512 × 512</option>
+            </select>
+          </label>
+          <label>Normal strength <output id="normalStrengthOutput">3.10</output>
+            <input id="normalStrength" type="range" min="0.25" max="8" step="0.05" value="3.1">
+          </label>
+          <div class="button-row">
+            <button type="button" class="primary" id="regenerate">Regenerate all 8 artifacts</button>
+            <button type="button" id="cancelDraft">Cancel draft</button>
+          </div>
+          <p class="microcopy" id="draftStatus">No staged edit.</p>
+        </fieldset>
+      </aside>
+    </div>
+
+    <section class="panel map-panel" aria-labelledby="mapsHeading">
+      <div class="panel-heading">
+        <div><p class="eyebrow">EXACT PNG PAYLOADS</p><h2 id="mapsHeading">Raw maps and sampling truth</h2></div>
+        <span id="mapSizeLabel">No maps loaded</span>
+      </div>
+      <div class="map-grid" id="mapGrid">
+        <button type="button" class="map-card" data-map-mode="albedo"><span>Albedo · colour/sRGB</span><img id="mapAlbedoImage" alt="Albedo map preview"></button>
+        <button type="button" class="map-card" data-map-mode="normal"><span>Normal · data/linear · OpenGL +Y</span><img id="mapNormalImage" alt="Tangent-space normal map preview"></button>
+        <button type="button" class="map-card" data-map-mode="ao"><span>ORM · R ambient occlusion</span><img id="mapOrmImage" alt="Packed occlusion roughness metalness map preview"></button>
+        <button type="button" class="map-card" data-map-mode="emissive"><span>Emissive · colour/sRGB</span><img id="mapEmissiveImage" alt="Emissive map preview"></button>
+        <button type="button" class="map-card" data-map-mode="height"><span>Height · data/linear · raw only</span><img id="mapHeightImage" alt="Height map preview"></button>
+        <button type="button" class="map-card reference" data-map-mode="lookdev"><span>Static machine reference · clamp</span><img id="mapPreviewImage" alt="Static reference sphere generated by the material baker"></button>
+      </div>
+    </section>
+
+    <div class="lower-grid">
+      <section class="panel evidence-panel" aria-labelledby="evidenceHeading">
+        <div class="panel-heading compact"><div><p class="eyebrow">DIGEST BINDING</p><h2 id="evidenceHeading">Machine evidence</h2></div></div>
+        <dl class="digest-list">
+          <div><dt>Result</dt><dd id="resultDigest">—</dd></div>
+          <div><dt>Recipe SHA-256</dt><dd id="recipeDigest">—</dd></div>
+          <div><dt>Sampling contract</dt><dd id="samplingDigest">—</dd></div>
+          <div><dt>Viewer state</dt><dd id="viewerDigest">—</dd></div>
+        </dl>
+        <div class="sha-table-wrap">
+          <table>
+            <thead><tr><th>PNG</th><th>Full byte SHA-256</th></tr></thead>
+            <tbody id="shaRows"><tr><td colspan="2">No candidate bound.</td></tr></tbody>
+          </table>
+        </div>
+        <div class="diagnostic" id="diagnostic" hidden></div>
+        <div class="button-row">
+          <button type="button" id="downloadPatch" disabled>Download machine patch</button>
+          <label class="file-button">Load serialized result<input id="serializedResult" type="file" accept="application/json,.json"></label>
+        </div>
+        <p class="microcopy">Serialized fallback is gated locally against exact sampling and all six SHA-256 values. A HOLD result is diagnostic-only.</p>
+      </section>
+
+      <section class="panel review-panel" aria-labelledby="reviewHeading">
+        <div class="panel-heading compact"><div><p class="eyebrow">HUMAN SEAT</p><h2 id="reviewHeading">Material review</h2></div></div>
+        <form id="reviewForm">
+          <label>Reviewer <input id="reviewer" required maxlength="160" autocomplete="name" placeholder="Your name or review role"></label>
+          <label>Verdict
+            <select id="verdict">
+              <option value="REVISE">Revise</option>
+              <option value="ACCEPT_FOR_TEST">Accept for TEST</option>
+              <option value="REJECT">Reject</option>
+            </select>
+          </label>
+          <div class="observation-grid">
+            <label>Tiling / seams <select data-observation="tiling_seams"><option>UNKNOWN</option><option>GOOD</option><option>REVISE</option><option>NOT_APPLICABLE</option></select></label>
+            <label>Colour <select data-observation="colour"><option>UNKNOWN</option><option>GOOD</option><option>REVISE</option><option>NOT_APPLICABLE</option></select></label>
+            <label>Normal response <select data-observation="normal_response"><option>UNKNOWN</option><option>GOOD</option><option>REVISE</option><option>NOT_APPLICABLE</option></select></label>
+            <label>Roughness / metal <select data-observation="roughness_metalness"><option>UNKNOWN</option><option>GOOD</option><option>REVISE</option><option>NOT_APPLICABLE</option></select></label>
+            <label>Emission <select data-observation="emission"><option>UNKNOWN</option><option>GOOD</option><option>REVISE</option><option>NOT_APPLICABLE</option></select></label>
+            <label>Height coherence <select data-observation="height_coherence"><option>UNKNOWN</option><option>GOOD</option><option>REVISE</option><option>NOT_APPLICABLE</option></select></label>
+            <label>Intended-use readability <select data-observation="readability_intended_use"><option>UNKNOWN</option><option>GOOD</option><option>REVISE</option><option>NOT_APPLICABLE</option></select></label>
+          </div>
+          <label class="confirm"><input id="dynamicObserved" type="checkbox"> I observed this exact candidate responding in the dynamic viewer under the bound settings.</label>
+          <label>Notes <textarea id="reviewNotes" rows="4" maxlength="3000" placeholder="What works, what fails, and for which game or asset context?"></textarea></label>
+          <div class="button-row">
+            <button class="primary" id="saveReview" type="submit" disabled>Save review</button>
+            <button type="button" id="downloadReceipt" disabled>Download review receipt</button>
+          </div>
+        </form>
+        <p class="review-state" id="reviewState">PLAY WITH LIGHT / MAPS TO REVIEW</p>
+        <div class="history" id="reviewHistory">No stale review history.</div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <span>TEST · installed false · promoted false · canonical false</span>
+    <span>Mike Tobi remains the taste and merge gate.</span>
+  </footer>
+
+  <script src="core.js"></script>
+  <script src="renderer.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

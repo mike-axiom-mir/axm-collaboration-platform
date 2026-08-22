@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.platform-courier.request/v1",
+  "type": "object",
+  "required": ["schema", "id", "action"],
+  "properties": {
+    "schema": { "const": "axm.platform-courier.request/v1" },
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,119}$" },
+    "createdAt": { "type": "string" },
+    "action": {
+      "enum": ["ping", "catalog", "discover", "search", "api.call", "hands.catalog", "hands.diagnose", "hands.plan", "hands.invoke", "evidence.status", "heartbeat.status", "holodeck.catalog", "holodeck.session.list", "holodeck.session.start", "holodeck.observe", "holodeck.capture", "holodeck.intent.dispatch", "holodeck.snapshot", "holodeck.session.reset"]
+    },
+    "payload": { "type": "object" },
+    "client": {
+      "type": "object",
+      "description": "Optional bounded connection metadata. Prompts and payload contents are never copied into the connection ledger.",
+      "properties": {
+        "id": { "type": "string", "maxLength": 120 },
+        "provider": { "type": "string", "maxLength": 80 },
+        "surface": { "type": "string", "maxLength": 80 },
+        "session_id": { "type": "string", "maxLength": 120 },
+        "label": { "type": "string", "maxLength": 120 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
