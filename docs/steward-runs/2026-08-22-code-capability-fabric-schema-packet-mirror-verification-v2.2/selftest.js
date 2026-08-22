@@ -141,6 +141,17 @@ assert.equal(postHandoff.authority.mergePerformed, false);
 assert.ok(postHandoff.exactIntegrationCommandOnlyAfterCleanTargetAndAncestryChecks.includes('--no-commit'));
 assert.ok(postHandoff.stopConditions.some((item) => item.includes('Do not push')));
 
+const closeoutSnapshot = readJson('CLOSEOUT_TARGET_SNAPSHOT.json');
+assert.equal(closeoutSnapshot.reviewedSource.branchTipBeforeThisSnapshotReceipt, '5e5ea250611c4eae2db562f5b3dd47c6cdb3b354');
+assert.equal(closeoutSnapshot.reviewedSource.clean, true);
+assert.equal(closeoutSnapshot.target.headChangedFromFirstObservation, false);
+assert.equal(closeoutSnapshot.target.busyStatusChangedFromFirstObservation, true);
+assert.equal(closeoutSnapshot.target.untrackedEntryDeltaFromFirstObservation, 20);
+assert.equal(closeoutSnapshot.target.taskRelevantStatusEntries, 0);
+assert.equal(closeoutSnapshot.target.taskRelevantOverlapObserved, false);
+assert.equal(closeoutSnapshot.authority.pushPerformed, false);
+assert.equal(closeoutSnapshot.authority.mergePerformed, false);
+
 const afterInventory = readJson('SCOUT_INVENTORY_AFTER.json');
 assert.equal(afterInventory.workspaceStatus, 'ONLY_BOUNDED_STEWARD_EVIDENCE_UNCOMMITTED');
 assert.equal(afterInventory.activeRelevantSharedSeams, 0);
