@@ -1,0 +1,39 @@
+{
+  "schema": "axm.visual-handshake.button-contract.v1",
+  "module_id": "axm.skill.visual-handshake",
+  "status": "WORKING_CANDIDATE_NOT_CANON_NOT_INTEGRATED",
+  "buttons": [
+    {
+      "id": "axm.visual-handshake.show-codex",
+      "label": "Show Codex",
+      "icon": "screen-arrow-right",
+      "action": {
+        "type": "local_command",
+        "windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start_windows.ps1 -Mode capture",
+        "portable": "python app/visual_handshake.py serve --open --mode capture"
+      },
+      "requires": ["USER_CLICK", "LOOPBACK_RUNTIME"],
+      "side_effect": "Writes one user-approved visual packet to exchange/to_codex"
+    },
+    {
+      "id": "axm.visual-handshake.codex-show-me",
+      "label": "Codex Show Me",
+      "icon": "screen-spark",
+      "action": {
+        "type": "local_command",
+        "windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start_windows.ps1 -Mode latest",
+        "portable": "python app/visual_handshake.py serve --open --mode latest"
+      },
+      "requires": ["USER_CLICK", "LOOPBACK_RUNTIME"],
+      "side_effect": "Opens the newest local Codex-to-Mike visual without publishing anything"
+    }
+  ],
+  "defaults": {
+    "network": "LOOPBACK_ONLY",
+    "capture": "USER_INITIATED_ONLY",
+    "implicit_screen_access": false,
+    "cloud_upload": false,
+    "telemetry": false,
+    "auto_delete": false
+  }
+}

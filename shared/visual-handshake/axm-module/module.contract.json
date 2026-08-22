@@ -1,0 +1,48 @@
+{
+  "schema": "axm.module.contract.v1",
+  "stable_id": "axm.skill.visual-handshake",
+  "name": "AXM Visual Handshake",
+  "version": "0.3.0",
+  "status": "WORKING_CANDIDATE_NOT_CANON_NOT_INTEGRATED",
+  "purpose": "Provide a user-initiated, local-only visual exchange between Mike and local Codex through modular buttons, immutable packets, and an inspectable filesystem bridge.",
+  "anti_purpose": [
+    "continuous monitoring",
+    "hidden capture",
+    "cloud screenshot upload",
+    "screen control",
+    "using screenshots as authority",
+    "claiming an image was inspected when it was not"
+  ],
+  "capabilities": [
+    "visual-context.mike-to-codex",
+    "visual-result.codex-to-mike",
+    "screen-window-capture.user-initiated",
+    "clipboard-image-import.user-initiated",
+    "local-preview-snapshot",
+    "immutable-packet-receipts",
+    "focused-skill-routing",
+    "platform-button-contract"
+  ],
+  "authority_ceiling": "LOCAL_USER_INITIATED_FILE_WRITE_AND_LOOPBACK_UI",
+  "network_default": "LOOPBACK_ONLY",
+  "write_surfaces": [
+    "exchange/to_codex",
+    "exchange/to_mike",
+    "runtime/session.json"
+  ],
+  "external_dependencies": [],
+  "optional_host_dependencies": [
+    "Python 3.9+",
+    "modern Chromium browser",
+    "Windows PowerShell for native 3-second capture"
+  ],
+  "rollback_unit": "program folder + installed skill suite; exchange data stays separate and is preserved",
+  "promotion_gate": [
+    "read-only overlap comparison",
+    "Windows exact-target test",
+    "Codex image inspection proof",
+    "platform button integration proof",
+    "rollback proof",
+    "Mike approval"
+  ]
+}

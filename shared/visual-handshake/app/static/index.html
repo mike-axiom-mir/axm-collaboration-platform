@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AXM Visual Handshake</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="orb orb-a"></div><div class="orb orb-b"></div>
+  <main class="shell">
+    <header class="topbar glass">
+      <div>
+        <div class="eyebrow">LOCAL VISUAL BRIDGE</div>
+        <h1>AXM Visual Handshake</h1>
+        <p>Mike and local Codex can show each other what is difficult to explain.</p>
+      </div>
+      <div class="status-cluster">
+        <span id="localBadge" class="badge good">● LOOPBACK ONLY</span>
+        <span id="serverBadge" class="badge">CONNECTING</span>
+      </div>
+    </header>
+
+    <section id="tokenWarning" class="warning hidden">
+      Open this page using the AXM launcher. The private local session token is missing.
+    </section>
+
+    <nav class="mode-tabs glass" aria-label="Views" role="tablist">
+      <button class="tab active" data-mode="home" role="tab" aria-selected="true">Both directions</button>
+      <button class="tab" data-mode="capture" role="tab" aria-selected="false">Show Codex</button>
+      <button class="tab" data-mode="latest" role="tab" aria-selected="false">Codex shows Mike</button>
+    </nav>
+
+    <section class="grid">
+      <article id="capturePanel" class="panel glass drop-target">
+        <div class="direction"><span>MIKE</span><b>→</b><span>CODEX</span></div>
+        <h2>Show Codex what you see</h2>
+        <p class="muted">Choose a window or screen, press Ctrl+V, or drop an image here. Nothing leaves this computer through this tool.</p>
+
+        <div class="button-grid">
+          <button id="captureBtn" class="primary huge">▣ Choose screen / window</button>
+          <button id="pasteBtn" class="secondary">Paste screenshot</button>
+          <label class="secondary file-label">Choose image<input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden></label>
+          <button id="nativeCaptureBtn" class="secondary hidden">3-second Windows capture</button>
+        </div>
+
+        <div id="captureStatus" class="mini-status">No visual selected yet.</div>
+        <div id="editor" class="editor hidden">
+          <div class="editor-tools">
+            <button id="penBtn" class="tool active" aria-pressed="true">Draw</button>
+            <button id="undoBtn" class="tool" disabled>Undo</button>
+            <button id="clearMarksBtn" class="tool">Clear marks</button>
+          </div>
+          <canvas id="previewCanvas"></canvas>
+          <label>What should Codex look at?<textarea id="noteInput" rows="3" maxlength="5000" placeholder="Optional: the button does nothing, this corner looks wrong, compare these two parts…"></textarea></label>
+          <div class="send-row">
+            <button id="cancelPreviewBtn" class="ghost">Cancel</button>
+            <button id="sendBtn" class="primary">Send visual to Codex</button>
+          </div>
+        </div>
+
+        <div class="last-card">
+          <div><span class="muted">Latest sent to Codex</span><strong id="latestToCodex">None</strong></div>
+          <span id="toCodexCount" class="count">0</span>
+        </div>
+      </article>
+
+      <article id="latestPanel" class="panel glass">
+        <div class="direction"><span>CODEX</span><b>→</b><span>MIKE</span></div>
+        <h2>Codex shows you</h2>
+        <p class="muted">The panel refreshes automatically. Codex can publish a screenshot, visual mock-up, HTML preview, SVG, or note.</p>
+
+        <div id="emptyLatest" class="empty-state">
+          <div class="empty-icon">◇</div>
+          <strong>No visual from Codex yet</strong>
+          <span>It will appear here without changing screens.</span>
+        </div>
+
+        <div id="latestCard" class="incoming hidden">
+          <div class="incoming-head">
+            <div><span class="muted" id="incomingTime"></span><h3 id="incomingTitle"></h3></div>
+            <span id="incomingAck" class="badge"></span>
+          </div>
+          <p id="incomingNote" class="incoming-note"></p>
+          <div class="incoming-meta"><span id="incomingSize">0 B</span><code id="incomingHash">SHA-256</code></div>
+          <div id="incomingViewer" class="viewer"></div>
+          <div class="send-row">
+            <button id="openFolderBtn" class="ghost">Open exchange folder</button>
+            <button id="fullscreenBtn" class="secondary">Fullscreen</button>
+            <button id="ackBtn" class="primary">Seen</button>
+          </div>
+        </div>
+
+        <div class="last-card">
+          <div><span class="muted">Latest received from Codex</span><strong id="latestToMike">None</strong></div>
+          <span id="toMikeCount" class="count">0</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="bottom glass">
+      <div><strong>Simple route</strong><span>Mike clicks “Show Codex.” Codex uses “send-to-mike.” Every exchange is a deliberate local snapshot, never continuous monitoring.</span></div>
+      <button id="notifyBtn" class="ghost">Enable local notifications</button>
+      <button id="refreshBtn" class="ghost">Refresh</button>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
