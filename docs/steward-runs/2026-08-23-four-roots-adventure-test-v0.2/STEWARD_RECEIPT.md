@@ -24,7 +24,7 @@ integration, promotion beyond TEST, or `CANON` receipt.
   commits respectively. One changed path intersects this run:
   `shared/code-capability-fabric/README.md`.
 
-The exact 40 changed paths are listed in `CHANGED_PATHS.txt`.
+The exact 41 changed paths are listed in `CHANGED_PATHS.txt`.
 
 ## What changed
 
@@ -206,3 +206,13 @@ both sides of the one known overlapping README path if it conflicts. Then
 rerun all commands in this receipt, the full Four Roots package test, and the
 live render/click/reload/restart journey. Mike may commit that reviewed merge
 or run `git merge --abort`. This receipt authorizes neither action.
+
+## Post-seal target recheck
+
+The canonical HEAD remained `dadd8a9f87c2cf70a7c444244483ee853276e745`,
+but three unrelated Foundation Planet paths became dirty after the main
+session segment was sealed. A commit-to-commit `git merge-tree` simulation
+against feature tip `b789c24b5bc25c804c6314064b8926d7e3588949`
+completed without a textual conflict. See `TARGET_DRIFT_ADDENDUM.md` for the
+exact paths, simulated tree, and truth limit. The busy canonical checkout must
+not be used for integration.
