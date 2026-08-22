@@ -1,0 +1,106 @@
+{
+  "schema": "axm.code-capability-fabric-slow-creation-verification/v1",
+  "testedCommit": "09c6bce30e50d9a960848a3c953c35cedcac6742",
+  "completedAt": "2026-08-22T01:58:11.698Z",
+  "status": "PASS_WITH_EXISTING_WARNINGS_AND_OPEN_GAPS",
+  "requiredChecks": [
+    {"command": "node verify.js", "status": "PASS", "observedWarnings": 41, "failures": 0},
+    {"command": "node hub/hub-selftest.js", "status": "PASS", "failures": 0},
+    {"command": "node hub/route-selftest.js", "status": "PASS", "failures": 0},
+    {"command": "node hub/graft-selftest.js", "status": "PASS", "failures": 0},
+    {"command": "node hub/skin-selftest.js", "status": "PASS", "failures": 0},
+    {"command": "node hub/verify-plus.js", "status": "PASS", "observedWarnings": 41, "failures": 0},
+    {"command": "node tests/html-script-syntax-test.js", "status": "PASS", "checksPassed": 55, "failures": 0},
+    {"command": "node tests/tool-forge-package-test.js", "status": "PASS", "installed": false},
+    {"command": "node tools/agent-tool-forge/selftest.js", "status": "PASS", "checksPassed": 17, "failures": 0},
+    {"command": "node tools/evidence-desk/selftest.js", "status": "PASS", "checksPassed": 36, "failures": 0}
+  ],
+  "focusedChecks": [
+    {"command": "node shared/code-capability-fabric/selftest.js", "status": "PASS", "checksPassed": 18},
+    {"command": "node shared/code-capability-fabric/selftest-v2.js", "status": "PASS", "checksPassed": 74},
+    {"command": "node shared/code-capability-fabric/selftest-readiness-v1.js", "status": "PASS", "checksPassed": 46},
+    {"command": "node shared/code-capability-fabric/selftest-independent-assurance-v1.js", "status": "PASS", "checksPassed": 46},
+    {"command": "node shared/code-capability-fabric/selftest-policy-bound-assurance-v1.js", "status": "PASS", "checksPassed": 46},
+    {"command": "node shared/code-capability-fabric/selftest-grounded-consent-scope-v1.js", "status": "PASS", "checksPassed": 73},
+    {"command": "node shared/code-capability-fabric/selftest-slow-creation-pilot-v1.js", "status": "PASS", "checksPassed": 40},
+    {"command": "node docs/steward-runs/2026-08-22-code-capability-fabric-intake/selftest.js", "status": "PASS"},
+    {"command": "node docs/steward-runs/2026-08-22-code-capability-fabric-hardening-v1.4/selftest.js", "status": "PASS"},
+    {"command": "node docs/steward-runs/2026-08-22-code-capability-fabric-readiness-v1.5/selftest.js", "status": "PASS"},
+    {"command": "node docs/steward-runs/2026-08-22-code-capability-fabric-independent-assurance-v1.6/selftest.js", "status": "PASS"},
+    {"command": "node docs/steward-runs/2026-08-22-code-capability-fabric-policy-binding-v1.7/selftest.js", "status": "PASS"},
+    {"command": "node docs/steward-runs/2026-08-22-code-capability-fabric-grounded-consent-v1.8/selftest.js", "status": "PASS"},
+    {"command": "node tools/detached-candidate-nursery/selftest.js", "status": "PASS", "checksPassed": 19},
+    {"command": "node tools/deterministic-json-core/selftest.js", "status": "PASS"},
+    {"command": "node shared/workshop-updater/selftest.js", "status": "PASS"}
+  ],
+  "staticAndNativeChecks": [
+    {"check": "Node syntax checks for implementation, CLI, and selftest", "status": "PASS"},
+    {"check": "git diff --check over eight additive implementation paths", "status": "PASS"},
+    {"check": "secret, credential, authorization-header, private-key, and absolute-machine-path scan", "status": "PASS"},
+    {"check": "deterministic capability comparator before BLOCKED and after READY for the bounded creation rung", "status": "PASS"},
+    {"check": "post-hardening external candidate receipt strict normalization", "status": "PASS", "receiptDigest": "sha256:6d86efa6cb4c4b072aa9fe23480465e3c8c78ea1c932e3ea3a2c7ad12ead25cb"},
+    {"check": "repeat Detached Candidate Nursery native inspection", "status": "PASS", "recordDigest": "sha256:706b6f76563fcf74918143429380eaead1f711fdd10297d8aa30a1542bf2d8d8"}
+  ],
+  "developmentFailuresPreserved": [
+    {"failure": "The forged-consent assertion expected a different rejection phrase.", "resolution": "The assertion accepted the existing strict truth-ceiling rejection; no validator was weakened."},
+    {"failure": "The Nursery assertion used candidateCodeExecuted instead of the Nursery record's codeExecuted field.", "resolution": "The assertion was corrected to the actual native record field."},
+    {"failure": "The Windows dot-segment adversary initially passed, exposing normalized alias handling; path.join in the test also erased the alias before the call.", "resolution": "The implementation now requires exact resolved and real-path spelling, and the test supplies an actual dot-segment string."},
+    {"failure": "A compact warning parser reported 618 by matching an unrelated nearby number.", "resolution": "Warnings were counted from exact lines beginning with warn; the observed baseline is 41."},
+    {"failure": "External trial 001 preceded final declaration-lineage and replay-truth hardening.", "resolution": "Trial 001 was preserved as a development observation; a new non-overwriting trial 002 was emitted and independently verified under the final implementation."}
+  ],
+  "auditDiscoveriesPreserved": [
+    {"finding": "A count-only receipt could substitute arbitrary six-file content.", "resolution": "The exact ordered portable file set is enforced by runtime and schema."},
+    {"finding": "A declaration reference not derived from declaration bytes could imply lineage it did not have.", "resolution": "The exact mode, one-candidate scope, and acknowledgement now derive one required reference."},
+    {"finding": "An exact acknowledgement can still be replayed without identity, trusted time, revocation, and a durable ledger.", "resolution": "Replay prevention remains explicitly false and blocks durable-consent interpretation."}
+  ],
+  "summary": {
+    "requiredCommandSuitesPassed": 10,
+    "focusedCommandSuitesPassed": 16,
+    "staticAndNativeChecksPassed": 6,
+    "finalCommandSuitesFailed": 0,
+    "warningBaseline": 41,
+    "warningObserved": 41,
+    "warningDelta": 0,
+    "pilotCandidateFiles": 6,
+    "pilotCandidateBytes": 7372
+  },
+  "warningBoundary": "The 41 Workshop warnings match all prior Fabric steward baselines. No warning was suppressed, repaired incidentally, or relabeled as a pass.",
+  "browser": {
+    "applicable": false,
+    "status": "NOT_RUN",
+    "reason": "No live visual surface changed or was opened. The emitted HTML remained inert candidate data, so no render/click pass is claimed."
+  },
+  "unrun": [
+    "Supplied v0.1 and v0.2 experimental runtimes and their package selftests.",
+    "Any provider or generated candidate runtime.",
+    "Any real private workspace or source-artifact read.",
+    "Cryptographic natural-person authentication, informed-understanding proof, declaration replay prevention, live revocation, or trusted-clock observation.",
+    "Any Machine Host integration or machine-wide default activation.",
+    "Any semantic code or content generation beyond the fixed static shell.",
+    "Any browser render/click, runtime behavior, visual quality, performance, duration, or memory proof.",
+    "Any persistent learning admission, installation, registration, staging, publishing, promotion, merge, hardware actuation, or CANON change.",
+    "Third-party JSON Schema validation; strict runtime normalizers and local schema-reference checks passed.",
+    "Public generated-source reuse-rights determination."
+  ],
+  "truth": {
+    "postHardeningCandidateEmitted": true,
+    "candidateBytesReadBack": true,
+    "nurseryStructureInspected": true,
+    "candidateCodeExecuted": false,
+    "runtimeQualityProven": false,
+    "visualApprovalProven": false,
+    "humanAuthenticationVerified": false,
+    "declarationReplayPrevented": false,
+    "liveRevocationChecked": false,
+    "trustedClockObserved": false,
+    "machineDefaultActivated": false,
+    "persistentLearningAdmitted": false,
+    "suppliedPackageCodeExecuted": false,
+    "browserClaimed": false,
+    "mergePerformed": false,
+    "installed": false,
+    "published": false,
+    "promoted": false,
+    "canonChanged": false
+  }
+}
