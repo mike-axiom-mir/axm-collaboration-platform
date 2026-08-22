@@ -1,0 +1,64 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-policy-bound-assurance-review",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "axm.code-policy-bound-assurance-request/v1",
+    "axm.code-policy-bound-assurance-review/v1",
+    "code.fabric.request-policy.bind",
+    "code.fabric.policy-bound-review.verify"
+  ],
+  "consumes": [
+    "axm.code-capability-request/v2",
+    "axm.code-independent-assurance-review/v1",
+    "axm.code-assurance-trust-policy/v1",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.code-policy-bound-assurance-request/v1",
+      "axm.code-policy-bound-assurance-review/v1"
+    ],
+    "accepts": [
+      "axm.code-capability-request/v2",
+      "axm.code-independent-assurance-review/v1",
+      "axm.code-assurance-trust-policy/v1"
+    ]
+  },
+  "rootsGate": [
+    "truth",
+    "agency-non-domination",
+    "continuity",
+    "wisdom-over-speed"
+  ],
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "structural-binding-as-requester-authorship-proof",
+      "structural-binding-as-human-acceptance-proof",
+      "structural-binding-as-execution-authorization",
+      "distinct-keys-as-organizational-independence-proof",
+      "base-v2-request-rewrite",
+      "provider-code-loading",
+      "provider-code-execution",
+      "experimental-runtime-execution",
+      "workspace-content-reading",
+      "filesystem-inspection",
+      "process-execution",
+      "network-use",
+      "permission-grant",
+      "executor-authorization",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}
