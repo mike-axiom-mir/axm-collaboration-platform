@@ -5,8 +5,9 @@ const fs = require('fs');
 const path = require('path');
 
 const SCHEMA = 'axm.heartbeat-observatory-deck/v1';
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
 const RUNNER = 'shared/heartbeat/axm-observatory-check-runner.js';
+const DIGEST_CONTRACT = 'sha256-canonical-text-lf-v1';
 const MODULE_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const EXCLUDED_EXECUTION_FILES = new Set(['candidate.receipt.json', 'module-bundle.json']);
 
@@ -33,6 +34,17 @@ const REVIEWED_MODULES = Object.freeze([
 
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function normalizeRelative(value) { return String(value).split(path.sep).join('/'); }
+function canonicalTextBytes(value) {
+  const bytes = Buffer.isBuffer(value) ? value : Buffer.from(value);
+  const output = Buffer.allocUnsafe(bytes.length);
+  let writeOffset = 0;
+  for (let readOffset = 0; readOffset < bytes.length; readOffset += 1) {
+    if (bytes[readOffset] === 13 && bytes[readOffset + 1] === 10) continue;
+    output[writeOffset] = bytes[readOffset];
+    writeOffset += 1;
+  }
+  return output.subarray(0, writeOffset);
+}
 function isExecutionFile(relativePath) {
   const base = path.basename(relativePath);
   if (EXCLUDED_EXECUTION_FILES.has(base) || base.startsWith('current-')) return false;
@@ -79,10 +91,10 @@ function executionDigest(root, moduleId) {
   const inventory = executionFiles(root, moduleId);
   const digest = crypto.createHash('sha256');
   for (const file of inventory.files) {
-    const fileDigest = crypto.createHash('sha256').update(fs.readFileSync(file.absolute)).digest('hex');
+    const fileDigest = crypto.createHash('sha256').update(canonicalTextBytes(fs.readFileSync(file.absolute))).digest('hex');
     digest.update(file.relative + '\0' + fileDigest + '\n');
   }
-  return { digest: digest.digest('hex'), files: inventory.files.map(file => file.relative), moduleRoot: inventory.moduleRoot };
+  return { digest: digest.digest('hex'), digestContract: DIGEST_CONTRACT, files: inventory.files.map(file => file.relative), moduleRoot: inventory.moduleRoot };
 }
 function reviewedModule(moduleId) {
   const review = REVIEWED_MODULES.find(item => item.id === moduleId);
@@ -109,13 +121,14 @@ function inspect(root, moduleId) {
       reasons,
       reviewedDigest: review.digest,
       measuredDigest: measured.digest,
+      digestContract: measured.digestContract,
       executionFiles: measured.files.length,
       command: [process.execPath, path.join('tools', moduleId, 'selftest.js')],
       shell: false,
       repairAuthority: 'NONE'
     };
   } catch (error) {
-    return { schema: SCHEMA, moduleId, status: 'HELD', reasons: ['inspection-error'], error: error.message, reviewedDigest: review.digest, repairAuthority: 'NONE' };
+    return { schema: SCHEMA, moduleId, status: 'HELD', reasons: ['inspection-error'], error: error.message, reviewedDigest: review.digest, digestContract: DIGEST_CONTRACT, repairAuthority: 'NONE' };
   }
 }
 function checkDeck() {
@@ -123,6 +136,7 @@ function checkDeck() {
     id: 'observatory-' + review.id,
     label: review.label + ' contract',
     args: [RUNNER, '--module', review.id, '--digest', review.digest],
+    digestContract: DIGEST_CONTRACT,
     evidenceAuthority: 'REVIEWED_EXECUTION_SURFACE_ONLY',
     repairAuthority: 'NONE'
   }));
@@ -132,6 +146,7 @@ module.exports = {
   SCHEMA,
   VERSION,
   RUNNER,
+  DIGEST_CONTRACT,
   REVIEWED_MODULES: clone(REVIEWED_MODULES),
   checkDeck,
   executionDigest,
