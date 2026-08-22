@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-challenger-reviewed-handoff/v1",
+  "title": "AXM Model Shadow Challenger Reviewed Handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "handoffId", "generatedAt", "status",
+    "proposalRef", "observationRef", "plan", "reviewEvidenceRef",
+    "reviewEvidence", "state", "nextGate", "truth", "handoffDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-challenger-reviewed-handoff/v1"},
+    "version": {"const": "0.1.0"},
+    "handoffId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "proposalRef": {"$ref": "#/$defs/reference"},
+    "observationRef": {"$ref": "#/$defs/reference"},
+    "plan": {"type": "object"},
+    "reviewEvidenceRef": {"$ref": "#/$defs/reference"},
+    "reviewEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "reviewItemId", "reviewItemSchema", "kind", "sourceRef",
+        "artifactDigest", "state", "requiredSeats", "approvalCount",
+        "declaredHumanApprovalCount", "approvals", "discussionIngested",
+        "voteNotesIngested", "actorAuthenticationProvided"
+      ],
+      "properties": {
+        "schema": {"const": "axm.model-shadow-challenger-review-evidence/v1"},
+        "reviewItemId": {"type": "string", "minLength": 1, "maxLength": 180},
+        "reviewItemSchema": {"const": "axm.review-item/v1"},
+        "kind": {"const": "model-shadow-challenger-plan"},
+        "sourceRef": {"type": "string", "minLength": 1, "maxLength": 300},
+        "artifactDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "state": {"const": "APPROVED"},
+        "requiredSeats": {"type": "integer", "minimum": 1, "maximum": 10},
+        "approvalCount": {"type": "integer", "minimum": 1, "maximum": 10},
+        "declaredHumanApprovalCount": {"type": "integer", "minimum": 1, "maximum": 10},
+        "approvals": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["actorDigest", "actorKind", "artifactDigest", "at"],
+            "properties": {
+              "actorDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+              "actorKind": {"type": "string", "minLength": 1, "maxLength": 40},
+              "artifactDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+              "at": {"type": "string", "format": "date-time"}
+            }
+          }
+        },
+        "discussionIngested": {"const": false},
+        "voteNotesIngested": {"const": false},
+        "actorAuthenticationProvided": {"const": false}
+      }
+    },
+    "state": {"const": "DECLARED_HUMAN_REVIEW_RECORDED_EXECUTION_NOT_AUTHORIZED"},
+    "nextGate": {"const": "EXPLICIT_SHADOW_EXECUTION_DECISION_USING_EXISTING_CHALLENGER_PLAN"},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "proposalVerifiedByExactRebuild", "challengerPlanVerifiedNatively",
+        "reviewItemExactPlanDigestMatch", "declaredHumanApprovalPresent",
+        "reviewActorAuthenticated", "actualHumanParticipationProven",
+        "reviewDiscussionIngested", "voteNotesIngested",
+        "rawModelOutputEmbedded", "privateContextEmbedded",
+        "experimentExecuted", "evaluationPerformed", "executionAuthorized",
+        "adoptionAuthorized", "humanBenefitProven", "sharedGrowthClaimed",
+        "broadLearningClaimed", "automaticExecution", "automaticWrite",
+        "automaticInstall", "automaticPermissionGrant", "automaticPromotion",
+        "automaticMerge", "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "proposalVerifiedByExactRebuild": {"const": true},
+        "challengerPlanVerifiedNatively": {"const": true},
+        "reviewItemExactPlanDigestMatch": {"const": true},
+        "declaredHumanApprovalPresent": {"const": true},
+        "reviewActorAuthenticated": {"const": false},
+        "actualHumanParticipationProven": {"const": false},
+        "reviewDiscussionIngested": {"const": false},
+        "voteNotesIngested": {"const": false},
+        "rawModelOutputEmbedded": {"const": false},
+        "privateContextEmbedded": {"const": false},
+        "experimentExecuted": {"const": false},
+        "evaluationPerformed": {"const": false},
+        "executionAuthorized": {"const": false},
+        "adoptionAuthorized": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "sharedGrowthClaimed": {"const": false},
+        "broadLearningClaimed": {"const": false},
+        "automaticExecution": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticInstall": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "handoffDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  },
+  "$defs": {
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 180},
+        "sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      }
+    }
+  }
+}

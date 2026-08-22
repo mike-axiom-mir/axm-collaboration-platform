@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.branch-return-inspection/v1",
+  "title": "AXM branch return inspection",
+  "type": "object",
+  "required": ["schema", "status", "pass", "module", "inventory", "findings", "truth"],
+  "properties": {
+    "schema": {"const": "axm.branch-return-inspection/v1"},
+    "status": {"enum": ["READY_FOR_GOVERNED_INTAKE", "HOLD_PORTABILITY_GAPS", "INVALID_RETURN_CONTRACT"]},
+    "pass": {"type": "boolean"},
+    "module": {"type": ["object", "null"]},
+    "inventory": {"type": "object"},
+    "findings": {
+      "type": "object",
+      "required": ["errors", "warnings"],
+      "properties": {
+        "errors": {"type": "array", "items": {"type": "string"}},
+        "warnings": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "truth": {"type": "object"}
+  }
+}
+

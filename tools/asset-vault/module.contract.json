@@ -1,0 +1,67 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "asset-vault",
+  "version": "v0_2",
+  "provides": [
+    "file-import-records",
+    "static-asset-catalogs",
+    "image-audio-video-preview",
+    "project-namespaces",
+    "handoff-templates",
+    "launcher-card-metadata",
+    "backup-json",
+    "action-report",
+    "registry-connection",
+    "studio-asset-handoff"
+  ],
+  "consumes": [
+    "workshop:storage",
+    "workshop:gate",
+    "workshop:optional-ai",
+    "service:asset-librarian",
+    "service:settings",
+    "service:registry",
+    "workshop:server-export",
+    "browser:user-selected-files"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm-asset-vault/v3",
+      "axm-launcher-card-metadata/v1",
+      "axm.studio-asset/v1",
+      "plain-text:asset-handoff",
+      "plain-text:action-or-issue-report"
+    ],
+    "accepts": [
+      "hub:init",
+      "axm-asset-vault/v3",
+      "browser:user-selected-file",
+      "registry:static-asset-catalog"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "browser-local:asset-vault",
+      "user-download:explicit",
+      "workshop-export:explicit",
+      "parent-window:explicit-studio-asset-handoff"
+    ],
+    "refuses": [
+      "automatic-folder-watching",
+      "automatic-asset-pack-zipping",
+      "automatic-file-copying",
+      "automatic-launcher-card-installation",
+      "persistent-server-wide-registry-authority",
+      "silent-backup-overwrite",
+      "automatic-promotion",
+      "hidden-cloud-sync"
+    ]
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "schema_version": "0.7",
+  "capsule_version": "0.7.0",
+  "capsule_id": "AXM-CONSOLE-001@0.4.0+RUNTIME-CAPSULE-0.7.0",
+  "asset": {
+    "asset_id": "AXM-CONSOLE-001",
+    "asset_version": "0.4.0",
+    "name": "AXM Interactive Control Console",
+    "family": "console-prop"
+  },
+  "source_binding": {
+    "object_contract_sha256": "2879518d238af0b0b9f88d9bace5a935fbc5410731ce137058d4b4123907b9d4",
+    "runtime_manifest": {
+      "portable_path": "AXM_ASSETS/AXM-CONSOLE-001/0.4.0/game/runtime_manifest.json",
+      "full_package_path": "deployments/AXM_8_GAMES_SHARED_GEOMETRY/AXM_ASSETS/AXM-CONSOLE-001/0.4.0/game/runtime_manifest.json",
+      "sha256": "7026215d3bf883dee7db141f4aa94931344e6c02ee5aee146ddd6609c98123e3"
+    },
+    "source_glb": {
+      "portable_path": "AXM_ASSETS/AXM-CONSOLE-001/0.4.0/game/AXM-CONSOLE-001.glb",
+      "full_package_path": "deployments/AXM_8_GAMES_SHARED_GEOMETRY/AXM_ASSETS/AXM-CONSOLE-001/0.4.0/game/AXM-CONSOLE-001.glb",
+      "sha256": "e90419f511faeb1d547426e84faa55f80ec98c2750b7d0c0a92bdebfc1e59a15"
+    },
+    "binding_rule": "Stable identity and SHA-256 evidence are authoritative; paths are resolvers only."
+  },
+  "coordinate_contract": {
+    "linear_unit": "meter",
+    "up": "+Y",
+    "forward": "+Z",
+    "import_scale": 1.0
+  },
+  "bounds_m": {
+    "minimum_m": [
+      -0.45,
+      -2.143131898507868e-17,
+      -0.43
+    ],
+    "maximum_m": [
+      0.45,
+      1.1910638510007585,
+      0.46980839877441466
+    ],
+    "extents_m": [
+      0.9,
+      1.1910638510007585,
+      0.8998083987744147
+    ],
+    "center_m": [
+      0.0,
+      0.595531926,
+      0.019904199
+    ],
+    "footprint_xz_m": [
+      0.9,
+      0.8998083987744147
+    ],
+    "height_m": 1.1910638510007585
+  },
+  "lods": {
+    "policy": {
+      "mode": "screen-coverage-or-distance",
+      "starting_screen_height_thresholds": [
+        0.18,
+        0.06
+      ],
+      "note": "Starting suggestion only. Tune per camera, game speed, and device class."
+    },
+    "records": [
+      {
+        "lod": 0,
+        "file": "AXM-CONSOLE-001.glb",
+        "faces": 336,
+        "bytes": 10340,
+        "sha256": "e90419f511faeb1d547426e84faa55f80ec98c2750b7d0c0a92bdebfc1e59a15"
+      },
+      {
+        "lod": 1,
+        "file": "lod/AXM-CONSOLE-001_LOD1.glb",
+        "faces": 224,
+        "bytes": 9180,
+        "sha256": "f2a908a3488b1a54599a2799e792f6e2713dd55046a5d0b997f08cfd9d940b43"
+      },
+      {
+        "lod": 2,
+        "file": "lod/AXM-CONSOLE-001_LOD2.glb",
+        "faces": 192,
+        "bytes": 8896,
+        "sha256": "d5d409256977fb524a96086ef092d2c66f58264b25ae70fd440e1a930cad873c"
+      }
+    ],
+    "selection_rule": "Helpers may select one declared LOD from screen-height input. They do not install automatic camera switching or tune thresholds for a receiving game."
+  },
+  "collision": {
+    "status": "DATA-CONTRACT",
+    "file": "collision/AXM-CONSOLE-001_COLLISION.glb",
+    "file_sha256": "7d8cd4211d27d181a7cf373dd3b5baf5f5a7f059e4f1e7aa67c24cdc9364a983",
+    "manifest": "collision/collision_manifest.json",
+    "manifest_sha256": "a9838e0f62315bfab0b1b54242403418f21d752d2be49506b1f67470f63d1dc5",
+    "manifest_schema_version": "0.3",
+    "policy": "component-primitives",
+    "prefer_engine_primitives_when_available": true,
+    "colliders": [
+      {
+        "node": "COL_base",
+        "source_component": "base",
+        "base_component": "base",
+        "shape": "box",
+        "policy": "component-primitives",
+        "game_unit": "meter",
+        "note": "Collision is a gameplay approximation, not the visual mesh or print-safety proof."
+      },
+      {
+        "node": "COL_pedestal",
+        "source_component": "pedestal",
+        "base_component": "pedestal",
+        "shape": "cylinder",
+        "policy": "component-primitives",
+        "game_unit": "meter",
+        "note": "Collision is a gameplay approximation, not the visual mesh or print-safety proof."
+      },
+      {
+        "node": "COL_panel",
+        "source_component": "panel",
+        "base_component": "panel",
+        "shape": "box",
+        "policy": "component-primitives",
+        "game_unit": "meter",
+        "note": "Collision is a gameplay approximation, not the visual mesh or print-safety proof."
+      }
+    ],
+    "runtime_rule": "Collision records are game-data intent. A receiving engine must explicitly choose the collision GLB or an engine-native interpretation; this capsule creates no physics body."
+  },
+  "sockets": {
+    "file": "sockets.json",
+    "file_sha256": "e6ca7cc6eea581c694b8f50e63da3fcc4a74865156bfde874e832727e7c5440a",
+    "manifest_schema_version": "0.2",
+    "records": [
+      {
+        "id": "interaction",
+        "purpose": "player use point",
+        "source_position_mm": [
+          0,
+          -520,
+          930
+        ],
+        "source_rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "game_position_m": [
+          0.0,
+          0.93,
+          0.5200000000000001
+        ],
+        "game_matrix_column_major": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          6.123233995736766e-17,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          6.123233995736766e-17,
+          0.0,
+          0.0,
+          0.93,
+          0.5200000000000001,
+          1.0
+        ]
+      },
+      {
+        "id": "screen_anchor",
+        "purpose": "world-space UI anchor",
+        "source_position_mm": [
+          0,
+          -450,
+          1060
+        ],
+        "source_rotation_deg": [
+          0,
+          0,
+          0
+        ],
+        "game_position_m": [
+          0.0,
+          1.06,
+          0.45000000000000007
+        ],
+        "game_matrix_column_major": [
+          1.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          6.123233995736766e-17,
+          -1.0,
+          0.0,
+          0.0,
+          1.0,
+          6.123233995736766e-17,
+          0.0,
+          0.0,
+          1.06,
+          0.45000000000000007,
+          1.0
+        ]
+      }
+    ],
+    "lookup_rule": "Socket IDs are exact and case-sensitive. Unknown IDs must return no result rather than a guessed transform."
+  },
+  "contracts": {
+    "assembly": {
+      "path": "../assembly_contract.json",
+      "content_sha256": "6abc47e6079d4d182d451deefc307cdb005069b1afe754a58106f8e2ec70f568",
+      "validation_status": "PASS"
+    },
+    "materials": {
+      "path": "../material_reality.json",
+      "content_sha256": "eb4337652f1239bc40823aa8d2346e88f09189a7ffc4c7f577a685520472eeda",
+      "calibration_required": true
+    }
+  },
+  "states": {
+    "default": "idle",
+    "named": [
+      "idle",
+      "active",
+      "locked",
+      "fault"
+    ],
+    "interaction": {
+      "socket": "interaction",
+      "actions": [
+        "use",
+        "hack",
+        "read"
+      ]
+    },
+    "execution_status": "DECLARED-ONLY",
+    "runtime_rule": "State names preserve human/game meaning. They do not move joints, swap materials, spawn effects, or authorize gameplay transitions without an explicit receiving-game binding."
+  },
+  "fallback_2d": {
+    "hero": "../preview/hero_isometric.png",
+    "top": "../preview/top.png",
+    "sprite_sheet": "../preview/turntable_8.png",
+    "sprite_manifest": "../preview/sprite_manifest.json",
+    "transparent_background": true
+  },
+  "authority_limits": {
+    "status": "GAME-DATA-WORKING / RECEIVING-ENGINE-INTEGRATION-UNCLAIMED",
+    "automatic_engine_physics": false,
+    "automatic_game_project_write": false,
+    "gameplay_balance_authority": false,
+    "physical_control_authority": false,
+    "manufacturing_authority": false,
+    "receiving_game_integration_claimed": false,
+    "rule": "The capsule exposes bounded source data. The receiving game owns import settings, physics bodies, behavior, balance, project writes, runtime tests, and final acceptance."
+  },
+  "generated_utc": "2026-07-28T20:03:04Z"
+}

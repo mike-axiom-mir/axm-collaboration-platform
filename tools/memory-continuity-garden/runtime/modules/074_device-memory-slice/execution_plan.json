@@ -1,0 +1,92 @@
+{
+  "all_steps_bounded": true,
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "final_result_does_not_imply_owner_acceptance": true,
+  "identity": {
+    "category": "8. Cross-session, cross-device, human-AI, and replica continuity",
+    "name": "Device Memory Slice Handoff",
+    "number": 74,
+    "stable_id": "axm.memory.device-memory-slice"
+  },
+  "no_implicit_parallel_apply": true,
+  "operation_kind": "BOUNDED_TRANSFORM",
+  "plan_is_reference_only": true,
+  "schema": "axm.memory.run80-execution-plan/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "8fa19ce34aaf133b5ecd87e09bfb2d3fbc52931daa475fb0276bac3f88d4bcaf"
+  },
+  "source_run70_protocol_sha256": "753eb77c03f6975b75de7e6655e45516ac9755b021dc5a10ef821a2566fc5f5f",
+  "step_count": 5,
+  "steps": [
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "admission_receipt",
+      "failure_result": "HOLD_ADMISSION",
+      "purpose": "validate exact scope, source, authority, and resource budget",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [],
+      "sequence": 1,
+      "side_effect_permitted": false,
+      "step_id": "ADMIT"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "validated_input",
+      "failure_result": "HOLD_INPUT",
+      "purpose": "verify schema, digests, purpose, revision, and limitations",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "ADMIT"
+      ],
+      "sequence": 2,
+      "side_effect_permitted": false,
+      "step_id": "VALIDATE_INPUT"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "staged_output",
+      "failure_result": "RECOVERY_HOLD",
+      "purpose": "produce transformed output in an isolated staging boundary",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "VALIDATE_INPUT"
+      ],
+      "sequence": 3,
+      "side_effect_permitted": true,
+      "step_id": "TRANSFORM_IN_STAGING"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "verified_output",
+      "failure_result": "HOLD_VERIFICATION",
+      "purpose": "compare output to source and declared invariants",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "TRANSFORM_IN_STAGING"
+      ],
+      "sequence": 4,
+      "side_effect_permitted": false,
+      "step_id": "VERIFY_OUTPUT"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "transform_receipt",
+      "failure_result": "HOLD_RECEIPT",
+      "purpose": "emit receipt while leaving source untouched",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "VERIFY_OUTPUT"
+      ],
+      "sequence": 5,
+      "side_effect_permitted": false,
+      "step_id": "EMIT_RECEIPT"
+    }
+  ]
+}

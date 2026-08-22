@@ -1,0 +1,32 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "evidence-chain-recovery-foundry",
+  "name": "AXM Evidence Chain Recovery Foundry",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "VERIFY",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": ["evidence", "hash-chain", "recovery", "candidate", "integrity", "local-first"],
+  "uses": ["evidence-chain-inspector", "browser-file-picker", "web-crypto", "explicit-download"],
+  "permissions": [],
+  "actions": [
+    "bind an inspection receipt to the exact selected evidence segment",
+    "refuse non-hash structural or metadata anomalies",
+    "rechain an in-memory candidate after explicit authenticity acknowledgement",
+    "independently inspect the candidate",
+    "download candidate JSONL and a separate digest-only receipt"
+  ],
+  "accepts": ["application/x-ndjson", "axm.evidence-chain-inspection/v1"],
+  "produces": ["application/x-ndjson", "axm.evidence-chain-recovery-candidate/v1"],
+  "readiness": ["evidence-chain-inspector", "sha256-runtime"],
+  "verifiedAt": null,
+  "summary": "Creates a source-bound, independently re-inspected structural rechain candidate without modifying the original or claiming recovered truth.",
+  "notes": "Candidate-only and explicit-download-only. Rehashing cannot prove payload authenticity or restore history. The Foundry never discovers live state, overwrites, applies, recovers, starts the server, promotes or changes CANON."
+}

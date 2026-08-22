@@ -1,13 +1,25 @@
 {
+  "schema": "axm.tool-manifest/v1",
   "id": "verifier",
   "name": "Verifier",
   "version": "v2.0",
   "status": "TEST",
   "entry": "index.html",
+  "kind": "product",
+  "contract": "module.contract.json",
   "type": "hub-module",
   "hubApiVersion": "1.0",
+  "audience": "human",
+  "risk": "MEDIUM",
   "tags": ["hub", "verify", "checks", "gate", "failure-memory", "category-packs"],
-  "uses": ["verification-spine"],
+  "uses": [
+    "verification-spine",
+    "same-origin-workshop-evidence",
+    "same-origin-verify-config",
+    "browser-blob-download",
+    "hub-module-bridge"
+  ],
   "permissions": [],
-  "notes": "Main Verifier plus category Verification Spine. Specialist verifiers keep their authority; normalized receipts expose missing validators and contradictions. Past failures can be curated as candidate, active, monitor, manual-review or retired regression lessons with append-only revisions."
+  "summary": "Inspect existing core and Verification Spine evidence, curate in-memory check and failure-memory proposals, and explicitly download a candidate verifier configuration.",
+  "notes": "Stateless browser editor over same-origin evidence. Specialist verifiers keep their authority; normalized receipts expose missing validators and contradictions. Failure-memory changes use append-only revisions. A downloaded verify.config.json is only a candidate: the browser does not write the root config, execute verification, change Workshop status, or confer CANON."
 }

@@ -1,12 +1,12 @@
 # Casino Workbench · Ten-Slot Alpha
 
 Status: **WORKING / TEST**  
-Version: `0.3.2-alpha`  
+Version: `0.3.3-alpha`  
 Publication: local workbench only; no GitHub action and no live-library promotion
 
 This local package contains one authoritative casino game with two routes:
 
-- **Backroom Story** — one to four real Party A seats share a ten-chapter campaign.
+- **Free Play** — one to four real Party A seats can choose and spin any of the ten cabinets immediately, with no quests or searches.
 - **House War** — equal parties from 1v1 through 4v4 operate and attack casinos, play random-slot district contests, and try to survive the closing bell.
 
 The alpha starts with ten mechanically distinct slots:
@@ -24,12 +24,12 @@ The alpha starts with ten mechanically distinct slots:
 
 Every settled spin advances one casino-wide 50,000-position AXM Draw Spine.
 The neutral ticket is then mapped into the already-selected style's independent
-50,000-outcome book. Actor, wager, bankroll, casino, owner, quest, and ability
+50,000-outcome book. Actor, wager, bankroll, casino, owner, and ability
 state never enter outcome selection. A new session seed reshuffles the neutral
 order and all ten mappings, so repeated sessions do not start with the same
 play sequence.
 
-The v0.3.2 Overdrive Theater pass gives every cabinet an original vector emblem, its own
+The v0.3.3 quest-free play pass retains the Overdrive Theater, giving every cabinet an original vector emblem, its own
 robot silhouette/accent, mechanic-shaped board, win personality, and readable
 mobile card. The shared presentation follows AXM's premium dark neon-lux DNA:
 gold identity, cyan structure, magenta spark, cute machines, and honest WORKING
@@ -44,7 +44,7 @@ Key paths:
   and ten presentation evaluators.
 - `slots/axm-draw-spine.js` — the shared without-replacement 50K draw authority.
 - `slots/lux-5/` — the original solved LUX-5 reels, free spins, and Overdrive math.
-- `alpha/` — server, clients, story campaign, multiplayer simulation, and tests.
+- `alpha/` — server, clients, free play, multiplayer simulation, and tests.
 - `ALPHA_GAMEPLAY_ROUTE.md` — the locked gameplay and probability contract.
 - `CODEX_LOCAL_LAYER_DROP.md` — the safe local Game Hub integration handoff.
 - `BUILD_REPORT.md` — implemented scope, verification, and remaining QA.

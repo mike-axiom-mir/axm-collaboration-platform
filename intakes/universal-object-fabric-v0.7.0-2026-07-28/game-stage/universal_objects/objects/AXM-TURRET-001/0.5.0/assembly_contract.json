@@ -1,0 +1,137 @@
+{
+  "schema_version": "0.5",
+  "asset_id": "AXM-TURRET-001",
+  "asset_version": "0.4.0",
+  "root_group": "root",
+  "groups": [
+    {
+      "id": "root",
+      "kind": "rigid",
+      "parent": null,
+      "member_patterns": [
+        "base",
+        "stabilizer__*"
+      ],
+      "members": [
+        "base",
+        "stabilizer__r00",
+        "stabilizer__r01",
+        "stabilizer__r02",
+        "stabilizer__r03"
+      ],
+      "pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "notes": ""
+    },
+    {
+      "id": "yaw_body",
+      "kind": "rigid",
+      "parent": null,
+      "member_patterns": [
+        "rotation_ring",
+        "body"
+      ],
+      "members": [
+        "rotation_ring",
+        "body"
+      ],
+      "pivot_m": [
+        0,
+        0.245,
+        0
+      ],
+      "notes": ""
+    },
+    {
+      "id": "pitch_head",
+      "kind": "rigid",
+      "parent": null,
+      "member_patterns": [
+        "head",
+        "barrel",
+        "muzzle"
+      ],
+      "members": [
+        "head",
+        "barrel",
+        "muzzle"
+      ],
+      "pivot_m": [
+        0,
+        0.98,
+        0
+      ],
+      "notes": ""
+    }
+  ],
+  "joints": [
+    {
+      "id": "yaw",
+      "type": "continuous",
+      "parent_group": "root",
+      "child_group": "yaw_body",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pivot_m": [
+        0,
+        0.245,
+        0
+      ],
+      "limits": {},
+      "default": 0,
+      "drive": {
+        "mode": "target",
+        "speed_deg_s": 120
+      },
+      "clearance_mm": null,
+      "human_confirmation_required": false,
+      "notes": ""
+    },
+    {
+      "id": "pitch",
+      "type": "revolute",
+      "parent_group": "yaw_body",
+      "child_group": "pitch_head",
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "pivot_m": [
+        0,
+        0.98,
+        0
+      ],
+      "limits": {
+        "min": -15,
+        "max": 65,
+        "unit": "degree"
+      },
+      "default": 0,
+      "drive": {
+        "mode": "target",
+        "speed_deg_s": 90
+      },
+      "clearance_mm": 0.4,
+      "human_confirmation_required": false,
+      "notes": ""
+    }
+  ],
+  "unassigned_nodes": [],
+  "moving_groups": [
+    "pitch_head",
+    "yaw_body"
+  ],
+  "validation": {
+    "status": "PASS",
+    "failures": [],
+    "warnings": []
+  },
+  "runtime_rule": "GLB node geometry stays source-preserved. Engines create groups at the declared pivots and re-parent only the named nodes at load time."
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "research-contribution-intake",
+  "version": "v0.2",
+  "status": "TEST",
+  "provides": [
+    "research.contribution.data-only-verify",
+    "research.contribution.artifact-seat-attribution",
+    "research.contribution.signal-stage-preserve",
+    "research.contribution.disagreement-preserve",
+    "research.contribution.proposal-disposition-preserve",
+    "research.contribution.common-mode-caution",
+    "research.contribution.simulation-projection",
+    "research.contribution.exact-rebuild-verify",
+    "research.contribution.authority.none",
+    "axm.research-contribution-bundle/v1",
+    "axm.research-contribution-assessment/v1",
+    "axm.research-contribution-simulation-projection/v1"
+  ],
+  "consumes": [
+    "caller-supplied digest-bound inert research artifacts",
+    "caller-supplied contributor-seat provenance",
+    "caller-supplied retained signals and proposal dispositions",
+    "caller-supplied claim-native evidence references",
+    "one exact portable baseline reference",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.research-contribution-assessment/v1",
+      "axm.research-contribution-simulation-projection/v1"
+    ],
+    "accepts": [
+      "one axm.research-contribution-bundle/v1"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "package-code-execution",
+      "artifact-extraction",
+      "model-invocation",
+      "cross-model-agreement-as-proof",
+      "signal-stage-promotion",
+      "disagreement-erasure",
+      "proposal-disposition-erasure",
+      "static-integrity-as-runtime-proof",
+      "simulation-as-learning-proof",
+      "runtime-proof-as-human-benefit",
+      "automatic-baseline-run",
+      "automatic-execution",
+      "automatic-acceptance",
+      "automatic-build",
+      "automatic-install",
+      "automatic-permission-grant",
+      "automatic-promotion",
+      "automatic-merge",
+      "automatic-canon",
+      "foundation-mutation",
+      "undefined-or-non-json-representable-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "rebuild from exact caller input",
+    "disconnect": "not-applicable",
+    "cleanup": "caller-owned"
+  }
+}

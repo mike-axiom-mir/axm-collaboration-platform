@@ -1,0 +1,39 @@
+{
+  "schema": "axm.code-capability-fabric-hardening-integration-handoff/v1",
+  "observedAt": "2026-08-21T23:26:33.860Z",
+  "source": {
+    "branch": "codex/code-capability-fabric-hardening-v1.4",
+    "implementationCommit": "356a37dacac4d8522fc81fcd4c89292df4f6dd2a",
+    "baseCommit": "d9066284e45eaedb07d8e7998b7c6a972e67c0c1",
+    "baseBranchAtIntake": "codex/code-capability-fabric-intake-v1.3"
+  },
+  "observedCanonicalCheckout": {
+    "branch": "local-visual-fabric-20260728",
+    "head": "c6e7909267f51a6fa14395e46d6917678ef87d06",
+    "dirty": true,
+    "trackedChangeEntries": 3599,
+    "untrackedEntries": 432,
+    "intakeCommitIsAncestor": false,
+    "taskRelevantPathStatus": "CLEAN_OR_ABSENT_IN_THAT_CHECKOUT"
+  },
+  "targetAssumption": "No integration target was chosen. The observed canonical checkout is not a safe merge base and must not be overwritten or used for an in-place merge.",
+  "readOnlyReviewCommands": [
+    "git -C <canonical-workshop> log --oneline --decorate d9066284e45eaedb07d8e7998b7c6a972e67c0c1..codex/code-capability-fabric-hardening-v1.4",
+    "git -C <canonical-workshop> diff --check d9066284e45eaedb07d8e7998b7c6a972e67c0c1...codex/code-capability-fabric-hardening-v1.4",
+    "git -C <canonical-workshop> diff --stat d9066284e45eaedb07d8e7998b7c6a972e67c0c1...codex/code-capability-fabric-hardening-v1.4"
+  ],
+  "safeIntegrationTemplateAfterMikeAccepts": [
+    "Re-check the chosen target branch HEAD, worktree status, and whether it already contains the intake commit.",
+    "Create a new clean review worktree from <mike-selected-target-ref>; do not use the busy canonical checkout.",
+    "In the review worktree run: git merge --no-ff --no-commit <final-source-commit>.",
+    "Inspect the complete staged diff, rerun every required and focused check, and let Mike decide whether to create the merge commit."
+  ],
+  "authority": {
+    "mergePerformed": false,
+    "canonicalCheckoutModified": false,
+    "installed": false,
+    "promoted": false,
+    "canonChanged": false,
+    "finalGate": "Mike Tobi"
+  }
+}

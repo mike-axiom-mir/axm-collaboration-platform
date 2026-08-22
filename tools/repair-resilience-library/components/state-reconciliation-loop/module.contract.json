@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.state-reconciliation-loop",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.reconciliation.receipt/v1"
+  ],
+  "consumes": [
+    "desired-state",
+    "actual-state",
+    "action-adapter",
+    "verifier"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_2_SHADOW_RECONCILIATION",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/recovery-center",
+      "shared/module-evolution-ledger"
+    ],
+    "reason": "Runs only caller-supplied idempotent actions on a local copy with verification after each bounded step."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-restore",
+      "automatic-rollback",
+      "silent-data-loss",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

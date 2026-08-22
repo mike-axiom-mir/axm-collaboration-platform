@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-pr-review-packet/v1",
+  "title": "AXM deterministic PR review packet",
+  "type": "object",
+  "required": ["schema", "state", "title", "body", "checkpointDigest", "draftRecommended", "pullRequestCreated", "mergeAuthority", "promotionAuthority", "canonAuthority", "reviewPacketDigest"],
+  "properties": {
+    "schema": { "const": "axm.git-pr-review-packet/v1" },
+    "state": { "enum": ["READY", "HELD"] },
+    "title": { "type": "string" },
+    "body": { "type": "string" },
+    "checkpointDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "reviewPacketDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "draftRecommended": { "const": true },
+    "pullRequestCreated": { "const": false },
+    "mergeAuthority": { "const": false },
+    "promotionAuthority": { "const": false },
+    "canonAuthority": { "const": false }
+  }
+}

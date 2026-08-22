@@ -1,0 +1,64 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "ai-habitat",
+  "version": "v0.3.0-axm.1",
+  "provides": [
+    "ai-presence-spatial-habitat",
+    "voluntary-signal-language-ui",
+    "permission-gated-demo-actions",
+    "workshop-presence-to-habitat-seat-bridge",
+    "habitat-to-workshop-presence-heartbeat",
+    "local-habitat-proof-trail"
+  ],
+  "consumes": [
+    "workshop:presence-api/v1",
+    "python:standard-library-runtime",
+    "browser:local-loopback",
+    "human:explicit-sidecar-launch"
+  ],
+  "permissions": [
+    "process:explicit-python-sidecar",
+    "network:loopback-only",
+    "filesystem:module-runtime"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.presence-heartbeat/v1",
+      "axm.habitat-seat-state/v0.3",
+      "axm.habitat-proof-event/v0.3"
+    ],
+    "accepts": [
+      "axm.workshop-presence/v1",
+      "axm.habitat-seat/v0.3",
+      "axm.habitat-intent/v0.3",
+      "axm.habitat-expression/v0.3"
+    ]
+  },
+  "boundaries": {
+    "writes": [
+      "module:runtime/state.json",
+      "module:runtime/events.jsonl",
+      "module:runtime/bridge_token.txt",
+      "module:runtime/artifacts",
+      "workshop:presence-heartbeat"
+    ],
+    "refuses": [
+      "non-loopback-network",
+      "automatic-sidecar-start",
+      "privileged-operating-system-control",
+      "arbitrary-file-read-or-write",
+      "presence-as-intelligence-proof",
+      "state-face-as-feeling-claim",
+      "suggested-line-as-spoken-output",
+      "automatic-permission-grant",
+      "automatic-canon-promotion",
+      "public-or-lan-exposure-by-default"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "mixed",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  }
+}

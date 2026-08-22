@@ -13,6 +13,7 @@
    ============================================================ */
 "use strict";
 const http = require("http");
+const crypto = require("crypto");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -25,6 +26,7 @@ const SharedProfile = require("./shared/profile/axm-profile-core");
 const SharedProfileProvider = require("./shared/profile/axm-profile-provider");
 const ExplorationGarden = require("./shared/exploration/axm-exploration-core");
 const GrowthMetrics = require("./shared/growth/axm-growth-metrics");
+const GrowthWorkerRunner = require("./shared/growth/growth-worker-runner");
 const SpecialistLibrary = require("./shared/specialists/axm-specialist-library");
 const SpecialistRouter = require("./shared/specialists/specialist-router");
 const PhysicsCore = require("./shared/physics/axm-physics-core");
@@ -37,12 +39,19 @@ const StaticBoundary = require("./shared/services/static-boundary");
 const BodyPulseServiceFactory = require("./shared/pulse/axm-body-pulse-service");
 const PlatformHeartbeatServiceFactory = require("./shared/heartbeat/axm-platform-heartbeat-service");
 const HeartbeatVerificationBridgeFactory = require("./shared/heartbeat/axm-heartbeat-verification-bridge");
+const HeartbeatCodeDraftBridgeFactory = require("./shared/heartbeat/axm-heartbeat-code-draft-bridge");
+const HeartbeatMirrorLearningBridgeFactory = require("./shared/heartbeat/axm-heartbeat-mirror-learning-bridge");
+const HeartbeatOrganOrchestratorFactory = require("./shared/heartbeat/axm-heartbeat-organ-orchestrator");
 const WorkshopUpdaterServiceFactory = require("./shared/workshop-updater/axm-workshop-updater-service");
 const DirectionServiceFactory = require("./shared/direction/axm-direction-service");
 const ProductionSessionCore = require("./shared/production-session/production-session-core");
 const ProductionSessionServiceFactory = require("./shared/production-session/production-session-service");
 const OperationsApiFactory = require("./shared/operations/operations-api");
+const OperationsUtils = require("./shared/operations/operations-utils");
 const AssetHands = require("./shared/asset-hands/asset-hands");
+const VerificationProofServiceFactory = require("./shared/verification-proof/verification-proof-service");
+const AccessibilityAdaptationServiceFactory = require("./shared/accessibility-adaptation/accessibility-adaptation-service");
+const AiTeamStewardServiceFactory = require("./shared/ai-team-steward/ai-team-steward-service");
 
 const ROOT = __dirname;
 const PRODUCTION_SESSION_ID = String(
@@ -132,6 +141,10 @@ const EXPLORATION_STATE_DIR = path.join(STATE_ROOT, "exploration-garden");
 const EXPLORATION_STATE_FILE = path.join(EXPLORATION_STATE_DIR, "garden.json");
 const GROWTH_STATE_DIR = path.join(STATE_ROOT, "workshop-growth");
 const GROWTH_STATE_FILE = path.join(GROWTH_STATE_DIR, "history.json");
+const GROWTH_SCAN_CACHE_FILE = path.join(
+  GROWTH_STATE_DIR,
+  "text-scan-cache.json",
+);
 const SPECIALIST_STATE_DIR = path.join(STATE_ROOT, "specialist-library");
 const SPECIALIST_STATE_FILE = path.join(SPECIALIST_STATE_DIR, "library.json");
 const BODY_PULSE_STATE_DIR = path.join(STATE_ROOT, "body-pulse");
@@ -144,6 +157,14 @@ const PLATFORM_HEARTBEAT_STATE_FILE = path.join(
 const HEARTBEAT_VERIFICATION_STATE_FILE = path.join(
   PLATFORM_HEARTBEAT_STATE_DIR,
   "verification.json",
+);
+const HEARTBEAT_CODE_DRAFT_STATE_FILE = path.join(
+  PLATFORM_HEARTBEAT_STATE_DIR,
+  "code-drafts.json",
+);
+const HEARTBEAT_MIRROR_LEARNING_STATE_FILE = path.join(
+  PLATFORM_HEARTBEAT_STATE_DIR,
+  "mirror-learning.json",
 );
 const WORKSHOP_UPDATER_STATE_DIR = path.join(STATE_ROOT, "workshop-updater");
 const WORKSHOP_UPDATER_STATE_FILE = path.join(
@@ -178,6 +199,13 @@ const MIRROR_PORT = 8799;
 const MIRROR_NATIVE_HOME =
   process.env.AXM_MIRROR_HOME || path.resolve(ROOT, "..", "AXM_MIRROR_LOCAL");
 const MIRROR_NATIVE_PORT = Number(process.env.AXM_MIRROR_PORT || 8818);
+const GROWTH_SCAN_RUNNER = GrowthWorkerRunner.create({
+  root: ROOT,
+  mirrorRoot: MIRROR_NATIVE_HOME,
+  cacheFile: GROWTH_SCAN_CACHE_FILE,
+  workerFile: path.join(ROOT, "shared", "growth", "growth-scan-worker.cjs"),
+  timeoutMs: 120000,
+});
 const MIRROR_NATIVE_TOKEN_FILE = path.join(
   MIRROR_NATIVE_HOME,
   "state",
@@ -217,8 +245,21 @@ let VISION_STATUS = {
   error: null,
 };
 let ACTIVE_PORT = DEFAULT_PORT;
+const SAFE_MODE = process.env.AXM_SAFE_MODE === "1";
 let GROWTH_DAILY_TIMER = null;
 let GROWTH_VELOCITY_TIMER = null;
+let GROWTH_SCAN_STATUS = {
+  schema: "axm.growth-scan-cache-status/v1",
+  mode: "NOT_MEASURED",
+  cacheHits: 0,
+  contentReads: 0,
+  eligibleTextFiles: 0,
+  durationMs: null,
+  measuredAt: null,
+  persisted: false,
+  execution: "not-started",
+  mainThreadFileWalk: false,
+};
 let TECHNICAL_GLASSES_TIMER = null;
 let PRODUCTION_SESSION_LAST_HEARTBEAT = Date.now();
 let PRODUCTION_SESSION_DOWNLOAD = null;
@@ -327,6 +368,15 @@ const OperationsApi = OperationsApiFactory.create({
   send,
   readJsonBody,
 });
+const VerificationProofService = VerificationProofServiceFactory.create({
+  root: ROOT,
+});
+const AccessibilityAdaptationService = AccessibilityAdaptationServiceFactory.create({
+  root: ROOT,
+});
+const AiTeamStewardService = AiTeamStewardServiceFactory.create({
+  root: ROOT,
+});
 
 function loadSharedProfile() {
   try {
@@ -434,11 +484,16 @@ function saveGrowthState(growth) {
   );
 }
 
-function scanGrowthBodies() {
-  return GrowthMetrics.attachMirror(
-    GrowthMetrics.scan(ROOT),
-    GrowthMetrics.scanMirror(MIRROR_NATIVE_HOME),
-  );
+async function scanGrowthWorkshop() {
+  const result = await GROWTH_SCAN_RUNNER.scanWorkshop();
+  GROWTH_SCAN_STATUS = result.status;
+  return result.metrics;
+}
+
+async function scanGrowthBodies() {
+  const result = await GROWTH_SCAN_RUNNER.scanBodies();
+  GROWTH_SCAN_STATUS = result.status;
+  return result.metrics;
 }
 
 function localDateKey(date) {
@@ -446,12 +501,12 @@ function localDateKey(date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
-function runDailyGrowthCapture() {
+async function runDailyGrowthCapture() {
   const growth = loadGrowthState(),
     today = localDateKey(new Date());
   if (!growth.schedule.enabled || growth.schedule.lastCaptureDate === today)
     return null;
-  const current = scanGrowthBodies();
+  const current = await scanGrowthBodies();
   const result = GrowthMetrics.capture(
     growth,
     current,
@@ -489,21 +544,18 @@ function scheduleNextGrowthCapture(options) {
   const delay =
     target.getTime() <= now.getTime() ? 1000 : target.getTime() - now.getTime();
   GROWTH_DAILY_TIMER = setTimeout(() => {
-    try {
-      runDailyGrowthCapture();
-    } catch (error) {
+    runDailyGrowthCapture().catch((error) => {
       slog(
         `daily workshop growth snapshot failed · ${String(error.message || error).slice(0, 160)}`,
       );
-    }
-    scheduleNextGrowthCapture();
+    }).finally(() => scheduleNextGrowthCapture());
   }, delay);
   if (GROWTH_DAILY_TIMER.unref) GROWTH_DAILY_TIMER.unref();
 }
 
-function captureGrowthVelocity() {
+async function captureGrowthVelocity() {
   if (IS_PRODUCTION_SESSION) return null;
-  const current = GrowthMetrics.scan(ROOT);
+  const current = await scanGrowthWorkshop();
   const result = GrowthMetrics.recordVelocity(loadGrowthState(), current, {
     minimumMinutes: 15,
   });
@@ -516,22 +568,18 @@ function scheduleGrowthVelocity(options) {
   GROWTH_VELOCITY_TIMER = null;
   if (IS_PRODUCTION_SESSION) return;
   if (!(options && options.skipInitial === true)) {
-    try {
-      captureGrowthVelocity();
-    } catch (error) {
+    captureGrowthVelocity().catch((error) => {
       slog(
       `Workshop code-line baseline failed · ${String(error.message || error).slice(0, 160)}`,
     );
-    }
+    });
   }
   GROWTH_VELOCITY_TIMER = setInterval(() => {
-    try {
-      captureGrowthVelocity();
-    } catch (error) {
+    captureGrowthVelocity().catch((error) => {
       slog(
         `Workshop code-line sample failed · ${String(error.message || error).slice(0, 160)}`,
       );
-    }
+    });
   }, 15 * 60 * 1000);
   if (GROWTH_VELOCITY_TIMER.unref) GROWTH_VELOCITY_TIMER.unref();
 }
@@ -1017,6 +1065,30 @@ function writeHeartbeatVerificationState(state) {
   );
 }
 
+function readHeartbeatCodeDraftState() {
+  try {
+    return JSON.parse(fs.readFileSync(HEARTBEAT_CODE_DRAFT_STATE_FILE, "utf8"));
+  } catch (e) {
+    return null;
+  }
+}
+
+function writeHeartbeatCodeDraftState(state) {
+  OperationsUtils.atomicJson(HEARTBEAT_CODE_DRAFT_STATE_FILE, state);
+}
+
+function readHeartbeatMirrorLearningState() {
+  try {
+    return JSON.parse(fs.readFileSync(HEARTBEAT_MIRROR_LEARNING_STATE_FILE, "utf8"));
+  } catch (e) {
+    return null;
+  }
+}
+
+function writeHeartbeatMirrorLearningState(state) {
+  OperationsUtils.atomicJson(HEARTBEAT_MIRROR_LEARNING_STATE_FILE, state);
+}
+
 function readWorkshopUpdaterState() {
   try {
     return JSON.parse(fs.readFileSync(WORKSHOP_UPDATER_STATE_FILE, "utf8"));
@@ -1051,16 +1123,37 @@ const HeartbeatVerificationBridge = HeartbeatVerificationBridgeFactory.create({
   bootstrapActor: "mike-authorized-heartbeat-v0.1",
 });
 
+const HeartbeatCodeDraftBridge = HeartbeatCodeDraftBridgeFactory.create({
+  root: ROOT,
+  bodyPulse: BodyPulseService,
+  reviewService: OperationsApi.services.review,
+  read: readHeartbeatCodeDraftState,
+  write: writeHeartbeatCodeDraftState,
+});
+
+const HeartbeatMirrorLearningBridge = HeartbeatMirrorLearningBridgeFactory.create({
+  bodyPulse: BodyPulseService,
+  reviewService: OperationsApi.services.review,
+  read: readHeartbeatMirrorLearningState,
+  write: writeHeartbeatMirrorLearningState,
+  actionFeedStatus: () => mirrorNativeJson("GET", "/axm/v1/learning/action-feed/status"),
+  ingestLesson: (action) => mirrorNativeJson("POST", "/axm/v1/learning/action-feed/ingest", { action }),
+});
+
+const HeartbeatOrganOrchestrator = HeartbeatOrganOrchestratorFactory.create([
+  { id: "verification", onBeat: (beat) => HeartbeatVerificationBridge.onBeat(beat) },
+  { id: "code-drafts", onBeat: (beat) => HeartbeatCodeDraftBridge.onBeat(beat) },
+  { id: "mirror-learning", onBeat: (beat) => HeartbeatMirrorLearningBridge.onBeat(beat) },
+  { id: "workshop-updater", onBeat: (beat) => WorkshopUpdaterService.onBeat(beat) },
+]);
+
 const PlatformHeartbeatService = PlatformHeartbeatServiceFactory.create({
   read: readPlatformHeartbeatState,
   write: writePlatformHeartbeatState,
-  onBeat: (beat) => Promise.all([
-    HeartbeatVerificationBridge.onBeat(beat),
-    WorkshopUpdaterService.onBeat(beat),
-  ]),
+  onBeat: (beat) => HeartbeatOrganOrchestrator.onBeat(beat),
   onBeatError: (error, beat) => {
     console.error(
-      "AXM heartbeat verification bridge error",
+      "AXM heartbeat bridge error",
       beat && beat.beatId ? beat.beatId : "unknown-beat",
       error && error.message ? error.message : error,
     );
@@ -1457,6 +1550,47 @@ function mirrorNativeToken() {
   }
 }
 
+function mirrorNativeJson(method, route, body) {
+  return new Promise((resolve, reject) => {
+    const token = mirrorNativeToken();
+    if (!token) return reject(new Error("Mirror Native is offline or has no local runtime token"));
+    const encoded = body == null ? null : Buffer.from(JSON.stringify(body));
+    const request = http.request(
+      {
+        hostname: "127.0.0.1",
+        port: MIRROR_NATIVE_PORT,
+        path: route,
+        method,
+        timeout: 3000,
+        headers: Object.assign(
+          { authorization: "Bearer " + token, accept: "application/json" },
+          encoded ? { "content-type": "application/json", "content-length": encoded.length } : {},
+        ),
+      },
+      (response) => {
+        let text = "";
+        response.setEncoding("utf8");
+        response.on("data", (chunk) => {
+          text += chunk;
+          if (text.length > 1024 * 1024) request.destroy(new Error("Mirror Native response exceeded 1 MiB"));
+        });
+        response.on("end", () => {
+          let parsed;
+          try { parsed = JSON.parse(text || "{}"); }
+          catch (error) { return reject(new Error("Mirror Native returned invalid JSON")); }
+          if ((response.statusCode || 500) >= 400 || parsed.ok === false)
+            return reject(new Error(String(parsed.error || "Mirror Native request failed").slice(0, 500)));
+          resolve(parsed);
+        });
+      },
+    );
+    request.on("timeout", () => request.destroy(new Error("Mirror Native request timed out")));
+    request.on("error", reject);
+    if (encoded) request.write(encoded);
+    request.end();
+  });
+}
+
 function aiLearningForgeToken() {
   try {
     const token = fs.readFileSync(AI_LEARNING_FORGE_TOKEN_FILE, "utf8").trim();
@@ -1670,6 +1804,17 @@ function productionSessionRuntimeBlocked(rawUrl) {
 
 const server = http.createServer((req, res) => {
   const rawUrl = String(req.url || "/");
+  if (
+    SAFE_MODE &&
+    ["/game-api", "/games/", "/services/"].some((prefix) =>
+      rawUrl === prefix || rawUrl.startsWith(prefix),
+    )
+  )
+    return send(res, 423, {
+      ok: false,
+      safeMode: true,
+      error: "game and sidecar runtime routes are disabled in AXM safe mode",
+    });
   if (productionSessionRuntimeBlocked(rawUrl))
     return send(res, 409, {
       ok: false,
@@ -1759,6 +1904,66 @@ const server = http.createServer((req, res) => {
   if (url === null) return send(res, 400, { error: "malformed URL refused" });
   if (url.includes("..") || url.includes("\0"))
     return send(res, 400, { error: "path tricks refused" });
+  if (url === "/api/runtime/stop-all" && req.method === "POST") {
+    const remoteAddress = String(req.socket && req.socket.remoteAddress || "").toLowerCase();
+    const loopback = remoteAddress === "127.0.0.1" || remoteAddress === "::1" || remoteAddress === "::ffff:127.0.0.1";
+    const intent = String(req.headers["x-axm-lifecycle"] || "");
+    if (!loopback) return send(res, 403, { ok: false, error: "AXM lifecycle control is loopback-only" });
+    if (intent !== "explicit-local-stop-all") {
+      return send(res, 403, { ok: false, error: "explicit AXM lifecycle intent is required" });
+    }
+    const stopScript = path.join(ROOT, "scripts", "Stop-AxmOwnedServices.ps1");
+    if (!fs.existsSync(stopScript)) {
+      return send(res, 503, { ok: false, error: "AXM owned-service stop script is unavailable" });
+    }
+    const stopper = childProcess.spawn(
+      "powershell.exe",
+      ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", stopScript, "-DelayMilliseconds", "750"],
+      { cwd: ROOT, detached: true, windowsHide: true, stdio: "ignore" },
+    );
+    let lifecycleAnswered = false;
+    stopper.once("error", () => {
+      if (lifecycleAnswered) return;
+      lifecycleAnswered = true;
+      send(res, 503, { ok: false, error: "AXM owned-service stopper could not start" });
+    });
+    stopper.once("spawn", () => {
+      if (lifecycleAnswered) return;
+      lifecycleAnswered = true;
+      stopper.unref();
+      send(res, 202, {
+        ok: true,
+        schema: "axm.explicit-local-stop-all/v1",
+        accepted: true,
+        ownershipBoundary: "AXM bundled runtime executable identity",
+      });
+    });
+    return;
+  }
+  if (url === "/api/runtime/stop" && req.method === "POST") {
+    const expected = String(process.env.AXM_SHUTDOWN_TOKEN || "");
+    const received = String(req.headers["x-axm-shutdown-token"] || "");
+    if (!expected) return send(res, 404, { ok: false, error: "owned stop route is not enabled" });
+    if (!received || received.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(received), Buffer.from(expected))) {
+      return send(res, 403, { ok: false, error: "owned stop token refused" });
+    }
+    send(res, 200, {
+      ok: true,
+      schema: "axm.deploy.graceful-stop-request/v1",
+      pid: process.pid,
+      owned_process_stop_accepted: true,
+    });
+    setTimeout(() => server.close(() => { process.exitCode = 0; }), 25);
+    return;
+  }
+  if (SAFE_MODE && !["GET", "HEAD"].includes(req.method)) {
+    return send(res, 423, {
+      ok: false,
+      safeMode: true,
+      error: "state-changing routes are disabled in AXM safe mode",
+      next: "restart with OPEN_AXM_WORKSHOP.cmd after diagnostics and recovery review",
+    });
+  }
   if (
     IS_PRODUCTION_SESSION &&
     req.method === "POST" &&
@@ -1788,7 +1993,177 @@ const server = http.createServer((req, res) => {
       build: BUILD,
       host: HOST + ":" + ACTIVE_PORT,
       root: path.basename(ROOT),
+      safeMode: SAFE_MODE,
       productionSession: productionSessionInfo(),
+    });
+  }
+  if (url === "/api/verification-proof/catalog" && req.method === "GET") {
+    try {
+      return send(res, 200, VerificationProofService.catalog());
+    } catch (error) {
+      return send(res, 500, {
+        ok: false,
+        schema: VerificationProofService.schema,
+        error: String(error.message || error).slice(0, 500),
+      });
+    }
+  }
+  if (url === "/api/verification-proof/run" && req.method === "POST") {
+    return readJsonBody(req, 220000, (error, parsed) => {
+      if (error)
+        return send(res, 400, {
+          ok: false,
+          schema: VerificationProofService.schema,
+          error: error.message,
+        });
+      VerificationProofService.run(parsed)
+        .then((result) => send(res, 200, result))
+        .catch((runError) =>
+          send(res, 422, {
+            ok: false,
+            schema: VerificationProofService.schema,
+            error: String(runError.message || runError).slice(0, 1000),
+          }),
+        );
+    });
+  }
+  if (url === "/api/accessibility-adaptation/catalog" && req.method === "GET") {
+    try {
+      return send(res, 200, AccessibilityAdaptationService.catalog());
+    } catch (error) {
+      return send(res, 500, {
+        ok: false,
+        schema: AccessibilityAdaptationService.schema,
+        error: String(error.message || error).slice(0, 500),
+      });
+    }
+  }
+  if (url === "/api/accessibility-adaptation/plan" && req.method === "POST") {
+    return readJsonBody(req, 100000, (error, parsed) => {
+      if (error)
+        return send(res, 400, {
+          ok: false,
+          schema: AccessibilityAdaptationService.schema,
+          error: error.message,
+        });
+      try {
+        return send(res, 200, AccessibilityAdaptationService.plan(parsed));
+      } catch (planError) {
+        return send(res, 422, {
+          ok: false,
+          schema: AccessibilityAdaptationService.schema,
+          error: String(planError.message || planError).slice(0, 1000),
+        });
+      }
+    });
+  }
+  if (url === "/api/ai-team-steward/catalog" && req.method === "GET") {
+    try {
+      return send(res, 200, AiTeamStewardService.catalog());
+    } catch (error) {
+      return send(res, 500, {
+        ok: false,
+        schema: AiTeamStewardService.catalogSchema,
+        error: String(error.message || error).slice(0, 500),
+      });
+    }
+  }
+  if (url === "/api/ai-team-steward/runtime-status" && req.method === "GET") {
+    try {
+      return send(res, 200, AiTeamStewardService.runtimeStatus());
+    } catch (error) {
+      return send(res, 500, {
+        ok: false,
+        schema: AiTeamStewardService.runtimeSchemas.status,
+        error: String(error.message || error).slice(0, 500),
+      });
+    }
+  }
+  if (url === "/api/ai-team-steward/operations" && req.method === "GET") {
+    try {
+      return send(res, 200, AiTeamStewardService.operationCatalog());
+    } catch (error) {
+      return send(res, 500, {
+        ok: false,
+        schema: AiTeamStewardService.operationSchemas.catalog,
+        error: String(error.message || error).slice(0, 500),
+      });
+    }
+  }
+  if (url === "/api/ai-team-steward/execute" && req.method === "POST") {
+    return readJsonBody(req, 100000, (error, parsed) => {
+      if (error)
+        return send(res, 400, {
+          ok: false,
+          schema: AiTeamStewardService.operationSchemas.result,
+          error: error.message,
+        });
+      try {
+        return send(res, 200, AiTeamStewardService.executeOperation(parsed));
+      } catch (operationError) {
+        return send(res, 422, {
+          ok: false,
+          schema: AiTeamStewardService.operationSchemas.result,
+          error: String(operationError.message || operationError).slice(0, 1000),
+        });
+      }
+    });
+  }
+  if (url === "/api/ai-team-steward/sample" && req.method === "POST") {
+    return readJsonBody(req, 100000, (error, parsed) => {
+      if (error)
+        return send(res, 400, {
+          ok: false,
+          schema: AiTeamStewardService.runtimeSchemas.sample,
+          error: error.message,
+        });
+      try {
+        return send(res, 200, AiTeamStewardService.sample(parsed));
+      } catch (sampleError) {
+        return send(res, 422, {
+          ok: false,
+          schema: AiTeamStewardService.runtimeSchemas.sample,
+          error: String(sampleError.message || sampleError).slice(0, 1000),
+        });
+      }
+    });
+  }
+  if (url === "/api/ai-team-steward/validate" && req.method === "POST") {
+    return readJsonBody(req, 100000, (error, parsed) => {
+      if (error)
+        return send(res, 400, {
+          ok: false,
+          schema: AiTeamStewardService.runtimeSchemas.validation,
+          error: error.message,
+        });
+      try {
+        return send(res, 200, AiTeamStewardService.validate(parsed));
+      } catch (validationError) {
+        return send(res, 422, {
+          ok: false,
+          schema: AiTeamStewardService.runtimeSchemas.validation,
+          error: String(validationError.message || validationError).slice(0, 1000),
+        });
+      }
+    });
+  }
+  if (url === "/api/ai-team-steward/plan" && req.method === "POST") {
+    return readJsonBody(req, 100000, (error, parsed) => {
+      if (error)
+        return send(res, 400, {
+          ok: false,
+          schema: AiTeamStewardService.schema,
+          error: error.message,
+        });
+      try {
+        return send(res, 200, AiTeamStewardService.plan(parsed));
+      } catch (planError) {
+        return send(res, 422, {
+          ok: false,
+          schema: AiTeamStewardService.schema,
+          error: String(planError.message || planError).slice(0, 1000),
+        });
+      }
     });
   }
   if (url === "/api/asset-hands/upgrades" && req.method === "GET") {
@@ -1989,12 +2364,20 @@ const server = http.createServer((req, res) => {
     try {
       const status = PlatformHeartbeatService.status();
       status.verificationBridge = HeartbeatVerificationBridge.status();
+      status.codeDraftBridge = HeartbeatCodeDraftBridge.status();
+      status.mirrorLearningBridge = HeartbeatMirrorLearningBridge.status();
       status.pulseBridge = {
         state: "GATED_DETERMINISTIC_VERIFICATION",
         automaticPulseRequests: true,
         masterGate: "Body Pulse must be ACTIVE or CONSERVE",
         maxChecksPerHour: status.verificationBridge.maxChecksPerHour,
         repairAuthority: status.verificationBridge.repairAuthority,
+        maxCandidateDraftsPerHour: status.codeDraftBridge.maxDraftsPerHour,
+        candidateDraftQueueRetentionDays: status.codeDraftBridge.queueRetentionDays,
+        candidateDraftApplyAuthority: status.codeDraftBridge.applyAuthority,
+        mirrorLearningLaneEnabled: status.mirrorLearningBridge.enabled,
+        mirrorLessonsPerHour: status.mirrorLearningBridge.maxLessonsPerHour,
+        mirrorLearningAuthority: status.mirrorLearningBridge.trainingAuthority,
       };
       status.updateBridge = WorkshopUpdaterService.status();
       return send(res, 200, { ok: true, status });
@@ -2040,6 +2423,18 @@ const server = http.createServer((req, res) => {
       if (error) return send(res, 400, { ok: false, error: error.message });
       try {
         return send(res, 200, { ok: true, status: PlatformHeartbeatService.configure(parsed || {}) });
+      } catch (serviceError) {
+        return send(res, 400, { ok: false, error: serviceError.message });
+      }
+    });
+  }
+  if (url === "/api/platform-heartbeat/mirror-learning/config" && req.method === "POST") {
+    if (String(req.headers["x-axm-heartbeat"] || "") !== "explicit-mirror-learning-config")
+      return send(res, 403, { ok: false, error: "explicit Mirror learning configuration header required" });
+    return readJsonBody(req, 10000, (error, parsed) => {
+      if (error) return send(res, 400, { ok: false, error: error.message });
+      try {
+        return send(res, 200, { ok: true, status: HeartbeatMirrorLearningBridge.configure(parsed || {}) });
       } catch (serviceError) {
         return send(res, 400, { ok: false, error: serviceError.message });
       }
@@ -3188,8 +3583,9 @@ const server = http.createServer((req, res) => {
     return;
   }
   if (url === "/api/workshop-growth" && req.method === "GET") {
-    try {
-      const current = scanGrowthBodies(),
+    void (async () => {
+      try {
+        const current = await scanGrowthBodies(),
         history = loadGrowthState(),
         baseline = history.snapshots[0] || null,
         previous = history.snapshots[history.snapshots.length - 1] || null;
@@ -3226,9 +3622,10 @@ const server = http.createServer((req, res) => {
               truth:
                 "Net aggregate growth per elapsed hour since the previous explicit or scheduled snapshot; not typing speed and not proof of completed work.",
             };
-      return send(res, 200, {
+        return send(res, 200, {
         ok: true,
         current,
+        measurementReuse: GROWTH_SCAN_STATUS,
         history: history.snapshots,
         historyRetention: history.retention,
         schedule: history.schedule,
@@ -3287,13 +3684,15 @@ const server = http.createServer((req, res) => {
           mirrorSignal:
             "local filesystem metadata only; private state contents are not read; Original Mirror owned body, state, installed substrates, repository history, outputs and logs remain separate; specialization footprints never duplicate shared parent code; runtime state is lineage-declared, not live-measured",
         },
-      });
-    } catch (e) {
-      return send(res, 500, {
-        ok: false,
-        error: "could not measure workshop growth",
-      });
-    }
+        });
+      } catch (e) {
+        return send(res, 500, {
+          ok: false,
+          error: "could not measure workshop growth",
+        });
+      }
+    })();
+    return;
   }
   if (url === "/api/workshop-growth/capture" && req.method === "POST") {
     if (req.headers["x-axm-growth"] !== "explicit-local-snapshot")
@@ -3301,10 +3700,10 @@ const server = http.createServer((req, res) => {
         ok: false,
         error: "explicit local growth snapshot required",
       });
-    readJsonBody(req, 8192, (error, input) => {
+    readJsonBody(req, 8192, async (error, input) => {
       if (error) return send(res, 400, { ok: false, error: error.message });
       try {
-        const current = scanGrowthBodies(),
+        const current = await scanGrowthBodies(),
           result = GrowthMetrics.capture(
             loadGrowthState(),
             current,
@@ -3715,6 +4114,8 @@ const server = http.createServer((req, res) => {
         active: false,
         packages: [],
         catalog: WorkshopPackager.catalog(),
+        offline_windows: WorkshopPackager.offlineReadiness(),
+        deployment_capabilities: WorkshopPackager.deploymentCapabilities(),
         unavailable:
           "Main Workshop packaging is intentionally outside the temporary session boundary",
       });
@@ -3723,6 +4124,8 @@ const server = http.createServer((req, res) => {
       active: WorkshopPackager.isActive(),
       packages: WorkshopPackager.list(),
       catalog: WorkshopPackager.catalog(),
+      offline_windows: WorkshopPackager.offlineReadiness(),
+      deployment_capabilities: WorkshopPackager.deploymentCapabilities(),
       delta_defaults: {
         github_repo: "mike-axiom-mir/axm-collaboration-platform",
         git_ref: "main",
@@ -4079,9 +4482,11 @@ function listenOn(port, attemptsLeft) {
     console.log("");
     const target = openTarget();
     if (target) openBrowser(base + target);
-    scheduleNextGrowthCapture({ skipOverdue: true });
-    scheduleGrowthVelocity({ skipInitial: true });
-    scheduleTechnicalGlassesSnapshot({ skipInitial: true });
+    if (!SAFE_MODE) {
+      scheduleNextGrowthCapture({ skipOverdue: true });
+      scheduleGrowthVelocity({ skipInitial: true });
+      scheduleTechnicalGlassesSnapshot({ skipInitial: true });
+    }
     startProductionSessionLease();
   };
   server.once("error", onError);

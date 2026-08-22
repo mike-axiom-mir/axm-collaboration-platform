@@ -1,0 +1,64 @@
+{
+  "schema": "bonk-bolt-evidence-v1",
+  "capturedAt": "2026-07-28T14:31:03.0872376+02:00",
+  "scope": "cartoon-attack-language-and-relocatable-rig-binding",
+  "classification": "DURABLE_EVENT",
+  "verdict": "pass",
+  "automated": {
+    "heroMotion": { "pass": 8, "fail": 0 },
+    "systemsChecks": 226,
+    "packageChecks": 101,
+    "http": { "pass": 4, "fail": 0 },
+    "sourceSyntax": "pass",
+    "focusedVerifier": { "errors": 0, "warnings": 0 }
+  },
+  "implemented": [
+    "A pure UMD motion-system contract owns deterministic attack, special and dodge poses for Panzer, Pun-Slinger and Gear Shepherd.",
+    "Panzer uses a heavy crouch-to-overhead pan slam; Pun-Slinger uses recoil and bread-fan motion; Gear Shepherd uses a conductor-style command sweep.",
+    "Every hero exposes version-1 semantic root, body, head, left arm, right arm, legs, weapon and action-cue bindings for later skeletal-rig replacement.",
+    "Local player two uses the same tested motion path independently of player one.",
+    "Reduced motion removes locomotion bounce and pose travel while retaining a static class-colored action cue.",
+    "Combat damage timing and balance remain immediate and unchanged; this seam is presentation-only."
+  ],
+  "live": [
+    {
+      "claim": "Each class has a distinct readable comedy-action silhouette.",
+      "surface": "in-app browser / ?testSteward=attack-language / 1280x720",
+      "observed": "Panzer displayed a gold pan-slam arc, Pun-Slinger displayed a teal impact cue with a seven-bread fan, and Gear Shepherd displayed a violet conductor sweep. The semantic phase was impact or recovery during each observed action and settled afterward.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Local shared-screen player two owns an independent attack pose.",
+      "surface": "in-app browser / ?testSteward=attack-language&testCoop=1 / 1280x720",
+      "observed": "After moving P2 clear of the Human Panzer, slash input produced a Toon Pun-Slinger impact pose and teal cue while the hero remained settled; P2 then returned to settled.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Reduced motion preserves feedback without animated pose travel.",
+      "surface": "in-app browser / accessibility control / 1280x720",
+      "observed": "With Reduced motion checked, attack exposed the reduced-cue semantic phase and a compact gold cue while the Human Panzer retained the base stance. The action returned to settled.",
+      "verdict": "PASS"
+    }
+  ],
+  "limitations": [
+    "Production Blender rigs, facial animation and authored attack clips remain unavailable; procedural geometry is still the visual substrate.",
+    "The rolling-frame capability was unavailable. Exact phase durations and ordering are deterministic test evidence, not screenshot-timed claims.",
+    "Physical gamepad feel and long-session human readability remain outside this bounded pass."
+  ],
+  "visualReceipt": {
+    "namedSeam": "cartoon-attack-language",
+    "bufferDigest": "not-created-rolling-buffer-unavailable",
+    "temporaryPathsDeleted": [],
+    "cleanupComplete": true
+  },
+  "retention": {
+    "rawScreenshotsCopied": false,
+    "rawVideoCreated": false,
+    "rawTerminalLogsCopied": false,
+    "summaryEvidenceRetained": true,
+    "browserWarnings": 0,
+    "browserErrors": 0,
+    "browserTabsFinalized": true,
+    "port8814Clean": true
+  }
+}

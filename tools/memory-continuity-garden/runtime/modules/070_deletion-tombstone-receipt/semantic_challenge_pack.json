@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "FALSE_ERASURE",
+      "expected": "HOLD_PRIVACY_OR_ERASURE_TRUTH",
+      "stimulus": "deletion receipt claims impossible universal erasure"
+    }
+  ],
+  "category": 7,
+  "category_name": "7. Privacy, consent, retention, redaction, deletion, and export",
+  "full_semantic_implementation": false,
+  "number": 70,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Record deletion scope, authority, affected copies, remaining references, retention exceptions, and proof without retaining the deleted private content.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "38caabc2cc4b3204f69929609eda6bee96d25fa6f5a78a5d51b41cf154691469"
+  },
+  "source_contract_sha256": "53465864c2dd33cd4c337feecb28c1428156eab04a81aad5258bd389c59ec56a",
+  "stable_id": "axm.memory.deletion-tombstone-receipt"
+}

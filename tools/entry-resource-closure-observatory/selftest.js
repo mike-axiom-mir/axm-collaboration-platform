@@ -67,7 +67,7 @@ try {
   write(path.join(alpha, 'poster.png'), 'POSTER');
   write(path.join(alpha, 'movie.mp4'), 'MOVIE');
   write(path.join(alpha, 'doc.bin'), 'DOC');
-  fs.symlinkSync(path.join(alpha, 'scripts', 'app.js'), path.join(alpha, 'linked.js'));
+  fs.symlinkSync(path.join(alpha, 'scripts'), path.join(alpha, 'linked-scripts'), process.platform === 'win32' ? 'junction' : 'dir');
   write(path.join(alpha, 'index.html'), [
     '<!doctype html>',
     '<link rel="stylesheet" href="styles.css?theme=dark">',
@@ -76,7 +76,7 @@ try {
     '<img src="images/pic.png">',
     '<video poster="poster.png"><source src="movie.mp4"></video>',
     '<object data="doc.bin"></object>',
-    '<script src="linked.js"></script>',
+    '<script src="linked-scripts/app.js"></script>',
     '<script src="missing.js"></script>',
     '<script src="../../../outside.js"></script>',
     '<img src="' + REMOTE_URL + '">',
@@ -92,15 +92,17 @@ try {
   ].join('\n'));
 
   addModule(fixtureRoot, 'beta', { entry: 'missing.html' });
-  const gamma = addModule(fixtureRoot, 'gamma', { entry: 'linked.html' });
-  write(path.join(gamma, 'real.html'), '<!doctype html>');
-  fs.symlinkSync(path.join(gamma, 'real.html'), path.join(gamma, 'linked.html'));
+  const gamma = addModule(fixtureRoot, 'gamma', { entry: 'linked-entry/real.html' });
+  const gammaEntryTarget = path.join(gamma, 'real-entry');
+  fs.mkdirSync(gammaEntryTarget, { recursive: true });
+  write(path.join(gammaEntryTarget, 'real.html'), '<!doctype html>');
+  fs.symlinkSync(gammaEntryTarget, path.join(gamma, 'linked-entry'), process.platform === 'win32' ? 'junction' : 'dir');
   const delta = addModule(fixtureRoot, 'delta');
   write(path.join(delta, 'index.html'), '<!doctype html><title>No static resources</title>');
   addModule(fixtureRoot, 'epsilon', { entry: '../outside.html' });
   const template = addModule(fixtureRoot, '_template');
   write(path.join(template, 'index.html'), '<script src="ignored.js"></script>');
-  fs.symlinkSync(alpha, path.join(fixtureRoot, 'tools', 'linked-alpha'));
+  fs.symlinkSync(alpha, path.join(fixtureRoot, 'tools', 'linked-alpha'), process.platform === 'win32' ? 'junction' : 'dir');
 
   const before = treeReceipt(fixtureRoot);
   const first = Core.scanWorkshop(fixtureRoot, { now: '2026-07-27T00:00:00Z' });
@@ -150,7 +152,7 @@ try {
     assert.equal(reference('../../../outside.js').resolvedPath, null);
   });
   check('referenced symlink is refused rather than followed', () => {
-    assert.equal(reference('linked.js').state, 'SYMLINK_REFUSED');
+    assert.equal(reference('linked-scripts/app.js').state, 'SYMLINK_REFUSED');
     assert.equal(first.source.symlinksFollowed, false);
   });
   check('remote inline fragment dynamic encoded and non-file schemes remain unresolved', () => {
@@ -209,6 +211,8 @@ try {
   check('manifest and contract identity version and permissions align', () => {
     const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
     const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
+    assert.equal(manifest.schema, 'axm.tool-manifest/v1');
+    assert.equal(manifest.kind, 'product');
     assert.equal(manifest.id, contract.id);
     assert.equal(manifest.version, contract.version);
     assert.deepEqual(manifest.permissions, contract.permissions);

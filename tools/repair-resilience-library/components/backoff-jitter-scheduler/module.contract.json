@@ -1,0 +1,40 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.backoff-jitter-scheduler",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.backoff-schedule/v1"
+  ],
+  "consumes": [
+    "retry-policy",
+    "lineage-seed"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_SCHEDULE_ONLY",
+    "automaticMutation": false,
+    "integrationRequiredForAutomation": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/body-pulse",
+      "shared/heartbeat"
+    ],
+    "reason": "Produces deterministic bounded jitter schedules so local callers do not synchronize."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "unbounded-retry",
+      "unbounded-restart",
+      "hidden-degradation",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

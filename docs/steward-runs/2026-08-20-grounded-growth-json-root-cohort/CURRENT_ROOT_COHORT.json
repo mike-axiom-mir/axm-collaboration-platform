@@ -1,0 +1,502 @@
+{
+  "schema": "axm.grounded-growth-json-root-cohort/v1",
+  "version": "0.1.0",
+  "generatedAt": "2026-08-20T04:20:00.000Z",
+  "status": "TEST",
+  "state": "THREE_CONSUMER_ROOT_COHORT_MIGRATED_ON_REVIEW_BRANCH",
+  "dependencyReason": {
+    "root": "grounded-growth-outcomes",
+    "directCloneSeamsClosedTogether": [
+      "grounded-growth-feedback",
+      "grounded-growth-current-state"
+    ],
+    "reason": "Migrating only the shared root would leave two direct consumers able to drop unsafe fields before delegation."
+  },
+  "before": {
+    "source": "sealed voluntary-choice pilot",
+    "strictUnsafeRefusal": 1,
+    "remainingUnsafeConsumers": 14
+  },
+  "cohort": [
+    {
+      "id": "grounded-growth-outcomes",
+      "path": "shared/grounded-growth-outcomes/grounded-growth-outcomes.js",
+      "beforeSourceSha256": "sha256:04f2de609cb61213271957a148d0ae8fa94685255fa350da56849a9d8480e70d",
+      "afterSourceSha256": "sha256:7c00328070a0c6b6c19ef168aed3983c82f4bd73910a0bd8d4dd51a2b55d2487",
+      "beforeBehavior": "INVALID_CANONICAL_TEXT",
+      "afterBehavior": "REFUSED_UNSAFE_VALUE",
+      "receiptSchemaChanged": false
+    },
+    {
+      "id": "grounded-growth-feedback",
+      "path": "shared/grounded-growth-feedback/grounded-growth-feedback.js",
+      "beforeSourceSha256": "sha256:295ac27742e56e79496023167fb7c4141589815c70b833875da5fe0941940b4c",
+      "afterSourceSha256": "sha256:8595412e44b124380d1f680afef884e106ccbb327634c5c900c6d58fea98d139",
+      "beforeBehavior": "INVALID_CANONICAL_TEXT",
+      "afterBehavior": "REFUSED_UNSAFE_VALUE",
+      "receiptSchemaChanged": false
+    },
+    {
+      "id": "grounded-growth-current-state",
+      "path": "shared/grounded-growth-current-state/grounded-growth-current-state.js",
+      "beforeSourceSha256": "sha256:f306bfcd7430c7a123e55c96cb2ceb61dd19d51da39573944aa5305da1cb373a",
+      "afterSourceSha256": "sha256:a7fa9fb509de527db0b04f0f8cd91312874c064ee1084386930f879b27b265c0",
+      "beforeBehavior": "INVALID_CANONICAL_TEXT",
+      "afterBehavior": "REFUSED_UNSAFE_VALUE",
+      "receiptSchemaChanged": false
+    }
+  ],
+  "after": {
+    "consumers": 15,
+    "strictUnsafeRefusal": 4,
+    "remainingInvalidCanonicalText": 6,
+    "remainingSilentFieldLoss": 5,
+    "remainingUnsafeConsumers": 11,
+    "remaining": [
+      {
+        "id": "grounded-growth-challenger-lab",
+        "behavior": "INVALID_CANONICAL_TEXT"
+      },
+      {
+        "id": "grounded-growth-direction-handoff",
+        "behavior": "INVALID_CANONICAL_TEXT"
+      },
+      {
+        "id": "grounded-growth-frontier-gate",
+        "behavior": "SILENT_FIELD_LOSS"
+      },
+      {
+        "id": "grounded-growth-human-bridge",
+        "behavior": "INVALID_CANONICAL_TEXT"
+      },
+      {
+        "id": "grounded-growth-human-bridge-v2",
+        "behavior": "INVALID_CANONICAL_TEXT"
+      },
+      {
+        "id": "grounded-growth-human-handoff",
+        "behavior": "INVALID_CANONICAL_TEXT"
+      },
+      {
+        "id": "grounded-growth-human-route-coverage",
+        "behavior": "INVALID_CANONICAL_TEXT"
+      },
+      {
+        "id": "grounded-growth-knowledge-frontier",
+        "behavior": "SILENT_FIELD_LOSS"
+      },
+      {
+        "id": "grounded-growth-participation-frontier",
+        "behavior": "SILENT_FIELD_LOSS"
+      },
+      {
+        "id": "grounded-growth-phone-evidence-gate",
+        "behavior": "SILENT_FIELD_LOSS"
+      },
+      {
+        "id": "grounded-growth-signal-lineage",
+        "behavior": "SILENT_FIELD_LOSS"
+      }
+    ],
+    "rolloutComplete": false
+  },
+  "structuralClosure": [
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "importsExistingCore": true,
+      "cloneUsesStrictCanonicalText": true,
+      "stableStringifyUsesExistingCore": true,
+      "contractRequiresExistingCore": true,
+      "contractRefusesUnsafeState": true
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "importsExistingCore": true,
+      "cloneUsesStrictCanonicalText": true,
+      "stableStringifyUsesExistingCore": true,
+      "contractRequiresExistingCore": true,
+      "contractRefusesUnsafeState": true
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "importsExistingCore": true,
+      "cloneUsesStrictCanonicalText": true,
+      "stableStringifyUsesExistingCore": true,
+      "contractRequiresExistingCore": true,
+      "contractRefusesUnsafeState": true
+    }
+  ],
+  "unsafeFixtureResults": [
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "fixtureId": "root-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $"
+    },
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "fixtureId": "object-property-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $.lost"
+    },
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "fixtureId": "nested-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $.nested.lost"
+    },
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "fixtureId": "array-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $[1]"
+    },
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "fixtureId": "sparse-array",
+      "state": "REFUSED",
+      "error": "TypeError: sparse array at $[0]"
+    },
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "fixtureId": "nan",
+      "state": "REFUSED",
+      "error": "TypeError: non-finite number at $.number"
+    },
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "fixtureId": "positive-infinity",
+      "state": "REFUSED",
+      "error": "TypeError: non-finite number at $.number"
+    },
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "fixtureId": "negative-infinity",
+      "state": "REFUSED",
+      "error": "TypeError: non-finite number at $.number"
+    },
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "fixtureId": "bigint",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported bigint at $.number"
+    },
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "fixtureId": "symbol",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported symbol at $.value"
+    },
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "fixtureId": "function",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported function at $.value"
+    },
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "fixtureId": "date",
+      "state": "REFUSED",
+      "error": "TypeError: non-plain object at $.value"
+    },
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "fixtureId": "cycle",
+      "state": "REFUSED",
+      "error": "TypeError: cycle at $.self"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "fixtureId": "root-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "fixtureId": "object-property-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $.lost"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "fixtureId": "nested-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $.nested.lost"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "fixtureId": "array-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $[1]"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "fixtureId": "sparse-array",
+      "state": "REFUSED",
+      "error": "TypeError: sparse array at $[0]"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "fixtureId": "nan",
+      "state": "REFUSED",
+      "error": "TypeError: non-finite number at $.number"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "fixtureId": "positive-infinity",
+      "state": "REFUSED",
+      "error": "TypeError: non-finite number at $.number"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "fixtureId": "negative-infinity",
+      "state": "REFUSED",
+      "error": "TypeError: non-finite number at $.number"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "fixtureId": "bigint",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported bigint at $.number"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "fixtureId": "symbol",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported symbol at $.value"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "fixtureId": "function",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported function at $.value"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "fixtureId": "date",
+      "state": "REFUSED",
+      "error": "TypeError: non-plain object at $.value"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "fixtureId": "cycle",
+      "state": "REFUSED",
+      "error": "TypeError: cycle at $.self"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "fixtureId": "root-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "fixtureId": "object-property-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $.lost"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "fixtureId": "nested-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $.nested.lost"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "fixtureId": "array-undefined",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported undefined at $[1]"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "fixtureId": "sparse-array",
+      "state": "REFUSED",
+      "error": "TypeError: sparse array at $[0]"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "fixtureId": "nan",
+      "state": "REFUSED",
+      "error": "TypeError: non-finite number at $.number"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "fixtureId": "positive-infinity",
+      "state": "REFUSED",
+      "error": "TypeError: non-finite number at $.number"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "fixtureId": "negative-infinity",
+      "state": "REFUSED",
+      "error": "TypeError: non-finite number at $.number"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "fixtureId": "bigint",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported bigint at $.number"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "fixtureId": "symbol",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported symbol at $.value"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "fixtureId": "function",
+      "state": "REFUSED",
+      "error": "TypeError: unsupported function at $.value"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "fixtureId": "date",
+      "state": "REFUSED",
+      "error": "TypeError: non-plain object at $.value"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "fixtureId": "cycle",
+      "state": "REFUSED",
+      "error": "TypeError: cycle at $.self"
+    }
+  ],
+  "buildPathResults": [
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "state": "REFUSED_BEFORE_CLONE_COMPLETION",
+      "error": "TypeError: unsupported undefined at $.lost"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "state": "REFUSED_BEFORE_CLONE_COMPLETION",
+      "error": "TypeError: unsupported undefined at $.lost"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "state": "REFUSED_BEFORE_CLONE_COMPLETION",
+      "error": "TypeError: unsupported undefined at $.lost"
+    }
+  ],
+  "historicalProductCompatibility": [
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "artifact": "CURRENT_PORTFOLIO.json",
+      "digest": "sha256:3739d53fefbcb6daebe6b0aaf121cda9d9cff347a0e345efd9f029fa7f8cc322",
+      "canonicalExact": true,
+      "nativeVerification": "PASS"
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "artifact": "CURRENT_FEEDBACK_PACKET.json",
+      "digest": "sha256:52010ee2894a08b341be83ca12d99b767b43d6f2e63ac12b277e7dbcbeb2f49d",
+      "canonicalExact": true,
+      "nativeVerification": "PASS"
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "artifact": "CURRENT_STATE_RECEIPT.json",
+      "digest": "sha256:a244cbbdc5bc35d0ee1dd9f87b509c48d2a53164634d99eb1003ceb28bd09cbb",
+      "canonicalExact": true,
+      "nativeVerification": "PASS"
+    }
+  ],
+  "persistence": [
+    {
+      "consumerId": "grounded-growth-outcomes",
+      "parsedBeforeWrite": true,
+      "writeCompleted": true,
+      "readCompleted": true,
+      "parsedAfterRead": true,
+      "canonicalExactAfterRead": true,
+      "canonicalDigestBound": true,
+      "payloadDigestBound": true,
+      "temporaryFileRetained": false
+    },
+    {
+      "consumerId": "grounded-growth-feedback",
+      "parsedBeforeWrite": true,
+      "writeCompleted": true,
+      "readCompleted": true,
+      "parsedAfterRead": true,
+      "canonicalExactAfterRead": true,
+      "canonicalDigestBound": true,
+      "payloadDigestBound": true,
+      "temporaryFileRetained": false
+    },
+    {
+      "consumerId": "grounded-growth-current-state",
+      "parsedBeforeWrite": true,
+      "writeCompleted": true,
+      "readCompleted": true,
+      "parsedAfterRead": true,
+      "canonicalExactAfterRead": true,
+      "canonicalDigestBound": true,
+      "payloadDigestBound": true,
+      "temporaryFileRetained": false
+    }
+  ],
+  "knownSourceEvolution": [
+    {
+      "command": "node docs/steward-runs/2026-08-19-verification-evolution-grounded-growth/selftest.js",
+      "verdict": "EXPECTED_STALE_AFTER_SOURCE_CHANGE",
+      "reason": "dated verification receipt binds prior grounded-growth-outcomes source digest"
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-grounded-growth-current-convergence/selftest.js",
+      "verdict": "EXPECTED_STALE_AFTER_SOURCE_CHANGE",
+      "reason": "dated verification receipt binds prior grounded-growth-current-state source digest"
+    },
+    {
+      "command": "node docs/steward-runs/2026-08-19-grounded-growth-current-state-portability/selftest.js",
+      "verdict": "EXPECTED_STALE_AFTER_SOURCE_CHANGE",
+      "reason": "prior receipt evolution view binds prior current-state source digest"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "three-module-structural-closure",
+      "verdict": "PASS"
+    },
+    {
+      "id": "39-unsafe-fixture-refusals",
+      "verdict": "PASS"
+    },
+    {
+      "id": "three-real-build-path-refusals",
+      "verdict": "PASS"
+    },
+    {
+      "id": "three-historical-product-replays",
+      "verdict": "PASS"
+    },
+    {
+      "id": "three-persistence-roundtrips",
+      "verdict": "PASS"
+    },
+    {
+      "id": "clean-checkout-full-verification",
+      "verdict": "NOT_RUN"
+    }
+  ],
+  "limits": {
+    "representationClosureOnly": true,
+    "semanticCorrectnessBeyondHistoricalCompatibilityProved": false,
+    "humanReviewRun": false,
+    "humanBenefitEstablished": false,
+    "browserParityTested": false,
+    "modelReasoningEquivalenceProved": false,
+    "shadowCloneCandidateEvaluated": false
+  },
+  "authority": {
+    "branchOnly": true,
+    "installed": false,
+    "promoted": false,
+    "merged": false,
+    "canonized": false,
+    "foundationMutation": false,
+    "consumersEditedThisCohort": 3
+  },
+  "cohortDigest": "sha256:6bd0f21e36572a18957b91b2c11ffc407b44c0aec5d45b0e8831d0affabcc36d"
+}

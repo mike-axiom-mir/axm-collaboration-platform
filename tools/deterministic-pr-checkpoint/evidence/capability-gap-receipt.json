@@ -1,0 +1,52 @@
+{
+  "schema": "axm.capability-gap-scout-receipt/v1",
+  "route": "READY",
+  "outcome": "Reduce repeated reasoning and prevent mixed-scope ordinary AXM pull-request branches from reaching review unnoticed.",
+  "requirements": [
+    {
+      "id": "git.pr.local-state-bind",
+      "status": "SATISFIED",
+      "route": "new bounded read-only adapter",
+      "proof": "focused Git fixture execution"
+    },
+    {
+      "id": "git.pr.scope-policy",
+      "status": "SATISFIED",
+      "route": "explicit allow and refusal policy",
+      "proof": "scope leak, deletion, rename, and limit assertions"
+    },
+    {
+      "id": "git.pr.evidence-bind",
+      "status": "SATISFIED",
+      "route": "declared receipt plus exact head-blob digest",
+      "proof": "match, missing, unknown, and mismatch assertions"
+    },
+    {
+      "id": "git.pr.path-independent-digest",
+      "status": "SATISFIED",
+      "route": "canonical semantic packet without root or time",
+      "proof": "same committed objects inspected from two filesystem roots"
+    },
+    {
+      "id": "git.pr.remote-freshness",
+      "status": "DEGRADED",
+      "gapType": "AUTHORITY",
+      "reason": "The gate intentionally has no network fetch authority.",
+      "cheapestHonestRoute": "Bind the locally resolved base and let CI or a human compare the remote head."
+    },
+    {
+      "id": "git.pr.publication",
+      "status": "OUTSIDE_SCOPE",
+      "gapType": "AUTHORITY",
+      "reason": "Push, PR creation, merge, promotion, and CANON remain external governed actions."
+    }
+  ],
+  "newContracts": [
+    "axm.git-pr-scope-policy/v1",
+    "axm.git-pr-evidence-input/v1",
+    "axm.git-pr-checkpoint/v1",
+    "axm.git-pr-checkpoint-verification/v1",
+    "axm.git-pr-review-metadata/v1",
+    "axm.git-pr-review-packet/v1"
+  ]
+}

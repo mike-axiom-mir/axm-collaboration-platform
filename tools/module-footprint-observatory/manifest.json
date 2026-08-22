@@ -1,8 +1,10 @@
 {
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
   "id": "module-footprint-observatory",
-  "name": "AXM Module Footprint Observatory",
-  "version": "v0.1",
-  "status": "EXPERIMENTAL",
+  "name": "AXM Module Footprint & Storage Pressure Observatory",
+  "version": "v0.2",
+  "status": "TEST",
   "entry": "index.html",
   "contract": "module.contract.json",
   "type": "local-module",
@@ -16,6 +18,9 @@
     "files",
     "bytes",
     "extensions",
+    "duplicates",
+    "retention",
+    "growth",
     "observability",
     "read-only"
   ],
@@ -28,17 +33,23 @@
     "surface each module's largest observed file",
     "group exact file bytes by lowercase extension",
     "record excluded directories and skipped symlinks",
-    "emit a freshness-bound footprint receipt"
+    "emit a freshness-bound footprint receipt",
+    "scan explicitly named Workshop and Mirror roots without following symlinks",
+    "classify operational retention pressure with protected-by-default fallbacks",
+    "prove same-size exact duplicate groups with SHA-256",
+    "measure directory fan-out and cluster-rounded allocation pressure",
+    "compare separately timed storage snapshots without performing cleanup"
   ],
   "accepts": [
     "filesystem/workshop-root"
   ],
   "produces": [
-    "axm.module-footprint-map/v1"
+    "axm.module-footprint-map/v1",
+    "axm.storage-pressure-map/v1"
   ],
   "readiness": [
     "storage"
   ],
-  "summary": "Read-only active-source footprint evidence for each top-level Workshop module, with exact file counts, bytes, largest files, extension mix, exclusions, and symlink holds.",
-  "notes": "Footprint is not quality, complexity, performance, readiness, duplication, importance, or a deletion recommendation. This module never packages, deletes, compresses, installs, promotes, or changes CANON."
+  "summary": "Read-only module footprint plus whole-root Workshop and Mirror storage-pressure evidence: exact logical bytes, SHA-256 duplicate groups, operational retention classes, directory fan-out, and snapshot deltas.",
+  "notes": "Path classes are review routing, not semantic truth. Duplicate hashes prove equal bytes, not disposability. Allocated bytes are a cluster-rounded estimate. The module never deletes, links, compresses, packages, installs, promotes, or changes CANON."
 }

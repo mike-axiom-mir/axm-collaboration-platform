@@ -12,5 +12,6 @@
   "boundaries": {
     "writes": ["local:state/discord-bridge", "discord:configured-channel:sanitized-receipts-only"],
     "refuses": ["credential-browser-readback", "credential-log", "ordinary-message-reading", "message-content-intent", "automatic-training", "automatic-execution", "automatic-proposal-approval", "raw-action-input-posting", "raw-action-output-posting", "unbounded-mentions"]
-  }
+  },
+  "lifecycle": {"state_owner": "service", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"}
 }

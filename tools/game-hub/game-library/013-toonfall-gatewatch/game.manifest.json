@@ -1,0 +1,109 @@
+{
+  "slot": "013",
+  "game_id": "013-toonfall-gatewatch",
+  "name": "Bloomvale: Gatewatch",
+  "status": "PLAYABLE BETA · STEWARDED GAME NIGHT BUILD",
+  "description": "An explorable storybook shooter with guided wayfinding, five districts, named neighbors, optional activities, six visible upgrade routes, and three player-triggered defense waves for one human Scout plus one server-owned AI companion.",
+  "version": "0.3.1-bloomvale-steward",
+  "min_players": 1,
+  "max_players": 1,
+  "default_visible_seats": 1,
+  "allowed_seat_types": ["human"],
+  "launch": {
+    "server_entry": "runtime/server.js",
+    "client_entry": "/games/013/?room=AXM1&player=p1",
+    "spectator_client_entry": "/games/013/?room=AXM1&player=screen",
+    "ready_path": "/health",
+    "port": 8803,
+    "start_command": "managed-by-game-hub",
+    "local_only_default": true
+  },
+  "join": {
+    "supports_qr": false,
+    "supports_lan_link": false,
+    "supports_room_code": true,
+    "room_code": "AXM1",
+    "screen_occupies_seat": false
+  },
+  "controls": {
+    "profile_id": "toonfall-gatewatch-scout-v1",
+    "intent_protocol": "axm-semantic-input-v1",
+    "phone_controller": false,
+    "gamepad": true,
+    "keyboard": true,
+    "mouse": true,
+    "touch": false,
+    "shared_screen": true,
+    "intent_lanes": ["move", "aim", "fire", "dash", "heartburst", "interact", "map", "pause", "start"]
+  },
+  "session": {
+    "passes_seat_map": true,
+    "returns_result_summary": true,
+    "drop_in_out_later": false,
+    "target_minutes": 10
+  },
+  "rules": {
+    "no_hidden_players": true,
+    "host_launch_required": true,
+    "game_does_not_override_hub_seats": true,
+    "local_authoritative_state": true,
+    "clients_send_input_intentions": true,
+    "host_ai_fill_empty_seats_default": false,
+    "runtime_internet_required": false,
+    "team_mode": "one-human-one-ai-cooperative-defense",
+    "fixed_human_seats": 1,
+    "server_owned_ai_companions": 1,
+    "split_screen": false,
+    "shared_objective_authority": "server",
+    "random_seed": 13013,
+    "story_scenes": 3,
+    "defense_waves": 3,
+    "explorable_districts": 5,
+    "named_npcs": 5,
+    "optional_activities": 4,
+    "run_unlocks": 6,
+    "exploration_between_waves": true,
+    "guided_wayfinding": true,
+    "route_aware_live_objective": true,
+    "visible_unlock_progress": true,
+    "safe_modal_pause_lifecycle": true,
+    "contained_modal_keyboard_focus": true,
+    "reload_input_resynchronization": true
+  },
+  "verification": {
+    "game_night": {
+      "schema": "axm.game-night-seams/v1",
+      "controller_delivery": "shared-runtime",
+      "controller_evidence": ["runtime/index.html", "tests/toonfall-selftest.js", "tests/live-semantic-driver.js"],
+      "state_authority": "server",
+      "host_reload_recovery": "game-hub-active-launch",
+      "shared_screen_occupies_seat": false,
+      "disconnect_recovery": "verified",
+      "blocking_overlay_escape": "verified",
+      "physical_phone_qa": "not-applicable"
+    }
+  },
+  "package": {
+    "source_status": "local-native-canvas-stewarded-game-night-beta",
+    "required_paths": [
+      "README_FIRST.md",
+      "KNOWN_LIMITS.md",
+      "ASSET_PROVENANCE.md",
+      "SYSTEMS_ROUTE.json",
+      "EVIDENCE_ROUTE.md",
+      "BUILD_RECEIPT.md",
+      "evidence/capability-requirements.json",
+      "evidence/capability-inventory.json",
+      "evidence/capability-gap-report.json",
+      "evidence/visual-verification.json",
+      "runtime/server.js",
+      "runtime/game-core.js",
+      "runtime/index.html",
+      "runtime/styles.css",
+      "runtime/app.js",
+      "tests/toonfall-selftest.js",
+      "tests/server-http.test.js",
+      "tests/live-semantic-driver.js"
+    ]
+  }
+}

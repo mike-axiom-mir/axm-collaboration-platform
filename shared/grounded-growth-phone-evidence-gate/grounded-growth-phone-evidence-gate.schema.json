@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-phone-evidence-gate/v1",
+  "title": "AXM Grounded Growth phone-evidence gate receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "gateId", "generatedAt", "status", "game",
+    "binding", "sourceRefs", "keys", "overall", "nextActions", "truth",
+    "receiptDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-phone-evidence-gate/v1" },
+    "version": { "const": "0.1.0" },
+    "gateId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "status": { "const": "TEST" },
+    "game": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gameId", "slot"],
+      "properties": {
+        "gameId": { "type": "string", "pattern": "^[0-9]{3}-[a-z0-9][a-z0-9-]{0,95}$" },
+        "slot": { "type": "string", "pattern": "^[0-9]{3}$" }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capabilityId", "humanClaimId", "targetScope", "scopeStatement"],
+      "properties": {
+        "capabilityId": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "humanClaimId": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "targetScope": { "enum": ["NAMED_LOCAL_STEWARD", "DECLARED_COHORT"] },
+        "scopeStatement": { "type": "string", "minLength": 1, "maxLength": 800 }
+      }
+    },
+    "sourceRefs": { "type": "object" },
+    "keys": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deviceBehavior", "humanUsefulness"],
+      "properties": {
+        "deviceBehavior": { "$ref": "#/$defs/key" },
+        "humanUsefulness": {
+          "allOf": [
+            { "$ref": "#/$defs/key" },
+            {
+              "type": "object",
+              "required": ["verdict", "routeStatus"],
+              "properties": {
+                "verdict": { "enum": ["PASS", "FAIL", "UNKNOWN", "NOT_RUN"] },
+                "routeStatus": { "enum": ["ADMITTED", "HOLD", "NOT_PROVEN"] }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "overall": {
+      "enum": [
+        "WAITING_FOR_VOLUNTARY_PHONE_OBSERVATION",
+        "WAITING_FOR_CANDIDATE_REVIEW",
+        "WAITING_FOR_MANIFEST_EVIDENCE_GATE",
+        "WAITING_FOR_HUMAN_USEFULNESS",
+        "HUMAN_PASS_DEVICE_EVIDENCE_INCOMPLETE",
+        "HUMAN_OUTCOME_HOLD",
+        "OPTIONAL_RETRY_OR_STOP",
+        "TWO_KEY_EVIDENCE_PRESENT"
+      ]
+    },
+    "nextActions": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "truth": { "type": "object" },
+    "receiptDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  },
+  "$defs": {
+    "key": {
+      "type": "object",
+      "required": ["state", "passed", "reasons"],
+      "properties": {
+        "state": { "type": "string", "minLength": 1 },
+        "passed": { "type": "boolean" },
+        "reasons": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    }
+  }
+}

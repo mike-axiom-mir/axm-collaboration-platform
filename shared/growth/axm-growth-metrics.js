@@ -5,7 +5,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 const TEXT_EXT = new Set(['.js', '.cjs', '.mjs', '.html', '.css', '.json', '.md', '.txt', '.bat', '.cmd', '.ps1', '.svg', '.csv', '.tsv', '.xml', '.yml', '.yaml']);
-const EXCLUDED = new Set(['.git', 'node_modules', 'exports', 'backups', 'logs', 'state', 'local-data', '.cache', 'coverage']);
+const EXCLUDED = new Set(['.git', 'node_modules', 'exports', 'backups', 'logs', 'state', 'local-data', '.cache', 'coverage', 'tmp']);
 const COMPONENT_KEYS = ['hands', 'schemas', 'protocols', 'validators'];
 const METRIC_KEYS = ['totalFiles', 'textFiles', 'binaryFiles', 'characters', 'lines', 'bytes', 'modules', 'worlds', 'games', 'tests', 'hands', 'schemas', 'protocols', 'validators', 'exactCapabilities', 'capabilityDeclarations', 'codeFiles', 'codeLines', 'testLines', 'documentLines', 'otherTextLines', 'assetFiles', 'assetBytes'];
 const MIRROR_METRIC_KEYS = ['totalFiles', 'bytes', 'bodyFiles', 'bodyBytes', 'characters', 'lines', 'stateFiles', 'stateBytes', 'substrateFiles', 'substrateBytes', 'historyFiles', 'historyBytes', 'outputFiles', 'outputBytes', 'logFiles', 'logBytes', 'modules', 'organs', 'tests', 'contracts', 'trainingFiles', 'specializationCount'];
@@ -14,6 +14,7 @@ const DEFAULT_SCHEDULE = Object.freeze({ enabled: true, localTime: '05:00', last
 const SNAPSHOT_RETENTION = 'all-compact-history';
 const CODE_EXT = new Set(['.js', '.cjs', '.mjs', '.html', '.css', '.ps1', '.bat', '.cmd']);
 const ASSET_EXT = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.wav', '.mp3', '.ogg', '.mp4', '.webm', '.obj', '.gltf', '.glb', '.mtlx', '.pdf', '.dxf', '.ktx2']);
+const SCAN_CACHE_SCHEMA = 'axm.growth-text-scan-cache/v1';
 
 function activityKind(rel, ext) {
   if (/(^|\/)(selftest|.*-test|.*\.test|.*\.spec)\.(js|cjs|mjs)$/.test(rel)) return 'tests';
@@ -61,9 +62,23 @@ function compactModuleFingerprints(value) {
 }
 
 function walk(root) {
-  const files = [];
+  const files = [], unreadableDirectories = [];
+  let unreadableDirectoryCount = 0;
   function visit(dir) {
-    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch (error) {
+      unreadableDirectoryCount++;
+      if (unreadableDirectories.length < 32) {
+        unreadableDirectories.push({
+          path:path.relative(root, dir).replace(/\\/g, '/') || '.',
+          code:String(error && error.code || 'READ_ERROR').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40) || 'READ_ERROR'
+        });
+      }
+      return;
+    }
+    for (const entry of entries) {
       if (EXCLUDED.has(entry.name)) continue;
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) visit(full);
@@ -71,7 +86,7 @@ function walk(root) {
     }
   }
   visit(root);
-  return files;
+  return { files, unreadableDirectoryCount, unreadableDirectories };
 }
 
 function safeJson(file) {
@@ -252,15 +267,28 @@ function attachMirror(metrics, mirror) {
   return out;
 }
 
-function scan(root) {
-  const files = walk(root);
+function scanRoot(root, inputCache, retainCache) {
+  const walked = walk(root), files = walked.files, unreadableFiles = [];
+  let unreadableFileCount = 0, processedFiles = 0;
+  const sourceCache = retainCache && inputCache && inputCache.schema === SCAN_CACHE_SCHEMA && inputCache.files && typeof inputCache.files === 'object' ? inputCache.files : {};
+  const cacheWasValid = retainCache && inputCache && inputCache.schema === SCAN_CACHE_SCHEMA && inputCache.files && typeof inputCache.files === 'object';
+  const nextCacheFiles = retainCache ? {} : null;
+  let cacheHits = 0, contentReads = 0, cacheChanged = retainCache && !cacheWasValid;
   let bytes = 0, textFiles = 0, binaryFiles = 0, characters = 0, lines = 0, modules = 0, worlds = 0, games = 0, tests = 0;
   let hands = 0, creationHands = 0, aiNativeHands = 0, schemas = 0, protocols = 0, validators = 0;
   let codeFiles = 0, codeLines = 0, testLines = 0, documentLines = 0, otherTextLines = 0, assetFiles = 0, assetBytes = 0;
   const extensions = {}, largest = [], activityNow = Date.now(), hourMs = 3600000, hourlyMap = {}, latest = [], moduleIds = new Set(), moduleParts = {}, worldIds = new Set(), worldParts = {};
   for (let offset = 23; offset >= 0; offset--) { const start = Math.floor((activityNow - offset * hourMs) / hourMs) * hourMs; hourlyMap[start] = { startedAt:new Date(start).toISOString(), files:0, code:0, assets:0, tests:0, documents:0, other:0, bytesCurrent:0, linesCurrent:0 }; }
   for (const file of files) {
-    const stat = fs.statSync(file), rel = path.relative(root, file).replace(/\\/g, '/'), ext = path.extname(file).toLowerCase() || '(none)', kind = activityKind(rel, ext);
+    let stat;
+    try { stat = fs.statSync(file); }
+    catch (error) {
+      unreadableFileCount++;
+      if (unreadableFiles.length < 32) unreadableFiles.push({ path:path.relative(root, file).replace(/\\/g, '/'), code:String(error && error.code || 'STAT_ERROR').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40) || 'STAT_ERROR' });
+      continue;
+    }
+    processedFiles++;
+    const rel = path.relative(root, file).replace(/\\/g, '/'), ext = path.extname(file).toLowerCase() || '(none)', kind = activityKind(rel, ext), modifiedMs = Math.floor(stat.mtimeMs);
     let fileLines = 0;
     bytes += stat.size;
     extensions[ext] = (extensions[ext] || 0) + 1;
@@ -298,11 +326,23 @@ function scan(root) {
     if (kind === 'code') codeFiles++;
     if (kind === 'assets') { assetFiles++; assetBytes += stat.size; }
     if (TEXT_EXT.has(ext) && stat.size <= 10 * 1024 * 1024) {
-      let text = '';
-      try { text = fs.readFileSync(file, 'utf8'); } catch (_) {}
+      const cached = retainCache && sourceCache[rel];
+      let fileCharacters = 0;
+      if (Array.isArray(cached) && cached.length === 4 && cached[0] === stat.size && cached[1] === modifiedMs && Number.isFinite(cached[2]) && Number.isFinite(cached[3])) {
+        fileCharacters = cached[2];
+        fileLines = cached[3];
+        cacheHits++;
+      } else {
+        let text = '';
+        try { text = fs.readFileSync(file, 'utf8'); } catch (_) {}
+        fileCharacters = text.length;
+        fileLines = text ? text.split(/\r?\n/).length : 0;
+        contentReads++;
+        if (retainCache) cacheChanged = true;
+      }
+      if (retainCache) nextCacheFiles[rel] = [stat.size, modifiedMs, fileCharacters, fileLines];
       textFiles++;
-      characters += text.length;
-      fileLines = text ? text.split(/\r?\n/).length : 0;
+      characters += fileCharacters;
       lines += fileLines;
       if (kind === 'code') codeLines += fileLines;
       else if (kind === 'tests') testLines += fileLines;
@@ -310,7 +350,7 @@ function scan(root) {
       else otherTextLines += fileLines;
     } else binaryFiles++;
     largest.push({ file: rel, bytes: stat.size });
-    const modifiedMs = Math.floor(stat.mtimeMs), hour = Math.floor(modifiedMs / hourMs) * hourMs;
+    const hour = Math.floor(modifiedMs / hourMs) * hourMs;
     if (hourlyMap[hour]) { const bucket = hourlyMap[hour]; bucket.files++; bucket[kind]++; bucket.bytesCurrent += stat.size; bucket.linesCurrent += fileLines; latest.push({ file:rel, kind, modifiedAt:new Date(modifiedMs).toISOString(), bytes:stat.size, linesCurrent:fileLines }); }
   }
   largest.sort((a, b) => b.bytes - a.bytes);
@@ -334,10 +374,22 @@ function scan(root) {
     sensoryAdapters = Array.isArray(registry.senses) ? registry.senses.length : 0;
   } catch (_) {}
   const capabilityCounts = scanCapabilities(root);
-  const measured = { measurementVersion:7, scope: 'active-workshop-source', excluded: Array.from(EXCLUDED), totalFiles: files.length, textFiles, binaryFiles, characters, lines, bytes, modules, worlds, games, tests, hands, handBreakdown:{ creation:creationHands, aiNative:aiNativeHands, sensoryAdapters, sensoryOverlapNote:'Sensorium Eye reuses the ephemeral-vision AI-native hand.' }, schemas, protocols, validators, exactCapabilities:capabilityCounts.exactCapabilities, capabilityDeclarations:capabilityCounts.capabilityDeclarations, codeFiles, codeLines, testLines, documentLines, otherTextLines, assetFiles, assetBytes, moduleFingerprints, moduleActivity, worldFingerprints, worldActivity, extensions, largest: largest.slice(0, 8), activity: { windowHours:24, lastHour, hourly, latest:latest.slice(0,16), truth:{ filesystemModificationSignal:true, completedWorkClaim:false, linesCurrentInTouchedFilesNotLinesAdded:true, verifiedGoalCompletionSeparate:true } }, measuredAt: new Date(activityNow).toISOString() };
+  const scanHealth = { partial:walked.unreadableDirectoryCount > 0 || unreadableFileCount > 0, unreadableDirectoryCount:walked.unreadableDirectoryCount, unreadableDirectories:walked.unreadableDirectories, unreadableFileCount, unreadableFiles };
+  const measured = { measurementVersion:7, scope: 'active-workshop-source', excluded: Array.from(EXCLUDED), totalFiles: processedFiles, textFiles, binaryFiles, characters, lines, bytes, modules, worlds, games, tests, hands, handBreakdown:{ creation:creationHands, aiNative:aiNativeHands, sensoryAdapters, sensoryOverlapNote:'Sensorium Eye reuses the ephemeral-vision AI-native hand.' }, schemas, protocols, validators, exactCapabilities:capabilityCounts.exactCapabilities, capabilityDeclarations:capabilityCounts.capabilityDeclarations, codeFiles, codeLines, testLines, documentLines, otherTextLines, assetFiles, assetBytes, moduleFingerprints, moduleActivity, worldFingerprints, worldActivity, extensions, largest: largest.slice(0, 8), activity: { windowHours:24, lastHour, hourly, latest:latest.slice(0,16), truth:{ filesystemModificationSignal:true, completedWorkClaim:false, linesCurrentInTouchedFilesNotLinesAdded:true, verifiedGoalCompletionSeparate:true } }, scanHealth, measuredAt: new Date(activityNow).toISOString() };
   measured.fingerprint = crypto.createHash('sha256').update(JSON.stringify({ totalFiles: measured.totalFiles, characters: measured.characters, lines: measured.lines, bytes: measured.bytes, modules, worlds, games, tests, hands, schemas, protocols, validators, exactCapabilities:measured.exactCapabilities, capabilityDeclarations:measured.capabilityDeclarations, codeLines, testLines, assetFiles, assetBytes, moduleFingerprints, worldFingerprints })).digest('hex').slice(0, 16);
-  return measured;
+  if (!retainCache) return { metrics:measured, cache:null, cacheChanged:false, cacheStats:{ cacheHits:0, contentReads:textFiles, eligibleTextFiles:textFiles, mode:'full-content-scan', scanHealth } };
+  const priorEntries = cacheWasValid ? Object.keys(sourceCache).length : 0, currentEntries = Object.keys(nextCacheFiles).length;
+  if (priorEntries !== currentEntries) cacheChanged = true;
+  return {
+    metrics:measured,
+    cache:{ schema:SCAN_CACHE_SCHEMA, version:1, scope:'active-workshop-source-text-metadata', updatedAt:measured.measuredAt, files:nextCacheFiles },
+    cacheChanged,
+    cacheStats:{ cacheHits, contentReads, eligibleTextFiles:textFiles, priorEntries, currentEntries, mode:'metadata-validated-incremental', scanHealth }
+  };
 }
+
+function scan(root) { return scanRoot(root, null, false).metrics; }
+function scanWithCache(root, inputCache) { return scanRoot(root, inputCache, true); }
 
 function cleanText(value, fallback, max) {
   const text = String(value == null ? fallback : value).replace(/[<>\r\n]/g, ' ').trim().slice(0, max);
@@ -544,4 +596,4 @@ function worldChanges(current, baseline) {
   return { exact:false, mode:baseline ? 'legacy-timestamp-fallback' : 'no-baseline', added:baseline ? Math.max(0, Number(current && current.worlds || 0) - Number(baseline.worlds || 0)) : null, removed:baseline ? Math.max(0, Number(baseline.worlds || 0) - Number(current && current.worlds || 0)) : null, updated:null, touched:baseline ? touchedIds.length : null, ids:{ touched:touchedIds } };
 }
 
-module.exports = { TEXT_EXT, CODE_EXT, ASSET_EXT, EXCLUDED, COMPONENT_KEYS, METRIC_KEYS, MIRROR_METRIC_KEYS, VELOCITY_KEYS, DEFAULT_SCHEDULE, SNAPSHOT_RETENTION, scan, scanCapabilities, scanMirror, attachMirror, state, capture, delta, mirrorDelta, mirrorSpecializationChanges, moduleChanges, worldChanges, configureSchedule, compactSnapshot, compactMirrorSnapshot, compactVelocitySample, recordVelocity, velocity, hourlyVelocity, validTime, activityKind, componentKind };
+module.exports = { TEXT_EXT, CODE_EXT, ASSET_EXT, EXCLUDED, COMPONENT_KEYS, METRIC_KEYS, MIRROR_METRIC_KEYS, VELOCITY_KEYS, DEFAULT_SCHEDULE, SNAPSHOT_RETENTION, SCAN_CACHE_SCHEMA, scan, scanWithCache, scanCapabilities, scanMirror, attachMirror, state, capture, delta, mirrorDelta, mirrorSpecializationChanges, moduleChanges, worldChanges, configureSchedule, compactSnapshot, compactMirrorSnapshot, compactVelocitySample, recordVelocity, velocity, hourlyVelocity, validTime, activityKind, componentKind };

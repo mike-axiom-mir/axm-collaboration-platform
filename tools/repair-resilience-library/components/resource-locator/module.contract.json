@@ -1,0 +1,43 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.resource-locator",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.resource-location-report/v1"
+  ],
+  "consumes": [
+    "resource-query",
+    "resource-inventory",
+    "allowed-roots"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/entry-resource-closure-observatory",
+      "tools/asset-filesystem-service",
+      "tools/module-installer"
+    ],
+    "reason": "Connects hash/provenance lookup to existing resource and package surfaces without copying files."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-patch-application",
+      "automatic-source-rewrite",
+      "automatic-install",
+      "automatic-dependency-change",
+      "automatic-promotion",
+      "automatic-canon",
+      "verification-from-original-tests-only",
+      "runtime-proof-claim"
+    ]
+  }
+}

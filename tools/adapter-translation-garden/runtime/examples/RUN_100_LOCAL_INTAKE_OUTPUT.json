@@ -1,0 +1,244 @@
+{
+  "consensus": {
+    "schema": "axm.translation.checkpoint-consensus/v1",
+    "checkpoint_count": 2,
+    "valid_checkpoint_count": 2,
+    "invalid_indices": [],
+    "required_claims": [
+      "prototypes",
+      "source"
+    ],
+    "claims": [
+      {
+        "claim": "prototypes",
+        "status": "AGREED",
+        "evidence": [
+          {
+            "checkpoint_id": "run90",
+            "value": 90,
+            "value_sha256": "69f59c273b6e669ac32a6dd5e1b2cb63333d8b004f9696447aee2d422ce63763",
+            "lineage_depth": 0,
+            "observed_at": 0
+          },
+          {
+            "checkpoint_id": "run95",
+            "value": 90,
+            "value_sha256": "69f59c273b6e669ac32a6dd5e1b2cb63333d8b004f9696447aee2d422ce63763",
+            "lineage_depth": 0,
+            "observed_at": 0
+          }
+        ],
+        "active_value_hashes": [
+          "69f59c273b6e669ac32a6dd5e1b2cb63333d8b004f9696447aee2d422ce63763"
+        ]
+      },
+      {
+        "claim": "source",
+        "status": "AGREED",
+        "evidence": [
+          {
+            "checkpoint_id": "run90",
+            "value": "b5c2a77acd863ded821735d4ecb43f499dbbe73c66457238888817b88fc86277",
+            "value_sha256": "76be8842b5bb240b5338d9954d6c0e9bb446e93ca541691b80b9c14fae6abc1e",
+            "lineage_depth": 0,
+            "observed_at": 0
+          },
+          {
+            "checkpoint_id": "run95",
+            "value": "b5c2a77acd863ded821735d4ecb43f499dbbe73c66457238888817b88fc86277",
+            "value_sha256": "76be8842b5bb240b5338d9954d6c0e9bb446e93ca541691b80b9c14fae6abc1e",
+            "lineage_depth": 0,
+            "observed_at": 0
+          }
+        ],
+        "active_value_hashes": [
+          "76be8842b5bb240b5338d9954d6c0e9bb446e93ca541691b80b9c14fae6abc1e"
+        ]
+      }
+    ],
+    "agreed_claims": {
+      "prototypes": 90,
+      "source": "b5c2a77acd863ded821735d4ecb43f499dbbe73c66457238888817b88fc86277"
+    },
+    "blockers": [],
+    "majority_selection": false,
+    "automatic_truth_selection": false,
+    "decision": "REVIEWABLE_CONVERGENCE",
+    "report_sha256": "51949060f31d75d7c297bbccff5ce845b4026b1d06437f95877a04e5dc97f0cc"
+  },
+  "consensus_verification": {
+    "schema": "axm.translation.checkpoint-consensus-verification/v1",
+    "verdict": "PASS",
+    "errors": [],
+    "claim_count": 2
+  },
+  "aging": {
+    "schema": "axm.translation.evidence-aging-simulation/v1",
+    "start_time": 0,
+    "horizons": [
+      0,
+      100
+    ],
+    "snapshots": [
+      {
+        "offset_seconds": 0,
+        "time": 0,
+        "records": [
+          {
+            "evidence_id": "source-lock",
+            "state": "FRESH",
+            "required": true,
+            "age_seconds": 0
+          }
+        ],
+        "required_holds": []
+      },
+      {
+        "offset_seconds": 100,
+        "time": 100,
+        "records": [
+          {
+            "evidence_id": "source-lock",
+            "state": "FRESH",
+            "required": true,
+            "age_seconds": 100
+          }
+        ],
+        "required_holds": []
+      }
+    ],
+    "clock_read": false,
+    "records_mutated": false,
+    "simulation_sha256": "c19ed7f311087c94d32531662a7dbcf334b391bf0fe7b54e8f44ec3381079d18"
+  },
+  "aging_gate": {
+    "schema": "axm.translation.evidence-aging-gate/v1",
+    "verdict": "PASS",
+    "holds": [],
+    "allowed_optional_states": [
+      "EXPIRED",
+      "STALE"
+    ],
+    "automatic_refresh": false,
+    "network_access": false
+  },
+  "recovery": {
+    "schema": "axm.translation.dependency-recovery-drill/v1",
+    "selected_modules": [
+      "proof"
+    ],
+    "dependency_closure": [
+      "fingerprint",
+      "proof"
+    ],
+    "cycles": [],
+    "damaged_modules": [
+      "proof"
+    ],
+    "recovery_choices": [
+      {
+        "module_id": "proof",
+        "pack_id": "p6",
+        "pack_revision": 6
+      }
+    ],
+    "unrecoverable_modules": [],
+    "steps": [
+      {
+        "action": "PLAN_RESTORE_PACK",
+        "module_id": "proof",
+        "pack_id": "p6"
+      }
+    ],
+    "decision": "DRILL_REVIEWABLE",
+    "archive_extraction": false,
+    "restore_executed": false,
+    "filesystem_writes": false,
+    "drill_sha256": "95ee945644873c397fdedf48e3625627896bb06b20d58f17760fb872cbacc2d0"
+  },
+  "recovery_verification": {
+    "schema": "axm.translation.dependency-recovery-drill-verification/v1",
+    "verdict": "PASS",
+    "errors": [],
+    "planned_restores": 1
+  },
+  "dashboard": {
+    "schema": "axm.translation.intake-dashboard/v1",
+    "status": "AMBER",
+    "blockers": [],
+    "warnings": [
+      "host"
+    ],
+    "tests": {
+      "run": 1,
+      "passed": 1
+    },
+    "authority": {
+      "files_scanned": 1,
+      "issue_count": 0
+    },
+    "packs": {
+      "count": 90,
+      "failed_count": 0
+    },
+    "readiness_items": [
+      {
+        "name": "host",
+        "state": "PENDING"
+      }
+    ],
+    "limitations": [
+      "Host probe must run locally."
+    ],
+    "automatic_approval": false,
+    "dashboard_sha256": "bd1fb196ac26b86413a9c5512c8dd4ca467b49c1cbf872388343b3d8b9fff06d"
+  },
+  "dashboard_verification": {
+    "schema": "axm.translation.intake-dashboard-verification/v1",
+    "verdict": "PASS",
+    "errors": []
+  },
+  "session": {
+    "schema": "axm.translation.intake-session/v1",
+    "session_id": "run100",
+    "events": [
+      {
+        "seq": 1,
+        "event_type": "SESSION_OPENED",
+        "payload": {
+          "selected_modules": [
+            "fingerprint",
+            "proof"
+          ],
+          "evidence_refs": [
+            {
+              "checkpoint": 95
+            }
+          ],
+          "created_at": 100
+        },
+        "previous_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "event_sha256": "f41910860bb6398370c05849b4c9267365c1593a52a161aa77821bd707b98d28"
+      },
+      {
+        "seq": 2,
+        "event_type": "EVIDENCE_REVIEWED",
+        "payload": {
+          "consensus": "REVIEWABLE_CONVERGENCE"
+        },
+        "previous_sha256": "f41910860bb6398370c05849b4c9267365c1593a52a161aa77821bd707b98d28",
+        "event_sha256": "27b482b2c08f8280d3b0c9aca5f71b7500603b5b0db3120ac3a0aba6ec2f3305"
+      }
+    ],
+    "closed": false,
+    "automatic_decision": false,
+    "automatic_action": false,
+    "session_sha256": "c689df21f41142af9cfd134642e63e1c5c5164ecb67af650b2420c57a32f3193"
+  },
+  "session_verification": {
+    "schema": "axm.translation.intake-session-verification/v1",
+    "verdict": "PASS",
+    "errors": [],
+    "event_count": 2
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "evidence-chain-recovery-adapter-conformance-lab",
+  "name": "AXM Evidence Chain Recovery Adapter Conformance Lab",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "VERIFY",
+  "layer": "machine",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": ["evidence", "recovery", "adapter", "conformance", "authorization", "rollback", "fixture-only", "local-first"],
+  "uses": ["evidence-chain-inspector", "evidence-chain-application-plan-foundry", "evidence-chain-application-drill-runner", "trusted-preloaded-node-adapter", "browser-file-picker", "web-crypto"],
+  "permissions": [],
+  "actions": [
+    "bind an adapter fixture profile to exact evidence-chain source, candidate, and application-plan digests",
+    "exercise synthetic permission denial, exact confirmation, preview expiry, candidate tamper, and target drift probes",
+    "exercise a complete fixture apply, independent digest inspection, rollback preview, rollback, and final inspection",
+    "reject adapter fixture responses that expose paths, payloads, identities, tokens, or raw bytes",
+    "emit a digest-only conformance receipt that preserves the missing live-application capability"
+  ],
+  "accepts": [
+    "application/x-ndjson",
+    "axm.evidence-chain-recovery-application-plan/v1",
+    "axm.evidence-chain-recovery-adapter-fixture-profile/v1"
+  ],
+  "produces": [
+    "axm.evidence-chain-recovery-adapter-conformance-probe/v1",
+    "axm.evidence-chain-recovery-adapter-conformance-receipt/v1"
+  ],
+  "readiness": ["nodejs", "evidence-chain-inspector", "evidence-chain-application-plan-foundry", "evidence-chain-application-drill-runner", "trusted-preloaded-fixture-adapter"],
+  "verifiedAt": null,
+  "summary": "Proves that a fixture-mode evidence-chain recovery adapter obeys fail-closed preview, apply, inspection, and rollback contracts before live authority is considered.",
+  "notes": "Conformance-fixture-only. The Lab loads no adapter path, calls no Recovery Center or network service, requests no permission, and touches no filesystem or live target. Passing does not provide capability.apply.evidence-chain-reviewed-recovery/v1 or prove real identity authorization."
+}

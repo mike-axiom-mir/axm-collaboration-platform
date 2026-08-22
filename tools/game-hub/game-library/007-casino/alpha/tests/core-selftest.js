@@ -111,12 +111,14 @@ test("normalizes District Party seats and rejects disguised imbalance", function
   assert.equal(Adapter.validateRoster(Adapter.normalizePlayers([player(1), player(5)]), "backroom_story", false).ok, false);
 });
 
-test("constructs 1-4 player story and equal 1v1-4v4 House War rosters", function () {
+test("constructs 1-4 player free play and equal 1v1-4v4 House War rosters", function () {
   for (var size = 1; size <= 4; size += 1) {
     var storySession = new Core.CasinoSession({ mode: "backroom_story", players: Adapter.createStandalonePlayers("backroom_story", size), seed: "story-roster-" + size, bookLength: 20, testOnly: true });
     assert.equal(Object.keys(storySession.players).length, size);
     assert.equal(Object.keys(storySession.parties).length, 1);
     assert.equal(storySession.observeHost(storySession.hostToken).styles.length, 10);
+    assert.equal(storySession.observeHost(storySession.hostToken).styles.filter(function (style) { return style.unlocked; }).length, 10);
+    assert.equal(storySession.observeHost(storySession.hostToken).quest, null);
 
     var warSession = new Core.CasinoSession({ mode: "house_war", players: Adapter.createStandalonePlayers("house_war", size), seed: "war-roster-" + size, bookLength: 20, testOnly: true });
     assert.equal(Object.keys(warSession.players).length, size * 2);
@@ -297,76 +299,48 @@ test("runs an NPC through exactly 100 paid one-percent wagers in 20-50-spin styl
   assert.equal(plannedSegments.reduce(function (sum, length) { return sum + length; }, 0), 100);
 });
 
-test("completes all ten story chapters through shared two-player co-op events", function () {
+test("opens all ten free-play cabinets immediately with no quest events", function () {
   var session = story({
     players: [player(1, "Errol"), player(2, "Co-op Friend")],
     house: 1000000,
     wallet: 10000,
-    seed: "ten-chapter-story-seed",
-    bookLength: 50000
+    seed: "ten-cabinet-free-play-seed",
+    bookLength: 100
   });
   var sequences = { seat_1: 1, seat_2: 1 };
 
   function doCommand(seatId, value) {
     return command(session, seatId, sequences[seatId]++, value).result;
   }
-  function spinAndDrain(seatId, wager) {
-    doCommand(seatId, { type: "spin", wager: wager });
-    sequences[seatId] = drainFreeSpins(session, seatId, sequences[seatId]);
-  }
-  function onePatron() {
-    var npc = session._spawnNpc("A", "chapter_test");
-    assert.ok(npc);
-    session._advanceNpc(npc);
-    if (session.npcs[npc.id]) session._departNpc(npc, "test_cleanup");
-  }
 
-  doCommand("seat_1", { type: "interact", styleId: "lux-5" });
-  doCommand("seat_2", { type: "fund_house", amount: 10 });
-  onePatron();
-  spinAndDrain("seat_1", 1);
-  spinAndDrain("seat_2", 2);
-  while (session.parties.A.stats.playerPaidSpins < 5) spinAndDrain("seat_1", 1);
-  doCommand("seat_2", { type: "close_opening_shift" });
-  doCommand("seat_1", { type: "claim_story_lease" });
-
-  Catalog.styleIds.slice(1).forEach(function (styleId, chapterOffset) {
-    var actor = chapterOffset % 2 === 0 ? "seat_1" : "seat_2";
-    assert.equal(session._currentQuestStyleId(), styleId);
-    doCommand(actor, { type: "interact", styleId: styleId });
-    assert.ok(session.unlockedStyleIds.indexOf(styleId) !== -1);
-    doCommand("seat_1", { type: "select_machine", styleId: styleId });
-    doCommand("seat_2", { type: "select_machine", styleId: styleId });
-    spinAndDrain("seat_1", 1);
-    spinAndDrain("seat_2", 1);
-    spinAndDrain("seat_1", 1);
-    spinAndDrain("seat_1", 1);
-    spinAndDrain("seat_2", 2);
-    assert.equal(session._currentQuestStyleId(), styleId);
-    onePatron();
+  assert.deepStrictEqual(session.unlockedStyleIds, Catalog.styleIds);
+  assert.equal(session.machineOpen, true);
+  assert.equal(session.questProgress, null);
+  Catalog.styleIds.forEach(function (styleId, index) {
+    var actor = index % 2 === 0 ? "seat_1" : "seat_2";
+    doCommand(actor, { type: "select_machine", styleId: styleId });
+    var receipt = doCommand(actor, { type: "spin", wager: 1 });
+    assert.equal(receipt.styleId, styleId);
+    sequences[actor] = drainFreeSpins(session, actor, sequences[actor]);
   });
 
-  assert.equal(session.questProgress.finished, true);
-  assert.deepStrictEqual(session.unlockedStyleIds, Catalog.styleIds);
-  assert.equal(session.spots[0].claim.expiresAtMs, null);
-  assert.equal(session.events.filter(function (event) { return event.type === "slot_chapter_completed"; }).length, 10);
-  assert.ok(session.events.some(function (event) { return event.type === "story_campaign_completed"; }));
-  assert.equal(session.observePlayer("seat_1", session.players.seat_1.token).quest.finished, true);
-  assert.equal(session.observePlayer("seat_2", session.players.seat_2.token).quest.finished, true);
+  assert.equal(session.events.some(function (event) { return /^quest_|^slot_chapter_|^story_/.test(event.type); }), false);
+  assert.equal(session.observePlayer("seat_1", session.players.seat_1.token).quest, null);
+  assert.equal(session.observePlayer("seat_2", session.players.seat_2.token).quest, null);
 });
 
-test("persists shared story unlocks and progressive but never the future Draw Spine", function () {
+test("persists free-play economy but never quests or the future Draw Spine", function () {
   var first = story({ seed: "persistent-first" });
-  command(first, "seat_1", 1, { type: "interact", styleId: "lux-5" });
-  command(first, "seat_1", 2, { type: "fund_house", amount: 10 });
+  command(first, "seat_1", 1, { type: "fund_house", amount: 10 });
   var saved = first.exportPersistentState();
   assert.equal(Object.prototype.hasOwnProperty.call(saved, "seed"), false);
   assert.equal(JSON.stringify(saved).includes(first.sessionSeed), false);
-  assert.deepStrictEqual(saved.story.unlockedStyleIds, ["lux-5"]);
+  assert.deepStrictEqual(saved.story.unlockedStyleIds, Catalog.styleIds);
+  assert.equal(Object.prototype.hasOwnProperty.call(saved.story, "questProgress"), false);
   var second = story({ seed: "persistent-second", persistentState: saved });
   assert.equal(second.machineOpen, true);
   assert.equal(second.parties.A.houseUnits, first.parties.A.houseUnits);
-  assert.deepStrictEqual(second.questProgress.completed, first.questProgress.completed);
+  assert.equal(second.questProgress, null);
   assert.deepStrictEqual(second.unlockedStyleIds, first.unlockedStyleIds);
   assert.equal(second.jackpotUnits, first.jackpotUnits);
   assert.notEqual(second.sessionSeed, first.sessionSeed);

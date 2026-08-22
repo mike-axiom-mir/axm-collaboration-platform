@@ -1,0 +1,278 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/world-kit-v0.5.schema.json",
+  "title": "AXM World Kit v0.5",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "world_id",
+    "version",
+    "name",
+    "intent",
+    "placements",
+    "interaction_zones",
+    "navigation",
+    "governance",
+    "budgets"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.5"
+    },
+    "world_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9][A-Z0-9-]{1,95}$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][A-Za-z0-9.-]+)?$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "intent": {
+      "type": "string"
+    },
+    "terrain_grid": {
+      "type": "object",
+      "required": [
+        "asset_id",
+        "asset_version",
+        "count_x",
+        "count_z",
+        "spacing_m",
+        "origin_m"
+      ],
+      "properties": {
+        "asset_id": {
+          "type": "string",
+          "pattern": "^[A-Z0-9][A-Z0-9-]{1,95}$"
+        },
+        "asset_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][A-Za-z0-9.-]+)?$"
+        },
+        "count_x": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "count_z": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "spacing_m": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "origin_m": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "rotation_y_deg": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+    "linear_repeats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "asset_id",
+          "asset_version",
+          "count",
+          "start_m",
+          "step_m"
+        ],
+        "properties": {
+          "id_pattern": {
+            "type": "string"
+          },
+          "asset_id": {
+            "type": "string",
+            "pattern": "^[A-Z0-9][A-Z0-9-]{1,95}$"
+          },
+          "asset_version": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][A-Za-z0-9.-]+)?$"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 512
+          },
+          "start_m": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "items": false,
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "step_m": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "items": false,
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "rotation_y_deg": {
+            "type": "number"
+          },
+          "role": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "placements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "asset_id",
+          "asset_version",
+          "position_m",
+          "rotation_y_deg",
+          "role"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "asset_id": {
+            "type": "string",
+            "pattern": "^[A-Z0-9][A-Z0-9-]{1,95}$"
+          },
+          "asset_version": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][A-Za-z0-9.-]+)?$"
+          },
+          "position_m": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "items": false,
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "rotation_y_deg": {
+            "type": "number"
+          },
+          "role": {
+            "type": "string"
+          },
+          "state": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "interaction_zones": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "navigation": {
+      "type": "object"
+    },
+    "budgets": {
+      "type": "object",
+      "required": [
+        "max_instances",
+        "max_geometries",
+        "max_triangles",
+        "max_glb_bytes"
+      ],
+      "properties": {
+        "max_instances": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_geometries": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_triangles": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_glb_bytes": {
+          "type": "integer",
+          "minimum": 1024
+        }
+      },
+      "additionalProperties": false
+    },
+    "governance": {
+      "type": "object",
+      "required": [
+        "automatic_game_write",
+        "automatic_physical_production",
+        "human_merge_gate_required"
+      ],
+      "properties": {
+        "automatic_game_write": {
+          "const": false
+        },
+        "automatic_physical_production": {
+          "const": false
+        },
+        "human_merge_gate_required": {
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

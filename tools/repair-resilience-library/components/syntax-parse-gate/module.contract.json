@@ -1,0 +1,43 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.syntax-parse-gate",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.syntax-parse-assessment/v1",
+    "axm.syntax-repair-candidate/v1"
+  ],
+  "consumes": [
+    "source-text",
+    "structural-checks",
+    "behavioral-checks"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_2_SHADOW_REPAIR",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/repairbuddy",
+      "tools/module-contract-workbench"
+    ],
+    "reason": "Extends RepairBuddy with bounded parse candidates while keeping application and acceptance outside the generator."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-patch-application",
+      "automatic-source-rewrite",
+      "automatic-install",
+      "automatic-dependency-change",
+      "automatic-promotion",
+      "automatic-canon",
+      "verification-from-original-tests-only",
+      "runtime-proof-claim"
+    ]
+  }
+}

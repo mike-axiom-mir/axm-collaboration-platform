@@ -1,0 +1,103 @@
+{
+  "slot": "012",
+  "game_id": "012-pulse-choir",
+  "name": "Pulse Choir",
+  "status": "PLAYABLE ALPHA V4 · HUMAN-STEWARDSHIP LOCAL GAME NIGHT",
+  "description": "A 1–4 player cosmic co-op show: build risky three-note TRIADs, chain bank multipliers, synchronize a room-wide surge, and turn perfect harmony into glitch shields.",
+  "version": "0.4.0-stewarded-alpha",
+  "min_players": 1,
+  "max_players": 4,
+  "default_visible_seats": 3,
+  "allowed_seat_types": ["human", "ai"],
+  "launch": {
+    "server_entry": "runtime/server.js",
+    "client_entry": "/games/012/?room=AXM1&player=screen",
+    "spectator_client_entry": "/games/012/?room=AXM1&player=screen",
+    "controller_path": "/controller.html?room=AXM1&player={player}",
+    "ready_path": "/health",
+    "port": 8802,
+    "start_command": "managed-by-game-hub",
+    "local_only_default": true
+  },
+  "join": {
+    "supports_qr": true,
+    "supports_lan_link": true,
+    "supports_room_code": true,
+    "room_code": "AXM1",
+    "screen_occupies_seat": false
+  },
+  "controls": {
+    "profile_id": "pulse-choir-semantic-input-v1",
+    "intent_protocol": "axm-semantic-input-v1",
+    "phone_controller": true,
+    "gamepad": true,
+    "keyboard": true,
+    "mouse": true,
+    "touch": true,
+    "shared_screen": true,
+    "intent_lanes": ["move", "pulse", "start", "room-signal"]
+  },
+  "session": {
+    "passes_seat_map": true,
+    "returns_result_summary": true,
+    "drop_in_out_later": true,
+    "target_minutes": 2
+  },
+  "rules": {
+    "no_hidden_players": true,
+    "host_launch_required": true,
+    "game_does_not_override_hub_seats": true,
+    "local_authoritative_state": true,
+    "clients_send_input_intentions": true,
+    "host_ai_fill_empty_seats_default": false,
+    "runtime_internet_required": false,
+    "team_mode": "cooperative",
+    "shared_objective_authority": "server",
+    "random_seed": 12026,
+    "round_seconds": 75
+  },
+  "verification": {
+    "game_night": {
+      "schema": "axm.game-night-seams/v1",
+      "controller_delivery": "dedicated-path",
+      "controller_evidence": ["runtime/controller.html", "tests/pulse-choir-selftest.js", "tests/runtime-recovery.test.js"],
+      "state_authority": "server",
+      "host_reload_recovery": "native-resume",
+      "shared_screen_occupies_seat": false,
+      "disconnect_recovery": "verified",
+      "blocking_overlay_escape": "verified",
+      "physical_phone_qa": "pending"
+    }
+  },
+  "package": {
+    "source_status": "local-deterministic-atlas-guided-prototype",
+    "required_paths": [
+      "README_FIRST.md",
+      "KNOWN_LIMITS.md",
+      "ASSET_PROVENANCE.md",
+      "CAPABILITY_PLAN.json",
+      "EVIDENCE_ROUTE.md",
+      "BUILD_RECEIPT.md",
+      "evidence/capability-gap-report.json",
+      "evidence/visual-verification.json",
+      "evidence/runtime-recovery-verification.json",
+      "evidence/game-hub-handback-verification.json",
+      "evidence/live-conductor-verification.json",
+      "evidence/room-signal-verification.json",
+      "evidence/managed-launch-receipt.json",
+      "runtime/server.js",
+      "runtime/checkpoint-store.js",
+      "runtime/hub-handback.js",
+      "runtime/game-core.js",
+      "runtime/index.html",
+      "runtime/styles.css",
+      "runtime/app.js",
+      "runtime/controller.html",
+      "runtime/assets/pulse-choir-arena-v2.png",
+      "tests/pulse-choir-selftest.js",
+      "tests/server-http.test.js",
+      "tests/runtime-recovery.test.js",
+      "tests/hub-handback.test.js"
+    ]
+  }
+}

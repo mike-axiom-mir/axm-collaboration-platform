@@ -1,0 +1,52 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "id": "mirror-code-clone",
+  "name": "Mirror Code Clone",
+  "version": "v0.2",
+  "status": "EXPERIMENTAL",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "AI Team",
+  "layer": "build",
+  "audience": "human-machine",
+  "risk": "MEDIUM",
+  "rank": 61,
+  "tags": [
+    "mirror-lineage",
+    "candidate-only",
+    "deterministic-repair",
+    "rollback",
+    "evidence"
+  ],
+  "uses": [
+    "local-cpu",
+    "filesystem",
+    "verification"
+  ],
+  "permissions": [],
+  "actions": [
+    "discover a repairable defect without a named target",
+    "patch only a marked disposable candidate root",
+    "keep a patch only after verifier improvement",
+    "emit hash-bound repair or rollback evidence",
+    "draft up to five deduplicated candidate improvements per scheduled hourly beat",
+    "queue exact-digest review for seven days without applying source changes"
+  ],
+  "accepts": [
+    "axm.disposable-code-candidate/v1"
+  ],
+  "produces": [
+    "axm.mirror-code-clone.receipt/v1"
+  ],
+  "readiness": [
+    "runtime",
+    "files",
+    "verification",
+    "body-pulse",
+    "review-inbox"
+  ],
+  "summary": "A deliberately small coding clone that discovers allowlisted defects, builds verifier-gated candidate drafts, and queues up to five per hour for seven-day exact-digest review without touching source.",
+  "notes": "It has no write route to the Workshop source tree, pure Mirror, installation, promotion, GitHub, or CANON. Human review is required to move any successful candidate patch elsewhere."
+}

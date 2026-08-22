@@ -1,0 +1,45 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.cross-signal-envelope",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.cross-signal-envelope/v1"
+  ],
+  "consumes": [
+    "logs",
+    "metrics",
+    "traces",
+    "profiles",
+    "state-changes",
+    "repair-actions"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/diagnostics-operations-center",
+      "shared/technical-glasses",
+      "shared/evidence-retention"
+    ],
+    "reason": "Provides one lineage envelope without becoming a new evidence authority."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-repair",
+      "automatic-restart",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "network-access",
+      "runtime-proof-claim",
+      "mutation-of-existing-axm-organs"
+    ]
+  }
+}

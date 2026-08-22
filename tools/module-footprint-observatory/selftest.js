@@ -6,6 +6,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const Core = require('./core/footprint-core');
+const Pressure = require('./core/storage-pressure-core');
 
 let checks = 0;
 function check(label, action) {
@@ -13,6 +14,10 @@ function check(label, action) {
   checks += 1;
   process.stdout.write('PASS ' + label + '\n');
 }
+
+const publishedManifest = require('./manifest.json');
+check('published manifest declares the modern schema', () => assert.equal(publishedManifest.schema, 'axm.tool-manifest/v1'));
+check('published manifest classifies the observatory as a product', () => assert.equal(publishedManifest.kind, 'product'));
 
 function writeJson(file, value, bom = false) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -58,12 +63,31 @@ try {
   }, true);
   writeSized(path.join(fixtureRoot, 'tools', 'beta', 'README'), 30);
   writeJson(path.join(fixtureRoot, 'tools', '_template', 'manifest.json'), { id: 'template' });
-  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'alpha', 'assets'), path.join(fixtureRoot, 'tools', 'alpha', 'linked-assets'));
-  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'alpha'), path.join(fixtureRoot, 'tools', 'linked-alpha'));
+  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'alpha', 'assets'), path.join(fixtureRoot, 'tools', 'alpha', 'linked-assets'), process.platform === 'win32' ? 'junction' : 'dir');
+  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'alpha'), path.join(fixtureRoot, 'tools', 'linked-alpha'), process.platform === 'win32' ? 'junction' : 'dir');
+
+  const pressureWorkshop = path.join(fixtureRoot, 'pressure-workshop');
+  const pressureMirror = path.join(fixtureRoot, 'pressure-mirror');
+  writeSized(path.join(pressureWorkshop, '.git', 'objects', 'canonical-copy'), 64, 65);
+  writeSized(path.join(pressureMirror, 'state', 'sessions', 'session-1.json'), 64, 65);
+  writeSized(path.join(pressureWorkshop, 'current-build.json'), 37, 66);
+  writeSized(path.join(pressureMirror, 'logs', 'pulse.log'), 37, 66);
+  writeSized(path.join(pressureWorkshop, 'projects', 'mike', 'site.html'), 101, 67);
+  writeSized(path.join(pressureMirror, 'state', 'canonical.json'), 113, 68);
+  writeSized(path.join(pressureMirror, 'tmp', 'captures', 'frame.tmp'), 119, 69);
+  writeSized(path.join(pressureMirror, 'state', 'evidence', 'receipt.json'), 131, 70);
+  writeSized(path.join(pressureWorkshop, 'src', 'code.js'), 127, 71);
+  fs.symlinkSync(path.join(pressureMirror, 'state'), path.join(pressureMirror, 'linked-state'), process.platform === 'win32' ? 'junction' : 'dir');
 
   const before = treeReceipt(fixtureRoot);
   const first = Core.scanWorkshop(fixtureRoot, { now: '2026-07-27T00:00:00Z' });
   const second = Core.scanWorkshop(fixtureRoot, { now: '2026-07-27T01:00:00Z' });
+  const pressureRoots = [
+    { id: 'workshop', path: pressureWorkshop },
+    { id: 'mirror', path: pressureMirror }
+  ];
+  const pressureFirst = Pressure.scanRoots(pressureRoots, { now: '2026-07-27T00:00:00Z', allocationUnit: 4096 });
+  const pressureSecond = Pressure.scanRoots(pressureRoots, { now: '2026-07-28T00:00:00Z', allocationUnit: 4096, previous: pressureFirst });
   const after = treeReceipt(fixtureRoot);
   const alpha = first.modules.find(module => module.id === 'alpha');
   const beta = first.modules.find(module => module.id === 'beta');
@@ -136,18 +160,70 @@ try {
     const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
     for (const boundary of [
       'quality-from-size', 'performance-from-size', 'readiness-from-size',
-      'duplicate-content-inference', 'deletion-recommendation', 'packaging', 'canon-change'
+      'duplicate-disposability-inference', 'deletion-target-selection', 'file-deletion',
+      'unreviewed-retention-action', 'packaging', 'canon-change'
     ]) assert(contract.boundaries.refuses.includes(boundary));
   });
   check('browser entry references only local candidate files', () => {
     const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
-    for (const name of ['styles.css', 'current-footprint-map.js', 'app.js']) assert(html.includes(name));
+    for (const name of ['styles.css', 'current-footprint-map.js', 'current-storage-pressure-map.js', 'app.js']) assert(html.includes(name));
     assert.equal(/https?:\/\//.test(html), false);
   });
   check('bundle builder is self-contained and excludes its output', () => {
     const source = fs.readFileSync(path.join(__dirname, 'build-bundle.js'), 'utf8');
     assert(source.includes('absolute === output'));
     assert(source.includes("'axm.module-bundle/v1'"));
+  });
+  check('whole-root pressure map covers both explicit roots without absolute path leakage', () => {
+    assert.equal(pressureFirst.schema, 'axm.storage-pressure-map/v1');
+    assert.equal(pressureFirst.summary.roots, 2);
+    assert.equal(pressureFirst.summary.files, 9);
+    assert.equal(JSON.stringify(pressureFirst).includes(fixtureRoot), false);
+  });
+  check('every operational retention class is represented and unclassified remains explicit', () => {
+    assert.deepEqual(pressureFirst.retentionClasses.map(item => item.id), Pressure.CLASSES);
+    assert(pressureFirst.retentionClasses.every(item => item.files > 0));
+  });
+  check('same-size SHA-256 scan proves exact groups across roots', () => {
+    assert.equal(pressureFirst.summary.exactDuplicateGroups, 2);
+    assert.equal(pressureFirst.summary.exactDuplicatePhysicalBytes, 101);
+    assert.equal(pressureFirst.duplicateCoverage.coverageComplete, true);
+    assert(pressureFirst.exactDuplicateGroups.every(group => group.sha256.length === 64));
+  });
+  check('duplicate review separates lower-risk repetition from protected or mixed paths', () => {
+    assert(pressureFirst.exactDuplicateGroups.some(group => group.reviewState === 'LOWER_RISK_REVIEW'));
+    assert(pressureFirst.exactDuplicateGroups.some(group => group.reviewState === 'PROTECTED_OR_MIXED_HOLD'));
+    assert.equal(pressureFirst.truth.deletionTargetSelected, false);
+  });
+  check('allocation pressure is visibly estimated from the declared cluster size', () => {
+    assert.equal(pressureFirst.source.allocationUnitBytes, 4096);
+    assert.equal(pressureFirst.summary.allocatedBytesEstimate, 9 * 4096);
+    assert.equal(pressureFirst.truth.allocatedBytesExact, false);
+  });
+  check('directory fan-out is measured and filesystem symlinks remain skipped', () => {
+    assert(pressureFirst.directoryPressure.length > 0);
+    assert.equal(pressureFirst.summary.skippedSymlinks, 1);
+    assert.equal(pressureFirst.source.symlinksFollowed, false);
+  });
+  check('separately timed snapshots expose a measured zero-growth window', () => {
+    assert.equal(pressureFirst.growth.state, 'BASELINE_ONLY');
+    assert.equal(pressureSecond.growth.state, 'MEASURED_WINDOW');
+    assert.equal(pressureSecond.growth.logicalBytes, 0);
+    assert.equal(pressureSecond.growth.totalFiles, 0);
+  });
+  check('pressure scan performs no source writes or destructive action', () => {
+    assert.deepEqual(after, before);
+    const source = fs.readFileSync(path.join(__dirname, 'core', 'storage-pressure-core.js'), 'utf8');
+    assert.equal(/\b(?:rmSync|unlinkSync|truncateSync|renameSync|linkSync)\b/.test(source), false);
+    assert.equal(pressureFirst.truth.deletionPerformed, false);
+    assert.equal(pressureFirst.truth.sourceMutationPerformed, false);
+  });
+  check('manifest and contract publish the pressure handoff with no permissions', () => {
+    const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
+    const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
+    assert(manifest.produces.includes('axm.storage-pressure-map/v1'));
+    assert(contract.handoffs.emits.includes('axm.storage-pressure-map/v1'));
+    assert.deepEqual(manifest.permissions, []);
   });
 
   const workshopRoot = argValue('--workshop-root');

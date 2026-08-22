@@ -10,6 +10,7 @@ import {
   chemistryElementInputs,
   emptyRiverChemistry,
   normalizeRiverChemistry,
+  riverNitrogenSpecies,
   riverChemistryDescription,
   riverChemistryFraction,
   riverChemistryTotals,
@@ -30,6 +31,7 @@ import {
 } from './estuary-reactor.mjs';
 import {
   ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
+  ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA,
   applyAtmosphereFloodplainGasExchange,
   applyAtmosphereGasBoundaryInput,
   normalizeAtmosphereBiogeochemistry,
@@ -53,6 +55,8 @@ import {
 import {
   FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA,
   FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA,
+  FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
+  FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
   FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
   FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA,
   FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA,
@@ -60,6 +64,8 @@ import {
   FLOODPLAIN_STATE_SCHEMA,
   applyFloodplainDetritalReturn,
   applyFloodplainAerobicMineralization,
+  applyFloodplainDenitrificationReaction,
+  applyFloodplainNitrificationReaction,
   applyFloodplainGasExchange,
   applyFloodplainPlantResourceExchange,
   advanceFloodplainExchange,
@@ -149,6 +155,26 @@ import {
   normalizeFloodplainRespirationState
 } from './floodplain-respiration.mjs';
 import {
+  FLOODPLAIN_DENITRIFICATION_RECEIPT_SCHEMA,
+  FLOODPLAIN_DENITRIFICATION_STATE_SCHEMA,
+  advanceFloodplainDenitrification,
+  emptyFloodplainDenitrificationState,
+  floodplainDenitrificationDescription,
+  floodplainDenitrificationPlan,
+  floodplainDenitrificationSummary,
+  normalizeFloodplainDenitrificationState
+} from './floodplain-denitrification.mjs';
+import {
+  FLOODPLAIN_NITRIFICATION_RECEIPT_SCHEMA,
+  FLOODPLAIN_NITRIFICATION_STATE_SCHEMA,
+  advanceFloodplainNitrification,
+  emptyFloodplainNitrificationState,
+  floodplainNitrificationDescription,
+  floodplainNitrificationPlan,
+  floodplainNitrificationSummary,
+  normalizeFloodplainNitrificationState
+} from './floodplain-nitrification.mjs';
+import {
   FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA,
   FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA,
   advanceFloodplainGasExchange,
@@ -159,15 +185,15 @@ import {
   normalizeFloodplainGasExchangeState
 } from './floodplain-gas-exchange.mjs';
 
-export const BASIN_ROUTING_ENGINE_SCHEMA = 'axm.foundation-planet.basin-routing-engine/v15';
+export const BASIN_ROUTING_ENGINE_SCHEMA = 'axm.foundation-planet.basin-routing-engine/v21';
 export const PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA =
-  'axm.foundation-planet.basin-routing-engine/v14';
-export const BASIN_ROUTING_STEP_SCHEMA = 'axm.foundation-planet.basin-routing-step/v15';
+  'axm.foundation-planet.basin-routing-engine/v20';
+export const BASIN_ROUTING_STEP_SCHEMA = 'axm.foundation-planet.basin-routing-step/v21';
 export const PREVIOUS_BASIN_ROUTING_STEP_SCHEMA =
-  'axm.foundation-planet.basin-routing-step/v14';
-export const BASIN_INLET_RECEIPT_SCHEMA = 'axm.foundation-planet.basin-inlet-receipt/v5';
-export const RIVER_REACH_TRANSFER_SCHEMA = 'axm.foundation-planet.river-reach-transfer/v4';
-export const OCEAN_MOUTH_RECEIPT_SCHEMA = 'axm.foundation-planet.ocean-mouth-receipt/v5';
+  'axm.foundation-planet.basin-routing-step/v20';
+export const BASIN_INLET_RECEIPT_SCHEMA = 'axm.foundation-planet.basin-inlet-receipt/v7';
+export const RIVER_REACH_TRANSFER_SCHEMA = 'axm.foundation-planet.river-reach-transfer/v6';
+export const OCEAN_MOUTH_RECEIPT_SCHEMA = 'axm.foundation-planet.ocean-mouth-receipt/v7';
 export const RIVER_BOUNDARY_RECEIPT_SCHEMA = 'axm.foundation-planet.river-boundary-receipt/v1';
 
 const CLOCK_TOLERANCE_DAYS = 1e-6;
@@ -239,6 +265,8 @@ function emptyReachState(reachId, day) {
     floodplainPlantResources: emptyFloodplainPlantResourcesState(),
     floodplainDecomposition: emptyFloodplainDecompositionState(),
     floodplainRespiration: emptyFloodplainRespirationState(),
+    floodplainDenitrification: emptyFloodplainDenitrificationState(),
+    floodplainNitrification: emptyFloodplainNitrificationState(),
     floodplainGasExchange: emptyFloodplainGasExchangeState(),
     estuary: emptyEstuaryState(),
     cumulativeInflowKg: 0,
@@ -267,6 +295,10 @@ function normalizedReachState(source) {
       source.floodplainDecomposition),
     floodplainRespiration: normalizeFloodplainRespirationState(
       source.floodplainRespiration),
+    floodplainDenitrification: normalizeFloodplainDenitrificationState(
+      source.floodplainDenitrification),
+    floodplainNitrification: normalizeFloodplainNitrificationState(
+      source.floodplainNitrification),
     floodplainGasExchange: normalizeFloodplainGasExchangeState(
       source.floodplainGasExchange),
     estuary: normalizeEstuaryState(source.estuary),
@@ -292,7 +324,10 @@ function profileChannelStorageKg(profile) {
 }
 
 function profileChemistry(profile) {
-  const totals = { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0, oxygenKgO2: 0 };
+  const totals = {
+    carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0, oxygenKgO2: 0,
+    alkalinityKgCaCO3Eq: 0
+  };
   for (const state of profile.reaches.values()) {
     const chemistry = riverChemistryTotals(state.chemistry);
     const floodplain = floodplainTotals(state.floodplain).chemistry;
@@ -300,6 +335,27 @@ function profileChemistry(profile) {
       totals[key] += chemistry[key] + floodplain[key];
     }
   }
+  return totals;
+}
+
+function profileNitrogenSpecies(profile) {
+  const totals = {
+    nitrateNitrogenKgN: 0,
+    ammoniumNitrogenKgN: 0,
+    dissolvedInorganicNitrogenKgN: 0
+  };
+  for (const state of profile.reaches.values()) {
+    for (const chemistry of [state.chemistry,
+      normalizeFloodplainState(state.floodplain).chemistry]) {
+      const species = riverNitrogenSpecies(chemistry);
+      totals.nitrateNitrogenKgN +=
+        species.dissolvedNitrateNitrogenKgN;
+      totals.ammoniumNitrogenKgN +=
+        species.dissolvedAmmoniumNitrogenKgN;
+    }
+  }
+  totals.dissolvedInorganicNitrogenKgN =
+    totals.nitrateNitrogenKgN + totals.ammoniumNitrogenKgN;
   return totals;
 }
 
@@ -332,7 +388,7 @@ function profileFloodplain(profile) {
     activeReachCount: 0,
     waterKg: 0,
     chemistry: { carbonKgC: 0, nitrogenKgN: 0,
-      phosphorusKgP: 0, oxygenKgO2: 0 },
+      phosphorusKgP: 0, oxygenKgO2: 0, alkalinityKgCaCO3Eq: 0 },
     suspendedSedimentKg: { clay: 0, silt: 0, sand: 0, gravel: 0 },
     depositedSedimentKg: { clay: 0, silt: 0, sand: 0, gravel: 0 },
     totalSedimentKg: 0
@@ -764,6 +820,192 @@ function profileFloodplainRespiration(profile) {
   };
 }
 
+function profileFloodplainDenitrification(profile) {
+  const totals = {
+    reachCount: 0,
+    observedReachCount: 0,
+    activeReachCount: 0,
+    atmosphereUnavailableReachCount: 0,
+    oxicConstrainedReachCount: 0,
+    nitrogenLimitedReachCount: 0,
+    temperatureConstrainedReachCount: 0,
+    observedDenitrificationDays: 0,
+    dormantDays: 0,
+    atmosphereUnavailableDays: 0,
+    oxicConstrainedDays: 0,
+    nitrogenLimitedDays: 0,
+    temperatureConstrainedDays: 0,
+    activityScale: 0,
+    waterTemperatureC: 0,
+    temperatureResponseFactor: 0,
+    cumulativeReaction: {
+      dissolvedOrganicCarbonConsumedKgC: 0,
+      dissolvedInorganicCarbonProducedKgC: 0,
+      dissolvedNitrateNitrogenConsumedKgN: 0,
+      nitrogenGasProducedKgN: 0,
+      alkalinityGeneratedKgCaCO3Eq: 0
+    }
+  };
+  for (const reach of [...profile.reaches.values()].sort((a, b) =>
+    String(a.reachId).localeCompare(String(b.reachId)))) {
+    const denitrification = floodplainDenitrificationSummary(
+      reach.floodplainDenitrification);
+    totals.reachCount += 1;
+    totals.observedReachCount +=
+      denitrification.observedDenitrificationDays > 0 ? 1 : 0;
+    totals.activeReachCount +=
+      denitrification.lastActivity.activityScale > 0 ? 1 : 0;
+    totals.atmosphereUnavailableReachCount +=
+      denitrification.atmosphereUnavailableDays > 0 &&
+      !denitrification.lastActivity.atmosphereAvailable ? 1 : 0;
+    totals.oxicConstrainedReachCount +=
+      denitrification.observedDenitrificationDays > 0 &&
+      denitrification.lastActivity.anoxiaFactor < .999999 ? 1 : 0;
+    totals.nitrogenLimitedReachCount +=
+      denitrification.lastActivity.nitrogenLimited ? 1 : 0;
+    totals.temperatureConstrainedReachCount +=
+      denitrification.observedDenitrificationDays > 0 &&
+      denitrification.lastActivity.temperatureConstrained ? 1 : 0;
+    for (const key of ['observedDenitrificationDays', 'dormantDays',
+      'atmosphereUnavailableDays', 'oxicConstrainedDays',
+      'nitrogenLimitedDays', 'temperatureConstrainedDays']) {
+      totals[key] += denitrification[key];
+    }
+    totals.activityScale += denitrification.lastActivity.activityScale;
+    totals.waterTemperatureC +=
+      denitrification.lastActivity.waterTemperatureC;
+    totals.temperatureResponseFactor +=
+      denitrification.lastActivity.temperatureResponseFactor;
+    for (const key of Object.keys(totals.cumulativeReaction)) {
+      totals.cumulativeReaction[key] += finite(
+        denitrification.cumulativeReaction[key]);
+    }
+  }
+  const divisor = Math.max(1, totals.reachCount);
+  return {
+    reachCount: totals.reachCount,
+    observedReachCount: totals.observedReachCount,
+    activeReachCount: totals.activeReachCount,
+    atmosphereUnavailableReachCount:
+      totals.atmosphereUnavailableReachCount,
+    oxicConstrainedReachCount: totals.oxicConstrainedReachCount,
+    nitrogenLimitedReachCount: totals.nitrogenLimitedReachCount,
+    temperatureConstrainedReachCount:
+      totals.temperatureConstrainedReachCount,
+    observedDenitrificationDays: round(
+      totals.observedDenitrificationDays, 8),
+    dormantDays: round(totals.dormantDays, 8),
+    atmosphereUnavailableDays: round(
+      totals.atmosphereUnavailableDays, 8),
+    oxicConstrainedDays: round(totals.oxicConstrainedDays, 8),
+    nitrogenLimitedDays: round(totals.nitrogenLimitedDays, 8),
+    temperatureConstrainedDays: round(
+      totals.temperatureConstrainedDays, 8),
+    cumulativeReaction: Object.fromEntries(Object.entries(
+      totals.cumulativeReaction).map(([key, value]) =>
+      [key, round(value, 9)])),
+    meanActivityScale: round(totals.activityScale / divisor, 9),
+    meanWaterTemperatureC: round(
+      totals.waterTemperatureC / divisor, 9),
+    meanTemperatureResponseFactor: round(
+      totals.temperatureResponseFactor / divisor, 9)
+  };
+}
+
+function profileFloodplainNitrification(profile) {
+  const totals = {
+    reachCount: 0,
+    observedReachCount: 0,
+    activeReachCount: 0,
+    oxygenConstrainedReachCount: 0,
+    oxygenLimitedReachCount: 0,
+    alkalinityLimitedReachCount: 0,
+    temperatureConstrainedReachCount: 0,
+    observedNitrificationDays: 0,
+    dormantDays: 0,
+    oxygenConstrainedDays: 0,
+    oxygenLimitedDays: 0,
+    alkalinityLimitedDays: 0,
+    temperatureConstrainedDays: 0,
+    legacyCumulativeAlkalinityDemandDiagnosticKgCaCO3: 0,
+    activityScale: 0,
+    waterTemperatureC: 0,
+    temperatureResponseFactor: 0,
+    cumulativeReaction: {
+      dissolvedAmmoniumNitrogenConsumedKgN: 0,
+      dissolvedNitrateNitrogenProducedKgN: 0,
+      dissolvedOxygenConsumedKgO2: 0,
+      alkalinityDemandKgCaCO3: 0
+    }
+  };
+  for (const reach of [...profile.reaches.values()].sort((a, b) =>
+    String(a.reachId).localeCompare(String(b.reachId)))) {
+    const nitrification = floodplainNitrificationSummary(
+      reach.floodplainNitrification);
+    totals.reachCount += 1;
+    totals.observedReachCount +=
+      nitrification.observedNitrificationDays > 0 ? 1 : 0;
+    totals.activeReachCount +=
+      nitrification.lastActivity.activityScale > 0 ? 1 : 0;
+    totals.oxygenConstrainedReachCount +=
+      nitrification.observedNitrificationDays > 0 &&
+      nitrification.lastActivity.oxygenResponseFactor < .999999 ? 1 : 0;
+    totals.oxygenLimitedReachCount +=
+      nitrification.lastActivity.oxygenLimited ? 1 : 0;
+    totals.alkalinityLimitedReachCount +=
+      nitrification.lastActivity.alkalinityLimited ? 1 : 0;
+    totals.temperatureConstrainedReachCount +=
+      nitrification.observedNitrificationDays > 0 &&
+      nitrification.lastActivity.temperatureConstrained ? 1 : 0;
+    for (const key of ['observedNitrificationDays', 'dormantDays',
+      'oxygenConstrainedDays', 'oxygenLimitedDays',
+      'alkalinityLimitedDays',
+      'temperatureConstrainedDays']) {
+      totals[key] += nitrification[key];
+    }
+    totals.activityScale += nitrification.lastActivity.activityScale;
+    totals.waterTemperatureC +=
+      nitrification.lastActivity.waterTemperatureC;
+    totals.temperatureResponseFactor +=
+      nitrification.lastActivity.temperatureResponseFactor;
+    totals.legacyCumulativeAlkalinityDemandDiagnosticKgCaCO3 += finite(
+      nitrification.legacyCumulativeAlkalinityDemandDiagnosticKgCaCO3);
+    for (const key of Object.keys(totals.cumulativeReaction)) {
+      totals.cumulativeReaction[key] += finite(
+        nitrification.cumulativeReaction[key]);
+    }
+  }
+  const divisor = Math.max(1, totals.reachCount);
+  return {
+    reachCount: totals.reachCount,
+    observedReachCount: totals.observedReachCount,
+    activeReachCount: totals.activeReachCount,
+    oxygenConstrainedReachCount: totals.oxygenConstrainedReachCount,
+    oxygenLimitedReachCount: totals.oxygenLimitedReachCount,
+    alkalinityLimitedReachCount: totals.alkalinityLimitedReachCount,
+    temperatureConstrainedReachCount:
+      totals.temperatureConstrainedReachCount,
+    observedNitrificationDays: round(
+      totals.observedNitrificationDays, 8),
+    dormantDays: round(totals.dormantDays, 8),
+    oxygenConstrainedDays: round(totals.oxygenConstrainedDays, 8),
+    oxygenLimitedDays: round(totals.oxygenLimitedDays, 8),
+    alkalinityLimitedDays: round(totals.alkalinityLimitedDays, 8),
+    temperatureConstrainedDays: round(
+      totals.temperatureConstrainedDays, 8),
+    cumulativeReaction: Object.fromEntries(Object.entries(
+      totals.cumulativeReaction).map(([key, value]) =>
+      [key, round(value, 9)])),
+    legacyCumulativeAlkalinityDemandDiagnosticKgCaCO3: round(
+      totals.legacyCumulativeAlkalinityDemandDiagnosticKgCaCO3, 9),
+    meanActivityScale: round(totals.activityScale / divisor, 9),
+    meanWaterTemperatureC: round(
+      totals.waterTemperatureC / divisor, 9),
+    meanTemperatureResponseFactor: round(
+      totals.temperatureResponseFactor / divisor, 9)
+  };
+}
+
 function profileFloodplainGasExchange(profile) {
   const totals = {
     reachCount: 0,
@@ -775,6 +1017,7 @@ function profileFloodplainGasExchange(profile) {
     atmosphereUnavailableDays: 0,
     cumulativeExchange: {
       carbonToAtmosphereKgC: 0,
+      carbonToFloodplainKgC: 0,
       oxygenToFloodplainKgO2: 0
     }
   };
@@ -786,7 +1029,7 @@ function profileFloodplainGasExchange(profile) {
     totals.observedReachCount += exchange.observedExchangeDays > 0 ? 1 : 0;
     totals.activeReachCount +=
       exchange.lastActivity.equilibrationFraction > 0 &&
-      (exchange.lastActivity.exchangeableDicKgC > 1e-12 ||
+      (Math.abs(exchange.lastActivity.signedCarbonGradientKgC) > 1e-12 ||
         exchange.lastActivity.oxygenDeficitKgO2 > 1e-12) ? 1 : 0;
     totals.atmosphereUnavailableReachCount +=
       exchange.atmosphereUnavailableDays > 0 &&
@@ -829,10 +1072,17 @@ function loadedLandLiveBiomass(columns) {
 }
 
 function profileEstuaryStorage(profile) {
-  const totals = { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0, oxygenKgO2: 0 };
+  const totals = {
+    carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0, oxygenKgO2: 0,
+    alkalinityKgCaCO3Eq: 0,
+    cumulativeAlkalinityGeneratedKgCaCO3Eq: 0
+  };
   for (const state of profile.reaches.values()) {
     const estuary = estuaryStorageTotals(state.estuary);
-    for (const key of Object.keys(totals)) totals[key] += estuary[key];
+    for (const key of ['carbonKgC', 'nitrogenKgN', 'phosphorusKgP',
+      'oxygenKgO2', 'alkalinityKgCaCO3Eq']) totals[key] += estuary[key];
+    totals.cumulativeAlkalinityGeneratedKgCaCO3Eq += Math.max(0, finite(
+      state.estuary?.cumulativeAlkalinityGeneratedKgCaCO3Eq));
   }
   return totals;
 }
@@ -853,7 +1103,8 @@ function earthRunoffBiogeochemistryMass(columns) {
     carbonKgC: 0,
     nitrogenKgN: 0,
     phosphorusKgP: 0,
-    oxygenKgO2: 0
+    oxygenKgO2: 0,
+    alkalinityKgCaCO3Eq: 0
   };
   for (const column of columns) {
     if (column.kind !== 'land') continue;
@@ -862,9 +1113,11 @@ function earthRunoffBiogeochemistryMass(columns) {
       earthCellAreaM2(column)
     );
     const elements = runoffBiogeochemistryAbsoluteElements(pools);
-    for (const key of Object.keys(totals)) totals[key] += elements[
-      key.replace(/Kg(C|N|P|O2)$/, '')
-    ] || 0;
+    totals.carbonKgC += elements.carbon;
+    totals.nitrogenKgN += elements.nitrogen;
+    totals.phosphorusKgP += elements.phosphorus;
+    totals.oxygenKgO2 += elements.oxygen;
+    totals.alkalinityKgCaCO3Eq += elements.alkalinity;
   }
   return totals;
 }
@@ -910,7 +1163,8 @@ function oceanEcologyMass(columns) {
     carbonKgC: 0,
     nitrogenKgN: 0,
     phosphorusKgP: 0,
-    oxygenKgO2: 0
+    oxygenKgO2: 0,
+    alkalinityKgCaCO3Eq: 0
   };
   for (const column of columns) {
     if (column.kind !== 'ocean' || !column.ocean?.ecology) continue;
@@ -920,6 +1174,8 @@ function oceanEcologyMass(columns) {
     totals.nitrogenKgN += elements.nitrogenKgNm2 * areaM2;
     totals.phosphorusKgP += elements.phosphorusKgPm2 * areaM2;
     totals.oxygenKgO2 += elements.oxygenKgO2m2 * areaM2;
+    totals.alkalinityKgCaCO3Eq +=
+      elements.alkalinityKgCaCO3Eqm2 * areaM2;
   }
   return totals;
 }
@@ -934,7 +1190,10 @@ function atmosphereNitrogenGasMass(columns) {
         pressureColumn: column.atmosphere?.pressureColumn
       }
     );
-    return sum + finite(state.cumulative?.estuaryNitrogenGasInputKgNm2) *
+    return sum + (finite(
+      state.cumulative?.estuaryNitrogenGasInputKgNm2) + finite(
+      state.cumulative
+        ?.floodplainDenitrificationNitrogenGasInputKgNm2)) *
       earthCellAreaM2(column);
   }, 0);
 }
@@ -1084,6 +1343,7 @@ export class BasinRoutingEngine {
     const initialLoadedLandLiveBiomass = loadedLandLiveBiomass(columns);
     const initialRiverStorageKg = profileStorageKg(working);
     const initialRiverChemistry = profileChemistry(working);
+    const initialRiverNitrogenSpecies = profileNitrogenSpecies(working);
     const initialRiverSediment = profileSediment(working);
     const initialFloodplain = profileFloodplain(working);
     const initialFloodplainHabitat = profileFloodplainHabitat(working);
@@ -1098,6 +1358,10 @@ export class BasinRoutingEngine {
       profileFloodplainDecomposition(working);
     const initialFloodplainRespiration =
       profileFloodplainRespiration(working);
+    const initialFloodplainDenitrification =
+      profileFloodplainDenitrification(working);
+    const initialFloodplainNitrification =
+      profileFloodplainNitrification(working);
     const initialFloodplainGasExchange =
       profileFloodplainGasExchange(working);
     const initialEstuaryStorage = profileEstuaryStorage(working);
@@ -1111,6 +1375,11 @@ export class BasinRoutingEngine {
     const floodplainDecompositionReceipts = [];
     const floodplainRespirationReceipts = [];
     const floodplainAerobicMineralizationReceipts = [];
+    const floodplainDenitrificationReactionReceipts = [];
+    const atmosphereFloodplainDenitrificationReceipts = [];
+    const floodplainDenitrificationProcessReceipts = [];
+    const floodplainNitrificationReactionReceipts = [];
+    const floodplainNitrificationProcessReceipts = [];
     const floodplainGasExchangeReceipts = [];
     const atmosphereFloodplainGasExchangeReceipts = [];
     const floodplainGasExchangeProcessReceipts = [];
@@ -1487,6 +1756,87 @@ export class BasinRoutingEngine {
         atmosphereColumn?.atmosphere?.biogeochemistry);
       const atmosphereAreaM2 = atmosphereAvailable
         ? earthCellAreaM2(atmosphereColumn) : 1;
+      const denitrificationPlan = floodplainDenitrificationPlan(
+        pending.state.floodplainDenitrification,
+        pending.state.floodplain,
+        {
+          durationDays,
+          atmosphereAvailable,
+          livingEnabled,
+          lifeAbundance: finite(options.lifeAbundance, 1),
+          anoxicThresholdMgL: finite(
+            options.floodplainDenitrificationAnoxicThresholdMgL, 2),
+          maximumDailyDocFraction: finite(
+            options.maximumFloodplainDailyDenitrificationDocFraction, .015),
+          waterTemperatureC: finite(
+            atmosphereColumn?.surface?.temperatureC, 20),
+          referenceTemperatureC: finite(
+            options.floodplainDenitrificationReferenceTemperatureC, 20),
+          temperatureQ10: finite(
+            options.floodplainDenitrificationTemperatureQ10, 2)
+        });
+      const denitrificationTransferId = transferId(
+        'floodplain-denitrification', startDay,
+        pending.reach.id, pending.donorCellId,
+        denitrificationPlan.reaction.nitrogenGasProducedKgN);
+      let denitrificationReactionReceipt = null;
+      let denitrificationAtmosphereReceipt = null;
+      if (atmosphereAvailable) {
+        const denitrificationReaction =
+          applyFloodplainDenitrificationReaction(
+            pending.state.floodplain,
+            denitrificationPlan.reaction,
+            {
+              transferId: denitrificationTransferId,
+              reachId: pending.reach.id,
+              startDay,
+              durationDays,
+              livingEnabled
+            });
+        pending.state.floodplain = denitrificationReaction.state;
+        denitrificationReactionReceipt = denitrificationReaction.receipt;
+        const atmosphereNitrogen = applyAtmosphereGasBoundaryInput(
+          atmosphereColumn.atmosphere.biogeochemistry,
+          {
+            nitrogenKgN:
+              denitrificationPlan.reaction.nitrogenGasProducedKgN
+          },
+          atmosphereAreaM2,
+          {
+            sourceKind: 'floodplain-denitrification',
+            transferId: denitrificationTransferId,
+            sourceReachId: pending.reach.id,
+            sourceReceiptDigest: denitrificationReaction.receipt.digest,
+            pressureColumn: atmosphereColumn.atmosphere.pressureColumn
+          });
+        atmosphereColumn.atmosphere.biogeochemistry =
+          synchronizeAtmosphereCompatibilityMirrors(
+            atmosphereNitrogen.state,
+            atmosphereColumn.land?.ecology,
+            atmosphereColumn.ocean?.ecology,
+            {
+              pressureColumn:
+                atmosphereColumn.atmosphere.pressureColumn
+            });
+        denitrificationAtmosphereReceipt = atmosphereNitrogen.receipt;
+        floodplainDenitrificationReactionReceipts.push(
+          denitrificationReaction.receipt);
+        atmosphereFloodplainDenitrificationReceipts.push(
+          atmosphereNitrogen.receipt);
+      }
+      const denitrification = advanceFloodplainDenitrification(
+        pending.state.floodplainDenitrification,
+        denitrificationPlan,
+        denitrificationReactionReceipt,
+        denitrificationAtmosphereReceipt,
+        {
+          transferId: denitrificationTransferId,
+          reachId: pending.reach.id,
+          atmosphereCellId: pending.donorCellId,
+          startDay,
+          durationDays
+        });
+      pending.state.floodplainDenitrification = denitrification.state;
       const gasExchangePlan = floodplainGasExchangePlan(
         pending.state.floodplainGasExchange,
         pending.state.floodplain,
@@ -1507,6 +1857,7 @@ export class BasinRoutingEngine {
         'floodplain-atmosphere-gas-exchange', startDay,
         pending.reach.id, pending.donorCellId,
         gasExchangePlan.exchange.carbonToAtmosphereKgC +
+          gasExchangePlan.exchange.carbonToFloodplainKgC +
           gasExchangePlan.exchange.oxygenToFloodplainKgO2);
       let floodplainGasOwnerReceipt = null;
       let atmosphereGasOwnerReceipt = null;
@@ -1558,8 +1909,57 @@ export class BasinRoutingEngine {
           atmosphereCellId: pending.donorCellId,
           startDay,
           durationDays
-        });
+      });
       pending.state.floodplainGasExchange = gasExchange.state;
+      const nitrificationPlan = floodplainNitrificationPlan(
+        pending.state.floodplainNitrification,
+        pending.state.floodplain,
+        {
+          durationDays,
+          livingEnabled,
+          lifeAbundance: finite(options.lifeAbundance, 1),
+          minimumDissolvedOxygenMgL: finite(
+            options.floodplainNitrificationMinimumDissolvedOxygenMgL, 2),
+          optimalDissolvedOxygenMgL: finite(
+            options.floodplainNitrificationOptimalDissolvedOxygenMgL, 6),
+          maximumDailyAmmoniumFraction: finite(
+            options.maximumFloodplainDailyNitrificationAmmoniumFraction,
+            .02),
+          waterTemperatureC: finite(
+            atmosphereColumn?.surface?.temperatureC, 20),
+          referenceTemperatureC: finite(
+            options.floodplainNitrificationReferenceTemperatureC, 20),
+          temperatureQ10: finite(
+            options.floodplainNitrificationTemperatureQ10, 2)
+        });
+      const nitrificationTransferId = transferId(
+        'floodplain-nitrification', startDay,
+        pending.reach.id, pending.donorCellId,
+        nitrificationPlan.reaction
+          .dissolvedAmmoniumNitrogenConsumedKgN);
+      const nitrificationReaction =
+        applyFloodplainNitrificationReaction(
+          pending.state.floodplain,
+          nitrificationPlan.reaction,
+          {
+            transferId: nitrificationTransferId,
+            reachId: pending.reach.id,
+            startDay,
+            durationDays,
+            livingEnabled
+          });
+      pending.state.floodplain = nitrificationReaction.state;
+      const nitrification = advanceFloodplainNitrification(
+        pending.state.floodplainNitrification,
+        nitrificationPlan,
+        nitrificationReaction.receipt,
+        {
+          transferId: nitrificationTransferId,
+          reachId: pending.reach.id,
+          startDay,
+          durationDays
+        });
+      pending.state.floodplainNitrification = nitrification.state;
       pending.state.lastTouchedDay = round(endDay, 8);
       floodplainPlantMatterReceipts.push(matter.receipt);
       floodplainPlantResourcesReceipts.push(resources.receipt);
@@ -1577,7 +1977,13 @@ export class BasinRoutingEngine {
       floodplainAerobicMineralizationReceipts.push(
         mineralization.receipt);
       floodplainRespirationReceipts.push(respiration.receipt);
+      floodplainDenitrificationProcessReceipts.push(
+        denitrification.receipt);
       floodplainGasExchangeProcessReceipts.push(gasExchange.receipt);
+      floodplainNitrificationReactionReceipts.push(
+        nitrificationReaction.receipt);
+      floodplainNitrificationProcessReceipts.push(
+        nitrification.receipt);
     }
     const preRouteStorage = new Map([...working.reaches.entries()].map(([id, state]) => [id, {
       storageKg: state.storageKg,
@@ -1597,6 +2003,10 @@ export class BasinRoutingEngine {
         state.floodplainDecomposition),
       floodplainRespiration: normalizeFloodplainRespirationState(
         state.floodplainRespiration),
+      floodplainDenitrification: normalizeFloodplainDenitrificationState(
+        state.floodplainDenitrification),
+      floodplainNitrification: normalizeFloodplainNitrificationState(
+        state.floodplainNitrification),
       floodplainGasExchange: normalizeFloodplainGasExchangeState(
         state.floodplainGasExchange)
     }]));
@@ -1653,7 +2063,13 @@ export class BasinRoutingEngine {
         state.chemistry,
         runoffBiogeochemistryTransfer.poolsKg,
         amountKg,
-        { transferId: id, sourceCellId: column.id, reachId: reach.id }
+        {
+          transferId: id,
+          sourceCellId: column.id,
+          reachId: reach.id,
+          nitrateFraction: finite(
+            options.riverRunoffDinNitrateFraction, .5)
+        }
       );
       state.chemistry = chemistryInput.state;
       const sedimentInput = applyRunoffSedimentInput(
@@ -1705,6 +2121,10 @@ export class BasinRoutingEngine {
         stored.floodplainDecomposition);
       const storedRespiration = floodplainRespirationSummary(
         stored.floodplainRespiration);
+      const storedDenitrification = floodplainDenitrificationSummary(
+        stored.floodplainDenitrification);
+      const storedNitrification = floodplainNitrificationSummary(
+        stored.floodplainNitrification);
       const storedGasExchange = floodplainGasExchangeSummary(
         stored.floodplainGasExchange);
       if (storedKg <= 1e-9 && storedFloodplain.waterKg <= 1e-9 &&
@@ -1728,10 +2148,21 @@ export class BasinRoutingEngine {
           .dissolvedInorganicCarbonProducedKgC <= 1e-9 &&
         storedRespiration.cumulativeMineralization
           .dissolvedOxygenConsumedKgO2 <= 1e-9 &&
+        storedDenitrification.observedDenitrificationDays <= 1e-12 &&
+        storedDenitrification.dormantDays <= 1e-12 &&
+        storedDenitrification.atmosphereUnavailableDays <= 1e-12 &&
+        Object.values(storedDenitrification.cumulativeReaction)
+          .every(value => value <= 1e-9) &&
+        storedNitrification.observedNitrificationDays <= 1e-12 &&
+        storedNitrification.dormantDays <= 1e-12 &&
+        Object.values(storedNitrification.cumulativeReaction)
+          .every(value => value <= 1e-9) &&
         storedGasExchange.observedExchangeDays <= 1e-12 &&
         storedGasExchange.atmosphereUnavailableDays <= 1e-12 &&
         storedGasExchange.cumulativeExchange
           .carbonToAtmosphereKgC <= 1e-9 &&
+        storedGasExchange.cumulativeExchange
+          .carbonToFloodplainKgC <= 1e-9 &&
         storedGasExchange.cumulativeExchange
           .oxygenToFloodplainKgO2 <= 1e-9) continue;
       const reach = reachById.get(reachId);
@@ -1790,6 +2221,32 @@ export class BasinRoutingEngine {
           retainedFloodplainRespirationOxygenConsumedKgO2: round(
             storedRespiration.cumulativeMineralization
               .dissolvedOxygenConsumedKgO2, 9),
+          retainedFloodplainDenitrificationObservedDays: round(
+            storedDenitrification.observedDenitrificationDays, 8),
+          retainedFloodplainDenitrificationCarbonKgC: round(
+            storedDenitrification.cumulativeReaction
+              .dissolvedOrganicCarbonConsumedKgC, 9),
+          retainedFloodplainDenitrificationNitrogenGasKgN: round(
+            storedDenitrification.cumulativeReaction
+              .nitrogenGasProducedKgN, 9),
+          retainedFloodplainNitrificationObservedDays: round(
+            storedNitrification.observedNitrificationDays, 8),
+          retainedFloodplainNitrificationAmmoniumConsumedKgN: round(
+            storedNitrification.cumulativeReaction
+              .dissolvedAmmoniumNitrogenConsumedKgN, 9),
+          retainedFloodplainNitrificationNitrateProducedKgN: round(
+            storedNitrification.cumulativeReaction
+              .dissolvedNitrateNitrogenProducedKgN, 9),
+          retainedFloodplainNitrificationOxygenConsumedKgO2: round(
+            storedNitrification.cumulativeReaction
+              .dissolvedOxygenConsumedKgO2, 9),
+          retainedFloodplainNitrificationAlkalinityDemandKgCaCO3: round(
+            storedNitrification.cumulativeReaction
+              .alkalinityDemandKgCaCO3, 9),
+          retainedRiverAndFloodplainAlkalinityKgCaCO3Eq: round(
+            riverChemistryTotals(stored.chemistry)
+              .alkalinityKgCaCO3Eq +
+            storedFloodplain.chemistry.alkalinityKgCaCO3Eq, 9),
           retainedFloodplainGasExchangeObservedDays: round(
             storedGasExchange.observedExchangeDays, 8),
           retainedFloodplainGasExchangeAtmosphereUnavailableDays: round(
@@ -1797,6 +2254,9 @@ export class BasinRoutingEngine {
           retainedFloodplainCarbonEvadedKgC: round(
             storedGasExchange.cumulativeExchange
               .carbonToAtmosphereKgC, 9),
+          retainedFloodplainCarbonInvadedKgC: round(
+            storedGasExchange.cumulativeExchange
+              .carbonToFloodplainKgC, 9),
           retainedFloodplainOxygenReaeratedKgO2: round(
             storedGasExchange.cumulativeExchange
               .oxygenToFloodplainKgO2, 9),
@@ -1899,17 +2359,24 @@ export class BasinRoutingEngine {
       carbonKgC: 0,
       nitrogenKgN: 0,
       phosphorusKgP: 0,
-      oxygenKgO2: 0
+      oxygenKgO2: 0,
+      alkalinityKgCaCO3Eq: 0
     };
     const estuaryBoundaryFluxes = {
       denitrifiedNitrogenKgN: 0,
-      oxygenConsumptionKgO2: 0
+      oxygenConsumptionKgO2: 0,
+      alkalinityGeneratedKgCaCO3Eq: 0
     };
     const estuaryRiverInputs = {
       carbonKgC: 0,
       nitrogenKgN: 0,
       phosphorusKgP: 0,
-      oxygenKgO2: 0
+      oxygenKgO2: 0,
+      alkalinityKgCaCO3Eq: 0
+    };
+    const estuaryRiverNitrogenSpecies = {
+      nitrateNitrogenKgN: 0,
+      ammoniumNitrogenKgN: 0
     };
     const coastalSedimentInputs = {
       clay: 0, silt: 0, sand: 0, gravel: 0
@@ -2003,13 +2470,22 @@ export class BasinRoutingEngine {
         });
         source.estuary = estuaryResult.state;
         const estuaryInputElements = chemistryElementInputs(proposal.chemistry);
+        const estuaryInputNitrogenSpecies = riverNitrogenSpecies(
+          proposal.chemistry);
         for (const key of Object.keys(estuaryRiverInputs)) {
           estuaryRiverInputs[key] += finite(estuaryInputElements[key]);
         }
+        estuaryRiverNitrogenSpecies.nitrateNitrogenKgN += finite(
+          estuaryInputNitrogenSpecies.dissolvedNitrateNitrogenKgN);
+        estuaryRiverNitrogenSpecies.ammoniumNitrogenKgN += finite(
+          estuaryInputNitrogenSpecies.dissolvedAmmoniumNitrogenKgN);
         estuaryBoundaryFluxes.denitrifiedNitrogenKgN += finite(
           estuaryResult.receipt.transformations.denitrifiedNitrogenKgN);
         estuaryBoundaryFluxes.oxygenConsumptionKgO2 += finite(
           estuaryResult.receipt.transformations.oxygenConsumedKgO2);
+        estuaryBoundaryFluxes.alkalinityGeneratedKgCaCO3Eq += finite(
+          estuaryResult.receipt.transformations
+            .alkalinityGeneratedKgCaCO3Eq);
         const atmosphereNitrogenInput = applyAtmosphereGasBoundaryInput(
           ocean.atmosphere.biogeochemistry,
           { nitrogenKgN: estuaryResult.receipt.transformations.denitrifiedNitrogenKgN },
@@ -2024,7 +2500,8 @@ export class BasinRoutingEngine {
           ocean.ocean.ecology,
           proposal.amountKg,
           earthCellAreaM2(ocean),
-          { ocean: ocean.ocean, explicitInputsKg: estuaryResult.transmitted }
+          { ocean: ocean.ocean, explicitInputsKg: estuaryResult.transmitted,
+            transferId: id }
         );
         ocean.ocean.ecology = oceanEcologyInput.state;
         for (const key of Object.keys(oceanEcologyBoundaryInputs)) {
@@ -2093,7 +2570,7 @@ export class BasinRoutingEngine {
       for (const pool of [
         'dissolvedInorganicCarbonKgC', 'dissolvedOrganicCarbonKgC',
         'dissolvedInorganicNitrogenKgN', 'dissolvedInorganicPhosphorusKgP',
-        'dissolvedOxygenKgO2'
+        'dissolvedOxygenKgO2', 'alkalinityKgCaCO3Eq'
       ]) state.chemistry[pool] = round(Math.max(0, state.chemistry[pool]), 9);
     }
     working.lastDay = round(endDay, 8);
@@ -2107,6 +2584,7 @@ export class BasinRoutingEngine {
     const finalLoadedLandLiveBiomass = loadedLandLiveBiomass(columns);
     const finalRiverStorageKg = profileStorageKg(working);
     const finalRiverChemistry = profileChemistry(working);
+    const finalRiverNitrogenSpecies = profileNitrogenSpecies(working);
     const finalRiverSediment = profileSediment(working);
     const finalFloodplain = profileFloodplain(working);
     const finalFloodplainHabitat = profileFloodplainHabitat(working);
@@ -2121,6 +2599,10 @@ export class BasinRoutingEngine {
       profileFloodplainDecomposition(working);
     const finalFloodplainRespiration =
       profileFloodplainRespiration(working);
+    const finalFloodplainDenitrification =
+      profileFloodplainDenitrification(working);
+    const finalFloodplainNitrification =
+      profileFloodplainNitrification(working);
     const finalFloodplainGasExchange =
       profileFloodplainGasExchange(working);
     const finalEstuaryStorage = profileEstuaryStorage(working);
@@ -2132,7 +2614,18 @@ export class BasinRoutingEngine {
       phosphorusKgP: inletReceipts.reduce((sum, receipt) => sum +
         finite(receipt.riverChemistryInput?.inputs?.phosphorusKgP), 0),
       oxygenKgO2: inletReceipts.reduce((sum, receipt) => sum +
-        finite(receipt.riverChemistryInput?.inputs?.oxygenKgO2), 0)
+        finite(receipt.riverChemistryInput?.inputs?.oxygenKgO2), 0),
+      alkalinityKgCaCO3Eq: inletReceipts.reduce((sum, receipt) => sum +
+        finite(receipt.riverChemistryInput?.inputs
+          ?.alkalinityKgCaCO3Eq), 0)
+    };
+    const landRunoffNitrogenSpeciesInputs = {
+      nitrateNitrogenKgN: inletReceipts.reduce((sum, receipt) => sum +
+        finite(receipt.riverChemistryInput?.nitrogenSpeciation
+          ?.nitrateNitrogenKgN), 0),
+      ammoniumNitrogenKgN: inletReceipts.reduce((sum, receipt) => sum +
+        finite(receipt.riverChemistryInput?.nitrogenSpeciation
+          ?.ammoniumNitrogenKgN), 0)
     };
     const detritalReturnInputs = {
       carbonKgC: floodplainDetritalReturnCreditReceipts.reduce((sum,
@@ -2156,10 +2649,52 @@ export class BasinRoutingEngine {
           sum + finite(receipt.reaction
             ?.dissolvedOxygenConsumedKgO2), 0)
     };
+    const floodplainDenitrificationFluxes = {
+      dissolvedOrganicCarbonConsumedKgC:
+        floodplainDenitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.reaction
+            ?.dissolvedOrganicCarbonConsumedKgC), 0),
+      dissolvedInorganicCarbonProducedKgC:
+        floodplainDenitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.reaction
+            ?.dissolvedInorganicCarbonProducedKgC), 0),
+      dissolvedNitrateNitrogenConsumedKgN:
+        floodplainDenitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.reaction
+            ?.dissolvedNitrateNitrogenConsumedKgN), 0),
+      nitrogenGasProducedKgN:
+        floodplainDenitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.reaction?.nitrogenGasProducedKgN), 0),
+      alkalinityGeneratedKgCaCO3Eq:
+        floodplainDenitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.reaction
+            ?.alkalinityGeneratedKgCaCO3Eq), 0)
+    };
+    const floodplainNitrificationFluxes = {
+      dissolvedAmmoniumNitrogenConsumedKgN:
+        floodplainNitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.reaction
+            ?.dissolvedAmmoniumNitrogenConsumedKgN), 0),
+      dissolvedNitrateNitrogenProducedKgN:
+        floodplainNitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.reaction
+            ?.dissolvedNitrateNitrogenProducedKgN), 0),
+      dissolvedOxygenConsumedKgO2:
+        floodplainNitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.reaction
+            ?.dissolvedOxygenConsumedKgO2), 0),
+      alkalinityDemandKgCaCO3:
+        floodplainNitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.reaction
+            ?.alkalinityDemandKgCaCO3), 0)
+    };
     const floodplainGasExchangeFluxes = {
       carbonToAtmosphereKgC: floodplainGasExchangeReceipts.reduce(
         (sum, receipt) => sum + finite(
           receipt.exchange?.carbonToAtmosphereKgC), 0),
+      carbonToFloodplainKgC: floodplainGasExchangeReceipts.reduce(
+        (sum, receipt) => sum + finite(
+          receipt.exchange?.carbonToFloodplainKgC), 0),
       oxygenToFloodplainKgO2: floodplainGasExchangeReceipts.reduce(
         (sum, receipt) => sum + finite(
           receipt.exchange?.oxygenToFloodplainKgO2), 0)
@@ -2182,18 +2717,25 @@ export class BasinRoutingEngine {
       phosphorusResidualKgP: finalOceanEcology.phosphorusKgP -
         initialOceanEcology.phosphorusKgP - oceanEcologyBoundaryInputs.phosphorusKgP,
       oxygenResidualKgO2: finalOceanEcology.oxygenKgO2 -
-        initialOceanEcology.oxygenKgO2 - oceanEcologyBoundaryInputs.oxygenKgO2
+        initialOceanEcology.oxygenKgO2 - oceanEcologyBoundaryInputs.oxygenKgO2,
+      alkalinityResidualKgCaCO3Eq:
+        finalOceanEcology.alkalinityKgCaCO3Eq -
+        initialOceanEcology.alkalinityKgCaCO3Eq -
+        oceanEcologyBoundaryInputs.alkalinityKgCaCO3Eq
     };
     const riverChemistryResiduals = {
       riverCarbonResidualKgC: finalRiverChemistry.carbonKgC -
         initialRiverChemistry.carbonKgC - landRunoffBiogeochemistryInputs.carbonKgC -
         detritalReturnInputs.carbonKgC +
         estuaryRiverInputs.carbonKgC +
-        floodplainGasExchangeFluxes.carbonToAtmosphereKgC,
+        floodplainGasExchangeFluxes.carbonToAtmosphereKgC -
+        floodplainGasExchangeFluxes.carbonToFloodplainKgC,
       riverNitrogenResidualKgN: finalRiverChemistry.nitrogenKgN -
         initialRiverChemistry.nitrogenKgN - landRunoffBiogeochemistryInputs.nitrogenKgN -
         detritalReturnInputs.nitrogenKgN +
-        estuaryRiverInputs.nitrogenKgN,
+        estuaryRiverInputs.nitrogenKgN +
+        floodplainDenitrificationFluxes
+          .dissolvedNitrateNitrogenConsumedKgN,
       riverPhosphorusResidualKgP: finalRiverChemistry.phosphorusKgP -
         initialRiverChemistry.phosphorusKgP - landRunoffBiogeochemistryInputs.phosphorusKgP -
         detritalReturnInputs.phosphorusKgP +
@@ -2201,8 +2743,39 @@ export class BasinRoutingEngine {
       riverOxygenResidualKgO2: finalRiverChemistry.oxygenKgO2 -
         initialRiverChemistry.oxygenKgO2 - landRunoffBiogeochemistryInputs.oxygenKgO2 +
         estuaryRiverInputs.oxygenKgO2 +
-        floodplainRespirationFluxes.dissolvedOxygenConsumedKgO2 -
-        floodplainGasExchangeFluxes.oxygenToFloodplainKgO2
+        floodplainRespirationFluxes.dissolvedOxygenConsumedKgO2 +
+        floodplainNitrificationFluxes.dissolvedOxygenConsumedKgO2 -
+        floodplainGasExchangeFluxes.oxygenToFloodplainKgO2,
+      riverAlkalinityResidualKgCaCO3Eq:
+        finalRiverChemistry.alkalinityKgCaCO3Eq -
+        initialRiverChemistry.alkalinityKgCaCO3Eq -
+        landRunoffBiogeochemistryInputs.alkalinityKgCaCO3Eq +
+        estuaryRiverInputs.alkalinityKgCaCO3Eq +
+        floodplainNitrificationFluxes.alkalinityDemandKgCaCO3 -
+        floodplainDenitrificationFluxes.alkalinityGeneratedKgCaCO3Eq
+    };
+    const riverNitrogenSpeciesResiduals = {
+      riverNitrateNitrogenResidualKgN:
+        finalRiverNitrogenSpecies.nitrateNitrogenKgN -
+        initialRiverNitrogenSpecies.nitrateNitrogenKgN -
+        landRunoffNitrogenSpeciesInputs.nitrateNitrogenKgN +
+        estuaryRiverNitrogenSpecies.nitrateNitrogenKgN +
+        floodplainDenitrificationFluxes
+          .dissolvedNitrateNitrogenConsumedKgN -
+        floodplainNitrificationFluxes
+          .dissolvedNitrateNitrogenProducedKgN,
+      riverAmmoniumNitrogenResidualKgN:
+        finalRiverNitrogenSpecies.ammoniumNitrogenKgN -
+        initialRiverNitrogenSpecies.ammoniumNitrogenKgN -
+        landRunoffNitrogenSpeciesInputs.ammoniumNitrogenKgN -
+        detritalReturnInputs.nitrogenKgN +
+        estuaryRiverNitrogenSpecies.ammoniumNitrogenKgN +
+        floodplainNitrificationFluxes
+          .dissolvedAmmoniumNitrogenConsumedKgN,
+      riverDinCompatibilityResidualKgN:
+        finalRiverNitrogenSpecies.dissolvedInorganicNitrogenKgN -
+        finalRiverNitrogenSpecies.nitrateNitrogenKgN -
+        finalRiverNitrogenSpecies.ammoniumNitrogenKgN
     };
     const runoffBiogeochemistryResiduals = {
       runoffCarbonResidualKgC: finalRunoffBiogeochemistry.carbonKgC -
@@ -2216,7 +2789,11 @@ export class BasinRoutingEngine {
         landRunoffBiogeochemistryInputs.phosphorusKgP,
       runoffOxygenResidualKgO2: finalRunoffBiogeochemistry.oxygenKgO2 -
         initialRunoffBiogeochemistry.oxygenKgO2 +
-        landRunoffBiogeochemistryInputs.oxygenKgO2
+        landRunoffBiogeochemistryInputs.oxygenKgO2,
+      runoffAlkalinityResidualKgCaCO3Eq:
+        finalRunoffBiogeochemistry.alkalinityKgCaCO3Eq -
+        initialRunoffBiogeochemistry.alkalinityKgCaCO3Eq +
+        landRunoffBiogeochemistryInputs.alkalinityKgCaCO3Eq
     };
     const estuaryResiduals = {
       estuaryCarbonResidualKgC: finalEstuaryStorage.carbonKgC -
@@ -2231,7 +2808,11 @@ export class BasinRoutingEngine {
         oceanEcologyBoundaryInputs.phosphorusKgP,
       estuaryOxygenResidualKgO2: -estuaryRiverInputs.oxygenKgO2 +
         oceanEcologyBoundaryInputs.oxygenKgO2 +
-        estuaryBoundaryFluxes.oxygenConsumptionKgO2
+        estuaryBoundaryFluxes.oxygenConsumptionKgO2,
+      estuaryAlkalinityResidualKgCaCO3Eq:
+        -estuaryRiverInputs.alkalinityKgCaCO3Eq +
+        oceanEcologyBoundaryInputs.alkalinityKgCaCO3Eq -
+        estuaryBoundaryFluxes.alkalinityGeneratedKgCaCO3Eq
     };
     const coupledChemistryResiduals = {
       coupledCarbonResidualKgC: finalRunoffBiogeochemistry.carbonKgC +
@@ -2239,7 +2820,8 @@ export class BasinRoutingEngine {
         finalEstuaryStorage.carbonKgC - initialRiverChemistry.carbonKgC -
         initialRunoffBiogeochemistry.carbonKgC - initialOceanEcology.carbonKgC -
         initialEstuaryStorage.carbonKgC - detritalReturnInputs.carbonKgC +
-        floodplainGasExchangeFluxes.carbonToAtmosphereKgC,
+        floodplainGasExchangeFluxes.carbonToAtmosphereKgC -
+        floodplainGasExchangeFluxes.carbonToFloodplainKgC,
       coupledNitrogenResidualKgN: finalRunoffBiogeochemistry.nitrogenKgN +
         finalRiverChemistry.nitrogenKgN + finalOceanEcology.nitrogenKgN +
         finalEstuaryStorage.nitrogenKgN + finalAtmosphereNitrogenGasKgN -
@@ -2258,8 +2840,19 @@ export class BasinRoutingEngine {
         finalRiverChemistry.oxygenKgO2 + finalOceanEcology.oxygenKgO2 -
         initialRunoffBiogeochemistry.oxygenKgO2 - initialRiverChemistry.oxygenKgO2 -
         initialOceanEcology.oxygenKgO2 + estuaryBoundaryFluxes.oxygenConsumptionKgO2 +
-        floodplainRespirationFluxes.dissolvedOxygenConsumedKgO2 -
-        floodplainGasExchangeFluxes.oxygenToFloodplainKgO2
+        floodplainRespirationFluxes.dissolvedOxygenConsumedKgO2 +
+        floodplainNitrificationFluxes.dissolvedOxygenConsumedKgO2 -
+        floodplainGasExchangeFluxes.oxygenToFloodplainKgO2,
+      coupledAlkalinityResidualKgCaCO3Eq:
+        finalRunoffBiogeochemistry.alkalinityKgCaCO3Eq +
+        finalRiverChemistry.alkalinityKgCaCO3Eq +
+        finalOceanEcology.alkalinityKgCaCO3Eq -
+        initialRunoffBiogeochemistry.alkalinityKgCaCO3Eq -
+        initialRiverChemistry.alkalinityKgCaCO3Eq -
+        initialOceanEcology.alkalinityKgCaCO3Eq +
+        floodplainNitrificationFluxes.alkalinityDemandKgCaCO3 -
+        floodplainDenitrificationFluxes.alkalinityGeneratedKgCaCO3Eq -
+        estuaryBoundaryFluxes.alkalinityGeneratedKgCaCO3Eq
     };
     const coupledPlantMatterResiduals = {
       loadedLandFloodplainPlantCarbonResidualKgC:
@@ -2312,12 +2905,66 @@ export class BasinRoutingEngine {
           sum + finite(receipt.closure
             ?.stoichiometricOxygenResidualKgO2), 0)
     };
+    const denitrificationResiduals = {
+      floodplainDenitrificationCarbonResidualKgC:
+        floodplainDenitrificationFluxes
+          .dissolvedOrganicCarbonConsumedKgC -
+        floodplainDenitrificationFluxes
+          .dissolvedInorganicCarbonProducedKgC,
+      floodplainDenitrificationNitrogenReactionResidualKgN:
+        floodplainDenitrificationFluxes
+          .dissolvedNitrateNitrogenConsumedKgN -
+        floodplainDenitrificationFluxes.nitrogenGasProducedKgN,
+      floodplainAtmosphereDenitrificationTransferResidualKgN:
+        floodplainDenitrificationFluxes.nitrogenGasProducedKgN -
+        atmosphereFloodplainDenitrificationReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.inputs?.nitrogenKgN), 0),
+      floodplainDenitrificationOwnerResidualKgN:
+        floodplainDenitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.closure?.nitrogenResidualKgN), 0),
+      atmosphereDenitrificationOwnerResidualKgN:
+        atmosphereFloodplainDenitrificationReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.conservation?.nitrogenResidualKgN), 0),
+      floodplainDenitrificationAlkalinityOwnerResidualKgCaCO3Eq:
+        floodplainDenitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.closure
+            ?.alkalinityCreditResidualKgCaCO3Eq), 0),
+      floodplainDenitrificationAlkalinityStoichiometryResidualKgCaCO3Eq:
+        floodplainDenitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.closure
+            ?.stoichiometricAlkalinityResidualKgCaCO3Eq), 0)
+    };
+    const nitrificationResiduals = {
+      floodplainNitrificationNitrogenResidualKgN:
+        floodplainNitrificationFluxes
+          .dissolvedAmmoniumNitrogenConsumedKgN -
+        floodplainNitrificationFluxes
+          .dissolvedNitrateNitrogenProducedKgN,
+      floodplainNitrificationOxygenResidualKgO2:
+        floodplainNitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.closure
+            ?.dissolvedOxygenDebitResidualKgO2), 0),
+      floodplainNitrificationOxygenStoichiometryResidualKgO2:
+        floodplainNitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.closure
+            ?.stoichiometricOxygenResidualKgO2), 0),
+      floodplainNitrificationAlkalinityOwnerResidualKgCaCO3Eq:
+        floodplainNitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.closure
+            ?.alkalinityDebitResidualKgCaCO3Eq), 0),
+      floodplainNitrificationAlkalinityStoichiometryResidualKgCaCO3Eq:
+        floodplainNitrificationReactionReceipts.reduce((sum, receipt) =>
+          sum + finite(receipt.closure
+            ?.stoichiometricAlkalinityResidualKgCaCO3Eq), 0)
+    };
     const gasExchangeResiduals = {
       floodplainAtmosphereCarbonTransferResidualKgC:
         floodplainGasExchangeReceipts.reduce((sum, receipt) =>
-          sum + finite(receipt.exchange?.carbonToAtmosphereKgC), 0) -
+          sum + finite(receipt.exchange?.carbonToAtmosphereKgC) -
+            finite(receipt.exchange?.carbonToFloodplainKgC), 0) -
         atmosphereFloodplainGasExchangeReceipts.reduce((sum, receipt) =>
-          sum + finite(receipt.exchange?.carbonToAtmosphereKgC), 0),
+          sum + finite(receipt.exchange?.carbonToAtmosphereKgC) -
+            finite(receipt.exchange?.carbonToFloodplainKgC), 0),
       floodplainAtmosphereOxygenTransferResidualKgO2:
         floodplainGasExchangeReceipts.reduce((sum, receipt) =>
           sum + finite(receipt.exchange?.oxygenToFloodplainKgO2), 0) -
@@ -2376,6 +3023,16 @@ export class BasinRoutingEngine {
       String(a.reachId).localeCompare(String(b.reachId)));
     floodplainRespirationReceipts.sort((a, b) => String(a.reachId)
       .localeCompare(String(b.reachId)));
+    floodplainDenitrificationReactionReceipts.sort((a, b) =>
+      String(a.reachId).localeCompare(String(b.reachId)));
+    atmosphereFloodplainDenitrificationReceipts.sort((a, b) =>
+      String(a.sourceReachId).localeCompare(String(b.sourceReachId)));
+    floodplainDenitrificationProcessReceipts.sort((a, b) =>
+      String(a.reachId).localeCompare(String(b.reachId)));
+    floodplainNitrificationReactionReceipts.sort((a, b) =>
+      String(a.reachId).localeCompare(String(b.reachId)));
+    floodplainNitrificationProcessReceipts.sort((a, b) =>
+      String(a.reachId).localeCompare(String(b.reachId)));
     floodplainGasExchangeReceipts.sort((a, b) => String(a.reachId)
       .localeCompare(String(b.reachId)));
     atmosphereFloodplainGasExchangeReceipts.sort((a, b) =>
@@ -2410,6 +3067,11 @@ export class BasinRoutingEngine {
       floodplainDecompositionReceipts,
       floodplainAerobicMineralizationReceipts,
       floodplainRespirationReceipts,
+      floodplainDenitrificationReactionReceipts,
+      atmosphereFloodplainDenitrificationReceipts,
+      floodplainDenitrificationProcessReceipts,
+      floodplainNitrificationReactionReceipts,
+      floodplainNitrificationProcessReceipts,
       floodplainGasExchangeReceipts,
       atmosphereFloodplainGasExchangeReceipts,
       floodplainGasExchangeProcessReceipts,
@@ -2463,9 +3125,41 @@ export class BasinRoutingEngine {
             floodplainRespirationFluxes
               .dissolvedOxygenConsumedKgO2, 9)
         },
+        floodplainDenitrification: {
+          dissolvedOrganicCarbonConsumedKgC: round(
+            floodplainDenitrificationFluxes
+              .dissolvedOrganicCarbonConsumedKgC, 9),
+          dissolvedInorganicCarbonProducedKgC: round(
+            floodplainDenitrificationFluxes
+              .dissolvedInorganicCarbonProducedKgC, 9),
+          dissolvedNitrateNitrogenConsumedKgN: round(
+            floodplainDenitrificationFluxes
+              .dissolvedNitrateNitrogenConsumedKgN, 9),
+          nitrogenGasProducedKgN: round(
+            floodplainDenitrificationFluxes.nitrogenGasProducedKgN, 9),
+          alkalinityGeneratedKgCaCO3Eq: round(
+            floodplainDenitrificationFluxes
+              .alkalinityGeneratedKgCaCO3Eq, 9)
+        },
+        floodplainNitrification: {
+          dissolvedAmmoniumNitrogenConsumedKgN: round(
+            floodplainNitrificationFluxes
+              .dissolvedAmmoniumNitrogenConsumedKgN, 9),
+          dissolvedNitrateNitrogenProducedKgN: round(
+            floodplainNitrificationFluxes
+              .dissolvedNitrateNitrogenProducedKgN, 9),
+          dissolvedOxygenConsumedKgO2: round(
+            floodplainNitrificationFluxes
+              .dissolvedOxygenConsumedKgO2, 9),
+          alkalinityDemandKgCaCO3: round(
+            floodplainNitrificationFluxes
+              .alkalinityDemandKgCaCO3, 9)
+        },
         floodplainAtmosphereGasExchange: {
           carbonToAtmosphereKgC: round(
             floodplainGasExchangeFluxes.carbonToAtmosphereKgC, 9),
+          carbonToFloodplainKgC: round(
+            floodplainGasExchangeFluxes.carbonToFloodplainKgC, 9),
           oxygenToFloodplainKgO2: round(
             floodplainGasExchangeFluxes.oxygenToFloodplainKgO2, 9)
         }
@@ -2476,6 +3170,12 @@ export class BasinRoutingEngine {
         initialRiverChemistry: Object.fromEntries(Object.entries(initialRiverChemistry)
           .map(([key, value]) => [key, round(value, 9)])),
         finalRiverChemistry: Object.fromEntries(Object.entries(finalRiverChemistry)
+          .map(([key, value]) => [key, round(value, 9)])),
+        initialRiverNitrogenSpecies: Object.fromEntries(Object.entries(
+          initialRiverNitrogenSpecies)
+          .map(([key, value]) => [key, round(value, 9)])),
+        finalRiverNitrogenSpecies: Object.fromEntries(Object.entries(
+          finalRiverNitrogenSpecies)
           .map(([key, value]) => [key, round(value, 9)])),
         initialRunoffBiogeochemistry: Object.fromEntries(Object.entries(
           initialRunoffBiogeochemistry)
@@ -2523,6 +3223,14 @@ export class BasinRoutingEngine {
           clone(initialFloodplainRespiration),
         finalFloodplainRespiration:
           clone(finalFloodplainRespiration),
+        initialFloodplainDenitrification:
+          clone(initialFloodplainDenitrification),
+        finalFloodplainDenitrification:
+          clone(finalFloodplainDenitrification),
+        initialFloodplainNitrification:
+          clone(initialFloodplainNitrification),
+        finalFloodplainNitrification:
+          clone(finalFloodplainNitrification),
         initialFloodplainGasExchange:
           clone(initialFloodplainGasExchange),
         finalFloodplainGasExchange:
@@ -2546,6 +3254,8 @@ export class BasinRoutingEngine {
           .map(([key, value]) => [key, round(value, 6)])),
         ...Object.fromEntries(Object.entries(riverChemistryResiduals)
           .map(([key, value]) => [key, round(value, 9)])),
+        ...Object.fromEntries(Object.entries(riverNitrogenSpeciesResiduals)
+          .map(([key, value]) => [key, round(value, 9)])),
         ...Object.fromEntries(Object.entries(runoffBiogeochemistryResiduals)
           .map(([key, value]) => [key, round(value, 9)])),
         ...Object.fromEntries(Object.entries(estuaryResiduals)
@@ -2559,6 +3269,10 @@ export class BasinRoutingEngine {
         ...Object.fromEntries(Object.entries(decompositionResiduals)
           .map(([key, value]) => [key, round(value, 9)])),
         ...Object.fromEntries(Object.entries(respirationResiduals)
+          .map(([key, value]) => [key, round(value, 9)])),
+        ...Object.fromEntries(Object.entries(denitrificationResiduals)
+          .map(([key, value]) => [key, round(value, 9)])),
+        ...Object.fromEntries(Object.entries(nitrificationResiduals)
           .map(([key, value]) => [key, round(value, 9)])),
         ...Object.fromEntries(Object.entries(gasExchangeResiduals)
           .map(([key, value]) => [key, round(value, 9)])),
@@ -2579,7 +3293,26 @@ export class BasinRoutingEngine {
           entry.runoffBiogeochemistrySenderDebit?.transferId ===
             entry.riverChemistryInput?.transferId &&
           entry.transferId === entry.riverChemistryInput?.transferId),
+        parameterizedRunoffDinSpeciation: inletReceipts.every(entry =>
+          entry.riverChemistryInput?.truth
+            ?.nitrateAndAmmoniumReceiverPoolsCredited === true &&
+          entry.riverChemistryInput?.truth
+            ?.measuredInputSpeciationClaimed === false),
         upstreamRiverChemistryReservoirs: true,
+        persistentRiverAndFloodplainNitrateAmmoniumPools: true,
+        exactNitrateAmmoniumReachTransport: routeReceipts.every(entry => {
+          const pools = entry.chemistryTransfer?.pools ||
+            entry.riverChemistrySenderDebit?.pools;
+          if (!pools) return true;
+          return Number.isFinite(pools.dissolvedNitrateNitrogenKgN) &&
+            Number.isFinite(pools.dissolvedAmmoniumNitrogenKgN) &&
+            Math.abs(finite(pools.dissolvedInorganicNitrogenKgN) -
+              finite(pools.dissolvedNitrateNitrogenKgN) -
+              finite(pools.dissolvedAmmoniumNitrogenKgN)) < 1e-7;
+        }),
+        nitrateAmmoniumConservationClosed:
+          Object.values(riverNitrogenSpeciesResiduals).every(value =>
+            Math.abs(value) < 1),
         persistentRiverSuspendedAndBedSediment: true,
         persistentFloodplainWaterChemistryAndSediment: true,
         geometryDerivedBankfullExchange: true,
@@ -2794,6 +3527,106 @@ export class BasinRoutingEngine {
         floodplainRespirationIndependentCreation: false,
         floodplainRespirationAtmosphericGasExchangeModeled: false,
         floodplainRespirationAnaerobicPathwayModeled: false,
+        persistentFloodplainDenitrification:
+          floodplainDenitrificationProcessReceipts.every(entry =>
+            entry.schema === FLOODPLAIN_DENITRIFICATION_RECEIPT_SCHEMA),
+        floodplainDenitrificationOwnerReceiptsTyped:
+          floodplainDenitrificationReactionReceipts.every(entry =>
+            entry.schema ===
+              FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA) &&
+          atmosphereFloodplainDenitrificationReceipts.every(entry =>
+            entry.schema === ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA &&
+            entry.sourceKind === 'floodplain-denitrification'),
+        floodplainDenitrificationEvidenceBound:
+          floodplainDenitrificationProcessReceipts.every(entry => {
+            if (entry.atmosphereCellId == null) {
+              return entry.reactionReceiptDigest == null &&
+                entry.atmosphereReceiptDigest == null;
+            }
+            const reactionOwner =
+              floodplainDenitrificationReactionReceipts.find(candidate =>
+                candidate.transferId === entry.transferId);
+            const atmosphereOwner =
+              atmosphereFloodplainDenitrificationReceipts.find(candidate =>
+                candidate.transferId === entry.transferId);
+            return reactionOwner?.digest === entry.reactionReceiptDigest &&
+              atmosphereOwner?.digest === entry.atmosphereReceiptDigest &&
+              atmosphereOwner?.sourceReceiptDigest === reactionOwner?.digest;
+          }),
+        exactFloodplainDenitrificationTransferIds:
+          floodplainDenitrificationReactionReceipts.length ===
+            atmosphereFloodplainDenitrificationReceipts.length &&
+          floodplainDenitrificationReactionReceipts.every(entry =>
+            atmosphereFloodplainDenitrificationReceipts.some(candidate =>
+              candidate.transferId === entry.transferId &&
+              candidate.sourceReachId === entry.reachId)),
+        floodplainDenitrificationCarbonNitrogenAndAlkalinityLedgersClosed:
+          Object.values(denitrificationResiduals).every(value =>
+            Math.abs(value) < 1),
+        floodplainDenitrificationOxygenGated: true,
+        floodplainDenitrificationNitrogenLimited: true,
+        floodplainDenitrificationSurfaceTemperatureProxyResponsive: true,
+        floodplainDenitrificationQ10TemperatureResponseParameterized: true,
+        floodplainDenitrificationPersistentWaterTemperatureState: false,
+        floodplainDenitrificationArrheniusKineticsResolved: false,
+        floodplainDenitrificationReactiveNitrateEquivalentParameterized:
+          false,
+        floodplainDenitrificationNitrateSpeciationResolved: true,
+        persistentRiverAndFloodplainNitrateAmmoniumPools: true,
+        exactNitrateAmmoniumWaterFractionTransport: true,
+        parameterizedRunoffDinSpeciation: true,
+        measuredRunoffDinSpeciation: false,
+        floodplainDenitrificationNitrateOnly: true,
+        floodplainDenitrificationAmmoniumConsumption: false,
+        floodplainDenitrificationIndependentCreation: false,
+        persistentFloodplainNitrification:
+          floodplainNitrificationProcessReceipts.every(entry =>
+            entry.schema === FLOODPLAIN_NITRIFICATION_RECEIPT_SCHEMA),
+        floodplainNitrificationOwnerReceiptsTyped:
+          floodplainNitrificationReactionReceipts.every(entry =>
+            entry.schema ===
+              FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA),
+        floodplainNitrificationEvidenceBound:
+          floodplainNitrificationProcessReceipts.length ===
+            floodplainNitrificationReactionReceipts.length &&
+          floodplainNitrificationProcessReceipts.every(entry => {
+            const owner = floodplainNitrificationReactionReceipts.find(
+              candidate => candidate.transferId === entry.transferId);
+            return owner?.digest === entry.reactionReceiptDigest &&
+              owner?.reachId === entry.reachId;
+          }),
+        exactFloodplainNitrificationTransferIds:
+          floodplainNitrificationProcessReceipts.every(entry =>
+            floodplainNitrificationReactionReceipts.some(candidate =>
+              candidate.transferId === entry.transferId &&
+              candidate.reachId === entry.reachId)),
+        floodplainNitrificationNitrogenOxygenAndAlkalinityLedgersClosed:
+          Object.values(nitrificationResiduals).every(value =>
+            Math.abs(value) < 1),
+        floodplainNitrificationReactionModeled: true,
+        floodplainNitrificationAmmoniumToNitrate: true,
+        floodplainNitrificationDissolvedOxygenConsumed: true,
+        floodplainNitrificationMinimumOxygenReserveHonored:
+          floodplainNitrificationProcessReceipts.every(entry =>
+            finite(entry.reaction?.dissolvedOxygenConsumedKgO2) <=
+              finite(entry.activity?.reactiveDissolvedOxygenKgO2) +
+                1e-7),
+        floodplainNitrificationAlkalinityCapacityHonored:
+          floodplainNitrificationProcessReceipts.every(entry =>
+            finite(entry.reaction?.alkalinityDemandKgCaCO3) <=
+              finite(entry.activity?.availableAlkalinityKgCaCO3Eq) +
+                1e-7),
+        floodplainNitrificationSurfaceTemperatureProxyResponsive: true,
+        floodplainNitrificationQ10TemperatureResponseParameterized: true,
+        floodplainNitrificationNitriteIntermediateResolved: false,
+        floodplainNitrificationAlkalinityDemandDiagnostic: false,
+        floodplainNitrificationAlkalinityMaterialOwnerDebited: true,
+        persistentEndToEndAlkalinityLedger: true,
+        alkalinityIsAcidNeutralizingCapacityEquivalent: true,
+        alkalinityCarbonateSpeciationResolved: false,
+        alkalinityPHResolved: false,
+        floodplainNitrificationPHFeedbackModeled: false,
+        floodplainNitrificationIndependentCreation: false,
         persistentFloodplainAtmosphereGasExchange:
           floodplainGasExchangeProcessReceipts.every(entry =>
             entry.schema ===
@@ -2833,10 +3666,12 @@ export class BasinRoutingEngine {
         floodplainGasExchangeUsesNativeAtmosphereSurfaceLayer:
           atmosphereFloodplainGasExchangeReceipts.every(entry =>
             entry.truth?.surfaceLayerOnly === true &&
-            entry.senderDebit?.nativeLayerIndex === 0 &&
-            entry.receiverCredit?.nativeLayerIndex === 0),
+            entry.atmosphereCarbonCredit?.nativeLayerIndex === 0 &&
+            entry.atmosphereCarbonDebit?.nativeLayerIndex === 0 &&
+            entry.atmosphereOxygenDebit?.nativeLayerIndex === 0),
         floodplainGasExchangePhysicalWithLifeOff: true,
         floodplainGasExchangeIndependentCreation: false,
+        floodplainGasExchangeBidirectionalCarbonGradientParameterized: true,
         floodplainGasExchangeBidirectionalHenryLawSolved: false,
         floodplainGasExchangeResolvedAirWaterTurbulence: false,
         grainSelectiveRiverAndMouthDeposition: true,
@@ -2868,6 +3703,7 @@ export class BasinRoutingEngine {
         unresolvedReachFloodplainPlantResourcesRetained: true,
         unresolvedReachFloodplainDecompositionRetained: true,
         unresolvedReachFloodplainRespirationRetained: true,
+        unresolvedReachFloodplainDenitrificationRetained: true,
         unresolvedReachFloodplainGasExchangeRetained: true,
         resolvedFloodplainInundationHydraulics: false,
         resolvedChannelMorphodynamics: false,
@@ -2898,7 +3734,23 @@ export class BasinRoutingEngine {
         ...reach,
         channelStorageKg: state?.storageKg || 0,
         channelChemistry: state ? riverChemistryTotals(state.chemistry) :
-          { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0, oxygenKgO2: 0 },
+          { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0,
+            oxygenKgO2: 0, alkalinityKgCaCO3Eq: 0 },
+        channelNitrogenSpecies: state ? (() => {
+          const species = riverNitrogenSpecies(state.chemistry);
+          return {
+            nitrateNitrogenKgN: round(
+              species.dissolvedNitrateNitrogenKgN, 9),
+            ammoniumNitrogenKgN: round(
+              species.dissolvedAmmoniumNitrogenKgN, 9),
+            dissolvedInorganicNitrogenKgN: round(
+              species.dissolvedInorganicNitrogenKgN, 9)
+          };
+        })() : {
+          nitrateNitrogenKgN: 0,
+          ammoniumNitrogenKgN: 0,
+          dissolvedInorganicNitrogenKgN: 0
+        },
         channelSediment: state ? riverSedimentTotals(state.sediment) :
           { suspendedKg: { clay: 0, silt: 0, sand: 0, gravel: 0 },
             bedDepositKg: { clay: 0, silt: 0, sand: 0, gravel: 0 },
@@ -2952,6 +3804,24 @@ export class BasinRoutingEngine {
           state?.floodplainRespiration?.lastTransitionReceipt
             ? clone(state.floodplainRespiration.lastTransitionReceipt)
             : null,
+        floodplainDenitrification: state ?
+          floodplainDenitrificationSummary(
+            state.floodplainDenitrification) :
+          floodplainDenitrificationSummary(
+            emptyFloodplainDenitrificationState()),
+        floodplainDenitrificationLastTransition:
+          state?.floodplainDenitrification?.lastTransitionReceipt
+            ? clone(state.floodplainDenitrification.lastTransitionReceipt)
+            : null,
+        floodplainNitrification: state ?
+          floodplainNitrificationSummary(
+            state.floodplainNitrification) :
+          floodplainNitrificationSummary(
+            emptyFloodplainNitrificationState()),
+        floodplainNitrificationLastTransition:
+          state?.floodplainNitrification?.lastTransitionReceipt
+            ? clone(state.floodplainNitrification.lastTransitionReceipt)
+            : null,
         floodplainGasExchange: state ? floodplainGasExchangeSummary(
           state.floodplainGasExchange) : floodplainGasExchangeSummary(
           emptyFloodplainGasExchangeState()),
@@ -2960,7 +3830,9 @@ export class BasinRoutingEngine {
             ? clone(state.floodplainGasExchange.lastTransitionReceipt)
             : null,
         estuaryStorage: state ? estuaryStorageTotals(state.estuary) :
-          { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0, oxygenKgO2: 0 },
+          { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0,
+            oxygenKgO2: 0, alkalinityKgCaCO3Eq: 0,
+            cumulativeAlkalinityGeneratedKgCaCO3Eq: 0 },
         estuaryLastFlux: state?.estuary?.lastFluxReceipt ?
           clone(state.estuary.lastFluxReceipt) : null,
         cumulativeChannelInflowKg: state?.cumulativeInflowKg || 0,
@@ -2978,7 +3850,8 @@ export class BasinRoutingEngine {
         activeChannelReachStates: activeStates.length,
         channelStorageKg: activeStates.reduce((sum, reach) => sum + reach.channelStorageKg, 0),
         channelChemistry: profile ? profileChemistry(profile) :
-          { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0, oxygenKgO2: 0 },
+          { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0,
+            oxygenKgO2: 0, alkalinityKgCaCO3Eq: 0 },
         channelSediment: profile ? profileSediment(profile) :
           emptySedimentTotals(),
         floodplain: profile ? profileFloodplain(profile) :
@@ -3002,11 +3875,19 @@ export class BasinRoutingEngine {
         floodplainRespiration: profile ?
           profileFloodplainRespiration(profile) :
           profileFloodplainRespiration({ reaches: new Map() }),
+        floodplainDenitrification: profile ?
+          profileFloodplainDenitrification(profile) :
+          profileFloodplainDenitrification({ reaches: new Map() }),
+        floodplainNitrification: profile ?
+          profileFloodplainNitrification(profile) :
+          profileFloodplainNitrification({ reaches: new Map() }),
         floodplainGasExchange: profile ?
           profileFloodplainGasExchange(profile) :
           profileFloodplainGasExchange({ reaches: new Map() }),
         estuaryStorage: profile ? profileEstuaryStorage(profile) :
-          { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0, oxygenKgO2: 0 },
+          { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0,
+            oxygenKgO2: 0, alkalinityKgCaCO3Eq: 0,
+            cumulativeAlkalinityGeneratedKgCaCO3Eq: 0 },
         riverToOceanKg: finite(receipt?.transfers?.riverToOceanKg),
         riverBoundaryRetentions: receipt?.boundaryReceipts?.length || 0
       },
@@ -3045,9 +3926,34 @@ export class BasinRoutingEngine {
         localFloodplainDissolvedOxygenConsumptionClosure: true,
         respirationAtmosphericGasExchangeModeled: false,
         respirationAnaerobicPathwayModeled: false,
+        persistentFloodplainDenitrification: true,
+        pairedFloodplainAtmosphereDenitrificationOwnership: true,
+        oxygenGatedFloodplainDenitrification: true,
+        nitrogenLimitedFloodplainDenitrification: true,
+        surfaceTemperatureProxyResponsiveFloodplainDenitrification: true,
+        q10TemperatureResponseParameterized: true,
+        persistentFloodplainWaterTemperatureState: false,
+        floodplainDenitrificationArrheniusKineticsResolved: false,
+        floodplainDenitrificationNitrateSpeciationResolved: true,
+        persistentRiverAndFloodplainNitrateAmmoniumPools: true,
+        exactNitrateAmmoniumWaterFractionTransport: true,
+        parameterizedRunoffDinSpeciation: true,
+        measuredRunoffDinSpeciation: false,
+        floodplainDenitrificationNitrateOnly: true,
+        persistentFloodplainNitrification: true,
+        floodplainNitrificationReactionModeled: true,
+        floodplainNitrificationAmmoniumToNitrate: true,
+        floodplainNitrificationDissolvedOxygenConsumed: true,
+        floodplainNitrificationMinimumOxygenReserveHonored: true,
+        floodplainNitrificationNitriteIntermediateResolved: false,
+        floodplainNitrificationAlkalinityDemandDiagnostic: true,
+        floodplainNitrificationAlkalinityMaterialOwnerDebited: false,
+        floodplainNitrificationPHFeedbackModeled: false,
         persistentFloodplainAtmosphereGasExchange: true,
         pairedFloodplainAtmosphereGasOwnership: true,
         parameterizedFloodplainCo2EvasionAndOxygenReaeration: true,
+        parameterizedFloodplainCo2Invasion: true,
+        bidirectionalFloodplainAtmosphereCarbonGradientExchange: true,
         floodplainGasExchangeGloballyMixedAtmosphere: false,
         exactRiverChemistrySenderDebits: true,
         persistentEstuaryProcessing: true,
@@ -3068,7 +3974,15 @@ export class BasinRoutingEngine {
       storedChannelWaterKg: profile ? round(profileChannelStorageKg(profile), 3) : 0,
       storedChemistry: profile ? Object.fromEntries(Object.entries(profileChemistry(profile))
         .map(([key, value]) => [key, round(value, 9)])) :
-        { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0, oxygenKgO2: 0 },
+        { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0,
+          oxygenKgO2: 0, alkalinityKgCaCO3Eq: 0,
+          cumulativeAlkalinityGeneratedKgCaCO3Eq: 0 },
+      storedNitrogenSpecies: profile ? Object.fromEntries(Object.entries(
+        profileNitrogenSpecies(profile)).map(([key, value]) =>
+        [key, round(value, 9)])) : {
+        nitrateNitrogenKgN: 0, ammoniumNitrogenKgN: 0,
+        dissolvedInorganicNitrogenKgN: 0
+      },
       storedMineralSediment: profile ? Object.fromEntries(Object.entries(
         profileSediment(profile)).map(([key, value]) => [key, round(value, 9)])) :
         emptySedimentTotals(),
@@ -3094,12 +4008,19 @@ export class BasinRoutingEngine {
       storedFloodplainRespiration: profile ?
         clone(profileFloodplainRespiration(profile)) :
         profileFloodplainRespiration({ reaches: new Map() }),
+      storedFloodplainDenitrification: profile ?
+        clone(profileFloodplainDenitrification(profile)) :
+        profileFloodplainDenitrification({ reaches: new Map() }),
+      storedFloodplainNitrification: profile ?
+        clone(profileFloodplainNitrification(profile)) :
+        profileFloodplainNitrification({ reaches: new Map() }),
       storedFloodplainGasExchange: profile ?
         clone(profileFloodplainGasExchange(profile)) :
         profileFloodplainGasExchange({ reaches: new Map() }),
       storedEstuarySediment: profile ? Object.fromEntries(Object.entries(profileEstuaryStorage(profile))
         .map(([key, value]) => [key, round(value, 9)])) :
-        { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0, oxygenKgO2: 0 },
+        { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0,
+          oxygenKgO2: 0, alkalinityKgCaCO3Eq: 0 },
       receipt: this.receipts.has(profileId) ? clone(this.receipts.get(profileId)) : null
     };
   }
@@ -3123,6 +4044,11 @@ export class BasinRoutingEngine {
     if (!state || ![
       BASIN_ROUTING_ENGINE_SCHEMA,
       PREVIOUS_BASIN_ROUTING_ENGINE_SCHEMA,
+      'axm.foundation-planet.basin-routing-engine/v18',
+      'axm.foundation-planet.basin-routing-engine/v17',
+      'axm.foundation-planet.basin-routing-engine/v16',
+      'axm.foundation-planet.basin-routing-engine/v15',
+      'axm.foundation-planet.basin-routing-engine/v14',
       'axm.foundation-planet.basin-routing-engine/v13',
       'axm.foundation-planet.basin-routing-engine/v12',
       'axm.foundation-planet.basin-routing-engine/v11',
@@ -3195,6 +4121,18 @@ export class BasinRoutingEngine {
               migrationCheckpoint: true
             });
         }
+        if (migratedFromLegacy && !reach.floodplainDenitrification) {
+          normalized.floodplainDenitrification =
+            emptyFloodplainDenitrificationState({
+              migrationCheckpoint: true
+            });
+        }
+        if (migratedFromLegacy && !reach.floodplainNitrification) {
+          normalized.floodplainNitrification =
+            emptyFloodplainNitrificationState({
+              migrationCheckpoint: true
+            });
+        }
         if (migratedFromLegacy && !reach.floodplainGasExchange) {
           normalized.floodplainGasExchange =
             emptyFloodplainGasExchangeState({
@@ -3232,7 +4170,14 @@ export class BasinRoutingEngine {
         round(profileChannelStorageKg(profile), 3) : 0,
       activeProfileStoredChemistry: profile ? Object.fromEntries(Object.entries(profileChemistry(profile))
         .map(([key, value]) => [key, round(value, 9)])) :
-        { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0, oxygenKgO2: 0 },
+        { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0,
+          oxygenKgO2: 0, alkalinityKgCaCO3Eq: 0 },
+      activeProfileStoredNitrogenSpecies: profile ?
+        Object.fromEntries(Object.entries(profileNitrogenSpecies(profile))
+          .map(([key, value]) => [key, round(value, 9)])) : {
+          nitrateNitrogenKgN: 0, ammoniumNitrogenKgN: 0,
+          dissolvedInorganicNitrogenKgN: 0
+        },
       activeProfileStoredMineralSediment: profile ? Object.fromEntries(
         Object.entries(profileSediment(profile))
           .map(([key, value]) => [key, round(value, 9)])) :
@@ -3260,12 +4205,20 @@ export class BasinRoutingEngine {
       activeProfileFloodplainRespiration: profile ?
         clone(profileFloodplainRespiration(profile)) :
         profileFloodplainRespiration({ reaches: new Map() }),
+      activeProfileFloodplainDenitrification: profile ?
+        clone(profileFloodplainDenitrification(profile)) :
+        profileFloodplainDenitrification({ reaches: new Map() }),
+      activeProfileFloodplainNitrification: profile ?
+        clone(profileFloodplainNitrification(profile)) :
+        profileFloodplainNitrification({ reaches: new Map() }),
       activeProfileFloodplainGasExchange: profile ?
         clone(profileFloodplainGasExchange(profile)) :
         profileFloodplainGasExchange({ reaches: new Map() }),
       activeProfileEstuaryStorage: profile ? Object.fromEntries(Object.entries(profileEstuaryStorage(profile))
         .map(([key, value]) => [key, round(value, 9)])) :
-        { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0, oxygenKgO2: 0 },
+        { carbonKgC: 0, nitrogenKgN: 0, phosphorusKgP: 0,
+          oxygenKgO2: 0, alkalinityKgCaCO3Eq: 0,
+          cumulativeAlkalinityGeneratedKgCaCO3Eq: 0 },
       deterministic: true,
       persistent: true
     };
@@ -3318,6 +4271,18 @@ export function basinRoutingDescription() {
       FLOODPLAIN_RESPIRATION_STATE_SCHEMA,
     floodplainRespirationReceiptSchema:
       FLOODPLAIN_RESPIRATION_RECEIPT_SCHEMA,
+    floodplainDenitrificationStateSchema:
+      FLOODPLAIN_DENITRIFICATION_STATE_SCHEMA,
+    floodplainDenitrificationReceiptSchema:
+      FLOODPLAIN_DENITRIFICATION_RECEIPT_SCHEMA,
+    floodplainDenitrificationReactionReceiptSchema:
+      FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
+    floodplainNitrificationStateSchema:
+      FLOODPLAIN_NITRIFICATION_STATE_SCHEMA,
+    floodplainNitrificationReceiptSchema:
+      FLOODPLAIN_NITRIFICATION_RECEIPT_SCHEMA,
+    floodplainNitrificationReactionReceiptSchema:
+      FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
     floodplainGasExchangeStateSchema:
       FLOODPLAIN_GAS_EXCHANGE_STATE_SCHEMA,
     floodplainGasExchangeProcessReceiptSchema:
@@ -3339,9 +4304,11 @@ export function basinRoutingDescription() {
     floodplainPlantResources: floodplainPlantResourcesDescription(),
     floodplainDecomposition: floodplainDecompositionDescription(),
     floodplainRespiration: floodplainRespirationDescription(),
+    floodplainDenitrification: floodplainDenitrificationDescription(),
+    floodplainNitrification: floodplainNitrificationDescription(),
     floodplainGasExchange: floodplainGasExchangeDescription(),
     topology: 'loaded canonical hydrology reaches bridged from canonical Earth-system cells',
-    processes: ['earth-cell-to-main-reach-capture', 'persistent-land-runoff-queue-sender-debit', 'exact-runoff-queue-to-river-chemistry-credit', 'exact-runoff-sediment-queue-to-river-suspended-load-credit', 'geometry-derived-bankfull-overbank-exchange', 'finite-floodplain-recession-return', 'grain-selective-floodplain-deposition', 'read-only-bounded-flood-event-chronicle', 'read-only-flood-pulse-and-habitat-potential-observation', 'persistent-functional-guild-seed-juvenile-mature-succession', 'flood-disturbance-mortality-and-post-flood-recovery', 'paired-land-ecology-subgrid-to-floodplain-plant-carbon-nitrogen-partition', 'joint-carbon-nitrogen-phosphorus-water-limited-growth', 'paired-floodplain-to-plant-water-phosphorus-uptake', 'mortality-tissue-water-return-to-local-floodplain', 'live-plant-to-standing-dead-to-litter-transfer', 'resource-backed-standing-dead-and-litter-decomposition', 'paired-plant-detritus-to-local-floodplain-chemistry-return', 'oxygen-limited-local-floodplain-doc-to-dic-aerobic-mineralization', 'simultaneous-reach-water-chemistry-and-sediment-routing', 'grain-selective-river-bed-deposition', 'persistent-estuary-reaction-and-organic-sediment-retention', 'grain-selective-coastal-mineral-sediment-deposition', 'estuary-denitrification-to-local-atmosphere', 'loaded-coastal-ocean-delivery-after-estuary-processing'],
+    processes: ['earth-cell-to-main-reach-capture', 'persistent-land-runoff-queue-sender-debit', 'parameterized-runoff-din-to-nitrate-ammonium-receiver-credit', 'exact-runoff-queue-to-river-chemistry-and-alkalinity-credit', 'exact-runoff-sediment-queue-to-river-suspended-load-credit', 'geometry-derived-bankfull-overbank-exchange', 'finite-channel-to-floodplain-nitrate-ammonium-alkalinity-transfer', 'finite-floodplain-to-channel-nitrate-ammonium-alkalinity-return', 'grain-selective-floodplain-deposition', 'read-only-bounded-flood-event-chronicle', 'read-only-flood-pulse-and-habitat-potential-observation', 'persistent-functional-guild-seed-juvenile-mature-succession', 'flood-disturbance-mortality-and-post-flood-recovery', 'paired-land-ecology-subgrid-to-floodplain-plant-carbon-nitrogen-partition', 'joint-carbon-nitrogen-phosphorus-water-limited-growth', 'paired-floodplain-to-plant-water-phosphorus-uptake', 'mortality-tissue-water-return-to-local-floodplain', 'live-plant-to-standing-dead-to-litter-transfer', 'resource-backed-standing-dead-and-litter-decomposition', 'paired-plant-detritus-to-local-floodplain-ammonium-return', 'oxygen-limited-local-floodplain-doc-to-dic-aerobic-mineralization', 'surface-temperature-responsive-oxygen-gated-nitrate-only-floodplain-denitrification-with-alkalinity-generation', 'paired-floodplain-atmosphere-nitrogen-gas-transfer', 'bidirectional-floodplain-atmosphere-carbon-and-oxygen-exchange', 'surface-temperature-responsive-oxygen-and-alkalinity-limited-ammonium-to-nitrate-floodplain-nitrification', 'nitrification-alkalinity-owner-debit', 'simultaneous-reach-water-nitrate-ammonium-alkalinity-chemistry-and-sediment-routing', 'grain-selective-river-bed-deposition', 'persistent-estuary-reaction-organic-sediment-retention-and-alkalinity-transmission', 'grain-selective-coastal-mineral-sediment-deposition', 'estuary-denitrification-alkalinity-generation-and-local-atmosphere-nitrogen-transfer', 'loaded-coastal-ocean-delivery-after-estuary-processing'],
     persistentReachStorage: true,
     persistentRiverSediment: true,
     persistentCoastalSediment: true,
@@ -3375,6 +4342,43 @@ export function basinRoutingDescription() {
     floodplainRespirationOxygenLimited: true,
     floodplainRespirationAtmosphericGasExchange: false,
     floodplainRespirationAnaerobicPathway: false,
+    persistentFloodplainDenitrification: true,
+    pairedFloodplainAtmosphereDenitrificationOwnership: true,
+    floodplainDenitrificationOxygenGated: true,
+    floodplainDenitrificationNitrogenLimited: true,
+    floodplainDenitrificationSurfaceTemperatureProxyResponsive: true,
+    floodplainDenitrificationQ10TemperatureResponseParameterized: true,
+    floodplainDenitrificationPersistentWaterTemperatureState: false,
+    floodplainDenitrificationArrheniusKineticsResolved: false,
+    floodplainDenitrificationReactiveNitrateEquivalentParameterized: false,
+    floodplainDenitrificationNitrateSpeciationResolved: true,
+    persistentRiverAndFloodplainNitrateAmmoniumPools: true,
+    exactNitrateAmmoniumWaterFractionTransport: true,
+    parameterizedRunoffDinSpeciation: true,
+    measuredRunoffDinSpeciation: false,
+    floodplainDenitrificationNitrateOnly: true,
+    floodplainDenitrificationAmmoniumConsumption: false,
+    persistentFloodplainNitrification: true,
+    floodplainNitrificationReactionModeled: true,
+    floodplainNitrificationAmmoniumToNitrate: true,
+    floodplainNitrificationDissolvedOxygenConsumed: true,
+    floodplainNitrificationMinimumOxygenReserveHonored: true,
+    floodplainNitrificationSurfaceTemperatureProxyResponsive: true,
+    floodplainNitrificationQ10TemperatureResponseParameterized: true,
+    floodplainNitrificationNitriteIntermediateResolved: false,
+    floodplainNitrificationAlkalinityDemandDiagnostic: false,
+    floodplainNitrificationAlkalinityMaterialOwnerDebited: true,
+    persistentEndToEndAlkalinityLedger: true,
+    alkalinityUnit: 'kg-CaCO3-equivalent',
+    alkalinityCarbonateSpeciationResolved: false,
+    alkalinityPHResolved: false,
+    floodplainNitrificationPHFeedbackModeled: false,
+    floodplainNitrificationMicrobialPopulationState: false,
+    floodplainDenitrificationMicrobialPopulationState: false,
+    persistentFloodplainAtmosphereGasExchange: true,
+    pairedFloodplainAtmosphereGasOwnership: true,
+    floodplainGasExchangeBidirectionalCarbonGradientParameterized: true,
+    floodplainGasExchangeBidirectionalHenryLawSolved: false,
     floodplainSuccessionResolvedIndividuals: false,
     floodplainSuccessionScientificModel: false,
     sedimentMassConservationChecked: true,

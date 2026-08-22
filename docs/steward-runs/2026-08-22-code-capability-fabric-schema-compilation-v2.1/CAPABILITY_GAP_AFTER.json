@@ -1,0 +1,126 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "compile-one-grounded-blueprint-schema-packet",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "blueprint.exact-lineage.verify",
+        "consent.exact-input-artifacts.bind",
+        "interface.strict-json-schema.compile",
+        "acceptance.claim-evidence.route",
+        "schema-packet.byte-bound-receipt.emit"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "blueprint.exact-lineage.verify": [
+          "v2.0 exact intent, object digest, and artifact bytes only"
+        ],
+        "consent.exact-input-artifacts.bind": [
+          "declarative grounded-consent scope; authentication, replay, trusted time, and live revocation remain absent"
+        ],
+        "interface.strict-json-schema.compile": [
+          "declared object shape only; no semantic implementation or runtime validation"
+        ],
+        "acceptance.claim-evidence.route": [
+          "all verdicts UNRUN; desired outcomes require human review"
+        ],
+        "schema-packet.byte-bound-receipt.emit": [
+          "exactly four JSON files in one new disposable root"
+        ]
+      }
+    },
+    {
+      "id": "preserve-no-execution-authority-ceiling",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "authority.network.disabled",
+        "authority.child-process.disabled",
+        "authority.generated-code.disabled",
+        "authority.candidate-execution.disabled",
+        "authority.lifecycle-effects.disabled"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "future-semantic-implementation-and-proof",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "provider.blueprint-to-code.generate",
+        "sandbox.candidate.execute",
+        "runtime.semantic-quality.verify"
+      ],
+      "declaredConstraints": {}
+    }
+  ],
+  "missingCapabilities": [
+    "provider.blueprint-to-code.generate",
+    "runtime.semantic-quality.verify",
+    "sandbox.candidate.execute"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "provider.blueprint-to-code.generate",
+      "requiredBy": [
+        "future-semantic-implementation-and-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "runtime.semantic-quality.verify",
+      "requiredBy": [
+        "future-semantic-implementation-and-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "sandbox.candidate.execute",
+      "requiredBy": [
+        "future-semantic-implementation-and-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

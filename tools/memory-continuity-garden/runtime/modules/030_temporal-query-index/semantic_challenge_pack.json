@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "CLOCK_FORCED_ORDER",
+      "expected": "HOLD_TIME_BASIS_UNCERTAIN",
+      "stimulus": "uncertain clocks are forced into total order"
+    }
+  ],
+  "category": 3,
+  "category_name": "3. Time, sessions, checkpoints, snapshots, and continuity gaps",
+  "full_semantic_implementation": false,
+  "number": 30,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Retrieve memory as it was known at a selected time, revision, checkpoint, or decision boundary rather than only the latest view.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "0256581598a7f78e5f7230dc9d3a3ca973a5ff14a2937b5632654358adcb4f37"
+  },
+  "source_contract_sha256": "5886f9ae4df793f8f57a61ad7e5d6833313288fa3f6bb3c7fb18a6f77620ea7d",
+  "stable_id": "axm.memory.temporal-query-index"
+}

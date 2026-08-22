@@ -1,0 +1,201 @@
+{
+  "capability_interface": {
+    "authority_delta": "NONE",
+    "canon_delta": "NONE",
+    "consent_delta": "NONE",
+    "consumes_clause": "human direction; exact source identity; ownership and role metadata; permission and privacy policy",
+    "human_gate_required_by_source_contract": false,
+    "input_contract": "axm.memory.reference-request/v2",
+    "invariants": [
+      "authority_delta_is_none",
+      "canon_delta_is_none",
+      "consent_delta_is_none",
+      "delivery_does_not_imply_acceptance",
+      "derived output is replaceable",
+      "failure returns untouched source plus HOLD or failure receipt",
+      "full_semantics_are_not_claimed",
+      "identity fields never fuse across handoff",
+      "memory_payload_is_inert_data",
+      "source limits survive every derived view",
+      "source remains authoritative and unchanged",
+      "source_truth_is_not_created_by_contract_validity",
+      "trust_delta_is_none"
+    ],
+    "operation_kind": "BOUNDED_TRANSFORM",
+    "output_contract": "axm.memory.original-inference-separator.receipt/v1",
+    "postconditions": [
+      "exactly one accepted reference contract or typed HOLD is returned",
+      "no hidden mutation, authority gain, trust gain, consent gain, or CANON promotion occurs",
+      "result remains source-linked, replaceable, privacy-safe, and bounded to the declared purpose",
+      "receiver acceptance, semantic apply, owner acceptance, and integration remain separate future acts"
+    ],
+    "preconditions": [
+      "exact seed identity and purpose match",
+      "source references and digests align",
+      "authority, consent, role, permission, expiry, and namespace checks pass",
+      "boot prerequisites are ready or explicitly safe degraded mode is allowed",
+      "resource, cancellation, revision, output-root, and compatibility guards pass"
+    ],
+    "purpose_clause": "Preserve source material independently from summaries, extracted fields, model interpretations, and later conclusions.",
+    "semantic_effect": "REFERENCE_ONLY_NOT_IMPLEMENTED",
+    "state_effect_envelope": "DERIVED_OUTPUT_ONLY",
+    "trust_delta": "NONE"
+  },
+  "composition": {
+    "accepted_upstream_ids": [
+      "axm.memory.lifecycle-state-machine",
+      "axm.memory.namespace-descriptor",
+      "axm.memory.provenance-envelope",
+      "axm.memory.source-authority-binder"
+    ],
+    "authority_transfer": false,
+    "boot_prerequisites": [
+      "axm.memory.lifecycle-state-machine",
+      "axm.memory.namespace-descriptor",
+      "axm.memory.provenance-envelope",
+      "axm.memory.source-authority-binder"
+    ],
+    "consent_transfer": false,
+    "cycles_allowed_only_outside_boot_graph": true,
+    "delivery_does_not_imply_acceptance": true,
+    "downstream_candidates": [
+      "axm.memory.active-direction-extractor",
+      "axm.memory.context-budget-allocator",
+      "axm.memory.decision-rationale-compressor",
+      "axm.memory.open-loop-queue",
+      "axm.memory.reentry-capsule",
+      "axm.memory.root-branch-compression-policy",
+      "axm.memory.semantic-summary-builder",
+      "axm.memory.source-linked-summary",
+      "axm.memory.summary-drift-verifier",
+      "axm.memory.unresolved-question-holder"
+    ],
+    "handoff_schema": "axm.memory.capability-handoff/v1",
+    "runtime_collaborators": [],
+    "semantic_apply_implied": false,
+    "trust_transfer": false
+  },
+  "human_review": {
+    "automatic_apply": false,
+    "challenge_and_reopen_supported": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "packet_path": "modules/007_original-inference-separator/review_packet.json",
+    "primary_actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN"
+    ]
+  },
+  "identity": {
+    "category_number": 1,
+    "name": "Original, Interpretation, and Inference Separator",
+    "number": 7,
+    "stable_id": "axm.memory.original-inference-separator"
+  },
+  "pipeline_membership": [
+    "PIPELINE_01_IDENTITY",
+    "PIPELINE_05_COMPRESSION"
+  ],
+  "profiles": {
+    "authority": {
+      "path": "profiles/authority_t1-bounded-local.json",
+      "sha256": "e9219d177513061d9d14f979361eda4f92f011a95e98db8074fb6da29009f428"
+    },
+    "category": {
+      "path": "profiles/category_01_identity_authority_provenance.json",
+      "sha256": "3808322f4a25dffa7b3f0536e05c1503885227d677cf286bbd20f43c0d0f304c"
+    },
+    "operation": {
+      "path": "profiles/operation_bounded-transform.json",
+      "sha256": "b3ab2464d2e6545bdea049c38bf76a0ab59b41ec29cba390c93c2a094e955bcb"
+    },
+    "proof_tiers": {
+      "path": "profiles/proof_tiers.json",
+      "sha256": "ab8646803825822a1c529c9a47163827813c5ea9f2c2034031bdd103245d2f00"
+    },
+    "review_surface": {
+      "path": "profiles/review_surface.json",
+      "sha256": "d46b074a8a703365fd7243c20fae436abd8346494a3100efff73f817a65431e5"
+    },
+    "risk": {
+      "path": "profiles/risk_low.json",
+      "sha256": "fa8c6a59e399b4b3b1d205c75408945cc9847ac60736b75b83a85faeed34dc8f"
+    }
+  },
+  "proof": {
+    "achieved_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE"
+    ],
+    "boundary": "Executable deltas, composition, metamorphic, resource, review, and capsule evidence remain synthetic/local reference proof.",
+    "canon": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "specialist_verification": false,
+    "workshop_integration": false
+  },
+  "resource_policy": {
+    "batch_and_step_limits_required": true,
+    "cancellation_must_be_checked": true,
+    "network_required": false,
+    "output_path_must_remain_under_exact_owned_root": true,
+    "profile_ref": {
+      "path": "profiles/risk_low.json",
+      "sha256": "fa8c6a59e399b4b3b1d205c75408945cc9847ac60736b75b83a85faeed34dc8f"
+    },
+    "symlink_escape_forbidden": true,
+    "unbounded_scan_forbidden": true
+  },
+  "schema": "axm.memory.capability-delta/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "base_contract_file_sha256": "75f3e5ded1b1042ea7a593f57f4aba173aa104bf71a96de9ad8b22654896b49c",
+    "body_sha256": "12000f204538bc52f509e9b94605afffa6217873d27abe29c2cc1e2a7fb266b4",
+    "delta_core_sha256": "96c7b0c5b3171f937143c36c6e1cbaf5089ae0cd2299365e60ccc2b524d83e66"
+  },
+  "source_run50": {
+    "build_intake_file_sha256": "f0e4d00a0ace643d6154efc931a15daee0ee7e5de04ce7b2006fabd24784e7ce",
+    "candidate_contract_body_sha256": "48ae26fc4b6705bb4c62df90caf456f54b325a61bca98e4aa5e87febf6022ad3",
+    "candidate_contract_file_sha256": "75f3e5ded1b1042ea7a593f57f4aba173aa104bf71a96de9ad8b22654896b49c",
+    "candidate_contract_path": "modules/007_original-inference-separator/candidate.contract.json",
+    "fixtures_file_sha256": "4249cd8fe067c11705b2499f6da4c30c8e878a278c87289512c1ad7b7a08f7ad",
+    "run50_posture_preserved": true,
+    "source_authority": "T1_BOUNDED_LOCAL",
+    "source_operation_kind": "BOUNDED_TRANSFORM",
+    "source_purpose": "Preserve source material independently from summaries, extracted fields, model interpretations, and later conclusions.",
+    "source_risk": "LOW",
+    "source_run50_status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE",
+  "validation": {
+    "cache_is_evidence_reuse_not_truth": true,
+    "cached_result_cannot_promote_canon": true,
+    "harness_version": "axm-memory-run60-harness-v1",
+    "proof_cache_key": "59c8dd9d6bcf49c70cb307e7f8b6bb239249868cce8bfbcfb713a0ba3c278dcf",
+    "revalidation_triggers": [
+      "candidate contract or fixture digest changes",
+      "capability delta core changes",
+      "referenced shared profile digest changes",
+      "validation harness version changes",
+      "boot prerequisite interface changes",
+      "privacy, authority, or lifecycle policy changes"
+    ],
+    "test_suites": [
+      "run50_full_reference_suite",
+      "run60_delta_preservation",
+      "run60_capability_interface",
+      "run60_composition_graph",
+      "run60_selective_validation",
+      "run60_metamorphic_laws",
+      "run60_resource_faults",
+      "run60_reference_pipelines",
+      "run60_human_review",
+      "run60_capsule_export",
+      "run60_efficiency",
+      "run60_roundtrip"
+    ]
+  }
+}

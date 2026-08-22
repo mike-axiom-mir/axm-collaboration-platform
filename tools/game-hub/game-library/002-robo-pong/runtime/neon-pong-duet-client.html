@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#030711">
+  <title>AXM Pong · Duet</title>
+  <link rel="stylesheet" href="aetherglass/axm-aetherglass.css">
+  <link rel="stylesheet" href="aetherglass/axm-components.css">
+  <link rel="stylesheet" href="neon-pong-duet.css">
+</head>
+<body data-theme="aetherglass" data-axm-surface="game" data-effects="balanced" data-motion="full">
+  <header class="topbar" aria-label="Game status">
+    <div class="brand"><span>AXM</span><b>// PONG</b></div>
+    <div class="mode-cluster"><span class="game-chip active">DUET</span><span class="game-chip">CROSS</span><strong id="modeLabel">STORY CO-OP</strong></div>
+    <div class="mission-title"><small id="chapterLabel">CHAPTER 02</small><b id="objectiveLabel">THE SHATTERED LINE</b></div>
+    <div class="status-cluster"><span id="connection">CONNECTING</span><button id="pauseButton" type="button">PAUSE</button></div>
+  </header>
+
+  <main class="game-layout">
+    <section class="arena-shell" id="arenaShell" aria-label="AXM Pong arena">
+      <canvas id="game" width="1200" height="800" aria-label="Two-player Pong arena"></canvas>
+      <div class="arena-vignette" aria-hidden="true"></div>
+
+      <section class="launch-panel" id="launchPanel" aria-labelledby="launchTitle">
+        <p class="eyebrow" id="launchEyebrow">1–2 PLAYER STORY / CO-OP</p>
+        <h1 id="launchTitle">THE SHATTERED LINE</h1>
+        <p id="launchCopy">Protect the core together. One player gets an AI wingmate; two players share the defense.</p>
+        <div class="arena-picker" id="arenaPicker" aria-label="Choose arena"></div>
+        <div class="launch-actions">
+          <button class="primary-action" id="startButton" type="button">ENTER ARENA</button>
+          <button class="quiet-action" id="nextButton" type="button" hidden>NEXT CHAPTER</button>
+        </div>
+        <p class="seat-note" id="seatNote">P1 keyboard: A / D · P2 keyboard: arrows · Space uses power</p>
+      </section>
+
+      <div class="event-toast" id="eventToast" aria-live="polite">READY</div>
+    </section>
+
+    <section class="mission-bar" aria-label="Mission progress">
+      <div><small>OBJECTIVE</small><strong id="missionObjective">THE SHATTERED LINE</strong></div>
+      <div class="mission-progress"><span id="progressFill"></span></div>
+      <div><small id="metricLabel">CORE</small><strong id="metricValue">5 / 5</strong></div>
+      <div><small>ARENA</small><strong id="arenaLabel">SHATTERED LINE</strong></div>
+    </section>
+
+    <section class="controller-panel" id="controllerPanel" hidden aria-label="Player controller">
+      <div class="controller-identity"><small id="controllerSeat">P1 · DUET</small><strong id="controllerName">PLAYER</strong><span id="controllerStatus">READY</span></div>
+      <div class="controller-mission"><small id="controllerMissionLabel">CORE</small><strong id="controllerMissionValue">5 / 5</strong></div>
+      <div class="ability-panel"><small>HELD ABILITY</small><strong id="powerName">RANDOM SPECIAL</strong><span id="powerState">READY</span></div>
+    </section>
+  </main>
+
+  <nav class="controls" id="controls" hidden aria-label="Player movement controls">
+    <button id="leftButton" class="move" type="button">LEFT</button>
+    <button id="powerButton" class="power" type="button">USE POWER</button>
+    <button id="rightButton" class="move" type="button">RIGHT</button>
+  </nav>
+
+  <script src="aetherglass/axm-aetherglass.js"></script>
+  <script src="aetherglass/axm-lighting-director.js"></script>
+  <script src="neon-pong-duet.js"></script>
+</body>
+</html>

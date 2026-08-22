@@ -1,0 +1,37 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.symptom-clusterer",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.symptom-clusters/v1"
+  ],
+  "consumes": [
+    "failure-fingerprints"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "EXTEND_EXISTING",
+    "targets": [
+      "tools/diagnostics-operations-center"
+    ],
+    "reason": "Groups related symptoms but keeps outliers and uncertainty visible."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-containment",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim",
+      "mutation-of-existing-axm-organs"
+    ]
+  }
+}

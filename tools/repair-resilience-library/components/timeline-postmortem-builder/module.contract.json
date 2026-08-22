@@ -1,0 +1,45 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.timeline-postmortem-builder",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.incident-timeline/v1",
+    "axm.postmortem-draft/v1"
+  ],
+  "consumes": [
+    "timestamped-evidence-events",
+    "declared-hypotheses"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_EVIDENCE_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "shared/evidence-retention",
+      "tools/diagnostics-operations-center",
+      "tools/repairbuddy"
+    ],
+    "reason": "Transforms linked evidence into a learning draft while keeping causal claims explicitly unconfirmed."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-pattern-reuse",
+      "automatic-memory-write",
+      "provider-execution",
+      "active-repair-orchestration",
+      "permission-grant",
+      "automatic-promotion",
+      "automatic-release",
+      "automatic-canon",
+      "diagnosis-from-similarity-alone",
+      "root-cause-invention"
+    ]
+  }
+}

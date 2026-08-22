@@ -1,0 +1,274 @@
+{
+  "schema": "axm.visual-module-package/1",
+  "packageId": "package.light.reflection-streak",
+  "name": "Reflection Streak",
+  "version": "1.1.0",
+  "entryModuleId": "light.reflection-streak",
+  "created": "2026-07-28",
+  "modules": [
+    {
+      "id": "primitive.gradient",
+      "name": "Gradient",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Interpolates color, light, and opacity.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "gradient"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.mask",
+      "name": "Mask",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Restricts an effect to a selected region.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "mask"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.motion-curve",
+      "name": "Motion Curve",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Defines easing and temporal behavior.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "wave"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "light.reflection-streak",
+      "name": "Reflection Streak",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "effect",
+      "category": "Light",
+      "status": "WORKING",
+      "description": "A moving specular streak for glass, acrylic, metal, and cinematic highlights.",
+      "tags": [
+        "light",
+        "reflection",
+        "motion"
+      ],
+      "dependencies": [
+        "primitive.gradient",
+        "primitive.mask",
+        "primitive.motion-curve"
+      ],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "slash"
+      },
+      "parameters": [
+        {
+          "id": "intensity",
+          "label": "Intensity",
+          "type": "number",
+          "default": 0.52,
+          "description": "",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "cssVar": "--fx-reflection-intensity"
+        },
+        {
+          "id": "length",
+          "label": "Length",
+          "type": "number",
+          "default": 42,
+          "description": "",
+          "min": 10,
+          "max": 90,
+          "step": 1,
+          "unit": "%",
+          "cssVar": "--fx-reflection-length"
+        },
+        {
+          "id": "angle",
+          "label": "Angle",
+          "type": "number",
+          "default": 118,
+          "description": "",
+          "min": 0,
+          "max": 360,
+          "step": 1,
+          "unit": "deg",
+          "cssVar": "--fx-reflection-angle"
+        },
+        {
+          "id": "speed",
+          "label": "Speed",
+          "type": "number",
+          "default": 7,
+          "description": "",
+          "min": 2,
+          "max": 20,
+          "step": 0.5,
+          "unit": "s",
+          "cssVar": "--fx-reflection-speed"
+        }
+      ],
+      "renderer": {
+        "type": "class",
+        "scope": "surface",
+        "className": "fx-reflection-streak"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "Animation becomes a static highlight when reduced motion is enabled.",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    }
+  ],
+  "notes": "Starter package. Set a public-sharing license before redistribution.",
+  "integrity": {
+    "algorithm": "sha256",
+    "value": "fffc162f8b22e06bd09861ddc862a8906dd267d4de30eb49883bf4d0eaecb56f"
+  }
+}

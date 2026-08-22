@@ -1,13 +1,13 @@
 # Casino Alpha · Local Playtest
 
 Status: **WORKING / TEST**  
-Version: `0.3.2-alpha`  
+Version: `0.3.3-alpha`  
 Publication: local workbench only
 
 This is the ten-slot gameplay alpha. One authoritative Node.js runtime serves:
 
-- **Backroom Story** for one to four real Party A seats, with ten sequential
-  cabinet chapters and shared co-op progress.
+- **Free Play** for one to four real Party A seats, with all ten cabinets open
+  immediately and no quests, searches, chapters, or unlock puzzles.
 - **House War** for equal 1v1 through 4v4 parties, with all ten styles, rival
   casino play, NPC traffic, contests, bankruptcy, and a closing bell.
 
@@ -46,8 +46,8 @@ silently adding seats.
   100 paid wagers per completed visit.
 - Random-style two-minute district contests scored by gross settled payout and
   five-minute traffic claims.
-- Forty-two settled-event quests across ten shared story chapters.
-- Local story/progressive persistence without seed, permutations, tokens, or
+- Quest-free direct access to all ten cabinets.
+- Local free-play/progressive persistence without seed, permutations, tokens, or
   future outcomes.
 - Idempotent seat commands and filtered player/party observations.
 - Responsive host, party, and light controller routes with a ten-cabinet picker.

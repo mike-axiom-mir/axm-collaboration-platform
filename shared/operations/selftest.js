@@ -17,6 +17,7 @@ const Search = require('./search-service');
 const Assets = require('./asset-filesystem-service');
 const Device = require('./device-handoff-service');
 const Diagnostics = require('./diagnostics-service');
+const EvidenceRetention = require('../evidence-retention/evidence-retention-service');
 
 let pass = 0;
 function check(value, label) { assert(value, label); pass += 1; console.log('PASS ' + label); }
@@ -31,13 +32,13 @@ async function waitForJob(machine, id) {
   throw new Error('machine job did not finish: ' + id);
 }
 function contract(id, version) { return { schema:'axm.module-contract/v1', id, version, provides:['test'], consumes:[], permissions:[], handoffs:{ emits:[], accepts:[] }, boundaries:{ writes:[], refuses:['fake-done'] }, lifecycle:{ state_owner:'browser', reload:'resume', disconnect:'graceful-degrade', cleanup:'explicit' } }; }
-function bundle(id, version, body) {
+function bundle(id, version, body, selftestContent) {
   const manifest = { id, name:'Temporary Test Module', version, status:'TEST', entry:'index.html', contract:'module.contract.json', uses:['storage'], permissions:[] };
   return { schema:'axm.module-bundle/v1', files:[
     { path:'manifest.json', content:JSON.stringify(manifest) },
     { path:'module.contract.json', content:JSON.stringify(contract(id, version)) },
     { path:'index.html', content:'<!doctype html><title>Test</title><main>'+body+'</main>' },
-    { path:'selftest.js', content:"console.log('PASS temp')" }
+    { path:'selftest.js', content:selftestContent || "console.log('PASS temp')" }
   ] };
 }
 
@@ -57,6 +58,27 @@ async function main() {
     check(review.get(item.id).state === 'PENDING', 'one identity cannot fill two review seats');
     review.vote(item.id, { actor:'Mirror', actorKind:'machine', verdict:'APPROVE', artifactDigest:digest });
     check(review.approved(item.id, digest), 'independent exact-digest seats approve artifact');
+    const codeDigest = U.sha256(Buffer.from('technical-code-candidate'));
+    const codeDraft = review.submit({ kind:'code-improvement-draft', title:'Technical code draft', sourceRef:'mirror-code-clone:test:bounded-repair', artifactDigest:codeDigest, requiredSeats:2 });
+    throws(() => review.vote(codeDraft.id, { actor:'Mike', actorKind:'human', verdict:'APPROVE', artifactDigest:codeDigest, informedExplanation:true }), /machine review/, 'technical code draft refuses an uninformed human-first vote');
+    throws(() => review.vote(codeDraft.id, { actor:'Pretend machine', actorKind:'machine', verdict:'APPROVE', artifactDigest:codeDigest, note:'Caller supplied machine identity.' }), /deterministic technical reviewer/, 'code draft refuses a caller-supplied machine identity');
+    review.recordTechnicalReview(codeDraft.id, { schema:'axm.code-draft-technical-review/v1', artifactDigest:codeDigest, verdict:'APPROVE', summary:'Exact candidate, bounded verifier and remaining risks were checked deterministically.', checks:[{ id:'fixture-integrity', status:'PASS', evidence:'Selftest fixture digest matched.' }], automaticApply:false });
+    throws(() => review.vote(codeDraft.id, { actor:'Mike', actorKind:'human', verdict:'APPROVE', artifactDigest:codeDigest }), /explanation acknowledgement/, 'technical code draft requires plain-language acknowledgement after machine review');
+    review.vote(codeDraft.id, { actor:'Mike', actorKind:'human', verdict:'APPROVE', artifactDigest:codeDigest, note:'Plain explanation and machine reason reviewed.', informedExplanation:true });
+    check(review.approved(codeDraft.id, codeDigest), 'technical-first informed human review can approve the exact candidate');
+    const heldDigest = U.sha256(Buffer.from('held-code-candidate'));
+    const heldDraft = review.submit({ kind:'code-improvement-draft', title:'Machine-held draft', sourceRef:'mirror-code-clone:test:held', artifactDigest:heldDigest, requiredSeats:2 });
+    review.recordTechnicalReview(heldDraft.id, { schema:'axm.code-draft-technical-review/v1', artifactDigest:heldDigest, verdict:'HOLD', summary:'The bounded contract still fails, so this exact candidate needs repair before any human choice.', checks:[{ id:'bounded-contract', status:'HOLD', evidence:'Fixture contract is incomplete.' }], automaticApply:false });
+    throws(() => review.vote(heldDraft.id, { actor:'Mike', actorKind:'human', verdict:'REJECT', artifactDigest:heldDigest, note:'No useful vote while repair is required.', informedExplanation:true }), /machine HOLD must be repaired/, 'machine-held code draft refuses an unnecessary human vote');
+    check(review.get(heldDraft.id).votes.length === 1 && review.get(heldDraft.id).state === 'HOLD', 'machine HOLD preserves only the technical seat and repair state');
+    const staleDigest = U.sha256(Buffer.from('stale-code-candidate'));
+    const staleDraft = review.submit({ kind:'code-improvement-draft', title:'Stale exact draft', sourceRef:'mirror-code-clone:test:stale', artifactDigest:staleDigest, requiredSeats:2 });
+    throws(() => review.recordTechnicalRefusal(staleDraft.id, { schema:'axm.code-draft-technical-refusal/v1', artifactDigest:staleDigest, reasonCode:'OPINION', summary:'This is not deterministic evidence and must be refused.', replacementRequired:true, automaticApply:false, applyAuthority:'NONE' }), /not deterministic/, 'technical retirement refuses subjective reasons');
+    review.recordTechnicalRefusal(staleDraft.id, { schema:'axm.code-draft-technical-refusal/v1', artifactDigest:staleDigest, reasonCode:'SOURCE_DRIFT', summary:'The live source changed after this exact candidate was sealed, so a fresh candidate is required.', replacementRequired:true, automaticApply:false, applyAuthority:'NONE' });
+    const staleRecorded = review.get(staleDraft.id);
+    check(staleRecorded.state === 'SUPERSEDED' && staleRecorded.votes.length === 0 && staleRecorded.technicalRefusal.reasonCode === 'SOURCE_DRIFT', 'deterministic stale-copy retirement preserves history without creating a vote');
+    throws(() => review.vote(staleDraft.id, { actor:'Mike', actorKind:'human', verdict:'APPROVE', artifactDigest:staleDigest, informedExplanation:true }), /closed/, 'retired exact candidate cannot receive a later vote');
+    check(EvidenceRetention.tailForFile(review.auditFile, 20000).includes('deterministic-technical-refusal'), 'technical retirement leaves an append-only audit event');
     const panelDigest = U.sha256(Buffer.from('panel-direction'));
     const panel = review.submit({ kind:'workshop-direction', title:'Ten-seat review', sourceRef:'workshop-direction:test', artifactDigest:panelDigest, requiredSeats:99 });
     check(panel.requiredSeats === 10, 'review panel is bounded to ten independent votes');
@@ -116,8 +138,15 @@ async function main() {
     check(approvedGovernance.reviewState === 'APPROVED' && approvedGovernance.exactDigestApproved && approvedGovernance.installEligible && approvedGovernance.remainingGates.length === 4, 'approved digest remains visibly gated by permission confirmation recheck and backup');
     const firstApplied = installer.apply(first.id, { confirmation:'INSTALL REVIEWED MODULE', actor:'Mike' });
     check((await waitForJob(machine, firstApplied.verificationJobId)).state === 'PASS', 'post-install module selftest runs through the allowlisted machine host');
+    const firstVerification = installer.list().find(item => item.id === first.id).verification;
+    check(firstVerification.currentDigestState === 'MATCH' && firstVerification.receiptAppliesToCurrentModule && firstVerification.candidateDigest === firstVerification.currentModuleDigest, 'post-install receipt is bound to the exact current module digest');
     check(!installer.list().find(item => item.id === first.id).governance.installEligible, 'applied candidate cannot remain install eligible');
     check(fs.readFileSync(path.join(root,'tools','test-module','index.html'),'utf8').includes('first'), 'approved new module installs into exact module folder');
+    const freshFailure = installer.stage(bundle('fresh-failure-module','v0.1','fresh failure',"console.error('FAIL intentional fresh install test'); process.exitCode=1;\n"), 'Mike');
+    review.vote(freshFailure.reviewId, { actor:'Mike', verdict:'APPROVE', artifactDigest:freshFailure.digest });
+    const freshFailureApplied = installer.apply(freshFailure.id, { confirmation:'INSTALL REVIEWED MODULE', actor:'Mike' });
+    const freshFailureJob = await waitForJob(machine, freshFailureApplied.verificationJobId), freshFailureView = installer.list().find(item => item.id === freshFailure.id).verification;
+    check(freshFailureJob.state === 'FAIL' && freshFailureView.currentDigestState === 'MATCH' && freshFailureView.receiptAppliesToCurrentModule && !freshFailureView.rollbackBackupRetained && !freshFailureView.rollbackAvailable && /no retained previous generation/.test(freshFailureView.truth) && !/can be rolled back/.test(freshFailureView.truth), 'failed first install does not claim a nonexistent rollback generation');
     const returnTop = path.join(temp, 'return-source'), returnModule = path.join(returnTop, 'tools', 'test-module');
     U.copyTree(path.join(root, 'tools', 'test-module'), returnModule);
     fs.writeFileSync(path.join(returnTop, 'BUILD_ON_GUIDE.md'), '# Test build-on return\n');
@@ -143,9 +172,11 @@ async function main() {
     const updated = installer.apply(second.id, { confirmation:'INSTALL REVIEWED MODULE', actor:'Mike' });
     check(updated.backupId && updated.backupRetentionRemoved === 1 && installer.backups('test-module').length === 1 && fs.readFileSync(path.join(root,'tools','test-module','index.html'),'utf8').includes('second'), 'approved update retains exactly one previous generation before replace');
     const failedVerification = await waitForJob(machine, updated.verificationJobId), failedView = installer.list().find(item => item.id === second.id).verification;
-    check(failedVerification.state === 'FAIL' && failedView.state === 'FAIL' && failedView.rollbackAvailable && fs.readFileSync(path.join(root,'tools','test-module','index.html'),'utf8') === improvedHtml, 'failed post-install selftest exposes direct rollback without silently auto-rolling back');
+    check(failedVerification.state === 'FAIL' && failedView.state === 'FAIL' && failedView.currentDigestState === 'MATCH' && failedView.receiptAppliesToCurrentModule && failedView.rollbackBackupRetained && failedView.rollbackAvailable && fs.readFileSync(path.join(root,'tools','test-module','index.html'),'utf8') === improvedHtml, 'failed post-install selftest exposes direct rollback only for its exact current digest without silently auto-rolling back');
     throws(() => installer.stageReturnedZip(returnInput, 'Mike'), /STALE_BUILD_ON_BASE/, 'an older build-on ZIP is refused after the live module changes');
     fs.appendFileSync(path.join(root,'tools','test-module','index.html'), '\nmanual drift');
+    const driftedVerification = installer.list().find(item => item.id === second.id).verification;
+    check(driftedVerification.currentDigestState === 'DRIFT' && !driftedVerification.receiptAppliesToCurrentModule && driftedVerification.rollbackBackupRetained && !driftedVerification.rollbackAvailable && /Historical selftest receipt only/.test(driftedVerification.truth) && /current verification is UNKNOWN/.test(driftedVerification.truth), 'current module drift makes the stored receipt historical and disables direct rollback eligibility');
     throws(() => installer.rollback('test-module', updated.backupId, { confirmation:'ROLL BACK MODULE', actor:'Mike' }), /current module changed/, 'direct rollback refuses live bytes that drifted after install');
     fs.writeFileSync(path.join(root,'tools','test-module','index.html'), improvedHtml);
     installer.rollback('test-module', updated.backupId, { confirmation:'ROLL BACK MODULE', actor:'Mike' });

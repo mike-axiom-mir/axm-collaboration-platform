@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.dependency-health-graph",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.dependency-health.graph-report/v1"
+  ],
+  "consumes": [
+    "dependency-declarations",
+    "node-health-snapshots"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "EXTEND_EXISTING",
+    "targets": [
+      "tools/dependency-declaration-observatory",
+      "tools/diagnostics-operations-center",
+      "registry/capabilities.jsonl"
+    ],
+    "reason": "Combines declared edges with observed health; does not replace declaration truth or claim causality."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-repair",
+      "automatic-restart",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "network-access",
+      "runtime-proof-claim",
+      "mutation-of-existing-axm-organs"
+    ]
+  }
+}

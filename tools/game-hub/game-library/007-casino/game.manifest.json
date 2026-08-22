@@ -1,17 +1,17 @@
 {
   "slot": "007",
   "game_id": "007-casino-alpha",
-  "name": "Casino Alpha: Backroom House War",
+  "name": "Casino Alpha: Ten-Slot Free Play",
   "status": "TEST-WORKING",
-  "description": "A local authoritative ten-slot 1-4 player story and 1v1-4v4 casino tycoon alpha powered by one 50K Draw Spine, immutable style books, and a reactive robot theater.",
-  "version": "0.3.2-alpha",
+  "description": "A local authoritative ten-slot free-play and 1v1-4v4 casino tycoon alpha powered by one 50K Draw Spine, immutable style books, and a reactive robot theater.",
+  "version": "0.3.3-alpha",
   "min_players": 1,
   "max_players": 8,
   "play_modes": [
     {
       "id": "backroom_story",
-      "label": "Backroom Story - solo / co-op",
-      "description": "Ready one to four seats from Party A (seats 1-4). One seat is solo; two to four share story progress.",
+      "label": "Free Play - solo / co-op",
+      "description": "Ready one to four seats from Party A (seats 1-4). All ten slot cabinets are immediately open with no quests or searches.",
       "party_rule": "party-a-only"
     },
     {
@@ -25,7 +25,7 @@
   "uses": ["game-hub-seats", "party-routing", "local-authority", "axm-50k-draw-spine", "ten-immutable-style-books"],
   "launch": {
     "server_entry": "alpha/runtime/casino-server.cjs",
-    "client_entry": "/games/007/?role=host",
+    "client_entry": "/games/007/?role=host&play=1",
     "spectator_client_entry": "/games/007/?role=host",
     "ready_path": "/state",
     "port": 8797,
@@ -85,7 +85,6 @@
       "alpha/README.md",
       "alpha/runtime/casino-server.cjs",
       "alpha/runtime/casino-core.js",
-      "alpha/runtime/quest-system.js",
       "alpha/runtime/game-hub-adapter.js",
       "alpha/client/index.html",
       "alpha/client/app.js",

@@ -1,0 +1,31 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "capability-gap-workbench",
+  "name": "AXM Capability Gap Workbench",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "category": "VERIFY",
+  "layer": "build",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": ["capabilities", "requirements", "gaps", "contracts", "evidence", "local-first"],
+  "uses": ["shared:ai-native-hands", "browser-dom", "explicit-download"],
+  "permissions": [],
+  "actions": [
+    "compare normalized requirements with a declared capability inventory",
+    "separate ready, degraded, unknown, optional-gap and blocked requirements",
+    "draft typed contracts for missing capabilities",
+    "download an explicit JSON gap report"
+  ],
+  "accepts": ["normalized-requirements", "declared-capability-inventory", "application/json"],
+  "produces": ["axm.capability-gap-report/v1"],
+  "readiness": ["local-browser", "shared:capability-gap-scout"],
+  "verifiedAt": null,
+  "summary": "A local workbench for turning declared requirements and capability inventories into honest, typed gap reports.",
+  "notes": "Exact identifier comparison only. The workbench never installs dependencies, grants permissions, lowers quality, persists inputs, promotes modules or treats declarations as runtime proof."
+}

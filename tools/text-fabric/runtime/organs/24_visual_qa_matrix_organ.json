@@ -1,0 +1,24 @@
+{
+  "id": "axm.text.organ.visual_qa_matrix",
+  "version": "0.8.0",
+  "label": "Visual QA Matrix Organ",
+  "purpose": "Generates comparable assets across presets, recipes, and render quality tiers so visual drift and over-expensive effects are inspectable before intake.",
+  "inputs": [
+    "target_ids",
+    "quality_tiers",
+    "dimensions",
+    "png_renderer_availability"
+  ],
+  "outputs": [
+    "qa_manifest",
+    "svg_assets",
+    "optional_png_assets",
+    "standalone_gallery"
+  ],
+  "rules": [
+    "Every matrix item must identify target, recipe, tier, and estimated cost.",
+    "PNG baking is optional; SVG generation remains dependency-free.",
+    "Generated files are hashed in the QA manifest.",
+    "A failed renderer may not invalidate the source SVG path."
+  ]
+}

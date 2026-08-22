@@ -1,0 +1,56 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "product",
+  "id": "bulk-intake-conveyor",
+  "name": "AXM Bulk Intake Conveyor",
+  "version": "v0.1",
+  "status": "TEST",
+  "entry": "index.html",
+  "contract": "module.contract.json",
+  "type": "local-module",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "layer": "machine",
+  "category": "GOVERNANCE",
+  "risk": "LOW",
+  "tags": [
+    "bulk-intake",
+    "archive",
+    "queue",
+    "resume",
+    "deduplication",
+    "evidence",
+    "local-first",
+    "read-only"
+  ],
+  "uses": [
+    "filesystem-read",
+    "storage"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "actions": [
+    "compose bounded archive maps into one resumable intake receipt",
+    "park exact duplicate carriers without deleting them",
+    "surface archive overlap and active-name collisions for judgment",
+    "group structural candidates into bounded deeper-review batches",
+    "emit digest-bound master worklist and per-archive receipts only when explicit outputs are named"
+  ],
+  "accepts": [
+    "filesystem/archive-supply-root",
+    "filesystem/workshop-root",
+    "axm.bulk-intake-conveyor-receipt/v1"
+  ],
+  "produces": [
+    "axm.bulk-intake-conveyor-receipt/v1",
+    "axm.bulk-intake-archive-work-item/v1",
+    "axm.bulk-intake-candidate-work-item/v1",
+    "axm.bulk-intake-worklist/v1"
+  ],
+  "readiness": [
+    "filesystem-read"
+  ],
+  "summary": "A bounded intake conveyor that turns many ZIP carriers into resumable duplicate, hold, judgment, and deeper-review queues without extracting or promoting anything.",
+  "notes": "Integrated TEST module. Structural candidate names are routing hints, not declared identities or merge authority. Mike and Codex remain the approval and promotion gate."
+}

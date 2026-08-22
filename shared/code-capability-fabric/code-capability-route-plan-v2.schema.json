@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-capability-route-plan/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "request", "status", "candidates", "selected", "hostObservation", "holds", "plannedEnvelope", "nextGate", "truth", "authority", "planDigest"],
+  "properties": {
+    "schema": {"const": "axm.code-capability-route-plan/v2"},
+    "version": {"const": "0.2.0"},
+    "request": {"$ref": "code-capability-request-v2.schema.json"},
+    "status": {"enum": ["MISSING_HAND", "SELECTED_PROVIDER_UNAVAILABLE", "SELECTED_PROVIDER_STALE", "SELECTION_REQUIRED", "HOST_OBSERVATION_REQUIRED", "HOST_OBSERVATION_AMBIGUOUS", "HOST_OBSERVATION_STALE", "HOST_OBSERVATION_UNTRUSTED", "HOST_UNAVAILABLE", "BOUNDARY_HOLD", "ASSURANCE_HOLD", "AUTHORITY_HOLD", "RESOURCE_HOLD", "REUSE_RIGHTS_HOLD", "ROUTE_PLANNED"]},
+    "candidates": {"type": "array", "maxItems": 128, "uniqueItems": true, "items": {"$ref": "#/$defs/providerRef"}},
+    "selected": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/providerRef"}]},
+    "hostObservation": {"oneOf": [{"type": "null"}, {"$ref": "code-provider-host-observation-v2.schema.json"}]},
+    "holds": {"type": "array", "maxItems": 32, "items": {"type": "string", "minLength": 1, "maxLength": 300}},
+    "plannedEnvelope": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/plannedEnvelope"}]},
+    "nextGate": {"enum": ["EXPLICIT_EXECUTOR_AUTHORIZATION_AND_EXTERNAL_ASSURANCE_VERIFICATION", "REPAIR_OR_EXPLICIT_SELECTION_THEN_REPLAN"]},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "planDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "ids": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "contract": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "contracts": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/contract"}},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "versionText": {"type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "schema": {"$ref": "#/$defs/contract"}, "sha256": {"$ref": "#/$defs/digest"}}
+    },
+    "providerSelector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "descriptorSha256"],
+      "properties": {"id": {"$ref": "#/$defs/id"}, "version": {"$ref": "#/$defs/versionText"}, "descriptorSha256": {"$ref": "#/$defs/digest"}}
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability", "inputSchema", "outputSchema", "minimumInputArtifacts"],
+      "properties": {
+        "capability": {"$ref": "#/$defs/id"},
+        "inputSchema": {"$ref": "#/$defs/contract"},
+        "outputSchema": {"$ref": "#/$defs/contract"},
+        "minimumInputArtifacts": {"type": "integer", "minimum": 0, "maximum": 32}
+      }
+    },
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "domains"],
+      "properties": {"mode": {"enum": ["disabled", "allowlist"]}, "domains": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}}
+    },
+    "authorityEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["permissions", "network", "mutability", "sourceUse"],
+      "properties": {
+        "permissions": {"$ref": "#/$defs/ids"},
+        "network": {"$ref": "#/$defs/network"},
+        "mutability": {"enum": ["read-only", "candidate-only", "process-observation"]},
+        "sourceUse": {"enum": ["inspect-only", "derive-concepts", "transform-bytes", "copy-bytes"]}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxInputBytes", "maxOutputBytes", "maxMemoryBytes", "maxDurationMs", "maxProcesses"],
+      "properties": {
+        "maxInputBytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxOutputBytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxMemoryBytes": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxDurationMs": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "maxProcesses": {"type": "integer", "minimum": 1, "maximum": 1024}
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parents"],
+      "properties": {"parents": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/$defs/providerSelector"}}}
+    },
+    "providerRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "descriptorSha256", "status", "route", "authority", "resources", "requiresWorkspaceBoundary", "requiredAssuranceSchemas", "executionBoundary", "evidenceCeilingSha256", "lineage"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "version": {"$ref": "#/$defs/versionText"},
+        "descriptorSha256": {"$ref": "#/$defs/digest"},
+        "status": {"enum": ["EXPERIMENTAL", "TEST", "WORKING"]},
+        "route": {"$ref": "#/$defs/route"},
+        "authority": {"$ref": "#/$defs/authorityEnvelope"},
+        "resources": {"$ref": "#/$defs/resources"},
+        "requiresWorkspaceBoundary": {"type": "boolean"},
+        "requiredAssuranceSchemas": {"$ref": "#/$defs/contracts"},
+        "executionBoundary": {"$ref": "#/$defs/id"},
+        "evidenceCeilingSha256": {"$ref": "#/$defs/digest"},
+        "lineage": {"$ref": "#/$defs/lineage"}
+      }
+    },
+    "plannedEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority", "resources", "workspaceBoundaryRef", "assuranceRefs"],
+      "properties": {
+        "authority": {"$ref": "#/$defs/authorityEnvelope"},
+        "resources": {"$ref": "#/$defs/resources"},
+        "workspaceBoundaryRef": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/reference"}]},
+        "assuranceRefs": {"type": "array", "minItems": 1, "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/reference"}}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planOnly", "providerDeclarationIsAvailabilityProof", "hostObservationIsExecutionProof", "hostObserverAuthenticityProven", "providerCodeLoaded", "providerCodeExecuted", "inputContentRead", "inputArtifactBytesProven", "rawInputContentRetained", "machinePathsRetained", "workspaceBoundaryHostVerified", "outputWritten", "outputArtifactDigestProven", "permissionGranted", "networkUsed", "resourceEnforcementProven", "externalAssurancesVerified", "directReuseRightsProven", "installed", "promoted", "canonChanged"],
+      "properties": {
+        "planOnly": {"const": true},
+        "providerDeclarationIsAvailabilityProof": {"const": false},
+        "hostObservationIsExecutionProof": {"const": false},
+        "hostObserverAuthenticityProven": {"const": false},
+        "providerCodeLoaded": {"const": false},
+        "providerCodeExecuted": {"const": false},
+        "inputContentRead": {"const": false},
+        "inputArtifactBytesProven": {"const": false},
+        "rawInputContentRetained": {"const": false},
+        "machinePathsRetained": {"const": false},
+        "workspaceBoundaryHostVerified": {"const": false},
+        "outputWritten": {"const": false},
+        "outputArtifactDigestProven": {"const": false},
+        "permissionGranted": {"const": false},
+        "networkUsed": {"const": false},
+        "resourceEnforcementProven": {"const": false},
+        "externalAssurancesVerified": {"const": false},
+        "directReuseRightsProven": {"const": false},
+        "installed": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false}
+      }
+    }
+  }
+}

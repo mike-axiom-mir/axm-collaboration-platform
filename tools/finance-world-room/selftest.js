@@ -7,6 +7,11 @@ const core=require('./finance-core');
 const sources=require('./finance-sources');
 const dictionary=JSON.parse(fs.readFileSync(path.join(__dirname,'finance-dictionary.json'),'utf8'));
 let pass=0;function test(name,fn){try{fn();console.log('PASS '+name);pass++;}catch(e){console.error('FAIL '+name+'\n  '+e.stack);process.exitCode=1;}}
+const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'manifest.json'),'utf8'));
+const contract=JSON.parse(fs.readFileSync(path.join(__dirname,'module.contract.json'),'utf8'));
+test('manifest uses the current product schema',()=>{assert.equal(manifest.schema,'axm.tool-manifest/v1');assert.equal(manifest.kind,'product');});
+test('manifest and contract permissions agree',()=>assert.deepEqual(manifest.permissions,contract.permissions));
+test('contract declares browser-owned resumable lifecycle',()=>assert.deepEqual(contract.lifecycle,{state_owner:'browser',reload:'resume',disconnect:'graceful-degrade',cleanup:'explicit'}));
 const base={indicatorId:'inflation',indicatorName:'Consumer-price inflation',geography:'NLD',countryName:'Netherlands',period:'2024',value:3.2,unit:'% annual',sourceId:'official:nld:2024',sourceType:'official-statistics',sourceUrl:'https://example.test'};
 test('valid sourced observation passes',()=>assert.equal(core.validateObservation(base,dictionary).pass,true));
 test('source-free observation is refused',()=>assert(core.validateObservation({...base,sourceId:''},dictionary).errors.includes('sourceId required')));
@@ -26,6 +31,6 @@ test('World Bank parser can restrict rows to mapped countries',()=>{const payloa
 test('local Natural Earth geometry is present and substantial',()=>{const g=JSON.parse(fs.readFileSync(path.join(__dirname,'assets/world-countries-110m.geojson'),'utf8'));assert(g.features.length>170);assert(g.features.some(f=>f.properties.ADM0_A3==='NLD'));});
 test('shell has all app DOM references',()=>{const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8'),app=fs.readFileSync(path.join(__dirname,'finance-app.js'),'utf8');const ids=new Set(Array.from(html.matchAll(/id="([\w-]+)"/g),m=>m[1]));const used=new Set(Array.from(app.matchAll(/\$\('([\w-]+)'\)/g),m=>m[1]));assert.deepEqual(Array.from(used).filter(x=>!ids.has(x)),[]);});
 test('app scripts compile',()=>new Function(fs.readFileSync(path.join(__dirname,'finance-app.js'),'utf8')));
-test('module contract declares sandbox boundaries',()=>{const c=JSON.parse(fs.readFileSync(path.join(__dirname,'module.contract.json'),'utf8'));assert(c.boundaries.refuses.includes('hidden-network-fetch'));assert(c.boundaries.refuses.includes('automatic-trading'));});
+test('module contract declares sandbox boundaries',()=>{assert(contract.boundaries.refuses.includes('hidden-network-fetch'));assert(contract.boundaries.refuses.includes('automatic-trading'));});
 test('local server proxy restricts World Bank preview',()=>{const server=fs.readFileSync(path.join(__dirname,'..','..','server.js'),'utf8');assert(server.includes('/api/finance-world/world-bank'));assert(server.includes('allowedIndicators'));assert(server.includes('end - start > 60'));});
 if(!process.exitCode)console.log('\n'+pass+' PASS · 0 FAIL · finance-core '+core.VERSION);

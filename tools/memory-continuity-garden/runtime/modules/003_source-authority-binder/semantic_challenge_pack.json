@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "IDENTITY_FUSION",
+      "expected": "HOLD_IDENTITY_OR_AUTHORITY_FUSION",
+      "stimulus": "human, AI seat, session, and device are fused"
+    }
+  ],
+  "category": 1,
+  "category_name": "1. Memory identity, scope, authority, and provenance",
+  "full_semantic_implementation": false,
+  "number": 3,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Bind every remembered item to who or what supplied it, what authority they had, and what the source can and cannot prove.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "e1a567c2a942c5eec68d0cdde40d34994d536df7b5210127ced460310dbe7911"
+  },
+  "source_contract_sha256": "9ca65fe49101853fcf103aafdda997e1a315e463970e08cb1d914648881f01ce",
+  "stable_id": "axm.memory.source-authority-binder"
+}

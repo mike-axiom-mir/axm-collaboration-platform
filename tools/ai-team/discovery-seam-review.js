@@ -4,14 +4,15 @@ const fs=require('fs'),path=require('path'),Discovery=require('../discovery-engi
 const read=file=>fs.readFileSync(path.join(__dirname,file),'utf8');
 const shell=read('ai-team.js'),html=read('index.html'),core=read('ai-team-core.js'),hub=read('../../hub/hub-shell.js'),presence=read('../../hub/ai-presence.js'),router=read('../../shared/specialists/specialist-router.js');
 const manifest=id=>JSON.parse(read('../'+id+'/manifest.json'));
-const children=['agent-command-center','agent-tool-forge','ai-task-talk','model-lab','reasoning-shell','prompt-vault','duo-test','technical-glasses'];
+const children=['agent-command-center','agent-tool-forge','ai-task-talk','ai-team-steward-lab','model-lab','reasoning-shell','prompt-vault','duo-test','technical-glasses'];
 const services=['chatgpt-connector','claude-connector','shell-guardian'];
 const checks=[
-  ['One visible parent declares all eight owned compatibility views',children.every(id=>manifest(id).integratedInto==='ai-team')],
+  ['One visible parent declares all nine owned compatibility views',children.every(id=>manifest(id).integratedInto==='ai-team')],
   ['Mirror learning remains owned by Learning Lab while AI Team exposes its explicit doorway',manifest('mirror-learning-shell').integratedInto==='learning-lab'&&/id:'learning'/.test(core)&&html.includes('mirror-learning-shell/index.html')],
   ['Connectors and Guardian declare background service roles',services.every(id=>manifest(id).integratedInto==='ai-team'&&/service/.test(manifest(id).serviceRole))],
-  ['Fourteen beginner-facing views cover technical truth, control, work, build, evaluation, Mirror learning and exploration',/id:'overview'/.test(core)&&/id:'technical'/.test(core)&&/id:'services'/.test(core)&&/id:'forge'/.test(core)&&/id:'specialists'/.test(core)&&/id:'learning'/.test(core)&&/id:'explore'/.test(core)&&/id:'data'/.test(core)],
+  ['Fifteen beginner-facing views cover technical truth, contract preflight, control, work, build, evaluation, Mirror learning and exploration',/id:'overview'/.test(core)&&/id:'technical'/.test(core)&&/id:'steward'/.test(core)&&/id:'services'/.test(core)&&/id:'forge'/.test(core)&&/id:'specialists'/.test(core)&&/id:'learning'/.test(core)&&/id:'explore'/.test(core)&&/id:'data'/.test(core)],
   ['Specialist views load lazily instead of booting every model tool',html.includes('data-src="../ai-task-talk')&&shell.includes('function ensureFrame')],
+  ['Collaboration Steward loads lazily inside AI Team and retains explicit no-execution boundaries',html.includes('id="stewardFrame"')&&html.includes('../ai-team-steward-lab/index.html?ai-team=1')&&manifest('ai-team-steward-lab').notes.includes('No agent start')],
   ['Old child Hub messages save through the AI Team parent',shell.includes("msg.type==='hub:ready'")&&shell.includes("msg.type==='hub:save'")],
   ['Questions and proposals require separate open and acknowledge actions',html.includes('Manual decisions only')&&shell.includes('data-open-notice')&&shell.includes('data-ack-notice')],
   ['Hub-raised notices reach Task & Talk even when Overview was last open',shell.includes("localStorage.getItem('axm.collaboration.notice.open')")&&shell.includes("state.view='collaborate'")&&presence.includes("var moduleId='ai-team'")],

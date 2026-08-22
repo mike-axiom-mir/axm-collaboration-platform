@@ -1,0 +1,43 @@
+#usda 1.0
+(
+    defaultPrim = "AXM_MACHINE_TREE_001"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "AXM_MACHINE_TREE_001"
+{
+    custom string axmAssetId = "AXM-MACHINE-TREE-001"
+    custom string axmAssetVersion = "0.4.0"
+    custom string axmUniversalContract = "0.5.0"
+    custom string axmSourceGlb = "AXM-MACHINE-TREE-001.glb"
+
+    def Xform "AssemblyGroups"
+    {
+        def Xform "root"
+        {
+            custom string axmMembersJson = "[\"root\", \"trunk\", \"branch__r00\", \"branch__r01\", \"branch__r02\", \"branch__r03\", \"branch__r04\", \"branch__r05\", \"crown__r00\", \"crown__r01\", \"crown__r02\", \"crown__r03\", \"crown__r04\", \"crown__r05\"]"
+            custom double3 axmPivotM = (0.0, 0.0, 0.0)
+        }
+        def Xform "heart"
+        {
+            custom string axmMembersJson = "[\"heart\"]"
+            custom double3 axmPivotM = (0.0, 1.82, 0.0)
+        }
+    }
+
+    def Xform "Joints"
+    {
+        def Xform "heart_spin"
+        {
+            custom string axmJointType = "continuous"
+            custom string axmParentGroup = "root"
+            custom string axmChildGroup = "heart"
+            custom double3 axmAxis = (0.0, 1.0, 0.0)
+            custom double3 axmPivotM = (0.0, 1.82, 0.0)
+        }
+    }
+}
+
+# Preview interchange only. Geometry remains in the referenced GLB;
+# physics schemas are intentionally not claimed without usdchecker validation.

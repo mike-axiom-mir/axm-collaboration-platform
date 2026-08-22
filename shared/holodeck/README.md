@@ -2,6 +2,11 @@
 
 Status: `TEST` foundation, not canonical and not promoted.
 
+The Node and browser kernels load `tools/deterministic-json-core`. Exported
+serialization and cloning refuse unsupported or lossy JSON state; the legacy
+`stableValue` normalizer remains available for existing world-normalization
+callers.
+
 Holodeck is a substrate-independent world compiler. A canonical world document carries identity, coordinates, entities, appearance data, state, interactions, sensory descriptions, narrative purpose, and truth boundaries. The compiler turns that meaning into a renderer-neutral deck plan. Screen, VR, fabrication, robotics, and future physical-space systems are adapters; none owns the world.
 
 Version zero deliberately uses primitive graphics. Its proof target is the shared data spine:

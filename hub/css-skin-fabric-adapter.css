@@ -32,19 +32,21 @@ body.sentient-atrium {
 
 .sentient-atrium .shell {
   background:
-    radial-gradient(circle at 8% 0%, color-mix(in oklab, var(--axm-sem-accent) 10%, transparent), transparent 30rem),
+    radial-gradient(circle at 78% 0%, color-mix(in oklab, var(--axm-sem-accent) 8%, transparent), transparent 34rem),
     linear-gradient(180deg, var(--axm-sem-canvas-elevated), var(--axm-sem-canvas));
 }
 
-.sentient-atrium .sentient-signal-field { opacity: .16; }
+.sentient-atrium .sentient-signal-field,
+.sentient-atrium .atrium-vortex-field { display: none !important; }
 
 .sentient-atrium .topbar {
   border-color: var(--axm-sem-border);
-  background: color-mix(in oklab, var(--axm-sem-canvas-elevated) 92%, transparent);
+  background: color-mix(in oklab, var(--axm-sem-canvas-elevated) 96%, transparent) !important;
   backdrop-filter: blur(var(--axm-effect-blur));
 }
 
-.sentient-atrium .topbar::before { opacity: .22; }
+.sentient-atrium .topbar::before,
+.sentient-atrium .sidebar::after { display: none !important; }
 
 body.sentient-atrium:not([data-nav="right"]):not([data-nav="rail"]) .body {
   grid-template-columns: 19rem minmax(0, 1fr);
@@ -52,8 +54,8 @@ body.sentient-atrium:not([data-nav="right"]):not([data-nav="rail"]) .body {
 
 .sentient-atrium .sidebar {
   border-color: var(--axm-sem-border);
-  background: color-mix(in oklab, var(--axm-sem-canvas-elevated) 94%, transparent);
-  box-shadow: var(--axm-shadow-sm);
+  background: color-mix(in oklab, var(--axm-sem-canvas-elevated) 96%, transparent) !important;
+  box-shadow: none !important;
 }
 
 .sentient-atrium .sidebar > .mod,
@@ -79,15 +81,23 @@ body.sentient-atrium:not([data-nav="right"]):not([data-nav="rail"]) .body {
 
 body.sentient-atrium .home-hero {
   min-height: auto !important;
-  border-color: var(--axm-sem-border);
+  border: 0;
+  border-bottom: 1px solid var(--axm-sem-border);
   background:
-    radial-gradient(circle at 88% 18%, color-mix(in oklab, var(--axm-sem-accent-alt) 12%, transparent), transparent 26rem),
-    linear-gradient(180deg, color-mix(in oklab, var(--axm-sem-canvas-elevated) 90%, transparent), var(--axm-sem-canvas));
+    radial-gradient(circle at 86% 16%, color-mix(in oklab, var(--axm-sem-accent) 8%, transparent), transparent 24rem),
+    linear-gradient(180deg, color-mix(in oklab, var(--axm-sem-canvas-elevated) 78%, transparent), transparent) !important;
+  overflow: visible;
 }
 
 .sentient-atrium .hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(15rem, .8fr);
   min-height: auto;
-  padding-top: clamp(4rem, 10vh, 7rem);
+  max-width: 80rem;
+  margin-inline: auto;
+  padding: clamp(2.75rem, 7vh, 5rem) clamp(1.5rem, 4vw, 3.5rem) 1.75rem;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
 }
 
 .sentient-atrium .home-hero h1 {
@@ -97,7 +107,50 @@ body.sentient-atrium .home-hero {
 }
 
 .sentient-atrium .home-hero h1 em { color: var(--axm-sem-accent); }
-.sentient-atrium .home-hero p { color: var(--axm-sem-text-muted); }
+.sentient-atrium .home-hero p {
+  max-width: 58ch;
+  margin-top: var(--axm-space-4);
+  color: var(--axm-sem-text-muted);
+}
+
+.sentient-atrium .hero-system-deck {
+  position: relative;
+  inset: auto;
+  width: auto;
+  min-height: 0;
+  padding: var(--axm-space-5);
+  border: 1px solid var(--axm-sem-border);
+  border-radius: var(--axm-radius-lg);
+  background: color-mix(in oklab, var(--axm-sem-surface) 82%, transparent);
+  box-shadow: var(--axm-shadow-xs);
+}
+
+.sentient-atrium .hero-system-head,
+.sentient-atrium .hero-system-grid {
+  position: static;
+  inset: auto;
+  width: auto;
+}
+
+.sentient-atrium .hero-system-head { padding: 0 0 var(--axm-space-3); }
+.sentient-atrium .hero-orbit { display: none; }
+.sentient-atrium .hero-system-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--axm-space-2);
+}
+
+.sentient-atrium .hero-system-grid div {
+  display: block;
+  min-height: 5rem;
+  padding: var(--axm-space-4);
+}
+
+.sentient-atrium .hero-system-grid div::before { display: none; }
+.sentient-atrium .hero-system-grid strong {
+  margin-top: var(--axm-space-2);
+  font-size: clamp(1rem, 2vw, 1.3rem);
+}
 
 .sentient-atrium .capability-search,
 .sentient-atrium .workflow-card,
@@ -112,6 +165,67 @@ body.sentient-atrium .home-hero {
 .sentient-atrium .capability-search:focus-within {
   border-color: var(--axm-sem-focus);
   box-shadow: 0 0 0 var(--axm-focus-width) color-mix(in oklab, var(--axm-sem-focus) 28%, transparent);
+}
+
+/* One front platform: Home, creation lanes, workbench cards, continuity, and
+   handoffs share a single scroll canvas and one spacing/surface language. */
+.sentient-atrium #homeScreen {
+  container: axm-front-platform / inline-size;
+  background: transparent;
+  scrollbar-color: var(--axm-sem-border-strong) transparent;
+}
+
+.sentient-atrium .capability-guide,
+.sentient-atrium .home-grid,
+.sentient-atrium .continuity-strip,
+.sentient-atrium .handoff-strip {
+  width: auto;
+  max-width: 80rem;
+  margin-inline: auto;
+}
+
+.sentient-atrium .capability-guide {
+  padding: 0 clamp(1.5rem, 4vw, 3.5rem) clamp(2rem, 5vw, 3.5rem);
+}
+
+.sentient-atrium .capability-search {
+  width: 100%;
+  max-width: none;
+}
+
+.sentient-atrium .capability-prompts {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.sentient-atrium .home-grid {
+  gap: var(--axm-space-4);
+  padding: clamp(1.75rem, 4vw, 3rem) clamp(1.5rem, 4vw, 3.5rem);
+  border: 0;
+  background: transparent;
+}
+
+.sentient-atrium .home-grid::before { display: none; }
+
+.sentient-atrium .continuity-strip,
+.sentient-atrium .handoff-strip {
+  margin-top: 0;
+  margin-bottom: var(--axm-space-8);
+  padding: var(--axm-space-6);
+  border-color: var(--axm-sem-border);
+  border-radius: var(--axm-radius-lg);
+  background: color-mix(in oklab, var(--axm-sem-surface) 88%, transparent);
+  box-shadow: var(--axm-shadow-xs);
+}
+
+.sentient-atrium .workflow-card,
+.sentient-atrium .module-card,
+.sentient-atrium .command-center-home-card,
+.sentient-atrium .continuity-item,
+.sentient-atrium .handoff-result {
+  border-color: var(--axm-sem-border) !important;
+  border-radius: var(--axm-control-radius) !important;
+  background: color-mix(in oklab, var(--axm-sem-surface) 88%, transparent) !important;
+  box-shadow: var(--axm-shadow-xs) !important;
 }
 
 .sentient-atrium button:focus-visible,
@@ -157,8 +271,22 @@ body.sentient-atrium .home-hero {
     box-shadow: var(--axm-shadow-lg) !important;
   }
 
+  body.sentient-atrium[data-sidebar-collapsed="true"] .sidebar {
+    width: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  body.sentient-atrium[data-sidebar-collapsed="true"] .sidebar::before,
+  body.sentient-atrium[data-sidebar-collapsed="true"] .sidebar::after {
+    display: none !important;
+  }
+
   body.sentient-atrium[data-sidebar-collapsed="true"] .sidebar > .sidebar-toggle {
-    top: 4.75rem !important;
+    top: 5rem !important;
     left: auto !important;
     right: var(--axm-space-3) !important;
     width: var(--axm-control-min);
@@ -181,7 +309,7 @@ body.sentient-atrium .home-hero {
   .sentient-atrium .hero-layout {
     display: block;
     min-height: auto;
-    padding: var(--axm-space-16) var(--axm-space-4) var(--axm-space-6);
+    padding: var(--axm-space-10) var(--axm-space-4) var(--axm-space-6);
   }
 
   .sentient-atrium .home-hero h1 {
@@ -238,9 +366,31 @@ body.sentient-atrium .home-hero {
     padding: var(--axm-space-4);
   }
 
+  .sentient-atrium .continuity-strip,
+  .sentient-atrium .handoff-strip {
+    margin: 0 var(--axm-space-4) var(--axm-space-6);
+    padding: var(--axm-space-5);
+  }
+
   .sentient-atrium .statusbar {
     min-height: 3rem;
     padding-inline: var(--axm-space-4);
+  }
+}
+
+/* Container-aware enhancement: when Home is embedded beside a wider rail,
+   component space—not the device label—decides when the composition stacks. */
+@container axm-front-platform (max-width: 52rem) {
+  .sentient-atrium .hero-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sentient-atrium .hero-system-deck { display: none; }
+  .sentient-atrium .capability-prompts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .sentient-atrium .home-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

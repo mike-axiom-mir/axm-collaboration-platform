@@ -15,6 +15,9 @@ function test(condition, message) {
 
 test(manifest.id === 'skinner' && manifest.version === 'v0.3', 'Skinner manifest exposes the upgraded compatibility route');
 test(contract.schema === 'axm.module-contract/v1' && contract.id === 'skinner', 'Skinner declares a module contract');
+test(manifest.schema === 'axm.tool-manifest/v1' && manifest.kind === 'product', 'Skinner uses the current product manifest schema');
+test(JSON.stringify(manifest.permissions) === JSON.stringify(contract.permissions), 'Skinner manifest and contract permissions agree');
+test(JSON.stringify(contract.lifecycle) === JSON.stringify({ state_owner: 'browser', reload: 'resume', disconnect: 'not-applicable', cleanup: 'explicit' }), 'Skinner declares its browser-owned lifecycle');
 test(contract.provides.includes('aetherglass-visual-composition-editing'), 'module contract declares Aetherglass editing');
 test(/shared\/aetherglass\/src\/axm-aetherglass\.js/.test(html), 'route loads the verified Aetherglass core');
 test(/shared\/aetherglass\/src\/axm-luminous-layer-forge\.js/.test(html), 'route loads Luminous Layer Forge');
@@ -23,6 +26,9 @@ test((html.match(/data-visual-option=/g) || []).length === 12, 'route exposes al
 test((html.match(/data-visual-range=/g) || []).length === 3, 'route exposes all three bounded visual gains');
 test((html.match(/data-visual-boolean=/g) || []).length === 5, 'route exposes all five visual toggles');
 test(/paintAetherglass/.test(html) && /AXMSkinAetherglass\.apply/.test(html), 'live preview routes through the reversible bridge');
+test(/class="studio-header skin-intro"/.test(html) && /class="canvas-bar"/.test(html), 'route exposes the modern Skin Studio shell and canvas chrome');
+test(/class="pv-metrics"/.test(html) && /SKIN STUDIO 2026/.test(html), 'live preview keeps the modern workbench hierarchy');
+test(/:has\(#applyBtn\)/.test(html) && /@media\(max-width:680px\)/.test(html), 'workbench provides a responsive commit surface');
 test(contract.provides.includes('style-fabric-to-skinner-safe-mapping'), 'module contract declares the Style Fabric safety adapter');
 test(/style-fabric-bridge\.mjs/.test(html), 'route loads the Style Fabric adapter module');
 test(/shared\/style-fabric\/studio\//.test(html), 'route links the full local Style Fabric composer');

@@ -2,6 +2,8 @@
 'use strict';
 
 const assert = require('assert');
+const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const Readiness = require('./tool-readiness');
 
@@ -17,4 +19,75 @@ assert.equal(first.truth.selftestPassIsHumanApproval, false);
 assert.ok(first.capabilities.every(row => Array.isArray(row.providers) && Array.isArray(row.consumers)));
 const bad = Readiness.validateTargetManifest({ id: 'wrong', name: 'Wrong', version: '1', status: 'TEST', entry: 'index.html', uses: [], permissions: [] }, 'folder');
 assert.ok(bad.some(message => message.startsWith('id must equal folder name')));
+
+assert.equal(typeof Readiness.isVerificationTarget, 'function', 'verification target policy is exported for generators and tests');
+assert.equal(Readiness.isVerificationTarget({ status: 'TEST', selftest: { promotionPath: 'tools/test/selftest.js' } }), true);
+assert.equal(Readiness.isVerificationTarget({ status: 'WORKING', selftest: { promotionPath: 'tools/working/selftest.js' } }), true);
+assert.equal(Readiness.isVerificationTarget({ status: 'CANON', selftest: { promotionPath: 'tools/canon/selftest.js' } }), true);
+assert.equal(Readiness.isVerificationTarget({ status: 'EXPERIMENTAL', selftest: { promotionPath: 'tools/experimental/selftest.js' } }), false);
+
+const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-readiness-policy-'));
+try {
+  const toolRoot = path.join(fixtureRoot, 'tools', 'working-tool');
+  fs.mkdirSync(toolRoot, { recursive: true });
+  fs.writeFileSync(path.join(toolRoot, 'manifest.json'), JSON.stringify({
+    schema: 'axm.tool-manifest/v1',
+    kind: 'product',
+    id: 'working-tool',
+    name: 'Working Tool',
+    version: 'v1',
+    status: 'WORKING',
+    entry: 'index.html',
+    contract: 'module.contract.json',
+    uses: [],
+    permissions: [],
+    verifiedAt: '2026-07-28T00:00:00.000Z'
+  }));
+  fs.writeFileSync(path.join(toolRoot, 'module.contract.json'), JSON.stringify({
+    schema: 'axm.module-contract/v1',
+    id: 'working-tool',
+    version: 'v1',
+    provides: ['working-tool.read/v1'],
+    consumes: [],
+    permissions: [],
+    handoffs: { emits: [], accepts: [] },
+    boundaries: { refuses: ['automatic-promotion'] }
+  }));
+  fs.writeFileSync(path.join(toolRoot, 'index.html'), '<!doctype html><title>Working Tool</title>');
+  fs.writeFileSync(path.join(toolRoot, 'selftest.js'), "console.log('PASS');\n");
+
+  const noReceipt = Readiness.buildIndex(fixtureRoot, { now: '2026-07-28T12:00:00.000Z' });
+  const missingResultTool = noReceipt.tools[0];
+  assert.equal(missingResultTool.promotion.state, 'CLAIM_NEEDS_REVERIFICATION');
+  assert.ok(missingResultTool.promotion.blockers.includes('current selftest PASS result is missing'));
+
+  const passReceipt = {
+    schema: 'axm.tool-selftest-results/v1',
+    results: [{ id: 'working-tool', selftestSha256: missingResultTool.selftest.sha256, verdict: 'PASS' }]
+  };
+  const current = Readiness.buildIndex(fixtureRoot, { now: '2026-07-28T12:00:00.000Z', verificationResults: passReceipt });
+  assert.equal(current.tools[0].promotion.state, 'CURRENT');
+  assert.equal(current.tools[0].selftest.result.verdict, 'PASS');
+  assert.deepEqual(Readiness.validateIndex(current), { pass: true, errors: [] });
+
+  const failed = Readiness.buildIndex(fixtureRoot, {
+    now: '2026-07-28T12:00:00.000Z',
+    verificationResults: { schema: 'axm.tool-selftest-results/v1', results: [{ id: 'working-tool', selftestSha256: missingResultTool.selftest.sha256, verdict: 'FAIL' }] }
+  });
+  assert.equal(failed.tools[0].promotion.state, 'CLAIM_NEEDS_REVERIFICATION');
+  assert.ok(failed.tools[0].promotion.blockers.includes('current selftest did not pass'));
+
+  const stale = Readiness.buildIndex(fixtureRoot, {
+    now: '2026-07-28T12:00:00.000Z',
+    verificationResults: { schema: 'axm.tool-selftest-results/v1', results: [{ id: 'working-tool', selftestSha256: '0'.repeat(64), verdict: 'PASS' }] }
+  });
+  assert.equal(stale.tools[0].promotion.state, 'CLAIM_NEEDS_REVERIFICATION');
+  assert.ok(stale.tools[0].promotion.blockers.includes('selftest result is stale for the current selftest digest'));
+
+  const tampered = JSON.parse(JSON.stringify(current));
+  tampered.tools[0].selftest.result = null;
+  assert.ok(Readiness.validateIndex(tampered).errors.some(message => message.includes('CURRENT requires a digest-bound PASS')));
+} finally {
+  fs.rmSync(fixtureRoot, { recursive: true, force: true });
+}
 console.log('tool readiness selftest: PASS (' + first.tools.length + ' tools, ' + first.summary.capabilities + ' capabilities)');

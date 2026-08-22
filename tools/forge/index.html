@@ -34,10 +34,10 @@
 <h1>Make a new tool</h1>
 
 <div class="panel">
-  <label>Your name (for the id prefix — official AXM tools skip this)</label>
+  <label for="owner">Your name (for the id prefix — official AXM tools skip this)</label>
   <input id="owner" placeholder="mike (leave empty ONLY for official tools)" />
-  <label>Tool name</label><input id="tname" placeholder="Snowball Counter" />
-  <label>What should it do? (plain words — this becomes the AI brief)</label>
+  <label for="tname">Tool name</label><input id="tname" placeholder="Snowball Counter" />
+  <label for="tdesc">What should it do? (plain words — this becomes the AI brief)</label>
   <textarea id="tdesc" placeholder="Counts snowballs per faction, saves the tally, shows a simple chart…"></textarea>
   <label>Powers it needs (tap — becomes the honest uses declaration)</label>
   <div class="row" id="usesRow"></div>
@@ -130,7 +130,8 @@ function makeBrief(id,name,desc){
 }
 
 function dl(filename, content){ const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'})); a.download=filename; a.click(); }
+  const url=URL.createObjectURL(new Blob([content],{type:'text/plain'})); a.href=url; a.download=filename; a.click();
+  URL.revokeObjectURL(url); }
 
 $('genBtn').onclick = () => {
   const owner = slug($('owner').value); const nm = $('tname').value.trim(); const desc = $('tdesc').value.trim();

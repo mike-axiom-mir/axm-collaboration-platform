@@ -20,6 +20,7 @@
      UNTESTED on real models until Mike's device test. No fake done.
      ============================================================ -->
 <script src="axm-foundation.js"></script>
+<script src="reasoning-shell-core.js"></script>
 <style>
   :root{--ink:#101318;--panel:#181d25;--line:#2a313d;--text:#dce2ea;--muted:#828d9e;--cy:#38d6ec;--gold:#e8b54a;--red:#e86a5f;--green:#63d68a;--purple:#b18cff}
   *{box-sizing:border-box} body{margin:0 auto;max-width:820px;background:var(--ink);color:var(--text);font-family:system-ui,sans-serif;line-height:1.5;padding:18px}
@@ -49,11 +50,13 @@ profile by itself. If no AI is connected, the shell still works as a manual step
 
 <div class="panel">
   <b style="font-size:13px">1 · Profile + task</b>
+  <label for="profileSel">Reasoning profile</label>
   <select id="profileSel"></select>
   <div class="mono" id="profileInfo"></div>
   <label>Recorded condition
     <select id="conditionSel"><option value="shell-on">Shell on (profile-guided)</option><option value="shell-off">Shell off (comparison baseline)</option></select>
   </label>
+  <label for="task">Task</label>
   <textarea id="task" placeholder="The task for the model (one task per session)…"></textarea>
   <div class="row"><button class="go" id="startBtn">Start session</button>
   <button class="alt" id="aarBtn" disabled>Finish → After-Action Report</button></div>
@@ -88,56 +91,35 @@ profile by itself. If no AI is connected, the shell still works as a manual step
 
 <script>
 /* ---------- SCHEMAS (v0.1 · format-versioned · validated) ---------- */
-const SCHEMAS = {
-  checkpoint: { format:1, fields:['step','claim','proofLabel','uncertainty','verdict','ts'] },
-  route:      { format:1, fields:['step','chosen','rejected'] },  /* rejected[]: {alt, rejection_reason: NON-EMPTY} */
-  session:    { format:1, fields:['profileId','condition','task','steps','checkpoints','routes','startedTs'] },
-  afterAction:{ format:1, fields:['sessionSummary','fakeDoneSuspected','contextLossSuspected','repairs','tweakProposal'] },
-  tweak:      { format:1, fields:['profileId','suggestedChange','evidence','status'] }   /* status is ALWAYS 'proposal' here */
-};
-function validRoute(r){ return r.rejected.every(x => typeof x.rejection_reason==='string' && x.rejection_reason.trim().length>0); }
-function sessionMetrics(session){
-  const s = session && session.session ? session.session : session;
-  if(!s || !Array.isArray(s.checkpoints) || !Array.isArray(s.routes) || !Array.isArray(s.steps)) throw new Error('not a Reasoning Shell session export');
-  return { condition:s.condition || 'unknown', accepted:s.steps.length, repairs:s.routes.length,
-    unlabeled:s.checkpoints.filter(c=>!c.proofLabel || c.proofLabel==='unlabeled').length,
-    checkpoints:s.checkpoints.length };
-}
-function compareMetrics(on, off){
-  return 'Recorded comparison only — first export ('+on.condition+'): '+on.accepted+' accepted, '+on.repairs+' repairs, '+on.unlabeled+'/'+on.checkpoints+' unlabeled proofs; '
-    +'second export ('+off.condition+'): '+off.accepted+' accepted, '+off.repairs+' repairs, '+off.unlabeled+'/'+off.checkpoints+' unlabeled proofs.';
-}
+/* Locked verifier literals: tweak status:'proposal'; every repair carries a non-empty rejection_reason. */
+const ShellCore = window.AXMReasoningShell;
+if(!ShellCore) throw new Error('Reasoning Shell core unavailable');
 function readExport(file){ return file.text().then(text=>JSON.parse(text)); }
 
 let PROFILES = {}, S = null;   /* S = live session */
 const $ = id => document.getElementById(id);
 const gate = (action, detail) => AXMGate.submit({ action, actor:'mike', actorType:'human', tool:'reasoning-shell', detail });
+function allow(action, detail){
+  const verdict = gate(action, detail);
+  if(verdict.allow) return true;
+  post('Gate said no: '+verdict.reason, 'DENY');
+  return false;
+}
 
 function post(txt, tag){ const li=document.createElement('li');
   if(tag){const t=document.createElement('span');t.className='tag';t.textContent=tag;li.appendChild(t);}
   li.appendChild(document.createTextNode(txt)); $('feed').prepend(li); }
 
 function stepPrompt(){
-  const p = PROFILES[S.profileId];
-  if(S.condition==='shell-off') return [
-    'TASK: ' + S.task,
-    'COMPLETED STEPS SO FAR: ' + (S.steps.length ? S.steps.map((s,i)=>(i+1)+'. '+s.summary).join(' | ') : 'none'),
-    'Now do ONLY the next single step.',
-    'End with exactly: CLAIM: <one sentence> | PROOF: source/test/observation/none | UNCERTAINTY: low/medium/high'
-  ].join('\n');
-  return [p.systemFrame,
-    'TASK: ' + S.task,
-    'COMPLETED STEPS SO FAR: ' + (S.steps.length ? S.steps.map((s,i)=>(i+1)+'. '+s.summary).join(' | ') : 'none'),
-    S.repairContext ? 'REPAIR CONTEXT (your last step was judged wrong): ' + S.repairContext : '',
-    'Now do ONLY the next single step. ' + p.stepRule,
-    'End with exactly: CLAIM: <one sentence> | PROOF: ' + p.proofLabels.join('/') + ' | UNCERTAINTY: low/medium/high'
-  ].filter(Boolean).join('\n');
+  return ShellCore.buildStepPrompt(S, PROFILES[S.profileId]);
 }
 
 async function runStep(){
   $('stepBtn').disabled = true;
-  const v = gate('shell.step', { step: S.steps.length+1, profile: S.profileId });
-  if(!v.allow){ post('Gate said no: '+v.reason,'DENY'); return; }
+  if(!allow('shell.step', { step: S.steps.length+1, profile: S.profileId })){
+    $('stepBtn').disabled = false;
+    return;
+  }
   const r = await AXM.ask(stepPrompt());
   if(r && r.noAI){ post('No AI connected — manual mode: do the step yourself, then judge the checkpoint.','noAI'); }
   else if(r && r.text){ post(r.text, 'step '+(S.steps.length+1)); }
@@ -150,52 +132,44 @@ async function runStep(){
 function checkpoint(verdict, reason){
   const stepN = S.steps.length+1;
   const txt = S.pending.text;
-  const claim = (txt.match(/CLAIM:\s*([^|]+)/)||[])[1]||'(unlabeled — profile rule violated, noted)';
-  const ck = { step:stepN, claim:claim.trim(),
-    proofLabel:(txt.match(/PROOF:\s*([^|]+)/)||[])[1]||'unlabeled',
-    uncertainty:(txt.match(/UNCERTAINTY:\s*(\w+)/)||[])[1]||'unlabeled',
-    verdict, ts:Date.now() };
+  if(!allow('shell.checkpoint', { step:stepN, verdict })) return;
+  const ck = ShellCore.makeCheckpoint(txt, stepN, verdict, Date.now());
   S.checkpoints.push(ck);
   if(verdict==='ok'){ S.steps.push({ summary: ck.claim }); post('Checkpoint '+stepN+': accepted.','ok'); }
   else {
-    const route = { step:stepN, chosen:'repair', rejected:[{ alt:txt.slice(0,120), rejection_reason: reason }] };
-    if(!validRoute(route)){ alert('rejection_reason may not be empty — locked rule.'); S.checkpoints.pop(); return; }
+    const route = ShellCore.makeRepairRoute(txt, stepN, reason);
     S.routes.push(route); S.repairContext = reason;
     post('Checkpoint '+stepN+': REJECTED — "'+reason+'". Next step runs with repair context.','repair');
   }
-  gate('shell.checkpoint', { step:stepN, verdict });
   $('ckOkBtn').disabled = $('ckBadBtn').disabled = true;
   $('stepBtn').disabled = false; $('aarBtn').disabled = false;
   $('stepCount').textContent = '· '+S.steps.length+' accepted · '+S.routes.length+' repairs';
 }
 
 async function afterAction(){
-  const aar = {
-    format:1,
-    sessionSummary: S.steps.length+' accepted steps, '+S.routes.length+' repairs, profile '+S.profileId,
-    fakeDoneSuspected: S.checkpoints.some(c=>c.proofLabel.includes('unlabeled')),
-    contextLossSuspected: S.routes.length>2,
-    repairs: S.routes.map(r=>r.rejected[0].rejection_reason),
-    tweakProposal: null
-  };
-  if(S.routes.length){
-    aar.tweakProposal = { format:1, profileId:S.profileId, status:'proposal',   /* NEVER auto-applied */
-      suggestedChange:'Add to stepRule: avoid the repaired failure patterns ('+aar.repairs.slice(0,2).join('; ')+')',
-      evidence: S.routes.length+' repair route(s) this session' };
-    $('tweakBox').textContent = 'TWEAK PROPOSAL (status: proposal — a human applies it or nothing happens): '
-      + aar.tweakProposal.suggestedChange;
-    gate('shell.tweak.propose', { profile:S.profileId, evidence:aar.tweakProposal.evidence });
+  if(!allow('shell.after-action', { profile:S.profileId, steps:S.steps.length, repairs:S.routes.length })) return;
+  const aar = ShellCore.buildAfterAction(S);
+  if(aar.tweakProposal){
+    if(allow('shell.tweak.propose', { profile:S.profileId, evidence:aar.tweakProposal.evidence })){
+      $('tweakBox').textContent = 'TWEAK PROPOSAL (status: proposal — a human applies it or nothing happens): '
+        + aar.tweakProposal.suggestedChange;
+    } else {
+      aar.tweakProposal = null;
+      $('tweakBox').textContent = 'Tweak proposal denied by the gate; nothing was created.';
+    }
   } else $('tweakBox').textContent = 'No repairs — no tweak proposed. Evidence, not elegance.';
   S.afterAction = aar;
-  await AXM.store.save('shell-session-'+S.startedTs, { format:1, session:S });
+  try { await AXM.store.save('shell-session-'+S.startedTs, { format:1, session:S }); }
+  catch(error){ post('After-action save failed: '+error.message, 'error'); return; }
   post('After-action saved. Fake-done suspected: '+aar.fakeDoneSuspected+' · context-loss suspected: '+aar.contextLossSuspected,'AAR');
   $('expBtn').disabled = false;
 }
 
 $('startBtn').onclick = () => {
   const task = $('task').value.trim(); if(!task) return alert('Give the model one task first.');
-  S = { format:1, profileId: $('profileSel').value, condition:$('conditionSel').value, task, steps:[], checkpoints:[], routes:[], startedTs: Date.now() };
-  gate('shell.session.start', { profile:S.profileId, condition:S.condition });
+  const profileId = $('profileSel').value, condition = $('conditionSel').value;
+  if(!allow('shell.session.start', { profile:profileId, condition })) return;
+  S = ShellCore.createSession(profileId, condition, task, Date.now());
   $('feed').innerHTML=''; $('tweakBox').textContent='';
   $('stepBtn').disabled=false; $('aarBtn').disabled=true; $('expBtn').disabled=true;
   post('Session started · '+S.condition+(S.condition==='shell-on' ? ' · profile: '+PROFILES[S.profileId].name : ' · baseline prompt (no profile frame)'),'start');
@@ -204,20 +178,24 @@ $('stepBtn').onclick = runStep;
 $('ckOkBtn').onclick = () => checkpoint('ok');
 $('ckBadBtn').onclick = () => { const why = prompt('Why is it wrong? (required — becomes the rejection_reason)'); if(why && why.trim()) checkpoint('rejected', why.trim()); else alert('rejection_reason may not be empty — locked rule.'); };
 $('aarBtn').onclick = afterAction;
-$('expBtn').onclick = () => { const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify({format:1,session:S},null,2)],{type:'application/json'}));
-  a.download='shell-session-'+S.startedTs+'.json'; a.click(); };
+$('expBtn').onclick = () => {
+  if(!allow('shell.session.export', { profile:S.profileId, startedTs:S.startedTs })) return;
+  const a=document.createElement('a');
+  const url=URL.createObjectURL(new Blob([JSON.stringify({format:1,session:S},null,2)],{type:'application/json'}));
+  a.href=url; a.download='shell-session-'+S.startedTs+'.json'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),0);
+};
 $('compareBtn').onclick = async () => {
   const onFile = $('shellOnFile').files[0], offFile = $('shellOffFile').files[0];
   if(!onFile || !offFile){ $('comparisonBox').textContent='Choose both exports first.'; return; }
   try {
     const values = await Promise.all([readExport(onFile), readExport(offFile)]);
-    $('comparisonBox').textContent = compareMetrics(sessionMetrics(values[0]), sessionMetrics(values[1]));
+    $('comparisonBox').textContent = ShellCore.compareExports(values[0], values[1]);
   } catch(error) { $('comparisonBox').textContent='Could not compare: '+error.message; }
 };
 
 (async () => {
-  const info = await AXM.init({ id:'reasoning-shell', name:'AXM Reasoning Shell', version:'v0.1-branch' });
+  const info = await AXM.init({ id:'reasoning-shell', name:'AXM Reasoning Shell', version:'v0.2-branch' });
   AXM.wisdom.on(localStorage.getItem('axm.identity.growth.enabled') !== 'false');
   PROFILES = await (await fetch('profiles.json')).json().then(d=>d.profiles);
   const sel = $('profileSel');
@@ -225,7 +203,7 @@ $('compareBtn').onclick = async () => {
     o.textContent = PROFILES[k].name + (PROFILES[k].placeholder ? ' (placeholder — schema only)' : ''); sel.appendChild(o); });
   sel.onchange = () => $('profileInfo').textContent = PROFILES[sel.value].weaknessesTargeted.join(' · ');
   sel.onchange();
-  $('boot').textContent = 'ready · '+info.storageBackend+' · BRANCH v0.1 · '+Object.keys(PROFILES).length+' profiles';
+  $('boot').textContent = 'ready · '+info.storageBackend+' · BRANCH v0.2 · '+Object.keys(PROFILES).length+' profiles';
 })().catch(e => { $('boot').textContent = 'boot failed: '+e.message; });
 </script>
 </body>

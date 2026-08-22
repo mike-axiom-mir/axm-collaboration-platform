@@ -3,15 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AXM Tool Template</title>
-<!-- ============================================================
-     AXM TOOL TEMPLATE (bundle version) — the blank seed for a NEW tool.
-     1. Copy this + axm-foundation.js into a folder.
-     2. Change id/name/version in AXM.init below.
-     3. Replace the "YOUR TOOL GOES HERE" zone; keep getProject/applyProject.
-     Saving, wisdom, identity, gate, friction, AI — wired by AXM.init.
-     AI is OPTIONAL: with none connected the tool still works.
-     ============================================================ -->
+<title>AXM Prehub — write, save, load</title>
+<!-- AXM Prehub v1: local note authoring with named save/load and autosave resume. -->
 <script src="axm-foundation.js"></script>
 <style>
   :root{--ink:#14171c;--panel:#191e25;--line:#2a313d;--text:#dce2ea;--muted:#828d9e;--cy:#38d6ec;--gold:#e8b54a}
@@ -36,10 +29,10 @@
 </head>
 <body>
 <div class="status" id="status">starting…</div>
-<div class="eyebrow">AXM tool</div>
-<h1 id="title">Untitled tool</h1>
-<section class="zone"><span class="tag">▚ your tool goes here</span>
-  <textarea id="demo" placeholder="Demo project — type anything. It saves and survives refresh."></textarea></section>
+<div class="eyebrow">AXM Prehub</div>
+<h1 id="title">Prehub — write, save, load</h1>
+<section class="zone"><span class="tag">▚ write · save · return</span>
+  <textarea id="demo" placeholder="Write anything. It saves locally and survives refresh."></textarea></section>
 <section class="panel"><h2>Saves</h2>
   <div class="row"><input type="text" id="slot" value="slotA" /><button class="human" id="save">Save slot</button><button id="load">Load slot</button></div>
   <p class="hint">Autosave keeps your work safe on refresh.</p></section>
@@ -56,7 +49,7 @@ function getProject(){ return { note: $('demo').value }; }
 function applyProject(d){ if(d) $('demo').value = d.note || ''; }
 let W;
 (async () => {
-  const info = await AXM.init({ id:'template', name:'Untitled tool', version:'v1' });
+  const info = await AXM.init({ id:'prehub', name:'Prehub — write, save, load', version:'v1' });
   AXM.wisdom.on(localStorage.getItem('axm.identity.growth.enabled') !== 'false');
   $('title').textContent = AXM.card().name; $('status').textContent = 'ready · ' + info.storageBackend; W = AXM.wisdom;
   const last = await AXM.store.resume(); if(last){ applyProject(last.data); }

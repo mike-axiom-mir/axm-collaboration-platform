@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-consent-evaluation/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "evaluatedAt", "policyRef", "instanceRef", "domainRuleId", "holds", "limitations", "nextGate", "truth", "authority", "evaluationDigest"],
+  "properties": {
+    "schema": {"const": "axm.grounded-consent-evaluation/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"enum": ["POLICY_HOLD", "INSTANCE_HOLD", "POLICY_BINDING_HOLD", "DOMAIN_HOLD", "SUBJECT_SCHEMA_HOLD", "DOMAIN_PROFILE_HOLD", "PREDECISION_EVIDENCE_HOLD", "ACTION_SCOPE_HOLD", "AUTHORITY_SCOPE_HOLD", "DATA_SCOPE_HOLD", "LIFECYCLE_SCOPE_HOLD", "RESOURCE_SCOPE_HOLD", "INPUT_BUDGET_HOLD", "EVIDENCE_SCOPE_HOLD", "RECONSENT_BINDING_HOLD", "TIME_WINDOW_HOLD", "AUTHENTICATED_HUMAN_DECISION_REQUIRED"]},
+    "evaluatedAt": {"oneOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]},
+    "policyRef": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/reference"}]},
+    "instanceRef": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/reference"}]},
+    "domainRuleId": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+    "holds": {"type": "array", "maxItems": 16, "items": {"type": "string", "minLength": 1, "maxLength": 1000}},
+    "limitations": {"const": ["POLICY_AUTHORSHIP_NOT_PROVEN", "NATURAL_PERSON_IDENTITY_NOT_PROVEN", "INFORMED_UNDERSTANDING_NOT_PROVEN", "PREDECISION_EVIDENCE_CONTENT_NOT_VERIFIED", "INPUT_ARTIFACT_BYTES_NOT_OBSERVED", "TRUSTED_CLOCK_NOT_OBSERVED", "LIVE_REVOCATION_NOT_CHECKED", "DOMAIN_SAFETY_NOT_VERIFIED", "HOST_AUTHORIZATION_NOT_GRANTED"]},
+    "nextGate": {"enum": ["REPAIR_CONSENT_SCOPE_THEN_REEVALUATE", "VERIFY_PREDECISION_EVIDENCE_THEN_AUTHENTICATE_EXACT_HUMAN_DECISION_AND_CHECK_LIVE_REVOCATION_DOMAIN_SAFETY_AND_HOST_AUTHORIZATION"]},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "evaluationDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "contract": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "schema": {"$ref": "#/$defs/contract"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policyIntegrityVerified", "instanceIntegrityVerified", "policyDigestBound", "domainRuleSelected", "subjectSchemaAllowed", "domainProfileSchemaAllowed", "predecisionEvidenceReferencesBound", "actionsWithinPolicy", "authorityWithinPolicy", "dataUseWithinPolicy", "lifecycleWithinPolicy", "resourcesWithinPolicy", "inputBudgetWithinPolicy", "evidenceRequirementsPreserved", "reconsentTriggersBound", "declaredTimeWindowValid", "authenticatedHumanDecisionVerified", "naturalPersonIdentityProven", "informedUnderstandingProven", "trustedClockObserved", "liveRevocationChecked", "domainSafetyVerified", "hostAuthorizationGranted", "attemptExecuted", "outputProduced", "persistentLearningAdmitted", "hardwareActuated", "installed", "published", "promoted", "canonChanged"],
+      "properties": {
+        "policyIntegrityVerified": {"type": "boolean"},
+        "instanceIntegrityVerified": {"type": "boolean"},
+        "policyDigestBound": {"type": "boolean"},
+        "domainRuleSelected": {"type": "boolean"},
+        "subjectSchemaAllowed": {"type": "boolean"},
+        "domainProfileSchemaAllowed": {"type": "boolean"},
+        "predecisionEvidenceReferencesBound": {"type": "boolean"},
+        "actionsWithinPolicy": {"type": "boolean"},
+        "authorityWithinPolicy": {"type": "boolean"},
+        "dataUseWithinPolicy": {"type": "boolean"},
+        "lifecycleWithinPolicy": {"type": "boolean"},
+        "resourcesWithinPolicy": {"type": "boolean"},
+        "inputBudgetWithinPolicy": {"type": "boolean"},
+        "evidenceRequirementsPreserved": {"type": "boolean"},
+        "reconsentTriggersBound": {"type": "boolean"},
+        "declaredTimeWindowValid": {"type": "boolean"},
+        "authenticatedHumanDecisionVerified": {"const": false},
+        "naturalPersonIdentityProven": {"const": false},
+        "informedUnderstandingProven": {"const": false},
+        "trustedClockObserved": {"const": false},
+        "liveRevocationChecked": {"const": false},
+        "domainSafetyVerified": {"const": false},
+        "hostAuthorizationGranted": {"const": false},
+        "attemptExecuted": {"const": false},
+        "outputProduced": {"const": false},
+        "persistentLearningAdmitted": {"const": false},
+        "hardwareActuated": {"const": false},
+        "installed": {"const": false},
+        "published": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false}
+      }
+    }
+  }
+}

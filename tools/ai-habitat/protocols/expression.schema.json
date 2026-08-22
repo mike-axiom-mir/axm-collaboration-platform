@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "expression.schema.json",
+  "title": "AXM Habitat Voluntary Expression Packet v0.3",
+  "description": "A seat-declared optional line, face-only signal, or explicit silence response. State faces are derived separately from seat status.",
+  "type": "object",
+  "required": [
+    "seat"
+  ],
+  "properties": {
+    "seat": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]+$",
+      "maxLength": 80
+    },
+    "mode": {
+      "enum": [
+        "words",
+        "face_only",
+        "silent"
+      ]
+    },
+    "face": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "emoticon": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "phrase": {
+      "type": "string",
+      "maxLength": 240
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 240
+    },
+    "category": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 320
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "chosen_by": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "invitation_id": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "ttl_seconds": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 600
+    },
+    "sticky": {
+      "type": "boolean"
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "mode"
+      ]
+    },
+    {
+      "required": [
+        "phrase"
+      ]
+    },
+    {
+      "required": [
+        "text"
+      ]
+    },
+    {
+      "required": [
+        "face"
+      ]
+    },
+    {
+      "required": [
+        "emoticon"
+      ]
+    }
+  ],
+  "additionalProperties": true
+}

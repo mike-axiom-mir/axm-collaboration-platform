@@ -1,0 +1,195 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "bounded-upstream-root-representation-migration",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "serialization.audit.production-javascript-static",
+        "serialization.audit.exported-shared-stable-runtime",
+        "serialization.core.strict-deterministic-json",
+        "serialization.verify.module-native",
+        "serialization.verify.safe-compatibility",
+        "serialization.verify.persistence-roundtrip"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "serialization.audit.production-javascript-static": [
+          "Scans JavaScript source under shared, tools, hub, worlds and site with declared generated, vendor, historical and test exclusions.",
+          "A static finding identifies a review seam, not a confirmed behavior bug."
+        ],
+        "serialization.audit.exported-shared-stable-runtime": [
+          "Thirteen explicitly enumerated non-Grounded-Growth shared modules are probed; six selected direct upstream roots now refuse all thirteen unsafe fixtures.",
+          "The runtime probe does not reach non-exported helpers."
+        ],
+        "serialization.core.strict-deterministic-json": [
+          "The six selected roots reuse the existing deterministic-json-core on this review branch."
+        ],
+        "serialization.verify.module-native": [
+          "All six selected upstream native self-tests pass with explicit safe-byte and unsafe-refusal assertions."
+        ],
+        "serialization.verify.safe-compatibility": [
+          "All 36 selected before/current safe canonical and object-digest comparisons are exact."
+        ],
+        "serialization.verify.persistence-roundtrip": [
+          "Six isolated temporary-file write/read/parse/re-canonicalize journeys are exact and retain no probe files."
+        ]
+      }
+    },
+    {
+      "id": "full-workshop-representation-closure-claim",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [
+        "serialization.audit.semantic-intent-review"
+      ],
+      "unknown": [
+        "serialization.audit.non-exported-helper-runtime",
+        "serialization.audit.browser-inline-runtime",
+        "serialization.audit.non-javascript-runtime"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "serialization.audit.non-exported-helper-runtime": [
+          "Static findings exist, but no safe general injection route proves behavior of every non-exported helper."
+        ],
+        "serialization.audit.browser-inline-runtime": [
+          "HTML inline scripts and browser-only state surfaces are outside the current source scanner."
+        ],
+        "serialization.audit.non-javascript-runtime": [
+          "This lane audits JavaScript representation seams only."
+        ],
+        "serialization.audit.semantic-intent-review": [
+          "Six high-value upstream roots and sixteen direct production seams are checked, but the remaining 291 potential static seams have not each received human semantic classification."
+        ]
+      }
+    },
+    {
+      "id": "voluntary-phone-qa-upstream-root",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "phone.qa.current-contract-compatible",
+        "phone.qa.physical-observation-capture"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "human-and-learning-benefit-claim",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "growth.human-benefit.native-evidence",
+        "growth.model-learning.held-out-evaluation"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "growth.human-benefit.native-evidence": [
+          "No voluntary human session is run by this technical lane."
+        ],
+        "growth.model-learning.held-out-evaluation": [
+          "Representation closure is not a model-learning evaluation."
+        ]
+      }
+    },
+    {
+      "id": "future-shadow-clone-integration",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "shadow-clone.candidate.received",
+        "shadow-clone.claim-specific-evaluation"
+      ],
+      "declaredConstraints": {}
+    }
+  ],
+  "missingCapabilities": [
+    "phone.qa.current-contract-compatible",
+    "phone.qa.physical-observation-capture",
+    "shadow-clone.candidate.received",
+    "shadow-clone.claim-specific-evaluation"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "phone.qa.current-contract-compatible",
+      "requiredBy": [
+        "voluntary-phone-qa-upstream-root"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "phone.qa.physical-observation-capture",
+      "requiredBy": [
+        "voluntary-phone-qa-upstream-root"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "shadow-clone.candidate.received",
+      "requiredBy": [
+        "future-shadow-clone-integration"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "shadow-clone.claim-specific-evaluation",
+      "requiredBy": [
+        "future-shadow-clone-integration"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

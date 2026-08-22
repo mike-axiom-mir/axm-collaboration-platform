@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../../shared/visual-kernel/axm-kernel.css">
   <link rel="stylesheet" href="../../shared/elements/dual-operator-command-deck.css">
   <link rel="stylesheet" href="command-center.css">
+  <link rel="stylesheet" href="code-draft-review.css">
   <link rel="stylesheet" href="../../shared/presentation-spine/presentation-spine.css?v=20260724-spine-1">
 </head>
 <body class="axm-spine" data-axm-profile="cockpit" data-axm-surface="workshop-command-center">
@@ -137,6 +138,12 @@
       <div class="vote-layout"><div><h2 id="voteTitle">Your seat is waiting</h2><p>The system recommendation is evidence, not your vote. Read it, add your reason, then choose. A changed plan gets a new digest and a new review.</p><div class="digest"><span>PLAN DIGEST</span><code id="planDigest">—</code></div><label class="vote-note"><span>WHY ARE YOU VOTING THIS WAY?</span><textarea id="voteNote" maxlength="1000" placeholder="Example: The plan is bounded and the missing pieces are acceptable for this stage."></textarea></label></div><div class="vote-console"><button data-vote="APPROVE" class="vote-up" type="button"><b>↑ UP</b><span>I support this exact plan</span></button><button data-vote="HOLD" class="vote-hold" type="button"><b>◇ HOLD</b><span>Pause for answers or repairs</span></button><button data-vote="REJECT" class="vote-down" type="button"><b>↓ DOWN</b><span>I reject this exact plan</span></button><p id="voteState">No vote recorded by this screen.</p></div></div>
     </section>
 
+    <section class="code-draft-zone panel" aria-labelledby="codeDraftReviewTitle">
+      <div class="zone-head"><div><span class="eyebrow">HEARTBEAT · CODE CLONE · EXISTING QUEUE</span><h2 id="codeDraftReviewTitle">Improvement drafts waiting for us</h2><p>Technical drafts are checked by a machine steward first. Mike only gets a choice when the exact copy passes that check and has a plain explanation. Machine-held drafts wait for repair without asking Mike to judge code. Nothing here can apply, merge, or publish itself.</p></div><div class="draft-queue-facts"><span id="codeDraftReviewCount">0 ACTIVE</span><span id="codeDraftReadyCount" class="ready-count">0 READY FOR MIKE</span><span id="codeDraftRepairCount" class="repair-count">0 NEED REPAIR</span><span id="codeDraftRetiredCount">0 ARCHIVED</span><span>DRAFTING DORMANT</span></div></div>
+      <div class="batch-technical-check"><div><b>LET THE TECHNICAL STEWARD CHECK THE QUEUE</b><span id="batchTechnicalStatus" aria-live="polite">Counting unchecked drafts…</span></div><button id="checkAllCodeDrafts" type="button" aria-describedby="batchTechnicalStatus">CHECK ALL UNCHECKED SAFELY</button><small>Maximum 25 exact candidates per click · each failure stays isolated · never applies code</small></div>
+      <div id="codeDraftReviews" class="code-draft-reviews"><p class="empty">No heartbeat code drafts are waiting.</p></div>
+    </section>
+
     <section class="room-zone" aria-labelledby="roomsTitle">
       <div class="zone-head"><div><span class="eyebrow">04 · OPEN A WORKSPACE</span><h2 id="roomsTitle">Or go straight where you need to be</h2><p>You do not need a saved plan to open a tool, game, project, or collaborator room.</p></div></div>
       <div class="room-grid">
@@ -167,6 +174,7 @@
   </main>
 
   <script src="../../shared/direction/axm-direction-review.js?v=0.2.0"></script>
-  <script src="app.js"></script>
+  <script src="code-draft-decision-guide.js?v=20260728-human-decision-1"></script>
+  <script src="app.js?v=20260728-human-decision-1"></script>
 </body>
 </html>

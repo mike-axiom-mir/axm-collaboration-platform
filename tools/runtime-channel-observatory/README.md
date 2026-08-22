@@ -1,6 +1,6 @@
 # AXM Runtime Channel Observatory
 
-Detached `EXPERIMENTAL` candidate. It consumes `axm.entry-resource-graph/v1`, rechecks source hashes, and inventories explicit communication declarations without running them.
+Integrated `TEST` module. It consumes `axm.entry-resource-graph/v1`, rechecks source hashes, and inventories explicit communication declarations without running them.
 
 It observes named `BroadcastChannel` and `CustomEvent` patterns, selected consumers, unnamed `postMessage` / `MessageChannel` patterns, and textual WebSocket/EventSource endpoints. Static producer/consumer pairing and multi-owner reuse become evidence states. A review request asks existing owners four questions about one named seam.
 

@@ -1,0 +1,73 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "evidence-chain-candidate-review-gate",
+  "version": "v0.1",
+  "provides": [
+    "capability.review.evidence-chain-recovery-candidate/v1",
+    "evidence-chain-recovery-four-artifact-binding",
+    "evidence-chain-recovery-independent-candidate-review",
+    "evidence-chain-recovery-fixed-decision-receipt"
+  ],
+  "consumes": [
+    "application/x-ndjson",
+    "axm.evidence-chain-inspection/v1",
+    "axm.evidence-chain-recovery-candidate/v1",
+    "capability.inspect.evidence-chain/v1",
+    "capability.prepare.evidence-chain-recovery-candidate/v1",
+    "human:explicit-review-decision-input"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.evidence-chain-recovery-review/v1",
+      "axm.evidence-chain-recovery-review-decision/v1"
+    ],
+    "accepts": [
+      "application/x-ndjson",
+      "axm.evidence-chain-inspection/v1",
+      "axm.evidence-chain-recovery-candidate/v1"
+    ]
+  },
+  "boundaries": {
+    "reads": [
+      "browser:user-selected-broken-segment",
+      "browser:user-selected-inspection-receipt",
+      "browser:user-selected-candidate-segment",
+      "browser:user-selected-recovery-receipt"
+    ],
+    "writes": [
+      "browser:explicit-assessment-download",
+      "browser:explicit-decision-download"
+    ],
+    "refuses": [
+      "implicit-live-state-discovery",
+      "unbound-source-inspection",
+      "unbound-recovery-receipt",
+      "invalid-candidate-chain",
+      "non-hash-semantic-change",
+      "transition-mismatch",
+      "forged-pass-on-failing-assessment",
+      "accept-without-no-authority-acknowledgement",
+      "accept-without-authenticity-unknown-acknowledgement",
+      "payload-or-source-in-output-receipts",
+      "original-or-candidate-mutation",
+      "live-state-write",
+      "candidate-application",
+      "session-recovery",
+      "server-start",
+      "content-authenticity-claim",
+      "history-restoration-claim",
+      "permission-or-authority-grant",
+      "automatic-promotion",
+      "automatic-canon",
+      "network-access",
+      "persistent-storage"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

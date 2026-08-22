@@ -1,6 +1,6 @@
 # AXM Workshop Census Observatory
 
-This is a detached `EXPERIMENTAL` candidate. It has not been installed, registered in the Hub, promoted, granted permissions, or made CANON.
+This integrated `TEST` module is installed and registered without new permissions or CANON authority.
 
 ## Why it exists
 

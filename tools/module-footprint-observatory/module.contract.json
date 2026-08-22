@@ -1,25 +1,34 @@
 {
   "schema": "axm.module-contract/v1",
   "id": "module-footprint-observatory",
-  "version": "v0.1",
+  "version": "v0.2",
   "provides": [
     "per-module-active-file-count",
     "per-module-active-byte-count",
     "largest-observed-module-file",
     "per-module-extension-footprint",
     "excluded-directory-and-symlink-evidence",
-    "freshness-bound-footprint-observation"
+    "freshness-bound-footprint-observation",
+    "multi-root-storage-pressure-observation",
+    "same-size-sha256-exact-duplicate-observation",
+    "protected-by-default-operational-retention-classification",
+    "directory-fanout-observation",
+    "cluster-rounded-allocation-estimate",
+    "separately-timed-storage-snapshot-delta"
   ],
   "consumes": [
-    "filesystem/workshop-root"
+    "filesystem/workshop-root",
+    "filesystem/mirror-root"
   ],
   "permissions": [],
   "handoffs": {
     "emits": [
-      "axm.module-footprint-map/v1"
+      "axm.module-footprint-map/v1",
+      "axm.storage-pressure-map/v1"
     ],
     "accepts": [
-      "filesystem/workshop-root"
+      "filesystem/workshop-root",
+      "filesystem/mirror-root"
     ]
   },
   "boundaries": {
@@ -27,16 +36,18 @@
       "explicit-user-selected-output-only"
     ],
     "refuses": [
-      "file-content-reading-beyond-manifest-identity",
       "symlink-following",
-      "generated-state-inclusion",
       "quality-from-size",
       "complexity-from-size",
       "performance-from-size",
       "readiness-from-size",
-      "duplicate-content-inference",
       "size-budget-enforcement",
-      "deletion-recommendation",
+      "semantic-importance-from-path",
+      "duplicate-disposability-inference",
+      "deletion-target-selection",
+      "file-deletion",
+      "hardlinking",
+      "unreviewed-retention-action",
       "compression",
       "packaging",
       "source-mutation",

@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.fabric-schema-packet-mirror-verification-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "comparisonMeaning", "requestRef", "consentEvaluationRef", "instructionRef", "verifierProfileRef", "compilerReceiptRef", "source", "mirror", "fileDelta", "executableLikePathsPresent", "resourceObservation", "limitations", "nextImprovementGaps", "truth", "authority", "receiptDigest"],
+  "properties": {
+    "schema": {"const": "axm.fabric-schema-packet-mirror-verification-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"enum": ["MATCH", "DRIFT"]},
+    "comparisonMeaning": {"const": "Exact schema-packet byte equality only; source and mirror are directional labels, not trust or precedence."},
+    "requestRef": {"$ref": "#/$defs/reference"},
+    "consentEvaluationRef": {"$ref": "#/$defs/reference"},
+    "instructionRef": {"$ref": "#/$defs/reference"},
+    "verifierProfileRef": {"$ref": "#/$defs/reference"},
+    "compilerReceiptRef": {"$ref": "#/$defs/reference"},
+    "source": {"$ref": "#/$defs/packetSummary"},
+    "mirror": {"$ref": "#/$defs/packetSummary"},
+    "fileDelta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["added", "removed", "changed", "unchanged"],
+      "properties": {
+        "added": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/$defs/fileRecord"}},
+        "removed": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/$defs/fileRecord"}},
+        "changed": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/$defs/changedRecord"}},
+        "unchanged": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"$ref": "#/$defs/fileRecord"}}
+      }
+    },
+    "executableLikePathsPresent": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 260}},
+    "resourceObservation": {"$ref": "#/$defs/resources"},
+    "limitations": {"type": "array", "minItems": 21, "maxItems": 21, "uniqueItems": true, "items": {"type": "string"}},
+    "nextImprovementGaps": {"type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true, "items": {"type": "string"}},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "receiptDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 180},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 220},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "fileRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "byteLength"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "maxLength": 260},
+        "sha256": {"$ref": "#/$defs/digest"},
+        "byteLength": {"type": "integer", "minimum": 1, "maximum": 65536}
+      }
+    },
+    "changedRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sourceSha256", "mirrorSha256", "sourceByteLength", "mirrorByteLength"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "maxLength": 260},
+        "sourceSha256": {"$ref": "#/$defs/digest"},
+        "mirrorSha256": {"$ref": "#/$defs/digest"},
+        "sourceByteLength": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "mirrorByteLength": {"type": "integer", "minimum": 1, "maximum": 65536}
+      }
+    },
+    "packetSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["packetRef", "fileCount", "totalBytes", "embeddedCompilationVerified", "deterministicReceiptBytes", "exactCompilationPacketVerified", "issues"],
+      "properties": {
+        "packetRef": {"$ref": "#/$defs/reference"},
+        "fileCount": {"type": "integer", "minimum": 1, "maximum": 8},
+        "totalBytes": {"type": "integer", "minimum": 1, "maximum": 131072},
+        "embeddedCompilationVerified": {"type": "boolean"},
+        "deterministicReceiptBytes": {"type": "boolean"},
+        "exactCompilationPacketVerified": {"type": "boolean"},
+        "issues": {"type": "array", "maxItems": 6, "uniqueItems": true, "items": {"enum": ["COMPILATION_ARTIFACT_VERIFICATION_FAILED", "EXPECTED_FILE_MISSING", "RECEIPT_JSON_INVALID", "RECEIPT_OBJECT_INVALID", "RECEIPT_BYTES_NOT_DETERMINISTIC", "UNEXPECTED_FILE_PRESENT"]}}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verifierInputBytes", "sourcePacketBytes", "mirrorPacketBytes", "receiptBytes", "writtenFiles", "inputByteCeilingEnforced", "outputByteCeilingEnforced", "fileCountEnforced", "attemptCountEnforced", "durationEnforced", "memoryEnforced"],
+      "properties": {
+        "verifierInputBytes": {"type": "integer", "minimum": 1, "maximum": 262144},
+        "sourcePacketBytes": {"type": "integer", "minimum": 1, "maximum": 131072},
+        "mirrorPacketBytes": {"type": "integer", "minimum": 1, "maximum": 131072},
+        "receiptBytes": {"type": "integer", "minimum": 1, "maximum": 32768},
+        "writtenFiles": {"const": 0},
+        "inputByteCeilingEnforced": {"const": true},
+        "outputByteCeilingEnforced": {"const": true},
+        "fileCountEnforced": {"const": true},
+        "attemptCountEnforced": {"const": false},
+        "durationEnforced": {"const": false},
+        "memoryEnforced": {"const": false}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fabricFirstGateApplied", "groundedConsentScopeVerified", "interactiveDeclarationSupplied", "interactiveDeclarationReplayPrevented", "cryptographicHumanAuthenticationVerified", "trustedClockObserved", "liveRevocationChecked", "sourceExactCompilationPacketVerified", "mirrorExactCompilationPacketVerified", "exactPacketByteEqualityProven", "mirrorDriftObserved", "filePathsCompared", "fileBytesCompared", "fileContentRetainedInReceipt", "gitObjectDatabaseInspected", "gitRefsInspected", "gitRemoteContacted", "transportDeliveryProven", "fullCloneCompletenessProven", "semanticEquivalenceInferred", "mirrorCodeCloneConnected", "mirrorCodeCloneExecuted", "sourceMutationPerformed", "mirrorMutationPerformed", "automaticMergePerformed", "machineDefaultActivated", "persistentLearningAdmitted", "installed", "published", "promoted", "canonChanged"],
+      "properties": {
+        "fabricFirstGateApplied": {"const": true},
+        "groundedConsentScopeVerified": {"const": true},
+        "interactiveDeclarationSupplied": {"const": true},
+        "interactiveDeclarationReplayPrevented": {"const": false},
+        "cryptographicHumanAuthenticationVerified": {"const": false},
+        "trustedClockObserved": {"const": false},
+        "liveRevocationChecked": {"const": false},
+        "sourceExactCompilationPacketVerified": {"const": true},
+        "mirrorExactCompilationPacketVerified": {"type": "boolean"},
+        "exactPacketByteEqualityProven": {"type": "boolean"},
+        "mirrorDriftObserved": {"type": "boolean"},
+        "filePathsCompared": {"const": true},
+        "fileBytesCompared": {"const": true},
+        "fileContentRetainedInReceipt": {"const": false},
+        "gitObjectDatabaseInspected": {"const": false},
+        "gitRefsInspected": {"const": false},
+        "gitRemoteContacted": {"const": false},
+        "transportDeliveryProven": {"const": false},
+        "fullCloneCompletenessProven": {"const": false},
+        "semanticEquivalenceInferred": {"const": false},
+        "mirrorCodeCloneConnected": {"const": false},
+        "mirrorCodeCloneExecuted": {"const": false},
+        "sourceMutationPerformed": {"const": false},
+        "mirrorMutationPerformed": {"const": false},
+        "automaticMergePerformed": {"const": false},
+        "machineDefaultActivated": {"const": false},
+        "persistentLearningAdmitted": {"const": false},
+        "installed": {"const": false},
+        "published": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false}
+      }
+    }
+  }
+}

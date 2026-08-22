@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.model-shadow-continuity-receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "observationId", "observedAt", "status",
+    "baselineSnapshot", "candidateSnapshot", "comparison", "comparisonRef",
+    "decision", "projection", "reviewProjection", "truth", "receiptDigest"
+  ],
+  "properties": {
+    "schema": {"const": "axm.model-shadow-continuity-receipt/v1"},
+    "version": {"const": "0.1.0"},
+    "observationId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "observedAt": {"type": "string", "format": "date-time"},
+    "status": {"const": "TEST"},
+    "baselineSnapshot": {"type": "object"},
+    "candidateSnapshot": {"type": "object"},
+    "comparison": {"type": "object"},
+    "comparisonRef": {"$ref": "#/$defs/reference"},
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification", "validComparison", "reviewRequired", "currentBestAction", "autonomousActionCount"],
+      "properties": {
+        "classification": {"enum": ["STRUCTURED_TRACE_MATCH", "DRIFT_DETECTED", "CRITICAL_DRIFT", "HOLD_TASK_MISMATCH", "CONTEXT_CHANGED_COMPARISON_NOT_VALID", "IDENTITY_CHANGED_COMPARISON_NOT_VALID", "HOLD_NON_FORWARD_SEQUENCE"]},
+        "validComparison": {"type": "boolean"},
+        "reviewRequired": {"type": "boolean"},
+        "currentBestAction": {"type": "string"},
+        "autonomousActionCount": {"const": 0}
+      }
+    },
+    "projection": {"type": "object"},
+    "reviewProjection": {"type": "object"},
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "structuredTraceOnly", "rawOutputEmbedded", "privateContextEmbedded", "rawOutputArtifactCompared",
+        "freeTextSemanticEquivalenceInferred", "sameModelMindClaimed", "modelInvoked",
+        "providerTransportPerformed", "reviewSubmitted", "humanReviewPerformed",
+        "semanticCorrectnessProven", "learningImprovementProven", "humanBenefitProven",
+        "modelWeightTrainingPerformed", "automaticExecution", "automaticWrite",
+        "automaticInstall", "automaticPermissionGrant", "automaticPromotion",
+        "automaticMerge", "automaticCanon", "foundationMutation"
+      ],
+      "properties": {
+        "structuredTraceOnly": {"const": true},
+        "rawOutputEmbedded": {"const": false},
+        "privateContextEmbedded": {"const": false},
+        "rawOutputArtifactCompared": {"const": false},
+        "freeTextSemanticEquivalenceInferred": {"const": false},
+        "sameModelMindClaimed": {"const": false},
+        "modelInvoked": {"const": false},
+        "providerTransportPerformed": {"const": false},
+        "reviewSubmitted": {"const": false},
+        "humanReviewPerformed": {"const": false},
+        "semanticCorrectnessProven": {"const": false},
+        "learningImprovementProven": {"const": false},
+        "humanBenefitProven": {"const": false},
+        "modelWeightTrainingPerformed": {"const": false},
+        "automaticExecution": {"const": false},
+        "automaticWrite": {"const": false},
+        "automaticInstall": {"const": false},
+        "automaticPermissionGrant": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticMerge": {"const": false},
+        "automaticCanon": {"const": false},
+        "foundationMutation": {"const": false}
+      }
+    },
+    "receiptDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  },
+  "$defs": {
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"type": "string"},
+        "schema": {"type": "string"},
+        "sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      }
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "deterministic-pr-checkpoint",
+  "version": "v0.1",
+  "provides": [
+    "git-pr.read-only-local-checkpoint",
+    "git-pr.explicit-scope-policy-gate",
+    "git-pr.path-independent-semantic-digest",
+    "git-pr.changed-blob-digest-binding",
+    "git-pr.declared-evidence-binding",
+    "git-pr.deterministic-review-packet",
+    "git-pr.authority-preservation"
+  ],
+  "consumes": [
+    "filesystem:explicit-clean-git-working-copy",
+    "local-git-runtime",
+    "deterministic-json-core",
+    "axm.git-pr-scope-policy/v1",
+    "axm.git-pr-evidence-input/v1",
+    "axm.git-pr-review-metadata/v1"
+  ],
+  "permissions": [
+    "export"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.git-pr-checkpoint/v1",
+      "axm.git-pr-checkpoint-verification/v1",
+      "axm.git-pr-review-packet/v1"
+    ],
+    "accepts": [
+      "filesystem/explicit-clean-git-working-copy",
+      "axm.git-pr-scope-policy/v1",
+      "axm.git-pr-evidence-input/v1",
+      "axm.git-pr-checkpoint/v1",
+      "axm.git-pr-review-metadata/v1"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "not-applicable",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "explicit-create-new-output-outside-inspected-repository"
+    ],
+    "refuses": [
+      "implicit-repository-selection",
+      "implicit-scope",
+      "dirty-working-copy",
+      "detached-head",
+      "default-branch-review",
+      "base-ref-not-locally-resolved",
+      "base-not-ancestor",
+      "credential-bearing-remote-url",
+      "unapproved-remote-host",
+      "path-outside-policy",
+      "forbidden-private-path",
+      "sensitive-changed-content",
+      "undeclared-deletion",
+      "undeclared-rename-or-copy",
+      "symbolic-link-or-gitlink-change",
+      "missing-required-evidence",
+      "test-command-execution",
+      "network-fetch",
+      "repository-write",
+      "git-stage-or-commit",
+      "git-push",
+      "pull-request-creation",
+      "automatic-merge",
+      "promotion",
+      "canon-change"
+    ]
+  }
+}

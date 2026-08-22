@@ -1,6 +1,6 @@
 # AXM Dependency Declaration Observatory
 
-Detached `EXPERIMENTAL` candidate. It maps exact module dependency declarations from the live Workshop without becoming an activation resolver.
+Integrated `TEST` module. It maps exact module dependency declarations from the live Workshop without becoming an activation resolver.
 
 ## What it owns
 

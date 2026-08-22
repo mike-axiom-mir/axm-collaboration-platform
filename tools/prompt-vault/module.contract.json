@@ -1,0 +1,74 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "prompt-vault",
+  "version": "v0_2",
+  "provides": [
+    "prompt-card-library",
+    "prompt-type-role-provider-tagging",
+    "prompt-status-lifecycle",
+    "model-agnostic-routing-guidance",
+    "explicit-prompt-handoff-builder",
+    "prompt-vault-backup-import-export",
+    "page-runtime-prompt-source-registry",
+    "optional-ai-assisted-prompt-revision"
+  ],
+  "consumes": [
+    "hub:axm-foundation",
+    "hub:axm-settings",
+    "hub:axm-registry",
+    "registry:asset.sink",
+    "connector:optional-ai",
+    "browser:file-input",
+    "browser:post-message"
+  ],
+  "permissions": [
+    "storage",
+    "gate",
+    "optional-ai",
+    "settings",
+    "registry",
+    "server-export"
+  ],
+  "handoffs": {
+    "emits": [
+      "application/json:axm-prompt-vault/v2",
+      "text/plain:axm-prompt-vault-handoff",
+      "text/plain:axm-prompt-vault-action-report",
+      "axm.ai-team-prompt/v1",
+      "registry:prompt.source/prompt-vault.records"
+    ],
+    "accepts": [
+      "application/json:axm-prompt-vault/v2",
+      "hub:init",
+      "browser-form:prompt-card"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "mixed",
+    "reload": "resume",
+    "disconnect": "graceful-degrade",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "axm-store:vault",
+      "registry:page-runtime/prompt-vault.records",
+      "server-export:explicit-user-request",
+      "browser-download:explicit-user-request",
+      "parent-window:explicit-model-comparison",
+      "activity-log:meaningful-actions"
+    ],
+    "refuses": [
+      "automatic-prompt-benchmarking",
+      "prompt-quality-proof",
+      "automatic-winner-selection",
+      "automatic-canon-promotion",
+      "persistent-server-wide-prompt-registry",
+      "required-ai-connector",
+      "silent-import",
+      "silent-export",
+      "promotion-authority",
+      "canon-authority"
+    ]
+  }
+}

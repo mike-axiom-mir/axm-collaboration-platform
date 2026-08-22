@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-human-handoff-package/v1",
+  "title": "AXM Grounded Growth Human Handoff Package",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "handoffId", "generatedAt", "capabilityId",
+    "claimId", "ancestryMode", "evaluation", "judgment",
+    "sourceDeclaration", "bridgeBundle", "state", "mappedDecision", "truth",
+    "handoffDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-human-handoff-package/v1" },
+    "version": { "const": "0.1.0" },
+    "handoffId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "capabilityId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "claimId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "ancestryMode": { "enum": ["CANDIDATE", "REUSE_EXISTING"] },
+    "evaluation": { "type": "object" },
+    "judgment": { "type": "object" },
+    "sourceDeclaration": { "$ref": "./local-steward-source-declaration.schema.json" },
+    "bridgeBundle": { "type": "object" },
+    "state": { "enum": ["ADMITTED", "EVIDENCE_HOLD", "SYNTHETIC_HOLD", "NATIVE_OR_BINDING_HOLD"] },
+    "mappedDecision": { "enum": ["PASS", "FAIL", "UNKNOWN"] },
+    "truth": { "type": "object" },
+    "handoffDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "playable-prototype",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.rules.deterministic",
+        "game.render.canvas",
+        "game.authority.server",
+        "game.package.game-hub"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "game-night-controls",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "input.keyboard.semantic",
+        "input.touch-controller.responsive",
+        "seat.ai.execution"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "input.touch-controller.responsive": [
+          "Browser viewport verification is available; physical phone evidence is separate."
+        ],
+        "seat.ai.execution": [
+          "Bounded deterministic prototype AI only."
+        ]
+      }
+    },
+    {
+      "id": "human-steering",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.room-signal.human-authority",
+        "game.room-signal.deterministic-resolution",
+        "state.room-signal.round-bound",
+        "ui.room-signal.cross-surface"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.room-signal.human-authority": [
+          "Only active human seats can cast one replaceable vote; AI attempts are denied without state mutation."
+        ],
+        "game.room-signal.deterministic-resolution": [
+          "Votes resolve by stable tie order into one exact authored next-round plan."
+        ],
+        "state.room-signal.round-bound": [
+          "The bounded vote targets the next round, survives checkpoints, and is stored in the consumed plan receipt."
+        ],
+        "ui.room-signal.cross-surface": [
+          "The portrait human controller sends and selects the vote; the shared lobby explains the winning vote and exact resulting Setlist."
+        ]
+      }
+    },
+    {
+      "id": "verification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "test.rules",
+        "test.http-lifecycle",
+        "visual.browser-journey"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "physical-device-proof",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "visual.physical-phone"
+      ],
+      "declaredConstraints": {
+        "visual.physical-phone": [
+          "No physical phone is connected to this task."
+        ]
+      }
+    },
+    {
+      "id": "human-fun-proof",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "judgment.human-game-night"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "judgment.human-game-night": [
+          "Requires Mike and representative players."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "visual.physical-phone"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "visual.physical-phone",
+      "requiredBy": [
+        "physical-device-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

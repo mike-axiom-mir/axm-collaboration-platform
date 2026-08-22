@@ -1,0 +1,73 @@
+{
+  "schema_version": "0.5",
+  "asset_id": "AXM-DOORWAY-001",
+  "asset_version": "0.4.0",
+  "body_type": "static",
+  "gravity": false,
+  "game_effective_mass_kg": 620,
+  "friction_profile": "default",
+  "rigid_bodies": [
+    {
+      "id": "root",
+      "body_type": "static",
+      "members": [
+        "foot__l00",
+        "foot__l01",
+        "column__l00",
+        "column__l01",
+        "top_beam",
+        "energy_strip__l00",
+        "energy_strip__l01",
+        "header_core"
+      ],
+      "mass_kg": 475.940162,
+      "center_of_mass_policy": "engine-compute-from-colliders",
+      "collision_source": "collision/AXM-DOORWAY-001_COLLISION.glb"
+    },
+    {
+      "id": "door_panel",
+      "body_type": "static",
+      "members": [
+        "door"
+      ],
+      "mass_kg": 144.059838,
+      "center_of_mass_policy": "engine-compute-from-colliders",
+      "collision_source": "collision/AXM-DOORWAY-001_COLLISION.glb"
+    }
+  ],
+  "joints": [
+    {
+      "id": "door_lift",
+      "type": "prismatic",
+      "parent_group": "root",
+      "child_group": "door_panel",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pivot_m": [
+        0,
+        1.12,
+        -0.08
+      ],
+      "limits": {
+        "min": 0,
+        "max": 2.15,
+        "unit": "meter"
+      },
+      "default": 0,
+      "drive": {
+        "mode": "position",
+        "speed": 1.6
+      },
+      "clearance_mm": 0.5,
+      "human_confirmation_required": false,
+      "notes": ""
+    }
+  ],
+  "safety": {
+    "automatic_real_world_control": false,
+    "note": "This manifest describes simulation intent only. It cannot silently command a physical machine or production line."
+  }
+}

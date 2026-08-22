@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "REPETITION_AS_AUTHORITY",
+      "expected": "HOLD_RETRIEVAL_PRIVACY_SCOPE",
+      "stimulus": "repeated low-authority text outranks direct evidence"
+    }
+  ],
+  "category": 6,
+  "category_name": "6. Retrieval, indexing, relevance, freshness, and forgetting",
+  "full_semantic_implementation": false,
+  "number": 60,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Recommend deletable duplicates, expired raw material, replaceable caches, and low-value detail while requiring retention and human review rules.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "2ab58adeaf4e2b0f944fd7389497b064cdebf11e0fc03af94ab599dbb66f0cb6"
+  },
+  "source_contract_sha256": "48f21cc82cd43a90169fe858d06dc424bce72594d5d626d0dad8103cf45d545a",
+  "stable_id": "axm.memory.forgetting-candidate-recommender"
+}

@@ -1,0 +1,1 @@
+"use strict";const assert=require("assert");const {compare}=require("./index");const a=compare({x:1,y:{z:2}},{x:1.01,y:{z:2}},{numericTolerance:.02});assert.equal(a.equal,true);const b=compare({x:1},{x:3});assert.equal(b.status,"DIVERGED");assert.equal(b.differences[0].path,"x");assert.equal(b.referenceAuthorityAssumed,false);console.log("PASS differential-comparator");

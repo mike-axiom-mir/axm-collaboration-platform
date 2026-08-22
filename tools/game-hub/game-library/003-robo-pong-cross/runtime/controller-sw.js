@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'axm-robo-pong-cross-controller-v3';
+const CACHE_NAME = 'axm-pong-cross-controller-v4';
 const SHELL_KEY = new URL('./controller-shell', self.registration.scope).href;
 const STATIC_ASSETS = [
   './controller-shell',
@@ -15,7 +15,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key.startsWith('axm-robo-pong-cross-controller-') && key !== CACHE_NAME).map(key => caches.delete(key))))
+      .then(keys => Promise.all(keys.filter(key => /axm-(?:robo-)?pong-cross-controller-/.test(key) && key !== CACHE_NAME).map(key => caches.delete(key))))
       .then(() => self.clients.claim())
   );
 });

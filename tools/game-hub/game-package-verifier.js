@@ -188,7 +188,9 @@ function validateRecoveryRegressions(libraryDir) {
     try { hub.validatePlayModeRoster(war, [{ slot: 1 }, { slot: 5 }]); }
     catch (error) { errors.push('Casino House War no longer accepts 1v1: ' + error.message); }
     const casinoApp = read(path.join(libraryDir, '007-casino', 'alpha', 'client', 'app.js'));
-    if (!casinoApp.includes('Backroom Story') || !casinoApp.includes('House War') || !casinoApp.includes('Start local alpha')) errors.push('Casino title/setup route no longer exposes both modes and a start action');
+    const storyTitle = String(story.label || '').split(' - ')[0].trim();
+    const warTitle = String(war.label || '').split(' - ')[0].trim();
+    if (!storyTitle || !warTitle || !casinoApp.includes(storyTitle) || !casinoApp.includes(warTitle) || !casinoApp.includes('Start local alpha')) errors.push('Casino title/setup route no longer exposes its manifest-declared modes and a start action');
     if (!(casino.controls && casino.controls.keyboard === true && casino.controls.phone_controller === true)) errors.push('Casino must retain laptop and optional phone controls');
   }
 

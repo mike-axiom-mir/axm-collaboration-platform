@@ -1,5 +1,8 @@
 {
-  "status": "WORKING / TEST example",
+  "schema": "axm.main-hub-layer-plan/v1",
+  "status": "PLAN_ONLY",
+  "implemented": false,
+  "authority": "design-reference-only",
   "active_layer_on_start": "visible-hub",
   "starter_layer_count": 2,
   "layers": [
@@ -8,8 +11,7 @@
       "order": 0,
       "label": "Hub",
       "visible_on_start": true,
-      "directly_seen": true,
-      "purpose": "Normal entry layer for players, members, visitors, and simple local tools.",
+      "purpose": "Proposed normal entry layer for players, members, visitors, and simple local tools.",
       "access": {
         "type": "open-local",
         "password_required": false
@@ -23,13 +25,12 @@
       "order": -1,
       "label": "Workshop Build",
       "visible_on_start": false,
-      "directly_seen": false,
-      "purpose": "Crew/system build layer for configuring modules, testing tools, and building the hub.",
+      "purpose": "Proposed crew/system build layer.",
       "entry_motion": "move-down",
       "access": {
-        "type": "local-password-gate",
+        "type": "unimplemented-local-password-plan",
         "password_required": true,
-        "password_storage": "settings.local.json or environment variable only; never commit real passwords"
+        "password_storage": "not implemented; never commit real passwords"
       },
       "modules": [
         "../agent-command-center",
@@ -39,11 +40,12 @@
       ]
     }
   ],
-  "rules": {
-    "visible_layer_opens_first": true,
-    "workshop_layer_not_directly_seen": true,
-    "simple_password_gate_for_workshop": true,
-    "no_committed_passwords": true,
-    "later_more_layers_allowed": true
+  "truth": {
+    "runtime_layer_switcher": false,
+    "runtime_password_input": false,
+    "runtime_password_validation": false,
+    "runtime_authentication": false,
+    "runtime_access_control": false,
+    "runtime_hub_state_adapter": false
   }
 }

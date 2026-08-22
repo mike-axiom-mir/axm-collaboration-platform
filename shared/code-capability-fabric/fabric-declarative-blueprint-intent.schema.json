@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.fabric-declarative-blueprint-intent/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "name", "purpose", "capability", "status", "kind", "inputFields", "outputFields", "steps", "qualityClaims", "resourceBudget", "authority", "intentDigest"],
+  "properties": {
+    "schema": {"const": "axm.fabric-declarative-blueprint-intent/v1"},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,79}$"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 120},
+    "purpose": {"type": "string", "minLength": 1, "maxLength": 600},
+    "capability": {"$ref": "#/$defs/contractToken"},
+    "status": {"const": "EXPERIMENTAL"},
+    "kind": {"const": "PURE_DATA_TRANSFORM"},
+    "inputFields": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"$ref": "#/$defs/inputField"}},
+    "outputFields": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"$ref": "#/$defs/outputField"}},
+    "steps": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"$ref": "#/$defs/step"}},
+    "qualityClaims": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 360}},
+    "resourceBudget": {"$ref": "#/$defs/resourceBudget"},
+    "authority": {"const": "NONE"},
+    "intentDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "token": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"},
+    "contractToken": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "fieldType": {"enum": ["array", "boolean", "integer", "number", "object", "string"]},
+    "inputField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "required", "description"],
+      "properties": {
+        "id": {"$ref": "#/$defs/token"},
+        "type": {"$ref": "#/$defs/fieldType"},
+        "required": {"type": "boolean"},
+        "description": {"type": "string", "minLength": 1, "maxLength": 240}
+      }
+    },
+    "outputField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "source", "description"],
+      "properties": {
+        "id": {"$ref": "#/$defs/token"},
+        "type": {"$ref": "#/$defs/fieldType"},
+        "source": {"$ref": "#/$defs/token"},
+        "description": {"type": "string", "minLength": 1, "maxLength": 240}
+      }
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "operation", "reads", "produces", "description"],
+      "properties": {
+        "id": {"$ref": "#/$defs/token"},
+        "operation": {"enum": ["ASSEMBLE", "EMIT", "FORMAT", "SELECT", "TRANSFORM", "VALIDATE"]},
+        "reads": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/token"}},
+        "produces": {"$ref": "#/$defs/token"},
+        "description": {"type": "string", "minLength": 1, "maxLength": 360}
+      }
+    },
+    "resourceBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxInputBytes", "maxOutputBytes", "maxDurationMs", "maxMemoryBytes", "maxOperations"],
+      "properties": {
+        "maxInputBytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "maxOutputBytes": {"type": "integer", "minimum": 1, "maximum": 65536},
+        "maxDurationMs": {"type": "integer", "minimum": 1, "maximum": 5000},
+        "maxMemoryBytes": {"type": "integer", "minimum": 1048576, "maximum": 134217728},
+        "maxOperations": {"type": "integer", "minimum": 1, "maximum": 16}
+      }
+    }
+  }
+}

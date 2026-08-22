@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#080916">
+  <title>Pulse Choir Controller</title>
+  <style>
+    :root{color-scheme:dark;--seat:#6df7ff;--bg:#060712;--panel:#101329;--line:#899cff30;--ink:#f8f7ff;--muted:#9399bb}*{box-sizing:border-box;touch-action:manipulation;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;min-height:100%;overflow-x:hidden;background:var(--bg);color:var(--ink);font-family:Inter,"Segoe UI",system-ui,sans-serif;overscroll-behavior:none}body{display:grid;place-items:center;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:radial-gradient(circle at 50% -10%,color-mix(in srgb,var(--seat) 22%,#14162d),#060712 62%)}main{width:min(560px,100%);display:grid;gap:11px}.top,.status,.directive,.controls,.foot{border:1px solid var(--line);border-radius:20px;background:#101329eb;box-shadow:0 18px 55px #0008,inset 0 1px #fff1}.top{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:11px;padding:12px}.mark{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:color-mix(in srgb,var(--seat) 18%,#111329);border:1px solid color-mix(in srgb,var(--seat) 45%,transparent);color:var(--seat);font-size:22px;box-shadow:0 0 22px color-mix(in srgb,var(--seat) 22%,transparent)}h1{margin:0;font-size:21px;letter-spacing:-.04em}.top p{margin:3px 0 0;color:var(--muted);font:800 9px ui-monospace,monospace;letter-spacing:.12em}.dot{width:10px;height:10px;border-radius:50%;background:#ff637d;box-shadow:0 0 13px currentColor}.dot.ok{background:#73f5a6}.status{padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.stat small{display:block;color:var(--muted);font:800 9px ui-monospace,monospace;letter-spacing:.1em}.stat strong{display:block;margin-top:4px;font-size:18px}.message{grid-column:1/-1;margin:2px 0 0;padding-top:9px;border-top:1px solid #fff1;color:#d8dcf4;font-size:12px;line-height:1.35}.directive{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:9px;padding:9px 12px}.directive[hidden]{display:none}.directive>i{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#ffcf5a20;color:#ffe174;font-style:normal;font-weight:1000;box-shadow:0 0 18px #ffcf5a35}.directive div{min-width:0}.directive small{display:block;color:#a8aed0;font:850 8px ui-monospace,monospace;letter-spacing:.1em}.directive strong{display:block;overflow:hidden;margin-top:2px;font-size:12px;text-overflow:ellipsis;white-space:nowrap}.directive>b{color:var(--seat);font:900 11px ui-monospace,monospace;white-space:nowrap}.controls{display:grid;grid-template-columns:1.1fr .9fr;gap:15px;align-items:center;padding:16px}.joystick{position:relative;justify-self:center;width:min(45vw,220px);aspect-ratio:1;border:1px solid color-mix(in srgb,var(--seat) 35%,transparent);border-radius:50%;background:radial-gradient(circle,#171b37 0 25%,#0b0e20 26% 56%,color-mix(in srgb,var(--seat) 10%,#0b0e20) 57%);box-shadow:inset 0 0 50px #0009,0 0 35px color-mix(in srgb,var(--seat) 10%,transparent);touch-action:none}.joystick:before,.joystick:after{content:"";position:absolute;background:#aeb9de22}.joystick:before{left:50%;top:9%;bottom:9%;width:1px}.joystick:after{top:50%;left:9%;right:9%;height:1px}.stick{position:absolute;left:50%;top:50%;width:38%;aspect-ratio:1;transform:translate(-50%,-50%);border:2px solid color-mix(in srgb,var(--seat) 62%,white);border-radius:50%;background:color-mix(in srgb,var(--seat) 24%,#11142a);box-shadow:0 9px 25px #0009,0 0 22px color-mix(in srgb,var(--seat) 28%,transparent);pointer-events:none}.actions{display:grid;gap:12px;justify-items:center}.pulse{width:min(37vw,176px);aspect-ratio:1;border:2px solid color-mix(in srgb,var(--seat) 75%,white);border-radius:50%;background:radial-gradient(circle at 38% 30%,#f8ffff,var(--seat) 17%,color-mix(in srgb,var(--seat) 55%,#131733) 58%,#11142a);color:#071019;font-weight:1000;font-size:22px;letter-spacing:.06em;box-shadow:0 9px 0 #03040a,0 0 35px color-mix(in srgb,var(--seat) 35%,transparent);touch-action:none}.pulse:active,.pulse.active{transform:translateY(6px);box-shadow:0 3px 0 #03040a,0 0 55px color-mix(in srgb,var(--seat) 60%,transparent)}.pulse small{display:block;font:900 8px ui-monospace,monospace;letter-spacing:.12em;margin-top:5px}.start{width:100%;border:1px solid #fff3;border-radius:12px;padding:11px;background:#181c38;color:#fff;font-weight:900;font-size:11px;letter-spacing:.08em}.start.ready{background:var(--seat);color:#071019}.hint{text-align:center;color:var(--muted);font-size:10px;line-height:1.35}.foot{padding:10px 13px;display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--muted);font-size:10px}.foot strong{color:#fff}.reduce{border:1px solid #fff2;border-radius:9px;padding:7px 9px;background:#0b0e20;color:#ccd1ec;font-size:10px}@media(max-width:520px){body{place-items:start center}main{gap:8px}.controls{grid-template-columns:1fr}.joystick{width:min(58vw,215px)}.pulse{width:min(41vw,160px)}.actions{grid-template-columns:1fr 1fr;align-items:center;width:100%}.hint{grid-column:1/-1}.status{grid-template-columns:repeat(3,1fr)}}@media(max-height:680px) and (orientation:landscape){body{place-items:center}.top{display:none}.directive{display:none}.controls{grid-template-columns:1fr 1fr}.joystick{width:min(40vh,210px)}.pulse{width:min(34vh,170px)}.foot{display:none}}body.reduce *{transition:none!important;animation:none!important}
+    body{position:relative;background:radial-gradient(circle at 50% -10%,color-mix(in srgb,var(--seat) 24%,#21103a),#050610 66%)}
+    body:before{content:"";position:fixed;inset:0;background:linear-gradient(#07051066,#04050de8),url('/games/012/assets/pulse-choir-arena-v2.png') center/cover;opacity:.48;filter:saturate(1.2);pointer-events:none}
+    main{position:relative;z-index:1}
+    .top,.status,.directive,.controls,.foot{border-color:color-mix(in srgb,var(--seat) 25%,#8574b7);background:linear-gradient(145deg,#19132de8,#090d20ed);backdrop-filter:blur(13px)}
+    .mark{border-radius:50%;box-shadow:0 0 0 4px #070817,0 0 30px color-mix(in srgb,var(--seat) 40%,transparent)}
+    h1{font-family:"Arial Black",Impact,sans-serif;font-style:italic;text-transform:uppercase;background:linear-gradient(100deg,#fff,var(--seat));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .pulse{position:relative;border-width:3px;background:radial-gradient(circle at 38% 30%,#fff,var(--seat) 17%,color-mix(in srgb,var(--seat) 58%,#25144a) 58%,#0b0c20);font-family:"Arial Black",Impact,sans-serif;font-style:italic;font-size:24px;box-shadow:0 9px 0 #03040a,0 0 0 7px color-mix(in srgb,var(--seat) 10%,transparent),0 0 42px color-mix(in srgb,var(--seat) 43%,transparent);animation:breathe 1.25s ease-in-out infinite alternate}
+    .start{border-radius:999px;box-shadow:0 5px 0 #050612}
+    .message{min-height:43px;font-weight:700}
+    @keyframes breathe{to{filter:brightness(1.12);box-shadow:0 9px 0 #03040a,0 0 0 10px color-mix(in srgb,var(--seat) 7%,transparent),0 0 56px color-mix(in srgb,var(--seat) 58%,transparent)}}
+    .room-signal{padding:10px 12px;border:1px solid #ffcf5a4d;border-radius:18px;background:linear-gradient(145deg,#28152ee8,#0b1024ed);box-shadow:0 18px 55px #0008,inset 0 1px #fff1}.room-signal[hidden]{display:none}.signal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.signal-head strong{color:#ffe174;font:950 10px ui-monospace,monospace;letter-spacing:.11em}.signal-head span{overflow:hidden;color:#b9bfdc;font:800 9px ui-monospace,monospace;text-overflow:ellipsis;white-space:nowrap}.signal-choices{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.signal-choice{min-height:44px;border:1px solid #fff2;border-radius:12px;background:#121832;color:#e7e9f8;font:950 10px ui-monospace,monospace;letter-spacing:.06em}.signal-choice small{display:block;margin-top:3px;color:#929abf;font:750 7px ui-monospace,monospace;letter-spacing:.04em}.signal-choice[aria-pressed="true"]{border-color:var(--seat);background:color-mix(in srgb,var(--seat) 22%,#12152d);color:#fff;box-shadow:0 0 18px color-mix(in srgb,var(--seat) 22%,transparent)}.signal-choice:disabled{opacity:.65}.waiting .controls{grid-template-columns:1fr;padding:10px 12px}.waiting .joystick,.waiting .pulse,.waiting .hint{display:none}.waiting .actions{display:block;width:100%}@media(max-width:520px){.room-signal{padding:9px 10px}.signal-choice{min-height:42px}.waiting main{gap:8px}}
+  </style>
+</head>
+<body>
+  <main>
+    <header class="top"><div class="mark" id="glyph">▲</div><div><h1 id="name">Pulse Choir</h1><p id="seat">CONNECTING TO HOST</p></div><i class="dot" id="dot"></i></header>
+    <section class="status" aria-live="polite">
+      <div class="stat"><small>CORE</small><strong id="core">0%</strong></div>
+      <div class="stat"><small>CARRY</small><strong id="carry">0 / 3</strong></div>
+      <div class="stat"><small>TIME</small><strong id="time">1:15</strong></div>
+      <p class="message" id="message">Waiting for the shared screen…</p>
+    </section>
+    <section class="directive" id="directive" aria-label="Live Setlist directive" aria-live="polite" hidden>
+      <i id="directiveGlyph">★</i><div><small id="directiveAct">ACT 1 / 3 · LIVE SETLIST</small><strong id="directiveTitle">HUMAN SPOTLIGHT</strong></div><b id="directiveProgress">0 / 1 · 0:23</b>
+    </section>
+    <section class="room-signal" id="roomSignal" aria-label="Choose the next round emphasis" hidden>
+      <div class="signal-head"><strong>ROOM SIGNAL</strong><span id="roomSignalStatus" aria-live="polite">VOTE ON THE NEXT SET</span></div>
+      <div class="signal-choices">
+        <button class="signal-choice" type="button" data-room-signal="together" aria-pressed="false">TOGETHER<small>SYNC THE ROOM</small></button>
+        <button class="signal-choice" type="button" data-room-signal="bold" aria-pressed="false">BOLD<small>TAKE THE SPOTLIGHT</small></button>
+        <button class="signal-choice" type="button" data-room-signal="flow" aria-pressed="false">FLOW<small>KEEP THE CHAIN</small></button>
+      </div>
+    </section>
+    <section class="controls" aria-label="Pulse Choir touch controls">
+      <div class="joystick" id="joystick" role="group" aria-label="Movement joystick"><div class="stick" id="stick"></div></div>
+      <div class="actions">
+        <button class="pulse" id="pulse" type="button" aria-label="Pulse during the synchronization window">PULSE<small>WHEN THE CORE CALLS</small></button>
+        <button class="start" id="start" type="button">WAITING FOR ROOM</button>
+        <p class="hint">Move with the left pad. PULSE is buffered for 0.24 seconds if you press just before the sync window.</p>
+      </div>
+    </section>
+    <footer class="foot"><span><strong>Striped</strong> lane = warning · <strong>solid</strong> = active</span><button class="reduce" id="reduce" type="button" aria-pressed="false">Reduce motion</button></footer>
+  </main>
+  <script>
+    (function(){
+      'use strict';
+      const params=new URLSearchParams(location.search),player=params.get('player')||'p1';
+      const ids=['glyph','name','seat','dot','core','carry','time','message','directive','directiveGlyph','directiveAct','directiveTitle','directiveProgress','roomSignal','roomSignalStatus','joystick','stick','pulse','start','reduce'];
+      const el=Object.fromEntries(ids.map(id=>[id,document.getElementById(id)]));
+      const signalButtons=Array.from(document.querySelectorAll('[data-room-signal]'));
+      let sequence=0,busy=false,signalBusy=false,pointer=null,lastVector='0,0',phase='lobby';
+      function fmt(ms){const s=Math.max(0,Math.ceil(Number(ms||0)/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+      async function call(path,options){const response=await fetch(path,Object.assign({cache:'no-store'},options||{}));const value=await response.json();if(!response.ok&&value.reason!=='stale-sequence')throw new Error(value.error||value.reason||'Host request failed');return value}
+      function showDirective(o){
+        const setlist=o.setlist,act=setlist&&setlist.activeIndex!==null?setlist.acts[setlist.activeIndex]:null,visible=o.phase==='playing'&&act&&act.status==='active',round=Math.max(1,Number(o.show&&o.show.roundNumber||1)),conductor=setlist&&setlist.conductor||{};
+        el.directive.hidden=!visible;
+        if(!visible)return;
+        el.directiveGlyph.textContent=act.glyph;
+        el.directiveAct.textContent='ROUND '+round+' · ACT '+(act.index+1)+' / '+setlist.acts.length+' · '+String(conductor.title||'OPENING SET');
+        el.directiveTitle.textContent=act.title;
+        el.directiveProgress.textContent=act.progress+' / '+act.target+' · '+fmt(Math.max(0,act.endsAt-Date.now()));
+      }
+      function showRoomSignal(o,p,show,conductor){
+        const visible=['lobby','results'].includes(o.phase)&&Number(show.completedRounds||0)>0&&p.type==='human',stored=show.roomSignal||{},resolved=conductor.roomSignal||{},selected=stored.votes&&stored.votes[p.id]||null;
+        el.roomSignal.hidden=!visible;
+        if(!visible)return;
+        signalButtons.forEach(button=>{const active=button.dataset.roomSignal===selected;button.setAttribute('aria-pressed',String(active));button.disabled=signalBusy});
+        el.roomSignalStatus.textContent=resolved.choice?(resolved.title+' LEADS · '+resolved.count+'/'+resolved.totalVotes+' HUMAN VOTE'+(resolved.totalVotes===1?'':'S')):'NO VOTES YET · TIES RESOLVE TOGETHER → BOLD → FLOW';
+      }
+      async function observe(){try{
+        const value=await call('/api/observe?player='+encodeURIComponent(player));
+        const o=value.observation,p=o.player,h=o.harmony||{streak:0,multiplier:1},show=o.show||{},next=show.next||{},round=Math.max(1,Number(o.phase==='lobby'&&next.roundNumber||show.roundNumber||next.roundNumber||1)),nextTitles=Array.isArray(next.acts)?next.acts.map(act=>act.title).join(' · '):'new directives',restored=value.recovery&&value.recovery.status==='restored',conductor=next.conductor||o.setlist&&o.setlist.conductor||{title:'OPENING SET',cue:'ESTABLISH THE ROOM',reason:'First round establishes the room’s rhythm before the show adapts.'};
+        sequence=Math.max(sequence,Number(p.lastSequence||0));phase=o.phase;document.body.classList.toggle('waiting',['lobby','results'].includes(o.phase));
+        document.documentElement.style.setProperty('--seat',p.recipe.color);el.glyph.textContent=p.recipe.glyph;el.name.textContent=p.name;
+        el.seat.textContent=player.toUpperCase()+' · '+p.type.toUpperCase()+' · ROUND '+round+' · CHAIN '+h.streak+' / x'+Number(h.multiplier).toFixed(2)+(restored?' · REJOINED':'');
+        el.core.textContent=Math.round(o.core.charge)+'%';el.carry.textContent=p.carrying.length+' / 3'+(p.shieldCharges?' · ◆':'');el.time.textContent=fmt(o.timeLeftMs);showDirective(o);showRoomSignal(o,p,show,conductor);
+        const triad=p.carrying.length===3&&new Set(p.carrying).size===3;
+        el.message.textContent=o.sync?'PULSE NOW · '+o.sync.pulses.length+'/'+(o.teammates.length+1)+' joined':o.glitch&&o.glitch.phase==='telegraph'?(p.shieldCharges?'SHIELD READY · you can take one hit':'GLITCH WARNING · move out of the striped lane'):triad?'TRIAD READY · BANK AT THE CENTER FOR THE JACKPOT':p.shieldCharges?'CHOIR SHIELD READY · next glitch hit is blocked':o.phase==='results'?conductor.title+' · '+conductor.reason+' Next: '+nextTitles:o.phase==='lobby'&&show.completedRounds?'CONDUCTOR · '+conductor.title+' · '+conductor.reason+' Next: '+nextTitles:restored?'SHOW RESTORED · pick up where the room left off.':'OPENING SET · Collect one of each beat for a TRIAD, or bank early to stay fast.';
+        el.dot.classList.add('ok');el.start.disabled=!['lobby','results'].includes(o.phase);el.start.classList.toggle('ready',!el.start.disabled);el.start.textContent=o.phase==='results'?'PLAY ROUND '+Number(next.roundNumber||round+1):o.phase==='lobby'?'START ROUND '+Number(next.roundNumber||round):o.phase.toUpperCase();
+      }catch(error){el.dot.classList.remove('ok');el.message.textContent=error.message}}
+      async function send(action){sequence+=1;try{const result=await call('/api/action',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({player,action:Object.assign({},action,{seq:sequence})})});if(result.lastSequence)sequence=Math.max(sequence,result.lastSequence);if(navigator.vibrate&&action.type==='pulse')navigator.vibrate([18,28,35])}catch(error){el.message.textContent=error.message}}
+      async function sendSignal(choice){if(signalBusy)return;signalBusy=true;signalButtons.forEach(button=>button.disabled=true);try{await call('/api/room-signal',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({player,choice})});if(navigator.vibrate)navigator.vibrate(24);await observe()}catch(error){el.message.textContent=error.message}finally{signalBusy=false;signalButtons.forEach(button=>button.disabled=false)}}
+      function vector(event){const rect=el.joystick.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2,dx=event.clientX-cx,dy=event.clientY-cy,max=rect.width*.34,length=Math.hypot(dx,dy)||1,ratio=Math.min(1,max/length),px=dx*ratio,py=dy*ratio;el.stick.style.transform='translate(calc(-50% + '+px+'px),calc(-50% + '+py+'px))';const x=Math.abs(dx/max)<.12?0:Math.max(-1,Math.min(1,dx/max)),y=Math.abs(dy/max)<.12?0:Math.max(-1,Math.min(1,dy/max)),key=x.toFixed(2)+','+y.toFixed(2);if(key!==lastVector){lastVector=key;send({type:'move',x,y})}}
+      function release(){pointer=null;el.stick.style.transform='translate(-50%,-50%)';if(lastVector!=='0,0'){lastVector='0,0';send({type:'move',x:0,y:0})}}
+      el.joystick.addEventListener('pointerdown',event=>{event.preventDefault();pointer=event.pointerId;el.joystick.setPointerCapture(pointer);vector(event)});el.joystick.addEventListener('pointermove',event=>{if(event.pointerId===pointer)vector(event)});el.joystick.addEventListener('pointerup',release);el.joystick.addEventListener('pointercancel',release);
+      el.pulse.addEventListener('pointerdown',event=>{event.preventDefault();el.pulse.classList.add('active');send({type:'pulse'})});['pointerup','pointercancel','pointerleave'].forEach(type=>el.pulse.addEventListener(type,()=>el.pulse.classList.remove('active')));
+      el.start.addEventListener('click',async()=>{if(busy||!['lobby','results'].includes(phase))return;busy=true;try{await call('/api/start',{method:'POST'});await observe()}catch(error){el.message.textContent=error.message}finally{busy=false}});
+      signalButtons.forEach(button=>button.addEventListener('click',()=>sendSignal(button.dataset.roomSignal)));
+      el.reduce.addEventListener('click',()=>{const on=document.body.classList.toggle('reduce');el.reduce.setAttribute('aria-pressed',String(on));el.reduce.textContent=on?'Motion reduced':'Reduce motion'});
+      observe();setInterval(observe,280);
+    })();
+  </script>
+</body>
+</html>

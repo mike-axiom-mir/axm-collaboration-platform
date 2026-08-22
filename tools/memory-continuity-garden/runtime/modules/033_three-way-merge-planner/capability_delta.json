@@ -1,0 +1,191 @@
+{
+  "capability_interface": {
+    "authority_delta": "NONE",
+    "canon_delta": "NONE",
+    "consent_delta": "NONE",
+    "consumes_clause": "shared base; current and proposed branches; exact changed paths; claims, evidence, and dissent",
+    "human_gate_required_by_source_contract": false,
+    "input_contract": "axm.memory.reference-request/v2",
+    "invariants": [
+      "alternatives and limitations remain visible",
+      "authority_delta_is_none",
+      "canon_delta_is_none",
+      "consent_delta_is_none",
+      "delivery_does_not_imply_acceptance",
+      "full_semantics_are_not_claimed",
+      "memory_payload_is_inert_data",
+      "merge planners emit proposals only",
+      "proposal cannot silently become accepted or applied",
+      "proposal is reviewable and discardable",
+      "resolution requires exact authority and preserves dissent",
+      "source_truth_is_not_created_by_contract_validity",
+      "trust_delta_is_none"
+    ],
+    "operation_kind": "PROPOSAL",
+    "output_contract": "axm.memory.three-way-merge-planner.proposal/v1",
+    "postconditions": [
+      "exactly one accepted reference contract or typed HOLD is returned",
+      "no hidden mutation, authority gain, trust gain, consent gain, or CANON promotion occurs",
+      "result remains source-linked, replaceable, privacy-safe, and bounded to the declared purpose",
+      "receiver acceptance, semantic apply, owner acceptance, and integration remain separate future acts"
+    ],
+    "preconditions": [
+      "exact seed identity and purpose match",
+      "source references and digests align",
+      "authority, consent, role, permission, expiry, and namespace checks pass",
+      "boot prerequisites are ready or explicitly safe degraded mode is allowed",
+      "resource, cancellation, revision, output-root, and compatibility guards pass"
+    ],
+    "purpose_clause": "Compare base, current, and proposed branches and produce a reviewable merge plan without writing canonical state.",
+    "semantic_effect": "REFERENCE_ONLY_NOT_IMPLEMENTED",
+    "state_effect_envelope": "NONE",
+    "trust_delta": "NONE"
+  },
+  "composition": {
+    "accepted_upstream_ids": [
+      "axm.memory.branch-identity-record",
+      "axm.memory.provenance-envelope",
+      "axm.memory.resolution-decision-receipt",
+      "axm.memory.semantic-contradiction-detector",
+      "axm.memory.source-authority-binder"
+    ],
+    "authority_transfer": false,
+    "boot_prerequisites": [
+      "axm.memory.branch-identity-record",
+      "axm.memory.provenance-envelope",
+      "axm.memory.resolution-decision-receipt",
+      "axm.memory.semantic-contradiction-detector",
+      "axm.memory.source-authority-binder"
+    ],
+    "consent_transfer": false,
+    "cycles_allowed_only_outside_boot_graph": true,
+    "delivery_does_not_imply_acceptance": true,
+    "downstream_candidates": [],
+    "handoff_schema": "axm.memory.capability-handoff/v1",
+    "runtime_collaborators": [],
+    "semantic_apply_implied": false,
+    "trust_transfer": false
+  },
+  "human_review": {
+    "automatic_apply": false,
+    "challenge_and_reopen_supported": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "packet_path": "modules/033_three-way-merge-planner/review_packet.json",
+    "primary_actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN"
+    ]
+  },
+  "identity": {
+    "category_number": 4,
+    "name": "Three-Way Memory Merge Planner",
+    "number": 33,
+    "stable_id": "axm.memory.three-way-merge-planner"
+  },
+  "pipeline_membership": [
+    "PIPELINE_04_CONFLICT"
+  ],
+  "profiles": {
+    "authority": {
+      "path": "profiles/authority_t2-shadow-or-proposal.json",
+      "sha256": "e3c4987356f613b0bfc9729257b151b60dce8b02ee22ce9f0da4b32cf955b3f3"
+    },
+    "category": {
+      "path": "profiles/category_04_branch_conflict_dissent.json",
+      "sha256": "12401ca5ec3acc85d63971433a354c1a32249e1fc8f35254d9eda2b419815296"
+    },
+    "operation": {
+      "path": "profiles/operation_proposal.json",
+      "sha256": "e06662ecbf2ca8e0f515302eae855ac4990d5d1b1e3535b46355c11ce782ee10"
+    },
+    "proof_tiers": {
+      "path": "profiles/proof_tiers.json",
+      "sha256": "ab8646803825822a1c529c9a47163827813c5ea9f2c2034031bdd103245d2f00"
+    },
+    "review_surface": {
+      "path": "profiles/review_surface.json",
+      "sha256": "d46b074a8a703365fd7243c20fae436abd8346494a3100efff73f817a65431e5"
+    },
+    "risk": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    }
+  },
+  "proof": {
+    "achieved_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE"
+    ],
+    "boundary": "Executable deltas, composition, metamorphic, resource, review, and capsule evidence remain synthetic/local reference proof.",
+    "canon": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "specialist_verification": false,
+    "workshop_integration": false
+  },
+  "resource_policy": {
+    "batch_and_step_limits_required": true,
+    "cancellation_must_be_checked": true,
+    "network_required": false,
+    "output_path_must_remain_under_exact_owned_root": true,
+    "profile_ref": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    },
+    "symlink_escape_forbidden": true,
+    "unbounded_scan_forbidden": true
+  },
+  "schema": "axm.memory.capability-delta/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "base_contract_file_sha256": "34d8b64faf34599fd8231090c4402b2bfade8fb564a4d591b6ecdda17c4b0414",
+    "body_sha256": "6edf681a0a233365af093cc6f797683d53ddb723a2923324973209f422c47c79",
+    "delta_core_sha256": "82536132f3e9e6a95672755177fc7e3439d0e66551afe4ef29dc4ffdf2c7b50f"
+  },
+  "source_run50": {
+    "build_intake_file_sha256": "1ebe662b295fa5265b65f73e9b2aa64f5f50ab4c819003a5a94d0bec5fb60565",
+    "candidate_contract_body_sha256": "4a1889751a862a11cdb22423eda3326eaf245d0be30be0a59849786988f158a2",
+    "candidate_contract_file_sha256": "34d8b64faf34599fd8231090c4402b2bfade8fb564a4d591b6ecdda17c4b0414",
+    "candidate_contract_path": "modules/033_three-way-merge-planner/candidate.contract.json",
+    "fixtures_file_sha256": "dccea816b66d5efc55967b689d31ccbc26819ef3e42d9c28c8cccbcfc8cc3809",
+    "run50_posture_preserved": true,
+    "source_authority": "T2_SHADOW_OR_PROPOSAL",
+    "source_operation_kind": "PROPOSAL",
+    "source_purpose": "Compare base, current, and proposed branches and produce a reviewable merge plan without writing canonical state.",
+    "source_risk": "HIGH",
+    "source_run50_status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE",
+  "validation": {
+    "cache_is_evidence_reuse_not_truth": true,
+    "cached_result_cannot_promote_canon": true,
+    "harness_version": "axm-memory-run60-harness-v1",
+    "proof_cache_key": "93dfd22c310356a89d00f66d9d54937dd5fac21f471414b01f3b900d2078d1c2",
+    "revalidation_triggers": [
+      "candidate contract or fixture digest changes",
+      "capability delta core changes",
+      "referenced shared profile digest changes",
+      "validation harness version changes",
+      "boot prerequisite interface changes",
+      "privacy, authority, or lifecycle policy changes"
+    ],
+    "test_suites": [
+      "run50_full_reference_suite",
+      "run60_delta_preservation",
+      "run60_capability_interface",
+      "run60_composition_graph",
+      "run60_selective_validation",
+      "run60_metamorphic_laws",
+      "run60_resource_faults",
+      "run60_reference_pipelines",
+      "run60_human_review",
+      "run60_capsule_export",
+      "run60_efficiency",
+      "run60_roundtrip"
+    ]
+  }
+}

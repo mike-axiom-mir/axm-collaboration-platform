@@ -1,0 +1,45 @@
+/* AXM Atrium Vortex — placement CSS (v0.1, DRAFT / TEST)
+   The JS sets the essential inline styles; this file is the declarative
+   version for integration + keeps the canvas behind hero content. */
+.atrium-vortex-field{
+  position:absolute; inset:0; width:100%; height:100%;
+  pointer-events:none; z-index:0;
+}
+/* hero copy + deck must sit above the portal */
+.home-hero > *{ position:relative; z-index:1; }
+/* if the hero has its own ::before/::after ambient layers, keep them under the portal */
+.home-hero::before,.home-hero::after{ z-index:0; }
+@media (prefers-reduced-motion:reduce){
+  /* JS already draws one still frame; nothing else needed */
+}
+
+/* ============================================================
+   COHESION OVERRIDE (hub install)
+   The live hub paints sentient-atrium-core.webp as a COVER background on
+   .home-hero — that's the "planted picture" with visible seams. We replace
+   just that raster with a seamless gradient so the live canvas funnel becomes
+   the single, continuous centerpiece. sentient-atrium.css is NOT edited (its
+   core.webp reference stays, so the selftest still passes); this simply wins
+   the cascade by loading later at equal specificity.
+   ============================================================ */
+/* ONE continuous surface: the shell carries a single backdrop, and the topbar,
+   sidebar and hero become transparent regions of it — no panel boxes, no seams. */
+body.sentient-atrium .shell{
+  background:
+    radial-gradient(1300px 900px at 62% 34%, rgba(86,241,220,.06), transparent 62%),
+    radial-gradient(1050px 720px at 56% 4%, rgba(122,110,255,.06), transparent 58%),
+    linear-gradient(180deg, #061024 0%, #040e1b 64%, #020813 100%) !important;
+}
+body.sentient-atrium .topbar,
+body.sentient-atrium .sidebar,
+body.sentient-atrium .body,
+body.sentient-atrium .home-hero{ background: transparent !important; }
+/* drop the heavy panel shadows; keep only whisper-thin dividers */
+body.sentient-atrium .topbar{ box-shadow:none !important; border-bottom:1px solid rgba(98,232,239,.07) !important; }
+body.sentient-atrium .sidebar{ box-shadow:none !important; border-right:1px solid rgba(98,232,239,.06) !important; }
+/* soften the two remaining baked images so they read as faint glow, not planted pictures */
+body.sentient-atrium .topbar::before{ opacity:.30 !important; }
+body.sentient-atrium .sidebar::after{ opacity:.32 !important; }
+/* the canvas centerpiece sits behind the hero copy + deck */
+body.sentient-atrium .home-hero > .atrium-vortex-field{ z-index:0; }
+body.sentient-atrium .home-hero > *:not(.atrium-vortex-field){ position:relative; z-index:1; }

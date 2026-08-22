@@ -1,0 +1,67 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "branch-module-return-gate",
+  "version": "v0.1",
+  "provides": [
+    "branch-return.read-only-inspection",
+    "branch-return.dependency-portability-gate",
+    "branch-return.deterministic-package",
+    "branch-return.digest-verification",
+    "branch-return.authority-preservation"
+  ],
+  "consumes": [
+    "filesystem:explicit-branch-module-root",
+    "axm.tool-manifest/v1",
+    "axm.module-contract/v1",
+    "axm.modular-piece-package/v1"
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "handoffs": {
+    "emits": [
+      "axm.branch-return-inspection/v1",
+      "axm.branch-return-receipt/v1",
+      "axm.modular-piece-package/v1"
+    ],
+    "accepts": [
+      "filesystem/explicit-branch-module-root",
+      "axm.branch-module-return/v1",
+      "axm.modular-piece-package/v1"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "resume",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "writes": [
+      "explicit-user-selected-output:modular-piece-package-json",
+      "explicit-user-selected-output:return-receipt-json"
+    ],
+    "refuses": [
+      "implicit-branch-selection",
+      "filesystem-watching",
+      "symbolic-link-following",
+      "undeclared-file-inclusion",
+      "external-package-installation",
+      "remote-runtime-dependency",
+      "native-host-dependency",
+      "branch-runtime-dependency",
+      "candidate-code-execution",
+      "automatic-review-vote",
+      "installer-staging",
+      "module-installation",
+      "permission-change",
+      "automatic-merge",
+      "git-push",
+      "promotion",
+      "canon-change",
+      "runtime-readiness-claim",
+      "visual-approval-claim"
+    ]
+  }
+}
+

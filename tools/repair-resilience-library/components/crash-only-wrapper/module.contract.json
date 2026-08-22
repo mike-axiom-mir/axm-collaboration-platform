@@ -1,0 +1,39 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.crash-only-wrapper",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.crash-only.lifecycle/v1"
+  ],
+  "consumes": [
+    "component-start-stop-contract"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_1_LOCAL_LIFECYCLE_ONLY",
+    "automaticMutation": false,
+    "integrationRequiredForAutomation": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/body-pulse",
+      "tools/recovery-center"
+    ],
+    "reason": "Enforces one declared stop path and one recovery path in a local lifecycle state machine."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "unbounded-retry",
+      "unbounded-restart",
+      "hidden-degradation",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.verification-harness",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.repair-verification.report/v1"
+  ],
+  "consumes": [
+    "predeclared-verification-plan",
+    "candidate-state"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_VERIFY_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/qa-lab",
+      "tools/repairbuddy",
+      "shared/module-evolution-ledger"
+    ],
+    "reason": "Creates a reusable proof report while existing verifiers and human gates remain authoritative."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "verification-as-permission",
+      "selftest-as-runtime-proof",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "hidden-evidence-omission"
+    ]
+  }
+}

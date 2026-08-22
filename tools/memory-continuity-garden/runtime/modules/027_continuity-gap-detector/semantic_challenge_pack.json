@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "CLOCK_FORCED_ORDER",
+      "expected": "HOLD_TIME_BASIS_UNCERTAIN",
+      "stimulus": "uncertain clocks are forced into total order"
+    }
+  ],
+  "category": 3,
+  "category_name": "3. Time, sessions, checkpoints, snapshots, and continuity gaps",
+  "full_semantic_implementation": false,
+  "number": 27,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Identify missing sessions, unexplained jumps, absent parent events, broken references, unknown decisions, and unaccounted state changes.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "61c649e610d2c74dc54f04799c0b6aa6da0b4c481a2e8d8ab4a320db66929c2c"
+  },
+  "source_contract_sha256": "fb2dd62878231617cf790a222c85dde3a6a7ee0f54e0028387d7c512bdb03411",
+  "stable_id": "axm.memory.continuity-gap-detector"
+}

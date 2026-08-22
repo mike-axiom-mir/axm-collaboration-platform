@@ -20,6 +20,8 @@ async function main() {
   const manifest = json('manifest.json');
   const contract = json('module.contract.json');
   equal(manifest.id, 'asset-engine-roundtrip-bridge', 'Manifest identity');
+  equal(manifest.schema, 'axm.tool-manifest/v1', 'Current manifest schema');
+  equal(manifest.kind, 'product', 'Browser workbench kind');
   equal(contract.id, manifest.id, 'Contract identity');
   equal(contract.version, manifest.version, 'Contract version');
   equal(manifest.category, 'Build', 'Hub parent');

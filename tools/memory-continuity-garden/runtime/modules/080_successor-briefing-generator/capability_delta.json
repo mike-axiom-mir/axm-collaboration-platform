@@ -1,0 +1,191 @@
+{
+  "capability_interface": {
+    "authority_delta": "NONE",
+    "canon_delta": "NONE",
+    "consent_delta": "NONE",
+    "consumes_clause": "scoped handoff packet; replica identity; causal metadata; source permissions; device or AI-seat role",
+    "human_gate_required_by_source_contract": false,
+    "input_contract": "axm.memory.reference-request/v2",
+    "invariants": [
+      "alternatives and limitations remain visible",
+      "authority_delta_is_none",
+      "canon_delta_is_none",
+      "consent_delta_is_none",
+      "delivery never implies receiver acceptance",
+      "delivery_does_not_imply_acceptance",
+      "full_semantics_are_not_claimed",
+      "memory_payload_is_inert_data",
+      "proposal cannot silently become accepted or applied",
+      "proposal is reviewable and discardable",
+      "replica progress cannot authorize semantic merge",
+      "source_truth_is_not_created_by_contract_validity",
+      "trust_delta_is_none"
+    ],
+    "operation_kind": "PROPOSAL",
+    "output_contract": "axm.memory.successor-briefing-generator.proposal/v1",
+    "postconditions": [
+      "exactly one accepted reference contract or typed HOLD is returned",
+      "no hidden mutation, authority gain, trust gain, consent gain, or CANON promotion occurs",
+      "result remains source-linked, replaceable, privacy-safe, and bounded to the declared purpose",
+      "receiver acceptance, semantic apply, owner acceptance, and integration remain separate future acts"
+    ],
+    "preconditions": [
+      "exact seed identity and purpose match",
+      "source references and digests align",
+      "authority, consent, role, permission, expiry, and namespace checks pass",
+      "boot prerequisites are ready or explicitly safe degraded mode is allowed",
+      "resource, cancellation, revision, output-root, and compatibility guards pass"
+    ],
+    "purpose_clause": "Create a source-linked briefing that restores architecture, roots, current state, gotchas, unresolved seams, and build boundaries for future collaborators.",
+    "semantic_effect": "REFERENCE_ONLY_NOT_IMPLEMENTED",
+    "state_effect_envelope": "NONE",
+    "trust_delta": "NONE"
+  },
+  "composition": {
+    "accepted_upstream_ids": [
+      "axm.memory.consent-lease",
+      "axm.memory.cross-replica-merge-gate",
+      "axm.memory.provenance-envelope",
+      "axm.memory.replica-identity-record",
+      "axm.memory.session-handoff-packet",
+      "axm.memory.source-authority-binder"
+    ],
+    "authority_transfer": false,
+    "boot_prerequisites": [
+      "axm.memory.consent-lease",
+      "axm.memory.cross-replica-merge-gate",
+      "axm.memory.provenance-envelope",
+      "axm.memory.replica-identity-record",
+      "axm.memory.session-handoff-packet",
+      "axm.memory.source-authority-binder"
+    ],
+    "consent_transfer": false,
+    "cycles_allowed_only_outside_boot_graph": true,
+    "delivery_does_not_imply_acceptance": true,
+    "downstream_candidates": [],
+    "handoff_schema": "axm.memory.capability-handoff/v1",
+    "runtime_collaborators": [],
+    "semantic_apply_implied": false,
+    "trust_transfer": false
+  },
+  "human_review": {
+    "automatic_apply": false,
+    "challenge_and_reopen_supported": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "packet_path": "modules/080_successor-briefing-generator/review_packet.json",
+    "primary_actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN"
+    ]
+  },
+  "identity": {
+    "category_number": 8,
+    "name": "Successor and Warm-Start Briefing Generator",
+    "number": 80,
+    "stable_id": "axm.memory.successor-briefing-generator"
+  },
+  "pipeline_membership": [],
+  "profiles": {
+    "authority": {
+      "path": "profiles/authority_t2-shadow-or-proposal.json",
+      "sha256": "e3c4987356f613b0bfc9729257b151b60dce8b02ee22ce9f0da4b32cf955b3f3"
+    },
+    "category": {
+      "path": "profiles/category_08_handoff_replica_continuity.json",
+      "sha256": "8a78c27c03fa37a1cb6f32496726a3a6ee3c76c59103a768c1b10da7397dc6fc"
+    },
+    "operation": {
+      "path": "profiles/operation_proposal.json",
+      "sha256": "e06662ecbf2ca8e0f515302eae855ac4990d5d1b1e3535b46355c11ce782ee10"
+    },
+    "proof_tiers": {
+      "path": "profiles/proof_tiers.json",
+      "sha256": "ab8646803825822a1c529c9a47163827813c5ea9f2c2034031bdd103245d2f00"
+    },
+    "review_surface": {
+      "path": "profiles/review_surface.json",
+      "sha256": "d46b074a8a703365fd7243c20fae436abd8346494a3100efff73f817a65431e5"
+    },
+    "risk": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    }
+  },
+  "proof": {
+    "achieved_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE"
+    ],
+    "boundary": "Executable deltas, composition, metamorphic, resource, review, and capsule evidence remain synthetic/local reference proof.",
+    "canon": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "specialist_verification": false,
+    "workshop_integration": false
+  },
+  "resource_policy": {
+    "batch_and_step_limits_required": true,
+    "cancellation_must_be_checked": true,
+    "network_required": false,
+    "output_path_must_remain_under_exact_owned_root": true,
+    "profile_ref": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    },
+    "symlink_escape_forbidden": true,
+    "unbounded_scan_forbidden": true
+  },
+  "schema": "axm.memory.capability-delta/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "base_contract_file_sha256": "1f53741362dd6ea2d2530554fc5ecf794a3b8a8c412c9f8ad09cec1be220d089",
+    "body_sha256": "d185ca96e961058f867ebe41015a5b9bb7e205adcda62c5d21fc4f84c3d26bed",
+    "delta_core_sha256": "d623ad723539874c6bde52dddfaf04e4cafab87a9b7952332f49238feb31d4a8"
+  },
+  "source_run50": {
+    "build_intake_file_sha256": "1effa6d2615a37fae5d180f67386041193b7a13e7cbaa98b02fcea6f41c610e7",
+    "candidate_contract_body_sha256": "935a51daec695856a40e718b157b8db4599753c5c1a0597f94b1ca2afef26901",
+    "candidate_contract_file_sha256": "1f53741362dd6ea2d2530554fc5ecf794a3b8a8c412c9f8ad09cec1be220d089",
+    "candidate_contract_path": "modules/080_successor-briefing-generator/candidate.contract.json",
+    "fixtures_file_sha256": "85bcd2b5ba6bc9575a9fe278a5c24e4758593191603cf1e8cc61349b5757fa43",
+    "run50_posture_preserved": true,
+    "source_authority": "T2_SHADOW_OR_PROPOSAL",
+    "source_operation_kind": "PROPOSAL",
+    "source_purpose": "Create a source-linked briefing that restores architecture, roots, current state, gotchas, unresolved seams, and build boundaries for future collaborators.",
+    "source_risk": "HIGH",
+    "source_run50_status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE",
+  "validation": {
+    "cache_is_evidence_reuse_not_truth": true,
+    "cached_result_cannot_promote_canon": true,
+    "harness_version": "axm-memory-run60-harness-v1",
+    "proof_cache_key": "cf7d198e938fea3e8d2ec818d39a6ae570ac1529b488baae299082334bf39e6e",
+    "revalidation_triggers": [
+      "candidate contract or fixture digest changes",
+      "capability delta core changes",
+      "referenced shared profile digest changes",
+      "validation harness version changes",
+      "boot prerequisite interface changes",
+      "privacy, authority, or lifecycle policy changes"
+    ],
+    "test_suites": [
+      "run50_full_reference_suite",
+      "run60_delta_preservation",
+      "run60_capability_interface",
+      "run60_composition_graph",
+      "run60_selective_validation",
+      "run60_metamorphic_laws",
+      "run60_resource_faults",
+      "run60_reference_pipelines",
+      "run60_human_review",
+      "run60_capsule_export",
+      "run60_efficiency",
+      "run60_roundtrip"
+    ]
+  }
+}

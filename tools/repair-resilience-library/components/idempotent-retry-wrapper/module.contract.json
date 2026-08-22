@@ -1,0 +1,40 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.idempotent-retry-wrapper",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.idempotent-retry.receipt/v1"
+  ],
+  "consumes": [
+    "idempotency-key",
+    "operation"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_1_CAPABLE_WHEN_PREDECLARED",
+    "automaticMutation": false,
+    "integrationRequiredForAutomation": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/body-pulse",
+      "shared/heartbeat"
+    ],
+    "reason": "Retries only explicit idempotent operations and reuses a successful keyed result instead of duplicating side effects."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "unbounded-retry",
+      "unbounded-restart",
+      "hidden-degradation",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

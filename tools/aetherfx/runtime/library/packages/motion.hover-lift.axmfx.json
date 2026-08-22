@@ -1,0 +1,263 @@
+{
+  "schema": "axm.visual-module-package/1",
+  "packageId": "package.motion.hover-lift",
+  "name": "Hover Lift",
+  "version": "1.1.0",
+  "entryModuleId": "motion.hover-lift",
+  "created": "2026-07-28",
+  "modules": [
+    {
+      "id": "primitive.transform",
+      "name": "Transform",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Moves, scales, tilts, and rotates a layer.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "move"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.shadow",
+      "name": "Shadow",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Creates separation and perceived elevation.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "layers"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "primitive.motion-curve",
+      "name": "Motion Curve",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "primitive",
+      "category": "Foundation",
+      "status": "WORKING",
+      "description": "Defines easing and temporal behavior.",
+      "tags": [
+        "primitive",
+        "foundation"
+      ],
+      "dependencies": [],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "wave"
+      },
+      "parameters": [],
+      "renderer": {
+        "type": "capability"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    },
+    {
+      "id": "motion.hover-lift",
+      "name": "Hover Lift",
+      "version": "1.1.0",
+      "schema": "axm.visual-module/1",
+      "kind": "effect",
+      "category": "Motion",
+      "status": "WORKING",
+      "description": "Subtle lift, tilt, and shadow response for selectable surfaces.",
+      "tags": [
+        "motion",
+        "hover",
+        "interaction"
+      ],
+      "dependencies": [
+        "primitive.transform",
+        "primitive.shadow",
+        "primitive.motion-curve"
+      ],
+      "exclusiveGroup": null,
+      "shareable": true,
+      "ui": {
+        "icon": "up"
+      },
+      "parameters": [
+        {
+          "id": "height",
+          "label": "Height",
+          "type": "number",
+          "default": 6,
+          "description": "",
+          "min": 0,
+          "max": 18,
+          "step": 1,
+          "unit": "px",
+          "cssVar": "--fx-hover-height"
+        },
+        {
+          "id": "tilt",
+          "label": "Tilt",
+          "type": "number",
+          "default": 0.8,
+          "description": "",
+          "min": 0,
+          "max": 3,
+          "step": 0.1,
+          "unit": "deg",
+          "cssVar": "--fx-hover-tilt"
+        },
+        {
+          "id": "duration",
+          "label": "Duration",
+          "type": "number",
+          "default": 240,
+          "description": "",
+          "min": 80,
+          "max": 700,
+          "step": 10,
+          "unit": "ms",
+          "cssVar": "--fx-hover-duration"
+        }
+      ],
+      "renderer": {
+        "type": "class",
+        "scope": "surface",
+        "className": "fx-hover-lift"
+      },
+      "quality": {
+        "low": {
+          "enabled": true
+        },
+        "medium": {
+          "enabled": true
+        },
+        "high": {
+          "enabled": true
+        },
+        "cinematic": {
+          "enabled": true
+        }
+      },
+      "accessibility": {
+        "reducedMotionSafe": true,
+        "highContrastSafe": true,
+        "notes": "",
+        "photosensitiveSafe": true
+      },
+      "provenance": {
+        "author": "Mike — Axiom/Mir",
+        "origin": "AXM AetherFX Visual Effect Fabric v1.1.0 working foundation",
+        "license": "UNSET — choose before public sharing",
+        "created": "2026-07-28",
+        "sourceIntegrity": "Generated locally from this package; no external runtime dependency."
+      }
+    }
+  ],
+  "notes": "Starter package. Set a public-sharing license before redistribution.",
+  "integrity": {
+    "algorithm": "sha256",
+    "value": "e29a0fb334b00b87bec0fd102a0671839e90b4914fb2f36be8a5234496c2cadc"
+  }
+}

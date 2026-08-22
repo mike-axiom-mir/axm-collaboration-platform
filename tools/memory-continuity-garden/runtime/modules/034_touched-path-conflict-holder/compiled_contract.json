@@ -1,0 +1,174 @@
+{
+  "allowed_hold_codes": [
+    "HOLD_APPEND_ONLY_VIOLATION",
+    "HOLD_AUTHORITY_OR_CONSENT",
+    "HOLD_CANCELLED",
+    "HOLD_CANON_OR_OWNER_AUTHORITY",
+    "HOLD_CONTRACT_SEAL_MISMATCH",
+    "HOLD_DEGRADED_MODE_NOT_ALLOWED",
+    "HOLD_DEPENDENCY_UNAVAILABLE",
+    "HOLD_EXPECTED_REVISION",
+    "HOLD_HUMAN_CONFIRMATION_REQUIRED",
+    "HOLD_IDENTITY_OR_AUTHORITY_FUSION",
+    "HOLD_IMPORT_QUARANTINE",
+    "HOLD_INPUT_DIGEST_MISMATCH",
+    "HOLD_INPUT_LIMIT",
+    "HOLD_INVALID_STATE_TRANSITION",
+    "HOLD_JOURNAL_CORRUPTION",
+    "HOLD_LOG_PRIVACY_VIOLATION",
+    "HOLD_LOW_DISK_OR_UNSAFE_WRITE",
+    "HOLD_NON_CANONICAL_VALUE",
+    "HOLD_OPERATION_ID_COLLISION",
+    "HOLD_OUTPUT_ROOT",
+    "HOLD_PERMISSION_ESCALATION",
+    "HOLD_PRIVACY_OR_ERASURE_TRUTH",
+    "HOLD_RECOVERY_OR_REPAIR_PROOF",
+    "HOLD_RETRIEVAL_PRIVACY_SCOPE",
+    "HOLD_ROOT_OR_SOURCE_OMISSION",
+    "HOLD_RUNTIME_CYCLE",
+    "HOLD_SCHEMA_OR_COMPATIBILITY",
+    "HOLD_SCOPE_OR_PURPOSE",
+    "HOLD_SEMANTIC_CONFLICT",
+    "HOLD_SOURCE_MISMATCH",
+    "HOLD_STALE_STATE",
+    "HOLD_TIME_BASIS_UNCERTAIN",
+    "HOLD_TRANSACTION_INCOMPLETE",
+    "HOLD_TRUST_OR_AUTHORITY_TRANSFER",
+    "HOLD_UNKNOWN_TOP_LEVEL_FIELD"
+  ],
+  "authority": "T1_BOUNDED_LOCAL",
+  "boot_prerequisites": [
+    "axm.memory.branch-identity-record",
+    "axm.memory.provenance-envelope",
+    "axm.memory.resolution-decision-receipt",
+    "axm.memory.semantic-contradiction-detector",
+    "axm.memory.source-authority-binder"
+  ],
+  "compiler_claim_boundary": "Normalized executable interface only; not semantic implementation or owner acceptance.",
+  "contract_references": [
+    "axm.memory.branch-identity-record",
+    "axm.memory.provenance-envelope",
+    "axm.memory.resolution-decision-receipt",
+    "axm.memory.semantic-contradiction-detector",
+    "axm.memory.source-authority-binder"
+  ],
+  "exact_owned_root": "local://axm-memory/axm.memory.touched-path-conflict-holder/",
+  "hold_contract": "axm.memory.typed-hold/v2",
+  "identity": {
+    "category": "4. Branching, merging, contradiction, dissent, and supersession",
+    "name": "Touched-Path Conflict Holder",
+    "number": 34,
+    "stable_id": "axm.memory.touched-path-conflict-holder"
+  },
+  "lifecycle_states": [
+    "DRAFT",
+    "VALIDATED",
+    "EXECUTED",
+    "VERIFIED",
+    "HELD",
+    "FAILED"
+  ],
+  "lifecycle_transitions": [
+    [
+      "DRAFT",
+      "FAILED"
+    ],
+    [
+      "DRAFT",
+      "HELD"
+    ],
+    [
+      "DRAFT",
+      "VALIDATED"
+    ],
+    [
+      "EXECUTED",
+      "FAILED"
+    ],
+    [
+      "EXECUTED",
+      "HELD"
+    ],
+    [
+      "EXECUTED",
+      "VERIFIED"
+    ],
+    [
+      "HELD",
+      "FAILED"
+    ],
+    [
+      "VALIDATED",
+      "EXECUTED"
+    ],
+    [
+      "VALIDATED",
+      "FAILED"
+    ],
+    [
+      "VALIDATED",
+      "HELD"
+    ]
+  ],
+  "operation_kind": "BOUNDED_TRANSFORM",
+  "permissions": [],
+  "privacy_forbidden_receipt_keys": [
+    "payload",
+    "source_refs",
+    "authority_ref",
+    "confirmation_ref",
+    "safety_copy_ref",
+    "deleted_content",
+    "raw_private"
+  ],
+  "purpose": "Hold updates that modify the same semantic path or depend on incompatible witnesses while preserving both proposals.",
+  "request_schema": "axm.memory.reference-request/v2",
+  "required_request_fields": [
+    "schema",
+    "seed_id",
+    "operation_id",
+    "purpose",
+    "source_refs",
+    "source_digests",
+    "authority_ref",
+    "consent_state",
+    "input_digest",
+    "target_root",
+    "request_timestamp",
+    "dependency_snapshot",
+    "expected_revision",
+    "current_revision",
+    "input_size_bytes",
+    "available_disk_bytes",
+    "cancelled",
+    "runtime_cycle_detected",
+    "import_trust_claim",
+    "payload",
+    "category_guard",
+    "requested_permissions",
+    "actor_role",
+    "request_state",
+    "requested_transition",
+    "allow_degraded",
+    "extensions",
+    "trace_id",
+    "receipt_visibility",
+    "preview_digest",
+    "confirmation_ref",
+    "confirmation_scope",
+    "confirmation_expires",
+    "safety_copy_ref",
+    "human_confirmed",
+    "transaction_id"
+  ],
+  "result_contract": "axm.memory.touched-path-conflict-holder.receipt/v1",
+  "risk": "LOW",
+  "runtime_collaborators": [],
+  "schema": "axm.memory.run100-compiled-contract/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "13224780ef97c0d501d7f68546909a41e8214c05ff5b7490e7b8d791854b2e14"
+  },
+  "source_contract_sha256": "fc43e57fa0639973cd7c1a81683bf35e3778664fc3f1e3c7074a65dc6135379a",
+  "source_run90_protocol_sha256": "4045270a7d7b4cbce82504bbda37a0203c72412aa8578e83dd30f53cb7632f49"
+}

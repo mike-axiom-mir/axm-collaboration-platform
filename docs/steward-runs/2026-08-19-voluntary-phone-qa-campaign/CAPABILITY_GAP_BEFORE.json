@@ -1,0 +1,270 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "current-warning-source",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "qa.phone-campaign.report-native-verify",
+        "qa.phone-campaign.lab-contract-bind"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "privacy-and-bounded-scope",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "qa.phone-campaign.sanitized-queue",
+        "qa.phone-campaign.machine-path-redaction"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "human-agency",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "qa.phone-campaign.bounded-session-batching",
+        "qa.phone-campaign.voluntary-stop"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "evidence-and-warning-separation",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "qa.phone-campaign.candidate-review-separate",
+        "qa.phone-campaign.warning-mutation.none"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "candidate-observation-received",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-campaign.candidate.received"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-campaign.candidate.received": [
+          "No voluntary physical-phone candidate was supplied to this campaign."
+        ]
+      }
+    },
+    {
+      "id": "candidate-review-accepted",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-campaign.review.accepted"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-campaign.review.accepted": [
+          "No candidate review was supplied to this campaign."
+        ]
+      }
+    },
+    {
+      "id": "physical-phone-evidence-verified",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.physical-phone.verified"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.physical-phone.verified": [
+          "No native physical-phone journey was observed or verified in this run."
+        ]
+      }
+    },
+    {
+      "id": "game-warning-closed",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": [
+        "qa.phone-campaign.game-warning.closed"
+      ],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "qa.phone-campaign.game-warning.closed": [
+          "All seventeen verifier warnings remain open."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "qa.phone-campaign.bounded-session-batching",
+    "qa.phone-campaign.candidate-review-separate",
+    "qa.phone-campaign.lab-contract-bind",
+    "qa.phone-campaign.machine-path-redaction",
+    "qa.phone-campaign.report-native-verify",
+    "qa.phone-campaign.sanitized-queue",
+    "qa.phone-campaign.voluntary-stop",
+    "qa.phone-campaign.warning-mutation.none"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "qa.phone-campaign.bounded-session-batching",
+      "requiredBy": [
+        "human-agency"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "qa.phone-campaign.candidate-review-separate",
+      "requiredBy": [
+        "evidence-and-warning-separation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "qa.phone-campaign.lab-contract-bind",
+      "requiredBy": [
+        "current-warning-source"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "qa.phone-campaign.machine-path-redaction",
+      "requiredBy": [
+        "privacy-and-bounded-scope"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "qa.phone-campaign.report-native-verify",
+      "requiredBy": [
+        "current-warning-source"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "qa.phone-campaign.sanitized-queue",
+      "requiredBy": [
+        "privacy-and-bounded-scope"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "qa.phone-campaign.voluntary-stop",
+      "requiredBy": [
+        "human-agency"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "qa.phone-campaign.warning-mutation.none",
+      "requiredBy": [
+        "evidence-and-warning-separation"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

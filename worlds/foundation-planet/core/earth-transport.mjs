@@ -74,10 +74,12 @@ export {
 };
 
 export const EARTH_TRANSPORT_GRAPH_SCHEMA = 'axm.foundation-planet.earth-transport-graph/v1';
-export const EARTH_TRANSPORT_STEP_SCHEMA = 'axm.foundation-planet.earth-transport-step/v10';
+export const EARTH_TRANSPORT_STEP_SCHEMA = 'axm.foundation-planet.earth-transport-step/v11';
 export const PREVIOUS_EARTH_TRANSPORT_STEP_SCHEMA =
-  'axm.foundation-planet.earth-transport-step/v9';
+  'axm.foundation-planet.earth-transport-step/v10';
 export const LEGACY_EARTH_TRANSPORT_STEP_SCHEMA =
+  'axm.foundation-planet.earth-transport-step/v9';
+export const OLDEST_EARTH_TRANSPORT_STEP_SCHEMA =
   'axm.foundation-planet.earth-transport-step/v8';
 export const OCEAN_ECOLOGY_TRANSPORT_RECEIPT_SCHEMA =
   'axm.foundation-planet.ocean-ecology-transport-receipt/v1';
@@ -291,7 +293,8 @@ function oceanEcologyDomainTotals(columns, areas) {
     oceanEcologyCarbonKg: 0,
     oceanEcologyNitrogenKg: 0,
     oceanEcologyPhosphorusKg: 0,
-    oceanEcologyOxygenKg: 0
+    oceanEcologyOxygenKg: 0,
+    oceanEcologyAlkalinityKg: 0
   };
   for (const column of columns) {
     if (column.kind !== 'ocean' || !column.ocean?.ecology) continue;
@@ -301,6 +304,8 @@ function oceanEcologyDomainTotals(columns, areas) {
     totals.oceanEcologyNitrogenKg += elements.nitrogenKgNm2 * area;
     totals.oceanEcologyPhosphorusKg += elements.phosphorusKgPm2 * area;
     totals.oceanEcologyOxygenKg += elements.oxygenKgO2m2 * area;
+    totals.oceanEcologyAlkalinityKg +=
+      elements.alkalinityKgCaCO3Eqm2 * area;
   }
   return totals;
 }
@@ -310,7 +315,8 @@ function runoffBiogeochemistryDomainTotals(columns, areas) {
     runoffBiogeochemistryCarbonKg: 0,
     runoffBiogeochemistryNitrogenKg: 0,
     runoffBiogeochemistryPhosphorusKg: 0,
-    runoffBiogeochemistryOxygenKg: 0
+    runoffBiogeochemistryOxygenKg: 0,
+    runoffBiogeochemistryAlkalinityKg: 0
   };
   for (const column of columns) {
     if (column.kind !== 'land') continue;
@@ -323,6 +329,7 @@ function runoffBiogeochemistryDomainTotals(columns, areas) {
     totals.runoffBiogeochemistryNitrogenKg += elements.nitrogen;
     totals.runoffBiogeochemistryPhosphorusKg += elements.phosphorus;
     totals.runoffBiogeochemistryOxygenKg += elements.oxygen;
+    totals.runoffBiogeochemistryAlkalinityKg += elements.alkalinity;
   }
   return totals;
 }
@@ -376,7 +383,8 @@ function runoffReceivingOceanDomainTotals(columns, areas) {
     runoffReceivingOceanCarbonKg: 0,
     runoffReceivingOceanNitrogenKg: 0,
     runoffReceivingOceanPhosphorusKg: 0,
-    runoffReceivingOceanOxygenKg: 0
+    runoffReceivingOceanOxygenKg: 0,
+    runoffReceivingOceanAlkalinityKg: 0
   };
   for (const column of columns) {
     if (column.kind !== 'ocean' || !column.ocean?.ecology) continue;
@@ -391,6 +399,8 @@ function runoffReceivingOceanDomainTotals(columns, areas) {
       finite(ecology.phosphorus?.dissolvedInorganicKgPm2) * area;
     totals.runoffReceivingOceanOxygenKg +=
       finite(ecology.oxygen?.dissolvedKgO2m2) * area;
+    totals.runoffReceivingOceanAlkalinityKg +=
+      finite(ecology.alkalinity?.dissolvedKgCaCO3Eqm2) * area;
   }
   return totals;
 }
@@ -805,7 +815,7 @@ function routeRunoff(sorted, byId, activeEdges, areas, duration) {
   }
   const chemistryReceiptByTransferId = new Map();
   const chemistryElements = {
-    carbon: 0, nitrogen: 0, phosphorus: 0, oxygen: 0
+    carbon: 0, nitrogen: 0, phosphorus: 0, oxygen: 0, alkalinity: 0
   };
   for (const proposal of proposals) {
     const source = byId.get(proposal.donorId);
@@ -959,7 +969,9 @@ function routeRunoff(sorted, byId, activeEdges, areas, duration) {
           totals[element] += elements[element];
         }
         return totals;
-      }, { carbon: 0, nitrogen: 0, phosphorus: 0, oxygen: 0 })
+      }, {
+        carbon: 0, nitrogen: 0, phosphorus: 0, oxygen: 0, alkalinity: 0
+      })
   };
 }
 
@@ -1552,7 +1564,8 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
     carbon: 'Carbon',
     nitrogen: 'Nitrogen',
     phosphorus: 'Phosphorus',
-    oxygen: 'Oxygen'
+    oxygen: 'Oxygen',
+    alkalinity: 'Alkalinity'
   })) {
     const delivered = runoffRouting.oceanBiogeochemistryElementsKg[element];
     residual[`runoffBiogeochemistry${suffix}ResidualKg`] += delivered;
@@ -1582,7 +1595,8 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
       a.poolId.localeCompare(b.poolId) ||
       a.donorCellId.localeCompare(b.donorCellId));
   const oceanEcologyTransferTotals = Object.fromEntries(
-    ['carbon', 'nitrogen', 'phosphorus', 'oxygen'].map(element => [element,
+    ['carbon', 'nitrogen', 'phosphorus', 'oxygen', 'alkalinity']
+      .map(element => [element,
       round(oceanEcologyReceipts
         .filter(entry => entry.element === element)
         .reduce((total, entry) => total + entry.amountKg, 0), 6)]));
@@ -1681,6 +1695,7 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
       oceanEcologyNitrogenKg: oceanEcologyTransferTotals.nitrogen,
       oceanEcologyPhosphorusKg: oceanEcologyTransferTotals.phosphorus,
       oceanEcologyOxygenKg: oceanEcologyTransferTotals.oxygen,
+      oceanEcologyAlkalinityKg: oceanEcologyTransferTotals.alkalinity,
       runoffRoutedKg: round(runoffRouting.routedKg, 3),
       runoffDeliveredToOceanKg: round(runoffRouting.deliveredToOceanKg, 3),
       runoffBiogeochemistryCarbonKg: round(
@@ -1691,6 +1706,8 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
         runoffRouting.biogeochemistryElementsKg.phosphorus, 9),
       runoffBiogeochemistryOxygenKg: round(
         runoffRouting.biogeochemistryElementsKg.oxygen, 9),
+      runoffBiogeochemistryAlkalinityKg: round(
+        runoffRouting.biogeochemistryElementsKg.alkalinity, 9),
       runoffSedimentKg: round(runoffRouting.sedimentKg, 9),
       runoffSedimentClayKg: round(
         runoffRouting.sedimentGrainsKg.clay, 9),
@@ -1747,6 +1764,8 @@ export function transportEarthSystemColumns(sourceColumns, dtDays, options = {})
       terrainFollowingGeopotentialAdjustmentReceipted: true,
       loadedOceanBiogeochemicalTracerMixing: true,
       oceanBiogeochemicalElementLedgers: true,
+      oceanAlkalinityTransportConservative: Math.abs(
+        residual.oceanEcologyAlkalinityResidualKg) < 1,
       buoyancyConversionResolved: false,
       runoffQueueRoutedByTopography: true,
       persistentRunoffBiogeochemistryQueue: true,
@@ -1796,7 +1815,7 @@ export function earthTransportDescription() {
     legacyAtmospherePressureImpulseReceiptSchema: EARTH_ATMOSPHERE_IMPULSE_SCHEMA,
     legacyAtmosphereCoriolisReceiptSchema: EARTH_ATMOSPHERE_CORIOLIS_SCHEMA,
     topology: 'cardinal neighbors on canonical spherical surface cells with dateline wrapping',
-    processes: ['eight-native-pressure-level-dry-air-advection', 'native-dry-air-carried-momentum-vapor-cloud-and-sensible-enthalpy', 'level-specific-loaded-atmosphere-carbon-oxygen-and-nitrogen-gas-advection', 'eight-level-pressure-gradient-forcing', 'eight-level-rotation-aware-coriolis-deflection', 'eight-level-atmospheric-kinetic-and-resolved-energy-ledgers', 'native-level-vapor-cloud-and-sensible-heat-mixing', 'native-level-terrain-and-hydrostatic-geopotential-adjustment-work', 'native-level-moist-enthalpy-ledger', 'hydraulic-head-groundwater-flow', 'ocean-freshwater-mixing', 'ocean-mixed-layer-heat-mixing', 'ocean-carbon-nitrogen-phosphorus-oxygen-and-plankton-mixing', 'topographic-runoff-routing', 'same-fraction-runoff-carbon-nitrogen-phosphorus-and-oxygen-routing', 'same-fraction-runoff-clay-silt-sand-and-gravel-routing', 'direct-land-runoff-to-ocean-biogeochemistry-credit', 'direct-land-runoff-to-coastal-sediment-credit'],
+    processes: ['eight-native-pressure-level-dry-air-advection', 'native-dry-air-carried-momentum-vapor-cloud-and-sensible-enthalpy', 'level-specific-loaded-atmosphere-carbon-oxygen-and-nitrogen-gas-advection', 'eight-level-pressure-gradient-forcing', 'eight-level-rotation-aware-coriolis-deflection', 'eight-level-atmospheric-kinetic-and-resolved-energy-ledgers', 'native-level-vapor-cloud-and-sensible-heat-mixing', 'native-level-terrain-and-hydrostatic-geopotential-adjustment-work', 'native-level-moist-enthalpy-ledger', 'hydraulic-head-groundwater-flow', 'ocean-freshwater-mixing', 'ocean-mixed-layer-heat-mixing', 'ocean-carbon-nitrogen-phosphorus-oxygen-alkalinity-and-plankton-mixing', 'topographic-runoff-routing', 'same-fraction-runoff-carbon-nitrogen-phosphorus-oxygen-and-alkalinity-routing', 'same-fraction-runoff-clay-silt-sand-and-gravel-routing', 'direct-land-runoff-to-ocean-biogeochemistry-credit', 'direct-land-runoff-to-coastal-sediment-credit'],
     simultaneous: true,
     cellAreaWeighted: true,
     explicitSparseBoundaries: true,

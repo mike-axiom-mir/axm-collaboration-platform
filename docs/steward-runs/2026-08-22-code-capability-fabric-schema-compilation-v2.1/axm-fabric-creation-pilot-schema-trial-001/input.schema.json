@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:axm:fabric:bounded-code-change-proposal:input:v1",
+  "title": "Bounded Code Change Proposal input",
+  "description": "Strict declared input shape compiled from an inert AXM capability blueprint.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "capability-catalog",
+    "change-request",
+    "known-failures"
+  ],
+  "properties": {
+    "capability-catalog": {
+      "type": "array",
+      "description": "Declared provider-neutral capabilities available for composition."
+    },
+    "change-request": {
+      "type": "object",
+      "description": "One bounded human-directed code improvement request."
+    },
+    "known-failures": {
+      "type": "array",
+      "description": "Preserved failures and counterevidence relevant to the request."
+    }
+  },
+  "x-axm-lineage": {
+    "status": "EXPERIMENTAL",
+    "direction": "INPUT",
+    "blueprintRef": {
+      "id": "bounded-code-change-proposal",
+      "schema": "axm.fabric-declarative-capability-blueprint/v1",
+      "sha256": "sha256:89dec506c5d2e65994b599baa42b618340348202538ca715e8e0dae88e849c39"
+    },
+    "rootsGate": [
+      "truth",
+      "agency-non-domination",
+      "continuity",
+      "wisdom-over-speed"
+    ],
+    "authority": "NONE"
+  }
+}

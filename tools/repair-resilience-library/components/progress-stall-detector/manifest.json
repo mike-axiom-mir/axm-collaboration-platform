@@ -1,0 +1,42 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.progress-stall-detector",
+  "name": "Progress Stall Detector",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "FOUNDATION",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "repair-seed",
+    "health-telemetry-lineage",
+    "local-first",
+    "dependency-free",
+    "no-automatic-canon"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Detect work that is alive but no longer making declared progress, including hangs, deadlocks, and stuck queues."
+  ],
+  "accepts": [
+    "progress-samples",
+    "liveness-state"
+  ],
+  "produces": [
+    "axm.progress-stall.finding/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Detect work that is alive but no longer making declared progress, including hangs, deadlocks, and stuck queues.",
+  "notes": "Standalone lower-level prototype for local intake. It has no install, publish, promotion, repair, permission, network, or CANON authority."
+}

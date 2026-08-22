@@ -1,0 +1,67 @@
+{
+  "packet_schema_version": "axm.proof.run-packet.v0.3.0",
+  "packet_id": "synthetic:artifact-digest-manifest:valid",
+  "seed_id": "axm.proof.artifact-digest-manifest",
+  "seed_schema_version": "axm.proof.seed.v0.2.0",
+  "fixture_class": "VALID",
+  "run_mode": "VALIDATE_ONLY",
+  "authority": {
+    "scope": "SCHEMA_AND_DISPOSABLE_SYNTHETIC_FIXTURE_ONLY",
+    "live_activation_allowed": false,
+    "canon_authority": false,
+    "publication_authority": false,
+    "merge_gate_required": true
+  },
+  "network_policy": "DENY",
+  "write_policy": "NONE",
+  "inputs": {
+    "packet_id": "synthetic:artifact_digest_manifest:packet_id",
+    "schema_version": "axm.proof.synthetic-input.v0.1.0",
+    "subject_refs": [
+      "synthetic:artifact_digest_manifest:subject_refs:1"
+    ],
+    "inventory": [
+      {
+        "path": "synthetic/artifact-digest-manifest/fixture.json",
+        "role": "disposable_fixture"
+      }
+    ],
+    "digest_policy": {
+      "algorithm": "sha256",
+      "canonical_json": true
+    },
+    "provenance_refs": [
+      "synthetic:artifact_digest_manifest:provenance_refs:1"
+    ],
+    "verification_policy": {
+      "mode": "STRUCTURAL_ONLY",
+      "independent_runtime_proof": false
+    },
+    "exclusions": [
+      "private workshop state",
+      "secrets",
+      "participant identity",
+      "network access"
+    ]
+  },
+  "expected": {
+    "decision": "ACCEPT_SCHEMA_ONLY",
+    "reason_codes": [],
+    "output_emitted": true,
+    "runtime_claim_upgraded": false
+  },
+  "privacy_canaries": [],
+  "rollback": {
+    "checkpoint_id": "synthetic:artifact-digest-manifest:checkpoint:clean",
+    "restore_required": false,
+    "expected_restore_digest": "sha256:synthetic-artifact-digest-manifest-clean",
+    "history_policy": "APPEND_ONLY_NO_DELETE"
+  },
+  "truth_guard": {
+    "canon": false,
+    "integrated": false,
+    "runtime_proof": false,
+    "published": false,
+    "automatic_promotion_allowed": false
+  }
+}

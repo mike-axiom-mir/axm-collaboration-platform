@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axm.local/schemas/resolved-visual-intent.schema.json",
+  "title": "AXM Resolved Visual Intent",
+  "type": "object",
+  "required": [
+    "schema",
+    "contractVersion",
+    "generatedBy",
+    "target",
+    "scene",
+    "quality",
+    "globals",
+    "accessibility",
+    "operations",
+    "supportSummary"
+  ],
+  "properties": {
+    "schema": {
+      "const": "axm.resolved-visual-intent/1"
+    },
+    "contractVersion": {
+      "type": "string"
+    },
+    "generatedBy": {
+      "type": "string"
+    },
+    "generatedAt": {
+      "type": "string"
+    },
+    "target": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "boundary"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "boundary": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "scene": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "renderer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "quality": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "cinematic"
+      ]
+    },
+    "globals": {
+      "type": "object"
+    },
+    "accessibility": {
+      "type": "object",
+      "required": [
+        "reducedMotion",
+        "photosensitiveSafe",
+        "highContrast",
+        "largeText"
+      ],
+      "properties": {
+        "reducedMotion": {
+          "type": "boolean"
+        },
+        "photosensitiveSafe": {
+          "type": "boolean"
+        },
+        "highContrast": {
+          "type": "boolean"
+        },
+        "largeText": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "order",
+          "instanceId",
+          "moduleId",
+          "version",
+          "renderer",
+          "parameters",
+          "support"
+        ],
+        "properties": {
+          "order": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "instanceId": {
+            "type": "string"
+          },
+          "moduleId": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "targetRole": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "renderer": {
+            "type": "object"
+          },
+          "parameters": {
+            "type": "object"
+          },
+          "fallbackOf": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "support": {
+            "type": "object",
+            "required": [
+              "target",
+              "status",
+              "note"
+            ],
+            "properties": {
+              "target": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "implemented",
+                  "approximated",
+                  "contract",
+                  "unsupported"
+                ]
+              },
+              "note": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "supportSummary": {
+      "type": "object",
+      "required": [
+        "total",
+        "implemented",
+        "approximated",
+        "contract",
+        "unsupported"
+      ],
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    }
+  },
+  "additionalProperties": true
+}

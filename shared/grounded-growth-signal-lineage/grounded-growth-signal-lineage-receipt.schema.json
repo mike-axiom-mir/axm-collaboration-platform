@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-signal-lineage-receipt/v1",
+  "title": "AXM Grounded Growth Signal Lineage Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "lineageId",
+    "generatedAt",
+    "status",
+    "state",
+    "sourceRefs",
+    "dispositionSnapshot",
+    "signals",
+    "proposals",
+    "coverage",
+    "decision",
+    "truth",
+    "receiptDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-signal-lineage-receipt/v1" },
+    "version": { "const": "0.1.0" },
+    "lineageId": { "$ref": "#/$defs/text" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "status": { "const": "TEST" },
+    "state": {
+      "enum": ["CURRENT_TECHNICAL_LINEAGE", "CURRENT_WITH_OPEN_HUMAN_EVIDENCE"]
+    },
+    "sourceRefs": {
+      "type": "object",
+      "required": ["disposition", "portfolio", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "disposition": { "$ref": "#/$defs/reference" },
+        "portfolio": { "$ref": "#/$defs/reference" },
+        "evidence": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidenceReference" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "dispositionSnapshot": {
+      "type": "object",
+      "required": ["signalIds", "proposalIds"],
+      "additionalProperties": false,
+      "properties": {
+        "signalIds": { "$ref": "#/$defs/stringSet" },
+        "proposalIds": { "$ref": "#/$defs/stringSet" }
+      }
+    },
+    "signals": { "type": "array", "minItems": 1 },
+    "proposals": { "type": "array", "minItems": 1 },
+    "coverage": { "type": "object" },
+    "decision": { "type": "object" },
+    "truth": { "type": "object" },
+    "receiptDigest": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "text": { "type": "string", "minLength": 1, "maxLength": 240 },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "stringSet": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "reference": {
+      "type": "object",
+      "required": ["id", "schema", "sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/text" },
+        "schema": { "$ref": "#/$defs/text" },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "evidenceReference": {
+      "type": "object",
+      "required": ["id", "schema", "sha256", "role"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/text" },
+        "schema": { "$ref": "#/$defs/text" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "role": { "$ref": "#/$defs/text" }
+      }
+    }
+  }
+}

@@ -21,6 +21,7 @@
       <nav aria-label="Diagnostic sections">
         <a href="#overview">Overview</a>
         <a href="#probes">Probes</a>
+        <a href="#offline-gate">Offline gate</a>
         <a href="#logs">Logs</a>
         <a href="#exports">Exports</a>
       </nav>
@@ -72,6 +73,29 @@
         <div id="probeLegend" class="legend" aria-label="Probe state legend"></div>
       </div>
       <div id="probeGrid" class="probe-grid"></div>
+    </section>
+
+    <section id="offline-gate" class="panel offline-panel" aria-labelledby="offlineTitle">
+      <div class="section-heading">
+        <div><span class="section-kicker">WINDOWS / PHYSICAL EVIDENCE</span><h2 id="offlineTitle">Offline-first gate</h2></div>
+        <span id="offlineState" class="state-chip state-unknown">Loading</span>
+      </div>
+      <p class="muted">Load one reviewed JSON packet containing network evidence, a runtime manifest and verification receipt, a candidate receipt, and a lifecycle receipt. Preview is read-only; recording stores only the gate result and payload digest.</p>
+      <div class="offline-grid">
+        <div>
+          <label>Reviewed gate packet
+            <input id="offlinePacket" type="file" accept="application/json,.json">
+          </label>
+          <div class="toolbar offline-actions">
+            <button id="previewOffline" type="button" disabled>Preview gate</button>
+            <button id="recordOffline" type="button" class="secondary" disabled>Record reviewed result</button>
+          </div>
+          <p id="offlineFileMeta" class="muted">No packet selected. The read-only collector is <code>scripts/collect-windows-offline-evidence.ps1</code>; its point-in-time snapshot cannot prove lifecycle network silence.</p>
+        </div>
+        <div id="offlineFacts" class="metric-grid offline-metrics" aria-label="Windows offline gate summary"></div>
+      </div>
+      <pre id="offlineResult" class="code offline-output" tabindex="0">No gate preview loaded.</pre>
+      <p class="truth warning-truth"><strong>This gate cannot disable adapters, install a runtime, publish, or grant public support.</strong> Physical proof remains held unless every independent receipt matches and the lifecycle network trace records zero requests.</p>
     </section>
 
     <section class="panel" aria-labelledby="jobsTitle">

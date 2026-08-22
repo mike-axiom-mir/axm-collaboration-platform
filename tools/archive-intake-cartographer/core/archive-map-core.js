@@ -470,6 +470,7 @@ module.exports = {
   MAX_ARCHIVES,
   MAX_ARCHIVE_BYTES,
   MAX_ENTRIES,
+  parseCentralDirectory,
   scanSupply,
   inspectArchiveBytes,
   relationBetween,

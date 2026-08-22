@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#08091d">
+  <title>MirrorShift Controller</title>
+  <style>
+    :root { font-family: "Bahnschrift", "Segoe UI", sans-serif; color: #f7f9ff; background: #08091d; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; }
+    body { min-height: 100dvh; margin: 0; display: grid; background: radial-gradient(circle at 50% 10%, #202362, #08091d 55%); overflow: hidden; }
+    main { width: min(100%, 540px); min-height: 100dvh; margin: auto; padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); display: grid; grid-template-rows: auto auto auto 1fr auto; gap: 13px; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(139,171,255,.2); padding-bottom: 12px; }
+    .logo { font-weight: 950; letter-spacing: .06em; } .logo span { color: #ff4fbd; }
+    #link { color: #7b86a8; font-size: 10px; letter-spacing: .12em; font-weight: 800; }
+    .driver { display: grid; grid-template-columns: auto 34px 1fr 34px auto; align-items: center; gap: 8px; padding: 13px; background: rgba(18,21,55,.82); border: 1px solid rgba(139,171,255,.2); }
+    .swatch { width: 44px; height: 44px; border-radius: 50%; background: var(--seat-color, #35f2ff); box-shadow: 0 0 24px var(--seat-color, #35f2ff); }
+    .driver b, .driver span { display: block; } .driver b { font-size: 18px; } .driver span { margin-top: 2px; color: #8692b1; font-size: 10px; letter-spacing: .09em; }
+    .rank { color: var(--seat-color, #35f2ff); font-size: 24px; font-weight: 950; }
+    .pick-arrow { width: 34px; min-height: 44px; padding: 0; color: var(--seat-color, #35f2ff); font-size: 20px; box-shadow: none; }
+    .pick-arrow:disabled { opacity: .28; cursor: not-allowed; }
+    .assist-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .assist-row button { min-height: 38px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; color: #9aa5c2; font-size: 9px; letter-spacing: .06em; }
+    .assist-row button[aria-pressed="true"] { color: white; border-color: #35f2ff; background: rgba(53,242,255,.14); box-shadow: inset 3px 0 #35f2ff; }
+    .assist-row button:disabled { opacity: .48; }
+    .playfield { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 22px; }
+    .steer { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    button { border: 1px solid rgba(173,193,255,.24); color: white; background: rgba(18,22,60,.86); font: inherit; font-weight: 950; box-shadow: 0 10px 25px rgba(0,0,0,.27); }
+    button:focus-visible { outline: 3px solid #35f2ff; }
+    button.down { color: #08091d; background: #35f2ff; box-shadow: 0 0 30px rgba(53,242,255,.45); }
+    .steer button { min-height: 114px; font-size: 43px; }
+    .pedals { display: grid; grid-template-columns: 1fr 1.25fr; align-items: end; gap: 9px; }
+    .pedals button { border-radius: 50% 50% 18% 18%; }
+    #brake { min-height: 112px; color: #ff9b92; }
+    #gas { min-height: 164px; color: #35f2ff; font-size: 27px; }
+    .actions { display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px; }
+    #item { min-height: 76px; color: #08091d; background: linear-gradient(100deg, #ff4fbd, #ffad52); border: 0; font-size: 17px; letter-spacing: .08em; }
+    #start { color: #35f2ff; }
+    #start[data-seat-confirmed="false"] { color: #08091d; background: linear-gradient(100deg, #35f2ff, #a58cff); border-color: transparent; }
+    #start:disabled { opacity: .48; cursor: not-allowed; }
+    .status { min-height: 24px; display: flex; justify-content: space-between; align-items: center; gap: 8px; color: #8490af; font-size: 9px; letter-spacing: .06em; }
+    #drift { color: #35f2ff; font-weight: 900; }
+    .guards { display: flex; gap: 4px; } .guards i { width: 22px; height: 7px; transform: skewX(-18deg); background: #313957; } .guards i.on { background: #35f2ff; box-shadow: 0 0 8px #35f2ff; }
+    @media (max-height: 650px) { main { gap: 7px; padding-block: 8px; } .assist-row button { min-height: 30px; } .steer button { min-height: 74px; } #gas { min-height: 106px; } #brake { min-height: 78px; } #item { min-height: 50px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header><div class="logo">MIRROR<span>SHIFT</span></div><div id="link">LINKING…</div></header>
+    <section class="driver" aria-label="Assigned racer">
+      <i class="swatch" aria-hidden="true"></i>
+      <button id="previousCharacter" class="pick-arrow" type="button" aria-label="Choose previous driver">&lsaquo;</button>
+      <div><b id="character">RACER</b><span id="vehicle">EQUAL SPEC MACHINE</span></div>
+      <button id="nextCharacter" class="pick-arrow" type="button" aria-label="Choose next driver">&rsaquo;</button>
+      <strong id="rank" class="rank">P–</strong>
+    </section>
+    <section class="assist-row" aria-label="Driving assists">
+      <button id="steerAssist" type="button" aria-pressed="false"><span>STEER HELP</span><b>OFF</b></button>
+      <button id="autoGas" type="button" aria-pressed="false"><span>AUTO GAS</span><b>OFF</b></button>
+    </section>
+    <section class="playfield" aria-label="Driving controls">
+      <div class="steer">
+        <button id="left" type="button" aria-label="Steer left">←</button>
+        <button id="right" type="button" aria-label="Steer right">→</button>
+      </div>
+      <div class="pedals">
+        <button id="brake" type="button">BRAKE</button>
+        <button id="gas" type="button">GO</button>
+      </div>
+    </section>
+    <section>
+      <div class="actions">
+        <button id="item" type="button">FIRE · EMPTY</button>
+        <button id="start" type="button" data-seat-confirmed="false" aria-label="Confirm controller seat">CONFIRM SEAT</button>
+      </div>
+      <div class="status"><span id="lap">LOBBY</span><span id="drift">DRIFT READY</span><span id="catchup">BASE SPEED</span><span class="guards" id="guards" aria-label="Shield guard segments"></span></div>
+    </section>
+  </main>
+  <script>
+    (function () {
+      'use strict';
+      var params = new URLSearchParams(location.search);
+      var player = /^p[1-4]$/.test(params.get('player') || '') ? params.get('player') : 'p1';
+      var seq = 1;
+      var sessionId = null;
+      try { sessionId = sessionStorage.getItem('mirrorshift-controller-session-' + player); } catch (_) {}
+      if (!/^[a-zA-Z0-9._:-]{8,96}$/.test(sessionId || '')) {
+        var token = window.crypto && typeof window.crypto.randomUUID === 'function' ? window.crypto.randomUUID() : Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
+        sessionId = 'controller-' + player + '-' + token;
+        try { sessionStorage.setItem('mirrorshift-controller-session-' + player, sessionId); } catch (_) {}
+      }
+      var sessionReady = false;
+      var seatConfirmed = false;
+      var seatConfirmBusy = false;
+      var currentPhase = 'lobby';
+      var sessionSync = null;
+      var actionChain = Promise.resolve();
+      var requestCount = 0;
+      var lastRtt = null;
+      var driveInFlight = false;
+      var held = { left: false, right: false, gas: false, brake: false };
+      var assists = { steering: false, autoAccelerate: false };
+      var characterIds = ['p1', 'p2', 'p3', 'p4'];
+      var selfCharacterId = player;
+      var names = { p1: '#ff9f43', p2: '#706cff', p3: '#26e6ee', p4: '#f0f5ff' };
+      document.documentElement.style.setProperty('--seat-color', names[player]);
+
+      window.__MIRRORSHIFT_CONTROLLER_TRANSPORT__ = {
+        schema: 'axm.mirrorshift-client-transport/v1', player: player, sessionId: sessionId,
+        ready: false, resumed: false, resumeCount: 0, nextSeq: seq, acknowledgedActions: 0,
+        seatConfirmed: false, seatConfirmCount: 0,
+        lastRequestId: null, lastRttMs: null, lastServerProcessMs: null, lastError: null
+      };
+
+      function fetchJson(path, options) {
+        return fetch(path, Object.assign({ cache: 'no-store' }, options || {})).then(function (response) {
+          return response.json().then(function (body) { body.httpStatus = response.status; return body; });
+        });
+      }
+      function updateLink(label) {
+        document.getElementById('link').textContent = label + (Number.isFinite(lastRtt) ? ' · ' + Math.round(lastRtt) + 'MS' : '');
+      }
+      function renderSeatAction() {
+        var button = document.getElementById('start');
+        button.dataset.seatConfirmed = String(seatConfirmed);
+        button.textContent = seatConfirmBusy ? 'CONFIRMING…' : (seatConfirmed ? 'START' : 'CONFIRM P' + player.slice(1));
+        button.setAttribute('aria-label', seatConfirmed ? 'Start match' : 'Confirm controller for seat ' + player.slice(1));
+        button.disabled = seatConfirmBusy || currentPhase !== 'lobby';
+      }
+      function syncSession(reason) {
+        if (sessionSync) return sessionSync;
+        sessionSync = fetchJson('/api/session', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ player: player, sessionId: sessionId, clientKind: 'controller', reason: reason || 'sync' })
+        }).then(function (body) {
+          if (!body.ok || !body.session) throw new Error(body.error || 'session handshake failed');
+          seq = Math.max(seq, Number(body.session.nextSeq || 1));
+          sessionReady = true;
+          seatConfirmed = body.session.seatConfirmed === true;
+          Object.assign(window.__MIRRORSHIFT_CONTROLLER_TRANSPORT__, {
+            ready: true, resumed: body.session.resumed, resumeCount: body.session.resumeCount,
+            nextSeq: seq, seatConfirmed: seatConfirmed, lastError: null
+          });
+          renderSeatAction();
+          updateLink('SEAT ' + player.slice(1) + (seatConfirmed ? ' // CONFIRMED' : (body.session.resumed ? ' // RESUMED' : ' // LIVE')));
+          return body.session;
+        }).catch(function (error) {
+          sessionReady = false;
+          window.__MIRRORSHIFT_CONTROLLER_TRANSPORT__.ready = false;
+          window.__MIRRORSHIFT_CONTROLLER_TRANSPORT__.lastError = error.message;
+          updateLink('RECONNECTING...');
+          throw error;
+        }).finally(function () { sessionSync = null; });
+        return sessionSync;
+      }
+      function heartbeatSession() {
+        if (!sessionReady) return syncSession('heartbeat').catch(function () {});
+        return fetchJson('/api/heartbeat', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ player: player, sessionId: sessionId })
+        }).then(function (body) {
+          if (!body.ok) {
+            sessionReady = false;
+            return syncSession('heartbeat-recovery');
+          }
+          window.__MIRRORSHIFT_CONTROLLER_TRANSPORT__.nextSeq = body.nextSeq;
+          return body;
+        }).catch(function () { sessionReady = false; updateLink('RECONNECTING...'); });
+      }
+      function reportRtt(receipt, rttMs) {
+        if (!receipt) return;
+        lastRtt = Math.round(rttMs * 100) / 100;
+        Object.assign(window.__MIRRORSHIFT_CONTROLLER_TRANSPORT__, {
+          acknowledgedActions: window.__MIRRORSHIFT_CONTROLLER_TRANSPORT__.acknowledgedActions + (receipt.accepted ? 1 : 0),
+          lastRequestId: receipt.requestId, lastRttMs: lastRtt,
+          lastServerProcessMs: receipt.serverProcessMs, nextSeq: receipt.nextSeq,
+          lastError: receipt.reason || null
+        });
+        fetch('/api/client-telemetry', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ player: player, sessionId: sessionId, requestId: receipt.requestId, rttMs: lastRtt })
+        }).catch(function () {});
+      }
+      function sendAction(action, retryCount) {
+        return (sessionReady ? Promise.resolve() : syncSession(retryCount ? 'resync' : 'action')).then(function () {
+          var sequence = seq++;
+          var requestId = sessionId + ':' + (++requestCount) + ':' + sequence;
+          var startedAt = performance.now();
+          return fetchJson('/api/action', {
+            method: 'POST', headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ player: player, sessionId: sessionId, requestId: requestId, clientSentAt: Date.now(), action: Object.assign({ seq: sequence }, action) })
+          }).then(function (body) {
+            if (body.receipt) reportRtt(body.receipt, performance.now() - startedAt);
+            if (!body.ok && retryCount < 1 && (body.error === 'session-required' || body.result && body.result.reason === 'stale-sequence')) {
+              sessionReady = false;
+              return syncSession('recovery').then(function () { return sendAction(action, retryCount + 1); });
+            }
+            if (!body.ok) throw new Error(body.error || body.result && body.result.reason || 'action rejected');
+            return body;
+          });
+        });
+      }
+      function post(action) {
+        var queued = actionChain.then(function () { return sendAction(action, 0); }, function () { return sendAction(action, 0); });
+        actionChain = queued.catch(function () {});
+        return queued.catch(function (error) {
+          sessionReady = false;
+          window.__MIRRORSHIFT_CONTROLLER_TRANSPORT__.ready = false;
+          window.__MIRRORSHIFT_CONTROLLER_TRANSPORT__.lastError = error.message;
+          updateLink('RECONNECTING...');
+          return null;
+        });
+      }
+      function postAssists(next) {
+        assists = Object.assign({}, assists, next || {});
+        return fetch('/api/assist', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ player: player, assists: assists }) });
+      }
+      function postCharacter(offset) {
+        var current = Math.max(0, characterIds.indexOf(selfCharacterId));
+        var characterId = characterIds[(current + offset + characterIds.length) % characterIds.length];
+        return fetchJson('/api/character', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ player: player, characterId: characterId })
+        }).then(function (body) {
+          if (!body.ok) throw new Error(body.reason || 'character locked');
+          return body;
+        }).catch(function () { updateLink('PICK LOCKED'); });
+      }
+      function confirmSeat() {
+        if (seatConfirmBusy) return Promise.resolve(null);
+        seatConfirmBusy = true;
+        renderSeatAction();
+        return (sessionReady ? Promise.resolve() : syncSession('seat-confirm')).then(function () {
+          return fetchJson('/api/seat-confirm', {
+            method: 'POST', headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ player: player, sessionId: sessionId })
+          });
+        }).then(function (body) {
+          if (!body.ok || body.confirmed !== true) throw new Error(body.error || 'seat confirmation failed');
+          seatConfirmed = true;
+          window.__MIRRORSHIFT_CONTROLLER_TRANSPORT__.seatConfirmed = true;
+          window.__MIRRORSHIFT_CONTROLLER_TRANSPORT__.seatConfirmCount = Number(body.confirmationCount || 1);
+          updateLink('SEAT ' + player.slice(1) + ' // CONFIRMED');
+          renderSeatAction();
+          return body;
+        }).catch(function (error) {
+          window.__MIRRORSHIFT_CONTROLLER_TRANSPORT__.lastError = error.message;
+          updateLink('CONFIRM FAILED');
+          return null;
+        }).finally(function () {
+          seatConfirmBusy = false;
+          renderSeatAction();
+        });
+      }
+      function bindHold(id, key) {
+        var button = document.getElementById(id);
+        function down(event) { event.preventDefault(); held[key] = true; button.classList.add('down'); if (button.setPointerCapture) button.setPointerCapture(event.pointerId); }
+        function up(event) { event.preventDefault(); held[key] = false; button.classList.remove('down'); }
+        button.addEventListener('pointerdown', down);
+        button.addEventListener('pointerup', up);
+        button.addEventListener('pointercancel', up);
+        button.addEventListener('lostpointercapture', up);
+      }
+      bindHold('left', 'left'); bindHold('right', 'right'); bindHold('gas', 'gas'); bindHold('brake', 'brake');
+      document.getElementById('item').addEventListener('pointerdown', function (event) { event.preventDefault(); post({ type: 'item' }); });
+      document.getElementById('start').addEventListener('click', function () {
+        if (!seatConfirmed) return confirmSeat();
+        return fetch('/api/start', { method: 'POST' });
+      });
+      document.getElementById('steerAssist').addEventListener('click', function () { postAssists({ steering: !assists.steering }); });
+      document.getElementById('autoGas').addEventListener('click', function () { postAssists({ autoAccelerate: !assists.autoAccelerate }); });
+      document.getElementById('previousCharacter').addEventListener('click', function () { postCharacter(-1); });
+      document.getElementById('nextCharacter').addEventListener('click', function () { postCharacter(1); });
+      setInterval(function () {
+        if (driveInFlight) return;
+        driveInFlight = true;
+        post({ type: 'drive', throttle: held.gas ? 1 : 0, brake: held.brake ? 1 : 0, steer: (held.left ? -1 : 0) + (held.right ? 1 : 0) }).finally(function () { driveInFlight = false; });
+      }, 85);
+      function render(observation) {
+        var self = observation.self;
+        currentPhase = observation.phase;
+        selfCharacterId = self.characterId;
+        if (self.color) document.documentElement.style.setProperty('--seat-color', self.color);
+        assists = { steering: Boolean(self.assists && self.assists.steering), autoAccelerate: Boolean(self.assists && self.assists.autoAccelerate) };
+        var steerAssist = document.getElementById('steerAssist');
+        var autoGas = document.getElementById('autoGas');
+        steerAssist.setAttribute('aria-pressed', String(assists.steering));
+        steerAssist.querySelector('b').textContent = assists.steering ? 'LIGHT' : 'OFF';
+        autoGas.setAttribute('aria-pressed', String(assists.autoAccelerate));
+        autoGas.querySelector('b').textContent = assists.autoAccelerate ? 'ON' : 'OFF';
+        steerAssist.disabled = autoGas.disabled = observation.phase !== 'lobby';
+        document.getElementById('previousCharacter').disabled = document.getElementById('nextCharacter').disabled = observation.phase !== 'lobby';
+        document.getElementById('character').textContent = self.character.toUpperCase();
+        document.getElementById('vehicle').textContent = ((self.expressionLabel || self.signature) ? (self.expressionLabel || self.signature) + ' // ' : '') + self.vehicle.toUpperCase();
+        document.getElementById('rank').textContent = 'P' + self.rank;
+        renderSeatAction();
+        if (observation.phase === 'racing' && observation.mode === 'battle') {
+          var seconds = Math.ceil(Math.max(0, observation.timeRemainingMs || 0) / 1000);
+          document.getElementById('lap').textContent = self.respawning ? 'REBOOTING' : 'CORE ' + self.score + ' · ' + seconds + 'S';
+        } else {
+          var variantTag = observation.variantLabel ? ' · ' + observation.variantLabel.replace(' SIGNAL', '').replace('SHARDLINE ', '').replace(' GAUNTLET', '') : '';
+          var routeTag = observation.routeDirectionId === 'reflection' ? ' · REFLECT' : '';
+          var tourTag = observation.mode === 'tour' && observation.tour
+            ? 'TOUR ' + observation.tour.roundNumber + '/' + observation.tour.roundCount + ' · ' + Number(observation.tour.points[self.id] || 0) + ' PTS · '
+            : '';
+          document.getElementById('lap').textContent = observation.phase === 'racing'
+            ? tourTag + 'LAP ' + self.lap + ' / ' + observation.raceLaps + routeTag + variantTag
+            : tourTag + observation.phase.toUpperCase() + routeTag + variantTag;
+        }
+        var driftLabels = ['DRIFT READY', 'BLUE', 'VIOLET', 'OVERDRIVE'];
+        document.getElementById('drift').textContent = self.drift.boosting ? 'SHIFT BOOST' : (self.drift.active ? driftLabels[self.drift.tier] : 'DRIFT READY');
+        document.getElementById('catchup').textContent = self.spawnProtected ? 'CORE SHIELD' : (self.catchup > 1 ? 'CATCH-UP +' + Math.round((self.catchup - 1) * 1000) / 10 + '%' : 'BASE SPEED');
+        document.getElementById('item').textContent = 'FIRE · ' + (self.item ? self.item.replace('-', ' ').toUpperCase() : 'EMPTY');
+        var guards = document.getElementById('guards'); guards.replaceChildren();
+        for (var index = 0; index < 3; index += 1) { var mark = document.createElement('i'); if (index < self.shield) mark.className = 'on'; guards.appendChild(mark); }
+        guards.setAttribute('aria-label', self.shield + ' shield segments');
+      }
+      function observe() {
+        fetch('/api/observe?player=' + encodeURIComponent(player), { cache: 'no-store' }).then(function (response) { return response.json(); }).then(function (body) {
+          if (body.ok) render(body.observation);
+          if (sessionReady) updateLink('SEAT ' + player.slice(1) + (seatConfirmed ? ' // CONFIRMED' : ' // LIVE'));
+        }).catch(function () { document.getElementById('link').textContent = 'RECONNECTING…'; });
+      }
+      window.addEventListener('online', function () { sessionReady = false; syncSession('online').catch(function () {}); });
+      renderSeatAction();
+      setInterval(observe, 160); setInterval(heartbeatSession, 1000); syncSession('load').catch(function () {}); observe();
+    })();
+  </script>
+</body>
+</html>

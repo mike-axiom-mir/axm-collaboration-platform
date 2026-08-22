@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "FALSE_ERASURE",
+      "expected": "HOLD_PRIVACY_OR_ERASURE_TRUTH",
+      "stimulus": "deletion receipt claims impossible universal erasure"
+    }
+  ],
+  "category": 7,
+  "category_name": "7. Privacy, consent, retention, redaction, deletion, and export",
+  "full_semantic_implementation": false,
+  "number": 67,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Expire raw material, derived caches, permissions, temporary branches, and proof references through explicit policy and auditable receipts.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "51f2914f01aaa0eeba0b2b1017739c5969e7561c8b7d645e10616aa07d0fef7c"
+  },
+  "source_contract_sha256": "86d0d56ec121b6cbd8bf7e31f7439e6f46c32f3e337cbbd4cd11f818e974514a",
+  "stable_id": "axm.memory.retention-expiry-controller"
+}

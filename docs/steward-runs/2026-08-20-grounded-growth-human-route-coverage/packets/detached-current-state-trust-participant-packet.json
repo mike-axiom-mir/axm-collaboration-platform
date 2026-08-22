@@ -1,0 +1,188 @@
+{
+  "schema": "axm.human-benefit-participant-packet/v1",
+  "version": "0.1.0",
+  "packetId": "current-detached-current-state-trust-participant-packet-20260820",
+  "generatedAt": "2026-08-20T01:04:00.000Z",
+  "capabilityBinding": {
+    "capabilityId": "growth.current-state.detached-integrity.verify",
+    "humanClaimId": "portable-current-state-human-benefit",
+    "protocolRef": {
+      "id": "detached-current-state-trust-local-steward-20260820",
+      "schema": "axm.human-benefit-protocol/v1",
+      "sha256": "sha256:bc53754bde20b078af9007436880ffbf531090c2d78c5307bff22b7bc9d4fab1"
+    },
+    "cycleRef": {
+      "id": "cycle-portable-current-state-verification-20260819",
+      "schema": "axm.verified-capability-cycle-receipt/v1",
+      "sha256": "sha256:ea067b2d3907534b3015047678cfda8c761c67bcdf8692d3a6ced2187de6543d"
+    },
+    "currentOutcomeRef": {
+      "id": "grounded-growth-portable-current-state-verification-20260819",
+      "schema": "axm.grounded-growth-outcome-receipt/v1",
+      "sha256": "sha256:927d373210bfcdf7c89163d805001bd116d6eba0e29d8f18f2d3e7ef0f577ff6"
+    }
+  },
+  "protocolRef": {
+    "id": "detached-current-state-trust-local-steward-20260820",
+    "schema": "axm.human-benefit-protocol/v1",
+    "sha256": "sha256:bc53754bde20b078af9007436880ffbf531090c2d78c5307bff22b7bc9d4fab1"
+  },
+  "status": "READY_FOR_VOLUNTARY_HUMAN_SESSION",
+  "notices": [
+    "Participation is optional. Stopping or withdrawing does not count as failure.",
+    "The packet records only structured choices, confidence, confusion, elapsed milliseconds, effect and burden.",
+    "Do not enter a name, email address, free-text comment, audio, video or screen recording.",
+    "This one-person result can describe only the participating local steward.",
+    "The condition roles and expected decisions are intentionally absent from this participant packet.",
+    "The exact protocol reference must accompany an external response so responses cannot cross capability routes."
+  ],
+  "trials": [
+    {
+      "trialId": "detached-trust-1",
+      "order": 1,
+      "conditionLabel": "Condition A",
+      "prompt": "Condition A: a receipt is internally self-consistent and labels itself CURRENT, but the native source graph is unavailable. The requested decision would treat it as authenticated source truth. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "detached-trust-2",
+      "order": 2,
+      "conditionLabel": "Condition B",
+      "prompt": "Condition B: integrity and internal coherence pass, source truth and currentness are explicitly UNKNOWN, and the requested use is limited to checking the receipt format. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "detached-trust-3",
+      "order": 3,
+      "conditionLabel": "Condition B",
+      "prompt": "Condition B: the receipt digest does not match its content, so detached integrity fails before any source-truth question. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "detached-trust-4",
+      "order": 4,
+      "conditionLabel": "Condition A",
+      "prompt": "Condition A: the receipt says TEST and CURRENT but provides no authority boundary and no distinction between integrity and authenticity. Use requires a bounded trust decision. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "detached-trust-5",
+      "order": 5,
+      "conditionLabel": "Condition A",
+      "prompt": "Condition A: a regenerated broad report changed, and every digest difference is called tampering without classifying mutable derived-view drift. The decision requires distinguishing history from a current view. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    },
+    {
+      "trialId": "detached-trust-6",
+      "order": 6,
+      "conditionLabel": "Condition B",
+      "prompt": "Condition B: a recomputed receipt sets installed and CANON authority true; the detached guard rejects the authority inflation even though the digest is coherent. Continue, hold, or mark unsure?",
+      "responseFields": {
+        "decision": [
+          "CONTINUE",
+          "HOLD",
+          "UNSURE"
+        ],
+        "confidence": "integer 1 to 5",
+        "confusion": [
+          "NONE",
+          "SOME",
+          "BLOCKED"
+        ],
+        "elapsedMs": "integer 0 to 3600000"
+      }
+    }
+  ],
+  "completionFields": {
+    "effect": [
+      "HELPED",
+      "HARMED",
+      "NO_MEANINGFUL_DIFFERENCE",
+      "UNSURE"
+    ],
+    "burden": [
+      "LOW",
+      "ACCEPTABLE",
+      "HIGH"
+    ],
+    "confidence": "integer 1 to 5"
+  },
+  "responseBoundary": {
+    "schema": "axm.human-benefit-response-input/v1",
+    "exactProtocolRefRequired": true,
+    "externalToWorkshopRepository": true,
+    "structuredNoFreeText": true
+  },
+  "outputBoundary": {
+    "writesAutomatically": false,
+    "sendsToNetwork": false,
+    "authenticatesHuman": false,
+    "createsHumanBenefitVerdict": false
+  },
+  "packetDigest": "sha256:cfbefd69500e48c05de021792aae9601dc6603fe1db32c84728807bb0dc638a0"
+}

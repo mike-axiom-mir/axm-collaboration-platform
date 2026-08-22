@@ -118,7 +118,7 @@ try {
   writeJson(path.join(missingDirectory, 'manifest.json'), missingPermissionField);
   fs.writeFileSync(path.join(missingDirectory, 'index.html'), '<!doctype html>');
   writeJson(path.join(missingDirectory, 'module.contract.json'), contract('missing-manifest-field'));
-  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'exact'), path.join(fixtureRoot, 'tools', 'linked-tool'));
+  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'exact'), path.join(fixtureRoot, 'tools', 'linked-tool'), process.platform === 'win32' ? 'junction' : 'dir');
 
   const before = treeReceipt(fixtureRoot);
   const first = Core.scanWorkshop(fixtureRoot, { now: '2026-07-26T00:00:00Z' });
@@ -240,6 +240,8 @@ try {
   check('manifest and contract identity versions and permissions align', () => {
     const manifestValue = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
     const contractValue = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
+    assert.equal(manifestValue.schema, 'axm.tool-manifest/v1');
+    assert.equal(manifestValue.kind, 'product');
     assert.equal(manifestValue.id, contractValue.id);
     assert.equal(manifestValue.version, contractValue.version);
     assert.deepEqual(manifestValue.permissions, contractValue.permissions);

@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.research-contribution-bundle/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "bundleId", "baselineRef", "sourceHandling",
+    "artifacts", "seats", "evidenceSources", "signals", "proposals", "truth"
+  ],
+  "properties": {
+    "schema": {"const": "axm.research-contribution-bundle/v1"},
+    "version": {"const": "0.1.0"},
+    "bundleId": {"$ref": "#/$defs/id"},
+    "baselineRef": {"$ref": "#/$defs/reference"},
+    "sourceHandling": {"const": "DATA_ONLY_NO_PACKAGE_CODE_EXECUTION"},
+    "artifacts": {
+      "type": "array", "minItems": 1, "maxItems": 256,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "label", "mediaType", "bytes", "sha256", "reportedSeatIds"],
+        "properties": {
+          "id": {"$ref": "#/$defs/id"},
+          "label": {"type": "string", "minLength": 1, "maxLength": 400},
+          "mediaType": {"type": "string", "minLength": 1, "maxLength": 200},
+          "bytes": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+          "sha256": {"$ref": "#/$defs/digest"},
+          "reportedSeatIds": {"$ref": "#/$defs/idList"}
+        }
+      }
+    },
+    "seats": {
+      "type": "array", "minItems": 1, "maxItems": 64,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": [
+          "id", "kind", "role", "providerFamily", "modelId",
+          "identityDisclosure", "priorOutputExposure", "provenanceRef", "proofAuthority"
+        ],
+        "properties": {
+          "id": {"$ref": "#/$defs/id"},
+          "kind": {"enum": ["HUMAN", "MODEL", "TOOL"]},
+          "role": {"type": "string", "minLength": 1, "maxLength": 400},
+          "providerFamily": {"type": ["string", "null"], "maxLength": 160},
+          "modelId": {"anyOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
+          "identityDisclosure": {"enum": ["EXACT", "PARTIAL", "UNDISCLOSED"]},
+          "priorOutputExposure": {"enum": ["NONE", "PARTIAL", "FULL", "UNKNOWN"]},
+          "provenanceRef": {"$ref": "#/$defs/reference"},
+          "proofAuthority": {"const": "NONE"}
+        }
+      }
+    },
+    "evidenceSources": {
+      "type": "array", "maxItems": 256,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "ref", "surface", "claimKinds"],
+        "properties": {
+          "id": {"$ref": "#/$defs/id"},
+          "ref": {"$ref": "#/$defs/reference"},
+          "surface": {
+            "enum": [
+              "file-inspection", "schema-validation", "focused-execution",
+              "live-visual-observation", "frame-sequence", "live-interaction",
+              "restart-reload", "sender-and-receiver-receipts",
+              "allowed-and-denied-attempts", "measured-telemetry",
+              "hardware-telemetry", "held-out-evaluation", "acceptance-review",
+              "human-steward-judgment", "declared-evidence"
+            ]
+          },
+          "claimKinds": {
+            "type": "array", "minItems": 1, "maxItems": 32,
+            "items": {"type": "string", "minLength": 1, "maxLength": 800},
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "signals": {
+      "type": "array", "minItems": 1, "maxItems": 256,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": [
+          "id", "statement", "evidenceStage", "artifactIds", "evidenceSourceIds",
+          "seatIds", "cheapestTest", "uncertainty", "solutionAlternatives",
+          "contradictions", "wildcard"
+        ],
+        "properties": {
+          "id": {"$ref": "#/$defs/id"},
+          "statement": {"type": "string", "minLength": 1, "maxLength": 2400},
+          "evidenceStage": {"enum": ["OBSERVED", "SIMULATED", "INFERENCE", "UNKNOWN"]},
+          "artifactIds": {"$ref": "#/$defs/idList"},
+          "evidenceSourceIds": {"$ref": "#/$defs/idList"},
+          "seatIds": {"$ref": "#/$defs/idList"},
+          "cheapestTest": {"type": "string", "minLength": 1, "maxLength": 1600},
+          "uncertainty": {"type": "string", "minLength": 1, "maxLength": 1600},
+          "solutionAlternatives": {
+            "type": "array", "minItems": 1, "maxItems": 24,
+            "items": {"type": "string", "minLength": 1, "maxLength": 800},
+            "uniqueItems": true
+          },
+          "contradictions": {
+            "type": "array", "maxItems": 24,
+            "items": {"type": "string", "minLength": 1, "maxLength": 800},
+            "uniqueItems": true
+          },
+          "wildcard": {"type": "boolean"}
+        }
+      }
+    },
+    "proposals": {
+      "type": "array", "maxItems": 256,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "statement", "disposition", "reason", "artifactIds", "evidenceSourceIds", "seatIds"],
+        "properties": {
+          "id": {"$ref": "#/$defs/id"},
+          "statement": {"type": ["string", "null"], "maxLength": 1600},
+          "disposition": {"enum": ["REJECTED", "REJECTED_AS_REDUNDANT", "DEFERRED", "CANDIDATE_FOR_TEST", "REUSE_EXISTING", "UNKNOWN"]},
+          "reason": {"type": "string", "minLength": 1, "maxLength": 1600},
+          "artifactIds": {"$ref": "#/$defs/idList"},
+          "evidenceSourceIds": {"$ref": "#/$defs/idList"},
+          "seatIds": {"$ref": "#/$defs/idList"}
+        }
+      }
+    },
+    "truth": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "artifactBytesEmbedded", "packageCodeExecuted", "modelInvoked",
+        "crossModelAgreementIsProof", "automaticAcceptance", "automaticBuild",
+        "automaticPromotion", "automaticCanon"
+      ],
+      "properties": {
+        "artifactBytesEmbedded": {"const": false},
+        "packageCodeExecuted": {"const": false},
+        "modelInvoked": {"const": false},
+        "crossModelAgreementIsProof": {"const": false},
+        "automaticAcceptance": {"const": false},
+        "automaticBuild": {"const": false},
+        "automaticPromotion": {"const": false},
+        "automaticCanon": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$", "maxLength": 180},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 240},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "idList": {
+      "type": "array", "maxItems": 256,
+      "items": {"$ref": "#/$defs/id"},
+      "uniqueItems": true
+    }
+  }
+}

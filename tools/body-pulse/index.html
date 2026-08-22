@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>AXM Body Pulse</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="heartbeat-evidence.css">
+  <link rel="stylesheet" href="code-draft.css">
+  <link rel="stylesheet" href="mirror-learning.css">
   <link rel="stylesheet" href="dormant.css">
   <link rel="stylesheet" href="hardware-archive.css">
 </head>
@@ -30,6 +33,9 @@
           <span>Schedule <b id="heartbeatSchedule">interval from change</b></span>
           <span>Verification <b id="verificationState">—</b></span>
           <span>Budget <b id="verificationBudget">10 checks/hour</b></span>
+          <span>Code drafts <b id="codeDraftState">—</b></span>
+          <span>Draft queue <b id="codeDraftQueueCount">0 waiting</b></span>
+          <span>Mirror lessons <b id="mirrorLearningState">PREPARED · OFF</b></span>
           <span>Repair authority <b>findings only</b></span>
         </div>
       </div>
@@ -50,7 +56,39 @@
         <div class="sectionHead"><div><span class="eyebrow">ROTATING SAFE ALLOW-LIST</span><h3>Next deterministic checks</h3></div><b id="verificationDeckSize">0 available</b></div>
         <div id="verificationNext" class="verificationChecks"></div>
         <div id="verificationRuns" class="verificationRuns"></div>
-        <p class="heartbeatBoundary">The clock may request five bounded Pulse leases per rolling hour. Body Pulse remains the master gate. Passing checks create evidence; they never edit, publish, push, merge, or promote.</p>
+        <p class="heartbeatBoundary">The clock may request fifteen deterministic test leases per rolling hour. Body Pulse remains the master gate. Tests create evidence but cannot edit source, apply, publish, push, merge, or promote.</p>
+      </div>
+      <div class="heartbeatEvidenceDeck" aria-labelledby="heartbeatEvidenceTitle">
+        <div class="sectionHead"><div><span class="eyebrow">EVIDENCE YIELD · HONEST MACHINE COST</span><h3 id="heartbeatEvidenceTitle">What the last heartbeat actually did</h3></div><b id="heartbeatYield">AWAITING EVIDENCE</b></div>
+        <div class="heartbeatEvidenceGrid">
+          <article><span>Latest cycle</span><b id="heartbeatWallTime">not measured</b><small>elapsed wall time, not CPU time</small></article>
+          <article><span>Latest checks</span><b id="heartbeatLatestChecks">0 / 0</b><small id="heartbeatCheckHistory">No retained check evidence</small></article>
+          <article><span>Rotating coverage</span><b id="heartbeatCoverage">0 / 0</b><small>distinct retained allow-listed checks</small></article>
+          <article><span>Observed CPU</span><b id="heartbeatCpuEvidence">unknown</b><small id="heartbeatCpuNote">No bounded pressure samples yet</small></article>
+          <article><span>Draft lane</span><b id="heartbeatDraftYield">DORMANT</b><small id="heartbeatDraftHistory">Existing queue preserved</small></article>
+          <article><span>Mutation authority</span><b>NONE</b><small>no source, apply, merge or promotion right</small></article>
+        </div>
+        <p class="heartbeatEvidenceTruth">Elapsed wall time includes process startup, file reads, waiting and receipt writes. CPU percentages are reported only when bounded Body Pulse samples exist; the dashboard never converts elapsed time into a guessed CPU load.</p>
+      </div>
+      <div class="codeDraftDeck">
+        <div class="sectionHead"><div><span class="eyebrow">CODE CLONE · DORMANT · SEVEN-DAY REVIEW QUEUE</span><h3>Heartbeat improvement drafts</h3></div><b id="codeDraftBudget">STOPPED</b></div>
+        <div id="codeDraftNext" class="codeDraftNext"><p>No allow-listed draft signal read yet.</p></div>
+        <div id="codeDraftQueue" class="codeDraftQueue"><p>No candidate drafts are waiting.</p></div>
+        <div id="codeDraftRuns" class="codeDraftRuns"><p>No scheduled draft window has run yet.</p></div>
+        <p class="heartbeatBoundary">No new drafts are scheduled. The existing queue remains reviewable: up or down records Mike's vote on the exact candidate digest, approval does not apply the patch, a second independent seat is still required, and unreviewed entries expire after seven days while their evidence remains. If explicitly re-enabled later, the lane is capped at one draft per hour.</p>
+      </div>
+      <div class="mirrorLearningDeck">
+        <div class="sectionHead"><div><span class="eyebrow">MIRROR + CODE CLONE · INDEPENDENTLY GATED</span><h3>Hourly private lesson lane</h3></div><b id="mirrorLearningBadge">OFF BY DEFAULT</b></div>
+        <div class="mirrorLearningGrid">
+          <div><span>Lane</span><b id="mirrorLearningLane">DORMANT</b></div>
+          <div><span>Pulse seat</span><b id="mirrorLearningPulse">DISABLED</b></div>
+          <div><span>Mirror feed</span><b id="mirrorLearningFeed">UNKNOWN</b></div>
+          <div><span>Reviewed lessons</span><b id="mirrorLearningWaiting">0 WAITING</b></div>
+        </div>
+        <p id="mirrorLearningReason">Prepared without activation. Scheduled beats make no Mirror request while this lane is off.</p>
+        <div id="mirrorLearningRuns" class="mirrorLearningRuns"><p>No hourly lesson intake has run.</p></div>
+        <button id="mirrorLearningToggle" class="mirrorLearningToggle">Prepared · keep OFF</button>
+        <p class="heartbeatBoundary">This switch controls only the Heartbeat lane. Body Pulse and Mirror's private action feed remain independent explicit gates. Even with all three on, one dual-reviewed Code Clone receipt per hour may enter Mirror's private lesson corpus. It does not train weights, rewrite original Mirror or Code Clone, apply a patch, edit CANON, or promote anything.</p>
       </div>
     </section>
     <section class="bodyGrid">

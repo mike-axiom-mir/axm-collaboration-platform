@@ -2,7 +2,9 @@
 
 Counts the active workshop source without inflating growth from copies.
 
-Excluded directories: `.git`, `node_modules`, `exports`, `backups`, `logs`, `state`, `.cache`, and `coverage`.
+Excluded directories: `.git`, `node_modules`, `exports`, `backups`, `logs`, `state`, `local-data`, `.cache`, `coverage`, and `tmp`.
+
+An unreadable directory or a file that disappears during a scan is skipped instead of failing the whole measurement. The live response reports a compact partial-scan warning using relative paths and error codes only; source contents and absolute paths remain excluded.
 
 Metrics include total files, text/binary split, UTF-8 characters, lines, bytes, tool manifests, game manifests and test files. Snapshots are explicit local actions and deduplicate identical measurements.
 

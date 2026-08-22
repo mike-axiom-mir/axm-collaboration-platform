@@ -1,6 +1,7 @@
 'use strict';
 
 const childProcess = require('child_process');
+const ObservatoryDeck = require('./axm-observatory-deck-adapter');
 
 const STATE_SCHEMA = 'axm.heartbeat-verification.state/v1';
 const MODULE_ID = 'heartbeat-verifier';
@@ -10,7 +11,7 @@ const WINDOW_JITTER_TOLERANCE_MS = 1000;
 const RUN_LIMIT = 96;
 const CHECK_TIMEOUT_MS = 120000;
 
-const CHECK_DECK = Object.freeze([
+const CORE_CHECK_DECK = Object.freeze([
   { id: 'server-syntax', label: 'Workshop server syntax', args: ['--check', 'server.js'] },
   { id: 'heartbeat-core', label: 'Platform Heartbeat core', args: ['shared/heartbeat/selftest.js'] },
   { id: 'heartbeat-service', label: 'Platform Heartbeat service', args: ['shared/heartbeat/service-selftest.js'] },
@@ -40,10 +41,24 @@ const CHECK_DECK = Object.freeze([
   { id: 'workshop-updater-service', label: 'Workshop Updater zero-network service', args: ['shared/workshop-updater/service-selftest.js'] },
   { id: 'workshop-updater-surface', label: 'Workshop Update Gate surface', args: ['tools/workshop-updater/selftest.js'] }
 ]);
+const CHECK_DECK = Object.freeze(CORE_CHECK_DECK.concat(ObservatoryDeck.checkDeck()).map(item => Object.freeze(item)));
 
 function nowIso(now) { return new Date(now == null ? Date.now() : now).toISOString(); }
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function tail(value, max) { const text = String(value || '').trim(); return text.slice(Math.max(0, text.length - (max || 1600))); }
+function pressureSample(body, phase, itemId) {
+  if (!body || !body.sampledAt) return null;
+  return {
+    sampledAt: body.sampledAt,
+    phase: String(phase || 'lease-request'),
+    itemId: itemId || null,
+    cpuUsedRatio: Number.isFinite(body.cpuUsedRatio) ? body.cpuUsedRatio : null,
+    memoryUsedRatio: Number.isFinite(body.memoryUsedRatio) ? body.memoryUsedRatio : null,
+    gpuUsedRatio: Number.isFinite(body.gpuUsedRatio) ? body.gpuUsedRatio : null,
+    thermalC: Number.isFinite(body.thermalC) ? body.thermalC : null,
+    pressure: String(body.pressure || 'UNKNOWN')
+  };
+}
 function createState() {
   return { schema: STATE_SCHEMA, version: '0.1.0', pulseBootstrapApplied: false, pulseBootstrapMode: null, lastWindowAt: null, running: false, activeBeatId: null, lastReason: 'awaiting-scheduled-heartbeat', runs: [] };
 }
@@ -83,6 +98,37 @@ function runCheck(root, check) {
   });
 }
 function processEnv() { return typeof process !== 'undefined' && process.env ? process.env : {}; }
+function summarizeRuns(runs) {
+  const retainedRuns = Array.isArray(runs) ? runs : [];
+  const checks = retainedRuns.reduce((all, run) => all.concat(Array.isArray(run.checks) ? run.checks : []), []);
+  const pressureSamples = retainedRuns.reduce((all, run) => all.concat(Array.isArray(run.pressureSamples) ? run.pressureSamples : []), []);
+  const durations = retainedRuns.map(run => Date.parse(run.completedAt) - Date.parse(run.startedAt)).filter(value => Number.isFinite(value) && value >= 0);
+  const cpu = pressureSamples.map(sample => sample.cpuUsedRatio).filter(Number.isFinite);
+  const memory = pressureSamples.map(sample => sample.memoryUsedRatio).filter(Number.isFinite);
+  const gpu = pressureSamples.map(sample => sample.gpuUsedRatio).filter(Number.isFinite);
+  const latest = retainedRuns.length ? retainedRuns[retainedRuns.length - 1] : null;
+  return {
+    durationKind: 'WALL_CLOCK_PROCESS_WINDOW',
+    retainedWindowCount: retainedRuns.length,
+    passWindowCount: retainedRuns.filter(run => run.status === 'PASS').length,
+    attentionWindowCount: retainedRuns.filter(run => run.status === 'ATTENTION').length,
+    checkExecutionCount: checks.length,
+    passCheckCount: checks.filter(check => check.status === 'PASS').length,
+    heldCheckCount: checks.filter(check => check.status === 'HELD').length,
+    failedCheckCount: checks.filter(check => check.status === 'FAIL' || check.status === 'TIMEOUT').length,
+    uniqueCheckCount: new Set(checks.map(check => check.checkId).filter(Boolean)).size,
+    pressureSampleCount: pressureSamples.length,
+    peakCpuUsedRatio: cpu.length ? Math.max.apply(null, cpu) : null,
+    averageCpuUsedRatio: cpu.length ? cpu.reduce((total, value) => total + value, 0) / cpu.length : null,
+    peakMemoryUsedRatio: memory.length ? Math.max.apply(null, memory) : null,
+    peakGpuUsedRatio: gpu.length ? Math.max.apply(null, gpu) : null,
+    lastDurationMs: durations.length ? durations[durations.length - 1] : null,
+    averageDurationMs: durations.length ? Math.round(durations.reduce((total, value) => total + value, 0) / durations.length) : null,
+    maxDurationMs: durations.length ? Math.max.apply(null, durations) : null,
+    latestBeatSequence: latest ? latest.beatSequence : null,
+    lastCompletedAt: latest ? latest.completedAt : null
+  };
+}
 
 function create(options) {
   if (!options || !options.root || !options.bodyPulse || typeof options.read !== 'function' || typeof options.write !== 'function') throw new Error('Heartbeat verification bridge adapters required');
@@ -115,7 +161,7 @@ function create(options) {
     const checks = selectedChecks(beat.sequence);
     const goalId = 'heartbeat-verification-' + beat.sequence;
     options.bodyPulse.goal({ goalId, moduleId: MODULE_ID, title: 'Heartbeat verification window #' + beat.sequence, priority: 82, maxPulses: MAX_CHECKS_PER_WINDOW, createdBy: 'mike-authorized-heartbeat', requiresReview: true });
-    const run = { beatId: beat.beatId, beatSequence: beat.sequence, goalId, startedAt: nowIso(stamp), completedAt: null, status: 'RUNNING', reason: 'fifteen-check-window', evidenceAuthority: 'NAMED_DETERMINISTIC_CHECKS_ONLY', checks: [] };
+    const run = { beatId: beat.beatId, beatSequence: beat.sequence, goalId, startedAt: nowIso(stamp), completedAt: null, status: 'RUNNING', reason: 'fifteen-check-window', evidenceAuthority: 'NAMED_DETERMINISTIC_CHECKS_ONLY', checks: [], pressureSamples: [] };
     state.running = true;
     state.activeBeatId = beat.beatId;
     state.lastWindowAt = nowIso(stamp);
@@ -123,6 +169,8 @@ function create(options) {
     write(state);
     for (const check of checks) {
       const decision = options.bodyPulse.request({ moduleId: MODULE_ID, force: true, leaseMs: CHECK_TIMEOUT_MS });
+      const sample = pressureSample(decision.body, 'lease-request', check.id);
+      if (sample) run.pressureSamples.push(sample);
       if (!decision.granted) {
         run.checks.push({ checkId: check.id, label: check.label, status: 'HELD', reason: decision.reason });
         run.reason = decision.reason;
@@ -132,6 +180,8 @@ function create(options) {
       run.checks.push(result);
       options.bodyPulse.complete({ leaseId: decision.lease.leaseId, outcome: result.status === 'PASS' ? 'COMPLETED' : 'FAILED', summary: check.label + ': ' + result.status, effect: 'deterministic-test-receipt-only' });
     }
+    const finalSample = pressureSample(options.bodyPulse.status().body, 'window-complete', null);
+    if (finalSample) run.pressureSamples.push(finalSample);
     options.bodyPulse.goal({ goalId, moduleId: MODULE_ID, title: 'Heartbeat verification window #' + beat.sequence, status: 'DONE', statusChangedBy: 'heartbeat-verification-bridge' });
     run.completedAt = nowIso(now());
     run.status = run.checks.length === checks.length && run.checks.every(item => item.status === 'PASS') ? 'PASS' : run.checks.some(item => item.status === 'FAIL' || item.status === 'TIMEOUT') ? 'ATTENTION' : 'HELD';
@@ -165,6 +215,7 @@ function create(options) {
       armed: pulseStatus.mode === 'ACTIVE' || pulseStatus.mode === 'CONSERVE',
       pulseBootstrapApplied: state.pulseBootstrapApplied,
       pulseBootstrapMode: state.pulseBootstrapMode,
+      evidenceSummary: summarizeRuns(state.runs),
       nextChecks: selectedChecks((state.runs.length ? state.runs[state.runs.length - 1].beatSequence : 0) + 1).map(item => ({ id: item.id, label: item.label })),
       recentRuns: clone(state.runs.slice(-12))
     };
@@ -187,4 +238,4 @@ function create(options) {
   return { onBeat, status, selectedChecks, MODULE_ID, MAX_CHECKS_PER_WINDOW, CHECK_DECK: clone(CHECK_DECK) };
 }
 
-module.exports = { create, STATE_SCHEMA, MODULE_ID, MAX_CHECKS_PER_WINDOW, WINDOW_MS, WINDOW_JITTER_TOLERANCE_MS, CHECK_DECK: clone(CHECK_DECK), selectedChecks };
+module.exports = { create, STATE_SCHEMA, MODULE_ID, MAX_CHECKS_PER_WINDOW, WINDOW_MS, WINDOW_JITTER_TOLERANCE_MS, CHECK_DECK: clone(CHECK_DECK), selectedChecks, summarizeRuns };

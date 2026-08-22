@@ -10,7 +10,33 @@
 /backups/
 /exports/
 /runtime/
+/sessions/
+/cache/
+/tmp/
+/projects/
+# Intake staging is private by default. Exact reviewed, public-safe runtime
+# dependencies are deliberately versioned; sibling intakes remain private.
+/intakes/*
+!/intakes/ai-team-collaboration-runs-01-101-v1/
+!/intakes/ai-team-collaboration-runs-01-101-v1/**
+!/intakes/universal-object-fabric-v0.7.0-2026-07-28/
+!/intakes/universal-object-fabric-v0.7.0-2026-07-28/**
+/intakes/universal-object-fabric-v0.7.0-2026-07-28/source/AXM_UNIVERSAL_OBJECT_FABRIC_COMPLETE_INTAKE_v0_7_0_2026-07-28.zip
+/distributions/
 /AXM_START_REPORT.txt
+
+# Imported working packs and archive-review lanes are local intake material.
+/_archive_review_*/
+/AXM_*_WORKING*/
+/AXM_*_PACK_*/
+/AXM_AETHERGLASS_VISUAL_ENGINE_*/
+/AXM_VISUAL_HANDSHAKE_*/
+
+# Derived evidence/build caches; production game runtime folders remain tracked.
+**/rollback/
+**/__pycache__/
+**/.pytest_cache/
+**/coverage/
 
 # Local credentials, tokens, and machine overrides
 .env
@@ -26,3 +52,4 @@ Thumbs.db
 Desktop.ini
 *.tmp
 *.bak
+*.bak-*

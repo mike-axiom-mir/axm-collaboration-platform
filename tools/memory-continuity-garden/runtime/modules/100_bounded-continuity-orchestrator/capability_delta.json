@@ -1,0 +1,201 @@
+{
+  "capability_interface": {
+    "authority_delta": "NONE",
+    "canon_delta": "NONE",
+    "consent_delta": "NONE",
+    "consumes_clause": "verified outcomes; feedback; failure lessons; candidate patterns; quality evidence; human decisions",
+    "human_gate_required_by_source_contract": false,
+    "input_contract": "axm.memory.reference-request/v2",
+    "invariants": [
+      "authority_delta_is_none",
+      "canon_delta_is_none",
+      "consent_delta_is_none",
+      "coordination receipts cannot complete downstream work",
+      "coordinator cannot complete, undo, or promote downstream work",
+      "delivery and acceptance are separate",
+      "delivery_does_not_imply_acceptance",
+      "downstream owners recover their own writes",
+      "full_semantics_are_not_claimed",
+      "human decisions remain explicit and reopenable",
+      "memory_payload_is_inert_data",
+      "source_truth_is_not_created_by_contract_validity",
+      "trust_delta_is_none"
+    ],
+    "operation_kind": "GATED_COORDINATION",
+    "output_contract": "axm.memory.bounded-continuity-orchestrator.proposal/v1",
+    "postconditions": [
+      "exactly one accepted reference contract or typed HOLD is returned",
+      "no hidden mutation, authority gain, trust gain, consent gain, or CANON promotion occurs",
+      "result remains source-linked, replaceable, privacy-safe, and bounded to the declared purpose",
+      "receiver acceptance, semantic apply, owner acceptance, and integration remain separate future acts"
+    ],
+    "preconditions": [
+      "exact seed identity and purpose match",
+      "source references and digests align",
+      "authority, consent, role, permission, expiry, and namespace checks pass",
+      "boot prerequisites are ready or explicitly safe degraded mode is allowed",
+      "resource, cancellation, revision, output-root, and compatibility guards pass"
+    ],
+    "purpose_clause": "Coordinate capture, provenance, branching, compression, retrieval, consent, synchronization, repair, and review without gaining canon, identity, or execution authority.",
+    "semantic_effect": "REFERENCE_ONLY_NOT_IMPLEMENTED",
+    "state_effect_envelope": "COORDINATION_STATE_ONLY",
+    "trust_delta": "NONE"
+  },
+  "composition": {
+    "accepted_upstream_ids": [
+      "axm.memory.canon-candidate-separator",
+      "axm.memory.failure-lesson-registry",
+      "axm.memory.lifecycle-state-machine",
+      "axm.memory.provenance-envelope",
+      "axm.memory.source-authority-binder"
+    ],
+    "authority_transfer": false,
+    "boot_prerequisites": [
+      "axm.memory.canon-candidate-separator",
+      "axm.memory.failure-lesson-registry",
+      "axm.memory.lifecycle-state-machine",
+      "axm.memory.provenance-envelope",
+      "axm.memory.source-authority-binder"
+    ],
+    "consent_transfer": false,
+    "cycles_allowed_only_outside_boot_graph": true,
+    "delivery_does_not_imply_acceptance": true,
+    "downstream_candidates": [
+      "axm.memory.canon-candidate-separator",
+      "axm.memory.continuity-dashboard",
+      "axm.memory.failure-lesson-registry",
+      "axm.memory.human-correction-propagator",
+      "axm.memory.pattern-candidate-library",
+      "axm.memory.public-safe-continuity-mirror",
+      "axm.memory.quality-profile",
+      "axm.memory.recertification-scheduler",
+      "axm.memory.retrieval-feedback-receipt"
+    ],
+    "handoff_schema": "axm.memory.capability-handoff/v1",
+    "runtime_collaborators": [],
+    "semantic_apply_implied": false,
+    "trust_transfer": false
+  },
+  "human_review": {
+    "automatic_apply": false,
+    "challenge_and_reopen_supported": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "packet_path": "modules/100_bounded-continuity-orchestrator/review_packet.json",
+    "primary_actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN"
+    ]
+  },
+  "identity": {
+    "category_number": 10,
+    "name": "Bounded Memory and Continuity Orchestrator",
+    "number": 100,
+    "stable_id": "axm.memory.bounded-continuity-orchestrator"
+  },
+  "pipeline_membership": [
+    "PIPELINE_10_GOVERNANCE"
+  ],
+  "profiles": {
+    "authority": {
+      "path": "profiles/authority_t2-coordinate-without-owning-authority.json",
+      "sha256": "83756e5e1a12ff79c47e3c2a601e82b3ba708c4d2f992c87a80e2b2aa00b54c2"
+    },
+    "category": {
+      "path": "profiles/category_10_governance_learning_orchestration.json",
+      "sha256": "19c404aeca5555052939a1872019f630473a67b7c74345f97b6cf68a415adc83"
+    },
+    "operation": {
+      "path": "profiles/operation_gated-coordination.json",
+      "sha256": "a0d0d1f65f0b5dcd95009e38e30b379bfa70e3549a6c27fcbd7ceb66f94f9153"
+    },
+    "proof_tiers": {
+      "path": "profiles/proof_tiers.json",
+      "sha256": "ab8646803825822a1c529c9a47163827813c5ea9f2c2034031bdd103245d2f00"
+    },
+    "review_surface": {
+      "path": "profiles/review_surface.json",
+      "sha256": "d46b074a8a703365fd7243c20fae436abd8346494a3100efff73f817a65431e5"
+    },
+    "risk": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    }
+  },
+  "proof": {
+    "achieved_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE"
+    ],
+    "boundary": "Executable deltas, composition, metamorphic, resource, review, and capsule evidence remain synthetic/local reference proof.",
+    "canon": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "specialist_verification": false,
+    "workshop_integration": false
+  },
+  "resource_policy": {
+    "batch_and_step_limits_required": true,
+    "cancellation_must_be_checked": true,
+    "network_required": false,
+    "output_path_must_remain_under_exact_owned_root": true,
+    "profile_ref": {
+      "path": "profiles/risk_high.json",
+      "sha256": "73449a63a8c41e88d4751aa59c48709a77dd40594078f3d933216aa3a3c7ed02"
+    },
+    "symlink_escape_forbidden": true,
+    "unbounded_scan_forbidden": true
+  },
+  "schema": "axm.memory.capability-delta/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "base_contract_file_sha256": "89149b25db521daf1366e68ff1afceb43a4d337292405a5f30b5c643b3cba420",
+    "body_sha256": "aa5d704bddaf6e52b2de91bbd50c0a45d4db4e8136dcfd57d6812f690487c395",
+    "delta_core_sha256": "810245dec7183853a63274c8d6dece0791e7adb658f481feff6e5c41c5c999b8"
+  },
+  "source_run50": {
+    "build_intake_file_sha256": "3f9a794d36d5580dc1cd6888b0ed64900902d787dd46bd8ed25b1df2016654ef",
+    "candidate_contract_body_sha256": "77c71a81d9a3b2e44a7de36bb91de7e3f5be99bf9feb38ef09e52ba2cea9efbc",
+    "candidate_contract_file_sha256": "89149b25db521daf1366e68ff1afceb43a4d337292405a5f30b5c643b3cba420",
+    "candidate_contract_path": "modules/100_bounded-continuity-orchestrator/candidate.contract.json",
+    "fixtures_file_sha256": "e9d490300868593e846f5059cbdbb0c3e648d03bf634bcca78a052de2ea291ad",
+    "run50_posture_preserved": true,
+    "source_authority": "T2_COORDINATE_WITHOUT_OWNING_AUTHORITY",
+    "source_operation_kind": "GATED_COORDINATION",
+    "source_purpose": "Coordinate capture, provenance, branching, compression, retrieval, consent, synchronization, repair, and review without gaining canon, identity, or execution authority.",
+    "source_risk": "HIGH",
+    "source_run50_status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE",
+  "validation": {
+    "cache_is_evidence_reuse_not_truth": true,
+    "cached_result_cannot_promote_canon": true,
+    "harness_version": "axm-memory-run60-harness-v1",
+    "proof_cache_key": "2c17fb34a73f274a399f6446ab62f0498532e5d8915e6e590293659426d8043b",
+    "revalidation_triggers": [
+      "candidate contract or fixture digest changes",
+      "capability delta core changes",
+      "referenced shared profile digest changes",
+      "validation harness version changes",
+      "boot prerequisite interface changes",
+      "privacy, authority, or lifecycle policy changes"
+    ],
+    "test_suites": [
+      "run50_full_reference_suite",
+      "run60_delta_preservation",
+      "run60_capability_interface",
+      "run60_composition_graph",
+      "run60_selective_validation",
+      "run60_metamorphic_laws",
+      "run60_resource_faults",
+      "run60_reference_pipelines",
+      "run60_human_review",
+      "run60_capsule_export",
+      "run60_efficiency",
+      "run60_roundtrip"
+    ]
+  }
+}

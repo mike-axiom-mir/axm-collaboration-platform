@@ -100,7 +100,7 @@ try {
   module(fixtureRoot, 'contract-unknown', {
     uses: ['storage']
   }, null);
-  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'alpha'), path.join(fixtureRoot, 'tools', 'linked-alpha'));
+  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'alpha'), path.join(fixtureRoot, 'tools', 'linked-alpha'), process.platform === 'win32' ? 'junction' : 'dir');
 
   const before = treeReceipt(fixtureRoot);
   const first = Core.scanWorkshop(fixtureRoot, { now: '2026-07-26T00:00:00Z' });
@@ -223,6 +223,8 @@ try {
   check('manifest and contract identity version and permissions align', () => {
     const manifestValue = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
     const contractValue = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
+    assert.equal(manifestValue.schema, 'axm.tool-manifest/v1');
+    assert.equal(manifestValue.kind, 'product');
     assert.equal(manifestValue.id, contractValue.id);
     assert.equal(manifestValue.version, contractValue.version);
     assert.deepEqual(manifestValue.permissions, contractValue.permissions);

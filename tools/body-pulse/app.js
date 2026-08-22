@@ -31,6 +31,28 @@
     if (minutes >= 60 && minutes % 60 === 0) return (minutes / 60) + ' hour' + (minutes === 60 ? '' : 's');
     return minutes + ' minute' + (minutes === 1 ? '' : 's');
   }
+  function elapsed(milliseconds) {
+    var value = Number(milliseconds);
+    if (!Number.isFinite(value) || value < 0) return 'not measured';
+    if (value < 1000) return Math.round(value) + ' ms';
+    if (value < 60000) return (value / 1000).toFixed(value < 10000 ? 1 : 0) + ' sec';
+    var minutes = Math.floor(value / 60000), seconds = Math.round((value % 60000) / 1000);
+    return minutes + 'm ' + String(seconds).padStart(2, '0') + 's';
+  }
+  function runDuration(run) {
+    var start = Date.parse(run && run.startedAt), end = Date.parse(run && run.completedAt);
+    return Number.isFinite(start) && Number.isFinite(end) && end >= start ? end - start : null;
+  }
+  function verificationEvidence(bridge) {
+    if (bridge.evidenceSummary) return bridge.evidenceSummary;
+    var runs = bridge.recentRuns || [], checks = runs.reduce(function (all, run) { return all.concat(run.checks || []); }, []), latest = runs[runs.length - 1] || null;
+    return { retainedWindowCount:runs.length, passWindowCount:runs.filter(function (run) { return run.status === 'PASS'; }).length, checkExecutionCount:checks.length, passCheckCount:checks.filter(function (check) { return check.status === 'PASS'; }).length, failedCheckCount:checks.filter(function (check) { return check.status === 'FAIL' || check.status === 'TIMEOUT'; }).length, uniqueCheckCount:new Set(checks.map(function (check) { return check.checkId; }).filter(Boolean)).size, lastDurationMs:runDuration(latest), latestBeatSequence:latest && latest.beatSequence, pressureSampleCount:0, peakCpuUsedRatio:null, averageCpuUsedRatio:null };
+  }
+  function draftEvidence(bridge) {
+    if (bridge.evidenceSummary) return bridge.evidenceSummary;
+    var runs = bridge.recentRuns || [], drafts = runs.reduce(function (all, run) { return all.concat(run.drafts || []); }, []), latest = runs[runs.length - 1] || null;
+    return { retainedWindowCount:runs.length, candidateExecutionCount:drafts.length, draftedCandidateCount:drafts.filter(function (draft) { return draft.status === 'DRAFTED'; }).length, failedCandidateCount:drafts.filter(function (draft) { return draft.status === 'FAILED'; }).length, pendingReviewCount:(bridge.queue || []).filter(function (item) { return item.state === 'PENDING'; }).length, latestDraftCount:latest && latest.drafts ? latest.drafts.length : 0, lastDurationMs:runDuration(latest), latestBeatSequence:latest && latest.beatSequence };
+  }
   function localDateTimeValue(value) {
     if (!value) return '';
     var date = new Date(value);
@@ -40,8 +62,20 @@
   function renderHeartbeat(status, pulseStatus) {
     currentHeartbeat = status;
     var bridge = status.verificationBridge || {};
+    var draftBridge = status.codeDraftBridge || {};
+    var learningBridge = status.mirrorLearningBridge || {};
+    var draftQueue = draftBridge.queue || [];
+    var draftRuns = (draftBridge.recentRuns || []).slice().reverse().slice(0, 4);
+    var latestDraftRun = draftRuns[0];
     var enabled = status.config && status.config.enabled === true;
     var pulseOpen = pulseStatus && ['ACTIVE', 'CONSERVE'].indexOf(pulseStatus.mode) >= 0;
+    var verificationFacts = verificationEvidence(bridge);
+    var draftFacts = draftEvidence(draftBridge);
+    var latestVerificationRun = (bridge.recentRuns || []).slice(-1)[0] || null;
+    var latestVerificationChecks = latestVerificationRun && latestVerificationRun.checks || [];
+    var latestVerificationPassed = latestVerificationChecks.filter(function (check) { return check.status === 'PASS'; }).length;
+    var sameCycle = verificationFacts.latestBeatSequence != null && verificationFacts.latestBeatSequence === draftFacts.latestBeatSequence;
+    var latestCycleMs = Number(verificationFacts.lastDurationMs || 0) + (sameCycle ? Number(draftFacts.lastDurationMs || 0) : 0);
     $('heartbeatState').textContent = enabled ? 'BEATING' : 'STOPPED';
     $('heartbeatCadence').textContent = cadenceLabel(status.config && status.config.cadenceMs);
     $('heartbeatNote').textContent = enabled
@@ -51,6 +85,18 @@
     $('heartbeatSchedule').textContent = status.scheduleMode === 'ANCHORED' ? 'anchored' : 'interval from change';
     $('verificationState').textContent = pulseOpen ? (bridge.state || 'IDLE') : 'HELD · Pulse ' + String(pulseStatus && pulseStatus.mode || 'unknown');
     $('verificationBudget').textContent = Number(bridge.maxChecksPerHour || 10) + ' checks/hour';
+    $('codeDraftState').textContent = draftBridge.enabled === false ? 'DORMANT · QUEUE PRESERVED' : pulseOpen ? ((draftBridge.state || 'IDLE') + (latestDraftRun ? ' · ' + latestDraftRun.status : '')) : 'HELD';
+    $('codeDraftQueueCount').textContent = draftQueue.length + ' active';
+    $('codeDraftBudget').textContent = draftBridge.enabled === false ? 'STOPPED · 1/H IF ENABLED' : Number(draftBridge.maxDraftsPerHour || 1) + ' draft/hour';
+    $('mirrorLearningState').textContent = learningBridge.enabled ? (learningBridge.state || 'GATED') : 'PREPARED · OFF';
+    $('mirrorLearningLane').textContent = learningBridge.state || 'DORMANT';
+    $('mirrorLearningPulse').textContent = learningBridge.pulseModule && learningBridge.pulseModule.enabled ? 'ENABLED · ' + esc(learningBridge.pulseModule.mode) : 'DISABLED';
+    $('mirrorLearningFeed').textContent = learningBridge.lastActionFeedState || 'UNKNOWN';
+    $('mirrorLearningWaiting').textContent = (learningBridge.waitingLessons || []).length + ' WAITING';
+    $('mirrorLearningReason').textContent = learningBridge.lastReason || 'Prepared without activation.';
+    $('mirrorLearningBadge').textContent = learningBridge.enabled ? 'LANE ON · GATES STILL APPLY' : 'OFF BY DEFAULT';
+    $('mirrorLearningToggle').textContent = learningBridge.enabled ? 'Turn lesson lane OFF' : 'Prepared · turn lane ON';
+    $('mirrorLearningToggle').classList.toggle('on', learningBridge.enabled === true);
     $('heartbeatProfile').value = status.config && status.config.profileId !== 'custom' ? status.config.profileId : 'low';
     if (document.activeElement !== $('heartbeatAnchor')) $('heartbeatAnchor').value = localDateTimeValue(status.nextDueAt);
     $('heartbeatToggle').textContent = enabled ? 'Stop heartbeat' : 'Start heartbeat';
@@ -62,6 +108,31 @@
       var passed = (run.checks || []).filter(function (check) { return check.status === 'PASS'; }).length;
       return '<div><b>' + esc(run.status) + '</b><span>Beat ' + esc(run.beatSequence) + ' · ' + passed + '/' + (run.checks || []).length + ' passed</span><small>' + esc(run.completedAt ? new Date(run.completedAt).toLocaleString() : 'running') + '</small></div>';
     }).join('') || '<p>No scheduled verification window has run yet.</p>';
+    $('heartbeatWallTime').textContent = latestCycleMs ? elapsed(latestCycleMs) : 'not measured';
+    $('heartbeatLatestChecks').textContent = latestVerificationPassed + ' / ' + latestVerificationChecks.length + ' PASS';
+    $('heartbeatCheckHistory').textContent = Number(verificationFacts.passCheckCount || 0) + ' / ' + Number(verificationFacts.checkExecutionCount || 0) + ' retained executions passed';
+    $('heartbeatCoverage').textContent = Number(verificationFacts.uniqueCheckCount || 0) + ' / ' + Number(bridge.deckSize || 0);
+    $('heartbeatCpuEvidence').textContent = Number.isFinite(verificationFacts.peakCpuUsedRatio) ? Math.round(verificationFacts.peakCpuUsedRatio * 100) + '% peak' : 'unknown';
+    $('heartbeatCpuNote').textContent = Number(verificationFacts.pressureSampleCount || 0) ? (Math.round(Number(verificationFacts.averageCpuUsedRatio || 0) * 100) + '% sampled average · ' + verificationFacts.pressureSampleCount + ' bounded samples') : 'Historical run had no bounded pressure series';
+    $('heartbeatDraftYield').textContent = draftBridge.enabled === false ? 'DORMANT' : Number(draftFacts.latestDraftCount || 0) + ' LATEST';
+    $('heartbeatDraftHistory').textContent = Number(draftFacts.pendingReviewCount || draftQueue.length || 0) + ' pending exact-digest candidate(s) preserved';
+    var evidenceAttention = Number(verificationFacts.failedCheckCount || 0) > 0 || Number(draftFacts.failedCandidateCount || 0) > 0;
+    $('heartbeatYield').textContent = evidenceAttention ? 'ATTENTION REQUIRED' : verificationFacts.checkExecutionCount ? 'USEFUL · EVIDENCE RETAINED' : 'AWAITING EVIDENCE';
+    $('heartbeatYield').classList.toggle('attention', evidenceAttention);
+    $('codeDraftNext').innerHTML = (draftBridge.nextDrafts || []).map(function (draft) { return '<span>' + esc(draft.moduleId) + ' · ' + esc(draft.repairClass) + '</span>'; }).join('') || '<p>No new allow-listed source improvement is waiting to be drafted.</p>';
+    $('codeDraftQueue').innerHTML = draftQueue.map(function (item) {
+      var moduleId = item.action && item.action.moduleId || item.title || 'candidate';
+      var own = (item.votes || []).find(function (vote) { return String(vote.actor).toLowerCase() === 'mike'; });
+      return '<article class="codeDraftCard" data-draft-review="' + esc(item.id) + '" data-draft-digest="' + esc(item.artifactDigest) + '"><div><span class="eyebrow">' + esc(item.state) + ' · ' + (item.votes || []).length + '/' + item.requiredSeats + ' REVIEWS</span><h4>' + esc(moduleId) + '</h4><code>' + esc(item.artifactDigest.slice(0,16)) + '…</code></div><div><small>' + esc(item.summary) + '</small><br><small>Queue until ' + esc(item.expiresAt ? new Date(item.expiresAt).toLocaleString() : 'seven-day retention check') + '</small></div><div class="codeDraftVote"><a href="../workshop-command-center/index.html#codeDraftReviewTitle">OPEN PLAIN-LANGUAGE REVIEW</a><small>' + (own ? ('Mike reviewed ' + esc(own.verdict)) : 'Technical steward must check first') + '</small></div></article>';
+    }).join('') || '<p>No candidate drafts are waiting. The draft lane is dormant.</p>';
+    $('codeDraftRuns').innerHTML = draftRuns.map(function (run) {
+      var drafted = (run.drafts || []).filter(function (draft) { return draft.status === 'DRAFTED'; }).length;
+      return '<div><b>' + esc(run.status) + '</b><span>Beat ' + esc(run.beatSequence == null ? run.beatId : run.beatSequence) + ' · ' + drafted + '/' + (run.drafts || []).length + ' drafted</span><small>' + esc(run.completedAt ? new Date(run.completedAt).toLocaleString() : 'running') + '</small></div>';
+    }).join('') || '<p>No scheduled draft window has run yet.</p>';
+    $('mirrorLearningRuns').innerHTML = (learningBridge.recentRuns || []).slice().reverse().slice(0, 4).map(function (run) {
+      var lesson = run.lesson || {};
+      return '<div><b>' + esc(run.status) + '</b><span>' + esc(lesson.moduleId || run.reason || 'No lesson') + '</span><small>' + esc(run.completedAt ? new Date(run.completedAt).toLocaleString() : 'running') + '</small></div>';
+    }).join('') || '<p>No hourly lesson intake has run.</p>';
     document.querySelector('.heartbeat').classList.toggle('stopped', !enabled);
   }
   function render(status) {
@@ -127,6 +198,7 @@
     }
   };
   $('heartbeatToggle').onclick = async function () { await Heartbeat.configure({ enabled: !(currentHeartbeat && currentHeartbeat.config && currentHeartbeat.config.enabled), actorId: 'mike' }); await refresh(); };
+  $('mirrorLearningToggle').onclick = async function () { try { await Heartbeat.configureMirrorLearning({ enabled: !(currentHeartbeat && currentHeartbeat.mirrorLearningBridge && currentHeartbeat.mirrorLearningBridge.enabled), actorId: 'mike' }); await refresh(); } catch (error) { $('mirrorLearningReason').innerHTML = '<span class="error">' + esc(error.message) + '</span>'; } };
   $('heartbeatStep').onclick = async function () { await Heartbeat.manual('mike'); await refresh(); };
   $('deleteSelected').onclick = function () { var ids = selectedArchiveIds(); deleteArchived(ids, 'Delete the ' + ids.length + ' selected archived request(s) permanently?'); };
   $('clearArchive').onclick = function () { var ids = current.goals.filter(function (goal) { return ['DONE', 'CANCELLED'].indexOf(goal.status) >= 0; }).map(function (goal) { return goal.goalId; }); deleteArchived(ids, 'Clear the entire request archive permanently? This cannot be undone.'); };

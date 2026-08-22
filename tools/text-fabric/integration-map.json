@@ -1,0 +1,80 @@
+{
+  "schema": "axm.text-fabric-integration-map/v1",
+  "version": "1.0.0-axm.1",
+  "status": "TEST",
+  "source": {
+    "package": "AXM_TEXT_FABRIC_v1_0_0_LOCAL_INTAKE.zip",
+    "sha256": "c7c9b4a8030fc2e9289aa47cd6c939c76b2d6e3f4e763198b6e9f853e3eecd48",
+    "release": "AXM_TEXT_FABRIC_v1_0_0",
+    "files": 282
+  },
+  "routes": {
+    "human_workshop": "runtime/START_HERE.html",
+    "layout_stress_lab": "runtime/LAYOUT_STRESS_LAB.html",
+    "visual_qa_matrix": "runtime/validation/VISUAL_QA_MATRIX/index.html",
+    "layout_qa_matrix": "runtime/validation/LAYOUT_QA_MATRIX/index.html",
+    "machine_cli": "node tools/text-fabric/run-cli.js",
+    "verification": "node tools/text-fabric/selftest.js"
+  },
+  "admitted": [
+    {
+      "area": "semantic text planning",
+      "why": "Adds reusable roles, responsive scales, recipes, presets, contrast safeguards, effect ordering, and render budgets."
+    },
+    {
+      "area": "font and glyph preflight",
+      "why": "Adds dependency-free project-font metadata and coverage inspection, hidden-control checks, registries, and fallback planning without bundling fonts."
+    },
+    {
+      "area": "localization and layout resilience",
+      "why": "Adds deterministic pseudo-localization, overflow heuristics, RTL stress, safe-area guidance, and viewing-distance floors."
+    },
+    {
+      "area": "adapter-first delivery",
+      "why": "Adds reversible Web, Unity, Unreal, Godot, desktop, mobile, and portable outputs without merging target-engine internals."
+    },
+    {
+      "area": "proof and rollback",
+      "why": "Adds source locks, hashes, bundle verification, static fallbacks, visual QA matrices, import notes, and rollback notes."
+    }
+  ],
+  "relationships": [
+    {
+      "owner": "shared/asset-hands/font-shaping-localization",
+      "relationship": "complements",
+      "boundary": "The existing pinned HarfBuzz hand remains the exact shaping authority for its supported scripts; Text Fabric supplies broader project-font inspection, planning, and heuristic preflight."
+    },
+    {
+      "owner": "shared/style-fabric",
+      "relationship": "adapter-output consumer",
+      "boundary": "Resolved semantic roles and Web CSS variables may be mapped into Style Fabric only through explicit reviewed adapters."
+    },
+    {
+      "owner": "shared/aetherglass",
+      "relationship": "adapter-output consumer",
+      "boundary": "Text effects may supply readable foreground parameters while Aetherglass retains visual composition authority."
+    },
+    {
+      "owner": "tools/asset-fabric",
+      "relationship": "artifact handoff",
+      "boundary": "Portable SVG, visual QA, and compiled adapter bundles remain candidate artifacts subject to the receiving canvas and review contracts."
+    }
+  ],
+  "not_admitted_as_authority": [
+    "exact shaping or final line-break proof",
+    "automatic mutation of Style Fabric or Aetherglass internals",
+    "automatic font installation or redistribution",
+    "Unity Unreal or Godot editor validation without those editors",
+    "automatic activation promotion or canon status"
+  ],
+  "platform_patch": {
+    "reason": "Windows convert.exe is a filesystem conversion utility, not ImageMagick; the layout stress lab must not widen a phone viewport when its internal test canvas is wider than the page.",
+    "files": [
+      "runtime/LAYOUT_STRESS_LAB.html",
+      "runtime/axm_text_fabric/static_assets.py",
+      "runtime/tests/test_layout_lab.py",
+      "runtime/tests/test_static_assets.py"
+    ],
+    "effect": "Renderer discovery now prefers magick and accepts legacy convert only after an ImageMagick identity probe; the layout lab contains wide test canvases inside an explicit scroll viewport and selects an honest initial width on narrow screens."
+  }
+}

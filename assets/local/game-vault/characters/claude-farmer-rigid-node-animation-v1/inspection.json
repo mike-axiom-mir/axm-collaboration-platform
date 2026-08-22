@@ -1,0 +1,111 @@
+{
+  "schema": "axm.3d-animation-inspection/v1",
+  "status": "STRUCTURE_VERIFIED_RUNTIME_VISUAL_UNKNOWN",
+  "asset": {
+    "file": "farmer.glb",
+    "sha256": "41c28d58d6191708d1e4e1e6a3d4d3a879da7e657dd726f6c4595b9271e3e5c3",
+    "container": "GLB 2.0",
+    "generator": "THREE.GLTFExporter r184",
+    "bytes": 90484
+  },
+  "geometry": {
+    "nodes": 35,
+    "meshes": 25,
+    "primitives": 25,
+    "vertices": 1455,
+    "triangles": 1268,
+    "materials": 14,
+    "textures": 0,
+    "images": 0
+  },
+  "animation": {
+    "technique": "rigid-hierarchical-node-transforms",
+    "skins": 0,
+    "skinnedPrimitives": 0,
+    "jointAttributes": false,
+    "weightAttributes": false,
+    "inverseBindMatrices": false,
+    "animatedControlNodes": [
+      "Hips",
+      "Head",
+      "ArmL",
+      "ArmR",
+      "LegL",
+      "LegR"
+    ],
+    "clips": [
+      {
+        "name": "Idle",
+        "durationSeconds": 2,
+        "channels": 4,
+        "keyCounts": [3, 3, 3, 3]
+      },
+      {
+        "name": "Walk",
+        "durationSeconds": 0.800000011920929,
+        "channels": 6,
+        "keyCounts": [5, 5, 5, 5, 5, 5]
+      },
+      {
+        "name": "Work",
+        "durationSeconds": 1.2999999523162842,
+        "channels": 6,
+        "keyCounts": [5, 5, 2, 2, 5, 5]
+      }
+    ]
+  },
+  "staticCompanion": {
+    "file": "farmer.obj",
+    "sha256": "cd291dd162a7f7bb2e126f96fa761613c46ac0be6a854cd736cbc5ee9d6051f3",
+    "bytes": 255249,
+    "vertices": 1576,
+    "normals": 1576,
+    "uvs": 1576,
+    "faces": 1448,
+    "objects": 26,
+    "referencedMaterialLibrary": "farmer.mtl",
+    "materialLibraryPresent": false,
+    "animationSupported": false
+  },
+  "claims": [
+    {
+      "claim": "The GLB contains three named animation clips.",
+      "kind": "static-structure",
+      "evidence": "Parsed glTF animation/channel/accessor tables",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The model is a conventional skinned rig.",
+      "kind": "static-structure",
+      "evidence": "No skins, JOINTS_0, WEIGHTS_0 or inverse-bind matrices; AXM rigged-gltf inspection refuses the skinned-rig claim",
+      "verdict": "FAIL"
+    },
+    {
+      "claim": "The model uses a reusable rigid-part hierarchy animation technique.",
+      "kind": "static-structure",
+      "evidence": "Animation channels target named parent nodes whose children contain the visible body-part meshes",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "All three animations render and cross-fade correctly in AXM runtimes.",
+      "kind": "motion-and-runtime",
+      "evidence": "No AXM live playback performed yet",
+      "verdict": "UNKNOWN"
+    },
+    {
+      "claim": "The asset is cleared for public or commercial distribution.",
+      "kind": "authorization",
+      "evidence": "No applicable provider license receipt was supplied with the files",
+      "verdict": "UNKNOWN"
+    }
+  ],
+  "axmLearning": {
+    "observedGap": "AXM's current rigged GLB validator correctly understands deforming skinned rigs but treats rigid hierarchical character animation as a failed rig rather than a separate supported animation class.",
+    "recommendedSplit": [
+      "skinned-deformation animation",
+      "rigid-node hierarchy animation"
+    ],
+    "reason": "Rigid parts are cheap, readable and sufficient for stylized low-poly characters; skinned deformation remains necessary for bending organic meshes and retargeting."
+  }
+}
+

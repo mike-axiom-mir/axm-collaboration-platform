@@ -1,0 +1,123 @@
+{
+  "schema": "axm.human-benefit-protocol/v1",
+  "version": "0.1.0",
+  "protocolId": "detached-current-state-trust-local-steward-20260820",
+  "generatedAt": "2026-08-20T01:01:00.000Z",
+  "fixtureMode": "LIVE",
+  "claim": {
+    "id": "portable-current-state-human-benefit",
+    "statement": "A person makes fewer mistaken receipt-trust decisions when using the detached guard.",
+    "beneficiary": "HUMAN",
+    "targetScope": "NAMED_LOCAL_STEWARD",
+    "scopeStatement": "Any result applies only to the participating local AXM steward and cannot be generalized to other people."
+  },
+  "conditions": [
+    {
+      "id": "condition-a",
+      "role": "BASELINE",
+      "label": "Condition A",
+      "artifactRef": {
+        "id": "detached-current-state-trust-condition-a-surface",
+        "schema": "axm.human-benefit-comparison-surface/v1",
+        "sha256": "sha256:dffbcb6e33d0c88d70d475dc21f2ff662671a8d9399df9079dfea61339385b1c"
+      }
+    },
+    {
+      "id": "condition-b",
+      "role": "CANDIDATE",
+      "label": "Condition B",
+      "artifactRef": {
+        "id": "detached-current-state-trust-condition-b-surface",
+        "schema": "axm.human-benefit-comparison-surface/v1",
+        "sha256": "sha256:9e977e33f7d1dc799f7ff9968314ca1cb30baf3ede79952ec116dc0a4575102b"
+      }
+    }
+  ],
+  "trials": [
+    {
+      "id": "detached-trust-1",
+      "caseId": "detached-self-consistent-forgery-1",
+      "conditionId": "condition-a",
+      "order": 1,
+      "prompt": "Condition A: a receipt is internally self-consistent and labels itself CURRENT, but the native source graph is unavailable. The requested decision would treat it as authenticated source truth. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "detached-trust-2",
+      "caseId": "detached-bounded-format-use-1",
+      "conditionId": "condition-b",
+      "order": 2,
+      "prompt": "Condition B: integrity and internal coherence pass, source truth and currentness are explicitly UNKNOWN, and the requested use is limited to checking the receipt format. Continue, hold, or mark unsure?",
+      "expectedDecision": "CONTINUE"
+    },
+    {
+      "id": "detached-trust-3",
+      "caseId": "detached-tampered-digest-1",
+      "conditionId": "condition-b",
+      "order": 3,
+      "prompt": "Condition B: the receipt digest does not match its content, so detached integrity fails before any source-truth question. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "detached-trust-4",
+      "caseId": "detached-status-only-1",
+      "conditionId": "condition-a",
+      "order": 4,
+      "prompt": "Condition A: the receipt says TEST and CURRENT but provides no authority boundary and no distinction between integrity and authenticity. Use requires a bounded trust decision. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "detached-trust-5",
+      "caseId": "detached-view-drift-as-tamper-1",
+      "conditionId": "condition-a",
+      "order": 5,
+      "prompt": "Condition A: a regenerated broad report changed, and every digest difference is called tampering without classifying mutable derived-view drift. The decision requires distinguishing history from a current view. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "detached-trust-6",
+      "caseId": "detached-authority-inflation-1",
+      "conditionId": "condition-b",
+      "order": 6,
+      "prompt": "Condition B: a recomputed receipt sets installed and CANON authority true; the detached guard rejects the authority inflation even though the digest is coherent. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    }
+  ],
+  "fairness": {
+    "orderPolicy": "BALANCED_WITHIN_SESSION",
+    "conditionLabels": "BLINDED_A_B",
+    "learningEffectRisk": "DECLARED",
+    "maximumSameConditionRun": 2
+  },
+  "successRule": {
+    "minimumCompletedSessions": 1,
+    "minimumCandidateAccuracyGain": 0,
+    "maximumCandidateUnsupportedContinueRate": 0,
+    "maximumCandidateMeanTimeRatio": 1.25,
+    "minimumHelpedFraction": 1,
+    "requireNoHighBurden": true
+  },
+  "consent": {
+    "mode": "VOLUNTARY_OPT_IN",
+    "withdrawalAllowed": true,
+    "completionConfirmationRequired": true,
+    "useScope": "LOCAL_BENEFIT_EVALUATION_ONLY"
+  },
+  "retention": {
+    "mode": "STRUCTURED_NO_FREE_TEXT",
+    "rawIdentity": "FORBIDDEN",
+    "freeText": "FORBIDDEN",
+    "rawRecording": "FORBIDDEN",
+    "network": "DENY",
+    "withdrawalBehavior": "OMIT_PARTICIPANT_AND_OBSERVATIONS"
+  },
+  "authority": {
+    "automaticHumanVerdict": false,
+    "finalHumanJudgmentRequired": true,
+    "sourceAuthenticationExternal": true,
+    "automaticExecution": false,
+    "automaticPromotion": false,
+    "automaticCanon": false
+  },
+  "protocolDigest": "sha256:bc53754bde20b078af9007436880ffbf531090c2d78c5307bff22b7bc9d4fab1"
+}

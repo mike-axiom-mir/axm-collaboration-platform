@@ -1,0 +1,85 @@
+{
+  "schema": "axm.shadow-specialist-static-review-findings/v1",
+  "generatedAt": "2026-08-20T14:00:00.000Z",
+  "disposition": "USEFUL_KNOWLEDGE_RUNTIME_HELD",
+  "workingStatic": [
+    "Both archives have safe inspectable structure and exact stable input digests.",
+    "Every file in each declared package-manifest scope matches its declared byte count and SHA-256.",
+    "The v0.2 predecessor manifest and v0.1 ZIP bindings match the supplied v0.1 package.",
+    "The v0.2 change is additive at the file level: 49 added, zero removed, 24 modified, and 31 identical files.",
+    "All 25 JavaScript/CommonJS files parse with node --check without loading package modules.",
+    "Fresh-epoch identity, evidence-kind separation, observation-loss holds, explicit uncertainty, and no-promotion boundaries are useful reusable patterns."
+  ],
+  "partialOrUnproven": [
+    {
+      "code": "INTAKE_FILESET_NOT_EXACT",
+      "evidence": "shadow_source_intake_gateway/index.js:69-83",
+      "detail": "The gateway verifies listed manifest and HASHES entries but does not require either list to equal the complete directory tree; extra unmanifested files can survive staging."
+    },
+    {
+      "code": "SDK_SENSITIVE_TRACE_SETTING_NOT_ENFORCED",
+      "evidence": "adapters/openai_agents_sdk/index.js:259-264; backend_install/openai_agents_sdk/README.md:14",
+      "detail": "Install checks addTraceProcessor and a feature flag, but it cannot verify that the application Runner actually set traceIncludeSensitiveData=false."
+    },
+    {
+      "code": "SANITIZER_IS_HEURISTIC_NOT_DLP",
+      "evidence": "observation_plane/trace_sanitizer.js:7-15,47-122; adapters/openai_agents_sdk/index.js:140-213",
+      "detail": "Known keys and three value patterns are redacted, while arbitrary metadata, structural span data, and error objects may retain private or identifying content."
+    },
+    {
+      "code": "MEMORY_SINK_UNBOUNDED",
+      "evidence": "observation_plane/index.js:93-98; backend_install/openai_agents_sdk/observer.js:10-17",
+      "detail": "The bus queue is bounded, but its default durable-in-process memory sink grows without a retention or epoch-size bound."
+    },
+    {
+      "code": "NO_SINK_CAN_COUNT_AS_DELIVERED",
+      "evidence": "observation_plane/index.js:192",
+      "detail": "A CanonicalObservationBus with zero sinks increments delivered state, allowing a complete-witness signal without durable delivery."
+    },
+    {
+      "code": "TEST_RECEIPTS_NOT_AUTHENTICATED",
+      "evidence": "shadow_learning_steward/index.js:192-203; shadow_epoch_factory/index.js:34",
+      "detail": "Executed/passed flags and an external-gate actor id are structurally sealed but not authenticated, so VERIFIED_CANDIDATE is not independent proof of execution or human approval."
+    },
+    {
+      "code": "COMMON_RUNTIME_NOT_COLLAPSED_FOR_INDEPENDENCE",
+      "evidence": "shadow_source_intake_gateway/index.js:248-253; shadow_learning_steward/index.js:121-190",
+      "detail": "Known backend and environment identities are preserved but sameness alone does not join evidence families, so shared runtime/cache effects can be overcounted as independent."
+    },
+    {
+      "code": "PORTABLE_EXPORT_TARGET_BOUNDARY_PARTIAL",
+      "evidence": "shadow_package_exporter/index.js:12-18",
+      "detail": "Exporter create-new semantics are good, but an existing symlinked directory is followed and no approved-root policy is enforced inside the exporter."
+    }
+  ],
+  "declaredButNotIndependentlyVerified": [
+    "The bundled 36/36 test report.",
+    "The 115-object donor-source provenance and source commit correspondence.",
+    "The local environment witness as an attestation of the actual build environment.",
+    "Compatibility with a current live OpenAI Agents SDK runtime.",
+    "Any working ChatGPT/Codex backend installation or provider activity.",
+    "Native Mirror/WALDO compatibility, host isolation, cross-process epoch isolation, or self-improvement."
+  ],
+  "prerequisitesBeforeAnyBackendExperiment": [
+    "Reject every unmanifested, duplicate, symlinked, non-regular, or out-of-scope package file.",
+    "Use full schema validation and exact schema-version allowlists.",
+    "Bind an authenticated test executor and authenticated human authorization receipt.",
+    "Enforce sensitive-trace configuration at the Runner/run boundary and add a reviewed DLP/redaction policy.",
+    "Bound memory, package bytes, event count, epoch duration, retention, and deletion behavior.",
+    "Treat same backend, environment, cache, trace, artifact, output, dependency, and prior-output exposure as common-mode evidence unless independently excluded.",
+    "Run only in an owner-controlled disposable application with rollback and no Main Mirror/CANON path.",
+    "Complete provider policy and package-license review; the supplied package declares UNLICENSED."
+  ],
+  "truth": {
+    "packageCodeExecuted": false,
+    "packageTestsExecuted": false,
+    "liveProviderObserved": false,
+    "workingBackendModified": false,
+    "runtimeSafeProven": false,
+    "learningProven": false,
+    "humanBenefitProven": false,
+    "installed": false,
+    "promoted": false,
+    "canonChanged": false
+  }
+}

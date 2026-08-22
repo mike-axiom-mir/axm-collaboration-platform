@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.watchdog-restart-guard",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.watchdog-restart-decision/v1"
+  ],
+  "consumes": [
+    "heartbeat-status",
+    "restart-history",
+    "state-checks"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_3_HUMAN_GATED_PLAN",
+    "automaticMutation": false,
+    "integrationRequiredForAutomation": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/body-pulse",
+      "shared/heartbeat",
+      "tools/recovery-center"
+    ],
+    "reason": "Prevents restart loops by combining stall evidence, state checks, limits, and escalation."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "unbounded-retry",
+      "unbounded-restart",
+      "hidden-degradation",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

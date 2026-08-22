@@ -1,6 +1,6 @@
 # AXM Host Assumption Observatory
 
-Detached `EXPERIMENTAL` candidate. It inventory-checks machine-declared host
+Integrated `TEST` module. It inventory-checks machine-declared host
 assumption syntax without pretending to inspect the machine itself.
 
 ## What it owns

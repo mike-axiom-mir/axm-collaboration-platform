@@ -137,6 +137,15 @@ try {
     assert.equal(one.record.status, 'READY_FOR_CONTENT_REVIEW');
     assert.equal(one.record.fileEntries, 1);
   });
+  check('the shared central-directory parser remains structural and non-extracting', () => {
+    const parsed = Core.parseCentralDirectory(
+      makeZip([{ name: 'shared.txt', content: 'not decompressed' }]),
+    );
+    assert.equal(parsed.ok, true);
+    assert.equal(parsed.entries.length, 1);
+    assert.equal(parsed.entries[0].name, 'shared.txt');
+    assert.equal(Object.prototype.hasOwnProperty.call(parsed.entries[0], 'content'), false);
+  });
   check('structural inspection explicitly proves no extraction or content integrity', () => {
     assert.equal(one.record.truth.archiveExtracted, false);
     assert.equal(one.record.truth.entryContentDecompressed, false);
@@ -204,7 +213,10 @@ try {
   fs.writeFileSync(path.join(supply, 'one.zip'), makeZip([{ name: 'a.txt', content: 'alpha' }]));
   fs.writeFileSync(path.join(nested, 'two.zip'), makeZip([{ name: 'b.txt', content: 'beta' }]));
   fs.writeFileSync(path.join(supply, 'ignored.txt'), 'not an archive');
-  fs.symlinkSync(path.join(supply, 'one.zip'), path.join(supply, 'linked.zip'));
+  const linkedSupplyTarget = path.join(fixtureRoot, 'linked-supply-target');
+  fs.mkdirSync(linkedSupplyTarget, { recursive: true });
+  fs.writeFileSync(path.join(linkedSupplyTarget, 'linked.zip'), makeZip([{ name: 'linked.txt', content: 'must not be followed' }]));
+  fs.symlinkSync(linkedSupplyTarget, path.join(supply, 'linked-dir'), process.platform === 'win32' ? 'junction' : 'dir');
   const before = recursiveFiles(supply);
   const first = Core.scanSupply(supply, { now: '2026-07-26T00:00:00.000Z' });
   const second = Core.scanSupply(supply, { now: '2026-07-26T00:30:00.000Z' });
@@ -215,7 +227,7 @@ try {
     assert(first.archives.some(item => item.relativePath === 'nested/two.zip'));
   });
   check('filesystem symlinks are recorded and never followed', () => {
-    assert.deepEqual(first.source.skippedSymlinks, ['linked.zip']);
+    assert.deepEqual(first.source.skippedSymlinks, ['linked-dir']);
     assert.equal(first.source.symlinksFollowed, false);
   });
   check('scanning performs no filesystem writes', () => {
@@ -244,6 +256,8 @@ try {
   const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'manifest.json'), 'utf8'));
   const contract = JSON.parse(fs.readFileSync(path.join(__dirname, 'module.contract.json'), 'utf8'));
   check('manifest and contract identity and permissions remain aligned', () => {
+    assert.equal(manifest.schema, 'axm.tool-manifest/v1');
+    assert.equal(manifest.kind, 'product');
     assert.equal(manifest.id, contract.id);
     assert.equal(manifest.version, contract.version);
     assert.deepEqual(contract.permissions, ['storage']);

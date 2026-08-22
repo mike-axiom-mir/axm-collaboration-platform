@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "REPAIR_WITHOUT_WITNESS",
+      "expected": "HOLD_RECOVERY_OR_REPAIR_PROOF",
+      "stimulus": "repair is proposed without source witness or safety copy"
+    }
+  ],
+  "category": 9,
+  "category_name": "9. Integrity, drift, corruption, migration, recovery, and repair",
+  "full_semantic_implementation": false,
+  "number": 87,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Detect truncated files, incomplete transactions, pending renames, abandoned locks, unflushed records, and mismatched commit markers.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "4201817de3893340c8e24ff41fa8045f34cdeff2c3743641eb30f1fd61b8f43c"
+  },
+  "source_contract_sha256": "9c0a91bc330ffbb1fd3d4e1aad9b3928f05245791e365dfa1d75c2f20a6691b3",
+  "stable_id": "axm.memory.partial-write-detector"
+}

@@ -1,0 +1,174 @@
+{
+  "schema_version": "0.5",
+  "asset_id": "AXM-VEHICLE-CHASSIS-001",
+  "asset_version": "0.4.0",
+  "body_type": "dynamic",
+  "gravity": true,
+  "game_effective_mass_kg": 950,
+  "friction_profile": "default",
+  "rigid_bodies": [
+    {
+      "id": "root",
+      "body_type": "dynamic",
+      "members": [
+        "chassis",
+        "cabin",
+        "cargo",
+        "front_core"
+      ],
+      "mass_kg": 821.403122,
+      "center_of_mass_policy": "engine-compute-from-colliders",
+      "collision_source": "collision/AXM-VEHICLE-CHASSIS-001_COLLISION.glb"
+    },
+    {
+      "id": "wheel_0",
+      "body_type": "kinematic",
+      "members": [
+        "wheel__g00",
+        "hub__g00"
+      ],
+      "mass_kg": 32.14922,
+      "center_of_mass_policy": "engine-compute-from-colliders",
+      "collision_source": "collision/AXM-VEHICLE-CHASSIS-001_COLLISION.glb"
+    },
+    {
+      "id": "wheel_1",
+      "body_type": "kinematic",
+      "members": [
+        "wheel__g01",
+        "hub__g01"
+      ],
+      "mass_kg": 32.14922,
+      "center_of_mass_policy": "engine-compute-from-colliders",
+      "collision_source": "collision/AXM-VEHICLE-CHASSIS-001_COLLISION.glb"
+    },
+    {
+      "id": "wheel_2",
+      "body_type": "kinematic",
+      "members": [
+        "wheel__g02",
+        "hub__g02"
+      ],
+      "mass_kg": 32.14922,
+      "center_of_mass_policy": "engine-compute-from-colliders",
+      "collision_source": "collision/AXM-VEHICLE-CHASSIS-001_COLLISION.glb"
+    },
+    {
+      "id": "wheel_3",
+      "body_type": "kinematic",
+      "members": [
+        "wheel__g03",
+        "hub__g03"
+      ],
+      "mass_kg": 32.14922,
+      "center_of_mass_policy": "engine-compute-from-colliders",
+      "collision_source": "collision/AXM-VEHICLE-CHASSIS-001_COLLISION.glb"
+    }
+  ],
+  "joints": [
+    {
+      "id": "wheel_0_spin",
+      "type": "continuous",
+      "parent_group": "root",
+      "child_group": "wheel_0",
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "pivot_m": [
+        -0.97,
+        0.43,
+        1.05
+      ],
+      "limits": {},
+      "default": 0,
+      "drive": {
+        "mode": "velocity",
+        "speed_rad_s": 0
+      },
+      "clearance_mm": null,
+      "human_confirmation_required": false,
+      "notes": ""
+    },
+    {
+      "id": "wheel_1_spin",
+      "type": "continuous",
+      "parent_group": "root",
+      "child_group": "wheel_1",
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "pivot_m": [
+        0.97,
+        0.43,
+        1.05
+      ],
+      "limits": {},
+      "default": 0,
+      "drive": {
+        "mode": "velocity",
+        "speed_rad_s": 0
+      },
+      "clearance_mm": null,
+      "human_confirmation_required": false,
+      "notes": ""
+    },
+    {
+      "id": "wheel_2_spin",
+      "type": "continuous",
+      "parent_group": "root",
+      "child_group": "wheel_2",
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "pivot_m": [
+        -0.97,
+        0.43,
+        -1.05
+      ],
+      "limits": {},
+      "default": 0,
+      "drive": {
+        "mode": "velocity",
+        "speed_rad_s": 0
+      },
+      "clearance_mm": null,
+      "human_confirmation_required": false,
+      "notes": ""
+    },
+    {
+      "id": "wheel_3_spin",
+      "type": "continuous",
+      "parent_group": "root",
+      "child_group": "wheel_3",
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "pivot_m": [
+        0.97,
+        0.43,
+        -1.05
+      ],
+      "limits": {},
+      "default": 0,
+      "drive": {
+        "mode": "velocity",
+        "speed_rad_s": 0
+      },
+      "clearance_mm": null,
+      "human_confirmation_required": false,
+      "notes": ""
+    }
+  ],
+  "safety": {
+    "automatic_real_world_control": false,
+    "note": "This manifest describes simulation intent only. It cannot silently command a physical machine or production line."
+  }
+}

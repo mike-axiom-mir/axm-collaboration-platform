@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Evidence Chain Inspector</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AXM Workshop verifier · TEST</p>
+        <h1>Evidence Chain Inspector</h1>
+        <p class="lede">Find the exact broken line in an evidence-retention JSONL chain without rewriting the segment or copying its payload into the receipt.</p>
+      </div>
+      <aside class="truth-card" aria-label="Inspection truth boundary">
+        <strong>Inspect, preserve, escalate</strong>
+        <p>The Inspector hashes complete events in memory but emits only line numbers, mismatch classes and digests. It cannot repair, delete, recover, start the server, promote or change CANON.</p>
+      </aside>
+    </header>
+
+    <section class="panel" aria-labelledby="inputHeading">
+      <div class="panel-heading">
+        <h2 id="inputHeading">1 · Supply one explicit segment</h2>
+        <span>10 MiB / 5,000 event limit</span>
+      </div>
+      <div class="input-grid">
+        <label for="pastedInput">Paste evidence JSONL
+          <span>Raw content remains only in this browser tab and is never copied into the receipt.</span>
+          <textarea id="pastedInput" spellcheck="false"></textarea>
+        </label>
+        <div class="file-well">
+          <label for="fileInput">Select one local JSONL file
+            <span>The browser grants access only to the file you explicitly choose.</span>
+            <input id="fileInput" type="file" accept=".jsonl,application/x-ndjson,text/plain">
+          </label>
+          <p>No implicit state-folder scan, startup attempt, persistence or network access occurs.</p>
+        </div>
+      </div>
+      <div class="actions" aria-label="Inspection actions">
+        <button class="primary" id="pasteButton" type="button">Inspect pasted JSONL</button>
+        <button id="fileButton" type="button">Inspect selected file</button>
+        <button class="secondary" id="exampleButton" type="button">Load valid synthetic example</button>
+        <button id="clearButton" type="button">Clear Inspector</button>
+      </div>
+      <p class="status-line" id="status" role="status" aria-live="polite">Building and inspecting a valid synthetic example…</p>
+    </section>
+
+    <section class="result-grid" aria-label="Inspection result">
+      <div class="panel result-panel">
+        <div class="panel-heading"><h2>2 · Findings</h2><span id="verdict" data-verdict="UNKNOWN">NOT INSPECTED</span></div>
+        <p id="metrics" class="metrics">No input inspected.</p>
+        <ul id="findings" class="finding-list"></ul>
+        <div class="actions">
+          <button id="downloadButton" type="button" disabled>Download digest-only receipt</button>
+        </div>
+      </div>
+      <div class="panel result-panel">
+        <div class="panel-heading"><h2>Inspection receipt</h2><span>axm.evidence-chain-inspection/v1</span></div>
+        <pre id="receiptPreview">No receipt built.</pre>
+      </div>
+    </section>
+  </main>
+
+  <script src="evidence-chain-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

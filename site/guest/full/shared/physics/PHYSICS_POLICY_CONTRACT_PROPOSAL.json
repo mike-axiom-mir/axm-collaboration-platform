@@ -1,0 +1,71 @@
+{
+  "schema": "axm.physics-policy-contract-proposal/v1",
+  "date": "2026-07-19",
+  "target": {
+    "engine": "axm-physics-2d",
+    "version": "0.3.1"
+  },
+  "status": "PARTIALLY_IMPLEMENTED_ADDITIVE_OBSERVABILITY",
+  "identity": {
+    "lineageKey": ["entityId", "generation", "epoch"],
+    "backendHandleIsAuthoritative": false,
+    "generationChangeEndsContactLineage": true,
+    "currentGap": "v0.3.1 exposes a reusable string id without generation or epoch"
+  },
+  "solverSchedule": {
+    "separateFromSemanticIdentity": true,
+    "recordedFields": ["solverFamily", "scheduleVersion", "substeps", "iterations", "parallelMode", "simdMode"],
+    "currentGap": "v0.3.1 sorts bodies and candidate pairs by semantic id"
+  },
+  "boundary": {
+    "canonicalCollisionTouchRule": "UNDECIDED",
+    "classificationPredicatesSeparateFromSolverTolerances": true,
+    "requiredAxes": ["shapePair", "collision", "pointQuery", "raycast", "shapeCast", "exactTangent", "initialOverlap", "epsilonInside", "epsilonOutside"],
+    "proposedQueryModes": ["solid", "boundary"],
+    "currentGap": "v0.3.1 has pair- and shape-specific exact-touch and origin-inside behavior"
+  },
+  "contactLifecycle": {
+    "terminalReasons": ["ended_by_separation", "ended_by_removal", "ended_by_filter_change", "ended_by_disable", "ended_by_transform"],
+    "preserveUnrelatedLineage": true,
+    "currentGap": "removeBody clears all contact lineage without an EXIT reason"
+  },
+  "hashes": {
+    "legacyStateChecksum": "PRESERVE_BYTE_FOR_BYTE",
+    "configurationHash": "IMPLEMENTED_ADDITIVE_V1",
+    "definitionHash": "IMPLEMENTED_ADDITIVE_V1",
+    "identityHash": "IMPLEMENTED_ADDITIVE_V1",
+    "lineageBundle": "IMPLEMENTED_ADDITIVE_V1_NOT_PREDECESSOR_BOUND",
+    "inputTraceHash": "PROPOSED",
+    "authoritativeStateHash": "PROPOSED_IEEE754_BIT_PRESERVING",
+    "lineageHash": "PROPOSED_PREDECESSOR_BOUND",
+    "structuralJsonCanonicalization": "RFC8785_CANDIDATE_FOR_JSON_SAFE_CONTENT",
+    "numericStateRule": "DO_NOT_COLLAPSE_NEGATIVE_ZERO",
+    "currentGap": "legacy checksum still collapses signed zero; input trace, authoritative numeric state and predecessor-bound lineage remain absent"
+  },
+  "capacity": {
+    "status": "IMPLEMENTED_WITH_OPEN_PRIORITY_POLICY",
+    "receiptSchema": "axm.physics-contact-capacity/v1",
+    "requiredFields": ["detected", "retained", "stored", "truncated", "limit", "status", "reason", "prioritization"],
+    "prioritizationRule": "FIRST_DETECTED_UNIQUE_KEYS_CURRENT_OPEN_FOR_VERSIONED_REDESIGN",
+    "currentGap": "overflow accounting is explicit; long-term contact-retention priority is not yet a stewarded stable contract"
+  },
+  "tunnelPrevention": {
+    "methodClasses": ["toi_ccd", "predictive_speculative", "substep_mitigation"],
+    "genuineCcdClasses": ["toi_ccd"],
+    "currentImplementation": ["substep_mitigation"],
+    "currentGap": "diagnostics do not attribute the prevention method"
+  },
+  "fixtures": {
+    "softwareVerification": ["rename", "insertion", "removal", "serialization", "boundary", "hash", "capacity"],
+    "physicalValidation": "SEPARATE_UNCERTAINTY_BEARING_DATASETS",
+    "currentCapabilityExclusion": "double-pendulum data requires rotation and joints absent from v0.3.1"
+  },
+  "truth": {
+    "changesRuntimeBehavior": false,
+    "changesSerialization": true,
+    "addsSerializedEvidenceFields": true,
+    "changesLegacyFields": false,
+    "redefinesLegacyChecksum": false,
+    "claimsScientificValidation": false
+  }
+}

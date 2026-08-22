@@ -1,0 +1,47 @@
+{
+  "schema": "axm.voluntary-phone-qa-contract-gap/v1",
+  "version": "0.1.0",
+  "generatedAt": "2026-08-20T05:54:00.000Z",
+  "status": "TEST",
+  "state": "DEFERRED_CONTRACT_AND_EVIDENCE_GAP",
+  "candidateModule": "voluntary-phone-qa-campaign",
+  "currentQaLab": {
+    "id": "browser-lan-hardware-qa-lab",
+    "version": "v0.2",
+    "manifestProduces": [
+      "axm.qa-journey-receipt/v1"
+    ],
+    "contractEmits": [
+      "axm.qa-journey-receipt/v1"
+    ],
+    "requirements": {
+      "producesDeviceEvidence": false,
+      "recordsPhysicalPhoneCandidates": false,
+      "contractEmitsDeviceEvidence": false,
+      "refusesSelfAttestedPhysicalProof": false,
+      "refusesManifestWarningMutation": false
+    }
+  },
+  "nativeBaseline": {
+    "command": "node shared/voluntary-phone-qa-campaign/selftest.js",
+    "exitCode": 1,
+    "expectedFailureObserved": true,
+    "error": "QA Lab device evidence handoff missing"
+  },
+  "decision": {
+    "migratedInThisCohort": false,
+    "reason": "The current generic QA Lab does not yet provide the game-specific physical-phone observation candidate contract required by the campaign.",
+    "fakeManifestOrContractDeclarationsAdded": false,
+    "requiredCapabilities": [
+      "phone.qa.current-contract-compatible",
+      "phone.qa.physical-observation-capture"
+    ]
+  },
+  "authority": {
+    "labMutated": false,
+    "campaignMutated": false,
+    "promoted": false,
+    "canonized": false
+  },
+  "digest": "sha256:6d0fca2b9b9b22589f471d501e9f24754f3199283e6efe570d932d943915cf36"
+}

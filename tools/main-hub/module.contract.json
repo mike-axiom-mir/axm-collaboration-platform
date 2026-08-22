@@ -1,0 +1,59 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "main-hub",
+  "version": "v0.2",
+  "provides": [
+    "legacy-main-hub-url-preservation",
+    "display-only-compatibility-card",
+    "explicit-same-origin-module-links",
+    "foundation-presence-status",
+    "visible-unimplemented-layer-boundary",
+    "non-runtime-layer-design-reference"
+  ],
+  "consumes": [
+    "foundation:runtime-presence",
+    "same-origin:game-hub-route",
+    "same-origin:agent-command-center-route",
+    "same-origin:agent-tool-forge-route",
+    "same-origin:hermes-route",
+    "human:explicit-navigation-click"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "browser-navigation:same-origin-explicit-click"
+    ],
+    "accepts": [
+      "human:explicit-navigation-click"
+    ]
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "hub-state-read",
+      "hub-state-write",
+      "layer-switching",
+      "layer-persistence",
+      "password-input",
+      "password-validation",
+      "password-storage",
+      "authentication",
+      "access-control",
+      "hidden-build-route-authority",
+      "automatic-navigation",
+      "module-loading",
+      "current-hub-ownership-claim",
+      "runtime-readiness-claim",
+      "external-network-fetch",
+      "automatic-status-promotion",
+      "canon-authority"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "graceful-degrade",
+    "cleanup": "automatic"
+  }
+}

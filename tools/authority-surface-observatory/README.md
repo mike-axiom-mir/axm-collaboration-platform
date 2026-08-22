@@ -1,8 +1,8 @@
 # AXM Authority Surface Observatory
 
-Status: `EXPERIMENTAL` detached candidate  
-Installed: `false`  
-Promoted: `false`  
+Status: integrated `TEST` module  
+Installed: `true`  
+Promoted: `TEST`  
 CANON: unchanged
 
 This module scans one explicit AXM Workshop root and maps static authority declarations across top-level Hub modules:

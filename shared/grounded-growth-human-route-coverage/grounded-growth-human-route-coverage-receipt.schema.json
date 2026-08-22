@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-human-route-coverage-receipt/v1",
+  "title": "AXM Grounded Growth human-route coverage receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "receiptId",
+    "generatedAt",
+    "status",
+    "state",
+    "portfolioRef",
+    "routes",
+    "holds",
+    "coverage",
+    "decision",
+    "truth",
+    "sourceRefs",
+    "receiptDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-human-route-coverage-receipt/v1" },
+    "version": { "const": "0.1.0" },
+    "receiptId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "status": { "const": "TEST" },
+    "state": {
+      "enum": [
+        "BOUNDED_COVERAGE_WITH_EXPLICIT_HOLDS",
+        "TECHNICAL_ROUTES_READY_HUMAN_EVIDENCE_NOT_RUN"
+      ]
+    },
+    "portfolioRef": { "$ref": "#/$defs/reference" },
+    "routes": { "type": "array", "items": { "type": "object" } },
+    "holds": { "type": "array", "items": { "type": "object" } },
+    "coverage": { "type": "object" },
+    "decision": { "type": "object" },
+    "truth": { "type": "object" },
+    "sourceRefs": { "type": "array", "items": { "$ref": "#/$defs/reference" }, "minItems": 1 },
+    "receiptDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "schema": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    }
+  }
+}

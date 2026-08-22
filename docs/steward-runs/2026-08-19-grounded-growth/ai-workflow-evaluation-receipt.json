@@ -1,0 +1,99 @@
+{
+  "schema": "axm.ai-workflow-evaluation/v1",
+  "version": "0.1.0",
+  "evaluationId": "evidence-closure-ai-steward-held-out-20260819",
+  "generatedAt": "2026-08-19T04:32:00.000Z",
+  "beneficiary": "AI_WORKFLOW",
+  "workflow": "Evidence-dependent steward decision: CONTINUE only when every relied-on registered source remains byte-current.",
+  "proofSurface": "AI_WORKFLOW_EVALUATION",
+  "heldOutCasePolicy": "Exact append, zero-byte, wrong-type, move, and unchanged cases were not used by the implementation under evaluation.",
+  "baseline": {
+    "policy": "REGISTERED_IDENTITY_WITHOUT_LATER_CLOSURE_CHECK",
+    "correctDecisions": 2,
+    "totalDecisions": 6,
+    "unsupportedContinueDecisions": 4
+  },
+  "outcome": {
+    "policy": "REGISTERED_IDENTITY_WITH_EXACT_LATER_CLOSURE_CHECK",
+    "correctDecisions": 6,
+    "totalDecisions": 6,
+    "unsupportedContinueDecisions": 0,
+    "newlyPreventedUnsupportedContinues": 4
+  },
+  "cases": [
+    {
+      "id": "unchanged-a",
+      "mutation": "NONE",
+      "expectedDecision": "CONTINUE",
+      "closureState": "CURRENT",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "CONTINUE",
+      "baselineCorrect": true,
+      "candidateCorrect": true
+    },
+    {
+      "id": "append-after-registration",
+      "mutation": "APPEND",
+      "expectedDecision": "HOLD",
+      "closureState": "CHANGED",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "HOLD",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "zero-byte-after-registration",
+      "mutation": "ZERO",
+      "expectedDecision": "HOLD",
+      "closureState": "CHANGED",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "HOLD",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "directory-replaces-file",
+      "mutation": "DIRECTORY",
+      "expectedDecision": "HOLD",
+      "closureState": "WRONG_TYPE",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "HOLD",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "moved-after-registration",
+      "mutation": "MOVE",
+      "expectedDecision": "HOLD",
+      "closureState": "MISSING",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "HOLD",
+      "baselineCorrect": false,
+      "candidateCorrect": true
+    },
+    {
+      "id": "unchanged-b",
+      "mutation": "NONE",
+      "expectedDecision": "CONTINUE",
+      "closureState": "CURRENT",
+      "baselineDecision": "CONTINUE",
+      "candidateDecision": "CONTINUE",
+      "baselineCorrect": true,
+      "candidateCorrect": true
+    }
+  ],
+  "verdict": "PASS",
+  "limitations": [
+    "This is a deterministic steward-workflow evaluation, not an LLM, provider, model-weight, intelligence, or generalization evaluation.",
+    "It proves the decision guard for local registered files under these six cases, not remote storage or every filesystem race.",
+    "The repaired capability remains a TEST candidate awaiting the separate Workshop steward and availability gates."
+  ],
+  "truth": {
+    "modelInvoked": false,
+    "modelWeightsChanged": false,
+    "humanBenefitClaimed": false,
+    "automaticAuthority": false,
+    "temporaryPathsRetained": false
+  },
+  "receiptDigest": "sha256:8d29d28a4ecbdbe332ea305ec4748623b64cbba4af03182c178f485e7ba24089"
+}

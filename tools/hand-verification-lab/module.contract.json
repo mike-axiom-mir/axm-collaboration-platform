@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "hand-verification-lab",
+  "version": "v0.1",
+  "provides": [
+    "capability.verify.missing-hand/v1",
+    "missing-hand-verification-plan-building",
+    "missing-hand-evidence-receipt-recording",
+    "unevidenced-pass-downgrade",
+    "missing-hand-explicit-receipt-download"
+  ],
+  "consumes": [
+    "axm.missing-hand-specification/v1",
+    "human-authored-evidence-observations"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.hand-verification-plan/v1", "axm.hand-verification-receipt/v1"],
+    "accepts": ["axm.missing-hand-specification/v1", "application/json"]
+  },
+  "boundaries": {
+    "writes": ["browser:explicit-json-download"],
+    "refuses": [
+      "automatic-test-execution",
+      "automatic-install",
+      "automatic-permission-grant",
+      "unevidenced-pass-as-proof",
+      "operator-declaration-as-independent-runtime-proof",
+      "automatic-release",
+      "automatic-promotion",
+      "automatic-canon",
+      "network-access",
+      "persistent-storage"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "browser",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

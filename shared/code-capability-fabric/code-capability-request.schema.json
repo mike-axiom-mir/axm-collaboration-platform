@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.code-capability-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "capability", "inputSchema", "outputSchema", "preferredProviderId", "policy"],
+  "properties": {
+    "schema": {"const": "axm.code-capability-request/v1"},
+    "id": {"$ref": "#/$defs/id"},
+    "capability": {"$ref": "#/$defs/id"},
+    "inputSchema": {"$ref": "#/$defs/contract"},
+    "outputSchema": {"$ref": "#/$defs/contract"},
+    "preferredProviderId": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority", "allowedPermissions", "allowedNetworkDomains", "allowedMutability"],
+      "properties": {
+        "authority": {"const": "PLAN_ONLY"},
+        "allowedPermissions": {"$ref": "#/$defs/ids"},
+        "allowedNetworkDomains": {"$ref": "#/$defs/ids"},
+        "allowedMutability": {"type": "array", "maxItems": 3, "uniqueItems": true, "items": {"enum": ["read-only", "candidate-only", "process-observation"]}}
+      }
+    }
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "ids": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "contract": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,179}$"}
+  }
+}

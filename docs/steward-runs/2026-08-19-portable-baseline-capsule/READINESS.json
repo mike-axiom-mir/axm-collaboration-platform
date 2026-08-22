@@ -1,0 +1,88 @@
+{
+  "schema": "axm.capability-readiness-assessment/v1",
+  "assessmentId": "portable-baseline-capsule:2026-08-19",
+  "status": "TEST",
+  "technicalStewardDisposition": "TEST_READY_WITH_LIVE_AND_TEMP_ROUTING_LIMITS",
+  "capabilities": [
+    {
+      "id": "simulation.baseline.capsule.verify",
+      "status": "READY",
+      "evidence": ["34-check focused selftest", "deterministic rebuild and tamper rejection"],
+      "limitations": ["Contract verification is not external effectiveness proof."]
+    },
+    {
+      "id": "simulation.baseline.software.bind-git-dirty",
+      "status": "READY_SCOPED",
+      "evidence": ["CURRENT_SOFTWARE_BASELINE_CAPSULE.json", "CURRENT_SOFTWARE_SOURCE_MANIFEST.json"],
+      "limitations": ["Live evidence covers the six-file leaf only, not the whole dirty Workshop."]
+    },
+    {
+      "id": "simulation.baseline.mirror.separate-realms",
+      "status": "CONTRACT_READY_LIVE_NOT_RUN",
+      "evidence": ["focused synthetic original/private/challenger separation and refusal checks"],
+      "limitations": ["No private Mirror state was opened or represented as live evidence."]
+    },
+    {
+      "id": "simulation.baseline.specialist.bind-host-mask-ceiling",
+      "status": "CONTRACT_READY_LIVE_NOT_RUN",
+      "evidence": ["focused synthetic host/mask/capability/ceiling boundary checks"],
+      "limitations": ["No model runtime was invoked; model provenance is not performance proof."]
+    },
+    {
+      "id": "simulation.baseline.generated-view-freshness",
+      "status": "READY_SCOPED",
+      "evidence": ["one CURRENT live leaf view", "synthetic STALE routing check"],
+      "limitations": ["Freshness reports byte/config alignment only, not semantic truth."]
+    },
+    {
+      "id": "simulation.baseline.compare-new-information",
+      "status": "CONTRACT_READY_LIVE_PRIOR_NOT_AVAILABLE",
+      "evidence": ["NO_NEW_INFORMATION, NEW_INFORMATION, BASELINE_CHANGED, and INCOMPARABLE focused checks"],
+      "limitations": ["There is no prior live capsule for a temporal live comparison yet."]
+    },
+    {
+      "id": "simulation.baseline.capability-loop-reference",
+      "status": "READY",
+      "evidence": ["focused handoff into Verified Capability Loop and exact receipt verification"],
+      "limitations": ["Reference compatibility transfers no install, promotion, CANON, or execution authority."]
+    },
+    {
+      "id": "simulation.baseline.authority.none",
+      "status": "READY",
+      "evidence": ["module contract and capsule truth constants"],
+      "limitations": ["Mike Tobi remains the explicit merge and CANON gate."]
+    },
+    {
+      "id": "simulation.lab.multi-substrate-live-run",
+      "status": "NOT_RUN",
+      "evidence": [],
+      "limitations": ["Requires exact authorized software, Mirror, and/or specialist runtime observations supplied to a later lab branch."]
+    },
+    {
+      "id": "test.artifact.output-routing",
+      "status": "DEGRADED",
+      "evidence": ["required tool-forge package check emitted its proof ZIP through Node os.tmpdir on Windows"],
+      "limitations": ["The existing modified test routes to the system temporary directory and does not clean its proof ZIP; it is not a D-drive AXM build or intake path."]
+    },
+    {
+      "id": "human.review",
+      "status": "NOT_RUN",
+      "evidence": [],
+      "limitations": ["Technical steward disposition is not Mike's acceptance, merge, or CANON decision."]
+    },
+    {
+      "id": "browser.visual",
+      "status": "NOT_APPLICABLE",
+      "evidence": [],
+      "limitations": ["This increment is a pure data contract with no browser surface."]
+    }
+  ],
+  "authority": {
+    "installed": false,
+    "promoted": false,
+    "merged": false,
+    "canon": false,
+    "foundationChanged": false,
+    "modelWeightsChanged": false
+  }
+}

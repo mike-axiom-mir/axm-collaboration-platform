@@ -14,6 +14,11 @@ function check(name, body) {
   checks += 1;
   process.stdout.write('PASS ' + name + '\n');
 }
+
+const publishedManifest = require('./manifest.json');
+check('published manifest declares the modern schema', () => assert.equal(publishedManifest.schema, 'axm.tool-manifest/v1'));
+check('published manifest classifies the observatory as a product', () => assert.equal(publishedManifest.kind, 'product'));
+
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-runtime-channel-'));
 

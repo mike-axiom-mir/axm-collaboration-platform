@@ -1,0 +1,107 @@
+{
+  "slot": "019",
+  "game_id": "019-brace-room",
+  "name": "Brace Room",
+  "status": "PLAYABLE - BALANCE VERIFIED, VISUAL/AUDIO POLISH DONE, AI-ADAPTER-VERIFIED LIVE IN A REAL BROWSER - HUMAN PLAYTEST AND PHYSICAL PHONE QA STILL PENDING",
+  "description": "A 1-4 player station-tag emergency co-op: faults spawn around a six-station ring, crew must run to the right station and resolve the right action before Hull Integrity hits zero. Fail together, survive together.",
+  "version": "0.5.1",
+  "min_players": 1,
+  "max_players": 4,
+  "default_visible_seats": 4,
+  "allowed_seat_types": ["human", "ai"],
+  "launch": {
+    "server_entry": "runtime/server.js",
+    "client_entry": "/games/019/",
+    "spectator_client_entry": "/games/019/",
+    "controller_path": "/controller.html?player={player}",
+    "ready_path": "/health",
+    "port": 8819,
+    "start_command": "managed-by-game-hub",
+    "local_only_default": true
+  },
+  "join": {
+    "supports_qr": true,
+    "supports_lan_link": true,
+    "supports_room_code": false,
+    "screen_occupies_seat": false,
+    "mode": "shared-screen-by-default-plus-optional-hub-qr-phone-seats"
+  },
+  "controls": {
+    "profile_id": "brace-room-station-tag-v1",
+    "intent_protocol": "local-direct-input-v1",
+    "phone_controller": true,
+    "gamepad": false,
+    "keyboard": true,
+    "mouse": false,
+    "touch": true,
+    "shared_screen": true,
+    "bindings": [
+      "P1: WASD + Space",
+      "P2: Arrow keys + Enter",
+      "P3: IJKL + O",
+      "P4: Numpad 8456 + Numpad 0",
+      "H help, M reduced motion, C high contrast, Esc pause / close overlay",
+      "A joined phone (via Game Hub's QR lobby) plays its seat with a d-pad + ACTION button instead of the keyboard cluster"
+    ]
+  },
+  "session": {
+    "passes_seat_map": true,
+    "returns_result_summary": true,
+    "drop_in_out_later": false,
+    "target_minutes": 9,
+    "available_contract_minutes": [6, 9, 12]
+  },
+  "rules": {
+    "no_hidden_players": true,
+    "host_launch_required": true,
+    "game_does_not_override_hub_seats": true,
+    "runtime_internet_required": false,
+    "team_mode": "cooperative",
+    "simulation_authority": "browser-local",
+    "save_authority": "none-in-v1",
+    "loss_condition": "hull-integrity-zero",
+    "win_condition": "survive-selected-session-timer",
+    "score_basis": "faults-resolved-plus-streak-minus-misses-minus-false-alarm-errors"
+  },
+  "verification": {
+    "game_night": {
+      "schema": "axm.game-night-seams/v1",
+      "controller_delivery": "dedicated-path",
+      "controller_evidence": ["runtime/controller.html", "tests/server-http.test.js"],
+      "state_authority": "server",
+      "state_authority_scope": "Managed local server owns the Game Hub launch session plus the short-lived phone-input and adapter-observation relay. Simulation, hull integrity, and result summary remain browser-local and are not persisted.",
+      "host_reload_recovery": "native-resume",
+      "host_reload_recovery_scope": "Reload restores the managed route, setup screen, and relay connection; an in-progress browser-local run does not survive host reload.",
+      "shared_screen_occupies_seat": false,
+      "disconnect_recovery": "pending",
+      "disconnect_recovery_scope": "Relay input expires safely after 400 ms, but physical phone reconnect behavior is not yet verified.",
+      "blocking_overlay_escape": "verified",
+      "physical_phone_qa": "pending"
+    }
+  },
+  "package": {
+    "source_status": "original-canvas-prototype-v1",
+    "required_paths": [
+      "README_FIRST.md",
+      "KNOWN_LIMITS.md",
+      "DESIGN_BIBLE.md",
+      "BUILD_PLAN.md",
+      "BALANCE_NOTES.md",
+      "ASSET_PROVENANCE.md",
+      "BUILD_RECEIPT.md",
+      "package.json",
+      "START_BRACE_ROOM.cmd",
+      "START_BRACE_ROOM.ps1",
+      "dev/balance-sim.js",
+      "runtime/server.js",
+      "runtime/game-core.js",
+      "runtime/index.html",
+      "runtime/styles.css",
+      "runtime/app.js",
+      "runtime/controller.html",
+      "docs/AI_NATIVE_SEAT_CONTRACT.md",
+      "tests/brace-room-selftest.js",
+      "tests/server-http.test.js"
+    ]
+  }
+}

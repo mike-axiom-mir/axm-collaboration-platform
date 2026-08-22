@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Hand Forge Bridge</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AXM Workshop adapter · TEST</p>
+        <h1>Hand Forge Bridge</h1>
+        <p class="lede">Carry an exact missing-hand contract and its verification plan into Agent Tool Forge, preserving provenance all the way to a reviewable package.</p>
+      </div>
+      <aside class="truth-card" aria-label="Bridge truth boundary">
+        <strong>Package is not installation</strong>
+        <p>The Bridge prepares an EXPERIMENTAL ZIP and receipt. It never executes generated code, copies Foundation implicitly, grants authority, installs, promotes, releases or changes CANON.</p>
+      </aside>
+    </header>
+
+    <section class="panel" aria-labelledby="sourcesHeading">
+      <div class="panel-heading">
+        <h2 id="sourcesHeading">1 · Bind exact sources</h2>
+        <span id="sourceStatus">No sources loaded.</span>
+      </div>
+      <div class="source-grid">
+        <label for="specificationInput">Missing-hand specification JSON
+          <span>axm.missing-hand-specification/v1 from Hand Specification Foundry</span>
+          <textarea id="specificationInput" spellcheck="false"></textarea>
+        </label>
+        <label for="planInput">Verification plan JSON
+          <span>axm.hand-verification-plan/v1 must fingerprint this exact specification</span>
+          <textarea id="planInput" spellcheck="false"></textarea>
+        </label>
+      </div>
+      <div class="actions" aria-label="Source actions">
+        <button class="primary" id="sourceButton" type="button">Validate and map sources</button>
+        <button class="secondary" id="exampleButton" type="button">Load complete chain example</button>
+        <button id="clearButton" type="button">Clear Bridge</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="mappingHeading">
+      <div class="panel-heading">
+        <h2 id="mappingHeading">2 · Review the Forge route</h2>
+        <span>Conservative defaults remain editable</span>
+      </div>
+      <div class="config-grid">
+        <label for="draftId">Draft ID
+          <input id="draftId" autocomplete="off">
+        </label>
+        <label for="draftName">Draft name
+          <input id="draftName" autocomplete="off">
+        </label>
+        <label for="draftKind">Supported package kind
+          <select id="draftKind">
+            <option value="machine-capability">Machine capability</option>
+            <option value="hub-module">Hub module</option>
+            <option value="proposal-analyzer">Proposal-only analyzer</option>
+          </select>
+          <span>Foundation-bearing routes are refused because this bridge does not copy Foundation source.</span>
+        </label>
+        <label for="draftRisk">Declared risk
+          <select id="draftRisk">
+            <option>LOW</option><option>MEDIUM</option><option>HIGH</option>
+          </select>
+        </label>
+        <label class="span-2" for="capabilities">Forge capabilities
+          <span>One per line: storage, wisdom, identity, ai, gate, export, files, network or bridge.</span>
+          <textarea id="capabilities"></textarea>
+        </label>
+      </div>
+      <div class="actions" aria-label="Package build actions">
+        <button class="primary" id="buildButton" type="button" disabled>Build EXPERIMENTAL package</button>
+        <button id="reviewButton" type="button" disabled>Download review JSON</button>
+        <button id="receiptButton" type="button" disabled>Download receipt JSON</button>
+        <button id="zipButton" type="button" disabled>Download review ZIP</button>
+      </div>
+      <p class="status-line" id="status" role="status" aria-live="polite">Loading the complete local chain example…</p>
+    </section>
+
+    <section class="result-grid" aria-label="Bridge package result">
+      <div class="panel result-panel">
+        <div class="panel-heading"><h2>Package files</h2><span>Source artifacts included</span></div>
+        <nav id="fileList" class="file-list" aria-label="Generated package files"></nav>
+        <pre id="filePreview">No package built.</pre>
+      </div>
+      <div class="panel result-panel">
+        <div class="panel-heading"><h2>Bridge receipt</h2><span>axm.hand-forge-bridge-receipt/v1</span></div>
+        <pre id="receiptPreview">No bridge receipt built.</pre>
+      </div>
+    </section>
+  </main>
+
+  <script src="../hand-specification-foundry/hand-specification-core.js"></script>
+  <script src="../hand-verification-lab/hand-verification-core.js"></script>
+  <script src="../agent-tool-forge/forge-core.js"></script>
+  <script src="../agent-tool-forge/zip-store.js"></script>
+  <script src="hand-forge-bridge-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

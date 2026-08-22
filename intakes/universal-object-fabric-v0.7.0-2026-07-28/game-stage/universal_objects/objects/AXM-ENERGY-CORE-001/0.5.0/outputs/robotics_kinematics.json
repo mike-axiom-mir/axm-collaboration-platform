@@ -1,0 +1,155 @@
+{
+  "schema_version": "0.5",
+  "asset_id": "AXM-ENERGY-CORE-001",
+  "asset_version": "0.4.0",
+  "coordinate_contract": {
+    "linear_unit": "meter",
+    "angle_unit": "radian",
+    "up": "+Y",
+    "forward": "+Z"
+  },
+  "root_link": "root",
+  "links": [
+    {
+      "link_id": "root",
+      "member_nodes": [
+        "base",
+        "pillar__r00",
+        "pillar__r01",
+        "pillar__r02",
+        "pillar__r03",
+        "base_gear",
+        "cap"
+      ],
+      "pivot_m": [
+        0,
+        0,
+        0
+      ],
+      "game_effective_mass_share_kg": 221.725639,
+      "visual_source": "AXM-ENERGY-CORE-001.glb",
+      "collision_source": "collision/AXM-ENERGY-CORE-001_COLLISION.glb"
+    },
+    {
+      "link_id": "lower_ring",
+      "member_nodes": [
+        "lower_ring"
+      ],
+      "pivot_m": [
+        0,
+        0.44,
+        0
+      ],
+      "game_effective_mass_share_kg": 13.910452,
+      "visual_source": "AXM-ENERGY-CORE-001.glb",
+      "collision_source": "collision/AXM-ENERGY-CORE-001_COLLISION.glb"
+    },
+    {
+      "link_id": "upper_ring",
+      "member_nodes": [
+        "upper_ring"
+      ],
+      "pivot_m": [
+        0,
+        1.32,
+        0
+      ],
+      "game_effective_mass_share_kg": 13.910452,
+      "visual_source": "AXM-ENERGY-CORE-001.glb",
+      "collision_source": "collision/AXM-ENERGY-CORE-001_COLLISION.glb"
+    },
+    {
+      "link_id": "energy_core",
+      "member_nodes": [
+        "core"
+      ],
+      "pivot_m": [
+        0,
+        0.88,
+        0
+      ],
+      "game_effective_mass_share_kg": 70.453457,
+      "visual_source": "AXM-ENERGY-CORE-001.glb",
+      "collision_source": "collision/AXM-ENERGY-CORE-001_COLLISION.glb"
+    }
+  ],
+  "joints": [
+    {
+      "joint_id": "lower_spin",
+      "type": "continuous",
+      "parent_link": "root",
+      "child_link": "lower_ring",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pivot_m": [
+        0,
+        0.44,
+        0
+      ],
+      "limits_si": null,
+      "drive_intent": {
+        "mode": "velocity",
+        "speed_deg_s": 32
+      },
+      "actuator": null,
+      "controller": null
+    },
+    {
+      "joint_id": "upper_spin",
+      "type": "continuous",
+      "parent_link": "root",
+      "child_link": "upper_ring",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pivot_m": [
+        0,
+        1.32,
+        0
+      ],
+      "limits_si": null,
+      "drive_intent": {
+        "mode": "velocity",
+        "speed_deg_s": -42
+      },
+      "actuator": null,
+      "controller": null
+    },
+    {
+      "joint_id": "core_spin",
+      "type": "continuous",
+      "parent_link": "root",
+      "child_link": "energy_core",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "pivot_m": [
+        0,
+        0.88,
+        0
+      ],
+      "limits_si": null,
+      "drive_intent": {
+        "mode": "velocity",
+        "speed_deg_s": 18
+      },
+      "actuator": null,
+      "controller": null
+    }
+  ],
+  "authority": {
+    "automatic_physical_control": false,
+    "actuator_mapping": "UNASSIGNED",
+    "controller_mapping": "UNASSIGNED",
+    "emergency_stop": "NOT_IMPLEMENTED",
+    "human_engineering_review_required": true
+  },
+  "scope_limit": "Kinematic translation proof only. It is not a robot design, controller, safety case, dynamic model, wiring plan, or authorization to move physical hardware."
+}

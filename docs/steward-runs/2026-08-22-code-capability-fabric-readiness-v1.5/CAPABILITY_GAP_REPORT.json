@@ -1,0 +1,206 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "evidence-bound-readiness",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "code.fabric.plan.verify",
+        "code.fabric.observer-key.bind",
+        "code.fabric.observation-signature.verify",
+        "code.fabric.assurance-record.verify",
+        "code.fabric.readiness-subject.bind",
+        "code.fabric.authorization-required.emit"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "code.fabric.plan.verify": [
+          "pure deterministic rebuild",
+          "authority NONE",
+          "no provider execution"
+        ],
+        "code.fabric.observer-key.bind": [
+          "Ed25519 public key only",
+          "no private-key storage",
+          "no trust-key promotion"
+        ],
+        "code.fabric.observation-signature.verify": [
+          "exact canonical payload",
+          "time bounded",
+          "synthetic fixture tested"
+        ],
+        "code.fabric.assurance-record.verify": [
+          "record integrity and scope only",
+          "evidence artifact bytes remain opaque"
+        ],
+        "code.fabric.readiness-subject.bind": [
+          "non-circular digest subject",
+          "does not bind executed output because none exists"
+        ],
+        "code.fabric.authorization-required.emit": [
+          "authority NONE",
+          "Mike remains decision gate",
+          "not execution readiness proof"
+        ]
+      }
+    },
+    {
+      "id": "authorized-provider-execution",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "code.fabric.authorization-required.emit"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "code.fabric.sandbox-executor.repaired",
+        "code.fabric.human-authorization.consume",
+        "code.fabric.resource-enforcement.observe",
+        "code.fabric.output-lineage.prove",
+        "code.fabric.private-evidence-retention.enforce"
+      ],
+      "declaredConstraints": {
+        "code.fabric.authorization-required.emit": [
+          "authority NONE",
+          "Mike remains decision gate",
+          "not execution readiness proof"
+        ],
+        "code.fabric.sandbox-executor.repaired": [
+          "supplied executors remain data",
+          "future disposable-sandbox execution is not authorized"
+        ],
+        "code.fabric.human-authorization.consume": [
+          "no software authorization consumer was added",
+          "Mike remains external authority"
+        ],
+        "code.fabric.resource-enforcement.observe": [
+          "no provider or executor ran",
+          "assurance record acceptance is not live measurement"
+        ],
+        "code.fabric.output-lineage.prove": [
+          "no output was produced or written"
+        ],
+        "code.fabric.private-evidence-retention.enforce": [
+          "planner retains only opaque references",
+          "future executor retention enforcement remains missing"
+        ]
+      }
+    },
+    {
+      "id": "generated-source-direct-reuse",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "code.fabric.generated-source-rights.decide"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "code.fabric.generated-source-rights.decide": [
+          "Mike decision intentionally deferred",
+          "default research-only and direct-reuse hold"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "code.fabric.human-authorization.consume",
+    "code.fabric.output-lineage.prove",
+    "code.fabric.private-evidence-retention.enforce",
+    "code.fabric.resource-enforcement.observe",
+    "code.fabric.sandbox-executor.repaired"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "code.fabric.human-authorization.consume",
+      "requiredBy": [
+        "authorized-provider-execution"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "code.fabric.output-lineage.prove",
+      "requiredBy": [
+        "authorized-provider-execution"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "code.fabric.private-evidence-retention.enforce",
+      "requiredBy": [
+        "authorized-provider-execution"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "code.fabric.resource-enforcement.observe",
+      "requiredBy": [
+        "authorized-provider-execution"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "code.fabric.sandbox-executor.repaired",
+      "requiredBy": [
+        "authorized-provider-execution"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

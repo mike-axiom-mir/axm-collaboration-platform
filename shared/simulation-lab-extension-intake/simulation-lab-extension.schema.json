@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.simulation-lab-extension/v1",
+  "title": "AXM simulation lab branch extension declaration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "extensionId", "candidate", "relation",
+    "hostProfileDigest", "subjectKinds", "mappings", "boundaries"
+  ],
+  "properties": {
+    "schema": {"const": "axm.simulation-lab-extension/v1"},
+    "version": {"const": "0.1.0"},
+    "extensionId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,99}$"},
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["moduleId", "version"],
+      "properties": {
+        "moduleId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,99}$"},
+        "version": {"type": "string", "minLength": 1, "maxLength": 80}
+      }
+    },
+    "relation": {"enum": ["ADAPTER", "SPECIALIST_EXTENSION"]},
+    "hostProfileDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "subjectKinds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {"enum": ["SOFTWARE_REPOSITORY", "MIRROR_STATE", "SPECIALIST_MASK"]}
+    },
+    "mappings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "subjectKind", "candidateCapability", "hostModuleId", "hostCapability",
+          "inputSchema", "outputSchema", "unsupportedFieldPolicy", "nativeSchemaIdentityClaimed"
+        ],
+        "properties": {
+          "subjectKind": {"enum": ["SOFTWARE_REPOSITORY", "MIRROR_STATE", "SPECIALIST_MASK"]},
+          "candidateCapability": {"type": "string", "minLength": 1, "maxLength": 240},
+          "hostModuleId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,99}$"},
+          "hostCapability": {"type": "string", "minLength": 1, "maxLength": 240},
+          "inputSchema": {"type": "string", "minLength": 1, "maxLength": 240},
+          "outputSchema": {"type": "string", "minLength": 1, "maxLength": 240},
+          "unsupportedFieldPolicy": {"const": "DIGEST_BOUND_REFERENCE"},
+          "nativeSchemaIdentityClaimed": {"const": false}
+        }
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "truthRulesChanged", "rootReplacement", "originalSourceMutation",
+        "candidateCodeExecuted", "installed", "promoted", "canonChanged",
+        "permissionsRequested"
+      ],
+      "properties": {
+        "truthRulesChanged": {"const": false},
+        "rootReplacement": {"const": false},
+        "originalSourceMutation": {"const": false},
+        "candidateCodeExecuted": {"const": false},
+        "installed": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false},
+        "permissionsRequested": {"type": "array", "maxItems": 0}
+      }
+    }
+  }
+}

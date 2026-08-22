@@ -1,0 +1,551 @@
+{
+  "schema": "axm.visual-verification/v1",
+  "artifact": "015-axm-mirrorshift",
+  "status": "PASS_WITH_BOUNDARIES",
+  "visualBackend": "BROWSER_PRIMARY",
+  "captureMode": "Repeated still screenshots, semantic DOM observations, responsive bounds, and a bounded in-page frame-delta smoke sample; no target-hardware performance claim.",
+  "checks": [
+    {
+      "claim": "The entry screen visibly presents all four requested characters, four vehicle identities, fairness rules, and an unambiguous start control.",
+      "route": "http://127.0.0.1:8805/games/015/",
+      "viewport": "1280x720 desktop",
+      "baseline": "Generated neon key art, MIRRORSHIFT identity, four roster cards, equal-spec labels, catch-up and guard rules visible.",
+      "action": "None; entry observation.",
+      "observed": "Mike, Axiom/Mir, Codex, and Mirror each had a distinct labelled card and vehicle; ARM THE CIRCUIT was exposed as one accessible button.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Start enters a visible countdown and settles into a stable active four-racer circuit rather than false-finishing.",
+      "route": "shared race screen",
+      "viewport": "1280x720 desktop and 390x844 narrow replay check",
+      "baseline": "Lobby/results screen with an enabled start or replay control.",
+      "action": "Clicked ARM THE CIRCUIT, then later RUN IT BACK.",
+      "expected": "Visible 3 countdown, then race HUD and moving racers; still racing at ten seconds.",
+      "observed": "Replay visibly showed 3 / GUARDS ARMED. The corrected simulation was racing at four and ten seconds with item pickups, attack events, four racers, lap 1/3, standings, catch-up, and guard HUD visible.",
+      "verdict": "PASS",
+      "namedSeam": "A first observation exposed false lap wraps; the nearest-track search origin was fixed and a ten-second regression was added before this passing repeat."
+    },
+    {
+      "claim": "A player can fire a held offensive item from the shared-screen HUD.",
+      "route": "shared race screen",
+      "viewport": "1280x720 desktop",
+      "baseline": "Player one held GLITCH MINE and the item button was enabled.",
+      "action": "Clicked the unique ATTACK SLOT item button once.",
+      "expected": "Server event records the mine drop and the track shows combat activity.",
+      "observed": "Event feed recorded 'Mike dropped a Glitch Mine'; a mine was visible on the circuit. Player one immediately acquired another mine from a reactivated nearby pad, so the slot remained filled.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The shortest complete journey reaches a legible result and can begin a rematch.",
+      "route": "shared race screen",
+      "viewport": "390x844 narrow result plus desktop race",
+      "baseline": "Active race with live workshop connection.",
+      "action": "Observed outcome, then clicked RUN IT BACK once.",
+      "expected": "Winner, full ranking, rule summary, and a fresh countdown.",
+      "observed": "CODEX WINS, all four ranked vehicles, 100% equal stats / 85% attack drops / 3 starting guards, then a fresh visible countdown. RESET returned the preview to lobby.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The dedicated phone controller fits a portrait phone viewport without clipping or scrolling.",
+      "route": "http://127.0.0.1:8805/controller.html?room=AXM1&player=p1",
+      "viewport": "390x844 portrait",
+      "baseline": "Seat 1 controller connected to the same live runtime.",
+      "action": "Applied an explicit 390x844 viewport and reloaded the controller route.",
+      "expected": "Steer, brake, gas, fire, start, driver, rank, catch-up, and three guard segments fit on screen.",
+      "observed": "All six interactive controls had bounds inside 390x844; scroll width and height exactly matched the viewport. The new DRIFT READY status was visible without changing the fit. Physical-device and mixed-router QA remain pending.",
+      "verdict": "PASS_WITH_BOUNDARY"
+    },
+    {
+      "claim": "The equal-spec drift contract has visible charge and release states during a live authoritative race.",
+      "route": "shared race screen with the normal AI semantic-input contract driving player one for reproducibility",
+      "viewport": "1280x720 desktop",
+      "baseline": "Race active with MIRROR DRIFT at READY.",
+      "action": "Observed a bounded live race until player one entered and released a drift.",
+      "expected": "Segmented charge, named tier, kart sparks/slip, then a short release boost state.",
+      "observed": "The HUD showed 25% charge and BLUE while Mike visibly drifted; a later DOM sample caught SHIFT BOOST and the live track showed stronger exhaust/speed language. Deterministic tests separately verify tier duration and power.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Incoming combat warnings are visible during play rather than hidden above the viewport.",
+      "route": "shared race screen",
+      "viewport": "1280x720 desktop",
+      "baseline": "A first pass exposed that lobby button focus left the page scrolled, placing the warning above the viewport.",
+      "action": "Reset start scroll position, raised HUD stacking, strengthened warning contrast, then repeated until a nearby mine warning fired.",
+      "expected": "Page remains at scroll Y 0 and a high-contrast warning appears inside the circuit frame.",
+      "observed": "Scroll Y was 0; MINE NEARBY became active at y=68.8 with approximately 0.96 transition opacity and was visible at the top center of the captured frame.",
+      "verdict": "PASS",
+      "namedSeam": "Live testing found and corrected the off-viewport warning before this passing repeat."
+    },
+    {
+      "claim": "The current client renderer meets a production 16.7 ms frame budget.",
+      "route": "shared race screen development diagnostics",
+      "viewport": "1280x720 desktop",
+      "baseline": "Versioned Canvas 2D bundle in the in-app preview browser.",
+      "action": "Collected the most recent 180 requestAnimationFrame deltas during an active four-racer race.",
+      "expected": "Representative hardware profiling at or under the eventual production budget.",
+      "observed": "This preview sampled 42.51 ms average and 55.6 ms p95. The browser environment may schedule frames differently from target hardware, but this result cannot support a production-performance claim.",
+      "verdict": "BLOCKED_PENDING_TARGET_PROFILE"
+    },
+    {
+      "claim": "Mirror Core is an explicit, understandable lobby choice and cannot be confused with Circuit Crown race mode.",
+      "route": "http://127.0.0.1:8805/games/015/",
+      "viewport": "1280x720 desktop",
+      "baseline": "Circuit Crown selected with 3 LAPS · 85% ATTACKS and ARM THE CIRCUIT.",
+      "action": "Clicked the uniquely named MIRROR CORE mode button once.",
+      "expected": "Selection state, rules summary, and start call-to-action all change before the match starts.",
+      "observed": "MIRROR CORE became pressed and visibly highlighted; Circuit Crown became unpressed; the summary changed to 60 SECONDS · 90% ATTACKS and the start action changed to IGNITE MIRROR CORE.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Mirror Core active play visibly communicates a distinct arena, score race, timer, guard combat, item pressure, and all four players.",
+      "route": "shared Mirror Core arena",
+      "viewport": "1280x720 desktop",
+      "baseline": "Mirror Core countdown with guards armed.",
+      "action": "Started the mode, observed initial active play, then observed the first settled scoring state.",
+      "expected": "Arena is visually distinct from the circuit; CORE scores and timer replace laps; guard-break events correspond to score changes.",
+      "observed": "The magenta elliptical MIRROR CORE arena, twelve attack pads, four vehicles, FIRST TO 12 CORE timer, per-player CORE standings, player guard HUD, mines and effects were visible. A later frame showed scores 3/3/1/0 while the event feed named a +1 guard-break score and player one had lost one guard segment.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Mirror Core reaches a legible mode-specific result and preserves the mode for a rematch.",
+      "route": "shared Mirror Core result and replay",
+      "viewport": "1280x720 desktop",
+      "baseline": "Active battle below the 12 CORE target.",
+      "action": "Observed a clean-wipe scoring finish, then clicked RUN IT BACK once.",
+      "expected": "Winner, all four score lines, battle rules, and a fresh 60-second battle appear without returning to race mode.",
+      "observed": "AXIOM/MIR WINS displayed 13 CORE, 9 guard breaks, 2 wipes, all four final lines, 12 CORE target, 90% attack drops, and 3 starting guards. RUN IT BACK returned to CORE 0 · 1:00 at scroll Y 0.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The phone controller remains touch-native and mode-aware during Mirror Core.",
+      "route": "http://127.0.0.1:8805/controller.html?room=AXM1&player=p1",
+      "viewport": "390x844 portrait",
+      "baseline": "Mirror Core active on the shared server.",
+      "action": "Applied the explicit phone viewport and observed the connected controller.",
+      "expected": "All controls fit; the status row exposes CORE score/time and drift without scrolling.",
+      "observed": "CORE 0 · 52S and DRIFT READY were visible; all six controls were inside the viewport; document width/height exactly matched 390x844. Physical touch and router QA remain pending.",
+      "verdict": "PASS_WITH_BOUNDARY"
+    },
+    {
+      "claim": "Circuit Crown exposes three understandable authored track choices without crowding the lobby or confusing battle setup.",
+      "route": "http://127.0.0.1:8805/games/015/",
+      "viewport": "desktop and 390x844 portrait",
+      "baseline": "Circuit Crown lobby with Mirror Forge selected.",
+      "action": "Observed all track controls, selected Splitglass and Null Foundry, then switched to Mirror Core at phone width.",
+      "expected": "Three named circuit cards fit, the selected circuit updates the rule pill, and the race-only selector disappears in battle mode.",
+      "observed": "MIRROR FORGE, SPLITGLASS, and NULL FOUNDRY were visible and individually selectable at both viewports. The phone layout preserved all three controls in one row. Mirror Core hid SELECT CIRCUIT and restored its 60-second rule summary.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The three race circuits render as authored places with materially different route and landmark language rather than palette swaps.",
+      "route": "shared Circuit Crown screen",
+      "viewport": "desktop game-night display",
+      "baseline": "Mirror Forge active race.",
+      "action": "Reset, selected, started, and observed Mirror Forge, Splitglass Gardens, and Null Foundry independently.",
+      "expected": "Each track has a visibly different silhouette, material system, central landmark, hazard language, and shortcut corridor.",
+      "observed": "Mirror Forge showed a flowing asymmetric neon loop and concentric AXM core; Splitglass showed a wide greenhouse route, six-petal glass landmark, crystals, and prism hazards; Null Foundry showed a hard-corner industrial route, hex furnace, stacks, heat vents, and orange material language.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A track shortcut is a visible physical risk/reward route rather than hidden progress logic.",
+      "route": "Splitglass Gardens active race",
+      "viewport": "desktop game-night display",
+      "baseline": "The first live version used a short chord too close to the main racing line to read as a player decision.",
+      "action": "Moved the corridor across the lower-right bend, widened its authored road treatment, added a SHORTCUT // GREENHOUSE SLIP label and a timed prism-shear hazard, then repeated the active-race observation.",
+      "expected": "The branch has a distinct entry/exit, readable label, and visibly live/safe hazard state while racers can physically enter it.",
+      "observed": "The final frame showed the diagonal shortcut splitting from and rejoining the main road, its route label, a SAFE hazard ring, and multiple karts physically traversing the corridor. Deterministic and held-out tests separately verify ordered progress and hazard effects.",
+      "verdict": "PASS",
+      "namedSeam": "Live visual evidence rejected a technically valid but illegible first shortcut placement; the authored decision was widened before promotion."
+    },
+    {
+      "claim": "A selected circuit survives a complete result and rematch journey.",
+      "route": "Splitglass Gardens result and replay",
+      "viewport": "desktop game-night display",
+      "baseline": "All-AI Splitglass race started from the selected-track lobby.",
+      "action": "Observed the complete race, result, and one RUN IT BACK action.",
+      "expected": "The result names Splitglass Gardens and replay returns to active play on the same circuit.",
+      "observed": "MIKE WINS displayed Maker GT · SPLITGLASS GARDENS · equal spec, better line with all four finish lines. RUN IT BACK cleared the result, entered a fresh countdown, and returned to the visible Splitglass greenhouse circuit.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Shared-screen keyboard controls can be remapped through a visible, persistent lobby control without hiding the active bindings.",
+      "route": "Circuit Crown lobby",
+      "viewport": "desktop game-night display",
+      "baseline": "CONTROL ACCESS displayed WASD + ARROWS with both assists off.",
+      "action": "Changed the keyboard layout to IJKL, enabled both assists, reloaded the page, then returned the layout to the default after verification.",
+      "expected": "The selected layout and updated drive/fire copy survive reload; assist states remain explicit; settings lock once play begins.",
+      "observed": "IJKL became selected, drive copy changed to DRIVE IJKL and FIRE U, STEER HELP LIGHT and AUTO GAS ON were pressed and visibly labelled, and all four states persisted after reload. The server locked configuration after start. The deliverable was returned to WASD + ARROWS with assists off.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Auto-accelerate and light steering are transparent input assists rather than hidden vehicle-stat upgrades.",
+      "route": "Mirror Forge active race plus authoritative state receipt",
+      "viewport": "desktop game-night display",
+      "baseline": "Mike had raw throttle 0 with both assists enabled in the lobby.",
+      "action": "Started the race without pressing a drive key and observed the settled racing state.",
+      "expected": "Mike moves under auto-accelerate, the HUD names both assists, and authoritative base max speed remains 260.",
+      "observed": "The live HUD exposed STEER HELP · AUTO GAS. The tied server receipt measured speed 128.67 with raw throttle 0, autoAccelerate true, active assist true, steering strength 0.22, and unchanged 260 base max speed. Focused tests independently verify the frozen equal-stat contract and lobby lock.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Player-specific driving assists remain usable and fully visible on a portrait phone controller.",
+      "route": "http://127.0.0.1:8805/controller.html?room=AXM1&player=p1",
+      "viewport": "390x844 portrait",
+      "baseline": "Seat 1 controller connected with both assists enabled.",
+      "action": "Observed the complete controller, then toggled AUTO GAS off from the phone.",
+      "expected": "Two labelled assist controls and every existing drive/action/status control fit without scrolling; phone input updates the server-owned profile.",
+      "observed": "STEER HELP LIGHT and AUTO GAS ON appeared above steering and pedals; steer, brake, gas, fire, start, lobby/drift/base-speed status, and three guard segments all fit inside 390x844. Tapping AUTO GAS changed it to OFF while steering remained LIGHT.",
+      "verdict": "PASS_WITH_BOUNDARY",
+      "namedSeam": "Physical touch latency and router behavior remain part of the separate four-phone LAN gate."
+    },
+    {
+      "claim": "The adaptive score changes deterministically from countdown charge into race pressure without stalling its browser scheduler.",
+      "route": "Mirror Forge shared race screen",
+      "viewport": "desktop game-night display",
+      "baseline": "Mirror Forge countdown after the user start gesture activated Web Audio.",
+      "action": "Observed the visible MUSIC status and tied audio diagnostics during countdown, then during an active chase.",
+      "expected": "The Forge profile remains selected while cue, intensity, tempo, layers, and scheduled-note count advance with race state.",
+      "observed": "Countdown reported forge charge, intensity 1, tempo 126, scheduler active, and 3 scheduled notes. Active play reported forge chase, intensity 2, tempo 128, scheduler active, and 42 scheduled notes.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The global sound control also mutes the adaptive music bus.",
+      "route": "shared race screen",
+      "viewport": "desktop game-night display",
+      "baseline": "Adaptive score scheduler active during racing.",
+      "action": "Clicked SOUND OFF and observed the tied audio status.",
+      "expected": "The scheduler reports muted while retaining deterministic state rather than creating a second independent audio toggle.",
+      "observed": "The status changed to Scheduler muted with 86 scheduled notes; SOUND ON restored the shared audio path before further checks.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Track and mode selection produce distinct adaptive score profiles rather than one renamed loop.",
+      "route": "Null Foundry countdown and active Mirror Core",
+      "viewport": "desktop game-night display",
+      "baseline": "Circuit Crown lobby after the Forge transition check.",
+      "action": "Selected Null Foundry and observed its countdown, then reset, selected Mirror Core, and observed active battle.",
+      "expected": "Foundry and Core expose different profile names, tempos, cues, and state intensity.",
+      "observed": "Null Foundry reported foundry charge, intensity 1, tempo 132, scheduler active, and 141 scheduled notes. Mirror Core reported core-pressure, intensity 2, tempo 138, scheduler active, and 204 scheduled notes.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The adaptive score already meets the final musical-quality and game-night speaker-mix gate.",
+      "route": "actual local runtime audio output",
+      "viewport": "not applicable",
+      "baseline": "Functional scheduler and mute telemetry passed.",
+      "action": "No human listening or captured-audio review was available in this environment.",
+      "expected": "Representative listeners approve composition, engine/event balance, clipping, and fatigue on target speakers.",
+      "observed": "Unobserved. Functional telemetry cannot prove perceived musical or mix quality.",
+      "verdict": "UNKNOWN_PENDING_HUMAN_LISTENING"
+    },
+    {
+      "claim": "Reloading the phone controller resumes the same seat without stale-sequence input rejection.",
+      "route": "http://127.0.0.1:8805/controller.html?room=AXM1&player=p1 plus /api/telemetry",
+      "viewport": "desktop browser controller surface; prior 390x844 fit receipt remains separate",
+      "baseline": "Seat 1 displayed MIKE, MAKER GT, LOBBY, three guard segments, and SEAT 1 // LIVE · 3MS while the server reported one active session and zero rejected actions.",
+      "action": "Reloaded the controller tab once and observed the settled controller plus the tied server transport receipt.",
+      "expected": "The same session identity handshakes as resumed, advances its next client sequence, keeps Mike on seat 1, and continues receiving acknowledgements without rejection.",
+      "observed": "The settled controller displayed SEAT 1 // LIVE · 4MS with Mike and all controls intact. The same session id reported 2 handshakes, 1 resume, 315 accepted actions, 0 rejected actions, and next sequence 316.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "An already-open controller visibly recovers when the authoritative server process is replaced.",
+      "route": "live controller plus replaced runtime on 127.0.0.1:8805",
+      "viewport": "same controller tab across the interruption",
+      "baseline": "Seat 1 controller was live with acknowledged round-trip timing.",
+      "action": "Stopped the exact Node process owning port 8805, observed the interruption, then started a fresh v0.7 runtime on the same port without reloading the controller.",
+      "expected": "The controller visibly enters a retry state, automatically handshakes again, retains p1/Mike identity, and sends a high continuing client sequence accepted by the fresh authority.",
+      "observed": "The middle semantic frame displayed RECONNECTING… while retaining Mike and the full controls. The settled frame returned to SEAT 1 // LIVE · 3MS. Fresh-server telemetry tied the same client session id to 102 accepted actions, 0 rejected actions, next sequence 534, and 5.2 ms p95 client-reported request-to-ack time.",
+      "verdict": "PASS_WITH_BOUNDARY",
+      "namedSeam": "Seat identity and input recover, but replacing the authoritative process intentionally resets the in-progress match to the lobby; durable match-state persistence is not claimed."
+    },
+    {
+      "claim": "Shared-screen and phone clients for one seat coexist without evicting each other's transport session.",
+      "route": "shared-screen and p1 controller tabs plus /api/telemetry",
+      "viewport": "simultaneous desktop game and controller surfaces",
+      "baseline": "The final v0.7 runtime started in the default Mirror Forge Circuit Crown lobby.",
+      "action": "Loaded both clients, waited across multiple one-second heartbeat intervals, then observed each surface and the tied server transport state.",
+      "expected": "Both surfaces remain live, two independent p1 session ids remain connected, and acknowledgement receipts show no session eviction or sequence collision.",
+      "observed": "Controller displayed SEAT 1 // LIVE · 4MS and the shared screen displayed WORKSHOP LINK // LIVE. Server telemetry reported 2 sessions, 2 active sessions, 125 accepted/applied actions, 0 rejected or ignored actions, and 5.3 ms p95 client-reported round trip. Focused HTTP evidence separately verifies that a non-owning client's neutral drive is acknowledged but ignored during the 900 ms meaningful-input lease.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The v0.8 lobby draft keeps four unique identities while an occupied shared-screen pick swaps ownership and survives reload.",
+      "route": "http://127.0.0.1:8805/games/015/?room=AXM1&player=screen",
+      "viewport": "1280x720 desktop",
+      "baseline": "Mike was P1, Axiom/Mir P2, Codex P3, and Mirror P4; every roster card exposed its owner, signature, vehicle, equal-spec label, and button state.",
+      "action": "Clicked the occupied Codex roster card once, observed both affected seats and cards, then reloaded the shared screen.",
+      "expected": "P1 receives the complete Codex identity, P3 receives Mike, all four identities remain unique, and the server-owned selection survives the client reload.",
+      "observed": "The event read P1 chose CODEX · P3 takes MIKE. P1 HUD and standings changed to Codex; the Codex card became pressed, LOCKED, and P1 · YOUR PICK; Mike became P3 PICK. Reload retained the pressed Codex assignment.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A second-seat phone can draft a character, updates the shared screen, locks after start, and preserves the pick through reset.",
+      "route": "P2 controller plus shared game screen on the same v0.8 authority",
+      "viewport": "browser controller surface 540x720 plus 1280x720 shared screen",
+      "baseline": "P2 controller showed Axiom/Mir, TWIN SIGNAL // AXIOM ARC, previous/next draft arrows, and all drive/action/status controls without scrolling.",
+      "action": "Pressed next once to choose occupied Codex, started the race, observed disabled draft arrows, then reset from the shared screen.",
+      "expected": "P2 receives Codex and P1 receives Axiom/Mir on both surfaces; draft controls disable outside the lobby and re-enable after reset without reverting identities.",
+      "observed": "P2 phone changed to CODEX and LIVE COMPILE // PROMPT RUNNER while the shared screen event read P2 chose CODEX · P1 takes AXIOM/MIR. In racing both draft arrows were disabled. After reset the phone returned to LOBBY with arrows enabled and Codex still assigned to P2.",
+      "verdict": "PASS_WITH_BOUNDARY",
+      "namedSeam": "This browser could not natively resize the updated controller to 390px width; the live 540x720 no-scroll result does not replace a post-change physical 390px touch/LAN check."
+    },
+    {
+      "claim": "The v0.9 Mirror identity produces a readable presentation-only draft cue, countdown callout, and bounded launch flourish without changing vehicle performance.",
+      "route": "shared Mirror Forge lobby, countdown, and launch",
+      "viewport": "1280x720 desktop",
+      "baseline": "Default Mike lobby with four roster cards exposing the new signature and expression labels; expression diagnostics waited for a user gesture.",
+      "action": "Clicked the occupied Mirror card, observed the tied motif receipt, started once, captured the countdown, first launch frame, and a later moving frame, then repeated after strengthening the short in-world labels.",
+      "expected": "Mirror's complete identity moves to P1; RETURN SIGNAL schedules once after the gesture; countdown names the identity; echo-prism geometry and a bounded RETURN SIGNAL label appear during launch; diagnostics explicitly deny a performance change.",
+      "observed": "P1 became Mirror. The draft receipt reported prism-echo, RETURN SIGNAL, draft-lock, 1 cue, 4 scheduled notes, audio scheduled, and changesPerformance=false. Countdown displayed COUNTER ANGLE // RETURN SIGNAL. Launch receipts reported echo-prism activity and named labels for all four clustered karts; a repeated Mirror launch logged 8 expression frames without obscuring standings, item HUD, track, or guards.",
+      "verdict": "PASS_WITH_BOUNDARY",
+      "namedSeam": "The first geometric-only cluster read too subtly; a short identity label was added and the complete launch was repeated. Repeated still frames prove bounded visible states, not high-cadence animation smoothness or perceived audio quality."
+    },
+    {
+      "claim": "A natural v0.9 race result carries the actual winner's expression and functional victory motif rather than a hard-coded P1 identity.",
+      "route": "complete authoritative Mirror Forge race to results",
+      "viewport": "1280x720 desktop",
+      "baseline": "P1 was Mirror while Codex remained an AI-controlled rival with the live-compile expression contract.",
+      "action": "Allowed the same unforced server race to resolve, then captured the settled results card and DOM-tied expression receipt.",
+      "expected": "Whichever racer wins supplies the result color, expression label, quote, vehicle, and victory-refrain motif metadata.",
+      "observed": "The natural result was CODEX WINS with ROUTE COMPILED // “ROUTE COMPILED. KEEP UP.”, Prompt Runner, Mirror Forge, and all four ranked rows. The tied receipt changed to live-compile, ROUTE COMPILED, victory-refrain, 3 cues, and 12 scheduled notes. No console warnings or errors were present.",
+      "verdict": "PASS_WITH_BOUNDARY",
+      "namedSeam": "Scheduler state proves distinct notes were scheduled under the runtime's audio path; it does not prove that humans like the motif or that the final speaker mix is balanced."
+    },
+    {
+      "claim": "The v0.9 expression renderer meets the production 16.7 ms frame budget on target hardware.",
+      "route": "shared screen development diagnostics after draft, launch, active race, and result",
+      "viewport": "1280x720 in-app preview",
+      "baseline": "Four bounded flourishes, labels, and motif diagnostics enabled; no target hardware profiler attached.",
+      "action": "Collected the latest 240 requestAnimationFrame deltas after 56 expression-active visual frames and a complete race.",
+      "expected": "A representative target device sustains the declared production frame budget for a full hardware-duration session.",
+      "observed": "The preview sampled 24.22 ms average and 27.9 ms p95 with a 47.08% over-25-ms rate. This is better than the earlier preview smoke but remains above 16.7 ms and cannot establish causality or target-hardware performance.",
+      "verdict": "BLOCKED_PENDING_TARGET_PROFILE"
+    },
+    {
+      "claim": "The v0.10 race-variant selector and complete lobby fit a 1280x720 game-night display without scrolling or hiding the launch action.",
+      "route": "http://127.0.0.1:8805/games/015/?room=AXM1&player=screen",
+      "viewport": "1280x720 desktop",
+      "baseline": "The first v0.10 live frame scrolled at page level and clipped the bottom of the launch control after the new selector was added.",
+      "action": "Changed the desktop shell to own the viewport, compressed the 720p lobby spacing, reloaded, and inspected Clear, Shardline, and Redline selections.",
+      "expected": "Header, mode/track/variant controls, all four character cards, rule strip, complete launch action, and footer remain visible together.",
+      "observed": "The corrected frame showed every required lobby element and the full ARM THE CIRCUIT button with no page scrollbar. Track and signal selections updated the mode pill and dynamic lap copy.",
+      "verdict": "PASS",
+      "namedSeam": "Live observation rejected the first valid layout because the main start action was partially clipped at the declared desktop height."
+    },
+    {
+      "claim": "Shardline Sprint is a materially distinct two-lap risk format and not renamed baseline copy.",
+      "route": "Mirror Forge Shardline Sprint lobby, countdown, and active race",
+      "viewport": "1280x720 desktop",
+      "baseline": "Clear Signal selected in the corrected lobby.",
+      "action": "Selected SHARDLINE through the real UI, armed the circuit, and observed countdown and active racing plus tied DOM diagnostics.",
+      "expected": "Every authority/HUD surface reports two laps; the world uses readable shard/risk-route language; music names SPRINT; diagnostics deny stat or catch-up changes.",
+      "observed": "The lobby and HUD reported SHARDLINE SPRINT // 2 LAPS and LAP 1 / 2; diagonal shard atmosphere and RISK ROUTES labeling were visible; music reported FORGE · SPRINT; 1015 visual frames accrued while changesVehicleStats and changesCatchup both remained false.",
+      "verdict": "PASS_WITH_CORRECTION",
+      "namedSeam": "The first live countdown exposed a visual 4 and the mode card retained stale three-lap copy. Display clamping and dynamic format copy were corrected before Redline verification."
+    },
+    {
+      "claim": "Redline Gauntlet completes a natural four-lap authoritative journey with stronger presentation pressure and equal-spec results.",
+      "route": "Null Foundry Redline Gauntlet from lobby through result",
+      "viewport": "1280x720 desktop",
+      "baseline": "Null Foundry and REDLINE selected in the lobby with a four-lap rule card.",
+      "action": "Armed the circuit through the real UI, captured the corrected countdown at 420 ms, allowed the race to resolve without forcing state, and inspected the final result/audio/variant receipts.",
+      "expected": "Countdown starts at 3; race and result report four laps; Redline visual/music identity remains active; result preserves equal stats and attack/guard rules.",
+      "observed": "Countdown visibly began at 3 with REDLINE GAUNTLET // 4 LAPS. The natural result was CODEX WINS on NULL FOUNDRY · REDLINE GAUNTLET · 4 LAPS, with 100% equal base stats, 85% attack drops, three starting guards, and FOUNDRY · REDLINE · DEBRIEF music. Variant diagnostics logged 24369 visual frames and explicitly reported no vehicle-stat or catch-up change.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The phone controller reflects the active race variant and dynamic lap total without removing controls or defence state.",
+      "route": "http://127.0.0.1:8805/controller.html?room=AXM1&player=p1",
+      "viewport": "centered controller surface in 1280x720 browser; physical phone boundary remains separate",
+      "baseline": "A Redline rematch was actively racing on lap one of four.",
+      "action": "Opened the existing p1 controller route during the live authoritative race and observed the semantic and visual surface.",
+      "expected": "The controller names REDLINE and 1 / 4 while retaining steering, pedals, fire, start, assists, catch-up, drift, and Flux Guard state.",
+      "observed": "The phone surface displayed LAP 1 / 4 · REDLINE, SEAT 1 // LIVE · 4MS, all drive/action controls, two assist controls, DRIFT READY, CATCH-UP +7.5%, and two remaining shield segments. Browser logs were empty.",
+      "verdict": "PASS_WITH_BOUNDARY",
+      "namedSeam": "This confirms the dynamic controller contract in a browser surface, not physical touch size, Wi-Fi latency, or the four-phone LAN gate."
+    },
+    {
+      "claim": "The v0.10 variant renderer meets the production 16.7 ms frame budget on target hardware.",
+      "route": "complete Null Foundry Redline journey with DOM-tied frame diagnostics",
+      "viewport": "1280x720 in-app preview",
+      "baseline": "Redline atmosphere, four character expressions, HUD, adaptive score, and result presentation enabled; no target-hardware profiler attached.",
+      "action": "Collected the latest 240 requestAnimationFrame deltas after the natural four-lap result.",
+      "expected": "A representative target device sustains the declared production frame budget for a full hardware-duration session.",
+      "observed": "The preview sampled 19.65 ms average and 27.8 ms p95 with a 10.42% over-25-ms rate. This improves on the v0.9 preview sample but remains above 16.7 ms and cannot prove target-hardware performance.",
+      "verdict": "BLOCKED_PENDING_TARGET_PROFILE"
+    },
+    {
+      "claim": "v0.11 presentation-only pose interpolation preserves the complete authored Redline and Mirror Core compositions while operating between authority packets.",
+      "route": "fresh v0.11 authority; Null Foundry Redline plus active Mirror Core",
+      "viewport": "1280x720 in-app preview",
+      "baseline": "The v0.10 client drew each server pose directly; measured authority packet cadence was approximately 90 ms.",
+      "action": "Selected Null Foundry and Redline through the real lobby, started active play, then independently reset into Mirror Core; collected DOM-tied interpolation/render receipts and complete screenshots.",
+      "expected": "Interpolation frames accrue only during active play; pose corrections remain bounded; track/arena, four racers, items, hazards, HUD, guards, standings, threats, and music identity stay visible; authoritative state and stats remain unchanged.",
+      "observed": "Fresh Redline accrued 74 interpolation frames with zero pose snaps while preserving the full Foundry pressure scene, four-lap HUD, attack slot, guards, standings, hazards, and music status. An earlier longer Redline sample accrued 111 interpolation frames. Isolated Mirror Core accrued 224 interpolation frames with zero pose snaps while preserving arena geometry, all four racers, score/timer, attack warnings, guards, items, and CORE DANGER music. The held-out deterministic soak separately covered 45,504 interpolated poses and 864 forced teleport snaps without packet mutation.",
+      "verdict": "PASS_WITH_BOUNDARY",
+      "namedSeam": "Repeated screenshots and semantic receipts prove preserved composition and active interpolation state, but this browser exposes no ephemeral rolling buffer; perceived high-cadence smoothness remains UNKNOWN pending target-display observation."
+    },
+    {
+      "claim": "v0.11 meets the local render-work budget and therefore already proves end-to-end 60 fps on target hardware.",
+      "route": "DOM-tied axm.render-performance-diagnostics/v1 under active Redline and Mirror Core",
+      "viewport": "1280x720 in-app preview",
+      "baseline": "The prior frame-delta-only receipt could not distinguish drawing cost from browser scheduling delay.",
+      "action": "Instrumented bounded Canvas stage duration, HUD update duration, authority packet cadence, interpolation activity, frame cadence, and inferred scheduling wait; repeated named race and battle workloads.",
+      "expected": "Local render and HUD work stay well below their budgets while any remaining end-to-end frame delay is kept separate from target-hardware claims.",
+      "observed": "Active Redline measured 1.44 ms average / 3.3 ms p95 render work and 0.55 / 0.8 ms HUD work. Active Mirror Core measured 1.41 / 2.8 ms render work. Preview frame p95 still ranged 34.9–55.6 ms, with 28.5–43.7 ms outside measured render work and schedulerLimited=true. The evidence proves local render-work headroom, not target-device 60 fps.",
+      "verdict": "PASS_LOCAL_RENDER_WORK__BLOCKED_END_TO_END_TARGET_PROFILE",
+      "namedSeam": "Render execution and frame scheduling are different claims. The preview's scheduler-limited cadence cannot be promoted into either a render regression or a representative-hardware pass."
+    },
+    {
+      "claim": "The V12 target-session recorder is an opt-in, legible measurement surface that can remain open or closed during active racing without changing the authored game composition.",
+      "route": "http://127.0.0.1:8805/games/015/?room=AXM1&player=screen&perf=1",
+      "viewport": "1280x720 in-app preview",
+      "baseline": "Normal game-night launch does not expose the recorder. The explicit perf query revealed TARGET LAB and opened its session panel over the complete lobby.",
+      "action": "Auto-started bounded smoke sessions, closed the panel, launched and observed a real Clear Signal race, reopened the panel during combat, and allowed the smoke to settle.",
+      "expected": "The panel states the evidence boundary, shows live measurements and zero authority writes, remains keyboard-accessible, can close without stopping the session, preserves the full racing surface when closed, and produces an export-ready receipt when settled.",
+      "observed": "The panel fit at 1280x720 with readable boundary, metrics, duration, controls, and privacy copy. Closing it restored the complete race view with standings, four racers, track, guards, item slot, events, music, and connection state. Reopening during live attacks showed measurement progress without gameplay or console errors.",
+      "verdict": "PASS_WITH_BOUNDARY",
+      "namedSeam": "The recorder is a local measurement hand. Its overlay intentionally occupies part of the opt-in evidence view and is not present during ordinary game-night launch."
+    },
+    {
+      "claim": "A short V12 recorder smoke cannot be mistaken for the 30-minute target-hardware gate.",
+      "route": "15-second active Clear Signal smoke using axm.target-session-performance/v1",
+      "viewport": "1280x720 in-app preview",
+      "baseline": "The first live 12-second build correctly completed its requested duration but used generic COMPLETE wording and left the visible selector on 30 minutes, creating an admission-language ambiguity.",
+      "action": "Added explicit duration class and thirty-minute eligibility, corrected the live status and query-duration label, reloaded, completed a 15-second active-race smoke, and read the DOM-tied receipt seam.",
+      "expected": "The visible selector names the requested smoke; the result says it does not close the 30-minute gate; the receipt remains compact/private/read-only and captures active workloads.",
+      "observed": "The final panel displayed 15 SECOND BOUNDED SMOKE and SMOKE COMPLETE // DOES NOT CLOSE 30-MINUTE GATE. The receipt reported 15,008.7 ms, four workload segments, 221 interpolation frames, zero snaps, 49 ms preview frame p95, 1.8 ms render p95, 0.05 ms server-tick p95, one long task, false 30-minute eligibility, zero authority writes, and false retention for raw frames, user agent, and network addresses. Browser logs were empty.",
+      "verdict": "PASS_MEASUREMENT_HAND__TARGET_HARDWARE_STILL_UNKNOWN",
+      "namedSeam": "The 49 ms preview frame p95 is native to this in-app smoke and remains non-representative. A complete 30-minute target receipt must still be joined with an external profiler, thermal/compositor evidence, and high-cadence target-display observation."
+    },
+    {
+      "claim": "The V13 four-phone LAN Lab provides a legible, privacy-bounded machine qualification receipt without self-certifying physical devices.",
+      "route": "http://127.0.0.1:8805/games/015/?room=AXM1&player=screen&lanlab=1",
+      "viewport": "1280x720 in-app preview with four independent local controller sessions",
+      "baseline": "The opt-in panel opened over the complete lobby with four seat cards, a duration selector, three unchecked host attestations, privacy copy, and an external-review physical verdict.",
+      "action": "Started a bounded local session, exercised the four established controller-kind sessions through applied meaningful drive and fire attempts, issued stable-session resume handshakes, challenged the same-seat input-owner lease, observed heartbeats and request-to-ack telemetry, and stopped before the requested two-minute duration.",
+      "expected": "Each seat becomes machine-ready; simultaneous connection, reconnect, owner protection, RTT budget, privacy, and read-only authority boundaries are explicit; a short local run remains partial and cannot close the physical gate.",
+      "observed": "The final 55.756-second receipt showed P1-P4 CONTROLLER LIVE and machine-ready, 100% all-four overlap, one applied meaningful drive and one fire attempt per seat, RTT p95 of 9.8, 10.3, 8.6, and 9.6 ms, nine resumes, OWNER GUARD PASS, authorityWrites=0, and false session-ID/network-address/raw-action retention. All three physical attestations remained visibly unchecked; eligibility was false; the status said PARTIAL RECEIPT · PHYSICAL GATE STILL OPEN; the physical verdict remained EXTERNAL REVIEW. Browser logs were empty.",
+      "verdict": "PASS_LOCAL_MEASUREMENT_HAND__PHYSICAL_FOUR_PHONE_GATE_UNKNOWN",
+      "namedSeam": "Live observation exposed that a rolling global action window could age out ownership evidence under sustained traffic. The recorder now admits the durable per-session ignored-action delta; a held-out rollover regression and the repeated live receipt both pass. Browser background-tab throttling also confirms that local tabs are not a substitute for four physical phones."
+    },
+    {
+      "claim": "The V15 LAN qualification cannot start with a missing or duplicate controller identity and can recover a closed duplicate without a server restart.",
+      "route": "http://127.0.0.1:8805/games/015/?room=AXM1&player=screen&lanlab=1",
+      "viewport": "1280x720 in-app preview with local controller tabs and one bounded synthetic duplicate session",
+      "baseline": "The panel opened at 0/4 with every seat waiting, all attestations unchecked, and START disabled.",
+      "action": "Connected one local controller tab per P1-P4, started and stopped a partial receipt, injected a second P1 controller identity, stopped that duplicate, and observed the panel through the bounded stale-identity hold.",
+      "expected": "START remains disabled until exactly one live identity exists on every seat; the receipt records the ready preflight; duplicate P1 blocks visibly; the closed duplicate expires after 15 seconds; no state implies the local clients are phones.",
+      "observed": "The panel moved from 0/4 blocked to 4/4 PREFLIGHT READY and enabled START. The partial receipt exposed startPreflightReady=true, authorityWrites=0, eligible=false, external physical verdict, and false private/raw retention. Duplicate P1 showed 1 LIVE / 2 SESSION, 3/4 readiness, a named 15-second hold, and disabled START; after expiry it returned automatically to one identity and 4/4 readiness. Browser warning/error logs were empty.",
+      "verdict": "PASS_LOCAL_PREFLIGHT__PHYSICAL_FOUR_PHONE_GATE_UNKNOWN",
+      "namedSeam": "The browser exposed no ephemeral rolling-buffer capability, so repeated semantic snapshots and still screenshots prove rendered state transitions but not high-cadence motion. Local tabs and the synthetic duplicate are software evidence only, never physical-phone or intended-router evidence."
+    },
+    {
+      "claim": "The V16 LAN qualification requires one explicit controller-seat confirmation on every connected seat, preserves a same-session acknowledgement across reload, and keeps the physical verdict external.",
+      "route": "http://127.0.0.1:8805/games/015/?room=AXM1&player=screen&lanlab=1 plus P1-P4 local controller routes",
+      "viewport": "DOM-reported 1280x720 in-app preview; an advertised 390x844 override was attempted but did not change the live viewport",
+      "baseline": "The host showed four exact live controller sessions but 0/4 confirmations, named CONFIRM ON CONTROLLER for every seat, and kept START disabled. Each controller exposed one unique CONFIRM P# action.",
+      "action": "Clicked each controller's real confirmation action once through unique semantic locators, reloaded P1, started and stopped a bounded qualification probe, checked the receipt seam and warning/error logs, then restored the host preflight view.",
+      "expected": "Only controller-kind sessions may confirm; the host remains blocked until all four acknowledge their assigned seats; each controller changes to START; same-session reload restores confirmation; the receipt records confirmation readiness but cannot certify phones, people, or router truth.",
+      "observed": "P1-P4 each changed from CONFIRM P# to START and reported SEAT # // CONFIRMED. The host advanced from 4/4 live with 0 confirmations to four PREFLIGHT READY cards with 1 LIVE / 1 SESSION / 1 CONFIRM, enabled START, and retained readiness after P1 reload. A 10.108-second partial receipt exposed lanSeatConfirmationsReady=true, authorityWrites=0, status=partial, and physicalGateVerdict=requires-external-steward-review. All five warning/error logs were empty.",
+      "verdict": "PASS_LOCAL_CONFIRMATION_JOURNEY__PHYSICAL_FOUR_PHONE_GATE_UNKNOWN",
+      "namedSeam": "The browser's viewport capability accepted 390x844 but both an existing and newly opened controller still reported 1280x720, so this slice cannot claim a current portrait-phone layout check. After reset, the screenshot backend also produced a device-pixel-ratio crop while DOM bounds remained within the declared viewport; the complete earlier ready frame and semantic interaction receipts support the gate journey, but responsive pixels remain UNKNOWN. Local tabs are not phones and a confirmation gesture does not identify the person or certify the network."
+    },
+    {
+      "claim": "V17 Signal Tour provides one legible server-owned three-round journey from lobby selection through cumulative debriefs, champion classification, and a fresh-tour restart without exposing manual itinerary control.",
+      "route": "ephemeral http://127.0.0.1:8825/games/015/?room=AXM1&player=screen plus the P1 controller route",
+      "viewport": "1280x720 in-app preview and an explicit 390x844 responsive browser override; neither is physical-phone evidence",
+      "baseline": "Circuit Crown lobby with three visible mode cards, four original character cards, identical-performance labels, fairness strip, and one ARM THE CIRCUIT action.",
+      "action": "Selected SIGNAL TOUR through its unique semantic control, observed its locked route/variant lobby and start action, naturally completed Mirror Forge/Clear, Splitglass/Sprint, and Null Foundry/Redline under the live authority, advanced only through NEXT TOUR ROUND, observed the champion screen, clicked NEW SIGNAL TOUR, then inspected the live P1 controller at 390x844.",
+      "expected": "The lobby names the fixed tour; circuit and variant controls lock; every active HUD names round, format, laps, and retained points; each debrief shows cumulative 9/6/4/2 scoring; progression loads the next authored route; the final screen distinguishes the champion and restarts at Round 1 with zero points; the controller fits its responsive viewport.",
+      "observed": "The selected lobby showed SIGNAL TOUR R1/3 · 0 PTS, SERVER-OWNED ITINERARY, locked track/variant controls, and START SIGNAL TOUR. The natural journey rendered all three distinct circuits and formats with R1/3, R2/3, and R3/3 HUD labels, retained P1 points, the unchanged +7.5% catch-up readout, 85% race item contract in authority state, and three visible Flux Guard segments. Round debriefs showed complete cumulative standings and NEXT TOUR ROUND; Codex naturally finished 9, 18, then 27 points and the final surface read CODEX CHAMPION / THREE CIRCUITS SEALED / NEW SIGNAL TOUR. Restart returned to Clear Signal Round 1 with 0 points. The 390x844 controller fit steer, brake, gas, fire, confirmation, tour/lap/point, drift, catch-up, and three-segment guard information. Warning/error logs were empty. A discovered broad data-variant selector was narrowed to lobby buttons and the corrected live lobby retained exactly three locked variant buttons without mutating the HUD badge.",
+      "verdict": "PASS_LOCAL_COMPLETE_TOUR__EXTERNAL_GAME_NIGHT_GATES_UNKNOWN",
+      "namedSeam": "The browser exposed repeated still screenshots and semantic state, not an ephemeral rolling buffer, so high-cadence motion remains outside this receipt. The 390x844 override proves responsive browser composition only; it does not prove a physical phone, touch feel, intended router, human attachment, target-hardware frame pacing, audio mix, or steward approval. No raw screenshot or video buffer was retained."
+    },
+    {
+      "claim": "V18 kinetic identity adds four distinct, bounded, presentation-only vehicle rigs that move with character draft identity, transition from idle into active driving, preserve the complete race composition, and retain local render-work headroom.",
+      "route": "managed http://127.0.0.1:8805/?room=AXM1&player=screen on current V18 source",
+      "viewport": "1280x720 in-app browser at device-pixel ratio 1.25; browser primary; repeated stills because no rolling-buffer capability was exposed",
+      "baseline": "Circuit Crown lobby fit one frame with three modes, three routes, three signal conditions, access controls, four character cards, fairness receipts, and one start action. Kinetic diagnostics identified Mike's maker-piston-rig in idle and accumulated pose frames without changing performance.",
+      "action": "Enabled equal-stat AUTO GAS and LIGHT STEERING, launched through the unique ARM THE CIRCUIT action, observed the countdown and active race, sampled a later active frame, reset to the lobby, then selected Axiom/Mir, Codex, Mirror, and Mike through their unique roster controls while reading the DOM-tied rig identity after each selection.",
+      "expected": "The complete lobby/countdown/race/reset journey remains unclipped; four identity choices bind to four distinct rigs; P1 transitions from idle to drive; all four machines, track, HUD, effects, standings, guard segments, and equal-stat copy remain present; kinetic diagnostics declare no performance change; render work remains below its local budget; browser warnings/errors stay empty.",
+      "observed": "The document and viewport both measured 1280x720. Countdown rendered a full-track 3 frame with MAKE IT LOUD // RATCHET ROAR. Active play showed all four character-specific machines on Mirror Forge with standings, items, three-segment guard, assist disclosure, equal-stat footer, hazards, and interpolation. P1 changed from kineticState=idle to drive; poseFrames exceeded 8,499 and max observed body lift reached 4.0201 world pixels. Character draft reads mapped p2 to axiom-twin-rig/counter-orbit-fins, p3 to codex-stack-rig/compile-stack-fins, p4 to mirror-prism-rig/phase-prism-plates, and p1 to maker-piston-rig/ratchet-pistons. Active render work measured 1.48 ms average / 3 ms p95, actor work 0.4 ms average, and HUD p95 1.1 ms. Reset restored the lobby. Warning/error logs were empty.",
+      "verdict": "PASS_LOCAL_KINETIC_COMPOSITION_AND_RENDER_WORK__TARGET_MOTION_AND_HUMAN_GATES_UNKNOWN",
+      "namedSeam": "The browser advertised visibility and viewport control but no visual.capture.ephemeral-rolling-buffer/v1 capability. Repeated frames and diagnostics prove rendered state change and preserved composition, not high-cadence smoothness. The local preview does not prove representative target hardware, thermal/frame pacing, physical phones, human character attachment, voice/audio quality, or steward approval. Screenshots remained ephemeral tool outputs; no raw screenshot or video path was created or retained."
+    },
+    {
+      "claim": "V19 Mirror Echo records a bounded presentation-only fastest circuit lap, discloses it clearly, and replays a non-colliding hologram during a rematch without becoming a fifth racer or modifying authority.",
+      "route": "managed http://127.0.0.1:8805/games/015/?room=AXM1&player=screen on V19 source",
+      "viewport": "1280x720 and explicit 390x844 responsive in-app browser overrides; browser primary; repeated stills because no rolling-buffer capability was exposed",
+      "baseline": "The V19 lobby fit at 1280x720 with all modes, tracks, variants, access controls, four identity cards, frozen fairness rules, ECHO EMPTY, and the explicit fastest-lap / non-colliding / not-a-fifth-racer boundary.",
+      "action": "Paused and resumed the unique echo toggle, launched one natural four-racer Clear Signal race, observed the first lap seal and results disclosure, selected the unique RUN IT BACK action, then inspected active rematch playback and the 390x844 responsive race composition.",
+      "expected": "The first session starts empty, a valid lap seals without server mutation, results name the record, rematch shows a labelled translucent replay and matching HUD, all four authoritative racers remain, mobile controls/HUD fit, frozen mechanics remain visible, and browser errors stay empty.",
+      "observed": "ECHO EMPTY toggled to ECHO OFF and back without losing session state. The first natural run sealed Axiom/Mir at 0:10.356 and the results card displayed MIRROR ECHO SEALED. The rematch rendered a dashed translucent ECHO // AXIOM/MIR hologram at the finish-line area while Mike, Axiom/Mir, Codex, and Mirror all remained in live standings and on the circuit; the HUD named the same 0:10.356 lap. DOM-tied diagnostics reported axm.mirror-echo/v1, enabled=true, status=sealed, echoCount=1, and local active render work at 1.65 ms average / 3.1 ms p95 with 0.46 ms actor average and 1 ms HUD p95. At 390x844, ECHO ON, the echo HUD, all four standings, attack slot, complete track, player panel, three Flux Guard segments, and touch controls fit without clipping. Browser errors were empty.",
+      "verdict": "PASS_LOCAL_BOUNDED_REPLAY_AND_COMPOSITION__HUMAN_TARGET_AND_EXTERNAL_GATES_UNKNOWN",
+      "namedSeam": "This proves a browser-session replay and responsive browser composition only. Repeated stills do not prove high-cadence hologram motion; the in-app preview does not prove representative target hardware, real phones, touch feel, intended-router behavior, human replay preference, broader time-trial/ghost depth, or steward approval. No raw screenshot or video path was created or retained."
+    },
+    {
+      "claim": "V20 Reflection Routes expose an understandable server-owned direction choice, reverse the actual circuit traversal, preserve the complete result/rematch journey, isolate Mirror Echo by direction, and fit both declared browser viewports.",
+      "route": "ephemeral http://127.0.0.1:8825/games/015/?room=AXM1&player=screen on V20 source",
+      "viewport": "1280x720 plus explicit 390x844 responsive in-app browser override; repeated stills and semantic state because no rolling-buffer capability was exposed",
+      "baseline": "Circuit Crown lobby showed one direction group with FORWARD FLOW selected, the three tracks, three variants, four identities, access controls, frozen fairness copy, and ECHO EMPTY.",
+      "action": "Selected the unique REFLECTION RUN control, launched through the unique start action, observed countdown and active reversed play, allowed the race to reach its natural result, ran one rematch, inspected the authority geometry and Mirror Echo diagnostics, then repeated the active responsive composition at 390x844.",
+      "expected": "Direction selection and lock are explicit; authority geometry follows the reversed course; result and rematch retain reflection; a direction-specific echo seals and replays without becoming a racer; all four racers, HUD, guards, and touch controls remain legible; no warning/error appears.",
+      "observed": "The lobby exposed exactly one direction group and selected REFLECTION RUN. The active HUD read REFLECT // CLEAR SIGNAL // 3 LAPS and the mode pill read MIRROR FORGE // REFLECT // CLEAR // 3 LAPS. Authority point 0 remained {1101.27,400}; reflection point 1 was {1095.9,390.17}, exactly the canonical forward final point. A natural result reached MIRROR WINS and named MIRROR FORGE // REFLECTION RUN // CLEAR SIGNAL // 3 LAPS with all four rankings. Mirror sealed 0:10.259; rematch retained reflection, reported axm.mirror-echo/v2 with one direction-isolated record, and rendered the labelled non-colliding echo beside all four racers. At 390x844, four standings, three guard segments, five touch controls, route HUD, and Echo HUD fit without overlap after the live correction. Final local reflection render work measured 2.32 ms average / 3.4 ms p95 total and 0.74 ms average / 1.2 ms p95 UI work; 423 interpolation frames accrued with zero snaps. Warning/error logs were empty.",
+      "verdict": "PASS_LOCAL_REFLECTION_JOURNEY__PHYSICAL_HARDWARE_HUMAN_GATES_UNKNOWN",
+      "namedSeam": "Live evidence found two composition defects before admission: a 5 px inner lobby overflow at 1280x720 and an Echo-HUD/P4 overlap at 390x844. Compact lobby padding and the mobile Echo-HUD offset were corrected, reloaded, and remeasured with no overflow or overlap. These browser views are not phones; repeated stills do not prove high-cadence motion or target-hardware frame pacing. Reflection is the same three authored environments traversed in reverse, not six environments. The temporary runtime was stopped, the viewport reset, and the tab finalized; no raw capture was retained."
+    },
+    {
+      "claim": "V21 Mirror Podium presents every authoritative finisher through one distinct, bounded, presentation-only character moment across race and Mirror Core results while preserving responsive composition and mode-aware continuation.",
+      "route": "ephemeral http://127.0.0.1:8826/games/015/?room=AXM1&player=screen on V21 source",
+      "viewport": "1280x720 plus explicit 390x844 responsive in-app browser override; repeated stills and semantic state because no rolling-buffer capability was exposed",
+      "baseline": "The V21 Circuit Crown lobby retained all three modes, three tracks, forward/reflection direction, three variants, four character cards, frozen fairness copy, access controls, and one start action.",
+      "action": "Completed one natural four-racer Circuit Crown result, inspected all cards and bounds, applied the 390x844 responsive viewport, used RUN IT BACK, reset, established a Mirror Core lobby through the server-owned mode endpoint after a stale browser-phase guard ignored the first mode-card click, started through the unique public action, observed active battle, allowed a natural result, used RUN IT BACK, and reset through the public controls.",
+      "expected": "Exactly four server-ranked entrants appear with distinct identity moments and mode-native metrics; no card or continuation action clips or overlaps at either viewport; reduced-motion and authority boundaries remain declared; race and battle rematch retain their mode; warning/error logs stay empty.",
+      "observed": "The race completed naturally at 56.327 seconds with MIRROR WINS and four moments: RETURN VECTOR, COMPILE COMPLETE, TWIN ORBIT LOCK, and RATCHET SALUTE. At 1280x720, the 760x394.5 result card had equal client/scroll height, four non-overlapping columns, and a visible 210x42 RUN IT BACK action. At 390x844, the 352.8x541.65 card retained equal client/scroll height, a non-overlapping 2x2 tableau, and a visible 319.2x44 continuation action. RUN IT BACK returned to countdown. Mirror Core rendered active combat, then naturally reached CODEX WINS at 12 CORE with all four distinct moments and truthful score/break/wipe metrics; the desktop result again had no overlap or inner overflow, RUN IT BACK retained battle, and RESET restored its lobby. DOM rows declared axm.result-stage-pose/v1, entrance=1.0000, four unique moments, and presentation-only authority=false. Local result render work measured 2.55 ms average / 3.9 ms p95 with 1.1 ms UI p95; frame p95 was 76.4 ms and schedulerLimited=true. Warning/error logs were empty.",
+      "verdict": "PASS_LOCAL_FOUR_CHARACTER_RESULT_STAGE__TARGET_HUMAN_AND_PHYSICAL_GATES_UNKNOWN",
+      "namedSeam": "The first Mirror Core mode-card locator click after responsive reload was ignored by the client's lobby-phase guard while server state remained race; the authority endpoint then established battle and the public start/rematch/reset journey passed. This slice therefore proves the result-stage and continuation contracts, not a fresh end-to-end mode-card selection receipt. Repeated stills and settled pose data do not prove high-cadence motion. The scheduler-limited 76.4 ms preview frame p95 is counterevidence against a local 60 fps claim, not representative target hardware. Browser views are not phones; human attachment, art direction, physical LAN, target profiling, and steward approval remain open. Screenshots remained ephemeral, the viewport was reset, the tab finalized, and the exact V21 orphan PID on port 8826 was stopped after health confirmation; no raw capture was retained."
+    },
+    {
+      "claim": "V22 Start Grid presents all four authority-owned seat and character assignments through distinct, bounded, presentation-only ready moments in Circuit Crown, Signal Tour, and Mirror Core while repairing the public lobby mode-selection hit target.",
+      "route": "ephemeral http://127.0.0.1:8827/games/015/?room=AXM1&player=screen on V22 source",
+      "viewport": "1280x720 plus explicit 390x844 responsive in-app browser override; repeated stills and semantic state because no rolling-buffer capability was exposed",
+      "baseline": "The V21 lobby visually exposed three enabled mode controls, but the invisible race HUD's item button occupied the same hit-test area as Mirror Core, so semantic and coordinate clicks left authority in Circuit Crown.",
+      "action": "Read the hit-test stack, visibility-gated the hidden HUD, removed the client's silent cached-phase veto while retaining the server lock, selected and started Mirror Core through public controls at 1280x720, then repeated Signal Tour and a Splitglass Gardens reflection Shardline Circuit Crown at 390x844.",
+      "expected": "Every visible mode control reaches the server authority; non-lobby mode changes remain rejected by the server; every countdown shows exactly four seat/character/vehicle cards with unique moments and mode-aware heading copy; the grid fits both declared viewports without horizontal overflow and launches ordinary play; warning/error logs remain empty.",
+      "observed": "After the repair, the Mirror Core control produced server mode=battle and aria-pressed=true through its public click. The 1280x720 countdown showed RATCHET READY, SIGNAL SYNCED, COMPILE ARMED, and VECTOR RETURNED above the unobscured racing HUD, then transitioned to server phase=racing. At 390x844, Signal Tour rendered a legible 2x2 four-card grid inside a 372.8x734.4 countdown with document scrollWidth=viewport width=390; configured Circuit Crown reported SPLITGLASS GARDENS // REFLECT // SPRINT with four cards and no horizontal overflow. DOM-tied attributes declared axm.start-grid-diagnostics/v1, axm.start-grid-pose/v1, four entrants, and changesAuthority=false. Browser warning/error logs were empty.",
+      "verdict": "PASS_LOCAL_START_GRID_AND_PUBLIC_MODE_JOURNEY__TARGET_HUMAN_AND_PHYSICAL_GATES_UNKNOWN",
+      "namedSeam": "Hit-test evidence corrected the V21 diagnosis: the primary blocker was a visually hidden but pointer-active race-HUD child, not the cached phase guard alone. The HUD now uses visibility gating and the client always asks the server, which still rejects non-lobby changes. Repeated stills and DOM pose progression do not prove high-cadence motion. Browser views are not phones; target profiling, physical LAN, human attachment/listening, independent art direction, deeper content, and steward approval remain open. Screenshots remained ephemeral, the viewport was reset, the tab finalized, and the exact temporary port-8827 PID was stopped after game-ID health confirmation; no raw capture was retained."
+    },
+    {
+      "claim": "V23 Living Circuits gives Mirror Forge, Splitglass Gardens, Null Foundry, and Mirror Core four distinct, deterministic, presentation-only environment identities without changing authority or obscuring the complete game composition.",
+      "route": "ephemeral http://127.0.0.1:8828/games/015/?room=AXM1&player=screen on V23 source",
+      "viewport": "1280x720 in-app browser at device-pixel ratio 1.25; repeated stills and DOM diagnostics because no rolling-buffer capability was exposed",
+      "baseline": "The V23 lobby retained all modes, tracks, directions, variants, four characters, frozen fairness copy, and the public start path. Initial DOM diagnostics exposed Forge Countercycle with changesPerformance=false and changesAuthority=false.",
+      "action": "Selected and launched Splitglass Gardens, sampled two active frames 720 ms apart, reset and launched Mirror Core, then reset and launched Null Foundry and Mirror Forge through unique public controls. Read the named environment diagnostics, render-work diagnostics, document bounds, and warning/error logs in each scene. Attempted the declared 390x844 browser viewport override on existing and new tabs.",
+      "expected": "Each environment shows a materially distinct motion language while the four racers, route/arena, hazards/items, HUD, guard contract, and authority remain intact; reduced motion is separately deterministic; document width stays bounded; responsive V23 evidence is admitted only if the requested viewport actually applies.",
+      "observed": "Forge rendered counter-orbit arcs and signal diamonds around its central core; Gardens rendered a rotating bloom tide and petal glints; Foundry rendered lifted stack embers; Mirror Core rendered a return-vector shard scan around the arena center. DOM diagnostics named forge-countercycle, garden-bloom-tide, foundry-heat-cycle, and core-vector-scan with changesPerformance=false and changesAuthority=false. Two Gardens frames had distinct SHA-256 digests while environmentVisualFrames advanced by 28. Every active desktop scene kept document scrollWidth=innerWidth=1280. Local render work measured Gardens 2.87 ms average / 4.7 ms p95, settled Foundry 2.35 / 4, Forge 1.45 / 2.7, and Mirror Core 1.37 / 1.8. Browser warning/error logs were empty. The viewport capability accepted 390x844 but existing and new tabs remained 1280x720 with the narrow media query false.",
+      "verdict": "PASS_LOCAL_FOUR_ENVIRONMENT_CHOREOGRAPHIES__RESPONSIVE_TARGET_HUMAN_AND_ART_GATES_UNKNOWN",
+      "namedSeam": "The server health label initially advertised stale V21 Mirror Podium copy; it was corrected to V23 Living Circuits and locked by HTTP test without changing behavior. The browser's viewport override was nonfunctional in this run, so no V23 responsive composition claim is made. Distinct repeated frames plus diagnostics prove visible state change at a low cadence, not rolling/high-cadence motion or representative performance. Living Circuits enriches three existing tracks and Mirror Core; it is not four new environments. Screenshots remained ephemeral tool output and no raw capture path was retained."
+    }
+  ],
+  "console": {
+    "gameWarningsOrErrors": 0,
+    "controllerWarningsOrErrors": 0
+  },
+  "temporaryPathsDeleted": [],
+  "cleanupComplete": true,
+  "unobserved": [
+    "Physical phone hardware and LAN router behavior",
+    "Representative-device frame pacing, a complete 30-minute target receipt, and an external native profiler/thermal join",
+    "High-cadence visual capture of the reboot-to-spawn-protection transition",
+    "Human listening and game-night speaker mix approval for music, engine, and event layers",
+    "Representative human character-attachment and motif preference judgment",
+    "High-cadence target-display observation of V22 start-grid motion, V21 result-stage motion, V20 reflection/Mirror Echo motion, and V18 suspension, wheel, drift, boost, impact, and identity-phase animation; the in-app browser exposed no rolling buffer",
+    "V23 Living Circuits responsive composition at 390x844; the requested override remained 1280x720, so current narrow pixels are unknown",
+    "High-cadence target-display observation of V23 environment choreography; distinct repeated stills are insufficient for a cadence claim",
+    "Physical 390px phone hardware, touch feel, controller confirmation, and intended-router verification (the V17 390x844 browser composition check is not a phone claim)",
+    "Gamepad input, which is not declared supported"
+  ]
+}

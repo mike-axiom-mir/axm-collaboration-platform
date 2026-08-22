@@ -1,0 +1,96 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "exact-historical-public-baseline",
+      "required": true,
+      "status": "READY",
+      "available": ["research.git-object.observe", "simulation.baseline.capsule.verify"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "research.git-object.observe": ["local Git object database", "does not prove remote freshness"],
+        "simulation.baseline.capsule.verify": ["TEST portable capsule", "historical public baseline only"]
+      }
+    },
+    {
+      "id": "inert-research-intake",
+      "required": true,
+      "status": "READY",
+      "available": ["research.input.hash-verify", "research.input.no-source-execution"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "research.input.hash-verify": ["seven externally quarantined D-drive inputs"],
+        "research.input.no-source-execution": ["read-only byte hashing and inert document inspection"]
+      }
+    },
+    {
+      "id": "seat-provenance-without-proof",
+      "required": true,
+      "status": "READY",
+      "available": ["research.seat.user-reported-provenance", "research.seat.proof-authority-none"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "research.seat.user-reported-provenance": ["provider families only", "exact model IDs undisclosed"],
+        "research.seat.proof-authority-none": ["all six run seats explicitly carry proofAuthority NONE"]
+      }
+    },
+    {
+      "id": "typed-grounded-disposition",
+      "required": true,
+      "status": "READY",
+      "available": ["research.signal.stage-preserve", "research.proposal.refusal-preserve", "research.consensus.not-proof"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "research.signal.stage-preserve": ["OBSERVED, INFERENCE, and UNKNOWN remain distinct"],
+        "research.proposal.refusal-preserve": ["six rejected or deferred proposals retained with reasons"],
+        "research.consensus.not-proof": ["no ranking, majority decision, or agreement-as-proof"]
+      }
+    },
+    {
+      "id": "bounded-capability-reuse-run",
+      "required": true,
+      "status": "READY",
+      "available": ["simulation.run-envelope.verify", "simulation.run-envelope.output-closure", "simulation.run-envelope.capability-cycle"],
+      "degraded": [], "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "simulation.run-envelope.verify": ["TEST pure validator", "no model invocation or source execution"],
+        "simulation.run-envelope.output-closure": ["caller-supplied identity receipts plus focused external hash checks"],
+        "simulation.run-envelope.capability-cycle": ["one REUSE_EXISTING receipt", "improvement not established"]
+      }
+    },
+    {
+      "id": "exact-model-artifact-attribution",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [], "degraded": [],
+      "unknown": ["research.model-artifact-attribution.exact"], "missing": [],
+      "declaredConstraints": {
+        "research.model-artifact-attribution.exact": ["no provider runtime receipts map individual artifacts to model seats"]
+      }
+    },
+    {
+      "id": "cross-model-independence",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [], "degraded": [],
+      "unknown": ["research.cross-model-independence.prove"], "missing": [],
+      "declaredConstraints": {
+        "research.cross-model-independence.prove": ["prior-output exposure is unknown"]
+      }
+    },
+    {
+      "id": "human-comprehension-benefit",
+      "required": false,
+      "status": "DEGRADED",
+      "available": [],
+      "degraded": ["research.human-comprehension.live-evaluate"],
+      "unknown": [], "missing": [],
+      "declaredConstraints": {
+        "research.human-comprehension.live-evaluate": ["protocol and voluntary bridge exist", "no opt-in live comparison occurred"]
+      }
+    }
+  ],
+  "missingCapabilities": [],
+  "proposedHands": []
+}

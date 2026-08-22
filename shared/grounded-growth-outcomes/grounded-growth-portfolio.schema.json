@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-portfolio/v1",
+  "title": "AXM Grounded Growth Portfolio",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "portfolioId",
+    "generatedAt",
+    "outcomes",
+    "latest",
+    "summary",
+    "truth",
+    "portfolioDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-portfolio/v1" },
+    "version": { "const": "0.1.0" },
+    "portfolioId": { "type": "string", "minLength": 1, "maxLength": 180 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "outcomes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "required": ["schema", "outcomeId", "capabilityId", "state", "receiptDigest"],
+        "properties": {
+          "schema": { "const": "axm.grounded-growth-outcome-receipt/v1" },
+          "outcomeId": { "type": "string" },
+          "capabilityId": { "type": "string" },
+          "state": { "type": "string" },
+          "receiptDigest": { "$ref": "#/$defs/digest" }
+        }
+      }
+    },
+    "latest": { "type": "array" },
+    "summary": {
+      "type": "object",
+      "required": ["outcomeCount", "capabilityCount", "stateCounts", "overall"],
+      "properties": {
+        "outcomeCount": { "type": "integer", "minimum": 1 },
+        "capabilityCount": { "type": "integer", "minimum": 1 },
+        "stateCounts": { "type": "object" },
+        "overall": { "type": "string" }
+      }
+    },
+    "truth": { "type": "object" },
+    "portfolioDigest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

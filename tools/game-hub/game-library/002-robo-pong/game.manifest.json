@@ -1,15 +1,29 @@
 {
   "slot": "002",
   "game_id": "002-robo-pong",
-  "name": "Robo Pong",
+  "name": "AXM Pong: Duet",
   "status": "WORKING TEST",
-  "description": "Offline server-authoritative Robo Pong with random activatable specials for human, local AI, spectator, and same-Wi-Fi play.",
-  "version": "1.1.0-specials",
-  "min_players": 2,
+  "description": "A hybrid low-poly 3D dark-glass Pong story with solo AI support, two-player co-op, three arenas, and local 1v1 multiplayer.",
+  "version": "2.0.0-neon-duet",
+  "min_players": 1,
   "max_players": 2,
+  "play_modes": [
+    {
+      "id": "story_coop",
+      "label": "Story / Co-op · 1-2 players",
+      "description": "One player receives an AI wingmate; two ready seats defend the core together across three light-driven arenas.",
+      "party_rule": "party-a-only"
+    },
+    {
+      "id": "duet_versus",
+      "label": "Duet Versus · 1v1",
+      "description": "Two ready seats meet in a first-to-seven local multiplayer duel.",
+      "party_rule": "party-a-only"
+    }
+  ],
   "allowed_seat_types": ["human", "adapter", "ai"],
   "launch": {
-    "server_entry": "runtime/robo-pong-simple-bat-server.cjs",
+    "server_entry": "runtime/neon-pong-duet-server.cjs",
     "client_entry": "/games/002/?room=AXM1&player=p1",
     "spectator_client_entry": "/games/002/?room=AXM1&player=screen",
     "ready_path": "/state?room=AXM1",
@@ -18,29 +32,60 @@
     "local_only_default": true
   },
   "join": {"supports_qr": true, "supports_lan_link": true, "supports_room_code": true, "room_code": "AXM1"},
-  "controls": {"phone_controller": true, "keyboard": true, "mouse": false, "touch": true},
+  "controls": {
+    "profile_id": "axm-paddle-duet-v1",
+    "intent_protocol": "axm-semantic-input-v1",
+    "adapter_observation": "axm-seat-screen-semantics-v1",
+    "phone_controller": true,
+    "gamepad": true,
+    "gamepad_profile": "axm-universal-xbox-brawl-v0.2.1",
+    "gamepad_actions": ["MOVE", "PRIMARY_ACTION", "OPEN_MENU"],
+    "unused_gamepad_inputs_allowed": true,
+    "keyboard": true,
+    "mouse": true,
+    "touch": true,
+    "shared_screen": true,
+    "party_coop": true
+  },
   "session": {"passes_seat_map": true, "returns_result_summary": true, "drop_in_out_later": false},
-  "rules": {"no_hidden_players": true, "host_launch_required": true, "game_does_not_override_hub_seats": true},
+  "rules": {
+    "no_hidden_players": true,
+    "host_launch_required": true,
+    "game_does_not_override_hub_seats": true,
+    "human_and_adapter_same_input_gate": true,
+    "adapter_observation_is_seat_visible_only": true
+  },
   "verification": {
     "game_night": {
       "schema": "axm.game-night-seams/v1",
       "controller_delivery": "shared-runtime",
-      "controller_evidence": ["runtime/ROBO_PONG_PHASER4_PHONE_CLIENT.html"],
+      "runtime_metadata_endpoint": "/api/host/bootstrap",
+      "controller_evidence": ["runtime/neon-pong-duet-client.html", "runtime/neon-pong-duet.js", "neon-duet-selftest.cjs"],
       "state_authority": "server",
       "host_reload_recovery": "game-hub-active-launch",
       "shared_screen_occupies_seat": false,
-      "disconnect_recovery": "pending",
+      "disconnect_recovery": "verified",
+      "disconnect_recovery_scope": "1280x720 desktop player-one browser with two human seats: a leaf-only fault proxy severed and restored HTTP/SSE while the production server stayed authoritative; the client visibly reported reconnecting, resynchronized to the authoritative result, and a recovered rematch control returned the game to running",
+      "disconnect_recovery_evidence": ["runtime/neon-pong-duet-client.html", "runtime/neon-pong-duet.js", "runtime/neon-pong-duet-server.cjs", "tests/disconnect-recovery-browser-harness.js", "tests/disconnect-recovery.test.js", "evidence/2026-08-16-disconnect-recovery/RECEIPT.md"],
       "blocking_overlay_escape": "not-applicable",
       "physical_phone_qa": "pending",
-      "adapter_state_interface": "pending"
+      "adapter_state_interface": "verified",
+      "adapter_state_evidence": ["runtime/seat-interface.cjs", "runtime/neon-pong-duet-server.cjs", "neon-duet-selftest.cjs"]
     }
   },
   "package": {
-    "source_status": "clean-local-rebuild",
+    "source_status": "working-local-neon-expansion-physical-phone-qa-pending",
     "required_paths": [
       "README.md",
-      "runtime/robo-pong-simple-bat-server.cjs",
-      "runtime/ROBO_PONG_PHASER4_PHONE_CLIENT.html"
+      "runtime/neon-pong-duet-server.cjs",
+      "runtime/seat-interface.cjs",
+      "runtime/neon-pong-duet-client.html",
+      "runtime/neon-pong-duet.css",
+      "runtime/neon-pong-duet.js",
+      "runtime/neon-pong-duet-depth.js",
+      "runtime/assets/maps/cathedral-cross-plate.png",
+      "runtime/assets/maps/shattered-line-plate.png",
+      "runtime/assets/maps/relay-protocol-plate.png"
     ]
   }
 }

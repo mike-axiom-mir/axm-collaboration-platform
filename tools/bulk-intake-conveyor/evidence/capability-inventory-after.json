@@ -1,0 +1,68 @@
+{
+  "capabilities": [
+    {
+      "id": "archive.bounded-map",
+      "status": "available",
+      "provider": "archive-intake-cartographer"
+    },
+    {
+      "id": "archive.exact-digest",
+      "status": "available",
+      "provider": "archive-intake-cartographer"
+    },
+    {
+      "id": "archive.structural-candidate-inventory",
+      "status": "available",
+      "provider": "bulk-intake-conveyor",
+      "constraints": [
+        "central-directory paths only",
+        "archived file bodies are not read",
+        "manifest roots are structural hints, not declared identities"
+      ]
+    },
+    {
+      "id": "active.name-collision-route",
+      "status": "available",
+      "provider": "bulk-intake-conveyor",
+      "constraints": [
+        "folder and declared-id names only",
+        "a match routes judgment and never proves semantic equivalence"
+      ]
+    },
+    {
+      "id": "intake.resume-evidence",
+      "status": "available",
+      "provider": "bulk-intake-conveyor",
+      "constraints": [
+        "resume status is bound to archive path, digest, and decision signature",
+        "archives are rescanned for fresh relationship evidence"
+      ]
+    },
+    {
+      "id": "intake.bounded-batches",
+      "status": "available",
+      "provider": "bulk-intake-conveyor",
+      "constraints": [
+        "default 50 candidate work items",
+        "hard maximum 100 work items per batch"
+      ]
+    },
+    {
+      "id": "intake.digest-bound-receipt-set",
+      "status": "available",
+      "provider": "bulk-intake-conveyor",
+      "constraints": [
+        "writes occur only at explicit output paths"
+      ]
+    },
+    {
+      "id": "authority.promotion-hold",
+      "status": "available",
+      "provider": "bulk-intake-conveyor + review-inbox + modular-intake-gate + module-installer",
+      "constraints": [
+        "Mike and Codex remain the merge gate",
+        "CANON requires Mike"
+      ]
+    }
+  ]
+}

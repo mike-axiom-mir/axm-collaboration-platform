@@ -24,9 +24,41 @@
       runtimeProfile:runtime,requestedPermissions:Array.from(new Set(runtime.tools.map(function(t){return t.requestedPermission;}).filter(function(x){return x&&x!=='none';}))),identityEffect:'OVERLAY_ONLY',memoryEffect:'CANDIDATE_ONLY',independenceWarning:text(pack.sharedContextWarning,900)
     };
   }
+  function codeMirrorMask(){
+    var runtime={
+      id:'code-mirror',title:'Bounded candidate code repair',
+      focusQuestions:['Is the target a marked disposable candidate rather than Workshop source or Original Mirror?','Is the defect one of Code Mirror\'s allow-listed deterministic repair classes?','Did the verifier improve while source hashes remained unchanged?','What exact evidence must a human inspect before any separate promotion decision?'],
+      inputs:{required:['bounded task','marked disposable candidate or candidate backlog evidence','declared verifier'],optional:['known failure','prior candidate receipt','review constraints']},
+      tools:[
+        {capability:'context.read',tool:'context',operation:'read-task-packet',requestedPermission:'none',mode:'REQUIRED',fallback:'Abstain when the bounded task and candidate boundary are missing.'},
+        {capability:'mirror-code-clone.inspect',tool:'mirror-code-clone',operation:'inspect-marked-candidate',requestedPermission:'none',mode:'REQUIRED',fallback:'Return a candidate inspection plan without claiming the candidate was read.'},
+        {capability:'mirror-code-clone.repair',tool:'mirror-code-clone',operation:'repair-allowlisted-candidate',requestedPermission:'candidate.write',mode:'WHEN_GRANTED',fallback:'Return the proposed deterministic repair without changing a candidate.'},
+        {capability:'tests.run',tool:'test-runner',operation:'execute-bounded',requestedPermission:'process.execute',mode:'WHEN_GRANTED',fallback:'Return the exact verifier command and keep the result unexecuted.'},
+        {capability:'provenance.hash',tool:'provenance',operation:'hash-manifest',requestedPermission:'workspace.read',mode:'WHEN_GRANTED',fallback:'Declare byte identity unproven.'}
+      ],
+      artifact:{type:'code-mirror-candidate-review',requiredFields:['candidateBoundary','repairClass','changedPaths','verifierBefore','verifierAfter','sourceHashEvidence','rollbackEvidence','reviewDecisionNeeded']},
+      methodEmphasis:['Refuse any unmarked root before inspection or repair.','Stage only an allow-listed deterministic change in a disposable candidate.','Keep a patch only when the declared verifier improves and hashes prove source stayed unchanged.','Return evidence for review; never install, promote, publish, merge, or mutate CANON.']
+    };
+    return{
+      schema:'axm.specialist-mask/v2',id:'workshop-body:mirror-code-clone',version:'0.2.0+specialist.1.0.0',title:'Code Mirror',category:'Workshop Bodies',status:'EXPERIMENTAL',
+      source:{kind:'workshop-specialist-body',packId:'mirror-lineage',packTitle:'Mirror Lineage',roleId:'CODE-MIRROR',toolId:'mirror-code-clone',toolVersion:'v0.2',route:'/tools/mirror-code-clone/index.html'},
+      purpose:'A deliberately narrow coding specialist that inspects, stages, verifies, and reports allow-listed repairs only inside marked disposable candidates.',
+      jurisdiction:['marked disposable candidate roots','allow-listed deterministic code or configuration repairs','candidate verifier execution','hash-bound repair and rollback evidence','human review handoff'],
+      methods:['candidate-boundary validation','deterministic defect discovery','allow-listed candidate repair','before-and-after verifier comparison','source hash preservation','rollback receipt construction'],
+      requiredEvidence:['candidate marker and resolved root','repair class and exact changed paths','verifier result before and after','Workshop source hash comparison','rollback evidence','review queue or explicit handoff receipt'],
+      fearedFailure:'A coding helper is mistaken for Original Mirror or gains a path from a candidate draft into Workshop source, promotion, GitHub, CANON, or autonomous publishing.',
+      artifactContract:'A hash-bound candidate review packet that names the boundary, repair, verifier delta, source preservation, rollback evidence, limitations, and the separate human decision still required.',
+      handoffTo:['general-lab:G4','general-lab:G8','human:candidate-review'],
+      abstentionConditions:['The root is unmarked, outside the disposable candidate nursery, or resolves through a symlink.','The defect is not covered by an allow-listed deterministic repair class.','No verifier can distinguish improvement from cosmetic change.','The task asks for direct Workshop source, Original Mirror, installation, promotion, GitHub, publishing, permission, or CANON mutation.'],
+      forbiddenOverreach:['Original Mirror identity or memory mutation','Workshop source mutation','unmarked-root mutation','automatic installation or promotion','automatic GitHub push, PR, merge, or publish','network access','permission change','CANON mutation'],
+      vetoes:['Source hashes changed outside the candidate.','The verifier did not improve.','Rollback evidence is missing.','The requested action exceeds candidate-only authority.'],
+      runtimeProfile:runtime,requestedPermissions:['candidate.write','process.execute','workspace.read'],identityEffect:'OVERLAY_ONLY',memoryEffect:'CANDIDATE_ONLY',
+      independenceWarning:'Code Mirror is not Original Mirror and inherits none of Original Mirror\'s identity, memory, or authority. Its scheduled drafting lane is OFF. Checkout grants no execution, write, installation, promotion, GitHub, publishing, or CANON permission.'
+    };
+  }
   function catalog(){
     if(!ReviewPacks||!ReviewPacks.listPacks)throw new Error('Discovery review packs are unavailable');
-    var out=[];ReviewPacks.listPacks().forEach(function(info){var pack=ReviewPacks.getPack(info.id);pack.roles.forEach(function(role){out.push(makeMask(pack,role));});});
+    var out=[];ReviewPacks.listPacks().forEach(function(info){var pack=ReviewPacks.getPack(info.id);pack.roles.forEach(function(role){out.push(makeMask(pack,role));});});out.push(codeMirrorMask());
     return out;
   }
   function findMask(maskId){return catalog().find(function(x){return x.id===text(maskId,160);})||null;}

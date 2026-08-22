@@ -1,0 +1,56 @@
+{
+  "schema": "axm.claim-evidence-route/v1",
+  "claims": [
+    {
+      "claimId": "checkpoint-exists",
+      "kind": "existence",
+      "risk": "low",
+      "passCondition": "Core, CLI, manifest, contract, schemas, examples, and selftest are directly present.",
+      "primarySurface": "file and JSON inspection",
+      "counterevidence": "Any declared entry, contract, or schema is missing or invalid.",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "checkpoint-deterministic",
+      "kind": "deterministic behavior",
+      "risk": "medium",
+      "passCondition": "The same Git objects, policy, and evidence produce the same digest at two roots; mutation changes or invalidates it.",
+      "primarySurface": "focused temporary-Git execution with asserted outputs",
+      "counterevidence": "Filesystem root, observation time, or mutable working-tree content changes a clean committed-state digest.",
+      "secondarySurface": "saved packet verification and manual canonical digest comparison",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "refusals-hold",
+      "kind": "authorization",
+      "risk": "medium",
+      "passCondition": "Dirty, drifted, mixed-scope, sensitive, destructive, or under-evidenced inputs emit typed HELD packets.",
+      "primarySurface": "focused negative fixture execution",
+      "counterevidence": "Any governed negative fixture emits READY or retains a secret value.",
+      "secondarySurface": "manifest and contract authority inspection",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "workshop-compatible",
+      "kind": "deterministic behavior",
+      "risk": "medium",
+      "passCondition": "All required Workshop command checks exit successfully on the branch.",
+      "primarySurface": "required local command execution",
+      "counterevidence": "Any required command exits non-zero.",
+      "secondarySurface": "GitHub CI after draft PR publication",
+      "observedEvidence": "All required Workshop commands exited 0; verify.js reported 0 FAIL and 43 warnings.",
+      "verdict": "PASS"
+    },
+    {
+      "claimId": "remote-current",
+      "kind": "transport",
+      "risk": "medium",
+      "passCondition": "The locally bound base commit equals the intended current remote base.",
+      "primarySurface": "external fetch or GitHub receipt",
+      "counterevidence": "Remote main advances after the local ref was resolved.",
+      "secondarySurface": "GitHub PR mergeability and CI context",
+      "verdict": "UNKNOWN",
+      "namedSeam": "The checkpoint has no network fetch authority."
+    }
+  ]
+}

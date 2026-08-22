@@ -1,0 +1,191 @@
+{
+  "capability_interface": {
+    "authority_delta": "NONE",
+    "canon_delta": "NONE",
+    "consent_delta": "NONE",
+    "consumes_clause": "scoped handoff packet; replica identity; causal metadata; source permissions; device or AI-seat role",
+    "human_gate_required_by_source_contract": false,
+    "input_contract": "axm.memory.reference-request/v2",
+    "invariants": [
+      "authority_delta_is_none",
+      "canon_delta_is_none",
+      "consent_delta_is_none",
+      "coordinator cannot complete, undo, or promote downstream work",
+      "delivery and acceptance are separate",
+      "delivery never implies receiver acceptance",
+      "delivery_does_not_imply_acceptance",
+      "downstream owners recover their own writes",
+      "full_semantics_are_not_claimed",
+      "memory_payload_is_inert_data",
+      "replica progress cannot authorize semantic merge",
+      "source_truth_is_not_created_by_contract_validity",
+      "trust_delta_is_none"
+    ],
+    "operation_kind": "GATED_COORDINATION",
+    "output_contract": "axm.memory.cross-chat-continuity-adapter.proposal/v1",
+    "postconditions": [
+      "exactly one accepted reference contract or typed HOLD is returned",
+      "no hidden mutation, authority gain, trust gain, consent gain, or CANON promotion occurs",
+      "result remains source-linked, replaceable, privacy-safe, and bounded to the declared purpose",
+      "receiver acceptance, semantic apply, owner acceptance, and integration remain separate future acts"
+    ],
+    "preconditions": [
+      "exact seed identity and purpose match",
+      "source references and digests align",
+      "authority, consent, role, permission, expiry, and namespace checks pass",
+      "boot prerequisites are ready or explicitly safe degraded mode is allowed",
+      "resource, cancellation, revision, output-root, and compatibility guards pass"
+    ],
+    "purpose_clause": "Create and verify a portable re-entry packet for a new conversation while separating supplied history from model memory claims.",
+    "semantic_effect": "REFERENCE_ONLY_NOT_IMPLEMENTED",
+    "state_effect_envelope": "COORDINATION_STATE_ONLY",
+    "trust_delta": "NONE"
+  },
+  "composition": {
+    "accepted_upstream_ids": [
+      "axm.memory.consent-lease",
+      "axm.memory.cross-replica-merge-gate",
+      "axm.memory.provenance-envelope",
+      "axm.memory.replica-identity-record",
+      "axm.memory.session-handoff-packet",
+      "axm.memory.source-authority-binder"
+    ],
+    "authority_transfer": false,
+    "boot_prerequisites": [
+      "axm.memory.consent-lease",
+      "axm.memory.cross-replica-merge-gate",
+      "axm.memory.provenance-envelope",
+      "axm.memory.replica-identity-record",
+      "axm.memory.session-handoff-packet",
+      "axm.memory.source-authority-binder"
+    ],
+    "consent_transfer": false,
+    "cycles_allowed_only_outside_boot_graph": true,
+    "delivery_does_not_imply_acceptance": true,
+    "downstream_candidates": [],
+    "handoff_schema": "axm.memory.capability-handoff/v1",
+    "runtime_collaborators": [],
+    "semantic_apply_implied": false,
+    "trust_transfer": false
+  },
+  "human_review": {
+    "automatic_apply": false,
+    "challenge_and_reopen_supported": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "packet_path": "modules/072_cross-chat-continuity-adapter/review_packet.json",
+    "primary_actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN"
+    ]
+  },
+  "identity": {
+    "category_number": 8,
+    "name": "Cross-Chat Continuity Adapter",
+    "number": 72,
+    "stable_id": "axm.memory.cross-chat-continuity-adapter"
+  },
+  "pipeline_membership": [],
+  "profiles": {
+    "authority": {
+      "path": "profiles/authority_t2-coordinate-without-owning-authority.json",
+      "sha256": "83756e5e1a12ff79c47e3c2a601e82b3ba708c4d2f992c87a80e2b2aa00b54c2"
+    },
+    "category": {
+      "path": "profiles/category_08_handoff_replica_continuity.json",
+      "sha256": "8a78c27c03fa37a1cb6f32496726a3a6ee3c76c59103a768c1b10da7397dc6fc"
+    },
+    "operation": {
+      "path": "profiles/operation_gated-coordination.json",
+      "sha256": "a0d0d1f65f0b5dcd95009e38e30b379bfa70e3549a6c27fcbd7ceb66f94f9153"
+    },
+    "proof_tiers": {
+      "path": "profiles/proof_tiers.json",
+      "sha256": "ab8646803825822a1c529c9a47163827813c5ea9f2c2034031bdd103245d2f00"
+    },
+    "review_surface": {
+      "path": "profiles/review_surface.json",
+      "sha256": "d46b074a8a703365fd7243c20fae436abd8346494a3100efff73f817a65431e5"
+    },
+    "risk": {
+      "path": "profiles/risk_medium.json",
+      "sha256": "0caaae86018b2eb8daed6e7cbf6ccb9a28d3f9f383e9df56922f67143d9476fe"
+    }
+  },
+  "proof": {
+    "achieved_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE"
+    ],
+    "boundary": "Executable deltas, composition, metamorphic, resource, review, and capsule evidence remain synthetic/local reference proof.",
+    "canon": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "specialist_verification": false,
+    "workshop_integration": false
+  },
+  "resource_policy": {
+    "batch_and_step_limits_required": true,
+    "cancellation_must_be_checked": true,
+    "network_required": false,
+    "output_path_must_remain_under_exact_owned_root": true,
+    "profile_ref": {
+      "path": "profiles/risk_medium.json",
+      "sha256": "0caaae86018b2eb8daed6e7cbf6ccb9a28d3f9f383e9df56922f67143d9476fe"
+    },
+    "symlink_escape_forbidden": true,
+    "unbounded_scan_forbidden": true
+  },
+  "schema": "axm.memory.capability-delta/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "base_contract_file_sha256": "f25111ee019efc5268f569c2f43cf70b461ebfe86c7b4d0ac857fd232ded9b38",
+    "body_sha256": "605825e1887b0eb783a7c6b558ac50000487d359db4f77a9523ba771a4bc84b6",
+    "delta_core_sha256": "51c41c4f45bf05127bf0e389eb6446d252d13619c3f77da9138fc894acee1a2b"
+  },
+  "source_run50": {
+    "build_intake_file_sha256": "44c6a6350308a64e600429dbddc2aa3b82bc333621686fb6f6bd84e9687e85bd",
+    "candidate_contract_body_sha256": "d4de229d5295540e1bbfafc432215e81eb0c4620b8f2c3ef4daaf82aa736b03e",
+    "candidate_contract_file_sha256": "f25111ee019efc5268f569c2f43cf70b461ebfe86c7b4d0ac857fd232ded9b38",
+    "candidate_contract_path": "modules/072_cross-chat-continuity-adapter/candidate.contract.json",
+    "fixtures_file_sha256": "2c0ed9e37527d1b3580757a42f742fa9f553670f9bfe850b15091565e4044619",
+    "run50_posture_preserved": true,
+    "source_authority": "T2_COORDINATE_WITHOUT_OWNING_AUTHORITY",
+    "source_operation_kind": "GATED_COORDINATION",
+    "source_purpose": "Create and verify a portable re-entry packet for a new conversation while separating supplied history from model memory claims.",
+    "source_risk": "MEDIUM",
+    "source_run50_status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE",
+  "validation": {
+    "cache_is_evidence_reuse_not_truth": true,
+    "cached_result_cannot_promote_canon": true,
+    "harness_version": "axm-memory-run60-harness-v1",
+    "proof_cache_key": "415cf7d9dab47ae04ab6d8105d5fae7dcb66a86936b3c015c7a36c8718ce5b4e",
+    "revalidation_triggers": [
+      "candidate contract or fixture digest changes",
+      "capability delta core changes",
+      "referenced shared profile digest changes",
+      "validation harness version changes",
+      "boot prerequisite interface changes",
+      "privacy, authority, or lifecycle policy changes"
+    ],
+    "test_suites": [
+      "run50_full_reference_suite",
+      "run60_delta_preservation",
+      "run60_capability_interface",
+      "run60_composition_graph",
+      "run60_selective_validation",
+      "run60_metamorphic_laws",
+      "run60_resource_faults",
+      "run60_reference_pipelines",
+      "run60_human_review",
+      "run60_capsule_export",
+      "run60_efficiency",
+      "run60_roundtrip"
+    ]
+  }
+}

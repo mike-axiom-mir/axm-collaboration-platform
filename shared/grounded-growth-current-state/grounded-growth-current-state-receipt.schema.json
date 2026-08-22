@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.grounded-growth-current-state-receipt/v1",
+  "title": "AXM Grounded Growth Current State Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "receiptId",
+    "generatedAt",
+    "status",
+    "state",
+    "sourceRefs",
+    "portfolioEvolution",
+    "participationBinding",
+    "currentEvidence",
+    "decision",
+    "truth",
+    "receiptDigest"
+  ],
+  "properties": {
+    "schema": { "const": "axm.grounded-growth-current-state-receipt/v1" },
+    "version": { "const": "0.1.0" },
+    "receiptId": { "$ref": "#/$defs/boundedText180" },
+    "generatedAt": { "type": "string", "format": "date-time", "maxLength": 80 },
+    "status": { "const": "TEST" },
+    "state": {
+      "enum": [
+        "CURRENT_CONVERGED",
+        "CURRENT_NO_NEW_INFORMATION",
+        "HOLD_PARTICIPATION_REBIND_REQUIRED"
+      ]
+    },
+    "sourceRefs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["participationFrontier", "participationPortfolio", "latestPortfolio"],
+      "properties": {
+        "participationFrontier": { "$ref": "#/$defs/reference" },
+        "participationPortfolio": { "$ref": "#/$defs/reference" },
+        "latestPortfolio": { "$ref": "#/$defs/reference" }
+      }
+    },
+    "portfolioEvolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "baseOutcomeCount",
+        "currentOutcomeCount",
+        "appendedOutcomeCount",
+        "appendedOutcomeRefs",
+        "capabilityCountBefore",
+        "capabilityCountCurrent",
+        "historicalOutcomeBytesPreserved"
+      ],
+      "properties": {
+        "state": { "enum": ["VALID_FORWARD_EXTENSION", "NO_NEW_INFORMATION"] },
+        "baseOutcomeCount": { "$ref": "#/$defs/nonnegativeInteger" },
+        "currentOutcomeCount": { "$ref": "#/$defs/nonnegativeInteger" },
+        "appendedOutcomeCount": { "$ref": "#/$defs/nonnegativeInteger" },
+        "appendedOutcomeRefs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/reference" }
+        },
+        "capabilityCountBefore": { "$ref": "#/$defs/nonnegativeInteger" },
+        "capabilityCountCurrent": { "$ref": "#/$defs/nonnegativeInteger" },
+        "historicalOutcomeBytesPreserved": { "const": true }
+      }
+    },
+    "participationBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "protectedCapabilityIds",
+        "affectedProtectedCapabilityIds",
+        "optionalReviewCandidates",
+        "humanEvidencePresent",
+        "humanBenefitEstablished",
+        "reviewIsParticipation",
+        "readinessIsHumanEvidence"
+      ],
+      "properties": {
+        "state": { "enum": ["PRESERVED", "REQUIRES_REBIND"] },
+        "protectedCapabilityIds": { "$ref": "#/$defs/stringSet" },
+        "affectedProtectedCapabilityIds": { "$ref": "#/$defs/stringSet" },
+        "optionalReviewCandidates": { "$ref": "#/$defs/nonnegativeInteger" },
+        "humanEvidencePresent": { "type": "boolean" },
+        "humanBenefitEstablished": { "type": "boolean" },
+        "reviewIsParticipation": { "const": false },
+        "readinessIsHumanEvidence": { "const": false }
+      }
+    },
+    "currentEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capabilityChains",
+        "outcomes",
+        "effectiveBeneficiaryVerdicts",
+        "sharedSystemPass",
+        "aiWorkflowPass",
+        "humanPass",
+        "humanNotRun",
+        "portfolioOverall",
+        "unresolvedEvidence"
+      ],
+      "properties": {
+        "capabilityChains": { "$ref": "#/$defs/nonnegativeInteger" },
+        "outcomes": { "$ref": "#/$defs/nonnegativeInteger" },
+        "effectiveBeneficiaryVerdicts": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^(HUMAN|AI_WORKFLOW|SHARED_SYSTEM):(PASS|FAIL|UNKNOWN|NOT_RUN)$"
+          },
+          "additionalProperties": { "$ref": "#/$defs/nonnegativeInteger" }
+        },
+        "sharedSystemPass": { "$ref": "#/$defs/nonnegativeInteger" },
+        "aiWorkflowPass": { "$ref": "#/$defs/nonnegativeInteger" },
+        "humanPass": { "$ref": "#/$defs/nonnegativeInteger" },
+        "humanNotRun": { "$ref": "#/$defs/nonnegativeInteger" },
+        "portfolioOverall": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "unresolvedEvidence": { "$ref": "#/$defs/stringSet" }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "autonomousActionCount",
+        "reviewableActionCount",
+        "currentBestAction",
+        "participationRequiresNewEvent"
+      ],
+      "properties": {
+        "state": { "const": "BOUNDED_CURRENT_STATE_DECISION" },
+        "autonomousActionCount": { "const": 0 },
+        "reviewableActionCount": { "$ref": "#/$defs/nonnegativeInteger" },
+        "currentBestAction": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "participationRequiresNewEvent": { "const": true }
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceReceiptsVerifiedByExactRebuild",
+        "latestPortfolioVerifiedNatively",
+        "historicalOutcomeBytesPreserved",
+        "priorFrontierRewritten",
+        "portfolioCurrentnessRewritesParticipation",
+        "reviewIsParticipation",
+        "readinessIsHumanEvidence",
+        "aiWorkflowPassIsHumanBenefit",
+        "humanBenefitClaimed",
+        "sharedGrowthClaimed",
+        "automaticParticipation",
+        "automaticExecution",
+        "automaticWrite",
+        "automaticInstall",
+        "automaticPermissionGrant",
+        "automaticPromotion",
+        "automaticMerge",
+        "automaticCanon",
+        "foundationMutation"
+      ],
+      "properties": {
+        "sourceReceiptsVerifiedByExactRebuild": { "const": true },
+        "latestPortfolioVerifiedNatively": { "const": true },
+        "historicalOutcomeBytesPreserved": { "const": true },
+        "priorFrontierRewritten": { "const": false },
+        "portfolioCurrentnessRewritesParticipation": { "const": false },
+        "reviewIsParticipation": { "const": false },
+        "readinessIsHumanEvidence": { "const": false },
+        "aiWorkflowPassIsHumanBenefit": { "const": false },
+        "humanBenefitClaimed": { "type": "boolean" },
+        "sharedGrowthClaimed": { "type": "boolean" },
+        "automaticParticipation": { "const": false },
+        "automaticExecution": { "const": false },
+        "automaticWrite": { "const": false },
+        "automaticInstall": { "const": false },
+        "automaticPermissionGrant": { "const": false },
+        "automaticPromotion": { "const": false },
+        "automaticMerge": { "const": false },
+        "automaticCanon": { "const": false },
+        "foundationMutation": { "const": false }
+      }
+    },
+    "receiptDigest": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "boundedText180": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "boundedText240": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "nonnegativeInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "stringSet": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": { "$ref": "#/$defs/boundedText180" },
+        "schema": { "$ref": "#/$defs/boundedText240" },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}

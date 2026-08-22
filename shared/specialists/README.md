@@ -1,6 +1,6 @@
 # AXM Specialist Library
 
-The Specialist Library turns the professional role contracts already maintained by Discovery into reusable, versioned masks.
+The Specialist Library turns the professional role contracts already maintained by Discovery into reusable, versioned masks and exposes explicitly registered bounded Workshop bodies through the same discovery and checkout surface.
 
 A mask is a temporary method overlay. It is not an identity, personality, permission grant, proof of expertise, independent reviewer, or durable memory update.
 
@@ -64,4 +64,6 @@ In AI Team, **Inspect & prepare checkout** selects the mask and copies the task,
 
 ## Source of truth
 
-`tools/discovery-engine/review-packs.js` remains the role-contract source. The library derives its catalog from those packs at runtime, so Discovery and AI Team cannot silently drift into separate definitions.
+`tools/discovery-engine/review-packs.js` remains the professional role-contract source. The library derives those masks from the packs at runtime and appends only explicit Workshop-body registrations with their own source, tool, route, authority, and identity boundaries.
+
+The first body registration is `workshop-body:mirror-code-clone`, shown as **Code Mirror**. It points to `tools/mirror-code-clone`, stays distinct from Original Mirror, and exposes candidate-only drafting and verification as a discoverable specialist contract. Its scheduled drafting lane remains off, and checkout does not grant candidate writes, test execution, installation, promotion, GitHub, publishing, or CANON authority.

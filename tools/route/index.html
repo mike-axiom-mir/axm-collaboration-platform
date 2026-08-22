@@ -17,6 +17,9 @@ button{font-family:inherit}
 .btn.warn{border-color:var(--gold);color:var(--gold);background:rgba(232,181,74,.08)}
 input,select,textarea{background:#06080f;border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:8px;font-family:inherit;font-size:13px}
 input,textarea{width:100%;box-sizing:border-box}
+.field{display:block;color:var(--muted);font-size:11px;letter-spacing:.3px}
+.field.grow{flex:1;min-width:170px}.field.compact{width:auto}
+.field input,.field select{display:block;margin-top:5px}
 .card{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:15px;margin-bottom:11px}
 .focus{border-color:#1c7f92;box-shadow:0 0 26px rgba(56,214,236,.07)}
 .focus h2{margin:0 0 4px;font-size:17px}
@@ -57,9 +60,13 @@ pre{background:#06080f;border:1px solid var(--edge);border-radius:10px;padding:1
     <div class="card focus" id="focusCard"><p class="muted">No steps yet. Add one below.</p></div>
     <div class="card">
       <p class="cap">Add a step</p>
-      <input id="stTitle" placeholder="What is the next concrete step?">
+      <label class="field" for="stTitle">Next concrete step
+        <input id="stTitle" placeholder="What is the next concrete step?">
+      </label>
       <div class="row">
-        <input id="stCheck" placeholder="check (optional): file path, or test name" style="flex:1;min-width:180px">
+        <label class="field grow" for="stCheck">Verification check (optional)
+          <input id="stCheck" placeholder="File path or test name">
+        </label>
         <button class="btn" id="addStep">Add step</button>
       </div>
       <p class="muted" style="margin:8px 0 0">A step with no check can only ever be <b>CLAIMED</b>. Ticking is not verifying.</p>
@@ -75,7 +82,9 @@ pre{background:#06080f;border:1px solid var(--edge);border-radius:10px;padding:1
       <p class="cap">Route state · chosen, never computed</p>
       <div class="row">
         <label class="muted"><input type="checkbox" id="goalReached" style="width:auto"> goal reached</label>
-        <select id="routeState"><option value="living">living</option><option value="quiet">quiet</option><option value="closed">closed</option></select>
+        <label class="field compact" for="routeState">Route state
+          <select id="routeState"><option value="living">living</option><option value="quiet">quiet</option><option value="closed">closed</option></select>
+        </label>
         <button class="btn ghost" id="setState">Set</button>
       </div>
       <p class="muted" style="margin:8px 0 0">A goal can be reached and the route stay <b>living</b>. Closing needs a reason. Closed is never gone — it stays readable and forkable.</p>
@@ -86,9 +95,13 @@ pre{background:#06080f;border:1px solid var(--edge);border-radius:10px;padding:1
   <div id="vNeeds" class="hide">
     <div class="card">
       <p class="cap">Open a need</p>
-      <input id="ndQ" placeholder="An open question this route depends on">
+      <label class="field" for="ndQ">Open question
+        <input id="ndQ" placeholder="An open question this route depends on">
+      </label>
       <div class="row">
-        <input id="ndWake" placeholder="revisit when… (optional)" style="flex:1;min-width:170px">
+        <label class="field grow" for="ndWake">Revisit condition (optional)
+          <input id="ndWake" placeholder="Revisit when…">
+        </label>
         <button class="btn" id="addNeed">Add need</button>
         <button class="btn ghost" id="resolveBtn">Try resolve()</button>
       </div>
@@ -102,7 +115,9 @@ pre{background:#06080f;border:1px solid var(--edge);border-radius:10px;padding:1
     <div class="warnbox">The workers are transient; the route is the memory they don't have. This packet is what a fresh Claude, a local model, or a human friend gets handed — bounded, with rejected paths and settled decisions included.</div>
     <div class="card">
       <div class="row">
-        <input id="hoWho" placeholder="who is picking this up? (claude / nova / errol)" style="flex:1;min-width:200px">
+        <label class="field grow" for="hoWho">Handoff recipient
+          <input id="hoWho" placeholder="Who is picking this up? (Claude / Nova / Errol)">
+        </label>
         <button class="btn" id="mkPacket">Build resume packet</button>
         <button class="btn ghost" id="dlRoute">Download route.json</button>
       </div>
@@ -139,7 +154,7 @@ function renderFocus(){
       + '<div class="muted" id="fMeta"></div>'
       + (stale ? '<div class="warnbox" style="margin-top:9px">This step rests on a <b>superseded claim</b>. Not failed — just worth a look.</div>' : '')
       + '<div class="row" id="fRow"></div><div id="fNotes"></div>'
-      + '<div class="row"><input id="fNote" placeholder="add a note (appends, never conflicts)" style="flex:1;min-width:190px"><button class="btn ghost" id="fNoteBtn">Note</button></div>';
+      + '<div class="row"><input id="fNote" aria-label="Step note" placeholder="add a note (appends, never conflicts)" style="flex:1;min-width:190px"><button class="btn ghost" id="fNoteBtn">Note</button></div>';
     c.querySelector('h2').textContent = s.title;
     $('fMeta').innerHTML = 'state: <b>' + s.state + '</b> · checks: ' + (s.checks.length || 'none')
       + (s.forced_reason ? ' · <span style="color:var(--gold)">forced: ' + s.forced_reason + '</span>' : '');
@@ -219,9 +234,9 @@ function renderNeeds(){
       + (n.answered_by ? '<span class="chip WORKING">answered</span>' : '<span class="chip NEEDS">NEEDS SOURCE</span>')
       + (contested ? '<span class="chip stale">contested</span>' : '') + '</div>';
     d.innerHTML = head + '<div class="muted wk"></div><div class="cl"></div>'
-      + '<div class="row"><input class="ct" placeholder="a claim answering this" style="flex:1;min-width:150px">'
-      + '<select class="sk"><option value="fetched">fetched (evidence)</option><option value="tested">tested</option><option value="human">human</option><option value="asserted" selected>asserted (unverified)</option></select>'
-      + '<input class="sw" placeholder="source (who?)" style="max-width:140px">'
+      + '<div class="row"><input class="ct" aria-label="Claim answering this need" placeholder="a claim answering this" style="flex:1;min-width:150px">'
+      + '<select class="sk" aria-label="Claim source kind"><option value="fetched">fetched (evidence)</option><option value="tested">tested</option><option value="human">human</option><option value="asserted" selected>asserted (unverified)</option></select>'
+      + '<input class="sw" aria-label="Claim source" placeholder="source (who?)" style="max-width:140px">'
       + '<button class="btn ghost addc">Add claim</button></div>';
     d.querySelector('.q').textContent = n.question;
     d.querySelector('.wk').textContent = n.revisit_when ? ('revisit when: ' + n.revisit_when) : 'no wake condition — a permanently curious question';
@@ -288,7 +303,8 @@ $('mkPacket').onclick = function(){
 };
 $('dlRoute').onclick = function(){
   var b = new Blob([JSON.stringify(route, null, 2)], { type: 'application/json' });
-  var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'route.json'; a.click();
+  var a = document.createElement('a'); var url = URL.createObjectURL(b); a.href = url; a.download = 'route.json'; a.click();
+  URL.revokeObjectURL(url);
   AXMHub.log('route.json downloaded — the file is the product');
 };
 

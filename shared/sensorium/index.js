@@ -19,6 +19,7 @@ module.exports = {
   eyeAccessibility: require('./eye-accessibility-inspector'),
   eye: require('../ai-native-hands/ephemeral-vision-hand'),
   coordinator: require('./coordinator'),
+  foundation: require('./foundation-contracts'),
   adapterContract: require('./adapter-contract'),
   capabilityGapRouter: require('./capability-gap-router'),
   freshnessScheduler: require('./freshness-scheduler'),

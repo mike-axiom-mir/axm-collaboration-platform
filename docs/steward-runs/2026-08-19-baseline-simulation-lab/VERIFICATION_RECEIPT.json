@@ -1,0 +1,56 @@
+{
+  "schema": "axm.steward-verification-receipt/v1",
+  "receiptId": "baseline-simulation-lab:verification:2026-08-19",
+  "recordedAt": "2026-08-19T08:28:00.000Z",
+  "status": "VERIFIED_WITH_LIMITS",
+  "subject": {
+    "id": "shared/baseline-simulation-lab",
+    "status": "TEST",
+    "implementationDigest": "sha256:8aa061aae5ff17051bd1af41e3b7021c974bd3942cde093e307718cb5e981140",
+    "schemaDigest": "sha256:7bb41e3e238f175da5032d82e091b2e47303033e6a9aadac8abc1acbca1e3eb8",
+    "contractDigest": "sha256:494f00b6bb8a63fac59d1eaf9644d02aca3548b920e972f207ebb99d28c99880",
+    "focusedSelftestDigest": "sha256:4a3ff0fa9a1d7b7aaf2df2b84d02943694e3b82b4e4cd25889f36cf5b76163da"
+  },
+  "focusedChecks": [
+    {"command": "node shared/baseline-simulation-lab/selftest.js", "exitCode": 0, "pass": 36, "fail": 0},
+    {"command": "node docs/steward-runs/2026-08-19-baseline-simulation-lab/selftest.js", "exitCode": 0, "pass": 18, "fail": 0},
+    {"command": "detect-capability-gaps comparator", "exitCode": 0, "overall": "READY", "missingCapabilities": 0, "optionalDegradedRequirements": 2},
+    {"command": "JSON parse, node --check, trailing-whitespace scan", "exitCode": 0, "jsonFiles": 13, "jsFiles": 4}
+  ],
+  "requiredChecks": [
+    {"command": "node verify.js", "exitCode": 0, "result": "PASS_WITH_17_EXISTING_WARNINGS"},
+    {"command": "node hub/hub-selftest.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node hub/route-selftest.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node hub/graft-selftest.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node hub/skin-selftest.js", "exitCode": 0, "result": "PASS"},
+    {"command": "node hub/verify-plus.js", "exitCode": 0, "result": "VERIFIED_WITH_LIMITS"},
+    {"command": "node tests/html-script-syntax-test.js", "exitCode": 0, "result": "55_PASS_0_FAIL"},
+    {"command": "node tests/tool-forge-package-test.js", "exitCode": 0, "result": "PASS_WITH_C_TEMP_ROUTING_LIMIT"},
+    {"command": "node tools/agent-tool-forge/selftest.js", "exitCode": 0, "result": "17_PASS_0_FAIL"},
+    {"command": "node tools/evidence-desk/selftest.js", "exitCode": 0, "result": "36_PASS_0_FAIL"}
+  ],
+  "claims": [
+    {"id": "deterministic-run-envelope", "verdict": "PASS", "surface": "focused-execution", "evidence": "36 adversarial checks plus exact receipt rebuild"},
+    {"id": "live-no-new-information-stop", "verdict": "PASS", "surface": "focused-execution", "evidence": "18 live audit checks against the stored scoped capsule"},
+    {"id": "mirror-live-effectiveness", "verdict": "NOT_RUN", "surface": "private-live-observation", "evidence": "private Mirror state not supplied"},
+    {"id": "specialist-live-effectiveness", "verdict": "NOT_RUN", "surface": "host-model-runtime", "evidence": "host-model runtime not supplied"},
+    {"id": "browser-render-click", "verdict": "NOT_APPLICABLE", "surface": "live-browser", "evidence": "pure contract leaf has no browser surface"}
+  ],
+  "limitations": [
+    "Live evidence covers the previously scoped Portable Baseline Capsule leaf, not the entire dirty shared Workshop.",
+    "Mirror and specialist adapters have synthetic contract evidence but no private/runtime effectiveness evidence.",
+    "Budget and output-closure claims depend on caller-supplied receipts and do not prove hardware or distributed-storage behavior.",
+    "The already modified foreign tests/tool-forge-package-test.js still writes an EXPERIMENTAL proof ZIP under Windows C-temp; this run did not overwrite that file or claim the routing defect fixed."
+  ],
+  "truth": {
+    "statusAssigned": "TEST",
+    "humanAcceptanceRun": false,
+    "installed": false,
+    "promoted": false,
+    "merged": false,
+    "canonAssigned": false,
+    "foundationMutated": false,
+    "published": false,
+    "pushed": false
+  }
+}

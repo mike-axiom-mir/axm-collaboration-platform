@@ -1,14 +1,71 @@
 {
+  "schema": "axm.tool-manifest/v1",
   "id": "reasoning-shell",
-  "name": "Reasoning Shell — EXPERIMENTAL BRANCH",
-  "version": "v0.1-branch",
+  "name": "Reasoning Shell - Experimental Branch",
+  "version": "v0.2-branch",
   "status": "TEST",
   "entry": "index.html",
-  "audience": "machine",
+  "contract": "module.contract.json",
+  "kind": "product",
+  "type": "hub-module",
+  "hubApiVersion": "1.0",
+  "audience": "human-machine",
+  "category": "AI Team",
   "layer": "machine",
+  "risk": "MEDIUM",
   "integratedInto": "ai-team",
   "serviceRole": "reasoning-lab-view",
-  "tags": ["branch", "experimental", "multi-ai", "research"],
-  "uses": ["storage", "ai"],
-  "notes": "BRANCH ONLY · NOT CANON · NOT FOUNDATION · shell suggestion, not truth. Optional adapter: profile-driven step loop + human checkpoints + session logs + after-action + tweak PROPOSALS (never auto-applied). Same AXM.ask, same AXMGate, same roots. Merge condition: EVIDENCE, NOT ELEGANCE. Untested on real models until device test."
+  "tags": [
+    "branch",
+    "experimental",
+    "multi-ai",
+    "human-checkpoint",
+    "proposal-only",
+    "local-comparison"
+  ],
+  "uses": [
+    "foundation-runtime",
+    "foundation-storage",
+    "optional-ai-connector",
+    "foundation-gate",
+    "local-profile-catalog",
+    "browser-file-selection",
+    "browser-blob-download"
+  ],
+  "permissions": [
+    "storage",
+    "ai",
+    "gate",
+    "files",
+    "export"
+  ],
+  "actions": [
+    "start a gated shell-on or shell-off session",
+    "request one gated model step or continue in manual mode",
+    "record a gated human checkpoint with a required rejection reason",
+    "create and persist a gated after-action record",
+    "create a gated proposal-only profile tweak",
+    "explicitly export a session log",
+    "compare one shell-on and one shell-off export locally"
+  ],
+  "accepts": [
+    "human:explicit-task-and-condition",
+    "local-file:reasoning-shell-session-json",
+    "optional:axm-ask-response"
+  ],
+  "produces": [
+    "axm.reasoning-shell-session/v1",
+    "axm.reasoning-shell-after-action/v1",
+    "axm.reasoning-shell-tweak-proposal/v1",
+    "text:recorded-condition-comparison"
+  ],
+  "readiness": [
+    "foundation-runtime",
+    "storage",
+    "gate",
+    "local-profile-catalog",
+    "optional-ai-connector"
+  ],
+  "summary": "Run profile-guided or comparison-baseline single-step sessions with human checkpoints, fail-closed rejection routes, gated proposal-only after-actions, explicit export, and local count comparisons.",
+  "notes": "Branch only; not CANON or Foundation. Manual mode remains available without an AI connector. Count comparisons do not prove model quality, learning improvement, or profile effectiveness. Real-model and human-fatigue evidence remains UNKNOWN."
 }

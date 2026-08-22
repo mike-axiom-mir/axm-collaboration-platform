@@ -1,0 +1,123 @@
+{
+  "schema": "axm.human-benefit-protocol/v1",
+  "version": "0.1.0",
+  "protocolId": "research-grounded-disposition-local-steward-20260819",
+  "generatedAt": "2026-08-19T10:45:00.000Z",
+  "fixtureMode": "LIVE",
+  "claim": {
+    "id": "public-research-replay-human-benefit",
+    "statement": "A human steward gains clearer understanding or better decisions from the grounded research disposition.",
+    "beneficiary": "HUMAN",
+    "targetScope": "NAMED_LOCAL_STEWARD",
+    "scopeStatement": "Any result applies only to the participating local AXM steward and cannot be generalized to other people."
+  },
+  "conditions": [
+    {
+      "id": "condition-a",
+      "role": "BASELINE",
+      "label": "Condition A",
+      "artifactRef": {
+        "id": "research-grounded-disposition-condition-a-surface",
+        "schema": "axm.human-benefit-comparison-surface/v1",
+        "sha256": "sha256:c0d6f7b2cdbf1cf1e39c15ffbfe52f885608eee081359fa3ab6ea8837134b25b"
+      }
+    },
+    {
+      "id": "condition-b",
+      "role": "CANDIDATE",
+      "label": "Condition B",
+      "artifactRef": {
+        "id": "research-grounded-disposition-condition-b-surface",
+        "schema": "axm.human-benefit-comparison-surface/v1",
+        "sha256": "sha256:c11da6deeae92c5fe7b83269d4ea6aaae3dde58493ae842fd8935abe14b108c8"
+      }
+    }
+  ],
+  "trials": [
+    {
+      "id": "research-review-1",
+      "caseId": "research-consensus-only-1",
+      "conditionId": "condition-a",
+      "order": 1,
+      "prompt": "Condition A: four models agree that a proposal should be adopted, but no exact source or verifier is shown. Adoption requires claim-specific evidence. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "research-review-2",
+      "caseId": "research-supported-signal-1",
+      "conditionId": "condition-b",
+      "order": 2,
+      "prompt": "Condition B: an exact artifact is referenced, the supported signal is separated from broader speculation, and limitations are explicit. Retention requires traceable support without promotion. Continue, hold, or mark unsure?",
+      "expectedDecision": "CONTINUE"
+    },
+    {
+      "id": "research-review-3",
+      "caseId": "research-boundary-conflict-1",
+      "conditionId": "condition-b",
+      "order": 3,
+      "prompt": "Condition B: a proposal would let generated modules promote themselves, and the disposition explicitly rejects it as conflicting with the root boundary. Use requires preserving that boundary. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "research-review-4",
+      "caseId": "research-status-only-1",
+      "conditionId": "condition-a",
+      "order": 4,
+      "prompt": "Condition A: a model-written report labels a capability WORKING, but supplies no runtime or claim-specific verifier evidence. Use requires evidence that can prove the claim. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "research-review-5",
+      "caseId": "research-future-assumption-1",
+      "conditionId": "condition-a",
+      "order": 5,
+      "prompt": "Condition A: a confident recommendation depends on an unspecified future state and provides no refresh trigger or exact baseline. Use requires a current grounded disposition. Continue, hold, or mark unsure?",
+      "expectedDecision": "HOLD"
+    },
+    {
+      "id": "research-review-6",
+      "caseId": "research-grounded-reuse-1",
+      "conditionId": "condition-b",
+      "order": 6,
+      "prompt": "Condition B: exact sources, provenance, retained signals, refusals, and a no-new-information reuse decision are recorded without granting consensus truth. Use requires traceable bounded reuse. Continue, hold, or mark unsure?",
+      "expectedDecision": "CONTINUE"
+    }
+  ],
+  "fairness": {
+    "orderPolicy": "BALANCED_WITHIN_SESSION",
+    "conditionLabels": "BLINDED_A_B",
+    "learningEffectRisk": "DECLARED",
+    "maximumSameConditionRun": 2
+  },
+  "successRule": {
+    "minimumCompletedSessions": 1,
+    "minimumCandidateAccuracyGain": 0,
+    "maximumCandidateUnsupportedContinueRate": 0,
+    "maximumCandidateMeanTimeRatio": 1.25,
+    "minimumHelpedFraction": 1,
+    "requireNoHighBurden": true
+  },
+  "consent": {
+    "mode": "VOLUNTARY_OPT_IN",
+    "withdrawalAllowed": true,
+    "completionConfirmationRequired": true,
+    "useScope": "LOCAL_BENEFIT_EVALUATION_ONLY"
+  },
+  "retention": {
+    "mode": "STRUCTURED_NO_FREE_TEXT",
+    "rawIdentity": "FORBIDDEN",
+    "freeText": "FORBIDDEN",
+    "rawRecording": "FORBIDDEN",
+    "network": "DENY",
+    "withdrawalBehavior": "OMIT_PARTICIPANT_AND_OBSERVATIONS"
+  },
+  "authority": {
+    "automaticHumanVerdict": false,
+    "finalHumanJudgmentRequired": true,
+    "sourceAuthenticationExternal": true,
+    "automaticExecution": false,
+    "automaticPromotion": false,
+    "automaticCanon": false
+  },
+  "protocolDigest": "sha256:0dfb896cd15e1a6382362831de5eb6535b8cb54de6dd8e6eb25de0368b1b34a0"
+}

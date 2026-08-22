@@ -1,0 +1,42 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.regression-selector",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.regression-selection.plan/v1"
+  ],
+  "consumes": [
+    "change-scope",
+    "test-catalog",
+    "dependency-map",
+    "failure-history"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_PLAN_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/qa-lab",
+      "tools/repairbuddy",
+      "shared/module-evolution-ledger"
+    ],
+    "reason": "Produces a bounded explainable test plan; it does not claim unselected tests are irrelevant."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "verification-as-permission",
+      "selftest-as-runtime-proof",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "hidden-evidence-omission"
+    ]
+  }
+}

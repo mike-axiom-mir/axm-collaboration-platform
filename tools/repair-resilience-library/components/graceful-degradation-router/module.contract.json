@@ -1,0 +1,41 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.graceful-degradation-router",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.degradation-route/v1"
+  ],
+  "consumes": [
+    "capability-routes",
+    "dependency-health"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_ROUTE_PROPOSAL",
+    "automaticMutation": false,
+    "integrationRequiredForAutomation": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/body-pulse",
+      "tools/diagnostics-operations-center",
+      "shared/handoffs"
+    ],
+    "reason": "Chooses an explicitly declared truthful reduced route; it never hides lost capability."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "unbounded-retry",
+      "unbounded-restart",
+      "hidden-degradation",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

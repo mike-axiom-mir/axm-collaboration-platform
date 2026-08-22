@@ -2,8 +2,13 @@
 
 (function () {
   const map = window.AXM_MODULE_FOOTPRINT_MAP;
+  const pressure = window.AXM_STORAGE_PRESSURE_MAP;
   const summaryGrid = document.getElementById('summary-grid');
   const moduleList = document.getElementById('module-list');
+  const pressureGrid = document.getElementById('pressure-summary-grid');
+  const classList = document.getElementById('class-list');
+  const duplicateList = document.getElementById('duplicate-list');
+  const fanoutList = document.getElementById('fanout-list');
 
   function make(tag, className, text) {
     const element = document.createElement(tag);
@@ -27,6 +32,12 @@
     const card = make('article', 'summary-card ' + tone);
     card.append(make('strong', null, value), make('span', null, label));
     summaryGrid.appendChild(card);
+  }
+
+  function pressureSummary(label, value, tone) {
+    const card = make('article', 'summary-card ' + tone);
+    card.append(make('strong', null, value), make('span', null, label));
+    pressureGrid.appendChild(card);
   }
 
   if (!map || map.schema !== 'axm.module-footprint-map/v1') {
@@ -58,4 +69,54 @@
     moduleList.appendChild(row);
   });
   if (!map.modules.length) moduleList.appendChild(make('p', 'empty', 'No top-level module manifests observed.'));
+
+  if (!pressure || pressure.schema !== 'axm.storage-pressure-map/v1') {
+    classList.appendChild(make('p', 'empty', 'Generate current-storage-pressure-map.js with storage-pressure-cli.js.'));
+    duplicateList.appendChild(make('p', 'empty', 'No pressure snapshot loaded.'));
+    fanoutList.appendChild(make('p', 'empty', 'No pressure snapshot loaded.'));
+    return;
+  }
+
+  document.getElementById('pressure-state').textContent = pressure.measuredAt + ' / ' + pressure.growth.state.replaceAll('_', ' ');
+  pressureSummary('Roots', pressure.summary.roots, 'neutral');
+  pressureSummary('All files', pressure.summary.files, 'good');
+  pressureSummary('Logical bytes', bytes(pressure.summary.logicalBytes), 'good');
+  pressureSummary('Allocated estimate', bytes(pressure.summary.allocatedBytesEstimate), 'hold');
+  pressureSummary('Duplicate bytes', bytes(pressure.summary.exactDuplicatePhysicalBytes), 'unknown');
+  pressureSummary('Duplicate groups', pressure.summary.exactDuplicateGroups, 'unknown');
+
+  pressure.retentionClasses.slice().sort((left, right) => right.logicalBytes - left.logicalBytes || left.id.localeCompare(right.id)).forEach(item => {
+    const row = make('article', 'row pressure-row');
+    row.append(
+      make('code', null, item.id.replaceAll('_', ' ')),
+      make('strong', null, bytes(item.logicalBytes)),
+      make('span', null, item.files + ' file(s)'),
+      make('small', null, item.exactDuplicateGroupMemberships + ' exact duplicate group membership(s)')
+    );
+    classList.appendChild(row);
+  });
+
+  pressure.exactDuplicateGroups.slice(0, 25).forEach(group => {
+    const first = group.paths[0];
+    const row = make('article', 'row pressure-row ' + (group.reviewState === 'LOWER_RISK_REVIEW' ? 'review-row' : 'hold-row'));
+    row.append(
+      make('code', null, bytes(group.redundantPhysicalBytes)),
+      make('strong', null, group.filePaths + ' equal path(s)'),
+      make('span', null, group.reviewState.replaceAll('_', ' ')),
+      make('small', null, first ? first.rootId + ':' + first.path : group.id)
+    );
+    duplicateList.appendChild(row);
+  });
+  if (!pressure.exactDuplicateGroups.length) duplicateList.appendChild(make('p', 'empty', 'No exact duplicate group observed in this snapshot.'));
+
+  pressure.directoryPressure.slice(0, 25).forEach(directory => {
+    const row = make('article', 'row pressure-row');
+    row.append(
+      make('code', null, directory.rootId),
+      make('strong', null, directory.immediateEntries + ' entries'),
+      make('span', null, directory.immediateFiles + ' files / ' + directory.immediateDirectories + ' folders'),
+      make('small', null, directory.path)
+    );
+    fanoutList.appendChild(row);
+  });
 }());

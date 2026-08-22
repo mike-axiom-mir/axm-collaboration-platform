@@ -1,0 +1,41 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.heartbeat-lease-monitor",
+  "name": "Heartbeat Lease Monitor",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "FOUNDATION",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "LOW",
+  "tags": [
+    "repair-seed",
+    "health-telemetry-lineage",
+    "local-first",
+    "dependency-free",
+    "no-automatic-canon"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Treat heartbeats as expiring leases with missed-beat coalescing, clock-skew tolerance, and false-alarm controls."
+  ],
+  "accepts": [
+    "axm.platform-heartbeat.beat/v1"
+  ],
+  "produces": [
+    "axm.heartbeat-lease.status/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Treat heartbeats as expiring leases with missed-beat coalescing, clock-skew tolerance, and false-alarm controls.",
+  "notes": "Standalone lower-level prototype for local intake. It has no install, publish, promotion, repair, permission, network, or CANON authority."
+}

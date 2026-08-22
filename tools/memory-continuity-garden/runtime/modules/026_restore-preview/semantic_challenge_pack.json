@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "CLOCK_FORCED_ORDER",
+      "expected": "HOLD_TIME_BASIS_UNCERTAIN",
+      "stimulus": "uncertain clocks are forced into total order"
+    }
+  ],
+  "category": 3,
+  "category_name": "3. Time, sessions, checkpoints, snapshots, and continuity gaps",
+  "full_semantic_implementation": false,
+  "number": 26,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Show what a restore would add, replace, preserve, conflict with, omit, or invalidate before any memory state changes.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "9a686e4c6162823e5e2244e3dbcb7a1a0a46fb4848b86a04ffc5762b2ac2ba13"
+  },
+  "source_contract_sha256": "5f25acb7214261698eb74ddbbce657ead7277674f59c2cfe398cc07e659af02f",
+  "stable_id": "axm.memory.restore-preview"
+}

@@ -1,0 +1,59 @@
+{
+  "schema": "axm.claim-evidence-route/v1",
+  "claims": [
+    {
+      "claim": "The comparison source is the exact verified retained v2.1 four-file schema packet.",
+      "evidenceKind": "TECHNICAL_LINEAGE_AND_ARTIFACT_EVIDENCE",
+      "evidence": ["blueprint-schema-compiler-v1 verifyCompilationArtifacts", "MATCH_RECEIPT.json source exactCompilationPacketVerified", "130-check focused selftest"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "One byte-identical inert packet copy is reported as MATCH deterministically.",
+      "evidenceKind": "DIRECT_BYTE_COMPARISON_AND_REPLAY_EVIDENCE",
+      "evidence": ["MATCH_RECEIPT.json", "direct Buffer equality", "reordered-input deterministic replay adversary"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A controlled one-byte packet change is reported as precise typed DRIFT without executing content.",
+      "evidenceKind": "ADVERSARIAL_BEHAVIORAL_EVIDENCE",
+      "evidence": ["DRIFT_RECEIPT.json", "per-file mutation adversaries", "malformed, missing, extra, and executable-like file adversaries"],
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The verifier uses no filesystem, Git, network, child process, packet execution, or lifecycle authority.",
+      "evidenceKind": "STATIC_AUTHORITY_SURFACE_AND_NEGATIVE_ADVERSARY_EVIDENCE",
+      "evidence": ["module contract", "profile schema", "static import scan", "authority-expansion adversaries", "receipt truth ceiling"],
+      "verdict": "PASS_WITH_SCOPE_LIMITS"
+    },
+    {
+      "claim": "Packet paths avoid common Windows portability aliases.",
+      "evidenceKind": "STATIC_PATH_BOUNDARY_AND_ADVERSARIAL_EVIDENCE",
+      "evidence": ["reserved device, drive, traversal, separator, trailing dot/space, alternate-stream, case collision, invalid-character, NFC, and segment-size adversaries"],
+      "verdict": "PASS_WITH_SCOPE_LIMITS"
+    },
+    {
+      "claim": "The unfinished mirror clone has complete Git objects, refs, remote delivery, recovery, and reliable full-clone behavior.",
+      "evidenceKind": "GIT_OBJECT_REF_TRANSPORT_AND_RECOVERY_EVIDENCE",
+      "evidence": [],
+      "verdict": "UNRUN"
+    },
+    {
+      "claim": "The interactive declaration cryptographically proves one informed human decision with replay prevention and live revocation.",
+      "evidenceKind": "HUMAN_AUTHENTICATION_AND_LIVE_AUTHORIZATION_EVIDENCE",
+      "evidence": [],
+      "verdict": "UNRUN"
+    },
+    {
+      "claim": "The Fabric may become a machine-wide default, persistent learner, installer, merger, promoter, or CANON authority.",
+      "evidenceKind": "HOST_AUTHORIZATION_AND_LONGITUDINAL_EVIDENCE",
+      "evidence": [],
+      "verdict": "NOT_AUTHORIZED"
+    },
+    {
+      "claim": "A visual surface rendered and responded to clicks.",
+      "evidenceKind": "LIVE_VISUAL_EVIDENCE",
+      "evidence": [],
+      "verdict": "NOT_APPLICABLE"
+    }
+  ]
+}

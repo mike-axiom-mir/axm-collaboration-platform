@@ -78,6 +78,7 @@ import {
 } from './atmosphere-biogeochemistry-vertical.mjs';
 import {
   SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA,
+  PREVIOUS_SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA,
   RUNOFF_BIOGEOCHEMISTRY_QUEUE_SCHEMA,
   SOIL_RUNOFF_MOBILIZATION_SCHEMA,
   RUNOFF_BIOGEOCHEMISTRY_TRANSFER_SCHEMA,
@@ -145,9 +146,9 @@ export {
 };
 
 export const EARTH_SYSTEM_COLUMN_SCHEMA = 'axm.foundation-planet.earth-system-column/v1';
-export const EARTH_SYSTEM_ENGINE_SCHEMA = 'axm.foundation-planet.earth-system-engine/v25';
+export const EARTH_SYSTEM_ENGINE_SCHEMA = 'axm.foundation-planet.earth-system-engine/v26';
 export const PREVIOUS_EARTH_SYSTEM_ENGINE_SCHEMA =
-  'axm.foundation-planet.earth-system-engine/v24';
+  'axm.foundation-planet.earth-system-engine/v25';
 export const EARTH_SYSTEM_FLUX_SCHEMA = 'axm.foundation-planet.earth-system-flux/v4';
 export const EARTH_CRYOSPHERE_PHASE_SCHEMA =
   'axm.foundation-planet.cryosphere-phase-receipt/v1';
@@ -2580,8 +2581,9 @@ function normalizeRestoredColumn(source) {
       substrate: column.substrate
     });
     column.land.soilBiogeochemistry =
-      column.land.soilBiogeochemistry?.schema ===
-        SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA
+      [SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA,
+        PREVIOUS_SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA].includes(
+        column.land.soilBiogeochemistry?.schema)
         ? normalizeSoilBiogeochemistry(column.land.soilBiogeochemistry)
         : emptyMigratedSoilBiogeochemistry();
     column.land.surfaceSediment = column.land.surfaceSediment?.schema ===
@@ -3238,7 +3240,7 @@ export function earthSystemDescription() {
     atmosphereBiogeochemistry: atmosphereBiogeochemistryDescription(),
     atmosphereBiogeochemistryVertical:
       atmosphereBiogeochemistryVerticalDescription(),
-    reservoirs: ['surface-pressure-dry-air-mass', 'eight-level-pressure-coordinate-dry-air-water-heat-and-momentum', 'eight-native-cloud-liquid-reservoirs', 'eight-native-cloud-ice-reservoirs', 'seven-native-pressure-interface-convective-kinetic-energy-reservoirs', 'boundary-layer-dry-air-compatibility-projection', 'free-troposphere-dry-air-compatibility-projection', 'independent-boundary-layer-eastward-and-northward-momentum', 'independent-free-troposphere-eastward-and-northward-momentum', 'column-convective-kinetic-energy-projection', 'local-atmosphere-carbon-dioxide-carbon', 'local-atmosphere-oxygen', 'local-atmosphere-nitrogen-gas', 'aged-land-snow', 'snow-on-sea-ice', 'surface-water', 'root-zone', 'deep-soil', 'groundwater', 'land-ecology-atmospheric-carbon-compatibility-mirror', 'live-biomass-carbon-and-nitrogen', 'litter-carbon-and-nitrogen', 'soil-organic-carbon-and-nitrogen', 'mineral-nitrogen', 'finite-dissolved-soil-water-carbon-nitrogen-phosphorus-and-oxygen', 'finite-clay-silt-sand-and-gravel-surface-sediment', 'runoff-routing-queue', 'persistent-runoff-biogeochemistry-queue', 'persistent-runoff-sediment-queue', 'external-persistent-river-reach-storage', 'persistent-coastal-suspended-and-deposited-sediment', 'ocean-mixed-layer', 'ocean-dissolved-inorganic-and-organic-carbon', 'ocean-phytoplankton-zooplankton-and-detritus', 'ocean-dissolved-nitrogen-phosphorus-and-oxygen', 'ocean-atmospheric-carbon-and-oxygen-compatibility-mirrors', 'deep-ocean-dissolved-carbon-nutrients-and-oxygen', 'deep-ocean-detritus', 'seafloor-buried-organic-carbon-nitrogen-and-phosphorus', 'sea-ice'],
+    reservoirs: ['surface-pressure-dry-air-mass', 'eight-level-pressure-coordinate-dry-air-water-heat-and-momentum', 'eight-native-cloud-liquid-reservoirs', 'eight-native-cloud-ice-reservoirs', 'seven-native-pressure-interface-convective-kinetic-energy-reservoirs', 'boundary-layer-dry-air-compatibility-projection', 'free-troposphere-dry-air-compatibility-projection', 'independent-boundary-layer-eastward-and-northward-momentum', 'independent-free-troposphere-eastward-and-northward-momentum', 'column-convective-kinetic-energy-projection', 'local-atmosphere-carbon-dioxide-carbon', 'local-atmosphere-oxygen', 'local-atmosphere-nitrogen-gas', 'aged-land-snow', 'snow-on-sea-ice', 'surface-water', 'root-zone', 'deep-soil', 'groundwater', 'land-ecology-atmospheric-carbon-compatibility-mirror', 'live-biomass-carbon-and-nitrogen', 'litter-carbon-and-nitrogen', 'soil-organic-carbon-and-nitrogen', 'mineral-nitrogen', 'finite-dissolved-soil-water-carbon-nitrogen-phosphorus-oxygen-and-alkalinity', 'finite-clay-silt-sand-and-gravel-surface-sediment', 'runoff-routing-queue', 'persistent-runoff-biogeochemistry-and-alkalinity-queue', 'persistent-runoff-sediment-queue', 'external-persistent-river-reach-storage', 'persistent-coastal-suspended-and-deposited-sediment', 'ocean-mixed-layer', 'ocean-dissolved-inorganic-and-organic-carbon', 'ocean-phytoplankton-zooplankton-and-detritus', 'ocean-dissolved-nitrogen-phosphorus-oxygen-and-alkalinity', 'ocean-atmospheric-carbon-and-oxygen-compatibility-mirrors', 'deep-ocean-dissolved-carbon-nutrients-and-oxygen', 'deep-ocean-detritus', 'seafloor-buried-organic-carbon-nitrogen-and-phosphorus', 'sea-ice'],
     fluxes: ['explicit-atmospheric-boundary-moisture-and-enthalpy', 'local-weather-pressure-momentum-and-two-band-thermal-boundary-forcing', 'loaded-neighbor-eight-level-dry-air-momentum-vapor-cloud-and-heat', 'native-pressure-level-vapor-to-cloud-condensation', 'native-pressure-level-cloud-to-vapor-evaporation', 'receipted-native-precipitation-descent-to-surface', 'seven-adjacent-native-equal-gross-dry-air-exchanges', 'native-adjacent-tracer-sensible-heat-and-tangent-momentum-exchange', 'seven-interface-virtual-temperature-buoyancy', 'seven-interface-bulk-entrainment-and-detrainment', 'explicit-updraft-and-compensating-downdraft-momentum', 'snowmelt', 'evaporation-to-boundary-layer', 'physiological-transpiration-to-boundary-layer', 'land-atmosphere-carbon-exchange', 'gross-primary-production', 'autotrophic-and-heterotrophic-respiration', 'litterfall', 'humification', 'nitrogen-uptake-and-mineralization', 'soil-water-to-runoff-queue-dissolved-carbon-nitrogen-phosphorus-and-oxygen', 'surface-runoff-detachment-of-finite-clay-silt-sand-and-gravel', 'same-water-fraction-runoff-sediment-routing', 'marine-primary-production', 'plankton-grazing-and-mortality', 'marine-community-respiration-and-remineralization', 'receipted-air-sea-carbon-and-oxygen-exchange', 'estuary-denitrification-to-local-atmospheric-nitrogen', 'marine-nitrogen-and-phosphorus-uptake', 'mixed-to-deep-dissolved-exchange', 'sinking-particle-export', 'deep-ocean-remineralization', 'seafloor-organic-burial', 'infiltration', 'recharge', 'capillary-rise', 'runoff-to-routing-queue', 'baseflow-to-routing-queue', 'runoff-queue-to-canonical-river-reach'],
     energy: ['native-liquid-ice-cloud-shortwave-optical-depth', 'native-liquid-ice-cloud-longwave-emissivity', 'eight-level-carbon-dioxide-grey-gas-longwave-adjustment', 'dynamic-vegetation-snow-and-sea-ice-albedo', 'canopy-roughness-sensible-exchange', 'shortwave', 'longwave', 'surface-latent', 'surface-snow-and-sea-ice-fusion', 'eight-level-atmospheric-phase-change-latent', 'eight-level-moist-enthalpy', 'native-adjacent-sensible-exchange', 'native-tangent-momentum-mixing-dissipation-to-sensible-heat', 'seven-interface-virtual-temperature-buoyancy-to-convective-kinetic-energy', 'seven-interface-convective-kinetic-energy-dissipation-to-sensible-heat', 'equal-gross-vertical-pressure-and-geopotential-work', 'surface-sensible', 'boundary-heat', 'surface-storage'],
     spatialModel: 'sparse canonical 0.25-degree surface columns with a conservative neighbor-transport commit seam',

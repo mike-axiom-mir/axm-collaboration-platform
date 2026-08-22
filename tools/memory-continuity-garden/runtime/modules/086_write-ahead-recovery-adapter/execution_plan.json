@@ -1,0 +1,106 @@
+{
+  "all_steps_bounded": true,
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "final_result_does_not_imply_owner_acceptance": true,
+  "identity": {
+    "category": "9. Integrity, drift, corruption, migration, recovery, and repair",
+    "name": "Write-Ahead and Journal Recovery Adapter",
+    "number": 86,
+    "stable_id": "axm.memory.write-ahead-recovery-adapter"
+  },
+  "no_implicit_parallel_apply": true,
+  "operation_kind": "GATED_COORDINATION",
+  "plan_is_reference_only": true,
+  "schema": "axm.memory.run80-execution-plan/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "0b8d5b581779a4d7721112d35c33254cf6bcb84e119246459b36c2851b72f132"
+  },
+  "source_run70_protocol_sha256": "780b227bac99c7b74726a6123d9270a1edaf080aa40b741b2250901efc61768f",
+  "step_count": 6,
+  "steps": [
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "admission_receipt",
+      "failure_result": "HOLD_ADMISSION",
+      "purpose": "validate exact scope, source, authority, and resource budget",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [],
+      "sequence": 1,
+      "side_effect_permitted": false,
+      "step_id": "ADMIT"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "participant_set",
+      "failure_result": "HOLD_PARTICIPANT",
+      "purpose": "verify participant identities, roles, permissions, and expiry",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "ADMIT"
+      ],
+      "sequence": 2,
+      "side_effect_permitted": false,
+      "step_id": "VALIDATE_PARTICIPANTS"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "return_packet_set",
+      "failure_result": "HOLD_RETURN_PACKET",
+      "purpose": "collect typed proposals or findings without accepting them",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "VALIDATE_PARTICIPANTS"
+      ],
+      "sequence": 3,
+      "side_effect_permitted": false,
+      "step_id": "COLLECT_BOUNDED_RETURNS"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "coordination_candidate",
+      "failure_result": "RECOVERY_HOLD",
+      "purpose": "compose a reviewable coordination result with no authority transfer",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "COLLECT_BOUNDED_RETURNS"
+      ],
+      "sequence": 4,
+      "side_effect_permitted": true,
+      "step_id": "COORDINATE_WITHOUT_OWNING"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": false,
+      "emits": "non_transfer_receipt",
+      "failure_result": "HOLD_AUTHORITY_TRANSFER",
+      "purpose": "prove no trust, identity, consent, authority, or CANON transfer",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "COORDINATE_WITHOUT_OWNING"
+      ],
+      "sequence": 5,
+      "side_effect_permitted": false,
+      "step_id": "VERIFY_NO_TRANSFER"
+    },
+    {
+      "cancellation_checked_before": true,
+      "checkpoint_after": true,
+      "emits": "coordination_receipt",
+      "failure_result": "HOLD_RECEIPT",
+      "purpose": "emit coordination proposal only",
+      "receiver_acceptance_implied": false,
+      "requires_steps": [
+        "VERIFY_NO_TRANSFER"
+      ],
+      "sequence": 6,
+      "side_effect_permitted": false,
+      "step_id": "EMIT_PROPOSAL"
+    }
+  ]
+}

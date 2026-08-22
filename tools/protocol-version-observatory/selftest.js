@@ -14,6 +14,10 @@ function check(label, action) {
   process.stdout.write('PASS ' + label + '\n');
 }
 
+const publishedManifest = require('./manifest.json');
+check('published manifest declares the modern schema', () => assert.equal(publishedManifest.schema, 'axm.tool-manifest/v1'));
+check('published manifest classifies the observatory as a product', () => assert.equal(publishedManifest.kind, 'product'));
+
 function writeJson(file, value) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, JSON.stringify(value, null, 2) + '\n');
@@ -101,7 +105,7 @@ try {
   module(fixtureRoot, 'contract-unknown', {
     accepts: ['axm.unknown/v1']
   }, null);
-  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'single'), path.join(fixtureRoot, 'tools', 'linked-single'));
+  fs.symlinkSync(path.join(fixtureRoot, 'tools', 'single'), path.join(fixtureRoot, 'tools', 'linked-single'), process.platform === 'win32' ? 'junction' : 'dir');
 
   const before = treeReceipt(fixtureRoot);
   const first = Core.scanWorkshop(fixtureRoot, { now: '2026-07-26T00:00:00Z' });

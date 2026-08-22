@@ -1,0 +1,55 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-capability-fabric",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "axm.code-capability-provider/v1",
+    "axm.code-capability-request/v1",
+    "axm.code-provider-host-observation/v1",
+    "axm.code-capability-route-plan/v1",
+    "code.capability.plan",
+    "code.capability.plan.verify"
+  ],
+  "consumes": [
+    "provider descriptors",
+    "exact descriptor digests",
+    "host-observed availability",
+    "explicit request authority policy",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.code-capability-route-plan/v1"],
+    "accepts": [
+      "axm.code-capability-request/v1",
+      "axm.code-capability-provider/v1",
+      "axm.code-provider-host-observation/v1"
+    ]
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "provider-code-loading",
+      "provider-code-execution",
+      "workspace-content-reading",
+      "source-or-candidate-mutation",
+      "process-execution",
+      "network-use",
+      "permission-grant",
+      "provider-self-asserted-availability",
+      "implicit-provider-choice-when-multiple-match",
+      "host-observation-as-execution-proof",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-canon",
+      "undefined-or-non-json-representable-state"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "axm.code-capability-fabric-schema-packet-mirror-verification-audit/v1",
+  "status": "PASS_WITH_OPEN_GAPS",
+  "findings": [
+    {
+      "id": "direct-byte-equality",
+      "severity": "HIGH",
+      "disposition": "ADDRESSED",
+      "finding": "MATCH now requires equal canonical paths and direct Buffer equality for every file. Digests remain lineage and receipt bindings, not the sole equality test."
+    },
+    {
+      "id": "strict-emitted-record-validation",
+      "severity": "HIGH",
+      "disposition": "ADDRESSED",
+      "finding": "Runtime normalizers close every request and receipt record, bound all arrays, reconstruct both packet digest rows from the file delta, verify counts and byte totals, reject duplicate categories, and enforce request, consent, profile, source-compiler, and packet reference lineage."
+    },
+    {
+      "id": "windows-path-aliases",
+      "severity": "HIGH",
+      "disposition": "PARTIAL",
+      "finding": "Traversal, absolute and drive paths, backslashes, case-insensitive collisions, alternate-stream colons, invalid Windows characters, trailing dots or spaces, reserved device names, non-NFC paths, and oversized segments are refused. Filesystem canonicalization and Windows short-name aliases remain unobserved."
+    },
+    {
+      "id": "resource-enforcement",
+      "severity": "HIGH",
+      "disposition": "PARTIAL",
+      "finding": "File count, per-file bytes, packet bytes, conservative total input bytes, and receipt output bytes are enforced. Duration, memory, and attempts across separate invocations are explicitly false because a stateless pure function cannot enforce them alone."
+    },
+    {
+      "id": "receipt-privacy",
+      "severity": "HIGH",
+      "disposition": "PARTIAL",
+      "finding": "Receipts retain paths, digests, lengths, issue codes, limitations, and truth ceilings but no file content, stdout, or stderr. Path privacy and the declared public data class are not independently verified."
+    },
+    {
+      "id": "mirror-scope-boundary",
+      "severity": "HIGH",
+      "disposition": "OPEN",
+      "finding": "The verifier proves one four-file Fabric packet copy only. Git objects, refs, remotes, sender and receiver transport receipts, clone completeness, recovery, and reliability over time remain unrun."
+    },
+    {
+      "id": "unfinished-mirror-clone",
+      "severity": "HIGH",
+      "disposition": "HELD_EXPERIMENTAL",
+      "finding": "The unfinished mirror-code-clone component was not imported, connected, executed, modified, installed, or promoted. The new verifier is a detached future input gate only."
+    },
+    {
+      "id": "strong-human-consent-proof",
+      "severity": "HIGH",
+      "disposition": "OPEN",
+      "finding": "The exact interactive declaration and grounded-consent scope are deterministic data bindings, not cryptographic natural-person authentication, replay prevention, informed-understanding proof, trusted time, or live revocation."
+    },
+    {
+      "id": "future-code-rights",
+      "severity": "HIGH",
+      "disposition": "MIKE_DECISION_REQUIRED",
+      "finding": "Direct reuse rights for future generated source remain undecided. This run copied no generated source and emitted no code."
+    },
+    {
+      "id": "future-executor",
+      "severity": "HIGH",
+      "disposition": "MIKE_DECISION_REQUIRED",
+      "finding": "A future repaired executor in a disposable sandbox remains unauthorized. No supplied or mirror experimental runtime was executed."
+    }
+  ]
+}

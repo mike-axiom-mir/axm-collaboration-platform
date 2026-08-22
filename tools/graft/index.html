@@ -15,6 +15,7 @@ button{font-family:inherit}
 .btn.ghost{border-color:var(--edge);background:transparent;color:var(--text)}
 input,textarea,select{background:#06080f;border:1px solid var(--edge);color:var(--text);border-radius:8px;padding:8px;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box}
 .row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:9px}
+.field{display:grid;gap:4px;flex:1;color:var(--muted);font-size:11px}
 .muted{color:var(--muted);font-size:12px}
 .mono{font-family:ui-monospace,monospace;font-size:11.5px}
 .state{border:1px solid var(--edge);border-radius:9px;padding:9px;background:#06080f;font-family:ui-monospace,monospace;font-size:11.5px;color:var(--muted)}
@@ -42,11 +43,11 @@ input,textarea,select{background:#06080f;border:1px solid var(--edge);color:var(
 
   <div class="card">
     <p class="cap">The idea to graft in</p>
-    <div class="row"><input id="iName" placeholder="name (e.g. Notes)" style="flex:2;min-width:150px"><input id="iId" placeholder="module id (e.g. notes)" style="flex:1;min-width:120px"></div>
-    <div class="row"><input id="iUses" placeholder="uses — capabilities, comma separated (e.g. storage, physics)"></div>
-    <div class="row"><input id="iLayer" placeholder="layer (open / private / ai-native)" style="flex:1"><input id="iPins" placeholder="pins (e.g. physics=2)" style="flex:1"></div>
-    <div class="row"><input id="iFiles" placeholder="new files, comma separated"></div>
-    <div class="row"><input id="iTouch" placeholder="existing files it modifies (leave blank if none)"></div>
+    <div class="row"><label class="field" style="flex:2;min-width:150px">Name<input id="iName" placeholder="name (e.g. Notes)"></label><label class="field" style="min-width:120px">Module ID<input id="iId" placeholder="module id (e.g. notes)"></label></div>
+    <div class="row"><label class="field">Capabilities used<input id="iUses" placeholder="uses — capabilities, comma separated (e.g. storage, physics)"></label></div>
+    <div class="row"><label class="field">Target layer<input id="iLayer" placeholder="layer (open / private / ai-native)"></label><label class="field">Version pins<input id="iPins" placeholder="pins (e.g. physics=2)"></label></div>
+    <div class="row"><label class="field">New files<input id="iFiles" placeholder="new files, comma separated"></label></div>
+    <div class="row"><label class="field">Existing files modified<input id="iTouch" placeholder="existing files it modifies (leave blank if none)"></label></div>
     <div class="row"><button class="btn" id="gen">Compute patch</button><button class="btn ghost" id="exp" style="display:none">Export patch</button></div>
   </div>
 
@@ -144,7 +145,7 @@ $('gen').onclick=function(){
 $('exp').onclick=function(){
   if(!PATCH) return;
   var b=new Blob([JSON.stringify(PATCH,null,2)],{type:'application/json'});
-  var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='graft-patch.json'; a.click();
+  var a=document.createElement('a'); var url=URL.createObjectURL(b); a.href=url; a.download='graft-patch.json'; a.click(); setTimeout(function(){URL.revokeObjectURL(url);},1000);
   AXMHub.log('graft patch exported for cross-check');
 };
 

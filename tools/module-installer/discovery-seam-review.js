@@ -29,11 +29,14 @@ const checks = [
   ['Existing module is backed up before replace', service.indexOf('U.copyTree(target, backup)') < service.indexOf("replaceFromFolder(source, record.moduleId, 'module install')")],
   ['Only one previous generation is retained', service.includes('retainOnlyBackup(record.moduleId, backupId)') && serviceTest.includes('retains exactly one previous generation')],
   ['Post-install failure exposes explicit rollback without auto-rollback', service.includes("machine.run('module-selftest'") && serviceTest.includes('without silently auto-rolling back') && app.includes('data-prepare-rollback')],
+  ['Post-install receipts are scoped to the current module digest', service.includes("currentDigestState = currentModuleDigest === record.digest ? 'MATCH' : 'DRIFT'") && service.includes('receiptAppliesToCurrentModule') && serviceTest.includes('bound to the exact current module digest')],
+  ['Historical receipts cannot retain direct rollback eligibility', service.includes('rollbackAvailable = rollbackBackupRetained && receiptAppliesToCurrentModule') && serviceTest.includes('disables direct rollback eligibility')],
+  ['UI labels stale or unmeasured receipts as historical', app.includes('HISTORICAL SELF-TEST') && app.includes('current verification is UNKNOWN')],
   ['UI mirrors both review eligibility and exact typed confirmation', app.includes('governance.installEligible') && app.includes("confirmInstall.value === 'INSTALL REVIEWED MODULE'")],
   ['Authority boundary is visible in plain language', html.includes('Evidence only') && html.includes('Never automatic') && html.includes('Digest rechecked before write')],
   ['Permission handoff selects the exact declared install permission', html.includes('module=module-installer&amp;permission=module.install')],
   ['Browser storage cannot shadow service truth', !/localStorage|sessionStorage/.test(app)],
-  ['Contract refuses authority collapse and automation', contract.boundaries.refuses.includes('review-approval-as-install-authority') && contract.boundaries.refuses.includes('automatic-install') && contract.boundaries.refuses.includes('automatic-promotion')],
+  ['Contract refuses authority collapse automation and historical proof reuse', contract.boundaries.refuses.includes('review-approval-as-install-authority') && contract.boundaries.refuses.includes('historical-selftest-receipt-as-current-proof') && contract.boundaries.refuses.includes('automatic-install') && contract.boundaries.refuses.includes('automatic-promotion')],
   ['Installer remains a TEST product behind the human gate', manifest.kind === 'product' && manifest.status === 'TEST']
 ];
 

@@ -15,6 +15,7 @@
   root.AXMPlatformHeartbeatClient = {
     status: function () { return request('/api/platform-heartbeat', 'GET').then(function (payload) { return payload.status; }); },
     configure: function (config) { return request('/api/platform-heartbeat/config', 'POST', config, 'explicit-heartbeat-config').then(function (payload) { return payload.status; }); },
+    configureMirrorLearning: function (config) { return request('/api/platform-heartbeat/mirror-learning/config', 'POST', config, 'explicit-mirror-learning-config').then(function (payload) { return payload.status; }); },
     manual: function (actorId) { return request('/api/platform-heartbeat/manual', 'POST', { actorId: actorId || 'mike' }, 'explicit-manual-beat'); },
     preview: function (count) { return request('/api/platform-heartbeat/preview', 'POST', { count: count || 5 }, 'heartbeat-preview-only').then(function (payload) { return payload.preview; }); }
   };

@@ -7,6 +7,7 @@ import {
   ATMOSPHERE_BIOGEOCHEMISTRY_LAYER_COUNT,
   ATMOSPHERE_BIOGEOCHEMISTRY_VERTICAL_TRANSPORT_SCHEMA,
   ATMOSPHERE_BIOSPHERE_GAS_FLUX_RECEIPT_SCHEMA,
+  ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA,
   ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG,
   ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA
 } from './atmosphere-biogeochemistry.mjs';
@@ -49,8 +50,13 @@ import {
   PREVIOUS_BASIN_ROUTING_STEP_SCHEMA
 } from './basin-routing.mjs';
 import {
+  RIVER_CHEMISTRY_INPUT_SCHEMA
+} from './river-chemistry.mjs';
+import {
   FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA,
   FLOODPLAIN_AEROBIC_MINERALIZATION_RECEIPT_SCHEMA,
+  FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
+  FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
   FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA,
   FLOODPLAIN_DETRITAL_RETURN_CREDIT_SCHEMA,
   FLOODPLAIN_PLANT_RESOURCE_DEBIT_SCHEMA,
@@ -83,6 +89,12 @@ import {
 import {
   FLOODPLAIN_RESPIRATION_RECEIPT_SCHEMA
 } from './floodplain-respiration.mjs';
+import {
+  FLOODPLAIN_DENITRIFICATION_RECEIPT_SCHEMA
+} from './floodplain-denitrification.mjs';
+import {
+  FLOODPLAIN_NITRIFICATION_RECEIPT_SCHEMA
+} from './floodplain-nitrification.mjs';
 import {
   FLOODPLAIN_GAS_EXCHANGE_PROCESS_RECEIPT_SCHEMA
 } from './floodplain-gas-exchange.mjs';
@@ -294,6 +306,12 @@ function soilRunoffBiogeochemistryCheck(column) {
   const mobilization = soil?.lastMobilizationReceipt;
   const valid = soil?.schema === SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA &&
     queue?.schema === RUNOFF_BIOGEOCHEMISTRY_QUEUE_SCHEMA &&
+    finite(soil?.pools?.alkalinityKgCaCO3Eqm2) &&
+    finite(queue?.pools?.alkalinityKgCaCO3Eqm2) &&
+    soil?.truth?.alkalinityIsAcidNeutralizingCapacityEquivalent === true &&
+    soil?.truth?.measuredAlkalinityClaimed === false &&
+    soil?.truth?.carbonateSpeciationResolved === false &&
+    soil?.truth?.pHResolved === false &&
     (!mobilization ||
       (mobilization.schema === SOIL_RUNOFF_MOBILIZATION_SCHEMA &&
        Object.values(mobilization.conservation || {})
@@ -303,13 +321,19 @@ function soilRunoffBiogeochemistryCheck(column) {
         RUNOFF_BIOGEOCHEMISTRY_TRANSFER_SCHEMA);
   return check('soil-runoff-biogeochemistry-lineage',
     valid ? 'PASS' : 'FAIL',
-    'Land retains finite soil-water C/N/P/O2 and a typed persistent runoff queue.', {
+    'Land retains finite soil-water C/N/P/O2/alkalinity and a typed persistent runoff queue.', {
       expectedSoilSchema: SOIL_BIOGEOCHEMISTRY_STATE_SCHEMA,
       actualSoilSchema: soil?.schema || null,
       expectedQueueSchema: RUNOFF_BIOGEOCHEMISTRY_QUEUE_SCHEMA,
       actualQueueSchema: queue?.schema || null,
       mobilizationSchema: mobilization?.schema || null,
-      migrationCheckpoint: soil?.migrationCheckpoint ?? null
+      migrationCheckpoint: soil?.migrationCheckpoint ?? null,
+      alkalinityMigrationCheckpoint:
+        soil?.alkalinityMigrationCheckpoint ?? null,
+      soilAlkalinityKgCaCO3Eqm2:
+        soil?.pools?.alkalinityKgCaCO3Eqm2 ?? null,
+      queueAlkalinityKgCaCO3Eqm2:
+        queue?.pools?.alkalinityKgCaCO3Eqm2 ?? null
     });
 }
 
@@ -466,6 +490,11 @@ function basinCheck(receipt) {
     receipt.truth?.landRunoffSedimentSenderDebited === true &&
     receipt.truth?.persistentRiverSuspendedAndBedSediment === true &&
     receipt.truth?.persistentFloodplainWaterChemistryAndSediment === true &&
+    receipt.truth?.persistentRiverAndFloodplainNitrateAmmoniumPools ===
+      true &&
+    receipt.truth?.exactNitrateAmmoniumReachTransport === true &&
+    receipt.truth?.nitrateAmmoniumConservationClosed === true &&
+    receipt.truth?.parameterizedRunoffDinSpeciation === true &&
     receipt.truth?.floodplainExchangeConservationClosed === true &&
     receipt.truth?.persistentFloodplainHabitatMemory === true &&
     receipt.truth?.floodplainHabitatPotentialOnly === true &&
@@ -516,6 +545,61 @@ function basinCheck(receipt) {
     receipt.truth?.floodplainRespirationAtmosphericGasExchangeModeled ===
       false &&
     receipt.truth?.floodplainRespirationAnaerobicPathwayModeled === false &&
+    receipt.truth?.persistentFloodplainDenitrification === true &&
+    receipt.truth?.floodplainDenitrificationOwnerReceiptsTyped === true &&
+    receipt.truth?.floodplainDenitrificationEvidenceBound === true &&
+    receipt.truth?.exactFloodplainDenitrificationTransferIds === true &&
+    receipt.truth
+      ?.floodplainDenitrificationCarbonNitrogenAndAlkalinityLedgersClosed ===
+      true &&
+    receipt.truth?.floodplainDenitrificationOxygenGated === true &&
+    receipt.truth?.floodplainDenitrificationNitrogenLimited === true &&
+    receipt.truth
+      ?.floodplainDenitrificationSurfaceTemperatureProxyResponsive ===
+      true &&
+    receipt.truth
+      ?.floodplainDenitrificationQ10TemperatureResponseParameterized ===
+      true &&
+    receipt.truth
+      ?.floodplainDenitrificationPersistentWaterTemperatureState ===
+      false &&
+    receipt.truth?.floodplainDenitrificationArrheniusKineticsResolved ===
+      false &&
+    receipt.truth
+      ?.floodplainDenitrificationReactiveNitrateEquivalentParameterized ===
+      false &&
+    receipt.truth?.floodplainDenitrificationNitrateSpeciationResolved ===
+      true &&
+    receipt.truth?.floodplainDenitrificationNitrateOnly === true &&
+    receipt.truth?.floodplainDenitrificationAmmoniumConsumption === false &&
+    receipt.truth?.floodplainDenitrificationIndependentCreation === false &&
+    receipt.truth?.persistentFloodplainNitrification === true &&
+    receipt.truth?.floodplainNitrificationOwnerReceiptsTyped === true &&
+    receipt.truth?.floodplainNitrificationEvidenceBound === true &&
+    receipt.truth?.exactFloodplainNitrificationTransferIds === true &&
+    receipt.truth
+      ?.floodplainNitrificationNitrogenOxygenAndAlkalinityLedgersClosed ===
+      true &&
+    receipt.truth?.floodplainNitrificationReactionModeled === true &&
+    receipt.truth?.floodplainNitrificationAmmoniumToNitrate === true &&
+    receipt.truth?.floodplainNitrificationDissolvedOxygenConsumed === true &&
+    receipt.truth
+      ?.floodplainNitrificationSurfaceTemperatureProxyResponsive === true &&
+    receipt.truth
+      ?.floodplainNitrificationQ10TemperatureResponseParameterized === true &&
+    receipt.truth?.floodplainNitrificationNitriteIntermediateResolved ===
+      false &&
+    receipt.truth?.floodplainNitrificationAlkalinityDemandDiagnostic ===
+      false &&
+    receipt.truth
+      ?.floodplainNitrificationAlkalinityMaterialOwnerDebited === true &&
+    receipt.truth?.persistentEndToEndAlkalinityLedger === true &&
+    receipt.truth?.alkalinityIsAcidNeutralizingCapacityEquivalent ===
+      true &&
+    receipt.truth?.alkalinityCarbonateSpeciationResolved === false &&
+    receipt.truth?.alkalinityPHResolved === false &&
+    receipt.truth?.floodplainNitrificationPHFeedbackModeled === false &&
+    receipt.truth?.floodplainNitrificationIndependentCreation === false &&
     receipt.truth?.persistentFloodplainAtmosphereGasExchange === true &&
     receipt.truth?.floodplainGasExchangeOwnerReceiptsTyped === true &&
     receipt.truth?.floodplainGasExchangeEvidenceBound === true &&
@@ -524,6 +608,9 @@ function basinCheck(receipt) {
     receipt.truth?.floodplainGasExchangeUsesNativeAtmosphereSurfaceLayer ===
       true &&
     receipt.truth?.floodplainGasExchangeIndependentCreation === false &&
+    receipt.truth
+      ?.floodplainGasExchangeBidirectionalCarbonGradientParameterized ===
+      true &&
     receipt.truth?.floodplainGasExchangeBidirectionalHenryLawSolved ===
       false &&
     receipt.truth?.grainSelectiveRiverAndMouthDeposition === true &&
@@ -533,18 +620,23 @@ function basinCheck(receipt) {
   const inletLineageValid = (receipt.inletReceipts || []).every(entry =>
       entry.transferId === entry.runoffBiogeochemistrySenderDebit?.transferId &&
       entry.transferId === entry.riverChemistryInput?.transferId &&
+      entry.riverChemistryInput?.schema === RIVER_CHEMISTRY_INPUT_SCHEMA &&
+      entry.riverChemistryInput?.truth
+        ?.nitrateAndAmmoniumReceiverPoolsCredited === true &&
+      entry.riverChemistryInput?.truth
+        ?.measuredInputSpeciationClaimed === false &&
       entry.runoffSedimentSenderDebit?.schema ===
         RUNOFF_SEDIMENT_TRANSFER_SCHEMA &&
       entry.riverSedimentInput?.schema === RIVER_SEDIMENT_INPUT_SCHEMA &&
       entry.transferId === entry.runoffSedimentSenderDebit?.transferId &&
       entry.transferId === entry.riverSedimentInput?.transferId);
-  const coupledShapeValid = coupled.length === 11;
+  const coupledShapeValid = coupled.length === 12;
   const coupledResidualsClosed = coupled.every(([, value]) =>
     close(value, 1));
   const valid = schemaCurrent && truthBoundaryValid && inletLineageValid &&
     coupledShapeValid && coupledResidualsClosed;
   return check('basin-routing-receipt', valid ? 'PASS' : 'FAIL',
-    'Loaded basin routing closes water including live tissue water, aquatic plus plant P, land-floodplain plant C/N and four mineral grain classes.', {
+    'Loaded basin routing closes water, reaction-ledgered alkalinity, aquatic plus plant P, land-floodplain plant C/N and four mineral grain classes.', {
       expectedSchema: BASIN_ROUTING_STEP_SCHEMA,
       actualSchema: receipt.schema || null,
       toleranceKg: 1,
@@ -563,6 +655,84 @@ function basinCheck(receipt) {
           receipt.truth?.exactLandRunoffRiverTransferIds ?? null,
         exactLandRunoffRiverSedimentTransferIds:
           receipt.truth?.exactLandRunoffRiverSedimentTransferIds ?? null
+      },
+      receiptDigest: receipt.digest || null
+    });
+}
+
+function alkalinityLedgerCheck(receipt) {
+  const claim = 'Alkalinity is a persistent kg-CaCO3-equivalent capacity ledger from soil runoff through river/floodplain, estuary and ocean mixed-layer owners, with explicit nitrification sinks and denitrification sources.';
+  if (!receipt) {
+    return check('end-to-end-alkalinity-ledger', 'NOT_APPLICABLE', claim,
+      { reason: 'no basin receipt supplied' }, { required: false });
+  }
+  if (receipt.schema === PREVIOUS_BASIN_ROUTING_STEP_SCHEMA) {
+    return check('end-to-end-alkalinity-ledger', 'NOT_APPLICABLE', claim, {
+      reason: 'legacy basin receipt predates persistent alkalinity ownership',
+      expectedSchema: BASIN_ROUTING_STEP_SCHEMA,
+      actualSchema: receipt.schema
+    }, { required: false });
+  }
+  const conservationKeys = [
+    'runoffAlkalinityResidualKgCaCO3Eq',
+    'riverAlkalinityResidualKgCaCO3Eq',
+    'estuaryAlkalinityResidualKgCaCO3Eq',
+    'alkalinityResidualKgCaCO3Eq',
+    'coupledAlkalinityResidualKgCaCO3Eq',
+    'floodplainDenitrificationAlkalinityOwnerResidualKgCaCO3Eq',
+    'floodplainDenitrificationAlkalinityStoichiometryResidualKgCaCO3Eq',
+    'floodplainNitrificationAlkalinityOwnerResidualKgCaCO3Eq',
+    'floodplainNitrificationAlkalinityStoichiometryResidualKgCaCO3Eq'
+  ];
+  const conservation = Object.fromEntries(conservationKeys.map(key =>
+    [key, receipt.conservation?.[key]]));
+  const conservationValid = Object.values(conservation).every(value =>
+    close(value, 1));
+  const inletsValid = (receipt.inletReceipts || []).every(entry =>
+    finite(entry.runoffBiogeochemistrySenderDebit?.debitedPoolsKg
+      ?.alkalinityKgCaCO3Eq) &&
+    finite(entry.riverChemistryInput?.pools?.alkalinityKgCaCO3Eq) &&
+    entry.riverChemistryInput?.truth?.alkalinitySenderDebited === true &&
+    entry.riverChemistryInput?.truth?.alkalinityReceiverPoolCredited ===
+      true);
+  const routesValid = (receipt.routeReceipts || []).every(entry => {
+    const pools = entry.chemistryTransfer?.pools ||
+      entry.riverChemistrySenderDebit?.pools;
+    if (!pools) return true;
+    if (!finite(pools.alkalinityKgCaCO3Eq)) return false;
+    if (!entry.oceanEcologyBoundaryInput) return true;
+    return close(entry.oceanEcologyBoundaryInput.conservation
+      ?.alkalinityResidualKgCaCO3Eq, 1e-7) &&
+      entry.oceanEcologyBoundaryInput.truth
+        ?.alkalinitySenderDebited === true &&
+      entry.oceanEcologyBoundaryInput.truth
+        ?.alkalinityReceiverPoolCredited === true;
+  });
+  const truthValid =
+    receipt.truth?.persistentEndToEndAlkalinityLedger === true &&
+    receipt.truth?.alkalinityIsAcidNeutralizingCapacityEquivalent ===
+      true &&
+    receipt.truth?.floodplainNitrificationAlkalinityMaterialOwnerDebited ===
+      true &&
+    receipt.truth
+      ?.floodplainDenitrificationCarbonNitrogenAndAlkalinityLedgersClosed ===
+      true &&
+    receipt.truth?.alkalinityCarbonateSpeciationResolved === false &&
+    receipt.truth?.alkalinityPHResolved === false;
+  const valid = receipt.schema === BASIN_ROUTING_STEP_SCHEMA &&
+    conservationValid && inletsValid && routesValid && truthValid;
+  return check('end-to-end-alkalinity-ledger', valid ? 'PASS' : 'FAIL',
+    claim, {
+      expectedSchema: BASIN_ROUTING_STEP_SCHEMA,
+      actualSchema: receipt.schema || null,
+      unit: 'kg-CaCO3-equivalent',
+      conservation,
+      criteria: { conservationValid, inletsValid, routesValid, truthValid },
+      boundaries: {
+        measuredAlkalinityClaimed: false,
+        carbonateSpeciationResolved: false,
+        pHResolved: false,
+        deepOceanAlkalinityExchange: false
       },
       receiptDigest: receipt.digest || null
     });
@@ -1029,8 +1199,11 @@ function floodplainDecompositionCheck(receipt) {
       ['standingDead', 'litter'].includes(allocation.pool)) &&
     close(entry.closure?.carbonResidualKgC, 1e-7) &&
     close(entry.closure?.nitrogenResidualKgN, 1e-7) &&
+    close(entry.closure?.ammoniumNitrogenResidualKgN, 1e-7) &&
     close(entry.closure?.phosphorusResidualKgP, 1e-9) &&
     entry.truth?.persistentFloodplainChemistryReceiverCredited === true &&
+    entry.truth?.detritalNitrogenCreditedToAmmoniumPool === true &&
+    entry.truth?.nitratePoolUnchanged === true &&
     entry.truth?.carbonNitrogenPhosphorusClosed === true &&
     entry.truth?.localReceiverOnly === true &&
     entry.truth?.soilReceiverModeled === false &&
@@ -1289,6 +1462,476 @@ function floodplainRespirationCheck(receipt) {
     });
 }
 
+function floodplainDenitrificationCheck(receipt) {
+  const claim = 'Floodplain DOC and owned nitrate-N become local DIC, alkalinity and native surface-layer atmospheric N2 only through paired, oxygen-gated, surface-temperature-responsive owner receipts; ammonium remains untouched.';
+  if (!receipt) {
+    return check('floodplain-denitrification-receipts', 'NOT_APPLICABLE',
+      claim, { reason: 'no basin receipt supplied' }, { required: false });
+  }
+  if (receipt.schema === PREVIOUS_BASIN_ROUTING_STEP_SCHEMA) {
+    return check('floodplain-denitrification-receipts', 'NOT_APPLICABLE',
+      claim, {
+        reason: 'legacy basin receipt predates persistent floodplain denitrification',
+        expectedSchema: BASIN_ROUTING_STEP_SCHEMA,
+        actualSchema: receipt.schema
+      }, { required: false });
+  }
+  const processes = receipt.floodplainDenitrificationProcessReceipts;
+  const floodplainOwners =
+    receipt.floodplainDenitrificationReactionReceipts;
+  const atmosphereOwners =
+    receipt.atmosphereFloodplainDenitrificationReceipts;
+  const receiptShapeValid = Array.isArray(processes) &&
+    Array.isArray(floodplainOwners) && Array.isArray(atmosphereOwners) &&
+    floodplainOwners.length === atmosphereOwners.length;
+  const reactionByTransfer = new Map((floodplainOwners || []).map(entry =>
+    [entry.transferId, entry]));
+  const atmosphereByTransfer = new Map((atmosphereOwners || []).map(entry =>
+    [entry.transferId, entry]));
+  const floodplainOwnerReceiptsValid = receiptShapeValid &&
+    floodplainOwners.every(entry =>
+      entry?.schema ===
+        FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA &&
+      typeof entry.transferId === 'string' && entry.transferId.length > 0 &&
+      typeof entry.reachId === 'string' && entry.reachId.length > 0 &&
+      close(entry.closure?.dissolvedOrganicCarbonDebitResidualKgC, 1e-7) &&
+      close(entry.closure?.dissolvedInorganicCarbonCreditResidualKgC,
+        1e-7) &&
+      close(entry.closure?.carbonResidualKgC, 1e-7) &&
+      close(entry.closure?.dissolvedNitrateNitrogenDebitResidualKgN,
+        1e-7) &&
+      close(entry.closure?.dissolvedAmmoniumNitrogenResidualKgN,
+        1e-7) &&
+      close(entry.closure?.dissolvedInorganicNitrogenDebitResidualKgN,
+        1e-7) &&
+      close(entry.closure?.nitrogenGasBoundaryResidualKgN, 1e-7) &&
+      close(entry.closure?.nitrogenResidualKgN, 1e-7) &&
+      close(entry.closure?.stoichiometricNitrogenResidualKgN, 1e-7) &&
+      close(entry.closure?.alkalinityCreditResidualKgCaCO3Eq, 1e-7) &&
+      close(entry.closure
+        ?.stoichiometricAlkalinityResidualKgCaCO3Eq, 1e-7) &&
+      entry.truth?.persistentFloodplainChemistryMutated === true &&
+      entry.truth?.localDocToDicCarbonClosed === true &&
+      entry.truth?.nitrogenGasBoundaryClosed === true &&
+      entry.truth?.dissolvedNitrateNitrogenSenderDebited === true &&
+      entry.truth?.alkalinityReceiverCredited === true &&
+      entry.truth?.denitrificationAlkalinityClosed === true &&
+      entry.truth?.dissolvedAmmoniumNitrogenUntouched === true &&
+      entry.truth?.dissolvedInorganicNitrogenTreatedAsFullyNitrate ===
+        false &&
+      entry.truth?.nitrateSpeciationResolved === true &&
+      entry.truth?.nitrateAndAmmoniumMaterialPools === true &&
+      entry.truth?.nitritePoolResolved === false &&
+      entry.truth?.independentCarbonCreation === false &&
+      entry.truth?.independentNitrogenCreation === false);
+  const atmosphereOwnerReceiptsValid = receiptShapeValid &&
+    atmosphereOwners.every(entry =>
+      entry?.schema === ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA &&
+      entry.sourceKind === 'floodplain-denitrification' &&
+      typeof entry.transferId === 'string' && entry.transferId.length > 0 &&
+      typeof entry.sourceReachId === 'string' &&
+        entry.sourceReachId.length > 0 &&
+      typeof entry.sourceReceiptDigest === 'string' &&
+        entry.sourceReceiptDigest.length > 0 &&
+      same(entry.inputs?.carbonKgC, 0) &&
+      same(entry.inputs?.oxygenKgO2, 0) &&
+      Number(entry.inputs?.nitrogenKgN) >= 0 &&
+      entry.receiverCredits?.nativeLayerIndex === 0 &&
+      close(entry.conservation?.carbonResidualKgC, 1e-7) &&
+      close(entry.conservation?.oxygenResidualKgO2, 1e-7) &&
+      close(entry.conservation?.nitrogenResidualKgN, 1e-7) &&
+      entry.truth?.persistentAtmosphericReceiver === true &&
+      entry.truth?.nativePressureLayerComposition === true &&
+      entry.truth?.surfaceLayerCoupled === true &&
+      entry.truth?.exactTransferIdentity === true);
+  const processReceiptsValid = receiptShapeValid && processes.every(entry =>
+    entry?.schema === FLOODPLAIN_DENITRIFICATION_RECEIPT_SCHEMA &&
+    typeof entry.transferId === 'string' && entry.transferId.length > 0 &&
+    typeof entry.reachId === 'string' && entry.reachId.length > 0 &&
+    entry.truth?.persistentDenitrificationProcessMemory === true &&
+    entry.truth?.floodplainChemistryOwnership === false &&
+    entry.truth?.atmosphereNitrogenOwnership === false &&
+    entry.truth?.pairedOwnerReceiptsRequiredWhenAtmosphereLoaded === true &&
+    entry.truth?.oxygenGated === true &&
+    entry.truth?.nitrogenLimited === true &&
+    entry.truth?.alkalinityGenerationClosureRequired === true &&
+    entry.truth?.surfaceTemperatureProxyResponsive === true &&
+    entry.truth?.q10TemperatureResponseParameterized === true &&
+    entry.truth?.persistentFloodplainWaterTemperatureState === false &&
+    entry.truth?.resolvedFloodplainFreezeThawState === false &&
+    entry.truth?.arrheniusKineticsResolved === false &&
+    entry.truth?.reactiveNitrateEquivalentFractionParameterized === false &&
+    entry.truth?.dissolvedInorganicNitrogenTreatedAsFullyNitrate === false &&
+    entry.truth?.nitrateSpeciationResolved === true &&
+    entry.truth?.nitrateAndAmmoniumMaterialPools === true &&
+    entry.truth?.nitrateOnlyDenitrification === true &&
+    entry.truth?.ammoniumConsumedByDenitrification === false &&
+    entry.truth?.nitritePoolResolved === false &&
+    entry.truth?.nitrificationReactionModeled === false &&
+    entry.truth?.microbialPopulationsResolved === false &&
+    entry.truth?.mechanisticRedoxModel === false &&
+    entry.truth
+      ?.surfaceTemperatureForcingUsedAsWaterTemperatureProxy === true &&
+    finite(entry.activity?.waterTemperatureC) &&
+    finite(entry.activity?.referenceTemperatureC) &&
+    Number(entry.activity?.temperatureQ10) >= .5 &&
+    Number(entry.activity?.temperatureQ10) <= 4 &&
+    Number(entry.activity?.temperatureResponseFactor) >= .05 &&
+    Number(entry.activity?.temperatureResponseFactor) <= 4 &&
+    typeof entry.activity?.temperatureConstrained === 'boolean' &&
+    finite(entry.activity?.availableDissolvedNitrateNitrogenKgN) &&
+    finite(entry.activity?.availableDissolvedAmmoniumNitrogenKgN) &&
+    entry.truth?.scientificCalibrationClaimed === false);
+  const lineageValid = receiptShapeValid && processes.every(entry => {
+    if (entry.atmosphereCellId == null) {
+      return entry.reactionReceiptDigest == null &&
+        entry.atmosphereReceiptDigest == null &&
+        !reactionByTransfer.has(entry.transferId) &&
+        !atmosphereByTransfer.has(entry.transferId);
+    }
+    const floodplainOwner = reactionByTransfer.get(entry.transferId);
+    const atmosphereOwner = atmosphereByTransfer.get(entry.transferId);
+    return floodplainOwner?.digest === entry.reactionReceiptDigest &&
+      atmosphereOwner?.digest === entry.atmosphereReceiptDigest &&
+      floodplainOwner?.reachId === entry.reachId &&
+      atmosphereOwner?.sourceReachId === entry.reachId &&
+      atmosphereOwner?.sourceReceiptDigest === floodplainOwner?.digest;
+  });
+  const quantitiesPaired = receiptShapeValid && processes.every(entry => {
+    if (entry.atmosphereCellId == null) return true;
+    const floodplainOwner = reactionByTransfer.get(entry.transferId);
+    const atmosphereOwner = atmosphereByTransfer.get(entry.transferId);
+    return ['dissolvedOrganicCarbonConsumedKgC',
+      'dissolvedInorganicCarbonProducedKgC',
+      'dissolvedNitrateNitrogenConsumedKgN',
+      'nitrogenGasProducedKgN',
+      'alkalinityGeneratedKgCaCO3Eq'].every(key =>
+      same(entry.reaction?.[key], floodplainOwner?.reaction?.[key], 1e-7)) &&
+      same(entry.reaction?.nitrogenGasProducedKgN,
+        atmosphereOwner?.inputs?.nitrogenKgN, 1e-7);
+  });
+  const transitionsValid = receiptShapeValid && processes.every(entry => {
+    const magnitude = Object.values(entry.reaction || {}).reduce(
+      (sum, value) => sum + Number(value || 0), 0);
+    if (entry.status ===
+      'initialized-after-v18-migration-no-invented-history') {
+      return Math.abs(magnitude) < 1e-12 &&
+        entry.truth?.migrationInventedHistory === false;
+    }
+    if (entry.status === 'atmosphere-unloaded-no-denitrification') {
+      return Math.abs(magnitude) < 1e-12 && entry.atmosphereCellId == null;
+    }
+    if (entry.status === 'life-disabled-dormant') {
+      return Math.abs(magnitude) < 1e-12 &&
+        entry.truth?.denitrificationPoolsFrozen === true;
+    }
+    return ['nitrogen-limited-anoxic-denitrification',
+      'temperature-constrained-anoxic-denitrification',
+      'anoxic-doc-denitrification', 'oxic-no-denitrification',
+      'denitrification-maintained-no-reactive-doc-or-nitrate']
+      .includes(entry.status) &&
+      entry.truth?.pairedOwnerReceiptsPresent === true &&
+      entry.truth?.exactTransferIdentity === true &&
+      entry.truth?.ownerLedgersClosed === true;
+  });
+  const conservationValid = [
+    receipt.conservation?.floodplainDenitrificationCarbonResidualKgC,
+    receipt.conservation
+      ?.floodplainDenitrificationNitrogenReactionResidualKgN,
+    receipt.conservation
+      ?.floodplainAtmosphereDenitrificationTransferResidualKgN,
+    receipt.conservation?.floodplainDenitrificationOwnerResidualKgN,
+    receipt.conservation?.atmosphereDenitrificationOwnerResidualKgN,
+    receipt.conservation
+      ?.floodplainDenitrificationAlkalinityOwnerResidualKgCaCO3Eq,
+    receipt.conservation
+      ?.floodplainDenitrificationAlkalinityStoichiometryResidualKgCaCO3Eq
+  ].every(value => close(value, 1));
+  const basinTruthValid =
+    receipt.truth?.persistentFloodplainDenitrification === true &&
+    receipt.truth?.floodplainDenitrificationOwnerReceiptsTyped === true &&
+    receipt.truth?.floodplainDenitrificationEvidenceBound === true &&
+    receipt.truth?.exactFloodplainDenitrificationTransferIds === true &&
+    receipt.truth
+      ?.floodplainDenitrificationCarbonNitrogenAndAlkalinityLedgersClosed ===
+      true &&
+    receipt.truth?.floodplainDenitrificationOxygenGated === true &&
+    receipt.truth?.floodplainDenitrificationNitrogenLimited === true &&
+    receipt.truth
+      ?.floodplainDenitrificationSurfaceTemperatureProxyResponsive ===
+      true &&
+    receipt.truth
+      ?.floodplainDenitrificationQ10TemperatureResponseParameterized ===
+      true &&
+    receipt.truth
+      ?.floodplainDenitrificationPersistentWaterTemperatureState ===
+      false &&
+    receipt.truth?.floodplainDenitrificationArrheniusKineticsResolved ===
+      false &&
+    receipt.truth
+      ?.floodplainDenitrificationReactiveNitrateEquivalentParameterized ===
+      false &&
+    receipt.truth?.floodplainDenitrificationNitrateSpeciationResolved ===
+      true &&
+    receipt.truth?.persistentRiverAndFloodplainNitrateAmmoniumPools ===
+      true &&
+    receipt.truth?.exactNitrateAmmoniumWaterFractionTransport === true &&
+    receipt.truth?.parameterizedRunoffDinSpeciation === true &&
+    receipt.truth?.measuredRunoffDinSpeciation === false &&
+    receipt.truth?.floodplainDenitrificationNitrateOnly === true &&
+    receipt.truth?.floodplainDenitrificationAmmoniumConsumption === false &&
+    receipt.truth?.floodplainDenitrificationIndependentCreation === false;
+  const valid = receipt.schema === BASIN_ROUTING_STEP_SCHEMA &&
+    receiptShapeValid && floodplainOwnerReceiptsValid &&
+    atmosphereOwnerReceiptsValid && processReceiptsValid && lineageValid &&
+    quantitiesPaired && transitionsValid && conservationValid &&
+    basinTruthValid;
+  return check('floodplain-denitrification-receipts',
+    valid ? 'PASS' : 'FAIL', claim, {
+      expectedBasinSchema: BASIN_ROUTING_STEP_SCHEMA,
+      actualBasinSchema: receipt.schema || null,
+      expectedProcessSchema: FLOODPLAIN_DENITRIFICATION_RECEIPT_SCHEMA,
+      expectedFloodplainOwnerSchema:
+        FLOODPLAIN_DENITRIFICATION_REACTION_RECEIPT_SCHEMA,
+      expectedAtmosphereOwnerSchema:
+        ATMOSPHERE_GAS_BOUNDARY_INPUT_RECEIPT_SCHEMA,
+      processReceiptCount: Array.isArray(processes)
+        ? processes.length : null,
+      pairedOwnerReceiptCount: Array.isArray(floodplainOwners)
+        ? floodplainOwners.length : null,
+      criteria: { receiptShapeValid, floodplainOwnerReceiptsValid,
+        atmosphereOwnerReceiptsValid, processReceiptsValid, lineageValid,
+        quantitiesPaired, transitionsValid, conservationValid,
+        basinTruthValid },
+      conservation: {
+        carbonResidualKgC: receipt.conservation
+          ?.floodplainDenitrificationCarbonResidualKgC ?? null,
+        nitrogenReactionResidualKgN: receipt.conservation
+          ?.floodplainDenitrificationNitrogenReactionResidualKgN ?? null,
+        atmosphereTransferResidualKgN: receipt.conservation
+          ?.floodplainAtmosphereDenitrificationTransferResidualKgN ?? null,
+        floodplainOwnerResidualKgN: receipt.conservation
+          ?.floodplainDenitrificationOwnerResidualKgN ?? null,
+        atmosphereOwnerResidualKgN: receipt.conservation
+          ?.atmosphereDenitrificationOwnerResidualKgN ?? null,
+        alkalinityOwnerResidualKgCaCO3Eq: receipt.conservation
+          ?.floodplainDenitrificationAlkalinityOwnerResidualKgCaCO3Eq ??
+          null,
+        alkalinityStoichiometryResidualKgCaCO3Eq: receipt.conservation
+          ?.floodplainDenitrificationAlkalinityStoichiometryResidualKgCaCO3Eq ??
+          null
+      },
+      receiptDigest: receipt.digest || null
+    });
+}
+
+function floodplainNitrificationCheck(receipt) {
+  const claim = 'Floodplain ammonium-N becomes nitrate-N only through an oxygen- and alkalinity-stoichiometric local owner receipt; total DIN closes and the persistent alkalinity owner is debited.';
+  if (!receipt) {
+    return check('floodplain-nitrification-receipts', 'NOT_APPLICABLE',
+      claim, { reason: 'no basin receipt supplied' }, { required: false });
+  }
+  if (receipt.schema === PREVIOUS_BASIN_ROUTING_STEP_SCHEMA) {
+    return check('floodplain-nitrification-receipts', 'NOT_APPLICABLE',
+      claim, {
+        reason: 'legacy basin receipt predates floodplain nitrification',
+        expectedSchema: BASIN_ROUTING_STEP_SCHEMA,
+        actualSchema: receipt.schema
+      }, { required: false });
+  }
+  const processes = receipt.floodplainNitrificationProcessReceipts;
+  const owners = receipt.floodplainNitrificationReactionReceipts;
+  const receiptShapeValid = Array.isArray(processes) &&
+    Array.isArray(owners) && processes.length === owners.length;
+  const ownerByTransfer = new Map((owners || []).map(entry =>
+    [entry.transferId, entry]));
+  const ownerReceiptsValid = receiptShapeValid && owners.every(entry =>
+    entry?.schema === FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA &&
+    typeof entry.transferId === 'string' && entry.transferId.length > 0 &&
+    typeof entry.reachId === 'string' && entry.reachId.length > 0 &&
+    close(entry.closure
+      ?.dissolvedAmmoniumNitrogenDebitResidualKgN, 1e-7) &&
+    close(entry.closure
+      ?.dissolvedNitrateNitrogenCreditResidualKgN, 1e-7) &&
+    close(entry.closure?.dissolvedInorganicNitrogenResidualKgN, 1e-7) &&
+    close(entry.closure?.dissolvedOxygenDebitResidualKgO2, 1e-7) &&
+    close(entry.closure?.stoichiometricOxygenResidualKgO2, 1e-7) &&
+    close(entry.closure?.alkalinityDebitResidualKgCaCO3Eq, 1e-7) &&
+    close(entry.closure
+      ?.stoichiometricAlkalinityResidualKgCaCO3Eq, 1e-7) &&
+    entry.truth?.persistentFloodplainChemistryMutated === true &&
+    entry.truth?.localFloodplainChemistryOnly === true &&
+    entry.truth?.dissolvedAmmoniumNitrogenSenderDebited === true &&
+    entry.truth?.dissolvedNitrateNitrogenReceiverCredited === true &&
+    entry.truth?.dissolvedOxygenSenderDebited === true &&
+    entry.truth?.alkalinitySenderDebited === true &&
+    entry.truth?.ammoniumToNitrateNitrogenClosed === true &&
+    entry.truth?.dissolvedOxygenConsumptionClosed === true &&
+    entry.truth?.alkalinityConsumptionClosed === true &&
+    entry.truth?.alkalinityDemandDiagnosticOnly === false &&
+    entry.truth?.alkalinityMaterialOwnerDebited === true &&
+    entry.truth?.pHFeedbackModeled === false &&
+    entry.truth?.nitriteIntermediateResolved === false &&
+    entry.truth?.independentNitrogenCreation === false &&
+    entry.truth?.independentOxygenCreation === false);
+  const processReceiptsValid = receiptShapeValid && processes.every(entry =>
+    entry?.schema === FLOODPLAIN_NITRIFICATION_RECEIPT_SCHEMA &&
+    typeof entry.transferId === 'string' && entry.transferId.length > 0 &&
+    typeof entry.reachId === 'string' && entry.reachId.length > 0 &&
+    entry.truth?.persistentNitrificationProcessMemory === true &&
+    entry.truth?.floodplainChemistryOwnership === false &&
+    entry.truth?.localAmmoniumSenderRequired === true &&
+    entry.truth?.localNitrateReceiverRequired === true &&
+    entry.truth?.localDissolvedOxygenSenderRequired === true &&
+    entry.truth?.localAlkalinitySenderRequired === true &&
+    entry.truth?.aerobicProcess === true &&
+    entry.truth?.minimumDissolvedOxygenReserveRequired === true &&
+    entry.truth?.surfaceTemperatureProxyResponsive === true &&
+    entry.truth?.q10TemperatureResponseParameterized === true &&
+    entry.truth?.persistentFloodplainWaterTemperatureState === false &&
+    entry.truth?.ammoniumToNitrateOneStepApproximation === true &&
+    entry.truth?.nitriteIntermediateResolved === false &&
+    entry.truth?.alkalinityDemandDiagnostic === false &&
+    entry.truth?.alkalinityMaterialOwnerDebited === true &&
+    entry.truth?.alkalinityLimitedReaction === true &&
+    entry.truth?.alkalinityIsAcidNeutralizingCapacityEquivalent === true &&
+    entry.truth?.carbonateSpeciationResolved === false &&
+    entry.truth?.pHFeedbackModeled === false &&
+    entry.truth?.microbialPopulationsResolved === false &&
+    entry.truth?.mechanisticNitrifierModel === false &&
+    finite(entry.activity?.dissolvedOxygenMgL) &&
+    Number(entry.activity?.oxygenResponseFactor) >= 0 &&
+    Number(entry.activity?.oxygenResponseFactor) <= 1 &&
+    finite(entry.activity?.waterTemperatureC) &&
+    Number(entry.activity?.temperatureQ10) >= .5 &&
+    Number(entry.activity?.temperatureQ10) <= 4 &&
+    Number(entry.activity?.temperatureResponseFactor) >= .05 &&
+    Number(entry.activity?.temperatureResponseFactor) <= 4 &&
+    finite(entry.activity
+      ?.availableDissolvedAmmoniumNitrogenKgN) &&
+    finite(entry.activity?.availableDissolvedOxygenKgO2) &&
+    finite(entry.activity?.minimumOxygenReserveKgO2) &&
+    Number(entry.activity?.minimumOxygenReserveKgO2) >= 0 &&
+    finite(entry.activity?.reactiveDissolvedOxygenKgO2) &&
+    Number(entry.activity?.reactiveDissolvedOxygenKgO2) >= 0 &&
+    Number(entry.activity?.minimumOxygenReserveKgO2) +
+      Number(entry.activity?.reactiveDissolvedOxygenKgO2) <=
+      Number(entry.activity?.availableDissolvedOxygenKgO2) + 1e-7 &&
+    Number(entry.reaction?.dissolvedOxygenConsumedKgO2) <=
+      Number(entry.activity?.reactiveDissolvedOxygenKgO2) + 1e-7 &&
+    finite(entry.activity?.availableAlkalinityKgCaCO3Eq) &&
+    finite(entry.activity?.alkalinityCapacityKgN) &&
+    Number(entry.reaction?.alkalinityDemandKgCaCO3) <=
+      Number(entry.activity?.availableAlkalinityKgCaCO3Eq) + 1e-7 &&
+    entry.truth?.scientificCalibrationClaimed === false);
+  const lineageValid = receiptShapeValid && processes.every(entry => {
+    const owner = ownerByTransfer.get(entry.transferId);
+    return owner?.digest === entry.reactionReceiptDigest &&
+      owner?.reachId === entry.reachId;
+  });
+  const quantitiesPaired = receiptShapeValid && processes.every(entry => {
+    const owner = ownerByTransfer.get(entry.transferId);
+    return ['dissolvedAmmoniumNitrogenConsumedKgN',
+      'dissolvedNitrateNitrogenProducedKgN',
+      'dissolvedOxygenConsumedKgO2',
+      'alkalinityDemandKgCaCO3'].every(key =>
+      same(entry.reaction?.[key], owner?.reaction?.[key], 1e-7));
+  });
+  const transitionsValid = receiptShapeValid && processes.every(entry => {
+    const magnitude = Object.values(entry.reaction || {}).reduce(
+      (sum, value) => sum + Number(value || 0), 0);
+    if (entry.status ===
+      'initialized-after-schema-migration-no-invented-history') {
+      return Math.abs(magnitude) < 1e-12 &&
+        entry.truth?.migrationInventedHistory === false;
+    }
+    if (entry.status === 'life-disabled-dormant') {
+      return Math.abs(magnitude) < 1e-12 &&
+        entry.truth?.nitrificationPoolsFrozen === true;
+    }
+    return ['alkalinity-limited-ammonium-nitrification',
+      'oxygen-limited-ammonium-nitrification',
+      'temperature-constrained-ammonium-nitrification',
+      'aerobic-ammonium-nitrification',
+      'oxygen-constrained-no-nitrification',
+      'nitrification-maintained-no-ammonium'].includes(entry.status) &&
+      entry.truth?.localFloodplainChemistryReaction === true &&
+      entry.truth?.ammoniumToNitrateNitrogenClosed === true &&
+      entry.truth?.dissolvedOxygenConsumptionClosed === true &&
+      entry.truth?.alkalinityConsumptionClosed === true;
+  });
+  const conservationValid = [
+    receipt.conservation?.floodplainNitrificationNitrogenResidualKgN,
+    receipt.conservation?.floodplainNitrificationOxygenResidualKgO2,
+    receipt.conservation
+      ?.floodplainNitrificationOxygenStoichiometryResidualKgO2,
+    receipt.conservation
+      ?.floodplainNitrificationAlkalinityOwnerResidualKgCaCO3Eq,
+    receipt.conservation
+      ?.floodplainNitrificationAlkalinityStoichiometryResidualKgCaCO3Eq
+  ].every(value => close(value, 1));
+  const basinTruthValid =
+    receipt.truth?.persistentFloodplainNitrification === true &&
+    receipt.truth?.floodplainNitrificationOwnerReceiptsTyped === true &&
+    receipt.truth?.floodplainNitrificationEvidenceBound === true &&
+    receipt.truth?.exactFloodplainNitrificationTransferIds === true &&
+    receipt.truth
+      ?.floodplainNitrificationNitrogenOxygenAndAlkalinityLedgersClosed ===
+      true &&
+    receipt.truth?.floodplainNitrificationReactionModeled === true &&
+    receipt.truth?.floodplainNitrificationAmmoniumToNitrate === true &&
+    receipt.truth?.floodplainNitrificationDissolvedOxygenConsumed === true &&
+    receipt.truth
+      ?.floodplainNitrificationMinimumOxygenReserveHonored === true &&
+    receipt.truth
+      ?.floodplainNitrificationAlkalinityCapacityHonored === true &&
+    receipt.truth
+      ?.floodplainNitrificationSurfaceTemperatureProxyResponsive === true &&
+    receipt.truth
+      ?.floodplainNitrificationQ10TemperatureResponseParameterized === true &&
+    receipt.truth?.floodplainNitrificationNitriteIntermediateResolved ===
+      false &&
+    receipt.truth?.floodplainNitrificationAlkalinityDemandDiagnostic ===
+      false &&
+    receipt.truth
+      ?.floodplainNitrificationAlkalinityMaterialOwnerDebited === true &&
+    receipt.truth?.persistentEndToEndAlkalinityLedger === true &&
+    receipt.truth?.floodplainNitrificationPHFeedbackModeled === false &&
+    receipt.truth?.floodplainNitrificationIndependentCreation === false;
+  const valid = receipt.schema === BASIN_ROUTING_STEP_SCHEMA &&
+    receiptShapeValid && ownerReceiptsValid && processReceiptsValid &&
+    lineageValid && quantitiesPaired && transitionsValid &&
+    conservationValid && basinTruthValid;
+  return check('floodplain-nitrification-receipts',
+    valid ? 'PASS' : 'FAIL', claim, {
+      expectedBasinSchema: BASIN_ROUTING_STEP_SCHEMA,
+      actualBasinSchema: receipt.schema || null,
+      expectedProcessSchema: FLOODPLAIN_NITRIFICATION_RECEIPT_SCHEMA,
+      expectedOwnerSchema:
+        FLOODPLAIN_NITRIFICATION_REACTION_RECEIPT_SCHEMA,
+      processReceiptCount: Array.isArray(processes)
+        ? processes.length : null,
+      ownerReceiptCount: Array.isArray(owners) ? owners.length : null,
+      criteria: { receiptShapeValid, ownerReceiptsValid,
+        processReceiptsValid, lineageValid, quantitiesPaired,
+        transitionsValid, conservationValid, basinTruthValid },
+      conservation: {
+        nitrogenResidualKgN: receipt.conservation
+          ?.floodplainNitrificationNitrogenResidualKgN ?? null,
+        oxygenResidualKgO2: receipt.conservation
+          ?.floodplainNitrificationOxygenResidualKgO2 ?? null,
+        oxygenStoichiometryResidualKgO2: receipt.conservation
+          ?.floodplainNitrificationOxygenStoichiometryResidualKgO2 ?? null,
+        alkalinityOwnerResidualKgCaCO3Eq: receipt.conservation
+          ?.floodplainNitrificationAlkalinityOwnerResidualKgCaCO3Eq ?? null,
+        alkalinityStoichiometryResidualKgCaCO3Eq: receipt.conservation
+          ?.floodplainNitrificationAlkalinityStoichiometryResidualKgCaCO3Eq ??
+          null
+      },
+      receiptDigest: receipt.digest || null
+    });
+}
+
 function floodplainGasExchangeCheck(receipt) {
   if (!receipt) {
     return check('floodplain-atmosphere-gas-exchange-receipts',
@@ -1300,7 +1943,7 @@ function floodplainGasExchangeCheck(receipt) {
     return check('floodplain-atmosphere-gas-exchange-receipts',
       'NOT_APPLICABLE',
       'Loaded floodplains exchange bounded carbon and oxygen only through paired floodplain and native-surface-atmosphere owner receipts.', {
-        reason: 'legacy basin receipt predates paired floodplain-atmosphere gas exchange',
+        reason: 'legacy basin receipt predates bidirectional floodplain-atmosphere carbon-gradient evidence',
         expectedSchema: BASIN_ROUTING_STEP_SCHEMA,
         actualSchema: receipt.schema
       }, { required: false });
@@ -1325,15 +1968,20 @@ function floodplainGasExchangeCheck(receipt) {
       entry.atmosphereCellId.length > 0 &&
       close(entry.closure?.carbonTransferResidualKgC, 1e-7) &&
       close(entry.closure?.oxygenTransferResidualKgO2, 1e-7) &&
-      entry.truth?.dissolvedInorganicCarbonSenderDebited === true &&
+      entry.truth?.dissolvedInorganicCarbonSenderDebitedWhenEvasion ===
+        true &&
+      entry.truth?.dissolvedInorganicCarbonReceiverCreditedWhenInvasion ===
+        true &&
       entry.truth?.dissolvedOxygenReceiverCredited === true &&
+      entry.truth?.carbonDirectionExclusive === true &&
       entry.truth?.atmosphericReservoirMutatedHere === false) &&
     atmosphereOwners.every(entry =>
       entry?.schema ===
         ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_RECEIPT_SCHEMA &&
       typeof entry.exchangeId === 'string' && entry.exchangeId.length > 0 &&
-      entry.senderDebit?.nativeLayerIndex === 0 &&
-      entry.receiverCredit?.nativeLayerIndex === 0 &&
+      entry.atmosphereCarbonCredit?.nativeLayerIndex === 0 &&
+      entry.atmosphereCarbonDebit?.nativeLayerIndex === 0 &&
+      entry.atmosphereOxygenDebit?.nativeLayerIndex === 0 &&
       close(entry.conservation?.carbonResidualKgC,
         ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG) &&
       close(entry.conservation?.oxygenResidualKgO2,
@@ -1343,8 +1991,10 @@ function floodplainGasExchangeCheck(receipt) {
         ATMOSPHERE_FLOODPLAIN_GAS_EXCHANGE_ABSOLUTE_TOLERANCE_KG &&
       entry.truth?.authoritativeLocalGasReservoirMutated === true &&
       entry.truth?.surfaceLayerOnly === true &&
-      entry.truth?.carbonReceiverCredited === true &&
+      entry.truth?.carbonReceiverCreditedWhenEvasion === true &&
+      entry.truth?.carbonSenderDebitedWhenInvasion === true &&
       entry.truth?.oxygenSenderDebited === true &&
+      entry.truth?.carbonDirectionExclusive === true &&
       entry.truth?.globallyMixed === false);
   const processReceiptsValid = receiptShapeValid && processes.every(entry =>
     entry?.schema ===
@@ -1355,6 +2005,8 @@ function floodplainGasExchangeCheck(receipt) {
     entry.truth?.floodplainChemistryOwnership === false &&
     entry.truth?.atmosphereGasOwnership === false &&
     entry.truth?.carbonDioxideEvasionParameterized === true &&
+    entry.truth?.carbonDioxideInvasionParameterized === true &&
+    entry.truth?.bidirectionalCarbonDioxideGradientExchange === true &&
     entry.truth?.oxygenReaerationParameterized === true &&
     entry.truth?.nativeAtmosphereSurfaceLayerRequired === true &&
     entry.truth?.bidirectionalHenryLawSolved === false &&
@@ -1366,6 +2018,7 @@ function floodplainGasExchangeCheck(receipt) {
       return entry.floodplainReceiptDigest == null &&
         entry.atmosphereReceiptDigest == null &&
         same(entry.exchange?.carbonToAtmosphereKgC, 0) &&
+        same(entry.exchange?.carbonToFloodplainKgC, 0) &&
         same(entry.exchange?.oxygenToFloodplainKgO2, 0);
     }
     const floodplainOwner = floodplainByExchange.get(entry.exchangeId);
@@ -1381,15 +2034,17 @@ function floodplainGasExchangeCheck(receipt) {
     if (entry.atmosphereCellId == null) return true;
     const floodplainOwner = floodplainByExchange.get(entry.exchangeId);
     const atmosphereOwner = atmosphereByExchange.get(entry.exchangeId);
-    return ['carbonToAtmosphereKgC', 'oxygenToFloodplainKgO2'].every(key =>
+    return ['carbonToAtmosphereKgC', 'carbonToFloodplainKgC',
+      'oxygenToFloodplainKgO2'].every(key =>
       same(entry.exchange?.[key], floodplainOwner?.exchange?.[key], 1e-7) &&
       same(entry.exchange?.[key], atmosphereOwner?.exchange?.[key], 1e-7));
   });
   const transitionsValid = receiptShapeValid && processes.every(entry => {
     const magnitude = Number(entry.exchange?.carbonToAtmosphereKgC || 0) +
+      Number(entry.exchange?.carbonToFloodplainKgC || 0) +
       Number(entry.exchange?.oxygenToFloodplainKgO2 || 0);
     if (entry.status ===
-      'initialized-after-v14-migration-no-invented-history') {
+      'initialized-after-v15-migration-no-invented-history') {
       return Math.abs(magnitude) < 1e-12 &&
         entry.truth?.migrationInventedHistory === false;
     }
@@ -1397,6 +2052,7 @@ function floodplainGasExchangeCheck(receipt) {
       return Math.abs(magnitude) < 1e-12 && entry.atmosphereCellId == null;
     }
     return ['bounded-co2-evasion-and-oxygen-reaeration',
+      'bounded-co2-invasion-and-oxygen-reaeration',
       'exchange-maintained-no-gradient'].includes(entry.status) &&
       entry.truth?.pairedOwnerReceiptsPresent === true &&
       entry.truth?.exactExchangeIdentity === true &&
@@ -1422,6 +2078,9 @@ function floodplainGasExchangeCheck(receipt) {
       true &&
     receipt.truth?.floodplainGasExchangePhysicalWithLifeOff === true &&
     receipt.truth?.floodplainGasExchangeIndependentCreation === false &&
+    receipt.truth
+      ?.floodplainGasExchangeBidirectionalCarbonGradientParameterized ===
+      true &&
     receipt.truth?.floodplainGasExchangeBidirectionalHenryLawSolved === false;
   const valid = receipt.schema === BASIN_ROUTING_STEP_SCHEMA &&
     receiptShapeValid && ownerReceiptsValid && processReceiptsValid &&
@@ -1429,7 +2088,7 @@ function floodplainGasExchangeCheck(receipt) {
     conservationValid && basinTruthValid;
   return check('floodplain-atmosphere-gas-exchange-receipts',
     valid ? 'PASS' : 'FAIL',
-    'Floodplain DIC and native surface-layer atmospheric oxygen cross owners only through an exact paired exchange ID with closed carbon and oxygen ledgers.', {
+    'Floodplain DIC and native surface-layer atmospheric CO2 carbon exchange in either gradient direction, while oxygen reaeration crosses the same owners only through an exact paired exchange ID with closed ledgers.', {
       expectedBasinSchema: BASIN_ROUTING_STEP_SCHEMA,
       actualBasinSchema: receipt.schema || null,
       expectedProcessSchema:
@@ -1481,7 +2140,11 @@ function floodplainCheck(receipt) {
     entry?.schema === FLOODPLAIN_EXCHANGE_RECEIPT_SCHEMA &&
     typeof entry.reachId === 'string' &&
     entry.truth?.resolvedInundationHydraulics === false &&
-    entry.truth?.senderDebitsAndReceiverCreditsPaired === true);
+    entry.truth?.senderDebitsAndReceiverCreditsPaired === true &&
+    entry.truth?.nitrateAndAmmoniumMaterialPools === true &&
+    entry.truth?.exactNitrateAmmoniumWaterFractionTransport === true &&
+    entry.truth?.nitrateAndAmmoniumSenderReceiverTransfersPaired === true &&
+    entry.truth?.nitrateAndAmmoniumConservationClosed === true);
   const entryResidualsClosed = receiptShapeValid && entries.every(entry =>
     close(entry.water?.residualKg, 1) &&
     Object.values(entry.chemistry?.residuals || {}).every(value =>
@@ -1491,6 +2154,9 @@ function floodplainCheck(receipt) {
     entry.truth?.conservationClosed === true);
   const basinTruthValid =
     receipt.truth?.persistentFloodplainWaterChemistryAndSediment === true &&
+    receipt.truth?.persistentRiverAndFloodplainNitrateAmmoniumPools ===
+      true &&
+    receipt.truth?.exactNitrateAmmoniumWaterFractionTransport === true &&
     receipt.truth?.geometryDerivedBankfullExchange === true &&
     receipt.truth?.finiteFloodplainReturnFlow === true &&
     receipt.truth?.grainSelectiveFloodplainDeposition === true &&
@@ -1893,6 +2559,7 @@ export function auditFoundationSystem(options = {}) {
     deepOceanCheck(column),
     transportCheck(options.earthTransportReceipt),
     basinCheck(options.basinRoutingReceipt),
+    alkalinityLedgerCheck(options.basinRoutingReceipt),
     floodplainCheck(options.basinRoutingReceipt),
     floodplainHabitatCheck(options.basinRoutingReceipt),
     floodEventHistoryCheck(options.basinRoutingReceipt),
@@ -1901,6 +2568,8 @@ export function auditFoundationSystem(options = {}) {
     floodplainPlantResourcesCheck(options.basinRoutingReceipt),
     floodplainDecompositionCheck(options.basinRoutingReceipt),
     floodplainRespirationCheck(options.basinRoutingReceipt),
+    floodplainDenitrificationCheck(options.basinRoutingReceipt),
+    floodplainNitrificationCheck(options.basinRoutingReceipt),
     floodplainGasExchangeCheck(options.basinRoutingReceipt)
   ];
   const counts = {
@@ -1974,9 +2643,50 @@ export function auditFoundationSystem(options = {}) {
       floodplainRespirationAnaerobicPathway: false,
       floodplainRespirationMicrobialPopulationState: false,
       scientificFloodplainRespirationModel: false,
+      persistentFloodplainDenitrification: true,
+      pairedFloodplainAtmosphereDenitrificationOwnerReceipts: true,
+      floodplainDenitrificationOxygenGated: true,
+      floodplainDenitrificationNitrogenLimited: true,
+      floodplainDenitrificationSurfaceTemperatureProxyResponsive: true,
+      floodplainDenitrificationQ10TemperatureResponseParameterized: true,
+      persistentFloodplainWaterTemperatureState: false,
+      resolvedFloodplainFreezeThawState: false,
+      floodplainDenitrificationArrheniusKineticsResolved: false,
+      floodplainDenitrificationReactiveNitrateEquivalentParameterized: false,
+      floodplainDenitrificationNitrateSpeciationResolved: true,
+      persistentRiverAndFloodplainNitrateAmmoniumPools: true,
+      exactNitrateAmmoniumWaterFractionTransport: true,
+      parameterizedRunoffDinSpeciation: true,
+      measuredRunoffDinSpeciation: false,
+      floodplainDenitrificationNitrateOnly: true,
+      floodplainDenitrificationAmmoniumConsumption: false,
+      nitritePoolResolved: false,
+      persistentFloodplainNitrification: true,
+      floodplainNitrificationReactionModeled: true,
+      floodplainNitrificationAmmoniumToNitrate: true,
+      floodplainNitrificationDissolvedOxygenConsumed: true,
+      floodplainNitrificationSurfaceTemperatureProxyResponsive: true,
+      floodplainNitrificationQ10TemperatureResponseParameterized: true,
+      floodplainNitrificationNitriteIntermediateResolved: false,
+      floodplainNitrificationAlkalinityDemandDiagnostic: false,
+      floodplainNitrificationAlkalinityMaterialOwnerDebited: true,
+      persistentEndToEndAlkalinityLedger: true,
+      alkalinityIsAcidNeutralizingCapacityEquivalent: true,
+      alkalinityMeasured: false,
+      alkalinityCarbonateSpeciationResolved: false,
+      alkalinityPHResolved: false,
+      deepOceanAlkalinityExchange: false,
+      floodplainNitrificationPHFeedbackModeled: false,
+      floodplainNitrificationMicrobialPopulationState: false,
+      scientificFloodplainNitrificationModel: false,
+      floodplainDenitrificationMicrobialPopulationState: false,
+      mechanisticFloodplainRedoxModel: false,
+      scientificFloodplainDenitrificationModel: false,
       persistentFloodplainAtmosphereGasExchange: true,
       pairedFloodplainAtmosphereGasOwnerReceipts: true,
       floodplainCarbonDioxideEvasion: true,
+      floodplainCarbonDioxideInvasion: true,
+      bidirectionalFloodplainCarbonGradientParameterized: true,
       floodplainOxygenReaeration: true,
       nativeAtmosphereSurfaceLayerFloodplainExchange: true,
       physicalFloodplainGasExchangeWithLifeOff: true,
@@ -2007,13 +2717,15 @@ export function foundationSystemAuditDescription() {
       'ecology-gas-mirrors', 'soil-runoff-biogeochemistry-lineage',
       'geomorphic-sediment-lineage',
       'deep-ocean-lineage', 'loaded-transport-receipt',
-      'basin-routing-receipt', 'floodplain-exchange-receipts',
+      'basin-routing-receipt', 'end-to-end-alkalinity-ledger',
+      'floodplain-exchange-receipts',
       'floodplain-habitat-receipts', 'flood-event-history-receipts',
       'floodplain-succession-receipts',
       'floodplain-plant-matter-receipts',
       'floodplain-plant-resources-receipts',
       'floodplain-decomposition-receipts',
       'floodplain-respiration-receipts',
+      'floodplain-denitrification-receipts',
       'floodplain-atmosphere-gas-exchange-receipts'
     ],
     mutatesWorld: false,

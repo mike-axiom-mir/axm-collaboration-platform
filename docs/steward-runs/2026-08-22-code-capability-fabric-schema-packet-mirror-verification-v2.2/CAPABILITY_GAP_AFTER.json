@@ -1,0 +1,275 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "compare-one-grounded-schema-packet-copy",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "schema-packet.source-exact.verify",
+        "consent.exact-packets.bind",
+        "schema-packet.exact-bytes.compare",
+        "schema-packet.typed-drift.report",
+        "packet-path.windows-portability.refuse",
+        "receipt.file-content.omit"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "schema-packet.source-exact.verify": [
+          "v2.1 retained four-file public generated TEST packet only"
+        ],
+        "consent.exact-packets.bind": [
+          "declarative scope only; authentication, replay prevention, trusted time, and live revocation remain absent"
+        ],
+        "schema-packet.exact-bytes.compare": [
+          "one exact four-file Fabric schema packet; direct in-memory byte comparison only"
+        ],
+        "schema-packet.typed-drift.report": [
+          "paths, digests, byte lengths, and bounded issue codes; no content retained"
+        ],
+        "packet-path.windows-portability.refuse": [
+          "syntactic boundary only; filesystem canonicalization and short-name aliases unobserved"
+        ],
+        "receipt.file-content.omit": [
+          "path privacy depends on declared public data class and is not independently verified"
+        ]
+      }
+    },
+    {
+      "id": "preserve-detached-no-authority-ceiling",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "authority.filesystem.disabled",
+        "authority.git-command.disabled",
+        "authority.network.disabled",
+        "authority.child-process.disabled",
+        "authority.packet-execution.disabled",
+        "authority.lifecycle-effects.disabled"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "future-complete-mirror-reliability",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "mirror.git-object-set.compare",
+        "mirror.git-ref-set.compare",
+        "mirror.transport.sender-receipt.verify",
+        "mirror.transport.receiver-receipt.verify",
+        "mirror.clone-completeness.verify",
+        "mirror.recovery.replay-test"
+      ],
+      "declaredConstraints": {}
+    },
+    {
+      "id": "future-strong-human-consent-proof",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "consent.human-decision.authenticate",
+        "consent.declaration.replay-prevent",
+        "consent.revocation.observe-live",
+        "consent.trusted-clock.observe"
+      ],
+      "declaredConstraints": {}
+    }
+  ],
+  "missingCapabilities": [
+    "consent.declaration.replay-prevent",
+    "consent.human-decision.authenticate",
+    "consent.revocation.observe-live",
+    "consent.trusted-clock.observe",
+    "mirror.clone-completeness.verify",
+    "mirror.git-object-set.compare",
+    "mirror.git-ref-set.compare",
+    "mirror.recovery.replay-test",
+    "mirror.transport.receiver-receipt.verify",
+    "mirror.transport.sender-receipt.verify"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "consent.declaration.replay-prevent",
+      "requiredBy": [
+        "future-strong-human-consent-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "consent.human-decision.authenticate",
+      "requiredBy": [
+        "future-strong-human-consent-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "consent.revocation.observe-live",
+      "requiredBy": [
+        "future-strong-human-consent-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "consent.trusted-clock.observe",
+      "requiredBy": [
+        "future-strong-human-consent-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "mirror.clone-completeness.verify",
+      "requiredBy": [
+        "future-complete-mirror-reliability"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "mirror.git-object-set.compare",
+      "requiredBy": [
+        "future-complete-mirror-reliability"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "mirror.git-ref-set.compare",
+      "requiredBy": [
+        "future-complete-mirror-reliability"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "mirror.recovery.replay-test",
+      "requiredBy": [
+        "future-complete-mirror-reliability"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "mirror.transport.receiver-receipt.verify",
+      "requiredBy": [
+        "future-complete-mirror-reliability"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "mirror.transport.sender-receipt.verify",
+      "requiredBy": [
+        "future-complete-mirror-reliability"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

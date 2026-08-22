@@ -1,0 +1,63 @@
+{
+  "packet_schema_version": "axm.proof.run-packet.v0.3.0",
+  "packet_id": "synthetic:proof-station-healthcheck:valid",
+  "seed_id": "axm.proof.proof-station-healthcheck",
+  "seed_schema_version": "axm.proof.seed.v0.2.0",
+  "fixture_class": "VALID",
+  "run_mode": "VALIDATE_ONLY",
+  "authority": {
+    "scope": "SCHEMA_AND_DISPOSABLE_SYNTHETIC_FIXTURE_ONLY",
+    "live_activation_allowed": false,
+    "canon_authority": false,
+    "publication_authority": false,
+    "merge_gate_required": true
+  },
+  "network_policy": "DENY",
+  "write_policy": "NONE",
+  "inputs": {
+    "station_id": "synthetic:proof_station_healthcheck:station_id",
+    "schema_version": "axm.proof.synthetic-input.v0.1.0",
+    "profile_ref": "synthetic:proof_station_healthcheck:profile_ref",
+    "approved_demo_refs": [
+      "synthetic:proof_station_healthcheck:approved_demo_refs:1"
+    ],
+    "hardware_map": {
+      "device": "synthetic",
+      "screen": "none",
+      "network": "none"
+    },
+    "network_mode": "OFFLINE_DENY",
+    "preflight": [
+      {
+        "check": "network_denied",
+        "expected": true
+      }
+    ],
+    "recovery_ref": "synthetic:proof_station_healthcheck:recovery_ref",
+    "retention_policy": {
+      "mode": "DELETE_AFTER_VALIDATION",
+      "persistent": false,
+      "identity_retained": false
+    }
+  },
+  "expected": {
+    "decision": "ACCEPT_SCHEMA_ONLY",
+    "reason_codes": [],
+    "output_emitted": true,
+    "runtime_claim_upgraded": false
+  },
+  "privacy_canaries": [],
+  "rollback": {
+    "checkpoint_id": "synthetic:proof-station-healthcheck:checkpoint:clean",
+    "restore_required": false,
+    "expected_restore_digest": "sha256:synthetic-proof-station-healthcheck-clean",
+    "history_policy": "APPEND_ONLY_NO_DELETE"
+  },
+  "truth_guard": {
+    "canon": false,
+    "integrated": false,
+    "runtime_proof": false,
+    "published": false,
+    "automatic_promotion_allowed": false
+  }
+}

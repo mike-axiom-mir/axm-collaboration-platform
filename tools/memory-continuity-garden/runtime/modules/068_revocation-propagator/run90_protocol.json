@@ -1,0 +1,327 @@
+{
+  "authority_delta": "NONE",
+  "canon_delta": "NONE",
+  "consent_delta": "NONE",
+  "identity": {
+    "category": "7. Privacy, consent, retention, redaction, deletion, and export",
+    "name": "Memory Consent Revocation Propagator",
+    "number": 68,
+    "stable_id": "axm.memory.revocation-propagator"
+  },
+  "identity_delta": "NONE",
+  "run81_dependency_resolution": {
+    "boot_prerequisites": [
+      "axm.memory.consent-bound-retention-policy",
+      "axm.memory.consent-lease",
+      "axm.memory.deletion-tombstone-receipt",
+      "axm.memory.provenance-envelope",
+      "axm.memory.sensitivity-classifier"
+    ],
+    "contract_references": [
+      "axm.memory.consent-bound-retention-policy",
+      "axm.memory.consent-lease",
+      "axm.memory.deletion-tombstone-receipt",
+      "axm.memory.provenance-envelope",
+      "axm.memory.sensitivity-classifier"
+    ],
+    "dependency_delivery_does_not_transfer_authority": true,
+    "exact_run80_protocol_sha256": "d0be3be42413334d5bb2b628fc98df128671bbd992d730489bb2a139e79d2156",
+    "exact_seed_contract_sha256": "81384678b64de53c44ff5f1392324a43c6ace89025c67f46f59a45944710c410",
+    "missing_boot_result": "HOLD_DEPENDENCY_UNAVAILABLE",
+    "missing_optional_runtime_result": "HOLD_DEPENDENCY_UNAVAILABLE",
+    "missing_required_runtime_result": "HOLD_DEPENDENCY_UNAVAILABLE",
+    "optional_runtime_collaborators": [],
+    "required_runtime_collaborators": [],
+    "resolution_receipt_required": true,
+    "version_requirement": {
+      "maximum_tested_minor": 2,
+      "minimum_minor": 0,
+      "protocol_major": 1
+    }
+  },
+  "run82_proof_freshness": {
+    "clock_basis": "steward_run_epoch",
+    "current_epoch": 90,
+    "freshness_is_not_semantic_truth": true,
+    "invalidation_triggers": [
+      "source_digest_change",
+      "contract_digest_change",
+      "permission_change",
+      "authority_change",
+      "purpose_change",
+      "schema_major_change",
+      "dependency_contract_change",
+      "risk_reclassification"
+    ],
+    "proofs": [
+      {
+        "age_runs": 10,
+        "created_epoch": 80,
+        "maximum_age_runs": 5,
+        "proof_id": "RUN80_COLD_SUITE",
+        "state": "RECERTIFICATION_REQUIRED"
+      },
+      {
+        "age_runs": 0,
+        "created_epoch": 90,
+        "maximum_age_runs": 5,
+        "proof_id": "RUN90_REFERENCE_LAYER",
+        "state": "FRESH"
+      }
+    ],
+    "recertification_does_not_apply_or_promote": true,
+    "stale_proof_result": "HOLD_PROOF_STALE"
+  },
+  "run83_partial_availability": {
+    "allowed_effect": "NONE",
+    "degraded_result_cannot_be_presented_as_complete": true,
+    "high_risk_fail_closed": true,
+    "missing_optional_result": "HOLD_DEPENDENCY_UNAVAILABLE",
+    "missing_required_result": "HOLD_DEPENDENCY_UNAVAILABLE",
+    "named_omissions_required": true,
+    "operation_kind": "HUMAN_GATED_APPLY",
+    "optional_runtime_collaborators": [],
+    "partial_availability_allowed": false,
+    "required_boot_dependencies": [
+      "axm.memory.consent-bound-retention-policy",
+      "axm.memory.consent-lease",
+      "axm.memory.deletion-tombstone-receipt",
+      "axm.memory.provenance-envelope",
+      "axm.memory.sensitivity-classifier"
+    ],
+    "required_runtime_collaborators": [],
+    "writes_forbidden_when_any_dependency_missing": true
+  },
+  "run84_repair_planning": {
+    "actions": [
+      "freeze affected candidate output",
+      "preserve source and counterevidence",
+      "recompute exact digests and dependency state",
+      "emit a non-applying repair preview",
+      "require verified safety copy",
+      "require fresh exact-state confirmation before any owner-controlled apply"
+    ],
+    "apply_authority": "EXISTING_OWNER_ONLY",
+    "automatic_apply": false,
+    "failure_inputs": [
+      "typed_hold",
+      "integrity_finding",
+      "stale_proof",
+      "dependency_failure",
+      "interrupted_operation"
+    ],
+    "insufficient_witness_result": "HOLD_REPAIR_WITNESS",
+    "preserve_counterevidence": true,
+    "preserve_original_history": true,
+    "repair_kind": "PROPOSAL_ONLY",
+    "repair_preview_result": "REPAIR_PREVIEW_READY",
+    "required_witnesses": [
+      "source_digests",
+      "current_state_digest",
+      "failure_receipt",
+      "dependency_snapshot"
+    ],
+    "rollback_or_nonreversibility_statement_required": true
+  },
+  "run85_review_reproducibility": {
+    "challenge_route": "append_challenge_receipt",
+    "decision_cannot_rewrite_review_packet": true,
+    "decision_stored_separately": true,
+    "deterministic_rebuild_required": true,
+    "dissent_preserved": true,
+    "majority_is_not_authority": true,
+    "reopen_conditions_required": true,
+    "required_actions": [
+      "HOLD",
+      "ACCEPT_FOR_NEXT_REVIEW",
+      "RETURN_FOR_REPAIR",
+      "REJECT"
+    ],
+    "review_basis": {
+      "candidate_contract_sha256": "81384678b64de53c44ff5f1392324a43c6ace89025c67f46f59a45944710c410",
+      "decision_card_sha256": "13ce5f9a2a18c3bef1f8cae6ede306032b14acdee7666eed24e03036c1274a51",
+      "evidence_capsule_sha256": "3297c2bebd928861f390756ce61560be26669737a15e3fa9f55f2fd626d339e8",
+      "number": 68,
+      "posture": "GOVERNANCE_HOLD_PRESERVED",
+      "purpose": "Propagate revoked permission to retrieval, sharing, derived views, exports, training candidates, and future processing without pretending impossible erasure occurred.",
+      "run80_protocol_sha256": "d0be3be42413334d5bb2b628fc98df128671bbd992d730489bb2a139e79d2156",
+      "stable_id": "axm.memory.revocation-propagator"
+    },
+    "review_packet_digest": "c0edcec0f1979a2de82a15dd6f77c3358429c266ba0e894787503dc69543bd3d"
+  },
+  "run86_upgrade_compatibility": {
+    "accepted_same_major_minor_range": [
+      0,
+      2
+    ],
+    "current_protocol": {
+      "major": 1,
+      "minor": 0
+    },
+    "downgrade_cannot_expand_permissions": true,
+    "future_major_2": {
+      "mode": "HOLD_PENDING_REVIEW",
+      "result": "HOLD_PROTOCOL_VERSION"
+    },
+    "legacy_major_0": {
+      "authority_delta": "NONE",
+      "mode": "READ_ONLY_ADAPTER",
+      "write_allowed": false
+    },
+    "migration_requires_dry_run": true,
+    "migration_requires_loss_report": true,
+    "original_record_preserved": true,
+    "silent_downgrade_forbidden": true,
+    "unknown_minor_fields": "PRESERVE_IN_EXTENSIONS_OR_HOLD"
+  },
+  "run87_provenance_gap_budget": {
+    "coverage_ratio_basis_points": 6875,
+    "covered_dimensions": [
+      "identity",
+      "purpose",
+      "source_refs",
+      "source_digests",
+      "authority",
+      "permissions",
+      "uncertainty",
+      "limitations",
+      "dependency_snapshot",
+      "proof_boundary",
+      "recovery_route"
+    ],
+    "gap_budget_exceeded": false,
+    "gap_result": "REFERENCE_ONLY_WITH_NAMED_GAPS",
+    "gaps_are_not_assumed_false_or_complete": true,
+    "minimum_reference_ratio_basis_points": 6500,
+    "named_gaps": [
+      "REAL_WORLD_SEMANTIC_EVIDENCE",
+      "EXISTING_OWNER_ACCEPTANCE",
+      "SPECIALIST_VERIFICATION",
+      "ACTIVE_WORKSHOP_INTEGRATION",
+      "REPRESENTATIVE_HIGH_RISK_HUMAN_REVIEW"
+    ],
+    "promotion_blocked_while_external_gaps_remain": true,
+    "required_dimensions": [
+      "identity",
+      "purpose",
+      "source_refs",
+      "source_digests",
+      "authority",
+      "permissions",
+      "uncertainty",
+      "limitations",
+      "dependency_snapshot",
+      "proof_boundary",
+      "recovery_route",
+      "REAL_WORLD_SEMANTIC_EVIDENCE",
+      "EXISTING_OWNER_ACCEPTANCE",
+      "SPECIALIST_VERIFICATION",
+      "ACTIVE_WORKSHOP_INTEGRATION",
+      "REPRESENTATIVE_HIGH_RISK_HUMAN_REVIEW"
+    ],
+    "structural_coverage_is_not_semantic_truth": true
+  },
+  "run88_policy_conflict_arbitration": {
+    "conflict_packet_fields": [
+      "policy_ids",
+      "inputs",
+      "decisions",
+      "evidence_refs",
+      "required_authority",
+      "safe_next_action"
+    ],
+    "conflict_result": "HOLD_POLICY_CONFLICT",
+    "conflicting_allows_do_not_create_authority": true,
+    "decision_receipt_required": true,
+    "deny_cannot_be_overridden_by_lower_priority_allow": true,
+    "human_resolution_required_when_semantics_or_authority_conflict": true,
+    "majority_is_not_authority": true,
+    "non_overridable_denials": [
+      "identity",
+      "authority",
+      "permission",
+      "consent",
+      "privacy",
+      "source_integrity"
+    ],
+    "policies": [
+      "identity_exactness",
+      "purpose_limitation",
+      "source_integrity",
+      "authority_and_permission",
+      "consent_and_privacy",
+      "lifecycle_legality",
+      "dependency_readiness",
+      "proof_freshness",
+      "resource_and_cancellation",
+      "owner_boundary"
+    ]
+  },
+  "run89_intake_readiness": {
+    "active_integration_performed": false,
+    "active_target": null,
+    "collision_checks": [
+      "stable_id",
+      "owned_root",
+      "authority_surface",
+      "schema_owner",
+      "public_private_boundary"
+    ],
+    "commit_authority": "EXTERNAL_EXISTING_OWNER",
+    "isolated_staging_required": true,
+    "one_seed_failure_does_not_accept_or_apply_other_seeds": true,
+    "posture_preserved": "GOVERNANCE_HOLD_PRESERVED",
+    "prepare_before_commit": true,
+    "readiness_is_not_acceptance": true,
+    "readiness_is_not_canon": true,
+    "readiness_is_not_integration": true,
+    "reference_readiness": "HOLD_UNKNOWN_POSTURE",
+    "required_gates": [
+      "source_owner_review",
+      "duplicate_check",
+      "schema_validation",
+      "cold_self_test",
+      "specialist_verification",
+      "mike_merge_gate"
+    ],
+    "rollback_scope": "ISOLATED_STAGING_ROOT_ONLY"
+  },
+  "run90_evidence_boundary": {
+    "CANON": false,
+    "achieved_reference_capabilities": [
+      "dependency_contract_resolution",
+      "proof_freshness_and_invalidation",
+      "partial_availability_containment",
+      "non_applying_repair_planning",
+      "reproducible_review_packets",
+      "upgrade_compatibility_matrix",
+      "named_provenance_gap_budget",
+      "policy_conflict_arbitration",
+      "isolated_intake_readiness_simulation"
+    ],
+    "active_workshop_integration": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "posture_preserved": "GOVERNANCE_HOLD_PRESERVED",
+    "production_proof": false,
+    "specialist_verification": false
+  },
+  "schema": "axm.memory.run90-capability-protocol/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "20d1242f60ad1d05bc4a763f53d91241072647fbd7f34720eac8ad538f417b6e"
+  },
+  "source_run80": {
+    "authority": "T3_EXPLICIT_HUMAN_GATE",
+    "candidate_contract_sha256": "81384678b64de53c44ff5f1392324a43c6ace89025c67f46f59a45944710c410",
+    "operation_kind": "HUMAN_GATED_APPLY",
+    "permissions": [
+      "memory.consent.manage"
+    ],
+    "posture": "GOVERNANCE_HOLD_PRESERVED",
+    "purpose": "Propagate revoked permission to retrieval, sharing, derived views, exports, training candidates, and future processing without pretending impossible erasure occurred.",
+    "risk": "HIGH",
+    "run80_protocol_sha256": "d0be3be42413334d5bb2b628fc98df128671bbd992d730489bb2a139e79d2156"
+  },
+  "trust_delta": "NONE"
+}

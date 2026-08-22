@@ -1,0 +1,28 @@
+{
+  "id": "axm.text.organ.layout_resilience",
+  "version": "1.0.0",
+  "label": "Layout Resilience Organ",
+  "purpose": "Estimates line wrapping, overflow, safe-area use, and viewing-distance risks before text enters a target renderer.",
+  "inputs": [
+    "text",
+    "role",
+    "size_px",
+    "line_height",
+    "tracking",
+    "container_width",
+    "max_lines",
+    "platform"
+  ],
+  "outputs": [
+    "layout_audit",
+    "overflow_risk",
+    "line_estimate",
+    "safe_area_status",
+    "viewing_distance_status"
+  ],
+  "rules": [
+    "Treat estimates as a gate, not a replacement for final engine shaping.",
+    "Never solve overflow by silently shrinking below the platform readability floor.",
+    "Preserve the readable core before decorative layers."
+  ]
+}

@@ -5,14 +5,16 @@ cd /d "%~dp0"
 
 rem BEGINNER FRONT DOOR
 rem -------------------
-rem Prefer a private portable runtime, then an installed compatible Node.
-rem If neither exists, bootstrap a pinned official Node.js LTS archive into
-rem this Workshop only. No administrator permission or system install is used.
+rem Offline candidates use only their verified bundled runtime and never
+rem download or fall back to a system runtime. Development copies prefer a
+rem private portable runtime, then an installed compatible Node, and may use
+rem the explicit pinned bootstrap route when neither is present.
 
 if not exist "server.js" goto :needs_extract
 if exist "AXM_START_REPORT.txt" del /q "AXM_START_REPORT.txt" >nul 2>nul
 
 set "AXM_NODE="
+if exist "AXM_OFFLINE_FIRST.json" goto :offline_candidate
 if exist "runtime\node\node.exe" set "AXM_NODE=%CD%\runtime\node\node.exe"
 if not defined AXM_NODE (
   where node >nul 2>nul
@@ -35,6 +37,7 @@ if not defined AXM_NODE (
 )
 
 if not defined AXM_NODE goto :runtime_failed
+:runtime_ready
 if not defined AXM_PORT set "AXM_PORT=8788"
 
 echo.
@@ -45,7 +48,9 @@ echo   Keep this window open while using AXM.
 echo   Close this window to stop the local Workshop server.
 echo.
 
-"%AXM_NODE%" server.js --open=hub
+set "AXM_OPEN_TARGET=hub"
+if "%AXM_SAFE_MODE%"=="1" set "AXM_OPEN_TARGET=/tools/diagnostics-operations-center/index.html"
+"%AXM_NODE%" server.js --open=%AXM_OPEN_TARGET%
 set "AXM_EXIT=%ERRORLEVEL%"
 if "%AXM_EXIT%"=="0" exit /b 0
 
@@ -57,6 +62,16 @@ echo   Nothing was installed system-wide or uploaded.
 echo.
 if not "%AXM_NONINTERACTIVE%"=="1" pause
 exit /b %AXM_EXIT%
+
+:offline_candidate
+if not exist "scripts\verify-offline-runtime.ps1" goto :offline_runtime_failed
+where powershell.exe >nul 2>nul
+if errorlevel 1 goto :offline_runtime_failed
+powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "%CD%\scripts\verify-offline-runtime.ps1" -WorkshopRoot "%CD%" >nul
+if errorlevel 1 goto :offline_runtime_failed
+if not exist "runtime\node\node.exe" goto :offline_runtime_failed
+set "AXM_NODE=%CD%\runtime\node\node.exe"
+goto :runtime_ready
 
 :needs_extract
 call :write_report WORKSHOP_NOT_EXTRACTED "AXM cannot find server.js beside the launcher." "Extract the complete GitHub ZIP, open that folder, and run this launcher again."
@@ -87,6 +102,16 @@ echo   No unverified runtime was kept.
 echo.
 if not "%AXM_NONINTERACTIVE%"=="1" pause
 exit /b 4
+
+:offline_runtime_failed
+call :write_report OFFLINE_RUNTIME_REFUSED "The bundled offline runtime is missing, changed, synthetic, or does not match its manifest." "Restore this candidate from its verified ZIP. This offline candidate will not download or use a system runtime."
+echo.
+echo   AXM refused the bundled offline runtime because its integrity check failed.
+echo   Restore the complete candidate from its verified ZIP and try again.
+echo   No download, system runtime fallback, installation, or upload was attempted.
+echo.
+if not "%AXM_NONINTERACTIVE%"=="1" pause
+exit /b 5
 
 :write_report
 >"AXM_START_REPORT.txt" (

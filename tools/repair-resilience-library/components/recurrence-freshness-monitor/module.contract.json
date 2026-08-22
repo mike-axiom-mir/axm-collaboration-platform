@@ -1,0 +1,45 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.recurrence-freshness-monitor",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.recurrence-freshness.report/v1"
+  ],
+  "consumes": [
+    "failure-signature-history",
+    "repair-pattern-metadata",
+    "current-environment"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/repairbuddy",
+      "shared/sensorium",
+      "tools/body-pulse"
+    ],
+    "reason": "Adds age, recurrence, and environment warnings without automatically applying historical patterns."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-pattern-reuse",
+      "automatic-memory-write",
+      "provider-execution",
+      "active-repair-orchestration",
+      "permission-grant",
+      "automatic-promotion",
+      "automatic-release",
+      "automatic-canon",
+      "diagnosis-from-similarity-alone",
+      "root-cause-invention"
+    ]
+  }
+}

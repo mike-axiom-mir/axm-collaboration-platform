@@ -1,0 +1,53 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "mirror-code-clone",
+  "version": "v0.2",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "autonomous-candidate-defect-discovery",
+    "allowlisted-candidate-code-repair",
+    "hourly-five-draft-heartbeat-adapter",
+    "seven-day-persistent-review-queue",
+    "verifier-gated-rollback",
+    "hash-bound-repair-receipts"
+  ],
+  "consumes": [
+    "axm.disposable-code-candidate/v1"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.mirror-code-clone.receipt/v1"
+    ],
+    "accepts": [
+      "human:candidate-review"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "filesystem",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "explicit"
+  },
+  "boundaries": {
+    "automaticWrites": [
+      "marker-bound-disposable-candidate-roots-in-the-system-temp-folder-or-exports/mirror-code-clone/candidates"
+    ],
+    "explicitWrites": [],
+    "refuses": [
+      "workshop-source-mutation",
+      "pure-mirror-mutation",
+      "shared-mirror-core-mutation",
+      "museum-original-mutation",
+      "unmarked-root-mutation",
+      "symlink-traversal",
+      "unknown-repair-class",
+      "automatic-installation",
+      "automatic-promotion",
+      "automatic-publish",
+      "network-access",
+      "permission-change",
+      "canon-mutation"
+    ]
+  }
+}

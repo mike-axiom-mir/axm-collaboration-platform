@@ -1,0 +1,39 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.minimal-failing-fixture",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.minimal-failing-fixture/v1"
+  ],
+  "consumes": [
+    "failing-fixture",
+    "failure-predicate"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_2_SHADOW_EXPERIMENT",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/repairbuddy",
+      "tools/diagnostics-operations-center"
+    ],
+    "reason": "Performs bounded delta debugging on a copy and preserves the original fixture."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "root-cause-certainty",
+      "canonical-state-mutation",
+      "automatic-repair",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

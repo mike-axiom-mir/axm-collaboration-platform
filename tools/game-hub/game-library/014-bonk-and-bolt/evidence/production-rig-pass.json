@@ -1,0 +1,65 @@
+{
+  "schema": "bonk-bolt-evidence-v1",
+  "capturedAt": "2026-07-28T16:00:00+02:00",
+  "scope": "licensed-relocatable-human-production-rig",
+  "classification": "DURABLE_EVENT",
+  "verdict": "pass",
+  "claims": [
+    {
+      "claim": "The packaged Human model has attributable, relocatable and integrity-checked provenance.",
+      "evidenceType": ["factual", "structural", "transport"],
+      "proof": "ASSET_PROVENANCE.md and the adjacent LICENSE.txt identify Quaternius Animated Men Pack under CC0-1.0. The contract stores only assets/characters/quaternius/animated-men/man-casual-a.glb, enforces SHA-256 dad8fa3ca2bc7760892f9ff47f544941179e50acb2aa772cf9f035154a37fc58 and 493196 bytes, and HTTP serves it as model/gltf-binary.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The asset is a real animation substrate rather than a decorative static mesh.",
+      "evidenceType": ["structural", "behavioral"],
+      "proof": "GLB metadata reports one skinned mesh, 31 joints and 11 clips. Seven deterministic contract tests resolve idle, walk, run, punch, sword slash, jump and clap by exporter-neutral suffix and require every class action binding.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "The licensed rig appears and transitions through locomotion and the Panzer attack in the live game.",
+      "evidenceType": ["visual", "behavioral"],
+      "proof": "At 1280x720 on ?testSteward=production-rig, the rendered Human reported production / human-casual-a / CC0-1.0 / 31 bones. A bounded W input reported walk. Pan Slap reported slash and attack:slash while the visible model changed to its authored strike; 700ms later direct runtime state returned to idle while retaining the last-action receipt.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "Reduced-motion preference does not run the production skeleton through an attack clip.",
+      "evidenceType": ["accessibility", "behavioral", "visual"],
+      "proof": "After enabling the visible Reduced motion checkbox, Pan Slap reported production / reduced-static while the high-contrast action cue remained visible. The setting was restored before handoff.",
+      "verdict": "PASS"
+    },
+    {
+      "claim": "A missing or rejected production asset cannot gate play.",
+      "evidenceType": ["failure-recovery", "visual", "behavioral"],
+      "proof": "The deterministic ?testRigFail=1 route made no failed network request, reported fallback / procedural / original-code / qa-forced-safe-fallback, visibly retained the original Human and completed a Pan Slap action.",
+      "verdict": "PASS"
+    }
+  ],
+  "automated": {
+    "systemsChecks": 236,
+    "heroMotion": { "pass": 8, "fail": 0 },
+    "coopCamera": { "pass": 10, "fail": 0 },
+    "heroRigContract": { "pass": 7, "fail": 0 },
+    "packageChecks": 118,
+    "http": { "pass": 4, "fail": 0 },
+    "focusedVerifier": { "errors": 0, "warnings": 0 },
+    "capabilityRoute": { "productionCharacterQuality": "READY", "overall": "DEGRADED" }
+  },
+  "limitations": [
+    "One Human body is an integration rung, not final cast breadth; the three classes still share it while retaining distinct code-native weapons, cues and semantic timing.",
+    "Blender remains unavailable, so bespoke sculpting, facial animation, grip correction, costumes and LOD authoring were not claimed.",
+    "No rolling-frame capture capability was available. Clip names, state transitions and settlement are direct runtime and deterministic evidence; no sub-frame cadence is inferred from screenshots.",
+    "Physical gamepad feel and long-session human quality remain unverified."
+  ],
+  "retention": {
+    "rawScreenshotsCopied": false,
+    "rawVideoCreated": false,
+    "rawTerminalLogsCopied": false,
+    "summaryEvidenceRetained": true,
+    "browserWarnings": 0,
+    "browserErrors": 0,
+    "browserTabsFinalized": true,
+    "port8814Clean": true
+  }
+}

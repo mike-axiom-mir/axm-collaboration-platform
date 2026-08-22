@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
+const DeterministicJson = require('../../tools/deterministic-json-core');
 
 const OBSERVATION_DRAFT_SCHEMA = 'axm.mirror.cognitive-work-observation-draft/v1';
 const ECONOMICS_DRAFT_SCHEMA = 'axm.mirror.cognitive-resource-economics-profile-draft/v1';
@@ -32,7 +33,7 @@ function stableValue(value) {
   }
   return output;
 }
-function stableStringify(value) { return JSON.stringify(stableValue(value)); }
+function stableStringify(value) { return DeterministicJson.canonicalJson(stableValue(value)); }
 function clone(value) { return JSON.parse(stableStringify(value)); }
 function digest(value) { return crypto.createHash('sha256').update(typeof value === 'string' || Buffer.isBuffer(value) ? value : stableStringify(value)).digest('hex'); }
 function same(left, right) { return stableStringify(left) === stableStringify(right); }

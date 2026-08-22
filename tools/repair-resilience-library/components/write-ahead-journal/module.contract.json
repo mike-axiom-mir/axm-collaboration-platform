@@ -1,0 +1,43 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.write-ahead-journal",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.write-ahead-journal.entry/v1"
+  ],
+  "consumes": [
+    "repair-plan",
+    "journal-root"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_3_HUMAN_GATED_PRIMITIVE",
+    "automaticMutation": false,
+    "explicitCallerRequired": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/recovery-center",
+      "shared/module-evolution-ledger",
+      "shared/evidence-retention"
+    ],
+    "reason": "Adds a caller-scoped hash-chained intent journal; existing systems remain storage and recovery authorities."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [
+      "caller-provided:journal.jsonl"
+    ],
+    "refuses": [
+      "automatic-restore",
+      "automatic-rollback",
+      "silent-data-loss",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

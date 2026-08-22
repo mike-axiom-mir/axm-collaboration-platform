@@ -1,0 +1,40 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.timeout-policy-adapter",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.timeout-policy/v1"
+  ],
+  "consumes": [
+    "latency-samples",
+    "operation-consequence"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_POLICY_PROPOSAL",
+    "automaticMutation": false,
+    "integrationRequiredForAutomation": true
+  },
+  "overlap": {
+    "decision": "ADAPTER_BETWEEN_EXISTING",
+    "targets": [
+      "tools/body-pulse",
+      "tools/diagnostics-operations-center"
+    ],
+    "reason": "Derives distinct bounded timeouts from measured behavior; existing runtime surfaces choose whether to adopt them."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "unbounded-retry",
+      "unbounded-restart",
+      "hidden-degradation",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "runtime-proof-claim"
+    ]
+  }
+}

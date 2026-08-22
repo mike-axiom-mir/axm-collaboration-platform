@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "REPLICA_AUTHORITY_INHERITANCE",
+      "expected": "HOLD_TRUST_OR_AUTHORITY_TRANSFER",
+      "stimulus": "replica handoff inherits human authority"
+    }
+  ],
+  "category": 8,
+  "category_name": "8. Cross-session, cross-device, human-AI, and replica continuity",
+  "full_semantic_implementation": false,
+  "number": 75,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Carry operations, ancestry, replica identity, schemas, permissions, and conflict evidence between disconnected local nodes.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "9e9697c4eb4449f4b24560f3d6ee834b820eeecfb79413c5b08ea1bd371ab5c3"
+  },
+  "source_contract_sha256": "0983178b8f629f4a0ab648dc059c25a4d9c4eba1625d29b0593840e2cf068bd9",
+  "stable_id": "axm.memory.offline-sync-envelope"
+}

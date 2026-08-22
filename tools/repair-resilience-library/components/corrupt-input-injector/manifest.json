@@ -1,0 +1,42 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.corrupt-input-injector",
+  "name": "Corrupt Input Injector",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "FAULT_INJECTION",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": [
+    "repair-seed",
+    "fault-injection-recovery-drill",
+    "local-first",
+    "bounded",
+    "sandbox-first"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Feed malformed, truncated, oversized, adversarial, and schema-drifted inputs through safe fixtures."
+  ],
+  "accepts": [
+    "seed-input",
+    "bounded-corruption-policy"
+  ],
+  "produces": [
+    "axm.corrupt-input.fixture-set/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Feed malformed, truncated, oversized, adversarial, and schema-drifted inputs through safe fixtures.",
+  "notes": "Sandbox or virtual experiment primitive only. Active-process, host-network, host-clock, real-storage, broad resource, production, promotion, and CANON authority are refused."
+}

@@ -12,13 +12,15 @@ It compiles from current manifests, module contracts, source timestamps, live re
 
 The JSON and text routes recompile on every request. Every result includes a source fingerprint and compilation time.
 
-## Without the Hub runtime
+## Command line and portability
 
 ```powershell
 node shared/technical-glasses/technical-glasses-cli.js --focus="your task"
 node shared/technical-glasses/technical-glasses-cli.js --focus="your task" --json
 node shared/technical-glasses/technical-glasses-cli.js --write
 ```
+
+The CLI uses the live local Hub route first, so storage, connectors, Guardian and other runtime probes stay aligned with the browser view. If the Hub is unavailable it falls back to a source-only compilation and keeps runtime readiness `UNKNOWN` instead of guessing. Use `--offline-source-only` to request that portable fallback explicitly or `--live-required` to fail when live runtime evidence cannot be obtained.
 
 `--write` stores an atomic portability snapshot in `state/technical-glasses/latest.json`. That snapshot is evidence from its compilation time, not an automatically trusted current state.
 

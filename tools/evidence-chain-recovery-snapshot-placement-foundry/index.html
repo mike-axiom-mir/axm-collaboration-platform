@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>AXM Evidence Chain Recovery Snapshot Placement Foundry</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AXM Workshop recovery placement - TEST</p>
+        <h1>Recovery Snapshot Placement Foundry</h1>
+        <p class="lede">Bind one retained, reviewed staging package to a private Workshop Packager output and prepare the exact placement request that makes its folder discoverable to Recovery Center.</p>
+      </div>
+      <aside class="truth-card" aria-label="Placement truth boundary">
+        <strong>Placement is not restore</strong>
+        <p>Success proves a verified folder was copied into the receiver's discovery layout. It does not prove the live server listed it, create a restore preview, grant permission, or apply candidate bytes.</p>
+      </aside>
+    </header>
+
+    <section class="panel" aria-labelledby="packageHeading">
+      <div class="panel-heading">
+        <div><span>STEP 1</span><h2 id="packageHeading">Bind exact staged evidence</h2></div>
+        <p id="packageSummary">No staging package bound.</p>
+      </div>
+      <div class="input-grid">
+        <label for="stagingReceiptFile">Staging receipt
+          <small>Exact retained <code>STAGING_RECEIPT.json</code>.</small>
+          <input id="stagingReceiptFile" type="file" accept=".json,application/json">
+        </label>
+        <label for="manifestFile">Package manifest
+          <small>Exact <code>PACKAGE_MANIFEST.json</code> from the staged snapshot folder.</small>
+          <input id="manifestFile" type="file" accept=".json,application/json">
+        </label>
+        <label for="candidateFile">Reviewed candidate JSONL
+          <small>The one ledgered candidate file; exact UTF-8 bytes are rehashed.</small>
+          <input id="candidateFile" type="file" accept=".jsonl,application/x-ndjson,text/plain">
+        </label>
+        <label for="outputBinding">Private packager output root
+          <small>Used only to compute a SHA-256 binding; never included in the request.</small>
+          <input id="outputBinding" type="text" autocomplete="off" spellcheck="false" placeholder="Absolute local exports/workshop-packages path">
+        </label>
+        <label for="confirmSnapshot">Confirm exact snapshot ID
+          <small>Must equal the ID inside the staging receipt.</small>
+          <input id="confirmSnapshot" type="text" autocomplete="off" spellcheck="false" placeholder="axm-workshop-full-evidence-repair-...">
+        </label>
+      </div>
+      <div class="actions">
+        <button class="primary" id="bindButton" type="button">Bind selected evidence</button>
+        <button id="clearButton" type="button">Clear Foundry</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="requestHeading">
+      <div class="panel-heading">
+        <div><span>STEP 2</span><h2 id="requestHeading">Prepare placement request</h2></div>
+        <p>Browser prepares - Node places</p>
+      </div>
+      <div class="acknowledgements">
+        <label for="outputAck"><input id="outputAck" type="checkbox"> <span>I explicitly request placement beneath the selected private Workshop Packager output.</span></label>
+        <label for="privateAck"><input id="privateAck" type="checkbox"> <span>I understand this is private local recovery data and must not be published.</span></label>
+        <label for="retainAck"><input id="retainAck" type="checkbox"> <span>I require the original staging root and its evidence to remain after placement.</span></label>
+        <label for="authorityAck"><input id="authorityAck" type="checkbox"> <span>I understand placement grants no <code>recovery.apply</code> or restore authority.</span></label>
+      </div>
+      <div class="actions">
+        <button class="primary" id="prepareButton" type="button" disabled>Prepare placement request</button>
+        <button id="downloadButton" type="button" disabled>Download private request</button>
+      </div>
+      <p class="status-line" id="status" role="status" aria-live="polite">Select the receipt, manifest, and candidate.</p>
+      <pre id="requestPreview">No placement request prepared.</pre>
+    </section>
+
+    <section class="panel node-panel" aria-labelledby="nodeHeading">
+      <div class="panel-heading">
+        <div><span>NODE MATERIALIZER</span><h2 id="nodeHeading">Verified receiver-visible copy</h2></div>
+        <p>New snapshot folder only</p>
+      </div>
+      <p><code>cli.js</code> requires an existing canonical <code>exports/workshop-packages</code> directory. It refuses overwrite, copies exactly the manifest and candidate through a private scratch folder, verifies both before and after atomic rename, and records a path-free placement receipt in the retained staging root.</p>
+      <p>No Recovery Center request is sent. No preview, restore test, permission check, apply, rollback, installation, promotion, or CANON change occurs.</p>
+    </section>
+  </main>
+
+  <script src="../evidence-chain-inspector/evidence-chain-core.js"></script>
+  <script src="evidence-chain-recovery-snapshot-placement-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

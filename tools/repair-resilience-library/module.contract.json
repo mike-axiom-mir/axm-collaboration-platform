@@ -1,0 +1,78 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "repair-resilience-library",
+  "version": "v0.1.0-axm.1",
+  "provides": [
+    "repair-resilience-component-catalog",
+    "bounded-component-search",
+    "local-component-loader",
+    "explicit-component-selftest-runner",
+    "source-status-and-authority-preservation"
+  ],
+  "consumes": [
+    "bundled:component-manifests",
+    "bundled:component-contracts",
+    "bundled:component-javascript",
+    "explicit:component-query",
+    "explicit:selftest-request"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": [
+      "axm.repair-resilience.catalog/v1",
+      "axm.repair-resilience.component-view/v1",
+      "axm.repair-resilience.selftest-summary/v1"
+    ],
+    "accepts": [
+      "plain-text/component-query",
+      "axm.repair.component-id/v1",
+      "explicit-local-selftest-request"
+    ]
+  },
+  "resourceBudget": {
+    "network": "none",
+    "externalPackages": "none",
+    "defaultMode": "read-only-catalog",
+    "selftests": "explicit-only",
+    "maxComponents": 100,
+    "maxSupportAdapters": 1,
+    "perSelftestTimeoutMs": 10000
+  },
+  "failureRecovery": {
+    "catalogFailure": "fail-closed",
+    "unknownComponent": "reject",
+    "selftestFailure": "report-and-hold",
+    "partialPromotion": "not-supported"
+  },
+  "compatibility": {
+    "runtime": "Node.js CommonJS",
+    "externalDependencies": []
+  },
+  "verification": {
+    "sourceManifest": "FILE_MANIFEST.sha256 1786/1786 PASS",
+    "checkpoint": "CHECKPOINT_010 2608/2608 PASS",
+    "componentSelftests": "100/100 PASS",
+    "hardening": "6095/6095 PASS"
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "not-applicable",
+    "disconnect": "not-applicable",
+    "cleanup": "not-applicable"
+  },
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "automatic-component-execution",
+      "automatic-repair",
+      "automatic-install",
+      "automatic-promotion",
+      "permission-escalation",
+      "network-access",
+      "process-control-without-explicit-caller-action",
+      "git-push",
+      "release",
+      "canon-change"
+    ]
+  }
+}

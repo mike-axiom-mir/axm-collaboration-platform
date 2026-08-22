@@ -1,0 +1,176 @@
+{
+  "allowed_hold_codes": [
+    "HOLD_APPEND_ONLY_VIOLATION",
+    "HOLD_AUTHORITY_OR_CONSENT",
+    "HOLD_CANCELLED",
+    "HOLD_CANON_OR_OWNER_AUTHORITY",
+    "HOLD_CONTRACT_SEAL_MISMATCH",
+    "HOLD_DEGRADED_MODE_NOT_ALLOWED",
+    "HOLD_DEPENDENCY_UNAVAILABLE",
+    "HOLD_EXPECTED_REVISION",
+    "HOLD_HUMAN_CONFIRMATION_REQUIRED",
+    "HOLD_IDENTITY_OR_AUTHORITY_FUSION",
+    "HOLD_IMPORT_QUARANTINE",
+    "HOLD_INPUT_DIGEST_MISMATCH",
+    "HOLD_INPUT_LIMIT",
+    "HOLD_INVALID_STATE_TRANSITION",
+    "HOLD_JOURNAL_CORRUPTION",
+    "HOLD_LOG_PRIVACY_VIOLATION",
+    "HOLD_LOW_DISK_OR_UNSAFE_WRITE",
+    "HOLD_NON_CANONICAL_VALUE",
+    "HOLD_OPERATION_ID_COLLISION",
+    "HOLD_OUTPUT_ROOT",
+    "HOLD_PERMISSION_ESCALATION",
+    "HOLD_PRIVACY_OR_ERASURE_TRUTH",
+    "HOLD_RECOVERY_OR_REPAIR_PROOF",
+    "HOLD_RETRIEVAL_PRIVACY_SCOPE",
+    "HOLD_ROOT_OR_SOURCE_OMISSION",
+    "HOLD_RUNTIME_CYCLE",
+    "HOLD_SCHEMA_OR_COMPATIBILITY",
+    "HOLD_SCOPE_OR_PURPOSE",
+    "HOLD_SEMANTIC_CONFLICT",
+    "HOLD_SOURCE_MISMATCH",
+    "HOLD_STALE_STATE",
+    "HOLD_TIME_BASIS_UNCERTAIN",
+    "HOLD_TRANSACTION_INCOMPLETE",
+    "HOLD_TRUST_OR_AUTHORITY_TRANSFER",
+    "HOLD_UNKNOWN_TOP_LEVEL_FIELD"
+  ],
+  "authority": "T3_EXPLICIT_HUMAN_GATE",
+  "boot_prerequisites": [
+    "axm.memory.consent-bound-retention-policy",
+    "axm.memory.consent-lease",
+    "axm.memory.deletion-tombstone-receipt",
+    "axm.memory.provenance-envelope",
+    "axm.memory.sensitivity-classifier"
+  ],
+  "compiler_claim_boundary": "Normalized executable interface only; not semantic implementation or owner acceptance.",
+  "contract_references": [
+    "axm.memory.consent-bound-retention-policy",
+    "axm.memory.consent-lease",
+    "axm.memory.deletion-tombstone-receipt",
+    "axm.memory.provenance-envelope",
+    "axm.memory.sensitivity-classifier"
+  ],
+  "exact_owned_root": "local://axm-memory/axm.memory.encryption-key-boundary/",
+  "hold_contract": "axm.memory.typed-hold/v2",
+  "identity": {
+    "category": "7. Privacy, consent, retention, redaction, deletion, and export",
+    "name": "Memory Encryption and Key Boundary",
+    "number": 66,
+    "stable_id": "axm.memory.encryption-key-boundary"
+  },
+  "lifecycle_states": [
+    "DRAFT",
+    "VALIDATED",
+    "EXECUTED",
+    "VERIFIED",
+    "HELD",
+    "FAILED"
+  ],
+  "lifecycle_transitions": [
+    [
+      "DRAFT",
+      "FAILED"
+    ],
+    [
+      "DRAFT",
+      "HELD"
+    ],
+    [
+      "DRAFT",
+      "VALIDATED"
+    ],
+    [
+      "EXECUTED",
+      "FAILED"
+    ],
+    [
+      "EXECUTED",
+      "HELD"
+    ],
+    [
+      "EXECUTED",
+      "VERIFIED"
+    ],
+    [
+      "HELD",
+      "FAILED"
+    ],
+    [
+      "VALIDATED",
+      "EXECUTED"
+    ],
+    [
+      "VALIDATED",
+      "FAILED"
+    ],
+    [
+      "VALIDATED",
+      "HELD"
+    ]
+  ],
+  "operation_kind": "BOUNDED_TRANSFORM",
+  "permissions": [
+    "secrets.use"
+  ],
+  "privacy_forbidden_receipt_keys": [
+    "payload",
+    "source_refs",
+    "authority_ref",
+    "confirmation_ref",
+    "safety_copy_ref",
+    "deleted_content",
+    "raw_private"
+  ],
+  "purpose": "Keep encrypted payloads, key identifiers, rotation, recovery, access roles, and secret-free metadata as separate governed surfaces.",
+  "request_schema": "axm.memory.reference-request/v2",
+  "required_request_fields": [
+    "schema",
+    "seed_id",
+    "operation_id",
+    "purpose",
+    "source_refs",
+    "source_digests",
+    "authority_ref",
+    "consent_state",
+    "input_digest",
+    "target_root",
+    "request_timestamp",
+    "dependency_snapshot",
+    "expected_revision",
+    "current_revision",
+    "input_size_bytes",
+    "available_disk_bytes",
+    "cancelled",
+    "runtime_cycle_detected",
+    "import_trust_claim",
+    "payload",
+    "category_guard",
+    "requested_permissions",
+    "actor_role",
+    "request_state",
+    "requested_transition",
+    "allow_degraded",
+    "extensions",
+    "trace_id",
+    "receipt_visibility",
+    "preview_digest",
+    "confirmation_ref",
+    "confirmation_scope",
+    "confirmation_expires",
+    "safety_copy_ref",
+    "human_confirmed",
+    "transaction_id"
+  ],
+  "result_contract": "axm.memory.encryption-key-boundary.receipt/v1",
+  "risk": "HIGH",
+  "runtime_collaborators": [],
+  "schema": "axm.memory.run100-compiled-contract/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "cb0a2d1db4f173bfdc7e2ddcc0dd197fca4d073baa7ff4b491fff957ea4af981"
+  },
+  "source_contract_sha256": "53816adf43cf1af09722b20c48ce252adfdfd492c60b78391713894c305cb8b4",
+  "source_run90_protocol_sha256": "6f5735d496170ce8a9af5196381597aac05d6484ae6b039605a471912ba21f85"
+}

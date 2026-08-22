@@ -1,0 +1,189 @@
+{
+  "capability_interface": {
+    "authority_delta": "NONE",
+    "canon_delta": "NONE",
+    "consent_delta": "NONE",
+    "consumes_clause": "source-linked memories; current goal; approved roots; decisions; open loops; context budget",
+    "human_gate_required_by_source_contract": false,
+    "input_contract": "axm.memory.reference-request/v2",
+    "invariants": [
+      "alternatives and limitations remain visible",
+      "authority_delta_is_none",
+      "canon_delta_is_none",
+      "consent_delta_is_none",
+      "delivery_does_not_imply_acceptance",
+      "derived capsules are replaceable and non-authoritative",
+      "every summary section resolves to sources",
+      "full_semantics_are_not_claimed",
+      "memory_payload_is_inert_data",
+      "proposal cannot silently become accepted or applied",
+      "proposal is reviewable and discardable",
+      "source_truth_is_not_created_by_contract_validity",
+      "trust_delta_is_none"
+    ],
+    "operation_kind": "PROPOSAL",
+    "output_contract": "axm.memory.decision-rationale-compressor.proposal/v1",
+    "postconditions": [
+      "exactly one accepted reference contract or typed HOLD is returned",
+      "no hidden mutation, authority gain, trust gain, consent gain, or CANON promotion occurs",
+      "result remains source-linked, replaceable, privacy-safe, and bounded to the declared purpose",
+      "receiver acceptance, semantic apply, owner acceptance, and integration remain separate future acts"
+    ],
+    "preconditions": [
+      "exact seed identity and purpose match",
+      "source references and digests align",
+      "authority, consent, role, permission, expiry, and namespace checks pass",
+      "boot prerequisites are ready or explicitly safe degraded mode is allowed",
+      "resource, cancellation, revision, output-root, and compatibility guards pass"
+    ],
+    "purpose_clause": "Condense a decision into context, options, evidence, trade-offs, authority, dissent, consequences, and reopening trigger.",
+    "semantic_effect": "REFERENCE_ONLY_NOT_IMPLEMENTED",
+    "state_effect_envelope": "NONE",
+    "trust_delta": "NONE"
+  },
+  "composition": {
+    "accepted_upstream_ids": [
+      "axm.memory.original-inference-separator",
+      "axm.memory.provenance-envelope",
+      "axm.memory.root-branch-compression-policy",
+      "axm.memory.source-linked-summary",
+      "axm.memory.summary-drift-verifier"
+    ],
+    "authority_transfer": false,
+    "boot_prerequisites": [
+      "axm.memory.original-inference-separator",
+      "axm.memory.provenance-envelope",
+      "axm.memory.root-branch-compression-policy",
+      "axm.memory.source-linked-summary",
+      "axm.memory.summary-drift-verifier"
+    ],
+    "consent_transfer": false,
+    "cycles_allowed_only_outside_boot_graph": true,
+    "delivery_does_not_imply_acceptance": true,
+    "downstream_candidates": [],
+    "handoff_schema": "axm.memory.capability-handoff/v1",
+    "runtime_collaborators": [],
+    "semantic_apply_implied": false,
+    "trust_transfer": false
+  },
+  "human_review": {
+    "automatic_apply": false,
+    "challenge_and_reopen_supported": true,
+    "default_action": "HOLD",
+    "one_safe_next_action_required": true,
+    "packet_path": "modules/048_decision-rationale-compressor/review_packet.json",
+    "primary_actions": [
+      "REVIEW",
+      "HOLD",
+      "RETURN"
+    ]
+  },
+  "identity": {
+    "category_number": 5,
+    "name": "Decision and Rationale Compressor",
+    "number": 48,
+    "stable_id": "axm.memory.decision-rationale-compressor"
+  },
+  "pipeline_membership": [],
+  "profiles": {
+    "authority": {
+      "path": "profiles/authority_t2-shadow-or-proposal.json",
+      "sha256": "e3c4987356f613b0bfc9729257b151b60dce8b02ee22ce9f0da4b32cf955b3f3"
+    },
+    "category": {
+      "path": "profiles/category_05_compression_reentry.json",
+      "sha256": "b08e515cf2f1d7ed0b560aa8a978b01e664ea3c27945f7075c990c08c2ab78cc"
+    },
+    "operation": {
+      "path": "profiles/operation_proposal.json",
+      "sha256": "e06662ecbf2ca8e0f515302eae855ac4990d5d1b1e3535b46355c11ce782ee10"
+    },
+    "proof_tiers": {
+      "path": "profiles/proof_tiers.json",
+      "sha256": "ab8646803825822a1c529c9a47163827813c5ea9f2c2034031bdd103245d2f00"
+    },
+    "review_surface": {
+      "path": "profiles/review_surface.json",
+      "sha256": "d46b074a8a703365fd7243c20fae436abd8346494a3100efff73f817a65431e5"
+    },
+    "risk": {
+      "path": "profiles/risk_low.json",
+      "sha256": "fa8c6a59e399b4b3b1d205c75408945cc9847ac60736b75b83a85faeed34dc8f"
+    }
+  },
+  "proof": {
+    "achieved_tiers": [
+      "STRUCTURAL",
+      "REFERENCE_BEHAVIOR",
+      "CATEGORY_SEAM",
+      "COMPOSITION_REFERENCE"
+    ],
+    "boundary": "Executable deltas, composition, metamorphic, resource, review, and capsule evidence remain synthetic/local reference proof.",
+    "canon": false,
+    "full_semantic_implementation": false,
+    "owner_acceptance": false,
+    "specialist_verification": false,
+    "workshop_integration": false
+  },
+  "resource_policy": {
+    "batch_and_step_limits_required": true,
+    "cancellation_must_be_checked": true,
+    "network_required": false,
+    "output_path_must_remain_under_exact_owned_root": true,
+    "profile_ref": {
+      "path": "profiles/risk_low.json",
+      "sha256": "fa8c6a59e399b4b3b1d205c75408945cc9847ac60736b75b83a85faeed34dc8f"
+    },
+    "symlink_escape_forbidden": true,
+    "unbounded_scan_forbidden": true
+  },
+  "schema": "axm.memory.capability-delta/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "base_contract_file_sha256": "b9d6aabd6a690c79d4eb8e8edcc0cbd38e621bc0f81eed658c8f918578d1506d",
+    "body_sha256": "90c5d6ad1263b047b928bbc6b7a5416e8d2943624ff78f108c65887af992bb66",
+    "delta_core_sha256": "c805aaa06a700093cde3a9744a099c70beb1885a42193e8659b38fcaee863db7"
+  },
+  "source_run50": {
+    "build_intake_file_sha256": "acb20a6cbb960ef7d505445908ffcd431a16fdbff977163fda2db02d2e024f2d",
+    "candidate_contract_body_sha256": "713bb9525d0de441e6331d6f2ad9f675140cb6f131b421d6b707258f391bc9bf",
+    "candidate_contract_file_sha256": "b9d6aabd6a690c79d4eb8e8edcc0cbd38e621bc0f81eed658c8f918578d1506d",
+    "candidate_contract_path": "modules/048_decision-rationale-compressor/candidate.contract.json",
+    "fixtures_file_sha256": "13a579aedcaa128062d4e813a4bcf360f94647b375d1ede711ccb98af10e3065",
+    "run50_posture_preserved": true,
+    "source_authority": "T2_SHADOW_OR_PROPOSAL",
+    "source_operation_kind": "PROPOSAL",
+    "source_purpose": "Condense a decision into context, options, evidence, trade-offs, authority, dissent, consequences, and reopening trigger.",
+    "source_risk": "LOW",
+    "source_run50_status": "STEWARD_RUN_50_EXECUTABLE_SAFETY_AND_CATEGORY_PROBE_VALIDATED_CANDIDATE"
+  },
+  "status": "STEWARD_RUN_60_CAPABILITY_COMPOSITION_AND_EFFICIENT_VALIDATION_CANDIDATE",
+  "validation": {
+    "cache_is_evidence_reuse_not_truth": true,
+    "cached_result_cannot_promote_canon": true,
+    "harness_version": "axm-memory-run60-harness-v1",
+    "proof_cache_key": "4001906a1afb1f00ddee93325411d7fcd31a100245a861bd6f90c5ff58737b2d",
+    "revalidation_triggers": [
+      "candidate contract or fixture digest changes",
+      "capability delta core changes",
+      "referenced shared profile digest changes",
+      "validation harness version changes",
+      "boot prerequisite interface changes",
+      "privacy, authority, or lifecycle policy changes"
+    ],
+    "test_suites": [
+      "run50_full_reference_suite",
+      "run60_delta_preservation",
+      "run60_capability_interface",
+      "run60_composition_graph",
+      "run60_selective_validation",
+      "run60_metamorphic_laws",
+      "run60_resource_faults",
+      "run60_reference_pipelines",
+      "run60_human_review",
+      "run60_capsule_export",
+      "run60_efficiency",
+      "run60_roundtrip"
+    ]
+  }
+}

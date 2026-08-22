@@ -1,53 +1,63 @@
 ============================================================
-AXM REASONING SHELL v0.1 — BRANCH DOCUMENTATION
-BRANCH ONLY · NOT CANON · NOT FOUNDATION · INHERITS FROM THE
-BACKBONE, DOES NOT OWN IT · SUGGESTION, NOT TRUTH
+AXM REASONING SHELL v0.2 - BRANCH DOCUMENTATION
+BRANCH ONLY - NOT CANON - NOT FOUNDATION - INHERITS FROM THE
+BACKBONE, DOES NOT OWN IT - SUGGESTION, NOT TRUTH
 ============================================================
-FILE MAP: index.html (module+UI, schemas inline, format:1) ·
-profiles.json (1 real: small-local-model v0.1 · 6 placeholders,
-schema-complete, labeled) · manifest.json · this file.
 
-FLOW (built): task -> profile frames ONE small step -> AXM.ask
-(same bridge; noAI = honest manual mode) -> CHECKPOINT judged by
-human -> accepted (step recorded) or rejected (ROUTE captured,
-rejection_reason REQUIRED — empty fails validation, proven) ->
-repair context feeds next step -> AFTER-ACTION report (fake-done
-+ context-loss flags, repairs list) -> TWEAK PROPOSAL, status
-always 'proposal' — a human edits profiles.json or nothing
-happens. Session saved via AXM.store (format:1) + exportable.
+FILE MAP
 
-SAFETY RULES (enforced in code): no auto-write · no auto-tweak ·
-no profile mutation · every session/step/checkpoint/proposal
-passes AXMGate.submit like any tool · no network beyond AXM.ask.
+index.html                 module UI and explicit action wiring
+reasoning-shell-core.js    deterministic format:1 session logic
+profiles.json              one real profile and six labeled placeholders
+manifest.json              authority and discovery declaration
+module.contract.json       capability, write, refusal, and lifecycle boundary
+selftest.js                held-out core, contract, profile, and markup checks
 
-[INTEGRATION] STUBS (documented, NOT built): registry connector
-('shell.profile.source') would register here when a second
-consumer exists; local measurement harness compares exported
-shell-on vs shell-off sessions by recorded condition, steps, repairs and
-unlabeled proof labels. It is a counting aid, not a quality
-verdict or profile-tuning authority. The shell-off condition uses
-only the task, prior accepted steps and the output format — no
-profile system frame or repair context.
+BUILT FLOW
 
-TEST PLAN (for Mike/Opus): same task ± shell on a small local
-model (Nova) — count fake-done, repairs, completion; on strong
-models with overconfident profile — count unlabeled claims.
-STOP CRITERIA: stop and flag if any change needs autonomy,
-compute allocation, sandboxing, own internet access, gate/
-registry logic changes, shared shell-only directories, or
-template-type definitions for other modules. None crossed here.
+task + condition -> gated session start -> one gated AXM.ask step
+(or honest manual mode) -> gated human checkpoint -> accepted step
+or fail-closed repair route with a non-empty rejection_reason ->
+gated after-action -> optional gated tweak PROPOSAL with status
+always proposal -> explicit persisted session -> separately gated
+explicit export.
 
-FAILURE MODES (known): shell theater (steps ritualized, not
-honest — watch unlabeled-claim rate) · checkpoint fatigue (human
-rubber-stamps — keep sessions short) · profile overfit (tweaks
-encode one session's noise — hence proposal-only + evidence).
+The shell-off condition receives the task, prior accepted steps,
+and generic output format only. It receives no profile system frame
+and no repair context. Local comparison accepts exactly one shell-on
+export followed by one shell-off export and reports recorded counts.
 
-MERGEGATE CHECKLIST: [x] shell-only functionality [x] no gate/
-registry modification [x] no shared shell directories [x] empty
-rejection_reason fails (proven) [x] STOP criteria present
-[ ] measurement evidence (REQUIRED before any canon talk; the
-    local comparison aid is built, but no real-model evidence exists)
-[ ] Opus cleanup: real registry integration, SOURCE_LINEAGE
-headers, cluster INDEX, overbuild trim.
-UNTESTED: everything on real models. No fake done.
+SAFETY RULES
+
+- Every state-changing shell action submits to AXMGate and honors deny.
+- No automatic step loop, session start, profile mutation, tweak apply,
+  export, promotion, or CANON action exists.
+- A denied tweak proposal is removed before the after-action is saved.
+- A failed session save does not enable export.
+- Export is explicit and revokes its temporary object URL.
+- The local comparison is read-only and does not rate model quality.
+- Same-origin profiles.json is the only direct fetch. Model transport,
+  when selected, remains owned by AXM.ask.
+
+EVIDENCE
+
+The deterministic core self-test proves prompt separation, route
+validation, proposal-only after-actions, exact condition pairing,
+profile shape, manifest/contract validity, gate-action wiring, script
+syntax, and definite static form naming.
+
+NOT PROVEN
+
+- No real-model effectiveness or learning-improvement claim.
+- No proof that a human checkpoint is correct or fatigue-free.
+- No proof that placeholder profiles improve any model.
+- No rendered usability, screen-reader, or visual-quality approval.
+- No registry connector integration beyond the existing AXM.ask seam.
+
+STOP CRITERIA
+
+Stop and flag if a change needs autonomous looping, compute allocation,
+new sandbox authority, direct internet access, gate/registry mutation,
+shared shell-only directories, profile auto-tuning, or authority over
+other modules. None is granted here.
 ============================================================

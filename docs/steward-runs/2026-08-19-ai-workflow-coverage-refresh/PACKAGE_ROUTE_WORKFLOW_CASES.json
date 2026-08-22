@@ -1,0 +1,127 @@
+{
+  "schema": "axm.steward-workflow-case-set/v1",
+  "version": "0.1.0",
+  "caseSetId": "workspace-local-package-proof-workflow-cases-20260819",
+  "status": "TEST",
+  "workflow": "Decide where a technical package proof belongs and whether its lifecycle may be called complete.",
+  "fixturePolicy": "Representative routing and completion cases are frozen as data outside both comparison policies. They test the repository proof workflow only, not browser or application download settings.",
+  "cases": [
+    {
+      "id": "d-workspace-with-c-host-temp",
+      "sourcePath": "docs/steward-runs/2026-08-19-workspace-local-package-proof/README.md",
+      "phase": "ROUTE",
+      "facts": {
+        "workspaceDrive": "D",
+        "hostTempDrive": "C",
+        "transientTechnicalProof": true,
+        "userPersistentOutput": false
+      },
+      "expectedDecision": "ROUTE_WORKSPACE_SCRATCH",
+      "expectedRule": "TRANSIENT_PROOF_FOLLOWS_WORKSPACE"
+    },
+    {
+      "id": "c-workspace-with-c-host-temp",
+      "sourcePath": "tests/tool-forge-package-test.js",
+      "phase": "ROUTE",
+      "facts": {
+        "workspaceDrive": "C",
+        "hostTempDrive": "C",
+        "transientTechnicalProof": true,
+        "userPersistentOutput": false
+      },
+      "expectedDecision": "ROUTE_WORKSPACE_SCRATCH",
+      "expectedRule": "TRANSIENT_PROOF_FOLLOWS_WORKSPACE"
+    },
+    {
+      "id": "hostile-cwd-temp-and-tmp",
+      "sourcePath": "docs/steward-runs/2026-08-19-workspace-local-package-proof/selftest.js",
+      "phase": "ROUTE",
+      "facts": {
+        "workspaceDrive": "D",
+        "hostTempDrive": "C",
+        "workingDirectoryDrive": "C",
+        "tempEnvironmentDrive": "C",
+        "transientTechnicalProof": true,
+        "userPersistentOutput": false
+      },
+      "expectedDecision": "ROUTE_WORKSPACE_SCRATCH",
+      "expectedRule": "TRANSIENT_PROOF_IGNORES_HOST_TEMP_REDIRECTION"
+    },
+    {
+      "id": "user-requested-persistent-download",
+      "sourcePath": "docs/steward-runs/2026-08-19-workspace-local-package-proof/README.md",
+      "phase": "ROUTE",
+      "facts": {
+        "transientTechnicalProof": false,
+        "userPersistentOutput": true,
+        "userSelectedDestination": true
+      },
+      "expectedDecision": "USE_USER_SELECTED_DESTINATION",
+      "expectedRule": "USER_OUTPUT_REMAINS_USER_ROUTED"
+    },
+    {
+      "id": "verified-cleaned-uninstalled-proof",
+      "sourcePath": "docs/steward-runs/2026-08-19-workspace-local-package-proof/VERIFICATION_RECEIPT.json",
+      "phase": "COMPLETE",
+      "facts": {
+        "executionExitCode": 0,
+        "pathInsideWorkspaceScratch": true,
+        "writeVerified": true,
+        "cleanupComplete": true,
+        "installed": false
+      },
+      "expectedDecision": "COMPLETE_VERIFIED_UNINSTALLED",
+      "expectedRule": "COMPLETE_REQUIRES_VERIFIED_CLEAN_STATE"
+    },
+    {
+      "id": "leftover-workspace-proof-directory",
+      "sourcePath": "docs/steward-runs/2026-08-19-workspace-local-package-proof/EVIDENCE_ROUTE.json",
+      "phase": "COMPLETE",
+      "facts": {
+        "executionExitCode": 0,
+        "pathInsideWorkspaceScratch": true,
+        "writeVerified": true,
+        "cleanupComplete": false,
+        "installed": false
+      },
+      "expectedDecision": "HOLD_FOR_CLEANUP",
+      "expectedRule": "LEFTOVER_TRANSIENT_STATE_BLOCKS_COMPLETION"
+    },
+    {
+      "id": "proof-path-escapes-workspace",
+      "sourcePath": "docs/steward-runs/2026-08-19-workspace-local-package-proof/EVIDENCE_ROUTE.json",
+      "phase": "COMPLETE",
+      "facts": {
+        "executionExitCode": 0,
+        "pathInsideWorkspaceScratch": false,
+        "writeVerified": true,
+        "cleanupComplete": true,
+        "installed": false
+      },
+      "expectedDecision": "HOLD_FOR_PATH_ESCAPE",
+      "expectedRule": "WORKSPACE_ESCAPE_BLOCKS_COMPLETION"
+    },
+    {
+      "id": "package-proof-process-fails",
+      "sourcePath": "docs/steward-runs/2026-08-19-workspace-local-package-proof/selftest.js",
+      "phase": "COMPLETE",
+      "facts": {
+        "executionExitCode": 1,
+        "pathInsideWorkspaceScratch": true,
+        "writeVerified": false,
+        "cleanupComplete": true,
+        "installed": false
+      },
+      "expectedDecision": "HOLD_FOR_FAILED_PROOF",
+      "expectedRule": "FAILED_PROOF_BLOCKS_COMPLETION"
+    }
+  ],
+  "truth": {
+    "statisticalBenchmark": false,
+    "modelTranscript": false,
+    "modelInvoked": false,
+    "humanParticipant": false,
+    "humanBenefitEvidence": false,
+    "automaticAuthority": false
+  }
+}

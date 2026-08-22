@@ -1,0 +1,129 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "BLOCKED",
+  "requirements": [
+    {
+      "id": "knowledge-to-beneficiary-outcome",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "growth.need-gap-cycle.bind"
+      ],
+      "degraded": [
+        "growth.outcome.evidence-route",
+        "growth.outcome.refresh"
+      ],
+      "unknown": [],
+      "missing": [
+        "growth.outcome.human.verify",
+        "growth.outcome.ai-workflow.verify"
+      ],
+      "declaredConstraints": {
+        "growth.need-gap-cycle.bind": [
+          "TEST connector in shared/verified-capability-loop",
+          "links receipts but performs no lifecycle stage"
+        ],
+        "growth.outcome.evidence-route": [
+          "claim-specific evidence routing exists as operating guidance",
+          "no portable Workshop outcome receipt enforces the route"
+        ],
+        "growth.outcome.human.verify": [
+          "Grounded Evolution records expected benefits but does not require human-native outcome evidence"
+        ],
+        "growth.outcome.ai-workflow.verify": [
+          "capability availability is not a held-out AI-workflow outcome"
+        ],
+        "growth.outcome.refresh": [
+          "capability-cycle refresh exists",
+          "beneficiary outcomes have no linked refresh state"
+        ]
+      }
+    },
+    {
+      "id": "reconstructable-non-authoritative-growth",
+      "required": true,
+      "status": "BLOCKED",
+      "available": [
+        "growth.authority.human"
+      ],
+      "degraded": [
+        "growth.evidence.closure"
+      ],
+      "unknown": [],
+      "missing": [
+        "growth.outcome.digest-receipt"
+      ],
+      "declaredConstraints": {
+        "growth.outcome.digest-receipt": [
+          "intervention and capability receipts exist separately"
+        ],
+        "growth.authority.human": [
+          "Review Inbox and Verified Capability Loop preserve exact-digest human decisions",
+          "no automatic apply or promotion"
+        ],
+        "growth.evidence.closure": [
+          "focused source-closure repair passes current tests",
+          "candidate remains AWAITING_STEWARD and is not installed or promoted"
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "growth.outcome.ai-workflow.verify",
+    "growth.outcome.digest-receipt",
+    "growth.outcome.human.verify"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "growth.outcome.ai-workflow.verify",
+      "requiredBy": [
+        "knowledge-to-beneficiary-outcome"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "growth.outcome.digest-receipt",
+      "requiredBy": [
+        "reconstructable-non-authoritative-growth"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "growth.outcome.human.verify",
+      "requiredBy": [
+        "knowledge-to-beneficiary-outcome"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

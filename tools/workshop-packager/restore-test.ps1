@@ -123,7 +123,7 @@ try {
   if (-not [System.IO.File]::Exists((Get-LongPath $manifestPath))) { throw 'Expected package manifest is missing.' }
   $manifest = [System.IO.File]::ReadAllText((Get-LongPath $manifestPath)) | ConvertFrom-Json
   if ($manifest.schema -ne 'axm.workshop-package/v1') { throw 'Unexpected package manifest schema.' }
-  if ($manifest.mode -notin @('full','public','module','delta')) { throw 'Unexpected package mode.' }
+  if ($manifest.mode -notin @('full','public','module','delta','offline-windows')) { throw 'Unexpected package mode.' }
 
   $checked = 0
   $manifestPaths = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
@@ -145,7 +145,7 @@ try {
   $removed = @($manifest.removed_paths | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
   foreach ($entry in $removed) { $null = Assert-SafeRelative ([string]$entry) 'removed-path ledger' }
 
-  $isWholeWorkshop = $manifest.mode -in @('full','public')
+  $isWholeWorkshop = $manifest.mode -in @('full','public','offline-windows')
   if (-not $isWholeWorkshop) {
     if ($manifest.mode -eq 'module') {
       $scopes = @($manifest.selection.scopes)
@@ -173,7 +173,19 @@ try {
   } else {
     $verifyPath = Join-Path $restoredRoot 'verify.js'
     if (-not (Test-Path -LiteralPath $verifyPath -PathType Leaf)) { throw 'Restored verify.js is missing.' }
-    $node = (Get-Command node.exe -ErrorAction Stop).Source
+    $offlineRuntime = 'not-applicable'
+    $runtimeFromCandidate = $false
+    if ($manifest.mode -eq 'offline-windows') {
+      $runtimeVerifier = Join-Path $restoredRoot 'scripts\verify-offline-runtime.ps1'
+      if (-not (Test-Path -LiteralPath $runtimeVerifier -PathType Leaf)) { throw 'Offline runtime verifier is missing.' }
+      $runtimeVerifyOutput = @(& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $runtimeVerifier -WorkshopRoot $restoredRoot 2>&1)
+      if ($LASTEXITCODE -ne 0) { throw ('Bundled runtime verification failed after restore: ' + (($runtimeVerifyOutput | Select-Object -Last 8) -join ' ')) }
+      $node = Join-Path $restoredRoot 'runtime\node\node.exe'
+      $offlineRuntime = 'pass'
+      $runtimeFromCandidate = $true
+    } else {
+      $node = (Get-Command node.exe -ErrorAction Stop).Source
+    }
 
     $beginnerLaunchTest = Join-Path $restoredRoot 'tests\beginner-launch-selftest.js'
     if (-not (Test-Path -LiteralPath $beginnerLaunchTest -PathType Leaf)) { throw 'Restored beginner launch self-test is missing.' }
@@ -227,6 +239,8 @@ try {
       beginner_launcher = 'pass'
       verifier = $verifyHeadline
       hub_health = 'pass'
+      offline_runtime = $offlineRuntime
+      runtime_from_candidate_bundle = $runtimeFromCandidate
       test_port = $port
       started_at = $startedAt
     }

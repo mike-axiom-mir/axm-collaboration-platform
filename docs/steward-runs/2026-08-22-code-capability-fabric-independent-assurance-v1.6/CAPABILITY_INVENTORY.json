@@ -1,0 +1,49 @@
+{
+  "schema": "capability-inventory/v1",
+  "observedAt": "2026-08-22T00:29:54.996Z",
+  "implementationCommit": "ba5af784b5322284d0f6da8a5f272648745053f9",
+  "available": [
+    {
+      "capability": "code.fabric.plan.verify",
+      "source": "existing v2 deterministic planner",
+      "authority": "NONE"
+    },
+    {
+      "capability": "code.fabric.readiness.verify",
+      "source": "existing readiness v1 gate",
+      "authority": "NONE"
+    },
+    {
+      "capability": "strict-deterministic-canonical-json",
+      "source": "existing deterministic-json-core",
+      "authority": "NONE"
+    },
+    {
+      "capability": "ed25519.verify",
+      "source": "trusted Node crypto standard-library primitive already used by Workshop updater and readiness",
+      "authority": "cryptographic verification only"
+    },
+    {
+      "capability": "code.assurance.independent.review",
+      "source": "new additive independent assurance review v1",
+      "authority": "NONE",
+      "status": "TEST"
+    },
+    {
+      "capability": "code.assurance.independent.review.verify",
+      "source": "new strict normalizer and deterministic rebuild verifier",
+      "authority": "NONE",
+      "status": "TEST"
+    }
+  ],
+  "notAvailable": [
+    "organizational-independence-proof",
+    "verifier-competence-proof",
+    "request-bound-assurance-policy-v3",
+    "authorized-repaired-disposable-sandbox-executor",
+    "live-resource-enforcement-observer",
+    "executed-output-lineage-proof",
+    "generated-source-direct-reuse-rights"
+  ],
+  "compositionDecision": "Reuse the existing planner, readiness, deterministic JSON, and Ed25519 verification organs. Add only pure coordination contracts; do not create a Foundation, Atlas, provider loader, or executor."
+}

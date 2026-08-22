@@ -1,0 +1,1 @@
+"use strict";const assert=require("assert");const {deriveTimeoutPolicy}=require("./index");let r=deriveTimeoutPolicy([100,200,300],{consequenceMultiplier:2,maxMs:1000});assert(r.requestMs>=500);assert(r.operationMs<=1000);r=deriveTimeoutPolicy([],{defaultMs:50});assert.equal(r.fallbackUsed,true);assert(r.connectionMs<r.operationMs);console.log("PASS timeout-policy-adapter");

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AXM Accessibility Adaptation Lab</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <main id="main">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">AXM · REVIEWED LOCAL INTAKE</p>
+        <h1>Accessibility Adaptation Lab</h1>
+        <p class="lead">Turn explicit access goals into a bounded plan, then preview low-risk display preferences locally.</p>
+      </div>
+      <div class="truth" role="note"><strong>Truth boundary</strong><span>No diagnosis, automatic activation, compatibility, field-effect, or conformance claim.</span></div>
+    </header>
+
+    <section class="stats" aria-label="Intake status">
+      <div><b id="moduleCount">—</b><span>packets</span></div>
+      <div><b id="familyCount">—</b><span>families</span></div>
+      <div><b id="packageCount">—</b><span>packages</span></div>
+      <div><b id="boundCount">—</b><span>adapter/evidence bound</span></div>
+    </section>
+
+    <div class="workspace">
+      <section class="panel controls" aria-labelledby="profileTitle">
+        <div class="section-head"><div><p class="eyebrow">LOCAL PREVIEW</p><h2 id="profileTitle">Choose the presentation</h2></div><span class="badge">THIS TOOL ONLY</span></div>
+        <div class="control-grid">
+          <div class="range-field"><label for="textScale">Text scale</label><output id="textScaleValue" for="textScale">110%</output><input id="textScale" type="range" min="90" max="160" step="5" value="110" aria-label="Text scale"></div>
+          <label><span>Contrast</span><select id="contrast"><option value="standard">Standard</option><option value="high">High contrast</option></select></label>
+          <label><span>Reading spacing</span><select id="spacing"><option value="standard">Standard</option><option value="relaxed">Relaxed</option></select></label>
+          <label><span>Information density</span><select id="density"><option value="standard">Standard</option><option value="reduced">Reduced</option></select></label>
+          <label><span>Focus indicator</span><select id="focus"><option value="enhanced">Enhanced</option><option value="standard">Standard</option></select></label>
+          <label><span>Language style</span><select id="language"><option value="standard">Standard</option><option value="plain">Plain language</option></select></label>
+        </div>
+        <div class="actions"><button class="primary" id="applyProfile" type="button">Apply local preview</button><button id="resetProfile" type="button">Reset</button></div>
+      </section>
+
+      <section class="panel preview-panel" aria-labelledby="previewTitle">
+        <div class="section-head"><div><p class="eyebrow">LIVE RESULT</p><h2 id="previewTitle">Task preview</h2></div><span id="profileState" class="badge">SESSION</span></div>
+        <article id="preview" class="preview" tabindex="0">
+          <p class="preview-kicker">Account security</p>
+          <h3 id="previewHeading">Review this change before continuing</h3>
+          <p id="previewCopy">Confirm the destination and access level. You can go back without saving any changes.</p>
+          <div class="preview-detail"><strong>Destination</strong><span>Project workspace</span></div>
+          <div class="preview-detail secondary"><strong>Access</strong><span>Editors can update content</span></div>
+          <label class="preview-check"><input type="checkbox"> I reviewed the destination and access level</label>
+          <div class="preview-actions"><button type="button">Go back</button><button type="button">Continue</button></div>
+        </article>
+      </section>
+    </div>
+
+    <section class="panel planner" aria-labelledby="plannerTitle">
+      <div class="section-head"><div><p class="eyebrow">EXPLICIT GOALS</p><h2 id="plannerTitle">Build a review plan</h2></div><span class="badge">NO AUTO-APPLY</span></div>
+      <fieldset><legend>Select relevant goals</legend><div class="goal-grid">
+        <label><input type="checkbox" value="keyboard focus"> Keyboard and focus</label>
+        <label><input type="checkbox" value="vision contrast reflow"> Vision and reflow</label>
+        <label><input type="checkbox" value="cognitive plain language errors"> Cognitive support</label>
+        <label><input type="checkbox" value="hearing captions transcript"> Hearing and media</label>
+        <label><input type="checkbox" value="motor switch voice gaze controller"> Alternative input</label>
+        <label><input type="checkbox" value="screenreader semantics aria"> Screen reader semantics</label>
+        <label><input type="checkbox" value="authoring alt text template"> Accessible authoring</label>
+        <label><input type="checkbox" value="evidence proof test conformance"> Evidence and review</label>
+      </div></fieldset>
+      <label class="wide"><span>Additional goal</span><input id="customGoal" type="text" maxlength="160" placeholder="For example: make error recovery easier"></label>
+      <button class="primary" id="buildPlan" type="button">Build bounded plan</button>
+      <div id="planResult" class="plan-result" aria-live="polite">Choose one or more goals, or build the default starter plan.</div>
+    </section>
+
+    <section class="panel catalog" aria-labelledby="catalogTitle">
+      <div class="section-head"><div><p class="eyebrow">100 SOURCE PACKETS</p><h2 id="catalogTitle">Browse the catalog</h2></div><span id="visibleCount" class="badge">LOADING</span></div>
+      <div class="catalog-filters"><label class="wide"><span>Search packets</span><input id="search" type="search" placeholder="Search title, purpose, family, or module ID"></label><label><span>Family</span><select id="familyFilter"><option value="">All families</option></select></label></div>
+      <div id="catalogList" class="catalog-list" aria-live="polite"></div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

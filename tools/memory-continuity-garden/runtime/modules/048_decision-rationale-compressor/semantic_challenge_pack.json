@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "ROOT_OMISSION",
+      "expected": "HOLD_ROOT_OR_SOURCE_OMISSION",
+      "stimulus": "compression omits a root constraint"
+    }
+  ],
+  "category": 5,
+  "category_name": "5. Compression, summaries, context windows, and warm re-entry",
+  "full_semantic_implementation": false,
+  "number": 48,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Condense a decision into context, options, evidence, trade-offs, authority, dissent, consequences, and reopening trigger.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "e6ed654eb6754a8009666d480822af15eb8375fef41a4067417b003e6a922c65"
+  },
+  "source_contract_sha256": "b9d6aabd6a690c79d4eb8e8edcc0cbd38e621bc0f81eed658c8f918578d1506d",
+  "stable_id": "axm.memory.decision-rationale-compressor"
+}

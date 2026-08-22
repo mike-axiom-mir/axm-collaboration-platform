@@ -1,0 +1,42 @@
+{
+  "schema": "axm.tool-manifest/v1",
+  "kind": "component",
+  "id": "axm.repair.microrestart-controller",
+  "name": "Microrestart Controller",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "entry": "index.js",
+  "contract": "module.contract.json",
+  "type": "shared-component",
+  "category": "RUNTIME",
+  "layer": "foundation",
+  "audience": "human-machine",
+  "risk": "HIGH",
+  "tags": [
+    "repair-seed",
+    "runtime-resilience",
+    "local-first",
+    "dependency-free",
+    "bounded"
+  ],
+  "uses": [
+    "local-cpu"
+  ],
+  "permissions": [],
+  "actions": [
+    "Restart the smallest faulty component while separating process recovery from persistent state recovery."
+  ],
+  "accepts": [
+    "component-state",
+    "restart-history"
+  ],
+  "produces": [
+    "axm.microrestart-plan/v1"
+  ],
+  "readiness": [
+    "nodejs",
+    "selftest"
+  ],
+  "summary": "Restart the smallest faulty component while separating process recovery from persistent state recovery.",
+  "notes": "Standalone bounded runtime primitive. Invocation is explicit; active AXM authority, integration, and safe operating limits remain unproven."
+}

@@ -15,6 +15,10 @@ function check(label, action) {
   process.stdout.write('PASS ' + label + '\n');
 }
 
+const publishedManifest = require('./manifest.json');
+check('published manifest declares the modern schema', () => assert.equal(publishedManifest.schema, 'axm.tool-manifest/v1'));
+check('published manifest classifies the comparator as a product', () => assert.equal(publishedManifest.kind, 'product'));
+
 function digest(value) {
   return crypto.createHash('sha256').update(Buffer.from(value)).digest('hex');
 }
@@ -230,14 +234,17 @@ check('the bundled demonstration proves additions removals changes and sameness'
   assert.equal(result.summary.changedFiles, 3);
   assert.equal(result.summary.unchangedFiles, 1);
 });
-check('CLI input symlinks can be distinguished by the host probe', () => {
+check('CLI input junctions can be distinguished by the host probe', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'axm-lineage-'));
   try {
-    const source = path.join(root, 'source.json');
-    const link = path.join(root, 'link.json');
+    const sourceDirectory = path.join(root, 'source');
+    const link = path.join(root, 'link');
+    fs.mkdirSync(sourceDirectory, { recursive: true });
+    const source = path.join(sourceDirectory, 'source.json');
     fs.writeFileSync(source, json(bundle('alpha', 'v0.1')));
-    fs.symlinkSync(source, link);
+    fs.symlinkSync(sourceDirectory, link, process.platform === 'win32' ? 'junction' : 'dir');
     assert.equal(fs.lstatSync(link).isSymbolicLink(), true);
+    assert.equal(fs.existsSync(path.join(link, 'source.json')), true);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

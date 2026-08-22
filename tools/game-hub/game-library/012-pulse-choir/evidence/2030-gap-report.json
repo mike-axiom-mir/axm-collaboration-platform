@@ -1,0 +1,354 @@
+{
+  "schema": "capability-gap-report/v1",
+  "overall": "DEGRADED",
+  "requirements": [
+    {
+      "id": "evolving-rounds",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.setlist.deterministic",
+        "game.setlist.server-authoritative",
+        "game.show-memory.server-authoritative"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.setlist.deterministic": [
+          "Three seeded directives selected from six authored contracts."
+        ],
+        "game.setlist.server-authoritative": [
+          "Progress, timeout, reward, and result state are owned by the local Node host."
+        ],
+        "game.show-memory.server-authoritative": [
+          "Bounded night history, total score, best result, cleared acts, round seed, and next-Setlist preview are owned by the runtime host; aborting a round does not consume it."
+        ]
+      }
+    },
+    {
+      "id": "adaptive-conductor",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.conductor.receipt-adaptive",
+        "game.conductor.transparent",
+        "state.conductor.schema-migration",
+        "ui.conductor.cross-surface",
+        "input.ai.idle-noop",
+        "test.conductor",
+        "visual.conductor.journey"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.conductor.receipt-adaptive": [
+          "The host deterministically selects OPENING, RECONNECT, LOCK-IN, or HEADLINER plans from the latest bounded authoritative receipt; adapted act kinds are fixed before the next round starts."
+        ],
+        "game.conductor.transparent": [
+          "Every plan carries a stable mode, title, short cue, source round, full reason, and exact act kinds; no difficulty or objective change is hidden from the room."
+        ],
+        "state.conductor.schema-migration": [
+          "Restored pre-cue checkpoints are normalized into the current Conductor contract without losing result state, show history, the completed-round receipt, or the next adapted plan."
+        ],
+        "ui.conductor.cross-surface": [
+          "The shared lobby/result and 390x844 controller expose the same RECONNECT SET reason, cue, Round 2 identity, and CALL & RESPONSE / PASS THE MIC / CHAIN REACTION plan."
+        ],
+        "input.ai.idle-noop": [
+          "Support AI idle decisions outside active play no longer advance action sequences or fill the bounded input ledger with rejected synthetic actions."
+        ],
+        "test.conductor": [
+          "Core, HTTP, recovery, and handback tests cover deterministic plan modes, exact adapted act kinds, cross-process persistence, legacy-state migration, receipt transport, and idle-AI no-op behavior."
+        ],
+        "visual.conductor.journey": [
+          "A full managed opening round produced a receipt-driven RECONNECT SET; shared result/lobby and portrait result/active states visibly exposed its reason and exact plan with measured no-overflow fit."
+        ]
+      }
+    },
+    {
+      "id": "human-steering",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.room-signal.human-authority",
+        "game.room-signal.deterministic-resolution",
+        "state.room-signal.round-bound",
+        "ui.room-signal.cross-surface",
+        "test.room-signal",
+        "visual.room-signal.journey"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.room-signal.human-authority": [
+          "Only current human players may cast or replace a next-round signal vote; a live AI attempt returned HTTP 403 without changing revision, votes, or plan."
+        ],
+        "game.room-signal.deterministic-resolution": [
+          "The server counts one replaceable vote per eligible human, resolves ties with the stable TOGETHER / BOLD / FLOW order, and maps the winner to one exact authored three-act plan."
+        ],
+        "state.room-signal.round-bound": [
+          "The bounded schema targets exactly the next unplayed round, survives fresh-process checkpoint recovery, is copied into the consumed Conductor receipt, and rolls forward only after round completion."
+        ],
+        "ui.room-signal.cross-surface": [
+          "The 390x844 human controller exposes three accessible vote buttons and current tally; the 1280x720 shared lobby exposes the winning signal, vote count, transparent reason, and exact next plan. AI controllers do not receive voting authority."
+        ],
+        "test.room-signal": [
+          "Core, HTTP, and fresh-process recovery tests cover authorization, validation, idempotence, vote replacement, deterministic ties, exact plan application, round consumption, receipt storage, and checkpoint persistence."
+        ],
+        "visual.room-signal.journey": [
+          "In managed session session-1785246383789, Mike selected BOLD on the portrait controller; shared lobby and both active surfaces visibly rendered the exact HUMAN SPOTLIGHT / PASS THE MIC / RIDE THE STATIC plan with zero measured overflow and zero console warnings/errors."
+        ]
+      }
+    },
+    {
+      "id": "human-agency",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.human-agency.gated"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.human-agency.gated": [
+          "Every set contains a human-required act; support AI cannot clear the full setlist alone."
+        ]
+      }
+    },
+    {
+      "id": "surface-parity",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "ui.shared-screen.setlist",
+        "ui.controller.setlist",
+        "ui.show-memory.cross-surface",
+        "ui.recovery.cross-surface"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "ui.shared-screen.setlist": [
+          "Managed browser verification passed at 1280x720 in lobby, active play, results, replay, and reset recovery."
+        ],
+        "ui.controller.setlist": [
+          "Managed portrait-browser verification passed at 390x844 with the directive and all touch controls visible without overflow."
+        ],
+        "ui.show-memory.cross-surface": [
+          "Shared lobby, active directive, receipt, replay, reset recovery, and portrait controller expose the same authoritative show/round identity and next plan."
+        ],
+        "ui.recovery.cross-surface": [
+          "The shared display exposes RECONNECTING then HOST RESTORED, while seat observation gives controllers an explicit REJOINED cue; both return to the same authoritative show identity."
+        ]
+      }
+    },
+    {
+      "id": "resilient-session",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "state.checkpoint.atomic",
+        "state.session.restore",
+        "input.sequence.restart-safe"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "state.checkpoint.atomic": [
+          "The local host writes a size-limited schema envelope through same-directory temporary write, fsync, and atomic rename; checkpoints are roster-bound and expire after 30 minutes by default."
+        ],
+        "state.session.restore": [
+          "A same-host, same-roster runtime relaunch restores lobby, countdown, active, or result state; live deadlines are rebased so downtime does not consume the round. This is not host migration."
+        ],
+        "input.sequence.restart-safe": [
+          "Accepted sequence counters survive restart, stale sequences remain rejected, and held movement/pulse buffers restore neutral to prevent duplicated or stuck input."
+        ]
+      }
+    },
+    {
+      "id": "managed-handback",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "game.handback.authoritative",
+        "transport.hub-result.callback",
+        "state.handback.clean-relaunch",
+        "ui.shared-screen.handback"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "game.handback.authoritative": [
+          "A completed-show summary is projected only from server-owned Show Memory and includes the bounded last round, next plan, totals, best result, and cleared acts."
+        ],
+        "transport.hub-result.callback": [
+          "Managed runtimes can POST a capped result envelope only to the configured loopback Game Hub /game/end route; sender, receiver, stored result, Hub lobby state, and stopped child were observed for one managed session."
+        ],
+        "state.handback.clean-relaunch": [
+          "A successful explicit handback retires the show checkpoint before Game Hub ends the child; the next managed launch was a fresh lobby with zero history and totals. Callback failure re-enables checkpoint persistence."
+        ],
+        "ui.shared-screen.handback": [
+          "After at least one completed round, the shared display exposes a two-step Return to Game Hub action and a visible SHOW SAVED transition; the action is hidden for a fresh show."
+        ]
+      }
+    },
+    {
+      "id": "verification",
+      "required": true,
+      "status": "READY",
+      "available": [
+        "test.setlist.rules",
+        "test.setlist.http",
+        "test.show-memory.replay",
+        "test.recovery.fresh-process",
+        "test.hub-handback",
+        "visual.setlist.journey",
+        "visual.show-memory.replay",
+        "visual.recovery.managed-restart",
+        "visual.handback-control"
+      ],
+      "degraded": [],
+      "unknown": [],
+      "missing": [],
+      "declaredConstraints": {
+        "test.setlist.rules": [
+          "Determinism, rotation, human gating, reward, and result closure are covered."
+        ],
+        "test.setlist.http": [
+          "HTTP state and seat observation expose the authoritative setlist."
+        ],
+        "test.show-memory.replay": [
+          "Core and HTTP tests prove deterministic seed advancement, changed directives, bounded history, persistent totals, and abort-safe replay identity."
+        ],
+        "test.recovery.fresh-process": [
+          "A separate-process HTTP test proves restore with paused time, neutral input, sequence continuity, explicit New Show reset, and safe fallbacks for corrupt, expired, and roster-mismatched checkpoints."
+        ],
+        "test.hub-handback": [
+          "A fake loopback receiver plus runtime HTTP test proves availability/refusal rules, exact receiver payload, single-send behavior, checkpoint retirement, and fresh relaunch."
+        ],
+        "visual.setlist.journey": [
+          "One complete managed round visibly rotated all three acts, cleared one act, awarded 240 bonus points, rendered a 1/3 receipt, replayed into countdown, and recovered to a clean lobby."
+        ],
+        "visual.show-memory.replay": [
+          "Managed Round 1 at seed 12026 visibly previewed and replayed into the exact changed Round 2 at seed 12027 on desktop and portrait surfaces; reset preserved history and the unconsumed Round 2 plan."
+        ],
+        "visual.recovery.managed-restart": [
+          "A managed Game Hub stop/start visibly traversed RECONNECTING to HOST RESTORED and recovered the exact active round identity, score, revision, clock, player position, Setlist act, and input sequence; controller observation rendered REJOINED."
+        ],
+        "visual.handback-control": [
+          "The managed lobby visibly exposed Return to Game Hub, a non-destructive confirmation state, and SHOW SAVED \u00b7 RETURNING before the callback stopped the runtime."
+        ]
+      }
+    },
+    {
+      "id": "human-delight",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "judgment.human.game-night"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "judgment.human.game-night": [
+          "Requires Mike and representative real groups."
+        ]
+      }
+    },
+    {
+      "id": "physical-controller-proof",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "visual.physical-phone"
+      ],
+      "declaredConstraints": {
+        "visual.physical-phone": [
+          "No physical phone is connected to this task."
+        ]
+      }
+    },
+    {
+      "id": "hub-home-navigation-proof",
+      "required": false,
+      "status": "OPTIONAL_UNKNOWN",
+      "available": [],
+      "degraded": [],
+      "unknown": [
+        "visual.hub-home-navigation"
+      ],
+      "missing": [],
+      "declaredConstraints": {
+        "visual.hub-home-navigation": [
+          "The in-app verifier blocks direct rendering of local port 8790, so the final browser landing on Game Hub is not visually observed even though Hub state and stored-result application passed."
+        ]
+      }
+    },
+    {
+      "id": "production-networking",
+      "required": false,
+      "status": "OPTIONAL_GAP",
+      "available": [],
+      "degraded": [],
+      "unknown": [],
+      "missing": [
+        "network.production-scale"
+      ],
+      "declaredConstraints": {
+        "network.production-scale": [
+          "This build is intentionally local-only and has no production matchmaking substrate."
+        ]
+      }
+    }
+  ],
+  "missingCapabilities": [
+    "network.production-scale",
+    "visual.physical-phone"
+  ],
+  "proposedHands": [
+    {
+      "capabilityId": "network.production-scale",
+      "requiredBy": [
+        "production-networking"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    },
+    {
+      "capabilityId": "visual.physical-phone",
+      "requiredBy": [
+        "physical-controller-proof"
+      ],
+      "contractStatus": "SPEC_REQUIRED",
+      "requiredContractFields": [
+        "inputs",
+        "outputs",
+        "sideEffects",
+        "permissions",
+        "resourceBudget",
+        "failureRecovery",
+        "compatibility",
+        "verification"
+      ]
+    }
+  ]
+}

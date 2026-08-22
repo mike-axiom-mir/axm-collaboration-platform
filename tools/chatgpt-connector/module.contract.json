@@ -19,7 +19,7 @@
     "accepts": ["image/png"]
   },
   "boundaries": {
-    "writes": ["game-hub:asset-inbox:proposal-only"],
+    "writes": ["browser-local:chatgpt-connector-draft", "game-hub:asset-inbox:proposal-only"],
     "refuses": [
       "credential-content-read",
       "cookie-or-token-reuse",
@@ -30,5 +30,6 @@
       "non-png-asset-handoff",
       "automatic-game-asset-acceptance"
     ]
-  }
+  },
+  "lifecycle": {"state_owner": "mixed", "reload": "resume", "disconnect": "graceful-degrade", "cleanup": "explicit"}
 }

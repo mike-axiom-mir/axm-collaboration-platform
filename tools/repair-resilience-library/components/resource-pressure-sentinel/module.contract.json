@@ -1,0 +1,40 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "axm.repair.resource-pressure-sentinel",
+  "version": "0.1.0",
+  "status": "EXPERIMENTAL",
+  "provides": [
+    "axm.resource-pressure.finding/v1"
+  ],
+  "consumes": [
+    "host-resource-sample"
+  ],
+  "permissions": [],
+  "authority": {
+    "tier": "TIER_0_OBSERVE_ONLY",
+    "automaticMutation": false
+  },
+  "overlap": {
+    "decision": "EXTEND_EXISTING",
+    "targets": [
+      "tools/body-pulse",
+      "shared/pulse",
+      "tools/diagnostics-operations-center"
+    ],
+    "reason": "Adds explicit per-resource thresholds and UNKNOWN handling; Body Pulse remains whole-body coordinator."
+  },
+  "boundaries": {
+    "automaticWrites": [],
+    "explicitWrites": [],
+    "refuses": [
+      "automatic-repair",
+      "automatic-restart",
+      "automatic-promotion",
+      "automatic-canon",
+      "permission-grant",
+      "network-access",
+      "runtime-proof-claim",
+      "mutation-of-existing-axm-organs"
+    ]
+  }
+}

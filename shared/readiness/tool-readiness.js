@@ -9,6 +9,7 @@ const INDEX_SCHEMA = 'axm.tools-index/v1';
 const MANIFEST_SCHEMA = 'axm.tool-manifest/v1';
 const STATUSES = new Set(['EXPERIMENTAL', 'TEST', 'WORKING', 'CANON', 'SHELL', 'BROKEN']);
 const KINDS = new Set(['product', 'service', 'scaffold', 'adapter', 'machine-capability']);
+const VERIFICATION_STATUSES = new Set(['TEST', 'WORKING', 'CANON']);
 const SKIP_WALK = new Set(['node_modules', 'vendor', 'exports', 'state', 'logs', 'backups']);
 
 function readJson(file, fallback) {
@@ -82,6 +83,10 @@ function normalizeVerificationResults(input) {
   return new Map(rows.map(row => [row.id, row]));
 }
 
+function isVerificationTarget(tool) {
+  return !!tool && VERIFICATION_STATUSES.has(tool.status) && !!(tool.selftest && tool.selftest.promotionPath);
+}
+
 function buildIndex(root, options) {
   options = options || {};
   root = path.resolve(root);
@@ -132,6 +137,7 @@ function buildIndex(root, options) {
       if (!manifest || !KINDS.has(manifest.kind)) blockers.push('kind is undeclared');
       if (!contractCheck.pass) blockers.push('valid module contract is missing');
       if (!promotionSelftest) blockers.push('top-level executable selftest is missing');
+      if (manifest && ['WORKING', 'CANON'].includes(manifest.status) && promotionSelftest && !verification) blockers.push('current selftest PASS result is missing');
       if (verification && !verificationCurrent) blockers.push('selftest result is stale for the current selftest digest');
       if (verificationCurrent && verification.verdict !== 'PASS') blockers.push('current selftest did not pass');
       if (manifest && ['WORKING', 'CANON'].includes(manifest.status) && verified.state !== 'FRESH') blockers.push('verifiedAt is not fresh');
@@ -227,7 +233,16 @@ function validateIndex(index) {
   if (!Array.isArray(index.capabilities)) errors.push('capabilities must be an array');
   if (!index.promotionQueue || typeof index.promotionQueue !== 'object') errors.push('promotionQueue is required');
   if (!index.truth || index.truth.automaticPromotion !== false) errors.push('automaticPromotion must remain false');
+  if (Array.isArray(index.tools)) {
+    index.tools.forEach(tool => {
+      if (!tool || !['WORKING', 'CANON'].includes(tool.status) || !tool.promotion || tool.promotion.state !== 'CURRENT') return;
+      const selftest = tool.selftest || {};
+      const result = selftest.result;
+      const digestBoundPass = !!result && result.id === tool.id && result.verdict === 'PASS' && result.selftestSha256 === selftest.sha256;
+      if (!digestBoundPass) errors.push(String(tool.id || 'unknown tool') + ': CURRENT requires a digest-bound PASS selftest result');
+    });
+  }
   return { pass: errors.length === 0, errors };
 }
 
-module.exports = { INDEX_SCHEMA, MANIFEST_SCHEMA, STATUSES, KINDS, buildIndex, validateIndex, validateTargetManifest, digestFile };
+module.exports = { INDEX_SCHEMA, MANIFEST_SCHEMA, STATUSES, KINDS, buildIndex, validateIndex, validateTargetManifest, digestFile, isVerificationTarget };

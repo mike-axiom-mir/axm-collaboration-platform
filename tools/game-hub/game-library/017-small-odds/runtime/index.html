@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#160d24">
+  <meta name="description" content="SMALL ODDS: an honest-randomness alien life simulation.">
+  <title>SMALL ODDS · A Random Item Life</title>
+  <link rel="stylesheet" href="/games/017/styles.css">
+</head>
+<body>
+  <noscript>SMALL ODDS needs JavaScript to run its local world simulation.</noscript>
+
+  <section class="splash" id="splash" aria-label="SMALL ODDS title screen">
+    <div class="splash__image" aria-hidden="true"></div>
+    <div class="splash__grain" aria-hidden="true"></div>
+    <div class="splash__content">
+      <p class="eyebrow"><span class="live-dot"></span> A RANDOM ITEM LIFE</p>
+      <h1><span>SMALL</span> <em>ODDS</em></h1>
+      <p class="splash__line">Fired. Evicted. Back in your childhood room.<br>Then the sea coughed up a probability machine.</p>
+      <div class="splash__actions">
+        <button class="button button--primary button--large" id="newGameButton">BEGIN WITH NOTHING</button>
+        <button class="button button--ghost button--large" id="continueButton" hidden>CONTINUE THIS LIFE</button>
+      </div>
+      <div class="trust-mark">
+        <span class="trust-mark__icon">1∕M</span>
+        <span><strong>FIXED ODDS · NO ADAPTIVE LUCK</strong><small>Every portal draw keeps its entropy seed and raw receipt.</small></span>
+      </div>
+    </div>
+    <p class="splash__status">LOCAL EXPANDING PRE-ALPHA <span>·</span> LIVES KEEP MOVING <span>·</span> SAVE STAYS ON THIS DEVICE</p>
+  </section>
+
+  <div class="game" id="gameRoot" hidden>
+    <header class="topbar">
+      <button class="brand" id="titleButton" aria-label="Return to title">
+        <span class="brand__small">SMALL</span><span class="brand__odds">ODDS</span>
+      </button>
+      <div class="topbar__world">
+        <span class="topbar__place" id="placeName">The Glimmer shore</span>
+        <span class="topbar__time" id="planetTime">Day 1 · 18:00 afterglow</span>
+      </div>
+      <div class="hud" aria-label="Player resources">
+        <button class="hud__cell" data-panel="journal"><small>CREDITS</small><strong><span id="moneyValue">19</span><i>₡</i></strong></button>
+        <button class="hud__cell" data-panel="journal"><small>ENERGY</small><strong><span id="energyValue">62</span><i>%</i></strong></button>
+        <button class="hud__cell hud__cell--charge" data-panel="portal"><small>PORTAL</small><strong><span id="chargeValue">0/3</span><i>⚡</i></strong></button>
+      </div>
+      <button class="round-button" id="settingsButton" aria-label="Open settings">···</button>
+    </header>
+
+    <main class="game__body">
+      <section class="scene-column">
+        <div class="scene-frame" id="sceneFrame">
+          <div class="scene-frame__top">
+            <span id="locationKicker">THE SEA IS NOT WATER AND RESENTS THE COMPARISON</span>
+            <span class="scene-frame__signal"><i></i> WORLD IS MOVING</span>
+          </div>
+          <div class="scene" id="scene">
+            <canvas id="worldCanvas" aria-label="Animated view of the current alien location"></canvas>
+            <div class="scene__vignette" aria-hidden="true"></div>
+            <div class="scene__scan" aria-hidden="true"></div>
+            <button class="world-person" id="actorButton" aria-label="Interact with nearby alien">
+              <span class="world-person__pulse"></span>
+              <span class="world-person__label" id="actorLabel">Shellby?</span>
+            </button>
+            <button class="hotspot hotspot--a" id="hotspotA"><span>01</span><b>PORTAL CREATURE</b></button>
+            <button class="hotspot hotspot--b" id="hotspotB"><span>02</span><b>GEL TIDE</b></button>
+            <button class="hotspot hotspot--c" id="hotspotC"><span>03</span><b>LOST POCKETS</b></button>
+            <div class="pip-label" id="pipLabel"><i></i><span>PIP</span></div>
+            <div class="speech" id="speechBubble" hidden><span id="speechText"></span></div>
+            <div class="scene__prompt" id="scenePrompt"><kbd>E</kbd><span>Reach for the escaping banknote</span></div>
+          </div>
+          <nav class="travel" aria-label="Travel">
+            <span class="travel__label">GO SOMEWHERE</span>
+            <button data-travel="room"><i></i><span>Old room<small>home</small></span></button>
+            <button data-travel="kitchen"><i></i><span>Kitchen<small>family</small></span></button>
+            <button data-travel="district" aria-label="Lopsided Lane neighborhood"><i></i><span>Lane<small>neighbors</small></span></button>
+            <button class="is-current" data-travel="shore"><i></i><span>Glimmer<small>shore</small></span></button>
+            <button data-travel="market"><i></i><span>Ragpicker<small>market</small></span></button>
+            <button data-travel="starspite" hidden><i></i><span>Starspite<small>casino ship</small></span></button>
+          </nav>
+        </div>
+
+        <div class="dock" aria-label="Main actions">
+          <button data-panel="portal" class="dock__button dock__button--portal" aria-label="Open Randomizer"><span class="dock__glyph">◎</span><span><b>RANDOMIZER</b><small id="portalDockText">not yours yet</small></span></button>
+          <button data-panel="inventory" class="dock__button" aria-label="Open Items"><span class="dock__glyph">▦</span><span><b>ITEMS</b><small id="inventoryDockText">empty box</small></span></button>
+          <button data-panel="home" class="dock__button" aria-label="Open Home"><span class="dock__glyph">⌂</span><span><b>HOME</b><small id="homeDockText">score 0</small></span></button>
+          <button data-panel="pets" class="dock__button" aria-label="Open Pets"><span class="dock__glyph">✣</span><span><b>PETS</b><small id="petsDockText">none yet</small></span></button>
+          <button data-panel="business" class="dock__button" aria-label="Open Business"><span class="dock__glyph">▥</span><span><b>BUSINESS</b><small id="businessDockText">unemployed</small></span></button>
+        </div>
+      </section>
+
+      <aside class="life-rail" aria-label="Living world">
+        <article class="event-card" id="eventCard">
+          <div class="event-card__weather" aria-hidden="true"><i></i><i></i><i></i></div>
+          <p class="eyebrow">PLANET RIGHT NOW</p>
+          <h2 id="eventName">Apologetic Gas Rain</h2>
+          <p id="eventSummary">The sky keeps saying sorry.</p>
+          <button class="text-button" id="marketInfoButton">SEE WHAT BECAME VALUABLE <span>↗</span></button>
+        </article>
+
+        <section class="life-card">
+          <div class="section-heading">
+            <div><p class="eyebrow">NO QUEST LOG</p><h2>Things happening here</h2></div>
+            <span class="count-pill" id="activityCount">2</span>
+          </div>
+          <div class="activity-list" id="activityList"></div>
+        </section>
+
+        <section class="life-card life-card--feed">
+          <div class="section-heading">
+            <div><p class="eyebrow">YOUR LIFE, REMEMBERED</p><h2>Recent consequences</h2></div>
+            <button class="icon-button" data-panel="journal" aria-label="Open full journal">↗</button>
+          </div>
+          <div class="feed" id="eventFeed" aria-live="polite"></div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <div class="panel-backdrop" id="panelBackdrop" hidden></div>
+  <section class="panel" id="mainPanel" aria-modal="true" role="dialog" aria-labelledby="panelTitle" hidden>
+    <header class="panel__header">
+      <div><p class="eyebrow" id="panelEyebrow">POCKET TERMINAL</p><h2 id="panelTitle">Inventory</h2></div>
+      <button class="round-button" id="panelCloseButton" aria-label="Close panel">×</button>
+    </header>
+    <div class="panel__body" id="panelContent"></div>
+  </section>
+
+  <section class="discovery" id="discoveryModal" aria-modal="true" role="dialog" aria-labelledby="discoveryName" hidden>
+    <div class="discovery__aura" aria-hidden="true"></div>
+    <button class="round-button discovery__close" id="discoveryCloseButton" aria-label="Keep item and close">×</button>
+    <p class="eyebrow" id="discoveryRarity">RARE ARRIVAL</p>
+    <div class="item-orbit item-orbit--large" id="discoveryOrbit"><i></i><i></i><i></i><b id="discoveryGlyph">◉</b></div>
+    <h2 id="discoveryName">Apologetic Glimmerglass Pocket Lamp</h2>
+    <p class="discovery__subtitle" id="discoverySubtitle">HEAT ECHO · APPLIANCE</p>
+    <p class="discovery__description" id="discoveryDescription"></p>
+    <div class="discovery__facts">
+      <span><small>VALUE NOW</small><b id="discoveryValue">42₡</b></span>
+      <span><small>STYLE FAMILY</small><b id="discoveryStyle">Tube-Age Domestic</b></span>
+      <span><small>WAKES UP</small><b id="discoveryTrigger">during gas rain</b></span>
+    </div>
+    <button class="button button--primary" id="discoveryKeepButton">PUT IT IN THE BOX</button>
+    <button class="receipt-link" id="discoveryReceiptButton">Inspect the honest probability receipt</button>
+  </section>
+
+  <section class="intro-card" id="introCard" role="dialog" aria-modal="true" aria-labelledby="introTitle" hidden>
+    <p class="eyebrow">ONE ORDINARY TERRIBLE DAY</p>
+    <h2 id="introTitle">Your employer has replaced you with a taller hat.</h2>
+    <p id="introText">Your landlord needs the room for a cousin who exists. By sunset, everything you own fits in one box.</p>
+    <div class="intro-card__scene" aria-hidden="true"><span class="tiny-pip">•</span><span class="big-world">◒ ◉ ◓</span></div>
+    <button class="button button--primary button--large" id="introNextButton">CARRY THE BOX HOME</button>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden><i></i><span id="toastText"></span></div>
+
+  <script type="module" src="/games/017/app.js"></script>
+</body>
+</html>

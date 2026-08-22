@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_id": "POSITIVE_EXACT_SOURCE",
+      "expected": "REFERENCE_PASS",
+      "stimulus": "exact source, valid scope, fresh proof"
+    },
+    {
+      "case_id": "MISSING_SOURCE",
+      "expected": "HOLD_SOURCE_MISMATCH",
+      "stimulus": "one required source digest is absent"
+    },
+    {
+      "case_id": "CONFLICTING_AUTHORITY",
+      "expected": "HOLD_POLICY_CONFLICT",
+      "stimulus": "two sources assert incompatible authority"
+    },
+    {
+      "case_id": "STALE_PROOF",
+      "expected": "HOLD_PROOF_STALE",
+      "stimulus": "proof age exceeds risk-based lifetime"
+    },
+    {
+      "case_id": "PRIVACY_CROSSING",
+      "expected": "HOLD_AUTHORITY_OR_CONSENT",
+      "stimulus": "memory is requested outside consent purpose"
+    },
+    {
+      "case_id": "FALSE_COMPLETION",
+      "expected": "HOLD_UNSUPPORTED_CLAIM",
+      "stimulus": "structural proof is presented as full semantic completion"
+    },
+    {
+      "case_id": "REPAIR_WITHOUT_WITNESS",
+      "expected": "HOLD_RECOVERY_OR_REPAIR_PROOF",
+      "stimulus": "repair is proposed without source witness or safety copy"
+    }
+  ],
+  "category": 9,
+  "category_name": "9. Integrity, drift, corruption, migration, recovery, and repair",
+  "full_semantic_implementation": false,
+  "number": 88,
+  "oracle_scope": "SYNTHETIC_CATEGORY_SEAM_ONLY",
+  "purpose": "Compare current memory-derived guidance with approved roots, intent, source facts, policies, and latest known-good checkpoint.",
+  "schema": "axm.memory.run100-semantic-challenge-pack/v1",
+  "seal": {
+    "algorithm": "sha256",
+    "body_sha256": "07ee74f3f988c4e7be6dfefb6298ae5439e30aeabf35b68d1419813e6bfcf8d3"
+  },
+  "source_contract_sha256": "c9e203fb32d1e316982f895927451ccd92b20e68607903412449d44fba2c9838",
+  "stable_id": "axm.memory.drift-comparator"
+}
