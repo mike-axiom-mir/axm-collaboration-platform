@@ -1,0 +1,73 @@
+{
+  "schema": "axm.claim-evidence-route/v1",
+  "implementationCommit": "8c6f311eebe18eda5f6318dbd8aaad7f7d37631d",
+  "claims": [
+    {
+      "id": "exact-request-policy-structural-binding",
+      "kind": "STATIC_STRUCTURE+DETERMINISTIC_BEHAVIOR",
+      "risk": "high",
+      "passCondition": "A strict envelope and deterministic review bind the exact normalized v2 request, exact trust policy, exact assurance schemas, roots, and non-retrospective time window.",
+      "primarySurface": "46-case focused selftest with digest, identity, scope, order, time, and replay adversaries",
+      "secondarySurface": "strict schemas, module contract, standalone normalizer, and deterministic rebuild verifier",
+      "counterevidence": "Any altered request or policy that retains a successful binding, or any post-signature envelope that passes.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "four-roots-technical-gate",
+      "kind": "CONTRACT+GOVERNANCE",
+      "risk": "high",
+      "passCondition": "The exact ordered roots are mandatory and cannot be reordered under a recomputed binding.",
+      "primarySurface": "binding normalizer and adversarial root-order test",
+      "secondarySurface": "module contract and receipt audit",
+      "counterevidence": "A different root order normalizes successfully.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "no-authorship-or-consent-inference",
+      "kind": "AUTHORIZATION",
+      "risk": "high",
+      "passCondition": "Successful output keeps requesterAuthorshipVerified and humanPolicyAcceptanceVerified false and rejects unsigned identity or acceptance fields.",
+      "primarySurface": "truth-ceiling and unknown-field adversarial tests",
+      "secondarySurface": "contract refusals and README boundary",
+      "counterevidence": "A recomputed result can claim human authorship or acceptance.",
+      "verdict": "PASS_WITH_SCOPE"
+    },
+    {
+      "id": "existing-fabric-continuity",
+      "kind": "CONTINUITY",
+      "risk": "high",
+      "passCondition": "Earlier Fabric implementations and receipts remain unchanged and all focused suites pass.",
+      "primarySurface": "v1, v2, readiness, independent assurance, and four prior receipt selftests",
+      "secondarySurface": "additive-only Git diff against v1.6 tip",
+      "counterevidence": "Any historical byte drift or focused regression.",
+      "verdict": "PASS"
+    },
+    {
+      "id": "actual-authenticated-human-decision",
+      "kind": "AUTHORIZATION",
+      "risk": "high",
+      "passCondition": "An allowed human decision identity is authenticated under a separately accepted trust policy and a denied identity is refused.",
+      "primarySurface": "not available",
+      "counterevidence": "No trusted human decision-key policy exists.",
+      "verdict": "UNKNOWN_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "actual-sandboxed-execution",
+      "kind": "RUNTIME+SECURITY",
+      "risk": "high",
+      "passCondition": "A separately authorized repaired executor runs under measured disposable isolation.",
+      "primarySurface": "not run",
+      "counterevidence": "Supplied runtimes remained data and no executor was authorized.",
+      "verdict": "UNKNOWN_NOT_RUN"
+    },
+    {
+      "id": "browser-behavior",
+      "kind": "VISUAL+INTERACTION",
+      "risk": "low",
+      "passCondition": "Only applicable when a visual surface changes.",
+      "primarySurface": "not applicable",
+      "counterevidence": "No visual or browser surface changed.",
+      "verdict": "NOT_APPLICABLE_NOT_RUN"
+    }
+  ]
+}
