@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.git-object-inventory-observation/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "id", "role", "subjectRef", "objectFormat", "enumerationClaim", "observedAt", "expiresAt", "objects", "objectCount", "totalDeclaredObjectBytes", "authority", "inventoryDigest"],
+  "properties": {
+    "schema": {"const": "axm.git-object-inventory-observation/v1"},
+    "version": {"const": "0.1.0"},
+    "id": {"$ref": "#/$defs/identifier"},
+    "role": {"enum": ["SOURCE", "MIRROR"]},
+    "subjectRef": {"$ref": "#/$defs/subjectReference"},
+    "objectFormat": {"enum": ["SHA1", "SHA256"]},
+    "enumerationClaim": {"const": "HOST_DECLARED_ALL_LOCAL_OBJECTS"},
+    "observedAt": {"$ref": "#/$defs/timestamp"},
+    "expiresAt": {"$ref": "#/$defs/timestamp"},
+    "objects": {
+      "type": "array",
+      "maxItems": 2048,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/objectRecord"}
+    },
+    "objectCount": {"type": "integer", "minimum": 0, "maximum": 2048},
+    "totalDeclaredObjectBytes": {"type": "integer", "minimum": 0, "maximum": 1099511627776},
+    "authority": {"const": "NONE"},
+    "inventoryDigest": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"objectFormat": {"const": "SHA1"}}},
+      "then": {"properties": {"objects": {"items": {"$ref": "#/$defs/sha1ObjectRecord"}}}}
+    },
+    {
+      "if": {"properties": {"objectFormat": {"const": "SHA256"}}},
+      "then": {"properties": {"objects": {"items": {"$ref": "#/$defs/sha256ObjectRecord"}}}}
+    }
+  ],
+  "$defs": {
+    "identifier": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,127}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "timestamp": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "subjectReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "schema", "sha256"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "schema": {"const": "axm.git-repository-object-set-subject/v1"},
+        "sha256": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "objectRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["oid", "type", "size"],
+      "properties": {
+        "oid": {"type": "string"},
+        "type": {"enum": ["blob", "commit", "tag", "tree"]},
+        "size": {"type": "integer", "minimum": 0, "maximum": 1099511627776}
+      }
+    },
+    "sha1ObjectRecord": {
+      "allOf": [
+        {"$ref": "#/$defs/objectRecord"},
+        {"properties": {"oid": {"pattern": "^[a-f0-9]{40}$"}}}
+      ]
+    },
+    "sha256ObjectRecord": {
+      "allOf": [
+        {"$ref": "#/$defs/objectRecord"},
+        {"properties": {"oid": {"pattern": "^[a-f0-9]{64}$"}}}
+      ]
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-capability-fabric-git-object-inventory-comparator",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "axm.git-object-inventory-observation/v1",
+    "axm.git-object-inventory-comparison-request/v1",
+    "axm.git-object-inventory-comparison-receipt/v1",
+    "code.compare-git-object-inventories"
+  ],
+  "consumes": [
+    "strict-deterministic-canonical-json",
+    "grounded-consent-scope",
+    "ed25519-consent-bound-host-observation-attestation",
+    "host-supplied-inert-git-object-records"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "accepts": [
+      "one signed SOURCE inventory observation",
+      "one signed MIRROR inventory observation",
+      "one to four exact consent-bound Ed25519 observer keys",
+      "one verified grounded-consent evaluation",
+      "one exact interactive declaration"
+    ],
+    "emits": [
+      "MATCH or typed DRIFT receipt over declared object ids, types, and sizes only"
+    ]
+  },
+  "rootsGate": ["truth", "agency-non-domination", "continuity", "wisdom-over-speed"],
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "filesystem-reading",
+      "filesystem-writing",
+      "git-command-execution",
+      "git-repository-opening",
+      "object-byte-reading",
+      "object-content-rehashing",
+      "host-enumeration-completeness-claim",
+      "network-use",
+      "child-process-execution",
+      "provider-code-loading",
+      "workspace-mutation",
+      "full-clone-reliability-claim",
+      "permission-grant",
+      "automatic-merge",
+      "automatic-install",
+      "automatic-publish",
+      "automatic-promotion",
+      "automatic-canon",
+      "machine-wide-default-activation",
+      "persistent-learning-admission"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "calling host",
+    "reload": "both freshly signed inventories and a new exact consent-bound declaration are required",
+    "disconnect": "pure comparison returns with no background work",
+    "cleanup": "no module-owned files, repositories, sockets, or processes exist"
+  }
+}
