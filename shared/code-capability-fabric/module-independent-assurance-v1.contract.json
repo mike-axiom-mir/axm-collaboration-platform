@@ -1,0 +1,66 @@
+{
+  "schema": "axm.module-contract/v1",
+  "id": "code-independent-assurance-review",
+  "version": "v0.1",
+  "status": "TEST",
+  "provides": [
+    "axm.code-assurance-trust-policy/v1",
+    "axm.code-assurance-attestation/v1",
+    "axm.code-independent-assurance-review/v1",
+    "code.assurance.independent.review",
+    "code.assurance.independent.review.verify"
+  ],
+  "consumes": [
+    "axm.code-capability-readiness/v1",
+    "axm.code-assurance-trust-policy/v1",
+    "axm.code-trust-key/v1",
+    "axm.code-assurance-attestation/v1",
+    "strict-deterministic-canonical-json"
+  ],
+  "permissions": [],
+  "handoffs": {
+    "emits": ["axm.code-independent-assurance-review/v1"],
+    "accepts": [
+      "axm.code-capability-readiness/v1",
+      "axm.code-assurance-trust-policy/v1",
+      "axm.code-trust-key/v1",
+      "axm.code-assurance-attestation/v1"
+    ]
+  },
+  "rootsGate": [
+    "truth",
+    "agency-non-domination",
+    "continuity",
+    "wisdom-over-speed"
+  ],
+  "boundaries": {
+    "writes": [],
+    "refuses": [
+      "host-observer-counting-as-independent-assurance-verifier",
+      "host-observer-key-alias-counting-as-independent-assurance-verifier",
+      "duplicate-public-key-material-counting-as-multiple-quorum-members",
+      "distinct-keys-as-organizational-independence-proof",
+      "unbound-trust-policy-as-request-authority",
+      "private-key-storage",
+      "trust-key-promotion",
+      "provider-code-loading",
+      "provider-code-execution",
+      "experimental-runtime-execution",
+      "workspace-content-reading",
+      "filesystem-inspection",
+      "process-execution",
+      "network-use",
+      "permission-grant",
+      "executor-authorization",
+      "automatic-install",
+      "automatic-promotion",
+      "automatic-canon"
+    ]
+  },
+  "lifecycle": {
+    "state_owner": "none",
+    "reload": "reset",
+    "disconnect": "not-applicable",
+    "cleanup": "automatic"
+  }
+}
