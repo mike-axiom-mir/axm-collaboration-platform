@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.semantic-generation-capability-gap/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "requestedRecipeId", "goal", "supportedRecipeIds", "proposedHandContract", "truth", "authority", "gapDigest"],
+  "properties": {
+    "schema": {"const": "axm.semantic-generation-capability-gap/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"const": "MISSING_TYPED_RECIPE"},
+    "requestedRecipeId": {"type": "string", "minLength": 1, "maxLength": 120},
+    "goal": {"type": "string", "minLength": 1, "maxLength": 600},
+    "supportedRecipeIds": {"const": ["creation-review-card-adapter"]},
+    "proposedHandContract": {"$ref": "#/$defs/hand"},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "gapDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "hand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provides", "mustPreserve", "authority"],
+      "properties": {
+        "provides": {"const": ["versioned-native-recipe"]},
+        "mustPreserve": {"const": ["exact-byte-lineage", "permissionless-generation", "UNRUN-evidence", "human-merge-gate"]},
+        "authority": {"const": "NONE"}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["implementationAvailable", "fallbackPretended"],
+      "properties": {
+        "implementationAvailable": {"const": false},
+        "fallbackPretended": {"const": false}
+      }
+    }
+  }
+}

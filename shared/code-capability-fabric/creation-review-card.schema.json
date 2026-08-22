@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axm.creation-review-card/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "status", "goal", "candidateRef", "comparisonRef", "tier", "ai", "sourcesUsed", "exactChanges", "permissions", "networkDomains", "resources", "reuseRights", "rootsGate", "evidence", "limitations", "controls", "choices", "nextGate", "truth", "authority", "cardDigest"],
+  "properties": {
+    "schema": {"const": "axm.creation-review-card/v1"},
+    "version": {"const": "0.1.0"},
+    "status": {"const": "REVIEW_REQUIRED"},
+    "goal": {"type": "string", "minLength": 1, "maxLength": 600},
+    "candidateRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "comparisonRef": {"$ref": "semantic-common.schema.json#/$defs/reference"},
+    "tier": {"const": 1},
+    "ai": {"$ref": "#/$defs/ai"},
+    "sourcesUsed": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"$ref": "semantic-common.schema.json#/$defs/reference"}},
+    "exactChanges": {"type": "array", "minItems": 1, "maxItems": 16, "items": {"$ref": "semantic-common.schema.json#/$defs/sourceFile"}},
+    "permissions": {"type": "array", "maxItems": 64, "items": {"$ref": "semantic-common.schema.json#/$defs/id"}},
+    "networkDomains": {"type": "array", "maxItems": 32, "items": {"$ref": "semantic-common.schema.json#/$defs/id"}},
+    "resources": {"$ref": "semantic-candidate-packet.schema.json#/$defs/resources"},
+    "reuseRights": {"$ref": "semantic-candidate-packet.schema.json#/$defs/reuseRights"},
+    "rootsGate": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "semantic-common.schema.json#/$defs/rootDecision"}},
+    "evidence": {"$ref": "#/$defs/evidence"},
+    "limitations": {"type": "array", "minItems": 20, "maxItems": 52, "items": {"type": "string", "minLength": 1, "maxLength": 200}},
+    "controls": {"$ref": "#/$defs/controls"},
+    "choices": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/$defs/choice"}},
+    "nextGate": {"const": "AUTHENTICATED_HUMAN_DECISION_REQUIRED"},
+    "truth": {"$ref": "#/$defs/truth"},
+    "authority": {"const": "NONE"},
+    "cardDigest": {"$ref": "semantic-common.schema.json#/$defs/digest"}
+  },
+  "$defs": {
+    "ai": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["used", "lane", "providerRef", "directReuseRightsHeld"],
+      "properties": {
+        "used": {"type": "boolean"},
+        "lane": {"enum": ["NATIVE", "AI_CHALLENGER"]},
+        "providerRef": {"oneOf": [{"type": "null"}, {"$ref": "semantic-candidate-packet.schema.json#/$defs/exactProvider"}]},
+        "directReuseRightsHeld": {"type": "boolean"}
+      }
+    },
+    "evidenceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "evidenceKind", "verdict"],
+      "properties": {
+        "id": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "evidenceKind": {"$ref": "semantic-common.schema.json#/$defs/id"},
+        "verdict": {"enum": ["PASS", "FAIL", "HOLD", "UNKNOWN", "UNRUN"]}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passed", "failed", "held", "unknown"],
+      "properties": {
+        "passed": {"type": "array", "maxItems": 32, "items": {"$ref": "#/$defs/evidenceItem"}},
+        "failed": {"type": "array", "maxItems": 32, "items": {"$ref": "#/$defs/evidenceItem"}},
+        "held": {"type": "array", "maxItems": 32, "items": {"$ref": "#/$defs/evidenceItem"}},
+        "unknown": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"$ref": "#/$defs/evidenceItem"}}
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stop", "revoke", "rollback", "changedBytes"],
+      "properties": {
+        "stop": {"const": "DISCARD_DETACHED_CANDIDATE"},
+        "revoke": {"const": "REVOKE_OR_EXPIRE_BEFORE_ANY_HIGHER_TIER"},
+        "rollback": {"const": "REMOVE_ONLY_THE_UNINSTALLED_DETACHED_CANDIDATE"},
+        "changedBytes": {"const": "NEW_REQUEST_AND_RECONSENT_REQUIRED"}
+      }
+    },
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "effect"],
+      "properties": {
+        "id": {"enum": ["ACCEPT_FOR_NEXT_GATE", "REQUEST_REPAIR", "DISCARD"]},
+        "effect": {"enum": ["REQUEST_AUTHENTICATED_HUMAN_DECISION_ONLY", "NEW_CANDIDATE_BYTES_REQUIRED", "NO_INSTALL_OR_INTEGRATION"]}
+      }
+    },
+    "truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unknownRenderedAsPass", "aiInvolvementHidden", "approvalSeatImpersonated", "changedBytesApproved", "candidateExecuted", "installed", "integrated", "promoted", "canonChanged"],
+      "properties": {
+        "unknownRenderedAsPass": {"const": false},
+        "aiInvolvementHidden": {"const": false},
+        "approvalSeatImpersonated": {"const": false},
+        "changedBytesApproved": {"const": false},
+        "candidateExecuted": {"const": false},
+        "installed": {"const": false},
+        "integrated": {"const": false},
+        "promoted": {"const": false},
+        "canonChanged": {"const": false}
+      }
+    }
+  }
+}
